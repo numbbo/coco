@@ -1,0 +1,19 @@
+Error catching:
+*When given a wrong path, nothing happens...
+*Problem with Gtk/gdk over ssh (import matplotlib) -> ssh -X
+*Problem with demo (is not working): no possibility of shorter demo due to writeTable2. It should try and take as input a list of arrays.
+*delete tex before writing in at the launch of the post processing... are the files written in again?
+*problem with the tables: too many floats to handle...
+*last figures: not spanned over the width of the page.
+
+Feature missing:
+*function values in italics missing
+*increased font size
+*Visible Symbol for the last function value reached
+*Deal with archive file.
+
+Misc.
+*documentation
+*error testing
+*Explicit demo post processing.
+*make tab only faster: it doesn't need to process everything...
