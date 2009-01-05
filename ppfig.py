@@ -101,7 +101,12 @@ def customizeFigure(figHandle, figureName, title = '',
     axisHandle.set_title(title)
 
     # Save figure
-    if len(fileFormat) > 1:
+    if isinstance(fileFormat, basestring):
+        plt.savefig(figureName + '.' + fileFormat, dpi = 120,
+                    format = entry)
+        if verbose:
+            print 'Wrote figure in %s.' %(figureName + '.' + fileFormat)
+    else:
         for entry in fileFormat:
             plt.savefig(figureName + '.' + entry, dpi = 120,
                         format = entry)

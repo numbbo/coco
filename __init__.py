@@ -23,12 +23,21 @@ from bbob_pproc import findindexfiles
 from bbob_pproc import pproc
 from bbob_pproc import ppfig
 from bbob_pproc import pptex
+from bbob_pproc import ppdatapr
 from pdb import set_trace
 import scipy
 import numpy as n
 import matplotlib.pyplot as plt
+import pickle
 
-__all__  = ['readindexfiles','findindexfiles','ppfig','pptex','main']
+plt.rc("axes", labelsize=16, titlesize=16)
+plt.rc("xtick", labelsize=16)
+plt.rc("ytick", labelsize=16)
+plt.rc("font", size=16)
+plt.rc("legend", fontsize=16)
+
+__all__  = ['readindexfiles','findindexfiles','ppfig','pptex','ppdatapr',
+            'main']
 sp1index = 1
 medianindex = 5
 colors = {2:'b', 3:'g', 5:'r', 10:'c', 20:'m', 40:'y'} #TODO colormaps!
@@ -123,7 +132,7 @@ def main(argv=None):
         try:
             opts, args = getopt.getopt(argv[1:], "hvfo:",
                                        ["help","files","output-dir",
-                                        "tab-only","fig-only"])
+                                        "tab-only","fig-only","dat-only"])
         except getopt.error, msg:
              raise Usage(msg)
         # more code, unchanged
@@ -131,6 +140,7 @@ def main(argv=None):
         verbose = True #TODO put verbose function everywhere needed.
         isfigure = True
         istab = True
+        isdataprof = True
         indexFiles = []
         #set_trace()
         for o, a in opts:
@@ -141,7 +151,8 @@ def main(argv=None):
                 sys.exit()
             elif o in ("-f", "--files"):
                 #Post processed data files
-                print 'bla'
+                isPostProcessed = True
+                #print 'bla'
                 #indexFiles.extend(findindexfiles.main(opts[o]))
             elif o in ("-o", "--output-dir"):
                 outputdir = a
@@ -149,27 +160,37 @@ def main(argv=None):
             #The next 2 are for testing purpose
             elif o == "--tab-only":
                 isfigure = False
+                isdatprof = False
             elif o == "--fig-only":
                 istab = False
+                isdataprof = False
+            elif o == "--dat-only":
+                istab = False
+                isfigure = False
             else:
                 assert False, "unhandled option"
 
-        for i in args:
-            if i.endswith('.info'):
-                (filepath,filename) = os.path.split(i)
-                indexFiles.append(findindexfiles.IndexFile(filepath,filename))
-            else:
-                indexFiles.extend(findindexfiles.main(i,verbose))
-            #Todo watch that the same info file is not listed twice this way.
-
-        indexEntries = readindexfiles.main(indexFiles,verbose)
-        sortByFunc = {}
-
-        #set_trace()
-        for elem in indexEntries:
-            if not sortByFunc.has_key(elem.funcId): #This takes a while!
-                sortByFunc[elem.funcId] = {}
-            sortByFunc[elem.funcId][elem.dim] = elem
+        if isPostProcessed:
+            for i in args
+        else:
+            for i in args:
+                if i.endswith('.info'):
+                    (filepath,filename) = os.path.split(i)
+                    indexFiles.append(findindexfiles.IndexFile(filepath,filename))
+                else:
+                    indexFiles.extend(findindexfiles.main(i,verbose))
+                #Todo watch that the same info file is not listed twice this way.
+    
+            indexEntries = readindexfiles.main(indexFiles,verbose)
+    
+            sortByFunc = {}
+            #set_trace()
+            for elem in indexEntries:
+                if not sortByFunc.has_key(elem.funcId): #This takes a while!
+                    sortByFunc[elem.funcId] = {}
+                sortByFunc[elem.funcId][elem.dim] = elem
+                pproc.main(elem,verbose)
+                file
 
         #set_trace()
         # create directory
@@ -194,39 +215,30 @@ def main(argv=None):
                 fig = plt.figure()
 
             for dim in sorted(sortByFunc[func].keys()):
-                #filename2 = os.path.join(outputdir,'ppdata_f%d_%d' %(func,dim))
                 entry = sortByFunc[func][dim]
-                pproc.main(entry,verbose)
+                #pproc.main(entry,verbose)
                 #set_trace()
-                #debug:
                 ps.append(entry.arrayTab[-1,4])
                 nbRuns.append(entry.nbRuns)
 
-                if istab:
-                    if dimOfInterest.count(dim) != 0 and tabData.shape[0] == 0:
-                        # Array tabData has no previous values.
-                        tabData = entry.arrayTab
-                        entryList.append(entry)
-                    elif dimOfInterest.count(dim) != 0 and tabData.shape[0] != 0:
-                        # Array tabData already contains values for the same function
-                        tabData = n.append(tabData,entry.arrayTab[:,1:],1)
-                        entryList.append(entry)
+                if dimOfInterest.count(dim) != 0 and tabData.shape[0] == 0:
+                    # Array tabData has no previous values.
+                    tabData = entry.arrayTab
+                    entryList.append(entry)
+                elif dimOfInterest.count(dim) != 0 and tabData.shape[0] != 0:
+                    # Array tabData already contains values for the same function
+                    tabData = n.append(tabData,entry.arrayTab[:,1:],1)
+                    entryList.append(entry)
 
                 if isfigure:
                     #set_trace()
-                    #sortind = scipy.ix_(tmp.arrayFullTab[:,sp1index].argsort(),
-                                     #[sp1index,0])
-                    #h = ppfig.createFigure(tmp.arrayFullTab[sortind],fig)
-                    h = ppfig.createFigure(entry.arrayFullTab[:,[sp1index,0]],
+                    h=ppfig.createFigure(entry.arrayFullTab[:,[sp1index,0]],
                                            fig)
                     for i in h:
                         plt.setp(i,'color',colors[dim])
 
-                    #sortind = scipy.ix_(tmp.arrayFullTab[:,medianindex].argsort(),
-                                        #[medianindex,0])
-                    #h = ppfig.createFigure(tmp.arrayFullTab[sortind],fig)
-                    h = ppfig.createFigure(entry.arrayFullTab[:,[medianindex,0]],
-                                           fig)
+                    h=ppfig.createFigure(entry.arrayFullTab[:,[medianindex,0]],
+                                         fig)
                     for i in h:
                         plt.setp(h,'color',colors[dim],'linestyle','--')
 
@@ -245,6 +257,27 @@ def main(argv=None):
                                       scale = ['log','log'],
                                       locLegend = 'best',verbose = verbose)
                 #plt.show(fig)
+                plt.close(fig)
+
+        if isdataprof:
+            sortForDataProf = ppdatapr.sortIndexEntries(indexEntries)
+            valuesOfInterest = [1.0,1.0e-2,1.0e-4,1.0e-6,1.0e-8]
+            colorsDataProf = ['b', 'g', 'r', 'c', 'm']
+            #synchronize this with the valuesForDataProf in pproc
+
+            for i in range(len(sortForDataProf)):
+                figureName = os.path.join(outputdir,'ppdataprofile%d' %(i))
+                i = sortForDataProf[i]
+                fig = plt.figure()
+                for j in range(len(valuesOfInterest)):
+                #for j in [0]:
+                    maxEvalsFactor = 1e4
+                    tmp = ppdatapr.main(i,valuesOfInterest[j],maxEvalsFactor,
+                                        verbose)
+                    if not tmp is None:
+                        plt.setp(tmp,'color',colorsDataProf[j])
+                ppdatapr.beautify(fig, figureName, maxEvalsFactor,
+                                  verbose = verbose)
                 plt.close(fig)
 
         if verbose:

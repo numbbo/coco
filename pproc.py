@@ -19,15 +19,13 @@ __version__ = "$Revision$"
 __all__ = ['main','quantile','postprocess']
 
 # Define global variables.
-quantilesTab = (0.,0.1,0.5,0.9,1.)
-quantilesFig = (0.1,0.5,0.9)
 prctilesTab = (0.,0.1,0.5,0.9,1.)
 # These depends on the layout of the data files.
 funcEvalsIndex = 0
-fitValIndex = 1
-bFitValIndex = 2
+fitValIndex = 2
 maxEvalsFactor = 1e5
 valuesOfInterest = (1.0,1.0e-2,1.0e-4,1.0e-6,1.0e-8) #has to be sorted
+valuesForDataProf = (1.0,1.0e-2,1.0e-4,1.0e-6,1.0e-8) #has to be sorted
 
 # Remarks:
 # Need for the optimum of the function!
@@ -57,7 +55,9 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
     vals = len(dataSets)*[0]
     arrayFullTab = [] #aligned by function values.
     arrayTab = {} #aligned by function values.
+    dataProf = {} #aligned by function values.
     iValuesOfInterest = 0
+    iValuesForDataProf = 0
     #arrayFig = [] #aligned by function evaluations.
     #currentLines = []
     #dataSetsToRead = dataSets
@@ -70,14 +70,14 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
         # Align data
         for i in range(len(dataSets)):
             res[i] = dataSets[i].set[dataSets[i].currentPos,funcEvalsIndex]
-            vals[i] = (dataSets[i].set[dataSets[i].currentPos,bFitValIndex]
+            vals[i] = (dataSets[i].set[dataSets[i].currentPos,fitValIndex]
                        -fvalueToReach+1.0e-8)
             if not isFinished[i]:
                 while (dataSets[i].currentPos < len(dataSets[i].set)-1 and
                        vals[i] > currentFitValue):
                     dataSets[i].currentPos += 1
                     vals[i] = dataSets[i].set[dataSets[i].currentPos,
-                                              bFitValIndex]
+                                              fitValIndex]
                     res[i] = dataSets[i].set[dataSets[i].currentPos,
                                              funcEvalsIndex]
                 if (dataSets[i].currentPos == len(dataSets[i].set)-1):
@@ -105,6 +105,9 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
         #sake. We can then use the user defined maximum number of function
         #evaluations.
 
+        # Tests if we have covered all of the valuesOfInterest (using the
+        # iterator iValuesOfInterest and then if 
+        # currentFitValue == valuesOfInterest[iValuesOfInterest].
         if (iValuesOfInterest < len(valuesOfInterest) and
             (currentFitValue-valuesOfInterest[iValuesOfInterest] <
              max([currentFitValue*(1.0-10.**-0.1),
@@ -112,6 +115,13 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
             arrayTab[valuesOfInterest[iValuesOfInterest]] = computevalues(res,
                                                       maxEvals,dispersion=True)
             iValuesOfInterest += 1
+        if (iValuesForDataProf < len(valuesForDataProf) and
+            (currentFitValue-valuesForDataProf[iValuesForDataProf] <
+             max([currentFitValue*(1.0-10.**-0.1),
+                  scipy.finfo('float64').resolution]))):
+            dataProf[valuesForDataProf[iValuesForDataProf]]= res[:]
+            iValuesForDataProf += 1
+
         currentFitValue *= 10.**(-0.2)
     arrayFullTab = scipy.vstack(arrayFullTab)
     tmp = []
@@ -131,7 +141,7 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
     #set_trace()
     arrayTab = scipy.vstack(tmp)
     #set_trace()
-    return (arrayFullTab,arrayTab,len(dataSets),maxEvals)
+    return (arrayFullTab,arrayTab,dataProf,len(dataSets),maxEvals)
 
 def testpostprocess():
     import glob
@@ -158,7 +168,8 @@ def computevalues(N, maxEvals,header=False,dispersion=False):
         #~ set_trace()
         sp1m = bootstrap.sp1(N,maxevals=maxEvals)
         if dispersion:
-            dispersionSP1 = bootstrap.draw(N,[10,90],15,bootstrap.sp1,[maxEvals])
+            dispersionSP1 = bootstrap.draw(N,[10,90],15,bootstrap.sp1,
+                                           [maxEvals]) #Why a list?
             res = [sp1m[0],dispersionSP1[0][0],dispersionSP1[0][1],sp1m[2]]
         else:
             res = [sp1m[0],sp1m[1]]
@@ -170,9 +181,9 @@ def computevalues(N, maxEvals,header=False,dispersion=False):
     else:
         # Returns header and format of the entries for one function
         # and one dimension.
-        header = ['$F_{t}$','$ENFEs$','10\%','90\%','$\#$',\
+        header = ['$f_{t}$','$ENFEs$','10\%','90\%','$\#$',
                   'Best','3$^{rd}$ B.','Median','3$^{rd}$ W.','Worst']
-        format = ['%1.1e','%1.1e','%1.1e','%1.1e','%d',\
+        format = ['%1.1e','%1.1e','%1.1e','%1.1e','%d',
                   '%1.1e','%1.1e','%1.1e','%1.1e','%1.1e']
         return header,format
 
@@ -229,8 +240,9 @@ def main(indexEntry,verbose = True):
 
     indexEntry.arrayFullTab = res[0]
     indexEntry.arrayTab = res[1]
-    indexEntry.nbRuns = res[2]
-    indexEntry.maxEvals = int(min((maxEvals,res[3])))
+    indexEntry.dataProf = res[2]
+    indexEntry.nbRuns = res[3]
+    indexEntry.maxEvals = int(min((maxEvals,res[4])))
     #The maxEvals to appear in the table should be this one.
 
     if verbose:

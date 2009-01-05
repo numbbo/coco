@@ -139,23 +139,23 @@ def writeTable2(data, filename, entryList, header = list(), fontSize = 'scriptsi
 
     # Create output file
     try:
-        os.listdir(filename.split('/')[0]).index(filename.split('/')[1] + '.tex')
-        print 'Overwrite old file %s!' %(filename + '.tex')
+        if verbose:
+            os.listdir(filename.split('/')[0]).index(filename.split('/')[1] + '.tex')
+            print 'Overwrite old file %s!' %(filename + '.tex')
         f = open(filename + '.tex','w')
-    except ValueError:    
-        f = open(filename + '.tex','w')
+    except ValueError:
+        print 'Error opening' + filename + '.tex'
 
     # Write tabular environment
-    #f.write('\\begin{table*} \n')
-    f.write('\\centering \n')
     f.write('\\begin{' + fontSize + '} \n')
     f.write('\\begin{tabular}{' + tabColumns + '} \n')
 
     # Write first two rows containing the info of the table columns
     for i in range(0,width):
-        caption = 'N = ' + str(entryList[i].dim) + ',FId = ' + str(entryList[i].funcId)
-        caption = caption + ',max. FEvals = ' + str(entryList[i].maxEvals)
-        caption = caption + ',Nruns = ' + str(entryList[i].nbRuns)
+        caption = ('DIM = ' + str(entryList[i].dim) + 
+                   ', FId = ' + str(entryList[i].funcId))
+        caption = caption + ', max. FEvals = ' + str(entryList[i].maxEvals)
+        caption = caption + ', Nruns = ' + str(entryList[i].nbRuns)
         if i != width - 1:
             f.write('& \multicolumn{' + str((len(format)-1)/width) + '}{@{$\,$}c|@{$\,$}}{' + caption + '}')
         else:
