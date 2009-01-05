@@ -1,19 +1,26 @@
 Error catching:
 *When given a wrong path, nothing happens...
-*Problem with Gtk/gdk over ssh (import matplotlib) -> ssh -X
 *Problem with demo (is not working): no possibility of shorter demo due to writeTable2. It should try and take as input a list of arrays.
-*delete tex before writing in at the launch of the post processing... are the files written in again?
-*problem with the tables: too many floats to handle...
-*last figures: not spanned over the width of the page.
+*problem with the tables: too many floats to handle -> not more than 12 it seems.
+*tables are hard to read: columns do not have all the same width
 
 Feature missing:
-*function values in italics missing
-*increased font size
-*Visible Symbol for the last function value reached
-*Deal with archive file.
+*function values in italics missing -> pproc.py has to return in arrayTab the right things.
+*Deal with archive file -> not file-like object for zipfile module in python 2.5.2
+*synchronize the caption of the data profiles with information from the post processing?
 
 Misc.
 *documentation
 *error testing
 *Explicit demo post processing.
 *make tab only faster: it doesn't need to process everything...
+*Problem with some fonts missing for tex compilation.
+
+SOLVED:
+*Problem with Gtk/gdk over ssh (import matplotlib) -> ssh -X
+*delete tex before writing in at the launch of the post processing... are the files written in again? -> They are not so the output tex files are simply overwritten.
+*last figures: not spanned over the width of the page -> put a tabular.
+*increased font size for figure -> parameter in __init__.py
+*Change ticks labels font size -> parameter in __init__.py
+*Visible Symbol for the last function value reached -> Make more visible?
+*F_t in the tables instead of f_t (cf experimentation.pdf §6.4)
