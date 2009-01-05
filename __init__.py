@@ -190,7 +190,6 @@ def main(argv=None):
             filename = os.path.join(outputdir,'ppdata_f%d' % (func))
             tabData = n.zeros(0)   # initialize matrix containing the table entries
             entryList = list()     # list of entries which are displayed in the table
-            #check filename+'.tex' does not exist.
             if isfigure:
                 fig = plt.figure()
 
