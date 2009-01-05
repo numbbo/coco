@@ -94,7 +94,7 @@ def writeTable(data, fileName, header = list(), fontSize = 'tiny',
     if verbose:
         print 'Wrote in %s.' %(fileName+'.tex')
 
-def writeTable2(data, fileName, entryList, header = list(), fontSize = 'tiny',
+def writeTable2(data, filename, entryList, header = list(), fontSize = 'tiny',
                 fontSize2 = 'scriptscriptstyle', format = list(), keep_open = 0,
                 width = 2, verbose = True):
     """Writes data of array in a *.tex file. This file then can be used
@@ -103,7 +103,7 @@ def writeTable2(data, fileName, entryList, header = list(), fontSize = 'tiny',
 
        Mandatory inputs:
        data - sorted 2d-array containing the data values (array)
-       fileName - name of output file (string)
+       filename - name of output file (string)
        entry - IndexEntry containing the attributes of the current index entry
 
        Optional inputs:
@@ -137,8 +137,13 @@ def writeTable2(data, fileName, entryList, header = list(), fontSize = 'tiny',
     tabColumns = tabColumns + 4 * '@{$\,$}c@{$\,$}' +'|'
     tabColumns = tabColumns + 5 * '@{$\,$}c@{$\,$}'
 
-    # Create and open output file
-    f = open(fileName + '.tex','a')
+    # Create output file
+    try:
+        os.listdir(filename.split('/')[0]).index(filename.split('/')[1] + '.tex')
+        print 'Overwrite old file %s!' %(filename + '.tex')
+        f = open(filename + '.tex','w')
+    except ValueError:    
+        f = open(filename + '.tex','w')
 
     # Write tabular environment
     f.write('\\begin{table*} \n')
@@ -173,7 +178,7 @@ def writeTable2(data, fileName, entryList, header = list(), fontSize = 'tiny',
         f.close()
 
     if verbose:
-        print 'Wrote in %s.' %(fileName+'.tex')
+        print 'Wrote in %s.' %(filename+'.tex')
 
 def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
     """ Writes components of an numeric array in LaTex file with additional
