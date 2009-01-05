@@ -15,6 +15,9 @@ Misc.
 *Explicit demo post processing.
 *make tab only faster: it doesn't need to process everything...
 *Problem with some fonts missing for tex compilation.
+*max. FEvals appearing in the tables is not the one set for the experiment but
+an empirical value (measured).
+*Write somewhere the result of the discussion about maxEvals.
 
 SOLVED:
 *Problem with Gtk/gdk over ssh (import matplotlib) -> ssh -X
