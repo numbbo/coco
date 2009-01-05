@@ -115,6 +115,7 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
             arrayTab[valuesOfInterest[iValuesOfInterest]] = computevalues(res,
                                                       maxEvals,dispersion=True)
             iValuesOfInterest += 1
+
         if (iValuesForDataProf < len(valuesForDataProf) and
             (currentFitValue-valuesForDataProf[iValuesForDataProf] <
              max([currentFitValue*(1.0-10.**-0.1),
@@ -243,6 +244,8 @@ def main(indexEntry,verbose = True):
     indexEntry.dataProf = res[2]
     indexEntry.nbRuns = res[3]
     indexEntry.maxEvals = int(min((maxEvals,res[4])))
+    #Problem here: maxEvals is the empirical value and not the one set for the
+    #experiment!
     #The maxEvals to appear in the table should be this one.
 
     if verbose:
