@@ -94,8 +94,8 @@ def writeTable(data, fileName, header = list(), fontSize = 'tiny',
     if verbose:
         print 'Wrote in %s.' %(fileName+'.tex')
 
-def writeTable2(data, filename, entryList, header = list(), fontSize = 'tiny',
-                fontSize2 = 'scriptscriptstyle', format = list(), keep_open = 0,
+def writeTable2(data, filename, entryList, header = list(), fontSize = 'scriptsize',
+                fontSize2 = 'scriptstyle', format = list(), keep_open = 0,
                 width = 2, verbose = True):
     """Writes data of array in a *.tex file. This file then can be used
        in LaTex as input for tables. The file must be placed inside a
@@ -146,7 +146,7 @@ def writeTable2(data, filename, entryList, header = list(), fontSize = 'tiny',
         f = open(filename + '.tex','w')
 
     # Write tabular environment
-    f.write('\\begin{table*} \n')
+    #f.write('\\begin{table*} \n')
     f.write('\\centering \n')
     f.write('\\begin{' + fontSize + '} \n')
     f.write('\\begin{tabular}{' + tabColumns + '} \n')
@@ -171,7 +171,7 @@ def writeTable2(data, filename, entryList, header = list(), fontSize = 'tiny',
     # Finish writing the table and close file.
     f.write('\end{tabular} \n')
     f.write('\end{' + fontSize + '} \n')
-    f.write('\end{table*} \n')
+    #f.write('\end{table*} \n')
 
     # Check if file should be closed
     if keep_open == 0:
