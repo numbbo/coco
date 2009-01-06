@@ -29,7 +29,7 @@ class IndexFile:
 
 
 # Initialization
-def main(directory = os.getcwd(),verbose = True):
+def main(directory=os.getcwd(),verbose=True):
     indexFiles = list()
 
     #~ if directory.endswith('.zip'):

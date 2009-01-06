@@ -5,6 +5,10 @@
 
 from __future__ import absolute_import
 
+__version__ = "$Revision$"
+# $URL$
+# $Date$
+
 import scipy
 import scipy.io
 from . import bootstrap
@@ -13,9 +17,7 @@ from . import bootstrap
 from pdb import set_trace
 
 
-__version__ = "$Revision$"
-# $URL$
-# $Date$
+
 __all__ = ['main','quantile','postprocess']
 
 # Define global variables.
@@ -134,7 +136,7 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
     arrayFullTab = scipy.vstack(arrayFullTab)
     tmp = []
     for i in valuesOfInterest:
-        if arrayTab.has_key(i):
+        if i in arrayTab:
             #set_trace()
             tmp.append(scipy.append(scipy.array([i]),arrayTab[i])) #Weird.
         else:
@@ -193,7 +195,7 @@ def computevalues(N, maxEvals,header=False,dispersion=False):
     else:
         # Returns header and format of the entries for one function
         # and one dimension.
-        header = ['$f_{t}$','$ENFEs$','10\%','90\%','$\#$',
+        header = ['$f_{t}$','$\ENFEs$','10\%','90\%','$\#$',
                   'Best','3$^{rd}$ B.','Median','3$^{rd}$ W.','Worst']
         format = ['%1.1e','%1.1e','%1.1e','%1.1e','%d',
                   '%1.1e','%1.1e','%1.1e','%1.1e','%1.1e']
