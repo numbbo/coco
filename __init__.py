@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-"""Generates a tex document from directories containing index files.
+"""Given input files from BBOB experiments, postprocesses and returns output.
+
+Keyword arguments:
+    
 """
 
 #credits to G. Van Rossum: http://www.artima.com/weblogs/viewpost.jsp?thread=4829
@@ -9,9 +12,6 @@
 #Add a commented header, and so shouldn't we store many post processed data into one file?
 
 #TODO:
-# Data profiles: CDF of all runs on all functions (for now) vs.
-#(number of function evaluations/dimension) for a given ftarget and for either
-# small (<10) or larger (>=10) dimensions
 
 from __future__ import absolute_import
 
@@ -141,8 +141,8 @@ def main(argv=None):
         isfigure = True
         istab = True
         isdataprof = True
-        indexFiles = []
-        #set_trace()
+        isPostProcessed = False
+
         for o, a in opts:
             if o == "-v":
                 verbose = True
@@ -152,15 +152,12 @@ def main(argv=None):
             elif o in ("-f", "--files"):
                 #Post processed data files
                 isPostProcessed = True
-                #print 'bla'
-                #indexFiles.extend(findindexfiles.main(opts[o]))
             elif o in ("-o", "--output-dir"):
                 outputdir = a
-
             #The next 2 are for testing purpose
             elif o == "--tab-only":
                 isfigure = False
-                isdatprof = False
+                isdataprof = False
             elif o == "--fig-only":
                 istab = False
                 isdataprof = False
@@ -171,8 +168,16 @@ def main(argv=None):
                 assert False, "unhandled option"
 
         if isPostProcessed:
-            for i in args
+            indexEntries = []
+            for i in args:
+                if i.endswith('.pickle'):
+                    f = open(i,'r')
+                    indexEntries.append(pickle.load(f))
+                    f.close()
+                    if verbose:
+                        print 'Unpickled %s.' %(i)
         else:
+            indexFiles = []
             for i in args:
                 if i.endswith('.info'):
                     (filepath,filename) = os.path.split(i)
@@ -180,17 +185,23 @@ def main(argv=None):
                 else:
                     indexFiles.extend(findindexfiles.main(i,verbose))
                 #Todo watch that the same info file is not listed twice this way.
-    
             indexEntries = readindexfiles.main(indexFiles,verbose)
-    
-            sortByFunc = {}
-            #set_trace()
-            for elem in indexEntries:
-                if not sortByFunc.has_key(elem.funcId): #This takes a while!
-                    sortByFunc[elem.funcId] = {}
-                sortByFunc[elem.funcId][elem.dim] = elem
+
+        sortByFunc = {}
+        #set_trace()
+        for elem in indexEntries:
+            if not sortByFunc.has_key(elem.funcId): #This takes a while!
+                sortByFunc[elem.funcId] = {}
+            sortByFunc[elem.funcId][elem.dim] = elem
+            if not isPostProcessed:
                 pproc.main(elem,verbose)
-                file
+                filename =os.path.join(outputdir,
+                                       'ppdata_f%d_%d' %(elem.funcId,elem.dim))
+                f = open(filename + '.pickle','w')
+                pickle.dump(elem,f)
+                f.close()
+                if verbose:
+                    print 'Pickle in %s.' %(filename+'.pickle')
 
         #set_trace()
         # create directory
