@@ -102,7 +102,7 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
                                          computevalues(res,userDefMaxEvals+1)))
         #arrayFullTab is displayed in the figures. As opposed to the tables,
         #we are not constrained to use the default maxEvals for comparison
-        #sake. We can then use the user defined maximum number of function
+        #sake. We can then use the user-defined maximum number of function
         #evaluations.
 
         # Tests if we have covered all of the valuesOfInterest (using the
@@ -114,6 +114,13 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
                   scipy.finfo('float64').resolution]))):
             arrayTab[valuesOfInterest[iValuesOfInterest]] = computevalues(res,
                                                       maxEvals,dispersion=True)
+            vals.sort()
+            ranksOfInterest = [vals[0],vals[2],bootstrap.prctile(vals,50)[0],
+                               vals[-3],vals[-1]] # minimization
+            for j in range(4,9): #index of the percentiles
+                if arrayTab[valuesOfInterest[iValuesOfInterest]][j]==maxEvals:
+                    arrayTab[valuesOfInterest[iValuesOfInterest]][j] = ranksOfInterest[j-4]
+                    #use vals either here or in computevalues.
             iValuesOfInterest += 1
 
         if (iValuesForDataProf < len(valuesForDataProf) and
@@ -128,11 +135,15 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
     tmp = []
     for i in valuesOfInterest:
         if arrayTab.has_key(i):
-            tmp.append(scipy.append(scipy.array([i]),arrayTab[i]))
+            #set_trace()
+            tmp.append(scipy.append(scipy.array([i]),arrayTab[i])) #Weird.
         else:
-            tmp.append(scipy.array((i,scipy.inf,scipy.inf,scipy.inf,0.0,
-                                    maxEvals,maxEvals,maxEvals,maxEvals,
-                                    maxEvals)))
+            vals.sort()
+            ranksOfInterest = []
+            tmp2 = scipy.array((i,scipy.inf,scipy.inf,scipy.inf,0.0,
+                                vals[0],vals[2],bootstrap.prctile(vals,50)[0],
+                                vals[-3],vals[-1])) # minimization
+            tmp.append(tmp2)
             #tmp.append(scipy.array((i,scipy.inf,scipy.inf,scipy.inf,len(dataSets),
             #                        maxEvals,maxEvals,maxEvals,maxEvals,
             #                        maxEvals)))
