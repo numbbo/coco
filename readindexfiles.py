@@ -7,7 +7,9 @@ from __future__ import absolute_import
 
 import sys
 import os
+
 from . import findindexfiles
+
 from pdb import set_trace
 
 # FUNCTION DEFINITIONS
@@ -79,6 +81,7 @@ class IndexEntry:
 class Error(Exception):
     """ Base class for errors. """
     pass
+
 
 class MissingValueError(Error):
     """ Error if a mandatory value is not found within a file.

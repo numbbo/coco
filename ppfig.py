@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import scipy
 from pdb import set_trace
 
-def createFigure(data, figHandle = None):
+def createFigure(data, figHandle=None):
     """ Create a figure from an array.
 
         Mandatory input:
@@ -46,10 +46,10 @@ def createFigure(data, figHandle = None):
     return lines
 
 
-def customizeFigure(figHandle, figureName, title = '',
-                    fileFormat = ('png','eps'),
-                    labels = None, scale = ['linear','linear'],
-                    legend = list(), locLegend = 'best',verbose = True):
+def customizeFigure(figHandle, figureName, title='',
+                    fileFormat=('png','eps'), labels=None, 
+                    scale=['linear','linear'], legend=list(), locLegend='best',
+                    verbose=True):
     """ Customize a figure by adding a legend, axis label, etc. At the
         end the fiugre is saved.
 

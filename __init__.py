@@ -1,47 +1,50 @@
 #!/usr/bin/env python
-"""Given input files from BBOB experiments, postprocesses and returns output.
+"""Black-Box Optimization Benchmarking (BBOB) post processing tool:
+
+The BBOB post-processing tool takes as input data from BBOB experiments and
+generates output that will be used in the generation of the LateX-formatted
+article summarizing the experiments.
 
 Keyword arguments:
-    
+argv -- list of strings.
+
+Exceptions raised:
+ValueError -- 
+OsError -- 
 """
 
 #credits to G. Van Rossum: http://www.artima.com/weblogs/viewpost.jsp?thread=4829
-
-#Should load either from index files or from the post processed data files.
-#Problem is: how do we get index entry information from the post processed data files?
-#Add a commented header, and so shouldn't we store many post processed data into one file?
-
-#TODO:
 
 from __future__ import absolute_import
 
 import sys
 import os
 import getopt
-from bbob_pproc import readindexfiles
-from bbob_pproc import findindexfiles
-from bbob_pproc import pproc
-from bbob_pproc import ppfig
-from bbob_pproc import pptex
-from bbob_pproc import ppdatapr
-from pdb import set_trace
-import scipy
-import numpy as n
-import matplotlib.pyplot as plt
 import pickle
 
-plt.rc("axes", labelsize=16, titlesize=16)
+import scipy
+import matplotlib.pyplot as plt
+
+from pdb import set_trace
+from bbob_pproc import readindexfiles, findindexfiles
+from bbob_pproc import pproc, ppfig, pptex, ppdatapr
+
+__all__  = ['readindexfiles','findindexfiles','ppfig','pptex','ppdatapr',
+            'main']
+
+plt.rc("axes", labelsize=16, titlesize=32)
 plt.rc("xtick", labelsize=16)
 plt.rc("ytick", labelsize=16)
 plt.rc("font", size=16)
 plt.rc("legend", fontsize=16)
 
-__all__  = ['readindexfiles','findindexfiles','ppfig','pptex','ppdatapr',
-            'main']
 sp1index = 1
 medianindex = 5
 colors = {2:'b', 3:'g', 5:'r', 10:'c', 20:'m', 40:'y'} #TODO colormaps!
 dimOfInterest = [5,20]    # dimension which are displayed in the tables
+valuesOfInterest = [1.0,1.0e-2,1.0e-4,1.0e-6,1.0e-8]
+colorsDataProf = ['b', 'g', 'r', 'c', 'm']
+
 
 #Either we read it in a file (flexibility) or we hard code it here.
 funInfos = {}
@@ -115,14 +118,145 @@ funInfos[128] = '128 Gallagher noise1';
 funInfos[129] = '129 Gallagher noise2';
 funInfos[130] = '130 Gallagher noise3';
 
+
+#CLASS DEFINITIONS
+
 class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
-#Should take as argument paths to info files (since it is what is read by read index files,
-# or post-processed data files to avoid processing raw data every time.
+
+###############################################################################
+
+
+#FUNCTION DEFINITIONS
+
+def processInputArgs(args, isPostProcessed, verbose=True):
+    ps = []
+    nbRuns = []
+
+    if isPostProcessed:
+        indexEntries = []
+        tmp = set(args) #for unicity
+        for i in tmp:
+            if i.endswith('.pickle'):
+                f = open(i,'r')
+                entry = pickle.load(f)
+                f.close()
+                if verbose:
+                    print 'Unpickled %s.' % (i)
+                indexEntries.append(entry)
+                ps.append(entry.arrayTab[-1,4])
+                nbRuns.append(entry.nbRuns)
+            #TODO:else: Error!
+
+    else:
+        indexFiles = []
+        for i in args:
+            if i.endswith('.info'):
+                (filepath,filename) = os.path.split(i)
+                indexFiles.append(findindexfiles.IndexFile(filepath,
+                                                           filename))
+            else:
+                indexFiles.extend(findindexfiles.main(i,verbose))
+            #TODO:catch potential error when another kind of file is provided 
+        indexFiles = set(indexFiles) #for unicity
+
+        indexEntries = readindexfiles.main(indexFiles,verbose)
+
+        for entry in indexEntries:
+            pproc.main(entry,verbose)
+            ps.append(entry.arrayTab[-1,4])
+            nbRuns.append(entry.nbRuns)
+
+    return indexEntries, ps, nbRuns
+
+
+def sortIndexEntries(indexEntries, outputdir, isPickled=True, verbose=True):
+    """From a list of IndexEntry, returs a post-processed sorted dictionary."""
+    sortByFunc = {}
+    for elem in indexEntries:
+        sortByFunc.setdefault(elem.funcId,{})
+        sortByFunc[elem.funcId][elem.dim] = elem
+        if isPickled:
+            filename = os.path.join(outputdir, 'ppdata_f%d_%d' 
+                                                %(elem.funcId,elem.dim))
+            f = open(filename + '.pickle','w')
+            pickle.dump(elem,f)
+            f.close()
+            if verbose:
+                print 'Pickle in %s.' %(filename+'.pickle')
+
+    return sortByFunc
+
+
+def genFig(sortByFunc,outputdir,verbose):
+    for func in sortByFunc:
+        filename = os.path.join(outputdir,'ppdata_f%d' % (func))
+        # initialize matrix containing the table entries
+        fig = plt.figure()
+
+        for dim in sorted(sortByFunc[func]):
+            entry = sortByFunc[func][dim]
+
+            h = ppfig.createFigure(entry.arrayFullTab[:,[sp1index,0]], fig)
+            for i in h:
+                plt.setp(i,'color',colors[dim])
+            h = ppfig.createFigure(entry.arrayFullTab[:,[medianindex,0]], fig)
+            for i in h:
+                plt.setp(h,'color',colors[dim],'linestyle','--')
+            #Do all this in createFigure?    
+        ppfig.customizeFigure(fig, filename, title=funInfos[entry.funcId],
+                              fileFormat=('eps','png'), labels=['', ''],
+                              scale=['log','log'], locLegend='best',
+                              verbose=verbose)
+        plt.close(fig)
+
+
+def genTab(sortByFunc, outputdir, verbose):
+    for func in sortByFunc:
+        filename = os.path.join(outputdir,'ppdata_f%d' % (func))
+        # initialize matrix containing the table entries
+        tabData = scipy.zeros(0)
+        entryList = list()     # list of entries which are displayed in the table
+
+        for dim in sorted(sortByFunc[func]):
+            entry = sortByFunc[func][dim]
+
+            if dimOfInterest.count(dim) != 0 and tabData.shape[0] == 0:
+                # Array tabData has no previous values.
+                tabData = entry.arrayTab
+                entryList.append(entry)
+            elif dimOfInterest.count(dim) != 0 and tabData.shape[0] != 0:
+                # Array tabData already contains values for the same function
+                tabData = scipy.append(tabData,entry.arrayTab[:,1:],1)
+                entryList.append(entry)
+
+        [header,format] = pproc.computevalues(None,None,header=True)
+        pptex.writeTable2(tabData, filename, entryList, fontSize='tiny', 
+                          header=header, format=format, verbose=verbose)
+
+
+def genDataProf(indexEntries, outputdir, verbose):
+    sortedIndexEntries = ppdatapr.sortIndexEntries(indexEntries)
+
+    for key, indexEntries in sortedIndexEntries.iteritems():
+        figureName = os.path.join(outputdir,'ppdataprofile_%s' %(key))
+
+        fig = plt.figure()
+        for j in range(len(valuesOfInterest)):
+        #for j in [0]:
+            maxEvalsFactor = 1e4
+            tmp = ppdatapr.main(indexEntries, valuesOfInterest[j],
+                                maxEvalsFactor, verbose)
+            if not tmp is None:
+                plt.setp(tmp, 'color', colorsDataProf[j])
+        ppdatapr.beautify(fig, figureName, maxEvalsFactor, verbose=verbose)
+        plt.close(fig)
+
 def usage():
-    print "python bbob_pproc.py -v" #TODO
+    print __doc__
+
 
 def main(argv=None):
     if argv is None:
@@ -130,31 +264,41 @@ def main(argv=None):
     try:
 
         try:
-            opts, args = getopt.getopt(argv[1:], "hvfo:",
-                                       ["help","files","output-dir",
-                                        "tab-only","fig-only","dat-only"])
+            opts, args = getopt.getopt(argv[1:], "hvpno:",
+                                       ["help", "pproc-files", "output-dir",
+                                        "tab-only", "fig-only", "dat-only",
+                                        "no-pickle"])
         except getopt.error, msg:
              raise Usage(msg)
-        # more code, unchanged
-        outputdir = 'ppdata'
-        verbose = True #TODO put verbose function everywhere needed.
+
+        if not (opts and args):
+            usage()
+            sys.exit()
+
         isfigure = True
         istab = True
         isdataprof = True
         isPostProcessed = False
+        isPickled = True
+        verbose = True
+        outputdir = 'ppdata'
 
+        #Process options
         for o, a in opts:
             if o == "-v":
                 verbose = True
             elif o in ("-h", "--help"):
                 usage()
                 sys.exit()
-            elif o in ("-f", "--files"):
+            elif o in ("-p", "--pproc-files"):
                 #Post processed data files
                 isPostProcessed = True
+                isPickled = False
+            elif o in ("-n", "--no-pickle"):
+                isPickled = False
             elif o in ("-o", "--output-dir"):
                 outputdir = a
-            #The next 2 are for testing purpose
+            #The next 3 are for testing purpose
             elif o == "--tab-only":
                 isfigure = False
                 isdataprof = False
@@ -167,138 +311,34 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        if isPostProcessed:
-            indexEntries = []
-            for i in args:
-                if i.endswith('.pickle'):
-                    f = open(i,'r')
-                    indexEntries.append(pickle.load(f))
-                    f.close()
-                    if verbose:
-                        print 'Unpickled %s.' %(i)
-        else:
-            indexFiles = []
-            for i in args:
-                if i.endswith('.info'):
-                    (filepath,filename) = os.path.split(i)
-                    indexFiles.append(findindexfiles.IndexFile(filepath,filename))
-                else:
-                    indexFiles.extend(findindexfiles.main(i,verbose))
-                #Todo watch that the same info file is not listed twice this way.
-            indexEntries = readindexfiles.main(indexFiles,verbose)
+        indexEntries, ps, nbRuns = processInputArgs(args, isPostProcessed,
+                                                    verbose)
 
-        sortByFunc = {}
-        #set_trace()
-        for elem in indexEntries:
-            if not sortByFunc.has_key(elem.funcId): #This takes a while!
-                sortByFunc[elem.funcId] = {}
-            sortByFunc[elem.funcId][elem.dim] = elem
-            if not isPostProcessed:
-                pproc.main(elem,verbose)
-                filename =os.path.join(outputdir,
-                                       'ppdata_f%d_%d' %(elem.funcId,elem.dim))
-                f = open(filename + '.pickle','w')
-                pickle.dump(elem,f)
-                f.close()
-                if verbose:
-                    print 'Pickle in %s.' %(filename+'.pickle')
+        if isfigure or istab or isdataprof:
+            try:
+                os.listdir(os.getcwd()).index(outputdir)
+            except ValueError:
+                os.mkdir(outputdir)
 
-        #set_trace()
-        # create directory
-
-        #filename2 = 'ppdata/ppdata'
-
-        #if not(isfigure or istab):
-            #return None
-        try:
-            os.listdir(os.getcwd()).index(outputdir)
-        except ValueError:
-            os.mkdir(outputdir)
-
-        ps = []
-        nbRuns = []
-
-        for func in sortByFunc.keys():
-            filename = os.path.join(outputdir,'ppdata_f%d' % (func))
-            tabData = n.zeros(0)   # initialize matrix containing the table entries
-            entryList = list()     # list of entries which are displayed in the table
+        if isfigure or istab:
+            sortByFunc = sortIndexEntries(indexEntries, outputdir, isPickled,
+                                          verbose)
             if isfigure:
-                fig = plt.figure()
-
-            for dim in sorted(sortByFunc[func].keys()):
-                entry = sortByFunc[func][dim]
-                #pproc.main(entry,verbose)
-                #set_trace()
-                ps.append(entry.arrayTab[-1,4])
-                nbRuns.append(entry.nbRuns)
-
-                if dimOfInterest.count(dim) != 0 and tabData.shape[0] == 0:
-                    # Array tabData has no previous values.
-                    tabData = entry.arrayTab
-                    entryList.append(entry)
-                elif dimOfInterest.count(dim) != 0 and tabData.shape[0] != 0:
-                    # Array tabData already contains values for the same function
-                    tabData = n.append(tabData,entry.arrayTab[:,1:],1)
-                    entryList.append(entry)
-
-                if isfigure:
-                    #set_trace()
-                    h=ppfig.createFigure(entry.arrayFullTab[:,[sp1index,0]],
-                                           fig)
-                    for i in h:
-                        plt.setp(i,'color',colors[dim])
-
-                    h=ppfig.createFigure(entry.arrayFullTab[:,[medianindex,0]],
-                                         fig)
-                    for i in h:
-                        plt.setp(h,'color',colors[dim],'linestyle','--')
-
+                genFig(sortByFunc, outputdir, verbose)
             if istab:
-                [header,format] = pproc.computevalues(None,None,header=True)
-                pptex.writeTable2(tabData, filename, entryList,
-                                  fontSize = 'tiny', header = header,
-                                  format = format, verbose = verbose)
-
-            if isfigure:
-                #set_trace()
-                ppfig.customizeFigure(fig, filename,
-                                      title = funInfos[entry.funcId],
-                                      fileFormat = ('eps','png'),
-                                      labels = ['',''],
-                                      scale = ['log','log'],
-                                      locLegend = 'best',verbose = verbose)
-                #plt.show(fig)
-                plt.close(fig)
+                genTab(sortByFunc, outputdir, verbose)
 
         if isdataprof:
-            sortForDataProf = ppdatapr.sortIndexEntries(indexEntries)
-            valuesOfInterest = [1.0,1.0e-2,1.0e-4,1.0e-6,1.0e-8]
-            colorsDataProf = ['b', 'g', 'r', 'c', 'm']
-            #synchronize this with the valuesForDataProf in pproc
-
-            for i in range(len(sortForDataProf)):
-                figureName = os.path.join(outputdir,'ppdataprofile%d' %(i))
-                i = sortForDataProf[i]
-                fig = plt.figure()
-                for j in range(len(valuesOfInterest)):
-                #for j in [0]:
-                    maxEvalsFactor = 1e4
-                    tmp = ppdatapr.main(i,valuesOfInterest[j],maxEvalsFactor,
-                                        verbose)
-                    if not tmp is None:
-                        plt.setp(tmp,'color',colorsDataProf[j])
-                ppdatapr.beautify(fig, figureName, maxEvalsFactor,
-                                  verbose = verbose)
-                plt.close(fig)
+            genDataProf(indexEntries, outputdir, verbose)
 
         if verbose:
-            #set_trace()
             print 'total ps = %g\n' % (float(scipy.sum(ps))/scipy.sum(nbRuns))
 
     except Usage, err:
         print >>sys.stderr, err.msg
         print >>sys.stderr, "for help use --help"
         return 2
+
 
 if __name__ == "__main__":
    sys.exit(main())

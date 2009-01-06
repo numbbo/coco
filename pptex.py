@@ -94,9 +94,9 @@ def writeTable(data, fileName, header = list(), fontSize = 'tiny',
     if verbose:
         print 'Wrote in %s.' %(fileName+'.tex')
 
-def writeTable2(data, filename, entryList, header = list(), fontSize = 'scriptsize',
-                fontSize2 = 'scriptstyle', format = list(), keep_open = 0,
-                width = 2, verbose = True):
+def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
+                fontSize2='scriptstyle', format=list(), keep_open=0,
+                width=2, verbose=True):
     """Writes data of array in a *.tex file. This file then can be used
        in LaTex as input for tables. The file must be placed inside a
        \begin{table} ... \end{table} environment.
@@ -138,13 +138,14 @@ def writeTable2(data, filename, entryList, header = list(), fontSize = 'scriptsi
     tabColumns = tabColumns + 5 * '@{$\,$}c@{$\,$}'
 
     # Create output file
-    try:
-        if verbose:
-            os.listdir(filename.split('/')[0]).index(filename.split('/')[1] + '.tex')
+    if verbose:
+        if os.path.exists(filename):
             print 'Overwrite old file %s!' %(filename + '.tex')
+
+    try:
         f = open(filename + '.tex','w')
     except ValueError:
-        print 'Error opening' + filename + '.tex'
+        print 'Error opening ' + filename + '.tex'
 
     # Write tabular environment
     f.write('\\begin{' + fontSize + '} \n')
@@ -240,4 +241,3 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
 
         # Write to file
         file.write(tmp2)
-
