@@ -118,6 +118,7 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
 
     """
 
+    indNbSuccRuns = (4,13)
     # Assemble header for whole table (contains more than 1 dimension)
     header = header + (width-1)*header[1:]
     format = format + (width-1)*format[1:]

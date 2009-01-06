@@ -8,8 +8,13 @@ Feature missing:
 *Deal with archive file -> not file-like object for zipfile module in python 2.5.2
 *synchronize the caption of the data profiles with information from the post processing?
 *Put a separation line in the table between function evaluations and function values
+*Have the number of solved functions appear on the data profile graph
+*Have SP1 on the data profile graph as well?
+*Compute the entropy based on the comment line in the info file? 
+*Compare results from different algorithms!
 
 Misc.
+*Make sure that anyone could produce a fig, table or data profile for every dimensions, functions they want.
 *documentation
 *error testing
 *Explicit demo post processing.
@@ -19,6 +24,9 @@ Misc.
 an empirical value (measured).
 *Write somewhere the result of the discussion about maxEvals.
 *Caption of the tables is too large!
+*Change mention of data profile graph to run length graph.
+*Prepare for vertical aligning!
+
 
 Profiling:
 *>80% of time spent on pproc.split
