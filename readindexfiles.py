@@ -77,6 +77,11 @@ class IndexEntry:
     def __ne__(self,other):
         return not self.__eq__(other)
 
+    def __repr__(self):
+        print ('alg: , F%d, dim: %d, dataFiles: %s, comment: %s, '
+               % (self.algId, self.funcId, self.dim, self.dataFiles) +
+               'maxEvals: %d, f_t: %g' %(self.maxEvals, self.targetFuncValue))
+
 
 class Error(Exception):
     """ Base class for errors. """
