@@ -11,32 +11,52 @@ __version__ = "$Revision$"
 
 import scipy
 import scipy.io
-from . import bootstrap
-
-# Used for debugging.
 from pdb import set_trace
 
-
+from . import bootstrap
 
 __all__ = ['main','quantile','postprocess']
 
 # Define global variables.
-prctilesTab = (0.,0.1,0.5,0.9,1.)
+prctilesTab = (0., 0.1, 0.5, 0.9, 1.)
 # These depends on the layout of the data files.
 funcEvalsIndex = 0
 fitValIndex = 2
 maxEvalsFactor = 1e5
-valuesOfInterest = (1.0,1.0e-2,1.0e-4,1.0e-6,1.0e-8) #has to be sorted
-valuesForDataProf = (1.0,1.0e-2,1.0e-4,1.0e-6,1.0e-8) #has to be sorted
+valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8) #has to be sorted
+valuesForDataProf = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8) #has to be sorted
+
+
+class Error(Exception):
+    """ Base class for errors. """
+    #TODO: what the?
+    pass
+
+
+class MissingValueError(Error):
+    """ Error if a mandatory value is not found within a file.
+        Returns a message with the missing value and the respective
+        file."""
+    #TODO: what the?
+
+    def __init__(self,value, filename):
+        self.value = value
+        self.filename = filename
+
+    def __str__(self):
+        message = 'The value %s was not found in file %s!' % \
+                  (self.value, self.filename)
+        return repr(message)
+
 
 # Remarks:
 # Need for the optimum of the function!
 # Let's store everything into memory.
 # TODO: aligned with function values or function evaluations should be a choice.
 
-def postprocess(dataFiles,fvalueToReach,maxEvals):
-    """Post process raw data files and write the result in output files.
-    """
+def postprocess(dataFiles, fvalueToReach, maxEvals):
+    """Post process raw data files and write the result in output files."""
+    #TODO this function is long and ugly.
     #set_trace()
     dataSets = split(dataFiles)
     # Is it ok to store all the data in memory?
@@ -52,12 +72,12 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
     currentFuncEvals = 1.
     currentFitValue = scipy.inf # Minimization
 
-    isFinished = len(dataSets)*[False]
-    res = len(dataSets)*[0]
-    vals = len(dataSets)*[0]
+    isFinished = len(dataSets) * [False]
+    res = len(dataSets) * [0]
+    vals = len(dataSets) * [0]
     arrayFullTab = [] #aligned by function values.
     arrayTab = {} #aligned by function values.
-    dataProf = {} #aligned by function values.
+    rlDistr = {} #aligned by function values.
     iValuesOfInterest = 0
     iValuesForDataProf = 0
     #arrayFig = [] #aligned by function evaluations.
@@ -71,9 +91,9 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
         #set_trace()
         # Align data
         for i in range(len(dataSets)):
-            res[i] = dataSets[i].set[dataSets[i].currentPos,funcEvalsIndex]
-            vals[i] = (dataSets[i].set[dataSets[i].currentPos,fitValIndex]
-                       -fvalueToReach+1.0e-8)
+            res[i] = dataSets[i].set[dataSets[i].currentPos, funcEvalsIndex]
+            vals[i] = (dataSets[i].set[dataSets[i].currentPos, fitValIndex] -
+                       fvalueToReach + 1.0e-8)
             if not isFinished[i]:
                 while (dataSets[i].currentPos < len(dataSets[i].set)-1 and
                        vals[i] > currentFitValue):
@@ -82,7 +102,7 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
                                               fitValIndex]
                     res[i] = dataSets[i].set[dataSets[i].currentPos,
                                              funcEvalsIndex]
-                if (dataSets[i].currentPos == len(dataSets[i].set)-1):
+                if (dataSets[i].currentPos == len(dataSets[i].set) - 1):
                     isFinished[i] = True
 
         # Process currentLines:
@@ -112,16 +132,17 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
         # currentFitValue == valuesOfInterest[iValuesOfInterest].
         if (iValuesOfInterest < len(valuesOfInterest) and
             (currentFitValue-valuesOfInterest[iValuesOfInterest] <
-             max([currentFitValue*(1.0-10.**-0.1),
+             max([currentFitValue * (1.0 - 10.**-0.1),
                   scipy.finfo('float64').resolution]))):
             arrayTab[valuesOfInterest[iValuesOfInterest]] = computevalues(res,
-                                                      maxEvals,dispersion=True)
+                                                     maxEvals, dispersion=True)
             vals.sort()
             ranksOfInterest = [vals[0],vals[2],bootstrap.prctile(vals,50)[0],
                                vals[-3],vals[-1]] # minimization
             for j in range(4,9): #index of the percentiles
                 if arrayTab[valuesOfInterest[iValuesOfInterest]][j]==maxEvals:
                     arrayTab[valuesOfInterest[iValuesOfInterest]][j] = ranksOfInterest[j-4]
+                    #TODO rewrite
                     #use vals either here or in computevalues.
             iValuesOfInterest += 1
 
@@ -129,7 +150,7 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
             (currentFitValue-valuesForDataProf[iValuesForDataProf] <
              max([currentFitValue*(1.0-10.**-0.1),
                   scipy.finfo('float64').resolution]))):
-            dataProf[valuesForDataProf[iValuesForDataProf]]= res[:]
+            rlDistr[valuesForDataProf[iValuesForDataProf]]= res[:]
             iValuesForDataProf += 1
 
         currentFitValue *= 10.**(-0.2)
@@ -138,13 +159,14 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
     for i in valuesOfInterest:
         if i in arrayTab:
             #set_trace()
-            tmp.append(scipy.append(scipy.array([i]),arrayTab[i])) #Weird.
+            tmp.append(scipy.append(scipy.array([i]), arrayTab[i])) #Weird.
         else:
             vals.sort()
             ranksOfInterest = []
-            tmp2 = scipy.array((i,scipy.inf,scipy.inf,scipy.inf,0.0,
-                                vals[0],vals[2],bootstrap.prctile(vals,50)[0],
-                                vals[-3],vals[-1])) # minimization
+            tmp2 = scipy.array((i, scipy.inf, scipy.inf, scipy.inf, 0.0,
+                                vals[0], vals[2],
+                                bootstrap.prctile(vals, 50)[0], vals[-3],
+                                vals[-1])) # minimization
             tmp.append(tmp2)
             #tmp.append(scipy.array((i,scipy.inf,scipy.inf,scipy.inf,len(dataSets),
             #                        maxEvals,maxEvals,maxEvals,maxEvals,
@@ -155,7 +177,8 @@ def postprocess(dataFiles,fvalueToReach,maxEvals):
     #set_trace()
     arrayTab = scipy.vstack(tmp)
     #set_trace()
-    return (arrayFullTab,arrayTab,dataProf,len(dataSets),maxEvals)
+    return (arrayFullTab, arrayTab, rlDistr, len(dataSets), maxEvals)
+
 
 def testpostprocess():
     import glob
@@ -166,7 +189,8 @@ def testpostprocess():
     #print res
     return res
 
-def computevalues(N, maxEvals,header=False,dispersion=False):
+
+def computevalues(N, maxEvals, header=False, dispersion=False):
     """
     Return different measures of a distribution of couple [fevals, fvalues].
 
@@ -182,44 +206,25 @@ def computevalues(N, maxEvals,header=False,dispersion=False):
         #~ set_trace()
         sp1m = bootstrap.sp1(N,maxevals=maxEvals)
         if dispersion:
-            dispersionSP1 = bootstrap.draw(N,[10,90],15,bootstrap.sp1,
+            dispersionSP1 = bootstrap.draw(N, [10,90], 15, bootstrap.sp1,
                                            [maxEvals]) #Why a list?
-            res = [sp1m[0],dispersionSP1[0][0],dispersionSP1[0][1],sp1m[2]]
+            res = [sp1m[0], dispersionSP1[0][0], dispersionSP1[0][1], sp1m[2]]
         else:
-            res = [sp1m[0],sp1m[1]]
+            res = [sp1m[0], sp1m[1]]
         #set_trace()
         #if len(N) < 3: catch error.
-        res.extend((N[0],N[2],bootstrap.prctile(N,50)[0],N[-3],N[-1]))
+        res.extend((N[0], N[2], bootstrap.prctile(N,50)[0], N[-3], N[-1]))
         return res
 
     else:
         # Returns header and format of the entries for one function
         # and one dimension.
-        header = ['$f_{t}$','$\ENFEs$','10\%','90\%','$\#$',
-                  'Best','3$^{rd}$ B.','Median','3$^{rd}$ W.','Worst']
-        format = ['%1.1e','%1.1e','%1.1e','%1.1e','%d',
-                  '%1.1e','%1.1e','%1.1e','%1.1e','%1.1e']
-        return header,format
+        header = ['$f_{t}$', '$\ENFEs$', '10\%', '90\%', '$\#$',
+                  'Best', '3$^{rd}$ B.', 'Median', '3$^{rd}$ W.', 'Worst']
+        format = ['%1.1e', '%1.1e', '%1.1e', '%1.1e', '%d',
+                  '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
+        return header, format
 
-
-class Error(Exception):
-    """ Base class for errors. """
-    pass
-
-class MissingValueError(Error):
-    """ Error if a mandatory value is not found within a file.
-        Returns a message with the missing value and the respective
-        file.
-    """
-
-    def __init__(self,value, filename):
-        self.value = value
-        self.filename = filename
-
-    def __str__(self):
-        message = 'The value %s was not found in file %s!' % \
-                  (self.value, self.filename)
-        return repr(message)
 
 def split(dataFiles):
     """Split the data files into arrays corresponding to the data sets.
@@ -238,7 +243,7 @@ def split(dataFiles):
             #dataSetFinalIndex = scipy.insert(dataSetFinalIndex,0,-2)
             for i in range(len(dataSetFinalIndex)-1):
                 dataSet = DataSet(content[dataSetFinalIndex[i]:
-                                         dataSetFinalIndex[i+1],:])
+                                          dataSetFinalIndex[i+1],:])
                 dataSets.append(dataSet)
         else:
             dataSet = DataSet(content)
@@ -246,15 +251,17 @@ def split(dataFiles):
 
     return dataSets
 
-def main(indexEntry,verbose = True):
+
+def main(indexEntry, verbose=True):
 
     #This is clumsy
-    maxEvals = maxEvalsFactor*indexEntry.dim
-    res = postprocess(indexEntry.dataFiles,indexEntry.targetFuncValue,maxEvals)
+    maxEvals = maxEvalsFactor * indexEntry.dim
+    res = postprocess(indexEntry.dataFiles,
+                      indexEntry.targetFuncValue, maxEvals)
 
     indexEntry.arrayFullTab = res[0]
     indexEntry.arrayTab = res[1]
-    indexEntry.dataProf = res[2]
+    indexEntry.rlDistr = res[2]
     indexEntry.nbRuns = res[3]
     indexEntry.maxEvals = int(min((maxEvals,res[4])))
     #Problem here: maxEvals is the empirical value and not the one set for the
@@ -270,7 +277,7 @@ def main(indexEntry,verbose = True):
     return None
 
 class DataSet:
-    def __init__(self,set):
+    def __init__ (self, set):
         self.currentPos = 0
         self.set = set
-        self.userDefMaxEvals = set[-1,0]
+        self.userDefMaxEvals = set[-1, 0]

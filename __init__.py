@@ -6,11 +6,49 @@ generates output that will be used in the generation of the LateX-formatted
 article summarizing the experiments.
 
 Keyword arguments:
-argv -- list of strings.
+argv -- list of strings containing options and arguments to the main function.
+Synopsis: python bbob_pproc.py [OPTIONS] input-files
+
+    Running bbob_pproc.py or importing the bbob_pproc package and running the
+    main method will take as input the input files and generate post-processed
+    data that will be output as convergence and ENFEs graphs, tex tables and 
+    running length distribution graphs according to the experimentation 
+    process described in the documentation of the BBOB. All the outputs will 
+    be saved in an output folder as files that will be included in a TeX file.
+
+    -h, --help
+
+        display this message
+
+    -v, --verbose
+
+        verbose mode, prints out operations. When not in verbose mode, no 
+        output is to be expected, except for errors.
+
+            opts, args = getopt.getopt(argv[1:], "hvpno:",
+                                       ["help", "pproc-files", "output-dir",
+                                        "tab-only", "fig-only", "rld-only",
+                                        "no-pickle","verbose"])
+    -p, --pproc-files
+
+        input files are expected to be files post processed by this tool.
+
+    -n, --no-pickle
+
+        prevents pickled post processed data files from being generated.
+
+    -o, --output-dir output-dir
+
+        change the default output directory ('ppdata') to output-dir
+
+    --tab-only, --fig-only, --rld-only
+
+        these options can be used to output respectively the tex tables, 
+        convergence and ENFEs graphs figures, run length distribution figures
+        only. A combination of any two of these options results in no output.
 
 Exceptions raised:
-ValueError -- 
-OsError -- 
+UsageError -- 
 """
 
 #credits to G. Van Rossum: http://www.artima.com/weblogs/viewpost.jsp?thread=4829
@@ -27,9 +65,17 @@ import matplotlib.pyplot as plt
 
 from pdb import set_trace
 from bbob_pproc import readindexfiles, findindexfiles
-from bbob_pproc import pproc, ppfig, pptex, ppdatapr
+from bbob_pproc import pproc, ppfig, pptex, pprldistr
 
-__all__  = ['readindexfiles','findindexfiles','ppfig','pptex','ppdatapr',
+"""Given a list of index files, returns convergence and ENFEs graphs, tables,
+Run length distribution graphs.
+ENFEs graphs: any indexEntries (usually for a given dim and a given func)
+conv graphs: any indexEntries (usually for a given dim and a given func)
+tables: should be any indexEntries and any precision
+rlDistr: any indexEntries
+"""
+
+__all__  = ['readindexfiles','findindexfiles','ppfig','pptex','pprldistr',
             'main']
 
 plt.rc("axes", labelsize=16, titlesize=32)
@@ -45,78 +91,24 @@ dimOfInterest = [5,20]    # dimension which are displayed in the tables
 valuesOfInterest = [1.0,1.0e-2,1.0e-4,1.0e-6,1.0e-8]
 colorsDataProf = ['b', 'g', 'r', 'c', 'm']
 
-
 #Either we read it in a file (flexibility) or we hard code it here.
 funInfos = {}
-# SEPARABLE
-funInfos[1]  =  '1 sphere';
-funInfos[2]  =  '2 ellipsoid separable';
-funInfos[3]  =  '3 Rastrigin separable';
-funInfos[4]  =  '4 skew Rastrigin-Bueche separable';
-
-# LOW OR MODERATE CONDITION
-funInfos[5]  =  '5 linear slope';
-funInfos[6]  =  '6 step-ellipsoid';
-funInfos[7]  =  '7 Rosenbrock non-rotated';
-funInfos[8]  =  '8 Rosenbrock rotated';
-
-# HIGH CONDITION
-funInfos[9]  =  '9 ellipsoid';
-funInfos[10] = '10 discus';
-funInfos[11] = '11 bent cigar';
-funInfos[12] = '12 sharp ridge';
-funInfos[13] = '13 sum of different powers';
-
-# MULTI-MODAL
-funInfos[14] = '14 Rastrigin';
-funInfos[15] = '15 skew Rastrigin-Bueche';
-funInfos[16] = '16 Weierstrass';
-funInfos[17] = '17 Schaffer F7, condition 10';
-funInfos[18] = '18 Schaffer F7, condition 1000';
-funInfos[19] = '19 F8F2';
-
-# MULTI-MODAL WITH WEAK GLOBAL STRUCTURE
-funInfos[20] = '20 Schwefel x*sin(x)';
-funInfos[21] = '21 Gallagher, global rotation';
-funInfos[22] = '22 Gallagher, local rotations';
-funInfos[23] = '23 Katsuuras';
-funInfos[24] = '24 Lunacek bi-Rastrigin';
-
-# MODERATE NOISE
-funInfos[101] = '101 sphere moderate noise1';
-funInfos[102] = '102 sphere moderate noise2';
-funInfos[103] = '103 sphere moderate noise3';
-funInfos[104] = '104 Rosenbrock non-rotated moderate noise1';
-funInfos[105] = '105 Rosenbrock non-rotated moderate noise2';
-funInfos[106] = '106 Rosenbrock non-rotated moderate noise3';
-
-# SEVERE NOISE
-funInfos[107] = '107 sphere noise1';
-funInfos[108] = '108 sphere noise2';
-funInfos[109] = '109 sphere noise3';
-funInfos[110] = '110 ellipsoid noise1';
-funInfos[111] = '111 ellipsoid noise2';
-funInfos[112] = '112 ellipsoid noise3';
-funInfos[113] = '113 step-ellipsoid noise1';
-funInfos[114] = '114 step-ellipsoid noise2';
-funInfos[115] = '115 step-ellipsoid noise3';
-funInfos[116] = '116 Rosenbrock non-rotated noise1';
-funInfos[117] = '117 Rosenbrock non-rotated noise2';
-funInfos[118] = '118 Rosenbrock non-rotated noise3';
-funInfos[119] = '119 sum of different powers noise1';
-funInfos[120] = '120 sum of different powers noise2';
-funInfos[121] = '121 sum of different powers noise3';
-
-# SEVERE NOISE HIGHLY MULTI-MODAL
-funInfos[122] = '122 Schaffer F7 noise1';
-funInfos[123] = '123 Schaffer F7 noise2';
-funInfos[124] = '124 Schaffer F7 noise3';
-funInfos[125] = '125 F8F2 noise1';
-funInfos[126] = '126 F8F2 noise2';
-funInfos[127] = '127 F8F2 noise3';
-funInfos[128] = '128 Gallagher noise1';
-funInfos[129] = '129 Gallagher noise2';
-funInfos[130] = '130 Gallagher noise3';
+isBenchmarkinfosFound = True
+try:
+    infofile = os.path.join(os.path.split(__file__)[0], '..', '..', 
+                            'benchmarkinfos')
+    f = open(infofile,'r')
+    for line in f:
+        if len(line) == 0 or line.startswith('%') or line.isspace() :
+            continue
+        funcId, funcInfo = line[0:-1].split(None,1)
+        funInfos[int(funcId)] = funcId + ' ' + funcInfo
+    f.close()
+except IOError, (errno, strerror):
+    print "I/O error(%s): %s" % (errno, strerror)
+    isBenchmarkinfosFound = False
+    print 'Could not find benchmarkinfos file. '\
+          'Titles in ENFEs and convergence figures will not be displayed.'
 
 
 #CLASS DEFINITIONS
@@ -139,7 +131,7 @@ def processInputArgs(args, isPostProcessed, verbose=True):
         indexEntries = []
         tmp = set(args) #for unicity
         for i in tmp:
-            if i.endswith('.pickle'):
+            try:
                 f = open(i,'r')
                 entry = pickle.load(f)
                 f.close()
@@ -148,7 +140,13 @@ def processInputArgs(args, isPostProcessed, verbose=True):
                 indexEntries.append(entry)
                 ps.append(entry.arrayTab[-1,4])
                 nbRuns.append(entry.nbRuns)
-            #TODO:else: Error!
+            except IOError, (errno, strerror):
+                print "I/O error(%s): %s" % (errno, strerror)
+            except UnpicklingError:
+                f.close()
+                print '%s could not be unpickled.' %(i)
+                if not i.endswith('.pickle'):
+                    print '%s might not be a pickle data file.' %(i)
 
     else:
         indexFiles = []
@@ -157,9 +155,12 @@ def processInputArgs(args, isPostProcessed, verbose=True):
                 (filepath,filename) = os.path.split(i)
                 indexFiles.append(findindexfiles.IndexFile(filepath,
                                                            filename))
-            else:
+            elif os.path.isdir(i):
                 indexFiles.extend(findindexfiles.main(i,verbose))
-            #TODO:catch potential error when another kind of file is provided 
+            else:
+                raise Usage('Expect as input argument either info files or '+
+                            'a folder containing info files.')
+                #TODO: how do we deal with this?
         indexFiles = set(indexFiles) #for unicity
 
         indexEntries = readindexfiles.main(indexFiles,verbose)
@@ -181,16 +182,20 @@ def sortIndexEntries(indexEntries, outputdir, isPickled=True, verbose=True):
         if isPickled:
             filename = os.path.join(outputdir, 'ppdata_f%d_%d' 
                                                 %(elem.funcId,elem.dim))
-            f = open(filename + '.pickle','w')
-            pickle.dump(elem,f)
-            f.close()
-            if verbose:
-                print 'Pickle in %s.' %(filename+'.pickle')
-
+            try:
+                f = open(filename + '.pickle','w')
+                pickle.dump(elem,f)
+                f.close()
+                if verbose:
+                    print 'Pickle in %s.' %(filename+'.pickle')
+            except IOError, (errno, strerror):
+                print "I/O error(%s): %s" % (errno, strerror)
+            except PicklingError:
+                print "Could not pickle %s" %(elem)
     return sortByFunc
 
 
-def genFig(sortByFunc,outputdir,verbose):
+def genFig(sortByFunc, outputdir, verbose, isBenchmarkinfosFound):
     for func in sortByFunc:
         filename = os.path.join(outputdir,'ppdata_f%d' % (func))
         # initialize matrix containing the table entries
@@ -206,7 +211,12 @@ def genFig(sortByFunc,outputdir,verbose):
             for i in h:
                 plt.setp(h,'color',colors[dim],'linestyle','--')
             #Do all this in createFigure?    
-        ppfig.customizeFigure(fig, filename, title=funInfos[entry.funcId],
+        if isBenchmarkinfosFound:
+            title = funInfos[entry.funcId]
+        else:
+            title = ''
+
+        ppfig.customizeFigure(fig, filename, title=title,
                               fileFormat=('eps','png'), labels=['', ''],
                               scale=['log','log'], locLegend='best',
                               verbose=verbose)
@@ -233,26 +243,27 @@ def genTab(sortByFunc, outputdir, verbose):
                 entryList.append(entry)
 
         [header,format] = pproc.computevalues(None,None,header=True)
-        pptex.writeTable2(tabData, filename, entryList, fontSize='tiny', 
+        pptex.writeTable2(tabData, filename, entryList, fontSize='tiny',
                           header=header, format=format, verbose=verbose)
 
 
 def genDataProf(indexEntries, outputdir, verbose):
-    sortedIndexEntries = ppdatapr.sortIndexEntries(indexEntries)
+    sortedIndexEntries = pprldistr.sortIndexEntries(indexEntries)
 
     for key, indexEntries in sortedIndexEntries.iteritems():
-        figureName = os.path.join(outputdir,'ppdataprofile_%s' %(key))
+        figureName = os.path.join(outputdir,'pprldistr_%s' %(key))
 
         fig = plt.figure()
         for j in range(len(valuesOfInterest)):
         #for j in [0]:
             maxEvalsFactor = 1e4
-            tmp = ppdatapr.main(indexEntries, valuesOfInterest[j],
+            tmp = pprldistr.main(indexEntries, valuesOfInterest[j],
                                 maxEvalsFactor, verbose)
             if not tmp is None:
                 plt.setp(tmp, 'color', colorsDataProf[j])
-        ppdatapr.beautify(fig, figureName, maxEvalsFactor, verbose=verbose)
+        pprldistr.beautify(fig, figureName, maxEvalsFactor, verbose=verbose)
         plt.close(fig)
+
 
 def usage():
     print __doc__
@@ -266,8 +277,8 @@ def main(argv=None):
         try:
             opts, args = getopt.getopt(argv[1:], "hvpno:",
                                        ["help", "pproc-files", "output-dir",
-                                        "tab-only", "fig-only", "dat-only",
-                                        "no-pickle"])
+                                        "tab-only", "fig-only", "rld-only",
+                                        "no-pickle","verbose"])
         except getopt.error, msg:
              raise Usage(msg)
 
@@ -277,7 +288,7 @@ def main(argv=None):
 
         isfigure = True
         istab = True
-        isdataprof = True
+        isrldistr = True
         isPostProcessed = False
         isPickled = True
         verbose = True
@@ -285,7 +296,7 @@ def main(argv=None):
 
         #Process options
         for o, a in opts:
-            if o == "-v":
+            if o in ("-v","--verbose"):
                 verbose = True
             elif o in ("-h", "--help"):
                 usage()
@@ -301,11 +312,11 @@ def main(argv=None):
             #The next 3 are for testing purpose
             elif o == "--tab-only":
                 isfigure = False
-                isdataprof = False
+                isrldistr = False
             elif o == "--fig-only":
                 istab = False
-                isdataprof = False
-            elif o == "--dat-only":
+                isrldistr = False
+            elif o == "--rld-only":
                 istab = False
                 isfigure = False
             else:
@@ -314,21 +325,21 @@ def main(argv=None):
         indexEntries, ps, nbRuns = processInputArgs(args, isPostProcessed,
                                                     verbose)
 
-        if isfigure or istab or isdataprof:
-            try:
-                os.listdir(os.getcwd()).index(outputdir)
-            except ValueError:
+        if isfigure or istab or isrldistr:
+            if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
+                if verbose:
+                    print '%s was created.' % (outputdir)
 
         if isfigure or istab:
             sortByFunc = sortIndexEntries(indexEntries, outputdir, isPickled,
                                           verbose)
             if isfigure:
-                genFig(sortByFunc, outputdir, verbose)
+                genFig(sortByFunc, outputdir, verbose, isBenchmarkinfosFound)
             if istab:
                 genTab(sortByFunc, outputdir, verbose)
 
-        if isdataprof:
+        if isrldistr:
             genDataProf(indexEntries, outputdir, verbose)
 
         if verbose:
@@ -341,4 +352,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-   sys.exit(main())
+   sys.exit(main()) #TODO change this to deal with args?

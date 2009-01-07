@@ -12,6 +12,7 @@ Feature missing:
 *Have SP1 on the data profile graph as well?
 *Compute the entropy based on the comment line in the info file? 
 *Compare results from different algorithms!
+*generate data for the run length distrib figure, ppfig and pptex not in pproc (to make pprldistr pptex and ppfig modules self-consistent)
 
 Misc.
 *Make sure that anyone could produce a fig, table or data profile for every dimensions, functions they want.
