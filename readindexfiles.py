@@ -78,9 +78,10 @@ class IndexEntry:
         return not self.__eq__(other)
 
     def __repr__(self):
-        print ('alg: , F%d, dim: %d, dataFiles: %s, comment: %s, '
-               % (self.algId, self.funcId, self.dim, self.dataFiles) +
-               'maxEvals: %d, f_t: %g' %(self.maxEvals, self.targetFuncValue))
+        return ('alg: "%s", F%d, dim: %d, dataFiles: %s, '
+                % (self.algId, self.funcId, self.dim, str(self.dataFiles)) +
+                'comment: "%s", maxEvals: %d,' %(self.comment, self.maxEvals) +
+                ' f_t: %g' % (self.targetFuncValue))
 
 
 class Error(Exception):
