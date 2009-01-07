@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# Creates pictures for BBOB post-processing.
+# Creates ENFEs and convergence figures for BBOB post-processing.
 
 import os
 import sys
