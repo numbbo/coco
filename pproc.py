@@ -22,7 +22,7 @@ prctilesTab = (0., 0.1, 0.5, 0.9, 1.)
 # These depends on the layout of the data files.
 funcEvalsIndex = 0
 fitValIndex = 2
-maxEvalsFactor = 1e5
+maxEvalsFactor = 1e4
 valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8) #has to be sorted
 valuesForDataProf = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8) #has to be sorted
 
@@ -61,12 +61,12 @@ def postprocess(dataFiles, fvalueToReach, maxEvals):
     dataSets = split(dataFiles)
     # Is it ok to store all the data in memory?
 
-    userDefMaxEvals = []
+    measuredMaxEvals = []
     for i in dataSets:
-        userDefMaxEvals.append(i.userDefMaxEvals)
+        measuredMaxEvals.append(i.userDefMaxEvals)
 
-    userDefMaxEvals = max(userDefMaxEvals)
-    maxEvals = min((userDefMaxEvals,maxEvals))
+    measuredMaxEvals = max(measuredMaxEvals)
+    maxEvals = min((measuredMaxEvals, maxEvals))
 
     # Parallel construction of the post-processed arrays:
     currentFuncEvals = 1.
@@ -75,6 +75,7 @@ def postprocess(dataFiles, fvalueToReach, maxEvals):
     isFinished = len(dataSets) * [False]
     res = len(dataSets) * [0]
     vals = len(dataSets) * [0]
+    previousVals = len(dataSets) * [0]
     arrayFullTab = [] #aligned by function values.
     arrayTab = {} #aligned by function values.
     rlDistr = {} #aligned by function values.
@@ -96,13 +97,18 @@ def postprocess(dataFiles, fvalueToReach, maxEvals):
                        fvalueToReach + 1.0e-8)
             if not isFinished[i]:
                 while (dataSets[i].currentPos < len(dataSets[i].set)-1 and
+                       dataSets[i].set[dataSets[i].currentPos, 0] < maxEvals and
                        vals[i] > currentFitValue):
+                    #Get the function values from the last valid position
+                    previousVals[i] = vals[i]
                     dataSets[i].currentPos += 1
-                    vals[i] = dataSets[i].set[dataSets[i].currentPos,
-                                              fitValIndex]
                     res[i] = dataSets[i].set[dataSets[i].currentPos,
                                              funcEvalsIndex]
-                if (dataSets[i].currentPos == len(dataSets[i].set) - 1):
+                    vals[i] = dataSets[i].set[dataSets[i].currentPos,
+                                              fitValIndex]
+                if (dataSets[i].currentPos == len(dataSets[i].set) - 1 or 
+                    dataSets[i].set[dataSets[i].currentPos, 0] >= maxEvals):
+                    #TODO: might not stop at the right fun eval
                     isFinished[i] = True
 
         # Process currentLines:
@@ -120,8 +126,12 @@ def postprocess(dataFiles, fvalueToReach, maxEvals):
         if scipy.isinf(currentFitValue):
             currentFitValue = max(valuesOfInterest[0],
                                   10**(scipy.ceil(scipy.log10(max(vals))*5)/5))
-        arrayFullTab.append(scipy.append(currentFitValue,
-                                         computevalues(res,userDefMaxEvals+1)))
+        tmp = scipy.append(currentFitValue, computevalues(res,maxEvals))
+        for j in range(2,7):
+            if tmp[j] == maxEvals:
+                tmp[j] = scipy.nan
+        arrayFullTab.append(tmp[:])
+
         #arrayFullTab is displayed in the figures. As opposed to the tables,
         #we are not constrained to use the default maxEvals for comparison
         #sake. We can then use the user-defined maximum number of function
@@ -136,11 +146,16 @@ def postprocess(dataFiles, fvalueToReach, maxEvals):
                   scipy.finfo('float64').resolution]))):
             arrayTab[valuesOfInterest[iValuesOfInterest]] = computevalues(res,
                                                      maxEvals, dispersion=True)
-            vals.sort()
-            ranksOfInterest = [vals[0],vals[2],bootstrap.prctile(vals,50)[0],
-                               vals[-3],vals[-1]] # minimization
+            previousVals.sort()
+            ranksOfInterest = [previousVals[0], previousVals[2],
+                               bootstrap.prctile(previousVals, 50)[0],
+                               previousVals[-3], previousVals[-1]]
+            #Gets the last valid function values. Might not be corresponding
+            #to maxEvals.
+            # minimization
+            #set_trace()
             for j in range(4,9): #index of the percentiles
-                if arrayTab[valuesOfInterest[iValuesOfInterest]][j]==maxEvals:
+                if arrayTab[valuesOfInterest[iValuesOfInterest]][j] >= maxEvals:
                     arrayTab[valuesOfInterest[iValuesOfInterest]][j] = ranksOfInterest[j-4]
                     #TODO rewrite
                     #use vals either here or in computevalues.
@@ -203,16 +218,15 @@ def computevalues(N, maxEvals, header=False, dispersion=False):
     #set_trace()
     if not header:
         N.sort() # Works because N is supposed to be a 1d array.
-        #~ set_trace()
         sp1m = bootstrap.sp1(N,maxevals=maxEvals)
         if dispersion:
             dispersionSP1 = bootstrap.draw(N, [10,90], 15, bootstrap.sp1,
-                                           [maxEvals]) #Why a list?
+                                           [maxEvals])
             res = [sp1m[0], dispersionSP1[0][0], dispersionSP1[0][1], sp1m[2]]
         else:
-            res = [sp1m[0], sp1m[1]]
-        #set_trace()
-        #if len(N) < 3: catch error.
+            res = [sp1m[0], sp1m[1]] #SP1 and success rate
+        if len(N) < 3: #catch error.
+            raise Exception, 'Probleme here' #Deal with this.
         res.extend((N[0], N[2], bootstrap.prctile(N,50)[0], N[-3], N[-1]))
         return res
 
@@ -239,7 +253,7 @@ def split(dataFiles):
         if len(dataSetFinalIndex)> 0:
             dataSetFinalIndex += 1
             dataSetFinalIndex = scipy.append(scipy.append(0,dataSetFinalIndex),
-                                             -1)
+                                             None)
             #dataSetFinalIndex = scipy.insert(dataSetFinalIndex,0,-2)
             for i in range(len(dataSetFinalIndex)-1):
                 dataSet = DataSet(content[dataSetFinalIndex[i]:
@@ -255,7 +269,9 @@ def split(dataFiles):
 def main(indexEntry, verbose=True):
 
     #This is clumsy
-    maxEvals = maxEvalsFactor * indexEntry.dim
+    maxEvals = scipy.floor(10**(scipy.floor(scipy.log10(maxEvalsFactor * indexEntry.dim)*20.)/20.))
+    #maxEvals = maxEvalsFactor * indexEntry.dim
+
     res = postprocess(indexEntry.dataFiles,
                       indexEntry.targetFuncValue, maxEvals)
 
@@ -263,7 +279,8 @@ def main(indexEntry, verbose=True):
     indexEntry.arrayTab = res[1]
     indexEntry.rlDistr = res[2]
     indexEntry.nbRuns = res[3]
-    indexEntry.maxEvals = int(min((maxEvals,res[4])))
+    #set_trace()
+    indexEntry.maxEvals = int(min((maxEvals, res[4])))
     #Problem here: maxEvals is the empirical value and not the one set for the
     #experiment!
     #The maxEvals to appear in the table should be this one.

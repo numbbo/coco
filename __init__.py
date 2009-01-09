@@ -78,7 +78,7 @@ rlDistr: any indexEntries
 __all__  = ['readindexfiles','findindexfiles','ppfig','pptex','pprldistr',
             'main']
 
-plt.rc("axes", labelsize=16, titlesize=32)
+plt.rc("axes", labelsize=16, titlesize=24)
 plt.rc("xtick", labelsize=16)
 plt.rc("ytick", labelsize=16)
 plt.rc("font", size=16)
@@ -282,7 +282,7 @@ def main(argv=None):
         except getopt.error, msg:
              raise Usage(msg)
 
-        if not (opts and args):
+        if not (args):
             usage()
             sys.exit()
 
