@@ -37,8 +37,8 @@ def beautify(figHandle, figureName, maxEvalsFactor, fileFormat=('png','eps'),
     axisHandle.grid('True')
     xtic = axisHandle.get_xticks()
     newxtic = []
-    for j in tmp:
-        tmp2.append('%d' % round(scipy.log10(j)))
+    for j in xtic:
+        newxtic.append('%d' % round(scipy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
 
     # Save figure
