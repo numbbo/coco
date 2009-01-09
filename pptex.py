@@ -154,10 +154,10 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
 
     # Write first two rows containing the info of the table columns
     for i in range(0,width):
-        caption = ('DIM = ' + str(entryList[i].dim) + 
-                   ', FId = ' + str(entryList[i].funcId))
-        caption = caption + ', max. FEvals = ' + str(entryList[i].maxEvals)
+        caption = ('f' + str(entryList[i].funcId) +
+                   ', DIM = ' + str(entryList[i].dim))
         caption = caption + ', Nruns = ' + str(entryList[i].nbRuns)
+        caption = caption + ', max. FEvals = ' + str(entryList[i].maxEvals)
         if i != width - 1:
             f.write('& \multicolumn{' + str((len(format)-1)/width) + '}{@{$\,$}c|@{$\,$}}{' + caption + '}')
         else:

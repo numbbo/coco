@@ -220,7 +220,7 @@ def computevalues(N, maxEvals, header=False, dispersion=False):
         # Returns header and format of the entries for one function
         # and one dimension.
         header = ['$f_{t}$', '$\ENFEs$', '10\%', '90\%', '$\#$',
-                  'Best', '3$^{rd}$ B.', 'Median', '3$^{rd}$ W.', 'Worst']
+                  'Best', '3$^\mathrm{rd}$', 'Median', '13$^\mathrm{rd}$', 'Worst']
         format = ['%1.1e', '%1.1e', '%1.1e', '%1.1e', '%d',
                   '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
         return header, format
