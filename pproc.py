@@ -56,6 +56,9 @@ class MissingValueError(Error):
 
 def postprocess(dataFiles, fvalueToReach, maxEvals):
     """Post process raw data files and write the result in output files."""
+    #TODO: as a minimal docu (which should have been done as specification even
+    #      before writing the function) it should be said what is written in
+    #      what output files and/or what is returned by the function
     #TODO this function is long and ugly.
     #set_trace()
     dataSets = split(dataFiles)
@@ -267,7 +270,8 @@ def split(dataFiles):
 
 
 def main(indexEntry, verbose=True):
-
+    # TODO: PLEASE describe in short input and output arguments of the function
+    #       it is probably more time efficient to do it in advance. 
     #This is clumsy
     maxEvals = scipy.floor(10**(scipy.floor(scipy.log10(maxEvalsFactor * indexEntry.dim)*20.)/20.))
     #maxEvals = maxEvalsFactor * indexEntry.dim
