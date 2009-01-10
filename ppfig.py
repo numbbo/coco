@@ -22,6 +22,8 @@ def createFigure(data, figHandle=None):
         Output:
         lines - handles of the Line2D instances
     """
+    # TODO: besides the output also the side effect (plotting a figure?)
+    #       should be described in short
 
     # initialize figure and handles
     if figHandle is None:
