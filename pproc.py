@@ -37,7 +37,6 @@ class MissingValueError(Error):
     """ Error if a mandatory value is not found within a file.
         Returns a message with the missing value and the respective
         file."""
-    #TODO: what the?
 
     def __init__(self,value, filename):
         self.value = value
@@ -55,10 +54,7 @@ class MissingValueError(Error):
 # TODO: aligned with function values or function evaluations should be a choice.
 
 def postprocess(dataFiles, fvalueToReach, maxEvals):
-    """Post process raw data files and write the result in output files."""
-    #TODO: as a minimal docu (which should have been done as specification even
-    #      before writing the function) it should be said what is written in
-    #      what output files and/or what is returned by the function
+    """Post processes raw data files, returns post-processed data in arrays."""
     #TODO this function is long and ugly.
     #set_trace()
     dataSets = split(dataFiles)
@@ -111,7 +107,6 @@ def postprocess(dataFiles, fvalueToReach, maxEvals):
                                               fitValIndex]
                 if (dataSets[i].currentPos == len(dataSets[i].set) - 1 or 
                     dataSets[i].set[dataSets[i].currentPos, 0] >= maxEvals):
-                    #TODO: might not stop at the right fun eval
                     isFinished[i] = True
 
         # Process currentLines:
@@ -244,8 +239,7 @@ def computevalues(N, maxEvals, header=False, dispersion=False):
 
 
 def split(dataFiles):
-    """Split the data files into arrays corresponding to the data sets.
-    """
+    """Split the data files into arrays corresponding to the data sets."""
     #TODO: optimize by splitting using %
     dataSets = []
     for fil in dataFiles:
@@ -270,6 +264,7 @@ def split(dataFiles):
 
 
 def main(indexEntry, verbose=True):
+    """Updates an indexEntry with attributes containing post processed data."""
     # TODO: PLEASE describe in short input and output arguments of the function
     #       it is probably more time efficient to do it in advance. 
     #This is clumsy

@@ -14,8 +14,8 @@ Feature missing:
 *Compute the entropy based on the comment line in the info file? 
 *Compare results from different algorithms!
 *generate data for the run length distrib figure, ppfig and pptex not in pproc (to make pprldistr pptex and ppfig modules self-consistent)
-*Short titles for the figures
 *Play with the fontsize (smaller titles, larger ticks).
+*Move the figures and make them larger.
 
 Misc.
 *Make sure that anyone could produce a fig, table or data profile for every dimensions, functions they want.
@@ -36,6 +36,7 @@ Profiling:
 *>80% of time spent on pproc.split
 
 SOLVED:
+*Short titles for the figures
 *Problem with reading the data: the last line was left unread
 *Problem with the median that was defined though it was not.
 *Problem with Gtk/gdk over ssh (import matplotlib) -> ssh -X
