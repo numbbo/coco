@@ -13,22 +13,29 @@
 import numpy
 
 def sp1(data, issuccessful=None, maxevals=numpy.Inf):
-    """sp1(data, maxevals=Inf) computes SP1, the mean over
-    successful entries in a data vector divided by the success
-    rate. Entry i in data is successful, if issuccessful[i]
-    is True or non-zero. If issuccessful is not provided, 
-    data[i] is successful if it is truly smaller than
-    maxevals. Input data contains, e.g., number of function
-    evaluations to reach the target value.
-    Returns (SP1, success_rate, nb of successful entries),
-    where SP1 equals numpy.Inf when the success rate is zero. 
+    """sp1(data, issuccessful=None, maxevals=Inf) computes a
+    mean value over successful entries in data divided by
+    success rate, the so-called SP1
+    
+    Input:
+      data -- array contains, e.g., number of function
+        evaluations to reach the target value
+      issuccessful -- array of same length as data. Entry i in data is
+         defined successful, if issuccessful[i] is True or non-zero 
+      maxevals -- number, if issuccessful is not provided, data[i]
+        is defined successful if it is truly smaller than maxevals
+
+    Returns: (SP1, success_rate, nb_of_successful_entries), where
+      SP1 is the mean over successful entries in data divided
+      by the success rate. SP1 equals numpy.Inf when the success
+      rate is zero.
     """
 
     dat = [d for d in data if not numpy.isnan(d)]
     N = len(dat)
     if issuccessful is not None:
         if len(issuccessful) != len(dat):
-            raise Error('lengths of data and issuccessful disagree')
+            raise Error('lengths of data and issuccessful disagree (regard the new interface)')
         dat = [dat[i] for i in xrange(len(dat)) if issuccessful[i]]
     else:
         dat = [d for d in dat if d < maxevals]
