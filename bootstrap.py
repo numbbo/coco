@@ -12,19 +12,26 @@
 
 import numpy
 
-def sp1(data, maxevals=numpy.Inf):
-    """sp1(data, maxevals=Inf) computes the mean over
-    successful entries in data divided by the success
-    rate (SP1). Successful entries in data are truly smaller than
+def sp1(data, issuccessful=None, maxevals=numpy.Inf):
+    """sp1(data, maxevals=Inf) computes SP1, the mean over
+    successful entries in a data vector divided by the success
+    rate. Entry i in data is successful, if issuccessful[i]
+    is True or non-zero. If issuccessful is not provided, 
+    data[i] is successful if it is truly smaller than
     maxevals. Input data contains, e.g., number of function
     evaluations to reach the target value.
-    Returns (SP1, success_rate), where SP1 equals numpy.Inf
-        when the success rate is zero. 
+    Returns (SP1, success_rate, nb of successful entries),
+    where SP1 equals numpy.Inf when the success rate is zero. 
     """
 
     dat = [d for d in data if not numpy.isnan(d)]
     N = len(dat)
-    dat = [d for d in dat if d < maxevals]
+    if issuccessful is not None:
+        if len(issuccessful) != len(dat):
+            raise Error('lengths of data and issuccessful disagree')
+        dat = [dat[i] for i in xrange(len(dat)) if issuccessful[i]]
+    else:
+        dat = [d for d in dat if d < maxevals]
     succ = float(len(dat)) / N
     if succ == 0:
         return (numpy.Inf, 0., 0)
