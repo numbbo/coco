@@ -78,11 +78,11 @@ rlDistr: any indexEntries
 __all__  = ['readindexfiles','findindexfiles','ppfig','pptex','pprldistr',
             'main']
 
-plt.rc("axes", labelsize=16, titlesize=24)
-plt.rc("xtick", labelsize=16)
-plt.rc("ytick", labelsize=16)
-plt.rc("font", size=16)
-plt.rc("legend", fontsize=16)
+plt.rc("axes", labelsize=20, titlesize=24)
+plt.rc("xtick", labelsize=20)
+plt.rc("ytick", labelsize=20)
+plt.rc("font", size=20)
+plt.rc("legend", fontsize=20)
 
 sp1index = 1
 medianindex = 5
@@ -96,7 +96,7 @@ funInfos = {}
 isBenchmarkinfosFound = True
 try:
     infofile = os.path.join(os.path.split(__file__)[0], '..', '..', 
-                            'benchmarkinfos')
+                            'benchmarkshortinfos')
     f = open(infofile,'r')
     for line in f:
         if len(line) == 0 or line.startswith('%') or line.isspace() :
@@ -107,7 +107,7 @@ try:
 except IOError, (errno, strerror):
     print "I/O error(%s): %s" % (errno, strerror)
     isBenchmarkinfosFound = False
-    print 'Could not find benchmarkinfos file. '\
+    print 'Could not find benchmarkshortinfos file. '\
           'Titles in ENFEs and convergence figures will not be displayed.'
 
 
@@ -204,10 +204,10 @@ def genFig(sortByFunc, outputdir, verbose, isBenchmarkinfosFound):
         for dim in sorted(sortByFunc[func]):
             entry = sortByFunc[func][dim]
 
-            h = ppfig.createFigure(entry.arrayFullTab[:,[sp1index,0]], fig)
+            h = ppfig.createFigure(entry.arrayFullTab[:,[0,sp1index]], fig)
             for i in h:
                 plt.setp(i,'color',colors[dim])
-            h = ppfig.createFigure(entry.arrayFullTab[:,[medianindex,0]], fig)
+            h = ppfig.createFigure(entry.arrayFullTab[:,[0,medianindex]], fig)
             for i in h:
                 plt.setp(h,'color',colors[dim],'linestyle','--')
             #Do all this in createFigure?    

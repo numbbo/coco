@@ -9,7 +9,7 @@ import scipy
 from pdb import set_trace
 
 def createFigure(data, figHandle=None):
-    """ Create a figure from an array.
+    """ Create a plot in a figure (eventually new) from a data array.
 
         Mandatory input:
         data - 2d-array where the 1st column contains x-values
@@ -20,10 +20,8 @@ def createFigure(data, figHandle=None):
                     will be created
 
         Output:
-        lines - handles of the Line2D instances
+        lines - handles of the Line2D instances.
     """
-    # TODO: besides the output also the side effect (plotting a figure?)
-    #       should be described in short
 
     # initialize figure and handles
     if figHandle is None:
@@ -37,7 +35,7 @@ def createFigure(data, figHandle=None):
         yValues = data[:,i]
 
         # Plot figure
-        tmp = scipy.where(scipy.isfinite(data[:,0]))[0]
+        tmp = scipy.where(scipy.isfinite(data[:,i]))[0]
         if tmp.size > 0:
             lines.extend(plt.plot(data[tmp,0], yValues[tmp]))
             lines.extend(plt.plot([data[tmp[-1],0]], [yValues[tmp[-1]]],
@@ -53,7 +51,7 @@ def customizeFigure(figHandle, figureName, title='',
                     scale=['linear','linear'], legend=list(), locLegend='best',
                     verbose=True):
     """ Customize a figure by adding a legend, axis label, etc. At the
-        end the fiugre is saved.
+        end the figure is saved.
 
         Inputs:
         figHandle - handle to existing figure
@@ -84,7 +82,6 @@ def customizeFigure(figHandle, figureName, title='',
 
     # Grid options
     axisHandle.grid('True')
-    #set_trace()
     tmp = axisHandle.get_xticks()
     tmp2 = []
     for i in tmp:
@@ -99,7 +96,7 @@ def customizeFigure(figHandle, figureName, title='',
     # Legend
     if len(legend) > 0:
         axisHandle.legend(legend,locLegend)
-
+    axisHandle.invert_xaxis()
     axisHandle.set_title(title)
 
     # Save figure
