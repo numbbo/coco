@@ -216,7 +216,7 @@ def computevalues(N, maxEvals, header=False, dispersion=False):
     #set_trace()
     if not header:
         N.sort() # Works because N is supposed to be a 1d array.
-        sp1m = bootstrap.sp1(N,maxevals=maxEvals)
+        sp1m = bootstrap.sp1(N,maxvalue=maxEvals)
         if dispersion:
             dispersionSP1 = bootstrap.draw(N, [10,90], 15, bootstrap.sp1,
                                            [maxEvals])
@@ -231,7 +231,7 @@ def computevalues(N, maxEvals, header=False, dispersion=False):
     else:
         # Returns header and format of the entries for one function
         # and one dimension.
-        header = ['$f_{t}$', '$\ENFEs$', '10\%', '90\%', '$\#$',
+        header = ['$\Delta f$', '$\ENFEs$', '10\%', '90\%', '$\#$',
                   'best', '$3^\mathrm{rd}$', 'median', '$3^\mathrm{rd}w.$', 'worst']
         format = ['%1.1e', '%1.1e', '%1.1e', '%1.1e', '%d',
                   '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
