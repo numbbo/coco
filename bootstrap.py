@@ -9,21 +9,20 @@
 #     res += [x[i]]
 # i is not an integer
 
-
 import numpy
 
-def sp1(data, issuccessful=None, maxevals=numpy.Inf):
-    """sp1(data, issuccessful=None, maxevals=Inf) computes a
+def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
+    """sp1(data, maxvalue=Inf, issuccessful=None) computes a
     mean value over successful entries in data divided by
     success rate, the so-called SP1
     
     Input:
       data -- array contains, e.g., number of function
         evaluations to reach the target value
+      maxvalue -- number, if issuccessful is not provided, data[i]
+        is defined successful if it is truly smaller than maxvalue
       issuccessful -- array of same length as data. Entry i in data is
          defined successful, if issuccessful[i] is True or non-zero 
-      maxevals -- number, if issuccessful is not provided, data[i]
-        is defined successful if it is truly smaller than maxevals
 
     Returns: (SP1, success_rate, nb_of_successful_entries), where
       SP1 is the mean over successful entries in data divided
@@ -31,14 +30,23 @@ def sp1(data, issuccessful=None, maxevals=numpy.Inf):
       rate is zero.
     """
 
+    if not getattr(data, '__iter__', False):  # is not iterable
+        raise Exception, 'data must be a vector'
+    if issuccessful is not None:
+        if not getattr(issuccessful, '__iter__', False):  # is not iterable
+            raise Exception, 'issuccessful must be a vector'
+        if len(issuccessful) != len(data):
+            raise Exception, 'lengths of data and issuccessful disagree'
+        issuccessful = [issuccessful[i] for i in xrange(len(issuccessful))
+                        if not numpy.isnan(data[i])]
     dat = [d for d in data if not numpy.isnan(d)]
     N = len(dat)
+    if N == 0:
+        return(numpy.nan, numpy.nan, numpy.nan)
     if issuccessful is not None:
-        if len(issuccessful) != len(dat):
-            raise Error('lengths of data and issuccessful disagree (regard the new interface)')
         dat = [dat[i] for i in xrange(len(dat)) if issuccessful[i]]
     else:
-        dat = [d for d in dat if d < maxevals]
+        dat = [d for d in dat if d < maxvalue]
     succ = float(len(dat)) / N
     if succ == 0:
         return (numpy.Inf, 0., 0)
@@ -144,6 +152,6 @@ def prctile(x, arrprctiles, issorted=False):
 def randint(upper, n):
     res = numpy.floor(upper*numpy.random.rand(n))
     if any(res>=upper):
-        raise Error('numpy.random.rand returned 1')
+        raise Exception, 'numpy.random.rand returned 1'
     return res
 
