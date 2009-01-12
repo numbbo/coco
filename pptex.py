@@ -163,9 +163,9 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
         else:
             f.write('& \multicolumn{' + str((len(format)-1)/width) + '}{@{$\,$}c@{$\,$}}{' + caption + '}')
     f.write('\\\\ \n')
-    f.write('\hline \n')
+    # f.write('\hline \n')
     f.write(' & '.join(header) + '\\\\ \n \hline \n')
-
+    
     # Write data
     for i in range(0,data.shape[1]):
         writeArray(f, data[:,i], format, fontSize2)
