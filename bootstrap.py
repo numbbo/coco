@@ -21,8 +21,9 @@ def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
         evaluations to reach the target value
       maxvalue -- number, if issuccessful is not provided, data[i]
         is defined successful if it is truly smaller than maxvalue
-      issuccessful -- array of same length as data. Entry i in data is
-         defined successful, if issuccessful[i] is True or non-zero 
+      issuccessful -- None ore array of same length as data. Entry
+         i in data is defined successful, if issuccessful[i] is
+         True or non-zero 
 
     Returns: (SP1, success_rate, nb_of_successful_entries), where
       SP1 is the mean over successful entries in data divided
@@ -30,13 +31,17 @@ def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
       rate is zero.
     """
 
+    # check input args
     if not getattr(data, '__iter__', False):  # is not iterable
         raise Exception, 'data must be a vector'
     if issuccessful is not None:
         if not getattr(issuccessful, '__iter__', False):  # is not iterable
-            raise Exception, 'issuccessful must be a vector'
+            raise Exception, 'issuccessful must be a vector or None'
         if len(issuccessful) != len(data):
             raise Exception, 'lengths of data and issuccessful disagree'
+
+    # remove NaNs
+    if issuccessful is not None:
         issuccessful = [issuccessful[i] for i in xrange(len(issuccessful))
                         if not numpy.isnan(data[i])]
     dat = [d for d in data if not numpy.isnan(d)]
@@ -45,12 +50,14 @@ def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
     if N == 0:
         return(numpy.nan, numpy.nan, numpy.nan)
 
+    # remove unsuccessful data
     if issuccessful is not None:
         dat = [dat[i] for i in xrange(len(dat)) if issuccessful[i]]
     else:
         dat = [d for d in dat if d < maxvalue]
     succ = float(len(dat)) / N
 
+    # return
     if succ == 0:
         return (numpy.Inf, 0., 0)
     else:
