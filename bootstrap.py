@@ -41,13 +41,16 @@ def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
                         if not numpy.isnan(data[i])]
     dat = [d for d in data if not numpy.isnan(d)]
     N = len(dat)
+
     if N == 0:
         return(numpy.nan, numpy.nan, numpy.nan)
+
     if issuccessful is not None:
         dat = [dat[i] for i in xrange(len(dat)) if issuccessful[i]]
     else:
         dat = [d for d in dat if d < maxvalue]
     succ = float(len(dat)) / N
+
     if succ == 0:
         return (numpy.Inf, 0., 0)
     else:
