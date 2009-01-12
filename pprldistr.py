@@ -31,8 +31,8 @@ def beautify(figHandle, figureName, maxEvalsFactor, fileFormat=('png','eps'),
     axisHandle.set_xscale('log')
     axisHandle.set_xlim((1.0,maxEvalsFactor))
     axisHandle.set_ylim((0.0,1.0))
-    axisHandle.set_xlabel('log10(FEvals/DIM)')
-    axisHandle.set_ylabel('Probability of success')
+    axisHandle.set_xlabel('decimal logarithm of FEvals/DIM')
+    axisHandle.set_ylabel('ratio of successful runs')
     # Grid options
     axisHandle.grid('True')
     xtic = axisHandle.get_xticks()
