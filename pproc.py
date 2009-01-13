@@ -5,17 +5,17 @@
 
 from __future__ import absolute_import
 
-__version__ = "$Revision$"
-# $URL$
-# $Date$
-
 import scipy
 import scipy.io
 from pdb import set_trace
 
-from . import bootstrap
+from bbob_pproc import bootstrap
 
-__all__ = ['main','quantile','postprocess']
+__version__ = "$Revision$"
+# $URL$
+# $Date$
+
+__all__ = ['main', 'postprocess']
 
 # Define global variables.
 prctilesTab = (0., 0.1, 0.5, 0.9, 1.)
@@ -103,8 +103,9 @@ def postprocess(dataFiles, fvalueToReach, maxEvals):
                     dataSets[i].currentPos += 1
                     res[i] = dataSets[i].set[dataSets[i].currentPos,
                                              funcEvalsIndex]
-                    vals[i] = dataSets[i].set[dataSets[i].currentPos,
-                                              fitValIndex]
+                    vals[i] = (dataSets[i].set[dataSets[i].currentPos,
+                                               fitValIndex] - fvalueToReach + 
+                               1.0e-8)
                 if (dataSets[i].currentPos == len(dataSets[i].set) - 1 or 
                     dataSets[i].set[dataSets[i].currentPos, 0] >= maxEvals):
                     isFinished[i] = True
@@ -124,6 +125,7 @@ def postprocess(dataFiles, fvalueToReach, maxEvals):
         if scipy.isinf(currentFitValue):
             currentFitValue = max(valuesOfInterest[0],
                                   10**(scipy.ceil(scipy.log10(max(vals))*5)/5))
+            #What does this mean?
         tmp = scipy.append(currentFitValue, computevalues(res,maxEvals))
         for j in range(2,7):
             if tmp[j] == maxEvals:
@@ -194,7 +196,6 @@ def postprocess(dataFiles, fvalueToReach, maxEvals):
 
 
 def testpostprocess():
-    import glob
     files = ['/users/dsa/ros/Desktop/coco/BBOB/demo/matlab/datafminunc_worestart/data_f1/datafminunc0_f1_DIM2.dat']
     #files = glob.glob('/users/dsa/ros/Desktop/coco/BBOB/demo/postProcessing/data_f2/*10.dat')
     #res = postprocess(files,1.e-8,scipy.in)
