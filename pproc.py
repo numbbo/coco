@@ -25,7 +25,14 @@ fitValIndex = 2
 maxEvalsFactor = 1e4
 valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8) #has to be sorted
 valuesForDataProf = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8) #has to be sorted
-
+ranksOfInterest = (1, 2)  # will show 1st, 2nd, median, 2nd worst and worst
+                          # TODO at present 1st, 3rd... are shown, but 2nd is desired
+                          # ie indices ranksOfInterest-1, -ranksOfInterest
+                          #    plus the median. 
+                          # TODO: this is not yet used in the code
+                          #    (I don't dare to put it, as there seems to
+                          #     be more than two places where it would be
+                          #     needed NH) 
 
 class Error(Exception):
     """ Base class for errors. """
@@ -233,7 +240,7 @@ def computevalues(N, maxEvals, header=False, dispersion=False):
         # Returns header and format of the entries for one function
         # and one dimension.
         header = ['$\Delta f$', '$\ENFEs$', '10\%', '90\%', '$\#$',
-                  'best', '$3^\mathrm{rd}$', 'med.', '$3^\mathrm{rd}w.$', 'worst']
+                  'best', '$2^\mathrm{nd}$', 'med.', '$2^\mathrm{nd}\,$w.', 'worst']
         format = ['%1.1e', '%1.1e', '%1.1e', '%1.1e', '%d',
                   '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
         return header, format
