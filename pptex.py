@@ -133,9 +133,9 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
 
     # Generate LaTex commands for vertical lines and aligment of the entries.
     # Vertical lines appear after column 'Ft' and '$P_{\mathrm{s}}$'
-    tabColumns ='@{$\,$}c@{$\,$}|' + 4 * '@{$\,$}c@{$\,$}' + '|'
-    tabColumns = tabColumns + 5 * '@{$\,$}c@{$\,$}' +'|'
-    tabColumns = tabColumns + 4 * '@{$\,$}c@{$\,$}' +'|'
+    tabColumns ='@{$\,$}c@{$\,$}|' + 4 * '@{$\,$}c@{$\,$}' + ''
+    tabColumns = tabColumns + 5 * '@{$\,$}c@{$\,$}' + '|'
+    tabColumns = tabColumns + 4 * '@{$\,$}c@{$\,$}' + ''
     tabColumns = tabColumns + 5 * '@{$\,$}c@{$\,$}'
 
     # Create output file
@@ -224,15 +224,17 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
             # Generate Latex entry
             # It is assumed that all entries range between 10e-9 and 10e9
 
-            if id == 0:
+            if id == 0:  # Delta f value
+                # the next line failed under Windows as tmp[1][2] is not the last digit
                 # tmp2 = '\\!' + tmp[1][0] + '\\!' + tmp[1][2]
-
-                sgn = '+'
-                if x < 1:
-                    sgn = '-'
-                tmp2 = (tmp[0][0] + '\\!\\mathrm{\\hspace{0.10em}e}' +
-                        sgn + tmp[1][-1])
-                
+                if x >= 1 and x < 10:
+                    tmp2 = tmp[0][0]
+                else:
+                    sgn = '+'  # don't assume that a + sign is present
+                    if x < 1:
+                        sgn = '-'
+                    tmp2 = (tmp[0][0] + '\\!\\mathrm{\\hspace{0.10em}e}' +
+                            sgn + tmp[1][-1])  
             else:
                 tmp2 = tmp[0] + '\\mathrm{\\hspace{0.10em}e}' + tmp[1][-1]
         else:
