@@ -44,6 +44,11 @@ def headerInfo(header,entry):
                 entry.maxEvals = int(elemSecond)
         elif elemFirst == 'targetFuncValue':
             entry.targetFuncValue = float(elemSecond)
+        elif elemFirst == 'Fopt':
+            entry.fopt = float(elemSecond)
+        elif elemFirst == 'Precision':
+            entry.targetFuncValue = float(elemSecond) + entry.fopt
+            entry.precision = float(elemSecond)
         elif elemFirst == 'algId':
             entry.algId = elemSecond
         else:
@@ -57,6 +62,7 @@ class IndexEntry:
     """Creates an instance with atributes funcId, dim, dataFiles,
        comment, maxEvals, targetFuncValue, and algId. A new instance
        contains the default values.
+
     """
 
     def __init__(self):
@@ -149,7 +155,7 @@ def main(indexFiles, verbose = True):
                 line = f.next()
                 # Split line in data file name(s) and run time information. Then
                 # store the data file name(s) in entry.dataFiles.
-                parts = line.split(',')
+                parts = line.split(', ')
                 for elem2 in parts:
                     if elem2.endswith('.dat'):
                         entry.dataFiles.append(os.path.join(elem.path, elem2))
