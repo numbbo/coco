@@ -1,4 +1,8 @@
 Error catching:
+*Bug! Though the new fgeneric output is read without problems.
+** MaxEvals should be defined by index files ?
+** best worst, ... should be defined by .dat files?
+** hdat -> when f-fopt = 0 -> bug in the results displayed.
 *When given a wrong path, nothing happens...
 *Problem with demo (is not working): no possibility of shorter demo due to writeTable2. It should try and take as input a list of arrays.
 *problem with the tables: too many floats to handle -> not more than 12 it seems.
@@ -11,7 +15,7 @@ Feature missing:
 *Put a separation line in the table between function evaluations and function values
 *Have the number of solved functions appear on the data profile graph
 *Have SP1 on the data profile graph as well?
-*Compute the entropy based on the comment line in the info file? 
+*Compute the entropy based on the comment line in the info file?
 *Compare results from different algorithms!
 *generate data for the run length distrib figure, ppfig and pptex not in pproc (to make pprldistr pptex and ppfig modules self-consistent)
 *Play with the fontsize (smaller titles, larger ticks).

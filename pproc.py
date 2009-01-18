@@ -28,11 +28,11 @@ valuesForDataProf = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8) #has to be sorted
 ranksOfInterest = (1, 2)  # will show 1st, 2nd, median, 2nd worst and worst
                           # TODO at present 1st, 3rd... are shown, but 2nd is desired
                           # ie indices ranksOfInterest-1, -ranksOfInterest
-                          #    plus the median. 
+                          #    plus the median.
                           # TODO: this is not yet used in the code
                           #    (I don't dare to put it, as there seems to
                           #     be more than two places where it would be
-                          #     needed NH) 
+                          #     needed NH)
 
 class Error(Exception):
     """ Base class for errors. """
@@ -99,8 +99,9 @@ def postprocess(dataFiles, fvalueToReach, maxEvals):
         # Align data
         for i in range(len(dataSets)):
             res[i] = dataSets[i].set[dataSets[i].currentPos, funcEvalsIndex]
-            vals[i] = (dataSets[i].set[dataSets[i].currentPos, fitValIndex] -
-                       fvalueToReach + 1.0e-8)
+            # vals[i] = (dataSets[i].set[dataSets[i].currentPos, fitValIndex] -
+            #            fvalueToReach + 1.0e-8)
+            vals[i] = dataSets[i].set[dataSets[i].currentPos, fitValIndex]
             if not isFinished[i]:
                 while (dataSets[i].currentPos < len(dataSets[i].set)-1 and
                        dataSets[i].set[dataSets[i].currentPos, 0] < maxEvals and
@@ -110,10 +111,12 @@ def postprocess(dataFiles, fvalueToReach, maxEvals):
                     dataSets[i].currentPos += 1
                     res[i] = dataSets[i].set[dataSets[i].currentPos,
                                              funcEvalsIndex]
-                    vals[i] = (dataSets[i].set[dataSets[i].currentPos,
-                                               fitValIndex] - fvalueToReach + 
-                               1.0e-8)
-                if (dataSets[i].currentPos == len(dataSets[i].set) - 1 or 
+                    # vals[i] = (dataSets[i].set[dataSets[i].currentPos,
+                    #                            fitValIndex] - fvalueToReach +
+                    #            1.0e-8)
+                    vals[i] = dataSets[i].set[dataSets[i].currentPos,
+                                              fitValIndex]
+                if (dataSets[i].currentPos == len(dataSets[i].set) - 1 or
                     dataSets[i].set[dataSets[i].currentPos, 0] >= maxEvals):
                     isFinished[i] = True
 
@@ -145,7 +148,7 @@ def postprocess(dataFiles, fvalueToReach, maxEvals):
         #evaluations.
 
         # Tests if we have covered all of the valuesOfInterest (using the
-        # iterator iValuesOfInterest and then if 
+        # iterator iValuesOfInterest and then if
         # currentFitValue == valuesOfInterest[iValuesOfInterest].
         if (iValuesOfInterest < len(valuesOfInterest) and
             (currentFitValue-valuesOfInterest[iValuesOfInterest] <
@@ -216,7 +219,6 @@ def computevalues(N, maxEvals, header=False, dispersion=False):
     Return different measures of a distribution of couple [fevals, fvalues].
 
     @parameter N - is the array of the fevals.
-    @parameter fvalueToReach - is the target function value to reach.
     @parameter maxEvals - is the maximum number of function evaluations.
 
     @return - [SP1,disp(SP1),success probability,quantiles]
@@ -233,7 +235,7 @@ def computevalues(N, maxEvals, header=False, dispersion=False):
             res = [sp1m[0], sp1m[1]] #SP1 and success rate
         if len(N) < 3: #catch error.
             raise Exception, 'Probleme here' #Deal with this.
-        res.extend((N[0], N[2], bootstrap.prctile(N,50)[0], N[-3], N[-1]))
+        res.extend((N[0], N[1], bootstrap.prctile(N,50)[0], N[-2], N[-1]))
         return res
 
     else:
@@ -251,6 +253,7 @@ def split(dataFiles):
     #TODO: optimize by splitting using %
     dataSets = []
     for fil in dataFiles:
+        fil = fil.replace('.dat', '.hdat') #TODO: hack
         content = scipy.io.read_array(fil,comment='%')
         dataSetFinalIndex = scipy.where(scipy.diff(content[:,0])<0)[0]
         #splitting is done by comparing the number of function evaluations
@@ -274,7 +277,7 @@ def split(dataFiles):
 def main(indexEntry, verbose=True):
     """Updates an indexEntry with attributes containing post processed data."""
     # TODO: PLEASE describe in short input and output arguments of the function
-    #       it is probably more time efficient to do it in advance. 
+    #       it is probably more time efficient to do it in advance.
     #This is clumsy
     maxEvals = scipy.floor(10**(scipy.floor(scipy.log10(maxEvalsFactor * indexEntry.dim)*20.)/20.))
     #maxEvals = maxEvalsFactor * indexEntry.dim
