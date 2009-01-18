@@ -253,7 +253,8 @@ def split(dataFiles):
     #TODO: optimize by splitting using %
     dataSets = []
     for fil in dataFiles:
-        fil = fil.replace('.dat', '.hdat') #TODO: hack
+        fil = fil.replace('.dat', '.hdat') #TODO: hack WHY not naming the f-data file .dat and the time data files .tdat?
+                                           #           the f-data are our "default" data. 
         content = scipy.io.read_array(fil,comment='%')
         dataSetFinalIndex = scipy.where(scipy.diff(content[:,0])<0)[0]
         #splitting is done by comparing the number of function evaluations
