@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# coding: utf-8
+
 """Black-Box Optimization Benchmarking (BBOB) post processing tool:
 
 The BBOB post-processing tool takes as input data from BBOB experiments and
@@ -11,9 +13,9 @@ Synopsis: python bbob_pproc.py [OPTIONS] input-files
 
     Running bbob_pproc.py or importing the bbob_pproc package and running the
     main method will take as input the input files and generate post-processed
-    data that will be output as convergence and ENFEs graphs, tex tables and 
-    running length distribution graphs according to the experimentation 
-    process described in the documentation of the BBOB. All the outputs will 
+    data that will be output as convergence and ENFEs graphs, tex tables and
+    running length distribution graphs according to the experimentation
+    process described in the documentation of the BBOB. All the outputs will
     be saved in an output folder as files that will be included in a TeX file.
 
     -h, --help
@@ -22,7 +24,7 @@ Synopsis: python bbob_pproc.py [OPTIONS] input-files
 
     -v, --verbose
 
-        verbose mode, prints out operations. When not in verbose mode, no 
+        verbose mode, prints out operations. When not in verbose mode, no
         output is to be expected, except for errors.
 
             opts, args = getopt.getopt(argv[1:], "hvpno:",
@@ -43,12 +45,12 @@ Synopsis: python bbob_pproc.py [OPTIONS] input-files
 
     --tab-only, --fig-only, --rld-only
 
-        these options can be used to output respectively the tex tables, 
+        these options can be used to output respectively the tex tables,
         convergence and ENFEs graphs figures, run length distribution figures
         only. A combination of any two of these options results in no output.
 
 Exceptions raised:
-UsageError -- 
+UsageError --
 """
 
 #credits to G. Van Rossum: http://www.artima.com/weblogs/viewpost.jsp?thread=4829
@@ -60,12 +62,12 @@ import os
 import getopt
 import pickle
 
-import scipy
-import matplotlib.pyplot as plt
+#import scipy
+#import matplotlib.pyplot as plt
 
 from pdb import set_trace
 from bbob_pproc import readindexfiles, findindexfiles
-from bbob_pproc import pproc, ppfig, pptex, pprldistr
+from bbob_pproc import pproc, ppfig, pptex, pprldistr, ppfigdim
 
 """Given a list of index files, returns convergence and ENFEs graphs, tables,
 Run length distribution graphs.
@@ -75,41 +77,18 @@ tables: should be any indexEntries and any precision
 rlDistr: any indexEntries
 """
 
-__all__  = ['readindexfiles','findindexfiles','ppfig','pptex','pprldistr',
-            'main']
+__all__  = ['readindexfiles', 'findindexfiles', 'ppfig', 'pptex', 'pprldistr',
+            'main', 'ppfigdim']
 
-plt.rc("axes", labelsize=20, titlesize=24)
-plt.rc("xtick", labelsize=20)
-plt.rc("ytick", labelsize=20)
-plt.rc("font", size=20)
-plt.rc("legend", fontsize=20)
+#colors = {2:'b', 3:'g', 5:'r', 10:'c', 20:'m', 40:'y'} #TODO colormaps!
+tabDimsOfInterest = [5, 20]    # dimension which are displayed in the tables
+tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
+tabRanksOfInterest = (1, 2)
 
-sp1index = 1
-medianindex = 5
-colors = {2:'b', 3:'g', 5:'r', 10:'c', 20:'m', 40:'y'} #TODO colormaps!
-dimOfInterest = [5,20]    # dimension which are displayed in the tables
-valuesOfInterest = [1.0,1.0e-2,1.0e-4,1.0e-6,1.0e-8]
-colorsDataProf = ['b', 'g', 'r', 'c', 'm']
+figValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 
-#Either we read it in a file (flexibility) or we hard code it here.
-funInfos = {}
-isBenchmarkinfosFound = True
-try:
-    infofile = os.path.join(os.path.split(__file__)[0], '..', '..', 
-                            'benchmarkshortinfos')
-    f = open(infofile,'r')
-    for line in f:
-        if len(line) == 0 or line.startswith('%') or line.isspace() :
-            continue
-        funcId, funcInfo = line[0:-1].split(None,1)
-        funInfos[int(funcId)] = funcId + ' ' + funcInfo
-    f.close()
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    isBenchmarkinfosFound = False
-    print 'Could not find benchmarkshortinfos file. '\
-          'Titles in ENFEs and convergence figures will not be displayed.'
-
+rldDimsOfInterest = (5, 20)
+rldValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 
 #CLASS DEFINITIONS
 
@@ -123,146 +102,146 @@ class Usage(Exception):
 
 #FUNCTION DEFINITIONS
 
-def processInputArgs(args, isPostProcessed, verbose=True):
-    ps = []
-    nbRuns = []
-
-    if isPostProcessed:
-        indexEntries = []
-        tmp = set(args) #for unicity
-        for i in tmp:
-            try:
-                f = open(i,'r')
-                entry = pickle.load(f)
-                f.close()
-                if verbose:
-                    print 'Unpickled %s.' % (i)
-                indexEntries.append(entry)
-                ps.append(entry.arrayTab[-1,4])
-                nbRuns.append(entry.nbRuns)
-            except IOError, (errno, strerror):
-                print "I/O error(%s): %s" % (errno, strerror)
-            except UnpicklingError:
-                f.close()
-                print '%s could not be unpickled.' %(i)
-                if not i.endswith('.pickle'):
-                    print '%s might not be a pickle data file.' %(i)
-
-    else:
-        indexFiles = []
-        for i in args:
-            if i.endswith('.info'):
-                (filepath,filename) = os.path.split(i)
-                indexFiles.append(findindexfiles.IndexFile(filepath,
-                                                           filename))
-            elif os.path.isdir(i):
-                indexFiles.extend(findindexfiles.main(i,verbose))
-            else:
-                raise Usage('Expect as input argument either info files or '+
-                            'a folder containing info files.')
-                #TODO: how do we deal with this?
-        indexFiles = set(indexFiles) #for unicity
-
-        indexEntries = readindexfiles.main(indexFiles,verbose)
-
-        for entry in indexEntries:
-            pproc.main(entry,verbose)
-            ps.append(entry.arrayTab[-1,4])
-            nbRuns.append(entry.nbRuns)
-
-    return indexEntries, ps, nbRuns
-
-
-def sortIndexEntries(indexEntries, outputdir, isPickled=True, verbose=True):
-    """From a list of IndexEntry, returs a post-processed sorted dictionary."""
-    sortByFunc = {}
-    for elem in indexEntries:
-        sortByFunc.setdefault(elem.funcId,{})
-        sortByFunc[elem.funcId][elem.dim] = elem
-        if isPickled:
-            filename = os.path.join(outputdir, 'ppdata_f%d_%d' 
-                                                %(elem.funcId,elem.dim))
-            try:
-                f = open(filename + '.pickle','w')
-                pickle.dump(elem,f)
-                f.close()
-                if verbose:
-                    print 'Pickle in %s.' %(filename+'.pickle')
-            except IOError, (errno, strerror):
-                print "I/O error(%s): %s" % (errno, strerror)
-            except PicklingError:
-                print "Could not pickle %s" %(elem)
-    return sortByFunc
-
-
-def genFig(sortByFunc, outputdir, verbose, isBenchmarkinfosFound):
-    for func in sortByFunc:
-        filename = os.path.join(outputdir,'ppdata_f%d' % (func))
-        # initialize matrix containing the table entries
-        fig = plt.figure()
-
-        for dim in sorted(sortByFunc[func]):
-            entry = sortByFunc[func][dim]
-
-            h = ppfig.createFigure(entry.arrayFullTab[:,[0,sp1index]], fig)
-            for i in h:
-                plt.setp(i,'color',colors[dim])
-            h = ppfig.createFigure(entry.arrayFullTab[:,[0,medianindex]], fig)
-            for i in h:
-                plt.setp(h,'color',colors[dim],'linestyle','--')
-            #Do all this in createFigure?    
-        if isBenchmarkinfosFound:
-            title = funInfos[entry.funcId]
+def createIndexEntries(args, outputdir, isPickled, verbose=True):
+    """Returns a list of post-processed ÏndexEntries from a list of file names.
+    Keyword arguments:
+    args -- list of strings being file names.
+    verbose
+    Outputs:
+    indexEntries -- list of IndexEntry instances.
+    """
+    indexFiles = []
+    args = set(args) #for unicity
+    pickles = [] # list of pickled
+    for i in args:
+        if i.endswith('.info'):
+            (filepath,filename) = os.path.split(i)
+            indexFiles.append(findindexfiles.IndexFile(filepath,
+                                                       filename))
+        elif os.path.isdir(i):
+            indexFiles.extend(findindexfiles.main(i,verbose))
+        elif i.endswith('.pickle'):
+            pickles.append(i)
         else:
-            title = ''
+            raise Usage('Expect as input argument either info files or '+
+                        'a folder containing info files.')
+            #TODO: how do we deal with this?
+    indexFiles = set(indexFiles) #for unicity
 
-        ppfig.customizeFigure(fig, filename, title=title,
-                              fileFormat=('eps','png'), labels=['', ''],
-                              scale=['log','log'], locLegend='best',
-                              verbose=verbose)
-        plt.close(fig)
+    indexEntries = []
+    for i in pickles:
+        try:
+            f = open(i,'r')
+            entry = pickle.load(f)
+            f.close()
+            if verbose:
+                print 'Unpickled %s.' % (i)
+            indexEntries.append(entry)
+        except IOError, (errno, strerror):
+            print "I/O error(%s): %s" % (errno, strerror)
+        except UnpicklingError:
+            f.close()
+            print '%s could not be unpickled.' %(i)
+            if not i.endswith('.pickle'):
+                print '%s might not be a pickle data file.' %(i)
+
+    #indexEntries = readindexfiles.main(indexFiles, indexEntries, verbose)
+    if indexFiles:
+        #If new indexEntries are added then some old indexEntries may need to
+        #be updated.
+        indexEntries = readindexfiles.main(indexFiles, indexEntries, verbose)
+        if isPickled:
+            for i in indexEntries:
+                filename = os.path.join(outputdir, 'ppdata_f%d_%d'
+                                                    %(i.funcId, i.dim))
+                try:
+                    f = open(filename + '.pickle','w')
+                    pickle.dump(i, f)
+                    f.close()
+                    if verbose:
+                        print 'Pickle in %s.' %(filename+'.pickle')
+                except IOError, (errno, strerror):
+                    print "I/O error(%s): %s" % (errno, strerror)
+                except PicklingError:
+                    print "Could not pickle %s" %(i)
+
+    return indexEntries
+
+#def generateFigures(sortByFunc, outputdir, verbose, isBenchmarkinfosFound):
+    #"""Creates image files of the convergence graphs."""
+
+    #for func in sortByFunc:
+        #filename = os.path.join(outputdir,'ppdata_f%d' % (func))
+        ## initialize matrix containing the table entries
+        #fig = plt.figure()
+
+        #for dim in sorted(sortByFunc[func]):
+            #tmp = ppfig.generateData(sortByFunc[func][dim])
+
+            #h = ppfig.createFigure(tmp[:,[0,1]], fig)
+            #for i in h:
+                #plt.setp(i,'color',colors[dim])
+            #h = ppfig.createFigure(tmp[:,[0,-1]], fig)
+            #for i in h:
+                #plt.setp(h,'color',colors[dim],'linestyle','--')
+            ##Do all this in createFigure?
+        #if isBenchmarkinfosFound:
+            #title = funInfos[func]
+        #else:
+            #title = ''
+
+        #ppfig.customizeFigure(fig, filename, title=title,
+                              #fileFormat=('eps','png'), labels=['', ''],
+                              #scale=['log','log'], locLegend='best',
+                              #verbose=verbose)
+        #plt.close(fig)
 
 
-def genTab(sortByFunc, outputdir, verbose):
-    for func in sortByFunc:
-        filename = os.path.join(outputdir,'ppdata_f%d' % (func))
-        # initialize matrix containing the table entries
-        tabData = scipy.zeros(0)
-        entryList = list()     # list of entries which are displayed in the table
+#def generateTables(sortByFunc, outputdir, verbose):
+    #"""Generate tex files containing tabular grouping post processed data."""
 
-        for dim in sorted(sortByFunc[func]):
-            entry = sortByFunc[func][dim]
+    #for func in sortByFunc:
+        #filename = os.path.join(outputdir,'ppdata_f%d' % (func))
+        ## initialize matrix containing the table entries
+        #tabData = scipy.zeros(0)
+        #entryList = list()     # list of entries which are displayed in the table
 
-            if dimOfInterest.count(dim) != 0 and tabData.shape[0] == 0:
-                # Array tabData has no previous values.
-                tabData = entry.arrayTab
-                entryList.append(entry)
-            elif dimOfInterest.count(dim) != 0 and tabData.shape[0] != 0:
-                # Array tabData already contains values for the same function
-                tabData = scipy.append(tabData,entry.arrayTab[:,1:],1)
-                entryList.append(entry)
+        #for dim in sorted(sortByFunc[func]):
+            #entry = sortByFunc[func][dim]
 
-        [header,format] = pproc.computevalues(None,None,header=True)
-        pptex.writeTable2(tabData, filename, entryList, fontSize='tiny',
-                          header=header, format=format, verbose=verbose)
+            #if dimOfInterest.count(dim) != 0 and tabData.shape[0] == 0:
+                ## Array tabData has no previous values.
+                #tabData = entry.arrayTab
+                #entryList.append(entry)
+            #elif dimOfInterest.count(dim) != 0 and tabData.shape[0] != 0:
+                ## Array tabData already contains values for the same function
+                #tabData = scipy.append(tabData,entry.arrayTab[:,1:],1)
+                #entryList.append(entry)
+
+        #[header,format] = pproc.computevalues(None,None,header=True)
+        #set_trace()
+        #pptex.writeTable2(tabData, filename, entryList, fontSize='tiny',
+                          #header=header, format=format, verbose=verbose)
 
 
-def genDataProf(indexEntries, outputdir, verbose):
-    sortedIndexEntries = pprldistr.sortIndexEntries(indexEntries)
+#def generateRLDistributions(indexEntries, outputdir, verbose):
+    #"""Generate image files of run length distribution figures."""
+    #sortedIndexEntries = pprldistr.sortIndexEntries(indexEntries)
+    ##set_trace()
+    #for key, indexEntries in sortedIndexEntries.iteritems():
+        #figureName = os.path.join(outputdir,'pprldistr_%s' %(key))
+        #figureName = os.path.join(outputdir,'ppfvdistr_%s' %(key))
 
-    for key, indexEntries in sortedIndexEntries.iteritems():
-        figureName = os.path.join(outputdir,'pprldistr_%s' %(key))
-
-        fig = plt.figure()
-        for j in range(len(valuesOfInterest)):
-        #for j in [0]:
-            maxEvalsFactor = 1e4
-            tmp = pprldistr.main(indexEntries, valuesOfInterest[j],
-                                maxEvalsFactor, verbose)
-            if not tmp is None:
-                plt.setp(tmp, 'color', colorsDataProf[j])
-        pprldistr.beautify(fig, figureName, maxEvalsFactor, verbose=verbose)
-        plt.close(fig)
+        #fig = plt.figure()
+        #for j in range(len(valuesOfInterest)):
+        ##for j in [0]:
+            #maxEvalsFactor = 1e3 #TODO: Global?
+            #tmp = pprldistr.main(indexEntries, valuesOfInterest[j],
+                                 #maxEvalsFactor, verbose)
+            #if not tmp is None:
+                #plt.setp(tmp, 'color', colorsDataProf[j])
+        #pprldistr.beautify(fig, figureName, maxEvalsFactor, verbose=verbose)
+        #plt.close(fig)
 
 
 def usage():
@@ -322,8 +301,7 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        indexEntries, ps, nbRuns = processInputArgs(args, isPostProcessed,
-                                                    verbose)
+        indexEntries = createIndexEntries(args, outputdir, isPickled, verbose)
 
         if isfigure or istab or isrldistr:
             if not os.path.exists(outputdir):
@@ -332,18 +310,18 @@ def main(argv=None):
                     print '%s was created.' % (outputdir)
 
         if isfigure or istab:
-            sortByFunc = sortIndexEntries(indexEntries, outputdir, isPickled,
-                                          verbose)
             if isfigure:
-                genFig(sortByFunc, outputdir, verbose, isBenchmarkinfosFound)
+                ppfigdim.main(indexEntries, figValsOfInterest, outputdir,
+                              verbose)
             if istab:
-                genTab(sortByFunc, outputdir, verbose)
+                pptex.main(indexEntries, tabDimsOfInterest, tabValsOfInterest,
+                           tabRanksOfInterest, outputdir, verbose)
 
         if isrldistr:
-            genDataProf(indexEntries, outputdir, verbose)
+            pprldistr.main(indexEntries, rldValsOfInterest, outputdir, verbose)
 
-        if verbose:
-            print 'total ps = %g\n' % (float(scipy.sum(ps))/scipy.sum(nbRuns))
+        #if verbose:
+            #print 'total ps = %g\n' % (float(scipy.sum(ps))/scipy.sum(nbRuns))
 
     except Usage, err:
         print >>sys.stderr, err.msg

@@ -29,7 +29,9 @@ class IndexFile:
 
 
 # Initialization
-def main(directory=os.getcwd(),verbose=True):
+def main(directory=os.getcwd(), verbose=True):
+    """Lists *.info files by browsing recursively a given directory."""
+
     indexFiles = list()
 
     #~ if directory.endswith('.zip'):

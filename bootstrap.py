@@ -1,8 +1,4 @@
-# bootstrapping 
-# this is linked in directory BBOB/code/python/postProcessing and will
-# be copied if something has to change to include it in the
-# postProcessing package.
-# this should move to another directory in future 
+# bootstrapping
 
 # BUG:
 # elif ilow == ihigh:
@@ -21,7 +17,7 @@ def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
         evaluations to reach the target value
       maxvalue -- number, if issuccessful is not provided, data[i]
         is defined successful if it is truly smaller than maxvalue
-      issuccessful -- None ore array of same length as data. Entry
+      issuccessful -- None or array of same length as data. Entry
          i in data is defined successful, if issuccessful[i] is
          True or non-zero 
 
@@ -33,10 +29,10 @@ def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
 
     # check input args
     if not getattr(data, '__iter__', False):  # is not iterable
-        raise Exception, 'data must be a vector'
+        raise Exception, 'data must be a sequence'
     if issuccessful is not None:
         if not getattr(issuccessful, '__iter__', False):  # is not iterable
-            raise Exception, 'issuccessful must be a vector or None'
+            raise Exception, 'issuccessful must be a sequence or None'
         if len(issuccessful) != len(data):
             raise Exception, 'lengths of data and issuccessful disagree'
 
@@ -119,9 +115,9 @@ def prctile(x, arrprctiles, issorted=False):
     :Arguments:
         data -- a sequence (list, array) of data values
         prctiles -- a scalar or a sequence of pertentiles 
-            to be calcuated. Values beyond the interval [0,100]
+            to be calculated. Values beyond the interval [0,100]
             also return the respective extreme value in data. 
-        issorted -- indicate when data is sorted
+        issorted -- indicate if data is sorted
     :Return:
         sequence of percentile values in data according to argument
         prctiles
