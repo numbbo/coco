@@ -4,9 +4,18 @@
 
 import os
 import sys
-import numpy as n
+import scipy
+
+from bbob_pproc import bootstrap
 from pdb import set_trace
 
+samplesize = 15 #Bootstrap sample size
+header = ['$\Delta f$', '$\ENFEs$', '10\%', '90\%', '$\#$',
+          'best', '$2^\mathrm{nd}$', 'med.', '$2^\mathrm{nd}\,$w.', 'worst']
+format = ['%1.1e', '%1.1e', '%1.1e', '%1.1e', '%d',
+          '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
+idxNbSuccRuns = (4,13) #TODO: global variable?
+#TODO: this global variables depend on ranksOfInterest
 
 class Error(Exception):
     """ Base class for errors. """
@@ -58,7 +67,7 @@ def writeTable(data, fileName, header = list(), fontSize = 'tiny',
     elif len(format) != len(header) :
         raise WrongInputSizeError('header',len(header),len(format))
     elif len(format) != data.shape[0]:
-        data = n.transpose(data)
+        data = scipy.transpose(data)
 
     # Generate LaTex commands for vertical lines and aligment of the entries.
     # Vertical lines appear after column 'FES' and '$P_{\mathrm{s}}$'
@@ -118,7 +127,6 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
 
     """
 
-    indNbSuccRuns = (4,13)
     # Assemble header for whole table (contains more than 1 dimension)
     header = header + (width-1)*header[1:]
     format = format + (width-1)*format[1:]
@@ -129,7 +137,7 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
     elif len(format) != len(header) :
         raise WrongInputSizeError('header',len(header),len(format))
     elif len(format) != data.shape[0]:
-        data = n.transpose(data)
+        data = scipy.transpose(data)
 
     # Generate LaTex commands for vertical lines and aligment of the entries.
     # Vertical lines appear after column 'Ft' and '$P_{\mathrm{s}}$'
@@ -157,7 +165,7 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
         caption = ('\\textbf{\\textit{f}\\raisebox{-0.35ex}{' + str(entryList[i].funcId) +
                    '} in ' + str(entryList[i].dim)) + '-D}'
         caption = caption + ', Nruns = ' + str(entryList[i].nbRuns)
-        caption = caption + ', max. FEvals = ' + str(entryList[i].maxEvals)
+        caption = caption + ', max.\,FEvals = ' + str(entryList[i].maxEvals)
         if i != width - 1:
             f.write('& \multicolumn{' + str((len(format)-1)/width) + '}{@{$\,$}c|@{$\,$}}{' + caption + '}')
         else:
@@ -165,7 +173,7 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
     f.write('\\\\ \n')
     # f.write('\hline \n')
     f.write(' & '.join(header) + '\\\\ \n \hline \n')
-    
+
     # Write data
     for i in range(0,data.shape[1]):
         writeArray(f, data[:,i], format, fontSize2)
@@ -199,15 +207,14 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
     """
 
     # Loop through vector
-    for id,x in enumerate(vector):
-
+    for id, x in enumerate(vector):
         #print type(x)
         #print len(vector)
 
         # Filter nan entries
-        if n.isinf(x):
+        if scipy.isinf(x):
             tmp2 = '\infty'
-        elif n.isnan(x):
+        elif scipy.isnan(x):
             tmp2 = '-'
 
         elif format[id].endswith('e'):
@@ -225,8 +232,6 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
             # It is assumed that all entries range between 10e-9 and 10e9
 
             if id == 0:  # Delta f value
-                # the next line failed under Windows as tmp[1][2] is not the last digit
-                # tmp2 = '\\!' + tmp[1][0] + '\\!' + tmp[1][2]
                 if x >= 1 and x < 10:
                     tmp2 = tmp[0][0]
                 else:
@@ -234,9 +239,17 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
                     if x < 1:
                         sgn = '-'
                     tmp2 = (tmp[0][0] + '\\!\\mathrm{\\hspace{0.10em}e}' +
-                            sgn + tmp[1][-1])  
+                            sgn + tmp[1][-1])
             else:
-                tmp2 = tmp[0] + '\\mathrm{\\hspace{0.10em}e}' + tmp[1][-1]
+                if x < 0:
+                    tmp2 = ('\\mathit{' + tmp[0][1]+ tmp[0][3] + '}' +
+                            '\\hspace{0.10em}e')
+                    # tmp[0][1] + tmp[0][3]: tmp[0][0] is the sign
+
+                    #TODO: hack because we change the number format
+                    tmp2 += '\\mathit{'+ ('%+d' % (int(tmp[1][-1]) - 1)) + '}'
+                else:
+                    tmp2 = tmp[0] + '\\mathrm{\\hspace{0.10em}e}' + tmp[1][-1]
         else:
             tmp2 = str(format[id]%x)
 
@@ -250,3 +263,102 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
 
         # Write to file
         file.write(tmp2)
+
+
+def sortIndexEntries(indexEntries, dimOfInterest):
+    """From a list of IndexEntry, returs a post-processed sorted dictionary."""
+    sortByFunc = {}
+    for elem in indexEntries:
+        sortByFunc.setdefault(elem.funcId,{})
+        if (dimOfInterest.count(elem.dim) != 0):
+            sortByFunc[elem.funcId][elem.dim] = elem
+
+    return sortByFunc
+
+
+def generateData(indexEntry, targetFuncValues, ranksOfInterest):
+    """Returns data to be plotted from indexEntry and the target function values."""
+
+    res = []
+    it = iter(indexEntry.hData)
+    i = it.next()
+    curLine = []
+
+    #set_trace()
+    for targetF in targetFuncValues:
+        while i[0] > targetF:
+            try:
+                i = it.next()
+            except(StopIteration):
+                isFinished = True
+                break
+        success = []
+        for j in i[indexEntry.nbRuns+1:]:
+            success.append(j <= targetF)
+        N = scipy.sort(i[1:indexEntry.nbRuns + 1])
+
+        sp1m = bootstrap.sp1(N, issuccessful=success)
+        dispersionSP1 = bootstrap.draw(N, [10,90], samplesize=samplesize, 
+                                       func=bootstrap.sp1, 
+                                       args=[0,success])[0]
+        curLine = [targetF, sp1m[0], dispersionSP1[0],
+                   dispersionSP1[1], sp1m[2]]
+
+        tmp = []
+        vals = scipy.sort(indexEntry.vData[-1, indexEntry.nbRuns+1:])
+        #set_trace()
+        for j in ranksOfInterest:
+            if sp1m[2] >= j:
+                tmp.append(N[j-1])
+            else:
+                tmp.append(-vals[j-1]) #minimization
+
+        if sp1m[2] > float(indexEntry.nbRuns)/2:
+            tmp.append(bootstrap.prctile(N, 50, issorted=True)[0])
+        else:
+            tmp.append(-bootstrap.prctile(vals, 50, issorted=True)[0])
+
+        for j in reversed(ranksOfInterest):
+            if sp1m[2] > indexEntry.nbRuns-j:
+                tmp.append(N[-j])
+            else:
+                tmp.append(-vals[-j])
+
+        curLine.extend(tmp)
+        res.append(curLine)
+            #set_trace()
+    return scipy.vstack(res)
+
+
+def main(indexEntries, dimOfInterest, valOfInterests, ranksOfInterest,
+         outputdir, verbose):
+    """From a list of IndexEntry and a prefix, returns latex tabulars in files.
+    """
+
+    sortByFunc = sortIndexEntries(indexEntries, dimOfInterest)
+
+    for func in sortByFunc:
+        filename = os.path.join(outputdir,'ppdata_f%d' % (func))
+        # initialize matrix containing the table entries
+        tabData = scipy.zeros(0)
+        entryList = list()     # list of entries which are displayed in the table
+
+        for dim in sorted(sortByFunc[func]):
+            entry = sortByFunc[func][dim]
+
+            if dimOfInterest.count(dim) != 0 and tabData.shape[0] == 0:
+                # Array tabData has no previous values.
+                tabData = generateData(entry, valOfInterests, ranksOfInterest)
+                entryList.append(entry)
+            elif dimOfInterest.count(dim) != 0 and tabData.shape[0] != 0:
+                # Array tabData already contains values for the same function
+                tabData = scipy.append(tabData,
+                                       generateData(entry, valOfInterests,
+                                                    ranksOfInterest)[:, 1:], 1)
+                #set_trace()
+                entryList.append(entry)
+
+        #[header,format] = pproc.computevalues(None,None,header=True)
+        #set_trace()
+        writeTable2(tabData, filename, entryList, fontSize='tiny',
+                    header=header, format=format, verbose=verbose)

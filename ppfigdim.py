@@ -9,6 +9,35 @@ import scipy
 from pdb import set_trace
 from bbob_pproc import bootstrap
 
+plt.rc("axes", labelsize=20, titlesize=24)
+plt.rc("xtick", labelsize=20)
+plt.rc("ytick", labelsize=20)
+plt.rc("font", size=20)
+plt.rc("legend", fontsize=20)
+#valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
+#colors = {1.0:'b', 1.0e-2:'g', 1.0e-4:'r', 1.0e-6:'c', 1.0e-8:'m'} #TODO colormaps!
+colors = ('b', 'g', 'r', 'c', 'm')
+
+#Either we read it in a file (flexibility) or we hard code it here.
+funInfos = {}
+isBenchmarkinfosFound = True
+try:
+    infofile = os.path.join(os.path.split(__file__)[0], '..', '..',
+                            'benchmarkshortinfos')
+    f = open(infofile,'r')
+    for line in f:
+        if len(line) == 0 or line.startswith('%') or line.isspace() :
+            continue
+        funcId, funcInfo = line[0:-1].split(None,1)
+        funInfos[int(funcId)] = funcId + ' ' + funcInfo
+    f.close()
+except IOError, (errno, strerror):
+    print "I/O error(%s): %s" % (errno, strerror)
+    isBenchmarkinfosFound = False
+    print 'Could not find benchmarkshortinfos file. '\
+          'Titles in scaling figures will not be displayed.'
+
+
 def createFigure(data, figHandle=None):
     """ Create a plot in a figure (eventually new) from a data array.
 
@@ -72,10 +101,11 @@ def customizeFigure(figHandle, figureName = None, title='',
 
     # Get axis handle and set scale for each axis
     axisHandle = figHandle.gca()
-    axisHandle.set_xscale(scale[0])
+    #axisHandle.set_xscale(scale[0])
     axisHandle.set_yscale(scale[1])
+
     tmp = axisHandle.get_xlim()
-    axisHandle.set_xlim((max(tmp[0], 1e-8), tmp[1])) #TODO 1e-8 arbitrarilyt set.
+    axisHandle.set_xlim(tmp[0], min(tmp[1], 40))
     # Annotate figure
     if labels is None: #Couldn't it be ''?
         axisHandle.set_xlabel(labels[0])
@@ -84,11 +114,6 @@ def customizeFigure(figHandle, figureName = None, title='',
 
     # Grid options
     axisHandle.grid('True')
-    tmp = axisHandle.get_xticks()
-    tmp2 = []
-    for i in tmp:
-        tmp2.append('%d' % round(scipy.log10(i)))
-    axisHandle.set_xticklabels(tmp2)
     tmp = axisHandle.get_yticks()
     tmp2 = []
     for i in tmp:
@@ -98,7 +123,6 @@ def customizeFigure(figHandle, figureName = None, title='',
     # Legend
     if len(legend) > 0:
         axisHandle.legend(legend,locLegend)
-    axisHandle.invert_xaxis()
     axisHandle.set_title(title)
 
     # Save figure
@@ -116,9 +140,6 @@ def customizeFigure(figHandle, figureName = None, title='',
                 if verbose:
                     print 'Wrote figure in %s.' %(figureName + '.' + entry)
 
-    # Close figure
-    plt.close(figHandle)
-
     # TODO:    *much more options available (styles, colors, markers ...)
     #       *output directory - contained in the file name or extra parameter?
 
@@ -131,53 +152,70 @@ def sortIndexEntries(indexEntries):
     for elem in indexEntries:
         sortByFunc.setdefault(elem.funcId,{})
         sortByFunc[elem.funcId][elem.dim] = elem
-        funcs.add(funcId)
+        funcs.add(elem.funcId)
         dims.add(elem.dim)
 
     return sortByFunc
 
 
-def generateData(indexEntry):
+def generateData(indexEntry, targetFuncValue):
+    """Returns data to be plotted from indexEntry and the target function value."""
+
     res = []
+
     for i in indexEntry.hData:
-        tmp = scipy.array(i[0])
-        tmp2 = []
-        for j in i[indexEntry.nbRuns+1:]:
-            tmp2.append(j <= i[0])
-        tmp = scipy.append(tmp, bootstrap.sp1(i[1:indexEntry.nbRuns + 1], 
-                                              issuccessful=tmp2))
-        tmp = scipy.append(tmp, bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 
-                                                  [0.5])[0])
-        #set_trace()
-        res.append(tmp)
+        if i[0] <= targetFuncValue:
+            tmp = []
+            for j in i[indexEntry.nbRuns+1:]:
+                tmp.append(j <= i[0])
+            res.extend(bootstrap.sp1(i[1:indexEntry.nbRuns + 1], 
+                                     issuccessful=tmp))
+            res.append(bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 50)[0])
+            break
 
-    return scipy.vstack(res)
+    return scipy.array(res)
 
 
-def main(indexEntries, filename):
-    """From a list of IndexEntry, returns a convergence and ENFEs figure."""
+def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
+    """From a list of IndexEntry, returns a convergence and ENFEs figure vs dim
+
+    """
 
     sortByFunc = sortIndexEntries(indexEntries)
+    for func in sortByFunc:
+        filename = os.path.join(outputdir,'ppdata_f%d' % (func))
+        fig = plt.figure()
 
-    for dim in sorted(sortByFunc[func]):
-        entry = sortByFunc[func][dim].hData
-        set_trace()
-        #h = ppfig.createFigure(entry.hData[:,[0,sp1index]], fig)
-        #for i in h:
-            #plt.setp(i,'color',colors[dim])
-        #h = ppfig.createFigure(entry.arrayFullTab[:,[0,medianindex]], fig)
-        #for i in h:
-            #plt.setp(h,'color',colors[dim],'linestyle','--')
-        #Do all this in createFigure?
-    if isBenchmarkinfosFound:
-        title = funInfos[entry.funcId]
-    else:
-        title = ''
+        for i in range(len(valuesOfInterest)):
+            tmp = []
+            for dim in sorted(sortByFunc[func]):
+                tmp2 = generateData(sortByFunc[func][dim], valuesOfInterest[i])
+                if len(tmp2) > 0:
+                    tmp.append(scipy.append(dim, tmp2))
 
-    customizeFigure(plt.gcf(), filename, title=title,
-                    fileFormat=('eps','png'), labels=['', ''],
-                    scale=['log','log'], locLegend='best',
-                    verbose=verbose)
+            if len(tmp) > 0:
+                tmp = scipy.vstack(tmp)
+                h = createFigure(tmp[:, [0, 1]], fig) #ENFEs
+                for j in h:
+                    plt.setp(j,'color',colors[i])
 
+                h = createFigure(tmp[:,[0, -1]], fig) #median
+                for j in h:
+                    plt.setp(j,'color',colors[i],'linestyle','--')
+                    #Do all this in createFigure
+
+        #TODO: legend
+
+        if isBenchmarkinfosFound:
+            title = funInfos[func]
+        else:
+            title = ''
+
+        customizeFigure(fig, filename, title=title,
+                        fileFormat=('eps','png'), labels=['', ''],
+                        scale=['log','log'], locLegend='best',
+                        verbose=verbose)
+
+        plt.close(fig)
 
     # TODO: how do we make a user define what color or line style?

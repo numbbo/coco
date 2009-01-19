@@ -7,10 +7,20 @@ from __future__ import absolute_import
 
 import sys
 import os
+import scipy
 
-from . import findindexfiles
+from bbob_pproc import findindexfiles
+from bbob_pproc import pproc
 
 from pdb import set_trace
+
+
+# GLOBAL VARIABLES
+idxEvals = 0
+idxF = 1
+
+nbPtsEvals = 20;
+nbPtsF = 5;
 
 # FUNCTION DEFINITIONS
 def headerInfo(header,entry):
@@ -59,9 +69,8 @@ def headerInfo(header,entry):
 
 # CLASS DEFINITIONS
 class IndexEntry:
-    """Creates an instance with atributes funcId, dim, dataFiles,
-       comment, maxEvals, targetFuncValue, and algId. A new instance
-       contains the default values.
+    """Unit element for the post-processing with given funcId, algId and
+    dimension.
 
     """
 
@@ -70,9 +79,13 @@ class IndexEntry:
         self.dim = 0        # dimension (integer)
         self.dataFiles = list()    # associated data files (list)
         self.comment = 'no comment'    # comment for the setting (string)
-        self.maxEvals = 0    # max. number of function evaluations (integer or string)
+        self.maxEvals = 0    # max. number of function evaluations
+        self.mMaxEvals = 0    # measured max. number of function evaluations
         self.targetFuncValue = 0.0     # target function value (float)
         self.algId = 'no name'    # algorithm name (string)
+        self.hData = None    # collected data aligned by function values
+        self.vData = None    # collected data aligned by function evaluations
+        self.nbRuns = 0    # collected data aligned by function evaluations
 
     def __eq__(self,other):
         return (self.__class__ is other.__class__ and
@@ -88,6 +101,129 @@ class IndexEntry:
                 % (self.algId, self.funcId, self.dim, str(self.dataFiles)) +
                 'comment: "%s", maxEvals: %d,' %(self.comment, self.maxEvals) +
                 ' f_t: %g' % (self.targetFuncValue))
+
+    def obtainData(self):
+        """Gets aligned data and stores the result in hData and vData."""
+
+        dataSets = pproc.split(self.dataFiles)
+        self.nbRuns = len(dataSets)
+        self.hData = pproc.alignData(dataSets, 'horizontal')
+
+        dataFiles = []
+        for fil in self.dataFiles:
+            dataFiles.append(fil.replace('.dat', '.tdat'))
+
+        dataSets = pproc.split(dataFiles)
+        self.vData = pproc.alignData(dataSets, 'vertical')
+
+        return
+
+
+    def obtainData_old(self):
+        """Deprecated: fgeneric outputs aligned data now.
+        Aligns all data and stores the result in hData and vData.
+
+        """
+
+        dataSets = pproc.split(self.dataFiles)
+
+        dataFiles = []
+        for fil in self.dataFiles:
+            dataFiles.append(fil.replace('.dat', '.tdat'))
+
+        dataSets2 = pproc.split(dataFiles)
+        self.nbRuns = len(dataSets)
+
+        hData = []
+        vData = []
+
+        #for horizontal alignment
+        evals = len(dataSets) * [0] # updated list of function evaluations.
+        f = len(dataSets) * [0] # updated list of function values.
+        isRead = len(dataSets) * [True] # read status of dataSets.
+
+        #for vertical alignment
+        evals2 = len(dataSets2) * [0] # updated list of function evaluations.
+        f2 = len(dataSets2) * [0] # updated list of function values.
+        isRead2 = len(dataSets2) * [True] # read status of dataSets.
+
+        idxCurrentF = scipy.inf # Minimization
+        currentF = scipy.power(10, idxCurrentF / 5)
+        idxCurrentEvals = 0
+        currentEvals = scipy.power(10, idxCurrentEvals / 20.)
+
+        # Parallel construction of the post-processed arrays:
+        #set_trace()
+        while any(isRead):
+            for i in range(len(dataSets)):
+                curDataSet = dataSets[i]
+                if isRead[i]:
+                    evals[i] = curDataSet.set[curDataSet.currentPos, idxEvals]
+                    f[i] = curDataSet.set[curDataSet.currentPos, idxF]
+                    while (curDataSet.currentPos < len(curDataSet.set) - 1 and
+                           f[i] > currentF): # minimization
+                        curDataSet.currentPos += 1
+                        evals[i] = curDataSet.set[curDataSet.currentPos,
+                                                  idxEvals]
+                        f[i] = curDataSet.set[curDataSet.currentPos, idxF]
+                    if not (curDataSet.currentPos < len(curDataSet.set) - 1):
+                        isRead[i] = False
+
+            if max(f) <= 0: #TODO: Issue if max(f) < 0
+                idxCurrentF = -scipy.inf
+                currentF = 0.
+            else:
+                # TODO modify this line so that idxCurrentF is the max of the f
+                # where isRead still is True.
+                idxCurrentF = min(idxCurrentF, 
+                                  int(scipy.ceil(scipy.log10(max(f)) * 
+                                                 nbPtsF)))
+                currentF = scipy.power(10, float(idxCurrentF) / nbPtsF)
+            #set_trace()
+            tmp = [currentF]
+            tmp.extend(evals)
+            tmp.extend(f)
+            hData.append(tmp)
+            idxCurrentF -= 1
+            currentF = scipy.power(10, float(idxCurrentF) / nbPtsF)
+
+        #set_trace()
+
+        while any(isRead2):
+            for i in range(len(dataSets2)):
+                curDataSet = dataSets2[i]
+
+                #set_trace()
+                if isRead2[i]:
+                    evals2[i] = curDataSet.set[curDataSet.currentPos2, idxEvals]
+                    f2[i] = curDataSet.set[curDataSet.currentPos2, idxF]
+                    while (curDataSet.currentPos2 < len(curDataSet.set) - 1 and
+                           evals2[i] < scipy.floor(currentEvals)):
+                        curDataSet.currentPos2 += 1
+                        evals2[i] = curDataSet.set[curDataSet.currentPos2,
+                                                   idxEvals]
+                        f2[i] = curDataSet.set[curDataSet.currentPos2, idxF]
+                    if not (curDataSet.currentPos2 < len(curDataSet.set) - 1):
+                        isRead2[i] = False
+            tmp = [scipy.floor(currentEvals)]
+            tmp.extend(evals2)
+            tmp.extend(f2)
+            vData.append(tmp)
+            if currentEvals < 10:
+                currentEvals += 1
+            else:
+                while (scipy.floor(currentEvals) >=
+                       scipy.floor(scipy.power(10,
+                                   float(idxCurrentEvals) / nbPtsEvals))):
+                    idxCurrentEvals += 1
+                currentEvals = scipy.power(10, float(idxCurrentEvals) / nbPtsEvals)
+
+        self.mMaxEvals = max(vData[-1][1:self.nbRuns+1])
+        #set_trace()
+        self.hData = scipy.vstack(hData)
+        self.vData = scipy.vstack(vData)
+        #set_trace()
+        return
 
 
 class Error(Exception):
@@ -114,11 +250,8 @@ class MissingValueError(Error):
 
 ##############################################################################
 
-def main(indexFiles, verbose = True):
+def main(indexFiles, indexEntries = [], verbose = True):
     # main code
-
-    # Initialization
-    indexEntries = list()
 
     # Read all index files within indexFiles.
     for elem in indexFiles:
@@ -158,6 +291,10 @@ def main(indexFiles, verbose = True):
                 parts = line.split(', ')
                 for elem2 in parts:
                     if elem2.endswith('.dat'):
+                        #Windows data to Linux processing
+                        elem2 = elem2.replace('\\',os.sep)
+                        #Linux data to Windows processing
+                        elem2 = elem2.replace('/',os.sep)
                         entry.dataFiles.append(os.path.join(elem.path, elem2))
                     else:
                         pass
@@ -188,6 +325,10 @@ def main(indexFiles, verbose = True):
                 break
         # Close index file
         f.close()
+
+    for i in indexEntries:
+        i.obtainData_old()
+        #set_trace()
 
     return indexEntries
 
