@@ -8,8 +8,8 @@ import zipfile
 import tarfile
 
 class IndexFile:
-    """ Class which contains the name and the global
-    path for an index file
+    """ Deprecated: Class which contains the name and the global
+    path for an index file.
     """
 
     def __init__(self,path,name):
@@ -57,8 +57,8 @@ def main(directory=os.getcwd(), verbose=True):
         previousLength = len(indexFiles)    # for nice output
         for elem in files:
             if elem.endswith('.info'):
-                indexFile = IndexFile(root,elem)
-                indexFiles.append(indexFile)
+                #indexFile = IndexFile(root,elem)
+                indexFiles.append(os.path.join(root, elem))
 
         # Print success message.
         if verbose and (len(indexFiles) - previousLength) != 0:

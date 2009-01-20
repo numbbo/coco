@@ -1,51 +1,47 @@
 Error catching:
 *Bug! Though the new fgeneric output is read without problems.
 ** MaxEvals should be defined by index files ?
-** best worst, ... should be defined by .dat files?
-** hdat -> when f-fopt == 0 -> bug in the results displayed.
 *When given a wrong path, nothing happens...
 *Problem with demo (is not working): no possibility of shorter demo due to writeTable2. It should try and take as input a list of arrays.
 *problem with the tables: too many floats to handle -> not more than 12 it seems.
 *tables are hard to read: columns do not have all the same width
-*sign missing for function values in the tables!
 
 Feature missing:
+*have low-level post-processing functions that deals with arrays.
+*Summary tables of ENFEs...
 *computevalues: rename and make some varargin
-*PprocIndexEntry class to be implemented
 *Deal with archive file -> not file-like object for zipfile module in python 2.5.2
+*Put a separation line in the table between function evaluations and function values -> Not needed
 *synchronize the caption of the data profiles with information from the post processing?
-*Put a separation line in the table between function evaluations and function values
-*Have the number of solved functions appear on the data profile graph
-*Have SP1 on the data profile graph as well?
+*Play with the fontsize (smaller titles, larger ticks).
 *Compute the entropy based on the comment line in the info file?
 *Compare results from different algorithms!
-*generate data for the run length distrib figure, ppfig and pptex not in pproc (to make pprldistr pptex and ppfig modules self-consistent)
-*Play with the fontsize (smaller titles, larger ticks).
-*final function value distribution.
+*Have SP1 on the data profile graph as well?
+
 
 Misc.
 *Update experimentation.tex
 *Provide a clean doc page that is helpful and useful.
 *Make sure that anyone could produce a fig, table or data profile for every dimensions, functions they want.
 *Explicit demo post processing.
-*make tab-only faster: it doesn't need to process everything...
 *Problem with some fonts missing for tex compilation.
 *Write somewhere the result of the discussion about maxEvals.
-*Prepare for vertical aligning!
 
 Profiling:
 *>80% of time spent on pproc.split
 
 Questions:
-*confirm: Have SP1 on the data profile graph as well?
 *Provide a clean doc page that is helpful and useful.
-*fgeneric:
-**what to save?
-**when to write (evals < 10)
-
 
 ###############################################################################
 SOLVED:
+*Have the number of solved functions appear on the data profile graph
+*Prepare for vertical aligning!
+*make tab-only faster: it doesn't need to process everything...
+*final function value distribution.
+*generate data for the run length distrib figure, ppfig and pptex not in pproc (to make pprldistr pptex and ppfig modules self-consistent)
+*sign missing for function values in the tables!
+*PprocIndexEntry class to be implemented -> IndexEntry
 *Change mention of data profile graph to run length graph.
 *Caption of the tables is too large!
 *max. FEvals appearing in the tables is not the one set for the experiment but

@@ -10,6 +10,9 @@ import scipy
 import matplotlib.pyplot as plt
 from pdb import set_trace
 
+#__all__ = []
+
+maxEvalsFactor = 1e4
 rldColors = ['b', 'g', 'r', 'c', 'm']
 
 #% SEPARABLE
@@ -56,36 +59,27 @@ def sortIndexEntries(indexEntries):
     #The bins correspond to whether the dimension is greater than 10 or not.
     #Still needs to be sorted by functions.
     for i in indexEntries:
-        if i.dim == 5 and i.funcId in range(0,6):
-            sorted.setdefault('dim05separ',[]).append(i)
-        elif i.dim == 5 and i.funcId in range(6,10):
-            sorted.setdefault('dim05lcond',[]).append(i)
-        elif i.dim == 5 and i.funcId in range(10,15):
-            sorted.setdefault('dim05hcond',[]).append(i)
-        elif i.dim == 5 and i.funcId in range(15,20):
-            sorted.setdefault('dim05multi',[]).append(i)
-        elif i.dim == 5 and i.funcId in range(20,25):
-            sorted.setdefault('dim05mult2',[]).append(i)
-        elif i.dim == 20 and i.funcId in range(0,6):
-            sorted.setdefault('dim20separ',[]).append(i)
-        elif i.dim == 20 and i.funcId in range(6,10):
-            sorted.setdefault('dim20lcond',[]).append(i)
-        elif i.dim == 20 and i.funcId in range(11,15):
-            sorted.setdefault('dim20hcond',[]).append(i)
-        elif i.dim == 20 and i.funcId in range(15,20):
-            sorted.setdefault('dim20multi',[]).append(i)
-        elif i.dim == 20 and i.funcId in range(20,25):
-            sorted.setdefault('dim20mult2',[]).append(i)
+        if i.funcId in range(0,6):
+            sorted.setdefault('dim%02dsepar' % (i.dim), []).append(i)
+        elif i.funcId in range(6,10):
+            sorted.setdefault('dim%02dlcond' % (i.dim), []).append(i)
+        elif i.funcId in range(10,15):
+            sorted.setdefault('dim%02dhcond' % (i.dim), []).append(i)
+        elif i.funcId in range(15,20):
+            sorted.setdefault('dim%02dmulti' % (i.dim), []).append(i)
+        elif i.funcId in range(20,25):
+            sorted.setdefault('dim%02dmult2' % (i.dim), []).append(i)
     return sorted
 
 
-def beautifyRLD(figHandle, figureName, maxEvalsFactor, fileFormat=('png','eps'),
-             verbose=True):
+def beautifyRLD(figHandle, figureName, maxEvalsFactor, 
+                legend='', locLegend='best', fileFormat=('png', 'eps'), 
+                verbose=True):
     """Formats the figure of the run length distribution."""
 
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
-    axisHandle.set_xlim((1.0,maxEvalsFactor))
+    axisHandle.set_xlim((1.0, maxEvalsFactor))
     axisHandle.set_ylim((0.0,1.0))
     axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of successful runs')
@@ -97,12 +91,16 @@ def beautifyRLD(figHandle, figureName, maxEvalsFactor, fileFormat=('png','eps'),
         newxtic.append('%d' % round(scipy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
 
+    if legend:
+        axisHandle.legend(legend, locLegend)
+
     # Save figure
     for entry in fileFormat:
         plt.savefig(figureName + '.' + entry, dpi = 120,
                     format = entry)
         if verbose:
             print 'Wrote figure in %s.' %(figureName + '.' + entry)
+
 
 
 def plotRLDistr(indexEntries, fvalueToReach, maxEvalsFactor=1e5, verbose=True):
@@ -115,10 +113,17 @@ def plotRLDistr(indexEntries, fvalueToReach, maxEvalsFactor=1e5, verbose=True):
 
     x = []
     nn = 0
+    fsolved = set()
+    funcs = set()
     for i in indexEntries:
+        funcs.add(i.funcId)
         for j in i.hData:
             if j[0] <= fvalueToReach:
-                x.extend(j[1:i.nbRuns+1]/i.dim)
+                for k in range(1, i.nbRuns+1):
+                    if j[i.nbRuns+k] <= fvalueToReach:
+                        x.append(j[k]/i.dim)
+                        #set_trace()
+                        fsolved.add(i.funcId)
                 break
         nn += i.nbRuns
 
@@ -132,19 +137,19 @@ def plotRLDistr(indexEntries, fvalueToReach, maxEvalsFactor=1e5, verbose=True):
                            float(n)/nn, float(n)/nn])
         res = plt.plot(x2, y2)
 
-    return res
+    return res, fsolved, funcs
 
 
-def beautifyFVD(figHandle, figureName, fvalueToReach, fileFormat=('png','eps'),
-             verbose=True):
+def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'), verbose=True):
     """Formats the figure of the run length distribution."""
 
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
-    #axisHandle.set_xlim((fvalueToReach))
+    tmp = axisHandle.get_xlim()
+    axisHandle.set_xlim((1.0, tmp[1]))
     #axisHandle.invert_xaxis()
     axisHandle.set_ylim((0.0,1.0))
-    axisHandle.set_xlabel('log10 of Delta f')
+    axisHandle.set_xlabel('log10 of Deltaf_best/Deltaf')
     axisHandle.set_ylabel('proportion of successful runs')
     # Grid options
     axisHandle.grid('True')
@@ -174,8 +179,11 @@ def plotFVDistr(indexEntries, maxEvals, fvalueToReach=1.e-8, verbose=True):
     nn = 0
     for i in indexEntries:
         for j in i.vData:
-            if j[0] >= maxEvals:
-                x.extend(j[i.nbRuns+1:] / fvalueToReach)
+            if j[0] >= maxEvals*i.dim:
+                for k in range(1, i.nbRuns+1):
+                    if j[k] >= maxEvals*i.dim:
+                        x.append(j[i.nbRuns+k] / fvalueToReach)
+                #set_trace()
                 break
         nn += i.nbRuns
 
@@ -183,10 +191,14 @@ def plotFVDistr(indexEntries, maxEvals, fvalueToReach=1.e-8, verbose=True):
     n = len(x)
     res = None
     if n > 0:
-        x2 = scipy.hstack([scipy.repeat(x, 2), fvalueToReach])
+        x2 = scipy.hstack([1.0, 1.0, scipy.repeat(x, 2)])
         #not efficient if some vals are repeated a lot
-        y2 = scipy.hstack([0.0, scipy.repeat(scipy.arange(1, n)/float(nn), 2),
-                           float(n)/nn, float(n)/nn])
+        #y2 = scipy.hstack([0.0, scipy.repeat(scipy.arange(1, n)/float(nn), 2),
+                           #float(n)/nn, float(n)/nn])
+        y2 = scipy.hstack([0.0, 
+                           scipy.repeat(scipy.arange(nn - n, nn)/float(nn), 2),
+                           1.0])
+        #set_trace()
         res = plt.plot(x2, y2)
 
     return res
@@ -198,16 +210,43 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose):
     #set_trace()
     for key, indexEntries in sortedIndexEntries.iteritems():
         figureName = os.path.join(outputdir,'pprldistr_%s' %(key))
-        #figureName = os.path.join(outputdir,'ppfvdistr_%s' %(key))
-
         fig = plt.figure()
+        legend = []
         for j in range(len(valuesOfInterest)):
-        #for j in [0]:
-            maxEvalsFactor = 1e3 #TODO: Global?
-            tmp = plotRLDistr(indexEntries, valuesOfInterest[j],
-                              maxEvalsFactor, verbose)
+            (tmp, fsolved, f) = plotRLDistr(indexEntries, valuesOfInterest[j],
+                                            maxEvalsFactor, verbose)
             if not tmp is None:
                 plt.setp(tmp, 'color', rldColors[j])
-        beautifyRLD(fig, figureName, maxEvalsFactor, verbose=verbose)
+                legend.append('Df = %1.0e, %d/%d solved' % 
+                              (valuesOfInterest[j], len(fsolved), len(f)))
+        beautifyRLD(fig, figureName, maxEvalsFactor, legend=legend,
+                    verbose=verbose)
         plt.close(fig)
 
+        #figureName = os.path.join(outputdir,'ppfvdistr_%s' %(key))
+        #fig = plt.figure()
+        ##for j in [0]:
+        ##maxEvalsF = [1e1,1e2,1e3]
+        ##for j in range(len(maxEvalsF)):
+        #for j in [-1]:
+            #maxEvalsFactor = maxEvalsF[j] #TODO: Global?
+            ##set_trace()
+            #tmp = plotFVDistr(indexEntries, maxEvalsFactor, valuesOfInterest[-2],
+                              #verbose)
+            #if not tmp is None:
+                #plt.setp(tmp, 'color', rldColors[j])
+
+        #beautifyFVD(fig, figureName, maxEvalsFactor, verbose=verbose)
+        #plt.close(fig)
+
+        figureName = os.path.join(outputdir,'ppfvdistr_%s' %(key))
+        fig = plt.figure()
+        for j in range(len(valuesOfInterest)):
+            #set_trace()
+            tmp = plotFVDistr(indexEntries, maxEvalsFactor, 
+                              valuesOfInterest[j], verbose)
+            if not tmp is None:
+                plt.setp(tmp, 'color', rldColors[j])
+
+        beautifyFVD(fig, figureName, verbose=verbose)
+        plt.close(fig)

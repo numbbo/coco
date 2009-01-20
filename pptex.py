@@ -14,12 +14,17 @@ header = ['$\Delta f$', '$\ENFEs$', '10\%', '90\%', '$\#$',
           'best', '$2^\mathrm{nd}$', 'med.', '$2^\mathrm{nd}\,$w.', 'worst']
 format = ['%1.1e', '%1.1e', '%1.1e', '%1.1e', '%d',
           '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
-idxNbSuccRuns = (4,13) #TODO: global variable?
+ranksOfInterest = (1, 2)
+maxEvalsFactor = 1e4 #Warning! this appears in pprldistr as well!
+
+idxNbSuccRuns = (4, 13) #TODO: global variable?
 #TODO: this global variables depend on ranksOfInterest
+
 
 class Error(Exception):
     """ Base class for errors. """
     pass
+
 
 class WrongInputSizeError(Error):
     """ Error if an array has the wrong size for the following operation.
@@ -127,6 +132,8 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
 
     """
 
+    #Why does this function needs entryList?
+
     # Assemble header for whole table (contains more than 1 dimension)
     header = header + (width-1)*header[1:]
     format = format + (width-1)*format[1:]
@@ -161,11 +168,12 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
     f.write('\\begin{tabular}{' + tabColumns + '} \n')
 
     # Write first two rows containing the info of the table columns
-    for i in range(0,width):
+    for i in range(0, width):
         caption = ('\\textbf{\\textit{f}\\raisebox{-0.35ex}{' + str(entryList[i].funcId) +
                    '} in ' + str(entryList[i].dim)) + '-D}'
         caption = caption + ', Nruns = ' + str(entryList[i].nbRuns)
-        caption = caption + ', max.\,FEvals = ' + str(entryList[i].maxEvals)
+        maxEvals = min(entryList[i].mMaxEvals, entryList[i].dim * maxEvalsFactor)
+        caption = caption + ', max.\,FEvals = ' + str(int(maxEvals))
         if i != width - 1:
             f.write('& \multicolumn{' + str((len(format)-1)/width) + '}{@{$\,$}c|@{$\,$}}{' + caption + '}')
         else:
@@ -276,13 +284,15 @@ def sortIndexEntries(indexEntries, dimOfInterest):
     return sortByFunc
 
 
-def generateData(indexEntry, targetFuncValues, ranksOfInterest):
+def generateData(indexEntry, targetFuncValues):
     """Returns data to be plotted from indexEntry and the target function values."""
 
     res = []
     it = iter(indexEntry.hData)
     i = it.next()
     curLine = []
+
+    maxEvals = min(indexEntry.mMaxEvals, indexEntry.dim * maxEvalsFactor)
 
     #set_trace()
     for targetF in targetFuncValues:
@@ -293,8 +303,10 @@ def generateData(indexEntry, targetFuncValues, ranksOfInterest):
                 isFinished = True
                 break
         success = []
-        for j in i[indexEntry.nbRuns+1:]:
-            success.append(j <= targetF)
+        for j in range(1, indexEntry.nbRuns+1):
+            success.append(i[indexEntry.nbRuns+j] <= targetF and 
+                           i[j] <= maxEvals)
+
         N = scipy.sort(i[1:indexEntry.nbRuns + 1])
 
         sp1m = bootstrap.sp1(N, issuccessful=success)
@@ -330,8 +342,7 @@ def generateData(indexEntry, targetFuncValues, ranksOfInterest):
     return scipy.vstack(res)
 
 
-def main(indexEntries, dimOfInterest, valOfInterests, ranksOfInterest,
-         outputdir, verbose):
+def main(indexEntries, dimOfInterest, valOfInterests, outputdir, verbose):
     """From a list of IndexEntry and a prefix, returns latex tabulars in files.
     """
 
@@ -348,13 +359,13 @@ def main(indexEntries, dimOfInterest, valOfInterests, ranksOfInterest,
 
             if dimOfInterest.count(dim) != 0 and tabData.shape[0] == 0:
                 # Array tabData has no previous values.
-                tabData = generateData(entry, valOfInterests, ranksOfInterest)
+                tabData = generateData(entry, valOfInterests)
                 entryList.append(entry)
             elif dimOfInterest.count(dim) != 0 and tabData.shape[0] != 0:
                 # Array tabData already contains values for the same function
                 tabData = scipy.append(tabData,
-                                       generateData(entry, valOfInterests,
-                                                    ranksOfInterest)[:, 1:], 1)
+                                       generateData(entry, 
+                                                    valOfInterests)[:, 1:], 1)
                 #set_trace()
                 entryList.append(entry)
 
