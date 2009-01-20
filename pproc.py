@@ -253,7 +253,11 @@ def split(dataFiles):
     #TODO: optimize by splitting using %
     dataSets = []
     for fil in dataFiles:
-        content = scipy.io.read_array(fil,comment='%')
+        try:
+            content = scipy.io.read_array(fil,comment='%')
+        except IOError:
+            print 'Could not find %s.' % fil
+            continue
         dataSetFinalIndex = scipy.where(scipy.diff(content[:,0])<0)[0]
         #splitting is done by comparing the number of function evaluations
         #which should be monotonous.
