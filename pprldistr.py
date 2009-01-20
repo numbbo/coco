@@ -13,7 +13,7 @@ from pdb import set_trace
 #__all__ = []
 
 maxEvalsFactor = 1e4
-rldColors = ['b', 'g', 'r', 'c', 'm']
+rldColors = ['b', 'g', 'r', 'c', 'm', 'b', 'g', 'r', 'c', 'm']  # might not be long enough
 
 #% SEPARABLE
 #1 Sphere

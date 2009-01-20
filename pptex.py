@@ -214,6 +214,9 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
 
     """
 
+    # TODO: I think the written numbers are only correct, if the input format specifies
+    #       two numbers of precision. Otherwise the rounding procedure is wrong. 
+
     # Loop through vector
     for id, x in enumerate(vector):
         #print type(x)
@@ -240,24 +243,24 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
             # It is assumed that all entries range between 10e-9 and 10e9
 
             if id == 0:  # Delta f value
-                if x >= 1 and x < 10:
-                    tmp2 = tmp[0][0]
+                if x >= 1 and x <= 100 and x == round(x):
+                    tmp2 = str(round(x))  # tmp[0][0]
                 else:
                     sgn = '+'  # don't assume that a + sign is present
                     if x < 1:
                         sgn = '-'
                     tmp2 = (tmp[0][0] + '\\!\\mathrm{\\hspace{0.10em}e}' +
-                            sgn + tmp[1][-1])
+                            sgn + tmp[1][-1])                            
             else:
                 if x < 0:
-                    tmp2 = ('\\mathit{' + tmp[0][1]+ tmp[0][3] + '}' +
-                            '\\hspace{0.10em}e')
+                    tmp2 = ('\\mathit{' + tmp[0][1] + tmp[0][3] + '}' +  
+                            '\\hspace{0.08em}e')
                     # tmp[0][1] + tmp[0][3]: tmp[0][0] is the sign
 
                     #TODO: hack because we change the number format
                     tmp2 += '\\mathit{'+ ('%+d' % (int(tmp[1][-1]) - 1)) + '}'
                 else:
-                    tmp2 = tmp[0] + '\\mathrm{\\hspace{0.10em}e}' + tmp[1][-1]
+                    tmp2 = tmp[0] + '\\mathrm{\\hspace{0.10em}e}' + tmp[1][-1] 
         else:
             tmp2 = str(format[id]%x)
 
