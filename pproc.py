@@ -258,7 +258,7 @@ def split(dataFiles):
         except IOError:
             print 'Could not find %s.' % fil
             continue
-        dataSetFinalIndex = scipy.where(scipy.diff(content[:,0])<0)[0]
+        dataSetFinalIndex = scipy.where(scipy.diff(content[:,0])<=0)[0]
         #splitting is done by comparing the number of function evaluations
         #which should be monotonous.
         if len(dataSetFinalIndex)> 0:
