@@ -16,7 +16,7 @@ plt.rc("font", size=20)
 plt.rc("legend", fontsize=20)
 #valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #colors = {1.0:'b', 1.0e-2:'g', 1.0e-4:'r', 1.0e-6:'c', 1.0e-8:'m'} #TODO colormaps!
-colors = ('b', 'g', 'r', 'c', 'm')
+colors = ('b', 'g', 'r', 'c', 'm', 'b', 'g', 'r', 'c', 'm')  # should not be too short
 
 #Either we read it in a file (flexibility) or we hard code it here.
 funInfos = {}
@@ -101,11 +101,12 @@ def customizeFigure(figHandle, figureName = None, title='',
 
     # Get axis handle and set scale for each axis
     axisHandle = figHandle.gca()
-    #axisHandle.set_xscale(scale[0])
+    axisHandle.set_xscale(scale[0])
     axisHandle.set_yscale(scale[1])
 
     tmp = axisHandle.get_xlim()
-    axisHandle.set_xlim(tmp[0], min(tmp[1], 40))
+    # axisHandle.set_xlim(tmp[0], min(tmp[1], 40))  
+    axisHandle.set_xlim(1.9, 45)  # TODO should become variable
     # Annotate figure
     if labels is None: #Couldn't it be ''?
         axisHandle.set_xlabel(labels[0])
