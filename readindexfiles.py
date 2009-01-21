@@ -384,7 +384,72 @@ class IndexEntries(list):
         if not isFound:
             list.append(self, o)
 
+    def sortByDim(self):
+        """Returns a dictionary sorted based on indexEntry.dim."""
+        sorted = {}
+        for i in self:
+            sorted.setdefault(i.dim, IndexEntries()).append(i)
+        return sorted
 
+    def sortByFunc(self):
+        """Returns a dictionary sorted based on indexEntry.dim."""
+        sorted = {}
+        for i in self:
+            sorted.setdefault(i.funcId, IndexEntries()).append(i)
+        return sorted
+
+    def sortByFuncGroup(self):
+        """Returns a dictionary sorted based on the function group."""
+
+        #% SEPARABLE
+        #1 Sphere
+        #2 Ellipsoid separable with monotone x-transformation, condition 1e6
+        #3 Rastrigin separable with asymmetric x-transformation "condition" 10
+        #4 Skew Rastrigin-Bueche separable, "condition" 10, skew-"condition" 100
+        #5 Linear slope, neutral extension outside the domain (but not flat)
+
+        #% LOW OR MODERATE CONDITION
+        #6 Attractive sector
+        #7 Step-ellipsoid, condition 100
+        #8 Rosenbrock, non-rotated
+        #9 Rosenbrock, rotated
+
+        #% HIGH CONDITION
+        #10 Ellipsoid with monotone x-transformation, condition 1e6
+        #11 Discus with monotone x-transformation, condition 1e6
+        #12 Bent cigar with asymmetric x-transformation, condition 1e6
+        #13 Sharp ridge, slope 1:100, condition 10
+        #14 Sum of different powers
+
+        #% MULTI-MODAL
+        #15 Rastrigin with asymmetric x-transformation, "condition" 10
+        #16 Weierstrass with monotone x-transformation, condition 100
+        #17 Schaffer F7 with asymmetric x-transformation, condition 10
+        #18 Schaffer F7 with asymmetric x-transformation, condition 1000
+        #19 F8F2 composition of 2-D Griewank-Rosenbrock
+
+        #% MULTI-MODAL WITH WEAK GLOBAL STRUCTURE
+        #20 Schwefel x*sin(x) with tridiagonal transformation, condition 10
+        #21 Gallagher 99 Gaussian peaks, global rotation, condition up to 1000
+        #22 Gallagher 99 Gaussian peaks, local rotations, condition up to 1000
+        #23 Katsuura
+        #24 Lunacek bi-Rastrigin, condition 100
+
+        sorted = {}
+        #The bins correspond to whether the dimension is greater than 10 or not.
+        #Still needs to be sorted by functions.
+        for i in self:
+            if i.funcId in range(0,6):
+                sorted.setdefault('separ', []).append(i)
+            elif i.funcId in range(6,10):
+                sorted.setdefault('lcond', []).append(i)
+            elif i.funcId in range(10,15):
+                sorted.setdefault('hcond', []).append(i)
+            elif i.funcId in range(15,20):
+                sorted.setdefault('multi', []).append(i)
+            elif i.funcId in range(20,25):
+                sorted.setdefault('mult2', []).append(i)
+        return sorted
 
 ##############################################################################
 

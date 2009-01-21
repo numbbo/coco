@@ -88,7 +88,9 @@ tabValsOfInterest = (10, 1.0, 1e-1, 1.0e-3, 1.0e-5, 1.0e-8)
 figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # should 
 
 rldDimsOfInterest = (5, 20)
-rldValsOfInterest = (10, 1e-2, 1e-5, 1e-8)  
+#rldValsOfInterest = (1e-8, 1e-5, 1e-2, 10)
+rldValsOfInterest = (10, 1e-2, 1e-5, 1e-8)
+#Put backward to have the legend in the same order as the lines.
 
 #CLASS DEFINITIONS
 
@@ -234,20 +236,27 @@ def main(argv=None):
                 if verbose:
                     print '%s was created.' % (outputdir)
 
-        if isfigure or istab:
-            if isfigure:
-                ppfigdim.main(indexEntries, figValsOfInterest, outputdir,
-                              verbose)
-            if istab:
-                pptex.main(indexEntries, tabDimsOfInterest, tabValsOfInterest,
-                           outputdir, verbose)
+        if isfigure:
+            ppfigdim.main(indexEntries, figValsOfInterest, outputdir,
+                          verbose)
+        if istab:
+            pptex.main(indexEntries, tabDimsOfInterest, tabValsOfInterest,
+                       outputdir, verbose)
 
         if isrldistr:
-            tmp = []
-            for i in indexEntries:
-                if i.dim in (5, 20):
-                    tmp.append(i)
-            pprldistr.main(tmp, rldValsOfInterest, outputdir, verbose)
+
+            sortedByDim = indexEntries.sortByDim()
+            #set_trace()
+            for dim, sliceDim in sortedByDim.items():
+                if dim in rldDimsOfInterest:
+                    pprldistr.main(sliceDim, rldValsOfInterest, 
+                                   'dim%02dall' % dim, outputdir, verbose)
+                    sortedByFG = sliceDim.sortByFuncGroup()
+                    #set_trace()
+                    for funcGroup, sliceFuncGroup in sortedByFG.items():
+                        pprldistr.main(sliceFuncGroup, rldValsOfInterest,
+                                       'dim%02d%s' % (dim, funcGroup), 
+                                       outputdir, verbose)
 
         #if verbose:
             #print 'total ps = %g\n' % (float(scipy.sum(ps))/scipy.sum(nbRuns))

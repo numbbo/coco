@@ -15,11 +15,11 @@ header = ['$\Delta f$', '$\ENFEs$', '10\%', '90\%', '$\#$',
 format = ['%1.1e', '%1.1e', '%1.1e', '%1.1e', '%d',
           '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
 ranksOfInterest = (1, 2)
-maxEvalsFactor = 1e4 #Warning! this appears in pprldistr as well!
 
 idxNbSuccRuns = (4, 13) #TODO: global variable?
 #TODO: this global variables depend on ranksOfInterest
 
+maxEvalsFactor = 1e4
 
 class Error(Exception):
     """ Base class for errors. """

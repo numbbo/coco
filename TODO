@@ -5,6 +5,7 @@ Error catching:
 *Problem with demo (is not working): no possibility of shorter demo due to writeTable2. It should try and take as input a list of arrays.
 *problem with the tables: too many floats to handle -> not more than 12 it seems.
 *tables are hard to read: columns do not have all the same width
+*maxEvalsFactor appears in pptex and pprldistr and have to be synchronized...
 
 Feature missing:
 *have low-level post-processing functions that deals with arrays.
