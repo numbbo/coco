@@ -244,7 +244,7 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
 
             if id == 0:  # Delta f value
                 if x >= 1 and x <= 100 and x == round(x):
-                    tmp2 = str(round(x))  # tmp[0][0]
+                    tmp2 = str(int(round(x)))  # tmp[0][0]
                 else:
                     sgn = '+'  # don't assume that a + sign is present
                     if x < 1:
