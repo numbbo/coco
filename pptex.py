@@ -11,7 +11,7 @@ from pdb import set_trace
 
 samplesize = 15 #Bootstrap sample size
 header = ['$\Delta f$', '$\ENFEs$', '10\%', '90\%', '$\#$',
-          'best', '$2^\mathrm{nd}$', 'med.', '$2^\mathrm{nd}\,$w.', 'worst']
+          'best', '$2^\mathrm{nd}$', 'med.', '$2^\mathrm{nd}$w.', 'worst']
 format = ['%1.1e', '%1.1e', '%1.1e', '%1.1e', '%d',
           '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
 ranksOfInterest = (1, 2)
@@ -253,12 +253,13 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
                             sgn + tmp[1][-1])                            
             else:
                 if x < 0:
-                    tmp2 = ('\\mathit{' + tmp[0][1] + tmp[0][3] + '}' +
-                            '\\hspace{0.08em}e')
+                    tmp2 = ('\\textit{' + tmp[0][1] + tmp[0][3] + '}' +  # mathit replaced with textit
+                            '\\hspace{0.00em}e')
                     # tmp[0][1] + tmp[0][3]: tmp[0][0] is the sign
 
                     #TODO: hack because we change the number format
-                    tmp2 += '\\mathit{%+d}' % (int(tmp[1]) - 1)
+                    # tmp2 += '\\mathit{%+d}' % (int(tmp[1]) - 1)
+                    tmp2 += ('\\textit{%+d}' % (int(tmp[1]) - 1)).replace('-', '--') 
                 else:
                     tmp2 = tmp[0] + '\\mathrm{\\hspace{0.10em}e}' + tmp[1][-1] 
         else:
