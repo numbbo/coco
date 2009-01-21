@@ -183,7 +183,7 @@ def sortIndexEntries(indexEntries):
 
 
 def generateData(indexEntry, targetFuncValue):
-    """Returns data to be plotted from indexEntry and the target function value."""
+    """Returns data to be plotted."""
 
     res = []
 
@@ -212,15 +212,17 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
         legend = []
         line = []
         for i in range(len(valuesOfInterest)):
-            tmp = []
+            data = []
+            #Collect data from indexEntry that have the same function and 
+            #different dimension.
             for dim in sorted(sortByFunc[func]):
-                tmp2 = generateData(sortByFunc[func][dim], valuesOfInterest[i])
-                if len(tmp2) > 0:
-                    tmp.append(scipy.append(dim, tmp2))
+                tmp = generateData(sortByFunc[func][dim], valuesOfInterest[i])
+                if len(tmp) > 0:
+                    data.append(scipy.append(dim, tmp))
 
-            if len(tmp) > 0:
-                tmp = scipy.vstack(tmp)
-                h = createFigure(tmp[:, [0, 1]], fig) #ENFEs
+            if len(data) > 0:
+                data = scipy.vstack(data)
+                h = createFigure(data[:, [0, 1]], fig) #ENFEs
                 #len(h) should be 1.
                 plt.setp(h[0], 'color', colors[i], 'linestyle', '-',
                          'marker', 'o', 'markersize', 12)
@@ -228,7 +230,7 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
 
                 legend.append('%+d' % (scipy.log10(valuesOfInterest[i])))
 
-                h = createFigure(tmp[:,[0, -1]], fig) #median
+                h = createFigure(data[:,[0, -1]], fig) #median
                 #len(h) should be 1.
                 plt.setp(h, 'color', colors[i], 'linestyle', '--',
                          'marker', '+', 'markersize', 20, 'markeredgewidth', 3)

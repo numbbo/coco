@@ -4,29 +4,8 @@
 # and its subfolders.
 
 import os
-import zipfile
-import tarfile
-
-class IndexFile:
-    """ Deprecated: Class which contains the name and the global
-    path for an index file.
-    """
-
-    def __init__(self,path,name):
-        self.path = path
-        self.name = name
-
-    def generateTuple(files):
-        """Returns a tuple of instances of IndexFile from a sequence of strings
-        """
-        indexFiles = ()
-        for elem in files:
-            if elem.endswith('.info'):
-                (root,elem) = os.path.split(elem)
-                indexFile = IndexFile(root,elem)
-                indexFiles.append(indexFile)
-        return indexFiles
-
+#import zipfile
+#import tarfile
 
 # Initialization
 def main(directory=os.getcwd(), verbose=True):

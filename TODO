@@ -1,8 +1,5 @@
 Error catching:
-*Bug! Though the new fgeneric output is read without problems.
-** MaxEvals should be defined by index files ?
 *When given a wrong path, nothing happens...
-*Problem with demo (is not working): no possibility of shorter demo due to writeTable2. It should try and take as input a list of arrays.
 *problem with the tables: too many floats to handle -> not more than 12 it seems.
 *tables are hard to read: columns do not have all the same width
 *maxEvalsFactor appears in pptex and pprldistr and have to be synchronized...
@@ -10,19 +7,14 @@ Error catching:
 Feature missing:
 *have low-level post-processing functions that deals with arrays.
 *Summary tables of ENFEs...
-*computevalues: rename and make some varargin
 *Deal with archive file -> not file-like object for zipfile module in python 2.5.2
-*Put a separation line in the table between function evaluations and function values -> Not needed
-*synchronize the caption of the data profiles with information from the post processing?
 *Play with the fontsize (smaller titles, larger ticks).
 *Compute the entropy based on the comment line in the info file?
 *Compare results from different algorithms!
-*Have SP1 on the data profile graph as well?
-
 
 Misc.
 *Update experimentation.tex
-*Provide a clean doc page that is helpful and useful.
+*Provide a clean doc page that is helpful and useful -> pydoc.writedocs('.') in BBOB/code/python
 *Make sure that anyone could produce a fig, table or data profile for every dimensions, functions they want.
 *Explicit demo post processing.
 *Problem with some fonts missing for tex compilation.
@@ -36,6 +28,9 @@ Questions:
 
 ###############################################################################
 SOLVED:
+*Have SP1 on the data profile graph as well? -> not needed
+*synchronize the caption of the data profiles with information from the post processing? -> legend
+*Put a separation line in the table between function evaluations and function values -> Not needed
 *Have the number of solved functions appear on the data profile graph
 *Prepare for vertical aligning!
 *make tab-only faster: it doesn't need to process everything...
@@ -65,3 +60,5 @@ an empirical value (measured). -> OK.
 *F_t in the tables instead of f_t (cf experimentation.pdf §6.4)
 *BUG: demo.py when the toydata folder does not exist -> catch when args is empty.
 *function values in italics missing -> pproc.py has to return in arrayTab the right things.
+*Problem with demo (is not working): no possibility of shorter demo due to writeTable2. It should try and take as input a list of arrays.
+*computevalues: rename and make some varargin -> not used anymore
