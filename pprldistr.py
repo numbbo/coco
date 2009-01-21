@@ -181,19 +181,22 @@ def main(indexEntries, valuesOfInterest, info, outputdir, verbose):
 
     figureName = os.path.join(outputdir,'ppfvdistr_%s' %(info))
     fig = plt.figure()
-    maxEvalsF = scipy.power(10,
-                            scipy.arange(0, scipy.log10(maxEvalsFactor) + 1))
     for j in range(len(valuesOfInterest)):
         #set_trace()
-        for k in maxEvalsF:
-            tmp = plotFVDistr(indexEntries, valuesOfInterest[j], maxEvalsF=k,
-                              verbose=verbose)
-            if not tmp is None:
-                plt.setp(tmp, 'color', rldColors[j])
-                if (k != maxEvalsFactor):
-                    plt.setp(tmp, 'linestyle', '--')
-                else:
-                    plt.setp(tmp, 'linestyle', '-')
+        tmp = plotFVDistr(indexEntries, valuesOfInterest[j], maxEvalsFactor,
+                          verbose=verbose)
+        if not tmp is None:
+            plt.setp(tmp, 'color', rldColors[j])
+
+    tmp = scipy.log10(maxEvalsFactor)
+    maxEvalsF = scipy.power(10, scipy.arange(tmp, 0, -1) - 1)
+
+    #The last index of valuesOfInterest is still used in this loop.
+    for k in range(len(maxEvalsF)):
+        tmp = plotFVDistr(indexEntries, valuesOfInterest[j],
+                          maxEvalsF=maxEvalsF[k], verbose=verbose)
+        if not tmp is None:
+            plt.setp(tmp, 'color', rldColors[j+k+1])
 
     beautifyFVD(fig, figureName, verbose=verbose)
     plt.close(fig)

@@ -14,6 +14,8 @@ header = ['$\Delta f$', '$\ENFEs$', '10\%', '90\%', '$\#$',
           'best', '$2^\mathrm{nd}$', 'med.', '$2^\mathrm{nd}$w.', 'worst']
 format = ['%1.1e', '%1.1e', '%1.1e', '%1.1e', '%d',
           '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
+#This has to be synchronized with what's computed in generateData.
+
 ranksOfInterest = (1, 2)
 
 idxNbSuccRuns = (4, 13) #TODO: global variable?
@@ -108,23 +110,20 @@ def writeTable(data, fileName, header = list(), fontSize = 'tiny',
     if verbose:
         print 'Wrote in %s.' %(fileName+'.tex')
 
-def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
-                fontSize2='scriptstyle', format=list(), keep_open=0,
-                width=2, verbose=True):
+def writeTable2(entries, filename, fontSize='scriptsize',
+                fontSize2='scriptstyle', keep_open=0,
+                verbose=True):
     """Writes data of array in a *.tex file. This file then can be used
        in LaTex as input for tables. The file must be placed inside a
        \begin{table} ... \end{table} environment.
 
        Mandatory inputs:
-       data - sorted 2d-array containing the data values (array)
+       entries - Sequence of IndexEntry to be displayed.
        filename - name of output file (string)
-       entry - IndexEntry containing the attributes of the current index entry
 
        Optional inputs:
-       header - header for the columns of the table (string, list)
        fontSize - size of fonts as they appear in the LaTex table (string)
        fontSize2 - size of the fonts in the math environment (string)
-       format - format specifier for each column
        keep_open - if nonzero the file will not be closed
        width -  number of dimension (from the same function) which are
                 displayed in the table. The first column (Ft) is only
@@ -132,26 +131,34 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
 
     """
 
-    #Why does this function needs entryList?
-
     # Assemble header for whole table (contains more than 1 dimension)
-    header = header + (width-1)*header[1:]
-    format = format + (width-1)*format[1:]
+    width = len(entries)
+
+    fullheader = header + (width-1)*header[1:]
+    fullformat = format + (width-1)*format[1:]
+
+    data = []
+    it = iter(entries)
+    data.append(it.next().tabData)
+    while True:
+        try:
+            data.append(it.next().tabData[:, 1:])
+        except StopIteration:
+            break
+
+    data = scipy.transpose(scipy.concatenate(data, 1))
 
     # Input checking and reshape data
-    if len(format) != data.shape[0] and len(format) != data.shape[1]:
-        raise WrongInputSizeError('data',data.shape,len(format))
-    elif len(format) != len(header) :
-        raise WrongInputSizeError('header',len(header),len(format))
-    elif len(format) != data.shape[0]:
-        data = scipy.transpose(data)
+    #if len(fullformat) != data.shape[0] and len(fullformat) != data.shape[1]:
+        #raise WrongInputSizeError('data',data.shape,len(format))
+    #elif len(fullformat) != len(fullheader) :
+        #raise WrongInputSizeError('header',len(fullheader),len(format))
+    #elif len(fullformat) != data.shape[0]:
+        #data = scipy.transpose(data)
 
     # Generate LaTex commands for vertical lines and aligment of the entries.
-    # Vertical lines appear after column 'Ft' and '$P_{\mathrm{s}}$'
-    tabColumns ='@{$\,$}c@{$\,$}|' + 4 * '@{$\,$}c@{$\,$}' + ''
-    tabColumns = tabColumns + 5 * '@{$\,$}c@{$\,$}' + '|'
-    tabColumns = tabColumns + 4 * '@{$\,$}c@{$\,$}' + ''
-    tabColumns = tabColumns + 5 * '@{$\,$}c@{$\,$}'
+    tabColumns ='@{$\,$}c@{$\,$}'
+    tabColumns += ('|' + (len(header) - 1) * '@{$\,$}c@{$\,$}') * width
 
     # Create output file
     if verbose:
@@ -169,22 +176,22 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
 
     # Write first two rows containing the info of the table columns
     for i in range(0, width):
-        caption = ('\\textbf{\\textit{f}\\raisebox{-0.35ex}{' + str(entryList[i].funcId) +
-                   '} in ' + str(entryList[i].dim)) + '-D}'
-        caption = caption + ', Nruns = ' + str(entryList[i].nbRuns)
-        maxEvals = min(entryList[i].mMaxEvals, entryList[i].dim * maxEvalsFactor)
+        caption = ('\\textbf{\\textit{f}\\raisebox{-0.35ex}{' + str(entries[i].funcId) +
+                   '} in ' + str(entries[i].dim)) + '-D}'
+        caption = caption + ', Nruns = ' + str(entries[i].nbRuns)
+        maxEvals = min(entries[i].mMaxEvals, entries[i].dim * maxEvalsFactor)
         caption = caption + ', max.\,FEvals = ' + str(int(maxEvals))
         if i != width - 1:
-            f.write('& \multicolumn{' + str((len(format)-1)/width) + '}{@{$\,$}c|@{$\,$}}{' + caption + '}')
+            f.write('& \multicolumn{' + str(len(format)-1) + '}{@{$\,$}c|@{$\,$}}{' + caption + '}')
         else:
-            f.write('& \multicolumn{' + str((len(format)-1)/width) + '}{@{$\,$}c@{$\,$}}{' + caption + '}')
+            f.write('& \multicolumn{' + str(len(format)-1) + '}{@{$\,$}c@{$\,$}}{' + caption + '}')
     f.write('\\\\ \n')
     # f.write('\hline \n')
-    f.write(' & '.join(header) + '\\\\ \n \hline \n')
+    f.write(' & '.join(fullheader) + '\\\\ \n \hline \n')
 
     # Write data
     for i in range(0,data.shape[1]):
-        writeArray(f, data[:,i], format, fontSize2)
+        writeArray(f, data[:,i], fullformat, fontSize2)
 
     # Finish writing the table and close file.
     f.write('\end{tabular} \n')
@@ -197,6 +204,7 @@ def writeTable2(data, filename, entryList, header=list(), fontSize='scriptsize',
 
     if verbose:
         print 'Wrote in %s.' %(filename+'.tex')
+
 
 def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
     """ Writes components of an numeric array in LaTex file with additional
@@ -250,7 +258,7 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
                     if x < 1:
                         sgn = '-'
                     tmp2 = (tmp[0][0] + '\\!\\mathrm{\\hspace{0.10em}e}' +
-                            sgn + tmp[1][-1])                            
+                            sgn + tmp[1][-1])
             else:
                 if x < 0:
                     tmp2 = ('\\textit{' + tmp[0][1] + tmp[0][3] + '}' +  # mathit replaced with textit
@@ -346,34 +354,18 @@ def generateData(indexEntry, targetFuncValues):
     return scipy.vstack(res)
 
 
-def main(indexEntries, dimOfInterest, valOfInterests, outputdir, verbose):
+def main(indexEntries, valOfInterests, outputdir, info, verbose=True):
     """From a list of IndexEntry and a prefix, returns latex tabulars in files.
+    args:
+    info --- string suffix for output files.
+
     """
 
-    sortByFunc = sortIndexEntries(indexEntries, dimOfInterest)
+    filename = os.path.join(outputdir,'ppdata%s' % ('_' + info))
+    for i in indexEntries:
+        i.tabData = generateData(i, valOfInterests)
 
-    for func in sortByFunc:
-        filename = os.path.join(outputdir,'ppdata_f%d' % (func))
-        # initialize matrix containing the table entries
-        tabData = scipy.zeros(0)
-        entryList = list()     # list of entries which are displayed in the table
+    #[header,format] = pproc.computevalues(None,None,header=True)
+    #set_trace()
 
-        for dim in sorted(sortByFunc[func]):
-            entry = sortByFunc[func][dim]
-
-            if dimOfInterest.count(dim) != 0 and tabData.shape[0] == 0:
-                # Array tabData has no previous values.
-                tabData = generateData(entry, valOfInterests)
-                entryList.append(entry)
-            elif dimOfInterest.count(dim) != 0 and tabData.shape[0] != 0:
-                # Array tabData already contains values for the same function
-                tabData = scipy.append(tabData,
-                                       generateData(entry, 
-                                                    valOfInterests)[:, 1:], 1)
-                #set_trace()
-                entryList.append(entry)
-
-        #[header,format] = pproc.computevalues(None,None,header=True)
-        #set_trace()
-        writeTable2(tabData, filename, entryList, fontSize='tiny',
-                    header=header, format=format, verbose=verbose)
+    writeTable2(indexEntries, filename, fontSize='tiny', verbose=verbose)

@@ -7,50 +7,6 @@ The BBOB post-processing tool takes as input data from BBOB experiments and
 generates output that will be used in the generation of the LateX-formatted
 article summarizing the experiments.
 
-Keyword arguments:
-argv -- list of strings containing options and arguments to the main function.
-Synopsis: python bbob_pproc.py [OPTIONS] input-files
-
-    Running bbob_pproc.py or importing the bbob_pproc package and running the
-    main method will take as input the input files and generate post-processed
-    data that will be output as convergence and ENFEs graphs, tex tables and
-    running length distribution graphs according to the experimentation
-    process described in the documentation of the BBOB. All the outputs will
-    be saved in an output folder as files that will be included in a TeX file.
-
-    -h, --help
-
-        display this message
-
-    -v, --verbose
-
-        verbose mode, prints out operations. When not in verbose mode, no
-        output is to be expected, except for errors.
-
-            opts, args = getopt.getopt(argv[1:], "hvpno:",
-                                       ["help", "pproc-files", "output-dir",
-                                        "tab-only", "fig-only", "rld-only",
-                                        "no-pickle","verbose"])
-    -p, --pproc-files
-
-        input files are expected to be files post processed by this tool.
-
-    -n, --no-pickle
-
-        prevents pickled post processed data files from being generated.
-
-    -o, --output-dir output-dir
-
-        change the default output directory ('ppdata') to output-dir
-
-    --tab-only, --fig-only, --rld-only
-
-        these options can be used to output respectively the tex tables,
-        convergence and ENFEs graphs figures, run length distribution figures
-        only. A combination of any two of these options results in no output.
-
-Exceptions raised:
-UsageError --
 """
 
 #credits to G. Van Rossum: http://www.artima.com/weblogs/viewpost.jsp?thread=4829
@@ -69,16 +25,8 @@ from pdb import set_trace
 from bbob_pproc import readindexfiles, findindexfiles
 from bbob_pproc import pproc, ppfig, pptex, pprldistr, ppfigdim
 
-"""Given a list of index files, returns convergence and ENFEs graphs, tables,
-Run length distribution graphs.
-ENFEs graphs: any indexEntries (usually for a given dim and a given func)
-conv graphs: any indexEntries (usually for a given dim and a given func)
-tables: should be any indexEntries and any precision
-rlDistr: any indexEntries
-"""
-
 __all__  = ['readindexfiles', 'findindexfiles', 'ppfig', 'pptex', 'pprldistr',
-            'main', 'ppfigdim']
+            'main', 'ppfigdim', 'pproc']
 
 #colors = {2:'b', 3:'g', 5:'r', 10:'c', 20:'m', 40:'y'} #TODO colormaps!
 tabDimsOfInterest = [5, 20]    # dimension which are displayed in the tables
@@ -176,10 +124,54 @@ def createIndexEntries(args, outputdir, isPickled, verbose=True):
 
 
 def usage():
-    print __doc__
+    print main.__doc__
 
 
 def main(argv=None):
+    """Generates from BBOB experiment data some outputs for a tex document.
+
+    If provided with some index entries (from info files), this should return
+    many output files in the folder 'ppdata' needed for the compilation of
+    latex document ExampleDataPresentation.tex. These output files will contain
+    performance tables, performance scaling figures and empirical cumulative
+    distribution functions figures.
+
+    Keyword arguments:
+    argv -- list of strings containing options and arguments.
+
+    argv should list either names of info files or folders containing info
+    files. argv can also list post-processed pickle files generated from this
+    method. Furthermore, argv can begin with, in any order, facultative option
+    flags listed below.
+
+        -h, --help
+
+            display this message
+
+        -v, --verbose
+
+            verbose mode, prints out operations. When not in verbose mode, no
+            output is to be expected, except for errors.
+
+        -n, --no-pickle
+
+            prevents pickled post processed data files from being generated.
+
+        -o, --output-dir OUTPUTDIR
+
+            change the default output directory ('ppdata') to OUTPUTDIR
+
+        --tab-only, --fig-only, --rld-only
+
+            these options can be used to output respectively the tex tables,
+            convergence and ENFEs graphs figures, run length distribution
+            figures only. A combination of any two of these options results in
+            no output.
+
+    Exceptions raised:
+    UsageError --
+    """
+
     if argv is None:
         argv = sys.argv
     try:
@@ -229,6 +221,8 @@ def main(argv=None):
                 assert False, "unhandled option"
 
         indexEntries = createIndexEntries(args, outputdir, isPickled, verbose)
+        sortedByDim = indexEntries.sortByDim()
+        sortedByFunc = indexEntries.sortByFunc()
 
         if isfigure or istab or isrldistr:
             if not os.path.exists(outputdir):
@@ -239,14 +233,18 @@ def main(argv=None):
         if isfigure:
             ppfigdim.main(indexEntries, figValsOfInterest, outputdir,
                           verbose)
+
         if istab:
-            pptex.main(indexEntries, tabDimsOfInterest, tabValsOfInterest,
-                       outputdir, verbose)
+            for fun, sliceFun in sortedByFunc.items():
+                tmp = []
+                for i in sliceFun:
+                    if i.dim in tabDimsOfInterest:
+                        tmp.append(i)
+                if tmp:
+                    pptex.main(tmp, tabValsOfInterest, outputdir, 'f%d' % fun,
+                               verbose)
 
         if isrldistr:
-
-            sortedByDim = indexEntries.sortByDim()
-            #set_trace()
             for dim, sliceDim in sortedByDim.items():
                 if dim in rldDimsOfInterest:
                     pprldistr.main(sliceDim, rldValsOfInterest, 
@@ -255,7 +253,7 @@ def main(argv=None):
                     #set_trace()
                     for funcGroup, sliceFuncGroup in sortedByFG.items():
                         pprldistr.main(sliceFuncGroup, rldValsOfInterest,
-                                       'dim%02d%s' % (dim, funcGroup), 
+                                       'dim%02d%s' % (dim, funcGroup),
                                        outputdir, verbose)
 
         #if verbose:
@@ -263,7 +261,7 @@ def main(argv=None):
 
     except Usage, err:
         print >>sys.stderr, err.msg
-        print >>sys.stderr, "for help use --help"
+        print >>sys.stderr, "for help use -h or --help"
         return 2
 
 

@@ -1,7 +1,9 @@
 #! /usr/bin/env python
 
-# Script to read the data from the files within the list indexFiles
-# and store it in the list indexEntries.
+"""Defines class IndexEntry, unit element in the post-processing and the list
+of instances of IndexEntry: IndexEntries.
+
+"""
 
 from __future__ import absolute_import
 
@@ -24,6 +26,7 @@ nbPtsF = 5;
 
 indexmainsep = ', '
 
+
 # CLASS DEFINITIONS
 class IndexEntry:
     """Unit element for the post-processing with given funcId, algId and
@@ -44,13 +47,18 @@ class IndexEntry:
 
     """
 
+    __attributes = {'funcId':('funcId', int), 'DIM':('dim',int),
+                    'Precision':('precision', float), 'Fopt':('fopt', float),
+                    'targetFuncValue':('targetFuncValue', float),
+                    'algId':('algId', str)}
+
     def __init__(self, header, comment, data):
-        """Instantiates an IndexEntry from 3 strings constituting an index 
+        """Instantiates an IndexEntry from 3 strings constituting an index
         entry in an index file.
 
         """
 
-        # Extract information from the line.
+        # Extract information from the header line.
         self.__parseHeader(header)
 
         # Read in second line of entry (comment line). The information
@@ -58,12 +66,12 @@ class IndexEntry:
         if comment.startswith('%'):
             self.comment = comment.strip()
         else:
-            print 'Warning: Comment line is skipped in %s,' % f.name
-            print '         since it is not starting with a %s!' % '%'
+            raise Exception()
+            print 'Warning: Comment line: "%s" is skipped,' % comment
+            print '         since it is not starting with a \%!'
+            self.comment = ''
 
-        # Read next line of index file (data file and run informations).
-        # Split line in data file name(s) and run time information. Then
-        # store the data file name(s) in entry.dataFiles.
+        # Split line in data file name(s) and run time information.
         self.dataFiles = []
         parts = data.split(', ')
         for elem in parts:
@@ -80,7 +88,8 @@ class IndexEntry:
                 # entry.dataFiles an attribute which contains another list
                 # is needed
 
-    def __eq__(self,other):
+    def __eq__(self, other):
+        """Comparison of indexEntry instances."""
         return (self.__class__ is other.__class__ and
                 self.funcId == other.funcId and
                 self.dim == other.dim and
@@ -90,18 +99,14 @@ class IndexEntry:
         return not self.__eq__(other)
 
     def __repr__(self):
-        return ('alg: "%s", F%d, dim: %d, dataFiles: %s, '
-                % (self.algId, self.funcId, self.dim, str(self.dataFiles)) +
-                'comment: "%s", f_t: %g' %(self.comment, self.targetFuncValue))
-
+        return ('{alg: %s, F%d, dim: %d}'
+                % (self.algId, self.funcId, self.dim))
 
     def __parseHeader(self, header):
-        """Extracts data from a header in the index files."""
+        """Extracts data from a header line in an index entry."""
 
-        # Split input line in and create new list.
+        # Split header into a list of key-value based on indexmainsep
         headerList = header.split(indexmainsep)
-        #split header into a list of key-value based on indexmainsep
-
 
         # Loop over all elements in the list and extract the relevant data.
         it = iter(headerList)
@@ -116,39 +121,29 @@ class IndexEntry:
                     elem += it.next()
 
                 elemList = elem.split('=')
+                #A key name is not expected to contain the string '='
                 elemFirst = elemList[0].strip()
-                #Do not expect a '=' in the key name
-                elemSecond = ''.join(elemList[1:]).strip()
+                elemSecond = ''.join(elemList[1:]).strip().strip('\'')
+                #TODO: use the quotes instead of stripping them to discern
+                #between data types?
 
-                # Process elements
-                # Assign values to the attributes of entry
-                if elemFirst == 'funcId':
-                    self.funcId = int(elemSecond)
-                elif elemFirst == 'DIM':
-                    self.dim = int(elemSecond)
-                #elif elemFirst == 'maxEvals':
-                    ## If maxEvals is 'Inf' it is stored as a string,
-                    ## else as an integer.
-                    #if elemSecond == 'Inf':
-                        #self.maxEvals = elemSecond
-                    #else:
-                        #self.maxEvals = int(elemSecond)
-                elif elemFirst == 'targetFuncValue':
-                    self.targetFuncValue = float(elemSecond)
-                elif elemFirst == 'Fopt':
-                    self.fopt = float(elemSecond)
-                elif elemFirst == 'Precision':
-                    self.targetFuncValue = float(elemSecond) + self.fopt
-                    #TODO: implies fopt has already been defined.
-                    self.precision = float(elemSecond)
-                elif elemFirst == 'algId':
-                    self.algId = elemSecond
-                else:
-                    print 'Warning: Reading some header data'
-                    print '         Can not handle quantity %s!' % elem
+                try:
+                    setattr(self, self.__attributes[elemFirst][0],
+                            self.__attributes[elemFirst][1](elemSecond))
+                except KeyError:
+                    print ('%s is not an expected attribute of IndexEntry.'
+                           % elemFirst)
+                    #setattr(self, elemFirst, elemSecond)
+                    continue
 
             except StopIteration:
                 break
+
+        #TODO: check that no compulsory attributes is missing:
+        #dim, funcId, algId and?
+
+        self.targetFuncValue = self.fopt + self.precision
+        #TODO: is this needed?
         return
 
     def obtainData_new(self):
@@ -166,7 +161,6 @@ class IndexEntry:
         self.vData = pproc.alignData(dataSets, 'vertical')
 
         return
-
 
     def obtainData(self):
         """Aligns all data and stores the result in hData and vData."""
@@ -292,26 +286,28 @@ class IndexEntry:
         return
 
 
-class Error(Exception):
-    """ Base class for errors. """
-    pass
+#class Error(Exception):
+    #""" Base class for errors. """
+    ##TODO: what is this for?
+    #pass
 
 
-class MissingValueError(Error):
-    """ Error if a mandatory value is not found within a file.
-        Returns a message with the missing value and the respective
-        file.
+#class MissingValueError(Error):
+    #""" Error if a mandatory value is not found within a file.
+        #Returns a message with the missing value and the respective
+        #file.
 
-    """
+    #"""
 
-    def __init__(self,value, filename):
-        self.value = value
-        self.filename = filename
+    ##TODO: what is this for?
+    #def __init__(self,value, filename):
+        #self.value = value
+        #self.filename = filename
 
-    def __str__(self):
-        message = 'The value %s was not found in file %s!' % \
-                  (self.value, self.filename)
-        return repr(message)
+    #def __str__(self):
+        #message = 'The value %s was not found in file %s!' % \
+                  #(self.value, self.filename)
+        #return repr(message)
 
 
 class IndexEntries(list):
@@ -319,7 +315,11 @@ class IndexEntries(list):
 
     #Do not inherit from set because IndexEntry instances are mutable.
     def __init__(self, indexFiles=[], verbose=True):
-        """Instantiate an IndexEntry from a list of index files."""
+        """Instantiate an IndexEntries from a list of index files.
+        If provided the list of index files will be splitted into index entries
+        which will instantiate IndexEntry and be added to this.
+
+        """
 
         if not indexFiles:
             self = list()
@@ -345,7 +345,7 @@ class IndexEntries(list):
                     header = f.next()
                     comment = f.next()
                     tmpline = f.next()
-                    # Add the path to the index file to the data files in 
+                    # Add the path to the index file to the data files in
                     # tmpline.
                     data = []
                     for i in tmpline.split(indexmainsep):
