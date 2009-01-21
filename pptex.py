@@ -253,12 +253,12 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
                             sgn + tmp[1][-1])                            
             else:
                 if x < 0:
-                    tmp2 = ('\\mathit{' + tmp[0][1] + tmp[0][3] + '}' +  
+                    tmp2 = ('\\mathit{' + tmp[0][1] + tmp[0][3] + '}' +
                             '\\hspace{0.08em}e')
                     # tmp[0][1] + tmp[0][3]: tmp[0][0] is the sign
 
                     #TODO: hack because we change the number format
-                    tmp2 += '\\mathit{'+ ('%+d' % (int(tmp[1][-1]) - 1)) + '}'
+                    tmp2 += '\\mathit{%+d}' % (int(tmp[1]) - 1)
                 else:
                     tmp2 = tmp[0] + '\\mathrm{\\hspace{0.10em}e}' + tmp[1][-1] 
         else:
