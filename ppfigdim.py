@@ -14,9 +14,14 @@ plt.rc("xtick", labelsize=20)
 plt.rc("ytick", labelsize=20)
 plt.rc("font", size=20)
 plt.rc("legend", fontsize=20)
+#Warning! this affects all other plots in the package.
+#TODO: put it elsewhere.
+
 #valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #colors = {1.0:'b', 1.0e-2:'g', 1.0e-4:'r', 1.0e-6:'c', 1.0e-8:'m'} #TODO colormaps!
-colors = ('c', 'g', 'b', 'r', 'm', 'c', 'g', 'b', 'r', 'm')  # should not be too short
+#colors = ('c', 'g', 'b', 'r', 'm', 'c', 'g', 'b', 'r', 'm')  # should not be too short
+colors = ('b', 'g', 'r', 'c', 'm', 'c', 'g', 'b', 'r', 'm')
+# Changed to correspond with the colors in pprldistr.
 
 #Either we read it in a file (flexibility) or we hard code it here.
 funInfos = {}
@@ -51,6 +56,7 @@ def createFigure(data, figHandle=None):
 
         Output:
         lines - handles of the Line2D instances.
+
     """
 
     # initialize figure and handles
@@ -67,9 +73,9 @@ def createFigure(data, figHandle=None):
         # Plot figure
         tmp = scipy.where(scipy.isfinite(data[:,i]))[0]
         if tmp.size > 0:
-            lines.extend(plt.plot(data[tmp,0], yValues[tmp]))
-            lines.extend(plt.plot([data[tmp[-1],0]], [yValues[tmp[-1]]],
-                                  marker='+'))
+            lines.append(plt.plot(data[tmp,0], yValues[tmp]))
+            #lines.append(plt.plot([data[tmp[-1],0]], [yValues[tmp[-1]]],
+                                  #marker='+'))
             #TODO: larger size.
         #else: ???
 
@@ -77,9 +83,9 @@ def createFigure(data, figHandle=None):
 
 
 def customizeFigure(figHandle, figureName = None, title='',
-                    fileFormat=('png','eps'), labels=None, 
-                    scale=['linear','linear'], legend=list(), locLegend='best',
-                    verbose=True):
+                    fileFormat=('png','eps'), labels=None,
+                    scale=['linear','linear'], legendh=list(), legend=list(),
+                    locLegend='best', verbose=True):
     """ Customize a figure by adding a legend, axis label, etc. At the
         end the figure is saved.
 
@@ -137,7 +143,10 @@ def customizeFigure(figHandle, figureName = None, title='',
 
     # Legend
     if len(legend) > 0:
-        axisHandle.legend(legend,locLegend)
+        if len(legendh) > 0:
+            axisHandle.legend(legendh, legend, locLegend)
+        else:
+            axisHandle.legend(legend, locLegend)
     axisHandle.set_title(title)
 
     # Save figure
@@ -200,7 +209,8 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
     for func in sortByFunc:
         filename = os.path.join(outputdir,'ppdata_f%d' % (func))
         fig = plt.figure()
-
+        legend = []
+        line = []
         for i in range(len(valuesOfInterest)):
             tmp = []
             for dim in sorted(sortByFunc[func]):
@@ -211,17 +221,18 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
             if len(tmp) > 0:
                 tmp = scipy.vstack(tmp)
                 h = createFigure(tmp[:, [0, 1]], fig) #ENFEs
-                for j in h:
-                    plt.setp(j, 'color', colors[i], 'linestyle', '-',
-                             'marker', 'o', 'markersize', 12)
+                #len(h) should be 1.
+                plt.setp(h[0], 'color', colors[i], 'linestyle', '-',
+                         'marker', 'o', 'markersize', 12)
+                line.extend(h[0])
+
+                legend.append('%+d' % (scipy.log10(valuesOfInterest[i])))
 
                 h = createFigure(tmp[:,[0, -1]], fig) #median
-                for j in h:
-                    plt.setp(j, 'color', colors[i], 'linestyle', '--',
-                             'marker', '+', 'markersize', 20, 'markeredgewidth', 3)
-                    #Do all this in createFigure
-
-        #TODO: legend
+                #len(h) should be 1.
+                plt.setp(h, 'color', colors[i], 'linestyle', '--',
+                         'marker', '+', 'markersize', 20, 'markeredgewidth', 3)
+                #Do all this in createFigure?
 
         if isBenchmarkinfosFound:
             title = funInfos[func]
@@ -230,8 +241,8 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
 
         customizeFigure(fig, filename, title=title,
                         fileFormat=('eps','png'), labels=['', ''],
-                        scale=['log','log'], locLegend='best',
-                        verbose=verbose)
+                        scale=['log','log'], legendh=line, legend=legend, 
+                        locLegend='best', verbose=verbose)
 
         plt.close(fig)
 
