@@ -104,14 +104,15 @@ def customizeFigure(figHandle, figureName = None, title='',
     axisHandle.set_xscale(scale[0])
     axisHandle.set_yscale(scale[1])
 
-    tmp = axisHandle.get_xlim()
-    # axisHandle.set_xlim(tmp[0], min(tmp[1], 40))  
-    axisHandle.set_xlim(1.9, 45)  # TODO should become variable
     # Annotate figure
     if labels is None: #Couldn't it be ''?
         axisHandle.set_xlabel(labels[0])
         axisHandle.set_ylabel(labels[1])
     #axisHandle.invert_xaxis()
+    dimticklist = (2, 3, 4, 5, 10, 20, 40)  # TODO: at some point put out of the function
+    dimannlist = (2, 3, '', 5, 10, 20, 40)  # TODO: at some point put out of the function
+    axisHandle.set_xticks(dimticklist)
+    axisHandle.set_xticklabels([str(n) for n in dimannlist])
 
     # Grid options
     axisHandle.grid('True')
@@ -120,6 +121,14 @@ def customizeFigure(figHandle, figureName = None, title='',
     for i in tmp:
         tmp2.append('%d' % round(scipy.log10(i)))
     axisHandle.set_yticklabels(tmp2)
+
+    plt.plot((4,44), (10,110), 'k-')
+    plt.plot((4,44), (10,1100), 'k-')
+
+    # axes limites
+    tmp = axisHandle.get_xlim()
+    # axisHandle.set_xlim(tmp[0], min(tmp[1], 40))  
+    axisHandle.set_xlim(1.8, 45)  # TODO should become variable
 
     # Legend
     if len(legend) > 0:
