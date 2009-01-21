@@ -16,7 +16,7 @@ plt.rc("font", size=20)
 plt.rc("legend", fontsize=20)
 #valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #colors = {1.0:'b', 1.0e-2:'g', 1.0e-4:'r', 1.0e-6:'c', 1.0e-8:'m'} #TODO colormaps!
-colors = ('b', 'g', 'r', 'c', 'm', 'b', 'g', 'r', 'c', 'm')  # should not be too short
+colors = ('c', 'g', 'b', 'r', 'm', 'c', 'g', 'b', 'r', 'm')  # should not be too short
 
 #Either we read it in a file (flexibility) or we hard code it here.
 funInfos = {}
@@ -105,30 +105,35 @@ def customizeFigure(figHandle, figureName = None, title='',
     axisHandle.set_yscale(scale[1])
 
     # Annotate figure
-    if labels is None: #Couldn't it be ''?
+    if labels is not None: #Couldn't it be ''?
         axisHandle.set_xlabel(labels[0])
         axisHandle.set_ylabel(labels[1])
-    #axisHandle.invert_xaxis()
-    dimticklist = (2, 3, 4, 5, 10, 20, 40)  # TODO: at some point put out of the function
-    dimannlist = (2, 3, '', 5, 10, 20, 40)  # TODO: at some point put out of the function
-    axisHandle.set_xticks(dimticklist)
-    axisHandle.set_xticklabels([str(n) for n in dimannlist])
 
     # Grid options
     axisHandle.grid('True')
+    ylim_org = axisHandle.get_ylim()
+    # linear and quadratic "grid"
+    plt.plot((2,200), (1,1e2), 'k:')    # TODO: this should be done before the real lines are plotted? 
+    plt.plot((2,200), (1,1e4), 'k:')
+    plt.plot((2,200), (1e3,1e5), 'k:')  # yet experimental
+    plt.plot((2,200), (1e3,1e7), 'k:')
+
+    # axes limites
+    axisHandle.set_xlim(1.8, 45)                # TODO should become input arg?
+    axisHandle.set_ylim(10**-0.2, ylim_org[1])  
+
+    # ticks on axes
+    #axisHandle.invert_xaxis()
+    dimticklist = (2, 3, 4, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
+    dimannlist = (2, 3, '', 5, 10, 20, 40)  # TODO: should become input arg at some point? 
+    axisHandle.set_xticks(dimticklist)
+    axisHandle.set_xticklabels([str(n) for n in dimannlist])
+
     tmp = axisHandle.get_yticks()
     tmp2 = []
     for i in tmp:
         tmp2.append('%d' % round(scipy.log10(i)))
     axisHandle.set_yticklabels(tmp2)
-
-    plt.plot((4,44), (10,110), 'k-')
-    plt.plot((4,44), (10,1100), 'k-')
-
-    # axes limites
-    tmp = axisHandle.get_xlim()
-    # axisHandle.set_xlim(tmp[0], min(tmp[1], 40))  
-    axisHandle.set_xlim(1.8, 45)  # TODO should become variable
 
     # Legend
     if len(legend) > 0:
@@ -207,11 +212,13 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
                 tmp = scipy.vstack(tmp)
                 h = createFigure(tmp[:, [0, 1]], fig) #ENFEs
                 for j in h:
-                    plt.setp(j,'color',colors[i])
+                    plt.setp(j, 'color', colors[i], 'linestyle', '-',
+                             'marker', 'o', 'markersize', 12)
 
                 h = createFigure(tmp[:,[0, -1]], fig) #median
                 for j in h:
-                    plt.setp(j,'color',colors[i],'linestyle','--')
+                    plt.setp(j, 'color', colors[i], 'linestyle', '--',
+                             'marker', '+', 'markersize', 20, 'markeredgewidth', 3)
                     #Do all this in createFigure
 
         #TODO: legend
