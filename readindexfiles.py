@@ -117,7 +117,7 @@ class IndexEntry:
                 #We need to catch the case where a value contains indexmainsep
                 #This could happen when the key algId and the value is a string
                 #and is caught by counting quotes.
-                while elem.count("'")%2 != 0: 
+                while elem.count("'")%2 != 0:
                     elem += it.next()
 
                 elemList = elem.split('=')
@@ -185,11 +185,12 @@ class IndexEntry:
         idxCurrentF = scipy.inf # Minimization
         currentF = scipy.power(10, float(idxCurrentF) / nbPtsF)
 
+        #~ set_trace()
         # Parallel construction of the post-processed arrays:
-        #set_trace()
-        while any(isRead):
+        while any(isRead) or any(f <= currentF):
             for i in range(len(dataSets)):
                 curDataSet = dataSets[i]
+
                 if isRead[i]:
                     evals[i] = curDataSet.set[curDataSet.currentPos, idxEvals]
                     f[i] = curDataSet.set[curDataSet.currentPos, idxF]
@@ -206,10 +207,12 @@ class IndexEntry:
                 idxCurrentF = -scipy.inf
                 currentF = 0.
             else:
-                # TODO modify this line so that idxCurrentF is the max of the f
-                # where isRead still is True.
-                idxCurrentF = min(idxCurrentF, 
-                                  int(scipy.ceil(scipy.log10(max(f)) * 
+                tmp = [] #Get the f that are still of interest.
+                for i in f:
+                    if i <= currentF:
+                        tmp.append(i)
+                idxCurrentF = min(idxCurrentF,
+                                  int(scipy.ceil(scipy.log10(max(tmp)) *
                                                  nbPtsF)))
                 currentF = scipy.power(10, float(idxCurrentF) / nbPtsF)
             #set_trace()
@@ -233,47 +236,42 @@ class IndexEntry:
             dataFiles[i] = '.'.join(dataFiles[i].split('.')[:-1]) + '.tdat'
             #removes the extension and add '.tdat' instead.
 
+        #TODO do not align on the chosen evals but the one we get!
         dataSets2 = pproc.split(dataFiles)
         vData = []
-        #for vertical alignment
+        #for vertical alignment:
         evals2 = len(dataSets2) * [0] # updated list of function evaluations.
         f2 = len(dataSets2) * [0] # updated list of function values.
         isRead2 = len(dataSets2) * [True] # read status of dataSets.
 
-        idxCurrentEvals = 0
-        idxDIMCurrentEvals = 0
-        currentEvals = scipy.power(10, float(idxCurrentEvals) / nbPtsEvals)
+        currentEvals = 1
 
         while any(isRead2):
+            nextCurEvals = []
             for i in range(len(dataSets2)):
                 curDataSet = dataSets2[i]
 
                 #set_trace()
                 if isRead2[i]:
-                    evals2[i] = curDataSet.set[curDataSet.currentPos2, idxEvals]
-                    f2[i] = curDataSet.set[curDataSet.currentPos2, idxF]
-                    while (curDataSet.currentPos2 < len(curDataSet.set) - 1 and
-                           evals2[i] < scipy.floor(currentEvals)):
-                        curDataSet.currentPos2 += 1
+                    while (curDataSet.currentPos2 < len(curDataSet.set) and
+                           (curDataSet.set[curDataSet.currentPos2, idxEvals]
+                            <= currentEvals)):
                         evals2[i] = curDataSet.set[curDataSet.currentPos2,
                                                    idxEvals]
                         f2[i] = curDataSet.set[curDataSet.currentPos2, idxF]
-                    if not (curDataSet.currentPos2 < len(curDataSet.set) - 1):
+                        curDataSet.currentPos2 += 1
+
+                    if (curDataSet.currentPos2 < len(curDataSet.set)):
+                        nextCurEvals.append(curDataSet.set[curDataSet.currentPos2, idxEvals])
+                    else:
                         isRead2[i] = False
-            tmp = [scipy.floor(currentEvals)]
+
+            tmp = [currentEvals]
             tmp.extend(evals2)
             tmp.extend(f2)
             vData.append(tmp)
-            while (scipy.floor(currentEvals) >=
-                   scipy.floor(scipy.power(10, 
-                               float(idxCurrentEvals) / nbPtsEvals))):
-                idxCurrentEvals += 1
-            while (scipy.floor(currentEvals) >=
-                   self.dim * scipy.power(10, idxDIMCurrentEvals)):
-                idxDIMCurrentEvals += 1
-            #set_trace()
-            currentEvals = min(scipy.power(10, float(idxCurrentEvals) / nbPtsEvals),
-                               self.dim * scipy.power(10, idxDIMCurrentEvals))
+            if nextCurEvals: #Else isRead2 is supposed to be all false.
+                currentEvals = min(nextCurEvals)
 
         try:
             self.vData = scipy.vstack(vData)
@@ -368,7 +366,7 @@ class IndexEntries(list):
         for i in self:
             i.obtainData()
             if verbose:
-                print 'Obtaining data for %s' % i.__repr__()
+                print 'Obtained data for %s' % i.__repr__()
 
     def append(self, o):
         """Redefines the append method to check for unicity."""
