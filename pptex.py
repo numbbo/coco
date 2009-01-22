@@ -191,7 +191,8 @@ def writeTable2(entries, filename, fontSize='scriptsize',
 
     # Write data
     for i in range(0,data.shape[1]):
-        writeArray(f, data[:,i], fullformat, fontSize2)
+        writeArray(f, data[:,i], fullformat, fontSize2,
+                   suppress_entry = None) # only one line of f-values
 
     # Finish writing the table and close file.
     f.write('\end{tabular} \n')
@@ -206,24 +207,34 @@ def writeTable2(entries, filename, fontSize='scriptsize',
         print 'Wrote in %s.' %(filename+'.tex')
 
 
-def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
+def writeArray(file, vector, format, fontSize, sep = ' & ', linesep = '\\\\ \n',
+               suppress_entry = None):
     """ Writes components of an numeric array in LaTex file with additional
-        Tex-formating features.
+        Tex-formating features. Negative numbers are printed positive but in
+        italics. 
 
         Inputs:
         file - file in which the output is written to
         vector - 1d-array with only numeric entries
-        format - format specifier for each column
+        format - format specifier for each column.
+            CAVE: numbers are only printed correctly,
+                  if format specifies two numbers of prec.
         fontSize - size of characters in math environment
 
         Optional Inputs:
         sep - string which is written between the numeric elements
         format - format for the numeric values (e.g. 'e','f')
-
+        suppressentry - list of boolean of vector length, if true 
+           a '.' is written. Used to not repeat the same line of
+           function values, 
     """
 
-    # TODO: I think the written numbers are only correct, if the input format specifies
-    #       two numbers of precision. Otherwise the rounding procedure is wrong. 
+    # TODO (see CAVE above): I think the written numbers are only correct, if the 
+    #     input format specifies two numbers of precision. Otherwise the rounding procedure is wrong. 
+
+    # handle input arg
+    if suppress_entry is None:
+        suppress_entry = len(vector) * (False,)
 
     # Loop through vector
     for id, x in enumerate(vector):
@@ -231,7 +242,9 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
         #print len(vector)
 
         # Filter nan entries
-        if scipy.isinf(x):
+        if suppress_entry[id]:
+            tmp2 = '.'
+        elif scipy.isinf(x):
             tmp2 = '\infty'
         elif scipy.isnan(x):
             tmp2 = '-'
@@ -260,8 +273,8 @@ def writeArray(file, vector, format, fontSize, sep = ' & ',linesep = '\\\\ \n'):
                     tmp2 = (tmp[0][0] + '\\!\\mathrm{\\hspace{0.10em}e}' +
                             sgn + tmp[1][-1])
             else:
-                if x < 0:
-                    tmp2 = ('\\textit{' + tmp[0][1] + tmp[0][3] + '}' +  # mathit replaced with textit
+                if x < 0:  
+                    tmp2 = ('\\textit{' + tmp[0][1] + tmp[0][3] + '}' +  # textit is narrower 
                             '\\hspace{0.00em}e')
                     # tmp[0][1] + tmp[0][3]: tmp[0][0] is the sign
 
