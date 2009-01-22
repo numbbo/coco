@@ -19,9 +19,8 @@ plt.rc("legend", fontsize=20)
 
 #valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #colors = {1.0:'b', 1.0e-2:'g', 1.0e-4:'r', 1.0e-6:'c', 1.0e-8:'m'} #TODO colormaps!
-#colors = ('c', 'g', 'b', 'r', 'm', 'c', 'g', 'b', 'r', 'm')  # should not be too short
-colors = ('b', 'g', 'r', 'c', 'm', 'c', 'g', 'b', 'r', 'm')
-# Changed to correspond with the colors in pprldistr.
+colors = ('g', 'c', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be too short
+# should correspond with the colors in pprldistr.
 
 #Either we read it in a file (flexibility) or we hard code it here.
 funInfos = {}
@@ -224,16 +223,16 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
                 data = scipy.vstack(data)
                 h = createFigure(data[:, [0, 1]], fig) #ENFEs
                 #len(h) should be 1.
-                plt.setp(h[0], 'color', colors[i], 'linestyle', '-',
-                         'marker', 'o', 'markersize', 12)
+                plt.setp(h[0], 'color', colors[i], 'linestyle', '',  # the problem: missing point should not be connected with lines
+                         'marker', 'o', 'markersize', 20)
                 line.extend(h[0])
 
-                legend.append('%+d' % (scipy.log10(valuesOfInterest[i])))
+                legend.append(' %+d' % (scipy.log10(valuesOfInterest[i])))
 
                 h = createFigure(data[:,[0, -1]], fig) #median
                 #len(h) should be 1.
-                plt.setp(h, 'color', colors[i], 'linestyle', '--',
-                         'marker', '+', 'markersize', 20, 'markeredgewidth', 3)
+                plt.setp(h, 'color', colors[i], 'linestyle', '',
+                         'marker', '+', 'markersize', 30, 'markeredgewidth', 5)
                 #Do all this in createFigure?
 
         if isBenchmarkinfosFound:

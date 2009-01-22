@@ -13,6 +13,7 @@ from pdb import set_trace
 #__all__ = []
 
 rldColors = ['b', 'g', 'r', 'c', 'm', 'b', 'g', 'r', 'c', 'm']  # might not be long enough
+rldColors = ('g', 'c', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be too short
 
 plt.rc("axes", labelsize=20, titlesize=24)
 plt.rc("xtick", labelsize=20)
@@ -104,8 +105,8 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'), verbose=True):
     axisHandle.set_xlim((1., tmp[1]))
     #axisHandle.invert_xaxis()
     axisHandle.set_ylim((0.0, 1.0))
-    axisHandle.set_xlabel('log10 of Deltaf_best/Deltaf')
-    axisHandle.set_ylabel('proportion of successful runs')
+    axisHandle.set_xlabel('log10 of Df / Dftarget')
+    # axisHandle.set_ylabel('proportion of successful runs')
     # Grid options
     axisHandle.grid('True')
     xtic = axisHandle.get_xticks()
@@ -113,7 +114,7 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'), verbose=True):
     for j in xtic:
         newxtic.append('%d' % round(scipy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
-
+        
     # Save figure
     for entry in fileFormat:
         plt.savefig(figureName + '.' + entry, dpi = 120,
