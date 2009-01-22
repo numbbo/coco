@@ -33,11 +33,10 @@ tabDimsOfInterest = [5, 20]    # dimension which are displayed in the tables
 # tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 tabValsOfInterest = (10, 1.0, 1e-1, 1.0e-3, 1.0e-5, 1.0e-8)
 
-figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # should 
+figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # 
 
 rldDimsOfInterest = (5, 20)
-#rldValsOfInterest = (1e-8, 1e-5, 1e-2, 10)
-rldValsOfInterest = (10, 1e-2, 1e-5, 1e-8)
+rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) 
 #Put backward to have the legend in the same order as the lines.
 
 #CLASS DEFINITIONS
