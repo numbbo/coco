@@ -21,7 +21,7 @@ ranksOfInterest = (1, 2)
 idxNbSuccRuns = (4, 13) #TODO: global variable?
 #TODO: this global variables depend on ranksOfInterest
 
-maxEvalsFactor = 1e4
+maxEvalsFactor = 5e4
 
 class Error(Exception):
     """ Base class for errors. """
@@ -211,7 +211,7 @@ def writeArray(file, vector, format, fontSize, sep = ' & ', linesep = '\\\\ \n',
                suppress_entry = None):
     """ Writes components of an numeric array in LaTex file with additional
         Tex-formating features. Negative numbers are printed positive but in
-        italics. 
+        italics.
 
         Inputs:
         file - file in which the output is written to
@@ -224,13 +224,13 @@ def writeArray(file, vector, format, fontSize, sep = ' & ', linesep = '\\\\ \n',
         Optional Inputs:
         sep - string which is written between the numeric elements
         format - format for the numeric values (e.g. 'e','f')
-        suppressentry - list of boolean of vector length, if true 
+        suppressentry - list of boolean of vector length, if true
            a '.' is written. Used to not repeat the same line of
-           function values, 
+           function values,
     """
 
-    # TODO (see CAVE above): I think the written numbers are only correct, if the 
-    #     input format specifies two numbers of precision. Otherwise the rounding procedure is wrong. 
+    # TODO (see CAVE above): I think the written numbers are only correct, if the
+    #     input format specifies two numbers of precision. Otherwise the rounding procedure is wrong.
 
     # handle input arg
     if suppress_entry is None:
@@ -273,16 +273,16 @@ def writeArray(file, vector, format, fontSize, sep = ' & ', linesep = '\\\\ \n',
                     tmp2 = (tmp[0][0] + '\\!\\mathrm{\\hspace{0.10em}e}' +
                             sgn + tmp[1][-1])
             else:
-                if x < 0:  
-                    tmp2 = ('\\textit{' + tmp[0][1] + tmp[0][3] + '}' +  # textit is narrower 
+                if x < 0:
+                    tmp2 = ('\\textit{' + tmp[0][1] + tmp[0][3] + '}' +  # textit is narrower
                             '\\hspace{0.00em}e')
                     # tmp[0][1] + tmp[0][3]: tmp[0][0] is the sign
 
                     #TODO: hack because we change the number format
                     # tmp2 += '\\mathit{%+d}' % (int(tmp[1]) - 1)
-                    tmp2 += ('\\textit{%+d}' % (int(tmp[1]) - 1)).replace('-', '--') 
+                    tmp2 += ('\\textit{%+d}' % (int(tmp[1]) - 1)).replace('-', '--')
                 else:
-                    tmp2 = tmp[0] + '\\mathrm{\\hspace{0.10em}e}' + tmp[1][-1] 
+                    tmp2 = tmp[0] + '\\mathrm{\\hspace{0.10em}e}' + tmp[1][-1]
         else:
             tmp2 = str(format[id]%x)
 
@@ -311,7 +311,7 @@ def sortIndexEntries(indexEntries, dimOfInterest):
 
 def generateData(indexEntry, targetFuncValues):
     """Returns data to be plotted from indexEntry and the target function values."""
-
+    #~ set_trace()
     res = []
     it = iter(indexEntry.hData)
     i = it.next()
@@ -325,24 +325,28 @@ def generateData(indexEntry, targetFuncValues):
             try:
                 i = it.next()
             except(StopIteration):
-                isFinished = True
                 break
         success = []
         for j in range(1, indexEntry.nbRuns+1):
-            success.append(i[indexEntry.nbRuns+j] <= targetF and 
+            success.append(i[indexEntry.nbRuns+j] <= targetF and
                            i[j] <= maxEvals)
 
         N = scipy.sort(i[1:indexEntry.nbRuns + 1])
 
         sp1m = bootstrap.sp1(N, issuccessful=success)
-        dispersionSP1 = bootstrap.draw(N, [10,90], samplesize=samplesize, 
-                                       func=bootstrap.sp1, 
+        dispersionSP1 = bootstrap.draw(N, [10,90], samplesize=samplesize,
+                                       func=bootstrap.sp1,
                                        args=[0,success])[0]
         curLine = [targetF, sp1m[0], dispersionSP1[0],
                    dispersionSP1[1], sp1m[2]]
 
+        for j in indexEntry.vData:
+            if j[0] > maxEvals:
+                break
+        vals = scipy.sort(j[indexEntry.nbRuns+1:])
+        #Get the function values for maxEvals.
+
         tmp = []
-        vals = scipy.sort(indexEntry.vData[-1, indexEntry.nbRuns+1:])
         #set_trace()
         for j in ranksOfInterest:
             if sp1m[2] >= j:
