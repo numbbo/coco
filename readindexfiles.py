@@ -185,9 +185,9 @@ class IndexEntry:
         idxCurrentF = scipy.inf # Minimization
         currentF = scipy.power(10, float(idxCurrentF) / nbPtsF)
 
-        #~ set_trace()
+        #set_trace()
         # Parallel construction of the post-processed arrays:
-        while any(isRead) or any(f <= currentF):
+        while (any(isRead) or any(f <= currentF)) and currentF != 0.:
             for i in range(len(dataSets)):
                 curDataSet = dataSets[i]
 
@@ -203,14 +203,14 @@ class IndexEntry:
                     if not (curDataSet.currentPos < len(curDataSet.set) - 1):
                         isRead[i] = False
 
-            if max(f) <= 0: #TODO: Issue if max(f) < 0
+            tmp = [] #Get the f that are still of interest.
+            for i in f:
+                if i <= currentF:
+                    tmp.append(i)
+            if max(tmp) <= 0: #TODO: Issue if max(f) < 0
                 idxCurrentF = -scipy.inf
                 currentF = 0.
             else:
-                tmp = [] #Get the f that are still of interest.
-                for i in f:
-                    if i <= currentF:
-                        tmp.append(i)
                 idxCurrentF = min(idxCurrentF,
                                   int(scipy.ceil(scipy.log10(max(tmp)) *
                                                  nbPtsF)))
@@ -364,9 +364,9 @@ class IndexEntries(list):
         # TODO: While an indexEntry cannot be created by incrementally
         # appending the data files, we need this loop.
         for i in self:
-            i.obtainData()
             if verbose:
-                print 'Obtained data for %s' % i.__repr__()
+                print 'Obtaining data for %s' % i.__repr__()
+            i.obtainData()
 
     def append(self, o):
         """Redefines the append method to check for unicity."""
