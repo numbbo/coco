@@ -47,13 +47,14 @@ class IndexEntry:
 
     """
 
-    __attributes = {'funcId':('funcId', int), 'DIM':('dim',int),
-                    'Precision':('precision', float), 'Fopt':('fopt', float),
-                    'targetFuncValue':('targetFuncValue', float),
-                    'algId':('algId', str)}
+    # Private attribute used for the parsing of info files.
+    __attributes = {'funcId': ('funcId', int), 'DIM': ('dim',int),
+                    'Precision': ('precision', float), 'Fopt': ('fopt', float),
+                    'targetFuncValue': ('targetFuncValue', float),
+                    'algId': ('algId', str)}
 
     def __init__(self, header, comment, data):
-        """Instantiates an IndexEntry from 3 strings constituting an index
+        """Instantiate an IndexEntry from 3 strings constituting an index
         entry in an index file.
 
         """
@@ -89,7 +90,7 @@ class IndexEntry:
                 # is needed
 
     def __eq__(self, other):
-        """Comparison of indexEntry instances."""
+        """Compare indexEntry instances."""
         return (self.__class__ is other.__class__ and
                 self.funcId == other.funcId and
                 self.dim == other.dim and
@@ -103,7 +104,7 @@ class IndexEntry:
                 % (self.algId, self.funcId, self.dim))
 
     def __parseHeader(self, header):
-        """Extracts data from a header line in an index entry."""
+        """Extract data from a header line in an index entry."""
 
         # Split header into a list of key-value based on indexmainsep
         headerList = header.split(indexmainsep)
@@ -309,11 +310,18 @@ class IndexEntry:
 
 
 class IndexEntries(list):
-    """Set of instances of IndexEntry."""
+    """Set of instances of IndexEntry, implement some useful slicing functions.
+
+    This class is not needed elsewhere than in __init__.main. Everywhere else,
+    only a sequence of IndexEntry is needed.
+
+    """
 
     #Do not inherit from set because IndexEntry instances are mutable.
+
     def __init__(self, indexFiles=[], verbose=True):
         """Instantiate an IndexEntries from a list of index files.
+
         If provided the list of index files will be splitted into index entries
         which will instantiate IndexEntry and be added to this.
 
@@ -453,7 +461,6 @@ class IndexEntries(list):
 
 def main(indexFiles, indexEntries = IndexEntries(), verbose = True):
     """Extends or creates an IndexEntries from a list of indexFiles."""
-
     indexEntries.extend(IndexEntries(indexFiles, verbose))
 
     return indexEntries

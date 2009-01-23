@@ -17,12 +17,14 @@ plt.rc("legend", fontsize=20)
 #Warning! this affects all other plots in the package.
 #TODO: put it elsewhere.
 
+#TODO: does not depend on maxEvalsFactor!
+
 #valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #colors = {1.0:'b', 1.0e-2:'g', 1.0e-4:'r', 1.0e-6:'c', 1.0e-8:'m'} #TODO colormaps!
 colors = ('g', 'c', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be too short
 # should correspond with the colors in pprldistr.
 
-#Either we read it in a file (flexibility) or we hard code it here.
+#Get benchmark short infos.
 funInfos = {}
 isBenchmarkinfosFound = True
 try:
@@ -242,7 +244,7 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
 
         if func > 1:  # legends hiding points can be very annoying
             legend = ''
-            
+
         customizeFigure(fig, filename, title=title,
                         fileFormat=('eps','png'), labels=['', ''],
                         scale=['log','log'], legendh=line, legend=legend, 
