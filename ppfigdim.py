@@ -240,6 +240,9 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
         else:
             title = ''
 
+        if func > 1:  # legends hiding points can be very annoying
+            legend = ''
+            
         customizeFigure(fig, filename, title=title,
                         fileFormat=('eps','png'), labels=['', ''],
                         scale=['log','log'], legendh=line, legend=legend, 
