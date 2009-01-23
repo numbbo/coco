@@ -31,7 +31,8 @@ __all__  = ['readindexfiles', 'findindexfiles', 'ppfig', 'pptex', 'pprldistr',
 #colors = {2:'b', 3:'g', 5:'r', 10:'c', 20:'m', 40:'y'} #TODO colormaps!
 tabDimsOfInterest = [5, 20]    # dimension which are displayed in the tables
 # tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
-tabValsOfInterest = (10, 1.0, 1e-1, 1.0e-3, 1.0e-5, 1.0e-8)
+tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)  # 
+# tabValsOfInterest = (10, 1.0, 1e-1, 1.0e-4, 1.0e-8)  # 1e-3 1e-5
 
 figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # 
 

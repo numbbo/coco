@@ -21,7 +21,7 @@ ranksOfInterest = (1, 2)
 idxNbSuccRuns = (4, 13) #TODO: global variable?
 #TODO: this global variables depend on ranksOfInterest
 
-maxEvalsFactor = 5e4
+maxEvalsFactor = 1e6
 
 class Error(Exception):
     """ Base class for errors. """
