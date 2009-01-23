@@ -245,7 +245,7 @@ def main(argv=None):
                     if i.dim in tabDimsOfInterest:
                         tmp.append(i)
                 if tmp:
-                    filename = os.path.join(outputdir,'ppdata_%d' % fun)
+                    filename = os.path.join(outputdir,'ppdata_f%d' % fun)
                     pptex.main(tmp, tabValsOfInterest, filename, verbose)
 
         if isrldistr:
