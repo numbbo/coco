@@ -52,15 +52,21 @@ class Usage(Exception):
 
 #FUNCTION DEFINITIONS
 
-def createIndexEntries(args, outputdir, isPickled, verbose=True):
-    """Returns a list of post-processed ÏndexEntries from a list of inputs.
+def createIndexEntries(args, verbose=True):
+    """Returns an instance of IndexEntries from a list of inputs.
     Keyword arguments:
     args -- list of strings being either info file names, folder containing 
             info files or pickled data files.
-    verbose
+    verbose -- controls verbosity.
     Outputs:
     indexEntries -- list of IndexEntry instances.
+
+    Exception:
+    Usage --
+
     """
+
+    #TODO split pickling process and reading.
     indexFiles = []
     args = set(args) #for unicity
     pickles = [] # list of pickled
@@ -100,26 +106,6 @@ def createIndexEntries(args, outputdir, isPickled, verbose=True):
         #If indexFiles is not empty, some new indexEntries are added and
         #then some old pickled indexEntries may need to be updated.
         indexEntries.extend(readindexfiles.IndexEntries(indexFiles, verbose))
-
-        if isPickled:
-            if not os.path.exists(outputdir):
-                os.mkdir(outputdir)
-                if verbose:
-                    print '%s was created.' % (outputdir)
-
-            for i in indexEntries:
-                filename = os.path.join(outputdir, 'ppdata_f%d_%d'
-                                                    %(i.funcId, i.dim))
-                try:
-                    f = open(filename + '.pickle','w')
-                    pickle.dump(i, f)
-                    f.close()
-                    if verbose:
-                        print 'Saved pickle in %s.' %(filename+'.pickle')
-                except IOError, (errno, strerror):
-                    print "I/O error(%s): %s" % (errno, strerror)
-                except PicklingError:
-                    print "Could not pickle %s" %(i)
 
     return indexEntries
 
@@ -170,7 +156,7 @@ def main(argv=None):
             no output.
 
     Exceptions raised:
-    UsageError --
+    Usage --
     """
 
     if argv is None:
@@ -221,41 +207,59 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        indexEntries = createIndexEntries(args, outputdir, isPickled, verbose)
-        sortedByDim = indexEntries.sortByDim()
-        sortedByFunc = indexEntries.sortByFunc()
-
-        if isfigure or istab or isrldistr:
+        if isPickled or isfigure or istab or isrldistr:
             if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
                 if verbose:
                     print '%s was created.' % (outputdir)
+
+        indexEntries = createIndexEntries(args, verbose)
+
+        if isPickled:
+            #Should get in there only if some data were not pickled.
+
+            for i in indexEntries:
+                filename = os.path.join(outputdir, 'ppdata_f%d_%d'
+                                                    %(i.funcId, i.dim))
+                try:
+                    f = open(filename + '.pickle','w')
+                    pickle.dump(i, f)
+                    f.close()
+                    #if verbose:
+                        #print 'Saved pickle in %s.' %(filename+'.pickle')
+                except IOError, (errno, strerror):
+                    print "I/O error(%s): %s" % (errno, strerror)
+                except PicklingError:
+                    print "Could not pickle %s" %(i)
+
 
         if isfigure:
             ppfigdim.main(indexEntries, figValsOfInterest, outputdir,
                           verbose)
 
         if istab:
+            sortedByFunc = indexEntries.sortByFunc()
             for fun, sliceFun in sortedByFunc.items():
                 tmp = []
                 for i in sliceFun:
                     if i.dim in tabDimsOfInterest:
                         tmp.append(i)
                 if tmp:
-                    pptex.main(tmp, tabValsOfInterest, outputdir, 'f%d' % fun,
-                               verbose)
+                    filename = os.path.join(outputdir,'ppdata_%d' % fun)
+                    pptex.main(tmp, tabValsOfInterest, filename, verbose)
 
         if isrldistr:
+            sortedByDim = indexEntries.sortByDim()
             for dim, sliceDim in sortedByDim.items():
                 if dim in rldDimsOfInterest:
-                    pprldistr.main(sliceDim, rldValsOfInterest, 
-                                   'dim%02dall' % dim, outputdir, verbose)
+                    pprldistr.main(sliceDim, rldValsOfInterest,
+                                   outputdir, 'dim%02dall' % dim, verbose)
                     sortedByFG = sliceDim.sortByFuncGroup()
                     #set_trace()
-                    for funcGroup, sliceFuncGroup in sortedByFG.items():
+                    for fGroup, sliceFuncGroup in sortedByFG.items():
                         pprldistr.main(sliceFuncGroup, rldValsOfInterest,
-                                       'dim%02d%s' % (dim, funcGroup),
-                                       outputdir, verbose)
+                                       outputdir, 'dim%02d%s' % (dim, fGroup),
+                                       verbose)
 
         #if verbose:
             #print 'total ps = %g\n' % (float(scipy.sum(ps))/scipy.sum(nbRuns))

@@ -9,6 +9,8 @@ import scipy
 from bbob_pproc import bootstrap
 from pdb import set_trace
 
+
+#GLOBAL VARIABLES DEFINITION
 samplesize = 15 #Bootstrap sample size
 header = ['$\Delta f$', '$\ENFEs$', '10\%', '90\%', '$\#$',
           'best', '$2^\mathrm{nd}$', 'med.', '$2^\mathrm{nd}$w.', 'worst']
@@ -23,6 +25,8 @@ idxNbSuccRuns = (4, 13) #TODO: global variable?
 
 maxEvalsFactor = 1e6
 
+
+#CLASS DEFINITION
 class Error(Exception):
     """ Base class for errors. """
     pass
@@ -46,12 +50,12 @@ class WrongInputSizeError(Error):
         return repr(message)
 
 
-
+#TOP LEVEL METHODS
 def writeTable(data, fileName, header = list(), fontSize = 'tiny',
                fontSize2 = 'scriptscriptstyle', format = list(), keep_open = 0,
                verbose = True):
-    """Writes data of array in a *.tex file. This file then can be used
-       in LaTex as input for tables. The file must be placed inside a
+    """DEPRECATED: Writes data of array in a *.tex file. This file then can be 
+       used in LaTex as input for tables. The file must be placed inside a
        \begin{table} ... \end{table} environment.
 
        Mandatory inputs:
@@ -110,12 +114,12 @@ def writeTable(data, fileName, header = list(), fontSize = 'tiny',
     if verbose:
         print 'Wrote in %s.' %(fileName+'.tex')
 
+
 def writeTable2(entries, filename, fontSize='scriptsize',
-                fontSize2='scriptstyle', keep_open=0,
-                verbose=True):
+                fontSize2='scriptstyle', verbose=True):
     """Writes data of array in a *.tex file. This file then can be used
-       in LaTex as input for tables. The file must be placed inside a
-       \begin{table} ... \end{table} environment.
+       in LaTex as input for tables. The input must be placed inside a
+       table environment.
 
        Mandatory inputs:
        entries - Sequence of IndexEntry to be displayed.
@@ -124,13 +128,10 @@ def writeTable2(entries, filename, fontSize='scriptsize',
        Optional inputs:
        fontSize - size of fonts as they appear in the LaTex table (string)
        fontSize2 - size of the fonts in the math environment (string)
-       keep_open - if nonzero the file will not be closed
-       width -  number of dimension (from the same function) which are
-                displayed in the table. The first column (Ft) is only
-                displayed once.
 
     """
 
+    #TODO cleanup tex ouput.
     # Assemble header for whole table (contains more than 1 dimension)
     width = len(entries)
 
@@ -164,6 +165,9 @@ def writeTable2(entries, filename, fontSize='scriptsize',
     if verbose:
         if os.path.exists(filename):
             print 'Overwrite old file %s!' %(filename + '.tex')
+        else:
+            print 'Write in %s.' %(filename+'.tex')
+
 
     try:
         f = open(filename + '.tex','w')
@@ -216,16 +220,9 @@ def writeTable2(entries, filename, fontSize='scriptsize',
     f.write('\end{' + fontSize + '} \n')
     #f.write('\end{table*} \n')
 
-    # Check if file should be closed
-    if keep_open == 0:
-        f.close()
 
-    if verbose:
-        print 'Wrote in %s.' %(filename+'.tex')
-
-
-def writeArray(file, vector, format, fontSize, sep = ' & ', linesep = '\\\\ \n',
-               suppress_entry = None):
+def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
+               suppress_entry=None):
     """ Writes components of an numeric array in LaTex file with additional
         Tex-formating features. Negative numbers are printed positive but in
         italics.
@@ -246,8 +243,9 @@ def writeArray(file, vector, format, fontSize, sep = ' & ', linesep = '\\\\ \n',
            function values again.  
     """
 
-    # TODO (see CAVE above): I think the written numbers are only correct, if the
-    #     input format specifies two numbers of precision. Otherwise the rounding procedure is wrong.
+    # TODO (see CAVE above): I think the written numbers are only correct, if 
+    # the input format specifies two numbers of precision. Otherwise the 
+    # rounding procedure is wrong.
 
     # handle input arg
     if suppress_entry is None:
@@ -315,20 +313,23 @@ def writeArray(file, vector, format, fontSize, sep = ' & ', linesep = '\\\\ \n',
         file.write(tmp2)
 
 
-def sortIndexEntries(indexEntries, dimOfInterest):
-    """From a list of IndexEntry, returs a post-processed sorted dictionary."""
-    sortByFunc = {}
-    for elem in indexEntries:
-        sortByFunc.setdefault(elem.funcId,{})
-        if (dimOfInterest.count(elem.dim) != 0):
-            sortByFunc[elem.funcId][elem.dim] = elem
-
-    return sortByFunc
-
-
 def generateData(indexEntry, targetFuncValues):
-    """Returns data to be plotted from indexEntry and the target function values."""
-    #~ set_trace()
+    """Returns data for the tables.
+
+    Data are supposed to be function-value aligned on some specific function
+    values, information on the number of function evaluations to reach the
+    target function value complete a row in the resulting array. If some runs
+    from indexEntry did not reach the target function value, information on the
+    final function value reached by these runs will be stored instead.
+
+    Keyword arguments:
+    indexEntry -- input IndexEntry.
+    targetFuncValues -- function values to be displayed
+
+    Outputs:
+    Array of data to be displayed in the tables."""
+
+    #TODO loop over header to know what to append to curLine.
     res = []
     it = iter(indexEntry.hData)
     i = it.next()
@@ -388,18 +389,18 @@ def generateData(indexEntry, targetFuncValues):
     return scipy.vstack(res)
 
 
-def main(indexEntries, valOfInterests, outputdir, info, verbose=True):
-    """From a list of IndexEntry and a prefix, returns latex tabulars in files.
-    args:
-    info --- string suffix for output files.
+def main(indexEntries, valOfInterests, filename, verbose=True):
+    """Generates latex tabular from IndexEntries.
 
+    Keyword arguments:
+    indexEntries -- list of indexEntry to put together in a tabular.
+    valOfInterests -- list of function values to be displayed.
+    filename -- output file name.
+    verbose -- controls verbosity.
     """
 
-    filename = os.path.join(outputdir,'ppdata%s' % ('_' + info))
+    #TODO give an array of indexEntries and have a vertical formatter.
     for i in indexEntries:
         i.tabData = generateData(i, valOfInterests)
-
-    #[header,format] = pproc.computevalues(None,None,header=True)
-    #set_trace()
 
     writeTable2(indexEntries, filename, fontSize='tiny', verbose=verbose)

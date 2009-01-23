@@ -37,7 +37,8 @@ __version__ = "$Revision$"
 
 
 def split(dataFiles):
-    """Split the data files into arrays corresponding to the data sets."""
+    """Split the data files into data sets."""
+
     #TODO: optimize by splitting using %
     dataSets = []
     for fil in dataFiles:
@@ -67,6 +68,9 @@ def split(dataFiles):
 
 def alignData(dataSets, align):
     """Returns data aligned according to align."""
+
+    #TODO is not used yet.
+
     current = CurrentState('align')
 
     data = []
@@ -115,6 +119,8 @@ def alignData(dataSets, align):
 
 
 class CurrentState:
+    """Is not used yet."""
+
     def __init__(self, align, size):
         self.evals = size * [0] # updated list of function evaluations
         self.f = size * [0] # updated list of function values.
@@ -175,6 +181,8 @@ class VCurrentState(CurrentState):
 
 
 class DataSet:
+    """Wrapper class for an array containing a current position attribute."""
+
     def __init__ (self, set):
         self.currentPos = 0
         self.currentPos2 = 0

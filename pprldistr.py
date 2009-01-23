@@ -12,7 +12,7 @@ from pdb import set_trace
 
 #__all__ = []
 
-rldColors = ['b', 'g', 'r', 'c', 'm', 'b', 'g', 'r', 'c', 'm']  # might not be long enough
+#rldColors = ['b', 'g', 'r', 'c', 'm', 'b', 'g', 'r', 'c', 'm']  # might not be long enough
 rldColors = ('g', 'c', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be too short
 
 plt.rc("axes", labelsize=20, titlesize=24)
@@ -25,10 +25,9 @@ plt.rc("legend", fontsize=20)
 
 maxEvalsFactor = 1e4
 
-def beautifyRLD(figHandle, figureName, legend='', locLegend='best', 
-                fileFormat=('png', 'eps'), verbose=True):
-    """Formats the figure of the run length distribution."""
-
+def beautifyRLD(figHandle, figureName, fileFormat=('png', 'eps'), 
+                verbose=True):
+    """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
     axisHandle.set_xlim((1.0, maxEvalsFactor))
@@ -43,8 +42,9 @@ def beautifyRLD(figHandle, figureName, legend='', locLegend='best',
         newxtic.append('%d' % round(scipy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
 
-    if legend:
-        axisHandle.legend(legend, locLegend)
+    plt.legend(loc='best')
+    #if legend:
+        #axisHandle.legend(legend, locLegend)
 
     # Save figure
     for entry in fileFormat:
@@ -57,9 +57,16 @@ def beautifyRLD(figHandle, figureName, legend='', locLegend='best',
 
 def plotRLDistr(indexEntries, fvalueToReach, verbose=True):
     """Creates run length distributions from a sequence of indexEntries.
+    
+    Keyword arguments:
+    indexEntries
+    fvalueToReach
+    verbose
 
-    Returns a plot of a run length distribution.
-
+    Outputs:
+    res -- resulting plot.
+    fsolved -- number of different functions solved.
+    funcs -- number of different function considered.
     """
 
     x = []
@@ -91,9 +98,11 @@ def plotRLDistr(indexEntries, fvalueToReach, verbose=True):
         #maxEvalsFactor : used for the limit of the plot.
         y2 = scipy.hstack([0.0,
                            scipy.repeat(scipy.arange(1, n+1) / float(nn), 2)])
-        res = plt.plot(x2, y2)
+        label = ('%+d:%d/%d' %
+                 (scipy.log10(fvalueToReach), len(fsolved), len(funcs)))
+        res = plt.plot(x2, y2, label=label)
 
-    return res, fsolved, funcs
+    return res#, fsolved, funcs
 
 
 def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'), verbose=True):
@@ -114,7 +123,7 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'), verbose=True):
     for j in xtic:
         newxtic.append('%d' % round(scipy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
-        
+
     # Save figure
     for entry in fileFormat:
         plt.savefig(figureName + '.' + entry, dpi = 120,
@@ -128,9 +137,13 @@ def plotFVDistr(indexEntries, fvalueToReach=1.e-8, maxEvalsF=maxEvalsFactor,
     """Creates empirical cumulative distribution functions of final function
     values plot from a sequence of indexEntries.
 
-    Returns a plot of a run length distribution.
-    args -- maxEvalsFactor : used for the limit of the plot.
+    Keyword arguments:
+    indexEntries -- sequence of IndexEntry to process.
+    fvalueToReach -- float used for the lower limit of the plot
+    maxEvalsFactor -- indicates which vertical data to display.
+    verbose -- controls verbosity.
 
+    Outputs: a plot of a run length distribution.
     """
 
     x = []
@@ -155,10 +168,18 @@ def plotFVDistr(indexEntries, fvalueToReach=1.e-8, maxEvalsF=maxEvalsFactor,
     return res
 
 
-def main(indexEntries, valuesOfInterest, info, outputdir, verbose):
-    """Generate image files of run length distribution figures.
-    args:
-    info --- string suffix for output files.
+def main(indexEntries, valuesOfInterest, outputdir='', info='default', 
+         verbose=True):
+    """Generate figures of empirical cumulative distribution functions.
+
+    Keyword arguments:
+    indexEntries -- list of IndexEntry instances to process.
+    valuesOfInterest -- target function values to be displayed.
+    outputdir -- output directory (must exist)
+    info --- string suffix for output file names.
+
+    Outputs:
+    Image files of the empirical cumulative distribution functions.
 
     """
 
@@ -168,16 +189,15 @@ def main(indexEntries, valuesOfInterest, info, outputdir, verbose):
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):
-        (tmp, fsolved, f) = plotRLDistr(indexEntries, valuesOfInterest[j],
-                                        verbose)
+        tmp = plotRLDistr(indexEntries, valuesOfInterest[j], verbose)
         #set_trace()
         if not tmp is None:
             plt.setp(tmp, 'color', rldColors[j])
             #set_trace()
-            legend.append('%+d:%d/%d' %  
-                          (scipy.log10(valuesOfInterest[j]), len(fsolved), 
-                           len(f)))
-    beautifyRLD(fig, figureName, legend=legend, verbose=verbose)
+            #legend.append('%+d:%d/%d' %  
+                          #(scipy.log10(valuesOfInterest[j]), len(fsolved), 
+                           #len(f)))
+    beautifyRLD(fig, figureName, verbose=verbose)
     plt.close(fig)
 
     figureName = os.path.join(outputdir,'ppfvdistr_%s' %(info))
