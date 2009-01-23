@@ -191,8 +191,25 @@ def writeTable2(entries, filename, fontSize='scriptsize',
 
     # Write data
     for i in range(0,data.shape[1]):
+        suppr = None
+        # suppress the same f-value entries from being written more than once
+        if len(data[:,i]) > 9:
+            suppr = [data[j, i] < 0 for j in xrange(data.shape[0])] # suppress f-values by default
+            ftarget = data[0,i]
+            fbest = -data[5,i]
+            if ((fbest > ftarget and (i == 0 or fbest <= data[0,i-1])) or  # first line without any #FEvals entry
+                (i + 1 == data.shape[1] and fbest < data[0,i-1])):         # or last line, if not printed before
+                for j in scipy.r_[5:10]:
+                    suppr[j] = False
+        if len(data[:,i]) > 18:
+            fbest = -data[14,i]
+            if ((fbest > ftarget and (i == 0 or fbest <= data[0,i-1])) or  # first line without any #FEvals entry
+                (i + 1 == data.shape[1] and fbest < data[0,i-1])):         # or last line, if not printed before
+                for j in scipy.r_[14:19]:
+                    suppr[j] = False
+
         writeArray(f, data[:,i], fullformat, fontSize2,
-                   suppress_entry = None) # only one line of f-values
+                   suppress_entry = suppr) # only one line of f-values
 
     # Finish writing the table and close file.
     f.write('\end{tabular} \n')
@@ -224,9 +241,9 @@ def writeArray(file, vector, format, fontSize, sep = ' & ', linesep = '\\\\ \n',
         Optional Inputs:
         sep - string which is written between the numeric elements
         format - format for the numeric values (e.g. 'e','f')
-        suppressentry - list of boolean of vector length, if true
-           a '.' is written. Used to not repeat the same line of
-           function values,
+        suppress_entry - list of boolean of len of vector, if true 
+           a '.' is written. Useful to not repeat the same line of
+           function values again.  
     """
 
     # TODO (see CAVE above): I think the written numbers are only correct, if the
@@ -241,7 +258,7 @@ def writeArray(file, vector, format, fontSize, sep = ' & ', linesep = '\\\\ \n',
         #print type(x)
         #print len(vector)
 
-        # Filter nan entries
+        # Filter entries to suppress, nan, inf...
         if suppress_entry[id]:
             tmp2 = '.'
         elif scipy.isinf(x):

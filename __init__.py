@@ -72,8 +72,9 @@ def createIndexEntries(args, outputdir, isPickled, verbose=True):
         elif i.endswith('.pickle'):
             pickles.append(i)
         else:
-            raise Usage('Expect as input argument either info files or '+
-                        'a folder containing info files.')
+            raise Usage('File or folder ' + i + ' not found. ' +
+                        'Expecting as input argument either .info file(s) ' +
+                        'or a folder containing .info file(s).')
             #TODO: how do we deal with this?
     indexFiles = set(indexFiles) #for unicity
 
