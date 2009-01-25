@@ -3,6 +3,7 @@ Error catching:
 *problem with the tables: too many floats to handle -> not more than 12 it seems.
 *tables are hard to read: columns do not have all the same width
 *maxEvalsFactor appears in pptex and pprldistr and have to be synchronized...
+*warning: no labels for legend
 
 Feature missing:
 *have low-level post-processing functions that deals with arrays.
@@ -11,6 +12,7 @@ Feature missing:
 *Play with the fontsize (smaller titles, larger ticks).
 *Compute the entropy based on the comment line in the info file?
 *Compare results from different algorithms!
+*Put a latex macro in the template to input the path to the external files.
 
 Misc.
 *Update experimentation.tex
@@ -25,6 +27,7 @@ Profiling:
 
 Questions:
 *Provide a clean doc page that is helpful and useful.
+
 
 ###############################################################################
 SOLVED:
