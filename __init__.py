@@ -119,9 +119,9 @@ def main(argv=None):
 
     If provided with some index entries (from info files), this should return
     many output files in the folder 'ppdata' needed for the compilation of
-    latex document ExampleDataPresentation.tex. These output files will contain
+    latex document templateBBOBarticle.tex. These output files will contain
     performance tables, performance scaling figures and empirical cumulative
-    distribution functions figures.
+    distribution figures.
 
     Keyword arguments:
     argv -- list of strings containing options and arguments.
