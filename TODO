@@ -1,13 +1,5 @@
-Doku: 
-* help of bbob_proc.py:  "To find more help: bbob_pproc.main(['', '-h'])"
-  This hint might help the very experienced user, but I have still no
-  idea what to do to find more help. Besides, it seems not the most
-  intuitive way to get help. How about help(...) in a python shell? 
-* The doku of the overall main function should include an example
-  code how this function might be used. I assume the preferred usage 
-  will be the one from the command line? 
-  
 Error catching:
+*Deal with data with more than one algId
 *When given a wrong path, nothing happens...
 *problem with the tables: too many floats to handle -> not more than 12 it seems.
 *tables are hard to read: columns do not have all the same width

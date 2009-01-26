@@ -9,6 +9,8 @@ import scipy
 from pdb import set_trace
 from bbob_pproc import bootstrap
 
+maxEvalsFactor = 1e6
+
 plt.rc("axes", labelsize=20, titlesize=24)
 plt.rc("xtick", labelsize=20)
 plt.rc("ytick", labelsize=20)
@@ -198,6 +200,19 @@ def generateData(indexEntry, targetFuncValue):
             res.append(bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 50)[0])
             break
 
+    ## if targetFuncValue was not reached
+    #if not res and len(indexEntry.vData) > 0:
+        #it = iter(indexEntry.vData)
+        #i = it.next()
+
+        #try:
+            #while i[0] <= maxEvalsFactor * indexEntry.dim:
+                #i = it.next()
+        #except StopIteration:
+            #pass
+        #res = [scipy.inf, 0., 0,
+               #bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 50)[0]]
+
     return scipy.array(res)
 
 
@@ -222,6 +237,7 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
                     data.append(scipy.append(dim, tmp))
 
             if len(data) > 0:
+                #set_trace()
                 data = scipy.vstack(data)
                 h = createFigure(data[:, [0, 1]], fig) #ENFEs
                 #len(h) should be 1.

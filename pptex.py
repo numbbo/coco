@@ -367,6 +367,9 @@ def generateData(indexEntry, targetFuncValues):
         tmp = []
         #set_trace()
         for j in ranksOfInterest:
+            if indexEntry.nbRuns < j:
+                tmp.append(scipy.nan)
+                continue
             if sp1m[2] >= j:
                 tmp.append(N[j-1])
             else:
@@ -378,6 +381,9 @@ def generateData(indexEntry, targetFuncValues):
             tmp.append(-bootstrap.prctile(vals, 50, issorted=True)[0])
 
         for j in reversed(ranksOfInterest):
+            if indexEntry.nbRuns < j:
+                tmp.append(scipy.nan)
+                continue
             if sp1m[2] > indexEntry.nbRuns-j:
                 tmp.append(N[-j])
             else:
