@@ -157,6 +157,26 @@ def main(argv=None):
 
     Exceptions raised:
     Usage --
+
+
+    Examples:
+
+    * Calling the bbob_pproc.py interface from the command line:
+
+        $ python bbob_pproc.py OPTIONS DATA_TO_PROCESS1 DATA_TO_PROCESS2...
+
+    * Loading this package and calling the main from the command line
+      (requires that the path to this package is in python search path):
+
+        $ python -m bbob_pproc main OPTIONS DATA_TO_PROCESS1...
+
+    * From the python interactive shell (requires that the path to this 
+      package is in python search path):
+
+        >>> import bbob_pproc
+        >>> python bbob_pproc.main(['', 'OPT1', 'OPT2', 'data_to_process_1',
+                                    'data_to_process_2', ...])
+
     """
 
     if argv is None:
@@ -240,10 +260,18 @@ def main(argv=None):
         if istab:
             sortedByFunc = indexEntries.sortByFunc()
             for fun, sliceFun in sortedByFunc.items():
+                sortedByDim = sliceFun.sortByDim()
                 tmp = []
-                for i in sliceFun:
-                    if i.dim in tabDimsOfInterest:
-                        tmp.append(i)
+                for dim in tabDimsOfInterest:
+                    try:
+                        if len(sortedByDim[dim]) > 1:
+                            raise Usage('Do not expect to have multiple ' + 
+                                        'IndexEntry with the same dimension ' +
+                                        'and function.')
+                        else:
+                            tmp.extend(sortedByDim[dim])
+                    except KeyError:
+                        pass
                 if tmp:
                     filename = os.path.join(outputdir,'ppdata_f%d' % fun)
                     pptex.main(tmp, tabValsOfInterest, filename, verbose)
