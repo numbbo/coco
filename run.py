@@ -13,13 +13,15 @@ Help:
 import os
 import sys
 
-(filepath,filename) = os.path.split(sys.argv[0])
-# append path without trailing '/bbob_pproc'
-sys.path.append(filepath[:-1-len(filepath.split(os.sep)[-1])]) 
+(filepath, filename) = os.path.split(sys.argv[0])
+
+# append path without trailing '/bbob_pproc', using os.sep fails in mingw32 
+sys.path.append(filepath.replace('\\', '/').rsplit('/', 1)[0]) 
 
 import bbob_pproc
 
 def main():
+    pass
     bbob_pproc.main(sys.argv)
 
 if __name__ == "__main__":
