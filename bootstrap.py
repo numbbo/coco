@@ -59,6 +59,57 @@ def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
     else:
         return (numpy.mean(dat) / succ, succ, len(dat))
 
+def sp(data, maxvalue=numpy.Inf, issuccessful=None):
+    """sp(data, issuccessful=None) divides the sum of the function evaluations
+    over all runs divided by the number of success, the so-called SP.
+
+    Input:
+      data -- array contains, e.g., number of function
+        evaluations to reach the target value
+      maxvalue -- number, if issuccessful is not provided, data[i]
+        is defined successful if it is truly smaller than maxvalue
+      issuccessful -- None or array of same length as data. Entry
+         i in data is defined successful, if issuccessful[i] is
+         True or non-zero 
+
+    Returns: (SP, success_rate, nb_of_successful_entries), where
+      SP is the sum of successful entries in data divided
+      by the number of success or 1 if the success rate is zero.
+    """
+
+    # check input args
+    if not getattr(data, '__iter__', False):  # is not iterable
+        raise Exception, 'data must be a sequence'
+    if issuccessful is not None:
+        if not getattr(issuccessful, '__iter__', False):  # is not iterable
+            raise Exception, 'issuccessful must be a sequence or None'
+        if len(issuccessful) != len(data):
+            raise Exception, 'lengths of data and issuccessful disagree'
+
+    # remove NaNs
+    if issuccessful is not None:
+        issuccessful = [issuccessful[i] for i in xrange(len(issuccessful))
+                        if not numpy.isnan(data[i])]
+    dat = [d for d in data if not numpy.isnan(d)]
+    N = len(dat)
+
+    if N == 0:
+        return(numpy.nan, numpy.nan, numpy.nan)
+
+    # remove unsuccessful data
+    if issuccessful is not None:
+        dat = [dat[i] for i in xrange(len(dat)) if issuccessful[i]]
+    else:
+        dat = [d for d in dat if d < maxvalue]
+    succ = float(len(dat)) / N
+
+    # return
+    if succ == 0:
+        return (numpy.sum(data), 0., 0)
+    else:
+        return (numpy.sum(data) / float(len(dat)), succ, len(dat))
+
+
 def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     """Input:
     data--a sequence of data values
