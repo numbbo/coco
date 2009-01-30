@@ -284,6 +284,6 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
 
         plt.close(fig)
 
-        plt.rcdefaults()
+    plt.rcdefaults()
 
     # TODO: how do we make a user define what color or line style?
