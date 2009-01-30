@@ -5,7 +5,7 @@
 import os
 import sys
 import matplotlib.pyplot as plt
-import scipy
+import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap
 
@@ -36,7 +36,7 @@ def createFigure(data, figHandle=None):
         yValues = data[:,i]
 
         # Plot figure
-        tmp = scipy.where(scipy.isfinite(data[:,i]))[0]
+        tmp = numpy.where(numpy.isfinite(data[:,i]))[0]
         if tmp.size > 0:
             lines.extend(plt.plot(data[tmp,0], yValues[tmp]))
             lines.extend(plt.plot([data[tmp[-1],0]], [yValues[tmp[-1]]],
@@ -87,12 +87,12 @@ def customizeFigure(figHandle, figureName = None, title='',
     tmp = axisHandle.get_xticks()
     tmp2 = []
     for i in tmp:
-        tmp2.append('%d' % round(scipy.log10(i)))
+        tmp2.append('%d' % round(numpy.log10(i)))
     axisHandle.set_xticklabels(tmp2)
     tmp = axisHandle.get_yticks()
     tmp2 = []
     for i in tmp:
-        tmp2.append('%d' % round(scipy.log10(i)))
+        tmp2.append('%d' % round(numpy.log10(i)))
     axisHandle.set_yticklabels(tmp2)
 
     # Legend
@@ -140,18 +140,18 @@ def sortIndexEntries(indexEntries):
 def generateData(indexEntry):
     res = []
     for i in indexEntry.hData:
-        tmp = scipy.array(i[0])
+        tmp = numpy.array(i[0])
         tmp2 = []
         for j in i[indexEntry.nbRuns+1:]:
             tmp2.append(j <= i[0])
-        tmp = scipy.append(tmp, bootstrap.sp1(i[1:indexEntry.nbRuns + 1], 
+        tmp = numpy.append(tmp, bootstrap.sp1(i[1:indexEntry.nbRuns + 1], 
                                               issuccessful=tmp2))
-        tmp = scipy.append(tmp, bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 
+        tmp = numpy.append(tmp, bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 
                                                   [0.5])[0])
         #set_trace()
         res.append(tmp)
 
-    return scipy.vstack(res)
+    return numpy.vstack(res)
 
 
 def main(indexEntries, filename):

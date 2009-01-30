@@ -18,7 +18,7 @@ import os
 import getopt
 import pickle
 
-#import scipy
+#import numpy
 #import matplotlib.pyplot as plt
 
 from pdb import set_trace
@@ -290,7 +290,7 @@ def main(argv=None):
                                        verbose)
 
         #if verbose:
-            #print 'total ps = %g\n' % (float(scipy.sum(ps))/scipy.sum(nbRuns))
+            #print 'total ps = %g\n' % (float(numpy.sum(ps))/numpy.sum(nbRuns))
 
     except Usage, err:
         print >>sys.stderr, err.msg

@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 
 import os
-import scipy
+import numpy
 import matplotlib.pyplot as plt
 from pdb import set_trace
 
@@ -33,7 +33,7 @@ def beautifyRLD(figHandle, figureName, fileFormat=('png', 'eps'),
     xtic = axisHandle.get_xticks()
     newxtic = []
     for j in xtic:
-        newxtic.append('%d' % round(scipy.log10(j)))
+        newxtic.append('%d' % round(numpy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
 
     #set_trace()
@@ -85,16 +85,16 @@ def plotRLDistr(indexEntries, fvalueToReach, verbose=True):
         nn += i.nbRuns
 
     label = ('%+d:%d/%d' %
-             (scipy.log10(fvalueToReach), len(fsolved), len(funcs)))
+             (numpy.log10(fvalueToReach), len(fsolved), len(funcs)))
     n = len(x)
     if n == 0:
         res = plt.plot([], [], label=label)
     else:
         x.sort()
-        x2 = scipy.hstack([scipy.repeat(x, 2), maxEvalsFactor])
+        x2 = numpy.hstack([numpy.repeat(x, 2), maxEvalsFactor])
         #maxEvalsFactor : used for the limit of the plot.
-        y2 = scipy.hstack([0.0,
-                           scipy.repeat(scipy.arange(1, n+1) / float(nn), 2)])
+        y2 = numpy.hstack([0.0,
+                           numpy.repeat(numpy.arange(1, n+1) / float(nn), 2)])
         res = plt.plot(x2, y2, label=label)
 
     return res#, fsolved, funcs
@@ -116,7 +116,7 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'), verbose=True):
     xtic = axisHandle.get_xticks()
     newxtic = []
     for j in xtic:
-        newxtic.append('%d' % round(scipy.log10(j)))
+        newxtic.append('%d' % round(numpy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
 
     # Save figure
@@ -151,11 +151,11 @@ def plotFVDistr(indexEntries, fvalueToReach=1.e-8, maxEvalsF=maxEvalsFactor,
         nn += i.nbRuns
 
     x.sort()
-    x2 = scipy.hstack([scipy.repeat(x, 2)])
+    x2 = numpy.hstack([numpy.repeat(x, 2)])
     #not efficient if some vals are repeated a lot
-    #y2 = scipy.hstack([0.0, scipy.repeat(scipy.arange(1, n)/float(nn), 2),
+    #y2 = numpy.hstack([0.0, numpy.repeat(numpy.arange(1, n)/float(nn), 2),
                        #float(n)/nn, float(n)/nn])
-    y2 = scipy.hstack([0.0, scipy.repeat(scipy.arange(1, nn)/float(nn), 2),
+    y2 = numpy.hstack([0.0, numpy.repeat(numpy.arange(1, nn)/float(nn), 2),
                        1.0])
     #set_trace()
     res = plt.plot(x2, y2)
@@ -196,7 +196,7 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
             plt.setp(tmp, 'color', rldColors[j])
             #set_trace()
             #legend.append('%+d:%d/%d' %  
-                          #(scipy.log10(valuesOfInterest[j]), len(fsolved), 
+                          #(numpy.log10(valuesOfInterest[j]), len(fsolved), 
                            #len(f)))
     beautifyRLD(fig, figureName, verbose=verbose)
     plt.close(fig)
@@ -210,8 +210,8 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
         #if not tmp is None:
         plt.setp(tmp, 'color', rldColors[j])
 
-    tmp = scipy.log10(maxEvalsFactor)
-    maxEvalsF = scipy.power(10, scipy.arange(tmp, 0, -1) - 1)
+    tmp = numpy.log10(maxEvalsFactor)
+    maxEvalsF = numpy.power(10, numpy.arange(tmp, 0, -1) - 1)
 
     #The last index of valuesOfInterest is still used in this loop.
     for k in range(len(maxEvalsF)):

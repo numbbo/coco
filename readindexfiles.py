@@ -9,7 +9,7 @@ from __future__ import absolute_import
 
 import sys
 import os
-import scipy
+import numpy
 
 from bbob_pproc import findindexfiles
 from bbob_pproc import pproc
@@ -183,8 +183,8 @@ class IndexEntry:
         f = len(dataSets) * [0] # updated list of function values.
         isRead = len(dataSets) * [True] # read status of dataSets.
 
-        idxCurrentF = scipy.inf # Minimization
-        currentF = scipy.power(10, float(idxCurrentF) / nbPtsF)
+        idxCurrentF = numpy.inf # Minimization
+        currentF = numpy.power(10, float(idxCurrentF) / nbPtsF)
 
         #set_trace()
         # Parallel construction of the post-processed arrays:
@@ -209,24 +209,24 @@ class IndexEntry:
                 if i <= currentF:
                     tmp.append(i)
             if max(tmp) <= 0: #TODO: Issue if max(f) < 0
-                idxCurrentF = -scipy.inf
+                idxCurrentF = -numpy.inf
                 currentF = 0.
             else:
                 idxCurrentF = min(idxCurrentF,
-                                  int(scipy.ceil(scipy.log10(max(tmp)) *
+                                  int(numpy.ceil(numpy.log10(max(tmp)) *
                                                  nbPtsF)))
-                currentF = scipy.power(10, float(idxCurrentF) / nbPtsF)
+                currentF = numpy.power(10, float(idxCurrentF) / nbPtsF)
             #set_trace()
             tmp = [currentF]
             tmp.extend(evals)
             tmp.extend(f)
             hData.append(tmp)
             idxCurrentF -= 1
-            currentF = scipy.power(10, float(idxCurrentF) / nbPtsF)
+            currentF = numpy.power(10, float(idxCurrentF) / nbPtsF)
 
         #set_trace()
         try:
-            self.hData = scipy.vstack(hData)
+            self.hData = numpy.vstack(hData)
         except ValueError:
             #TODO: empty data!
             self.hData = []
@@ -275,7 +275,7 @@ class IndexEntry:
                 currentEvals = min(nextCurEvals)
 
         try:
-            self.vData = scipy.vstack(vData)
+            self.vData = numpy.vstack(vData)
             self.mMaxEvals = max(vData[-1][1:self.nbRuns+1])
         except ValueError:
             #TODO: empty data!
