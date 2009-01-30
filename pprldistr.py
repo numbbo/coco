@@ -10,22 +10,16 @@ import scipy
 import matplotlib.pyplot as plt
 from pdb import set_trace
 
+#from bbob_pproc import maxEvalsFactor
+
 #__all__ = []
 
 #rldColors = ['b', 'g', 'r', 'c', 'm', 'b', 'g', 'r', 'c', 'm']  # might not be long enough
 rldColors = ('g', 'c', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be too short
 
-plt.rc("axes", labelsize=20, titlesize=24)
-plt.rc("xtick", labelsize=20)
-plt.rc("ytick", labelsize=20)
-plt.rc("font", size=20)
-plt.rc("legend", fontsize=20)
-#Warning! this affects all other plots in the package.
-#TODO: put it elsewhere.
+maxEvalsFactor = 1e6
 
-maxEvalsFactor = 1e4
-
-def beautifyRLD(figHandle, figureName, fileFormat=('png', 'eps'), 
+def beautifyRLD(figHandle, figureName, fileFormat=('png', 'eps'),
                 verbose=True):
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
@@ -42,6 +36,7 @@ def beautifyRLD(figHandle, figureName, fileFormat=('png', 'eps'),
         newxtic.append('%d' % round(scipy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
 
+    #set_trace()
     plt.legend(loc='best')
     #if legend:
         #axisHandle.legend(legend, locLegend)
@@ -89,17 +84,17 @@ def plotRLDistr(indexEntries, fvalueToReach, verbose=True):
                 break
         nn += i.nbRuns
 
+    label = ('%+d:%d/%d' %
+             (scipy.log10(fvalueToReach), len(fsolved), len(funcs)))
     n = len(x)
     if n == 0:
-        res = plt.plot([], [])
+        res = plt.plot([], [], label=label)
     else:
         x.sort()
         x2 = scipy.hstack([scipy.repeat(x, 2), maxEvalsFactor])
         #maxEvalsFactor : used for the limit of the plot.
         y2 = scipy.hstack([0.0,
                            scipy.repeat(scipy.arange(1, n+1) / float(nn), 2)])
-        label = ('%+d:%d/%d' %
-                 (scipy.log10(fvalueToReach), len(fsolved), len(funcs)))
         res = plt.plot(x2, y2, label=label)
 
     return res#, fsolved, funcs
@@ -184,7 +179,13 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
     """
 
     #sortedIndexEntries = sortIndexEntries(indexEntries)
-    #set_trace()
+
+    plt.rc("axes", labelsize=20, titlesize=24)
+    plt.rc("xtick", labelsize=20)
+    plt.rc("ytick", labelsize=20)
+    plt.rc("font", size=20)
+    plt.rc("legend", fontsize=20)
+
     figureName = os.path.join(outputdir,'pprldistr%s' %('_' + info))
     fig = plt.figure()
     legend = []
@@ -206,8 +207,8 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
         #set_trace()
         tmp = plotFVDistr(indexEntries, valuesOfInterest[j], maxEvalsFactor,
                           verbose=verbose)
-        if not tmp is None:
-            plt.setp(tmp, 'color', rldColors[j])
+        #if not tmp is None:
+        plt.setp(tmp, 'color', rldColors[j])
 
     tmp = scipy.log10(maxEvalsFactor)
     maxEvalsF = scipy.power(10, scipy.arange(tmp, 0, -1) - 1)
@@ -216,8 +217,9 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
     for k in range(len(maxEvalsF)):
         tmp = plotFVDistr(indexEntries, valuesOfInterest[j],
                           maxEvalsF=maxEvalsF[k], verbose=verbose)
-        if not tmp is None:
-            plt.setp(tmp, 'color', rldColors[j+k+1])
+        plt.setp(tmp, 'color', rldColors[j+k+1])
 
     beautifyFVD(fig, figureName, verbose=verbose)
     plt.close(fig)
+
+    plt.rcdefaults()

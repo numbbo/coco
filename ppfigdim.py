@@ -11,16 +11,6 @@ from bbob_pproc import bootstrap
 
 maxEvalsFactor = 1e6
 
-plt.rc("axes", labelsize=20, titlesize=24)
-plt.rc("xtick", labelsize=20)
-plt.rc("ytick", labelsize=20)
-plt.rc("font", size=20)
-plt.rc("legend", fontsize=20)
-#Warning! this affects all other plots in the package.
-#TODO: put it elsewhere.
-
-#TODO: does not depend on maxEvalsFactor!
-
 #valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #colors = {1.0:'b', 1.0e-2:'g', 1.0e-4:'r', 1.0e-6:'c', 1.0e-8:'m'} #TODO colormaps!
 colors = ('g', 'c', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be too short
@@ -87,7 +77,7 @@ def createFigure(data, figHandle=None):
 
 def customizeFigure(figHandle, figureName = None, title='',
                     fileFormat=('png','eps'), labels=None,
-                    scale=['linear','linear'], legendh=list(), legend=list(),
+                    scale=['linear','linear'], legend=True,
                     locLegend='best', verbose=True):
     """ Customize a figure by adding a legend, axis label, etc. At the
         end the figure is saved.
@@ -100,8 +90,7 @@ def customizeFigure(figHandle, figureName = None, title='',
         fileFormat - list of formats of output files
         labels - list with xlabel and ylabel
         scale - scale for x-axis and y-axis
-        legend - if this list is not empty a legend will be generated from
-                 the entries of this list
+        legend - show legend
         locLegend - location of legend
 
     """
@@ -145,11 +134,13 @@ def customizeFigure(figHandle, figureName = None, title='',
     axisHandle.set_yticklabels(tmp2)
 
     # Legend
-    if len(legend) > 0:
-        if len(legendh) > 0:
-            axisHandle.legend(legendh, legend, locLegend)
-        else:
-            axisHandle.legend(legend, locLegend)
+    if legend:
+        plt.legend(loc=locLegend)
+    #if len(legend) > 0:
+        #if len(legendh) > 0:
+            #axisHandle.legend(legendh, legend, locLegend)
+        #else:
+            #axisHandle.legend(legend, locLegend)
     axisHandle.set_title(title)
 
     # Save figure
@@ -195,23 +186,29 @@ def generateData(indexEntry, targetFuncValue):
             tmp = []
             for j in i[indexEntry.nbRuns+1:]:
                 tmp.append(j <= i[0])
-            res.extend(bootstrap.sp1(i[1:indexEntry.nbRuns + 1], 
+            res.extend(bootstrap.sp(i[1:indexEntry.nbRuns + 1], 
                                      issuccessful=tmp))
+            res.append(res[0] * max(res[2], 1)) #Sum(FE)
             res.append(bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 50)[0])
             break
 
-    ## if targetFuncValue was not reached
-    #if not res and len(indexEntry.vData) > 0:
-        #it = iter(indexEntry.vData)
-        #i = it.next()
+    # if targetFuncValue was not reached
+    if not res and len(indexEntry.vData) > 0:
+        it = iter(indexEntry.vData)
+        i = it.next()
 
-        #try:
-            #while i[0] <= maxEvalsFactor * indexEntry.dim:
-                #i = it.next()
-        #except StopIteration:
-            #pass
-        #res = [scipy.inf, 0., 0,
+        try:
+            while i[0] <= maxEvalsFactor * indexEntry.dim:
+                i = it.next()
+        except StopIteration:
+            pass
+        #res = [scipy.sum(i[1:indexEntry.nbRuns + 1]), 0., 0,
                #bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 50)[0]]
+        res.extend(bootstrap.sp(i[1:indexEntry.nbRuns + 1],
+                                issuccessful=[False]*indexEntry.nbRuns))
+        res.append(res[0] * max(res[2], 1)) #Sum(FE)
+        res.append(bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 50)[0])
+
 
     return scipy.array(res)
 
@@ -221,51 +218,72 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
 
     """
 
+    plt.rc("axes", labelsize=20, titlesize=24)
+    plt.rc("xtick", labelsize=20)
+    plt.rc("ytick", labelsize=20)
+    plt.rc("font", size=20)
+    plt.rc("legend", fontsize=20)
+
     sortByFunc = sortIndexEntries(indexEntries)
     for func in sortByFunc:
         filename = os.path.join(outputdir,'ppdata_f%d' % (func))
         fig = plt.figure()
-        legend = []
+        #legend = []
         line = []
         for i in range(len(valuesOfInterest)):
+            #data = []
+            succ = []
+            unsucc = []
             data = []
             #Collect data from indexEntry that have the same function and 
             #different dimension.
             for dim in sorted(sortByFunc[func]):
                 tmp = generateData(sortByFunc[func][dim], valuesOfInterest[i])
-                if len(tmp) > 0:
-                    data.append(scipy.append(dim, tmp))
+                data.append(scipy.append(dim, tmp))
+                if tmp[2] > 0: #Number of success is larger than 0
+                    succ.append(scipy.append(dim, tmp))
+                else:
+                    unsucc.append(scipy.append(dim, tmp))
 
-            if len(data) > 0:
-                #set_trace()
-                data = scipy.vstack(data)
-                h = createFigure(data[:, [0, 1]], fig) #ENFEs
-                #len(h) should be 1.
-                plt.setp(h[0], 'color', colors[i], 'linestyle', '',  # the problem: missing point should not be connected with lines
+            if succ:
+                tmp = scipy.vstack(succ)
+                h = createFigure(tmp[:, [0, 1]], fig) #ERT
+                plt.setp(h[0], 'color', colors[i], 'linestyle', '',
                          'marker', 'o', 'markersize', 20)
+                h = createFigure(tmp[:,[0, -1]], fig) #median
+                plt.setp(h[0], 'color', colors[i], 'linestyle', '',
+                         'marker', '+', 'markersize', 30, 'markeredgewidth', 5)
+
+            if unsucc:
+                tmp = scipy.vstack(unsucc)
+                h = createFigure(tmp[:, [0, 1]], fig) #ERT
+                plt.setp(h[0], 'color', colors[i], 'linestyle', '',
+                         'marker', 'x', 'markersize', 20)
+
+            if data:
+                tmp = scipy.vstack(data)
+                h = createFigure(tmp[:,[0, 1]], fig) #ERT
+                plt.setp(h[0], 'color', colors[i], 'label',
+                         ' %+d' % (scipy.log10(valuesOfInterest[i])))
                 line.extend(h[0])
 
-                legend.append(' %+d' % (scipy.log10(valuesOfInterest[i])))
-
-                h = createFigure(data[:,[0, -1]], fig) #median
-                #len(h) should be 1.
-                plt.setp(h, 'color', colors[i], 'linestyle', '',
-                         'marker', '+', 'markersize', 30, 'markeredgewidth', 5)
-                #Do all this in createFigure?
 
         if isBenchmarkinfosFound:
             title = funInfos[func]
         else:
             title = ''
 
-        if func > 1:  # legends hiding points can be very annoying
-            legend = ''
+        #if func > 1:  # legends hiding points can be very annoying
+            #legend = ''
 
-        customizeFigure(fig, filename, title=title,
+        legend = func in (1, 101)
+
+        customizeFigure(fig, filename, title=title, legend=legend,
                         fileFormat=('eps','png'), labels=['', ''],
-                        scale=['log','log'], legendh=line, legend=legend, 
-                        locLegend='best', verbose=verbose)
+                        scale=['log','log'], verbose=verbose)
 
         plt.close(fig)
+
+        plt.rcdefaults()
 
     # TODO: how do we make a user define what color or line style?
