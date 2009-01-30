@@ -5,7 +5,7 @@
 import os
 import sys
 import matplotlib.pyplot as plt
-import scipy
+import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap
 
@@ -64,7 +64,7 @@ def createFigure(data, figHandle=None):
         yValues = data[:,i]
 
         # Plot figure
-        tmp = scipy.where(scipy.isfinite(data[:,i]))[0]
+        tmp = numpy.where(numpy.isfinite(data[:,i]))[0]
         if tmp.size > 0:
             lines.append(plt.plot(data[tmp,0], yValues[tmp]))
             #lines.append(plt.plot([data[tmp[-1],0]], [yValues[tmp[-1]]],
@@ -130,7 +130,7 @@ def customizeFigure(figHandle, figureName = None, title='',
     tmp = axisHandle.get_yticks()
     tmp2 = []
     for i in tmp:
-        tmp2.append('%d' % round(scipy.log10(i)))
+        tmp2.append('%d' % round(numpy.log10(i)))
     axisHandle.set_yticklabels(tmp2)
 
     # Legend
@@ -202,7 +202,7 @@ def generateData(indexEntry, targetFuncValue):
                 i = it.next()
         except StopIteration:
             pass
-        #res = [scipy.sum(i[1:indexEntry.nbRuns + 1]), 0., 0,
+        #res = [numpy.sum(i[1:indexEntry.nbRuns + 1]), 0., 0,
                #bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 50)[0]]
         res.extend(bootstrap.sp(i[1:indexEntry.nbRuns + 1],
                                 issuccessful=[False]*indexEntry.nbRuns))
@@ -210,7 +210,7 @@ def generateData(indexEntry, targetFuncValue):
         res.append(bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 50)[0])
 
 
-    return scipy.array(res)
+    return numpy.array(res)
 
 
 def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
@@ -239,14 +239,14 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
             #different dimension.
             for dim in sorted(sortByFunc[func]):
                 tmp = generateData(sortByFunc[func][dim], valuesOfInterest[i])
-                data.append(scipy.append(dim, tmp))
+                data.append(numpy.append(dim, tmp))
                 if tmp[2] > 0: #Number of success is larger than 0
-                    succ.append(scipy.append(dim, tmp))
+                    succ.append(numpy.append(dim, tmp))
                 else:
-                    unsucc.append(scipy.append(dim, tmp))
+                    unsucc.append(numpy.append(dim, tmp))
 
             if succ:
-                tmp = scipy.vstack(succ)
+                tmp = numpy.vstack(succ)
                 h = createFigure(tmp[:, [0, 1]], fig) #ERT
                 plt.setp(h[0], 'color', colors[i], 'linestyle', '',
                          'marker', 'o', 'markersize', 20)
@@ -255,16 +255,16 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
                          'marker', '+', 'markersize', 30, 'markeredgewidth', 5)
 
             if unsucc:
-                tmp = scipy.vstack(unsucc)
+                tmp = numpy.vstack(unsucc)
                 h = createFigure(tmp[:, [0, 1]], fig) #ERT
                 plt.setp(h[0], 'color', colors[i], 'linestyle', '',
                          'marker', 'x', 'markersize', 20)
 
             if data:
-                tmp = scipy.vstack(data)
+                tmp = numpy.vstack(data)
                 h = createFigure(tmp[:,[0, 1]], fig) #ERT
                 plt.setp(h[0], 'color', colors[i], 'label',
-                         ' %+d' % (scipy.log10(valuesOfInterest[i])))
+                         ' %+d' % (numpy.log10(valuesOfInterest[i])))
                 line.extend(h[0])
 
 

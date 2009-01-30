@@ -5,8 +5,8 @@
 
 from __future__ import absolute_import
 
-import scipy
-import scipy.io
+import numpy
+
 from pdb import set_trace
 
 __version__ = "$Revision$"
@@ -43,18 +43,18 @@ def split(dataFiles):
     dataSets = []
     for fil in dataFiles:
         try:
-            content = scipy.io.read_array(fil,comment='%')
+            content = numpy.loadtxt(fil, comments='%')
         except IOError:
             print 'Could not find %s.' % fil
             continue
-        dataSetFinalIndex = scipy.where(scipy.diff(content[:,0])<=0)[0]
+        dataSetFinalIndex = numpy.where(numpy.diff(content[:,0])<=0)[0]
         #splitting is done by comparing the number of function evaluations
         #which should be monotonous.
         if len(dataSetFinalIndex)> 0:
             dataSetFinalIndex += 1
-            dataSetFinalIndex = scipy.append(scipy.append(0,dataSetFinalIndex),
+            dataSetFinalIndex = numpy.append(numpy.append(0,dataSetFinalIndex),
                                              None)
-            #dataSetFinalIndex = scipy.insert(dataSetFinalIndex,0,-2)
+            #dataSetFinalIndex = numpy.insert(dataSetFinalIndex,0,-2)
             for i in range(len(dataSetFinalIndex)-1):
                 dataSet = DataSet(content[dataSetFinalIndex[i]:
                                           dataSetFinalIndex[i+1],:])
@@ -98,23 +98,23 @@ def alignData(dataSets, align):
         if current.any(isReading):
             #Gets the closest fitness which can be written as 10**(i/5)
             #from above
-            if scipy.isinf(currentF):
-                idxCurrentF = int(scipy.ceil(scipy.log10(max(f))*nbPtsF))
-                currentF = scipy.power(10, float(idxCurrentF) / nbPtsF)
+            if numpy.isinf(currentF):
+                idxCurrentF = int(numpy.ceil(numpy.log10(max(f))*nbPtsF))
+                currentF = numpy.power(10, float(idxCurrentF) / nbPtsF)
             tmp = [currentF]
             tmp.extend(evals)
             tmp.extend(f)
             hData.append(tmp)
-            while all(scipy.power(10, float(idxCurrentF) / nbPtsF) > f):
+            while all(numpy.power(10, float(idxCurrentF) / nbPtsF) > f):
                 idxCurrentF -= 1
-            currentF = scipy.power(10, float(idxCurrentF) / nbPtsF)
+            currentF = numpy.power(10, float(idxCurrentF) / nbPtsF)
 
     tmp = [currentF]
     tmp.extend(evals)
     tmp.extend(f)
     hData.append(tmp)
     set_trace()
-    self.hData = scipy.vstack(hData)
+    self.hData = numpy.vstack(hData)
     return hData
 
 
@@ -133,14 +133,14 @@ class CurrentState:
         else:
             print 'Error'
 
-        self.curIdF = scipy.inf #minimization
-        self.curIdEv = -scipy.inf
+        self.curIdF = numpy.inf #minimization
+        self.curIdEv = -numpy.inf
 
     def getF(self):
-        return scipy.power(10, self.idxVal/nbPtsF)
+        return numpy.power(10, self.idxVal/nbPtsF)
 
     def getEv(self):
-        return int(scipy.floor(scipy.power(10, idxVal/nbPtsEvals)))
+        return int(numpy.floor(numpy.power(10, idxVal/nbPtsEvals)))
 
     def getVector(self):
         res = self.getVal()
@@ -161,7 +161,7 @@ class HCurrentState(CurrentState):
         return getF(self)
 
     def getCurVal(self):
-        self.idxF = scipy.ceil(scipy.log10(max(self.f)) * nbPtsF)
+        self.idxF = numpy.ceil(numpy.log10(max(self.f)) * nbPtsF)
         return getF
 
 
