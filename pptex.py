@@ -12,7 +12,7 @@ from pdb import set_trace
 
 #GLOBAL VARIABLES DEFINITION
 samplesize = 15 #Bootstrap sample size
-header = ['$\Delta f$', '$\#$', '$\ENFEs$', '10\%', '90\%',
+header = ['$\Delta f$', '$\#$', '$\ERT$', '10\%', '90\%',
           '$\\text{RT}_{\\text{us}}$']
 format = ['%1.1e', '%d', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
 #This has to be synchronized with what's computed in generateData.
@@ -170,8 +170,8 @@ def writeTable2(entries, filename, fontSize='scriptsize',
         #data = numpy.transpose(data)
 
     # Generate LaTex commands for vertical lines and aligment of the entries.
-    tabColumns ='@{$\,$}c@{$\,$}'
-    tabColumns += ('|' + (len(header) - 1) * '@{$\,$}c@{$\,$}') * width
+    tabColumns ='@{$\;$}c@{$\;$}'  
+    tabColumns += ('|' + (len(header) - 1) * '@{$\;$}c@{$\;$}') * width
 
     # Create output file
     if verbose:
@@ -198,9 +198,9 @@ def writeTable2(entries, filename, fontSize='scriptsize',
         maxEvals = min(entries[i].mMaxEvals, entries[i].dim * maxEvalsFactor)
         caption = caption + ', mFE=' + str(int(maxEvals))
         if i != width - 1:
-            f.write('& \multicolumn{' + str(len(format)-1) + '}{@{$\,$}c|@{$\,$}}{' + caption + '}')
+            f.write('& \multicolumn{' + str(len(format)-1) + '}{@{$\;$}c|@{$\;$}}{' + caption + '}')
         else:
-            f.write('& \multicolumn{' + str(len(format)-1) + '}{@{$\,$}c@{$\,$}}{' + caption + '}')
+            f.write('& \multicolumn{' + str(len(format)-1) + '}{@{$\;$}c@{$\;$}}{' + caption + '}')
     f.write('\\\\ \n')
     # f.write('\hline \n')
     f.write(' & '.join(fullheader) + '\\\\ \n \hline \n')
