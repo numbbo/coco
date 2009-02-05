@@ -43,7 +43,40 @@ def split(dataFiles):
     dataSets = []
     for fil in dataFiles:
         try:
-            content = numpy.loadtxt(fil, comments='%')
+            # content = numpy.loadtxt(fil, comments='%') <-- doesnt work with windows
+            file = open(fil,'r')               # read in the file
+            dummy = file.readlines()          
+            content = numpy.zeros([1,1])
+
+            # Save values in array content. Check for nan and inf.
+            # Skip comment lines
+            for string in dummy: 
+
+                # skip if comment
+                if string.startswith('%'):
+                    continue
+
+                # else remove end-of-line sign
+                # and split into single strings
+                string = string.strip('\n')
+                data = string.split()
+                line = numpy.empty([1,len(data)])
+
+                for id,elem in enumerate(data):
+                    if elem == 'Inf' or elem == 'inf':
+                        line[0,id] = numpy.inf
+                    elif elem == '-Inf' or elem == '-inf':
+                        line[0,id] = -numpy.inf
+                    elif elem == 'NaN' or elem == 'nan':
+                        line[0,id] = numpy.nan
+                    else:
+                        line[0,id] = float(elem)
+    
+                if content.any():            
+                    content = numpy.vstack((content,line))        
+                else:
+                    content = line
+
         except IOError:
             print 'Could not find %s.' % fil
             continue
