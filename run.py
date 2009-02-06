@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-"""Calls the main function from bbob_pproc with arguments from the
-   command line.
+"""Calls the main function of bbob_pproc with arguments from the
+   command line. Executes the BBOB postprocessing on the given
+   filename and folder arguments, using all found .info files. 
 Synopsis:
   python path_to_folder/bbob_pproc/run.py [OPTIONS] FILE_NAME FOLDER_NAME...
 Help: 

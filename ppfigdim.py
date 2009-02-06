@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# Creates ENFEs and convergence figures for BBOB post-processing.
+# Creates ERTs and convergence figures for BBOB post-processing.
 
 import os
 import sys
@@ -13,7 +13,8 @@ maxEvalsFactor = 1e6
 
 #valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #colors = {1.0:'b', 1.0e-2:'g', 1.0e-4:'r', 1.0e-6:'c', 1.0e-8:'m'} #TODO colormaps!
-colors = ('g', 'c', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be too short
+colors = ('k', 'g', 'c', 'b', 'y', 'm', 'r', 'g', 'b', 'c', 'r', 'm')  # should not be too short
+colors = ('k', 'm', 'b', 'c', 'g', 'y', 'r', 'k', 'k', 'c', 'r', 'm')  # should not be too short
 # should correspond with the colors in pprldistr.
 
 #Get benchmark short infos.
