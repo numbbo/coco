@@ -180,7 +180,6 @@ def main(argv=None):
 
     """
 
-    set_trace()
     if argv is None:
         argv = sys.argv
     try:
