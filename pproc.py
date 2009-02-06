@@ -45,54 +45,42 @@ def split(dataFiles):
         try:
             # content = numpy.loadtxt(fil, comments='%') <-- doesnt work with windows
             file = open(fil,'r')               # read in the file
-            dummy = file.readlines()          
-            content = numpy.zeros([1,1])
-
-            # Save values in array content. Check for nan and inf.
-            # Skip comment lines
-            for string in dummy: 
-
-                # skip if comment
-                if string.startswith('%'):
-                    continue
-
-                # else remove end-of-line sign
-                # and split into single strings
-                string = string.strip('\n')
-                data = string.split()
-                line = numpy.empty([1,len(data)])
-
-                for id,elem in enumerate(data):
-                    if elem == 'Inf' or elem == 'inf':
-                        line[0,id] = numpy.inf
-                    elif elem == '-Inf' or elem == '-inf':
-                        line[0,id] = -numpy.inf
-                    elif elem == 'NaN' or elem == 'nan':
-                        line[0,id] = numpy.nan
-                    else:
-                        line[0,id] = float(elem)
-    
-                if content.any():            
-                    content = numpy.vstack((content,line))        
-                else:
-                    content = line
-
+            lines = file.readlines()
         except IOError:
             print 'Could not find %s.' % fil
             continue
-        dataSetFinalIndex = numpy.where(numpy.diff(content[:,0])<=0)[0]
-        #splitting is done by comparing the number of function evaluations
-        #which should be monotonous.
-        if len(dataSetFinalIndex)> 0:
-            dataSetFinalIndex += 1
-            dataSetFinalIndex = numpy.append(numpy.append(0,dataSetFinalIndex),
-                                             None)
-            #dataSetFinalIndex = numpy.insert(dataSetFinalIndex,0,-2)
-            for i in range(len(dataSetFinalIndex)-1):
-                dataSet = DataSet(content[dataSetFinalIndex[i]:
-                                          dataSetFinalIndex[i+1],:])
-                dataSets.append(dataSet)
-        else:
+
+        content = []
+
+        # Save values in array content. Check for nan and inf.
+        for line in lines:
+            # skip if comment
+            if line.startswith('%'):
+                if content:
+                    content = numpy.vstack(content)
+                    dataSet = DataSet(content)
+                    dataSets.append(dataSet)
+                    content = []
+                continue
+
+            # else remove end-of-line sign
+            # and split into single strings
+            data = line.strip('\n').split()
+
+            for id in xrange(len(data)):
+                if data[id] in ('Inf', 'inf'):
+                    data[id] = numpy.inf
+                elif data[id] in ('-Inf', '-inf'):
+                    data[id] = -numpy.inf
+                elif data[id] in ('NaN', 'nan'):
+                    data[id] = numpy.nan
+                else:
+                    data[id] = float(data[id])
+            #set_trace()
+            content.append(numpy.array(data))
+            #Check that it always have the same length?
+        if content:
+            content = numpy.vstack(content)
             dataSet = DataSet(content)
             dataSets.append(dataSet)
 
