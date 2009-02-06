@@ -2,11 +2,13 @@
 
 """Calls the main function of bbob_pproc with arguments from the
    command line. Executes the BBOB postprocessing on the given
-   filename and folder arguments, using all found .info files. 
+   file name (.info or .pickle extension ) and folder arguments,
+   using all found .info files.
 Synopsis:
   python path_to_folder/bbob_pproc/run.py [OPTIONS] FILE_NAME FOLDER_NAME...
-Help: 
-  python path_to_folder/bbob_pproc/run.py -h  
+Help:
+  python path_to_folder/bbob_pproc/run.py -h
+
 """
 
 # this script should probably replace ../bbob_pproc.py in future? 
@@ -26,4 +28,4 @@ def main():
     bbob_pproc.main(sys.argv)
 
 if __name__ == "__main__":
-   sys.exit(main())
+    sys.exit(main())

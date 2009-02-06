@@ -5,6 +5,7 @@ Error catching:
 *tables are hard to read: columns do not have all the same width
 *maxEvalsFactor appears in pptex and pprldistr and ppfig and have to be synchronized...
 *IOError with pickled data.
+*Problem with MINGW32 os.sep returns a \ !
 
 Feature missing:
 *Summary tables of ENFEs...

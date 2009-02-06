@@ -143,7 +143,7 @@ class IndexEntry:
         #TODO: check that no compulsory attributes is missing:
         #dim, funcId, algId and?
 
-        self.targetFuncValue = self.fopt + self.precision
+        #self.targetFuncValue = self.fopt + self.precision
         #TODO: is this needed?
         return
 
