@@ -44,71 +44,7 @@ class WrongInputSizeError(Error):
 
 
 #TOP LEVEL METHODS
-def writeTable(data, fileName, header = list(), fontSize = 'tiny',
-               fontSize2 = 'scriptscriptstyle', format = list(), keep_open = 0,
-               verbose = True):
-    """DEPRECATED: Writes data of array in a *.tex file. This file then can be 
-       used in LaTex as input for tables. The file must be placed inside a
-       \begin{table} ... \end{table} environment.
-
-       Mandatory inputs:
-       data - sorted 2d-array containing the data values (array)
-       fileName - name of output file (string)
-       caption - caption for the table (string)
-
-       Optional inputs:
-       header - header for the columns of the table (string, list)
-       fontSize - size of fonts as they appear in the LaTex table (string)
-       fontSize2 - size of the fonts in the math environment (string)
-       format - format specifier for each column
-       keep_open - if nonzero the file will not be closed
-
-    """
-
-    # Input checking and reshape data
-    if len(format) != data.shape[0] and len(format) != data.shape[1]:
-        raise WrongInputSizeError('data',data.shape,len(format))
-    elif len(format) != len(header) :
-        raise WrongInputSizeError('header',len(header),len(format))
-    elif len(format) != data.shape[0]:
-        data = numpy.transpose(data)
-
-    # Generate LaTex commands for vertical lines and aligment of the entries.
-    # Vertical lines appear after column 'FES' and '$P_{\mathrm{s}}$'
-    tabColumns ='@{$\,$}l@{$\,$}' + '|' + 4*'@{$\,$}l@{$\,$}' + '|'
-    tabColumns = tabColumns + 5*'@{$\,$}l@{$\,$}'
-
-    # Create and open output file
-    f = open(fileName + '.tex','a')
-
-    # Write tabular environment
-    f.write('\\begin{table} \n')
-    f.write('\\centering \n')
-    f.write('\\begin{' + fontSize + '} \n')
-    f.write('\\begin{tabular}{' + tabColumns + '} \n')
-
-    # Write first row containing the header of the table columns
-    f.write(' & '.join(header) + '\\\\ \n \hline \n')
-
-    # Write data
-    for i in range(0,data.shape[1]):
-        writeArray(f, data[:,i], format, fontSize2)
-
-    # Finish writing the table and close file.
-    f.write('\end{tabular} \n')
-    f.write('\end{' + fontSize + '} \n')
-    f.write('\end{table} \n')
-    #f.write('\caption{{'+ '\\' + fontSize + ' ' + caption + '}} \n')
-
-    # Check if file should be closed
-    if keep_open == 0:
-        f.close()
-
-    if verbose:
-        print 'Wrote in %s.' %(fileName+'.tex')
-
-
-def writeTable2(entries, filename, fontSize='scriptsize',
+def writeTable(entries, filename, fontSize='scriptsize',
                 fontSize2='scriptstyle', verbose=True):
     """Writes data of array in a *.tex file. This file then can be used
        in LaTex as input for tables. The input must be placed inside a
@@ -407,4 +343,4 @@ def main(indexEntries, valOfInterests, filename, verbose=True):
     for i in indexEntries:
         i.tabData = generateData(i, valOfInterests)
 
-    writeTable2(indexEntries, filename, fontSize='tiny', verbose=verbose)
+    writeTable(indexEntries, filename, fontSize='tiny', verbose=verbose)

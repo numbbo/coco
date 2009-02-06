@@ -25,7 +25,7 @@ from pdb import set_trace
 from bbob_pproc import readindexfiles, findindexfiles
 from bbob_pproc import pproc, ppfig, pptex, pprldistr, ppfigdim
 
-__all__  = ['readindexfiles', 'findindexfiles', 'ppfig', 'pptex', 'pprldistr',
+__all__  = ['readindexfiles', 'findindexfiles', 'pptex', 'pprldistr',
             'main', 'ppfigdim', 'pproc']
 
 #colors = {2:'b', 3:'g', 5:'r', 10:'c', 20:'m', 40:'y'} #TODO colormaps!
