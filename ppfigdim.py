@@ -14,7 +14,7 @@ maxEvalsFactor = 1e6
 #valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #colors = {1.0:'b', 1.0e-2:'g', 1.0e-4:'r', 1.0e-6:'c', 1.0e-8:'m'} #TODO colormaps!
 colors = ('k', 'g', 'c', 'b', 'y', 'm', 'r', 'g', 'b', 'c', 'r', 'm')  # should not be too short
-colors = ('k', 'm', 'b', 'c', 'g', 'y', 'r', 'k', 'k', 'c', 'r', 'm')  # should not be too short
+colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 # should correspond with the colors in pprldistr.
 
 #Get benchmark short infos.
@@ -277,7 +277,7 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
         #if func > 1:  # legends hiding points can be very annoying
             #legend = ''
 
-        legend = func in (1, 101)
+        legend = func in (1, 24, 101, 130)
 
         customizeFigure(fig, filename, title=title, legend=legend,
                         fileFormat=('eps','png'), labels=['', ''],
