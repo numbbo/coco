@@ -17,7 +17,7 @@ header = ['$\Delta f$', '$\#$', '$\ERT$', '10\%', '90\%',
 format = ['%1.1e', '%d', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
 #This has to be synchronized with what's computed in generateData.
 
-maxEvalsFactor = 1e6
+#maxEvalsFactor = 1e6
 
 #CLASS DEFINITION
 class Error(Exception):
@@ -106,7 +106,7 @@ def writeTable(entries, filename, fontSize='scriptsize',
         #data = numpy.transpose(data)
 
     # Generate LaTex commands for vertical lines and aligment of the entries.
-    tabColumns ='@{$\;$}c@{$\;$}'  
+    tabColumns ='@{$\;$}c@{$\;$}'
     tabColumns += ('|' + (len(header) - 1) * '@{$\;$}c@{$\;$}') * width
 
     # Create output file
@@ -131,7 +131,8 @@ def writeTable(entries, filename, fontSize='scriptsize',
         caption = ('\\textbf{\\textit{f}\\raisebox{-0.35ex}{' + str(entries[i].funcId) +
                    '} in ' + str(entries[i].dim)) + '-D}'
         caption = caption + ', N=' + str(entries[i].nbRuns)
-        maxEvals = min(entries[i].mMaxEvals, entries[i].dim * maxEvalsFactor)
+        #maxEvals = min(entries[i].mMaxEvals, entries[i].dim * maxEvalsFactor)
+        maxEvals = entries[i].mMaxEvals
         caption = caption + ', mFE=' + str(int(maxEvals))
         if i != width - 1:
             f.write('& \multicolumn{' + str(len(format)-1) + '}{@{$\;$}c|@{$\;$}}{' + caption + '}')
@@ -186,13 +187,13 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
         Optional Inputs:
         sep - string which is written between the numeric elements
         format - format for the numeric values (e.g. 'e','f')
-        suppress_entry - list of boolean of len of vector, if true 
+        suppress_entry - list of boolean of len of vector, if true
            a '.' is written. Useful to not repeat the same line of
-           function values again.  
+           function values again.
     """
 
-    # TODO (see CAVE above): I think the written numbers are only correct, if 
-    # the input format specifies two numbers of precision. Otherwise the 
+    # TODO (see CAVE above): I think the written numbers are only correct, if
+    # the input format specifies two numbers of precision. Otherwise the
     # rounding procedure is wrong.
 
     # handle input arg
@@ -285,7 +286,7 @@ def generateData(indexEntry, targetFuncValues):
     i = it.next()
     curLine = []
 
-    maxEvals = min(indexEntry.mMaxEvals, indexEntry.dim * maxEvalsFactor)
+    #maxEvals = indexEntry.mMaxEvals
 
     #set_trace()
     for targetF in targetFuncValues:
@@ -297,35 +298,35 @@ def generateData(indexEntry, targetFuncValues):
         success = []
         unsucc = []
         for j in range(1, indexEntry.nbRuns+1):
-            tmpsucc = (i[indexEntry.nbRuns+j] <= targetF and
-                       i[j] <= maxEvals)
+            tmpsucc = (i[indexEntry.nbRuns+j] <= targetF)
             success.append(tmpsucc)
             if not tmpsucc:
-                unsucc.append(i[j])
+                unsucc.append(indexEntry.vData[-1, j])
+                #if the target function value is not reached, the last number
+                #of function evaluations is found in vData.
 
         N = numpy.sort(i[1:indexEntry.nbRuns + 1])
 
         ertvec = bootstrap.sp(N, issuccessful=success)
-        if ertvec[2] > 0: # 0 success
-            dispersion = bootstrap.draw(N, [10,90], samplesize=samplesize,
+
+        if ertvec[2] > 0: # if at least one success
+            dispersion = bootstrap.draw(N, [10, 90], samplesize=samplesize,
                                         func=bootstrap.sp, args=[0,success])[0]
             curLine = [targetF, ertvec[2], ertvec[0],
                        dispersion[0], dispersion[1],
-                       float(numpy.sum(unsucc))/max(1, ertvec[2])]
-        else:
-            for j in indexEntry.vData:
-                if j[0] > maxEvals:
-                    break
-            vals = numpy.sort(j[indexEntry.nbRuns+1:])
+                       float(numpy.sum(unsucc))/ertvec[2]]
+        else: # 0 success.
+            vals = numpy.sort(indexEntry.vData[-1, indexEntry.nbRuns+1:])
             #Get the function values for maxEvals.
+
             curLine = [targetF, ertvec[2]]
             curLine.extend(list(-j for j in bootstrap.prctile(vals,
-                                                              [50,10,90])))
+                                                              [50, 10, 90])))
             #set_trace()
-            curLine.append(numpy.mean(unsucc))
+            curLine.append(numpy.sum(unsucc)) #/max(1, ertvec[2])
 
         res.append(curLine)
-            #set_trace()
+        #set_trace()
     return numpy.vstack(res)
 
 
