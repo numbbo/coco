@@ -28,7 +28,7 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc import readindexfiles, findindexfiles
-from bbob_pproc import pproc, ppfig, pptex, pprldistr, ppfigdim
+from bbob_pproc import pproc, pptex, pprldistr, ppfigdim
 
 tabDimsOfInterest = [5, 20]    # dimension which are displayed in the tables
 # tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
