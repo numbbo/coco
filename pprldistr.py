@@ -19,12 +19,12 @@ rldColors = ('g', 'c', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be 
 
 maxEvalsFactor = 1e6
 
-def beautifyRLD(figHandle, figureName, fileFormat=('png', 'eps'),
-                verbose=True):
+def beautifyRLD(figHandle, figureName, maxEvalsF=maxEvalsFactor,
+                fileFormat=('png', 'eps'), verbose=True):
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
-    axisHandle.set_xlim((1.0, maxEvalsFactor))
+    axisHandle.set_xlim((1.0, maxEvalsF))
     axisHandle.set_ylim((0.0, 1.0))
     axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of successful runs')
@@ -50,9 +50,10 @@ def beautifyRLD(figHandle, figureName, fileFormat=('png', 'eps'),
 
 
 
-def plotRLDistr(indexEntries, fvalueToReach, verbose=True):
+def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF=maxEvalsFactor,
+                verbose=True):
     """Creates run length distributions from a sequence of indexEntries.
-    
+
     Keyword arguments:
     indexEntries
     fvalueToReach
@@ -77,12 +78,12 @@ def plotRLDistr(indexEntries, fvalueToReach, verbose=True):
                 #might not be reached yet. This is because the horizontal data
                 #do not go to maxEvals.
 
-                for k in range(1, i.nbRuns + 1):
-                    if j[i.nbRuns + k] <= fvalueToReach:
+                for k in range(1, i.nbRuns() + 1):
+                    if j[i.nbRuns() + k] <= fvalueToReach:
                         x.append(j[k] / i.dim)
                         fsolved.add(i.funcId)
                 break
-        nn += i.nbRuns
+        nn += i.nbRuns()
 
     label = ('%+d:%d/%d' %
              (numpy.log10(fvalueToReach), len(fsolved), len(funcs)))
@@ -91,8 +92,8 @@ def plotRLDistr(indexEntries, fvalueToReach, verbose=True):
         res = plt.plot([], [], label=label)
     else:
         x.sort()
-        x2 = numpy.hstack([numpy.repeat(x, 2), maxEvalsFactor])
-        #maxEvalsFactor : used for the limit of the plot.
+        x2 = numpy.hstack([numpy.repeat(x, 2), maxEvalsF])
+        #maxEvalsF: used for the limit of the plot.
         y2 = numpy.hstack([0.0,
                            numpy.repeat(numpy.arange(1, n+1) / float(nn), 2)])
         res = plt.plot(x2, y2, label=label)
@@ -135,7 +136,7 @@ def plotFVDistr(indexEntries, fvalueToReach=1.e-8, maxEvalsF=maxEvalsFactor,
     Keyword arguments:
     indexEntries -- sequence of IndexEntry to process.
     fvalueToReach -- float used for the lower limit of the plot
-    maxEvalsFactor -- indicates which vertical data to display.
+    maxEvalsF -- indicates which vertical data to display.
     verbose -- controls verbosity.
 
     Outputs: a plot of a run length distribution.
@@ -147,8 +148,8 @@ def plotFVDistr(indexEntries, fvalueToReach=1.e-8, maxEvalsF=maxEvalsFactor,
         for j in i.vData:
             if j[0] >= maxEvalsF * i.dim:
                 break
-        x.extend(j[i.nbRuns+1:] / fvalueToReach)
-        nn += i.nbRuns
+        x.extend(j[i.nbRuns()+1:] / fvalueToReach)
+        nn += i.nbRuns()
 
     x.sort()
     x2 = numpy.hstack([numpy.repeat(x, 2)])
@@ -186,11 +187,15 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
     plt.rc("font", size=20)
     plt.rc("legend", fontsize=20)
 
+    maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in indexEntries)
+    maxEvalsFactor = numpy.power(10, round(numpy.log10(maxEvalsFactor)))
+
     figureName = os.path.join(outputdir,'pprldistr%s' %('_' + info))
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):
-        tmp = plotRLDistr(indexEntries, valuesOfInterest[j], verbose)
+        tmp = plotRLDistr(indexEntries, valuesOfInterest[j], maxEvalsFactor,
+                          verbose)
         #set_trace()
         if not tmp is None:
             plt.setp(tmp, 'color', rldColors[j])
@@ -198,7 +203,7 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
             #legend.append('%+d:%d/%d' %  
                           #(numpy.log10(valuesOfInterest[j]), len(fsolved), 
                            #len(f)))
-    beautifyRLD(fig, figureName, verbose=verbose)
+    beautifyRLD(fig, figureName, maxEvalsFactor, verbose=verbose)
     plt.close(fig)
 
     figureName = os.path.join(outputdir,'ppfvdistr_%s' %(info))
@@ -214,6 +219,7 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
     maxEvalsF = numpy.power(10, numpy.arange(tmp, 0, -1) - 1)
 
     #The last index of valuesOfInterest is still used in this loop.
+    #set_trace()
     for k in range(len(maxEvalsF)):
         tmp = plotFVDistr(indexEntries, valuesOfInterest[j],
                           maxEvalsF=maxEvalsF[k], verbose=verbose)

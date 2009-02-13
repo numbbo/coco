@@ -1,11 +1,12 @@
 #! /usr/bin/env python
 # coding: utf-8
 
-""" Routines common to ppfig, pptex, ppfigdim, pprldistr."""
+"""Helper routines for read index files."""
 
 from __future__ import absolute_import
 
 import numpy
+import warnings
 
 from pdb import set_trace
 
@@ -13,37 +14,221 @@ __version__ = "$Revision$"
 # $URL$
 # $Date$
 
-#TODO: at this point only split is used elsewhere.
+#GLOBAL VARIABLES
+idxEvals = 0
+idxF = 2
+nbPtsF = 5;
 
-#class Error(Exception):
-    #""" Base class for errors. """
-    ##TODO: what the?
-    #pass
+#CLASS DEFINITIONS
+class MultiReader(list):
+    """Wrapper class of data arrays to be aligned.
+
+    This class is part abstract: some methods have to be defined by inheriting
+    classes depending on wanted alignment: isFinished, getInitialValue,
+    newCurrentValue, align, idx.
+
+    """
+
+    def __init__(self, data):
+        for i in data:
+            if len(i) > 0:
+                self.append(self.SingleReader(i))
+
+    def currentLine(self):
+        """Aggregates currentLines information."""
+        res = []
+        res.extend(list(i.currentLine[idxEvals] for i in self))
+        res.extend(list(i.currentLine[idxF] for i in self))
+        return numpy.array(res)
+
+    def currentValues(self):
+        return list(i.currentLine[self.idx] for i in self)
+
+    def nextValues(self):
+        return list(i.nextLine[self.idx] for i in self if not i.isFinished)
+
+    #def isFinished(self):
+        #pass
+
+    #def getInitialValue(self):
+        #pass
+
+    #def newCurrentValue(self):
+        #pass
+
+    #def align(self, currentValue):
+        #pass
+
+    class SingleReader:
+        """Single data array reader class."""
+        def __init__(self, data):
+            if len(data) == 0:
+                raise ValueError, 'Empty data array.'
+            self.data = numpy.array(data)
+            self.it = self.data.__iter__()
+            self.isFinished = False
+            self.currentLine = None
+            self.nextLine = self.it.next()
+
+        def next(self):
+            """Returns the next (last if undefined) line of the array data."""
+            self.currentLine = self.nextLine
+            try:
+                self.nextLine = self.it.next()
+            except StopIteration:
+                self.isFinished = True
+            return self.currentLine
 
 
-#class MissingValueError(Error):
-    #""" Error if a mandatory value is not found within a file.
-        #Returns a message with the missing value and the respective
-        #file."""
+class VMultiReader(MultiReader):
+    """Wrapper class of data arrays to be aligned vertically."""
+    idx = idxEvals
 
-    #def __init__(self,value, filename):
-        #self.value = value
-        #self.filename = filename
+    def __init__(self, data):
+        MultiReader.__init__(self, data)
 
-    #def __str__(self):
-        #message = 'The value %s was not found in file %s!' % \
-                  #(self.value, self.filename)
-        #return repr(message)
+    def isFinished(self):
+        return all(i.isFinished for i in self)
+
+    def currentLine(self):
+        """Aggregates currentLines information."""
+        res = []
+        res.extend(list(i.currentLine[idxEvals] for i in self))
+        res.extend(list(i.currentLine[idxF] for i in self))
+        return numpy.array(res)
+
+    def getInitialValue(self):
+        for i in self:
+            i.next()
+        res = self.currentValues()
+        return min(res)
+
+    def newCurrentValue(self):
+        res = self.nextValues()
+        if res:
+            return min(self.nextValues())
+        else:
+            return None
+
+    def align(self, currentValue):
+        for i in self:
+            while not i.isFinished:
+                if i.nextLine[self.idx] > currentValue:
+                    break
+                i.next()
+        return numpy.insert(self.currentLine(), 0, currentValue)
+
+
+class HMultiReader(MultiReader):
+    """Wrapper class of data arrays to be aligned vertically."""
+    idx = idxF
+
+    def __init__(self, data):
+        MultiReader.__init__(self, data)
+        self.idxCurrentF = numpy.inf #Minimization
+        #idxCurrentF is a float for the extreme case where it is infinite.
+
+    def isFinished(self):
+        currentValue = numpy.power(10, self.idxCurrentF / nbPtsF)
+        if currentValue == 0:
+            return True
+
+        return not any(i.nextLine[self.idx] <= currentValue for i in self)
+
+    def getInitialValue(self):
+        for i in self:
+            i.next()
+        fvalues = self.currentValues()
+        self.idxCurrentF = numpy.ceil(numpy.log10(max(fvalues)) * nbPtsF)
+        # Returns the smallest 10^i/nbPtsF value larger than max(Fvalues)
+        return numpy.power(10, self.idxCurrentF / nbPtsF)
+
+    def newCurrentValue(self):
+        self.idxCurrentF -= 1
+        return numpy.power(10, self.idxCurrentF / nbPtsF)
+
+    def align(self, currentValue):
+        fvalues = []
+        for i in self:
+            while not i.isFinished:
+                if i.currentLine[self.idx] <= currentValue:
+                    break
+                i.next()
+            if i.currentLine[self.idx] <= currentValue:
+                fvalues.append(i.currentLine[self.idx])
+
+        #This should not happen
+        if not fvalues:
+            raise ValueError, 'Value %g is not reached.'
+
+        self.idxCurrentF = min(self.idxCurrentF,
+                               numpy.ceil(numpy.log10(max(fvalues)) * nbPtsF))
+        #The update of idxCurrentF is done so all the intermediate function
+        #value trigger reached are not written, only the smallest.
+        currentValue = numpy.power(10, self.idxCurrentF / nbPtsF)
+        return numpy.insert(self.currentLine(), 0, currentValue)
+
+
+class ArrayMultiReader(MultiReader):
+    """Wrapper class of ALIGNED data arrays to be aligned together."""
+
+    idx = 0
+
+    def __init__(self, data):
+        MultiReader.__init__(self, data)
+        for i in self:
+            i.nbRuns = (numpy.shape(i.data)[1] - 1)/2
+
+    def currentLine(self):
+        """Aggregates currentLines information."""
+        res = []
+        res.extend(list(i.currentLine[1:i.nbRuns+1] for i in self))
+        res.extend(list(i.currentLine[1+i.nbRuns:] for i in self))
+        return numpy.hstack(res)
+
+class VArrayMultiReader(ArrayMultiReader, VMultiReader):
+    """Wrapper class of ALIGNED data arrays to be aligned vertically."""
+
+    def __init__(self, data):
+        ArrayMultiReader.__init__(self, data)
+
+
+class HArrayMultiReader(ArrayMultiReader, HMultiReader):
+    """Wrapper class of ALIGNED data arrays to be aligned vertically."""
+
+    def __init__(self, data):
+        ArrayMultiReader.__init__(self, data)
+        self.idxCurrentF = numpy.inf #Minimization
+
+
+#FUNCTION DEFINITIONS
+
+def alignData(data):
+    """Returns an array of aligned data from a list of data arrays."""
+
+    res = []
+    currentValue = data.getInitialValue()
+    #set_trace()
+    if data.isFinished():
+        res.append(data.align(currentValue))
+
+    while not data.isFinished():
+        res.append(data.align(currentValue))
+        currentValue = data.newCurrentValue()
+
+    return numpy.vstack(res)
 
 
 def split(dataFiles):
-    """Split the data files into data sets."""
+    """Split a list of data files into arrays corresponding to data sets."""
 
     #TODO: optimize by splitting using %
     dataSets = []
     for fil in dataFiles:
         try:
-            # content = numpy.loadtxt(fil, comments='%') <-- doesnt work with windows
+            # This doesnt work with windows.
+            # content = numpy.loadtxt(fil, comments='%')
+
             file = open(fil,'r')               # read in the file
             lines = file.readlines()
         except IOError:
@@ -57,9 +242,7 @@ def split(dataFiles):
             # skip if comment
             if line.startswith('%'):
                 if content:
-                    content = numpy.vstack(content)
-                    dataSet = DataSet(content)
-                    dataSets.append(dataSet)
+                    dataSets.append(numpy.vstack(content))
                     content = []
                 continue
 
@@ -80,132 +263,6 @@ def split(dataFiles):
             content.append(numpy.array(data))
             #Check that it always have the same length?
         if content:
-            content = numpy.vstack(content)
-            dataSet = DataSet(content)
-            dataSets.append(dataSet)
+            dataSets.append(numpy.vstack(content))
 
     return dataSets
-
-
-def alignData(dataSets, align):
-    """Returns data aligned according to align."""
-
-    #TODO is not used yet.
-
-    current = CurrentState('align')
-
-    data = []
-
-    # read status of dataSets.
-
-    while any(current.isReading):
-        for i in range(len(dataSets)):
-            curDataSet = dataSets[i]
-            if current.isReading[i]:
-                evals[i] = curDataSet.set[curDataSet.currentPos, idxEvals]
-                f[i] = curDataSet.set[curDataSet.currentPos, idxF]
-                while (curDataSet.currentPos < len(curDataSet.set) - 1 and
-                       not current.isValid(slice(i,i+1))): # minimization
-                    curDataSet.currentPos += 1
-                    evals[i] = curDataSet.set[curDataSet.currentPos,
-                                              idxEvals]
-                    f[i] = curDataSet.set[curDataSet.currentPos, idxF]
-                if not (curDataSet.currentPos < len(curDataSet.set) - 1):
-                    current.isReading[i] = False
-
-        set_trace()
-        data.append(current.getVector())
-
-        if current.any(isReading):
-            #Gets the closest fitness which can be written as 10**(i/5)
-            #from above
-            if numpy.isinf(currentF):
-                idxCurrentF = int(numpy.ceil(numpy.log10(max(f))*nbPtsF))
-                currentF = numpy.power(10, float(idxCurrentF) / nbPtsF)
-            tmp = [currentF]
-            tmp.extend(evals)
-            tmp.extend(f)
-            hData.append(tmp)
-            while all(numpy.power(10, float(idxCurrentF) / nbPtsF) > f):
-                idxCurrentF -= 1
-            currentF = numpy.power(10, float(idxCurrentF) / nbPtsF)
-
-    tmp = [currentF]
-    tmp.extend(evals)
-    tmp.extend(f)
-    hData.append(tmp)
-    set_trace()
-    self.hData = numpy.vstack(hData)
-    return hData
-
-
-class CurrentState:
-    """Is not used yet."""
-
-    def __init__(self, align, size):
-        self.evals = size * [0] # updated list of function evaluations
-        self.f = size * [0] # updated list of function values.
-        self.isReading = size * [True]
-        if align == 'horizontal':
-            self =  HCurrentState()
-
-        elif align == 'vertical':
-            self = VCurrentState()
-        else:
-            print 'Error'
-
-        self.curIdF = numpy.inf #minimization
-        self.curIdEv = -numpy.inf
-
-    def getF(self):
-        return numpy.power(10, self.idxVal/nbPtsF)
-
-    def getEv(self):
-        return int(numpy.floor(numpy.power(10, idxVal/nbPtsEvals)))
-
-    def getVector(self):
-        res = self.getVal()
-
-
-class HCurrentState(CurrentState):
-
-    def isValid(self, s): #= slice(len(self.f))):
-        """Tests if a slice of self.f is lesser than the current value."""
-        res = []
-        tmp = self.getVal()
-        for i in self.f[s]:
-            res.append(i <= tmp)
-
-        return all(res)
-
-    def getVal(self):
-        return getF(self)
-
-    def getCurVal(self):
-        self.idxF = numpy.ceil(numpy.log10(max(self.f)) * nbPtsF)
-        return getF
-
-
-class VCurrentState(CurrentState):
-
-    def isValid(self, s ):#= slice(len(self.f))):
-        """Tests if a slice of self.f is greater than the current value."""
-        res = []
-        tmp = self.getVal()
-        for i in self.f[s]:
-            res.append(i >= tmp)
-
-        return all(res)
-
-    def getVal(self):
-        return getEv(self)
-
-
-class DataSet:
-    """Wrapper class for an array containing a current position attribute."""
-
-    def __init__ (self, set):
-        self.currentPos = 0
-        self.currentPos2 = 0
-        self.set = set
-        self.userDefMaxEvals = set[-1, 0]

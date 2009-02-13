@@ -130,9 +130,9 @@ def writeTable(entries, filename, fontSize='scriptsize',
     for i in range(0, width):
         caption = ('\\textbf{\\textit{f}\\raisebox{-0.35ex}{' + str(entries[i].funcId) +
                    '} in ' + str(entries[i].dim)) + '-D}'
-        caption = caption + ', N=' + str(entries[i].nbRuns)
+        caption = caption + ', N=' + str(entries[i].nbRuns())
         #maxEvals = min(entries[i].mMaxEvals, entries[i].dim * maxEvalsFactor)
-        maxEvals = entries[i].mMaxEvals
+        maxEvals = entries[i].mMaxEvals()
         caption = caption + ', mFE=' + str(int(maxEvals))
         if i != width - 1:
             f.write('& \multicolumn{' + str(len(format)-1) + '}{@{$\;$}c|@{$\;$}}{' + caption + '}')
@@ -297,15 +297,15 @@ def generateData(indexEntry, targetFuncValues):
                 break
         success = []
         unsucc = []
-        for j in range(1, indexEntry.nbRuns+1):
-            tmpsucc = (i[indexEntry.nbRuns+j] <= targetF)
+        for j in range(1, indexEntry.nbRuns() + 1):
+            tmpsucc = (i[indexEntry.nbRuns() + j] <= targetF)
             success.append(tmpsucc)
             if not tmpsucc:
                 unsucc.append(indexEntry.vData[-1, j])
                 #if the target function value is not reached, the last number
                 #of function evaluations is found in vData.
 
-        N = numpy.sort(i[1:indexEntry.nbRuns + 1])
+        N = numpy.sort(i[1:indexEntry.nbRuns() + 1])
 
         ertvec = bootstrap.sp(N, issuccessful=success)
 
@@ -316,7 +316,7 @@ def generateData(indexEntry, targetFuncValues):
                        dispersion[0], dispersion[1],
                        float(numpy.sum(unsucc))/ertvec[2]]
         else: # 0 success.
-            vals = numpy.sort(indexEntry.vData[-1, indexEntry.nbRuns+1:])
+            vals = numpy.sort(indexEntry.vData[-1, indexEntry.nbRuns() + 1:])
             #Get the function values for maxEvals.
 
             curLine = [targetF, ertvec[2]]

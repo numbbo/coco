@@ -4,9 +4,10 @@
    command line. Executes the BBOB postprocessing on the given
    filename and folder arguments, using all found .info files. 
 Synopsis:
-  python path_to_folder/bbob_pproc/run.py [OPTIONS] FILE_NAME FOLDER_NAME...
+    python path_to_folder/bbob_pproc/run.py [OPTIONS] FILE_NAME FOLDER_NAME...
 Help:
-  python path_to_folder/bbob_pproc/run.py -h
+    python path_to_folder/bbob_pproc/run.py -h
+
 """
 
 # this script should probably replace ../bbob_pproc.py in future? 
@@ -27,19 +28,20 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import readindexfiles, findindexfiles
+from bbob_pproc.readindexfiles import IndexEntries
 from bbob_pproc import pproc, pptex, pprldistr, ppfigdim
 
+# GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
 tabDimsOfInterest = [5, 20]    # dimension which are displayed in the tables
 # tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
 # tabValsOfInterest = (10, 1.0, 1e-1, 1.0e-4, 1.0e-8)  # 1e-3 1e-5
 
-figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # 
-figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)  # 
+figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
+figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)
 
 rldDimsOfInterest = (5, 20)
-rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) 
+rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 #Put backward to have the legend in the same order as the lines.
 
 #CLASS DEFINITIONS
@@ -49,67 +51,7 @@ class Usage(Exception):
         self.msg = msg
 
 
-###############################################################################
-
-
 #FUNCTION DEFINITIONS
-
-def createIndexEntries(args, verbose=False):
-    """Returns an instance of IndexEntries from a list of inputs.
-    Keyword arguments:
-    args -- list of strings being either info file names, folder containing 
-            info files or pickled data files.
-    verbose -- controls verbosity.
-    Outputs:
-    indexEntries -- list of IndexEntry instances.
-
-    Exception:
-    Usage --
-
-    """
-
-    indexFiles = []
-    args = set(args) #for unicity
-    pickles = [] # list of pickled
-    for i in args:
-        if i.endswith('.info'):
-            (filepath,filename) = os.path.split(i)
-            indexFiles.append(i)
-        elif os.path.isdir(i):
-            indexFiles.extend(findindexfiles.main(i,verbose))
-        elif i.endswith('.pickle'):
-            pickles.append(i)
-        else:
-            raise Usage('File or folder ' + i + ' not found. ' +
-                        'Expecting as input argument either .info file(s) ' +
-                        '.pickle file(s) or a folder containing .info ' +
-                         'file(s).')
-    indexFiles = set(indexFiles) #for unicity
-
-    indexEntries = readindexfiles.IndexEntries(verbose=verbose)
-    for i in pickles:
-        try:
-            f = open(i,'r')
-            entry = pickle.load(f)
-            f.close()
-            if verbose:
-                print 'Unpickled %s.' % (i)
-            indexEntries.append(entry)
-        except IOError, (errno, strerror):
-            print "I/O error(%s): %s" % (errno, strerror)
-        except UnpicklingError:
-            f.close()
-            print '%s could not be unpickled.' %(i)
-            if not i.endswith('.pickle'):
-                print '%s might not be a pickle data file.' %(i)
-
-    if indexFiles:
-        #If indexFiles is not empty, some new indexEntries are added and
-        #then some old pickled indexEntries may need to be updated.
-        indexEntries.extend(readindexfiles.IndexEntries(indexFiles, verbose))
-
-    return indexEntries
-
 
 def usage():
     print main.__doc__
@@ -234,11 +176,10 @@ def main(argv=None):
                 if verbose:
                     print '%s was created.' % (outputdir)
 
-        indexEntries = createIndexEntries(args, verbose)
+        indexEntries = IndexEntries(args, verbose)
 
         if isPickled:
             #Should get in there only if some data were not pickled.
-
             for i in indexEntries:
                 filename = os.path.join(outputdir, 'ppdata_f%d_%d'
                                                     %(i.funcId, i.dim))
@@ -253,7 +194,7 @@ def main(argv=None):
                 except PicklingError:
                     print "Could not pickle %s" %(i)
 
-
+        #set_trace()
         if isfigure:
             ppfigdim.main(indexEntries, figValsOfInterest, outputdir,
                           verbose)
