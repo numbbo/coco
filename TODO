@@ -6,6 +6,7 @@ Error catching:
 *maxEvalsFactor appears in pptex and pprldistr and ppfig and have to be synchronized...
 *IOError with pickled data.
 *Problem with MINGW32 os.sep returns a \ !
+*Problem with some negative values on f-fopt on function 5!!! Do the test again.
 
 Feature missing:
 *Summary tables of ENFEs...
@@ -29,6 +30,7 @@ Questions:
 
 ###############################################################################
 SOLVED:
+*Problem with maxEvalsFactor in pprldistr: if maxEvalsFactor is not set alright, there is a good chance one of the final value distribution graph for maxEvalsF = 10^i*D will overlap one of the graph where Deltaf changes.
 *warning: no labels for legend
 *Put a latex macro in the template to input the path to the external files.
 *Play with the fontsize (smaller titles, larger ticks).

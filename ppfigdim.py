@@ -11,8 +11,6 @@ from bbob_pproc import bootstrap
 
 maxEvalsFactor = 1e6
 
-#valuesOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
-#colors = {1.0:'b', 1.0e-2:'g', 1.0e-4:'r', 1.0e-6:'c', 1.0e-8:'m'} #TODO colormaps!
 colors = ('k', 'g', 'c', 'b', 'y', 'm', 'r', 'g', 'b', 'c', 'r', 'm')  # should not be too short
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 # should correspond with the colors in pprldistr.
@@ -22,7 +20,7 @@ funInfos = {}
 isBenchmarkinfosFound = True
 try:
     infofile = os.path.join(os.path.split(__file__)[0], '..', '..',
-                            'benchmarkshortinfos')
+                            'benchmarkshortinfos.txt')
     f = open(infofile,'r')
     for line in f:
         if len(line) == 0 or line.startswith('%') or line.isspace() :
@@ -68,17 +66,13 @@ def createFigure(data, figHandle=None):
         tmp = numpy.where(numpy.isfinite(data[:,i]))[0]
         if tmp.size > 0:
             lines.append(plt.plot(data[tmp,0], yValues[tmp]))
-            #lines.append(plt.plot([data[tmp[-1],0]], [yValues[tmp[-1]]],
-                                  #marker='+'))
-            #TODO: larger size.
-        #else: ???
 
     return lines
 
 
 def customizeFigure(figHandle, figureName = None, title='',
-                    fileFormat=('png','eps'), labels=None,
-                    scale=['linear','linear'], legend=True,
+                    fileFormat=('png', 'eps'), labels=None,
+                    scale=('linear','linear'), legend=True,
                     locLegend='best', verbose=True):
     """ Customize a figure by adding a legend, axis label, etc. At the
         end the figure is saved.
@@ -119,12 +113,14 @@ def customizeFigure(figHandle, figureName = None, title='',
 
     # axes limites
     axisHandle.set_xlim(1.8, 45)                # TODO should become input arg?
-    axisHandle.set_ylim(10**-0.2, ylim_org[1])  
+    axisHandle.set_ylim(10**-0.2, ylim_org[1])
 
     # ticks on axes
     #axisHandle.invert_xaxis()
     dimticklist = (2, 3, 4, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
     dimannlist = (2, 3, '', 5, 10, 20, 40)  # TODO: should become input arg at some point? 
+    # TODO: All these should depend on one given input (xlim, ylim)
+
     axisHandle.set_xticks(dimticklist)
     axisHandle.set_xticklabels([str(n) for n in dimannlist])
 
@@ -137,11 +133,6 @@ def customizeFigure(figHandle, figureName = None, title='',
     # Legend
     if legend:
         plt.legend(loc=locLegend)
-    #if len(legend) > 0:
-        #if len(legendh) > 0:
-            #axisHandle.legend(legendh, legend, locLegend)
-        #else:
-            #axisHandle.legend(legend, locLegend)
     axisHandle.set_title(title)
 
     # Save figure
@@ -152,45 +143,29 @@ def customizeFigure(figHandle, figureName = None, title='',
             if verbose:
                 print 'Wrote figure in %s.' %(figureName + '.' + fileFormat)
         else:
-            #TODO: that is if fileFormat is iterable.
-            for entry in fileFormat:
-                plt.savefig(figureName + '.' + entry, dpi = 120,
-                            format = entry)
-                if verbose:
-                    print 'Wrote figure in %s.' %(figureName + '.' + entry)
+            if not isinstance(fileFormat, basestring):
+                for entry in fileFormat:
+                    plt.savefig(figureName + '.' + entry, dpi = 120,
+                                format = entry)
+                    if verbose:
+                        print 'Wrote figure in %s.' %(figureName + '.' + entry)
 
     # TODO:    *much more options available (styles, colors, markers ...)
-    #       *output directory - contained in the file name or extra parameter?
-
-
-def sortIndexEntries(indexEntries):
-    """From a list of IndexEntry, returns a sorted dictionary."""
-    sortByFunc = {}
-    dims = set()
-    funcs = set()
-    for elem in indexEntries:
-        sortByFunc.setdefault(elem.funcId,{})
-        sortByFunc[elem.funcId][elem.dim] = elem
-        funcs.add(elem.funcId)
-        dims.add(elem.dim)
-
-    return sortByFunc
 
 
 def generateData(indexEntry, targetFuncValue):
     """Returns data to be plotted."""
 
     res = []
-
     for i in indexEntry.hData:
         if i[0] <= targetFuncValue:
             tmp = []
-            for j in i[indexEntry.nbRuns+1:]:
+            for j in i[indexEntry.nbRuns()+1:]:
                 tmp.append(j <= i[0])
-            res.extend(bootstrap.sp(i[1:indexEntry.nbRuns + 1], 
+            res.extend(bootstrap.sp(i[1:indexEntry.nbRuns() + 1],
                                      issuccessful=tmp))
             res.append(res[0] * max(res[2], 1)) #Sum(FE)
-            res.append(bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 50)[0])
+            res.append(bootstrap.prctile(i[1:indexEntry.nbRuns() + 1], 50)[0])
             break
 
     # if targetFuncValue was not reached
@@ -203,13 +178,10 @@ def generateData(indexEntry, targetFuncValue):
                 i = it.next()
         except StopIteration:
             pass
-        #res = [numpy.sum(i[1:indexEntry.nbRuns + 1]), 0., 0,
-               #bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 50)[0]]
-        res.extend(bootstrap.sp(i[1:indexEntry.nbRuns + 1],
-                                issuccessful=[False]*indexEntry.nbRuns))
+        res.extend(bootstrap.sp(i[1:indexEntry.nbRuns() + 1],
+                                issuccessful=[False]*indexEntry.nbRuns()))
         res.append(res[0] * max(res[2], 1)) #Sum(FE)
-        res.append(bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 50)[0])
-
+        res.append(bootstrap.prctile(i[1:indexEntry.nbRuns() + 1], 50)[0])
 
     return numpy.array(res)
 
@@ -225,8 +197,11 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
     plt.rc("font", size=20)
     plt.rc("legend", fontsize=20)
 
-    sortByFunc = sortIndexEntries(indexEntries)
+    #sortByFunc = sortIndexEntries(indexEntries)
+    #set_trace()
+    sortByFunc = indexEntries.sortByFunc()
     for func in sortByFunc:
+        sortByFunc[func] = sortByFunc[func].sortByDim()
         filename = os.path.join(outputdir,'ppdata_f%d' % (func))
         fig = plt.figure()
         #legend = []
@@ -236,10 +211,11 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
             succ = []
             unsucc = []
             data = []
-            #Collect data from indexEntry that have the same function and 
-            #different dimension.
+            #Collect data that have the same function and different dimension.
             for dim in sorted(sortByFunc[func]):
-                tmp = generateData(sortByFunc[func][dim], valuesOfInterest[i])
+                #set_trace()
+                tmp = generateData(sortByFunc[func][dim][0],
+                                   valuesOfInterest[i])
                 data.append(numpy.append(dim, tmp))
                 if tmp[2] > 0: #Number of success is larger than 0
                     succ.append(numpy.append(dim, tmp))
@@ -268,14 +244,10 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
                          ' %+d' % (numpy.log10(valuesOfInterest[i])))
                 line.extend(h[0])
 
-
         if isBenchmarkinfosFound:
             title = funInfos[func]
         else:
             title = ''
-
-        #if func > 1:  # legends hiding points can be very annoying
-            #legend = ''
 
         legend = func in (1, 24, 101, 130)
 
@@ -287,4 +259,4 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
 
     plt.rcdefaults()
 
-    # TODO: how do we make a user define what color or line style?
+    # TODO: make a user define what color or line style

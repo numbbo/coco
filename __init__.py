@@ -15,4 +15,4 @@ __all__  = ['readindexfiles', 'findindexfiles', 'pptex', 'pprldistr',
             'main', 'ppfigdim', 'pproc']
 
 if __name__ == "__main__":
-    sys.exit(main()) #TODO change this to deal with args?
+    sys.exit(main())
