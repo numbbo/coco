@@ -1,19 +1,17 @@
 Error catching:
-*Deal with data with more than one algId
-*When given a wrong path, nothing happens...
 *problem with the tables: too many floats to handle -> maybe more than 12?
 *tables are hard to read: columns do not have all the same width
-*maxEvalsFactor appears in pptex and pprldistr and ppfig and have to be synchronized...
 *IOError with pickled data.
 *Problem with MINGW32 os.sep returns a \ !
-*Problem with some negative values on f-fopt on function 5!!! Do the test again.
+*Problem with some negative values on f-fopt on function 5!!! Did the test again.
 
 Feature missing:
 *Summary tables of ENFEs...
 *have low-level post-processing functions that deals with arrays.
 *Deal with archive file -> not file-like object for zipfile module in python 2.5.2
 *Compute the entropy based on the comment line in the info file?
-*Compare results from different algorithms!
+*Compare results from different algorithms! -> How?
+*does the maxEvalsFactor appearing in ppfigdim still makes sense?
 
 Misc.
 *Provide a clean doc page that is helpful and useful -> pydoc.writedocs('.') in BBOB/code/python
@@ -30,6 +28,9 @@ Questions:
 
 ###############################################################################
 SOLVED:
+*When given a wrong path, nothing happens...
+*maxEvalsFactor appears in pptex and pprldistr and ppfig and have to be synchronized -> only appear in ppfigdim now.
+*Deal with data with more than one algId -> warning
 *Problem with maxEvalsFactor in pprldistr: if maxEvalsFactor is not set alright, there is a good chance one of the final value distribution graph for maxEvalsF = 10^i*D will overlap one of the graph where Deltaf changes.
 *warning: no labels for legend
 *Put a latex macro in the template to input the path to the external files.

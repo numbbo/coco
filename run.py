@@ -17,7 +17,6 @@ from __future__ import absolute_import
 import os
 import sys
 import getopt
-import pickle
 from pdb import set_trace
 
 # Add the path to bbob_pproc
@@ -37,7 +36,7 @@ tabDimsOfInterest = [5, 20]    # dimension which are displayed in the tables
 tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
 # tabValsOfInterest = (10, 1.0, 1e-1, 1.0e-4, 1.0e-8)  # 1e-3 1e-5
 
-figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
+#figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)
 
 rldDimsOfInterest = (5, 20)
@@ -170,31 +169,23 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
+        indexEntries = IndexEntries(args, verbose)
+        #set_trace()
+        sortedByAlg = indexEntries.sortByAlg()
+        if len(sortedByAlg) > 1:
+            warnings.warn('Data with multiple algId %s ' % (sortedByAlg) +
+                          'will be processed together.')
+
+
         if isPickled or isfigure or istab or isrldistr:
             if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
                 if verbose:
                     print '%s was created.' % (outputdir)
 
-        indexEntries = IndexEntries(args, verbose)
-
         if isPickled:
-            #Should get in there only if some data were not pickled.
-            for i in indexEntries:
-                filename = os.path.join(outputdir, 'ppdata_f%d_%d'
-                                                    %(i.funcId, i.dim))
-                try:
-                    f = open(filename + '.pickle','w')
-                    pickle.dump(i, f)
-                    f.close()
-                    #if verbose:
-                        #print 'Saved pickle in %s.' %(filename+'.pickle')
-                except IOError, (errno, strerror):
-                    print "I/O error(%s): %s" % (errno, strerror)
-                except PicklingError:
-                    print "Could not pickle %s" %(i)
+            indexEntries.pickle(outputdir, verbose)
 
-        #set_trace()
         if isfigure:
             ppfigdim.main(indexEntries, figValsOfInterest, outputdir,
                           verbose)
@@ -207,11 +198,11 @@ def main(argv=None):
                 for dim in tabDimsOfInterest:
                     try:
                         if len(sortedByDim[dim]) > 1:
-                            raise Usage('Do not expect to have multiple ' + 
-                                        'IndexEntry with the same dimension ' +
-                                        'and function.')
-                        else:
-                            tmp.extend(sortedByDim[dim])
+                            warnings.warn('Func: %d, DIM %d: ' % (fun, dim) +
+                                          'multiple index entries. Will only '+
+                                          'process the first ' +
+                                          '%s.' % sortedByDim[dim][0])
+                        tmp.append(sortedByDim[dim][0])
                     except KeyError:
                         pass
                 if tmp:
@@ -231,8 +222,13 @@ def main(argv=None):
                                        outputdir, 'dim%02d%s' % (dim, fGroup),
                                        verbose)
 
-        #if verbose:
-            #print 'total ps = %g\n' % (float(numpy.sum(ps))/numpy.sum(nbRuns))
+        if verbose:
+            tmp = []
+            tmp.extend(tabValsOfInterest)
+            tmp.extend(figValsOfInterest)
+            tmp.extend(rldValsOfInterest)
+            if indexEntries:
+                print 'total ps = %g\n' % indexEntries.successProbability(tmp)
 
     except Usage, err:
         print >>sys.stderr, err.msg

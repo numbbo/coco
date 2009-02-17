@@ -10,14 +10,12 @@ import numpy
 import matplotlib.pyplot as plt
 from pdb import set_trace
 
-#from bbob_pproc import maxEvalsFactor
-
 #__all__ = []
 
 #rldColors = ['b', 'g', 'r', 'c', 'm', 'b', 'g', 'r', 'c', 'm']  # might not be long enough
 rldColors = ('g', 'c', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be too short
 
-maxEvalsFactor = 1e6
+#maxEvalsFactor = 1e6
 
 def beautifyRLD(figHandle, figureName, maxEvalsF=maxEvalsFactor,
                 fileFormat=('png', 'eps'), verbose=True):
@@ -164,7 +162,7 @@ def plotFVDistr(indexEntries, fvalueToReach=1.e-8, maxEvalsF=maxEvalsFactor,
     return res
 
 
-def main(indexEntries, valuesOfInterest, outputdir='', info='default', 
+def main(indexEntries, valuesOfInterest, outputdir='', info='default',
          verbose=True):
     """Generate figures of empirical cumulative distribution functions.
 

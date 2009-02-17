@@ -9,10 +9,12 @@ from __future__ import absolute_import
 
 import os
 import pickle
+import warnings
 import numpy
 
 from bbob_pproc import findindexfiles
-from bbob_pproc import pproc
+from bbob_pproc.pproc import split, alignData, HMultiReader, VMultiReader
+from bbob_pproc.pproc import HArrayMultiReader, VArrayMultiReader
 
 from pdb import set_trace
 
@@ -67,13 +69,16 @@ class IndexEntry:
         if comment.startswith('%'):
             self.comment = comment.strip()
         else:
-            raise Exception()
-            print 'Warning: Comment line: "%s" is skipped,' % comment
-            print '         since it is not starting with a \%!'
+            #raise Exception()
+            warnings.warn('Comment line: %s is skipped,' % (comment) +
+                          'it does not start with \%.')
             self.comment = ''
 
         # Split line in data file name(s) and run time information.
         self.dataFiles = []
+        self.itrials = []
+        self.evals = []
+        self.finalFminusFtarget = []
         parts = data.split(', ')
         for elem in parts:
             if elem.endswith('dat'):
@@ -84,20 +89,21 @@ class IndexEntry:
 
                 self.dataFiles.append(elem)
             else:
-                pass
-                # TODO: to store the run time information for each entry of
-                # entry.dataFiles an attribute which contains another list
-                # is needed
+                elem = elem.split(':')
+                self.itrials.append(int(elem[0]))
+                elem = elem[1].split('|')
+                self.evals.append(int(elem[0]))
+                self.finalFminusFtarget.append(float(elem[1]))
+                #pass
 
         #set_trace()
-        ext = {'.dat':(pproc.HMultiReader, 'hData'),
-               '.tdat':(pproc.VMultiReader, 'vData')}
+        ext = {'.dat':(HMultiReader, 'hData'), '.tdat':(VMultiReader, 'vData')}
         for extension, info in ext.iteritems():
             #set_trace()
             dataFiles = list('.'.join(i.split('.')[:-1]) + extension
                              for i in self.dataFiles)
-            data = info[0](pproc.split(dataFiles))
-            setattr(self, info[1], pproc.alignData(data))
+            data = info[0](split(dataFiles))
+            setattr(self, info[1], alignData(data))
         #set_trace()
 
     def __eq__(self, other):
@@ -105,7 +111,8 @@ class IndexEntry:
         return (self.__class__ is other.__class__ and
                 self.funcId == other.funcId and
                 self.dim == other.dim and
-                self.algId == other.algId)
+                self.algId == other.algId and
+                self.comment == other.comment)
 
     def __ne__(self,other):
         return not self.__eq__(other)
@@ -149,19 +156,48 @@ class IndexEntry:
                     setattr(self, self.__attributes[elemFirst][0],
                             self.__attributes[elemFirst][1](elemSecond))
                 except KeyError:
-                    print ('%s is not an expected attribute of IndexEntry.'
-                           % elemFirst)
+                    warnings.warn('%s is not an expected ' % (elemFirst) +
+                                  'attribute of IndexEntry.')
                     continue
 
             except StopIteration:
                 break
 
         #TODO: check that no compulsory attributes is missing:
-        #dim, funcId, algId and?
+        #dim, funcId, algId, precision
 
-        #self.targetFuncValue = self.fopt + self.precision
-        #TODO: is this needed?
         return
+
+    def pickle(self, outputdir, verbose=True):
+        if not getattr(self, 'pickleFile', False):
+            self.pickleFile = os.path.join(outputdir, 'ppdata_f%d_%d.pickle'
+                                           %(self.funcId, self.dim))
+            try:
+                f = open(self.pickleFile, 'w')
+                pickle.dump(self, f)
+                f.close()
+                if verbose:
+                    print 'Saved pickle in %s.' %(self.pickleFile)
+            except IOError, (errno, strerror):
+                print "I/O error(%s): %s" % (errno, strerror)
+            except pickle.PicklingError:
+                print "Could not pickle %s" %(self)
+        #else: #What?
+            #if verbose:
+                #print ('Skipped update of pickle file %s: no new data.'
+                       #% self.pickleFile)
+
+    def nbSuccess(self, targetFuncValue):
+        """Returns the nb of successes for a given target function value."""
+
+        succ = 0
+        for j in self.hData:
+            if j[0] <= targetFuncValue:
+                for k in j[i.nbRuns()+1:]:
+                    if k <= targetFuncValue:
+                        succ += 1
+                break
+        return succ
 
 
 class IndexEntries(list):
@@ -174,7 +210,7 @@ class IndexEntries(list):
     def __init__(self, args=[], verbose=True):
         """Instantiate IndexEntries from a list of inputs.
         Keyword arguments:
-        args -- list of strings being either info file names, folder containing 
+        args -- list of strings being either info file names, folder containing
                 info files or pickled data files.
         verbose -- controls verbosity.
 
@@ -182,7 +218,8 @@ class IndexEntries(list):
         indexEntries -- list of IndexEntry instances.
 
         Exception:
-        Usage --
+        Warning -- Unexpected user input.
+        pickle.UnpicklingError
 
         """
 
@@ -201,30 +238,26 @@ class IndexEntries(list):
                     f = open(i,'r')
                     try:
                         entry = pickle.load(f)
-                    except UnpicklingError:
+                    except pickle.UnpicklingError:
                         print '%s could not be unpickled.' %(i)
                     f.close()
                     if verbose:
                         print 'Unpickled %s.' % (i)
-                    entry.pickle = i
                     self.append(entry)
+                    #set_trace()
                 except IOError, (errno, strerror):
                     print "I/O error(%s): %s" % (errno, strerror)
 
-            #else:
-                #raise Usage('File or folder ' + i + ' not found. ' +
-                            #'Expecting as input argument either .info file(s) ' +
-                            #'.pickle file(s) or a folder containing .info ' +
-                            #'file(s).')
+            else:
+                warnings.warn('File or folder ' + i + ' not found. ' +
+                              'Expecting as input argument either .info ' +
+                              'file(s), .pickle file(s) or a folder ' +
+                              'containing .info file(s).')
 
-        # TODO: While an indexEntry cannot be created by incrementally
-        # appending the data files, we need this loop.
-        #for i in self:
-            #if verbose:
-                #print 'Obtaining data for %s' % i.__repr__()
-            #i.obtainData()
 
     def processIndexFile(self, indexFile, verbose=True):
+        """Reads in an index file information on the different runs."""
+
         try:
             f = open(indexFile)
             if verbose:
@@ -264,25 +297,31 @@ class IndexEntries(list):
         for i in self:
             if i == o:
                 isFound = True
-                i.dataFiles.extend(o.dataFiles)
-                #TODO: update i.Data with o.Data
-                #set_trace()
-                i.vData = pproc.alignData(pproc.VArrayMultiReader([i.vData,
-                                                                   o.vData]))
-                #set_trace()
-                i.hData = pproc.alignData(pproc.HArrayMultiReader([i.hData,
-                                                                   o.hData]))
-                #set_trace()
+                if set(i.dataFiles).symmetric_difference(set(o.dataFiles)):
+                    #set_trace()
+                    i.vData = alignData(VArrayMultiReader([i.vData, o.vData]))
+                    #set_trace()
+                    i.hData = alignData(HArrayMultiReader([i.hData, o.hData]))
+                    if getattr(i, 'pickleFile', False):
+                        del i.pickleFile
                 break
         if not isFound:
             list.append(self, o)
 
+    def pickle(self, outputdir, verbose=True):
+        """Loop over self to pickle each elements."""
+
+        for i in self:
+            #set_trace()
+            i.pickle(outputdir, verbose)
+
     def sortByAlg(self):
-        """Returns a dictionary sorted based on indexEntry.algId."""
+        """Returns a dictionary sorted based on algId and comment."""
 
         sorted = {}
         for i in self:
-            sorted.setdefault(i.algId, IndexEntries()).append(i)
+            sorted.setdefault(i.algId + ', ' + i.comment,
+                              IndexEntries()).append(i)
         return sorted
 
     def sortByDim(self):
@@ -322,6 +361,25 @@ class IndexEntries(list):
                 sorted.setdefault('nzsev', []).append(i)
             elif i.funcId in range(122, 131):
                 sorted.setdefault('nzsmm', []).append(i)
-            #else: Undefined function group
+            else:
+                warnings.warn('Unknown function id.')
 
         return sorted
+
+    def successProbability(self, targetFuncValue):
+        """Returns overall probability of success given a target function value
+        targetFuncValue -- float
+
+        Exception:
+        ValueError
+        """
+
+        if self:
+            succ = 0
+            nbRuns = 0
+            for i in self:
+                nbRuns += i.nbRuns()
+                succ += i.nbSuccess()
+            return float(succ)/nbRuns
+        else:
+            raise ValueError('The probability of success is not defined.')
