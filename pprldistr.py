@@ -15,10 +15,8 @@ from pdb import set_trace
 #rldColors = ['b', 'g', 'r', 'c', 'm', 'b', 'g', 'r', 'c', 'm']  # might not be long enough
 rldColors = ('g', 'c', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be too short
 
-#maxEvalsFactor = 1e6
-
-def beautifyRLD(figHandle, figureName, maxEvalsF=maxEvalsFactor,
-                fileFormat=('png', 'eps'), verbose=True):
+def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
+                verbose=True):
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
@@ -48,8 +46,7 @@ def beautifyRLD(figHandle, figureName, maxEvalsF=maxEvalsFactor,
 
 
 
-def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF=maxEvalsFactor,
-                verbose=True):
+def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
     """Creates run length distributions from a sequence of indexEntries.
 
     Keyword arguments:
@@ -126,8 +123,7 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'), verbose=True):
             print 'Wrote figure in %s.' %(figureName + '.' + entry)
 
 
-def plotFVDistr(indexEntries, fvalueToReach=1.e-8, maxEvalsF=maxEvalsFactor,
-                verbose=True):
+def plotFVDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
     """Creates empirical cumulative distribution functions of final function
     values plot from a sequence of indexEntries.
 
