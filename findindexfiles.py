@@ -41,10 +41,15 @@ def main(directory=os.getcwd(), verbose=True):
                 indexFiles.append(os.path.join(root, elem))
 
         # Print success message.
-        if verbose:
-            print 'Found %d file(s)!' % (len(indexFiles) - previousLength)
+        #if verbose:
+        #    if len(indexFiles) - previousLength > 0:
+        #        print 'Found %d file(s)!' % (len(indexFiles) - previousLength)
             #else:
                 #warnings.warn('Could not find any index file in %s!' % root)
+    if verbose:
+        print 'Found %d file(s)!' % (len(indexFiles))
+    if not indexFiles:
+        warnings.warn('Could not find any index file in %s!' % root)
     return indexFiles
 
 if __name__ == '__main__':

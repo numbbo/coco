@@ -2,7 +2,7 @@
 
 """Calls the main function of bbob_pproc with arguments from the
    command line. Executes the BBOB postprocessing on the given
-   filename and folder arguments, using all found .info files. 
+   filename and folder arguments, using all found .info files.
 Synopsis:
     python path_to_folder/bbob_pproc/run.py [OPTIONS] FILE_NAME FOLDER_NAME...
 Help:
@@ -10,7 +10,7 @@ Help:
 
 """
 
-# this script should probably replace ../bbob_pproc.py in future? 
+# this script should probably replace ../bbob_pproc.py in future?
 
 from __future__ import absolute_import
 
@@ -112,7 +112,7 @@ def main(argv=None):
 
         $ python -m bbob_pproc OPTIONS DATA_TO_PROCESS1...
 
-    * From the python interactive shell (requires that the path to this 
+    * From the python interactive shell (requires that the path to this
       package is in python search path):
 
         >>> import bbob_pproc
@@ -142,7 +142,7 @@ def main(argv=None):
         isrldistr = True
         isPostProcessed = False
         isPickled = True
-        verbose = True
+        verbose = False
         outputdir = 'ppdata'
 
         #Process options
@@ -228,7 +228,8 @@ def main(argv=None):
             tmp.extend(figValsOfInterest)
             tmp.extend(rldValsOfInterest)
             if indexEntries:
-                print 'total ps = %g\n' % indexEntries.successProbability(tmp)
+                print ('total ps = %g\n'
+                       % indexEntries.successProbability(min(tmp)))
 
     except Usage, err:
         print >>sys.stderr, err.msg

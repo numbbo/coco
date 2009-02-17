@@ -193,7 +193,7 @@ class IndexEntry:
         succ = 0
         for j in self.hData:
             if j[0] <= targetFuncValue:
-                for k in j[i.nbRuns()+1:]:
+                for k in j[self.nbRuns()+1:]:
                     if k <= targetFuncValue:
                         succ += 1
                 break
@@ -379,7 +379,7 @@ class IndexEntries(list):
             nbRuns = 0
             for i in self:
                 nbRuns += i.nbRuns()
-                succ += i.nbSuccess()
+                succ += i.nbSuccess(targetFuncValue)
             return float(succ)/nbRuns
         else:
             raise ValueError('The probability of success is not defined.')
