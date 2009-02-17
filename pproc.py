@@ -222,7 +222,6 @@ def alignData(data):
 def split(dataFiles):
     """Split a list of data files into arrays corresponding to data sets."""
 
-    #TODO: optimize by splitting using %
     dataSets = []
     for fil in dataFiles:
         try:
