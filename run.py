@@ -228,7 +228,7 @@ def main(argv=None):
             tmp.extend(figValsOfInterest)
             tmp.extend(rldValsOfInterest)
             if indexEntries:
-                print ('total ps = %g\n'
+                print ('Overall ps = %g\n'
                        % indexEntries.successProbability(min(tmp)))
 
     except Usage, err:
