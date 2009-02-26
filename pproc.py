@@ -219,7 +219,7 @@ def alignData(data):
     return numpy.vstack(res)
 
 
-def split(dataFiles):
+def split(dataFiles, dim=None):
     """Split a list of data files into arrays corresponding to data sets."""
 
     dataSets = []
@@ -248,7 +248,10 @@ def split(dataFiles):
             # else remove end-of-line sign
             # and split into single strings
             data = line.strip('\n').split()
-
+            if dim and len(data) != dim + 5:
+                warnings.warn('Incomplete line %s in  ' % (line) +
+                              'data file %s: ' % (dataFiles))
+                continue
             for id in xrange(len(data)):
                 if data[id] in ('Inf', 'inf'):
                     data[id] = numpy.inf

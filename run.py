@@ -16,6 +16,7 @@ from __future__ import absolute_import
 
 import os
 import sys
+import warnings
 import getopt
 from pdb import set_trace
 
@@ -31,6 +32,8 @@ from bbob_pproc.readindexfiles import IndexEntries
 from bbob_pproc import pproc, pptex, pprldistr, ppfigdim
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
+instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
+
 tabDimsOfInterest = [5, 20]    # dimension which are displayed in the tables
 # tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
@@ -170,6 +173,16 @@ def main(argv=None):
                 assert False, "unhandled option"
 
         indexEntries = IndexEntries(args, verbose)
+
+        if (verbose):
+            for i in indexEntries:
+                if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
+                    instancesOfInterest):
+                    warnings.warn('The data of %s do not list ' %(i) +
+                                  'the correct instances ' +
+                                  'of function F%d or the ' %(i.funcId) +
+                                  'correct number of trials for each.')
+
         #set_trace()
         sortedByAlg = indexEntries.sortByAlg()
         if len(sortedByAlg) > 1:

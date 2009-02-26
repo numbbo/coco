@@ -297,15 +297,20 @@ def generateData(indexEntry, targetFuncValues):
                 break
         success = []
         unsucc = []
+
+        # Create a vector that contains a mix of hData and vData:
+        # the fevals for successes and maxEvals for failures.
+        data = i[:]
         for j in range(1, indexEntry.nbRuns() + 1):
-            tmpsucc = (i[indexEntry.nbRuns() + j] <= targetF)
+            tmpsucc = (data[indexEntry.nbRuns() + j] <= targetF)
             success.append(tmpsucc)
             if not tmpsucc:
                 unsucc.append(indexEntry.vData[-1, j])
+                data[j] = indexEntry.vData[-1, j]
                 #if the target function value is not reached, the last number
                 #of function evaluations is found in vData.
 
-        N = numpy.sort(i[1:indexEntry.nbRuns() + 1])
+        N = numpy.sort(data[1:indexEntry.nbRuns() + 1])
 
         ertvec = bootstrap.sp(N, issuccessful=success)
 
