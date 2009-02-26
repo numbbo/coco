@@ -9,7 +9,7 @@ import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap
 
-maxEvalsFactor = 1e6
+#maxEvalsFactor = 1e6
 
 colors = ('k', 'g', 'c', 'b', 'y', 'm', 'r', 'g', 'b', 'c', 'r', 'm')  # should not be too short
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
@@ -170,14 +170,12 @@ def generateData(indexEntry, targetFuncValue):
 
     # if targetFuncValue was not reached
     if not res and len(indexEntry.vData) > 0:
-        it = iter(indexEntry.vData)
-        i = it.next()
-
-        try:
-            while i[0] <= maxEvalsFactor * indexEntry.dim:
-                i = it.next()
-        except StopIteration:
-            pass
+        #try:
+            #while i[0] <= maxEvalsFactor * indexEntry.dim:
+                #i = it.next()
+        #except StopIteration:
+            #pass
+        i = indexEntry.vData[-1]
         res.extend(bootstrap.sp(i[1:indexEntry.nbRuns() + 1],
                                 issuccessful=[False]*indexEntry.nbRuns()))
         res.append(res[0] * max(res[2], 1)) #Sum(FE)
