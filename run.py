@@ -202,6 +202,7 @@ def main(argv=None):
         if isfigure:
             ppfigdim.main(indexEntries, figValsOfInterest, outputdir,
                           verbose)
+            print "Scaling figures done."
 
         if istab:
             sortedByFunc = indexEntries.sortByFunc()
@@ -221,6 +222,7 @@ def main(argv=None):
                 if tmp:
                     filename = os.path.join(outputdir,'ppdata_f%d' % fun)
                     pptex.main(tmp, tabValsOfInterest, filename, verbose)
+            print "TeX tables done."
 
         if isrldistr:
             sortedByDim = indexEntries.sortByDim()
@@ -235,6 +237,8 @@ def main(argv=None):
                                        outputdir, 'dim%02d%s' % (dim, fGroup),
                                        verbose)
 
+            print "ECDF graphs done."
+
         if verbose:
             tmp = []
             tmp.extend(tabValsOfInterest)
@@ -243,6 +247,9 @@ def main(argv=None):
             if indexEntries:
                 print ('Overall ps = %g\n'
                        % indexEntries.successProbability(min(tmp)))
+
+        if isfigure or istab or isrldistr:
+            print "Output data can be found in folder %s." % outputdir
 
     except Usage, err:
         print >>sys.stderr, err.msg

@@ -1,4 +1,4 @@
-g#! /usr/bin/env python
+#! /usr/bin/env python
 
 # Creates ERTs and convergence figures for BBOB post-processing.
 
@@ -11,7 +11,7 @@ from bbob_pproc import bootstrap
 
 #maxEvalsFactor = 1e6
 
-colors = ('k', 'g', 'c', 'b', 'y', 'm', 'r', 'g', 'b', 'c', 'r', 'm')  # should not be too short
+#colors = ('k', 'g', 'c', 'b', 'y', 'm', 'r', 'g', 'b', 'c', 'r', 'm')  # should not be too short
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 # should correspond with the colors in pprldistr.
 

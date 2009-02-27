@@ -55,7 +55,7 @@ class IndexEntry:
                     'targetFuncValue': ('targetFuncValue', float),
                     'algId': ('algId', str)}
 
-    def __init__(self, header, comment, data):
+    def __init__(self, header, comment, data, verbose=True):
         """Instantiate an IndexEntry from 3 strings constituting an index
         entry in an index file.
 
@@ -79,6 +79,7 @@ class IndexEntry:
         self.itrials = []
         self.evals = []
         self.finalFminusFtarget = []
+        self.isFinalized = []
         parts = data.split(', ')
         for elem in parts:
             if elem.endswith('dat'):
@@ -91,18 +92,31 @@ class IndexEntry:
             else:
                 elem = elem.split(':')
                 self.itrials.append(int(elem[0]))
-                elem = elem[1].split('|')
-                self.evals.append(int(elem[0]))
-                self.finalFminusFtarget.append(float(elem[1]))
+                if len(elem) < 2:
+                    #Caught a ill-finalized run.
+                    self.isFinalized.append(False)
+                    warnings.warn('Caught an ill-finalized run in %s'
+                                  % self.dataFiles[-1])
+                else:
+                    self.isFinalized.append(True)
+                    elem = elem[1].split('|')
+                    self.evals.append(int(elem[0]))
+                    self.finalFminusFtarget.append(float(elem[1]))
                 #pass
 
         #set_trace()
+        if verbose:
+            print "%s" % self.__repr__()
+
         ext = {'.dat':(HMultiReader, 'hData'), '.tdat':(VMultiReader, 'vData')}
         for extension, info in ext.iteritems():
             #set_trace()
             dataFiles = list('.'.join(i.split('.')[:-1]) + extension
                              for i in self.dataFiles)
             data = info[0](split(dataFiles))
+            if verbose:
+                print ("Processing %s: %d/%d trials found."
+                       % (dataFiles, len(data), len(self.itrials)))
             setattr(self, info[1], alignData(data))
         #set_trace()
 
@@ -229,10 +243,10 @@ class IndexEntries(list):
 
         for i in args:
             if i.endswith('.info'):
-                self.processIndexFile(i)
+                self.processIndexFile(i, verbose)
             elif os.path.isdir(i):
-                for j in findindexfiles.main(i,verbose):
-                    self.processIndexFile(j)
+                for j in findindexfiles.main(i, verbose):
+                    self.processIndexFile(j, verbose)
             elif i.endswith('.pickle'):
                 try:
                     f = open(i,'r')
@@ -278,7 +292,7 @@ class IndexEntries(list):
                         else: #other information
                             data.append(i)
                     data = indexmainsep.join(data)
-                    self.append(IndexEntry(header, comment, data))
+                    self.append(IndexEntry(header, comment, data, verbose))
                 except StopIteration:
                     break
 

@@ -13,7 +13,8 @@ from pdb import set_trace
 #__all__ = []
 
 #rldColors = ['b', 'g', 'r', 'c', 'm', 'b', 'g', 'r', 'c', 'm']  # might not be long enough
-rldColors = ('k', 'c', 'm', 'r', 'b', 'g', 'c', 'b', 'r', 'm')  # should not be too short
+rldColors = ('k', 'c', 'm', 'r')
+rldUnsuccColors = ('k', 'c', 'm', 'r', 'g', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be too short
 
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
                 verbose=True):
@@ -96,7 +97,8 @@ def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
     return res#, fsolved, funcs
 
 
-def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'), verbose=True):
+def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'), 
+                text=None, verbose=True):
     """Formats the figure of the run length distribution."""
 
     axisHandle = figHandle.gca()
@@ -114,6 +116,10 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'), verbose=True):
     for j in xtic:
         newxtic.append('%d' % round(numpy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
+
+    plt.text(0.98, 0.02, text, horizontalalignment="right",
+             transform=axisHandle.transAxes)
+             #bbox=dict(ec='k', fill=False), 
 
     # Save figure
     for entry in fileFormat:
@@ -182,14 +188,15 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
     plt.rc("legend", fontsize=20)
 
     maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in indexEntries)
-    maxEvalsFactor = numpy.power(10, round(numpy.log10(maxEvalsFactor)))
+    #maxEvalsFactorCeil = numpy.power(10,
+                                     #numpy.ceil(numpy.log10(maxEvalsFactor)))
 
     figureName = os.path.join(outputdir,'pprldistr%s' %('_' + info))
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):
-        tmp = plotRLDistr(indexEntries, valuesOfInterest[j], maxEvalsFactor,
-                          verbose)
+        tmp = plotRLDistr(indexEntries, valuesOfInterest[j],
+                          maxEvalsFactor, verbose)
         #set_trace()
         if not tmp is None:
             plt.setp(tmp, 'color', rldColors[j])
@@ -204,22 +211,31 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
     fig = plt.figure()
     for j in range(len(valuesOfInterest)):
         #set_trace()
-        tmp = plotFVDistr(indexEntries, valuesOfInterest[j], maxEvalsFactor,
-                          verbose=verbose)
+        tmp = plotFVDistr(indexEntries, valuesOfInterest[j],
+                          maxEvalsFactor, verbose=verbose)
         #if not tmp is None:
         plt.setp(tmp, 'color', rldColors[j])
 
-    tmp = numpy.log10(maxEvalsFactor)
-    maxEvalsF = numpy.power(10, numpy.arange(tmp, 0, -1) - 1)
+    tmp = numpy.floor(numpy.log10(maxEvalsFactor))
+    # coloring left to right:
+    #maxEvalsF = numpy.power(10, numpy.arange(tmp, 0, -1) - 1)
+    # coloring right to left:
+    maxEvalsF = numpy.power(10, numpy.arange(0, tmp))
 
     #The last index of valuesOfInterest is still used in this loop.
     #set_trace()
     for k in range(len(maxEvalsF)):
         tmp = plotFVDistr(indexEntries, valuesOfInterest[j],
                           maxEvalsF=maxEvalsF[k], verbose=verbose)
-        plt.setp(tmp, 'color', rldColors[j+k+1])
+        plt.setp(tmp, 'color', rldUnsuccColors[k])
 
-    beautifyFVD(fig, figureName, verbose=verbose)
+    funcs = list(i.funcId for i in indexEntries)
+    if len(funcs) > 1:
+        text = 'f%d - %d' %(min(funcs), max(funcs))
+    else:
+        text = 'f%d' %(funcs[0])
+    beautifyFVD(fig, figureName, text=text, verbose=verbose)
+
     plt.close(fig)
 
     plt.rcdefaults()

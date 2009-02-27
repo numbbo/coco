@@ -5,6 +5,9 @@ Error catching:
 *Problem with MINGW32 os.sep returns a \ ! -> dealt with?
 
 Feature missing:
+*Manage multiple algorithms.
+*put in pproc methods to determine success and failure so as to have uniform
+data for all ppXXX modules.
 *put the right bibtex entry in the templatearticle.
 *Summary tables of ENFEs
 *have low-level post-processing functions that deals with arrays.
