@@ -106,9 +106,13 @@ def writeTable(entries, filename, fontSize='scriptsize',
         #data = numpy.transpose(data)
 
     # Generate LaTex commands for vertical lines and aligment of the entries.
-    tabColumns ='@{$\;$}c@{$\;$}'
+    tabColumns = '@{$\;$}c@{$\;$}'
     tabColumns += ('|' + (len(header) - 1) * '@{$\;$}c@{$\;$}') * width
-
+    #tabColumns += (r'|@{$\;$}c@{$\;$}' + (len(header) - 2) *
+                   #r'@{$\;$}>{\centering}X@{$\;$}') * (width-1)
+    #tabColumns += (r'|@{$\;$}c@{$\;$}' +
+                   #(len(header) - 3) * r'@{$\;$}>{\centering}X@{$\;$}' +
+                   #r'@{$\;$}>{\centering\arraybackslash}X@{$\;$}')
     # Create output file
     if verbose:
         if os.path.exists(filename):
@@ -125,6 +129,7 @@ def writeTable(entries, filename, fontSize='scriptsize',
     # Write tabular environment
     f.write('\\begin{' + fontSize + '} \n')
     f.write('\\begin{tabular}{' + tabColumns + '} \n')
+    #f.write('\\begin{tabularx}{0.47\\textwidth}{' + tabColumns + '} \n')
 
     # Write first two rows containing the info of the table columns
     for i in range(0, width):
@@ -166,6 +171,7 @@ def writeTable(entries, filename, fontSize='scriptsize',
 
     # Finish writing the table and close file.
     f.write('\end{tabular} \n')
+    #f.write('\end{tabularx} \n')
     f.write('\end{' + fontSize + '} \n')
     #f.write('\end{table*} \n')
 
@@ -217,12 +223,12 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
 
             # Split number and sign+exponent
             try:
-            	tmp = str(format[id]%x).split('e')
+                tmp = str(format[id]%x).split('e')
             except TypeError:
-            	print format[id]
-            	print x
-            	print type(x)
-            	print type(format[id])
+                print format[id]
+                print x
+                print type(x)
+                print type(format[id])
 
             # Generate Latex entry
             # It is assumed that all entries range between 10e-9 and 10e9
