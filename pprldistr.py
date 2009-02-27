@@ -13,7 +13,7 @@ from pdb import set_trace
 #__all__ = []
 
 #rldColors = ['b', 'g', 'r', 'c', 'm', 'b', 'g', 'r', 'c', 'm']  # might not be long enough
-rldColors = ('g', 'c', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be too short
+rldColors = ('k', 'c', 'm', 'r', 'b', 'g', 'c', 'b', 'r', 'm')  # should not be too short
 
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
                 verbose=True):
@@ -23,7 +23,7 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
     axisHandle.set_xlim((1.0, maxEvalsF))
     axisHandle.set_ylim((0.0, 1.0))
     axisHandle.set_xlabel('log10 of FEvals / DIM')
-    axisHandle.set_ylabel('proportion of successful runs')
+    axisHandle.set_ylabel('proportion of successful trials')
     # Grid options
     axisHandle.grid('True')
     xtic = axisHandle.get_xticks()
@@ -106,7 +106,7 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'), verbose=True):
     #axisHandle.invert_xaxis()
     axisHandle.set_ylim((0.0, 1.0))
     axisHandle.set_xlabel('log10 of Df / Dftarget')
-    # axisHandle.set_ylabel('proportion of successful runs')
+    # axisHandle.set_ylabel('proportion of successful trials')
     # Grid options
     axisHandle.grid('True')
     xtic = axisHandle.get_xticks()
