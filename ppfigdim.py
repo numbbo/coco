@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+g#! /usr/bin/env python
 
 # Creates ERTs and convergence figures for BBOB post-processing.
 
@@ -108,8 +108,10 @@ def customizeFigure(figHandle, figureName = None, title='',
     # linear and quadratic "grid"
     plt.plot((2,200), (1,1e2), 'k:')    # TODO: this should be done before the real lines are plotted? 
     plt.plot((2,200), (1,1e4), 'k:')
-    plt.plot((2,200), (1e3,1e5), 'k:')  # yet experimental
+    plt.plot((2,200), (1e3,1e5), 'k:')  
     plt.plot((2,200), (1e3,1e7), 'k:')
+    plt.plot((2,200), (1e6,1e8), 'k:')  
+    plt.plot((2,200), (1e6,1e10), 'k:')
 
     # axes limites
     axisHandle.set_xlim(1.8, 45)                # TODO should become input arg?
