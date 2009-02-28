@@ -187,7 +187,7 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
     plt.rc("font", size=20)
     plt.rc("legend", fontsize=20)
 
-    maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in indexEntries)
+    maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in indexEntries) ** 1.05
     #maxEvalsFactorCeil = numpy.power(10,
                                      #numpy.ceil(numpy.log10(maxEvalsFactor)))
 
