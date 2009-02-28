@@ -159,15 +159,21 @@ def generateData(indexEntry, targetFuncValue):
     """Returns data to be plotted."""
 
     res = []
+    data = []
     for i in indexEntry.hData:
         if i[0] <= targetFuncValue:
             tmp = []
-            for j in i[indexEntry.nbRuns()+1:]:
-                tmp.append(j <= i[0])
-            res.extend(bootstrap.sp(i[1:indexEntry.nbRuns() + 1],
-                                     issuccessful=tmp))
+            data = i[:]
+            for j in range(1, indexEntry.nbRuns()+1):
+                if data[j + indexEntry.nbRuns()] <= i[0]:
+                    tmp.append(True)
+                else:
+                    tmp.append(False)
+                    data[j] = indexEntry.vData[-1, j]
+            res.extend(bootstrap.sp(data[1:indexEntry.nbRuns()+1],
+                                    issuccessful=tmp))
             res.append(res[0] * max(res[2], 1)) #Sum(FE)
-            res.append(bootstrap.prctile(i[1:indexEntry.nbRuns() + 1], 50)[0])
+            res.append(bootstrap.prctile(data[1:indexEntry.nbRuns()+1], 50)[0])
             break
 
     # if targetFuncValue was not reached
