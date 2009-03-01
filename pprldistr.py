@@ -12,9 +12,8 @@ from pdb import set_trace
 
 #__all__ = []
 
-#rldColors = ['b', 'g', 'r', 'c', 'm', 'b', 'g', 'r', 'c', 'm']  # might not be long enough
-rldColors = ('k', 'c', 'm', 'r')
-rldUnsuccColors = ('k', 'c', 'm', 'r', 'g', 'b', 'r', 'm', 'g', 'c', 'b', 'r', 'm')  # should not be too short
+rldColors = ('k', 'c', 'm', 'r', 'k', 'c', 'm', 'r', 'k', 'c', 'm', 'r')
+rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  # should not be too short
 
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
                 verbose=True):
@@ -24,7 +23,7 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
     axisHandle.set_xlim((1.0, maxEvalsF))
     axisHandle.set_ylim((0.0, 1.0))
     axisHandle.set_xlabel('log10 of FEvals / DIM')
-    axisHandle.set_ylabel('proportion of successful trials')
+    axisHandle.set_ylabel('proportion of trials')
     # Grid options
     axisHandle.grid('True')
     xtic = axisHandle.get_xticks()

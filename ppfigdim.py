@@ -104,7 +104,7 @@ def customizeFigure(figHandle, figureName = None, title='',
 
     # Grid options
     axisHandle.grid('True')
-    ylim_org = axisHandle.get_ylim()
+    ylim_org = axisHandle.get_ylim().copy()
     # linear and quadratic "grid"
     plt.plot((2,200), (1,1e2), 'k:')    # TODO: this should be done before the real lines are plotted? 
     plt.plot((2,200), (1,1e4), 'k:')
