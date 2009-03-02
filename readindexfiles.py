@@ -80,7 +80,7 @@ class IndexEntry:
         self.evals = []
         self.finalFminusFtarget = []
         self.isFinalized = []
-        parts = data.split(', ')
+        parts = data.split(', ')I did not look at the code, but
         for elem in parts:
             if elem.endswith('dat'):
                 #Windows data to Linux processing
@@ -331,8 +331,10 @@ class IndexEntries(list):
 
     def sortByAlg(self):
         """Returns a dictionary sorted based on algId and comment."""
+        # TODO: dictionaries cannot be sorted
+        #       if we rely on this sorting the code is broken!
 
-        sorted = {}
+        sorted = {}  # CAVE: this overwrites a built-in function
         for i in self:
             sorted.setdefault(i.algId + ', ' + i.comment,
                               IndexEntries()).append(i)
