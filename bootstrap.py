@@ -60,7 +60,7 @@ def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
         return (numpy.mean(dat) / succ, succ, len(dat))
 
 def sp(data, maxvalue=numpy.Inf, issuccessful=None):
-    """sp(data, issuccessful=None) divides the sum of the function evaluations
+    """sp(data, issuccessful=None) computes the sum of the function evaluations
     over all runs divided by the number of success, the so-called SP.
 
     Input:

@@ -157,6 +157,7 @@ def customizeFigure(figHandle, figureName = None, title='',
 
 def generateData(indexEntry, targetFuncValue):
     """Returns data to be plotted."""
+    # TODO: describe the data which are returned
 
     res = []
     data = []
