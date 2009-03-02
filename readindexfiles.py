@@ -40,13 +40,17 @@ class IndexEntry:
         comment -- comment for the setting (string)
         targetFuncValue -- target function value (float)
         algId -- algorithm name (string)
-
-        The following attributes/methods are set after obtainData was called:
         hData -- collected data aligned by function values (array)
         vData -- collected data aligned by function evaluations (array)
         nbRuns -- number of runs (integer)
         mMaxEvals -- measured max. number of function evaluations (float)
 
+    hData and vData are arrays of data collected from N data sets. Both have
+    the same format: zero-th column is the value on which the data of a row is
+    aligned, the N subsequent columns are the function values of the aligned
+    data, the N columns after those are the corresponding numbers of function
+    evaluations. Those 2 times N columns are sorted and go by pairs:
+    column 1 and N+1 are related to the first trial, column 2 and N+2...
     """
 
     # Private attribute used for the parsing of info files.
@@ -329,35 +333,40 @@ class IndexEntries(list):
             #set_trace()
             i.pickle(outputdir, verbose)
 
-    def sortByAlg(self):
-        """Returns a dictionary sorted based on algId and comment."""
-        # TODO: dictionaries cannot be sorted
-        #       if we rely on this sorting the code is broken!
+    def dictByAlg(self):
+        """Returns a dictionary with algId and comment as keys and
+        the corresponding slices of IndexEntries as values.
 
-        sorted = {}  # CAVE: this overwrites a built-in function
+        """
+
+        d = {}
         for i in self:
-            sorted.setdefault(i.algId + ', ' + i.comment,
-                              IndexEntries()).append(i)
-        return sorted
+            d.setdefault(i.algId + ', ' + i.comment, IndexEntries()).append(i)
+        return d
 
-    def sortByDim(self):
-        """Returns a dictionary sorted based on indexEntry.dim."""
+    def dictByDim(self):
+        """Returns a dictionary with dimension as keys and the corresponding
+        slices of IndexEntries as values.
 
-        sorted = {}
+        """
+
+        d = {}
         for i in self:
-            sorted.setdefault(i.dim, IndexEntries()).append(i)
-        return sorted
+            d.setdefault(i.dim, IndexEntries()).append(i)
+        return d
 
-    def sortByFunc(self):
-        """Returns a dictionary sorted based on indexEntry.dim."""
+    def dictByFunc(self):
+        """Returns a dictionary with the function id as keys and the
+        corresponding slices of IndexEntries as values."""
 
-        sorted = {}
+        d = {}
         for i in self:
-            sorted.setdefault(i.funcId, IndexEntries()).append(i)
-        return sorted
+            d.setdefault(i.funcId, IndexEntries()).append(i)
+        return d
 
-    def sortByFuncGroup(self):
-        """Returns a dictionary sorted based on the function group."""
+    def dictByFuncGroup(self):
+        """Returns a dictionary with function group names as keys and the
+        corresponding slices of IndexEntries as values."""
 
         sorted = {}
         for i in self:

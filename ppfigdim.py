@@ -104,7 +104,7 @@ def customizeFigure(figHandle, figureName = None, title='',
 
     # Grid options
     axisHandle.grid('True')
-    ylim_org = axisHandle.get_ylim().copy()
+    ylim_org = axisHandle.get_ylim()[:] #.copy()
     # linear and quadratic "grid"
     plt.plot((2,200), (1,1e2), 'k:')    # TODO: this should be done before the real lines are plotted? 
     plt.plot((2,200), (1,1e4), 'k:')
@@ -204,11 +204,9 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
     plt.rc("font", size=20)
     plt.rc("legend", fontsize=20)
 
-    #sortByFunc = sortIndexEntries(indexEntries)
-    #set_trace()
-    sortByFunc = indexEntries.sortByFunc()
-    for func in sortByFunc:
-        sortByFunc[func] = sortByFunc[func].sortByDim()
+    dictFunc = indexEntries.dictByFunc()
+    for func in dictFunc:
+        dictFunc[func] = dictFunc[func].dictByDim()
         filename = os.path.join(outputdir,'ppdata_f%d' % (func))
         fig = plt.figure()
         #legend = []
@@ -219,9 +217,9 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
             unsucc = []
             data = []
             #Collect data that have the same function and different dimension.
-            for dim in sorted(sortByFunc[func]):
+            for dim in sorted(dictFunc[func]):
                 #set_trace()
-                tmp = generateData(sortByFunc[func][dim][0],
+                tmp = generateData(dictFunc[func][dim][0],
                                    valuesOfInterest[i])
                 data.append(numpy.append(dim, tmp))
                 if tmp[2] > 0: #Number of success is larger than 0

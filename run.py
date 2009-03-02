@@ -184,9 +184,9 @@ def main(argv=None):
                                   'correct number of trials for each.')
 
         #set_trace()
-        sortedByAlg = indexEntries.sortByAlg()
-        if len(sortedByAlg) > 1:
-            warnings.warn('Data with multiple algId %s ' % (sortedByAlg) +
+        dictAlg = indexEntries.dictByAlg()
+        if len(dictAlg) > 1:
+            warnings.warn('Data with multiple algId %s ' % (dictAlg) +
                           'will be processed together.')
 
 
@@ -205,18 +205,18 @@ def main(argv=None):
             print "Scaling figures done."
 
         if istab:
-            sortedByFunc = indexEntries.sortByFunc()
-            for fun, sliceFun in sortedByFunc.items():
-                sortedByDim = sliceFun.sortByDim()
+            dictFunc = indexEntries.dictByFunc()
+            for fun, sliceFun in dictFunc.items():
+                dictDim = sliceFun.dictByDim()
                 tmp = []
                 for dim in tabDimsOfInterest:
                     try:
-                        if len(sortedByDim[dim]) > 1:
+                        if len(dictDim[dim]) > 1:
                             warnings.warn('Func: %d, DIM %d: ' % (fun, dim) +
                                           'multiple index entries. Will only '+
                                           'process the first ' +
-                                          '%s.' % sortedByDim[dim][0])
-                        tmp.append(sortedByDim[dim][0])
+                                          '%s.' % dictDim[dim][0])
+                        tmp.append(dictDim[dim][0])
                     except KeyError:
                         pass
                 if tmp:
@@ -225,14 +225,14 @@ def main(argv=None):
             print "TeX tables done."
 
         if isrldistr:
-            sortedByDim = indexEntries.sortByDim()
-            for dim, sliceDim in sortedByDim.items():
+            dictDim = indexEntries.dictByDim()
+            for dim, sliceDim in dictDim.items():
                 if dim in rldDimsOfInterest:
                     pprldistr.main(sliceDim, rldValsOfInterest,
                                    outputdir, 'dim%02dall' % dim, verbose)
-                    sortedByFG = sliceDim.sortByFuncGroup()
+                    dictFG = sliceDim.dictByFuncGroup()
                     #set_trace()
-                    for fGroup, sliceFuncGroup in sortedByFG.items():
+                    for fGroup, sliceFuncGroup in dictFG.items():
                         pprldistr.main(sliceFuncGroup, rldValsOfInterest,
                                        outputdir, 'dim%02d%s' % (dim, fGroup),
                                        verbose)
