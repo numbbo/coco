@@ -5,6 +5,7 @@ Error catching:
 *Problem with MINGW32 os.sep returns a \ ! -> dealt with?
 
 Feature missing:
+*rewrite the ppXXX with common script in pproc...
 *Manage multiple algorithms.
 *put in pproc methods to determine success and failure so as to have uniform
 data for all ppXXX modules.

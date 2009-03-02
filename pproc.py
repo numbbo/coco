@@ -204,7 +204,16 @@ class HArrayMultiReader(ArrayMultiReader, HMultiReader):
 #FUNCTION DEFINITIONS
 
 def alignData(data):
-    """Returns an array of aligned data from a list of data arrays."""
+    """Returns an array of aligned data from a list of data arrays.
+    Data is the concatenation of rows, the zero-th column being the alignment
+    value (or index), the subsequent ones the aligned data. The size of the
+    resulting array will be of size 2*N + 1 where N is the number of data sets
+    to be aligned. Rows are sorted: the first data set will be in column
+    1 and N+1, the second in 2 and N+2. If still valid or if none are available
+    at some point, data obtained in previous rows are repeated in the current
+    one.
+
+    """
 
     res = []
     currentValue = data.getInitialValue()
