@@ -80,7 +80,7 @@ class IndexEntry:
         self.evals = []
         self.finalFminusFtarget = []
         self.isFinalized = []
-        parts = data.split(', ')I did not look at the code, but
+        parts = data.split(', ')
         for elem in parts:
             if elem.endswith('dat'):
                 #Windows data to Linux processing
