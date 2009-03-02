@@ -47,9 +47,9 @@ class IndexEntry:
 
     hData and vData are arrays of data collected from N data sets. Both have
     the same format: zero-th column is the value on which the data of a row is
-    aligned, the N subsequent columns are the function values of the aligned
-    data, the N columns after those are the corresponding numbers of function
-    evaluations. Those 2 times N columns are sorted and go by pairs:
+    aligned, the N subsequent columns are the numbers of function evaluations
+    of the aligned data, the N columns after those are the corresponding
+    function values. Those 2 times N columns are sorted and go by pairs:
     column 1 and N+1 are related to the first trial, column 2 and N+2...
     """
 
