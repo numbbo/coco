@@ -104,7 +104,10 @@ def customizeFigure(figHandle, figureName = None, title='',
 
     # Grid options
     axisHandle.grid('True')
-    ylim_org = axisHandle.get_ylim()[:] #.copy()
+    #ylim_org = axisHandle.get_ylim()
+    #set_trace()
+    ymin, ymax = plt.ylim()
+
     # linear and quadratic "grid"
     plt.plot((2,200), (1,1e2), 'k:')    # TODO: this should be done before the real lines are plotted? 
     plt.plot((2,200), (1,1e4), 'k:')
@@ -114,8 +117,10 @@ def customizeFigure(figHandle, figureName = None, title='',
     plt.plot((2,200), (1e6,1e10), 'k:')
 
     # axes limites
-    axisHandle.set_xlim(1.8, 45)                # TODO should become input arg?
-    axisHandle.set_ylim(10**-0.2, ylim_org[1])
+    plt.xlim(1.8, 45)                # TODO should become input arg?
+    #set_trace()
+    plt.ylim(10**-0.2, ymax)
+    #plt.ylim(10**-0.2, ylim_org[1])
 
     # ticks on axes
     #axisHandle.invert_xaxis()
