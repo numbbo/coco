@@ -230,7 +230,7 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
 
     funcs = list(i.funcId for i in indexEntries)
     if len(funcs) > 1:
-        text = 'f%d - %d' %(min(funcs), max(funcs))
+        text = 'f%d-%d' %(min(funcs), max(funcs))
     else:
         text = 'f%d' %(funcs[0])
     beautifyFVD(fig, figureName, text=text, verbose=verbose)
