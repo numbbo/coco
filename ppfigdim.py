@@ -18,9 +18,9 @@ colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of
 #Get benchmark short infos.
 funInfos = {}
 isBenchmarkinfosFound = True
+infofile = os.path.join(os.path.split(__file__)[0], '..', '..',
+                        'benchmarkshortinfos.txt')
 try:
-    infofile = os.path.join(os.path.split(__file__)[0], '..', '..',
-                            'benchmarkshortinfos.txt')
     f = open(infofile,'r')
     for line in f:
         if len(line) == 0 or line.startswith('%') or line.isspace() :
@@ -31,7 +31,7 @@ try:
 except IOError, (errno, strerror):
     print "I/O error(%s): %s" % (errno, strerror)
     isBenchmarkinfosFound = False
-    print 'Could not find benchmarkshortinfos file. '\
+    print 'Could not find file', infofile, \
           'Titles in scaling figures will not be displayed.'
 
 
