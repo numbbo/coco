@@ -263,7 +263,7 @@ def main(argv=None):
                        % indexEntries.successProbability(min(tmp)))
 
         if isfigure or istab or isrldistr:
-            print "Output data can be found in folder %s." % outputdir
+            print "Output data written to folder %s" % outputdir
 
     except Usage, err:
         print >>sys.stderr, err.msg
