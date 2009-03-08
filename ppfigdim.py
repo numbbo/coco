@@ -169,7 +169,7 @@ def generateData(indexEntry, targetFuncValue):
     for i in indexEntry.hData:
         if i[0] <= targetFuncValue:
             tmp = []
-            data = i[:]
+            data = i[:]  # TODO: is this meant to make a copy? Does it really?
             for j in range(1, indexEntry.nbRuns()+1):
                 if data[j + indexEntry.nbRuns()] <= i[0]:
                     tmp.append(True)
