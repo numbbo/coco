@@ -166,7 +166,6 @@ def generateData(indexEntry, targetFuncValue):
 
     res = []
     data = []
-    set_trace()
     for i in indexEntry.hData:
         if i[0] <= targetFuncValue:
             tmp = []
