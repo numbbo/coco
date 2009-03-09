@@ -306,7 +306,7 @@ def generateData(indexEntry, targetFuncValues):
 
         # Create a vector that contains a mix of hData and vData:
         # the fevals for successes and maxEvals for failures.
-        data = i[:]
+        data = i.copy()
         for j in range(1, indexEntry.nbRuns() + 1):
             tmpsucc = (data[indexEntry.nbRuns() + j] <= targetF)
             success.append(tmpsucc)
