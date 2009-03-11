@@ -18,8 +18,10 @@ colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of
 #Get benchmark short infos.
 funInfos = {}
 isBenchmarkinfosFound = True
-infofile = os.path.join(os.path.split(__file__)[0], '..', '..',
-                        'benchmarkshortinfos.txt')
+#infofile = os.path.join(os.path.split(__file__)[0], '..', '..',
+                        #'benchmarkshortinfos.txt')
+infofile = os.path.join(os.path.split(__file__)[0], 'benchmarkshortinfos.txt')
+
 try:
     f = open(infofile,'r')
     for line in f:
@@ -145,14 +147,14 @@ def customizeFigure(figHandle, figureName = None, title='',
     # Save figure
     if not (figureName is None or fileFormat is None):
         if isinstance(fileFormat, basestring):
-            plt.savefig(figureName + '.' + fileFormat, dpi = 120,
+            plt.savefig(figureName + '.' + fileFormat, dpi = 300,
                         format = entry)
             if verbose:
                 print 'Wrote figure in %s.' %(figureName + '.' + fileFormat)
         else:
             if not isinstance(fileFormat, basestring):
                 for entry in fileFormat:
-                    plt.savefig(figureName + '.' + entry, dpi = 120,
+                    plt.savefig(figureName + '.' + entry, dpi = 300,
                                 format = entry)
                     if verbose:
                         print 'Wrote figure in %s.' %(figureName + '.' + entry)
