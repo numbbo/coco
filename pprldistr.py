@@ -39,7 +39,7 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
 
     # Save figure
     for entry in fileFormat:
-        plt.savefig(figureName + '.' + entry, dpi = 120,
+        plt.savefig(figureName + '.' + entry, dpi = 300,
                     format = entry)
         if verbose:
             print 'Wrote figure in %s.' %(figureName + '.' + entry)
@@ -122,7 +122,7 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'),
 
     # Save figure
     for entry in fileFormat:
-        plt.savefig(figureName + '.' + entry, dpi = 120,
+        plt.savefig(figureName + '.' + entry, dpi = 300,
                     format = entry)
         if verbose:
             print 'Wrote figure in %s.' %(figureName + '.' + entry)
