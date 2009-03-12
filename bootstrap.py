@@ -1,17 +1,12 @@
 # bootstrapping
 
-# BUG:
-# elif ilow == ihigh:
-#     res += [x[i]]
-# i is not an integer
-
 import numpy
 
 def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
     """sp1(data, maxvalue=Inf, issuccessful=None) computes a
     mean value over successful entries in data divided by
     success rate, the so-called SP1
-    
+
     Input:
       data -- array contains, e.g., number of function
         evaluations to reach the target value
@@ -131,9 +126,9 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     Remark:
        NaN-values are also bootstrapped, but disregarded for the 
        calculation of percentiles which can lead to somewhat
-       unexpected results. 
+       unexpected results.
     """
-    
+
     arrStats = []
     N = len(data)
     adata = numpy.array(data)  # more efficient indexing

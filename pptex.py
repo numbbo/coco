@@ -11,7 +11,6 @@ from pdb import set_trace
 
 
 #GLOBAL VARIABLES DEFINITION
-samplesize = 15 #Bootstrap sample size
 header = ['$\Delta f$', '$\#$', '$\ERT$', '10\%', '90\%',
           '$\\text{RT}_{\\text{us}}$']
 format = ['%1.1e', '%d', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
@@ -268,7 +267,7 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
         file.write(tmp2)
 
 
-def generateData(indexEntry, targetFuncValues):
+def generateData(indexEntry, targetFuncValues, samplesize=1000):
     """Returns data for the tables.
 
     Data are supposed to be function-value aligned on some specific function
@@ -280,6 +279,8 @@ def generateData(indexEntry, targetFuncValues):
     Keyword arguments:
     indexEntry -- input IndexEntry.
     targetFuncValues -- function values to be displayed
+    samplesize -- sample size used for the bootstrapping. The larger this value
+    is the longer it takes.
 
     Outputs:
     Array of data to be displayed in the tables.
@@ -341,18 +342,23 @@ def generateData(indexEntry, targetFuncValues):
     return numpy.vstack(res)
 
 
-def main(indexEntries, valOfInterests, filename, verbose=True):
+def main(indexEntries, valOfInterests, filename, isDraft=False, verbose=True):
     """Generates latex tabular from IndexEntries.
 
     Keyword arguments:
     indexEntries -- list of indexEntry to put together in a tabular.
     valOfInterests -- list of function values to be displayed.
     filename -- output file name.
+    isDraft -- if true, quickens the bootstrapping step.
     verbose -- controls verbosity.
     """
 
+    samplesize = 1000
+    if isDraft:
+        samplesize = 15
+
     #TODO give an array of indexEntries and have a vertical formatter.
     for i in indexEntries:
-        i.tabData = generateData(i, valOfInterests)
+        i.tabData = generateData(i, valOfInterests, samplesize)
 
     writeTable(indexEntries, filename, fontSize='tiny', verbose=verbose)
