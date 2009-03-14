@@ -16,7 +16,7 @@ rldColors = ('k', 'c', 'm', 'r', 'k', 'c', 'm', 'r', 'k', 'c', 'm', 'r')
 rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  # should not be too short
 
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
-                verbose=True):
+                text=None, verbose=True):
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
@@ -31,6 +31,10 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
     for j in xtic:
         newxtic.append('%d' % round(numpy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
+
+    plt.text(0.5, 0.93, text, horizontalalignment="center",
+             transform=axisHandle.transAxes)
+             #bbox=dict(ec='k', fill=False), 
 
     #set_trace()
     plt.legend(loc='best')
@@ -115,6 +119,7 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'),
     for j in xtic:
         newxtic.append('%d' % round(numpy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
+    axisHandle.set_yticklabels(())
 
     plt.text(0.98, 0.02, text, horizontalalignment="right",
              transform=axisHandle.transAxes)
@@ -203,7 +208,15 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
             #legend.append('%+d:%d/%d' %  
                           #(numpy.log10(valuesOfInterest[j]), len(fsolved), 
                            #len(f)))
-    beautifyRLD(fig, figureName, maxEvalsFactor, verbose=verbose)
+            if rldColors[j] == 'r':  # 1e-8 in bold
+                plt.setp(tmp, 'linewidth', 3)
+
+    funcs = list(i.funcId for i in indexEntries)
+    if len(funcs) > 1:
+        text = 'f%d-%d' %(min(funcs), max(funcs))
+    else:
+        text = 'f%d' %(funcs[0])
+    beautifyRLD(fig, figureName, maxEvalsFactor, text=text, verbose=verbose)
     plt.close(fig)
 
     figureName = os.path.join(outputdir,'ppfvdistr_%s' %(info))
@@ -214,6 +227,8 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
                           maxEvalsFactor, verbose=verbose)
         #if not tmp is None:
         plt.setp(tmp, 'color', rldColors[j])
+        if rldColors [j] == 'r':  # 1e-8 in bold
+            plt.setp(tmp, 'linewidth', 3)
 
     tmp = numpy.floor(numpy.log10(maxEvalsFactor))
     # coloring left to right:
@@ -228,11 +243,6 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
                           maxEvalsF=maxEvalsF[k], verbose=verbose)
         plt.setp(tmp, 'color', rldUnsuccColors[k])
 
-    funcs = list(i.funcId for i in indexEntries)
-    if len(funcs) > 1:
-        text = 'f%d-%d' %(min(funcs), max(funcs))
-    else:
-        text = 'f%d' %(funcs[0])
     beautifyFVD(fig, figureName, text=text, verbose=verbose)
 
     plt.close(fig)
