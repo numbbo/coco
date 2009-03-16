@@ -336,7 +336,6 @@ class IndexEntries(list):
     def dictByAlg(self):
         """Returns a dictionary with algId and comment as keys and
         the corresponding slices of IndexEntries as values.
-
         """
 
         d = {}
@@ -347,7 +346,6 @@ class IndexEntries(list):
     def dictByDim(self):
         """Returns a dictionary with dimension as keys and the corresponding
         slices of IndexEntries as values.
-
         """
 
         d = {}
@@ -357,7 +355,8 @@ class IndexEntries(list):
 
     def dictByFunc(self):
         """Returns a dictionary with the function id as keys and the
-        corresponding slices of IndexEntries as values."""
+        corresponding slices of IndexEntries as values.
+        """
 
         d = {}
         for i in self:
@@ -366,7 +365,8 @@ class IndexEntries(list):
 
     def dictByFuncGroup(self):
         """Returns a dictionary with function group names as keys and the
-        corresponding slices of IndexEntries as values."""
+        corresponding slices of IndexEntries as values.
+        """
 
         sorted = {}
         for i in self:

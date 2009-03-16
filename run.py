@@ -40,7 +40,7 @@ tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
 #figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)
 
-rldDimsOfInterest = (20, 5)
+rldDimsOfInterest = (5, 20)
 rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 #Put backward to have the legend in the same order as the lines.
 
@@ -255,22 +255,27 @@ def main(argv=None):
                                verbose)
             print "TeX tables",
             if isDraft:
-                print "(draft mode) done. To get final version tables, please use the -f option with run.py"
+                print ("(draft) done. To get final version tables, please "
+                       "use the -f option with run.py")
             else:
                 print "done."
 
         if isrldistr:
             dictDim = indexEntries.dictByDim()
-            for dim, sliceDim in dictDim.items():
-                if dim in rldDimsOfInterest:
+            for dim in rldDimsOfInterest:
+                try:
+                    sliceDim = dictDim[dim]
                     pprldistr.main(sliceDim, rldValsOfInterest, True,
                                    outputdir, 'dim%02dall' % dim, verbose)
                     dictFG = sliceDim.dictByFuncGroup()
                     #set_trace()
                     for fGroup, sliceFuncGroup in dictFG.items():
-                        pprldistr.main(sliceFuncGroup, rldValsOfInterest,
-                                       True, outputdir,
-                                       'dim%02d%s' % (dim, fGroup), verbose)
+                        pprldistr.main(sliceFuncGroup, rldValsOfInterest, True,
+                                       outputdir, 'dim%02d%s' % (dim, fGroup),
+                                       verbose)
+                    pprldistr.fmax = None #Resetting the maximum final value.
+                except KeyError:
+                    pass
             print "ECDF graphs done."
 
         if verbose:
