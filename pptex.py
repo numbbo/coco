@@ -12,7 +12,7 @@ from pdb import set_trace
 
 #GLOBAL VARIABLES DEFINITION
 header = ['$\Delta f$', '$\#$', '$\ERT$', '10\%', '90\%',
-          '$\\text{RT}_{\\text{us}}$']
+          '$\\text{RT}_{\\text{s}}$']
 format = ['%1.1e', '%d', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
 #This has to be synchronized with what's computed in generateData.
 
@@ -312,10 +312,15 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
             tmpsucc = (data[indexEntry.nbRuns() + j] <= targetF)
             success.append(tmpsucc)
             if not tmpsucc:
-                unsucc.append(indexEntry.vData[-1, j])
                 data[j] = indexEntry.vData[-1, j]
-                #if the target function value is not reached, the last number
-                #of function evaluations is found in vData.
+
+                tmpvalue = indexEntry.vData[-1, indexEntry.nbRuns() + j]
+                for k in reversed(indexEntry.vData):
+                    if k[indexEntry.nbRuns() + j] > tmpvalue:
+                        break
+                unsucc.append(k[j])
+                #if the target function value is not reached, we get the
+                #largest number of function evaluations for which f > fbest.
 
         N = numpy.sort(data[1:indexEntry.nbRuns() + 1])
 
@@ -326,7 +331,9 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
                                         func=bootstrap.sp, args=[0,success])[0]
             curLine = [targetF, ertvec[2], ertvec[0],
                        dispersion[0], dispersion[1],
-                       float(numpy.sum(unsucc))/ertvec[2]]
+                       #float(numpy.sum(unsucc))/ertvec[2]]
+                       numpy.mean(list(N[i] for i in range(len(N)) if
+                                       success[i]))]
         else: # 0 success.
             vals = numpy.sort(indexEntry.vData[-1, indexEntry.nbRuns() + 1:])
             #Get the function values for maxEvals.
@@ -335,7 +342,8 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
             curLine.extend(list(-j for j in bootstrap.prctile(vals,
                                                               [50, 10, 90])))
             #set_trace()
-            curLine.append(numpy.sum(unsucc)) #/max(1, ertvec[2])
+            #curLine.append(numpy.sum(unsucc)) #/max(1, ertvec[2])
+            curLine.append(bootstrap.prctile(unsucc, [50])[0])
 
         res.append(curLine)
         #set_trace()

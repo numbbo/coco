@@ -14,14 +14,16 @@ from pdb import set_trace
 
 rldColors = ('k', 'c', 'm', 'r', 'k', 'c', 'm', 'r', 'k', 'c', 'm', 'r')
 rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  # should not be too short
+# Used as a global to store the largest xmax and align the FV ECD figures.
+fmax = None
 
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
                 text=None, verbose=True):
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
-    axisHandle.set_xlim((1.0, maxEvalsF))
-    axisHandle.set_ylim((0.0, 1.0))
+    plt.xlim(1.0, maxEvalsF)
+    plt.ylim(0.0, 1.0)
     axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of trials')
     # Grid options
@@ -100,16 +102,30 @@ def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
     return res#, fsolved, funcs
 
 
-def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'), 
-                text=None, verbose=True):
-    """Formats the figure of the run length distribution."""
+def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'),
+                isStoringMaxF=False, text=None, verbose=True):
+    """Formats the figure of the run length distribution.
+
+    Keyword arguments:
+    isStoringMaxF -- if set to True, the first call BeautifyVD sets the global
+                     fmax and all subsequent call will have the same maximum
+                     xlim.
+    """
 
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
-    tmp = axisHandle.get_xlim()
-    axisHandle.set_xlim((1., tmp[1]))
+
+    if isStoringMaxF:
+        global fmax
+    else:
+        fmax = None
+
+    if not fmax:
+        xmin, fmax = plt.xlim()
+    plt.xlim(1., fmax)
+
     #axisHandle.invert_xaxis()
-    axisHandle.set_ylim((0.0, 1.0))
+    plt.ylim(0.0, 1.0)
     axisHandle.set_xlabel('log10 of Df / Dftarget')
     # axisHandle.set_ylabel('proportion of successful trials')
     # Grid options
@@ -131,7 +147,6 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'),
                     format = entry)
         if verbose:
             print 'Wrote figure in %s.' %(figureName + '.' + entry)
-
 
 def plotFVDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
     """Creates empirical cumulative distribution functions of final function
@@ -168,19 +183,21 @@ def plotFVDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
     return res
 
 
-def main(indexEntries, valuesOfInterest, outputdir='', info='default',
-         verbose=True):
+def main(indexEntries, valuesOfInterest, isStoringMaxF=False, outputdir='',
+         info='default', verbose=True):
     """Generate figures of empirical cumulative distribution functions.
 
     Keyword arguments:
     indexEntries -- list of IndexEntry instances to process.
     valuesOfInterest -- target function values to be displayed.
+    isStoringMaxF -- if set to True, the first call BeautifyVD sets the global
+                     fmax and all subsequent call will have the same maximum
+                     xlim.
     outputdir -- output directory (must exist)
     info --- string suffix for output file names.
 
     Outputs:
     Image files of the empirical cumulative distribution functions.
-
     """
 
     #sortedIndexEntries = sortIndexEntries(indexEntries)
@@ -243,7 +260,8 @@ def main(indexEntries, valuesOfInterest, outputdir='', info='default',
                           maxEvalsF=maxEvalsF[k], verbose=verbose)
         plt.setp(tmp, 'color', rldUnsuccColors[k])
 
-    beautifyFVD(fig, figureName, text=text, verbose=verbose)
+    beautifyFVD(fig, figureName, text=text, isStoringMaxF=isStoringMaxF,
+                verbose=verbose)
 
     plt.close(fig)
 

@@ -32,7 +32,7 @@ from bbob_pproc import pproc, pptex, pprldistr, ppfigdim
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 
-tabDimsOfInterest = [5, 20]    # dimension which are displayed in the tables
+tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
 # tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
 # tabValsOfInterest = (10, 1.0, 1e-1, 1.0e-4, 1.0e-8)  # 1e-3 1e-5
@@ -40,7 +40,7 @@ tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
 #figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)
 
-rldDimsOfInterest = (5, 20)
+rldDimsOfInterest = (20, 5)
 rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 #Put backward to have the legend in the same order as the lines.
 
@@ -64,9 +64,8 @@ def main(argv=None):
     many output files in the folder 'ppdata' needed for the compilation of
     latex document templateBBOBarticle.tex. These output files will contain
     performance tables, performance scaling figures and empirical cumulative
-    distribution figures. Among these output data, there will be some
-    pickle files (.pickle) extension each corresponding to a given index
-    entry.
+    distribution figures. On subsequent executions, new files will be added 
+    to the output directory, overwriting existing older files in the process.
 
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not given,
@@ -231,13 +230,11 @@ def main(argv=None):
             indexEntries.pickle(outputdir, verbose)
 
         if isfigure:
-            print "Scaling figures",
             ppfigdim.main(indexEntries, figValsOfInterest, outputdir,
                           verbose)
-            print "done."
+            print "Scaling figures done."
 
         if istab:
-            print "TeX tables",
             dictFunc = indexEntries.dictByFunc()
             for fun, sliceFun in dictFunc.items():
                 dictDim = sliceFun.dictByDim()
@@ -256,25 +253,25 @@ def main(argv=None):
                     filename = os.path.join(outputdir,'ppdata_f%d' % fun)
                     pptex.main(tmp, tabValsOfInterest, filename, isDraft,
                                verbose)
+            print "TeX tables",
             if isDraft:
                 print "(draft mode) done. To get final version tables, please use the -f option with run.py"
             else:
                 print "done."
 
         if isrldistr:
-            print "ECDF graphs",
             dictDim = indexEntries.dictByDim()
             for dim, sliceDim in dictDim.items():
                 if dim in rldDimsOfInterest:
-                    pprldistr.main(sliceDim, rldValsOfInterest,
+                    pprldistr.main(sliceDim, rldValsOfInterest, True,
                                    outputdir, 'dim%02dall' % dim, verbose)
                     dictFG = sliceDim.dictByFuncGroup()
                     #set_trace()
                     for fGroup, sliceFuncGroup in dictFG.items():
                         pprldistr.main(sliceFuncGroup, rldValsOfInterest,
-                                       outputdir, 'dim%02d%s' % (dim, fGroup),
-                                       verbose)
-            print "done."
+                                       True, outputdir,
+                                       'dim%02d%s' % (dim, fGroup), verbose)
+            print "ECDF graphs done."
 
         if verbose:
             tmp = []
