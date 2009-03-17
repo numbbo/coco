@@ -228,7 +228,7 @@ def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):
-        tmp = plotRLDistr(indexEntries, valuesOfInterest[j], evalsfmax,
+        tmp = plotRLDistr(indexEntries, valuesOfInterest[j], evalfmax,
                           verbose)
         #set_trace()
         if not tmp is None:
