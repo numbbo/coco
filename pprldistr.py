@@ -16,6 +16,7 @@ rldColors = ('k', 'c', 'm', 'r', 'k', 'c', 'm', 'r', 'k', 'c', 'm', 'r')
 rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  # should not be too short
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
+evalfmax = None
 
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
                 text=None, verbose=True):
@@ -103,7 +104,7 @@ def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
 
 
 def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'),
-                isStoringMaxF=False, text=None, verbose=True):
+                isStoringXMax=False, text=None, verbose=True):
     """Formats the figure of the run length distribution.
 
     Keyword arguments:
@@ -115,7 +116,7 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'),
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
 
-    if isStoringMaxF:
+    if isStoringXMax:
         global fmax
     else:
         fmax = None
@@ -183,14 +184,17 @@ def plotFVDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
     return res
 
 
-def main(indexEntries, valuesOfInterest, isStoringMaxF=False, outputdir='',
+def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
          info='default', verbose=True):
     """Generate figures of empirical cumulative distribution functions.
 
     Keyword arguments:
     indexEntries -- list of IndexEntry instances to process.
     valuesOfInterest -- target function values to be displayed.
-    isStoringMaxF -- if set to True, the first call BeautifyVD sets the global
+    isStoringXMax -- if set to True, the first call BeautifyVD sets the globals
+                     fmax and maxEvals and all subsequent calls will use these
+                     values as rightmost xlim in the generated figures.
+     -- if set to True, the first call BeautifyVD sets the global
                      fmax and all subsequent call will have the same maximum
                      xlim.
     outputdir -- output directory (must exist)
@@ -233,7 +237,16 @@ def main(indexEntries, valuesOfInterest, isStoringMaxF=False, outputdir='',
         text = 'f%d-%d' %(min(funcs), max(funcs))
     else:
         text = 'f%d' %(funcs[0])
-    beautifyRLD(fig, figureName, maxEvalsFactor, text=text, verbose=verbose)
+
+    if isStoringXMax:
+        global evalfmax
+    else:
+        evalfmax = None
+
+    if not evalfmax:
+        evalfmax = maxEvalsFactor
+
+    beautifyRLD(fig, figureName, evalfmax, text=text, verbose=verbose)
     plt.close(fig)
 
     figureName = os.path.join(outputdir,'ppfvdistr_%s' %(info))
@@ -260,7 +273,7 @@ def main(indexEntries, valuesOfInterest, isStoringMaxF=False, outputdir='',
                           maxEvalsF=maxEvalsF[k], verbose=verbose)
         plt.setp(tmp, 'color', rldUnsuccColors[k])
 
-    beautifyFVD(fig, figureName, text=text, isStoringMaxF=isStoringMaxF,
+    beautifyFVD(fig, figureName, text=text, isStoringXMax=isStoringXMax,
                 verbose=verbose)
 
     plt.close(fig)

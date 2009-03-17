@@ -273,7 +273,8 @@ def main(argv=None):
                         pprldistr.main(sliceFuncGroup, rldValsOfInterest, True,
                                        outputdir, 'dim%02d%s' % (dim, fGroup),
                                        verbose)
-                    pprldistr.fmax = None #Resetting the maximum final value.
+                    pprldistr.fmax = None #Resetting the max final value
+                    pprldistr.evalfmax = None #Resetting the max #fevalsfactor
                 except KeyError:
                     pass
             print "ECDF graphs done."
