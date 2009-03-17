@@ -216,12 +216,20 @@ def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
     #maxEvalsFactorCeil = numpy.power(10,
                                      #numpy.ceil(numpy.log10(maxEvalsFactor)))
 
+    if isStoringXMax:
+        global evalfmax
+    else:
+        evalfmax = None
+
+    if not evalfmax:
+        evalfmax = maxEvalsFactor
+
     figureName = os.path.join(outputdir,'pprldistr%s' %('_' + info))
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):
-        tmp = plotRLDistr(indexEntries, valuesOfInterest[j],
-                          maxEvalsFactor, verbose)
+        tmp = plotRLDistr(indexEntries, valuesOfInterest[j], evalsfmax,
+                          verbose)
         #set_trace()
         if not tmp is None:
             plt.setp(tmp, 'color', rldColors[j])
@@ -237,14 +245,6 @@ def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
         text = 'f%d-%d' %(min(funcs), max(funcs))
     else:
         text = 'f%d' %(funcs[0])
-
-    if isStoringXMax:
-        global evalfmax
-    else:
-        evalfmax = None
-
-    if not evalfmax:
-        evalfmax = maxEvalsFactor
 
     beautifyRLD(fig, figureName, evalfmax, text=text, verbose=verbose)
     plt.close(fig)
