@@ -212,6 +212,10 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
     plt.rc("legend", fontsize=20)
 
     dictFunc = indexEntries.dictByFunc()
+
+    valuesOfInterest = list(valuesOfInterest)
+    valuesOfInterest.sort(reverse=True)
+
     for func in dictFunc:
         dictFunc[func] = dictFunc[func].dictByDim()
         filename = os.path.join(outputdir,'ppdata_f%d' % (func))
@@ -222,6 +226,7 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
             #data = []
             succ = []
             unsucc = []
+            displaynumber = []
             data = []
             #Collect data that have the same function and different dimension.
             for dim in sorted(dictFunc[func]):
@@ -231,6 +236,8 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
                 data.append(numpy.append(dim, tmp))
                 if tmp[2] > 0: #Number of success is larger than 0
                     succ.append(numpy.append(dim, tmp))
+                    if tmp[2] < dictFunc[func][dim][0].nbRuns():
+                        displaynumber.append((dim, tmp[0], tmp[2]))
                 else:
                     unsucc.append(numpy.append(dim, tmp))
 
@@ -255,6 +262,13 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
                 plt.setp(h[0], 'color', colors[i], 'label',
                          ' %+d' % (numpy.log10(valuesOfInterest[i])))
                 line.extend(h[0])
+
+        if displaynumber: #displayed only for the smallest valuesOfInterest
+            a = fig.gca()
+            for j in displaynumber:
+                plt.text(j[0], j[1]*1.8, "%.0f" % j[2], axes=a,
+                         horizontalalignment="center",
+                         verticalalignment="bottom")
 
         if isBenchmarkinfosFound:
             title = funInfos[func]
