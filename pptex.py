@@ -12,7 +12,7 @@ from pdb import set_trace
 
 #GLOBAL VARIABLES DEFINITION
 header = ['$\Delta f$', '$\#$', '$\ERT$', '10\%', '90\%',
-          '$\\text{RT}_{\\text{s}}$']
+          '$\\text{RT}_{\\text{succ}}$']
 format = ['%1.1e', '%d', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
 #This has to be synchronized with what's computed in generateData.
 
