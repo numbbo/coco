@@ -266,7 +266,7 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
         if displaynumber: #displayed only for the smallest valuesOfInterest
             a = fig.gca()
             for j in displaynumber:
-                plt.text(j[0], j[1]*1.8, "%.0f" % j[2], axes=a,
+                plt.text(j[0], j[1]*1.85, "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
                          verticalalignment="bottom")
 
