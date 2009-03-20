@@ -8,6 +8,7 @@ of instances of IndexEntry: IndexEntries.
 from __future__ import absolute_import
 
 import os
+import re
 import pickle
 import warnings
 import numpy
@@ -152,16 +153,16 @@ class IndexEntry:
         headerList = header.split(indexmainsep)
 
         # Loop over all elements in the list and extract the relevant data.
+        # We loop backward to make sure that we did not split inside quotes.
+        # It could happen when the key algId and the value is a string.
+        p = re.compile('[^,=]+ = .*')
+        headerList.reverse()
         it = iter(headerList)
         while True:
             try:
                 elem = it.next()
-
-                #We need to catch the case where a value contains indexmainsep
-                #This could happen when the key algId and the value is a string
-                #and is caught by counting quotes.
-                while elem.count("'")%2 != 0:
-                    elem += it.next()
+                while not p.match(elem):
+                    elem = it.next() + elem
 
                 elemList = elem.split('=')
                 #A key name is not expected to contain the string '='
