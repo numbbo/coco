@@ -31,15 +31,15 @@
 107 Sphere Gauss
 108 Sphere unif
 109 Sphere Cauchy
-110 Ellipsoid Gauss
-111 Ellipsoid unif
-112 Ellipsoid Cauchy
+110 Rosenbrock Gauss
+111 Rosenbrock unif
+112 Rosenbrock Cauchy
 113 Step-ellipsoid Gauss
 114 Step-ellipsoid unif
 115 Step-ellipsoid Cauchy
-116 Rosenbrock Gauss
-117 Rosenbrock unif
-118 Rosenbrock Cauchy
+116 Ellipsoid Gauss
+117 Ellipsoid unif
+118 Ellipsoid Cauchy
 119 Sum of different powers Gauss
 120 Sum of different powers unif
 121 Sum of different powers Cauchy
