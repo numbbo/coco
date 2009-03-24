@@ -5,7 +5,7 @@
 5 Linear slope
 6 Attractive sector
 7 Step-ellipsoid
-8 Rosenbrock non-rotated
+8 Rosenbrock original
 9 Rosenbrock rotated
 10 Ellipsoid
 11 Discus
@@ -16,7 +16,7 @@
 16 Weierstrass
 17 Schaffer F7, condition 10
 18 Schaffer F7, condition 1000
-19 F8F2
+19 Griewank-Rosenbrock F8F2
 20 Schwefel x*sin(x)
 21 Gallagher 101 peaks
 22 Gallagher 21 peaks
@@ -46,9 +46,9 @@
 122 Schaffer F7 Gauss
 123 Schaffer F7 unif
 124 Schaffer F7 Cauchy
-125 F8F2 Gauss
-126 F8F2 unif
-127 F8F2 Cauchy
+125 Griewank-Rosenbrock Gauss
+126 Griewank-Rosenbrock unif
+127 Griewank-Rosenbrock Cauchy
 128 Gallagher Gauss
 129 Gallagher unif
 130 Gallagher Cauchy
