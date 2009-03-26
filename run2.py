@@ -235,7 +235,8 @@ def main(argv=None):
             indexEntries.pickle(outputdir, verbose)
 
         if isfigure:
-            ppfig2.main(dictAlg[dictAlg.keys()[0]], dictAlg[dictAlg.keys()[1]],
+            tmp = sorted(dictAlg.keys()) #alphabetical sort (for now)
+            ppfig2.main(dictAlg[tmp[0]], dictAlg[tmp[1]],
                         figDimsOfInterest, outputdir, verbose)
 
         if istab:
