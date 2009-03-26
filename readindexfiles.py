@@ -130,6 +130,7 @@ class IndexEntry:
         return (self.__class__ is other.__class__ and
                 self.funcId == other.funcId and
                 self.dim == other.dim and
+                self.precision == other.precision and
                 self.algId == other.algId and
                 self.comment == other.comment)
 
@@ -323,6 +324,9 @@ class IndexEntries(list):
                     i.hData = alignData(HArrayMultiReader([i.hData, o.hData]))
                     if getattr(i, 'pickleFile', False):
                         del i.pickleFile
+                    for j in dir(i):
+                        if isinstance(getattr(i, j), list):
+                            getattr(i, j).extend(getattr(o, j))
                 break
         if not isFound:
             list.append(self, o)
@@ -363,6 +367,21 @@ class IndexEntries(list):
         for i in self:
             d.setdefault(i.funcId, IndexEntries()).append(i)
         return d
+
+    def dictByNoise(self):
+        """Returns a dictionary splitting noisy and non-noisy entries.
+        """
+
+        sorted = {}
+        for i in self:
+            if i.funcId in range(1, 25):
+                sorted.setdefault('noiselessall', []).append(i)
+            elif i.funcId in range(101, 131):
+                sorted.setdefault('nzall', []).append(i)
+            else:
+                warnings.warn('Unknown function id.')
+
+        return sorted
 
     def dictByFuncGroup(self):
         """Returns a dictionary with function group names as keys and the

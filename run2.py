@@ -27,7 +27,7 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc.readindexfiles import IndexEntries
-from bbob_pproc import pproc, pptex, pprldistr, ppfigdim
+from bbob_pproc import pproc, pptex, ppfig2, pprldistr2, ppfigdim2
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
@@ -39,6 +39,7 @@ tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
 
 #figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)
+figDimsOfInterest = (2, 3, 5, 10, 20, 40)
 
 rldDimsOfInterest = (5, 20)
 rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
@@ -64,8 +65,9 @@ def main(argv=None):
     many output files in the folder 'ppdata' needed for the compilation of
     latex document templateBBOBarticle.tex. These output files will contain
     performance tables, performance scaling figures and empirical cumulative
-    distribution figures. On subsequent executions, new files will be added 
-    to the output directory, overwriting existing older files in the process.
+    distribution figures. Among these output data, there will be some
+    pickle files (.pickle) extension each corresponding to a given index
+    entry.
 
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not given,
@@ -165,13 +167,13 @@ def main(argv=None):
             sys.exit()
 
         isfigure = True
-        istab = True
-        isrldistr = True
+        istab = False
+        isrldistr = False
         isPostProcessed = False
         isPickled = False
         isDraft = True
-        verbose = False
-        outputdir = 'ppdata'
+        verbose = True
+        outputdir = 'cmpdata'
 
         #Process options
         for o, a in opts:
@@ -208,6 +210,7 @@ def main(argv=None):
             for i in indexEntries:
                 if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
                     instancesOfInterest):
+                    set_trace()
                     warnings.warn('The data of %s do not list ' %(i) +
                                   'the correct instances ' +
                                   'of function F%d or the ' %(i.funcId) +
@@ -215,10 +218,12 @@ def main(argv=None):
 
         #set_trace()
         dictAlg = indexEntries.dictByAlg()
-        if len(dictAlg) > 1:
+        if len(dictAlg) < 2:
+            Usage('Expect data from two different algorithms, could only find '
+                  'one.')
+        if len(dictAlg) > 2:
             warnings.warn('Data with multiple algId %s ' % (dictAlg) +
-                          'will be processed together.')
-
+                          'were found, two among those will be processed.')
 
         if isPickled or isfigure or istab or isrldistr:
             if not os.path.exists(outputdir):
@@ -230,11 +235,11 @@ def main(argv=None):
             indexEntries.pickle(outputdir, verbose)
 
         if isfigure:
-            ppfigdim.main(indexEntries, figValsOfInterest, outputdir,
-                          verbose)
-            print "Scaling figures done."
+            ppfig2.main(dictAlg[dictAlg.keys()[0]], dictAlg[dictAlg.keys()[1]],
+                        figDimsOfInterest, outputdir, verbose)
 
         if istab:
+            print "TeX tables",
             dictFunc = indexEntries.dictByFunc()
             for fun, sliceFun in dictFunc.items():
                 dictDim = sliceFun.dictByDim()
@@ -253,37 +258,25 @@ def main(argv=None):
                     filename = os.path.join(outputdir,'ppdata_f%d' % fun)
                     pptex.main(tmp, tabValsOfInterest, filename, isDraft,
                                verbose)
-            print "TeX tables",
             if isDraft:
-                print ("(draft) done. To get final version tables, please "
-                       "use the -f option with run.py")
+                print "(draft mode) done. To get final version tables, please use the -f option with run.py"
             else:
                 print "done."
 
         if isrldistr:
-            dictNoise = indexEntries.dictByNoise()
-            if len(dictNoise) > 1:
-                warnings.warn('Data for functions from both the noisy and '
-                              'non-noisy testbeds have been found. Their '
-                              'results will be mixed in the "all functions"'
-                              'ECDF figures.')
+            print "ECDF graphs",
             dictDim = indexEntries.dictByDim()
-            for dim in rldDimsOfInterest:
-                try:
-                    sliceDim = dictDim[dim]
-                    pprldistr.main(sliceDim, rldValsOfInterest, True,
+            for dim, sliceDim in dictDim.items():
+                if dim in rldDimsOfInterest:
+                    pprldistr.main(sliceDim, rldValsOfInterest,
                                    outputdir, 'dim%02dall' % dim, verbose)
                     dictFG = sliceDim.dictByFuncGroup()
                     #set_trace()
                     for fGroup, sliceFuncGroup in dictFG.items():
-                        pprldistr.main(sliceFuncGroup, rldValsOfInterest, True,
+                        pprldistr.main(sliceFuncGroup, rldValsOfInterest,
                                        outputdir, 'dim%02d%s' % (dim, fGroup),
                                        verbose)
-                    pprldistr.fmax = None #Resetting the max final value
-                    pprldistr.evalfmax = None #Resetting the max #fevalsfactor
-                except KeyError:
-                    pass
-            print "ECDF graphs done."
+            print "done."
 
         if verbose:
             tmp = []
