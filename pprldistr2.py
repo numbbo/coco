@@ -184,8 +184,8 @@ def plotFVDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
     return res
 
 
-def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
-         info='default', verbose=True):
+def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest,
+         isStoringXMax=False, outputdir='', info='default', verbose=True):
     """Generate figures of empirical cumulative distribution functions.
 
     Keyword arguments:
@@ -212,7 +212,14 @@ def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
     plt.rc("font", size=20)
     plt.rc("legend", fontsize=20)
 
-    maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in indexEntries) ** 1.05
+    maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in indexEntriesAlg0+indexEntriesAlg1) ** 1.05
+
+    set_trace()
+
+    dictFunc0 = indexEntriesAlg0.dictByFunc()
+    dictFunc1 = indexEntriesAlg1.dictByFunc()
+    funcs = set.union(set(dictFunc0), set(dictFunc0))
+
     #maxEvalsFactorCeil = numpy.power(10,
                                      #numpy.ceil(numpy.log10(maxEvalsFactor)))
 
@@ -249,33 +256,33 @@ def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
     beautifyRLD(fig, figureName, evalfmax, text=text, verbose=verbose)
     plt.close(fig)
 
-    figureName = os.path.join(outputdir,'ppfvdistr_%s' %(info))
-    fig = plt.figure()
-    for j in range(len(valuesOfInterest)):
-        #set_trace()
-        tmp = plotFVDistr(indexEntries, valuesOfInterest[j],
-                          maxEvalsFactor, verbose=verbose)
-        #if not tmp is None:
-        plt.setp(tmp, 'color', rldColors[j])
-        if rldColors [j] == 'r':  # 1e-8 in bold
-            plt.setp(tmp, 'linewidth', 3)
+    #figureName = os.path.join(outputdir,'ppfvdistr_%s' %(info))
+    #fig = plt.figure()
+    #for j in range(len(valuesOfInterest)):
+        ##set_trace()
+        #tmp = plotFVDistr(indexEntries, valuesOfInterest[j],
+                          #maxEvalsFactor, verbose=verbose)
+        ##if not tmp is None:
+        #plt.setp(tmp, 'color', rldColors[j])
+        #if rldColors [j] == 'r':  # 1e-8 in bold
+            #plt.setp(tmp, 'linewidth', 3)
 
-    tmp = numpy.floor(numpy.log10(maxEvalsFactor))
-    # coloring left to right:
-    #maxEvalsF = numpy.power(10, numpy.arange(tmp, 0, -1) - 1)
-    # coloring right to left:
-    maxEvalsF = numpy.power(10, numpy.arange(0, tmp))
+    #tmp = numpy.floor(numpy.log10(maxEvalsFactor))
+    ## coloring left to right:
+    ##maxEvalsF = numpy.power(10, numpy.arange(tmp, 0, -1) - 1)
+    ## coloring right to left:
+    #maxEvalsF = numpy.power(10, numpy.arange(0, tmp))
 
-    #The last index of valuesOfInterest is still used in this loop.
-    #set_trace()
-    for k in range(len(maxEvalsF)):
-        tmp = plotFVDistr(indexEntries, valuesOfInterest[j],
-                          maxEvalsF=maxEvalsF[k], verbose=verbose)
-        plt.setp(tmp, 'color', rldUnsuccColors[k])
+    ##The last index of valuesOfInterest is still used in this loop.
+    ##set_trace()
+    #for k in range(len(maxEvalsF)):
+        #tmp = plotFVDistr(indexEntries, valuesOfInterest[j],
+                          #maxEvalsF=maxEvalsF[k], verbose=verbose)
+        #plt.setp(tmp, 'color', rldUnsuccColors[k])
 
-    beautifyFVD(fig, figureName, text=text, isStoringXMax=isStoringXMax,
-                verbose=verbose)
+    #beautifyFVD(fig, figureName, text=text, isStoringXMax=isStoringXMax,
+                #verbose=verbose)
 
-    plt.close(fig)
+    #plt.close(fig)
 
     plt.rcdefaults()

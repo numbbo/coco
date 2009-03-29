@@ -65,8 +65,8 @@ def createFigure(data, figHandle=None):
         tmp = numpy.where(numpy.isfinite(data[:,i]))[0]
         if tmp.size > 0:
             lines.extend(plt.plot(data[tmp,0], yValues[tmp]))
-            #lines.extend(plt.plot([data[tmp[-1],0]], [yValues[tmp[-1]]],
-                                  #marker='+'))
+            lines.extend(plt.plot([data[tmp[-1],0]], [yValues[tmp[-1]]],
+                                  marker='+'))
             #TODO: larger size.
         #else: ???
 
@@ -101,6 +101,7 @@ def customizeFigure(figHandle, figureName = None, title='',
 
     xmin, xmax = plt.xlim()
     plt.xlim(max(xmin, 1e-8), xmax)
+    axisHandle.invert_xaxis()
 
     # Annotate figure
     if not labels is None: #Couldn't it be ''?
@@ -123,14 +124,13 @@ def customizeFigure(figHandle, figureName = None, title='',
     # Legend
     if legend:
         plt.legend(loc=locLegend)
-    axisHandle.invert_xaxis()
     axisHandle.set_title(title)
 
     # Save figure
     if not (figureName is None or fileFormat is None):
         if isinstance(fileFormat, basestring):
             plt.savefig(figureName + '.' + fileFormat, dpi = 120,
-                        format = entry)
+                        format=fileFormat)
             if verbose:
                 print 'Wrote figure in %s.' %(figureName + '.' + fileFormat)
         else:
@@ -217,9 +217,11 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
             try:
                 if len(dictFunc0[func][dim]) != 1 or len(dictFunc1[func][dim]) != 1:
                     warnings.warn('gnagnagna')
+                    #set_trace()
                     continue
             except KeyError:
                 warnings.warn('gnagnagna')
+                #set_trace()
                 continue
 
             indexEntry0 = dictFunc0[func][dim][0]
@@ -234,6 +236,7 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
             data0 = numpy.hstack((data0,
                                   res[:, numpy.r_[idxM+idxCur:idxM+idxNext]]))
             data0 = computeERT(data0)
+            data0 = data0[data0[:,0] <= min(indexEntry0.hData[0,0], indexEntry1.hData[0,0]),:]
 
             idxCur += indexEntry0.nbRuns()
             idxNext = idxCur+indexEntry1.nbRuns()
@@ -241,26 +244,37 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
             data1 = numpy.hstack((data1,
                                   res[:, numpy.r_[idxM+idxCur:idxM+idxNext]]))
             data1 = computeERT(data1)
-            data = numpy.vstack((data0[:,0],
-                                          data1[:, 1]/data0[:, 1])).transpose()
+            data1 = data1[data1[:,0] <= min(indexEntry0.hData[0,0], indexEntry1.hData[0,0]),:]
 
-            h = createFigure(data[(data0[:, 2] > 0) * (data1[:, 2] > 0)], fig)
-            plt.setp(h[0], 'color', colors[i], 'marker', 'o',
-                     'label', '%d-D' % dim)
+            data = numpy.vstack((data0[:, 0],
+                                 data1[:, 1]/data0[:, 1])).transpose()
+
+            data = data[(data0[:, 2] > 0) * (data1[:, 2] > 0)]
+            h = createFigure(data, fig)
+            plt.setp(h, 'color', colors[i])
+            plt.setp(h[0], 'label', '%d-D' % dim)
 
             if (data0[:, 2] == 0).any():
                 #set_trace()
-                h = createFigure(data0[(data0[:, 2] == 0), 0:2], fig)
-                plt.setp(h[0], 'color', colors[i], 'marker', 'x')
+                tmp = data1[(data0[:, 2] == 0), 0:2]
+                tmp = numpy.vstack([data1[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 0:2], tmp])
+                #set_trace()
+                tmp[:,1] = tmp[0,1] / tmp[:,1] * data[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 1]
+                h = createFigure(tmp, fig)
+                plt.setp(h, 'color', colors[i])
             if (data1[:, 2] == 0).any():
                 #set_trace()
-                h = createFigure(data1[(data1[:, 2] == 0), 0:2], fig)
-                plt.setp(h[0], 'color', colors[i], 'marker', '+')
+                tmp = data0[(data1[:, 2] == 0), 0:2]
+                tmp = numpy.vstack([data0[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 0:2], tmp])
+                #set_trace()
+                tmp[:,1] = tmp[:,1] / tmp[0,1] * data[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 1]
+                h = createFigure(tmp, fig)
+                plt.setp(h, 'color', colors[i])
 
-        legend = func in (1, 24, 101, 130)
+        legend = False #func in (1, 24, 101, 130)
         customizeFigure(fig, filename, title=title,
-                    fileFormat=('eps','png'), labels=['', ''],
-                    legend=legend, locLegend='best', verbose=verbose)
+                        fileFormat=('png'), labels=['', ''],
+                        legend=legend, locLegend='best', verbose=verbose)
 
         #for i in h:
             #plt.setp(i,'color',colors[dim])
