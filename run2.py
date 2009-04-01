@@ -210,7 +210,6 @@ def main(argv=None):
             for i in indexEntries:
                 if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
                     instancesOfInterest):
-                    set_trace()
                     warnings.warn('The data of %s do not list ' %(i) +
                                   'the correct instances ' +
                                   'of function F%d or the ' %(i.funcId) +
