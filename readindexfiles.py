@@ -285,11 +285,23 @@ class IndexEntries(list):
 
             # Read all data sets within one index file.
             indexpath = os.path.split(indexFile)[0]
+            nbLine = 1
             while True:
                 try:
                     header = f.next()
+                    while not header.strip(): # remove blank lines
+                        header = f.next()
+                        nbLine += 1
                     comment = f.next()
+                    if not comment.startswith('%'):
+                        warnings.warn('Entry in file %s at line %d is faulty: '
+                                      % (indexFile, nbLine) +
+                                      'it will be skipped.')
+                        nbLine += 2
+                        continue
                     tmpline = f.next()
+                    nbLine += 3
+                    #TODO: check that something is not wrong with the 3 lines.
                     # Add the path to the index file to the file names
                     data = []
                     for i in tmpline.split(indexmainsep):

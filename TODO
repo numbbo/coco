@@ -5,6 +5,9 @@ Error catching:
 *Problem with MINGW32 os.sep returns a \ ! -> dealt with?
 
 Feature missing:
+*in the RLD figures, if some final values are 0 there is the chance that the
+line for Df/ftarget = 1 to the first final value for which it is larger than 1
+is missing.
 *Automatically generate the associated TeX file to compile...
 *rewrite the ppXXX with common script in pproc...
 *Manage multiple algorithms.
