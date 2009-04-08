@@ -137,7 +137,18 @@ def writeTable(entries, filename, fontSize='scriptsize',
         caption = caption + ', N=' + str(entries[i].nbRuns())
         #maxEvals = min(entries[i].mMaxEvals, entries[i].dim * maxEvalsFactor)
         maxEvals = entries[i].mMaxEvals()
-        caption = caption + ', mFE=' + str(int(maxEvals))
+        caption = caption + ', mFE='
+        if maxEvals >= 1e6:
+            strMaxEvals = '%.2e' % (maxEvals)
+            # the numbers of significant figures was set so that even if maxEvals
+            # is greater than 10 (and lesser than 99), it should still fit.
+            (mantissa, exponent) = strMaxEvals.split('e')
+            exponent = exponent.lstrip('+0')
+            #Remove leading sign and zeros
+            caption += ('$%s\\mathrm{\\hspace{0.10em}e}%s$'
+                        % (mantissa, exponent))
+        else:
+            caption += str(int(maxEvals))
         if i != width - 1:
             f.write('& \multicolumn{' + str(len(format)-1) + '}{@{$\;$}c|@{$\;$}}{' + caption + '}')
         else:
