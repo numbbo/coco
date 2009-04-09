@@ -8,6 +8,7 @@ from __future__ import absolute_import
 import os
 import numpy
 import matplotlib.pyplot as plt
+from bbob_pproc import bootstrap
 from pdb import set_trace
 
 #__all__ = []
@@ -18,15 +19,16 @@ rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  
 fmax = None
 evalfmax = None
 
-def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
-                text=None, verbose=True):
+def beautify(figHandle, figureName, fileFormat=('png', 'eps'),
+             text=None, verbose=True):
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
+    #try:
     axisHandle.set_xscale('log')
-    plt.xlim(1.0, maxEvalsF)
+    #plt.xlim(1.0, maxEvalsF)
     plt.ylim(0.0, 1.0)
-    axisHandle.set_xlabel('log10 of FEvals / DIM')
-    axisHandle.set_ylabel('proportion of trials')
+    axisHandle.set_xlabel('log10 of ERT1/ERT0')
+    axisHandle.set_ylabel('proportion of instances...')
     # Grid options
     axisHandle.grid('True')
     xtic = axisHandle.get_xticks()
@@ -35,12 +37,12 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
         newxtic.append('%d' % round(numpy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
 
-    plt.text(0.5, 0.93, text, horizontalalignment="center",
-             transform=axisHandle.transAxes)
+    #plt.text(0.5, 0.93, text, horizontalalignment="center",
+             #transform=axisHandle.transAxes)
              #bbox=dict(ec='k', fill=False), 
 
     #set_trace()
-    plt.legend(loc='best')
+    #plt.legend(loc='best')
     #if legend:
         #axisHandle.legend(legend, locLegend)
 
@@ -53,12 +55,16 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
 
 
 
-def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
-    """Creates run length distributions from a sequence of indexEntries.
+def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=False,
+               verbose=True):
+    """Creates one run length distribution from a sequence of indexEntries.
 
     Keyword arguments:
-    indexEntries
+    indexEntries0 -- reference
+    indexEntries1
     fvalueToReach
+    maxEvalsF
+    isByInstance -- loop over the function instances instead of the functions
     verbose
 
     Outputs:
@@ -71,118 +77,88 @@ def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
     nn = 0
     fsolved = set()
     funcs = set()
-    for i in indexEntries:
-        funcs.add(i.funcId)
-        for j in i.hData:
-            if j[0] <= fvalueToReach:
-                #This loop is needed because though some number of function
-                #evaluations might be below maxEvals, the target function value
-                #might not be reached yet. This is because the horizontal data
-                #do not go to maxEvals.
+    funIndexEntries0 = indexEntries0.dictByFunc()
+    funIndexEntries1 = indexEntries1.dictByFunc()
+    for func in set(funIndexEntries0.keys()).union(funIndexEntries1.keys()):
+        try:
+            i0 = funIndexEntries0[func][0]
+            i1 = funIndexEntries1[func][0]
+        except KeyError:
+            continue
 
-                for k in range(1, i.nbRuns() + 1):
-                    if j[i.nbRuns() + k] <= fvalueToReach:
-                        x.append(j[k] / i.dim)
-                        fsolved.add(i.funcId)
-                break
-        nn += i.nbRuns()
+        if isByInstance:
+            dictinstance = []
 
-    label = ('%+d:%d/%d' %
-             (numpy.log10(fvalueToReach), len(fsolved), len(funcs)))
+        ERT = []
+        if not isByInstance:
+            for i, entry in enumerate((i0, i1)):
+                for j in entry.hData:
+                    if j[0] <= fvalueToReach:
+                        break
+                success = (j[entry.nbRuns()+1:] <= fvalueToReach)
+                fevals = j[1:entry.nbRuns()+1]
+                for j, issuccess in enumerate(success):
+                    if not issuccess:
+                        fevals[j] = entry.vData[-1, 1+j]
+                tmp = bootstrap.sp(fevals, issuccessful=success)
+                #set_trace()
+                if tmp[2]: #success probability is larger than 0
+                    ERT.append(tmp[0])
+                else:
+                    set_trace()
+                    ERT.append(numpy.inf)
+            if not all(numpy.isinf(ERT)):
+                x.append(ERT[1]/ERT[0])
+                nn += 1
+            #TODO check it is the same as ERT[1]
+        else:
+            for i, entry in enumerate((i0, i1)):
+                dictinstance = {}
+                for j in range(len(entry.itrials)):
+                    dictinstance.setdefault(entry.itrials[j], []).append(j)
+                ERT.append(dictinstance.copy())
+                for k in dictinstance:
+                    for j in entry.hData:
+                        if j[0] <= fvalueToReach:
+                            break
+                    success = (j[list(entry.nbRuns()+i for i in dictinstance[k])] <= fvalueToReach)
+                    fevals = j[list(1+i for i in dictinstance[k])]
+                    for l, issuccess in enumerate(success):
+                        if issuccess:
+                            fevals[l] = entry.vData[-1, 1+dictinstance[k][l]]
+                    tmp = bootstrap.sp(fevals, issuccessful=success)
+                    if tmp[2]: #success probability is larger than 0
+                        ERT[i][k] = tmp[0]
+                    else:
+                        ERT[i][k] = numpy.inf
+                    ERT[i][k] = tmp[0]
+            s0 = set(ERT[0])
+            s1 = set(ERT[1])
+            #Could be done simpler
+            for j in s0 - s1:
+                x.append(0)
+            for j in s0 & s1:
+                x.append(ERT[1][j]/ERT[0][j])
+            for j in s1 - s0:
+                x.append(inf)
+            nn += len(s0 | s1)
+
+    #set_trace()
+    #label = ('%+d:%d/%d' %
+             #(numpy.log10(fvalueToReach), len(fsolved), len(funcs)))
     n = len(x)
     if n == 0:
         res = plt.plot([], [], label=label)
     else:
         x.sort()
-        x2 = numpy.hstack([numpy.repeat(x, 2), maxEvalsF])
+        x2 = numpy.hstack([numpy.repeat(x, 2)])
         #maxEvalsF: used for the limit of the plot.
         y2 = numpy.hstack([0.0,
-                           numpy.repeat(numpy.arange(1, n+1) / float(nn), 2)])
-        res = plt.plot(x2, y2, label=label)
+                           numpy.repeat(numpy.arange(1, n) / float(nn), 2),
+                           n/float(nn)])
+        res = plt.plot(x2, y2) #, label=label)
 
     return res#, fsolved, funcs
-
-
-def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'),
-                isStoringXMax=False, text=None, verbose=True):
-    """Formats the figure of the run length distribution.
-
-    Keyword arguments:
-    isStoringMaxF -- if set to True, the first call BeautifyVD sets the global
-                     fmax and all subsequent call will have the same maximum
-                     xlim.
-    """
-
-    axisHandle = figHandle.gca()
-    axisHandle.set_xscale('log')
-
-    if isStoringXMax:
-        global fmax
-    else:
-        fmax = None
-
-    if not fmax:
-        xmin, fmax = plt.xlim()
-    plt.xlim(1., fmax)
-
-    #axisHandle.invert_xaxis()
-    plt.ylim(0.0, 1.0)
-    axisHandle.set_xlabel('log10 of Df / Dftarget')
-    # axisHandle.set_ylabel('proportion of successful trials')
-    # Grid options
-    axisHandle.grid('True')
-    xtic = axisHandle.get_xticks()
-    newxtic = []
-    for j in xtic:
-        newxtic.append('%d' % round(numpy.log10(j)))
-    axisHandle.set_xticklabels(newxtic)
-    axisHandle.set_yticklabels(())
-
-    plt.text(0.98, 0.02, text, horizontalalignment="right",
-             transform=axisHandle.transAxes)
-             #bbox=dict(ec='k', fill=False), 
-
-    # Save figure
-    for entry in fileFormat:
-        plt.savefig(figureName + '.' + entry, dpi = 300,
-                    format = entry)
-        if verbose:
-            print 'Wrote figure in %s.' %(figureName + '.' + entry)
-
-def plotFVDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
-    """Creates empirical cumulative distribution functions of final function
-    values plot from a sequence of indexEntries.
-
-    Keyword arguments:
-    indexEntries -- sequence of IndexEntry to process.
-    fvalueToReach -- float used for the lower limit of the plot
-    maxEvalsF -- indicates which vertical data to display.
-    verbose -- controls verbosity.
-
-    Outputs: a plot of a run length distribution.
-    """
-
-    x = []
-    nn = 0
-    for i in indexEntries:
-        for j in i.vData:
-            if j[0] >= maxEvalsF * i.dim:
-                break
-        x.extend(j[i.nbRuns()+1:] / fvalueToReach)
-        nn += i.nbRuns()
-
-    x.sort()
-    x2 = numpy.hstack([numpy.repeat(x, 2)])
-    #not efficient if some vals are repeated a lot
-    #y2 = numpy.hstack([0.0, numpy.repeat(numpy.arange(1, n)/float(nn), 2),
-                       #float(n)/nn, float(n)/nn])
-    y2 = numpy.hstack([0.0, numpy.repeat(numpy.arange(1, nn)/float(nn), 2),
-                       1.0])
-    #set_trace()
-    res = plt.plot(x2, y2)
-
-    return res
-
 
 def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest,
          isStoringXMax=False, outputdir='', info='default', verbose=True):
@@ -212,31 +188,31 @@ def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest,
     plt.rc("font", size=20)
     plt.rc("legend", fontsize=20)
 
-    maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in indexEntriesAlg0+indexEntriesAlg1) ** 1.05
+    #maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in indexEntriesAlg0+indexEntriesAlg1) ** 1.05
 
-    set_trace()
+    #set_trace()
 
-    dictFunc0 = indexEntriesAlg0.dictByFunc()
-    dictFunc1 = indexEntriesAlg1.dictByFunc()
-    funcs = set.union(set(dictFunc0), set(dictFunc0))
+    #dictFunc0 = indexEntriesAlg0.dictByFunc()
+    #dictFunc1 = indexEntriesAlg1.dictByFunc()
+    #funcs = set.union(set(dictFunc0), set(dictFunc0))
 
     #maxEvalsFactorCeil = numpy.power(10,
                                      #numpy.ceil(numpy.log10(maxEvalsFactor)))
 
-    if isStoringXMax:
-        global evalfmax
-    else:
-        evalfmax = None
+    #if isStoringXMax:
+        #global evalfmax
+    #else:
+        #evalfmax = None
 
-    if not evalfmax:
-        evalfmax = maxEvalsFactor
+    #if not evalfmax:
+        #evalfmax = maxEvalsFactor
 
-    figureName = os.path.join(outputdir,'pprldistr%s' %('_' + info))
+    figureName = os.path.join(outputdir,'pplog%s' %('_' + info))
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):
-        tmp = plotRLDistr(indexEntries, valuesOfInterest[j], evalfmax,
-                          verbose)
+        tmp = plotLogAbs(indexEntriesAlg0, indexEntriesAlg1,
+                         valuesOfInterest[j], verbose=verbose)
         #set_trace()
         if not tmp is None:
             plt.setp(tmp, 'color', rldColors[j])
@@ -247,13 +223,12 @@ def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest,
             if rldColors[j] == 'r':  # 1e-8 in bold
                 plt.setp(tmp, 'linewidth', 3)
 
-    funcs = list(i.funcId for i in indexEntries)
-    if len(funcs) > 1:
-        text = 'f%d-%d' %(min(funcs), max(funcs))
-    else:
-        text = 'f%d' %(funcs[0])
-
-    beautifyRLD(fig, figureName, evalfmax, text=text, verbose=verbose)
+    #funcs = list(i.funcId for i in indexEntries)
+    #if len(funcs) > 1:
+        #text = 'f%d-%d' %(min(funcs), max(funcs))
+    #else:
+        #text = 'f%d' %(funcs[0])
+    beautify(fig, figureName, verbose=verbose)
     plt.close(fig)
 
     #figureName = os.path.join(outputdir,'ppfvdistr_%s' %(info))
