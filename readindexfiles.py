@@ -130,7 +130,7 @@ class IndexEntry:
         return (self.__class__ is other.__class__ and
                 self.funcId == other.funcId and
                 self.dim == other.dim and
-                self.precision == other.precision and
+                #self.precision == other.precision and
                 self.algId == other.algId and
                 self.comment == other.comment)
 
