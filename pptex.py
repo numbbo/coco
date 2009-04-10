@@ -374,7 +374,7 @@ def main(indexEntries, valOfInterests, filename, isDraft=False, verbose=True):
 
     samplesize = 1000
     if isDraft:
-        samplesize = 15
+        samplesize = 100
 
     #TODO give an array of indexEntries and have a vertical formatter.
     for i in indexEntries:
