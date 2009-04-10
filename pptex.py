@@ -372,7 +372,7 @@ def main(indexEntries, valOfInterests, filename, isDraft=False, verbose=True):
     verbose -- controls verbosity.
     """
 
-    samplesize = 1000
+    samplesize = 3000
     if isDraft:
         samplesize = 100
 

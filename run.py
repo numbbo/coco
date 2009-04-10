@@ -96,9 +96,9 @@ def main(argv=None):
         -f, --final
 
             lengthens the bootstrapping process used as dispersion measure in
-            the tables generation. This might double the time of the whole
-            post-processing. Please use this option when generating your final
-            paper.
+            the tables generation. This might at least double the time of the
+            whole post-processing. Please use this option when generating your
+            final paper.
 
         --tab-only, --fig-only, --rld-only
 
