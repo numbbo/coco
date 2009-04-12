@@ -54,7 +54,7 @@ def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
     else:
         return (numpy.mean(dat) / succ, succ, len(dat))
 
-def sp(data, maxvalue=numpy.Inf, issuccessful=None):
+def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
     """sp(data, issuccessful=None) computes the sum of the function evaluations
     over all runs divided by the number of success, the so-called SP.
 
@@ -66,10 +66,12 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None):
       issuccessful -- None or array of same length as data. Entry
          i in data is defined successful, if issuccessful[i] is
          True or non-zero 
+      allowinf -- If False, replace inf output (in case of no success)
+         with the sum of function evaluations.
 
     Returns: (SP, success_rate, nb_of_successful_entries), where
       SP is the sum of successful entries in data divided
-      by the number of success or 1 if the success rate is zero.
+      by the number of success.
     """
 
     # check input args
@@ -99,10 +101,11 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None):
     succ = float(len(dat)) / N
 
     # return
-    if succ == 0:
-        return (numpy.sum(data), 0., 0)
-    else:
-        return (numpy.sum(data) / float(len(dat)), succ, len(dat))
+    if not allowinf:
+        if succ == 0:
+            return (numpy.sum(data), 0., 0)
+    #else:
+    return (numpy.sum(data) / float(len(dat)), succ, len(dat))
 
 
 def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):

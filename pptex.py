@@ -335,9 +335,10 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
 
         N = numpy.sort(data[1:indexEntry.nbRuns() + 1])
 
-        ertvec = bootstrap.sp(N, issuccessful=success)
+        ertvec = bootstrap.sp(N, issuccessful=success, allowinf=False)
 
         if ertvec[2] > 0: # if at least one success
+            #set_trace()
             dispersion = bootstrap.draw(N, [10, 90], samplesize=samplesize,
                                         func=bootstrap.sp, args=[0,success])[0]
             curLine = [targetF, ertvec[2], ertvec[0],
@@ -346,6 +347,7 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
                        numpy.mean(list(N[i] for i in range(len(N)) if
                                        success[i]))]
         else: # 0 success.
+            #set_trace()
             vals = numpy.sort(indexEntry.vData[-1, indexEntry.nbRuns() + 1:])
             #Get the function values for maxEvals.
 
