@@ -179,7 +179,7 @@ def generateData(indexEntry, targetFuncValue):
                     tmp.append(False)
                     data[j] = indexEntry.vData[-1, j]
             res.extend(bootstrap.sp(data[1:indexEntry.nbRuns()+1],
-                                    issuccessful=tmp))
+                                    issuccessful=tmp, allowinf=False))
             res.append(res[0] * max(res[2], 1)) #Sum(FE)
             res.append(bootstrap.prctile(data[1:indexEntry.nbRuns()+1], 50)[0])
             break
@@ -193,7 +193,8 @@ def generateData(indexEntry, targetFuncValue):
             #pass
         i = indexEntry.vData[-1]
         res.extend(bootstrap.sp(i[1:indexEntry.nbRuns() + 1],
-                                issuccessful=[False]*indexEntry.nbRuns()))
+                                issuccessful=[False]*indexEntry.nbRuns(),
+				allowinf=False))
         res.append(res[0] * max(res[2], 1)) #Sum(FE)
         res.append(bootstrap.prctile(i[1:indexEntry.nbRuns() + 1], 50)[0])
 
