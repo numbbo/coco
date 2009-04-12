@@ -1,7 +1,6 @@
 # bootstrapping
 
 import numpy
-from pdb import set_trace
 
 def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
     """sp1(data, maxvalue=Inf, issuccessful=None) computes a
@@ -140,7 +139,6 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     # there is a third argument to func which is the arrayof success
     if len(args) > 1:
         succ = numpy.array(args[1])
-    set_trace()
     # should NaNs also be bootstrapped?
     argsv = args
     if 1 < 3:
