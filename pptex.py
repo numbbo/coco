@@ -217,33 +217,39 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
         suppress_entry = len(vector) * (False,)
 
     # Loop through vector
-    for id, x in enumerate(vector):
+    for i, x in enumerate(vector):
+        if i % 5 == 0:
+            isFunctionValues = False
+        elif i % 5 == 1: # Find the entries for the number of successes
+            if x == 0:
+                isFunctionValues = True
+
         #print type(x)
         #print len(vector)
 
         # Filter entries to suppress, nan, inf...
-        if suppress_entry[id]:
+        if suppress_entry[i]:
             tmp2 = '.'
         elif numpy.isinf(x):
             tmp2 = '\infty'
         elif numpy.isnan(x):
             tmp2 = '-'
 
-        elif format[id].endswith('e'):
+        elif format[i].endswith('e'):
 
             # Split number and sign+exponent
             try:
-                tmp = str(format[id]%x).split('e')
+                tmp = str(format[i]%x).split('e')
             except TypeError:
-                print format[id]
+                print format[i]
                 print x
                 print type(x)
-                print type(format[id])
+                print type(format[i])
 
             # Generate Latex entry
             # It is assumed that all entries range between 10e-9 and 10e9
 
-            if id == 0:  # Delta f value
+            if i == 0:  # Delta f value
                 if x >= 1 and x <= 100 and x == round(x):
                     tmp2 = str(int(round(x)))  # tmp[0][0]
                 else:
@@ -253,23 +259,27 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
                     tmp2 = (tmp[0][0] + '\\!\\mathrm{\\hspace{0.10em}e}' +
                             sgn + tmp[1][-1])
             else:
-                if x < 0:
-                    tmp2 = ('\\textit{' + tmp[0][1] + tmp[0][3] + '}' +  # textit is narrower
+                if isFunctionValues:
+                    # tmp[0][0] + tmp[0][2]: format change...
+                    tmp2 = ('\\textit{' + tmp[0][0] + tmp[0][2] + '}' +  # textit is narrower
                             '\\hspace{0.00em}e')
-                    # tmp[0][1] + tmp[0][3]: tmp[0][0] is the sign
 
                     #TODO: hack because we change the number format
-                    # tmp2 += '\\mathit{%+d}' % (int(tmp[1]) - 1)
                     tmp2 += ('\\textit{%+d}' % (int(tmp[1]) - 1)).replace('-', '--')
                 else:
-                    tmp2 = tmp[0] + '\\mathrm{\\hspace{0.10em}e}' + tmp[1][-1]
+                    if x < 0:
+                        x *= -1
+                        tmp = str('%1.e'%x).split('e')
+                        tmp2 = '>' + tmp[0][0] + '\\mathrm{\\hspace{0.10em}e}' + tmp[1][-1]
+                    else:
+                        tmp2 = tmp[0] + '\\mathrm{\\hspace{0.10em}e}' + tmp[1][-1]
         else:
-            tmp2 = str(format[id]%x)
+            tmp2 = str(format[i]%x)
 
         tmp2 = '$' + '\\' + fontSize + tmp2 + '$'
 
         # Print in between separator or end of line separator
-        if id != len(vector)-1:
+        if i != len(vector)-1:
             tmp2 = tmp2 + sep
         else:
             tmp2 = tmp2 + linesep
@@ -335,14 +345,24 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
 
         N = numpy.sort(data[1:indexEntry.nbRuns() + 1])
 
+        #set_trace()
         ertvec = bootstrap.sp(N, issuccessful=success, allowinf=False)
 
         if ertvec[2] > 0: # if at least one success
-            #set_trace()
             dispersion = bootstrap.draw(N, [10, 90], samplesize=samplesize,
-                                        func=bootstrap.sp, args=[0,success])[0]
+                                        func=bootstrap.sp,
+                                        args=[0,success, False])[0]
+            #False on the line above is for allowinf.
+
+            #set_trace()
+            #Hack for the display of the tables with the percentiles of bootrap
+            #the percentile may be interpolated so the number of success
+            #(dispersion[1][2]) may be included between 0 and 1.
+            if dispersion[1][2] < 1:
+                dispersion[1][0] *= -1.
+
             curLine = [targetF, ertvec[2], ertvec[0],
-                       dispersion[0], dispersion[1],
+                       dispersion[0][0], dispersion[1][0],
                        #float(numpy.sum(unsucc))/ertvec[2]]
                        numpy.mean(list(N[i] for i in range(len(N)) if
                                        success[i]))]
@@ -352,8 +372,7 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
             #Get the function values for maxEvals.
 
             curLine = [targetF, ertvec[2]]
-            curLine.extend(list(-j for j in bootstrap.prctile(vals,
-                                                              [50, 10, 90])))
+            curLine.extend(bootstrap.prctile(vals, [50, 10, 90]))
             #set_trace()
             #curLine.append(numpy.sum(unsucc)) #/max(1, ertvec[2])
             curLine.append(bootstrap.prctile(unsucc, [50])[0])
