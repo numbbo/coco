@@ -65,13 +65,12 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
         is defined successful if it is truly smaller than maxvalue
       issuccessful -- None or array of same length as data. Entry
          i in data is defined successful, if issuccessful[i] is
-         True or non-zero 
+         True or non-zero
       allowinf -- If False, replace inf output (in case of no success)
          with the sum of function evaluations.
 
-    Returns: (SP, success_rate, nb_of_successful_entries), where
-      SP is the sum of successful entries in data divided
-      by the number of success.
+    Returns: (SP, success_rate, nb_of_successful_entries), where SP is the sum
+      of successful entries in data divided by the number of success.
     """
 
     # check input args
@@ -95,17 +94,21 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
 
     # remove unsuccessful data
     if issuccessful is not None:
-        dat = [dat[i] for i in xrange(len(dat)) if issuccessful[i]]
+        succdat = [dat[i] for i in xrange(len(dat)) if issuccessful[i]]
     else:
-        dat = [d for d in dat if d < maxvalue]
-    succ = float(len(dat)) / N
+        succdat = [d for d in dat if d < maxvalue]
+    succ = float(len(succdat)) / N
 
     # return
-    if not allowinf:
-        if succ == 0:
-            return (numpy.sum(data), 0., 0)
-    #else:
-    return (numpy.sum(data) / float(len(dat)), succ, len(dat))
+    if succ == 0:
+        if not allowinf:
+            res = numpy.sum(dat) # here it is divided by min(1, succ)
+        else:
+            res = numpy.inf
+    else:
+        res = numpy.sum(dat) / float(len(succdat))
+
+    return (res, succ, len(succdat))
 
 
 def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
@@ -143,29 +146,32 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     argsv = args
     if 1 < 3:
         for i in xrange(int(samplesize)):
-            # relying that idx<len(data) 
+            # relying that idx<len(data)
             idx = numpy.random.randint(N, size=N)
             if len(args) > 1:
                 argsv[1] = succ[numpy.r_[idx]]
-            res = func(adata[numpy.r_[idx]], *(argsv))
-            if isinstance(res, list) or isinstance(res, tuple):
-                res = res[0]
-            arrStats.append(res)
+            #if isinstance(res, list) or isinstance(res, tuple):
+                #res = res[0]
+            arrStats.append(func(adata[numpy.r_[idx]], *(argsv)))
+
             # arrStats = [data[i] for i in idx]  # efficient up to 50 data
     else:  # not more efficient
         arrIdx = numpy.random.randint(N, size=N*samplesize)
         arrIdx.resize(samplesize, N)
-        arrStats = [func(adata[numpy.r_[idx]], *args)[0] for idx in arrIdx]
+        arrStats = [func(adata[numpy.r_[idx]], *args) for idx in arrIdx]
 
-    arrStats = sorted(arrStats)
+    try:
+        arrStats.sort(key=lambda x: x.__getitem__(0))
+    except AttributeError: #no method __getitem__
+        arrStats.sort()
+
     return (prctile(arrStats, percentiles, issorted=True),
             arrStats)
 
 
 # utils not really part of bootstrap module though:
 def prctile(x, arrprctiles, issorted=False):
-    """prctile -- computes percentile based on data with linear
-    interpolation
+    """prctile -- computes percentile based on data with linear interpolation
     :Calling Sequence:
         prctile(data, prctiles, issorted=False)
     :Arguments:
@@ -185,9 +191,15 @@ def prctile(x, arrprctiles, issorted=False):
     if not getattr(arrprctiles, '__iter__', False):  # is not iterable
         arrprctiles = (arrprctiles,)
     # remove NaNs, sort
-    x = [d for d in x if not numpy.isnan(d) and d is not None]
-    if not issorted:
-        x = numpy.sort(x)
+    try:
+        x = [d for d in x if not numpy.isnan(d[0]) and d is not None]
+        if not issorted:
+            x.sort(key=lambda x: x.__getitem__(0))
+    except IndexError, AttributeError:
+        x = [d for d in x if not numpy.isnan(d) and d is not None]
+        if not issorted:
+            x.sort()
+
     N = float(len(x))
     if N == 0:
         return [numpy.NaN for a in arrprctiles]
@@ -203,12 +215,18 @@ def prctile(x, arrprctiles, issorted=False):
             res += [x[-1]]
         elif ilow == ihigh:
             res += [x[ilow]]
-        elif numpy.isinf(x[ihigh]) and ihigh - i <= 0.5:
+        #numpy.bool__.any() works as well as numpy.array.any()...
+        elif numpy.isinf(x[ihigh]).any() and ihigh - i <= 0.5:
             res += [x[ihigh]]
-        elif numpy.isinf(x[ilow]) and i - ilow < 0.5:
+        elif numpy.isinf(x[ilow]).any() and i - ilow < 0.5:
             res += [x[ilow]]
         else:
-            res += [(ihigh-i) * x[ilow] + (i-ilow) * x[ihigh]]
+            try:
+                it = iter(x[ilow]) # if x[ilow] is an iterable
+                res += [(ihigh-i) * numpy.array(x[ilow]) +
+                        (i-ilow) * numpy.array(x[ihigh])]
+            except TypeError:
+                res += [(ihigh-i) * x[ilow] + (i-ilow) * x[ihigh]]
     return res
 
 def randint(upper, n):
