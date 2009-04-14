@@ -387,9 +387,9 @@ class IndexEntries(list):
         sorted = {}
         for i in self:
             if i.funcId in range(1, 25):
-                sorted.setdefault('noiselessall', []).append(i)
+                sorted.setdefault('noiselessall', IndexEntries()).append(i)
             elif i.funcId in range(101, 131):
-                sorted.setdefault('nzall', []).append(i)
+                sorted.setdefault('nzall', IndexEntries()).append(i)
             else:
                 warnings.warn('Unknown function id.')
 
@@ -403,21 +403,21 @@ class IndexEntries(list):
         sorted = {}
         for i in self:
             if i.funcId in range(1, 6):
-                sorted.setdefault('separ', []).append(i)
+                sorted.setdefault('separ', IndexEntries()).append(i)
             elif i.funcId in range(6, 10):
-                sorted.setdefault('lcond', []).append(i)
+                sorted.setdefault('lcond', IndexEntries()).append(i)
             elif i.funcId in range(10, 15):
-                sorted.setdefault('hcond', []).append(i)
+                sorted.setdefault('hcond', IndexEntries()).append(i)
             elif i.funcId in range(15, 20):
-                sorted.setdefault('multi', []).append(i)
+                sorted.setdefault('multi', IndexEntries()).append(i)
             elif i.funcId in range(20, 25):
-                sorted.setdefault('mult2', []).append(i)
+                sorted.setdefault('mult2', IndexEntries()).append(i)
             elif i.funcId in range(101, 107):
-                sorted.setdefault('nzmod', []).append(i)
+                sorted.setdefault('nzmod', IndexEntries()).append(i)
             elif i.funcId in range(107, 122):
-                sorted.setdefault('nzsev', []).append(i)
+                sorted.setdefault('nzsev', IndexEntries()).append(i)
             elif i.funcId in range(122, 131):
-                sorted.setdefault('nzsmm', []).append(i)
+                sorted.setdefault('nzsmm', IndexEntries()).append(i)
             else:
                 warnings.warn('Unknown function id.')
 

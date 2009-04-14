@@ -27,21 +27,17 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc.readindexfiles import IndexEntries
-from bbob_pproc import pproc, pptex, ppfig2, pprldistr2, ppfigdim2
+from bbob_pproc import pproc, pptex, ppfig2, pprldistr2
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
-
-tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
-# tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
-tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
-# tabValsOfInterest = (10, 1.0, 1e-1, 1.0e-4, 1.0e-8)  # 1e-3 1e-5
 
 #figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)
 figDimsOfInterest = (2, 3, 5, 10, 20, 40)
 
-rldDimsOfInterest = (5, 20)
+rldDimsOfInterest = (2, 3, 5, 10, 20, 40)
+#rldValsOfInterest = (1e-4, 1e-8)
 rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 #Put backward to have the legend in the same order as the lines.
 
@@ -168,7 +164,7 @@ def main(argv=None):
 
         isfigure = True
         istab = False
-        isrldistr = False
+        isrldistr = True
         isPostProcessed = False
         isPickled = False
         isDraft = True
@@ -223,6 +219,9 @@ def main(argv=None):
         if len(dictAlg) > 2:
             warnings.warn('Data with multiple algId %s ' % (dictAlg) +
                           'were found, two among those will be processed.')
+        keys = sorted(dictAlg.keys()) #alphabetical sort (for now)
+        for i, entry in enumerate(keys):
+            print "Alg%d is: %s" % (i, entry)
 
         if isPickled or isfigure or istab or isrldistr:
             if not os.path.exists(outputdir):
@@ -230,62 +229,80 @@ def main(argv=None):
                 if verbose:
                     print 'Folder %s was created.' % (outputdir)
 
-        if isPickled:
-            indexEntries.pickle(outputdir, verbose)
+        #if isPickled:
+            #indexEntries.pickle(outputdir, verbose)
 
         if isfigure:
-            tmp = sorted(dictAlg.keys()) #alphabetical sort (for now)
-            ppfig2.main(dictAlg[tmp[0]], dictAlg[tmp[1]],
+            ppfig2.main(dictAlg[keys[0]], dictAlg[keys[1]],
                         figDimsOfInterest, outputdir, verbose)
 
-        if istab:
-            print "TeX tables",
-            dictFunc = indexEntries.dictByFunc()
-            for fun, sliceFun in dictFunc.items():
-                dictDim = sliceFun.dictByDim()
-                tmp = []
-                for dim in tabDimsOfInterest:
-                    try:
-                        if len(dictDim[dim]) > 1:
-                            warnings.warn('Func: %d, DIM %d: ' % (fun, dim) +
-                                          'multiple index entries. Will only '+
-                                          'process the first ' +
-                                          '%s.' % dictDim[dim][0])
-                        tmp.append(dictDim[dim][0])
-                    except KeyError:
-                        pass
-                if tmp:
-                    filename = os.path.join(outputdir,'ppdata_f%d' % fun)
-                    pptex.main(tmp, tabValsOfInterest, filename, isDraft,
-                               verbose)
-            if isDraft:
-                print "(draft mode) done. To get final version tables, please use the -f option with run.py"
-            else:
-                print "done."
+        #if istab:
+            #print "TeX tables",
+            #dictFunc = indexEntries.dictByFunc()
+            #for fun, sliceFun in dictFunc.items():
+                #dictDim = sliceFun.dictByDim()
+                #tmp = []
+                #for dim in tabDimsOfInterest:
+                    #try:
+                        #if len(dictDim[dim]) > 1:
+                            #warnings.warn('Func: %d, DIM %d: ' % (fun, dim) +
+                                          #'multiple index entries. Will only '+
+                                          #'process the first ' +
+                                          #'%s.' % dictDim[dim][0])
+                        #tmp.append(dictDim[dim][0])
+                    #except KeyError:
+                        #pass
+                #if tmp:
+                    #filename = os.path.join(outputdir,'ppdata_f%d' % fun)
+                    #pptex.main(tmp, tabValsOfInterest, filename, isDraft,
+                               #verbose)
+            #if isDraft:
+                #print "(draft mode) done. To get final version tables, please use the -f option with run.py"
+            #else:
+                #print "done."
 
         if isrldistr:
-            print "ECDF graphs",
-            dictDim = indexEntries.dictByDim()
-            for dim, sliceDim in dictDim.items():
+            dictDim0 = dictAlg[keys[0]].dictByDim()
+            dictDim1 = dictAlg[keys[1]].dictByDim()
+
+            print "ECDF absolute target graphs",
+            #set_trace()
+            for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
                 if dim in rldDimsOfInterest:
-                    pprldistr.main(sliceDim, rldValsOfInterest,
-                                   outputdir, 'dim%02dall' % dim, verbose)
-                    dictFG = sliceDim.dictByFuncGroup()
-                    #set_trace()
-                    for fGroup, sliceFuncGroup in dictFG.items():
-                        pprldistr.main(sliceFuncGroup, rldValsOfInterest,
-                                       outputdir, 'dim%02d%s' % (dim, fGroup),
-                                       verbose)
+                    pprldistr2.main(dictDim0[dim], dictDim1[dim],
+                                    rldValsOfInterest, False,
+                                    outputdir, 'dim%02dall' % dim, verbose)
+                    dictFG0 = dictDim0[dim].dictByFuncGroup()
+                    dictFG1 = dictDim1[dim].dictByFuncGroup()
+                    for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
+                        pprldistr2.main(dictFG0[fGroup], dictFG1[fGroup],
+                                        rldValsOfInterest, False,
+                                        outputdir, 'dim%02d%s' % (dim, fGroup),
+                                        verbose)
             print "done."
 
-        if verbose:
-            tmp = []
-            tmp.extend(tabValsOfInterest)
-            tmp.extend(figValsOfInterest)
-            tmp.extend(rldValsOfInterest)
-            if indexEntries:
-                print ('Overall ps = %g\n'
-                       % indexEntries.successProbability(min(tmp)))
+            print "ECDF relative target graphs",
+            for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
+                if dim in rldDimsOfInterest:
+                    pprldistr2.main(dictDim0[dim], dictDim1[dim], None, True,
+                                    outputdir, 'dim%02dall' % dim, verbose)
+                    dictFG0 = dictDim0[dim].dictByFuncGroup()
+                    dictFG1 = dictDim1[dim].dictByFuncGroup()
+                    for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
+                        pprldistr2.main(dictFG0[fGroup], dictFG1[fGroup], None,
+                                        True, outputdir,
+                                        'dim%02d%s' % (dim, fGroup), verbose)
+            print "done."
+
+
+        #if verbose:
+            #tmp = []
+            #tmp.extend(tabValsOfInterest)
+            #tmp.extend(figValsOfInterest)
+            #tmp.extend(rldValsOfInterest)
+            #if indexEntries:
+                #print ('Overall ps = %g\n'
+                       #% indexEntries.successProbability(min(tmp)))
 
         if isfigure or istab or isrldistr:
             print "Output data written to folder %s." % outputdir

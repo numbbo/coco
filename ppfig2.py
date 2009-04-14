@@ -35,7 +35,7 @@ except IOError, (errno, strerror):
           'Titles in scaling figures will not be displayed.'
 
 
-def createFigure(data, figHandle=None):
+def createFigure(data, label=None, figHandle=None):
     """ Create a plot in a figure (eventually new) from a data array.
 
         Mandatory input:
@@ -64,7 +64,7 @@ def createFigure(data, figHandle=None):
         # Plot figure
         tmp = numpy.where(numpy.isfinite(data[:,i]))[0]
         if tmp.size > 0:
-            lines.extend(plt.plot(data[tmp,0], yValues[tmp]))
+            lines.extend(plt.plot(data[tmp,0], yValues[tmp], label=label))
             lines.extend(plt.plot([data[tmp[-1],0]], [yValues[tmp[-1]]],
                                   marker='+'))
             #TODO: larger size.
@@ -216,11 +216,13 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
             #compare dictFunc0[func][dim][0] and dictFunc1[func][dim][0]
             try:
                 if len(dictFunc0[func][dim]) != 1 or len(dictFunc1[func][dim]) != 1:
-                    warnings.warn('gnagnagna')
+                    warnings.warn('Could not find some data for f%d in %d-D.'
+                                  % (func, dim))
                     #set_trace()
                     continue
             except KeyError:
-                warnings.warn('gnagnagna')
+                warnings.warn('Could not find some data for f%d in %d-D.'
+                              % (func, dim))
                 #set_trace()
                 continue
 
@@ -250,7 +252,7 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
                                  data1[:, 1]/data0[:, 1])).transpose()
 
             data = data[(data0[:, 2] > 0) * (data1[:, 2] > 0)]
-            h = createFigure(data, fig)
+            h = createFigure(data, label='%d-D' % dim, figHandle=fig)
             plt.setp(h, 'color', colors[i])
             plt.setp(h[0], 'label', '%d-D' % dim)
 
@@ -260,7 +262,7 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
                 tmp = numpy.vstack([data1[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 0:2], tmp])
                 #set_trace()
                 tmp[:,1] = tmp[0,1] / tmp[:,1] * data[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 1]
-                h = createFigure(tmp, fig)
+                h = createFigure(tmp, figHandle=fig)
                 plt.setp(h, 'color', colors[i])
             if (data1[:, 2] == 0).any():
                 #set_trace()
@@ -268,10 +270,10 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
                 tmp = numpy.vstack([data0[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 0:2], tmp])
                 #set_trace()
                 tmp[:,1] = tmp[:,1] / tmp[0,1] * data[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 1]
-                h = createFigure(tmp, fig)
+                h = createFigure(tmp, figHandle=fig)
                 plt.setp(h, 'color', colors[i])
 
-        legend = False #func in (1, 24, 101, 130)
+        legend = True #func in (1, 24, 101, 130)
         customizeFigure(fig, filename, title=title,
                         fileFormat=('png'), labels=['', ''],
                         legend=legend, locLegend='best', verbose=verbose)
