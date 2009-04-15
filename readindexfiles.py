@@ -219,6 +219,48 @@ class IndexEntry:
                 break
         return succ
 
+    def createDictInstance(self):
+        """Returns a dictionary of the instances: the key is the instance id,
+        the value is a list of an index corresponding to the instance in the
+        hData and vData array.
+        """
+        dictinstance = {}
+        for i in range(len(self.itrials)):
+            dictinstance.setdefault(self.itrials[i], []).append(i)
+
+        return dictinstance
+
+
+    def splitByTrials(self, whichdata=None):
+        """Splits the post-processed data arrays by trials.
+        Returns a two-element list of dictionaries of arrays, the key of the
+        dictionary being the instance id, the value being a smaller
+        post-processed data array corresponding to the instance id.
+        """
+
+        dictinstance = self.createDictInstance()
+        hData = {}
+        vData = {}
+
+        for instanceid, idx in iteritems(dictinstance):
+            hData[instanceid] = self.hData[:,
+                                           numpy.ix_(list(i + 1 for i in idx)),
+                                           numpy.ix_(list(i + self.nbRuns()
+                                                          for i in idx))]
+            vData[instanceid] = self.vData[:,
+                                           numpy.ix_(list(i + 1 for i in idx)),
+                                           numpy.ix_(list(i + self.nbRuns()
+                                                          for i in idx))]
+
+        if whichdata :
+            if whichdata == 'hData':
+                return hData
+            elif whichdata == 'vData':
+                return vData
+
+        return (hData, vData)
+
+
 
 class IndexEntries(list):
     """Set of instances of IndexEntry, implement some useful slicing functions.
