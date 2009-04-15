@@ -99,9 +99,6 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
         except KeyError:
             continue
 
-        if isByInstance:
-            dictinstance = []
-
         ERT = []
         if not isByInstance:
             for i, entry in enumerate((i0, i1)):
@@ -114,12 +111,7 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
                     if not issuccess:
                         fevals[j] = entry.vData[-1, 1+j]
                 tmp = bootstrap.sp(fevals, issuccessful=success)
-                #set_trace()
-                if tmp[2]: #success probability is larger than 0
-                    ERT.append(tmp[0])
-                else:
-                    #set_trace()
-                    ERT.append(numpy.inf)
+                ERT.append(tmp[0])
             if not all(numpy.isinf(ERT)):
                 if numpy.isnan(ERT[1]/ERT[0]):
                     x.append(ERT[1]/ERT[0])
@@ -141,10 +133,6 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
                         if issuccess:
                             fevals[l] = entry.vData[-1, 1+dictinstance[k][l]]
                     tmp = bootstrap.sp(fevals, issuccessful=success)
-                    if tmp[2]: #success probability is larger than 0
-                        ERT[i][k] = tmp[0]
-                    else:
-                        ERT[i][k] = numpy.inf
                     ERT[i][k] = tmp[0]
             s0 = set(ERT[0])
             s1 = set(ERT[1])
@@ -287,11 +275,8 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
                             if issuccess:
                                 fevals[l] = entry.vData[-1, 1+dictinstance[k][l]]
                         tmp = bootstrap.sp(fevals, issuccessful=success)
-                        if tmp[2]: #success probability is larger than 0
-                            ERT[i][k] = tmp[0]
-                        else:
-                            ERT[i][k] = numpy.inf
                         ERT[i][k] = tmp[0]
+
                 s0 = set(ERT[0])
                 s1 = set(ERT[1])
                 #Could be done simpler

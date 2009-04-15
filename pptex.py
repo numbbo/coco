@@ -351,15 +351,19 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
         if ertvec[2] > 0: # if at least one success
             dispersion = bootstrap.draw(N, [10, 90], samplesize=samplesize,
                                         func=bootstrap.sp,
-                                        args=[0,success, False])[0]
+                                        args=[0,success, True])[0]
             #False on the line above is for allowinf.
 
             #set_trace()
             #Hack for the display of the tables with the percentiles of bootrap
             #the percentile may be interpolated so the number of success
             #(dispersion[1][2]) may be included between 0 and 1.
-            if dispersion[1][2] < 1:
-                dispersion[1][0] *= -1.
+            if numpy.isinf(dispersion[1][0]) :
+                tmp = list(dispersion[1]) #dispersion is a tuple.
+                tmp[0] = -ertvec[0]
+                dispersion[1] = tmp
+                # we put a minus for the hack in the display of the 90%
+                # the 90% percentile is larger than the sum of the maxEvals.
 
             curLine = [targetF, ertvec[2], ertvec[0],
                        dispersion[0][0], dispersion[1][0],
