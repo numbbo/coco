@@ -376,7 +376,8 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
             #Get the function values for maxEvals.
 
             curLine = [targetF, ertvec[2]]
-            tmp = [50].extend(percentiles)
+            tmp = [50]
+            tmp.extend(percentiles)
             curLine.extend(bootstrap.prctile(vals, tmp))
             #set_trace()
             #curLine.append(numpy.sum(unsucc)) #/max(1, ertvec[2])
