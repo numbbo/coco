@@ -194,7 +194,7 @@ def generateData(indexEntry, targetFuncValue):
         i = indexEntry.vData[-1]
         res.extend(bootstrap.sp(i[1:indexEntry.nbRuns() + 1],
                                 issuccessful=[False]*indexEntry.nbRuns(),
-				allowinf=False))
+                                allowinf=False))
         res.append(res[0] * max(res[2], 1)) #Sum(FE)
         res.append(bootstrap.prctile(i[1:indexEntry.nbRuns() + 1], 50)[0])
 
