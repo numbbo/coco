@@ -352,18 +352,21 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
         if ertvec[2] > 0: # if at least one success
             #Probability that a bootstrap sample contains no success
             pbu = ((len(N) - ertvec[2]) / float(len(N))) ** len(N)
-            npercentiles = list(j for j in percentiles if j/100. <= 1.-pbu)
-            dispersion = bootstrap.draw(N, npercentiles, samplesize=samplesize,
-                                        func=bootstrap.sp,
-                                        args=[0, success])[0]
+            bpercentiles = list(j/100. <= 1.-pbu for j in percentiles)
+            if any(bpercentiles):
+                #Line below: percentiles instead of npercentiles
+                #We compute all the percentiles though some might be infinite
+                dispersion = bootstrap.draw(N, percentiles,
+                                            samplesize=samplesize,
+                                            func=bootstrap.sp,
+                                            args=[0, success])[0]
 
-            if len(npercentiles) != len(percentiles):
-                sumfevals = numpy.sum(list(i for i in N if not numpy.isnan(i)))
-                for j in percentiles:
-                    if j/100. > 1. - pbu:
-                        dispersion.append(-sumfevals)
-                        # we put a minus for the hack in the display of the 90%
-                        # the 90% percentile is larger than the sum of fevals.
+            sumfevals = numpy.sum(list(i for i in N if not numpy.isnan(i)))
+            for j in range(len(bpercentiles)):
+                #the percentile is larger than 1-pbu or we still have inf
+                # (which has a chance of happening though not in the limit).
+                if not bpercentiles[j] or numpy.isinf(percentiles[j]):
+                    dispersion[j] = -sumfevals
 
             curLine = [targetF, ertvec[2], ertvec[0],
                        dispersion[0], dispersion[1],
