@@ -11,8 +11,9 @@ from pdb import set_trace
 
 
 #GLOBAL VARIABLES DEFINITION
-header = ['$\Delta f$', '$\#$', '$\ERT$', '10\%', '90\%',
-          '$\\text{RT}_{\\text{succ}}$']
+percentiles = [10, 90]
+header = ['$\Delta f$', '$\#$', '$\ERT$', '%d\%%' % percentiles[0],
+          '%d\%%' % percentiles[1], '$\\text{RT}_{\\text{succ}}$']
 format = ['%1.1e', '%d', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
 #This has to be synchronized with what's computed in generateData.
 
@@ -349,24 +350,23 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
         ertvec = bootstrap.sp(N, issuccessful=success, allowinf=False)
 
         if ertvec[2] > 0: # if at least one success
-            dispersion = bootstrap.draw(N, [10, 90], samplesize=samplesize,
+            #Probability that a bootstrap sample contains no success
+            pbu = ((len(N) - ertvec[2]) / float(len(N))) ** len(N)
+            npercentiles = list(j for j in percentiles if j/100. <= 1.-pbu)
+            dispersion = bootstrap.draw(N, npercentiles, samplesize=samplesize,
                                         func=bootstrap.sp,
-                                        args=[0,success, True])[0]
-            #False on the line above is for allowinf.
+                                        args=[0, success])[0]
 
-            #set_trace()
-            #Hack for the display of the tables with the percentiles of bootrap
-            #the percentile may be interpolated so the number of success
-            #(dispersion[1][2]) may be included between 0 and 1.
-            if numpy.isinf(dispersion[1][0]) :
-                tmp = list(dispersion[1]) #dispersion is a tuple.
-                tmp[0] = -numpy.sum(list(i for i in N if not numpy.isnan(i)))
-                dispersion[1] = tuple(tmp)
-                # we put a minus for the hack in the display of the 90%
-                # the 90% percentile is larger than the sum of the maxEvals.
+            if len(npercentiles) != len(percentiles):
+                sumfevals = numpy.sum(list(i for i in N if not numpy.isnan(i)))
+                for j in percentiles:
+                    if j/100. > 1. - pbu:
+                        dispersion.append(-sumfevals)
+                        # we put a minus for the hack in the display of the 90%
+                        # the 90% percentile is larger than the sum of fevals.
 
             curLine = [targetF, ertvec[2], ertvec[0],
-                       dispersion[0][0], dispersion[1][0],
+                       dispersion[0], dispersion[1],
                        #float(numpy.sum(unsucc))/ertvec[2]]
                        numpy.mean(list(N[i] for i in range(len(N)) if
                                        success[i]))]
@@ -376,7 +376,8 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
             #Get the function values for maxEvals.
 
             curLine = [targetF, ertvec[2]]
-            curLine.extend(bootstrap.prctile(vals, [50, 10, 90]))
+            tmp = [50].extend(percentiles)
+            curLine.extend(bootstrap.prctile(vals, tmp))
             #set_trace()
             #curLine.append(numpy.sum(unsucc)) #/max(1, ertvec[2])
             curLine.append(bootstrap.prctile(unsucc, [50])[0])

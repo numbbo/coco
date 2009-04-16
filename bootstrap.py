@@ -118,7 +118,10 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
         to be computed from the bootstrapped distribution.
     func--function that computes the statistics as func(data,*args)
         or func(data,*args)[0], by default bootstrap.sp1
-    args--arguments to func
+    args--arguments to func, the zero-th element of args is expected to be a
+        sequence of boolean giving the success status of the associated data
+        value. This specialization of the draw procedure is due to the
+        interface of the performance computation methods sp1 and sp.
     samplesize--number of bootstraps drawn, default is 1e3,
        for more reliable values choose rather 1e4. 
        performance is linear in samplesize, 0.2s for samplesize=1000.
@@ -148,11 +151,12 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
         for i in xrange(int(samplesize)):
             # relying that idx<len(data)
             idx = numpy.random.randint(N, size=N)
+
+            #This part is specialized to conform with sp1 and sp.
             if len(args) > 1:
                 argsv[1] = succ[numpy.r_[idx]]
-            #if isinstance(res, list) or isinstance(res, tuple):
-                #res = res[0]
-            arrStats.append(func(adata[numpy.r_[idx]], *(argsv)))
+
+            arrStats.append(func(adata[numpy.r_[idx]], *(argsv))[0])
 
             # arrStats = [data[i] for i in idx]  # efficient up to 50 data
     else:  # not more efficient
@@ -160,10 +164,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
         arrIdx.resize(samplesize, N)
         arrStats = [func(adata[numpy.r_[idx]], *args) for idx in arrIdx]
 
-    try:
-        arrStats.sort(key=lambda x: x.__getitem__(0))
-    except AttributeError: #no method __getitem__
-        arrStats.sort()
+    arrStats.sort()
 
     return (prctile(arrStats, percentiles, issorted=True),
             arrStats)
@@ -191,14 +192,10 @@ def prctile(x, arrprctiles, issorted=False):
     if not getattr(arrprctiles, '__iter__', False):  # is not iterable
         arrprctiles = (arrprctiles,)
     # remove NaNs, sort
-    try:
-        x = [d for d in x if not numpy.isnan(d[0]) and d is not None]
-        if not issorted:
-            x.sort(key=lambda x: x.__getitem__(0))
-    except IndexError, AttributeError:
-        x = [d for d in x if not numpy.isnan(d) and d is not None]
-        if not issorted:
-            x.sort()
+
+    x = [d for d in x if not numpy.isnan(d) and d is not None]
+    if not issorted:
+        x.sort()
 
     N = float(len(x))
     if N == 0:
@@ -221,12 +218,7 @@ def prctile(x, arrprctiles, issorted=False):
         elif numpy.isinf(x[ilow]).any() and i - ilow < 0.5:
             res += [x[ilow]]
         else:
-            try:
-                it = iter(x[ilow]) # if x[ilow] is an iterable
-                res += [(ihigh-i) * numpy.array(x[ilow]) +
-                        (i-ilow) * numpy.array(x[ihigh])]
-            except TypeError:
-                res += [(ihigh-i) * x[ilow] + (i-ilow) * x[ihigh]]
+            res += [(ihigh-i) * x[ilow] + (i-ilow) * x[ihigh]]
     return res
 
 def randint(upper, n):
