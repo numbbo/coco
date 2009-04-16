@@ -360,8 +360,8 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
             #(dispersion[1][2]) may be included between 0 and 1.
             if numpy.isinf(dispersion[1][0]) :
                 tmp = list(dispersion[1]) #dispersion is a tuple.
-                tmp[0] = -ertvec[0]
-                dispersion[1] = tmp
+                tmp[0] = -numpy.sum(list(i for i in N if not numpy.isnan(i)))
+                dispersion[1] = tuple(tmp)
                 # we put a minus for the hack in the display of the 90%
                 # the 90% percentile is larger than the sum of the maxEvals.
 
