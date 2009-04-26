@@ -111,6 +111,29 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
     return (res, succ, len(succdat))
 
 
+def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
+    """Input:
+    runlengths_succ--array of running lengths of successful runs
+    runlengths_unsucc--arrauf of running lengths of unsuccessful runs
+    Return:
+       (percentiles, all_sampled_values_sorted)
+    Details:
+       SP is computed by adding uniformly randomly chosen running lengths
+       until the first time a successful one is chosen. In case of no
+       successful run the sum of unsuccessful runs is bootstrapped.
+    """
+    print 'to be implemented'  # TODO
+
+    Nsucc = len(runlengths_succ)
+    Nunsucc = len(runlengths_unsucc)
+
+    if Nsucc == 0:
+        # return (numpy.Inf*numpy.array(percentiles), )
+        return draw(runlengths_unsucc, percentiles, samplesize=samplesize, func=sum)
+    
+    # geometric distribution for number of unsuccessful runs
+    
+
 def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     """Input:
     data--a sequence of data values
