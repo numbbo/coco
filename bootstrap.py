@@ -114,7 +114,7 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
 def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
     """Input:
     runlengths_succ--array of running lengths of successful runs
-    runlengths_unsucc--arrauf of running lengths of unsuccessful runs
+    runlengths_unsucc--array of running lengths of unsuccessful runs
     Return:
        (percentiles, all_sampled_values_sorted)
     Details:
