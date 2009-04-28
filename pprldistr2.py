@@ -166,9 +166,11 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
         if tmp2 > 0:
             x = x[:-tmp2]
 
-        x2 = numpy.hstack([10.**numpy.floor(numpy.log10(x[0])),
+        xbound = max(abs(numpy.floor(numpy.log10(x[0]))),
+                     abs(numpy.ceil(numpy.log10(x[-1]))))
+        x2 = numpy.hstack([10.**(-xbound),
                            numpy.repeat(x, 2),
-                           10.**numpy.ceil(numpy.log10(x[-1]))])
+                           10.**xbound])
         #maxEvalsF: used for the limit of the plot.
         y2 = numpy.hstack([tmp/float(nn), tmp/float(nn),
                            numpy.repeat(numpy.arange(tmp+1, n-tmp2) / float(nn), 2),
@@ -320,9 +322,11 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
             if tmp2 > 0:
                 x = x[:-tmp2]
 
-            x2 = numpy.hstack([10.**numpy.floor(numpy.log10(x[0])),
+            xbound = max(abs(numpy.floor(numpy.log10(x[0]))),
+                         abs(numpy.ceil(numpy.log10(x[-1]))))
+            x2 = numpy.hstack([10.**(-xbound),
                                numpy.repeat(x, 2),
-                               10.**numpy.ceil(numpy.log10(x[-1]))])
+                               10.**xbound])
             #maxEvalsF: used for the limit of the plot.
             y2 = numpy.hstack([tmp/float(nn), tmp/float(nn),
                                numpy.repeat(numpy.arange(tmp+1, n-tmp2) / float(nn), 2),
