@@ -25,6 +25,7 @@ def beautify(figHandle, figureName, fileFormat=('png'), isByInstance=True,
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
     #try:
+    #set_trace()
     axisHandle.set_xscale('log')
     plt.ylim(0.0, 1.0)
     plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
@@ -153,17 +154,31 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
              #(numpy.log10(fvalueToReach), len(fsolved), len(funcs)))
     label = '%+d' % numpy.log10(fvalueToReach)
     n = len(x)
-    if n == 0:
-        res = plt.plot([], [], label=label)
-    else:
+    try:
         x.sort()
-        x2 = numpy.hstack([numpy.repeat(x, 2)])
-        #maxEvalsF: used for the limit of the plot.
-        y2 = numpy.hstack([0.0,
-                           numpy.repeat(numpy.arange(1, n) / float(nn), 2),
-                           n/float(nn)])
-        res = plt.plot(x2, y2, label=label)
+        #Catch negative values: zeros are not a problem...
+        #tmp = 0
+        tmp = len(list(i for i in x if i <= 0))
+        x = x[tmp:]
+        #Catch inf, those could be a problem with the log scale...
+        #tmp2 = 0
+        tmp2 = len(list(i for i in x if i > 0 and numpy.isinf(i)))
+        if tmp2 > 0:
+            x = x[:-tmp2]
 
+        x2 = numpy.hstack([10.**numpy.floor(numpy.log10(x[0])),
+                           numpy.repeat(x, 2),
+                           10.**numpy.ceil(numpy.log10(x[-1]))])
+        #maxEvalsF: used for the limit of the plot.
+        y2 = numpy.hstack([tmp/float(nn), tmp/float(nn),
+                           numpy.repeat(numpy.arange(tmp+1, n-tmp2) / float(nn), 2),
+                           (n-tmp2)/float(nn), (n-tmp2)/float(nn)])
+        #set_trace()
+        res = plt.plot(x2, y2, label=label)
+    except OverflowError: #TODO Check this exception
+        res = plt.plot([], [], label=label)
+
+    #set_trace()
     return res
 
 def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
@@ -293,16 +308,29 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
 
         label = '1e%+d * DIM' % numpy.log10(curevals/indexEntries0[0].dim)
         n = len(x)
-        if n == 0:
-            res.append(plt.plot([], [], label=label))
-        else:
+        try:
             x.sort()
-            x2 = numpy.hstack([numpy.repeat(x, 2)])
+            #Catch negative values, those could be a problem with the log scale...
+            #tmp = 0
+            tmp = len(list(i for i in x if i <= 0))
+            x = x[tmp:]
+            #Catch inf, those could be a problem with the log scale...
+            #tmp2 = 0
+            tmp2 = len(list(i for i in x if numpy.isinf(i))) #Also catches negative inf
+            if tmp2 > 0:
+                x = x[:-tmp2]
+
+            x2 = numpy.hstack([10.**numpy.floor(numpy.log10(x[0])),
+                               numpy.repeat(x, 2),
+                               10.**numpy.ceil(numpy.log10(x[-1]))])
             #maxEvalsF: used for the limit of the plot.
-            y2 = numpy.hstack([0.0,
-                               numpy.repeat(numpy.arange(1, n) / float(nn), 2),
-                               n/float(nn)])
+            y2 = numpy.hstack([tmp/float(nn), tmp/float(nn),
+                               numpy.repeat(numpy.arange(tmp+1, n-tmp2) / float(nn), 2),
+                               (n-tmp2)/float(nn), (n-tmp2)/float(nn)])
             res.append(plt.plot(x2, y2, label=label))
+        except OverflowError: #TODO Check this exception
+            res = plt.plot([], [], label=label)
+
         #Update the curDf
         curevals *= 10
 
@@ -356,6 +384,7 @@ def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest=None,
                 #if rldColors[j] == 'r':  # 1e-8 in bold
                     #plt.setp(tmp, 'linewidth', 3)
 
+    #set_trace()
     beautify(fig, figureName, legend=True, verbose=verbose)
     plt.close(fig)
 

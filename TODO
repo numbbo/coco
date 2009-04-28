@@ -5,27 +5,30 @@ Error catching:
 *Problem with MINGW32 os.sep returns a \ ! -> dealt with?
 
 Feature missing:
+*Data structure that makes more sense.
+*Java application on the web
+*template-independent stuff...
+*paper updater (update the template inside a paper...)
+*in the scaling figures, take away the line that goes to the sum(maxfunevals) if there are no dots...
+*vertical line for the maxfunevals in the ECDF figures
 *in the RLD figures, if some final values are 0 there is the chance that the
 line for Df/ftarget = 1 to the first final value for which it is larger than 1
 is missing.
 *Automatically generate the associated TeX file to compile...
 *rewrite the ppXXX with common script in pproc...
-*Manage multiple algorithms.
 *put in pproc methods to determine success and failure so as to have uniform
 data for all ppXXX modules.
-*put the right bibtex entry in the templatearticle.
 *Summary tables of ENFEs
 *have low-level post-processing functions that deals with arrays.
 *Deal with archive file -> no file-like object for zipfile module in python 2.5.2
-*Compute the entropy based on the comment line in the info file?
-*Compare results from different algorithms! -> How?
+*Compute the Crafting Effort based on the comment line in the info file?
 *Readable output instead of pickle files?
+*put the right bibtex entry in the templatearticle.
+*Compute the entropy based on the comment line in the info file?
 
 Misc.
 *Provide a clean doc page that is helpful and useful -> pydoc.writedocs('.') in BBOB/code/python
-*Put the pydoc online.
 *Problem with some fonts missing for tex compilation.
-*Think about adding bbob.bib to the release.
 *Explicit demo post processing.
 *Update the readme from the demo folder.
 
@@ -34,6 +37,9 @@ Profiling:
 
 ###############################################################################
 SOLVED:
+*Think about adding bbob.bib to the release.
+*Put the pydoc online.
+*Manage multiple algorithms
 *diagnose that all the trials (3) for all instance id (1..5) are there -> added instanceOfInterest and warning in run.py.
 *Write somewhere the result of the discussion about maxEvals.
 *does the maxEvalsFactor appearing in ppfigdim still makes sense? -> It does not. It's been removed

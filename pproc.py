@@ -20,6 +20,25 @@ idxF = 2
 nbPtsF = 5;
 
 #CLASS DEFINITIONS
+#class DataSet(numpy.ndarray):
+    #"""Aggregation of data from multiple runs. Implements methods to access
+    #data in the array.
+    #"""
+
+    #def __init__(self, *args, **kwargs):
+        #super(DataSet, self).__init__(*args, **kwargs)
+
+    #def getFuncEvals(self, funcValues):
+        #"""Provided with function values, return the number of function
+        #evaluations to reach.
+        #"""
+
+    #def getFuncValues(self, FuncEvals):
+        #"""Provided with function values, return the number of function
+        #evaluations to reach.
+        #"""
+
+
 class MultiReader(list):
     """Wrapper class of data arrays to be aligned.
 
@@ -81,7 +100,10 @@ class MultiReader(list):
 
 
 class VMultiReader(MultiReader):
-    """Wrapper class of data arrays to be aligned vertically."""
+    """Wrapper class of data arrays to be aligned vertically.
+    Aligned vertically means, all number of function evaluations are the
+    closest from below to the alignment number of function evaluations.
+    """
     idx = idxEvals
 
     def __init__(self, data):
