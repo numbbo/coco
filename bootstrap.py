@@ -214,6 +214,7 @@ def prctile(x, arrprctiles, issorted=False):
 
     if not getattr(arrprctiles, '__iter__', False):  # is not iterable
         arrprctiles = (arrprctiles,)
+        # makes a tuple even if the arrprctiles is not iterable
     # remove NaNs, sort
 
     x = [d for d in x if not numpy.isnan(d) and d is not None]

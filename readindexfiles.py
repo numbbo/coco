@@ -260,6 +260,112 @@ class IndexEntry:
 
         return (hData, vData)
 
+    def getFuncEvals(self, functionValues):
+        """Returns a sequence of the number of function evaluations for
+        each run to reach the given function value or the maximum number
+        of function evaluations for the given if it did not reached it.
+        The second ouput argument is a sequence of the success status for
+        each run.
+        Keyword arguments:
+        functionValues -- 
+        """
+
+        try:
+            iter(functionValues)
+        except TypeError:
+            functionValue = (functionValues, )
+
+        sfunctionValues = sorted(functionValues)
+
+        try:
+            it = iter(self.hData)
+            curline = it.next()
+        except StopIteration:
+            warnings.warn('Problem here!')
+
+        res = {}
+        isSuccessful = {}
+
+        #Isn't this MultiReader.align???
+        for fValue in sfunctionValues:
+            while curline[0] > fValue:
+                try:
+                    curline = it.next()
+                except StopIteration:
+                    break
+
+            tmpres = curline[1:self.nbRuns()+1]
+            tmpIsSucc = (curline[self.nbRuns()+1:] <= fValue)
+
+            for i in range(len(tmpIsSucc)):
+                if not tmpIsSucc[i]:
+                    tmpres[i] = self.vData[-1, 1+i]
+
+            #Append a copy?
+            res[fValue] = tmpres
+            isSuccessful[fValue] = tmpIsSucc
+
+        res = list(res[fValue] for fValue in functionValues)
+        isSuccessful = list(isSuccessful[fValue]
+                            for fValue in functionValues)
+
+        return res, isSuccessful
+
+    def getFuncValues(self, functionEvaluations):
+        """Returns a sequence of the function values reached right before
+        the given number of function evaluations or the last function value
+        obtained.
+        Keyword arguments:
+        functionValues -- 
+        isSuccessful -- is not the sequence indicating whether the functionEvaluations
+        were actually reached! In this implementation it says whether the 
+        """
+
+        try:
+            iter(functionEvaluations)
+        except TypeError:
+            functionEvaluations = (functionEvaluations, )
+
+        sfunctionEvaluations = sorted(functionEvaluations)
+
+        try:
+            it = iter(self.vData)
+            nextline = it.next()
+            curline = nextline
+        except StopIteration:
+            warnings.warn('Problem here!')
+
+        res = {}
+        isSuccessful = {}
+
+        set_trace()
+        for fEvals in sfunctionEvaluations:
+            while True:
+                if nextline[0] > fEvals:
+                    break
+                try:
+                    curline = nextline
+                    nextline = it.next()
+                except StopIteration:
+                    break
+
+            tmpres = curline[self.nbRuns()+1:]
+            #set_trace()
+            #tmpIsSucc = (curline[1:self.nbRuns()+1] <= fEvals)
+
+            #for i in range(len(tmpIsSucc)):
+                #if not tmpIsSucc[i]:
+                    #tmpres[i] = self.vData[-1, self.nbRuns()+1+i]
+
+            #Append a copy?
+            res[fEvals] = tmpres
+            #isSuccessful[fEvals] = tmpIsSucc
+
+        res = list(res[fEvals] for fEvals in functionEvaluations)
+        #isSuccessful = list(isSuccessful[fEvals]
+                            #for fEvals in functionEvaluations)
+
+        return res #, isSuccessful
 
 
 class IndexEntries(list):
@@ -288,6 +394,9 @@ class IndexEntries(list):
         if not args:
             self = list()
             return
+
+        if isinstance(args, basestring):
+            args = [args]
 
         for i in args:
             if i.endswith('.info'):
