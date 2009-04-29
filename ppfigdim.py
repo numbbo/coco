@@ -201,7 +201,7 @@ def generateData(indexEntry, targetFuncValue):
     return numpy.array(res)
 
 
-def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
+def main(indexEntries, _valuesOfInterest, outputdir, verbose=True):
     """From a list of IndexEntry, returns a convergence and ENFEs figure vs dim
 
     """
@@ -214,15 +214,14 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
 
     dictFunc = indexEntries.dictByFunc()
 
-    valuesOfInterest = list(valuesOfInterest)
-    valuesOfInterest.sort(reverse=True)
-
     for func in dictFunc:
         dictFunc[func] = dictFunc[func].dictByDim()
         filename = os.path.join(outputdir,'ppdata_f%d' % (func))
         fig = plt.figure()
         #legend = []
         line = []
+        valuesOfInterest = list(j[func] for j in _valuesOfInterest)
+        valuesOfInterest.sort(reverse=True)
         for i in range(len(valuesOfInterest)):
             #data = []
             succ = []

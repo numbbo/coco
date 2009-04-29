@@ -75,21 +75,22 @@ def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
     for i in indexEntries:
         funcs.add(i.funcId)
         for j in i.hData:
-            if j[0] <= fvalueToReach:
+            if j[0] <= fvalueToReach[i.funcId]:
                 #This loop is needed because though some number of function
                 #evaluations might be below maxEvals, the target function value
                 #might not be reached yet. This is because the horizontal data
                 #do not go to maxEvals.
 
                 for k in range(1, i.nbRuns() + 1):
-                    if j[i.nbRuns() + k] <= fvalueToReach:
+                    if j[i.nbRuns() + k] <= fvalueToReach[i.funcId]:
                         x.append(j[k] / i.dim)
                         fsolved.add(i.funcId)
                 break
         nn += i.nbRuns()
 
+    # For the label the last i.funcId is used.
     label = ('%+d:%d/%d' %
-             (numpy.log10(fvalueToReach), len(fsolved), len(funcs)))
+             (numpy.log10(fvalueToReach[i.funcId]), len(fsolved), len(funcs)))
     n = len(x)
     if n == 0:
         res = plt.plot([], [], label=label)
@@ -169,7 +170,7 @@ def plotFVDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
         for j in i.vData:
             if j[0] >= maxEvalsF * i.dim:
                 break
-        x.extend(j[i.nbRuns()+1:] / fvalueToReach)
+        x.extend(j[i.nbRuns()+1:] / fvalueToReach[i.funcId])
         nn += i.nbRuns()
 
     x.sort()
