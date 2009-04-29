@@ -23,7 +23,8 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
-    plt.xlim(1.0, maxEvalsF)
+    plt.axvline(x=maxEvalsF, color='k')
+    plt.xlim(1.0, maxEvalsF ** 1.05)
     plt.ylim(0.0, 1.0)
     axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of trials')
@@ -94,7 +95,7 @@ def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
         res = plt.plot([], [], label=label)
     else:
         x.sort()
-        x2 = numpy.hstack([numpy.repeat(x, 2), maxEvalsF])
+        x2 = numpy.hstack([numpy.repeat(x, 2), maxEvalsF ** 1.05])
         #maxEvalsF: used for the limit of the plot.
         y2 = numpy.hstack([0.0,
                            numpy.repeat(numpy.arange(1, n+1) / float(nn), 2)])
@@ -212,7 +213,7 @@ def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
     plt.rc("font", size=20)
     plt.rc("legend", fontsize=20)
 
-    maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in indexEntries) ** 1.05
+    maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in indexEntries)
     #maxEvalsFactorCeil = numpy.power(10,
                                      #numpy.ceil(numpy.log10(maxEvalsFactor)))
 
@@ -254,13 +255,13 @@ def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
     for j in range(len(valuesOfInterest)):
         #set_trace()
         tmp = plotFVDistr(indexEntries, valuesOfInterest[j],
-                          maxEvalsFactor, verbose=verbose)
+                          evalfmax, verbose=verbose)
         #if not tmp is None:
         plt.setp(tmp, 'color', rldColors[j])
         if rldColors [j] == 'r':  # 1e-8 in bold
             plt.setp(tmp, 'linewidth', 3)
 
-    tmp = numpy.floor(numpy.log10(maxEvalsFactor))
+    tmp = numpy.floor(numpy.log10(evalfmax))
     # coloring left to right:
     #maxEvalsF = numpy.power(10, numpy.arange(tmp, 0, -1) - 1)
     # coloring right to left:

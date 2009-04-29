@@ -1,14 +1,17 @@
+Rehaul v4:
+*data structure:
+**falignx, faligndata, evalignx, evaligndata, mFEs, finalfs... NaN in the end...
+**IndexEntry -> DataSet?
+**IndexEntries -> SeqDataSet?
+**ASCII File representation of IndexEntry
+
 Error catching:
 *problem with the tables: too many floats to handle -> maybe more than 12?
-*tables are hard to read: columns do not have all the same width
 *IOError with pickled data. -> dealt with?
-*Problem with MINGW32 os.sep returns a \ ! -> dealt with?
 
 Feature missing:
-*Data structure that makes more sense.
 *Java application on the web
 *template-independent stuff...
-*paper updater (update the template inside a paper...)
 *in the scaling figures, take away the line that goes to the sum(maxfunevals) if there are no dots...
 *vertical line for the maxfunevals in the ECDF figures
 *in the RLD figures, if some final values are 0 there is the chance that the

@@ -234,7 +234,7 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
                 #set_trace()
                 tmp = generateData(dictFunc[func][dim][0],
                                    valuesOfInterest[i])
-                data.append(numpy.append(dim, tmp))
+                #data.append(numpy.append(dim, tmp))
                 if tmp[2] > 0: #Number of success is larger than 0
                     succ.append(numpy.append(dim, tmp))
                     if tmp[2] < dictFunc[func][dim][0].nbRuns():
@@ -247,22 +247,26 @@ def main(indexEntries, valuesOfInterest, outputdir, verbose=True):
                 h = createFigure(tmp[:, [0, 1]], fig) #ERT
                 plt.setp(h[0], 'color', colors[i], 'linestyle', '',
                          'marker', 'o', 'markersize', 20)
+                # Separately plot the line so as to not show the marker in the legend
+                h = createFigure(tmp[:,[0, 1]], fig) #ERT
+                plt.setp(h[0], 'color', colors[i], 'label',
+                         ' %+d' % (numpy.log10(valuesOfInterest[i])))
                 h = createFigure(tmp[:,[0, -1]], fig) #median
                 plt.setp(h[0], 'color', colors[i], 'linestyle', '',
                          'marker', '+', 'markersize', 30, 'markeredgewidth', 5)
 
-            if unsucc:
-                tmp = numpy.vstack(unsucc)
-                h = createFigure(tmp[:, [0, 1]], fig) #ERT
-                plt.setp(h[0], 'color', colors[i], 'linestyle', '',
-                         'marker', 'x', 'markersize', 20)
+            #if data:
+                #tmp = numpy.vstack(data)
+                #h = createFigure(tmp[:,[0, 1]], fig) #ERT
+                #plt.setp(h[0], 'color', colors[i], 'label',
+                         #' %+d' % (numpy.log10(valuesOfInterest[i])))
 
-            if data:
-                tmp = numpy.vstack(data)
-                h = createFigure(tmp[:,[0, 1]], fig) #ERT
-                plt.setp(h[0], 'color', colors[i], 'label',
-                         ' %+d' % (numpy.log10(valuesOfInterest[i])))
-                line.extend(h[0])
+        #Only for the last target function value...
+        if unsucc:
+            tmp = numpy.vstack(unsucc)
+            h = createFigure(tmp[:, [0, 1]], fig) #ERT
+            plt.setp(h[0], 'color', colors[i], 'linestyle', '-',
+                     'marker', 'x', 'markersize', 20)
 
         if displaynumber: #displayed only for the smallest valuesOfInterest
             a = fig.gca()
