@@ -408,6 +408,7 @@ def main(indexEntries, valOfInterests, filename, isDraft=False, verbose=True):
 
     #TODO give an array of indexEntries and have a vertical formatter.
     for i in indexEntries:
-        i.tabData = generateData(i, valOfInterests, samplesize)
+        curValOfInterests = list(j[i.funcId] for j in valOfInterests)
+        i.tabData = generateData(i, curValOfInterests, samplesize)
 
     writeTable(indexEntries, filename, fontSize='tiny', verbose=verbose)
