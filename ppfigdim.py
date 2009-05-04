@@ -36,42 +36,6 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in scaling figures will not be displayed.'
 
-
-def createFigure(data, figHandle=None):
-    """ Create a plot in a figure (eventually new) from a data array.
-
-        Mandatory input:
-        data - 2d-array where the 1st column contains x-values
-               and the remaining columns contain y-values
-
-        Optional inputs:
-        figHandle - handle to existing figure, if omitted a new figure
-                    will be created
-
-        Output:
-        lines - handles of the Line2D instances.
-
-    """
-
-    # initialize figure and handles
-    if figHandle is None:
-        figHandle = plt.figure()
-    else:
-        plt.figure(figHandle.number)
-
-    lines = []
-    # Plot data sets
-    for i in range(1,len(data[0,:])):
-        yValues = data[:,i]
-
-        # Plot figure
-        tmp = numpy.where(numpy.isfinite(data[:,i]))[0]
-        if tmp.size > 0:
-            lines.append(plt.plot(data[tmp,0], yValues[tmp]))
-
-    return lines
-
-
 def customizeFigure(figHandle, figureName = None, title='',
                     fileFormat=('png', 'eps'), labels=None,
                     scale=('linear','linear'), legend=True,
@@ -243,29 +207,23 @@ def main(indexEntries, _valuesOfInterest, outputdir, verbose=True):
 
             if succ:
                 tmp = numpy.vstack(succ)
-                h = createFigure(tmp[:, [0, 1]], fig) #ERT
-                plt.setp(h[0], 'color', colors[i], 'linestyle', '',
-                         'marker', 'o', 'markersize', 20)
-                # Separately plot the line so as to not show the marker in the legend
-                h = createFigure(tmp[:,[0, 1]], fig) #ERT
-                plt.setp(h[0], 'color', colors[i], 'label',
-                         ' %+d' % (numpy.log10(valuesOfInterest[i])))
-                h = createFigure(tmp[:,[0, -1]], fig) #median
-                plt.setp(h[0], 'color', colors[i], 'linestyle', '',
-                         'marker', '+', 'markersize', 30, 'markeredgewidth', 5)
+                #ERT
+                plt.plot(tmp[:, 0], tmp[:,1], figure=fig, color=colors[i],
+                         marker='o', markersize=20)
+                #median
+                plt.plot(tmp[:, 0], tmp[:,-1], figure=fig, color=colors[i],
+                         linestyle='', marker='+', markersize=30,
+                         markeredgewidth=5)
 
-            #if data:
-                #tmp = numpy.vstack(data)
-                #h = createFigure(tmp[:,[0, 1]], fig) #ERT
-                #plt.setp(h[0], 'color', colors[i], 'label',
-                         #' %+d' % (numpy.log10(valuesOfInterest[i])))
+            # To have the legend displayed whatever happens with the data.
+            plt.plot([], [], color=colors[i],
+                     label=' %+d' % (numpy.log10(valuesOfInterest[i])))
 
         #Only for the last target function value...
         if unsucc:
             tmp = numpy.vstack(unsucc)
-            h = createFigure(tmp[:, [0, 1]], fig) #ERT
-            plt.setp(h[0], 'color', colors[i], 'linestyle', '-',
-                     'marker', 'x', 'markersize', 20)
+            plt.plot(tmp[:, 0], tmp[:, 1], figure=fig, color=colors[i],
+                     marker='x', markersize=20)
 
         if displaynumber: #displayed only for the smallest valuesOfInterest
             a = fig.gca()

@@ -18,7 +18,7 @@ import warnings
 import getopt
 from pdb import set_trace
 import matplotlib
-matplotlib.use('Agg') # To avoid having a window popup...
+matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
