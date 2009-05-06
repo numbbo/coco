@@ -1,10 +1,12 @@
 Rehaul v4:
-*data structure:
+*data structure (to be discussed):
 **falignx, faligndata, evalignx, evaligndata, mFEs, finalfs... NaN in the end...
+  evals,               funvals,               maxevals, finalfunvals
+
 **IndexEntry -> DataSet?
 **IndexEntries -> SeqDataSet?
 **ASCII File representation of IndexEntry
-
+  
 Error catching:
 *problem with the tables: too many floats to handle -> maybe more than 12?
 *IOError with pickled data. -> dealt with?
