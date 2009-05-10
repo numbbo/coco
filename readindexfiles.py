@@ -590,4 +590,4 @@ class IndexEntries(list):
                 succ += i.nbSuccess(targetFuncValue)
             return float(succ)/nbRuns
         else:
-            raise ValueError('The probability of success is not defined.')
+            raise ValueError('The probability of success is not defined. TODO: obvioulsy, but why?')
