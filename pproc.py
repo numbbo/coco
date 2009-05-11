@@ -113,12 +113,12 @@ class VMultiReader(MultiReader):
     def isFinished(self):
         return all(i.isFinished for i in self)
 
-    def currentLine(self):
-        """Aggregates currentLines information."""
-        res = []
-        res.extend(list(i.currentLine[idxEvals] for i in self))
-        res.extend(list(i.currentLine[idxF] for i in self))
-        return numpy.array(res)
+    #def currentLine(self):
+        #"""Aggregates currentLines information."""
+        #res = []
+        #res.extend(list(i.currentLine[idxEvals] for i in self))
+        #res.extend(list(i.currentLine[idxF] for i in self))
+        #return numpy.array(res)
 
     def getInitialValue(self):
         for i in self:
