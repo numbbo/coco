@@ -15,7 +15,7 @@ import pickle
 import warnings
 from pdb import set_trace
 import numpy
-from bbob_pproc import findindexfiles, readalign
+from bbob_pproc import findindexfiles, readalign, bootstrap
 from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
 from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader
 
@@ -39,15 +39,13 @@ class DataSet:
         evals -- collected data aligned by function values (array)
         funvals -- collected data aligned by function evaluations (array)
         nbRuns -- number of runs (integer)
-        maxevals -- 
-        finalfunvals -- 
+        maxevals -- maximum number of function evaluations (array)
+        finalfunvals -- final function values (array)
 
-    hData and vData are arrays of data collected from N data sets. Both have
+    evals and funvals are arrays of data collected from N data sets. Both have
     the same format: zero-th column is the value on which the data of a row is
-    aligned, the N subsequent columns are the numbers of function evaluations
-    of the aligned data, the N columns after those are the corresponding
-    function values. Those 2 times N columns are sorted and go by pairs:
-    column 1 and N+1 are related to the first trial, column 2 and N+2...
+    aligned, the N subsequent columns are either the numbers of function
+    evaluations for evals or function values for funvals.
     """
 
     # Private attribute used for the parsing of info files.
@@ -121,14 +119,34 @@ class DataSet:
             (adata, maxevals, finalfunvals) = alignData(data)
             setattr(self, info[1], adata)
             try:
-                if all(numpy.array(maxevals) > numpy.array(self.maxevals)):
+                if all(maxevals > self.maxevals):
                     self.maxevals = maxevals
                     self.finalfunvals = finalfunvals
             except AttributeError:
                 self.maxevals = maxevals
                 self.finalfunvals = finalfunvals
 
+        # Compute ERT
+        self.computeERTfromEvals()
         #set_trace()
+
+    def computeERTfromEvals(self):
+        self.ert = []
+        self.target = []
+        for i in self.evals:
+            data = i.copy()
+            data = data[1:]
+            succ = (numpy.isnan(data)==False)
+            if any(numpy.isnan(data)):
+                data[numpy.isnan(data)] = self.maxevals[numpy.isnan(data)]
+            self.ert.append(bootstrap.sp(data, issuccessful=succ)[0])
+            self.target.append(i[0])
+
+        #set_trace()
+        self.ert = numpy.array(self.ert)
+        self.target = numpy.array(self.target)
+
+
 
     def __eq__(self, other):
         """Compare indexEntry instances."""
@@ -148,9 +166,6 @@ class DataSet:
 
     def nbRuns(self):
         return (numpy.shape(self.funvals)[1]-1)
-
-    def mMaxEvals(self):
-        return self.vData[-1,0]
 
     def __parseHeader(self, header):
         """Extract data from a header line in an index entry."""
@@ -212,22 +227,9 @@ class DataSet:
                 #print ('Skipped update of pickle file %s: no new data.'
                        #% self.pickleFile)
 
-    def nbSuccess(self, targetFuncValue):
-        """Returns the nb of successes for a given target function value."""
-
-        succ = 0
-        for j in self.evals:
-            if j[0] <= targetFuncValue:
-                for k in j[self.nbRuns()+1:]:
-                    if k <= targetFuncValue:
-                        succ += 1
-                break
-        return succ
-
     def createDictInstance(self):
         """Returns a dictionary of the instances: the key is the instance id,
-        the value is a list of an index corresponding to the instance in the
-        hData and vData array.
+        the value is a list of index.
         """
         dictinstance = {}
         for i in range(len(self.itrials)):
@@ -260,114 +262,6 @@ class DataSet:
                 return funvals
 
         return (evals, funvals)
-
-    def getFuncEvals(self, functionValues):
-        """Returns a sequence of the number of function evaluations for
-        each run to reach the given function value or the maximum number
-        of function evaluations for the given if it did not reached it.
-        The second ouput argument is a sequence of the success status for
-        each run.
-        Keyword arguments:
-        functionValues -- 
-        """
-
-        try:
-            iter(functionValues)
-        except TypeError:
-            functionValue = (functionValues, )
-
-        sfunctionValues = sorted(functionValues)
-
-        try:
-            it = iter(self.evals)
-            curline = it.next()
-        except StopIteration:
-            warnings.warn('Problem here!')
-
-        res = {}
-        isSuccessful = {}
-
-        #Isn't this MultiReader.align???
-        for fValue in sfunctionValues:
-            while curline[0] > fValue:
-                try:
-                    curline = it.next()
-                except StopIteration:
-                    break
-
-            tmpres = curline[1:self.nbRuns()+1]
-            tmpIsSucc = (curline[self.nbRuns()+1:] <= fValue)
-
-            for i in range(len(tmpIsSucc)):
-                if not tmpIsSucc[i]:
-                    tmpres[i] = self.funvals[-1, 1+i]
-
-            #Append a copy?
-            res[fValue] = tmpres
-            isSuccessful[fValue] = tmpIsSucc
-
-        res = list(res[fValue] for fValue in functionValues)
-        isSuccessful = list(isSuccessful[fValue]
-                            for fValue in functionValues)
-
-        return res, isSuccessful
-
-    def getFuncValues(self, functionEvaluations):
-        """Returns a sequence of the function values reached right before
-        the given number of function evaluations or the last function value
-        obtained.
-        Keyword arguments:
-        functionValues -- 
-        isSuccessful -- is not the sequence indicating whether the functionEvaluations
-        were actually reached! In this implementation it says whether the 
-        """
-
-        try:
-            iter(functionEvaluations)
-        except TypeError:
-            functionEvaluations = (functionEvaluations, )
-
-        sfunctionEvaluations = sorted(functionEvaluations)
-
-        try:
-            it = iter(self.funvals)
-            nextline = it.next()
-            curline = nextline
-        except StopIteration:
-            warnings.warn('Problem here!')
-
-        res = {}
-        isSuccessful = {}
-
-        #set_trace()
-        for fEvals in sfunctionEvaluations:
-            while True:
-                if nextline[0] > fEvals:
-                    break
-                try:
-                    curline = nextline
-                    nextline = it.next()
-                except StopIteration:
-                    break
-
-            tmpres = curline[self.nbRuns()+1:]
-            #set_trace()
-            #tmpIsSucc = (curline[1:self.nbRuns()+1] <= fEvals)
-
-            #for i in range(len(tmpIsSucc)):
-                #if not tmpIsSucc[i]:
-                    #tmpres[i] = self.vData[-1, self.nbRuns()+1+i]
-
-            #Append a copy?
-            res[fEvals] = tmpres
-            #isSuccessful[fEvals] = tmpIsSucc
-
-        res = list(res[fEvals] for fEvals in functionEvaluations)
-        #isSuccessful = list(isSuccessful[fEvals]
-                            #for fEvals in functionEvaluations)
-
-        return res #, isSuccessful
-
 
 class DataSetList(list):
     """Set of instances of DataSet objects, implement some useful slicing
@@ -474,7 +368,7 @@ class DataSetList(list):
         """Redefines the append method to check for unicity."""
         #TODO: Watchout! extend does not call append.
 
-        set_trace()
+        #set_trace()
         if not isinstance(o, DataSet):
             raise Exception()
         isFound = False
@@ -488,6 +382,7 @@ class DataSetList(list):
                     i.finalfunvals.extend(o.finalfunvals)
                     i.evals = alignData(HArrayMultiReader([i.evals, o.evals]))[0]
                     i.maxevals.extend(o.maxevals)
+                    i.computeERTfromEvals()
                     if getattr(i, 'pickleFile', False):
                         del i.pickleFile
                     for j in dir(i):
@@ -577,20 +472,3 @@ class DataSetList(list):
 
         return sorted
 
-    def successProbability(self, targetFuncValue):
-        """Returns overall probability of success given a target function value
-        targetFuncValue -- float
-
-        Exception:
-        ValueError
-        """
-
-        if self:
-            succ = 0
-            nbRuns = 0
-            for i in self:
-                nbRuns += i.nbRuns()
-                succ += i.nbSuccess(targetFuncValue)
-            return float(succ)/nbRuns
-        else:
-            raise ValueError('The probability of success is not defined.')

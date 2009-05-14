@@ -239,8 +239,8 @@ def alignData(data):
         currentValue = data.newCurrentValue()
 
     #set_trace()
-    return (numpy.vstack(res), list(i.nextLine[idxEvals] for i in data),
-            list(i.nextLine[idxF] for i in data))
+    return (numpy.vstack(res), numpy.array(list(i.nextLine[idxEvals] for i in data)),
+            numpy.array(list(i.nextLine[idxF] for i in data)))
     # Hack: at this point nextLine contains all information on the last line
     # of the data.
 
