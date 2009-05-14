@@ -73,7 +73,7 @@ class MultiReader(list):
             if not self.isFinished:
                 if not self.isNearlyFinished: # the next line is still defined
                     self.currentLine = self.nextLine.copy()
-                    #Update nextLine
+                    # Update nextLine
                     try:
                         self.nextLine = self.it.next()
                     except StopIteration:
@@ -137,8 +137,8 @@ class HMultiReader(MultiReader):
 
     def __init__(self, data):
         MultiReader.__init__(self, data)
-        self.idxCurrentF = numpy.inf #Minimization
-        #idxCurrentF is a float for the extreme case where it is infinite.
+        self.idxCurrentF = numpy.inf # Minimization
+        # idxCurrentF is a float for the extreme case where it is infinite.
 
     def isFinished(self):
         """Is not finished when all the data is finished, it goes further...
@@ -178,8 +178,8 @@ class HMultiReader(MultiReader):
 
         self.idxCurrentF = min(self.idxCurrentF,
                                numpy.ceil(numpy.log10(max(fvalues)) * nbPtsF))
-        #The update of idxCurrentF is done so all the intermediate function
-        #value trigger reached are not written, only the smallest.
+        # The update of idxCurrentF is done so all the intermediate function
+        # value trigger reached are not written, only the smallest.
         currentValue = numpy.power(10, self.idxCurrentF / nbPtsF)
 
         return numpy.insert(self.currentLine(), 0, currentValue)
