@@ -105,6 +105,51 @@ def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
     return res#, fsolved, funcs
 
 
+def plotRLDistr2(dataSetList, fvalueToReach, maxEvalsF, verbose=True):
+    """Creates run length distributions from a sequence dataSetList.
+
+    Keyword arguments:
+    dataSetList
+    fvalueToReach
+    verbose
+
+    Outputs:
+    res -- resulting plot.
+    fsolved -- number of different functions solved.
+    funcs -- number of different function considered.
+    """
+
+    x = []
+    nn = 0
+    fsolved = set()
+    funcs = set()
+    for i in indexEntries:
+        funcs.add(i.funcId)
+        for j in i.evals:
+            if j[0] <= fvalueToReach[i.funcId]:
+                x.extend(j[numpy.isfinite(j)]/float(i.dim))
+                fsolved.add(i.funcId)
+                #TODO: what if j[numpy.isfinite(j)] is empty
+                break
+        nn += i.nbRuns()
+
+    # For the label the last i.funcId is used.
+    label = ('%+d:%d/%d' %
+             (numpy.log10(fvalueToReach[i.funcId]), len(fsolved), len(funcs)))
+    n = len(x)
+    if n == 0:
+        res = plt.plot([], [], label=label)
+    else:
+        x.sort()
+        x2 = numpy.hstack([numpy.repeat(x, 2), maxEvalsF ** 1.05])
+        #maxEvalsF: used for the limit of the plot.
+        y2 = numpy.hstack([0.0,
+                           numpy.repeat(numpy.arange(1, n+1) / float(nn), 2)])
+        res = plt.plot(x2, y2, label=label)
+
+    return res#, fsolved, funcs
+
+
 def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'),
                 isStoringXMax=False, text=None, verbose=True):
     """Formats the figure of the run length distribution.
@@ -185,6 +230,39 @@ def plotFVDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
 
     return res
 
+def plotFVDistr2(dataSetList, fvalueToReach, maxEvalsF, verbose=True):
+    """Creates empirical cumulative distribution functions of final function
+    values plot from a sequence of indexEntries.
+
+    Keyword arguments:
+    indexEntries -- sequence of IndexEntry to process.
+    fvalueToReach -- float used for the lower limit of the plot
+    maxEvalsF -- indicates which vertical data to display.
+    verbose -- controls verbosity.
+
+    Outputs: a plot of a run length distribution.
+    """
+
+    x = []
+    nn = 0
+    for i in dataSetList:
+        for j in i.funvals:
+            if j[0] >= maxEvalsF * i.dim:
+                break
+        x.extend(j[1:] / fvalueToReach[i.funcId])
+        nn += i.nbRuns()
+
+    x.sort()
+    x2 = numpy.hstack([numpy.repeat(x, 2)])
+    #not efficient if some vals are repeated a lot
+    #y2 = numpy.hstack([0.0, numpy.repeat(numpy.arange(1, n)/float(nn), 2),
+                       #float(n)/nn, float(n)/nn])
+    y2 = numpy.hstack([0.0, numpy.repeat(numpy.arange(1, nn)/float(nn), 2),
+                       1.0])
+    #set_trace()
+    res = plt.plot(x2, y2)
+
+    return res
 
 def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
          info='default', verbose=True):

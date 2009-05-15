@@ -164,8 +164,11 @@ class DataSet:
         return ('{alg: %s, F%d, dim: %d}'
                 % (self.algId, self.funcId, self.dim))
 
+    def mMaxEvals(self):
+        return max(self.maxevals)
+
     def nbRuns(self):
-        return (numpy.shape(self.funvals)[1]-1)
+        return numpy.shape(self.funvals)[1]-1
 
     def __parseHeader(self, header):
         """Extract data from a header line in an index entry."""

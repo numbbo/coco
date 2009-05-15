@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # coding: utf-8
 
-"""Helper routines for read index files."""
+"""Helper routines to read in data files."""
 
 from __future__ import absolute_import
 
@@ -12,51 +12,66 @@ from pdb import set_trace
 
 
 #GLOBAL VARIABLES
-idxEvals = 0
-idxF = 2
-nbPtsF = 5;
+idxEvals = 0 # TODO: problem-dependent
+idxF = 2 # TODO: problem-dependent
+nbPtsF = 5
 
 #CLASS DEFINITIONS
 class MultiReader(list):
-    """Wrapper class of data arrays to be aligned.
+    """List of data arrays to be aligned.
 
-    This class is part abstract: some methods have to be defined by inheriting
-    classes depending on wanted alignment: isFinished, getInitialValue,
-    newCurrentValue, align, idx, idxData.
+    The main purpose of this class is to be used as a single container of the
+    data arrays to be aligned by the alignData method in the parent module.
+
+    This class is part abstract. Some methods have to be defined by inheriting
+    classes depending on wanted alignment isFinished, getInitialValue,
+    newCurrentValue, align. Some attributes have to be defined as well idx,
+    idxData.
 
     """
 
+    # TODO: this class and all inheriting class may have to be redesigned for
+    # other kind of problems to work.
+
+    # idx: index of the column in the data array of the alignment value.
+    # idxData: index of the column in the data array for the data of concern.
+
     def __init__(self, data):
         for i in data:
-            if len(i) > 0:
+            if len(i) > 0: # ie. if the data array is not empty.
                 self.append(self.SingleReader(i))
 
     def currentLine(self):
         """Aggregates currentLines information."""
-        res = []
-        res.extend(list(i.currentLine[self.idxData] for i in self))
-        return numpy.array(res)
+        return numpy.array(list(i.currentLine[self.idxData] for i in self))
 
     def currentValues(self):
+        """Gets the list of the current alignment values."""
         return list(i.currentLine[self.idx] for i in self)
 
     def nextValues(self):
+        """Gets the list of the next alignment values."""
         return list(i.nextLine[self.idx] for i in self if not i.isFinished)
 
     #def isFinished(self):
+        """When all the data is read."""
         #pass
 
     #def getInitialValue(self):
+        """Returns the initial alignment value."""
         #pass
 
     #def newCurrentValue(self):
+        """Returns the next alignment value."""
         #pass
 
     #def align(self, currentValue):
+        """Process all the elements of self to make them aligned."""
         #pass
 
     class SingleReader:
         """Single data array reader class."""
+
         def __init__(self, data):
             if len(data) == 0:
                 raise ValueError, 'Empty data array.'
@@ -86,26 +101,21 @@ class MultiReader(list):
 
 
 class VMultiReader(MultiReader):
-    """Wrapper class of data arrays to be aligned vertically.
+    """List of data arrays to be aligned vertically.
+
     Aligned vertically means, all number of function evaluations are the
     closest from below or equal to the alignment number of function evaluations
+
     """
 
-    idx = idxEvals
-    idxData = idxF
+    idx = idxEvals # the alignment value is the number of function evaluations.
+    idxData = idxF # the data of concern are the function values.
 
     def __init__(self, data):
         MultiReader.__init__(self, data)
 
     def isFinished(self):
         return all(i.isFinished for i in self)
-
-    #def currentLine(self):
-        #"""Aggregates currentLines information."""
-        #res = []
-        #res.extend(list(i.currentLine[idxEvals] for i in self))
-        #res.extend(list(i.currentLine[idxF] for i in self))
-        #return numpy.array(res)
 
     def getInitialValue(self):
         for i in self:
@@ -130,20 +140,25 @@ class VMultiReader(MultiReader):
 
 
 class HMultiReader(MultiReader):
-    """Wrapper class of data arrays to be aligned horizontally."""
+    """List of data arrays to be aligned horizontally.
 
-    idx = idxF
-    idxData = idxEvals
+    Aligned horizontally means all the function values are lesser than (or
+    equal to) the current alignment function value.
+
+    """
+
+    idx = idxF # the alignment value is the function value.
+    idxData = idxEvals # the data of concern are the number of function evals.
 
     def __init__(self, data):
         MultiReader.__init__(self, data)
         self.idxCurrentF = numpy.inf # Minimization
         # idxCurrentF is a float for the extreme case where it is infinite.
+        # else it is an integer and then is the 'i' in 10**(i/nbPtsF)
 
     def isFinished(self):
-        """Is not finished when all the data is finished, it goes further...
+        """Is finished when we found the last alignment value reached."""
 
-        """
         currentValue = numpy.power(10, self.idxCurrentF / nbPtsF)
         if currentValue == 0:
             return True
@@ -186,9 +201,9 @@ class HMultiReader(MultiReader):
 
 
 class ArrayMultiReader(MultiReader):
-    """Wrapper class of ALIGNED data arrays to be aligned together."""
+    """Class of ALIGNED data arrays to be aligned together."""
 
-    idx = 0
+    idx = 0 # We expect the alignment value to be the 1st column.
 
     def __init__(self, data):
         MultiReader.__init__(self, data)
@@ -209,7 +224,7 @@ class VArrayMultiReader(ArrayMultiReader, VMultiReader):
 
 
 class HArrayMultiReader(ArrayMultiReader, HMultiReader):
-    """Wrapper class of ALIGNED data arrays to be aligned vertically."""
+    """Wrapper class of ALIGNED data arrays to be aligned horizontally."""
 
     def __init__(self, data):
         ArrayMultiReader.__init__(self, data)
@@ -220,13 +235,12 @@ class HArrayMultiReader(ArrayMultiReader, HMultiReader):
 
 def alignData(data):
     """Aligns the data from a list of data arrays.
-    This method returns an array described right after, the final numbers of
-    function evaluations and the final function values.
-    The ouput array is a concatenation of rows, the zero-th column being the
-    alignment value (or index), the subsequent ones the aligned data.
-    TODO: is template dependent.
+    This method returns an array for which the alignment value is the first
+    column and the aligned values are in subsequent columns.
 
     """
+
+    #TODO: is template dependent.
 
     res = []
     currentValue = data.getInitialValue()
