@@ -127,7 +127,9 @@ def customizeFigure(figHandle, figureName = None, title='',
 
 
 def generateData(indexEntry, targetFuncValue):
-    """Returns data to be plotted."""
+    """Returns an array of results to be plotted. 1st column is ert, 2nd is
+    the number of success, 3rd the success rate, 4th the sum of the number of
+    function evaluations, and finally the median."""
     # TODO: describe the data which are returned
 
     res = []
@@ -164,6 +166,39 @@ def generateData(indexEntry, targetFuncValue):
 
     return numpy.array(res)
 
+
+def generateData2(dataSet, targetFuncValue):
+    """Returns an array of results to be plotted. 1st column is ert, 2nd is
+    the number of success, 3rd the success rate, 4th the sum of the number of
+    function evaluations, and finally the median."""
+
+    res = []
+    data = []
+
+    # TODO: Exception when dataSet.evals is empty?
+    it = iter(reversed(dataSet.evals))
+    i = it.next()
+    prev = numpy.array([numpy.nan] * len(i))
+
+    while i[0] <= targetFuncValue:
+        prev = i
+        try:
+            i = it.next()
+        except StopIteration:
+            break
+
+    data = prev[1:].copy() # keep only the number of function evaluations.
+    succ = numpy.isfinite(data)
+    data[numpy.isnan(data)] = dataSet.maxevals[numpy.isnan(data)]
+    #TODO: numpy.isnan(data) is close to numpy.logical_not(succ)
+
+    res = []
+    #TODO: use dataSet.ert instead?
+    res.extend(bootstrap.sp(data, issuccessful=succ, allowinf=False))
+    res.append(numpy.sum(data)) #Sum(FE)
+    res.append(bootstrap.prctile(data, 50)[0])
+
+    return numpy.array(res)
 
 def main(indexEntries, _valuesOfInterest, outputdir, verbose=True):
     """From a list of IndexEntry, returns a convergence and ENFEs figure vs dim

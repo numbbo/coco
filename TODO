@@ -2,16 +2,20 @@ Rehaul v4:
 *data structure (to be discussed):
 **falignx, faligndata, evalignx, evaligndata, mFEs, finalfs... NaN in the end...
   evals,               funvals,               maxevals, finalfunvals
+*Have a data structure by problem (a problem being in our case a function, a dimension but could be anything really).
 
 **IndexEntry -> DataSet?
-**IndexEntries -> SeqDataSet?
+**IndexEntries -> DataSetList?
 **ASCII File representation of IndexEntry
-  
+
 Error catching:
 *problem with the tables: too many floats to handle -> maybe more than 12?
 *IOError with pickled data. -> dealt with?
 
 Feature missing:
+*Check that the given target function values are dictionaries?
+*utility generating pickle files or equivalent for a lot of different algorithms (put them into directories depending on the algorithm's short name?)
+*is the raw data provided compatible with bbob_pproc
 *Java application on the web
 *template-independent stuff...
 *in the scaling figures, take away the line that goes to the sum(maxfunevals) if there are no dots...
