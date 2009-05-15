@@ -10,10 +10,9 @@ import numpy
 import matplotlib.pyplot as plt
 from pdb import set_trace
 
-""" Generates Performance Profiles (More Wild 2002)."""
+"""Generates Performance Profiles (More Wild 2002)."""
 
 def beautify(figureName='perfprofile', fileFormat=('eps',)):
-
     plt.legend(loc='best')
     for entry in fileFormat:
         plt.savefig(figureName + '.' + entry, dpi = 300, format = entry)
@@ -30,15 +29,12 @@ def plotPerfProf(data, label=None):
     else:
         x.sort()
         x2 = numpy.hstack([numpy.repeat(x, 2)])
-        #maxEvalsF: used for the limit of the plot.
         y2 = numpy.hstack([0.0,
                           numpy.repeat(numpy.arange(1, n) / float(nn), 2), 1.0])
         res = plt.plot(x2, y2, label=label)
 
 def main(indexEntries, target, outputdir='', info='default', verbose=True):
-    """From a list of IndexEntry, generates the performance profiles
-
-    """
+    """From a list of IndexEntry, generates the performance profiles."""
 
     plt.rc("axes", labelsize=20, titlesize=24)
     plt.rc("xtick", labelsize=20)
@@ -50,11 +46,11 @@ def main(indexEntries, target, outputdir='', info='default', verbose=True):
         warnings.warn('Provided with data from multiple dimension.')
 
     dictData = {} # list of (ert per function) per algorithm
-    #the functions will not necessarily sorted.
+    # the functions will not necessarily sorted.
 
     bestERT = [] # best ert per function, not necessarily sorted as well.
 
-    #per instance instead of per function?
+    # per instance instead of per function?
     dictFunc = indexEntries.dictByFunc()
 
     for f, samefuncEntries in dictFunc.iteritems():
@@ -62,11 +58,12 @@ def main(indexEntries, target, outputdir='', info='default', verbose=True):
         erts = []
 
         for alg, entry in dictAlg.iteritems():
-            #entry is supposed to be a single item DataSetList
+            # entry is supposed to be a single item DataSetList
             entry = entry[0]
-            try:
+            # Duck typing would not work here: the function ids are integers.
+            if isinstance(target, dict):
                 x = entry.ert[entry.target <= target[f]]
-            except TypeError: #target is a float
+            else:
                 x = entry.ert[entry.target <= target]
 
             if len(x) > 0:
@@ -78,9 +75,9 @@ def main(indexEntries, target, outputdir='', info='default', verbose=True):
             erts.append(x)
 
         bestERT.append(min(erts))
-    #TODO: bootstrap something... but what?
+    # TODO: bootstrap something... but what?
 
-    #what about infs?
+    # what about infs?
     for alg, data in dictData.iteritems():
         plotPerfProf(numpy.array(data)/numpy.array(bestERT), label=alg)
         #set_trace()
