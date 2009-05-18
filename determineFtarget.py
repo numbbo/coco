@@ -77,11 +77,19 @@ class FunTarget:
             # increase counter
             i += 1
 
-def writeTable(data,dim):
-    """ Write data in tex-files for creating tables 
-    """
+def writeTable(data,dim,suffix=None, whichvalue = 'min'):
+    """ Write data in tex-files for creating tables.
 
-    #print data
+        Inputvalues:
+        data - values which are to be processed (list)
+        dim - corresponding dimension. There will be
+              at least one table per dimension.
+        suffix - If not all data can fit within one side
+                 2 files (*_part1.tex and *_part2.tex) will
+                 be created. 
+        whichvalue - determines wheter the min ('min') values
+                     or the median ('median') values are displayed. 
+    """
 
     # parameter
     fontSize = 'tiny'   
@@ -98,7 +106,10 @@ def writeTable(data,dim):
     tabColumns += ('|' + (len(header) - 1) * '@{$\;$}c@{$\;$}')
 
     # open file
-    filename = 'ftarget_dim' + str(dim)
+    if suffix is None:
+        filename = 'ftarget_dim' + str(dim) + whichvalue
+    else:
+        filename = 'ftarget_dim' + str(dim) + whichvalue + '_part' + str(suffix)
     try:
         f = open(filename + '.tex','w')
     except ValueError:
@@ -120,7 +131,7 @@ def writeTable(data,dim):
         # create data for each function
         for fun in range(0,len(data)):
             try:
-                tableData.append(data[fun]['min'][i])
+                tableData.append(data[fun][whichvalue][i]) 
             except:
                 # if no entry exist write nan
                 tableData.append(numpy.nan)
@@ -132,7 +143,7 @@ def writeTable(data,dim):
         #print tableData
 
         # write row in latex format
-        writeArray(f,tableData,format, 'scriptstyle')
+        writeArray(f,tableData,format,'scriptstyle')
 
         # check termination condition
         if maxLength > i+1:
@@ -142,7 +153,8 @@ def writeTable(data,dim):
 
     # finish writing and write caption
     f.write('\end{tabular} \n')
-    f.write('\caption{target function value (min) for increasing problem difficulty in '+ str(dim) +'-D} \n')  
+    if suffix is None or suffix == 2:
+        f.write('\caption{target function value (min) for increasing problem difficulty in '+ str(dim) +'-D} \n')  
     f.write('\end{' + fontSize + '} \n')
 
     # close file
@@ -231,7 +243,7 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
         file.write(tmp2)
 
 
-def main(directory,dims, funcs):
+def main(directory,dims,funcs):
     """From a directory which contains the data of the algorithms
        the minimum reached target value and the median reached target
        value for all algorithms will be determined for all dimensions
@@ -250,38 +262,51 @@ def main(directory,dims, funcs):
     # dims = [10]
     # funcs = [101]
 
+    # partition data since not all functions can be displayed in 
+    # one table
+    partition = [1]
+    if len(funcs) > 12:
+        partition.append(2)
+        half = int(round(len(funcs)/2))
+    
     # create dataset
     datasetfull = pproc2.DataSetList(directory,verbose=False)
 
     # loop over dimension and functions
     for dim in dims:
 
-        # create list which contains min and median values across all 
-        # algorithms for all functions
-        ftarget = list()
+        # use partition
+        for p in partition:
+
+            # create list which contains min and median values across all 
+            # algorithms for all functions
+            ftarget = list()
         
-        for fun in funcs:
+            for fun in funcs[0+int((p-1)*half):int(p*half)]:
                 
-            # create list which only contains entries with dimension = dim
-            # for function = fun   
-            dataset = list()                     
-            for elem in datasetfull:        
-                if elem.dim == dim and elem.funcId == fun:
-                    dataset.append(elem)
-                    datasetfull.remove(elem)
+                # create list which only contains entries with dimension = dim
+                # for function = fun   
+                dataset = list()                     
+                for elem in datasetfull:        
+                    if elem.dim == dim and elem.funcId == fun:
+                        dataset.append(elem)
+                        datasetfull.remove(elem)
                 
-            if len(dataset) == 0:
-                raise ValueError, ('No entry found for dim = %g' %dim 
-                                  + ' and function = f%g!' %fun)
+                if len(dataset) == 0:
+                    raise ValueError, ('No entry found for dim = %g' %dim 
+                                         + ' and function = f%g!' %fun)
 
-            # get min and median values 
-            #print dataset  
-            tmp = FunTarget(dataset,dim)
-            #print tmp.minFtarget
-            #print tmp.medianFtarget
-            #print tmp.ert
-            ftarget.append({'dim':dim,'funcId':fun,'min':tmp.minFtarget,'median':tmp.medianFtarget,'ert':tmp.ert})
+                # get min and median values 
+                #print dataset  
+                tmp = FunTarget(dataset,dim)
+                #print tmp.minFtarget
+                #print tmp.medianFtarget
+                #print tmp.ert
+                ftarget.append({'dim':dim,'funcId':fun,'min':tmp.minFtarget,'median':tmp.medianFtarget,'ert':tmp.ert})
 
-        # write data into table
-        writeTable(ftarget,dim)
+            # write data into table
+            writeTable(ftarget,dim,p)
+
+    #if __name__ == "__main__":
+    #    determineFtarget.main.__doc__
     
