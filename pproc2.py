@@ -382,9 +382,9 @@ class DataSetList(list):
                     #set_trace()
                     i.funvals = alignData(VArrayMultiReader([i.funvals, o.funvals]))[0]
                     #set_trace()
-                    i.finalfunvals.extend(o.finalfunvals)
+                    i.finalfunvals = numpy.r_[i.finalfunvals, o.finalfunvals]
                     i.evals = alignData(HArrayMultiReader([i.evals, o.evals]))[0]
-                    i.maxevals.extend(o.maxevals)
+                    i.maxevals = numpy.r_[i.maxevals, o.maxevals]
                     i.computeERTfromEvals()
                     if getattr(i, 'pickleFile', False):
                         del i.pickleFile
