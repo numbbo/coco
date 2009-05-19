@@ -271,17 +271,17 @@ def main(argv=None):
        -h,--help           - displays help
        -d,--dimensions DIM - dimension(s) of interest
        -f,--functions FUN  - function(s) of interest
-       -nf,--noisefree     - noisefree function set 
-       -n,--noisy          - noisy function set
+       --noisefree         - noisefree function set 
+       --noisy             - noisy function set
        -v,--verbose        - verbose output
        Either the flag -f FUN or -nf or -n should be set!
     """
 
     if argv is None:
         argv = sys.argv[1:]
-
+        
     try: 
-        opts, args = getopt.getopt(argv, "hnnfvd:f:",["help", "dimensions=","functions=","noisy","noisefree","verbose"])
+        opts, args = getopt.getopt(argv, "hvd:f:",["help", "dimensions=","functions=","noisy","noisefree","verbose"])
 
     except getopt.error, msg:
         raise Usage(msg)
@@ -290,9 +290,11 @@ def main(argv=None):
         usage()
         sys.exit()
 
+    
+    verboseflag = False
     dims = list()
     funcs = list()
-    verboseflag = False
+    directory = argv[-1]  # directory which contains data  
 
     # Process options
     for o, a in opts:
@@ -300,14 +302,14 @@ def main(argv=None):
             usage()
             sys.exit()
         elif o in ("-d", "--dimensions"):
-            dims = a
+            dims.append(int(a))
         elif o in ("-f", "--functions"):
-            funcs = a
-        elif o in ("-n","--noisy"):
+            funcs.append(int(a))
+        elif o in ("--noisy"):
             funcs = range(101,131)
-        elif o in ("-nf","--noisefree"):
+        elif o in ("--noisefree"):
             funcs = range(1,25)
-        elif o in ("v","--verbose")
+        elif o in ("v","--verbose"):
             verboseflag = True
         else:
             assert False, "unhandled option"
@@ -316,13 +318,6 @@ def main(argv=None):
         raise ValueError,('No dimension(s) specified!')
     if len(funcs) == 0:
         raise ValueError,('No function(s) specified!')
-
-    # directory which contains data
-    directory = argv[-1]    
-
-    print directory
-    print dims
-    print funcs
 
     # partition data since not all functions can be displayed in 
     # one table
@@ -359,7 +354,7 @@ def main(argv=None):
                                          + ' and function = f%g!' %fun)
 
                 # get min and median values 
-                print dataset  
+                #print dataset  
                 tmp = FunTarget(dataset,dim)
                 #print tmp.minFtarget
                 #print tmp.medianFtarget
