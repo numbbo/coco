@@ -4,15 +4,22 @@
 import os
 import numpy
 import sys
+from pdb import set_trace
+import getopt
 
 # add path to bbob_pproc  
-filepath = os.getcwd()
-sys.path.append(os.path.join(filepath, os.path.pardir))
+#filepath = '/home/fst/coco/BBOB/code/python/bbob_pproc/'
+#sys.path.append(os.path.join(filepath, os.path.pardir))
+if __name__ == "__main__":
+    # append path without trailing '/bbob_pproc', using os.sep fails in mingw32
+    #sys.path.append(filepath.replace('\\', '/').rsplit('/', 1)[0])
+    (filepath, filename) = os.path.split(sys.argv[0])
+    # Test system independent method:
+    sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc import pproc2
-# from bbob_pproc import pptex
 
-from pdb import set_trace
+### Class Definitions ###
 
 class FunTarget:
     """ Determines the best and median function value from the data of all 
@@ -77,6 +84,12 @@ class FunTarget:
             # increase counter
             i += 1
 
+
+### Function definitons ###
+
+def usage():
+    print main.__doc__
+
 def writeTable(data,dim,suffix=None, whichvalue = 'min'):
     """ Write data in tex-files for creating tables.
 
@@ -107,9 +120,9 @@ def writeTable(data,dim,suffix=None, whichvalue = 'min'):
 
     # open file
     if suffix is None:
-        filename = 'ftarget_dim' + str(dim) + whichvalue
+        filename = whichvalue + 'ftarget_dim' + str(dim) 
     else:
-        filename = 'ftarget_dim' + str(dim) + whichvalue + '_part' + str(suffix)
+        filename = whichvalue + 'ftarget_dim' + str(dim) + '_part' + str(suffix)
     try:
         f = open(filename + '.tex','w')
     except ValueError:
@@ -154,7 +167,8 @@ def writeTable(data,dim,suffix=None, whichvalue = 'min'):
     # finish writing and write caption
     f.write('\end{tabular} \n')
     if suffix is None or suffix == 2:
-        f.write('\caption{target function value (min) for increasing problem difficulty in '+ str(dim) +'-D} \n')  
+        f.write('\caption{target function value ('+ whichvalue +
+                ') for increasing problem difficulty in '+ str(dim) +'-D} \n')  
     f.write('\end{' + fontSize + '} \n')
 
     # close file
@@ -243,24 +257,72 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
         file.write(tmp2)
 
 
-def main(directory,dims,funcs):
+def main(argv=None):
     """From a directory which contains the data of the algorithms
        the minimum reached target value and the median reached target
        value for all algorithms will be determined for all dimensions
        and functions. 
 
        Input parameter:
-       directory - directory containing the data (list)
-       dims - Dimensions of interest (list)
-       funcs - dfunctions of interest (list)
+       argv - list of strings containing options and arguments. If not given,
+              sys.argv is accessed. The first argument is the directory which
+              contains the data files.
+       flags:
+       -h,--help           - displays help
+       -d,--dimensions DIM - dimension(s) of interest
+       -f,--functions FUN  - function(s) of interest
+       -nf,--noisefree     - noisefree function set 
+       -n,--noisy          - noisy function set
+       -v,--verbose        - verbose output
+       Either the flag -f FUN or -nf or -n should be set!
     """
-    
-    # directory containing the data
-    # directory = ['/home/fst/coco/BBOB/mydata/noisySPSA1e4', '/home/fst/coco/BBOB/mydata/noisySPSAHA1e4']
 
-    # functions and dimension of interest
-    # dims = [10]
-    # funcs = [101]
+    if argv is None:
+        argv = sys.argv[1:]
+
+    try: 
+        opts, args = getopt.getopt(argv, "hnnfvd:f:",["help", "dimensions=","functions=","noisy","noisefree","verbose"])
+
+    except getopt.error, msg:
+        raise Usage(msg)
+
+    if not (args):
+        usage()
+        sys.exit()
+
+    dims = list()
+    funcs = list()
+    verboseflag = False
+
+    # Process options
+    for o, a in opts:
+        if o in ("-h","--help"):
+            usage()
+            sys.exit()
+        elif o in ("-d", "--dimensions"):
+            dims = a
+        elif o in ("-f", "--functions"):
+            funcs = a
+        elif o in ("-n","--noisy"):
+            funcs = range(101,131)
+        elif o in ("-nf","--noisefree"):
+            funcs = range(1,25)
+        elif o in ("v","--verbose")
+            verboseflag = True
+        else:
+            assert False, "unhandled option"
+
+    if len(dims) == 0:
+        raise ValueError,('No dimension(s) specified!')
+    if len(funcs) == 0:
+        raise ValueError,('No function(s) specified!')
+
+    # directory which contains data
+    directory = argv[-1]    
+
+    print directory
+    print dims
+    print funcs
 
     # partition data since not all functions can be displayed in 
     # one table
@@ -270,7 +332,7 @@ def main(directory,dims,funcs):
         half = int(round(len(funcs)/2))
     
     # create dataset
-    datasetfull = pproc2.DataSetList(directory,verbose=False)
+    datasetfull = pproc2.DataSetList(directory,verbose = verboseflag)
 
     # loop over dimension and functions
     for dim in dims:
@@ -297,7 +359,7 @@ def main(directory,dims,funcs):
                                          + ' and function = f%g!' %fun)
 
                 # get min and median values 
-                #print dataset  
+                print dataset  
                 tmp = FunTarget(dataset,dim)
                 #print tmp.minFtarget
                 #print tmp.medianFtarget
@@ -305,8 +367,9 @@ def main(directory,dims,funcs):
                 ftarget.append({'dim':dim,'funcId':fun,'min':tmp.minFtarget,'median':tmp.medianFtarget,'ert':tmp.ert})
 
             # write data into table
-            writeTable(ftarget,dim,p)
+            writeTable(ftarget,dim,p,whichvalue = 'min')
+            writeTable(ftarget,dim,p,whichvalue = 'median')
 
-    #if __name__ == "__main__":
-    #    determineFtarget.main.__doc__
+if __name__ == "__main__":
+    sys.exit(main())
     
