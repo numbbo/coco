@@ -309,7 +309,7 @@ def main(argv=None):
             funcs = range(101,131)
         elif o in ("--noisefree"):
             funcs = range(1,25)
-        elif o in ("v","--verbose"):
+        elif o in ("-v","--verbose"):
             verboseflag = True
         else:
             assert False, "unhandled option"
