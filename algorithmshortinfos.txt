@@ -1,0 +1,5 @@
+cmaes28noikappa2:cmaes V3.30.beta:% cmaes28noikappa2 BIPOP like 24 with kappa=10, deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize)
+cmaes30noikappa2:cmaes V3.30.beta:% cmaes26noi BIPOP like 24 with kappa=10, deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize)
+bfgs:BFGS:% [-5, 5]^n, max 100 independent restarts.
+nelder:fminsearch:% 1e4*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1
+nelder2:fminsearch:% 1e5*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1

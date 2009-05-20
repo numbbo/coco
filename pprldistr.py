@@ -18,6 +18,24 @@ rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  
 fmax = None
 evalfmax = None
 
+def plotECDF(x, n=None, label=None):
+    if n is None:
+        n = len(x)
+    nx = len(x)
+    if n == 0:
+        res = plt.plot([], [], label=label)
+    else:
+        x2 = numpy.hstack(numpy.repeat(sorted(x), 2))
+        y2 = numpy.hstack([0.0,
+                           numpy.repeat(numpy.arange(1, nx) / float(n), 2),
+                           1.0])
+        res = plt.plot(x2, y2, label=label)
+    return res
+
+def beautifyECDF(axish=plt.gca()):
+    plt.ylim(0.0, 1.0)
+    axisHandle.grid('True')
+
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
                 text=None, verbose=True):
     """Format the figure of the run length distribution and save into files."""
@@ -25,16 +43,16 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
     axisHandle.set_xscale('log')
     plt.axvline(x=maxEvalsF, color='k')
     plt.xlim(1.0, maxEvalsF ** 1.05)
-    plt.ylim(0.0, 1.0)
     axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of trials')
     # Grid options
-    axisHandle.grid('True')
     xtic = axisHandle.get_xticks()
     newxtic = []
     for j in xtic:
         newxtic.append('%d' % round(numpy.log10(j)))
     axisHandle.set_xticklabels(newxtic)
+
+    beautifyECDF()
 
     plt.text(0.5, 0.93, text, horizontalalignment="center",
              transform=axisHandle.transAxes)
@@ -91,17 +109,8 @@ def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
     # For the label the last i.funcId is used.
     label = ('%+d:%d/%d' %
              (numpy.log10(fvalueToReach[i.funcId]), len(fsolved), len(funcs)))
-    n = len(x)
-    if n == 0:
-        res = plt.plot([], [], label=label)
-    else:
-        x.sort()
-        x2 = numpy.hstack([numpy.repeat(x, 2), maxEvalsF ** 1.05])
-        #maxEvalsF: used for the limit of the plot.
-        y2 = numpy.hstack([0.0,
-                           numpy.repeat(numpy.arange(1, n+1) / float(nn), 2)])
-        res = plt.plot(x2, y2, label=label)
-
+    x.append(maxEvalsF ** 1.05)
+    res = plotECDF(x, n=nn, label=label)
     return res#, fsolved, funcs
 
 
@@ -136,19 +145,45 @@ def plotRLDistr2(dataSetList, fvalueToReach, maxEvalsF, verbose=True):
     # For the label the last i.funcId is used.
     label = ('%+d:%d/%d' %
              (numpy.log10(fvalueToReach[i.funcId]), len(fsolved), len(funcs)))
-    n = len(x)
-    if n == 0:
-        res = plt.plot([], [], label=label)
-    else:
-        x.sort()
-        x2 = numpy.hstack([numpy.repeat(x, 2), maxEvalsF ** 1.05])
-        #maxEvalsF: used for the limit of the plot.
-        y2 = numpy.hstack([0.0,
-                           numpy.repeat(numpy.arange(1, n+1) / float(nn), 2)])
-        res = plt.plot(x2, y2, label=label)
+    x.append(maxEvalsF ** 1.05)
+    res = plotECDF(x, nn, label=label)
 
     return res#, fsolved, funcs
 
+def plotERTDistr(dataSetList, fvalueToReach, verbose=True):
+    """Creates estimated run time distributions from a sequence dataSetList.
+
+    Keyword arguments:
+    dataSetList
+    fvalueToReach
+    verbose
+
+    Outputs:
+    res -- resulting plot.
+    fsolved -- number of different functions solved.
+    funcs -- number of different function considered.
+    """
+
+    x = []
+    nn = 0
+    samplesize = 200 # samplesize is at least 200
+    percentiles = 0.5 # could be anything...
+
+    for i in indexEntries:
+        #funcs.add(i.funcId)
+        for j in i.evals:
+            if j[0] <= fvalueToReach[i.funcId]:
+                runlengthsucc = j[1:][numpy.isfinite(j[1:])]
+                runlengthunsucc = i.maxevals[numpy.isnan(j[1:])]
+                tmp = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                                       percentiles=percentiles, samplesize=200)
+                x.extend(tmp[1])
+                break
+        nn += samplesize
+
+    res = plotECDF(x, nn)
+
+    return res
 
 def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'),
                 isStoringXMax=False, text=None, verbose=True):
@@ -173,11 +208,11 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'),
     plt.xlim(1., fmax)
 
     #axisHandle.invert_xaxis()
-    plt.ylim(0.0, 1.0)
     axisHandle.set_xlabel('log10 of Df / Dftarget')
     # axisHandle.set_ylabel('proportion of successful trials')
     # Grid options
-    axisHandle.grid('True')
+    beautifyECDF()
+
     xtic = axisHandle.get_xticks()
     newxtic = []
     for j in xtic:
@@ -218,15 +253,7 @@ def plotFVDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
         x.extend(j[i.nbRuns()+1:] / fvalueToReach[i.funcId])
         nn += i.nbRuns()
 
-    x.sort()
-    x2 = numpy.hstack([numpy.repeat(x, 2)])
-    #not efficient if some vals are repeated a lot
-    #y2 = numpy.hstack([0.0, numpy.repeat(numpy.arange(1, n)/float(nn), 2),
-                       #float(n)/nn, float(n)/nn])
-    y2 = numpy.hstack([0.0, numpy.repeat(numpy.arange(1, nn)/float(nn), 2),
-                       1.0])
-    #set_trace()
-    res = plt.plot(x2, y2)
+    res = plotECDF(x, nn)
 
     return res
 
@@ -252,15 +279,7 @@ def plotFVDistr2(dataSetList, fvalueToReach, maxEvalsF, verbose=True):
         x.extend(j[1:] / fvalueToReach[i.funcId])
         nn += i.nbRuns()
 
-    x.sort()
-    x2 = numpy.hstack([numpy.repeat(x, 2)])
-    #not efficient if some vals are repeated a lot
-    #y2 = numpy.hstack([0.0, numpy.repeat(numpy.arange(1, n)/float(nn), 2),
-                       #float(n)/nn, float(n)/nn])
-    y2 = numpy.hstack([0.0, numpy.repeat(numpy.arange(1, nn)/float(nn), 2),
-                       1.0])
-    #set_trace()
-    res = plt.plot(x2, y2)
+    res = plotECDF(x, nn)
 
     return res
 
