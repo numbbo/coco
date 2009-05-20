@@ -39,14 +39,15 @@ class FunTarget:
 
         # initialize
         i = 0
-        self.minFtarget = numpy.array([])
-        self.medianFtarget = numpy.array([])
-        self.ert = numpy.array([])
+        self.minFtarget = []
+        self.medianFtarget = []
+        self.ert = []
         maxErtAll = 0
 
+        # loop through all ERT values (2*dim*10**i)
         while True:
 
-            targetValue = numpy.array([])
+            targetValue = []
 
             # search all algorithms
             for alg in dataset:
@@ -56,35 +57,34 @@ class FunTarget:
                     maxErtAll = alg.ert[-1]
 
                 id = 0
+                tmp = numpy.nan
                 while id < len(alg.ert):
-                    tmp = 0
                     if alg.ert[id] <= 2*dim*10**i:
                         id += 1
                     elif alg.ert[id] > 2*dim*10**i:
-                        tmp = alg.target[id-1]
+                        # minimum for one algorithm
+                        tmp = min(alg.target[:id])                            
                         break # target value is reached
                 
-                if tmp == 0:
-                    # if no ERT is larger than 2*dim*10**i take
-                    # the best value (last entry in alg.target)
-                    tmp = alg.target[-1]
+                # if no ERT value is available
+                if numpy.isnan(tmp):
+                    tmp = min(alg.target) 
 
                 # add to list of targetvalues
-                targetValue = numpy.append(targetValue,tmp)
+                targetValue.append(tmp)
 
-            # determine min and median and set attributes
-            self.minFtarget = numpy.append(self.minFtarget,numpy.min(targetValue))
-            self.medianFtarget = numpy.append(self.medianFtarget,numpy.median(targetValue))
-            self.ert = numpy.append(self.ert,10**i)             
+            # determine min and median for all algorithm
+            self.minFtarget.append(numpy.min(targetValue))
+            self.medianFtarget.append(numpy.median(targetValue))
+            self.ert.append(10**i)             
             
             # check termination conditions
-            if numpy.min(targetValue) <= 1e-8 or maxErtAll < 2*dim*10**i:
+            if numpy.min(targetValue) <= 1e-8 or maxErtAll < 2*dim*10**i or i>0:
                 break 
 
             # increase counter
             i += 1
-
-
+        
 ### Function definitons ###
 
 def usage():
@@ -322,7 +322,8 @@ def main(argv=None):
     # partition data since not all functions can be displayed in 
     # one table
     partition = [1]
-    if len(funcs) > 12:
+    half = len(funcs)
+    if half > 12:
         partition.append(2)
         half = int(round(len(funcs)/2))
     
@@ -355,6 +356,7 @@ def main(argv=None):
 
                 # get min and median values 
                 #print dataset  
+                #print fun
                 tmp = FunTarget(dataset,dim)
                 #print tmp.minFtarget
                 #print tmp.medianFtarget
