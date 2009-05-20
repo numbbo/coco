@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 
-# Creates ENFEs and convergence figures for BBOB post-processing.
+""" Creates ENFEs and convergence figures for BBOB post-processing for the
+comparison of 2 algorithms.
+"""
 
 import os
 import sys

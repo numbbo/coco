@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 
-# Creates ERTs and convergence figures for BBOB post-processing.
+""" Creates ERTs and convergence figures for BBOB post-processing.
+Is not implemented yet.
+"""
 
 import os
 import sys

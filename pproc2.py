@@ -17,7 +17,7 @@ from pdb import set_trace
 import numpy
 from bbob_pproc import findindexfiles, readalign, bootstrap
 from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
-from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader
+from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 
 #GLOBAL VARIABLES
 idxEvals = 0
@@ -380,10 +380,10 @@ class DataSetList(list):
                 isFound = True
                 if set(i.dataFiles).symmetric_difference(set(o.dataFiles)):
                     #set_trace()
-                    i.funvals = alignData(VArrayMultiReader([i.funvals, o.funvals]))[0]
+                    i.funvals = alignArrayData(VArrayMultiReader([i.funvals, o.funvals]))
                     #set_trace()
                     i.finalfunvals = numpy.r_[i.finalfunvals, o.finalfunvals]
-                    i.evals = alignData(HArrayMultiReader([i.evals, o.evals]))[0]
+                    i.evals = alignArrayData(HArrayMultiReader([i.evals, o.evals]))
                     i.maxevals = numpy.r_[i.maxevals, o.maxevals]
                     i.computeERTfromEvals()
                     if getattr(i, 'pickleFile', False):
@@ -409,7 +409,7 @@ class DataSetList(list):
 
         d = {}
         for i in self:
-            d.setdefault(i.algId + ', ' + i.comment, DataSetList()).append(i)
+            d.setdefault((i.algId, i.comment), DataSetList()).append(i)
         return d
 
     def dictByDim(self):

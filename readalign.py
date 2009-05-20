@@ -259,6 +259,31 @@ def alignData(data):
     # of the data.
 
 
+def alignArrayData(data):
+    """Aligns the data from a list of aligned arrays.
+    This method returns an array for which the alignment value is the first
+    column and the aligned values are in subsequent columns.
+
+    """
+
+    #TODO: is template dependent.
+
+    res = []
+    currentValue = data.getInitialValue()
+    #set_trace()
+    if data.isFinished():
+        res.append(data.align(currentValue))
+
+    while not data.isFinished():
+        res.append(data.align(currentValue))
+        currentValue = data.newCurrentValue()
+
+    #set_trace()
+    return numpy.vstack(res)
+    # Hack: at this point nextLine contains all information on the last line
+    # of the data.
+
+
 def split(dataFiles, dim=None):
     """Split a list of data files into arrays corresponding to data sets."""
 

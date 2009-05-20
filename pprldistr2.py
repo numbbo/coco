@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-"""Creates run length distribution figures."""
+"""Creates run length distribution figures for the comparison of 2 algorithms."""
 
 
 from __future__ import absolute_import

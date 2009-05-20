@@ -20,8 +20,9 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc.pproc2 import DataSetList
 from bbob_pproc import ppperfprof
+from bbob_pproc import dataoutput
+from bbob_pproc.pproc2 import DataSetList
 
 #CLASS DEFINITIONS
 
@@ -43,9 +44,9 @@ def main(argv=None):
 
     try:
         try:
-            opts, args = getopt.getopt(argv, "hvo:",
+            opts, args = getopt.getopt(argv, "hvpo:",
                                        ["help", "output-dir",
-                                        "pickle", "verbose"])
+                                        "write-pickles", "verbose"])
         except getopt.error, msg:
              raise Usage(msg)
 
@@ -55,6 +56,7 @@ def main(argv=None):
 
         verbose = False
         outputdir = 'defaultoutputdirectory'
+        isWritePickle = False
 
         #Process options
         for o, a in opts:
@@ -65,6 +67,8 @@ def main(argv=None):
                 sys.exit()
             elif o in ("-o", "--output-dir"):
                 outputdir = a
+            elif o in ("-p", "--write-pickles"):
+                isWritePickle = True
             else:
                 assert False, "unhandled option"
 
@@ -73,7 +77,10 @@ def main(argv=None):
         if not dsList:
             sys.exit()
 
-        # Write the pickle files
+        # Write the pickle files if needed!
+        if isWritePickle:
+            dataoutput.outputPickle(dsList, verbose=verbose)
+            sys.exit()
 
         # Get the target function values depending on the function
         # target = dict(...)
@@ -84,6 +91,12 @@ def main(argv=None):
                 print 'Folder %s was created.' % (outputdir)
 
         # Performance profiles
+        dictDim = dsList.dictByDim()
+        for d, entries in dictDim.iteritems():
+            ppperfprof.main(entries, target=1e-8, outputdir=outputdir,
+                            info=('%02d' % d), verbose=verbose)
+
+        #ECDF:
         dictDim = dsList.dictByDim()
         for d, entries in dictDim.iteritems():
             ppperfprof.main(entries, target=1e-8, outputdir=outputdir,
