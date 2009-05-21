@@ -61,14 +61,14 @@ class FunTarget:
                 while id < len(alg.ert):
                     if alg.ert[id] <= 2*dim*10**i:
                         id += 1
-                    elif alg.ert[id] > 2*dim*10**i:
+                    elif alg.ert[id] > 2*dim*10**i:  # why this? 
                         # minimum for one algorithm
                         tmp = min(alg.target[:id])                            
                         break # target value is reached
                 
                 # if no ERT value is available
                 if numpy.isnan(tmp):
-                    tmp = min(alg.target) 
+                    tmp = min(alg.target)  
 
                 # add to list of targetvalues
                 targetValue.append(tmp)
