@@ -8,11 +8,12 @@ import numpy
 #import matplotlib
 #matplotlib.use('GtkAgg')
 import matplotlib.pyplot as plt
+from bbob_pproc.dataoutput import algLongInfos, algShortInfos
 from pdb import set_trace
 
 """Generates Performance Profiles (More Wild 2002)."""
 
-def beautify(figureName='perfprofile', fileFormat=('eps',)):
+def beautify(figureName='perfprofile', fileFormat=('png',)):
     plt.legend(loc='best')
     for entry in fileFormat:
         plt.savefig(figureName + '.' + entry, dpi = 300, format = entry)
@@ -33,7 +34,8 @@ def plotPerfProf(data, label=None):
                           numpy.repeat(numpy.arange(1, n) / float(nn), 2), 1.0])
         res = plt.plot(x2, y2, label=label)
 
-def main(indexEntries, target, outputdir='', info='default', verbose=True):
+def main(dsList, target, 
+         order=None, outputdir='', info='default', verbose=True):
     """From a list of IndexEntry, generates the performance profiles."""
 
     plt.rc("axes", labelsize=20, titlesize=24)
@@ -42,7 +44,7 @@ def main(indexEntries, target, outputdir='', info='default', verbose=True):
     plt.rc("font", size=20)
     plt.rc("legend", fontsize=20)
 
-    if len(indexEntries.dictByDim()) > 1:
+    if len(dsList.dictByDim()) > 1:
         warnings.warn('Provided with data from multiple dimension.')
 
     dictData = {} # list of (ert per function) per algorithm
@@ -51,7 +53,7 @@ def main(indexEntries, target, outputdir='', info='default', verbose=True):
     bestERT = [] # best ert per function, not necessarily sorted as well.
 
     # per instance instead of per function?
-    dictFunc = indexEntries.dictByFunc()
+    dictFunc = dsList.dictByFunc()
 
     for f, samefuncEntries in dictFunc.iteritems():
         dictAlg = samefuncEntries.dictByAlg()
@@ -78,9 +80,18 @@ def main(indexEntries, target, outputdir='', info='default', verbose=True):
     # TODO: bootstrap something... but what?
 
     # what about infs?
-    for alg, data in dictData.iteritems():
-        plotPerfProf(numpy.array(data)/numpy.array(bestERT), label=alg)
-        #set_trace()
+    if order is not None:
+        for alg in order:
+            #set_trace()
+            plotPerfProf(numpy.array(dictData[algLongInfos[alg]])/numpy.array(bestERT),
+                         label=alg)
+            #set_trace()    
+    else:
+        for alg, data in dictData.iteritems():
+            #set_trace()
+            plotPerfProf(numpy.array(data)/numpy.array(bestERT),
+                         label=algShortInfos[alg])
+            #set_trace()
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
     beautify(figureName)

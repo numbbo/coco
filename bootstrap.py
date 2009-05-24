@@ -1,6 +1,7 @@
 # bootstrapping
 
 import numpy
+from pdb import set_trace
 
 def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
     """sp1(data, maxvalue=Inf, issuccessful=None) computes a
@@ -122,7 +123,7 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
        until the first time a successful one is chosen. In case of no
        successful run the sum of unsuccessful runs is bootstrapped.
     """
-    print 'to be implemented'  # TODO
+    #print 'to be implemented'  # TODO
 
     Nsucc = len(runlengths_succ)
     Nunsucc = len(runlengths_unsucc)
@@ -130,9 +131,34 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
     if Nsucc == 0:
         # return (numpy.Inf*numpy.array(percentiles), )
         return draw(runlengths_unsucc, percentiles, samplesize=samplesize, func=sum)
-    
+
     # geometric distribution for number of unsuccessful runs
-    
+    # The samplesize depends on the number of unsuccessful runs?
+
+    arrStats = []
+    sdata = numpy.array(runlengths_succ)  # more efficient indexing
+    udata = numpy.array(runlengths_unsucc)  # more efficient indexing
+    Nu = len(udata)
+    Ns = len(sdata)
+    data = numpy.r_[udata, sdata]
+    N = Ns + Nu
+
+    for i in xrange(int(samplesize)):
+        # relying that idx<len(data)
+        tmpdata = []
+        idx = numpy.random.randint(N)
+        #set_trace()
+        while idx < Nu:
+            tmpdata.append(data[idx])
+            idx = numpy.random.randint(N)
+
+        tmpdata.append(data[idx])
+        arrStats.append(numpy.sum(tmpdata)) # We know we have one success here.
+
+    arrStats.sort()
+
+    return (prctile(arrStats, percentiles, issorted=True),
+            arrStats)
 
 def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     """Input:
