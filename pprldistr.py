@@ -9,6 +9,7 @@ import os
 import numpy
 import matplotlib.pyplot as plt
 from pdb import set_trace
+from bbob_pproc import bootstrap
 
 #__all__ = []
 
@@ -22,7 +23,7 @@ def plotECDF(x, n=None, label=None):
     if n is None:
         n = len(x)
     nx = len(x)
-    if n == 0:
+    if n == 0 or nx == 0:
         res = plt.plot([], [], label=label)
     else:
         x2 = numpy.hstack(numpy.repeat(sorted(x), 2))
@@ -150,7 +151,7 @@ def plotRLDistr2(dataSetList, fvalueToReach, maxEvalsF, verbose=True):
 
     return res#, fsolved, funcs
 
-def plotERTDistr(dataSetList, fvalueToReach, verbose=True):
+def plotERTDistr(dsList, fvalueToReach, label=None, verbose=True):
     """Creates estimated run time distributions from a sequence dataSetList.
 
     Keyword arguments:
@@ -166,22 +167,23 @@ def plotERTDistr(dataSetList, fvalueToReach, verbose=True):
 
     x = []
     nn = 0
-    samplesize = 200 # samplesize is at least 200
+    samplesize = 1000 # samplesize is at least 1000
     percentiles = 0.5 # could be anything...
 
-    for i in indexEntries:
+    for i in dsList:
         #funcs.add(i.funcId)
         for j in i.evals:
             if j[0] <= fvalueToReach[i.funcId]:
                 runlengthsucc = j[1:][numpy.isfinite(j[1:])]
                 runlengthunsucc = i.maxevals[numpy.isnan(j[1:])]
                 tmp = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
-                                       percentiles=percentiles, samplesize=200)
+                                       percentiles=percentiles,
+                                       samplesize=samplesize)
                 x.extend(tmp[1])
                 break
         nn += samplesize
-
-    res = plotECDF(x, nn)
+    #set_trace()
+    res = plotECDF(x, nn, label=label)
 
     return res
 
