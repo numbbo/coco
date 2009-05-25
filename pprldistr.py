@@ -19,23 +19,24 @@ rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  
 fmax = None
 evalfmax = None
 
-def plotECDF(x, n=None, label=None):
+def plotECDF(x, n=None, plotArgs={}):
     if n is None:
         n = len(x)
     nx = len(x)
     if n == 0 or nx == 0:
-        res = plt.plot([], [], label=label)
+        res = plt.plot([], [], **plotArgs)
     else:
         x2 = numpy.hstack(numpy.repeat(sorted(x), 2))
         y2 = numpy.hstack([0.0,
                            numpy.repeat(numpy.arange(1, nx) / float(n), 2),
                            1.0])
-        res = plt.plot(x2, y2, label=label)
+        res = plt.plot(x2, y2, **plotArgs)
     return res
 
-def beautifyECDF(axish=plt.gca()):
+def beautifyECDF(axish=None):
+    if axish is None:
+        axish = plt.gca()
     plt.ylim(0.0, 1.0)
-    #axisHandle.grid('True')
     axish.grid('True')
 
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
@@ -109,10 +110,10 @@ def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
         nn += i.nbRuns()
 
     # For the label the last i.funcId is used.
-    label = ('%+d:%d/%d' %
-             (numpy.log10(fvalueToReach[i.funcId]), len(fsolved), len(funcs)))
+    kwargs = {'label' : ('%+d:%d/%d' %
+             (numpy.log10(fvalueToReach[i.funcId]), len(fsolved), len(funcs)))}
     x.append(maxEvalsF ** 1.05)
-    res = plotECDF(x, n=nn, label=label)
+    res = plotECDF(x, nn, kwargs)
     return res#, fsolved, funcs
 
 
@@ -145,14 +146,14 @@ def plotRLDistr2(dataSetList, fvalueToReach, maxEvalsF, verbose=True):
         nn += i.nbRuns()
 
     # For the label the last i.funcId is used.
-    label = ('%+d:%d/%d' %
-             (numpy.log10(fvalueToReach[i.funcId]), len(fsolved), len(funcs)))
+    kwargs = {'label' : ('%+d:%d/%d' %
+             (numpy.log10(fvalueToReach[i.funcId]), len(fsolved), len(funcs)))}
     x.append(maxEvalsF ** 1.05)
-    res = plotECDF(x, nn, label=label)
+    res = plotECDF(x, nn, kwargs)
 
     return res#, fsolved, funcs
 
-def plotERTDistr(dsList, fvalueToReach, label=None, verbose=True):
+def plotERTDistr(dsList, fvalueToReach, plotArgs=None, verbose=True):
     """Creates estimated run time distributions from a sequence dataSetList.
 
     Keyword arguments:
@@ -184,7 +185,7 @@ def plotERTDistr(dsList, fvalueToReach, label=None, verbose=True):
                 break
         nn += samplesize
     #set_trace()
-    res = plotECDF(x, nn, label=label)
+    res = plotECDF(x, nn, plotArgs)
 
     return res
 
