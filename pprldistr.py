@@ -35,7 +35,8 @@ def plotECDF(x, n=None, label=None):
 
 def beautifyECDF(axish=plt.gca()):
     plt.ylim(0.0, 1.0)
-    axisHandle.grid('True')
+    #axisHandle.grid('True')
+    axish.grid('True')
 
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
                 text=None, verbose=True):
