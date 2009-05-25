@@ -140,20 +140,21 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
     udata = numpy.array(runlengths_unsucc)  # more efficient indexing
     Nu = len(udata)
     Ns = len(sdata)
-    data = numpy.r_[udata, sdata]
+    #data = numpy.r_[udata, sdata]
     N = Ns + Nu
 
     for i in xrange(int(samplesize)):
         # relying that idx<len(data)
-        tmpdata = []
+        sumdata = 0
         idx = numpy.random.randint(N)
         #set_trace()
         while idx < Nu:
-            tmpdata.append(data[idx])
+            sumdata += udata[idx]
             idx = numpy.random.randint(N)
 
-        tmpdata.append(data[idx])
-        arrStats.append(numpy.sum(tmpdata)) # We know we have one success here.
+        sumdata += sdata[idx-Nu]
+
+        arrStats.append(sumdata) # We know we have one success here.
 
     arrStats.sort()
 
