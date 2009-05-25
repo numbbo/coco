@@ -47,7 +47,7 @@ class FunTarget:
         # loop through all ERT values (2*dim*10**i)
         while True:
 
-            targetValue = []
+            targetValues = []
 
             # search all algorithms
             for alg in dataset:
@@ -56,30 +56,33 @@ class FunTarget:
                 if i == 0 and alg.ert[-1] > maxErtAll:
                     maxErtAll = alg.ert[-1]
 
-                id = 0
-                tmp = numpy.nan
-                while id < len(alg.ert):
-                    if alg.ert[id] <= 2*dim*10**i:
-                        id += 1
-                    elif alg.ert[id] > 2*dim*10**i:  # why this? 
-                        # minimum for one algorithm
-                        tmp = min(alg.target[:id])                            
-                        break # target value is reached
-                
-                # if no ERT value is available
-                if numpy.isnan(tmp):
-                    tmp = min(alg.target)  
+                # find target value
+                tmp = alg.target[sum(alg.ert < 2*dim*10**i) - 1]
 
                 # add to list of targetvalues
-                targetValue.append(tmp)
+                targetValues.append(tmp)
 
             # determine min and median for all algorithm
-            self.minFtarget.append(numpy.min(targetValue))
-            self.medianFtarget.append(numpy.median(targetValue))
-            self.ert.append(10**i)             
-            
+            self.ert.append(10**i)      
+            if len(self.minFtarget) == 0:
+                # always write first value
+                self.minFtarget.append(numpy.min(targetValues))
+                self.medianFtarget.append(numpy.median(targetValues))
+            elif min(self.minFtarget) <= 1e-8 and min(self.medianFtarget) > 1e-8:
+                # min target is reached, but not for median
+                self.minFtarget.append(numpy.nan)
+                self.medianFtarget.append(numpy.median(targetValues))
+            elif min(self.minFtarget) <= 1e-8 and min(self.medianFtarget) <= 1e-8:  
+                # min and median minimal target is reached                      
+                self.minFtarget.append(numpy.nan)
+                self.medianFtarget.append(numpy.nan)
+                break   
+            else:
+                self.minFtarget.append(numpy.min(targetValues))
+                self.medianFtarget.append(numpy.median(targetValues))
+
             # check termination conditions
-            if numpy.min(targetValue) <= 1e-8 or maxErtAll < 2*dim*10**i or i>0:
+            if maxErtAll < 2*dim*10**i:
                 break 
 
             # increase counter
@@ -218,6 +221,10 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
             tmp2 = '-'
 
         elif format[i].endswith('e'):
+
+            # set minimum to 1e-8
+            if x>0 and x<1e-8:
+                x = 0.00000001
 
             # Split number and sign+exponent
             try:
