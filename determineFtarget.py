@@ -87,7 +87,8 @@ class FunTarget:
 
             # increase counter
             i += 1
-        
+
+      
 ### Function definitons ###
 
 def usage():
@@ -244,7 +245,7 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
                     tmp2 = (tmp[0][0] + '\\!\\mathrm{\\hspace{0.10em}e}' +
                             tmp[1][-1])
             else:   # target function values
-                if x > 1:
+                if x >= 1:
                     sgn = '+'
                 else:
                     sgn = '-'
@@ -263,6 +264,18 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
         # Write to file
         file.write(tmp2)
 
+def postprocessing(data):
+    """ Substitutes all entries which are the same as
+        the minimum reached value with 'nan'. The minimum
+        value appears then only once in the table."""
+
+    last_entry = data[-1]  
+    for i in range(2,len(data)+1):
+        if data[-i] == last_entry:
+            data[-i+1] = numpy.nan
+        else:
+            break
+    return data
 
 def main(argv=None):
     """From a directory which contains the data of the algorithms
@@ -362,12 +375,10 @@ def main(argv=None):
                                          + ' and function = f%g!' %fun)
 
                 # get min and median values 
-                #print dataset  
-                #print fun
                 tmp = FunTarget(dataset,dim)
-                #print tmp.minFtarget
-                #print tmp.medianFtarget
-                #print tmp.ert
+                # some post-processing of the data               
+                tmp.minFtarget = postprocessing(tmp.minFtarget)
+                tmp.medianFtarget = postprocessing(tmp.medianFtarget)
                 ftarget.append({'dim':dim,'funcId':fun,'min':tmp.minFtarget,'median':tmp.medianFtarget,'ert':tmp.ert})
 
             # write data into table
