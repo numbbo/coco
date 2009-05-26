@@ -29,7 +29,7 @@ def plotECDF(x, n=None, plotArgs={}):
         x2 = numpy.hstack(numpy.repeat(sorted(x), 2))
         y2 = numpy.hstack([0.0,
                            numpy.repeat(numpy.arange(1, nx) / float(n), 2),
-                           1.0])
+                           float(nx)/n])
         res = plt.plot(x2, y2, **plotArgs)
     return res
 
@@ -110,14 +110,28 @@ def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
         nn += i.nbRuns()
 
     # For the label the last i.funcId is used.
-    kwargs = {'label' : ('%+d:%d/%d' %
-             (numpy.log10(fvalueToReach[i.funcId]), len(fsolved), len(funcs)))}
-    x.append(maxEvalsF ** 1.05)
-    res = plotECDF(x, nn, kwargs)
+    kwargs = plotArgs.copy()
+    kwargs['label'] = (kwargs.get('label', '') +
+                       ('%+d:%d/%d' % (numpy.log10(fvalueToReach[i.funcId]),
+                                      len(fsolved), len(funcs))))
+    
+    #res = plotECDF(x, nn, kwargs)
+    n = len(x)
+    if n == 0:
+        res = plt.plot([], [], **kwargs)
+    else:
+        x.sort()
+        x2 = numpy.hstack([numpy.repeat(x, 2), maxEvalsF ** 1.05])
+        # maxEvalsF: used for the limit of the plot
+        y2 = numpy.hstack([0.0,
+                           numpy.repeat(numpy.arange(1, n+1)/float(nn), 2)])
+        res = plt.plot(x2, y2, **kwargs)
+
     return res#, fsolved, funcs
 
 
-def plotRLDistr2(dataSetList, fvalueToReach, maxEvalsF, verbose=True):
+def plotRLDistr2(dsList, fvalueToReach, maxEvalsF, plotArgs={},
+                 verbose=True):
     """Creates run length distributions from a sequence dataSetList.
 
     Keyword arguments:
@@ -135,21 +149,37 @@ def plotRLDistr2(dataSetList, fvalueToReach, maxEvalsF, verbose=True):
     nn = 0
     fsolved = set()
     funcs = set()
-    for i in indexEntries:
+    for i in dsList:
         funcs.add(i.funcId)
         for j in i.evals:
             if j[0] <= fvalueToReach[i.funcId]:
-                x.extend(j[numpy.isfinite(j)]/float(i.dim))
+                #set_trace()
+                tmp = j[1:]
+                x.extend(tmp[numpy.isfinite(tmp)]/float(i.dim))
                 fsolved.add(i.funcId)
                 #TODO: what if j[numpy.isfinite(j)] is empty
                 break
         nn += i.nbRuns()
 
+    #set_trace()
+    #if len(x) > 0:
+        #x.append(maxEvalsF ** 1.05)
     # For the label the last i.funcId is used.
-    kwargs = {'label' : ('%+d:%d/%d' %
-             (numpy.log10(fvalueToReach[i.funcId]), len(fsolved), len(funcs)))}
-    x.append(maxEvalsF ** 1.05)
-    res = plotECDF(x, nn, kwargs)
+    kwargs = plotArgs.copy()
+    kwargs['label'] = kwargs.setdefault('label', 
+                       ('%+d:%d/%d' % (numpy.log10(fvalueToReach[i.funcId]),
+                                      len(fsolved), len(funcs))))
+    #res = plotECDF(x, nn, kwargs)
+    n = len(x)
+    if n == 0:
+        res = plt.plot([], [], **kwargs)
+    else:
+        x.sort()
+        x2 = numpy.hstack([numpy.repeat(x, 2), maxEvalsF ** 1.05])
+        # maxEvalsF: used for the limit of the plot
+        y2 = numpy.hstack([0.0,
+                           numpy.repeat(numpy.arange(1, n+1)/float(nn), 2)])
+        res = plt.plot(x2, y2, **kwargs)
 
     return res#, fsolved, funcs
 
@@ -261,7 +291,8 @@ def plotFVDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
 
     return res
 
-def plotFVDistr2(dataSetList, fvalueToReach, maxEvalsF, verbose=True):
+def plotFVDistr2(dataSetList, fvalueToReach, maxEvalsF, plotArgs={},
+                 verbose=True):
     """Creates empirical cumulative distribution functions of final function
     values plot from a sequence of indexEntries.
 
@@ -280,10 +311,14 @@ def plotFVDistr2(dataSetList, fvalueToReach, maxEvalsF, verbose=True):
         for j in i.funvals:
             if j[0] >= maxEvalsF * i.dim:
                 break
-        x.extend(j[1:] / fvalueToReach[i.funcId])
+        #set_trace()
+        tmp = j[1:].copy() / fvalueToReach[i.funcId]
+        tmp[tmp==0] = 1. # HACK
+        x.extend(tmp)
         nn += i.nbRuns()
 
-    res = plotECDF(x, nn)
+    #set_trace()
+    res = plotECDF(x, nn, plotArgs)
 
     return res
 

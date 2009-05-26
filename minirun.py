@@ -12,7 +12,7 @@ import glob
 import getopt
 from pdb import set_trace
 import matplotlib
-matplotlib.use('Agg') # To avoid window popup and use without X forwarding
+matplotlib.use("Agg") # To avoid window popup and use without X forwarding
 import matplotlib.pyplot as plt
 
 # Add the path to bbob_pproc
@@ -26,6 +26,12 @@ if __name__ == "__main__":
 from bbob_pproc import ppperfprof, pprldistr
 from bbob_pproc import dataoutput
 from bbob_pproc.pproc2 import DataSetList
+
+algPlotInfos = {"CMA-ES": {"label": "CMA-ES", "color": "b"},#, "marker": "+"},
+                "NEWUOA": {"label": "NEWUOA", "color": "g"},#, "marker": "o"},
+                "BFGS": {"label": "BFGS", "color": "r"},#, "marker": "x"},
+                "NELDER": {"label": "NELDER", "color": "c"}}#, "marker": "."}}
+figformat = ('png', )
 
 #CLASS DEFINITIONS
 
@@ -61,6 +67,14 @@ def main(argv=None):
         outputdir = 'defaultoutputdirectory'
         isWritePickle = False
 
+        isEff = True
+        isERT = True
+        isPer = True
+        #isEff = False
+        #isERT = False
+        #isPer = False
+        isECDF = True
+
         #Process options
         for o, a in opts:
             if o in ("-v","--verbose"):
@@ -83,9 +97,23 @@ def main(argv=None):
         else:
             #Get only pickles!
             tmpargs = []
+            algs = []
             for i in args:
-                tmpargs.extend(glob.glob(os.path.join(i, '*.pickle')))
-            set_trace()
+                if i.endswith(".pickle"):
+                    tmpargs.append(i)
+                    tmpalg = os.path.split(os.path.split(i)[0])[1]
+                    if not tmpalg in algs:
+                        algs.append(tmpalg)
+                else:
+                    tmpargs.extend(glob.glob(os.path.join(i, "*.pickle")))
+                    tmpalg = os.path.split(i)[1]
+                    if not tmpalg in algs:
+                        algs.append(tmpalg)
+
+            if not algs:
+                algs = args
+
+            #set_trace()
             dsList = DataSetList(tmpargs)
 
             if not dsList:
@@ -107,62 +135,137 @@ def main(argv=None):
         # dsList.dictByAlg()
 
         # Performance profiles
-        dictDim = dsList.dictByDim()
-        for d, entries in dictDim.iteritems():
-            ppperfprof.main(entries, target=target, outputdir=outputdir,
-                            info=('%02d' % d), verbose=verbose)
+        if isPer:
+            dictDim = dsList.dictByDim()
+            for d, entries in dictDim.iteritems():
+                ppperfprof.main(entries, target=target,
+                                plotArgs=algPlotInfos,
+                                outputdir=outputdir,
+                                info=('%02d' % d), verbose=verbose)
 
-        plt.rc("axes", labelsize=20, titlesize=24)
-        plt.rc("xtick", labelsize=20)
-        plt.rc("ytick", labelsize=20)
-        plt.rc("font", size=20)
-        plt.rc("legend", fontsize=20)
+        if isERT or isEff or isECDF:
+            plt.rc("axes", labelsize=20, titlesize=24)
+            plt.rc("xtick", labelsize=20)
+            plt.rc("ytick", labelsize=20)
+            plt.rc("font", size=20)
+            plt.rc("legend", fontsize=20)
 
-        # ECDF: 1 per function and dimension
-        dictDim = dsList.dictByDim()
-        for d, dimentries in dictDim.iteritems():
-            dictFunc = dimentries.dictByFunc()
-            for f, funentries in dictFunc.iteritems():
-                dictAlg = funentries.dictByAlg()
-                plt.figure()
-                for alg in args:
-                    #set_trace()
-                    pprldistr.plotERTDistr(dictAlg[dataoutput.algLongInfos[alg]],
-                                           target, label=alg, verbose=True)
-                #try log x-axis if possible. and labels !
-                plt.xscale("log")
-                plt.legend(loc="best")
-                plt.xlabel("Expected Run Time")
-                plt.ylabel("Proportion Of Trials")
-                figname = os.path.join(outputdir, "ppertdistr_f%d_%d" %(f, d))
-                plt.savefig(figname+".png", dpi=300,
-                            format="png")
-                plt.close()
+            # ECDF: 1 per function and dimension
+            dictDim = dsList.dictByDim()
+            for d, dimentries in dictDim.iteritems():
+                dictFunc = dimentries.dictByFunc()
+                for f, funentries in dictFunc.iteritems():
+                    dictAlg = funentries.dictByAlg()
+                    if isEff:
+                        plt.figure()
+                        for alg in algs:
+                            #set_trace()
+                            pprldistr.plotERTDistr(dictAlg[dataoutput.algLongInfos[alg]],
+                                                   target, plotArgs=algPlotInfos[alg],
+                                                   verbose=True)
+                        #try log x-axis if possible. and labels !
+                        plt.xscale("log")
+                        plt.legend(loc="best")
+                        plt.xlabel("Expected Running Time")
+                        #plt.ylabel("Proportion Bootstrap")
+                        plt.grid(True)
+                        figname = os.path.join(outputdir, "ppertdistr_f%03d_%02d" %(f, d))
+                        for i in figformat:
+                            plt.savefig(figname+"."+i, dpi=300, format=i)
+                            if verbose:
+                                print "Saved figure %s.%s" % (figname, i)
+                        plt.close()
 
-                # Plot the VTR vs ERT...
-                plt.figure()
-                for alg in args:
-                    #set_trace()
-                    entries = dictAlg[dataoutput.algLongInfos[alg]]
-                    plt.plot(entries[0].target[entries[0].target>=1e-8],
-                             entries[0].ert[entries[0].target>=1e-8], 
-                             label=alg)
-                #try log x-axis if possible. and labels !
-                plt.xscale("log")
-                plt.yscale("log")
-                plt.gca().invert_xaxis()
-                #set_trace()
-                #plt.xlim(plt.xlim()[0], max(plt.xlim()[1], 1e-8))
-                plt.legend(loc="best")
-                plt.xlabel("Target Function Value")
-                plt.ylabel("Expected Run Time")
-                
-                figname = os.path.join(outputdir, "ppfig_f%d_%d" %(f, d))
-                plt.savefig(figname+".png", dpi=300,
-                            format="png")
-                plt.close()
+                    # Plot the VTR vs ERT...
+                    if isERT:
+                        plt.figure()
+                        for alg in algs:
+                            #set_trace()
+                            entries = dictAlg[dataoutput.algLongInfos[alg]]
+                            plt.plot(entries[0].target[entries[0].target>=target[f]],
+                                     entries[0].ert[entries[0].target>=target[f]],
+                                     **algPlotInfos[alg])
+                        #try log x-axis if possible. and labels !
+                        plt.xscale("log")
+                        plt.yscale("log")
+                        plt.gca().invert_xaxis()
+                        #set_trace()
+                        #plt.xlim(plt.xlim()[0], max(plt.xlim()[1], 1e-8))
+                        plt.legend(loc="best")
+                        plt.xlabel("Target Function Value")
+                        plt.ylabel("Expected Running Time")
+                        plt.grid(True)
+                        figname = os.path.join(outputdir, "ppfig_f%03d_%02d" %(f, d))
+                        for i in figformat:
+                            plt.savefig(figname+"."+i, dpi=300, format=i)
+                            if verbose:
+                                print "Saved figure %s.%s" % (figname, i)
+                        plt.close()
 
-        plt.rcdefaults()
+                    if isECDF:
+                        plt.figure()
+                        maxEvalsF = 0
+                        for alg in algs:
+                            entries = dictAlg[dataoutput.algLongInfos[alg]]
+                            maxEvalsF = max((maxEvalsF, max(entries[0].maxevals/entries[0].dim)))
+                            
+                        for alg in algs:
+                            #set_trace()
+                            entries = dictAlg[dataoutput.algLongInfos[alg]]
+                            pprldistr.plotRLDistr2(entries, fvalueToReach=target,
+                                                   maxEvalsF=maxEvalsF,
+                                                   plotArgs=algPlotInfos[alg],
+                                                   verbose=verbose)
+
+                        #try log x-axis if possible. and labels !
+                        plt.xscale("log")
+                        #plt.gca().invert_xaxis()
+                        #set_trace()
+                        #plt.xlim(plt.xlim()[0], max(plt.xlim()[1], 1e-8))
+                        plt.xlim(max(1./40, plt.xlim()[0]), maxEvalsF**1.05)
+                        plt.ylim(0., 1.)
+                        plt.legend(loc="best")
+                        plt.xlabel("FEvals/DIM")
+                        plt.ylabel("Proportion of trials")
+                        plt.grid(True)
+                        figname = os.path.join(outputdir, "pprldistr_f%03d_%02d" %(f, d))
+                        for i in figformat:
+                            plt.savefig(figname+"."+i, dpi=300, format="png")
+                            if verbose:
+                                print "Saved figure %s.%s" % (figname, i)
+                        plt.close()
+
+                        plt.figure()
+                        for alg in algs:
+                            #set_trace()
+                            entries = dictAlg[dataoutput.algLongInfos[alg]]
+                            pprldistr.plotFVDistr2(entries, fvalueToReach=target,
+                                                   maxEvalsF=max(entries[0].maxevals/entries[0].dim),
+                                                   plotArgs=algPlotInfos[alg],
+                                                   verbose=verbose)
+                            #set_trace()
+
+                        #try log x-axis if possible. and labels !
+                        try:
+                            plt.xscale("log")
+                        except OverflowError:
+                            pass
+                        #plt.gca().invert_xaxis()
+                        #set_trace()
+                        plt.xlim(1., plt.xlim()[1])
+                        plt.legend(loc="best")
+                        plt.xlabel("Df/Dftarget")
+                        plt.ylabel("Proportion of trials")
+                        plt.grid(True)
+                        #set_trace()
+                        figname = os.path.join(outputdir, "ppfvdistr_f%03d_%02d" %(f, d))
+                        for i in figformat:
+                            plt.savefig(figname+"."+i, dpi=300, format=i)
+                            if verbose:
+                                print "Saved figure %s.%s" % (figname, i)
+                        plt.close()
+
+            plt.rcdefaults()
 
     except Usage, err:
         print >>sys.stderr, err.msg
