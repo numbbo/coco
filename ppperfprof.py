@@ -14,11 +14,13 @@ from pdb import set_trace
 """Generates Performance Profiles (More Wild 2002)."""
 
 def beautify(figureName='perfprofile', fileFormat=('png',)):
+    plt.xscale('log')
     plt.legend(loc='best')
+    plt.grid(True)
     for entry in fileFormat:
         plt.savefig(figureName + '.' + entry, dpi = 300, format = entry)
 
-def plotPerfProf(data, label=None):
+def plotPerfProf(data, kwargs):
     x = data[numpy.isnan(data)==False] # Take away the nans
     x.sort()
     #set_trace()
@@ -26,16 +28,17 @@ def plotPerfProf(data, label=None):
     x = x[numpy.isinf(x)==False] # Take away the infs
     n = len(x)
     if n == 0:
-        res = plt.plot([], [], label=label) #Why?
+        res = plt.plot([], [], **kwargs) #Why?
     else:
         x.sort()
         x2 = numpy.hstack([numpy.repeat(x, 2)])
         y2 = numpy.hstack([0.0,
-                          numpy.repeat(numpy.arange(1, n) / float(nn), 2), 1.0])
-        res = plt.plot(x2, y2, label=label)
+                           numpy.repeat(numpy.arange(1, n) / float(nn), 2),
+                           float(n)/nn])
+        res = plt.plot(x2, y2, **kwargs)
 
-def main(dsList, target, 
-         order=None, outputdir='', info='default', verbose=True):
+def main(dsList, target,
+         plotArgs={}, outputdir='', info='default', verbose=True):
     """From a list of IndexEntry, generates the performance profiles."""
 
     plt.rc("axes", labelsize=20, titlesize=24)
@@ -80,18 +83,12 @@ def main(dsList, target,
     # TODO: bootstrap something... but what?
 
     # what about infs?
-    if order is not None:
-        for alg in order:
-            #set_trace()
-            plotPerfProf(numpy.array(dictData[algLongInfos[alg]])/numpy.array(bestERT),
-                         label=alg)
-            #set_trace()    
-    else:
-        for alg, data in dictData.iteritems():
-            #set_trace()
-            plotPerfProf(numpy.array(data)/numpy.array(bestERT),
-                         label=algShortInfos[alg])
-            #set_trace()
+    for alg, data in dictData.iteritems():
+        #set_trace()
+        #kwargs = {'label': algShortInfos[alg]}
+        plotPerfProf(numpy.array(data)/numpy.array(bestERT),
+                     plotArgs[algShortInfos[alg]])
+        #set_trace()
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
     beautify(figureName)

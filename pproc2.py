@@ -213,8 +213,9 @@ class DataSet:
 
     def pickle(self, outputdir, verbose=True):
         if not getattr(self, 'pickleFile', False):
-            self.pickleFile = os.path.join(outputdir, 'ppdata_f%d_%d.pickle'
-                                           %(self.funcId, self.dim))
+            self.pickleFile = os.path.join(outputdir,
+                                           'ppdata_f%03d_%02d.pickle'
+                                            %(self.funcId, self.dim))
             try:
                 f = open(self.pickleFile, 'w')
                 pickle.dump(self, f)
