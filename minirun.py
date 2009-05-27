@@ -11,8 +11,8 @@ import sys
 import glob
 import getopt
 from pdb import set_trace
-import matplotlib
-matplotlib.use("Agg") # To avoid window popup and use without X forwarding
+#import matplotlib
+#matplotlib.use("Agg") # To avoid window popup and use without X forwarding
 import matplotlib.pyplot as plt
 
 # Add the path to bbob_pproc
@@ -27,10 +27,6 @@ from bbob_pproc import ppperfprof, pprldistr
 from bbob_pproc import dataoutput
 from bbob_pproc.pproc2 import DataSetList
 
-algPlotInfos = {"CMA-ES": {"label": "CMA-ES", "color": "b"},#, "marker": "+"},
-                "NEWUOA": {"label": "NEWUOA", "color": "g"},#, "marker": "o"},
-                "BFGS": {"label": "BFGS", "color": "r"},#, "marker": "x"},
-                "NELDER": {"label": "NELDER", "color": "c"}}#, "marker": "."}}
 figformat = ('png', )
 
 #CLASS DEFINITIONS
@@ -70,10 +66,11 @@ def main(argv=None):
         isEff = True
         isERT = True
         isPer = True
+        isECDF = True
         #isEff = False
         #isERT = False
         #isPer = False
-        isECDF = True
+        #isECDF = False
 
         #Process options
         for o, a in opts:
@@ -97,21 +94,20 @@ def main(argv=None):
         else:
             #Get only pickles!
             tmpargs = []
-            algs = []
+            sortedAlgs = []
             for i in args:
                 if i.endswith(".pickle"):
                     tmpargs.append(i)
                     tmpalg = os.path.split(os.path.split(i)[0])[1]
-                    if not tmpalg in algs:
-                        algs.append(tmpalg)
                 else:
                     tmpargs.extend(glob.glob(os.path.join(i, "*.pickle")))
                     tmpalg = os.path.split(i)[1]
-                    if not tmpalg in algs:
-                        algs.append(tmpalg)
 
-            if not algs:
-                algs = args
+                if not tmpalg in sortedAlgs:
+                    sortedAlgs.append(dataoutput.algLongInfos[tmpalg])
+
+            if not sortedAlgs:
+                sortedAlgs = list(dataoutput.algLongInfos[i] for i in args)
 
             #set_trace()
             dsList = DataSetList(tmpargs)
@@ -139,16 +135,16 @@ def main(argv=None):
             dictDim = dsList.dictByDim()
             for d, entries in dictDim.iteritems():
                 ppperfprof.main(entries, target=target,
-                                plotArgs=algPlotInfos,
+                                order=sortedAlgs, plotArgs=dataoutput.algPlotInfos,
                                 outputdir=outputdir,
                                 info=('%02d' % d), verbose=verbose)
 
         if isERT or isEff or isECDF:
-            plt.rc("axes", labelsize=20, titlesize=24)
-            plt.rc("xtick", labelsize=20)
-            plt.rc("ytick", labelsize=20)
-            plt.rc("font", size=20)
-            plt.rc("legend", fontsize=20)
+            #plt.rc("axes", labelsize=20, titlesize=24)
+            #plt.rc("xtick", labelsize=20)
+            #plt.rc("ytick", labelsize=20)
+            #plt.rc("font", size=20)
+            #plt.rc("legend", fontsize=20)
 
             # ECDF: 1 per function and dimension
             dictDim = dsList.dictByDim()
@@ -158,10 +154,11 @@ def main(argv=None):
                     dictAlg = funentries.dictByAlg()
                     if isEff:
                         plt.figure()
-                        for alg in algs:
+                        for alg in sortedAlgs:
                             #set_trace()
-                            pprldistr.plotERTDistr(dictAlg[dataoutput.algLongInfos[alg]],
-                                                   target, plotArgs=algPlotInfos[alg],
+                            pprldistr.plotERTDistr(dictAlg[alg],
+                                                   target,
+                                                   plotArgs=dataoutput.algPlotInfos[alg],
                                                    verbose=True)
                         #try log x-axis if possible. and labels !
                         plt.xscale("log")
@@ -179,12 +176,12 @@ def main(argv=None):
                     # Plot the VTR vs ERT...
                     if isERT:
                         plt.figure()
-                        for alg in algs:
+                        for alg in sortedAlgs:
                             #set_trace()
-                            entries = dictAlg[dataoutput.algLongInfos[alg]]
+                            entries = dictAlg[alg]
                             plt.plot(entries[0].target[entries[0].target>=target[f]],
                                      entries[0].ert[entries[0].target>=target[f]],
-                                     **algPlotInfos[alg])
+                                     **dataoutput.algPlotInfos[alg])
                         #try log x-axis if possible. and labels !
                         plt.xscale("log")
                         plt.yscale("log")
@@ -205,16 +202,16 @@ def main(argv=None):
                     if isECDF:
                         plt.figure()
                         maxEvalsF = 0
-                        for alg in algs:
-                            entries = dictAlg[dataoutput.algLongInfos[alg]]
+                        for alg in sortedAlgs:
+                            entries = dictAlg[alg]
                             maxEvalsF = max((maxEvalsF, max(entries[0].maxevals/entries[0].dim)))
-                            
-                        for alg in algs:
+
+                        for alg in sortedAlgs:
                             #set_trace()
-                            entries = dictAlg[dataoutput.algLongInfos[alg]]
+                            entries = dictAlg[alg]
                             pprldistr.plotRLDistr2(entries, fvalueToReach=target,
                                                    maxEvalsF=maxEvalsF,
-                                                   plotArgs=algPlotInfos[alg],
+                                                   plotArgs=dataoutput.algPlotInfos[alg],
                                                    verbose=verbose)
 
                         #try log x-axis if possible. and labels !
@@ -236,12 +233,12 @@ def main(argv=None):
                         plt.close()
 
                         plt.figure()
-                        for alg in algs:
+                        for alg in sortedAlgs:
                             #set_trace()
-                            entries = dictAlg[dataoutput.algLongInfos[alg]]
+                            entries = dictAlg[alg]
                             pprldistr.plotFVDistr2(entries, fvalueToReach=target,
                                                    maxEvalsF=max(entries[0].maxevals/entries[0].dim),
-                                                   plotArgs=algPlotInfos[alg],
+                                                   plotArgs=dataoutput.algPlotInfos[alg],
                                                    verbose=verbose)
                             #set_trace()
 
@@ -252,7 +249,7 @@ def main(argv=None):
                             pass
                         #plt.gca().invert_xaxis()
                         #set_trace()
-                        plt.xlim(1., plt.xlim()[1])
+                        plt.xlim(1., max(1., plt.xlim()[1]))
                         plt.legend(loc="best")
                         plt.xlabel("Df/Dftarget")
                         plt.ylabel("Proportion of trials")
@@ -265,7 +262,7 @@ def main(argv=None):
                                 print "Saved figure %s.%s" % (figname, i)
                         plt.close()
 
-            plt.rcdefaults()
+            #plt.rcdefaults()
 
     except Usage, err:
         print >>sys.stderr, err.msg

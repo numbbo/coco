@@ -279,9 +279,9 @@ def postprocessing(data):
 
 def main(argv=None):
     """From a directory which contains the data of the algorithms
-       the minimum reached target value and the median reached target
-       value for all algorithms will be determined for all dimensions
-       and functions. 
+       generates tables showing the minimum reached target value and the
+       median reached target value for all algorithms will be determined
+       for all dimensions and functions.
 
        Input parameter:
        argv - list of strings containing options and arguments. If not given,
@@ -310,7 +310,6 @@ def main(argv=None):
         usage()
         sys.exit()
 
-    
     verboseflag = False
     dims = list()
     funcs = list()
@@ -322,9 +321,15 @@ def main(argv=None):
             usage()
             sys.exit()
         elif o in ("-d", "--dimensions"):
-            dims.append(int(a))
+            try:
+                dims.extend(eval(a))
+            except TypeError:
+                dims.append(int(a))
         elif o in ("-f", "--functions"):
-            funcs.append(int(a))
+            try:
+                funcs.extend(eval(a))
+            except TypeError:
+                funcs.append(int(a))
         elif o in ("--noisy"):
             funcs = range(101,131)
         elif o in ("--noisefree"):
@@ -346,7 +351,7 @@ def main(argv=None):
     if half > 12:
         partition.append(2)
         half = int(round(len(funcs)/2))
-    
+
     # create dataset
     datasetfull = pproc2.DataSetList(directory,verbose = verboseflag)
 
