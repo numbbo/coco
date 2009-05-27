@@ -19,15 +19,17 @@ infofilename = 'algorithmshortinfos.txt'
 infofile = os.path.join(os.path.split(__file__)[0], infofilename)
 algShortInfos = {}
 algLongInfos = {}
+algPlotInfos = {}
 isAlgorithminfosFound = True
 try:
     f = open(infofile,'r')
     for line in f:
         if len(line) == 0 or line.startswith('%') or line.isspace() :
             continue
-        algShortInfo, algId, comment = line.strip().split(':', 2)
+        algShortInfo, algId, comment, plotinfo = line.strip().split(':', 3)
         algShortInfos[(algId, comment)] = algShortInfo
         algLongInfos[algShortInfo] = (algId, comment)
+        algPlotInfos[(algId, comment)] = eval(plotinfo)
     f.close()
 except IOError, (errno, strerror):
     print "I/O error(%s): %s" % (errno, strerror)
