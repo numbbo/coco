@@ -72,6 +72,10 @@ def main(dsList, target, order=None,
     for f, samefuncEntries in dictFunc.iteritems():
         dictAlg = samefuncEntries.dictByAlg()
         erts = []
+        try:
+            target[f]
+        except KeyError:
+            continue
 
         for alg, entry in dictAlg.iteritems():
             # entry is supposed to be a single item DataSetList
@@ -100,17 +104,21 @@ def main(dsList, target, order=None,
 
     # what about infs?
     maxval = 0
+    #set_trace()
     for data in dictData.values():
         tmp = numpy.array(data)/numpy.array(bestERT)
-        maxval = max(maxval, max(tmp[numpy.isfinite(tmp)]))
+        if any(numpy.isfinite(tmp)):
+            maxval = max(maxval, max(tmp[numpy.isfinite(tmp)]))
 
     #set_trace()
     if order is None:
         order = dictData.keys()
 
     for alg in order:
-        plotPerfProf(numpy.array(dictData[alg])/numpy.array(bestERT),
-                     maxval,plotArgs[alg])
+        if dictData.has_key(alg):
+            plotPerfProf(numpy.array(dictData[alg])/numpy.array(bestERT),
+                         maxval,plotArgs[alg])
+        #else: problem!
         #set_trace()
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))

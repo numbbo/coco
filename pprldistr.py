@@ -166,9 +166,14 @@ def plotRLDistr2(dsList, fvalueToReach, maxEvalsF, plotArgs={},
         #x.append(maxEvalsF ** 1.05)
     # For the label the last i.funcId is used.
     kwargs = plotArgs.copy()
-    kwargs['label'] = kwargs.setdefault('label', 
-                       ('%+d:%d/%d' % (numpy.log10(fvalueToReach[i.funcId]),
-                                      len(fsolved), len(funcs))))
+    #set_trace()
+    try:
+        kwargs['label'] = kwargs.setdefault('label',
+                          ('%+d:%d/%d' % (numpy.log10(fvalueToReach[i.funcId]),
+                                          len(fsolved), len(funcs))))
+    except TypeError: # fvalueToReach == 0. for instance...
+        pass
+
     #res = plotECDF(x, nn, kwargs)
     n = len(x)
     if n == 0:
