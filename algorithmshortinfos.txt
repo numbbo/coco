@@ -11,3 +11,5 @@ DEPSO:DEPSO:% MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "DEPSO
 CMA-ESPLUSSEL:cmaesplussel:%:{"label": "(1+1)-CMA-ES", "color": "b", "ls": "--"}
 ONEFIFTH:One-Fifth Variant3:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "(1+1)-ES with 1/5 SR", "color": "m"}
 RANDOMSEARCH:PureRandomSearchOnNoise:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "Pure Random Search", "color": "k", "ls": "--"}
+SPSAHANOISY:SPSA2:%  maxFunevals = 5e4*DIM with 10 restarts, blocking = 10, lambda_start = 10:{"label":"adaptive SPSA"}
+SPSAHA:SPSA2:%  maxFunevals = 5e4*DIM with restarts, c0=0.1, initial lambda = 5, blocking = 10, restart changes c0:{"label":"adaptive SPSA"}
