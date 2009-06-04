@@ -63,7 +63,7 @@ class FunTarget:
                 targetValues.append(tmp)
 
             # determine min and median for all algorithm
-            self.ert.append(10**i)      
+            self.ert.append(10**i)
             if len(self.minFtarget) == 0:
                 # always write first value
                 self.minFtarget.append(numpy.min(targetValues))
@@ -313,7 +313,7 @@ def main(argv=None):
     verboseflag = False
     dims = list()
     funcs = list()
-    directory = argv[-1]  # directory which contains data  
+    directory = args  # directories which contains data...
 
     # Process options
     for o, a in opts:

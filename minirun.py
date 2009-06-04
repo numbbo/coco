@@ -11,6 +11,7 @@ import sys
 import glob
 import getopt
 from pdb import set_trace
+import warnings
 import numpy
 #import matplotlib
 #matplotlib.use("Agg") # To avoid window popup and use without X forwarding
@@ -29,6 +30,8 @@ from bbob_pproc import dataoutput, determineFtarget
 from bbob_pproc.pproc2 import DataSetList
 
 figformat = ('png', )
+# GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
+instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 
 #CLASS DEFINITIONS
 
@@ -51,8 +54,10 @@ def main(argv=None):
     try:
         try:
             opts, args = getopt.getopt(argv, "hvpo:",
-                                       ["help", "output-dir",
-                                        "write-pickles", "verbose"])
+                                       ["help", "output-dir", "noisy",
+                                        "noise-free", "write-pickles",
+                                        "perfprof-only",
+                                        "verbose"])
         except getopt.error, msg:
              raise Usage(msg)
 
@@ -63,15 +68,17 @@ def main(argv=None):
         verbose = False
         outputdir = 'defaultoutputdirectory'
         isWritePickle = False
+        isNoisy = False
+        isNoiseFree = False
 
         isPer = True
         isEff = True
         isERT = True
         isECDF = True
         #isPer = False
-        isEff = False
-        isERT = False
-        isECDF = False
+        #isEff = False
+        #isERT = False
+        #isECDF = False
 
         #Process options
         for o, a in opts:
@@ -84,6 +91,14 @@ def main(argv=None):
                 outputdir = a
             elif o in ("-p", "--write-pickles"):
                 isWritePickle = True
+            elif o == "--noisy":
+                isNoisy = True
+            elif o == "--noise-free":
+                isNoiseFree = True
+            elif o == "--perfprof-only":
+                isEff = False
+                isERT = False
+                isECDF = False
             else:
                 assert False, "unhandled option"
 
@@ -101,22 +116,45 @@ def main(argv=None):
                 tmpargs.append(i)
                 tmpalg = os.path.split(os.path.split(i)[0])[1]
             else:
-                tmpargs.extend(glob.glob(os.path.join(i, "*.pickle")))
+                if isNoisy and isNoiseFree:
+                    ext = "*.pickle"
+                elif isNoisy:
+                    ext = "*f1*.pickle"
+                elif isNoiseFree:
+                    ext = "*f0*.pickle"
+                else:
+                    ext = "*.pickle"
+                tmpargs.extend(glob.glob(os.path.join(i, ext)))
                 tmpalg = os.path.split(i)[1]
 
-            if not dataoutput.algLongInfos[tmpalg] in sortedAlgs:
-                sortedAlgs.append(dataoutput.algLongInfos[tmpalg])
+            for i in dataoutput.algLongInfos[tmpalg]:
+                if not i in sortedAlgs:
+                    sortedAlgs.append(i)
         #set_trace()
 
         if not sortedAlgs:
-            sortedAlgs = list(dataoutput.algLongInfos[i] for i in args)
+            for i in args:
+                sortedAlgs.extend(dataoutput.algLongInfos[i])
 
         #set_trace()
-        dsList = DataSetList(tmpargs)
+        dsList = DataSetList(tmpargs, verbose=verbose)
 
         if not dsList:
             sys.exit()
 
+        for i in dsList:
+            if not i.dim in (2, 3, 5, 10, 20):
+                continue
+            if i.algId == 'Original DIRECT': # all instances are only done once
+                continue
+
+            if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
+                instancesOfInterest):
+                warnings.warn('The data of %s do not list ' %(i) +
+                              'the correct instances ' +
+                              'of function F%d or the ' %(i.funcId) +
+                              'correct number of trials for each.')
+                #set_trace()
 
         # Get the target function values depending on the function
         # target = dict(...)
@@ -131,14 +169,15 @@ def main(argv=None):
             for f, funentries in dictFunc.iteritems():
                 tmptarget = determineFtarget.FunTarget(funentries, d)
                 for i in range(len(tmptarget.ert)):
-                    dictTarget = allmintarget.setdefault(tmptarget.ert[i], {})
-                    #if dictTarget.has_key((f, d)):
-                        #pass # TODO: problem!
-                    dictTarget.setdefault((f, d), tmptarget.minFtarget[i])
-                    dictTarget = allmedtarget.setdefault(tmptarget.ert[i], {})
-                    #if dictTarget.has_key((f, d)):
-                        #pass # TODO: problem!
-                    dictTarget.setdefault((f, d), tmptarget.medianFtarget[i])
+                    tmp = allmintarget.setdefault(tmptarget.ert[i], {})
+                    if (tmptarget.minFtarget[i] < 1e-8): # BBOB-dependent
+                        tmptarget.minFtarget[i] = numpy.nan
+                    tmp.setdefault((f, d), tmptarget.minFtarget[i])
+
+                    tmp = allmedtarget.setdefault(tmptarget.ert[i], {})
+                    if (tmptarget.medianFtarget[i] >= 1e-8): # BBOB-dependent
+                        tmptarget.medianFtarget[i] = numpy.nan
+                    tmp.setdefault((f, d), tmptarget.medianFtarget[i])
 
         #allmintarget = list(allmintarget[i] for i in sorted(allmintarget.keys()))
         #allmedtarget = list(allmedtarget[i] for i in sorted(allmedtarget.keys()))
@@ -156,15 +195,24 @@ def main(argv=None):
             dictDim = dsList.dictByDim()
             for d, entries in dictDim.iteritems():
                 for k, t in allmintarget.iteritems():
-                    target = dict((f[0], t[f]) for f in t if f[1] == d and numpy.isfinite(t[f]) and t[f] >= 1e-8)
+                    target = dict((f[0], t[f]) for f in t if f[1] == d and numpy.isfinite(t[f]))
                     if len(target) == 0:
                         continue
                     #set_trace()
-                    ppperfprof.main(entries, target=target, order=sortedAlgs,
+                    ppperfprof.main(entries, target=target, minERT=2*k*d,
+                                    order=sortedAlgs,
                                     plotArgs=dataoutput.algPlotInfos,
                                     outputdir=outputdir,
                                     info=('%02d_ert%2.1eD' % (d, k)),
                                     verbose=verbose)
+                    set_trace()
+                #set_trace()
+                ppperfprof.main2(entries, target=allmintarget,
+                                 order=sortedAlgs,
+                                 plotArgs=dataoutput.algPlotInfos,
+                                 outputdir=outputdir,
+                                 info=('%02d' % (d)),
+                                 verbose=verbose)
 
         if isERT or isEff or isECDF:
             #plt.rc("axes", labelsize=20, titlesize=24)
