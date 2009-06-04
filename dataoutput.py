@@ -28,7 +28,8 @@ try:
             continue
         algShortInfo, algId, comment, plotinfo = line.strip().split(':', 3)
         algShortInfos[(algId, comment)] = algShortInfo
-        algLongInfos[algShortInfo] = (algId, comment)
+        algLongInfos.setdefault(algShortInfo, []).append((algId, comment))
+        # Could have multiple entries...
         algPlotInfos[(algId, comment)] = eval(plotinfo)
     f.close()
 except IOError, (errno, strerror):
