@@ -32,7 +32,7 @@ GA:PUT ALGORITHM NAME:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"
 SEP-CMA-ES:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e4*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize), only the first restart uses mixed strategies for 1+100*N/sqrt(popsize):{"label": "sep-CMA-ES", "color": "b", "ls": "-."}
 VNS:VNS_with_ECs:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "VNS"}
 NELDERDOERR:NELDERDOERR:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "NELDERDOERR"}
-SPSAHANOISY:SPSA2:%  maxFunevals = 5e4*DIM with 10 restarts, blocking = 10, lambda_start = 10:{"label":"adaptive SPSA"}
+SPSAHA:SPSA2:%  maxFunevals = 5e4*DIM with 10 restarts, blocking = 10, lambda_start = 10:{"label":"adaptive SPSA"}
 SPSAHA:SPSA2:%  maxFunevals = 5e4*DIM with restarts, c0=0.1, initial lambda = 5, blocking = 10, restart changes c0:{"label":"adaptive SPSA"}
 SNOBFIT:SNOBFIT:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"SNOBFIT"}
 MCS:MCS:% default parameters except for local = maxfunevals/5:{"label":"MCS"}
