@@ -37,5 +37,6 @@ SPSAHA:SPSA2:%  maxFunevals = 5e4*DIM with restarts, c0=0.1, initial lambda = 5,
 SNOBFIT:SNOBFIT:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"SNOBFIT"}
 MCS:MCS:% default parameters except for local = maxfunevals/5:{"label":"MCS"}
 MCS:MCS:% default parameters, no local search:{"label":"MCS"}
+MA2LSI_5DIMF_ssga_cmaesn05:MA2LSI_5DIMF_ssga_cmaesn05:% RatioBL=0.5,Intensity=500:{"label":"MA2LSI_5DIMF_ssga_cmaesn05"}
 
 
