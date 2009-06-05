@@ -127,17 +127,11 @@ def main(argv=None):
                 tmpargs.extend(glob.glob(os.path.join(i, ext)))
                 tmpalg = os.path.split(i)[1]
 
-            for i in dataoutput.algLongInfos[tmpalg]:
-                if not i in sortedAlgs:
-                    sortedAlgs.append(i)
-        #set_trace()
+            sortedAlgs.append(dataoutput.algLongInfos[tmpalg])
 
-        if not sortedAlgs:
-            for i in args:
-                sortedAlgs.extend(dataoutput.algLongInfos[i])
-
-        #set_trace()
         dsList = DataSetList(tmpargs, verbose=verbose)
+
+        #set_trace()
 
         if not dsList:
             sys.exit()
@@ -205,7 +199,7 @@ def main(argv=None):
                                     outputdir=outputdir,
                                     info=('%02d_ert%2.1eD' % (d, k)),
                                     verbose=verbose)
-                    set_trace()
+                    #set_trace()
                 #set_trace()
                 ppperfprof.main2(entries, target=allmintarget,
                                  order=sortedAlgs,
@@ -232,10 +226,16 @@ def main(argv=None):
                         plt.figure()
                         for alg in sortedAlgs:
                             #set_trace()
-                            entries = dictAlg[alg]
-                            plt.plot(entries[0].target[entries[0].target>=1e-8],
-                                     entries[0].ert[entries[0].target>=1e-8],
-                                     **dataoutput.algPlotInfos[alg])
+                            for elem in alg:
+                                try:
+                                    entry = dictAlg[elem][0]
+                                    break
+                                except KeyError:
+                                    pass
+
+                            plt.plot(entry.target[entry.target>=1e-8],
+                                     entry.ert[entry.target>=1e-8],
+                                     **dataoutput.algPlotInfos[elem])
                         #try log x-axis if possible. and labels !
                         plt.xscale("log")
                         plt.yscale("log")
@@ -265,9 +265,15 @@ def main(argv=None):
                             plt.figure()
                             for alg in sortedAlgs:
                                 #set_trace()
-                                pprldistr.plotERTDistr(dictAlg[alg],
+                                for elem in alg:
+                                    try:
+                                        entry = dictAlg[elem][0]
+                                        break
+                                    except KeyError:
+                                        pass
+                                pprldistr.plotERTDistr(entry,
                                                        target,
-                                                       plotArgs=dataoutput.algPlotInfos[alg],
+                                                       plotArgs=dataoutput.algPlotInfos[elem],
                                                        verbose=True)
                             #try log x-axis if possible. and labels !
                             plt.xscale("log")
@@ -286,15 +292,24 @@ def main(argv=None):
                             plt.figure()
                             maxEvalsF = 0
                             for alg in sortedAlgs:
-                                entries = dictAlg[alg]
+                                for elem in alg:
+                                    try:
+                                        entries = dictAlg[elem]
+                                        break
+                                    except KeyError:
+                                        pass
                                 maxEvalsF = max((maxEvalsF, max(entries[0].maxevals/entries[0].dim)))
 
                             for alg in sortedAlgs:
-                                #set_trace()
-                                entries = dictAlg[alg]
+                                for elem in alg:
+                                    try:
+                                        entries = dictAlg[elem]
+                                        break
+                                    except KeyError:
+                                        pass
                                 pprldistr.plotRLDistr2(entries, fvalueToReach=target,
                                                        maxEvalsF=maxEvalsF,
-                                                       plotArgs=dataoutput.algPlotInfos[alg],
+                                                       plotArgs=dataoutput.algPlotInfos[elem],
                                                        verbose=verbose)
 
                             #try log x-axis if possible. and labels !
@@ -318,10 +333,15 @@ def main(argv=None):
                             plt.figure()
                             for alg in sortedAlgs:
                                 #set_trace()
-                                entries = dictAlg[alg]
+                                for elem in alg:
+                                    try:
+                                        entries = dictAlg[elem]
+                                        break
+                                    except KeyError:
+                                        pass
                                 pprldistr.plotFVDistr2(entries, fvalueToReach=target,
                                                        maxEvalsF=max(entries[0].maxevals/entries[0].dim),
-                                                       plotArgs=dataoutput.algPlotInfos[alg],
+                                                       plotArgs=dataoutput.algPlotInfos[elem],
                                                        verbose=verbose)
                                 #set_trace()
 

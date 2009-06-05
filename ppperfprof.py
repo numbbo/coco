@@ -16,7 +16,7 @@ percentiles = 50
 samplesize = 200
 
 def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
-             fileFormat=('png',)):
+             isLegend=True, fileFormat=('png',)):
 
     plt.xscale('log')
     plt.xlim(xmin=1e-2)
@@ -40,17 +40,20 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
                  verticalalignment="bottom",
                  transform=plt.gca().transAxes)
 
-    plt.legend(loc='best')
+    if isLegend:
+        plt.legend(loc='best')
 
     #set_trace()
     for entry in fileFormat:
         plt.savefig(figureName + '.' + entry, dpi = 300, format = entry)
 
-def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, kwargs={}):
+def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
+                 kwargs={}):
+    #Expect data to be a ndarray.
     x = data[numpy.isnan(data)==False] # Take away the nans
-    x.sort()
     #set_trace()
     nn = len(x)
+
     x = x[numpy.isinf(x)==False] # Take away the infs
     n = len(x)
 
@@ -59,24 +62,36 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, kwargs={}):
     else:
         x.sort()
         if maxval is None:
-            maxval = x[-1]
+            maxval = max(x)
+        x = x[x <= maxval]
+        n = len(x) # redefine n to correspond to the x that will be shown...
+
         x2 = numpy.hstack([numpy.repeat(x, 2), maxval])
         y2 = numpy.hstack([0.0,
                            numpy.repeat(numpy.arange(1, n+1) / float(nn), 2)])
         res = plt.plot(x2, y2, **kwargs)
         if not maxevals is None:
             #set_trace()
-
             x3 = numpy.median(maxevals) # or mean?
             try:
                 y3 = y2[x2<=x3][-1]
             except IndexError: # x3 < x2 !!! TODO: possible?
                 #set_trace()
                 y3 = 0.
-            kwargs3 = kwargs.copy()
-            kwargs3['marker'] = 'x'
-            del kwargs3['label']
-            plt.plot((x3,), (y3,), **kwargs3) # Only take sequences for x and y!
+
+            #set_trace()
+            plt.plot((x3,), (y3,), marker='x', ls=plt.getp(res[0], 'ls'),
+                     color=plt.getp(res[0], 'color'))
+            # Only take sequences for x and y!
+
+        #set_trace()
+        if not order is None:
+            #set_trace()
+            plt.plot((maxval, maxval*2), (y2[-1], 0.05 + order[0]*0.9/(order[1]-1)),
+                     ls=plt.getp(res[0], 'ls'), color=plt.getp(res[0], 'color'))
+            plt.text(maxval*2.1, 0.05 + order[0]*0.9/(order[1]-1),
+                     kwargs['label'], horizontalalignment="left",
+                     verticalalignment="center")
 
     return res
 
@@ -155,11 +170,13 @@ def main(dsList, target, minERT=None, order=None,
     if order is None:
         order = dictData.keys()
 
-    for alg in order:
-        if dictData.has_key(alg):
-            kwargs = plotArgs[alg].copy()
-            plotPerfProf(numpy.array(dictData[alg]), #/numpy.array(bestERT),
-                         max(maxval, 1e7), dictMaxEvals[alg], kwargs=kwargs)
+    for i, alg in enumerate(order):
+        for elem in alg:
+            if dictData.has_key(elem):
+                plotPerfProf(numpy.array(dictData[elem]), #/numpy.array(bestERT),
+                             1e7, dictMaxEvals[elem],
+                             kwargs=plotArgs[elem])
+                break
         #else: problem!
         #set_trace()
     #plotPerfProf(numpy.array(bestERT), #/numpy.array(bestERT),
@@ -191,6 +208,8 @@ def main2(dsList, target, order=None,
 
     bestERT = [] # best ert per function, not necessarily sorted as well.
     funcsolved = {}
+    if order is None:
+        order = dictData.keys()
 
     # per instance instead of per function?
     dictFunc = dsList.dictByFunc()
@@ -251,13 +270,14 @@ def main2(dsList, target, order=None,
             maxval = max(maxval, max(tmp[numpy.isfinite(tmp)]))
 
     #set_trace()
-    if order is None:
-        order = dictData.keys()
 
-    for alg in order:
-        if dictData.has_key(alg):
-            plotPerfProf(numpy.array(dictData[alg]), #/numpy.array(bestERT),
-                         max(maxval, 1e7), dictMaxEvals[alg], plotArgs[alg])
+    for i, alg in enumerate(order):
+        for elem in alg:
+            if dictData.has_key(elem):
+                plotPerfProf(numpy.array(dictData[elem]), #/numpy.array(bestERT),
+                             1e7, dictMaxEvals[elem],
+                             order=(i, len(order)), kwargs=plotArgs[elem])
+                break
     #plotPerfProf(numpy.array(bestERT), #/numpy.array(bestERT),
                  #maxval, dictMaxEvals[alg], {'label': 'bestERT', 'color' :'k', 'marker': '*'})
 
@@ -267,7 +287,7 @@ def main2(dsList, target, order=None,
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
     #set_trace()
     funcsolved = list(len(funcsolved[i]) for i in sorted(funcsolved.keys()))
-    beautify(figureName, funcsolved, 1e7)
+    beautify(figureName, funcsolved, 1e7*100, False)
 
     plt.close()
 
