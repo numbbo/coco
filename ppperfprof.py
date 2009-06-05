@@ -85,15 +85,34 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
             # Only take sequences for x and y!
 
         #set_trace()
-        if not order is None:
-            #set_trace()
-            plt.plot((maxval, maxval*2), (y2[-1], 0.05 + order[0]*0.9/(order[1]-1)),
-                     ls=plt.getp(res[0], 'ls'), color=plt.getp(res[0], 'color'))
-            plt.text(maxval*2.1, 0.05 + order[0]*0.9/(order[1]-1),
-                     kwargs['label'], horizontalalignment="left",
-                     verticalalignment="center")
+        #if not order is None:
+            ##set_trace()
+            #plt.plot((maxval, maxval*2), (y2[-1], 0.05 + order[0]*0.9/(order[1]-1)),
+                     #ls=plt.getp(res[0], 'ls'), color=plt.getp(res[0], 'color'))
+            #plt.text(maxval*2.1, 0.05 + order[0]*0.9/(order[1]-1),
+                     #kwargs['label'], horizontalalignment="left",
+                     #verticalalignment="center")
 
     return res
+
+def plotLegend(handles, maxval):
+    ys = {}
+    for h in handles:
+        h = h[0]
+        x2 = plt.getp(h, "xdata")
+        y2 = plt.getp(h, "ydata")
+        ys.setdefault(y2[sum(x2 <= maxval) - 1], []).append(h)
+
+    i = 0
+    for j in sorted(ys.keys()):
+        for h in ys[j]:
+            y = 0.02 + i * 0.96/(len(handles)-1)
+            plt.plot((maxval, maxval*2), (j, y),
+                     ls=plt.getp(h, 'ls'), color=plt.getp(h, 'color'))
+            plt.text(maxval*2.1, y,
+                     plt.getp(h, 'label'), horizontalalignment="left",
+                     verticalalignment="center")
+            i += 1
 
 def main(dsList, target, minERT=None, order=None,
          plotArgs={}, outputdir='', info='default', verbose=True):
@@ -170,12 +189,13 @@ def main(dsList, target, minERT=None, order=None,
     if order is None:
         order = dictData.keys()
 
+    lines = []
     for i, alg in enumerate(order):
         for elem in alg:
             if dictData.has_key(elem):
-                plotPerfProf(numpy.array(dictData[elem]), #/numpy.array(bestERT),
+                lines.append(plotPerfProf(numpy.array(dictData[elem]), #/numpy.array(bestERT),
                              1e7, dictMaxEvals[elem],
-                             kwargs=plotArgs[elem])
+                             kwargs=plotArgs[elem]))
                 break
         #else: problem!
         #set_trace()
@@ -271,13 +291,17 @@ def main2(dsList, target, order=None,
 
     #set_trace()
 
+    lines = []
     for i, alg in enumerate(order):
         for elem in alg:
             if dictData.has_key(elem):
-                plotPerfProf(numpy.array(dictData[elem]), #/numpy.array(bestERT),
+                lines.append(plotPerfProf(numpy.array(dictData[elem]), #/numpy.array(bestERT),
                              1e7, dictMaxEvals[elem],
-                             order=(i, len(order)), kwargs=plotArgs[elem])
+                             order=(i, len(order)), kwargs=plotArgs[elem]))
                 break
+    #set_trace()
+
+    plotLegend(lines, 1e7)
     #plotPerfProf(numpy.array(bestERT), #/numpy.array(bestERT),
                  #maxval, dictMaxEvals[alg], {'label': 'bestERT', 'color' :'k', 'marker': '*'})
 
