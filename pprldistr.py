@@ -75,7 +75,8 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
 
 
 
-def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
+def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, plotArgs={}, 
+                verbose=True):
     """Creates run length distributions from a sequence of indexEntries.
 
     Keyword arguments:
@@ -372,7 +373,7 @@ def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
     legend = []
     for j in range(len(valuesOfInterest)):
         tmp = plotRLDistr(indexEntries, valuesOfInterest[j], evalfmax,
-                          verbose)
+                          verbose=verbose)
         #set_trace()
         if not tmp is None:
             plt.setp(tmp, 'color', rldColors[j])
