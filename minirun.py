@@ -13,8 +13,8 @@ import getopt
 from pdb import set_trace
 import warnings
 import numpy
-#import matplotlib
-#matplotlib.use("Agg") # To avoid window popup and use without X forwarding
+import matplotlib
+matplotlib.use("Agg") # To avoid window popup and use without X forwarding
 import matplotlib.pyplot as plt
 
 # Add the path to bbob_pproc
@@ -189,6 +189,8 @@ def main(argv=None):
             dictDim = dsList.dictByDim()
             for d, entries in dictDim.iteritems():
                 for k, t in allmintarget.iteritems():
+                    if k >= 10000:
+                        continue
                     target = dict((f[0], t[f]) for f in t if f[1] == d and numpy.isfinite(t[f]))
                     if len(target) == 0:
                         continue
@@ -207,6 +209,14 @@ def main(argv=None):
                                  outputdir=outputdir,
                                  info=('%02d' % (d)),
                                  verbose=verbose)
+                tmpmintarget = dict((k, t) for k, t in allmintarget.iteritems() if k >= 10000)
+                ppperfprof.main2(entries, target=tmpmintarget,
+                                 order=sortedAlgs,
+                                 plotArgs=dataoutput.algPlotInfos,
+                                 outputdir=outputdir,
+                                 info=('%02d_ert1.0e+04Dandmore' % (d)),
+                                 verbose=verbose)
+
 
         if isERT or isEff or isECDF:
             #plt.rc("axes", labelsize=20, titlesize=24)
