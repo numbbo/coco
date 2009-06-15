@@ -41,3 +41,4 @@ SNOBFIT:SNOBFIT:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label"
 MCS:MCS:% default parameters except for local = maxfunevals/5:{"label":"MCS", "color": "peru"}
 MCS:MCS:% default parameters, no local search:{"label":"MCS", "color": "peru"}
 MA-LS-CHAIN:MA2LSI_5DIMF_ssga_cmaesn05:% RatioBL=0.5,Intensity=500:{"label":"MA-LS-Chain", "color": "pink"}
+SPSA:SPSA:% maxFuneval = 5e4*dim with 20 restarts, with blocking, A = 10% of kmax, lambda = 2, 20% of choosing a new start point/increase lambda:{"label":"SPSA","color":"purple"}
