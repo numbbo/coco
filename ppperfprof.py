@@ -19,15 +19,11 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
              isLegend=True, fileFormat=('png',)):
 
     plt.xscale('log')
-    plt.xlim(xmin=1e-2)
-    if not maxval is None:
-        plt.xlim(xmax=maxval)
-    plt.ylim(0, 1)
     plt.xlabel('Running Lengths/Dim')
     plt.ylabel('Proportion of functions')
     plt.grid(True)
 
-    if not funcsolved is None:
+    if not funcsolved is None and funcsolved:
         try:
             txt = '(%d' % funcsolved[0]
             for i in range(1, len(funcsolved)):
@@ -43,10 +39,20 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
     if isLegend:
         plt.legend(loc='best')
 
+    plt.xlim(xmin=1e-2)
+    plt.xlim(xmax=1e3)
+    #plt.ylim(0, 1)
     #set_trace()
     for entry in fileFormat:
-        plt.savefig(figureName + '.' + entry, dpi = 300, format = entry)
+        plt.savefig(figureName + 'a.' + entry, dpi = 300, format = entry)
 
+    plt.xlim(xmin=1e2)
+    if not maxval is None:
+        plt.xlim(xmax=maxval)
+    #plt.ylim(0, 1)
+    for entry in fileFormat:
+        plt.savefig(figureName + 'b.' + entry, dpi = 300, format = entry)
+    
 def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
                  kwargs={}):
     #Expect data to be a ndarray.
@@ -97,19 +103,24 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
 
 def plotLegend(handles, maxval):
     ys = {}
+    lh = 0
     for h in handles:
         h = h[0]
         x2 = plt.getp(h, "xdata")
         y2 = plt.getp(h, "ydata")
-        ys.setdefault(y2[sum(x2 <= maxval) - 1], []).append(h)
+        try:
+            ys.setdefault(y2[sum(x2 <= maxval) - 1], []).append(h)
+            lh += 1
+        except IndexError:
+            pass
 
     i = 0
     for j in sorted(ys.keys()):
         for h in ys[j]:
-            y = 0.02 + i * 0.96/(len(handles)-1)
-            plt.plot((maxval, maxval*2), (j, y),
+            y = 0.02 + i * 0.96/(lh-1)
+            plt.plot((maxval, maxval*10), (j, y),
                      ls=plt.getp(h, 'ls'), color=plt.getp(h, 'color'))
-            plt.text(maxval*2.1, y,
+            plt.text(maxval*11, y,
                      plt.getp(h, 'label'), horizontalalignment="left",
                      verticalalignment="center")
             i += 1
@@ -153,6 +164,7 @@ def main(dsList, target, minERT=None, order=None,
 
             x = [numpy.inf]*samplesize
             y = numpy.inf
+            runlengthunsucc = []
             for j, line in enumerate(entry.evals):
                 if line[0] <= target[f]:
                     runlengthsucc = line[1:][numpy.isfinite(line[1:])]
@@ -167,7 +179,7 @@ def main(dsList, target, minERT=None, order=None,
                     break
 
             dictData.setdefault(alg, []).extend(x)
-            dictMaxEvals.setdefault(alg, []).extend((float(i)/entry.dim for i in entry.maxevals))
+            dictMaxEvals.setdefault(alg, []).extend(float(i)/entry.dim for i in runlengthunsucc)
             erts.append(y)
 
         if minERT is None:
@@ -204,7 +216,7 @@ def main(dsList, target, minERT=None, order=None,
                  #{'label': 'bestERT', 'color': 'k', 'marker': '*'})
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
-    beautify(figureName, funcsolved, 1e7)
+    beautify(figureName, funcsolved, 1e7, False)
 
     plt.close()
 
@@ -239,11 +251,11 @@ def main2(dsList, target, order=None,
         for d, samedimEntries in dictDim.iteritems():
             dictAlg = samedimEntries.dictByAlg()
 
-            for alg, entry in dictAlg.iteritems():
-                entry = entry[0]
-                dictMaxEvals.setdefault(alg, []).extend((float(i)/entry.dim for i in entry.maxevals))
+            #for alg, entry in dictAlg.iteritems():
+                #entry = entry[0]
+                #dictMaxEvals.setdefault(alg, []).extend((float(i)/entry.dim for i in entry.maxevals))
 
-            for t in target.keys():
+            for t in sorted(target.keys()):
                 try:
                     if numpy.isnan(target[t][(f, d)]):
                         continue
@@ -259,6 +271,7 @@ def main2(dsList, target, order=None,
 
                     x = [numpy.inf]*samplesize
                     y = numpy.inf
+                    runlengthunsucc = []
                     for j, line in enumerate(entry.evals):
                         if line[0] <= target[t][(f, d)]:
                             runlengthsucc = line[1:][numpy.isfinite(line[1:])]
@@ -275,6 +288,8 @@ def main2(dsList, target, order=None,
 
                     dictData.setdefault(alg, []).extend(x)
                     #set_trace()
+                    dictMaxEvals.setdefault(alg, []).extend(float(i)/entry.dim for i in runlengthunsucc)
+                    #TODO: there may be addition for every target... is it the desired behaviour?
                     erts.append(y)
 
                 bestERT.append(min(erts))
@@ -311,7 +326,7 @@ def main2(dsList, target, order=None,
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
     #set_trace()
     funcsolved = list(len(funcsolved[i]) for i in sorted(funcsolved.keys()))
-    beautify(figureName, funcsolved, 1e7*100, False)
+    beautify(figureName, funcsolved, 1e7*1000, False)
 
     plt.close()
 
