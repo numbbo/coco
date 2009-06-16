@@ -10,6 +10,7 @@ import os
 import sys
 import glob
 import getopt
+import pickle
 from pdb import set_trace
 import warnings
 import numpy
@@ -32,6 +33,7 @@ from bbob_pproc.pproc2 import DataSetList
 figformat = ('png', )
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
+instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
 
 #CLASS DEFINITIONS
 
@@ -54,9 +56,9 @@ def main(argv=None):
     try:
         try:
             opts, args = getopt.getopt(argv, "hvpo:",
-                                       ["help", "output-dir", "noisy",
+                                       ["help", "output-dir=", "noisy",
                                         "noise-free", "write-pickles",
-                                        "perfprof-only",
+                                        "perfprof-only", "targets=",
                                         "verbose"])
         except getopt.error, msg:
              raise Usage(msg)
@@ -70,6 +72,8 @@ def main(argv=None):
         isWritePickle = False
         isNoisy = False
         isNoiseFree = False
+        targets = False
+        targetsfile = 'targetsfile.pickle'
 
         isPer = True
         isEff = True
@@ -91,6 +95,9 @@ def main(argv=None):
                 outputdir = a
             elif o in ("-p", "--write-pickles"):
                 isWritePickle = True
+            elif o == "--targets":
+                targets = True
+                targetsfile = a
             elif o == "--noisy":
                 isNoisy = True
             elif o == "--noise-free":
@@ -126,12 +133,9 @@ def main(argv=None):
                     ext = "*.pickle"
                 tmpargs.extend(glob.glob(os.path.join(i, ext)))
                 tmpalg = os.path.split(i)[1]
-
             sortedAlgs.append(dataoutput.algLongInfos[tmpalg])
 
         dsList = DataSetList(tmpargs, verbose=verbose)
-
-        #set_trace()
 
         if not dsList:
             sys.exit()
@@ -139,11 +143,14 @@ def main(argv=None):
         for i in dsList:
             if not i.dim in (2, 3, 5, 10, 20):
                 continue
-            if i.algId == 'Original DIRECT': # all instances are only done once
-                continue
+            # Deterministic algorithms
+            if i.algId in ('Original DIRECT', ):
+                tmpInstancesOfInterest = instancesOfInterestDet
+            else:
+                tmpInstancesOfInterest = instancesOfInterest
 
             if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
-                instancesOfInterest):
+                tmpInstancesOfInterest):
                 warnings.warn('The data of %s do not list ' %(i) +
                               'the correct instances ' +
                               'of function F%d or the ' %(i.funcId) +
@@ -155,34 +162,46 @@ def main(argv=None):
         #target = {1: 1e-8, 2: 1e-8, 3: 1e-8, 4: 1e-8, 5: 1e-8, 6: 1e-8, 7: 1e-8, 8: 1e-8, 9: 1e-8,
                   #10: 1e-8, 11: 1e-8, 12: 1e-8, 13: 1e-8, 14: 1e-8, 15: 1e-8, 16: 1e-8, 17: 1e-8,
                   #18: 1e-8, 19: 1e-8, 20: 1e-8, 21: 1e-8, 22: 1e-8, 23: 1e-8, 24: 1e-8}
+
         allmintarget = {}
         allmedtarget = {}
-        dictDim = dsList.dictByDim()
-        for d, dimentries in dictDim.iteritems():
-            dictFunc = dimentries.dictByFunc()
-            for f, funentries in dictFunc.iteritems():
-                tmptarget = determineFtarget.FunTarget(funentries, d)
-                for i in range(len(tmptarget.ert)):
-                    tmp = allmintarget.setdefault(tmptarget.ert[i], {})
-                    if (tmptarget.minFtarget[i] < 1e-8): # BBOB-dependent
-                        tmptarget.minFtarget[i] = numpy.nan
-                    tmp.setdefault((f, d), tmptarget.minFtarget[i])
+        if targets:
+            f = open(targetsfile, 'r')
+            algSet = pickle.load(f)
+            if not set(dsList.dictByAlg().keys()).issubset(algSet):
+                raise Usage('Problem here')
+            allmintarget = pickle.load(f)
+            allmedtarget = pickle.load(f)
+            f.close()
 
-                    tmp = allmedtarget.setdefault(tmptarget.ert[i], {})
-                    if (tmptarget.medianFtarget[i] >= 1e-8): # BBOB-dependent
-                        tmptarget.medianFtarget[i] = numpy.nan
-                    tmp.setdefault((f, d), tmptarget.medianFtarget[i])
+        if not allmintarget or not allmedtarget:
+            dictDim = dsList.dictByDim()
+            for d, dimentries in dictDim.iteritems():
+                dictFunc = dimentries.dictByFunc()
+                for f, funentries in dictFunc.iteritems():
+                    #tmp = allmintarget.setdefault(1, {})
+                    #tmp.setdefault((f, d), 1)
+                    tmptarget = determineFtarget.FunTarget(funentries, d)
+                    for i in range(len(tmptarget.ert)):
+                       tmp = allmintarget.setdefault(tmptarget.ert[i], {})
+                       if (tmptarget.minFtarget[i] < 1e-8): # BBOB-dependent
+                           tmptarget.minFtarget[i] = 1e-8
+                       tmp.setdefault((f, d), tmptarget.minFtarget[i])
 
-        #allmintarget = list(allmintarget[i] for i in sorted(allmintarget.keys()))
-        #allmedtarget = list(allmedtarget[i] for i in sorted(allmedtarget.keys()))
+                       tmp = allmedtarget.setdefault(tmptarget.ert[i], {})
+                       if (tmptarget.medianFtarget[i] < 1e-8): # BBOB-dependent
+                           tmptarget.medianFtarget[i] = 1e-8
+                       tmp.setdefault((f, d), tmptarget.medianFtarget[i])
+            f = open(targetsfile, 'w')
+            pickle.dump(set(dsList.dictByAlg().keys()), f)
+            pickle.dump(allmintarget, f)
+            pickle.dump(allmedtarget, f)
+            f.close()
 
         if not os.path.exists(outputdir):
             os.mkdir(outputdir)
             if verbose:
                 print 'Folder %s was created.' % (outputdir)
-
-        # Sort algorithms...
-        # dsList.dictByAlg()
 
         # Performance profiles
         if isPer:
@@ -191,18 +210,13 @@ def main(argv=None):
                 for k, t in allmintarget.iteritems():
                     if k >= 10000:
                         continue
-                    target = dict((f[0], t[f]) for f in t if f[1] == d and numpy.isfinite(t[f]))
-                    if len(target) == 0:
-                        continue
-                    #set_trace()
-                    ppperfprof.main(entries, target=target, minERT=2*k*d,
-                                    order=sortedAlgs,
+                    target = {k: t}
+                    ppperfprof.main2(entries, target=target, order=sortedAlgs,
                                     plotArgs=dataoutput.algPlotInfos,
                                     outputdir=outputdir,
                                     info=('%02d_ert%2.1eD' % (d, k)),
                                     verbose=verbose)
-                    #set_trace()
-                #set_trace()
+
                 ppperfprof.main2(entries, target=allmintarget,
                                  order=sortedAlgs,
                                  plotArgs=dataoutput.algPlotInfos,
@@ -235,7 +249,6 @@ def main(argv=None):
                         # Plot the VTR vs ERT...
                         plt.figure()
                         for alg in sortedAlgs:
-                            #set_trace()
                             for elem in alg:
                                 try:
                                     entry = dictAlg[elem][0]
@@ -277,7 +290,7 @@ def main(argv=None):
                                 #set_trace()
                                 for elem in alg:
                                     try:
-                                        entry = dictAlg[elem][0]
+                                        entry = dictAlg[elem]
                                         break
                                     except KeyError:
                                         pass

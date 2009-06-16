@@ -24,11 +24,14 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
     plt.grid(True)
 
     if not funcsolved is None and funcsolved:
+        txt = ''
         try:
-            txt = '(%d' % funcsolved[0]
-            for i in range(1, len(funcsolved)):
-                txt += ', %d' % funcsolved[i]
-            txt += ') = %d funcs' % numpy.sum(funcsolved)
+            if len(funcsolved) > 1:
+                txt = '(%d' % funcsolved[0]
+                for i in range(1, len(funcsolved)):
+                    txt += ', %d' % funcsolved[i]
+                txt += ') = '
+            txt += '%d funcs' % numpy.sum(funcsolved)
         except TypeError:
             txt = '%d funcs' % funcsolved
 
@@ -41,7 +44,7 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
 
     plt.xlim(xmin=1e-2)
     plt.xlim(xmax=1e3)
-    #plt.ylim(0, 1)
+    plt.ylim(0, 1)
     #set_trace()
     for entry in fileFormat:
         plt.savefig(figureName + 'a.' + entry, dpi = 300, format = entry)
@@ -52,7 +55,7 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
     #plt.ylim(0, 1)
     for entry in fileFormat:
         plt.savefig(figureName + 'b.' + entry, dpi = 300, format = entry)
-    
+
 def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
                  kwargs={}):
     #Expect data to be a ndarray.
@@ -64,7 +67,11 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
     n = len(x)
 
     if n == 0:
-        res = plt.plot([], [], **kwargs) #Why?
+        #TODO: problem if no maxval
+        if maxval is None:
+            res = plt.plot([], [], **kwargs)
+        else:
+            res = plt.plot([1., maxval], [0., 0.], **kwargs)
     else:
         x.sort()
         if maxval is None:
@@ -77,27 +84,14 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
                            numpy.repeat(numpy.arange(1, n+1) / float(nn), 2)])
         res = plt.plot(x2, y2, **kwargs)
         if not maxevals is None:
-            #set_trace()
-            x3 = numpy.median(maxevals) # or mean?
-            try:
+            x3 = numpy.median(maxevals)
+            if numpy.any(x2 <= x3):
                 y3 = y2[x2<=x3][-1]
-            except IndexError: # x3 < x2 !!! TODO: possible?
-                #set_trace()
-                y3 = 0.
-
-            #set_trace()
-            plt.plot((x3,), (y3,), marker='x', ls=plt.getp(res[0], 'ls'),
-                     color=plt.getp(res[0], 'color'))
-            # Only take sequences for x and y!
-
-        #set_trace()
-        #if not order is None:
-            ##set_trace()
-            #plt.plot((maxval, maxval*2), (y2[-1], 0.05 + order[0]*0.9/(order[1]-1)),
-                     #ls=plt.getp(res[0], 'ls'), color=plt.getp(res[0], 'color'))
-            #plt.text(maxval*2.1, 0.05 + order[0]*0.9/(order[1]-1),
-                     #kwargs['label'], horizontalalignment="left",
-                     #verticalalignment="center")
+                if y3 <= maxval:
+                    plt.plot((x3,), (y3,), marker='x',
+                             ls=plt.getp(res[0], 'ls'),
+                             color=plt.getp(res[0], 'color'))
+                # Only take sequences for x and y!
 
     return res
 
@@ -109,21 +103,29 @@ def plotLegend(handles, maxval):
         x2 = plt.getp(h, "xdata")
         y2 = plt.getp(h, "ydata")
         try:
-            ys.setdefault(y2[sum(x2 <= maxval) - 1], []).append(h)
+            #set_trace() # TODO add another layer of sorting here.
+            tmp = sum(x2 <= maxval) - 1
+            x2bis = x2[sum(y2 < y2[tmp]) - 1]
+            ys.setdefault(y2[tmp], {}).setdefault(x2bis, []).append(h)
             lh += 1
         except IndexError:
             pass
 
-    i = 0
+    if lh <= 1:
+        lh = 2
+    i = 0 # loop over the elements of ys
     for j in sorted(ys.keys()):
-        for h in ys[j]:
-            y = 0.02 + i * 0.96/(lh-1)
-            plt.plot((maxval, maxval*10), (j, y),
-                     ls=plt.getp(h, 'ls'), color=plt.getp(h, 'color'))
-            plt.text(maxval*11, y,
-                     plt.getp(h, 'label'), horizontalalignment="left",
-                     verticalalignment="center")
-            i += 1
+        for k in reversed(sorted(ys[j].keys())):
+            for h in ys[j][k]:
+                y = 0.02 + i * 0.96/(lh-1)
+                plt.plot((maxval, maxval*10), (j, y),
+                         ls=plt.getp(h, 'ls'), color=plt.getp(h, 'color'))
+                plt.text(maxval*11, y,
+                         plt.getp(h, 'label'), horizontalalignment="left",
+                         verticalalignment="center")
+                i += 1
+
+    plt.axvline(x=maxval, color='k')
 
 def main(dsList, target, minERT=None, order=None,
          plotArgs={}, outputdir='', info='default', verbose=True):
@@ -226,13 +228,9 @@ def main2(dsList, target, order=None,
           plotArgs={}, outputdir='', info='default', verbose=True):
     """From a dataSetList, generates the performance profiles for multiple
     functions for multiple targets altogether.
+    order determines the plotting order of the algorithm (used by the legend
+    and in the case the algorithm has no plotting arguments specified).
     """
-
-    #plt.rc("axes", labelsize=20, titlesize=24)
-    #plt.rc("xtick", labelsize=20)
-    #plt.rc("ytick", labelsize=20)
-    #plt.rc("font", size=20)
-    #plt.rc("legend", fontsize=20)
 
     dictData = {} # list of (ert per function) per algorithm
     dictMaxEvals = {} # list of (maxevals per function) per algorithm
@@ -240,20 +238,13 @@ def main2(dsList, target, order=None,
 
     bestERT = [] # best ert per function, not necessarily sorted as well.
     funcsolved = {}
-    if order is None:
-        order = dictData.keys()
 
-    # per instance instead of per function?
     dictFunc = dsList.dictByFunc()
 
     for f, samefuncEntries in dictFunc.iteritems():
         dictDim = samefuncEntries.dictByDim()
         for d, samedimEntries in dictDim.iteritems():
             dictAlg = samedimEntries.dictByAlg()
-
-            #for alg, entry in dictAlg.iteritems():
-                #entry = entry[0]
-                #dictMaxEvals.setdefault(alg, []).extend((float(i)/entry.dim for i in entry.maxevals))
 
             for t in sorted(target.keys()):
                 try:
@@ -263,8 +254,6 @@ def main2(dsList, target, order=None,
                     continue
                 funcsolved.setdefault(t, []).append(f)
 
-                erts = []
-
                 for alg, entry in dictAlg.iteritems():
                     # entry is supposed to be a single item DataSetList
                     entry = entry[0]
@@ -272,56 +261,33 @@ def main2(dsList, target, order=None,
                     x = [numpy.inf]*samplesize
                     y = numpy.inf
                     runlengthunsucc = []
-                    for j, line in enumerate(entry.evals):
+                    for line in entry.evals:
                         if line[0] <= target[t][(f, d)]:
                             runlengthsucc = line[1:][numpy.isfinite(line[1:])]
                             runlengthunsucc = entry.maxevals[numpy.isnan(line[1:])]
                             tmp = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
                                                    percentiles=percentiles,
                                                    samplesize=samplesize)
-                            #set_trace()
                             x = list(float(i)/entry.dim for i in tmp[1])
-                            y = entry.ert[j]
-                            #set_trace()
-                            # j is the index of the line in entry.evals.
                             break
 
                     dictData.setdefault(alg, []).extend(x)
-                    #set_trace()
                     dictMaxEvals.setdefault(alg, []).extend(float(i)/entry.dim for i in runlengthunsucc)
                     #TODO: there may be addition for every target... is it the desired behaviour?
-                    erts.append(y)
 
-                bestERT.append(min(erts))
-        #set_trace()
-
-    #set_trace()
-    # what about infs?
-    maxval = 0
-    #set_trace()
-    for data in dictData.values():
-        tmp = numpy.array(data) #/numpy.array(bestERT)
-        if any(numpy.isfinite(tmp)):
-            maxval = max(maxval, max(tmp[numpy.isfinite(tmp)]))
-
-    #set_trace()
+    if order is None:
+        order = dictData.keys()
 
     lines = []
     for i, alg in enumerate(order):
         for elem in alg:
             if dictData.has_key(elem):
-                lines.append(plotPerfProf(numpy.array(dictData[elem]), #/numpy.array(bestERT),
+                lines.append(plotPerfProf(numpy.array(dictData[elem]),
                              1e7, dictMaxEvals[elem],
                              order=(i, len(order)), kwargs=plotArgs[elem]))
                 break
-    #set_trace()
 
     plotLegend(lines, 1e7)
-    #plotPerfProf(numpy.array(bestERT), #/numpy.array(bestERT),
-                 #maxval, dictMaxEvals[alg], {'label': 'bestERT', 'color' :'k', 'marker': '*'})
-
-        #else: problem!
-        #set_trace()
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
     #set_trace()
@@ -329,5 +295,3 @@ def main2(dsList, target, order=None,
     beautify(figureName, funcsolved, 1e7*1000, False)
 
     plt.close()
-
-    #plt.rcdefaults()
