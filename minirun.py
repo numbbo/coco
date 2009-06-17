@@ -179,19 +179,24 @@ def main(argv=None):
             for d, dimentries in dictDim.iteritems():
                 dictFunc = dimentries.dictByFunc()
                 for f, funentries in dictFunc.iteritems():
-                    #tmp = allmintarget.setdefault(1, {})
-                    #tmp.setdefault((f, d), 1)
-                    tmptarget = determineFtarget.FunTarget(funentries, d)
-                    for i in range(len(tmptarget.ert)):
-                       tmp = allmintarget.setdefault(tmptarget.ert[i], {})
-                       if (tmptarget.minFtarget[i] < 1e-8): # BBOB-dependent
-                           tmptarget.minFtarget[i] = 1e-8
-                       tmp.setdefault((f, d), tmptarget.minFtarget[i])
+                    if 11 < 3:  # constant target
+                        for t in (10, 0.1, 1e-3, 1e-5, 1e-8):
+                            tmp = allmintarget.setdefault(t, {})
+                            tmp.setdefault((f, d), t)
+                            tmp = allmedtarget.setdefault(t, {})
+                            tmp.setdefault((f, d), t)
+                    else:
+                        tmptarget = determineFtarget.FunTarget(funentries, d)
+                        for i in range(len(tmptarget.ert)):
+                            tmp = allmintarget.setdefault(tmptarget.ert[i], {})
+                            if (tmptarget.minFtarget[i] < 1e-8): # BBOB-dependent
+                                tmptarget.minFtarget[i] = 1e-8
+                            tmp.setdefault((f, d), tmptarget.minFtarget[i])
 
-                       tmp = allmedtarget.setdefault(tmptarget.ert[i], {})
-                       if (tmptarget.medianFtarget[i] < 1e-8): # BBOB-dependent
-                           tmptarget.medianFtarget[i] = 1e-8
-                       tmp.setdefault((f, d), tmptarget.medianFtarget[i])
+                            tmp = allmedtarget.setdefault(tmptarget.ert[i], {})
+                            if (tmptarget.medianFtarget[i] < 1e-8): # BBOB-dependent
+                                tmptarget.medianFtarget[i] = 1e-8
+                            tmp.setdefault((f, d), tmptarget.medianFtarget[i])
             f = open(targetsfile, 'w')
             pickle.dump(set(dsList.dictByAlg().keys()), f)
             pickle.dump(allmintarget, f)
