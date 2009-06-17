@@ -179,7 +179,7 @@ def main(argv=None):
             for d, dimentries in dictDim.iteritems():
                 dictFunc = dimentries.dictByFunc()
                 for f, funentries in dictFunc.iteritems():
-                    if 11 < 3:  # constant target
+                    if 11 < 3:  # constant targets
                         for t in (10, 0.1, 1e-3, 1e-5, 1e-8):
                             tmp = allmintarget.setdefault(t, {})
                             tmp.setdefault((f, d), t)
