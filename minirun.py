@@ -46,6 +46,8 @@ class Usage(Exception):
 #FUNCTION DEFINITIONS
 
 def detTarget(dsList):
+    allmintarget = {}
+    allmedtarget = {}
     dictDim = dsList.dictByDim()
     for d, dimentries in dictDim.iteritems():
         dictFunc = dimentries.dictByFunc()
