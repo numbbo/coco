@@ -29,7 +29,8 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
             if len(funcsolved) > 1:
                 txt = '(%d' % funcsolved[0]
                 for i in range(1, len(funcsolved)):
-                    txt += ', %d' % funcsolved[i]
+                    if funcsolved[i] > 0:
+                        txt += ', %d' % funcsolved[i]
                 txt += ') = '
             txt += '%d funcs' % numpy.sum(funcsolved)
         except TypeError:
@@ -42,9 +43,10 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
     if isLegend:
         plt.legend(loc='best')
 
+    plt.ylim(0, 1)
+
     plt.xlim(xmin=1e-2)
     plt.xlim(xmax=1e3)
-    plt.ylim(0, 1)
     #set_trace()
     for entry in fileFormat:
         plt.savefig(figureName + 'a.' + entry, dpi = 300, format = entry)
@@ -55,6 +57,11 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
     #plt.ylim(0, 1)
     for entry in fileFormat:
         plt.savefig(figureName + 'b.' + entry, dpi = 300, format = entry)
+
+    plt.xlim(xmin=1e-2)
+    for entry in fileFormat:
+        plt.savefig(figureName + '.' + entry, dpi = 300, format = entry)
+
 
 def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
                  kwargs={}):
@@ -228,16 +235,21 @@ def main2(dsList, target, order=None,
           plotArgs={}, outputdir='', info='default', verbose=True):
     """From a dataSetList, generates the performance profiles for multiple
     functions for multiple targets altogether.
-    order determines the plotting order of the algorithm (used by the legend
+    keyword arguments:
+    target: list of dictionaries with (function, dimension) as keys, target
+    function values as values
+    order: determines the plotting order of the algorithm (used by the legend
     and in the case the algorithm has no plotting arguments specified).
+
     """
 
+    xlim = 1e7
     dictData = {} # list of (ert per function) per algorithm
     dictMaxEvals = {} # list of (maxevals per function) per algorithm
     # the functions will not necessarily sorted.
 
     bestERT = [] # best ert per function, not necessarily sorted as well.
-    funcsolved = {}
+    funcsolved = [0] * len(target)
 
     dictFunc = dsList.dictByFunc()
 
@@ -246,13 +258,14 @@ def main2(dsList, target, order=None,
         for d, samedimEntries in dictDim.iteritems():
             dictAlg = samedimEntries.dictByAlg()
 
-            for t in sorted(target.keys()):
+            for j, t in enumerate(target):
                 try:
-                    if numpy.isnan(target[t][(f, d)]):
+                    #set_trace()
+                    if numpy.isnan(t[(f, d)]):
                         continue
                 except KeyError:
                     continue
-                funcsolved.setdefault(t, []).append(f)
+                funcsolved[j] += 1
 
                 for alg, entry in dictAlg.iteritems():
                     # entry is supposed to be a single item DataSetList
@@ -262,7 +275,7 @@ def main2(dsList, target, order=None,
                     y = numpy.inf
                     runlengthunsucc = []
                     for line in entry.evals:
-                        if line[0] <= target[t][(f, d)]:
+                        if line[0] <= t[(f, d)]:
                             runlengthsucc = line[1:][numpy.isfinite(line[1:])]
                             runlengthunsucc = entry.maxevals[numpy.isnan(line[1:])]
                             tmp = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
@@ -283,15 +296,14 @@ def main2(dsList, target, order=None,
         for elem in alg:
             if dictData.has_key(elem):
                 lines.append(plotPerfProf(numpy.array(dictData[elem]),
-                             1e7, dictMaxEvals[elem],
-                             order=(i, len(order)), kwargs=plotArgs[elem]))
+                             xlim, dictMaxEvals[elem], order=(i, len(order)),
+                             kwargs=plotArgs[elem]))
                 break
 
-    plotLegend(lines, 1e7)
+    plotLegend(lines, xlim)
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
     #set_trace()
-    funcsolved = list(len(funcsolved[i]) for i in sorted(funcsolved.keys()))
-    beautify(figureName, funcsolved, 1e7*1000, False)
+    beautify(figureName, funcsolved, xlim*1000, False)
 
     plt.close()

@@ -28,7 +28,9 @@ if __name__ == "__main__":
 
 from bbob_pproc import ppperfprof, pprldistr
 from bbob_pproc import dataoutput, determineFtarget
+from bbob_pproc.dataoutput import algLongInfos, algPlotInfos
 from bbob_pproc.pproc2 import DataSetList
+
 
 figformat = ('png', )
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
@@ -42,6 +44,26 @@ class Usage(Exception):
         self.msg = msg
 
 #FUNCTION DEFINITIONS
+
+def detTarget(dsList):
+    dictDim = dsList.dictByDim()
+    for d, dimentries in dictDim.iteritems():
+        dictFunc = dimentries.dictByFunc()
+        for f, funentries in dictFunc.iteritems():
+            #tmp = allmintarget.setdefault(1, {})
+            #tmp.setdefault((f, d), 1)
+            tmptarget = determineFtarget.FunTarget(funentries, d)
+            for i in range(len(tmptarget.ert)):
+               tmp = allmintarget.setdefault(tmptarget.ert[i], {})
+               if (tmptarget.minFtarget[i] < 1e-8): # BBOB-dependent
+                   tmptarget.minFtarget[i] = 1e-8
+               tmp.setdefault((f, d), tmptarget.minFtarget[i])
+
+               tmp = allmedtarget.setdefault(tmptarget.ert[i], {})
+               if (tmptarget.medianFtarget[i] < 1e-8): # BBOB-dependent
+                   tmptarget.medianFtarget[i] = 1e-8
+               tmp.setdefault((f, d), tmptarget.medianFtarget[i])
+    return allmintarget, allmedtarget
 
 def usage():
     print main.__doc__
@@ -133,7 +155,7 @@ def main(argv=None):
                     ext = "*.pickle"
                 tmpargs.extend(glob.glob(os.path.join(i, ext)))
                 tmpalg = os.path.split(i)[1]
-            sortedAlgs.append(dataoutput.algLongInfos[tmpalg])
+            sortedAlgs.append(algLongInfos[tmpalg])
 
         dsList = DataSetList(tmpargs, verbose=verbose)
 
@@ -155,13 +177,6 @@ def main(argv=None):
                               'the correct instances ' +
                               'of function F%d or the ' %(i.funcId) +
                               'correct number of trials for each.')
-                #set_trace()
-
-        # Get the target function values depending on the function
-        # target = dict(...)
-        #target = {1: 1e-8, 2: 1e-8, 3: 1e-8, 4: 1e-8, 5: 1e-8, 6: 1e-8, 7: 1e-8, 8: 1e-8, 9: 1e-8,
-                  #10: 1e-8, 11: 1e-8, 12: 1e-8, 13: 1e-8, 14: 1e-8, 15: 1e-8, 16: 1e-8, 17: 1e-8,
-                  #18: 1e-8, 19: 1e-8, 20: 1e-8, 21: 1e-8, 22: 1e-8, 23: 1e-8, 24: 1e-8}
 
         allmintarget = {}
         allmedtarget = {}
@@ -175,33 +190,25 @@ def main(argv=None):
             f.close()
 
         if not allmintarget or not allmedtarget:
-            dictDim = dsList.dictByDim()
-            for d, dimentries in dictDim.iteritems():
-                dictFunc = dimentries.dictByFunc()
-                for f, funentries in dictFunc.iteritems():
-                    if 11 < 3:  # constant targets
-                        for t in (10, 0.1, 1e-3, 1e-5, 1e-8):
-                            tmp = allmintarget.setdefault(t, {})
-                            tmp.setdefault((f, d), t)
-                            tmp = allmedtarget.setdefault(t, {})
-                            tmp.setdefault((f, d), t)
-                    else:
-                        tmptarget = determineFtarget.FunTarget(funentries, d)
-                        for i in range(len(tmptarget.ert)):
-                            tmp = allmintarget.setdefault(tmptarget.ert[i], {})
-                            if (tmptarget.minFtarget[i] < 1e-8): # BBOB-dependent
-                                tmptarget.minFtarget[i] = 1e-8
-                            tmp.setdefault((f, d), tmptarget.minFtarget[i])
-
-                            tmp = allmedtarget.setdefault(tmptarget.ert[i], {})
-                            if (tmptarget.medianFtarget[i] < 1e-8): # BBOB-dependent
-                                tmptarget.medianFtarget[i] = 1e-8
-                            tmp.setdefault((f, d), tmptarget.medianFtarget[i])
+            allmintarget, allmedtarget = detTarget(dsList)
             f = open(targetsfile, 'w')
             pickle.dump(set(dsList.dictByAlg().keys()), f)
             pickle.dump(allmintarget, f)
             pickle.dump(allmedtarget, f)
             f.close()
+
+        # group targets:
+        dictTarget = {}
+        for i in sorted(allmintarget):
+            if i < 10000:
+                dictTarget['_ert%2.1eD' % i] = (allmintarget[i],)
+            if i >= 10000:
+                dictTarget.setdefault('_ert1.0e+04Dandmore', []).append(allmintarget[i])
+            dictTarget.setdefault('_allerts', []).append(allmintarget[i])
+        for t in (10., 1., 0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-8):
+            tmpdict = dict.fromkeys(((f, d) for f in range(0, 25) + range(101, 131) for d in (2, 3, 5, 10, 20, 40)), t)
+            dictTarget['_f%2.1eD' % t] = (tmpdict, )
+            dictTarget.setdefault('_allfs', []).append(tmpdict)
 
         if not os.path.exists(outputdir):
             os.mkdir(outputdir)
@@ -212,38 +219,14 @@ def main(argv=None):
         if isPer:
             dictDim = dsList.dictByDim()
             for d, entries in dictDim.iteritems():
-                for k, t in allmintarget.iteritems():
-                    if k >= 10000:
-                        continue
-                    target = {k: t}
-                    ppperfprof.main2(entries, target=target, order=sortedAlgs,
-                                    plotArgs=dataoutput.algPlotInfos,
+                for k, t in dictTarget.iteritems():
+                    ppperfprof.main2(entries, target=t, order=sortedAlgs,
+                                    plotArgs=algPlotInfos,
                                     outputdir=outputdir,
-                                    info=('%02d_ert%2.1eD' % (d, k)),
+                                    info=('%02d%s' % (d, k)),
                                     verbose=verbose)
 
-                ppperfprof.main2(entries, target=allmintarget,
-                                 order=sortedAlgs,
-                                 plotArgs=dataoutput.algPlotInfos,
-                                 outputdir=outputdir,
-                                 info=('%02d' % (d)),
-                                 verbose=verbose)
-                tmpmintarget = dict((k, t) for k, t in allmintarget.iteritems() if k >= 10000)
-                ppperfprof.main2(entries, target=tmpmintarget,
-                                 order=sortedAlgs,
-                                 plotArgs=dataoutput.algPlotInfos,
-                                 outputdir=outputdir,
-                                 info=('%02d_ert1.0e+04Dandmore' % (d)),
-                                 verbose=verbose)
-
-
         if isERT or isEff or isECDF:
-            #plt.rc("axes", labelsize=20, titlesize=24)
-            #plt.rc("xtick", labelsize=20)
-            #plt.rc("ytick", labelsize=20)
-            #plt.rc("font", size=20)
-            #plt.rc("legend", fontsize=20)
-
             # ECDF: 1 per function and dimension
             dictDim = dsList.dictByDim()
             for d, dimentries in dictDim.iteritems():
@@ -263,7 +246,7 @@ def main(argv=None):
 
                             plt.plot(entry.target[entry.target>=1e-8],
                                      entry.ert[entry.target>=1e-8],
-                                     **dataoutput.algPlotInfos[elem])
+                                     **algPlotInfos[elem])
                         #try log x-axis if possible. and labels !
                         plt.xscale("log")
                         plt.yscale("log")
@@ -301,7 +284,7 @@ def main(argv=None):
                                         pass
                                 pprldistr.plotERTDistr(entry,
                                                        target,
-                                                       plotArgs=dataoutput.algPlotInfos[elem],
+                                                       plotArgs=algPlotInfos[elem],
                                                        verbose=True)
                             #try log x-axis if possible. and labels !
                             plt.xscale("log")
@@ -337,7 +320,7 @@ def main(argv=None):
                                         pass
                                 pprldistr.plotRLDistr2(entries, fvalueToReach=target,
                                                        maxEvalsF=maxEvalsF,
-                                                       plotArgs=dataoutput.algPlotInfos[elem],
+                                                       plotArgs=algPlotInfos[elem],
                                                        verbose=verbose)
 
                             #try log x-axis if possible. and labels !
@@ -369,7 +352,7 @@ def main(argv=None):
                                         pass
                                 pprldistr.plotFVDistr2(entries, fvalueToReach=target,
                                                        maxEvalsF=max(entries[0].maxevals/entries[0].dim),
-                                                       plotArgs=dataoutput.algPlotInfos[elem],
+                                                       plotArgs=algPlotInfos[elem],
                                                        verbose=verbose)
                                 #set_trace()
 
