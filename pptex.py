@@ -344,7 +344,7 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
                 #if the target function value is not reached, we get the
                 #largest number of function evaluations for which f > fbest.
 
-        N = numpy.sort(data[1:indexEntry.nbRuns() + 1])
+        N = data[1:indexEntry.nbRuns() + 1]
 
         #set_trace()
         ertvec = bootstrap.sp(N, issuccessful=success, allowinf=False)
@@ -381,9 +381,7 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
             tmp = [50]
             tmp.extend(percentiles)
             curLine.extend(bootstrap.prctile(vals, tmp))
-            #set_trace()
-            #curLine.append(numpy.sum(unsucc)) #/max(1, ertvec[2])
-            curLine.append(bootstrap.prctile(unsucc, [50])[0])
+            curLine.append(bootstrap.prctile(unsucc, [50], issorted=False)[0])
 
         res.append(curLine)
         #set_trace()
@@ -470,15 +468,19 @@ def generateData2(dataSet, targetFuncValues, samplesize=1000):
             # for which f is STRICTLY larger to fbest
             unsucc = []
             for j in range(1, dataSet.nbRuns()+1):
+                # Get the alignment number of function evaluations
+                # corresponding to the 1st occurrence of a function value
+                # different from the best function value obtained.
                 k = -1
                 while dataSet.funvals[k, j] == dataSet.finalfunvals[j-1]:
                     k -= 1
-                unsucc.append(dataSet.funvals[k, 0])
-            unsucc.sort()
-            curLine.append(bootstrap.prctile(unsucc, [50])[0])
+                tmpval = dataSet.funvals[k, j]
+                while dataSet.funvals[k, j] == tmpval:
+                    k -= 1
+                unsucc.append(dataSet.funvals[k + 1, 0])
+            curLine.append(bootstrap.prctile(unsucc, [50], issorted=False)[0])
 
         res.append(curLine)
-        #set_trace()
     return numpy.vstack(res)
 
 
