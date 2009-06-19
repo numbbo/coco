@@ -469,10 +469,10 @@ def generateData2(dataSet, targetFuncValues, samplesize=1000):
             unsucc = []
             for j in range(1, dataSet.nbRuns()+1):
                 # Get the alignment number of function evaluations
-                # corresponding to the 1st occurrence of a function value
-                # different from the best function value obtained.
+                # corresponding to the 1st occurrence of the best function
+                # value obtained.
                 k = -1
-                while dataSet.funvals[k, j] == dataSet.finalfunvals[j-1]:
+                while dataSet.funvals[k - 1, j] == dataSet.finalfunvals[j-1]:
                     k -= 1
                 unsucc.append(dataSet.funvals[k, 0])
             curLine.append(bootstrap.prctile(unsucc, [50], issorted=False)[0])
