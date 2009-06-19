@@ -27,7 +27,7 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc import ppperfprof, pprldistr
-from bbob_pproc import dataoutput, determineFtarget
+from bbob_pproc import dataoutput, determineFtarget2
 from bbob_pproc.dataoutput import algLongInfos, algPlotInfos
 from bbob_pproc.pproc import DataSetList
 
@@ -54,7 +54,7 @@ def detTarget(dsList):
         for f, funentries in dictFunc.iteritems():
             #tmp = allmintarget.setdefault(1, {})
             #tmp.setdefault((f, d), 1)
-            tmptarget = determineFtarget.FunTarget(funentries, d)
+            tmptarget = determineFtarget2.FunTarget(funentries, d)
             for i in range(len(tmptarget.ert)):
                tmp = allmintarget.setdefault(tmptarget.ert[i], {})
                if (tmptarget.minFtarget[i] < 1e-8): # BBOB-dependent
