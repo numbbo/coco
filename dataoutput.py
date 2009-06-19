@@ -10,7 +10,7 @@ from __future__ import absolute_import
 import os
 import sys
 import pickle
-from bbob_pproc import pproc2
+from bbob_pproc import pproc
 
 from pdb import set_trace
 
