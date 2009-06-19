@@ -344,7 +344,7 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
                 #if the target function value is not reached, we get the
                 #largest number of function evaluations for which f > fbest.
 
-        N = data[1:indexEntry.nbRuns() + 1]
+        N = numpy.sort(data[1:indexEntry.nbRuns() + 1])
 
         #set_trace()
         ertvec = bootstrap.sp(N, issuccessful=success, allowinf=False)
@@ -474,10 +474,7 @@ def generateData2(dataSet, targetFuncValues, samplesize=1000):
                 k = -1
                 while dataSet.funvals[k, j] == dataSet.finalfunvals[j-1]:
                     k -= 1
-                tmpval = dataSet.funvals[k, j]
-                while dataSet.funvals[k, j] == tmpval:
-                    k -= 1
-                unsucc.append(dataSet.funvals[k + 1, 0])
+                unsucc.append(dataSet.funvals[k, 0])
             curLine.append(bootstrap.prctile(unsucc, [50], issorted=False)[0])
 
         res.append(curLine)
@@ -502,6 +499,6 @@ def main(indexEntries, valOfInterests, filename, isDraft=False, verbose=True):
     #TODO give an array of indexEntries and have a vertical formatter.
     for i in indexEntries:
         curValOfInterests = list(j[i.funcId] for j in valOfInterests)
-        i.tabData = generateData(i, curValOfInterests, samplesize)
+        i.tabData = generateData2(i, curValOfInterests, samplesize)
 
     writeTable(indexEntries, filename, fontSize='tiny', verbose=verbose)

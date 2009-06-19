@@ -28,8 +28,11 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc.readindexfiles import IndexEntries
-from bbob_pproc import pproc, pptex, pprldistr, ppfigdim
+#from bbob_pproc import pptex_v2, pprldistr_v2, ppfigdim_v2
+from bbob_pproc import pptex_v2 as pptex
+from bbob_pproc import pprldistr_v2 as pprldistr
+from bbob_pproc import ppfigdim_v2 as ppfigdim
+from bbob_pproc.pproc2 import DataSetList
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
@@ -398,13 +401,13 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        indexEntries = IndexEntries(args, verbose)
+        dsList = DataSetList(args, verbose)
 
-        if not indexEntries:
+        if not dsList:
             sys.exit() #raise Usage("Nothing to do: post-processing stopped.")
 
         if (verbose):
-            for i in indexEntries:
+            for i in dsList:
                 if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
                     instancesOfInterest):
                     warnings.warn('The data of %s do not list ' %(i) +
@@ -413,7 +416,7 @@ def main(argv=None):
                                   'correct number of trials for each.')
 
         #set_trace()
-        dictAlg = indexEntries.dictByAlg()
+        dictAlg = dsList.dictByAlg()
         if len(dictAlg) > 1:
             warnings.warn('Data with multiple algId %s ' % (dictAlg) +
                           'will be processed together.')
@@ -426,15 +429,15 @@ def main(argv=None):
                     print 'Folder %s was created.' % (outputdir)
 
         if isPickled:
-            indexEntries.pickle(outputdir, verbose)
+            dsList.pickle(outputdir, verbose)
 
         if isfigure:
-            ppfigdim.main(indexEntries, figValsOfInterest, outputdir,
+            ppfigdim.main(dsList, figValsOfInterest, outputdir,
                           verbose)
             print "Scaling figures done."
 
         if istab:
-            dictFunc = indexEntries.dictByFunc()
+            dictFunc = dsList.dictByFunc()
             for fun, sliceFun in dictFunc.items():
                 dictDim = sliceFun.dictByDim()
                 tmp = []
@@ -460,13 +463,13 @@ def main(argv=None):
                 print "done."
 
         if isrldistr:
-            dictNoise = indexEntries.dictByNoise()
+            dictNoise = dsList.dictByNoise()
             if len(dictNoise) > 1:
                 warnings.warn('Data for functions from both the noisy and '
                               'non-noisy testbeds have been found. Their '
                               'results will be mixed in the "all functions"'
                               'ECDF figures.')
-            dictDim = indexEntries.dictByDim()
+            dictDim = dsList.dictByDim()
             for dim in rldDimsOfInterest:
                 try:
                     sliceDim = dictDim[dim]
@@ -489,9 +492,9 @@ def main(argv=None):
             tmp.extend(tabValsOfInterest)
             tmp.extend(figValsOfInterest)
             tmp.extend(rldValsOfInterest)
-            if indexEntries:
+            if dsList:
                 print ('Overall ps = %g\n'
-                       % indexEntries.successProbability(min(tmp)))
+                       % dsList.successProbability(min(tmp)))
 
         if isfigure or istab or isrldistr:
             print "Output data written to folder %s." % outputdir

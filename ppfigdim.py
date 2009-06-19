@@ -230,7 +230,7 @@ def main(indexEntries, _valuesOfInterest, outputdir, verbose=True):
             #Collect data that have the same function and different dimension.
             for dim in sorted(dictFunc[func]):
                 #set_trace()
-                tmp = generateData(dictFunc[func][dim][0],
+                tmp = generateData2(dictFunc[func][dim][0],
                                    valuesOfInterest[i])
                 #data.append(numpy.append(dim, tmp))
                 if tmp[2] > 0: #Number of success is larger than 0
