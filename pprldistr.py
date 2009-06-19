@@ -372,7 +372,7 @@ def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):
-        tmp = plotRLDistr(indexEntries, valuesOfInterest[j], evalfmax,
+        tmp = plotRLDistr2(indexEntries, valuesOfInterest[j], evalfmax,
                           verbose=verbose)
         #set_trace()
         if not tmp is None:
@@ -397,7 +397,7 @@ def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
     fig = plt.figure()
     for j in range(len(valuesOfInterest)):
         #set_trace()
-        tmp = plotFVDistr(indexEntries, valuesOfInterest[j],
+        tmp = plotFVDistr2(indexEntries, valuesOfInterest[j],
                           evalfmax, verbose=verbose)
         #if not tmp is None:
         plt.setp(tmp, 'color', rldColors[j])
@@ -413,7 +413,7 @@ def main(indexEntries, valuesOfInterest, isStoringXMax=False, outputdir='',
     #The last index of valuesOfInterest is still used in this loop.
     #set_trace()
     for k in range(len(maxEvalsF)):
-        tmp = plotFVDistr(indexEntries, valuesOfInterest[j],
+        tmp = plotFVDistr2(indexEntries, valuesOfInterest[j],
                           maxEvalsF=maxEvalsF[k], verbose=verbose)
         plt.setp(tmp, 'color', rldUnsuccColors[k])
 
