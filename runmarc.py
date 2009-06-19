@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
 from bbob_pproc import ppperfprof, pprldistr
 from bbob_pproc import dataoutput
-from bbob_pproc.pproc2 import DataSetList
+from bbob_pproc.pproc import DataSetList
 
 figformat = ('png', )
 
