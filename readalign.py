@@ -112,7 +112,7 @@ class VMultiReader(MultiReader):
     idxData = idxF # the data of concern are the function values.
 
     def __init__(self, data):
-        MultiReader.__init__(self, data)
+        super(VMultiReader, self).__init__(data)
 
     def isFinished(self):
         return all(i.isFinished for i in self)
@@ -151,7 +151,7 @@ class HMultiReader(MultiReader):
     idxData = idxEvals # the data of concern are the number of function evals.
 
     def __init__(self, data):
-        MultiReader.__init__(self, data)
+        super(HMultiReader, self).__init__(data)
         self.idxCurrentF = numpy.inf # Minimization
         # idxCurrentF is a float for the extreme case where it is infinite.
         # else it is an integer and then is the 'i' in 10**(i/nbPtsF)
@@ -206,7 +206,7 @@ class ArrayMultiReader(MultiReader):
     idx = 0 # We expect the alignment value to be the 1st column.
 
     def __init__(self, data):
-        MultiReader.__init__(self, data)
+        super(ArrayMultiReader, self).__init__(data)
         #for i in self:
             #i.nbRuns = (numpy.shape(i.data)[1] - 1)
 
@@ -221,13 +221,14 @@ class VArrayMultiReader(ArrayMultiReader, VMultiReader):
 
     def __init__(self, data):
         ArrayMultiReader.__init__(self, data)
-
+        #TODO: Should this use super?
 
 class HArrayMultiReader(ArrayMultiReader, HMultiReader):
     """Wrapper class of ALIGNED data arrays to be aligned horizontally."""
 
     def __init__(self, data):
         ArrayMultiReader.__init__(self, data)
+        #TODO: Should this use super?
         self.idxCurrentF = numpy.inf #Minimization
 
 

@@ -289,7 +289,7 @@ class DataSetList(list):
         """
 
         if not args:
-            self = list()
+            super(DataSetList, self).__init__()
             return
 
         if isinstance(args, basestring):
