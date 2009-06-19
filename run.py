@@ -28,10 +28,7 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-#from bbob_pproc import pptex_v2, pprldistr_v2, ppfigdim_v2
-from bbob_pproc import pptex_v2 as pptex
-from bbob_pproc import pprldistr_v2 as pprldistr
-from bbob_pproc import ppfigdim_v2 as ppfigdim
+from bbob_pproc import pptex, pprldistr, ppfigdim
 from bbob_pproc.pproc2 import DataSetList
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
