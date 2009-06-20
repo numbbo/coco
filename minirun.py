@@ -209,7 +209,7 @@ def main(argv=None):
             dictTarget.setdefault('_allerts', []).append(allmintarget[i])
         for t in (10., 1., 0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-8):
             tmpdict = dict.fromkeys(((f, d) for f in range(0, 25) + range(101, 131) for d in (2, 3, 5, 10, 20, 40)), t)
-            dictTarget['_f%2.1eD' % t] = (tmpdict, )
+            dictTarget['_f%2.1e' % t] = (tmpdict, )
             dictTarget.setdefault('_allfs', []).append(tmpdict)
 
         if not os.path.exists(outputdir):
