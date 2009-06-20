@@ -7,6 +7,9 @@ import sys
 from pdb import set_trace
 import getopt
 
+last_target_value_replacement = None  # 1e-5  # None for nothing
+append_final_target_value = True      # 1e-8 is appended
+
 # add path to bbob_pproc  
 #filepath = '/home/fst/coco/BBOB/code/python/bbob_pproc/'
 #sys.path.append(os.path.join(filepath, os.path.pardir))
@@ -23,16 +26,19 @@ from bbob_pproc import pproc2
 
 class FunTarget:
     """ Determines the largest (easiest) of the recorded function values where 
-        the best algorithm needs more than ERT=i*D function evaluations for
-        i = 0,1,2,... 
-        The minimal target function value 1e-8 is not included in the list. 
+        the best algorithm needs more than (E)RT=i*D function evaluations for
+        i = 1,10,100... 
+        The minimal target function value 1e-8 might be appended to the list, 
+        or the last element is set to be not larger than 1e-5. 
 
         Class Attributes:
-        minFtarget - target function values of respecive best algorithm for 
-                     given dimension, function, and ERT (array)
-        medianFtarget - equals to minFtarget for the time being
-
-        ert - corresponds to ERT/DIM for minFtarget (array)
+        minFtarget - target function values that could never be achieved
+                     within D, 10D, 100D,... evaluations for 
+                     given dimension, function (array)
+        medianFtarget - target function values that could never be 
+                     achieved within an ERT of D,10D, 100D,... for 
+                     given dimension, function (array)
+        ert - (E)RT/DIM corresponding to minFtarget (array)
     """
    
     def __init__(self, dataset, dim):
@@ -49,12 +55,12 @@ class FunTarget:
 
         for i in range(0, 1 + int(numpy.log10(maxErtAll))):
 
-            # collect function values reached within ERT <= D * 10**i for all algorithms
+            # collect smallest function value reached within ERT <= D * 10**i for all algorithms
             targetValues = []
             for alg in dataset:
                 targetValues.append(alg.target[sum(alg.ert <= dim * 10**i) - 1])
 
-            # collect function values reached in any single run within D * 10**i fevals
+            # collect smallest function value reached in any single run within D * 10**i fevals
             alltargetValues = []
             for alg in dataset:
                 for row in reversed(alg.evals):
@@ -63,36 +69,47 @@ class FunTarget:
                       break
                 
             # determine min and median for all algorithms
-            self.ert.append(10**i)
-            # print targetValues
             self.minFtarget.append(numpy.min(alltargetValues) / 10**(0.1))
             self.medianFtarget.append(numpy.min(targetValues) / 10**(0.1))  # min was median
+            self.ert.append(10**i)
             
-        # check lists
+	# set trailing of equal values to NaN: 
+        # TODO: this does not work for the profile plots
+        # TODO: this should become part of the target value pre-processing for the run length distributions
+	for i in range(1,len(self.minFtarget)):
+	    if self.minFtarget[i-1] == self.minFtarget[i]:
+                pass
+                # self.minFtarget[i-1] = numpy.NaN
+
+	# modify end of lists
         self.minFtarget = numpy.array(self.minFtarget)
-        if 11 < 3:  # replace last value with min(val, 1e-5)
+        if last_target_value_replacement is not None:  # replace last value with e.g. min(val, 1e-5)
+            finalval = last_target_value_replacement
             idx = numpy.where(self.minFtarget >= 1e-8)[0][-1]
-            if self.minFtarget[idx] > 1e-5:
-                self.minFtarget[idx] = 1e-5
-        else:  # add 1e-8 as last value
+            if self.minFtarget[idx] > finalval:
+                self.minFtarget[idx] = finalval
+        if append_final_target_value:  # add e.g. 1e-8 as last value
             finalval = 1e-8
             idx = numpy.where(self.minFtarget > finalval)[0][-1]
-            if len(self.minFtarget) > idx+1:
+            if len(self.minFtarget) > idx+1:  # only if space is left
                 self.minFtarget[idx+1] = finalval
             
-        self.minFtarget[self.minFtarget < 1e-8] = numpy.NaN
-        if len(self.minFtarget) == 0:
-            print 'empty minFtarget list in determineFtarget2.py'
-        self.medianFtarget = numpy.array(self.medianFtarget)
-        self.medianFtarget[self.medianFtarget < 1e-8] = numpy.NaN
-        if len(self.medianFtarget) == 0:
-            print 'empty medianFtarget list in determineFtarget2.py'
-        print 'f', dataset[0].funcId, dim, '-D', ':'
-        print self.minFtarget
-        print self.medianFtarget
-        if dataset[0].funcId == 24 and dim == 20:
-            pass
-            # set_trace()
+            
+        # check lists
+        if 1 < 3:  # should not be necessary, including some testing
+	    self.minFtarget[self.minFtarget < 1e-8] = numpy.NaN
+	    if len(self.minFtarget) == 0:
+		print 'empty minFtarget list in determineFtarget2.py'
+	    self.medianFtarget = numpy.array(self.medianFtarget)
+	    self.medianFtarget[self.medianFtarget < 1e-8] = numpy.NaN
+	    if len(self.medianFtarget) == 0:
+		print 'empty medianFtarget list in determineFtarget2.py'
+	    print 'f', dataset[0].funcId, dim, '-D', ':'
+	    print self.minFtarget
+	    print self.medianFtarget
+	    if dataset[0].funcId == 24 and dim == 20:
+		pass
+		# set_trace()
       
 ### Function definitons ###
 

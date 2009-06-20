@@ -254,6 +254,8 @@ def main2(dsList, target, order=None,
     dictFunc = dsList.dictByFunc()
 
     for f, samefuncEntries in dictFunc.iteritems():
+	if f not in range(1,999):  # TODO: functions should become input argument
+	    continue
         dictDim = samefuncEntries.dictByDim()
         for d, samedimEntries in dictDim.iteritems():
             dictAlg = samedimEntries.dictByAlg()
