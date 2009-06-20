@@ -58,7 +58,10 @@ def detTarget(dsList):
             for i in range(len(tmptarget.ert)):
                tmp = allmintarget.setdefault(tmptarget.ert[i], {})
                if (tmptarget.minFtarget[i] < 1e-8): # BBOB-dependent
-                   tmptarget.minFtarget[i] = 1e-8
+                   if i == 0 or tmptarget.minFtarget[i-1] > 1e-8:
+                       tmptarget.minFtarget[i] = 1e-8
+                   else:
+                       tmptarget.minFtarget[i] = numpy.NaN
                tmp.setdefault((f, d), tmptarget.minFtarget[i])
 
                tmp = allmedtarget.setdefault(tmptarget.ert[i], {})
