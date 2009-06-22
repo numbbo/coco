@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
 from pdb import set_trace
 
-"""Generates Performance Profiles (More Wild 2002)."""
+"""Generates Runtime distributions (Performance Profiles, More Wild 2002)."""
 percentiles = 50
 samplesize = 200
 
@@ -45,18 +45,20 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
 
     plt.ylim(0, 1)
 
-    plt.xlim(xmin=1e-2)
     plt.xlim(xmax=1e3)
-    #set_trace()
-    for entry in fileFormat:
-        plt.savefig(figureName + 'a.' + entry, dpi = 300, format = entry)
-
+    plt.xlim(xmin=1e-2)
+    if 1 < 3:  # first half only, takes about 2.5 seconds
+        #set_trace()
+        for entry in fileFormat:
+            plt.savefig(figureName + 'a.' + entry, dpi = 300, format = entry)
+    
     plt.xlim(xmin=1e2)
     if not maxval is None:
         plt.xlim(xmax=maxval)
-    #plt.ylim(0, 1)
-    for entry in fileFormat:
-        plt.savefig(figureName + 'b.' + entry, dpi = 300, format = entry)
+    if 1 < 3:  # second half only
+        #plt.ylim(0, 1)
+        for entry in fileFormat:
+            plt.savefig(figureName + 'b.' + entry, dpi = 300, format = entry)
 
     plt.xlim(xmin=1e-0)
     for entry in fileFormat:

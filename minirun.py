@@ -18,6 +18,8 @@ import matplotlib
 matplotlib.use("Agg") # To avoid window popup and use without X forwarding
 import matplotlib.pyplot as plt
 
+constant_target_function_values = (1e0, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)
+
 # Add the path to bbob_pproc
 if __name__ == "__main__":
     # append path without trailing '/bbob_pproc', using os.sep fails in mingw32
@@ -210,7 +212,7 @@ def main(argv=None):
             if i >= 10000:
                 dictTarget.setdefault('_ert1.0e+04Dandmore', []).append(allmintarget[i])
             dictTarget.setdefault('_allerts', []).append(allmintarget[i])
-        for t in (10., 1., 0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-8):
+        for t in constant_target_function_values:
             tmpdict = dict.fromkeys(((f, d) for f in range(0, 25) + range(101, 131) for d in (2, 3, 5, 10, 20, 40)), t)
             dictTarget['_f%2.1e' % t] = (tmpdict, )
             dictTarget.setdefault('_allfs', []).append(tmpdict)
