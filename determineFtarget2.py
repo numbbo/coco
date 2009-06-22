@@ -8,10 +8,10 @@ from pdb import set_trace
 import getopt
 
 # parameter for manipulating the original list, should rather become a pre-processing function for the RL-plots
-minimal_target_value = 1e-7 
+minimal_target_value = 1e-6 
 last_target_value_replacement = 1e-5       # replace with min of two values, None for do nothing
 final_target_value_append_threshold = None # 1e-5 # append another value if last value is above threshold, None for do nothing
-final_target_value_appended = 1e-7         # None for nothing
+final_target_value_appended = None # 1e-7         # None for nothing
 
 # add path to bbob_pproc  
 #filepath = '/home/fst/coco/BBOB/code/python/bbob_pproc/'
@@ -76,7 +76,7 @@ class FunTarget:
             self.medianFtarget.append(numpy.min(targetValues) / 10**(0.1))  # min was median
             self.ert.append(10**i)
             
-        # TODO: all the remainder should rather become part of the target value pre-processing for the run length distributions
+        # TODO: all the remainder should rather become part of the target value pre-processing for the run time distributions
 	# modify end of lists
         self.minFtarget = numpy.array(self.minFtarget)
         if last_target_value_replacement is not None:  # replace last value with e.g. min(val, 1e-5)
