@@ -1,15 +1,15 @@
 cmaes28noikappa2:cmaes V3.30.beta:% cmaes28noikappa2 BIPOP like 24 with kappa=10, deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{}
 cmaes30noikappa2:cmaes V3.30.beta:% cmaes26noi BIPOP like 24 with kappa=10, deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{}
 BFGS:BFGS:% [-5, 5]^n, max 100 independent restarts.:{"label": "BFGS", "color": "r"}
-NELDER:fminsearch:% 1e4*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1:{"label": "NELDER", "color": "c"}
-NELDER:fminsearch:% 1e5*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1:{"label": "NELDER", "color": "c"}
+NELDER:fminsearch:% 1e4*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1:{"label": "NELDER (Han)", "color": "c"}
+NELDER:fminsearch:% 1e5*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1:{"label": "NELDER (Han)", "color": "c"}
 NEWUOA:NEWUOA:% NPT=2*DIM+1, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "NEWUOA", "color": "g"}
-FULLNEWUOA:NEWUOA:% NPT=(DIM+1)(DIM+2)/2, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "FULLNEWUOA", "color": "g", "linestyle": "--"}
-CMA-ES:cmaes V3.30.beta:% cmaes25 ccum=new stopstagnation, sigmaUp=10^20, maxrestartfunevals=1e7*DIM restarts=9 maxiter=100 + 50 * (N+3)^2/sqrt(popsize) no xopt sigma0=2:{"label": "BIPOP-CMA-ES", "color": "b"}
+FULLNEWUOA:NEWUOA:% NPT=(DIM+1)(DIM+2)/2, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "full NEWUOA", "color": "g", "linestyle": "--"}
+CMA-ES:cmaes V3.30.beta:% cmaes25 ccum=new stopstagnation, sigmaUp=10^20, maxrestartfunevals=1e7*DIM restarts=9 maxneiter=100 + 50 * (N+3)^2/sqrt(popsize) no xopt sigma0=2:{"label": "BIPOP-CMA-ES", "color": "b"}
 CMA-ES:cmaes V3.30.beta:% cmaes24noi BIPOP like 21 with deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{"label": "BIPOP-CMA-ES", "color": "b"}
 DE-PSO:DEPSO:% MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "DE-PSO", "color": "y"}
 CMA-ESPLUSSEL:cmaesplussel:%:{"label": "(1+1)-CMA-ES", "color": "b", "ls": "--"}
-ONEFIFTH:One-Fifth Variant3:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "1/5 SR (1+1)-ES", "color": "m"}
+ONEFIFTH:One-Fifth Variant3:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "(1+1)-ES", "color": "m"}
 RANDOMSEARCH:PureRandomSearchOnNoise:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "Rand Search", "color": "k", "ls": "--"}
 EDA-PSO:EDA-PSO:% All historical information with correlation-triggered adaptive variance scaling.:{"label": "EDA-PSO", "color": "y"}
 EDA-PSO:EDA-PSO:% An EDA and PSO hybrid algorithm.:{"label": "EDA-PSO", "color": "y"}
@@ -23,7 +23,7 @@ G3PCX:G3PCX:% restarts up to 100, outermaxfevals 5e4*dim, inner maxfunevals 5e4*
 LSfminbnd:Line Search - fminbnd:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "LSfminbnd", "color": "steelblue"}
 LSstep:Line Search - STEP:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "LSstep", "color": "teal"}
 LSrosen:Local Search - Rosenbrock:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "Rosenbrock", "color": "thistle"}
-AMALGAM:AMaLGaM-Full-Free:% AMaLGaM-Full-Free:{"label": "AMaLGaM", "color": "tomato"}
+AMALGAM:AMaLGaM-FVNull-Free:% AMaLGaM-Full-Free:{"label": "AMaLGaM", "color": "tomato"}
 iAMALGAM:iAMaLGaM-Full-Free:% iAMaLGaM-Full-Free:{"label": "iAMaLGaM", "color": "tomato", "ls": "--"}
 BAYEDA:BAYEDA:% Simple continuous BAYEDA with 0.8 selection, population=10*DIM, 2000*DIM fn evals, so 200 generations:{"label": "BayEDAcG", "color": "turquoise"}
 GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =8;Maxfevnr=5000;Method =simplex2:{"label": "GLOBAL", "color": "violet"}
@@ -31,15 +31,15 @@ GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=5000;M
 GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =bfgs:{"label": "GLOBAL", "color": "violet"}
 GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =simplex2:{"label": "GLOBAL", "color": "violet"}
 POEMS:POEMS:% no comments:{"label": "POEMS", "color": "wheat"}
-GA:PUT ALGORITHM NAME:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "GA", "color": "royalblue"}
+GA:PUT ALGORITHM NAME:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "simpFle-GA", "color": "royalblue"}
 SEP-CMA-ES:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e4*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize), only the first restart uses mixed strategies for 1+100*N/sqrt(popsize):{"label": "IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
-VNS:VNS_with_ECs:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "VNS", "color": "rosybrown"}
-NELDERDOERR:NELDERDOERR:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "NELDERDOERR", "color": "c", "ls": "--"}
+VNS:VNS_with_ECs:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "VNS (Garcia)", "color": "rosybrown"}
+NELDERDOERR:NELDERDOERR:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "NELDER (Doe)", "color": "c", "ls": "--"}
 SPSAHA:SPSA2:%  maxFunevals = 5e4*DIM with 10 restarts, blocking = 10, lambda_start = 10:{"label":"adaptive SPSA", "color": "purple"}
 SPSAHA:SPSA2:%  maxFunevals = 5e4*DIM with restarts, c0=0.1, initial lambda = 5, blocking = 10, restart changes c0:{"label":"adaptive SPSA", "color": "purple", "ls": "--"}
 SNOBFIT:SNOBFIT:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"SNOBFIT", "color": "powderblue"}
-MCS:MCS:% default parameters except for local = maxfunevals/5:{"label":"MCS", "color": "peru"}
-MCS:MCS:% default parameters, no local search:{"label":"MCS", "color": "peru"}
+MCS:MCS:% default parameters except for local = maxfunevals/5:{"label":"MCS (Neum)", "color": "peru"}
+MCS:MCS:% default parameters, no local search:{"label":"MCS (Neum)", "color": "peru"}
 MA-LS-CHAIN:MA2LSI_5DIMF_ssga_cmaesn05:% RatioBL=0.5,Intensity=500:{"label":"MA-LS-Chain", "color": "pink"}
 SPSA:SPSA:% maxFuneval = 5e4*dim with 20 restarts, with blocking, A = 10% of kmax, lambda = 2, 20% of choosing a new start point/increase lambda:{"label":"SPSA","color":"purple"}
 SPSA:SPSA:%  maxFuneval = 5e4*DIM with 20 restarts, blocking, change lambda in restarts, lambda_start = 1, lambda_max = 16:{"label":"SPSA","color":"purple"}

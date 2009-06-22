@@ -19,7 +19,7 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
              isLegend=True, fileFormat=('png',)):
 
     plt.xscale('log')
-    plt.xlabel('Running Lengths/Dim')
+    plt.xlabel('Running lengths / dimension')
     plt.ylabel('Proportion of functions')
     plt.grid(True)
 
@@ -58,7 +58,7 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
     for entry in fileFormat:
         plt.savefig(figureName + 'b.' + entry, dpi = 300, format = entry)
 
-    plt.xlim(xmin=1e-2)
+    plt.xlim(xmin=1e-0)
     for entry in fileFormat:
         plt.savefig(figureName + '.' + entry, dpi = 300, format = entry)
 
