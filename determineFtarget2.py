@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import pproc2
+from bbob_pproc import pproc
 
 ### Class Definitions ###
 
@@ -394,7 +394,7 @@ def main(argv=None):
         half = int(round(len(funcs)/2))
 
     # create dataset
-    datasetfull = pproc2.DataSetList(directory,verbose = verboseflag)
+    datasetfull = pproc.DataSetList(directory,verbose = verboseflag)
 
     # loop over dimension and functions
     for dim in dims:
