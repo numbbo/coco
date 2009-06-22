@@ -7,8 +7,11 @@ import sys
 from pdb import set_trace
 import getopt
 
-last_target_value_replacement = None  # 1e-5  # None for nothing
-append_final_target_value = True      # 1e-8 is appended
+# parameter for manipulating the original list, should rather become a pre-processing function for the RL-plots
+minimal_target_value = 1e-7 
+last_target_value_replacement = 1e-5       # replace with min of two values, None for do nothing
+final_target_value_append_threshold = None # 1e-5 # append another value if last value is above threshold, None for do nothing
+final_target_value_appended = 1e-7         # None for nothing
 
 # add path to bbob_pproc  
 #filepath = '/home/fst/coco/BBOB/code/python/bbob_pproc/'
@@ -73,43 +76,55 @@ class FunTarget:
             self.medianFtarget.append(numpy.min(targetValues) / 10**(0.1))  # min was median
             self.ert.append(10**i)
             
-	# set trailing of equal values to NaN: 
-        # TODO: this does not work for the profile plots
-        # TODO: this should become part of the target value pre-processing for the run length distributions
-	for i in range(1,len(self.minFtarget)):
-	    if self.minFtarget[i-1] == self.minFtarget[i]:
-                pass
-                # self.minFtarget[i-1] = numpy.NaN
-
+        # TODO: all the remainder should rather become part of the target value pre-processing for the run length distributions
 	# modify end of lists
         self.minFtarget = numpy.array(self.minFtarget)
         if last_target_value_replacement is not None:  # replace last value with e.g. min(val, 1e-5)
-            finalval = last_target_value_replacement
+            val = last_target_value_replacement
             idx = numpy.where(self.minFtarget >= 1e-8)[0][-1]
-            if self.minFtarget[idx] > finalval:
-                self.minFtarget[idx] = finalval
-        if append_final_target_value:  # add e.g. 1e-8 as last value
-            finalval = 1e-8
-            idx = numpy.where(self.minFtarget > finalval)[0][-1]
-            if len(self.minFtarget) > idx+1:  # only if space is left
-                self.minFtarget[idx+1] = finalval
+            if self.minFtarget[idx] > val:
+                self.minFtarget[idx] = val
+        if final_target_value_appended and final_target_value_append_threshold:  # add e.g. 1e-8 as last value
+            val = final_target_value_appended
+            thresh = final_target_value_append_threshold
+            idx = numpy.where(self.minFtarget > val)[0][-1]
+            if self.minFtarget[idx] > thresh and \
+               len(self.minFtarget) > idx+1 and \
+               self.minFtarget[idx+1] < 1e-8:
+                self.minFtarget[idx+1] = val
+
+	# set all leading of equal values to NaN: 
+	for i in range(1,len(self.minFtarget)):
+	    if self.minFtarget[i-1] == self.minFtarget[i]:
+                self.minFtarget[i-1] = numpy.NaN
             
-            
+        # set trailing values to NaN
+        self.minFtarget[self.minFtarget < 1e-8] = numpy.nan
+        if minimal_target_value:
+            self.minFtarget[self.minFtarget < minimal_target_value] = numpy.nan
+
+	# set minimal target value
+        if minimal_target_value:
+            idx = numpy.isnan(self.minFtarget)
+            self.minFtarget = numpy.maximum(self.minFtarget, minimal_target_value)
+            if idx.any():
+                self.minFtarget[idx] = numpy.nan
+            idx = numpy.where(self.minFtarget > minimal_target_value)[0][-1]
+            if len(self.minFtarget) > idx + 2:
+                self.minFtarget[idx+2:] = numpy.nan
+
         # check lists
-        if 1 < 3:  # should not be necessary, including some testing
-	    self.minFtarget[self.minFtarget < 1e-8] = numpy.NaN
+        if 11 < 3:  # should not be necessary, includes some testing
 	    if len(self.minFtarget) == 0:
 		print 'empty minFtarget list in determineFtarget2.py'
-	    self.medianFtarget = numpy.array(self.medianFtarget)
-	    self.medianFtarget[self.medianFtarget < 1e-8] = numpy.NaN
-	    if len(self.medianFtarget) == 0:
-		print 'empty medianFtarget list in determineFtarget2.py'
 	    print 'f', dataset[0].funcId, dim, '-D', ':'
 	    print self.minFtarget
-	    print self.medianFtarget
+	    # print self.medianFtarget
 	    if dataset[0].funcId == 24 and dim == 20:
 		pass
 		# set_trace()
+
+
       
 ### Function definitons ###
 
