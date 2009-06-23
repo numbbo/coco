@@ -13,6 +13,8 @@ from pdb import set_trace
 percentiles = 50
 samplesize = 200
 
+function_IDs = range(1,999)  # 1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
+    
 def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
              isLegend=True, fileFormat=('eps', 'png')):
 
@@ -156,7 +158,7 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
     dictFunc = dsList.dictByFunc()
 
     for f, samefuncEntries in dictFunc.iteritems():
-	if f not in range(1,999):  # 1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
+        if f not in function_IDs:
 	    continue
         dictDim = samefuncEntries.dictByDim()
         for d, samedimEntries in dictDim.iteritems():
