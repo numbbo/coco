@@ -5,8 +5,6 @@ from __future__ import absolute_import
 import os
 import warnings
 import numpy
-#import matplotlib
-#matplotlib.use('GtkAgg')
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
 from pdb import set_trace
@@ -16,7 +14,7 @@ percentiles = 50
 samplesize = 200
 
 def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
-             isLegend=True, fileFormat=('png',)):
+             isLegend=True, fileFormat=('eps', 'png')):
 
     plt.xscale('log')
     plt.xlabel('Running lengths / dimension')
@@ -36,24 +34,23 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
         except TypeError:
             txt = '%d funcs' % funcsolved
 
-        plt.text(0.01, 1.01, txt, horizontalalignment='left',
-                 verticalalignment="bottom",
-                 transform=plt.gca().transAxes)
+        plt.figtext(0.01, 1.01, txt, horizontalalignment='left',
+                 verticalalignment="bottom")
 
     if isLegend:
         plt.legend(loc='best')
 
     plt.ylim(0, 1)
 
-    plt.xlim(xmax=1e3)
+    plt.xlim(xmax=1e3) #TODO: save default value?
     plt.xlim(xmin=1e-2)
     if 1 < 3:  # first half only, takes about 2.5 seconds
         #set_trace()
         for entry in fileFormat:
             plt.savefig(figureName + 'a.' + entry, dpi = 300, format = entry)
-    
+
     plt.xlim(xmin=1e2)
-    if not maxval is None:
+    if not maxval is None: # TODO: reset to default value...
         plt.xlim(xmax=maxval)
     if 1 < 3:  # second half only
         #plt.ylim(0, 1)
@@ -112,7 +109,6 @@ def plotLegend(handles, maxval):
         x2 = plt.getp(h, "xdata")
         y2 = plt.getp(h, "ydata")
         try:
-            #set_trace() # TODO add another layer of sorting here.
             tmp = sum(x2 <= maxval) - 1
             x2bis = x2[sum(y2 < y2[tmp]) - 1]
             ys.setdefault(y2[tmp], {}).setdefault(x2bis, []).append(h)
@@ -134,107 +130,11 @@ def plotLegend(handles, maxval):
                          verticalalignment="center")
                 i += 1
 
-    plt.axvline(x=maxval, color='k')
+    #plt.axvline(x=maxval, color='k') # Not as efficient?
+    plt.plot((maxval, maxval), (0., 1.), color='k')
 
-def main(dsList, target, minERT=None, order=None,
-         plotArgs={}, outputdir='', info='default', verbose=True):
-    """From a list of IndexEntry, generates the performance profiles for
-    multiple functions and a single target."""
-
-    #plt.rc("axes", labelsize=20, titlesize=24)
-    #plt.rc("xtick", labelsize=20)
-    #plt.rc("ytick", labelsize=20)
-    #plt.rc("font", size=20)
-    #plt.rc("legend", fontsize=20)
-
-    if len(dsList.dictByDim()) > 1:
-        warnings.warn('Provided with data from multiple dimension.')
-
-    dictData = {} # list of (ert per function) per algorithm
-    dictMaxEvals = {} # list of (maxevals per function) per algorithm
-    funcsolved = len(target)
-    # the functions will not necessarily sorted.
-
-    bestERT = [] # best ert per function, not necessarily sorted as well.
-
-    # per instance instead of per function?
-    dictFunc = dsList.dictByFunc()
-
-    for f, samefuncEntries in dictFunc.iteritems():
-        dictAlg = samefuncEntries.dictByAlg()
-        erts = []
-        try:
-            target[f]
-        except KeyError:
-            continue
-        #funcsolved.setdefault(alg, []).append(f)
-
-        for alg, entry in dictAlg.iteritems():
-            # entry is supposed to be a single item DataSetList
-            entry = entry[0]
-
-            x = [numpy.inf]*samplesize
-            y = numpy.inf
-            runlengthunsucc = []
-            for j, line in enumerate(entry.evals):
-                if line[0] <= target[f]:
-                    runlengthsucc = line[1:][numpy.isfinite(line[1:])]
-                    runlengthunsucc = entry.maxevals[numpy.isnan(line[1:])]
-                    tmp = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
-                                           percentiles=percentiles,
-                                           samplesize=samplesize)
-                    #set_trace()
-                    x = list(float(i)/entry.dim for i in tmp[1])
-                    y = entry.ert[j]
-                    # j is the index of the line in entry.evals.
-                    break
-
-            dictData.setdefault(alg, []).extend(x)
-            dictMaxEvals.setdefault(alg, []).extend(float(i)/entry.dim for i in runlengthunsucc)
-            erts.append(y)
-
-        if minERT is None:
-            bestERT.append(min(erts))
-        else:
-            bestERT.append(minERT)
-        #set_trace()
-
-    #set_trace()
-    # what about infs?
-    maxval = 0
-    #set_trace()
-    for data in dictData.values():
-        tmp = numpy.array(data) #/numpy.array(bestERT)
-        if any(numpy.isfinite(tmp)):
-            maxval = max(maxval, max(tmp[numpy.isfinite(tmp)]))
-
-    #set_trace()
-    if order is None:
-        order = dictData.keys()
-
-    lines = []
-    for i, alg in enumerate(order):
-        for elem in alg:
-            if dictData.has_key(elem):
-                lines.append(plotPerfProf(numpy.array(dictData[elem]), #/numpy.array(bestERT),
-                             1e7, dictMaxEvals[elem],
-                             kwargs=plotArgs[elem]))
-                break
-        #else: problem!
-        #set_trace()
-    #plotPerfProf(numpy.array(bestERT), #/numpy.array(bestERT),
-                 #maxval, dictMaxEvals[alg],
-                 #{'label': 'bestERT', 'color': 'k', 'marker': '*'})
-
-    figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
-    beautify(figureName, funcsolved, 1e7, False)
-
-    plt.close()
-
-    #plt.rcdefaults()
-
-def main2(dsList, target, order=None,
-          plotArgs={}, outputdir='', info='default', verbose=True):
+def main2(dsList, target, order=None, plotArgs={}, outputdir='',
+          info='default', fileFormat=('eps', 'png'), verbose=True):
     """From a dataSetList, generates the performance profiles for multiple
     functions for multiple targets altogether.
     keyword arguments:
@@ -280,16 +180,17 @@ def main2(dsList, target, order=None,
                     runlengthunsucc = []
                     for line in entry.evals:
                         if line[0] <= t[(f, d)]:
-                            runlengthsucc = line[1:][numpy.isfinite(line[1:])]
-                            runlengthunsucc = entry.maxevals[numpy.isnan(line[1:])]
+                            tmp = line[1:]/entry.dim
+                            runlengthsucc = tmp[numpy.isfinite(tmp)]
+                            runlengthunsucc = entry.maxevals[numpy.isnan(tmp)]
                             tmp = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
                                                    percentiles=percentiles,
                                                    samplesize=samplesize)
-                            x = list(float(i)/entry.dim for i in tmp[1])
+                            x = tmp[1]
                             break
 
                     dictData.setdefault(alg, []).extend(x)
-                    dictMaxEvals.setdefault(alg, []).extend(float(i)/entry.dim for i in runlengthunsucc)
+                    dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
                     #TODO: there may be addition for every target... is it the desired behaviour?
 
     if order is None:
@@ -308,6 +209,6 @@ def main2(dsList, target, order=None,
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
     #set_trace()
-    beautify(figureName, funcsolved, xlim*1000, False)
+    beautify(figureName, funcsolved, xlim*1000, False, fileFormat=fileFormat)
 
     plt.close()

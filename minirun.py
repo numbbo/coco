@@ -14,11 +14,6 @@ import pickle
 from pdb import set_trace
 import warnings
 import numpy
-import matplotlib
-matplotlib.use("Agg") # To avoid window popup and use without X forwarding
-import matplotlib.pyplot as plt
-
-constant_target_function_values = (1e0, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -32,7 +27,9 @@ from bbob_pproc import ppperfprof, pprldistr
 from bbob_pproc import dataoutput, determineFtarget2
 from bbob_pproc.dataoutput import algLongInfos, algPlotInfos
 from bbob_pproc.pproc import DataSetList
+import matplotlib.pyplot as plt
 
+constant_target_function_values = (1e0, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)
 
 figformat = ('png', )
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
@@ -231,6 +228,7 @@ def main(argv=None):
                                     plotArgs=algPlotInfos,
                                     outputdir=outputdir,
                                     info=('%02d%s' % (d, k)),
+                                    fileFormat=figformat,
                                     verbose=verbose)
 
         if isERT or isEff or isECDF:
@@ -343,7 +341,7 @@ def main(argv=None):
                             plt.grid(True)
                             figname = os.path.join(outputdir, "pprldistr_f%03d_%02d_ert%2.1eD" %(f, d, k))
                             for i in figformat:
-                                plt.savefig(figname+"."+i, dpi=300, format="png")
+                                plt.savefig(figname+"."+i, dpi=300, format=figformat)
                                 if verbose:
                                     print "Saved figure %s.%s" % (figname, i)
                             plt.close()
