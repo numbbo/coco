@@ -5,7 +5,7 @@ NELDER:fminsearch:% 1e4*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xo
 NELDER:fminsearch:% 1e5*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1:{"label": "NELDER (Han)", "color": "c"}
 NEWUOA:NEWUOA:% NPT=2*DIM+1, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "NEWUOA", "color": "g"}
 FULLNEWUOA:NEWUOA:% NPT=(DIM+1)(DIM+2)/2, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "full NEWUOA", "color": "g", "linestyle": "--"}
-CMA-ES:cmaes V3.30.beta:% cmaes25 ccum=new stopstagnation, sigmaUp=10^20, maxrestartfunevals=1e7*DIM restarts=9 maxneiter=100 + 50 * (N+3)^2/sqrt(popsize) no xopt sigma0=2:{"label": "BIPOP-CMA-ES", "color": "b"}
+CMA-ES:cmaes V3.30.beta:% cmaes25 ccum=new stopstagnation, sigmaUp=10^20, maxrestartfunevals=1e7*DIM restarts=9 maxiter=100 + 50 * (N+3)^2/sqrt(popsize) no xopt sigma0=2:{"label": "BIPOP-CMA-ES", "color": "b"}
 CMA-ES:cmaes V3.30.beta:% cmaes24noi BIPOP like 21 with deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{"label": "BIPOP-CMA-ES", "color": "b"}
 DE-PSO:DEPSO:% MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "DE-PSO", "color": "y"}
 CMA-ESPLUSSEL:cmaesplussel:%:{"label": "(1+1)-CMA-ES", "color": "b", "ls": "--"}
