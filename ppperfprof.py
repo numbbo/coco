@@ -13,8 +13,9 @@ from pdb import set_trace
 percentiles = 50
 samplesize = 200
 
-function_IDs = range(1,999)  # 1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
-    
+#function_IDs = range(1,999)  # 1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
+function_IDs = range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
+
 def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
              isLegend=True, fileFormat=('eps', 'png')):
 
@@ -26,7 +27,7 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
     if not funcsolved is None and funcsolved:
         txt = ''
         try:
-            if len(funcsolved) > 1:
+            if len(list(i for i in funcsolved if i > 0)) > 1:
                 txt = '(%d' % funcsolved[0]
                 for i in range(1, len(funcsolved)):
                     if funcsolved[i] > 0:
@@ -36,8 +37,10 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
         except TypeError:
             txt = '%d funcs' % funcsolved
 
-        plt.figtext(0.01, 1.01, txt, horizontalalignment='left',
-                 verticalalignment="bottom")
+        #plt.figtext(0.01, 1.01, txt, horizontalalignment='left',
+                 #verticalalignment="bottom")
+        plt.text(0.01, 1.01, txt, horizontalalignment='left',
+                 verticalalignment="bottom", transform=plt.gca().transAxes)
 
     if isLegend:
         plt.legend(loc='best')
@@ -93,12 +96,11 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
         res = plt.plot(x2, y2, **kwargs)
         if not maxevals is None:
             x3 = numpy.median(maxevals)
-            if numpy.any(x2 <= x3):
+            if x3 <= maxval and numpy.any(x2 <= x3):
                 y3 = y2[x2<=x3][-1]
-                if y3 <= maxval:
-                    plt.plot((x3,), (y3,), marker='x',
-                             ls=plt.getp(res[0], 'ls'),
-                             color=plt.getp(res[0], 'color'))
+                plt.plot((x3,), (y3,), marker='x',
+                         ls=plt.getp(res[0], 'ls'),
+                         color=plt.getp(res[0], 'color'))
                 # Only take sequences for x and y!
 
     return res
@@ -176,7 +178,6 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                 for alg, entry in dictAlg.iteritems():
                     # entry is supposed to be a single item DataSetList
                     entry = entry[0]
-
                     x = [numpy.inf]*samplesize
                     y = numpy.inf
                     runlengthunsucc = []
@@ -200,12 +201,16 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
 
     lines = []
     for i, alg in enumerate(order):
+        data = []
+        maxevals = []
         for elem in alg:
             if dictData.has_key(elem):
-                lines.append(plotPerfProf(numpy.array(dictData[elem]),
-                             xlim, dictMaxEvals[elem], order=(i, len(order)),
-                             kwargs=plotArgs[elem]))
-                break
+                data.extend(dictData[elem])
+                maxevals.extend(dictMaxEvals[elem])
+
+        lines.append(plotPerfProf(numpy.array(data),
+                     xlim, maxevals, order=(i, len(order)),
+                     kwargs=plotArgs[elem])) #elem is an element in alg...
 
     plotLegend(lines, xlim)
 

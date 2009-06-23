@@ -50,7 +50,8 @@ class FunTarget:
 
         self.minFtarget = [] 
         self.medianFtarget = [] 
-        self.ert = [] 
+        self.ert = []
+        self.ertbest = []
 
         maxErtAll = 0
         maxRL = 0
@@ -62,8 +63,10 @@ class FunTarget:
 
             # collect smallest function value reached within ERT <= D * 10**i for all algorithms
             targetValues = []
+            erts = []
             for alg in dataset:
                 targetValues.append(alg.target[sum(alg.ert <= dim * 10**i) - 1])
+                erts.append(alg.ert[sum(alg.ert <= dim * 10**i) - 1])
 
             # collect smallest function value reached in any single run within D * 10**i fevals
             alltargetValues = []
@@ -72,12 +75,14 @@ class FunTarget:
                   if min(row[1:][numpy.isfinite(row[1:])]) <= dim * 10**i:
                       alltargetValues.append(row[0])
                       break
-                
+
             # determine min and median for all algorithms
             self.minFtarget.append(numpy.min(alltargetValues) / 10**(0.1))
             self.medianFtarget.append(numpy.min(targetValues) / 10**(0.1))  # min was median
             self.ert.append(10**i)
-            
+            self.ertbest.append(numpy.min(erts))
+
+        self.ertbest = numpy.array(self.ertbest)
         self.minFtarget = numpy.array(self.minFtarget)
         # TODO: all the remainder should rather become part of the target value pre-processing for the run time distributions
         # append final target value
@@ -89,16 +94,29 @@ class FunTarget:
                len(self.minFtarget) > idx+1 and \
                self.minFtarget[idx+1] < 1e-8:
                 self.minFtarget[idx+1] = val
+                erts = []
+                for alg in dataset:
+                    try:
+                        erts.append(alg.ert[alg.target <= val][0])
+                    except IndexError:
+                        pass
+                if not erts:
+                    self.ertbest[idx+1] = numpy.nan
+                else:
+                    self.ertbest[idx+1] = min(erts)
 
         # set all leading of equal values to NaN: 
         for i in range(1,len(self.minFtarget)):
             if self.minFtarget[i-1] == self.minFtarget[i]:
-                self.minFtarget[i-1] = numpy.NaN
-            
+                self.minFtarget[i-1] = numpy.nan
+                self.ertbest[i-1] = numpy.nan
+
         # set trailing values to NaN
+        self.ertbest[self.minFtarget < 1e-8] = numpy.nan
         self.minFtarget[self.minFtarget < 1e-8] = numpy.nan
         if minimal_target_value:
             self.minFtarget[self.minFtarget < minimal_target_value] = numpy.nan
+            self.ertbest[self.minFtarget < minimal_target_value] = numpy.nan
 
         # set last target value
         if last_target_value_replacement is not None:  # replace last value with e.g. min(val, 1e-5)
@@ -106,6 +124,16 @@ class FunTarget:
             idx = numpy.where(self.minFtarget >= 1e-8)[0][-1]
             if self.minFtarget[idx] > val:
                 self.minFtarget[idx] = val
+                erts = []
+                for alg in dataset:
+                    try:
+                        erts.append(alg.ert[alg.target <= val][0])
+                    except IndexError:
+                        pass
+                if not erts:
+                    self.ertbest[idx] = numpy.nan
+                else:
+                    self.ertbest[idx] = min(erts)
 
         # set minimal target value
         if minimal_target_value:
@@ -116,10 +144,13 @@ class FunTarget:
             idx = numpy.where(self.minFtarget > minimal_target_value)[0][-1]
             if len(self.minFtarget) > idx + 2:
                 self.minFtarget[idx+2:] = numpy.nan
+                self.ertbest[idx+2:] = numpy.nan
+
+        # TODO: get the bestert here.
 
         # check and print lists
         if 11 < 3:  # should not be necessary, includes some testing
-	    if len(self.minFtarget) == 0:
+            if len(self.minFtarget) == 0:
                 print 'empty minFtarget list in determineFtarget2.py'
             print 'f', dataset[0].funcId, dim, '-D', ':'
             print self.minFtarget
@@ -128,8 +159,6 @@ class FunTarget:
                 pass
                 # set_trace()
 
-
-      
 ### Function definitons ###
 
 def usage():

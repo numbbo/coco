@@ -36,8 +36,8 @@ class FunTarget:
                        dimension, function, and ERT (array)
         ert - corresponds to ERT/DIM for minFtarget (array)
     """
-   
-    def __init__(self,dataset,dim):
+
+    def __init__(self, dataset, dim):
 
         # initialize
         i = 0
@@ -75,7 +75,7 @@ class FunTarget:
                 self.minFtarget.append(numpy.nan)
                 self.medianFtarget.append(numpy.median(targetValues))
             elif min(self.minFtarget) <= 1e-8 and min(self.medianFtarget) <= 1e-8:  
-                # min and median minimal target is reached                      
+                # min and median minimal target is reached
                 self.minFtarget.append(numpy.nan)
                 self.medianFtarget.append(numpy.nan)
                 break   
@@ -90,7 +90,39 @@ class FunTarget:
             # increase counter
             i += 1
 
-      
+class TargetList(dict):
+    """Trying to improve on FunTarget:
+    one inconvenient was the target function values could not be accessed
+    indifferently from the dimension, the function or the difficulty.
+    Another thing is: the best ERT is not recorded...
+    algSet
+    bestERT
+    """
+    def __init__(self, dsList):
+        super(TargetList, self).__init__()
+        process(self, dsList)
+
+    def process(self, dsList):
+        dictDim = dsList.dictByDim()
+        for d, dentries in dictDim.iteritems():
+            dictFunc = dentries.dictByFunc()
+            for f, fentries in dictFunc.iteritems():
+                
+                # We need the function, dimension, the function value, the
+                # best algorithm, best ERT (for this target function value)
+                #FunTarget.__init__(self, fentries, d)
+                #set_trace()
+
+    def compare(self, dsList):
+        """One function, one dimension, multiple algorithms. Virtual...
+        """
+        pass
+
+
+class FixedBudgetFunTarget(NewFunTarget):
+
+class Fix
+
 ### Function definitons ###
 
 def usage():

@@ -24,8 +24,9 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc import ppperfprof, pprldistr
+from bbob_pproc import pptables, pptex
 from bbob_pproc import dataoutput, determineFtarget2
-from bbob_pproc.dataoutput import algLongInfos, algPlotInfos
+from bbob_pproc.dataoutput import algLongInfos, algShortInfos, algPlotInfos
 from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
 
@@ -47,6 +48,7 @@ class Usage(Exception):
 def detTarget(dsList):
     allmintarget = {}
     allmedtarget = {}
+    allertbest = {}
     dictDim = dsList.dictByDim()
     for d, dimentries in dictDim.iteritems():
         dictFunc = dimentries.dictByFunc()
@@ -67,7 +69,11 @@ def detTarget(dsList):
                if (tmptarget.medianFtarget[i] < 1e-8): # BBOB-dependent
                    tmptarget.medianFtarget[i] = 1e-8
                tmp.setdefault((f, d), tmptarget.medianFtarget[i])
-    return allmintarget, allmedtarget
+
+               tmp = allertbest.setdefault(tmptarget.ert[i], {})
+               tmp.setdefault((f, d), tmptarget.ertbest[i])
+
+    return allmintarget, allmedtarget, allertbest
 
 def usage():
     print main.__doc__
@@ -84,8 +90,8 @@ def main(argv=None):
             opts, args = getopt.getopt(argv, "hvpo:",
                                        ["help", "output-dir=", "noisy",
                                         "noise-free", "write-pickles",
-                                        "perfprof-only", "targets=",
-                                        "verbose"])
+                                        "perfprof-only", "tab-only", 
+                                        "targets=", "verbose"])
         except getopt.error, msg:
              raise Usage(msg)
 
@@ -102,13 +108,10 @@ def main(argv=None):
         targetsfile = 'targetsfile.pickle'
 
         isPer = True
+        isTab = True
         isEff = True
         isERT = True
         isECDF = True
-        #isPer = False
-        #isEff = False
-        #isERT = False
-        #isECDF = False
 
         #Process options
         for o, a in opts:
@@ -128,8 +131,14 @@ def main(argv=None):
                 isNoisy = True
             elif o == "--noise-free":
                 isNoiseFree = True
+            elif o == "--tab-only":
+                isPer = False
+                isEff = False
+                isERT = False
+                isECDF = False
             elif o == "--perfprof-only":
                 isEff = False
+                isTab = False
                 isERT = False
                 isECDF = False
             else:
@@ -184,6 +193,7 @@ def main(argv=None):
 
         allmintarget = {}
         allmedtarget = {}
+        allertbest = {}
         if targets:
             f = open(targetsfile, 'r')
             algSet = pickle.load(f)
@@ -191,14 +201,16 @@ def main(argv=None):
                 raise Usage('Problem here')
             allmintarget = pickle.load(f)
             allmedtarget = pickle.load(f)
+            allertbest = pickle.load(f)
             f.close()
 
-        if not allmintarget or not allmedtarget:
-            allmintarget, allmedtarget = detTarget(dsList)
+        if not allmintarget or not allmedtarget or not allertbest:
+            allmintarget, allmedtarget, allertbest = detTarget(dsList)
             f = open(targetsfile, 'w')
             pickle.dump(set(dsList.dictByAlg().keys()), f)
             pickle.dump(allmintarget, f)
             pickle.dump(allmedtarget, f)
+            pickle.dump(allertbest, f)
             f.close()
 
         # group targets:
@@ -224,12 +236,36 @@ def main(argv=None):
             dictDim = dsList.dictByDim()
             for d, entries in dictDim.iteritems():
                 for k, t in dictTarget.iteritems():
+                    #if k == '_allerts':
+                        #set_trace()
                     ppperfprof.main2(entries, target=t, order=sortedAlgs,
                                     plotArgs=algPlotInfos,
                                     outputdir=outputdir,
                                     info=('%02d%s' % (d, k)),
                                     fileFormat=figformat,
                                     verbose=verbose)
+
+        if isTab:
+            dictDim = dsList.dictByDim()
+            for d, dentries in dictDim.iteritems():
+                dictAlg = dentries.dictByAlg()
+                for alg in sortedAlgs:
+                    algentries = DataSetList()
+                    for i in alg:
+                        if dictAlg.has_key(i):
+                            algentries.extend(dictAlg[i])
+                    set_trace()
+                    table = pptables.onealg(algentries, allmintarget, allertbest)
+                    f = open(os.path.join(outputdir, 'pptable_%s_%dD.tex' % (algShortInfos[i], d)), 'w')
+                    #TODO: i is one of the elements of an element of sortedAlgs.
+                    f.write(r'\begin{tabular}{cccccccccc}'+'\n')
+                    f.write(r'\multicolumn{4}{c}{Solved} & \multicolumn{6}{c}{ERT/ERT\_best} \\'+'\n')
+                    #set_trace()
+                    for i in table:
+                        pptex.writeArray(f, i, ['%d', '%d', '%d', '%s', '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e'],
+                        'scriptstyle')
+                    f.write(r'\end{tabular}'+'\n')
+                    f.close()
 
         if isERT or isEff or isECDF:
             # ECDF: 1 per function and dimension
