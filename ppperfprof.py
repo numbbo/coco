@@ -13,8 +13,8 @@ from pdb import set_trace
 percentiles = 50
 samplesize = 200
 
-#function_IDs = range(1,999)  # 1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
-function_IDs = range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
+function_IDs = range(1,999)  # 1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
+#function_IDs = range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
 
 def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
              isLegend=True, fileFormat=('eps', 'png')):
