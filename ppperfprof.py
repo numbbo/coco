@@ -159,7 +159,7 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
 
     for f, samefuncEntries in dictFunc.iteritems():
         if f not in function_IDs:
-	    continue
+           continue
         dictDim = samefuncEntries.dictByDim()
         for d, samedimEntries in dictDim.iteritems():
             dictAlg = samedimEntries.dictByAlg()
