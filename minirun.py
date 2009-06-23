@@ -198,6 +198,7 @@ def main(argv=None):
             f = open(targetsfile, 'r')
             algSet = pickle.load(f)
             if not set(dsList.dictByAlg().keys()).issubset(algSet):
+                set_trace()
                 raise Usage('Problem here')
             allmintarget = pickle.load(f)
             allmedtarget = pickle.load(f)
