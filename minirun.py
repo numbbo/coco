@@ -30,12 +30,11 @@ from bbob_pproc.dataoutput import algLongInfos, algShortInfos, algPlotInfos
 from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
 
-constant_target_function_values = (1e0, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)
-
-figformat = ('png', )
-# GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
+# GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
+constant_target_function_values = (1e0, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)
+figformat = ('png', )
 
 #CLASS DEFINITIONS
 
