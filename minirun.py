@@ -37,7 +37,7 @@ instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
 constant_target_function_values = (1e1, 1e-0, 1e-1)
 constant_target_function_values = (1e-3, 1e-5, 1e-7)
 constant_target_function_values = (1e0, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)
-# constant_target_function_values = (1e4, 1e3, 1e2, 1e1, 1e0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8)
+# constant_target_function_values = 10**numpy.r_[4 : -0.5 : -8.01]  # for a "movie"
 # constant_target_function_values = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10)  # useful for a single function
 figformat = ('png', )
 
