@@ -33,7 +33,12 @@ import matplotlib.pyplot as plt
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
+
+constant_target_function_values = (1e1, 1e-0, 1e-1)
+constant_target_function_values = (1e-3, 1e-5, 1e-7)
 constant_target_function_values = (1e0, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)
+# constant_target_function_values = (1e4, 1e3, 1e2, 1e1, 1e0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8)
+# constant_target_function_values = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10)  # useful for a single function
 figformat = ('png', )
 
 #CLASS DEFINITIONS
@@ -217,9 +222,9 @@ def main(argv=None):
         dictTarget = {}
         for i in sorted(allmintarget):
             if i < 10000:
-                dictTarget['_ert%2.1eD' % i] = (allmintarget[i],)
+                dictTarget['_ertE%2.1fD' % numpy.log10(i)] = (allmintarget[i],)
             if i >= 10000:
-                dictTarget.setdefault('_ert1.0e+04Dandmore', []).append(allmintarget[i])
+                dictTarget.setdefault('_ertE4.0Dandmore', []).append(allmintarget[i])
             dictTarget.setdefault('_allerts', []).append(allmintarget[i])
         for t in constant_target_function_values:
             tmpdict = dict.fromkeys(((f, d) for f in range(0, 25) + range(101, 131) for d in (2, 3, 5, 10, 20, 40)), t)
