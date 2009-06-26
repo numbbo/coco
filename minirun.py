@@ -31,14 +31,14 @@ from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
-instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
-instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
-
 constant_target_function_values = (1e1, 1e-0, 1e-1)
 constant_target_function_values = (1e-3, 1e-5, 1e-7)
-constant_target_function_values = (1e0, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)
-# constant_target_function_values = 10**numpy.r_[4 : -0.5 : -8.01]  # for a "movie"
+constant_target_function_values = (1e1, 1e-0, 1e-1, 1e-3, 1e-5, 1e-7)
+# constant_target_function_values = 10**numpy.r_[4 : -8.01 : -0.5]  # for a "movie"
 # constant_target_function_values = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10)  # useful for a single function
+
+instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
+instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
 figformat = ('png', )
 
 #CLASS DEFINITIONS
@@ -228,7 +228,7 @@ def main(argv=None):
             dictTarget.setdefault('_allerts', []).append(allmintarget[i])
         for t in constant_target_function_values:
             tmpdict = dict.fromkeys(((f, d) for f in range(0, 25) + range(101, 131) for d in (2, 3, 5, 10, 20, 40)), t)
-            dictTarget['_f%2.1e' % t] = (tmpdict, )
+            dictTarget['_fE%2.1f' % numpy.log10(t)] = (tmpdict, )
             dictTarget.setdefault('_allfs', []).append(tmpdict)
 
         if not os.path.exists(outputdir):

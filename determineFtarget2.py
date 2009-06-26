@@ -9,11 +9,11 @@ import getopt
 
 # parameters for manipulating the target list, should partly rather become a pre-processing function for the RL-plots
 minimal_target_value = 1e-6 
-last_target_value_replacement = 1e-5       # replace with min of given and actual value, None for do nothing
+last_target_value_replacement = 1e-5      # replace with min of given and actual value, None for do nothing
 final_target_value_append_threshold = None # 1e-5 # append another value if last value is above threshold, None for do nothing
 final_target_value_appended = None # 1e-7         # None for nothing
-log10_step_width_for_run_length = 1  # 0.2  
-flg_movie = False  # True  # no in-between NaN values for a movie
+log10_step_width_for_run_length = 0.5  # 0.2  
+flg_movie = True  # True  # False: in-between NaN values 
 
 # add path to bbob_pproc  
 #filepath = '/home/fst/coco/BBOB/code/python/bbob_pproc/'
@@ -62,9 +62,9 @@ class FunTarget:
             maxRL = max(maxRL, max(alg.maxevals))
 
         # for i in range(0, 1 + int(numpy.log10(maxRL))):
-        ilast = 0
+        ilast = -1
         for i in numpy.r_[0 : numpy.log10(maxRL) : log10_step_width_for_run_length]:
-            if int(dim * 10**i) == int(dim * 10**ilast)  # fevals are integers
+            if int(dim * 10**i) == int(dim * 10**ilast):  # fevals are integers
                 continue
             ilast = i 
 
@@ -153,7 +153,7 @@ class FunTarget:
         self.ertbest = numpy.array(self.ertbest)
 
         # check and print lists
-        if 11 < 3:  # should not be necessary, includes some testing
+        if 1 < 3:  # should not be necessary, includes some testing
             if len(self.minFtarget) == 0:
                 print 'empty minFtarget list in determineFtarget2.py'
             print 'f', dataset[0].funcId, dim, '-D', ':'

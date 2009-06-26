@@ -17,7 +17,7 @@ samplesize = 200
                              #sep mod high mul mulw
 function_IDs = range(1,999)  #  1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
 #function_IDs = range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
-save_zoom = True  # False
+save_zoom = False  # False
 
 
 def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
