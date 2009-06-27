@@ -18,18 +18,18 @@ PSO_Bounds:PSO_Bounds algorithm:% A PSO algortihm with Adaptive Varying Bounds, 
 PSO:PSO:% A gbest PSO algorithm.:{"label": "PSO", "color": "y"}
 DASA:DASA:% test:{"label": "DASA", "color": "sienna"}
 Cauchy-EDA:Cauchy EDA:% restarts up to 100, outermaxfevals 5e4*dim, inner maxfunevals 5e4*dim:{"label": "Cauchy EDA", "color": "slategray"}
-DIRECT:Original DIRECT:% No restarts, outermaxfevals 1e5, inner maxfunevals 1e5:{"label": "DIRECT", "color": "salmon"}
-G3PCX:G3PCX:% restarts up to 100, outermaxfevals 5e4*dim, inner maxfunevals 5e4*dim:{"label": "G3PCX", "color": "springgreen"}
+DIRECT:Original DIRECT:% No restarts, outermaxfevals 1e5, inner maxfunevals 1e5:{"label": "DIRECT", "color": "violet"}
+G3PCX:G3PCX:% restarts up to 100, outermaxfevals 5e4*dim, inner maxfunevals 5e4*dim:{"label": "G3-PCX", "color": "springgreen"}
 LSfminbnd:Line Search - fminbnd:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "LSfminbnd", "color": "steelblue"}
 LSstep:Line Search - STEP:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "LSstep", "color": "teal"}
-LSrosen:Local Search - Rosenbrock:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "Rosenbrock", "color": "thistle"}
+LSrosen:Local Search - Rosenbrock:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "Rosenbrock", "color": "peru"}
 AMALGAM:AMaLGaM-Full-Free:% AMaLGaM-Full-Free:{"label": "AMaLGaM", "color": "tomato"}
 iAMALGAM:iAMaLGaM-Full-Free:% iAMaLGaM-Full-Free:{"label": "iAMaLGaM", "color": "tomato", "ls": "--"}
 BAYEDA:BAYEDA:% Simple continuous BAYEDA with 0.8 selection, population=10*DIM, 2000*DIM fn evals, so 200 generations:{"label": "BayEDAcG", "color": "turquoise"}
-GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =8;Maxfevnr=5000;Method =simplex2:{"label": "GLOBAL", "color": "violet"}
-GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=5000;Method =simplex2:{"label": "GLOBAL", "color": "violet"}
-GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =bfgs:{"label": "GLOBAL", "color": "violet"}
-GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =simplex2:{"label": "GLOBAL", "color": "violet"}
+GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =8;Maxfevnr=5000;Method =simplex2:{"label": "GLOBAL", "color": "salmon"}
+GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=5000;Method =simplex2:{"label": "GLOBAL", "color": "salmon"}
+GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =bfgs:{"label": "GLOBAL", "color": "salmon"}
+GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =simplex2:{"label": "GLOBAL", "color": "salmon"}
 POEMS:POEMS:% no comments:{"label": "POEMS", "color": "wheat"}
 GA:PUT ALGORITHM NAME:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "simple GA", "color": "royalblue"}
 SEP-CMA-ES:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e4*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize), only the first restart uses mixed strategies for 1+100*N/sqrt(popsize):{"label": "IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
@@ -38,8 +38,8 @@ NELDERDOERR:NELDERDOERR:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:
 SPSAHA:SPSA2:%  maxFunevals = 5e4*DIM with 10 restarts, blocking = 10, lambda_start = 10:{"label":"adaptive SPSA", "color": "purple"}
 SPSAHA:SPSA2:%  maxFunevals = 5e4*DIM with restarts, c0=0.1, initial lambda = 5, blocking = 10, restart changes c0:{"label":"adaptive SPSA", "color": "purple", "ls": "--"}
 SNOBFIT:SNOBFIT:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"SNOBFIT", "color": "powderblue"}
-MCS:MCS:% default parameters except for local = maxfunevals/5:{"label":"MCS (Neum)", "color": "peru"}
-MCS:MCS:% default parameters, no local search:{"label":"MCS (Neum)", "color": "peru"}
+MCS:MCS:% default parameters except for local = maxfunevals/5:{"label":"MCS (Neum)", "color": "thistle"}
+MCS:MCS:% default parameters, no local search:{"label":"MCS (Neum)", "color": "thistle"}
 MA-LS-CHAIN:MA2LSI_5DIMF_ssga_cmaesn05:% RatioBL=0.5,Intensity=500:{"label":"MA-LS-Chain", "color": "pink"}
 SPSA:SPSA:% maxFuneval = 5e4*dim with 20 restarts, with blocking, A = 10% of kmax, lambda = 2, 20% of choosing a new start point/increase lambda:{"label":"SPSA","color":"purple"}
 SPSA:SPSA:%  maxFuneval = 5e4*DIM with 20 restarts, blocking, change lambda in restarts, lambda_start = 1, lambda_max = 16:{"label":"SPSA","color":"purple"}

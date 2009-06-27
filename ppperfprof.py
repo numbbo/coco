@@ -15,10 +15,29 @@ samplesize = 200
 
 # input parameter settings
                              #sep mod high mul mulw
-function_IDs = range(1,999)  #  1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
+function_IDs = range(1, 999)  #  1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
 #function_IDs = range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122, TODO: functions should become input argument
+
+classics = ('BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'DIRECT', 'LSfminbnd', 
+            'LSstep', 'Rosenbrock', 'GLOBAL', 'SNOBFIT', 'MCS (Neum)', 'adaptive SPSA', 'Rand Search')  # 14+1 
+EDA = ('BIPOP-CMA-ES', '(1+1)-CMA-ES', 'VNS', 'EDA-PSO', 'IPOP-SEP-CMA-ES', 'AMaLGaM', 'iAMaLGaM', 
+       'Cauchy EDA', 'BayEDAcG', 'MA-LS-Chain', 'Rand Search')  # 10+1
+GA = ('DE-PSO', '(1+1)-ES', 'PSO_Bounds', 'DASA', 'G3-PCX', 'simple GA', 'Rand Search')  # 6+1
+TAO = ('BFGS', 'NELDER (Han)', 'NEWUOA', 'full NEWUOA', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', '(1+1)-CMA-ES', '(1+1)-ES', 'simple GA', 'Rand Search')
+
+show_algorithms = TAO # () # classics, GAs, EDAs, empty==all
+
 save_zoom = False  # False
 
+def get_plot_args(args):
+    """args is one dict element according to algorithmshortinfos
+    """
+    if args['label'] in show_algorithms:
+        args['linewidth'] = 2
+    elif len(show_algorithms) > 0:
+        args['color'] = 'wheat'
+        args['ls'] = '-' 
+    return args
 
 def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
              isLegend=True, fileFormat=('eps', 'png')):
@@ -124,19 +143,22 @@ def plotLegend(handles, maxval):
         except IndexError:
             pass
 
+    if len(show_algorithms) > 0:
+        lh = min(lh, len(show_algorithms))
     if lh <= 1:
         lh = 2
     i = 0 # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
             for h in ys[j][k]:
-                y = 0.02 + i * 0.96/(lh-1)
-                plt.plot((maxval, maxval*10), (j, y),
-                         ls=plt.getp(h, 'ls'), color=plt.getp(h, 'color'))
-                plt.text(maxval*11, y,
-                         plt.getp(h, 'label'), horizontalalignment="left",
-                         verticalalignment="center")
-                i += 1
+                if len(show_algorithms) == 0 or plt.getp(h, 'label') in show_algorithms: 
+                    y = 0.02 + i * 0.96/(lh-1)
+                    plt.plot((maxval, maxval*10), (j, y),
+                             ls=plt.getp(h, 'ls'), color=plt.getp(h, 'color'))
+                    plt.text(maxval*11, y,
+                             plt.getp(h, 'label'), horizontalalignment="left",
+                             verticalalignment="center")
+                    i += 1
 
     #plt.axvline(x=maxval, color='k') # Not as efficient?
     plt.plot((maxval, maxval), (0., 1.), color='k')
@@ -211,10 +233,9 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
             if dictData.has_key(elem):
                 data.extend(dictData[elem])
                 maxevals.extend(dictMaxEvals[elem])
-
         lines.append(plotPerfProf(numpy.array(data),
                      xlim, maxevals, order=(i, len(order)),
-                     kwargs=plotArgs[elem])) #elem is an element in alg...
+                     kwargs=get_plot_args(plotArgs[elem]))) #elem is an element in alg...
 
     plotLegend(lines, xlim)
 

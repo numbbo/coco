@@ -8,12 +8,16 @@ from pdb import set_trace
 import getopt
 
 # parameters for manipulating the target list, should partly rather become a pre-processing function for the RL-plots
+log10_step_width_for_run_length = 0.5  # 0.1 for a movie, 0.5 default
+log10_interval_for_run_length = (0, 10)           # (0, 2) for light case, (2, 10) for heavy case
+trailing_equal_targets_to_nan = True  # False  # should be True for overall plots, and False for single RT-target plots
+rank_of_reference_algorithm  = 1  # let's try two at some point
+between_equal_targets_to_nan = False   # True: in-between NaN values 
+
 minimal_target_value = 1e-6 
-last_target_value_replacement = 1e-5      # replace with min of given and actual value, None for do nothing
+last_target_value_replacement = 1e-5 + 0e-9       # replace with min of given and actual value, None for do nothing
 final_target_value_append_threshold = None # 1e-5 # append another value if last value is above threshold, None for do nothing
 final_target_value_appended = None # 1e-7         # None for nothing
-log10_step_width_for_run_length = 0.5  # 0.2  
-flg_movie = True  # True  # False: in-between NaN values 
 
 # add path to bbob_pproc  
 #filepath = '/home/fst/coco/BBOB/code/python/bbob_pproc/'
@@ -63,8 +67,10 @@ class FunTarget:
 
         # for i in range(0, 1 + int(numpy.log10(maxRL))):
         ilast = -1
-        for i in numpy.r_[0 : numpy.log10(maxRL) : log10_step_width_for_run_length]:
-            if int(dim * 10**i) == int(dim * 10**ilast):  # fevals are integers
+        for i in numpy.r_[log10_interval_for_run_length[0] 
+                          : min(numpy.log10(maxRL), log10_interval_for_run_length[1])
+                          : log10_step_width_for_run_length]:
+            if i > 0 and int(dim * 10**i) == int(dim * 10**ilast):  # fevals are integers
                 continue
             ilast = i 
 
@@ -83,7 +89,7 @@ class FunTarget:
                       break
 
             # determine min and median for all algorithms
-            self.minFtarget.append(numpy.min(alltargetValues) / 10**(0.05))
+            self.minFtarget.append(sorted(alltargetValues)[rank_of_reference_algorithm] / 10**(0.05))
             self.medianFtarget.append(numpy.min(targetValues) / 10**(0.05))  # min was median
             self.ert.append(10**i)
 
@@ -102,13 +108,15 @@ class FunTarget:
         # set all leading of equal values to NaN
         # TODO: for getting a "movie" this should be omitted
         for i in range(1,len(self.minFtarget)):
-            if self.minFtarget[i-1] == self.minFtarget[i] and not flg_movie:
+            if (self.minFtarget[i-1] == self.minFtarget[i] and  
+                  not between_equal_targets_to_nan):
                 self.minFtarget[i-1] = numpy.nan
 
         # set trailing values to NaN
-        self.minFtarget[self.minFtarget < 1e-8] = numpy.nan
-        if minimal_target_value:
-            self.minFtarget[self.minFtarget < minimal_target_value] = numpy.nan
+        if trailing_equal_targets_to_nan:
+            self.minFtarget[self.minFtarget < 1e-8] = numpy.nan
+            if minimal_target_value:
+                self.minFtarget[self.minFtarget < minimal_target_value] = numpy.nan
 
         # set last target value
         if last_target_value_replacement is not None:  # replace last value with e.g. min(val, 1e-5)
@@ -153,7 +161,7 @@ class FunTarget:
         self.ertbest = numpy.array(self.ertbest)
 
         # check and print lists
-        if 1 < 3:  # should not be necessary, includes some testing
+        if 11 < 3:  # should not be necessary, includes some testing
             if len(self.minFtarget) == 0:
                 print 'empty minFtarget list in determineFtarget2.py'
             print 'f', dataset[0].funcId, dim, '-D', ':'
