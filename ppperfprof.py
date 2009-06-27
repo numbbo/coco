@@ -1,33 +1,33 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
 
-import os
-import warnings
-import numpy
+import os, warnings, numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
 from pdb import set_trace
 
 """Generates Runtime distributions (Performance Profiles, More Wild 2002)."""
-percentiles = 50  # TODO: deserves a comment or a better speaking name
-samplesize = 100  # as well
 
 # input parameter settings
                               # sep ros high mul mulw
-function_IDs = range(1, 999)  #   1, 6, 10, 15, 20, 101, 107, 122, displayed functions
+function_IDs = range(1,999)  #   1, 6, 10, 15, 20, 101, 107, 122, displayed functions
 #function_IDs = range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122
 
 classics = ('BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'DIRECT', 'LSfminbnd', 
-            'LSstep', 'Rosenbrock', 'GLOBAL', 'SNOBFIT', 'MCS (Neum)', 'adaptive SPSA', 'Rand Search')  # 14+1 
-EDA = ('BIPOP-CMA-ES', '(1+1)-CMA-ES', 'VNS', 'EDA-PSO', 'IPOP-SEP-CMA-ES', 'AMaLGaM', 'iAMaLGaM', 
-       'Cauchy EDA', 'BayEDAcG', 'MA-LS-Chain', 'Rand Search')  # 10+1
-GA = ('DE-PSO', '(1+1)-ES', 'PSO_Bounds', 'DASA', 'G3-PCX', 'simple GA', 'Rand Search')  # 6+1
-TAO = ('BFGS', 'NELDER (Han)', 'NEWUOA', 'full NEWUOA', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', '(1+1)-CMA-ES', '(1+1)-ES', 'simple GA', 'Rand Search')
+            'LSstep', 'Rosenbrock', 'GLOBAL', 'SNOBFIT', 'MCS (Neum)', 'adaptive SPSA', 'Monte Carlo')  # 14+1 
+EDA = ('BIPOP-CMA-ES', '(1+1)-CMA-ES', 'VNS (Garcia)', 'EDA-PSO', 'IPOP-SEP-CMA-ES', 'AMaLGaM',
+       'iAMaLGaM', 'Cauchy EDA', 'BayEDAcG', 'MA-LS-Chain', 'Monte Carlo')  # 10+1
+GA = ('DE-PSO', '(1+1)-ES', 'PSO_Bounds', 'DASA', 'G3-PCX', 'simple GA', 'Monte Carlo')  # 6+1
+TAO = ('BFGS', 'NELDER (Han)', 'NEWUOA', 'full NEWUOA', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', 
+       '(1+1)-CMA-ES', '(1+1)-ES', 'simple GA', 'Monte Carlo')
 
 show_algorithms = EDA # () # classics, GAs, EDAs, empty==all
 
-save_zoom = False  # False
+save_zoom = False  # False 
+percentiles = 50  # TODO: deserves a comment or a better speaking name
+samplesize = 100  # as well
 
 def get_plot_args(args):
     """args is one dict element according to algorithmshortinfos
