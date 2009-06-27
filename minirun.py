@@ -31,11 +31,11 @@ from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
-constant_target_function_values = (1e1, 1e-0, 1e-1)
-constant_target_function_values = (1e-3, 1e-5, 1e-7)
+constant_target_function_values = (1e1, 1e-0, 1e-1)  # easy 
+constant_target_function_values = (1e-3, 1e-5, 1e-7) # heavy
 constant_target_function_values = (1e1, 1e-0, 1e-1, 1e-3, 1e-5, 1e-7)
 # constant_target_function_values = 10**numpy.r_[4 : -8.01 : -0.5]  # for a "movie"
-# constant_target_function_values = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10)  # useful for a single function
+# constant_target_function_values = 10**numpy.r_[0 : -9.01 : -1] # <1e-8 only useful for a single function
 
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
