@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """Mini run to display the performance profiles of algorithms.
 
@@ -6,11 +7,7 @@
 
 from __future__ import absolute_import
 
-import os
-import sys
-import glob
-import getopt
-import pickle
+import os, sys, glob, getopt, pickle
 from pdb import set_trace
 import warnings
 import numpy
@@ -35,7 +32,7 @@ constant_target_function_values = (1e1, 1e-0, 1e-1)  # easy
 constant_target_function_values = (1e-3, 1e-5, 1e-7) # heavy
 constant_target_function_values = (1e1, 1e-0, 1e-1, 1e-3, 1e-5, 1e-7)
 # constant_target_function_values = 10**numpy.r_[4 : -8.01 : -0.5]  # for a "movie"
-# constant_target_function_values = 10**numpy.r_[0 : -9.01 : -1] # <1e-8 only useful for a single function
+# constant_target_function_values = 10**numpy.array((0,-1,-2,-3,-4,-5,-6,-7,-7.99,-8))
 
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}

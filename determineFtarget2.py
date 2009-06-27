@@ -1,17 +1,16 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 # coding: utf-8
 
-import os
+import os, sys, getopt
 import numpy
-import sys
 from pdb import set_trace
-import getopt
 
 # parameters for manipulating the target list, should partly rather become a pre-processing function for the RL-plots
 log10_step_width_for_run_length = 0.5  # 0.1 for a movie, 0.5 default
 log10_interval_for_run_length = (0, 10)           # (0, 2) for light case, (2, 10) for heavy case
-trailing_equal_targets_to_nan = True  # False  # should be True for overall plots, and False for single RT-target plots
-rank_of_reference_algorithm  = 1  # let's try two at some point
+trailing_equal_targets_to_nan = False # should be True for overall plots, and False for single RT-target plots
+rank_of_reference_algorithm  = 2  
 between_equal_targets_to_nan = False   # True: in-between NaN values 
 
 minimal_target_value = 1e-6 
