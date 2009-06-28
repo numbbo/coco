@@ -7,11 +7,14 @@ import numpy
 from pdb import set_trace
 
 # parameters for manipulating the target list, should partly rather become a pre-processing function for the RL-plots
-log10_step_width_for_run_length = 0.5  # 0.1 for a movie, 0.5 default
-log10_interval_for_run_length = (0, 10)           # (0, 2) for light case, (2, 10) for heavy case
-trailing_equal_targets_to_nan = False # should be True for overall plots, and False for single RT-target plots
+log10_interval_for_run_length = (0, 20)  # (0, 2) for light case, (2, 20) for heavy case
+log10_step_width_for_run_length = 0.5    # 0.1 for a movie, 0.5 default
+
+display_between_equal_targets = True  # should be False for overall plots(?) and True for single RT-target plots,   
+display_all_final_targets = False  # should be False for overall plots, maybe True for single RT-target plots of small groups of functions (to be tested)
+
+
 rank_of_reference_algorithm  = 2  
-between_equal_targets_to_nan = False   # True: in-between NaN values 
 
 minimal_target_value = 1e-6 
 last_target_value_replacement = 1e-5 + 0e-9       # replace with min of given and actual value, None for do nothing
@@ -75,7 +78,6 @@ class FunTarget:
 
             # collect smallest function value reached within ERT <= D * 10**i for all algorithms
             targetValues = []
-            erts = []
             for alg in dataset:
                 targetValues.append(alg.target[sum(alg.ert <= dim * 10**i) - 1])
 
@@ -88,7 +90,7 @@ class FunTarget:
                       break
 
             # determine min and median for all algorithms
-            self.minFtarget.append(sorted(alltargetValues)[rank_of_reference_algorithm] / 10**(0.05))
+            self.minFtarget.append(sorted(alltargetValues)[rank_of_reference_algorithm-1] / 10**(0.05))
             self.medianFtarget.append(numpy.min(targetValues) / 10**(0.05))  # min was median
             self.ert.append(10**i)
 
@@ -98,21 +100,25 @@ class FunTarget:
         if final_target_value_appended and final_target_value_append_threshold:  # add e.g. 1e-8 as last value
             val = final_target_value_appended
             thresh = final_target_value_append_threshold
-            idx = numpy.where(self.minFtarget > val)[0][-1]
+            idx = numpy.where(self.minFtarget > val)[0]
+            if len(idx) > 0:
+                idx = idx[-1]
+            else:
+                idx = 0
             if self.minFtarget[idx] > thresh and \
-               len(self.minFtarget) > idx+1 and \
-               self.minFtarget[idx+1] < 1e-8:
+                 len(self.minFtarget) > idx+1 and \
+                  self.minFtarget[idx+1] < 1e-8:
                 self.minFtarget[idx+1] = val
 
         # set all leading of equal values to NaN
         # TODO: for getting a "movie" this should be omitted
-        for i in range(1,len(self.minFtarget)):
-            if (self.minFtarget[i-1] == self.minFtarget[i] and  
-                  not between_equal_targets_to_nan):
-                self.minFtarget[i-1] = numpy.nan
+        if  not display_between_equal_targets:
+            for i in range(1,len(self.minFtarget)):
+                if self.minFtarget[i-1] == self.minFtarget[i]:
+                    self.minFtarget[i-1] = numpy.nan
 
-        # set trailing values to NaN
-        if trailing_equal_targets_to_nan:
+        # set final values to NaN
+        if not display_all_final_targets:
             self.minFtarget[self.minFtarget < 1e-8] = numpy.nan
             if minimal_target_value:
                 self.minFtarget[self.minFtarget < minimal_target_value] = numpy.nan
@@ -120,7 +126,11 @@ class FunTarget:
         # set last target value
         if last_target_value_replacement is not None:  # replace last value with e.g. min(val, 1e-5)
             val = last_target_value_replacement
-            idx = numpy.where(self.minFtarget >= 1e-8)[0][-1]
+            idx = numpy.where(self.minFtarget >= 1e-8)[0]
+            if len(idx) > 0:
+                idx = idx[-1]
+            else: 
+                idx = 0
             if self.minFtarget[idx] > val:
                 self.minFtarget[idx] = val
 
@@ -130,13 +140,18 @@ class FunTarget:
             self.minFtarget = numpy.maximum(self.minFtarget, minimal_target_value)
             if idx.any():
                 self.minFtarget[idx] = numpy.nan
-            idx = numpy.where(self.minFtarget > minimal_target_value)[0][-1]
-            if len(self.minFtarget) > idx + 2:
-                self.minFtarget[idx+2:] = numpy.nan
+            if not display_all_final_targets:  # sort of code dublication
+                idx = numpy.where(self.minFtarget > minimal_target_value)[0]
+                if len(idx) > 0:
+                    idx = idx[-1]
+                else:
+                    idx = 0
+                if len(self.minFtarget) > idx + 2:
+                    self.minFtarget[idx+2:] = numpy.nan
 
         erts = []
         for alg in dataset:
-            idx = 0 # index of ert or target.
+            idx = 0  # index of ert or target.
             for i, val in enumerate(self.minFtarget):
                 try:
                     erts[i]

@@ -10,11 +10,6 @@ from pdb import set_trace
 
 """Generates Runtime distributions (Performance Profiles, More Wild 2002)."""
 
-# input parameter settings
-                              # sep ros high mul mulw
-function_IDs = range(1,999)  #   1, 6, 10, 15, 20, 101, 107, 122, displayed functions
-#function_IDs = range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122
-
 classics = ('BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'DIRECT', 'LSfminbnd', 
             'LSstep', 'Rosenbrock', 'GLOBAL', 'SNOBFIT', 'MCS (Neum)', 'adaptive SPSA', 'Monte Carlo')  # 14+1 
 EDA = ('BIPOP-CMA-ES', '(1+1)-CMA-ES', 'VNS (Garcia)', 'EDA-PSO', 'IPOP-SEP-CMA-ES', 'AMaLGaM',
@@ -22,8 +17,18 @@ EDA = ('BIPOP-CMA-ES', '(1+1)-CMA-ES', 'VNS (Garcia)', 'EDA-PSO', 'IPOP-SEP-CMA-
 GA = ('DE-PSO', '(1+1)-ES', 'PSO_Bounds', 'DASA', 'G3-PCX', 'simple GA', 'Monte Carlo')  # 6+1
 TAO = ('BFGS', 'NELDER (Han)', 'NEWUOA', 'full NEWUOA', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', 
        '(1+1)-CMA-ES', '(1+1)-ES', 'simple GA', 'Monte Carlo')
+nikos = ('AMaLGaM', 'VNS', 'MA-LS-Chain', 'BIPOP-CMA-ES', '(1+1)-CMA-ES', 'G3-PCX', 'NEWUOA', 
+         'Monte Carlo', 'NELDER (Han)', 'NELDER (Doe)', 'GLOBAL', 'MCS (Neum)')
+petr = ('DIRECT', 'LSfminbnd', 'LSstep', 'Rosenbrock', 'G3-PCX', 'Cauchy EDA', 'Monte Carlo')
 
-show_algorithms = EDA # () # classics, GAs, EDAs, empty==all
+funi = [1] + range(5, 15)  # without paired Ellipsoid 
+fmulti = [4] + range(15,25) # without paired Rastrigin
+
+# input parameter settings
+show_algorithms = ()  # ()==all
+function_IDs = range(1,999)  #   1, 6, 10, 15, 20, 101, 107, 122, displayed functions
+#function_IDs = range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122
+                                  # sep ros high mul mulw
 
 save_zoom = False  # False 
 percentiles = 50  # TODO: deserves a comment or a better speaking name
