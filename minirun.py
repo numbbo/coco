@@ -28,11 +28,11 @@ from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
-constant_target_function_values = (1e1, 1e-0, 1e-1)  # easy 
-constant_target_function_values = (1e-3, 1e-5, 1e-7) # heavy
+constant_target_function_values = (1e1, 1e-0, 1e-1)  # light&easy 
+# constant_target_function_values = (1e-3, 1e-5, 1e-7) # tight&heavy
 constant_target_function_values = (1e1, 1e-0, 1e-1, 1e-3, 1e-5, 1e-7)
 # constant_target_function_values = 10**numpy.r_[4 : -8.01 : -0.5]  # for a "movie"
-# constant_target_function_values = 10**numpy.array((0,-1,-2,-3,-4,-5,-6,-7,-7.99,-8))
+# constant_target_function_values = 10**numpy.array((0,-1,-2,-3,-4,-5,-6,-7,-7.98,-7.99))
 
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
@@ -246,6 +246,12 @@ def main(argv=None):
                                     info=('%02d%s' % (d, k)),
                                     fileFormat=figformat,
                                     verbose=verbose)
+            # try:
+            # import organizeRTDpictures
+            # organizeRTDpictures.do(outputdir)
+            # except:
+            #     pass
+            os.system('./organizeRTDpictures.py ' + outputdir)
 
         if isTab:
             dictDim = dsList.dictByDim()
