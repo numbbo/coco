@@ -7,7 +7,11 @@
 
 from __future__ import absolute_import
 
-import os, sys, glob, getopt, pickle
+import os
+import sys
+import glob
+import getopt
+import pickle
 from pdb import set_trace
 import warnings
 import numpy
@@ -110,6 +114,8 @@ def main(argv=None):
 
         isPer = True
         isTab = True
+        isTab2 = True
+        isTab3 = True
         isEff = True
         isERT = True
         isECDF = True
@@ -140,6 +146,8 @@ def main(argv=None):
             elif o == "--perfprof-only":
                 isEff = False
                 isTab = False
+                isTab2 = False
+                isTab3 = False
                 isERT = False
                 isECDF = False
             else:
@@ -257,22 +265,146 @@ def main(argv=None):
             dictDim = dsList.dictByDim()
             for d, dentries in dictDim.iteritems():
                 dictAlg = dentries.dictByAlg()
+                # one-alg table
                 for alg in sortedAlgs:
+                    # Regroup entries by algorithm
                     algentries = DataSetList()
                     for i in alg:
                         if dictAlg.has_key(i):
                             algentries.extend(dictAlg[i])
-                    set_trace()
                     table = pptables.onealg(algentries, allmintarget, allertbest)
                     f = open(os.path.join(outputdir, 'pptable_%s_%dD.tex' % (algShortInfos[i], d)), 'w')
                     #TODO: i is one of the elements of an element of sortedAlgs.
-                    f.write(r'\begin{tabular}{cccccccccc}'+'\n')
-                    f.write(r'\multicolumn{4}{c}{Solved} & \multicolumn{6}{c}{ERT/ERT\_best} \\'+'\n')
+                    f.write(r'\begin{tabular}{cccc|cccccc}'+'\n')
+                    f.write(r'\multicolumn{4}{c|}{Solved} & \multicolumn{6}{|c}{ERT/ERT\_best} \\'+'\n')
+                    header2 = ('evals/D', '\%trials', '\%inst', 'fcts', 'best', '10', '25', 'med', '75', '90')
+                    f.write('&'.join(header2) + r' \\' + '\n')
                     #set_trace()
                     for i in table:
                         pptex.writeArray(f, i, ['%d', '%d', '%d', '%s', '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e'],
                         'scriptstyle')
                     f.write(r'\end{tabular}'+'\n')
+                    f.close()
+
+        if isTab2:
+            dictDim = dsList.dictByDim()
+            for d, dentries in dictDim.iteritems():
+                dictAlg = dentries.dictByAlg()
+                # Multiple algorithms table.
+                f = open(os.path.join(outputdir, 'pptableall_%dD.tex' % (d)), 'w')
+                nbtarget = len(allmintarget)
+                f.write(r'\begin{tabular}{c' + 'ccc'*nbtarget + '}\n')
+                f.write(r'evals/D')
+                stargets = sorted(allmintarget.keys())
+                for t in stargets:
+                    nbsolved = sum(numpy.isfinite(list(allmintarget[t][i] for i in allmintarget[t] if i[1] == d)))
+                    #set_trace()
+                    f.write(r' & \multicolumn{2}{c}{%d} & %d' % (t, nbsolved))
+                f.write(r'\\'+'\n')
+
+                for alg in sortedAlgs:
+                    # Regroup entries by algorithm
+                    algentries = DataSetList()
+                    for i in alg:
+                        if dictAlg.has_key(i):
+                            algentries.extend(dictAlg[i])
+                    f.write(algPlotInfos[alg[0]]['label'].replace('_', '\\_')) # TODO: escape special latex characters
+                    for t in stargets:
+                        dictFunc = algentries.dictByFunc()
+                        erts = []
+                        for func, entry in dictFunc.iteritems():
+                            try:
+                                entry = entry[0]
+                            except:
+                                raise Usage('oops too many entries')
+                            try:
+                                erts.append(entry.ert[entry.target<=allmintarget[t][(func, d)]][0]/allertbest[t][(func, d)])
+                            except LookupError:
+                                pass
+                        if erts:
+                            f.write(r' & %2.1f & %2.1f & (%d)' % (numpy.median(erts), numpy.min(erts), len(erts)))
+                        else:
+                            f.write(r' & . & . & (0)')
+                    f.write(r'\\' + '\n')
+                f.write(r'\end{tabular}'+'\n')
+                f.close()
+
+        if isTab3:
+            dictDim = dsList.dictByDim()
+            widthtable = 3 # Put in as global? 3 functions wide
+            # TODO: split the generation of the tables from their formatting/output
+            # ... if its possible
+            for d, dentries in dictDim.iteritems():
+                dictFunc = dentries.dictByFunc()
+                dictAlg = dentries.dictByAlg()
+                # Summary table: multiple algorithm for each function
+                funcs = sorted(dictFunc.keys())
+                nbtarget = len(allmintarget)
+                stargets = sorted(allmintarget.keys())
+                groups = list(funcs[i*widthtable:(1+i)*widthtable] for i in range(len(funcs)/widthtable + 1))
+                for i, g in enumerate(groups):
+                    nbcols = {}
+                    lines = [r'\begin{tabular}{c', '', 'Dftarget', 'ERT\\_ertbest/D']
+                    for func in g:
+                        curtargets = []
+                        for t in stargets:
+                            try:
+                                if numpy.isfinite(allmintarget[t][(func, d)]):
+                                    curtargets.append(t)
+                            except KeyError:
+                                continue
+                        lines[0] += '|' + len(curtargets) * 'c'
+                        lines[1] += (r' & \multicolumn{%d}{|c|}{f%d}' % (len(curtargets), func))
+
+                        for t in curtargets:
+                            try:
+                                lines[2] += (r'& %1.0e' % allmintarget[t][(func, d)])
+                            except KeyError:
+                                lines[2] += (r'& .')
+                            try:
+                                lines[3] += (r'& %g' % (float(allertbest[t][(func, d)])/d))
+                            except KeyError:
+                                lines[3] += (r'& .')
+
+                    lines[0] += '}'
+                    lines[1] += r'\\'
+                    lines[2] += r'\\'
+                    lines[3] += r'\\'
+
+                    for alg in sortedAlgs:
+                        tmpstr = ''
+                        # Regroup entries by algorithm
+                        algentries = DataSetList()
+                        for a in alg:
+                            if dictAlg.has_key(a):
+                                algentries.extend(dictAlg[a])
+                        tmpstr += algPlotInfos[alg[0]]['label'].replace('_', '\\_') # TODO: escape special latex characters
+                        dictF = algentries.dictByFunc()
+                        for func in g:
+                            try:
+                                entry = dictF[func]
+                            except KeyError:
+                                continue
+                            try:
+                                entry = entry[0]
+                            except:
+                                raise Usage('oops too many entries')
+
+                            for t in stargets:
+                                try:
+                                    if numpy.isnan(allmintarget[t][(func, d)]):
+                                        continue
+                                except KeyError:
+                                    continue
+                                try:
+                                    tmpstr += (' & %3.2g ' % (entry.ert[entry.target<=allmintarget[t][(func, d)]][0]/allertbest[t][(func, d)]))
+                                except LookupError: #IndexError, KeyError:
+                                    tmpstr += (' & .')
+                        tmpstr += r'\\'
+                        lines.append(tmpstr)
+
+                    f = open(os.path.join(outputdir, 'pptablef%d_%dD.tex' % (i, d)), 'w')
+                    f.write('\n'.join(lines) + r'\end{tabular}'+'\n')
                     f.close()
 
         if isERT or isEff or isECDF:

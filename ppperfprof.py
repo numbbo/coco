@@ -3,7 +3,9 @@
 
 from __future__ import absolute_import
 
-import os, warnings, numpy
+import os
+import warnings
+import numpy # According to PEP 8 imports should be on different lines
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
 from pdb import set_trace
