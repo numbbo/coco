@@ -45,6 +45,8 @@ def onealg(dsList, allmintarget, allertbest):
                         if numpy.isfinite(list(tmpline[j+1] for j in idx)).any():
                             solinstances += 1
                     nbinstances += len(dictinstance)
+                    #if solinstances != nbinstances:
+                        #set_trace()
                     erts.append(float(entry.ert[l]) / allertbest[t][(entry.funcId, entry.dim)])
                     break
 
@@ -52,7 +54,7 @@ def onealg(dsList, allmintarget, allertbest):
             erts.sort()
             line = [t]
             line.extend((float(soltrials)/nbtrials*100., float(solinstances)/nbinstances*100.,
-                         '%d/%d' % (solfcts, nbfcts)))
+                         solfcts, nbfcts))
             line.append(erts[0])
             line.extend(prctile(erts, [10, 25, 50, 75, 90]))
             table.append(line)
