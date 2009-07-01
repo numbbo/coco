@@ -14,7 +14,7 @@ display_between_equal_targets = True  # should be False for overall plots(?) and
 display_all_final_targets = False  # should be False for overall plots, maybe True for single RT-target plots of small groups of functions (to be tested)
 
 
-rank_of_reference_algorithm  = 2  
+rank_of_reference_algorithm  = 2  # 2nd best algorithm needs more than xx fevals
 
 minimal_target_value = 1e-6 
 last_target_value_replacement = 1e-5 + 0e-9       # replace with min of given and actual value, None for do nothing
