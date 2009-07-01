@@ -15,17 +15,20 @@ allmintarget = {}
 allmedtarget = {}
 
 def writeFunVal(funval):
-    '''Returns string representation of a function value to use in a table.'''
+    """Returns string representation of a function value to use in a table."""
     str = ('%.1e' % funval).split('e')
     str[0] = str[0].replace('.', '')
     str[1] = '%+d' % (int(str[1]) - 1)
     return r'\textit{%s}' % 'e'.join(str)
 
 def writeFEvals(fevals):
-    '''Returns string representation of a number of function evaluations to use
+    """Returns string representation of a number of function evaluations to use
     in a table.
-    '''
-    return ('%.2g' % fevals).replace('+', '')
+    """
+    str = ('%.2g' % fevals).split('e')
+    if len(str) > 1:
+        str[1] = '%d' % int(str[1])
+    return '%s' % 'e'.join(str)
 
 def onealg(dsList, allmintarget, allertbest):
     table = []
@@ -139,24 +142,20 @@ def tableonealg(dsList, allmintarget, allertbest, sortedAlgs=None,
             f.write('\n'.join(lines) + '\n')
             f.close()
 
-def manyalg(dsList):
-    pass
 
-def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None, outputdir='.'):
+
+def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None,
+                 outputdir='.'):
+    stargets = sorted(allmintarget.keys())
     dictDim = dsList.dictByDim()
+    limitRank = 3
+
     for d, dentries in dictDim.iteritems():
         dictAlg = dentries.dictByAlg()
         # Multiple algorithms table.
-        nbtarget = len(allmintarget)
-        lines = [r'\begin{tabular}{c@{}' + 'c@{/}c@{(}c@{) }'*nbtarget + '}']
-        stargets = sorted(allmintarget.keys())
-        tmpstr = 'evals/D'
-        for t in stargets:
-            nbsolved = sum(numpy.isfinite(list(allmintarget[t][i] for i in allmintarget[t] if i[1] == d)))
-            #set_trace()
-            tmpstr += (r' & \multicolumn{2}{c@{(}}{%.2g} & %d' % (t, nbsolved))
-        lines.append(tmpstr)
-
+        # Generate data
+        table = []
+        algnames = []
         for alg in sortedAlgs:
             # Regroup entries by algorithm
             algentries = DataSetList()
@@ -165,8 +164,8 @@ def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None, outputdir='.
                     algentries.extend(dictAlg[i])
             if not algentries:
                 continue
-            lines[-1] += r'\\'
-            tmpstr = algPlotInfos[alg[0]]['label'].replace('_', '\\_') # TODO: escape special latex characters
+            algnames.append(algPlotInfos[alg[0]]['label'].replace('_', '\\_')) # TODO: escape special latex characters
+            tmp = []
             for t in stargets:
                 dictFunc = algentries.dictByFunc()
                 erts = []
@@ -175,21 +174,78 @@ def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None, outputdir='.
                         entry = entry[0]
                     except:
                         raise Usage('oops too many entries')
+
+                    try:
+                        if numpy.isnan(allmintarget[t][(func, d)]):
+                            continue
+                    except LookupError:
+                        continue
+                    # At this point the target exists.
                     try:
                         erts.append(entry.ert[entry.target<=allmintarget[t][(func, d)]][0]/allertbest[t][(func, d)])
                     except LookupError:
                         erts.append(numpy.inf)
+
                 if numpy.isfinite(erts).any():
-                    med = numpy.median(erts)
-                    if numpy.isinf(med):
-                        tmpstr += r' & . '
-                    else:
-                        tmpstr += r' & %s ' % (writeFEvals(numpy.median(erts)))
-                    tmpstr += '& %s & %d' % (writeFEvals(numpy.min(erts)), numpy.sum(numpy.isfinite(erts)))
+                    tmp += [numpy.median(erts), numpy.min(erts), numpy.sum(numpy.isfinite(erts))]
                 else:
-                    tmpstr += (r' & . & . & 0')
-            lines.append(tmpstr)
+                    tmp += [numpy.inf, numpy.inf, 0]
+            table.append(tmp)
+
+        # Process over all data
+        table = numpy.array(table)
+        kept = [] # range(numpy.shape(table)[1])
+        targetkept = []
+        for i in range(1, (numpy.shape(table)[1])/3 + 1):
+            if (table[:, 3*i - 1] != 0).any():
+                kept.extend([3*i - 3, 3*i - 2 , 3*i - 1])
+                targetkept.append(i-1)
+        table = table[:, kept]
+        boldface = []
+        for i in range(numpy.shape(table)[1]):
+            tmp = table[:, i].argsort()
+            prevValue = 0
+            tmp2 = []
+            for j in tmp:
+                if table[j, i] != prevValue:
+                    tmp2.extend(numpy.where(table[:, i] == table[j, i])[0])
+                    prevValue = table[j, i]
+                if len(tmp2) >= limitRank:
+                    break
+            boldface.append(tmp2)
+            #set_trace()
+
+        # format the data
+        lines = [r'\begin{tabular}{c' + 'c@{/}c@{(}c@{) }'*len(targetkept) + '}']
+        tmpstr = 'evals/D'
+        for t in list(stargets[i] for i in targetkept):
+            nbsolved = sum(numpy.isfinite(list(allmintarget[t][i] for i in allmintarget[t] if i[1] == d)))
+            #set_trace()
+            tmpstr += (r' & \multicolumn{2}{c@{(}}{%.2g} & %d' % (t, nbsolved))
+        lines.append(tmpstr)
+
+        for i in range(len(table)):
+            lines[-1] += r'\\'
+            curline = algnames[i]
+            for j in range(len(table[i])):
+                curline += ' & '
+                if (j + 1) % 3 > 0: # the test may not be necessary
+                    if numpy.isinf(table[i, j]):
+                        tmpstr = '.'
+                    else:
+                        tmpstr = '%s' % (writeFEvals(table[i, j]))
+
+                    if any(list(k == i for k in boldface[j])):
+                        tmpstr = r'\textbf{' + tmpstr + '}'
+
+                    curline += tmpstr
+                else:
+                    curline += '%d' % table[i, j] # nb solved.
+
+            lines.append(curline)
+
         lines.append(r'\end{tabular}')
+
         f = open(os.path.join(outputdir, 'pptableall_%02dD.tex' % (d)), 'w')
         f.write('\n'.join(lines) + '\n')
         f.close()
@@ -270,9 +326,9 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                         try:
                             tmp = entry.ert[entry.target<=allmintarget[t][(func, d)]][0]/allertbest[t][(func, d)]
                             if tmp < 3:
-                                tmpstr += (r' & \textbf{%.3g} ' % tmp)
+                                tmpstr += (r' & \textbf{%s} ' % writeFEvals(tmp))
                             else:
-                                tmpstr += (' & %.3g ' % tmp)
+                                tmpstr += (' & %s ' % writeFEvals(tmp))
                         except LookupError: #IndexError, KeyError:
                             if not isLastInfoWritten:
                                 tmpstr += (r' & %s\textit{/%.1g}' % (writeFunVal(numpy.median(entry.finalfunvals)), numpy.median(entry.maxevals)))
@@ -287,44 +343,3 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
             lines.append(r'\end{tabular}')
             f.write('\n'.join(lines) + '\n')
             f.close()
-
-def summaryfunction(dsList):
-    pass
-
-def createTables(dsList):
-    dictFunc = dsList.dictByFunc()
-
-    if dictFunc.keys()[0] <= 100:
-        targetsfile = '/users/dsa/ros/Desktop/coco/BBOB/final-submissions/ppdata/noisefreetarget.pickle'
-    else:
-        targetsfile = '/users/dsa/ros/Desktop/coco/BBOB/final-submissions/ppdata/noisytarget.pickle'
-
-    f = open(targetsfile, 'r')
-    algSet = pickle.load(f)
-    allmintarget = pickle.load(f)
-    allmedtarget = pickle.load(f)
-    allertbest = pickle.load(f)
-    f.close()
-
-    dictAlg = dsList.dictByAlg()
-    dictAlg2 = {}
-    for i, j in dictAlg.iteritems():
-        dictAlg2.setdefault(algShortInfos[i], []).extend(j)
-    #set_trace()
-    if len(dictAlg2) > 1:
-        manyalg(dsList)
-    else:
-        table = onealg(dsList, allmintarget, allertbest)
-
-    #header2 = ('evals/D', '\%trials', '\%inst', 'fcts', 'best', '10', '25', 'med', '75', '90')
-
-    f = open('test', 'w')
-    f.write(r'\begin{tabular}{cccccccccc}'+'\n')
-    f.write(r'\multicolumn{4}{c}{Solved} & \multicolumn{6}{c}{ERT/ERT\_best} \\'+'\n')
-    #set_trace()
-    for i in table:
-        pptex.writeArray(f, i, ['%d', '%d', '%d', '%s', '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e'],
-        'scriptstyle')
-    f.write(r'\end{tabular}'+'\n')
-    f.close()
-    return table
