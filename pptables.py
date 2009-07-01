@@ -21,6 +21,12 @@ def writeFunVal(funval):
     str[1] = '%+d' % (int(str[1]) - 1)
     return r'\textit{%s}' % 'e'.join(str)
 
+def writeFEvals(fevals):
+    '''Returns string representation of a number of function evaluations to use
+    in a table.
+    '''
+    return ('%.2g' % fevals).replace('+', '')
+
 def onealg(dsList, allmintarget, allertbest):
     table = []
     unsolved = {}
@@ -83,7 +89,7 @@ def onealg(dsList, allmintarget, allertbest):
     unsolvedrl = []
     for i in unsolved:
         unsolvedrl.extend(i['runlengths'])
-        
+
     if unsolvedrl:
         unsolvedrl.sort()
         line = [numpy.inf,
@@ -148,7 +154,7 @@ def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None, outputdir='.
         for t in stargets:
             nbsolved = sum(numpy.isfinite(list(allmintarget[t][i] for i in allmintarget[t] if i[1] == d)))
             #set_trace()
-            tmpstr += (r' & \multicolumn{2}{c@{(}}{%g} & %d' % (t, nbsolved))
+            tmpstr += (r' & \multicolumn{2}{c@{(}}{%.2g} & %d' % (t, nbsolved))
         lines.append(tmpstr)
 
         for alg in sortedAlgs:
@@ -176,9 +182,10 @@ def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None, outputdir='.
                 if numpy.isfinite(erts).any():
                     med = numpy.median(erts)
                     if numpy.isinf(med):
-                        tmpstr += (r' & . & %2.1f & %d' % (numpy.min(erts), numpy.sum(numpy.isfinite(erts))))
+                        tmpstr += r' & . '
                     else:
-                        tmpstr += (r' & %2.1f & %2.1f & %d' % (numpy.median(erts), numpy.min(erts), numpy.sum(numpy.isfinite(erts))))
+                        tmpstr += r' & %s ' % (writeFEvals(numpy.median(erts)))
+                    tmpstr += '& %s & %d' % (writeFEvals(numpy.min(erts)), numpy.sum(numpy.isfinite(erts)))
                 else:
                     tmpstr += (r' & . & . & 0')
             lines.append(tmpstr)
@@ -214,8 +221,8 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                             curtargets.append(t)
                     except KeyError:
                         continue
-                lines[0] += '|' + len(curtargets) * '@{}c@{}'
-                lines[1] += (r' & \multicolumn{%d}{|@{}c@{}|}{f%d}' % (len(curtargets), func))
+                lines[0] += '|' + len(curtargets) * 'c'
+                lines[1] += (r' & \multicolumn{%d}{|c|}{f%d}' % (len(curtargets), func))
 
                 for t in curtargets:
                     try:

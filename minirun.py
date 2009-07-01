@@ -223,6 +223,18 @@ def main(argv=None):
             pickle.dump(allertbest, f)
             f.close()
 
+        if isNoisy:
+            for t in allmintarget:
+                allmintarget[t] = dict((i, allmintarget[t][i]) for i in allmintarget[t] if i[0] > 100)
+                allmedtarget[t] = dict((i, allmedtarget[t][i]) for i in allmedtarget[t] if i[0] > 100)
+                allertbest[t] = dict((i, allertbest[t][i]) for i in allertbest[t] if i[0] > 100)
+
+        elif isNoiseFree:
+            for t in allmintarget:
+                allmintarget[t] = dict((i, allmintarget[t][i]) for i in allmintarget[t] if i[0] <= 100)
+                allmedtarget[t] = dict((i, allmedtarget[t][i]) for i in allmedtarget[t] if i[0] <= 100)
+                allertbest[t] = dict((i, allertbest[t][i]) for i in allertbest[t] if i[0] <= 100)
+
         # group targets:
         dictTarget = {}
         for i in sorted(allmintarget):
