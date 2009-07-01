@@ -10,30 +10,43 @@ import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
 from pdb import set_trace
 
-"""Generates Runtime distributions (Performance Profiles, More Wild 2002)."""
+"""Generates Runtime distributions (for now not Performance Profiles, More Wild 2002)."""
+
+nikos = ('AMaLGaM', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', '(1+1)-CMA-ES', 'G3-PCX', 'NEWUOA', 
+         'Monte Carlo', 'NELDER (Han)', 'NELDER (Doe)', 'GLOBAL', 'MCS (Neum)')
+
+# three groups which include all algorithms: 
+GA = ('DE-PSO', '(1+1)-ES', 'PSO_Bounds', 'DASA', 'G3-PCX', 'simple GA', 'POEMS', 'Monte Carlo')  # 7+1
 
 classics = ('BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'DIRECT', 'LSfminbnd', 
-            'LSstep', 'Rosenbrock', 'GLOBAL', 'SNOBFIT', 'MCS (Neum)', 'adaptive SPSA', 'Monte Carlo')  # 14+1 
-EDA = ('BIPOP-CMA-ES', '(1+1)-CMA-ES', 'VNS (Garcia)', 'EDA-PSO', 'IPOP-SEP-CMA-ES', 'AMaLGaM',
-       'iAMaLGaM', 'Cauchy EDA', 'BayEDAcG', 'MA-LS-Chain', 'Monte Carlo')  # 10+1
-GA = ('DE-PSO', '(1+1)-ES', 'PSO_Bounds', 'DASA', 'G3-PCX', 'simple GA', 'Monte Carlo')  # 6+1
+            'LSstep', 'Rosenbrock', 'GLOBAL', 'SNOBFIT', 'MCS (Neum)', 'adaptive SPSA', 'Monte Carlo')  # 13+1 
+
+EDA = ('BIPOP-CMA-ES', '(1+1)-CMA-ES', 'VNS (Garcia)', 'EDA-PSO', 'IPOP-SEP-CMA-ES', 'AMaLGaM IDEA',
+       'iAMaLGaM IDEA', 'Cauchy EDA', 'BayEDAcG', 'MA-LS-Chain', 'Monte Carlo')  # 10+1
+
+# groups according to the talks 
+petr = ('DIRECT', 'LSfminbnd', 'LSstep', 'Rosenbrock', 'G3-PCX', 'Cauchy EDA', 'Monte Carlo')
 TAO = ('BFGS', 'NELDER (Han)', 'NEWUOA', 'full NEWUOA', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', 
        '(1+1)-CMA-ES', '(1+1)-ES', 'simple GA', 'Monte Carlo')
-nikos = ('AMaLGaM', 'VNS', 'MA-LS-Chain', 'BIPOP-CMA-ES', '(1+1)-CMA-ES', 'G3-PCX', 'NEWUOA', 
-         'Monte Carlo', 'NELDER (Han)', 'NELDER (Doe)', 'GLOBAL', 'MCS (Neum)')
-petr = ('DIRECT', 'LSfminbnd', 'LSstep', 'Rosenbrock', 'G3-PCX', 'Cauchy EDA', 'Monte Carlo')
+TAOp = TAO + ('NELDER (Doe)',) 
+
+third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'PSO-EDA', 'AMaLGaM IDEA', 'iAMaLGaM IDEA',
+         'MA-LS-Chain', 'DASA', 'BayEDAcG')
+
+# MORE TO COME
 
 funi = [1] + range(5, 15)  # without paired Ellipsoid 
 fmulti = [4] + range(15,25) # without paired Rastrigin
+funisep = [1,2,5]
 
 # input parameter settings
-show_algorithms = ()  # ()==all
+show_algorithms = TAOp  # ()==all
+function_IDs = [10]  # range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122
 function_IDs = range(1,999)  #   1, 6, 10, 15, 20, 101, 107, 122, displayed functions
-#function_IDs = range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122
                                   # sep ros high mul mulw
 
-save_zoom = False  # False 
-percentiles = 50  # TODO: deserves a comment or a better speaking name
+save_zoom = False  # save zoom into left and right part of the figures
+percentiles = 50  # TODO: deserves a comment (percentiles of what?) or a better speaking name
 samplesize = 100  # as well
 
 def get_plot_args(args):
@@ -243,6 +256,13 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
         lines.append(plotPerfProf(numpy.array(data),
                      xlim, maxevals, order=(i, len(order)),
                      kwargs=get_plot_args(plotArgs[elem]))) #elem is an element in alg...
+
+    # re-plot show_algorithms in front, does not work
+    #for i, alg in enumerate(order):
+    #    if plotArgs[alg[0]] in show_algorithms:
+    #        lines.append(plotPerfProf(numpy.array(data),
+    #                     xlim, maxevals, order=(i, len(order)),
+    #                     kwargs=get_plot_args(plotArgs[alg[0]]))) #elem is an element in alg...
 
     plotLegend(lines, xlim)
 

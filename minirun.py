@@ -32,15 +32,15 @@ from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
-constant_target_function_values = (1e1, 1e-0, 1e-1)  # light&easy 
-# constant_target_function_values = (1e-3, 1e-5, 1e-7) # tight&heavy
 constant_target_function_values = (1e1, 1e-0, 1e-1, 1e-3, 1e-5, 1e-7)
+# constant_target_function_values = (1e1, 1e-0, 1e-1)  # light&easy 
+# constant_target_function_values = (1e-3, 1e-5, 1e-7) # tight&heavy
 # constant_target_function_values = 10**numpy.r_[4 : -8.01 : -0.5]  # for a "movie"
 # constant_target_function_values = 10**numpy.array((0,-1,-2,-3,-4,-5,-6,-7,-7.98,-7.99))
 
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
-figformat = ('png', )
+figformat = ('png',)
 
 #CLASS DEFINITIONS
 
@@ -208,7 +208,7 @@ def main(argv=None):
             algSet = pickle.load(f)
             if not set(dsList.dictByAlg().keys()).issubset(algSet):
                 #set_trace()
-                raise Usage('Problem here')
+                raise Usage('some algorithm are not regarded in the used targets (if this is deliberate incomment the error raise and rerun)')
             allmintarget = pickle.load(f)
             allmedtarget = pickle.load(f)
             allertbest = pickle.load(f)
@@ -245,7 +245,10 @@ def main(argv=None):
             dictTarget.setdefault('_allerts', []).append(allmintarget[i])
         for t in constant_target_function_values:
             tmpdict = dict.fromkeys(((f, d) for f in range(0, 25) + range(101, 131) for d in (2, 3, 5, 10, 20, 40)), t)
-            dictTarget['_fE%2.1f' % numpy.log10(t)] = (tmpdict, )
+            stmp = 'E'
+            if t == 1:
+                stmp = 'E-'
+            dictTarget['_f' + stmp + '%2.1f' % numpy.log10(t)] = (tmpdict, )
             dictTarget.setdefault('_allfs', []).append(tmpdict)
 
         if not os.path.exists(outputdir):
