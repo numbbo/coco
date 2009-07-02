@@ -472,7 +472,8 @@ def generateData2(dataSet, targetFuncValues, samplesize=1000):
                 # corresponding to the 1st occurrence of the best function
                 # value obtained.
                 k = -1
-                while (dataSet.funvals[k - 1, j] == dataSet.finalfunvals[j-1] and k > -len(dataSet.funvals)):
+                while (dataSet.funvals[k - 1, j] == dataSet.finalfunvals[j-1]
+                       and k > -len(dataSet.funvals) + 1):
                     k -= 1
                 unsucc.append(dataSet.funvals[k, 0])
             curLine.append(bootstrap.prctile(unsucc, [50], issorted=False)[0])
