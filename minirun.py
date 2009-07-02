@@ -113,9 +113,9 @@ def main(argv=None):
         targetsfile = 'targetsfile.pickle'
 
         isPer = True
-        isTab = False
+        isTab = True
         isTab2 = True
-        isTab3 = False
+        isTab3 = True
         isEff = True
         isERT = True
         isECDF = True
