@@ -313,8 +313,9 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
         funcs = sorted(dictFunc.keys())
         nbtarget = len(allmintarget)
         stargets = sorted(allmintarget.keys())
-        groups = [[1, 2], [3], [4], [5, 6], [7], [8, 9], [10], [11], [12], [13], [14], [15], [16], [17], [18], [19], [20], [21, 22], [23], [24]]
-        #groups = list(funcs[i*widthtable:(1+i)*widthtable] for i in range(len(funcs)/widthtable + 1))
+        #groups = [[1, 2], [3], [4], [5, 6], [7], [8, 9], [10], [11], [12], [13], [14], [15], [16], [17], [18], [19], [20], [21, 22], [23], [24]]
+        groups = list(funcs[i*widthtable:(i+1)*widthtable] for i in range(len(funcs)/widthtable + 1))
+        #set_trace()
         for numgroup, g in enumerate(groups):
             if not g:
                 continue
@@ -364,8 +365,10 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                 replacement.append(replacementLine)
                 table.append(curline)
 
-            table = numpy.array(table)
-            #set_trace()
+            try:
+                table = numpy.array(table)
+            except ValueError:
+                set_trace()
             # Process data
             boldface = sortColumns(table, maxRank=3)
 

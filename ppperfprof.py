@@ -56,7 +56,8 @@ def get_plot_args(args):
         args['linewidth'] = 2
     elif len(show_algorithms) > 0:
         args['color'] = 'wheat'
-        args['ls'] = '-' 
+        args['ls'] = '-'
+        args['zorder'] = -1
     return args
 
 def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
