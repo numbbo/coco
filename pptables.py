@@ -59,12 +59,15 @@ def writeFEvals(fevals, precision='.2'):
     """Returns string representation of a number of function evaluations to use
     in a table.
     """
-    res = (('%' + precision + 'g') % fevals).split('e')
+    tmp = (('%' + precision + 'g') % fevals)
+    res = tmp.split('e')
     if len(res) > 1:
         res[1] = '%d' % int(res[1])
         res = '%s' % 'e'.join(res)
         pr2 = str(float(precision) + .2)
-        res2 = (('%' + pr2 + 'g') % fevals)
+        #res2 = (('%' + pr2 + 'g') % fevals)
+        res2 = (('%' + pr2 + 'g') % float(tmp))
+        # To have the same number of significant digits.
         if len(res) >= len(res2):
             res = res2
     else:
@@ -314,7 +317,8 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
         nbtarget = len(allmintarget)
         stargets = sorted(allmintarget.keys())
         #groups = [[1, 2], [3], [4], [5, 6], [7], [8, 9], [10], [11], [12], [13], [14], [15], [16], [17], [18], [19], [20], [21, 22], [23], [24]]
-        groups = list(funcs[i*widthtable:(i+1)*widthtable] for i in range(len(funcs)/widthtable + 1))
+        #groups = list(funcs[i*widthtable:(i+1)*widthtable] for i in range(len(funcs)/widthtable + 1))
+        groups = list([i] for i in funcs)
         #set_trace()
         for numgroup, g in enumerate(groups):
             if not g:
@@ -373,7 +377,7 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
             boldface = sortColumns(table, maxRank=3)
 
             # Format data
-            lines = [r'\begin{tabular}{c', '', r'$\Delta$ftarget', r'ERT\_best/D']
+            lines = [r'\begin{tabular}{c', '', r'$\Delta$ftarget', r'ERT$_{\textrm{best}}$/D']
             for func in g:
                 curtargets = []
                 for t in stargets:
