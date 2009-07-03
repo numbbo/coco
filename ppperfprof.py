@@ -175,7 +175,8 @@ def plotLegend(handles, maxval):
                 if len(show_algorithms) == 0 or plt.getp(h, 'label') in show_algorithms: 
                     y = 0.02 + i * 0.96/(lh-1)
                     plt.plot((maxval, maxval*10), (j, y),
-                             ls=plt.getp(h, 'ls'), color=plt.getp(h, 'color'))
+                             ls=plt.getp(h, 'ls'), color=plt.getp(h, 'color'),
+                             lw=plt.getp(h, 'lw'))
                     plt.text(maxval*11, y,
                              plt.getp(h, 'label'), horizontalalignment="left",
                              verticalalignment="center")
