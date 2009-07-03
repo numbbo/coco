@@ -40,8 +40,8 @@ fmulti = [4] + range(15,25) # without paired Rastrigin
 funisep = [1,2,5]
 
 # input parameter settings
-show_algorithms = TAOp  # ()==all
-function_IDs = [10]  # range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122
+show_algorithms = petr  # ()==all
+function_IDs = 22  # range(6,25)  # range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122
 function_IDs = range(1,999)  #   1, 6, 10, 15, 20, 101, 107, 122, displayed functions
                                   # sep ros high mul mulw
 
