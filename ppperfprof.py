@@ -12,7 +12,13 @@ from pdb import set_trace
 
 """Generates Runtime distributions (for now not Performance Profiles, More Wild 2002)."""
 
-nikos = ('AMaLGaM', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', '(1+1)-CMA-ES', 'G3-PCX', 'NEWUOA', 
+best = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES',  
+   'BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'GLOBAL', 'MCS (Neum)',
+   'DIRECT', 'DASA', 'POEMS', 'Cauchy EDA', 'Monte Carlo')
+
+bestnoisy = ()
+
+nikos = ('AMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', '(1+1)-CMA-ES', 'G3-PCX', 'NEWUOA', 
          'Monte Carlo', 'NELDER (Han)', 'NELDER (Doe)', 'GLOBAL', 'MCS (Neum)')
 
 # three groups which include all algorithms: 
@@ -40,10 +46,11 @@ fmulti = [4] + range(15,25) # without paired Rastrigin
 funisep = [1,2,5]
 
 # input parameter settings
-show_algorithms = petr  # ()==all
-function_IDs = 22  # range(6,25)  # range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122
+show_algorithms = () # ()==all
+function_IDs = fmulti  # range(6,25)  # range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122
 function_IDs = range(1,999)  #   1, 6, 10, 15, 20, 101, 107, 122, displayed functions
                                   # sep ros high mul mulw
+x_limit = 1e9   # maximal run length shown
 
 save_zoom = False  # save zoom into left and right part of the figures
 percentiles = 50  # TODO: deserves a comment (percentiles of what?) or a better speaking name
@@ -197,7 +204,7 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
 
     """
 
-    xlim = 1e7
+    xlim = x_limit
     dictData = {} # list of (ert per function) per algorithm
     dictMaxEvals = {} # list of (maxevals per function) per algorithm
     # the functions will not necessarily sorted.
