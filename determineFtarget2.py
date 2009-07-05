@@ -7,7 +7,7 @@ import numpy
 from pdb import set_trace
 
 # parameters for manipulating the target list, should partly rather become a pre-processing function for the RL-plots
-log10_interval_for_run_length = (0, 20)  # (0, 2) for light case, (2, 20) for heavy case
+log10_interval_for_run_length = (0.0, 20)  # (0, 2) for light case, (2, 20) for heavy case
 log10_step_width_for_run_length = 0.5    # 0.1 for a movie, 0.5 default
 
 display_between_equal_targets = True  # should be False for overall plots(?) and True for single RT-target plots,   

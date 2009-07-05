@@ -33,6 +33,7 @@ import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
 constant_target_function_values = (1e1, 1e-0, 1e-1, 1e-3, 1e-5, 1e-7)
+# constant_target_function_values = (1e-7, )
 # constant_target_function_values = (1e1, 1e-0, 1e-1)  # light&easy 
 # constant_target_function_values = (1e-3, 1e-5, 1e-7) # tight&heavy
 # constant_target_function_values = 10**numpy.r_[4 : -8.01 : -0.5]  # for a "movie"
