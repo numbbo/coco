@@ -241,12 +241,12 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                             tmp = line[1:]
                             runlengthsucc = tmp[numpy.isfinite(tmp)]
                             runlengthunsucc = entry.maxevals[numpy.isnan(tmp)]
-                            if len(runlengthunsucc) > 0:
-                                x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
-                                                     percentiles=percentiles,
-                                                     samplesize=samplesize)[1]
-                            else:
-                                x = runlengthsucc
+                            #if len(runlengthunsucc) > 0:
+                            x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                                                 percentiles=percentiles,
+                                                 samplesize=samplesize)[1]
+                            #else: # Problem in this case due to samplesize.
+                            #    x = runlengthsucc
 
                             #Normalization
                             x = x / entry.dim
