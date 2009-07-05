@@ -249,8 +249,8 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                                 x = runlengthsucc
 
                             #Normalization
-                            x = list(i / entry.dim for i in x)
-                            runlengthunsucc = list(i / entry.dim for i in runlengthunsucc)
+                            x = x / entry.dim
+                            runlengthunsucc = runlengthunsucc / entry.dim
                             break
 
                     dictData.setdefault(alg, []).extend(x)
