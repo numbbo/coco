@@ -241,10 +241,16 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                             tmp = line[1:]
                             runlengthsucc = tmp[numpy.isfinite(tmp)]
                             runlengthunsucc = entry.maxevals[numpy.isnan(tmp)]
-                            tmp = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
-                                                   percentiles=percentiles,
-                                                   samplesize=samplesize)
-                            x = tmp[1]/entry.dim
+                            if len(runlengthunsucc) > 0:
+                                x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                                                     percentiles=percentiles,
+                                                     samplesize=samplesize)[1]
+                            else:
+                                x = runlengthsucc
+
+                            #Normalization
+                            x = list(i / entry.dim for i in x)
+                            runlengthunsucc = list(i / entry.dim for i in runlengthunsucc)
                             break
 
                     dictData.setdefault(alg, []).extend(x)
