@@ -50,7 +50,7 @@ show_algorithms = () # ()==all
 function_IDs = fmulti  # range(6,25)  # range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122
 function_IDs = range(1,999)  #   1, 6, 10, 15, 20, 101, 107, 122, displayed functions
                                   # sep ros high mul mulw
-x_limit = 1e9   # maximal run length shown
+x_limit = 1e8   # maximal run length shown
 
 save_zoom = False  # save zoom into left and right part of the figures
 percentiles = 50  # TODO: deserves a comment (percentiles of what?) or a better speaking name
@@ -238,13 +238,13 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                     runlengthunsucc = []
                     for line in entry.evals:
                         if line[0] <= t[(f, d)]:
-                            tmp = line[1:]/entry.dim
+                            tmp = line[1:]
                             runlengthsucc = tmp[numpy.isfinite(tmp)]
                             runlengthunsucc = entry.maxevals[numpy.isnan(tmp)]
                             tmp = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
                                                    percentiles=percentiles,
                                                    samplesize=samplesize)
-                            x = tmp[1]
+                            x = tmp[1]/entry.dim
                             break
 
                     dictData.setdefault(alg, []).extend(x)
