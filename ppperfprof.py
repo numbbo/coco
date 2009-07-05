@@ -239,8 +239,8 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                     for line in entry.evals:
                         if line[0] <= t[(f, d)]:
                             tmp = line[1:]
-                            runlengthsucc = tmp[numpy.isfinite(tmp)]
-                            runlengthunsucc = entry.maxevals[numpy.isnan(tmp)]
+                            runlengthsucc = tmp[numpy.isfinite(tmp)] / entry.dim
+                            runlengthunsucc = entry.maxevals[numpy.isnan(tmp)] / entry.dim
                             #if len(runlengthunsucc) > 0:
                             x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
                                                  percentiles=percentiles,
@@ -248,9 +248,6 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                             #else: # Problem in this case due to samplesize.
                             #    x = runlengthsucc
 
-                            #Normalization
-                            x = list(i / entry.dim for i in x)
-                            runlengthunsucc = runlengthunsucc / entry.dim
                             break
 
                     dictData.setdefault(alg, []).extend(x)
