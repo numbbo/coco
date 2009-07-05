@@ -249,7 +249,7 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                             #    x = runlengthsucc
 
                             #Normalization
-                            x = x / entry.dim
+                            x = list(i / entry.dim for i in x)
                             runlengthunsucc = runlengthunsucc / entry.dim
                             break
 
