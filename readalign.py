@@ -36,10 +36,10 @@ class MultiReader(list):
     # idx: index of the column in the data array of the alignment value.
     # idxData: index of the column in the data array for the data of concern.
 
-    def __init__(self, data):
+    def __init__(self, data, isHArray=False):
         for i in data:
             if len(i) > 0: # ie. if the data array is not empty.
-                self.append(self.SingleReader(i))
+                self.append(self.SingleReader(i, isHArray))
 
     def currentLine(self):
         """Aggregates currentLines information."""
@@ -72,7 +72,7 @@ class MultiReader(list):
     class SingleReader:
         """Single data array reader class."""
 
-        def __init__(self, data):
+        def __init__(self, data, isHArray=False):
             if len(data) == 0:
                 raise ValueError, 'Empty data array.'
             self.data = numpy.array(data)
@@ -81,6 +81,11 @@ class MultiReader(list):
             self.isFinished = False
             self.currentLine = None
             self.nextLine = self.it.next()
+            if isHArray:
+                self.idxEvals = range(1, numpy.shape(data)[1])
+            else:
+                self.idxEvals = idxEvals
+
 
         def next(self):
             """Returns the next (last if undefined) line of the array data."""
@@ -95,7 +100,8 @@ class MultiReader(list):
                         self.isNearlyFinished = True
                 else:
                     self.isFinished = True
-                    self.currentLine[idxEvals] = numpy.nan
+                    self.currentLine[self.idxEvals] = numpy.nan
+                    #TODO: the line above was not valid for the MultiArrayReader
 
             return self.currentLine
 
@@ -205,8 +211,9 @@ class ArrayMultiReader(MultiReader):
 
     idx = 0 # We expect the alignment value to be the 1st column.
 
-    def __init__(self, data):
-        super(ArrayMultiReader, self).__init__(data)
+    def __init__(self, data, isHArray=False):
+        #super(ArrayMultiReader, self).__init__(data, True)
+        MultiReader.__init__(self, data, isHArray)
         #for i in self:
             #i.nbRuns = (numpy.shape(i.data)[1] - 1)
 
@@ -227,7 +234,7 @@ class HArrayMultiReader(ArrayMultiReader, HMultiReader):
     """Wrapper class of ALIGNED data arrays to be aligned horizontally."""
 
     def __init__(self, data):
-        ArrayMultiReader.__init__(self, data)
+        ArrayMultiReader.__init__(self, data, isHArray=True)
         #TODO: Should this use super?
         self.idxCurrentF = numpy.inf #Minimization
 

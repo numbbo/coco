@@ -380,9 +380,7 @@ class DataSetList(list):
             if i == o:
                 isFound = True
                 if set(i.dataFiles).symmetric_difference(set(o.dataFiles)):
-                    #set_trace()
                     i.funvals = alignArrayData(VArrayMultiReader([i.funvals, o.funvals]))
-                    #set_trace()
                     i.finalfunvals = numpy.r_[i.finalfunvals, o.finalfunvals]
                     i.evals = alignArrayData(HArrayMultiReader([i.evals, o.evals]))
                     i.maxevals = numpy.r_[i.maxevals, o.maxevals]

@@ -235,13 +235,15 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                     entry = entry[0]
                     x = [numpy.inf]*samplesize
                     y = numpy.inf
-                    runlengthunsucc = []
+                    runlengthunsucc = entry.maxevals / entry.dim
                     for line in entry.evals:
                         if line[0] <= t[(f, d)]:
                             tmp = line[1:]
                             runlengthsucc = tmp[numpy.isfinite(tmp)] / entry.dim
                             runlengthunsucc = entry.maxevals[numpy.isnan(tmp)] / entry.dim
                             #if len(runlengthunsucc) > 0:
+                            #if info == '20_fE1.0':
+                            #    set_trace()
                             x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
                                                  percentiles=percentiles,
                                                  samplesize=samplesize)[1]
@@ -265,6 +267,7 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
             if dictData.has_key(elem):
                 data.extend(dictData[elem])
                 maxevals.extend(dictMaxEvals[elem])
+
         lines.append(plotPerfProf(numpy.array(data),
                      xlim, maxevals, order=(i, len(order)),
                      kwargs=get_plot_args(plotArgs[elem]))) #elem is an element in alg...

@@ -167,6 +167,8 @@ def main(argv=None):
             if i.endswith(".pickle"):
                 tmpargs.append(i)
                 tmpalg = os.path.split(os.path.split(i)[0])[1]
+                if algLongInfos[tmpalg] in sortedAlgs:
+                    continue
             else:
                 if isNoisy and isNoiseFree:
                     ext = "*.pickle"
@@ -262,8 +264,8 @@ def main(argv=None):
             dictDim = dsList.dictByDim()
             for d, entries in dictDim.iteritems():
                 for k, t in dictTarget.iteritems():
-                    #if k == '_allerts':
-                        #set_trace()
+                    #if k == '_fE1.0':
+                    #    set_trace()
                     ppperfprof.main2(entries, target=t, order=sortedAlgs,
                                     plotArgs=algPlotInfos,
                                     outputdir=outputdir,
