@@ -132,6 +132,9 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
         # return (numpy.Inf*numpy.array(percentiles), )
         return draw(runlengths_unsucc, percentiles, samplesize=samplesize, func=sum)
 
+    #if Nunsucc == 0: # Special case: all success, how can we improve efficiency?
+    #    return 
+
     # geometric distribution for number of unsuccessful runs
     # The samplesize depends on the number of unsuccessful runs?
 

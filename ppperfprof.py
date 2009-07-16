@@ -53,8 +53,7 @@ function_IDs = range(1,999)  #   1, 6, 10, 15, 20, 101, 107, 122, displayed func
 x_limit = 1e8   # maximal run length shown
 
 save_zoom = False  # save zoom into left and right part of the figures
-percentiles = 50  # TODO: deserves a comment (percentiles of what?) or a better speaking name
-samplesize = 100  # as well
+perfprofsamplesize = 100 # resolution of the performance profile.
 
 def get_plot_args(args):
     """args is one dict element according to algorithmshortinfos
@@ -131,19 +130,23 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
     if n == 0:
         #TODO: problem if no maxval
         if maxval is None:
-            res = plt.plot([], [], **kwargs)
+            res = plt.plot([], [], **kwargs) # TODO: plot a horizontal line instead?
         else:
             res = plt.plot([1., maxval], [0., 0.], **kwargs)
     else:
-        x.sort()
+        dictx = {}
+        for i in x:
+            dictx[i] = dictx.get(i, 0) + 1
+        
+        x = numpy.array(sorted(dictx))        
         if maxval is None:
             maxval = max(x)
         x = x[x <= maxval]
-        n = len(x) # redefine n to correspond to the x that will be shown...
+        y = numpy.cumsum(list(dictx[i] for i in x))
 
         x2 = numpy.hstack([numpy.repeat(x, 2), maxval])
         y2 = numpy.hstack([0.0,
-                           numpy.repeat(numpy.arange(1, n+1) / float(nn), 2)])
+                           numpy.repeat(y / float(nn), 2)])
         res = plt.plot(x2, y2, **kwargs)
         if not maxevals is None:
             x3 = numpy.median(maxevals)
@@ -233,7 +236,7 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                 for alg, entry in dictAlg.iteritems():
                     # entry is supposed to be a single item DataSetList
                     entry = entry[0]
-                    x = [numpy.inf]*samplesize
+                    x = [numpy.inf]*perfprofsamplesize
                     y = numpy.inf
                     runlengthunsucc = entry.maxevals / entry.dim
                     for line in entry.evals:
@@ -246,7 +249,7 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                             #    set_trace()
                             x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
                                                  percentiles=percentiles,
-                                                 samplesize=samplesize)[1]
+                                                 samplesize=perfprofsamplesize)[1]
                             #else: # Problem in this case due to samplesize.
                             #    x = runlengthsucc
 
