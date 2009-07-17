@@ -235,7 +235,7 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                 for alg, entry in dictAlg.iteritems():
                     # entry is supposed to be a single item DataSetList
                     entry = entry[0]
-                    x = [numpy.inf]*perfprofsamplesize
+                    x = [numpy.inf] * perfprofsamplesize
                     y = numpy.inf
                     runlengthunsucc = entry.maxevals / entry.dim
                     for line in entry.evals:
@@ -247,7 +247,7 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                             #if info == '20_fE1.0':
                             #    set_trace()
                             x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
-                                                 percentiles=percentiles,
+                                                 percentiles=[50],
                                                  samplesize=perfprofsamplesize)[1]
                             #else: # Problem in this case due to samplesize.
                             #    x = runlengthsucc
@@ -265,14 +265,17 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
     for i, alg in enumerate(order):
         data = []
         maxevals = []
+        isData = False
         for elem in alg:
             if dictData.has_key(elem):
+                isData = True
                 data.extend(dictData[elem])
                 maxevals.extend(dictMaxEvals[elem])
 
-        lines.append(plotPerfProf(numpy.array(data),
-                     xlim, maxevals, order=(i, len(order)),
-                     kwargs=get_plot_args(plotArgs[elem]))) #elem is an element in alg...
+        if isData:        
+            lines.append(plotPerfProf(numpy.array(data),
+                         xlim, maxevals, order=(i, len(order)),
+                         kwargs=get_plot_args(plotArgs[elem]))) #elem is an element in alg...
 
     # re-plot show_algorithms in front, does not work
     #for i, alg in enumerate(order):
