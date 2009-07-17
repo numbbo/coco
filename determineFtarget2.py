@@ -52,14 +52,20 @@ class FunTarget:
         ert - (E)RT/DIM corresponding to minFtarget (array)
     """
    
-    def __init__(self, dataset, dim):
-        """ TODO: what type are the input arguments?
+    def __init__(self, dataset, dim, use_uniform_fake_values=False):
+        """ input dim: used for computing the target levels
+            TODO: what type are the input arguments?
         """
 
         self.minFtarget = [] 
         self.medianFtarget = [] 
         self.ert = []
         self.ertbest = []
+
+        if use_uniform_fake_values:
+            self.minFtarget = [1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7]
+            self.ert = numpy.array(self.minFtarget)**-1
+            return 
 
         maxErtAll = 0
         maxRL = 0
