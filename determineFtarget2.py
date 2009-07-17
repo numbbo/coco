@@ -7,7 +7,7 @@ import numpy
 from pdb import set_trace
 
 # parameters for manipulating the target list, should partly rather become a pre-processing function for the RL-plots
-log10_interval_for_run_length = (0, .20)  # (0, 2) for light case, (2, 20) for heavy case
+log10_interval_for_run_length = (0, 20)  # (0, 2) for light case, (2, 20) for heavy case
 log10_step_width_for_run_length = 0.5    # 0.1 for a movie, 0.5 default
 display_between_equal_targets = False # should be False for overall plots and True for single RT-target plots,
                                       # use naming convention name-singleRT in case of True   
@@ -50,22 +50,52 @@ class FunTarget:
                      achieved within an ERT of D,10D, 100D,... for 
                      given dimension, function (array)
         ert - (E)RT/DIM corresponding to minFtarget (array)
+        ertbest - best ERT for a given target function value (array)
     """
-   
+
+    def detertbest(self, dataset):
+        erts = []
+        ertbest = []
+        for alg in dataset:
+            idx = 0  # index of ert or target.
+            for i, val in enumerate(self.minFtarget):
+                try:
+                    erts[i]
+                except IndexError:
+                    erts.append([])
+                if numpy.isfinite(val):
+                    while (idx < len(alg.target) and alg.target[idx] > val):
+                        idx += 1
+                    try:
+                        erts[i].append(alg.ert[idx])
+                    except IndexError:
+                        pass
+                        #TODO: what value to put?
+                        #erts[i].append(numpy.nan)
+
+        for elem in erts:
+            if not elem:
+                ertbest.append(numpy.nan) # TODO: what value to put?
+            else:
+                ertbest.append(min(elem))
+        return numpy.array(ertbest)
+
     def __init__(self, dataset, dim, use_uniform_fake_values=False):
         """ input dim: used for computing the target levels
             TODO: what type are the input arguments?
         """
 
-        self.minFtarget = [] 
-        self.medianFtarget = [] 
+        self.minFtarget = []
+        self.medianFtarget = []
         self.ert = []
-        self.ertbest = []
+        self.ertbest = numpy.array([])
 
         if use_uniform_fake_values:
             self.minFtarget = [1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7]
+            self.medianFtarget = [1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7]
             self.ert = numpy.array(self.minFtarget)**-1
-            return 
+            self.ertbest = self.detertbest(dataset)
+            return
 
         maxErtAll = 0
         maxRL = 0
@@ -155,30 +185,7 @@ class FunTarget:
                 if len(self.minFtarget) > idx + 2:
                     self.minFtarget[idx+2:] = numpy.nan
 
-        erts = []
-        for alg in dataset:
-            idx = 0  # index of ert or target.
-            for i, val in enumerate(self.minFtarget):
-                try:
-                    erts[i]
-                except IndexError:
-                    erts.append([])
-                if numpy.isfinite(val):
-                    while (idx < len(alg.target) and alg.target[idx] > val):
-                        idx += 1
-                    try:
-                        erts[i].append(alg.ert[idx])
-                    except IndexError:
-                        pass
-                        #TODO: what value to put?
-                        #erts[i].append(numpy.nan)
-
-        for elem in erts:
-            if not elem:
-                self.ertbest.append(numpy.nan) # TODO: what value to put?
-            else:
-                self.ertbest.append(min(elem))
-        self.ertbest = numpy.array(self.ertbest)
+        self.ertbest = detertbest(dataset)
 
         # check and print lists
         if 11 < 3:  # should not be necessary, includes some testing
