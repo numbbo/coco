@@ -7,19 +7,19 @@ import numpy
 from pdb import set_trace
 
 # parameters for manipulating the target list, should partly rather become a pre-processing function for the RL-plots
-log10_interval_for_run_length = (0.0, 20)  # (0, 2) for light case, (2, 20) for heavy case
+log10_interval_for_run_length = (0, .20)  # (0, 2) for light case, (2, 20) for heavy case
 log10_step_width_for_run_length = 0.5    # 0.1 for a movie, 0.5 default
-
-display_between_equal_targets = True  # should be False for overall plots(?) and True for single RT-target plots,   
+display_between_equal_targets = False # should be False for overall plots and True for single RT-target plots,
+                                      # use naming convention name-singleRT in case of True   
 display_all_final_targets = False  # should be False for overall plots, maybe True for single RT-target plots of small groups of functions (to be tested)
 
 
-rank_of_reference_algorithm  = 2  # 2nd best algorithm needs more than xx fevals
+rank_of_reference_algorithm = 2  # 2nd best algorithm needs more than xx fevals
 
 minimal_target_value = 1e-6 
 last_target_value_replacement = 1e-5 + 0e-9       # replace with min of given and actual value, None for do nothing
 final_target_value_append_threshold = None # 1e-5 # append another value if last value is above threshold, None for do nothing
-final_target_value_appended = None # 1e-7         # None for nothing
+final_target_value_appended = None # 1e-6         # None for nothing
 
 # add path to bbob_pproc  
 #filepath = '/home/fst/coco/BBOB/code/python/bbob_pproc/'

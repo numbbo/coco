@@ -1,4 +1,5 @@
 TODO:
+*provide individual performance tables on the web with (a) fixed targets and (b) run-length-based targets using 1e-8 as last additional target row
 *Do higher dim benchmark functions
 *Real-world functions
 *Test some other algorithms

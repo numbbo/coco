@@ -36,7 +36,7 @@ TAO = ('BFGS', 'NELDER (Han)', 'NEWUOA', 'full NEWUOA', 'BIPOP-CMA-ES', 'IPOP-SE
        '(1+1)-CMA-ES', '(1+1)-ES', 'simple GA', 'Monte Carlo')
 TAOp = TAO + ('NELDER (Doe)',) 
 
-third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'PSO-EDA', 'AMaLGaM IDEA', 'iAMaLGaM IDEA',
+third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'EDA-PSO', 'PSO_Bounds', 'PSO', 'AMaLGaM IDEA', 'iAMaLGaM IDEA',
          'MA-LS-Chain', 'DASA', 'BayEDAcG')
 
 # MORE TO COME
@@ -47,10 +47,9 @@ funisep = [1,2,5]
 
 # input parameter settings
 show_algorithms = () # ()==all
-function_IDs = fmulti  # range(6,25)  # range(103, 131, 3)  # 1, 6, 10, 15, 20, 101, 107, 122
-function_IDs = range(1,999)  #   1, 6, 10, 15, 20, 101, 107, 122, displayed functions
-                                  # sep ros high mul mulw
-x_limit = 1e8   # maximal run length shown
+function_IDs = [8]  # range(103, 131, 3)   # displayed functions
+function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
+x_limit = 1e8   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = 100 # resolution of the performance profile.
