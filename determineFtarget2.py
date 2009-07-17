@@ -16,7 +16,7 @@ display_all_final_targets = False  # should be False for overall plots, maybe Tr
 
 rank_of_reference_algorithm = 2  # 2nd best algorithm needs more than xx fevals
 
-minimal_target_value = 1e-6 
+minimal_target_value = 1e-6
 last_target_value_replacement = 1e-5 + 0e-9       # replace with min of given and actual value, None for do nothing
 final_target_value_append_threshold = None # 1e-5 # append another value if last value is above threshold, None for do nothing
 final_target_value_appended = None # 1e-6         # None for nothing
