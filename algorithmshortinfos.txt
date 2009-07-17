@@ -7,15 +7,15 @@ NEWUOA:NEWUOA:% NPT=2*DIM+1, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "
 FULLNEWUOA:NEWUOA:% NPT=(DIM+1)(DIM+2)/2, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "full NEWUOA", "color": "g", "linestyle": "--"}
 CMA-ES:cmaes V3.30.beta:% cmaes25 ccum=new stopstagnation, sigmaUp=10^20, maxrestartfunevals=1e7*DIM restarts=9 maxiter=100 + 50 * (N+3)^2/sqrt(popsize) no xopt sigma0=2:{"label": "BIPOP-CMA-ES", "color": "b"}
 CMA-ES:cmaes V3.30.beta:% cmaes24noi BIPOP like 21 with deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{"label": "BIPOP-CMA-ES", "color": "b"}
-DE-PSO:DEPSO:% MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "DE-PSO", "color": "y"}
+DE-PSO:DEPSO:% MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "DE-PSO", "color": "springgreen", "ls": "--"}
 CMA-ESPLUSSEL:cmaesplussel:%:{"label": "(1+1)-CMA-ES", "color": "b", "ls": "--"}
 ONEFIFTH:One-Fifth Variant3:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "(1+1)-ES", "color": "m"}
 RANDOMSEARCH:PureRandomSearchOnNoise:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "Monte Carlo", "color": "k", "ls": "--"}
-EDA-PSO:EDA-PSO:% All historical information with correlation-triggered adaptive variance scaling.:{"label": "EDA-PSO", "color": "y"}
-EDA-PSO:EDA-PSO:% An EDA and PSO hybrid algorithm.:{"label": "EDA-PSO", "color": "y"}
+EDA-PSO:EDA-PSO:% All historical information with correlation-triggered adaptive variance scaling.:{"label": "EDA-PSO", "color": "springgreen"}
+EDA-PSO:EDA-PSO:% An EDA and PSO hybrid algorithm.:{"label": "EDA-PSO", "color": "springgreen"}
 PSO_Bounds:PSO_Bounds_R:% hmin=0.2, hmax=0.8, alpha=0.05 and T=0.0001.:{"label": "PSO_Bounds", "color": "y"}
 PSO_Bounds:PSO_Bounds algorithm:% A PSO algortihm with Adaptive Varying Bounds, pmin = 0.2, pmax = 0.8, alpha = 0.05, T = 0.0001.:{"label": "PSO_Bounds", "color": "y"}
-PSO:PSO:% A gbest PSO algorithm.:{"label": "PSO", "color": "y"}
+PSO:PSO:% A gbest PSO algorithm.:{"label": "PSO", "color": "y", "ls": "--"}
 DASA:DASA:% test:{"label": "DASA", "color": "sienna"}
 Cauchy-EDA:Cauchy EDA:% restarts up to 100, outermaxfevals 5e4*dim, inner maxfunevals 5e4*dim:{"label": "Cauchy EDA", "color": "slategray"}
 DIRECT:Original DIRECT:% No restarts, outermaxfevals 1e5, inner maxfunevals 1e5:{"label": "DIRECT", "color": "violet"}
