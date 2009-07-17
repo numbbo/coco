@@ -362,7 +362,7 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                         except LookupError: #IndexError, KeyError:
                             curline.append(numpy.inf)
                             if not isLastInfoWritten:
-                                replacementLine.append(r'%s\textit{/%s}' % (writeFunVal(numpy.median(entry.finalfunvals)), writeFEvals(numpy.median(entry.maxevals), precision='.1')))
+                                replacementLine.append(r'%s\textit{/%s}' % (writeFunVal(numpy.median(entry.finalfunvals)), writeFEvals(numpy.median(entry.maxevals)/entry.dim, precision='.1')))
                                 isLastInfoWritten = True
                             else:
                                 replacementLine.append('.')

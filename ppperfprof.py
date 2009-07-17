@@ -136,8 +136,8 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
         dictx = {}
         for i in x:
             dictx[i] = dictx.get(i, 0) + 1
-        
-        x = numpy.array(sorted(dictx))        
+
+        x = numpy.array(sorted(dictx))
         if maxval is None:
             maxval = max(x)
         x = x[x <= maxval]

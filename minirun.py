@@ -63,7 +63,7 @@ def detTarget(dsList):
         for f, funentries in dictFunc.iteritems():
             #tmp = allmintarget.setdefault(1, {})
             #tmp.setdefault((f, d), 1)
-            tmptarget = determineFtarget2.FunTarget(funentries, d)
+            tmptarget = determineFtarget2.FunTarget(funentries, d, use_uniform_fake_values=True) # for the tables to show uniform values
             for i in range(len(tmptarget.ert)):
                tmp = allmintarget.setdefault(tmptarget.ert[i], {})
                if (tmptarget.minFtarget[i] < 1e-8): # BBOB-dependent
@@ -228,12 +228,12 @@ def main(argv=None):
             pickle.dump(allertbest, f)
             f.close()
 
+        # Restrain the allmintarget to the functions considered
         if isNoisy:
             for t in allmintarget:
                 allmintarget[t] = dict((i, allmintarget[t][i]) for i in allmintarget[t] if i[0] > 100)
                 allmedtarget[t] = dict((i, allmedtarget[t][i]) for i in allmedtarget[t] if i[0] > 100)
                 allertbest[t] = dict((i, allertbest[t][i]) for i in allertbest[t] if i[0] > 100)
-
         elif isNoiseFree:
             for t in allmintarget:
                 allmintarget[t] = dict((i, allmintarget[t][i]) for i in allmintarget[t] if i[0] <= 100)
