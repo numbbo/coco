@@ -63,7 +63,8 @@ def detTarget(dsList):
         for f, funentries in dictFunc.iteritems():
             #tmp = allmintarget.setdefault(1, {})
             #tmp.setdefault((f, d), 1)
-            tmptarget = determineFtarget2.FunTarget(funentries, d, use_uniform_fake_values=True) # for the tables to show uniform values
+            tmptarget = determineFtarget2.FunTarget(funentries, d)
+            #, use_uniform_fake_values=True) # for the tables to show uniform values
             for i in range(len(tmptarget.ert)):
                tmp = allmintarget.setdefault(tmptarget.ert[i], {})
                if (tmptarget.minFtarget[i] < 1e-8): # BBOB-dependent
