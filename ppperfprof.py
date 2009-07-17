@@ -272,7 +272,8 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                 data.extend(dictData[elem])
                 maxevals.extend(dictMaxEvals[elem])
 
-        if isData:        
+        if isData:
+            set_trace()
             lines.append(plotPerfProf(numpy.array(data),
                          xlim, maxevals, order=(i, len(order)),
                          kwargs=get_plot_args(plotArgs[elem]))) #elem is an element in alg...

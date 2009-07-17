@@ -185,7 +185,7 @@ class FunTarget:
                 if len(self.minFtarget) > idx + 2:
                     self.minFtarget[idx+2:] = numpy.nan
 
-        self.ertbest = detertbest(dataset)
+        self.ertbest = self.detertbest(dataset)
 
         # check and print lists
         if 11 < 3:  # should not be necessary, includes some testing
@@ -423,7 +423,6 @@ def main(argv=None):
     dims = list()
     funcs = list()
     directory = args  # directories which contains data...
-
     # Process options
     for o, a in opts:
         if o in ("-h","--help"):
@@ -463,7 +462,6 @@ def main(argv=None):
 
     # create dataset
     datasetfull = pproc.DataSetList(directory,verbose = verboseflag)
-
     # loop over dimension and functions
     for dim in dims:
 
