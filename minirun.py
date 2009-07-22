@@ -32,7 +32,8 @@ from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
-constant_target_function_values = (1e1, 1e-0, 1e-1, 1e-3, 1e-5, 1e-7)
+# constant_target_function_values = (1e2, 1e1, 1e-0, 1e-1, 1e-3, 1e-6)
+constant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7)
 # constant_target_function_values = (1e-6, )  # single 
 # constant_target_function_values = (1e1, 1e-0, 1e-1)  # light&easy 
 # constant_target_function_values = (1e-3, 1e-5, 1e-7) # tight&heavy
@@ -43,7 +44,7 @@ constant_target_function_values = (1e1, 1e-0, 1e-1, 1e-3, 1e-5, 1e-7)
 
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
-figformat = ('png',)
+figformat = ('png', 'pdf')
 
 #CLASS DEFINITIONS
 
