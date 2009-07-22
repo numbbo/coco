@@ -49,10 +49,11 @@ funisep = [1,2,5]
 show_algorithms = () # ()==all
 function_IDs = [8]  # range(103, 131, 3)   # displayed functions
 function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
-x_limit = 1e8   # noisy: 1e8, otherwise: 1e7. maximal run length shown
+x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = 100 # resolution of the performance profile.
+dpi_global_var = 60  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 
 def get_plot_args(args):
     """args is one dict element according to algorithmshortinfos
@@ -113,10 +114,10 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
 
     plt.xlim(xmin=1e-0)
     for entry in fileFormat:
-        plt.savefig(figureName + '.' + entry, dpi = 300, format = entry)
+        plt.savefig(figureName + '.' + entry, dpi = dpi_global_var, format = entry)
 
 
-def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
+def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None, CrE=0,
                  kwargs={}):
     #Expect data to be a ndarray.
     x = data[numpy.isnan(data)==False] # Take away the nans
@@ -125,6 +126,8 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
 
     x = x[numpy.isinf(x)==False] # Take away the infs
     n = len(x)
+
+    x = numpy.exp(CrE) * x  # correction by crafting effort CrE
 
     if n == 0:
         #TODO: problem if no maxval
@@ -146,6 +149,15 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None,
         x2 = numpy.hstack([numpy.repeat(x, 2), maxval])
         y2 = numpy.hstack([0.0,
                            numpy.repeat(y / float(nn), 2)])
+
+        if 11 < 3:  # to be removed
+            # first try to downsample for reduced figure size, is not effective while reducing dvi is
+            idx = range(0, len(x2), 5)
+            if numpy.mod(len(x2), 5) != 1:
+                idx.append(len(x2) - 1)
+            x2 = x2[idx]
+            y2 = y2[idx]
+
         res = plt.plot(x2, y2, **kwargs)
         if not maxevals is None:
             x3 = numpy.median(maxevals)
@@ -273,9 +285,22 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
                 maxevals.extend(dictMaxEvals[elem])
 
         if isData:
+            CrE = 0 
+            # need to know noisy or non-noisy functions here!
+            if max(function_IDs) < 100:  # non-noisy functions
+                if alg[0][0] == 'GLOBAL':
+                    CrE = 0.5117
+                    # print 'GLOBAL corrected'
+            elif min(function_IDs) > 100 :  # noisy functions
+                if alg[0][0] == 'GLOBAL':
+                    CrE = 0.6572
+            else:
+                pass 
+                # print 'mixing noisy and non-noisy functions will yield questionable results'
+
             lines.append(plotPerfProf(numpy.array(data),
-                         xlim, maxevals, order=(i, len(order)),
-                         kwargs=get_plot_args(plotArgs[elem]))) #elem is an element in alg...
+                         xlim, maxevals, order=(i, len(order)), CrE=CrE, 
+                         kwargs=get_plot_args(plotArgs[elem]), )) #elem is an element in alg...
 
     # re-plot show_algorithms in front, does not work
     #for i, alg in enumerate(order):
@@ -288,6 +313,6 @@ def main2(dsList, target, order=None, plotArgs={}, outputdir='',
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
     #set_trace()
-    beautify(figureName, funcsolved, xlim*1000, False, fileFormat=fileFormat)
+    beautify(figureName, funcsolved, xlim*100, False, fileFormat=fileFormat)
 
     plt.close()

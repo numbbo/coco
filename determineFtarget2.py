@@ -7,19 +7,19 @@ import numpy
 from pdb import set_trace
 
 # parameters for manipulating the target list, should partly rather become a pre-processing function for the RL-plots
-log10_interval_for_run_length = (0, 20)  # (0, 2) for light case, (2, 20) for heavy case
-log10_step_width_for_run_length = 0.5    # 0.1 for a movie, 0.5 default
-display_between_equal_targets = False # should be False for overall plots and True for single RT-target plots,
+log10_interval_for_run_length = (0, .20)  # (0, 2) for light case, (2, 20) for heavy case
+log10_step_width_for_run_length = 1    # 0.1 for a movie, 0.5 default
+display_between_equal_targets = True  # should be False for overall plots((?) and True for single RT-target plots,
                                       # use naming convention name-singleRT in case of True   
-display_all_final_targets = False  # should be False for overall plots, maybe True for single RT-target plots of small groups of functions (to be tested)
+minimal_target_value = 1e-6   # must be given, also final value is only appended if value after threshold-value is smaller than minimal value
+display_all_final_targets = False  # ie. repeat minimal_target, should be False for overall plots, maybe True for single RT-target plots of small groups of functions (to be tested)
 
+rank_of_reference_algorithm = 1  # (2nd) best algorithm needs more than xy fevals
+use_single_runs_as_reference = False  # was True until July 17th, now ERT is used again 
 
-rank_of_reference_algorithm = 2  # 2nd best algorithm needs more than xx fevals
-
-minimal_target_value = 1e-6
-last_target_value_replacement = 1e-5 + 0e-9       # replace with min of given and actual value, None for do nothing
-final_target_value_append_threshold = None # 1e-5 # append another value if last value is above threshold, None for do nothing
-final_target_value_appended = None # 1e-6         # None for nothing
+last_target_value_replacement = None  # 1e-5 + 0e-9       # replace with min of given and actual value, None for do nothing
+final_target_value_append_threshold = 1e-5 # append another value if last value is above threshold, None for do nothing
+final_target_value_appended = minimal_target_value         # None for nothing  
 
 # add path to bbob_pproc  
 #filepath = '/home/fst/coco/BBOB/code/python/bbob_pproc/'
@@ -93,7 +93,7 @@ class FunTarget:
         if use_uniform_fake_values:
             self.minFtarget = [1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7]
             self.medianFtarget = [1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7]
-            self.ert = numpy.array(self.minFtarget)**-1
+            self.ert = numpy.array(self.minFtarget)**-1  # fake values for sorting of rows
             self.ertbest = self.detertbest(dataset)
             return
 
@@ -126,12 +126,21 @@ class FunTarget:
                       break
 
             # determine min and median for all algorithms
-            self.minFtarget.append(sorted(alltargetValues)[rank_of_reference_algorithm-1] / 10**(0.05))
+            if use_single_runs_as_reference:
+                self.minFtarget.append(sorted(alltargetValues)[rank_of_reference_algorithm-1] / 10**(0.05))
+            else:
+                self.minFtarget.append(sorted(targetValues)[rank_of_reference_algorithm-1] / 10**(0.05))
             self.medianFtarget.append(numpy.min(targetValues) / 10**(0.05))  # min was median
             self.ert.append(10**i)
 
         self.minFtarget = numpy.array(self.minFtarget)
+
         # TODO: all the remainder should rather become part of the target value pre-processing for the run time distributions
+
+        # at least one value
+        # if isempty(self.minFtarget):
+        #     self.minFtarget = [minimal_target_value]
+
         # append final target value
         if final_target_value_appended and final_target_value_append_threshold:  # add e.g. 1e-8 as last value
             val = final_target_value_appended
@@ -143,7 +152,7 @@ class FunTarget:
                 idx = 0
             if self.minFtarget[idx] > thresh and \
                  len(self.minFtarget) > idx+1 and \
-                  self.minFtarget[idx+1] < 1e-8:
+                  self.minFtarget[idx+1] < minimal_target_value:
                 self.minFtarget[idx+1] = val
 
         # set all leading of equal values to NaN
@@ -155,9 +164,11 @@ class FunTarget:
 
         # set final values to NaN
         if not display_all_final_targets:
-            self.minFtarget[self.minFtarget < 1e-8] = numpy.nan
-            if minimal_target_value:
-                self.minFtarget[self.minFtarget < minimal_target_value] = numpy.nan
+            self.minFtarget[self.minFtarget < minimal_target_value] = numpy.nan
+
+        # set at least one value
+        if sum(numpy.isfinite(self.minFtarget)) == 0:
+            self.minFtarget[0] = minimal_target_value
 
         # set last target value
         if last_target_value_replacement is not None:  # replace last value with e.g. min(val, 1e-5)
@@ -176,7 +187,7 @@ class FunTarget:
             self.minFtarget = numpy.maximum(self.minFtarget, minimal_target_value)
             if idx.any():
                 self.minFtarget[idx] = numpy.nan
-            if not display_all_final_targets:  # sort of code dublication
+            if not display_all_final_targets:  # sort of code duplication
                 idx = numpy.where(self.minFtarget > minimal_target_value)[0]
                 if len(idx) > 0:
                     idx = idx[-1]
@@ -188,7 +199,7 @@ class FunTarget:
         self.ertbest = self.detertbest(dataset)
 
         # check and print lists
-        if 11 < 3:  # should not be necessary, includes some testing
+        if 1 < 3:  # should not be necessary, includes some testing
             if len(self.minFtarget) == 0:
                 print 'empty minFtarget list in determineFtarget2.py'
             print 'f', dataset[0].funcId, dim, '-D', ':'
@@ -198,7 +209,7 @@ class FunTarget:
                 pass
                 # set_trace()
 
-### Function definitons ###
+### Function definitions ###
 
 def usage():
     print main.__doc__
@@ -222,6 +233,7 @@ def writeTable(data,dim,suffix=None, whichvalue = 'min'):
     
     # define header and format of columns
     header = ['$evals/D$'] 
+    header = ['ERT$_\mathrm{best}/D$']   
     format = ['%1e']
     for id in range(0,len(data)):
         header.append('$f_{' + str(data[id]['funcId']) + '}$')
@@ -253,7 +265,7 @@ def writeTable(data,dim,suffix=None, whichvalue = 'min'):
     maxLength = 0
     # write each row separately
     while True:
-        tableData = [10**i]
+        tableData = [10**(0.5 * i)]  # TODO: the assumption for this x-value is not necessarily true
         # create data for each function
         for fun in range(0,len(data)):
             try:
@@ -420,8 +432,8 @@ def main(argv=None):
         sys.exit()
 
     verboseflag = False
-    dims = list()
-    funcs = list()
+    dims = [2,3,5,10,20,40]  # default values list()
+    funcs = range(1,25)  # default values list()
     directory = args  # directories which contains data...
     # Process options
     for o, a in opts:
@@ -462,6 +474,7 @@ def main(argv=None):
 
     # create dataset
     datasetfull = pproc.DataSetList(directory,verbose = verboseflag)
+    # print datasetfull
     # loop over dimension and functions
     for dim in dims:
 
