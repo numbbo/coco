@@ -4,6 +4,14 @@
 """Mini run to display the performance profiles of algorithms.
 
 """
+"""Process data and generates some comparison results from either
+   raw data files or pickle data files.
+   Synopsis:
+      python path_to_folder/bbob_pproc/minirun.py [OPTIONS] FILE_NAME FOLDER_NAME...
+    Help:
+      python path_to_folder/bbob_pproc/minirun.py -h
+
+"""
 
 from __future__ import absolute_import
 
@@ -90,7 +98,109 @@ def usage():
 
 
 def main(argv=None):
-    """Process info files and output performance profiles."""
+    """
+    Keyword arguments:
+    argv -- list of strings containing options and arguments. If not provided,
+    sys.argv is accessed.
+
+    argv should list either names of info files or folders containing info
+    files or folders containing pickle files (preferred).
+    Furthermore, argv can begin with, in any order, facultative option
+    flags listed below.
+
+        -h, --help
+
+            display this message
+
+        -v, --verbose
+ 
+            verbose mode, prints out operations. When not in verbose mode, no
+            output is to be expected, except for errors.
+
+        -p, --write-pickles
+
+            generates pickle post processed data files and then stops!
+
+        -o, --output-dir OUTPUTDIR
+
+            change the default output directory ('defaultoutputdirectory') to OUTPUTDIR
+
+        --noise-free, --noisy
+
+            restrain the post-processing to part of the data set only. Actually fasten the
+            post-processing since it loads only part of the pickle files.
+
+        --targets TARGETFILE
+
+            uses TARGETFILE instead of the targets defined by the data given as
+            input arguments.
+
+        --tab-only, --perfprof-only
+
+            these options can be used to output respectively the comparison
+            tex tables or the performance profiles only.
+            A combination of any two of these options results in
+            no output.
+
+    Exceptions raised:
+    Usage -- Gives back a usage message.
+
+    Examples:
+
+    * Calling the minirun.py interface from the command line:
+
+        $ python bbob_pproc/minirun.py -v
+
+        $ python bbob_pproc/minirun.py -o otherppdata experiment2/*.info
+
+
+    * Loading this package and calling the main from the command line
+      (requires that the path to this package is in python search path):
+
+        $ python -m bbob_pproc -h
+
+
+    This will print out this help message.
+
+    * From the python interactive shell (requires that the path to this
+      package is in python search path):
+
+        >>> import bbob_pproc
+        >>> bbob_pproc.minirun.main('-o outputfolder folder1'.split())
+
+    This will execute the post-processing on the index files found in folder1.
+    The -o option changes the output folder from the default ppdata to
+    outputfolder.
+
+
+    * Generate post-processed pickle data files:
+    
+        $ python minirun.py -p RAWDATAFOLDER
+
+    If you need to process new data, you must add a line in the file 
+    algorithmshortinfos.txt
+    The line in question must have 4 fields separated by colon (:) character.
+    The 1st must be the name of the folder which will contain the
+    post-processed pickle data file, the 2nd is the exact string used as algId
+    in the info files, the 3rd is the exact string for the comment. The 4th
+    will be a python dictionary which will be use for the plotting.
+    If different comment lines (3rd field) have been used for a single
+    algorithm, there should be a line in algorithmshortinfos.txt corresponding
+    to each of these.
+
+
+    * Generate post-processing data for some algorithms:
+    
+        $ python minirun.py AMALGAM BFGS CMA-ES
+
+    * Generate post-processing data using a custom target pickle file:
+
+        $ python minirun.py --targets customtargetfile.pickle OTHER_ALGORITHM
+
+    Using the --targets option, the custom target file is not overwritten and
+    the default target file is not generated.
+
+    """
 
     if argv is None:
         argv = sys.argv[1:]
@@ -215,7 +325,7 @@ def main(argv=None):
             algSet = pickle.load(f)
             if not set(dsList.dictByAlg().keys()).issubset(algSet):
                 #set_trace()
-                raise Usage('some algorithm are not regarded in the used targets (if this is deliberate incomment the error raise and rerun)')
+                raise Usage('some algorithm are not regarded in the used targets (if this is deliberate, uncomment the raise error line and rerun)')
             allmintarget = pickle.load(f)
             allmedtarget = pickle.load(f)
             allertbest = pickle.load(f)
