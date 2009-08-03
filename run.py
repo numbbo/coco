@@ -484,14 +484,14 @@ def main(argv=None):
                     pass
             print "ECDF graphs done."
 
-        if verbose:
-            tmp = []
-            tmp.extend(tabValsOfInterest)
-            tmp.extend(figValsOfInterest)
-            tmp.extend(rldValsOfInterest)
-            if dsList:
-                print ('Overall ps = %g\n'
-                       % dsList.successProbability(min(tmp)))
+        #if verbose:
+        #    tmp = []
+        #    tmp.extend(tabValsOfInterest)
+        #    tmp.extend(figValsOfInterest)
+        #    tmp.extend(rldValsOfInterest)
+        #    if dsList:
+        #        print ('Overall ps = %g\n'
+        #               % dsList.successProbability(min(tmp)))
 
         if isfigure or istab or isrldistr:
             print "Output data written to folder %s." % outputdir
