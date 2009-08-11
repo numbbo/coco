@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Mini run to display the performance profiles of algorithms.
-
-"""
 """Process data and generates some comparison results from either
    raw data files or pickle data files.
    Synopsis:
