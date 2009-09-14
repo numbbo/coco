@@ -51,6 +51,7 @@ function_IDs = [8]  # range(103, 131, 3)   # displayed functions
 function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 
+
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = 100 # resolution of the performance profile.
 dpi_global_var = 60  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
