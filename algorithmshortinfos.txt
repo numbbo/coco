@@ -44,3 +44,8 @@ MCS:MCS:% default parameters, no local search:{"label":"MCS (Neum)", "color": "t
 MA-LS-CHAIN:MA2LSI_5DIMF_ssga_cmaesn05:% RatioBL=0.5,Intensity=500:{"label":"MA-LS-Chain", "color": "turquoise"}
 SPSA:SPSA:% maxFuneval = 5e4*dim with 20 restarts, with blocking, A = 10% of kmax, lambda = 2, 20% of choosing a new start point/increase lambda:{"label":"SPSA","color":"purple"}
 SPSA:SPSA:%  maxFuneval = 5e4*DIM with 20 restarts, blocking, change lambda in restarts, lambda_start = 1, lambda_max = 16:{"label":"SPSA","color":"purple"}
+EGS:EGSipopcma:% 10 restarts, EGS-CMA implementation from D.Arnold, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda:{"label":"EGS","color":"red"}
+EGS:EGS_ipopcma_KappaAdapt:% 10 independent restarts, EGS-CMA implementation from D.Arnold, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda, kappa adaptation, each pop has size lambda:{"label":"EGS","color":"red"}
+SPSAv5:SPSA:%  10 restarts with increasing lambda and decreasing step, if improvement was found then kmax = 1e3, else kmax = 1e4:{"label":"SPSAv5","color":"blue"}
+SPSAv6:SPSA:% 10 restarts, maxFunevals = 1e4*dim:{"label":"SPSAv6","color":"green"}
+SPSAv5:SPSA:% 10 restarts, kmax = 1e3, for improvement step kmax = 5e2, restart changes lambda and step:{"label":"SPSAv5","color":"blue"}

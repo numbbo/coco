@@ -353,16 +353,19 @@ def main(argv=None):
         dictTarget = {}
         for i in sorted(allmintarget):
             if i < 10000:
-                dictTarget['_ertE%2.1fD' % numpy.log10(i)] = (allmintarget[i],)
+                # dictTarget['_ertE%2.1fD' % numpy.log10(i)] = (allmintarget[i],)
+                dictTarget['_ertE%1dD' % numpy.log10(i)] = (allmintarget[i],)
             if i >= 10000:
-                dictTarget.setdefault('_ertE4.0Dandmore', []).append(allmintarget[i])
+                # dictTarget.setdefault('_ertE4.0Dandmore', []).append(allmintarget[i])
+                dictTarget.setdefault('_ertE4Dandmore', []).append(allmintarget[i])
             dictTarget.setdefault('_allerts', []).append(allmintarget[i])
         for t in constant_target_function_values:
             tmpdict = dict.fromkeys(((f, d) for f in range(0, 25) + range(101, 131) for d in (2, 3, 5, 10, 20, 40)), t)
             stmp = 'E'
             if t == 1:
                 stmp = 'E-'
-            dictTarget['_f' + stmp + '%2.1f' % numpy.log10(t)] = (tmpdict, )
+            # dictTarget['_f' + stmp + '%2.1f' % numpy.log10(t)] = (tmpdict, )
+            dictTarget['_f' + stmp + '%1d' % numpy.log10(t)] = (tmpdict, )
             dictTarget.setdefault('_allfs', []).append(tmpdict)
 
         if not os.path.exists(outputdir):
