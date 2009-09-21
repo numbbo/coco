@@ -515,7 +515,7 @@ def main(argv=None):
                             plt.grid(True)
                             figname = os.path.join(outputdir, "pprldistr_f%03d_%02d_ert%2.1eD" %(f, d, k))
                             for i in figformat:
-                                plt.savefig(figname+"."+i, dpi=300, format=figformat)
+                                plt.savefig(figname+"."+i, dpi=300, format=i)
                                 if verbose:
                                     print "Saved figure %s.%s" % (figname, i)
                             plt.close()
