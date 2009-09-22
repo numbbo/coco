@@ -365,12 +365,7 @@ def main(argv=None):
             if t == 1:
                 stmp = 'E-'
             # dictTarget['_f' + stmp + '%2.1f' % numpy.log10(t)] = (tmpdict, )
-            if t > 1:
-                dictTarget['_f' + stmp + '%02d' % numpy.log10(t)] = (tmpdict, )
-            else:
-                # In this case the sign takes an additional digit, hence ones needs
-                # 3 (instead of 2) an additional digit.
-                dictTarget['_f' + stmp + '%03d' % numpy.log10(t)] = (tmpdict, )
+            dictTarget['_f' + stmp + '%02d' % numpy.log10(t)] = (tmpdict, )
             dictTarget.setdefault('_allfs', []).append(tmpdict)
 
         if not os.path.exists(outputdir):
