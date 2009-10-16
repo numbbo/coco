@@ -11,7 +11,7 @@ article summarizing the experiments.
 import sys
 from bbob_pproc.run import main as main
 
-__all__  = ['readindexfiles', 'findindexfiles', 'pptex', 'pprldistr',
+__all__  = ['readalign', 'findindexfiles', 'pptex', 'pprldistr',
             'main', 'ppfigdim', 'pproc', 'dataoutput']
 
 if __name__ == "__main__":
