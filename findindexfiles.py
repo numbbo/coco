@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 
-# Script to find all *.info files within a directory
-# and its subfolders.
+"""Script to find all *.info files within a directory
+  and its subfolders.
+"""
 
 import os
 import warnings
