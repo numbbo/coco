@@ -23,7 +23,7 @@ DIRECT:Original DIRECT:% No restarts, outermaxfevals 1e5, inner maxfunevals 1e5:
 G3PCX:G3PCX:% restarts up to 100, outermaxfevals 5e4*dim, inner maxfunevals 5e4*dim:{"label": "G3-PCX", "color": "springgreen"}
 LSfminbnd:Line Search - fminbnd:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "LSfminbnd", "color": "steelblue"}
 LSstep:Line Search - STEP:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "LSstep", "color": "teal"}
-LSrosen:Local Search - Rosenbrock:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "Rosenbrock", "color": "peru"}
+Rosenbrock:Local Search - Rosenbrock:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "Rosenbrock", "color": "peru"}
 AMALGAM:AMaLGaM-Full-Free:% AMaLGaM-Full-Free:{"label": "AMaLGaM IDEA", "color": "tomato"}
 iAMALGAM:iAMaLGaM-Full-Free:% iAMaLGaM-Full-Free:{"label": "iAMaLGaM IDEA", "color": "tomato", "ls": "--"}
 BAYEDA:BAYEDA:% Simple continuous BAYEDA with 0.8 selection, population=10*DIM, 2000*DIM fn evals, so 200 generations:{"label": "BayEDAcG", "color": "pink"}
