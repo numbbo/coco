@@ -32,7 +32,7 @@ GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=5000;M
 GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =bfgs:{"label": "GLOBAL", "color": "salmon"}
 GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =simplex2:{"label": "GLOBAL", "color": "salmon"}
 POEMS:POEMS:% no comments:{"label": "POEMS", "color": "slategray", "ls": "--"}
-GA:PUT ALGORITHM NAME:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "simple GA", "color": "royalblue"}
+GA:Simple GA:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "simple GA", "color": "royalblue"}
 SEP-CMA-ES:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e4*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize), only the first restart uses mixed strategies for 1+100*N/sqrt(popsize):{"label": "IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
 VNS:VNS_with_ECs:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "VNS (Garcia)", "color": "rosybrown"}
 NELDERDOERR:NELDERDOERR:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "NELDER (Doe)", "color": "c"}
