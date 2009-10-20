@@ -41,6 +41,10 @@ class DataSet:
         nbRuns -- number of runs (integer)
         maxevals -- maximum number of function evaluations (array)
         finalfunvals -- final function values (array)
+        readmaxevals -- maximum number of function evaluations read from index
+                        file (array)
+        readfinalFminusFtarget -- final function values - ftarget read from
+                                  index file (array)
 
     evals and funvals are arrays of data collected from N data sets. Both have
     the same format: zero-th column is the value on which the data of a row is
@@ -54,7 +58,7 @@ class DataSet:
                     'targetFuncValue': ('targetFuncValue', float),
                     'algId': ('algId', str)}
 
-    def __init__(self, header, comment, data, verbose=True):
+    def __init__(self, header, comment, data, indexfile, verbose=True):
         """Instantiate an IndexEntry from 3 strings constituting an index
         entry in an index file.
 
@@ -77,8 +81,9 @@ class DataSet:
         self.dataFiles = []
         self.itrials = []
         self.evals = []
-        self.finalFminusFtarget = []
         self.isFinalized = []
+        self.readmaxevals = []
+        self.readfinalFminusFtarget = []
         parts = data.split(', ')
         for elem in parts:
             if elem.endswith('dat'):
@@ -92,16 +97,20 @@ class DataSet:
                 elem = elem.split(':')
                 self.itrials.append(int(elem[0]))
                 if len(elem) < 2:
-                    #Caught a ill-finalized run.
+                    # Caught a ill-finalized run, in this case, what should we
+                    # do? Either we try to process the corresponding data
+                    # anyway or we leave it out.
+                    # For now we leave it in.
                     self.isFinalized.append(False)
-                    warnings.warn('Caught an ill-finalized run in %s'
-                                  % self.dataFiles[-1])
+                    warnings.warn('Caught an ill-finalized run in %s for %s'
+                                  % (indexfile, self.dataFiles[-1]))
+                    self.readmaxevals.append(0)
+                    self.readfinalFminusFtarget.append(numpy.inf)
                 else:
                     self.isFinalized.append(True)
                     elem = elem[1].split('|')
-                    self.evals.append(int(elem[0]))
-                    self.finalFminusFtarget.append(float(elem[1]))
-                #pass
+                    self.readmaxevals.append(int(elem[0]))
+                    self.readfinalFminusFtarget.append(float(elem[1]))
 
         #set_trace()
         if verbose:
@@ -109,7 +118,6 @@ class DataSet:
 
         ext = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
         for extension, info in ext.iteritems():
-            #set_trace()
             dataFiles = list('.'.join(i.split('.')[:-1]) + extension
                              for i in self.dataFiles)
             data = info[0](split(dataFiles))
@@ -358,7 +366,8 @@ class DataSetList(list):
                         else: #other information
                             data.append(i)
                     data = indexmainsep.join(data)
-                    self.append(DataSet(header, comment, data, verbose))
+                    self.append(DataSet(header, comment, data, indexFile,
+                                        verbose))
                 except StopIteration:
                     break
 
