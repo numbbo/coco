@@ -197,11 +197,21 @@ class HMultiReader(MultiReader):
         if not fvalues:
             raise ValueError, 'Value %g is not reached.'
 
-        self.idxCurrentF = min(self.idxCurrentF,
+        if max(fvalues) <= 0.:
+            self.idxCurrentF = -numpy.inf
+            currentValue = 0.
+        else:
+            self.idxCurrentF = min(self.idxCurrentF,
                                numpy.ceil(numpy.log10(max(fvalues)) * nbPtsF))
-        # The update of idxCurrentF is done so all the intermediate function
-        # value trigger reached are not written, only the smallest.
-        currentValue = numpy.power(10, self.idxCurrentF / nbPtsF)
+            # Above line may return: Warning: divide by zero encountered in
+            # log10 in the case of negative fvalues.
+            # In the case of negative values for fvalues, self.idxCurrentF
+            # should be -numpy.inf at the condition that
+            # numpy.power(10, -inf) == 0 is true
+
+            # The update of idxCurrentF is done so all the intermediate
+            # function value trigger reached are not written, only the smallest
+            currentValue = numpy.power(10, self.idxCurrentF / nbPtsF)
 
         return numpy.insert(self.currentLine(), 0, currentValue)
 
@@ -260,7 +270,6 @@ def alignData(data):
         res.append(data.align(currentValue))
         currentValue = data.newCurrentValue()
 
-    #set_trace()
     return (numpy.vstack(res), numpy.array(list(i.nextLine[idxEvals] for i in data)),
             numpy.array(list(i.nextLine[idxF] for i in data)))
     # Hack: at this point nextLine contains all information on the last line
