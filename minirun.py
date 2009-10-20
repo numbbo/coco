@@ -30,7 +30,7 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc import ppperfprof, pprldistr
-from bbob_pproc import pptables, pptex
+from bbob_pproc import pptables
 from bbob_pproc import dataoutput, determineFtarget2
 from bbob_pproc.dataoutput import algLongInfos, algShortInfos, algPlotInfos
 from bbob_pproc.pproc import DataSetList
