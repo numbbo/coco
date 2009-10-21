@@ -30,9 +30,9 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc.compall import ppperfprof, pptables, determineFtarget2
-from bbob_pproc.compall import organizeRTDpictures
-from bbob_pproc import dataoutput, pprldistr
-from bbob_pproc.dataoutput import algLongInfos, algShortInfos, algPlotInfos
+from bbob_pproc.compall import organizeRTDpictures, dataoutput
+from bbob_pproc import  pprldistr
+from bbob_pproc.compall.dataoutput import algLongInfos, algShortInfos, algPlotInfos
 from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
 
