@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Process data and generates some comparison results from either
    raw data files or pickle data files.
    Synopsis:
-      python path_to_folder/bbob_pproc/minirun.py [OPTIONS] FILE_NAME FOLDER_NAME...
+      python path_to_folder/bbob_pproc/runcompall.py [OPTIONS] FILE_NAME FOLDER_NAME...
     Help:
-      python path_to_folder/bbob_pproc/minirun.py -h
+      python path_to_folder/bbob_pproc/runcompall.py -h
 
 """
 
@@ -129,9 +128,9 @@ def main(argv=None):
 
     Examples:
 
-    * Calling the minirun.py interface from the command line:
+    * Calling the runcompall.py interface from the command line:
 
-        $ python bbob_pproc/minirun.py -v
+        $ python bbob_pproc/runcompall.py -v
 
 
     * Loading this package and calling the main from the command line
@@ -146,7 +145,7 @@ def main(argv=None):
       package is in python search path):
 
         >>> import bbob_pproc
-        >>> bbob_pproc.minirun.main('-o outputfolder folder1'.split())
+        >>> bbob_pproc.runcompall.main('-o outputfolder folder1'.split())
 
     This will execute the post-processing on the pickle files found in folder1.
     The -o option changes the output folder from the default ppdata to
@@ -165,7 +164,7 @@ def main(argv=None):
 
     * Generate post-processing data for some algorithms:
 
-        $ python minirun.py AMALGAM BFGS CMA-ES
+        $ python runcompall.py AMALGAM BFGS CMA-ES
 
     """
 

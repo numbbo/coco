@@ -8,7 +8,7 @@ import glob
 from pdb import set_trace
 
 def do(dirnames): 
-    # moves images into different folders, only the overall RL distributions remain in the root folder
+    """ moves images into different folders, only the overall RL distributions remain in the root folder"""
     if not hasattr(dirnames, '__iter__'):
         dirnames = (dirnames, )
     for dirname in dirnames:
