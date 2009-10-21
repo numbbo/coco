@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-"""Process data and generates some comparison results from either
-   raw data files or pickle data files.
+"""Process data and generates some comparison results from pickle data files
+   only.
+
    Synopsis:
-      python path_to_folder/bbob_pproc/runcompall.py [OPTIONS] FILE_NAME FOLDER_NAME...
+      python path_to_folder/bbob_pproc/runcompall.py [OPTIONS] FOLDER_NAME...
     Help:
       python path_to_folder/bbob_pproc/runcompall.py -h
 
