@@ -44,11 +44,15 @@ def updateAlgorithmInfo(alg):
         if not alg[0] in algLongInfos:
             algShortInfos[alg] = alg[0]
             algLongInfos[alg[0]] = alg
+            f.write(':'.join([algShortInfos[alg],
+                             ':'.join(algLongInfos[alg[0]]),
+                            '{"label":"%s"}\n' %  algShortInfos[alg]]))
         else:
             raise Usage('Problem here')
     except:
         print 'There was a problem here'
-    f.close()
+    else:
+        f.close()
 
 
 def outputPickle(dsList, verbose=True):
