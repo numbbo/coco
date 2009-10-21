@@ -1,5 +1,7 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
+
+"""Routine to organize the output folder in which runcompall puts all the output.
+"""
 
 import os
 import sys
