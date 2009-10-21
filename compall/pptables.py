@@ -8,7 +8,7 @@ import pickle
 import numpy
 from bbob_pproc import pptex
 from bbob_pproc.bootstrap import prctile
-from bbob_pproc.dataoutput import algShortInfos, algPlotInfos
+from bbob_pproc.compall.dataoutput import algShortInfos, algPlotInfos
 from bbob_pproc.pproc import DataSetList
 
 allmintarget = {}
