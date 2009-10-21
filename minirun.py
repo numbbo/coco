@@ -29,9 +29,9 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import ppperfprof, pprldistr
-from bbob_pproc import pptables
-from bbob_pproc import dataoutput, determineFtarget2
+from bbob_pproc.compall import ppperfprof, pptables, determineFtarget2
+from bbob_pproc.compall import organizeRTDpictures
+from bbob_pproc import dataoutput, pprldistr
 from bbob_pproc.dataoutput import algLongInfos, algShortInfos, algPlotInfos
 from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
@@ -171,7 +171,7 @@ def main(argv=None):
 
 
     * Generate post-processed pickle data files:
-    
+
         $ python minirun.py -p RAWDATAFOLDER
 
     If you need to process new data, you must add a line in the file 
@@ -187,7 +187,7 @@ def main(argv=None):
 
 
     * Generate post-processing data for some algorithms:
-    
+
         $ python minirun.py AMALGAM BFGS CMA-ES
 
     * Generate post-processing data using a custom target pickle file:
@@ -386,12 +386,9 @@ def main(argv=None):
                                     info=('%02d%s' % (d, k)),
                                     fileFormat=figformat,
                                     verbose=verbose)
-            # try:
-            # import organizeRTDpictures
-            # organizeRTDpictures.do(outputdir)
-            # except:
-            #     pass
-            os.system('./organizeRTDpictures.py ' + outputdir)
+            #try:
+            organizeRTDpictures.do(outputdir)
+            #os.system('./organizeRTDpictures.py ' + outputdir)
 
         if isTab:
             pptables.tableonealg(dsList, allmintarget, allertbest, sortedAlgs,

@@ -29,7 +29,7 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc.readindexfiles import IndexEntries
-from bbob_pproc import pproc, pptex, ppfig2, pprldistr2
+from bbob_pproc import pproc, ppfig2, pprldistr2
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
