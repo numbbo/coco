@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
 from pdb import set_trace
 
-"""Generates Runtime distributions (for now not Performance Profiles, More Wild 2002)."""
+"""Generates Empirical Cumulative Distribution of the bootstrap distribution of
+the Expected Running Time (ERT) divided by the dimension."""
 
 best = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES',  
    'BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'GLOBAL', 'MCS (Neum)',
@@ -30,7 +31,7 @@ classics = ('BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'DI
 EDA = ('BIPOP-CMA-ES', '(1+1)-CMA-ES', 'VNS (Garcia)', 'EDA-PSO', 'IPOP-SEP-CMA-ES', 'AMaLGaM IDEA',
        'iAMaLGaM IDEA', 'Cauchy EDA', 'BayEDAcG', 'MA-LS-Chain', 'Monte Carlo')  # 10+1
 
-# groups according to the talks 
+# groups according to the talks
 petr = ('DIRECT', 'LSfminbnd', 'LSstep', 'Rosenbrock', 'G3-PCX', 'Cauchy EDA', 'Monte Carlo')
 TAO = ('BFGS', 'NELDER (Han)', 'NEWUOA', 'full NEWUOA', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', 
        '(1+1)-CMA-ES', '(1+1)-ES', 'simple GA', 'Monte Carlo')
@@ -69,6 +70,7 @@ def get_plot_args(args):
 
 def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
              isLegend=True, fileFormat=('eps', 'png')):
+    """Format the figure."""
 
     plt.xscale('log')
     plt.xlabel('Running length / dimension')
@@ -120,6 +122,9 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
 
 def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None, CrE=0,
                  kwargs={}):
+    """Draw a performance profile.
+    """
+
     #Expect data to be a ndarray.
     x = data[numpy.isnan(data)==False] # Take away the nans
     #set_trace()
@@ -172,6 +177,8 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None, 
     return res
 
 def plotLegend(handles, maxval):
+    """Display right-side legend.
+    """
     ys = {}
     lh = 0
     for h in handles:
@@ -207,7 +214,7 @@ def plotLegend(handles, maxval):
     #plt.axvline(x=maxval, color='k') # Not as efficient?
     plt.plot((maxval, maxval), (0., 1.), color='k')
 
-def main2(dsList, target, order=None, plotArgs={}, outputdir='',
+def main(dsList, target, order=None, plotArgs={}, outputdir='',
           info='default', fileFormat=('eps', 'png'), verbose=True):
     """From a dataSetList, generates the performance profiles for multiple
     functions for multiple targets altogether.

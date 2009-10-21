@@ -14,10 +14,10 @@ from bbob_pproc.pproc import DataSetList
 allmintarget = {}
 allmedtarget = {}
 
+"""Routines for the generation of TeX tables.
+See Section Comparison Tables in
+http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 """
-"""
-
-#TODO: use structured arrays!
 
 def sortColumns(table, maxRank=None):
     """For each column in table, returns a list of the maxRank-ranked
@@ -75,6 +75,9 @@ def writeFEvals(fevals, precision='.2'):
     return res
 
 def onealg(dsList, allmintarget, allertbest):
+    """Helper routine for the generation of a table for one algorithm.
+    """
+
     table = []
     unsolved = {}
 
@@ -154,6 +157,9 @@ def onealg(dsList, allmintarget, allertbest):
 
 def tableonealg(dsList, allmintarget, allertbest, sortedAlgs=None,
                 outputdir='.'):
+    """Routine for the generation of a table for an algorithm.
+    """
+
     header2 = ('evals/D', '\%trials', '\%inst', '\multicolumn{2}{c|}{fcts}', 'best', '10', '25', 'med', '75', '90')
     format2 = ('%.3g', '%d', '%d', '%d', '%d', '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e')
     ilines = [r'\begin{tabular}{cccc@{/}c|cccccc}',
@@ -196,6 +202,9 @@ def tableonealg(dsList, allmintarget, allertbest, sortedAlgs=None,
 
 def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None,
                  outputdir='.'):
+    """Generate a table with the figures of multiple algorithms.
+    """
+
     stargets = sorted(allmintarget.keys())
     dictDim = dsList.dictByDim()
     maxRank = 3
@@ -305,6 +314,10 @@ def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None,
 
 def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                         outputdir='.'):
+    """Generate multiple tables with the figures of multiple algorithms with
+    one table per function.
+    """
+
     dictDim = dsList.dictByDim()
     widthtable = 3 # Put in as global? 3 functions wide
     # TODO: split the generation of the tables from their formatting/output
