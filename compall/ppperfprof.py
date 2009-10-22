@@ -72,7 +72,9 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
              isLegend=True, fileFormat=('eps', 'png')):
     """Format the figure."""
 
-    plt.xscale('log')
+    #plt.xscale('log') # Does not work with matplotlib 0.91.2
+    a = plt.gca()
+    a.set_xscale('log')
     plt.xlabel('Running length / dimension')
     plt.ylabel('Proportion of functions')
     plt.grid(True)
@@ -165,7 +167,7 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None, 
             y2 = y2[idx]
 
         res = plt.plot(x2, y2, **kwargs)
-        if not maxevals is None:
+        if maxevals: # Should cover the case where maxevals is None or empty
             x3 = numpy.median(maxevals)
             if x3 <= maxval and numpy.any(x2 <= x3):
                 y3 = y2[x2<=x3][-1]
