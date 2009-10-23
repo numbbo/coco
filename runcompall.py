@@ -37,6 +37,7 @@ import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
 constant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7)
+tableconstant_target_function_values = [1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7]
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 #Deterministic instance of interest: only one trial is required.
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
@@ -50,38 +51,54 @@ class Usage(Exception):
 
 #FUNCTION DEFINITIONS
 
+def detertbest(dsList, minFtarget):
+    """Determines the best ert for a given traget function value."""
+    erts = []
+    ertbest = []
+    for alg in dsList:
+        idx = 0  # index of ert or target.
+        for i, val in enumerate(minFtarget):
+            try:
+                erts[i]
+            except IndexError:
+                erts.append([])
+            if numpy.isfinite(val):
+                while (idx < len(alg.target) and alg.target[idx] > val):
+                    idx += 1
+                try:
+                    erts[i].append(alg.ert[idx])
+                except IndexError:
+                    pass
+                    #TODO: what value to put?
+                    #erts[i].append(numpy.nan)
+
+    for elem in erts:
+        if not elem:
+            ertbest.append(numpy.nan) # TODO: what value to put?
+        else:
+            ertbest.append(min(elem))
+    return numpy.array(ertbest)
+
 def detTarget(dsList):
-    """Determines the target function values according to dsList.
+    """Creates the data structure of the target function values.
     """
     allmintarget = {}
-    allmedtarget = {}
     allertbest = {}
     dictDim = dsList.dictByDim()
+    targets = tableconstant_target_function_values
+
     for d, dimentries in dictDim.iteritems():
         dictFunc = dimentries.dictByFunc()
         for f, funentries in dictFunc.iteritems():
-            #tmp = allmintarget.setdefault(1, {})
-            #tmp.setdefault((f, d), 1)
-            tmptarget = determineFtarget2.FunTarget(funentries, d)
-            #, use_uniform_fake_values=True) # for the tables to show uniform values
-            for i in range(len(tmptarget.ert)):
-               tmp = allmintarget.setdefault(tmptarget.ert[i], {})
-               if (tmptarget.minFtarget[i] < 1e-8): # BBOB-dependent
-                   if i == 0 or tmptarget.minFtarget[i-1] > 1e-8:
-                       tmptarget.minFtarget[i] = 1e-8
-                   else:
-                       tmptarget.minFtarget[i] = numpy.NaN
-               tmp.setdefault((f, d), tmptarget.minFtarget[i])
+            tmpertbest = detertbest(funentries, targets)
+            for i in range(len(targets)):
+               tmp = allmintarget.setdefault(-targets[i], {}) # Why the minus?
+               tmp.setdefault((f, d), targets[i])
 
-               tmp = allmedtarget.setdefault(tmptarget.ert[i], {})
-               if (tmptarget.medianFtarget[i] < 1e-8): # BBOB-dependent
-                   tmptarget.medianFtarget[i] = 1e-8
-               tmp.setdefault((f, d), tmptarget.medianFtarget[i])
+               tmp = allertbest.setdefault(-targets[i], {}) # Why the minus?
+               tmp.setdefault((f, d), tmpertbest[i])
 
-               tmp = allertbest.setdefault(tmptarget.ert[i], {})
-               tmp.setdefault((f, d), tmptarget.ertbest[i])
-
-    return allmintarget, allmedtarget, allertbest
+    return allmintarget, allertbest
 
 def usage():
     print main.__doc__
@@ -303,6 +320,8 @@ def main(argv=None):
                                     fileFormat=figformat,
                                     verbose=verbose)
             organizeRTDpictures.do(outputdir)
+
+        allmintarget, allertbest = detTarget(dsList)
 
         if isTab:
             pptables.tablemanyalgonefunc(dsList, allmintarget, allertbest,
