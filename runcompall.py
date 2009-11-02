@@ -254,6 +254,7 @@ def main(argv=None):
             else:
                 ext = "*.pickle"
 
+            set_trace()
             tmpargs.extend(glob.glob(os.path.join(i, ext)))
             # remove trailing slashes and keep only the folder name which is
             # supposed to be the algorithm name.

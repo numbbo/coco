@@ -34,7 +34,7 @@ except IOError, (errno, strerror):
     print "I/O error(%s): %s" % (errno, strerror)
     isBenchmarkinfosFound = False
     print 'Could not find file', infofile, \
-          'Titles in scaling figures will not be displayed.'
+          'Titles in figures will not be displayed.'
 
 def customizeFigure(figHandle, figureName = None, title='',
                     fileFormat=('png', 'eps'), labels=None,

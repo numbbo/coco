@@ -10,7 +10,7 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
-from bbob_pproc import bootstrap, pproc
+from bbob_pproc import bootstrap, readalign
 
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')
@@ -20,7 +20,8 @@ funInfos = {}
 isBenchmarkinfosFound = True
 #infofile = os.path.join(os.path.split(__file__)[0], '..', '..',
                         #'benchmarkshortinfos.txt')
-infofile = os.path.join(os.path.split(__file__)[0], 'benchmarkshortinfos.txt')
+infofile = os.path.join(os.path.split(__file__)[0], '..',
+                        'benchmarkshortinfos.txt')
 
 try:
     f = open(infofile,'r')
@@ -179,13 +180,27 @@ def generateData(indexEntry):
         res.append(tmp)
     return numpy.vstack(res)
 
+#def computeERT(hdata):
+    #res = []
+    #nbRuns = (numpy.shape(hdata)[1]-1)/2
+    #for i in hdata:
+        #success = i[nbRuns+1:] <= i[0]
+        #tmp = [i[0]]
+        #tmp.extend(bootstrap.sp(i[1:nbRuns+1], issuccessful=success))
+        #res.append(tmp)
+    ##set_trace()
+    #return numpy.vstack(res)
+
 def computeERT(hdata):
     res = []
-    nbRuns = (numpy.shape(hdata)[1]-1)/2
     for i in hdata:
-        success = i[nbRuns+1:] <= i[0]
+        data = i.copy()
+        data = data[1:]
+        succ = (numpy.isnan(data)==False)
+        if any(numpy.isnan(data)):
+            data[numpy.isnan(data)] = self.maxevals[numpy.isnan(data)]
         tmp = [i[0]]
-        tmp.extend(bootstrap.sp(i[1:nbRuns+1], issuccessful=success))
+        tmp.extend(bootstrap.sp(data, issuccessful=success))
         res.append(tmp)
     #set_trace()
     return numpy.vstack(res)
@@ -231,22 +246,19 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
             indexEntry0 = dictFunc0[func][dim][0]
             indexEntry1 = dictFunc1[func][dim][0]
             # align together and split again (the data are mixed together):
-            res = pproc.alignData(pproc.HArrayMultiReader([indexEntry0.hData,
-                                                           indexEntry1.hData]))
+            res = readalign.alignData(readalign.HArrayMultiReader([indexEntry0.evals,
+                                                                   indexEntry1.evals]))
+            set_trace()
             idxM = (numpy.shape(res)[1]-1)/2
             idxCur = 1
             idxNext = idxCur+indexEntry0.nbRuns()
             data0 = res[:, numpy.r_[0, idxCur:idxNext]]
-            data0 = numpy.hstack((data0,
-                                  res[:, numpy.r_[idxM+idxCur:idxM+idxNext]]))
             data0 = computeERT(data0)
-            data0 = data0[data0[:,0] <= min(indexEntry0.hData[0,0], indexEntry1.hData[0,0]),:]
+            data0 = data0[data0[:,0] <= min(indexEntry0.evals[0,0], indexEntry1.evals[0,0]),:]
 
             idxCur += indexEntry0.nbRuns()
             idxNext = idxCur+indexEntry1.nbRuns()
             data1 = res[:, numpy.r_[0, idxCur:idxNext]]
-            data1 = numpy.hstack((data1,
-                                  res[:, numpy.r_[idxM+idxCur:idxM+idxNext]]))
             data1 = computeERT(data1)
             data1 = data1[data1[:,0] <= min(indexEntry0.hData[0,0], indexEntry1.hData[0,0]),:]
 
@@ -254,6 +266,30 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
                                  data1[:, 1]/data0[:, 1])).transpose()
 
             data = data[(data0[:, 2] > 0) * (data1[:, 2] > 0)]
+
+            #res = pproc.alignData(pproc.HArrayMultiReader([indexEntry0.hData,
+                                                           #indexEntry1.hData]))
+            #idxM = (numpy.shape(res)[1]-1)/2
+            #idxCur = 1
+            #idxNext = idxCur+indexEntry0.nbRuns()
+            #data0 = res[:, numpy.r_[0, idxCur:idxNext]]
+            #data0 = numpy.hstack((data0,
+                                  #res[:, numpy.r_[idxM+idxCur:idxM+idxNext]]))
+            #data0 = computeERT(data0)
+            #data0 = data0[data0[:,0] <= min(indexEntry0.hData[0,0], indexEntry1.hData[0,0]),:]
+
+            #idxCur += indexEntry0.nbRuns()
+            #idxNext = idxCur+indexEntry1.nbRuns()
+            #data1 = res[:, numpy.r_[0, idxCur:idxNext]]
+            #data1 = numpy.hstack((data1,
+                                  #res[:, numpy.r_[idxM+idxCur:idxM+idxNext]]))
+            #data1 = computeERT(data1)
+            #data1 = data1[data1[:,0] <= min(indexEntry0.hData[0,0], indexEntry1.hData[0,0]),:]
+
+            #data = numpy.vstack((data0[:, 0],
+                                 #data1[:, 1]/data0[:, 1])).transpose()
+
+            #data = data[(data0[:, 2] > 0) * (data1[:, 2] > 0)]
             h = createFigure(data, label='%d-D' % dim, figHandle=fig)
             plt.setp(h, 'color', colors[i])
             plt.setp(h[0], 'label', '%d-D' % dim)
