@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """Process data and generates some comparison results from pickle data files
    only.
@@ -254,7 +255,6 @@ def main(argv=None):
             else:
                 ext = "*.pickle"
 
-            set_trace()
             tmpargs.extend(glob.glob(os.path.join(i, ext)))
             # remove trailing slashes and keep only the folder name which is
             # supposed to be the algorithm name.
