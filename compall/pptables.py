@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
 
@@ -18,6 +19,23 @@ allmedtarget = {}
 See Section Comparison Tables in
 http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 """
+
+funInfos = {}
+isBenchmarkinfosFound = True
+infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
+try:
+    f = open(infofile,'r')
+    for line in f:
+        if len(line) == 0 or line.startswith('%') or line.isspace() :
+            continue
+        funcId, funcInfo = line[0:-1].split(None,1)
+        funInfos[int(funcId)] = funcId + ' ' + funcInfo
+    f.close()
+except IOError, (errno, strerror):
+    print "I/O error(%s): %s" % (errno, strerror)
+    isBenchmarkinfosFound = False
+    print 'Could not find file', infofile, \
+          'Titles in figures will not be displayed.'
 
 def sortColumns(table, maxRank=None):
     """For each column in table, returns a list of the maxRank-ranked
@@ -319,7 +337,7 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
     """
 
     dictDim = dsList.dictByDim()
-    widthtable = 3 # Put in as global? 3 functions wide
+    #widthtable = 3 # Put in as global? 3 functions wide
     # TODO: split the generation of the tables from their formatting/output
     # ... if its possible
     for d, dentries in dictDim.iteritems():
@@ -356,12 +374,13 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                     isLastInfoWritten = False
                     try:
                         entry = dictF[func]
+                        try:
+                            entry = entry[0]
+                        except:
+                            raise Usage('Problem with the entries')
+
                     except KeyError:
-                        continue
-                    try:
-                        entry = entry[0]
-                    except:
-                        raise Usage('oops too many entries')
+                        pass # empty data
 
                     for t in stargets:
                         try:
@@ -399,8 +418,12 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                             curtargets.append(t)
                     except KeyError:
                         continue
-                lines[0] += '|' + len(curtargets) * 'c'
-                lines[1] += (r' & \multicolumn{%d}{|c|}{f%d}' % (len(curtargets), func))
+                lines[0] += len(curtargets) * 'c'
+                lines[0] += 'c' # algname in the end.
+                if isBenchmarkinfosFound:
+                    lines[1] += (r' & \multicolumn{%d}{c}{%s}' % (len(curtargets), funInfos[func]))
+                else:
+                    lines[1] += (r' & \multicolumn{%d}{c}{f%d}' % (len(curtargets), func))
 
                 for t in curtargets:
                     try:
@@ -412,10 +435,10 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                     except KeyError:
                         lines[3] += (r'& .')
 
-            lines[0] += '|}'
+            lines[0] += '}'
             lines[1] += r'\\'
-            lines[2] += r'\\'
-            lines[3] += r'\\'
+            lines[2] += r' & $\Delta$ftarget \\'
+            lines[3] += r' & ERT$_{\textrm{best}}$/D \\'
             lines.append(r'\hline')
 
             for i, line in enumerate(table):
@@ -433,10 +456,15 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                     if i in boldface[j] or line[j] < 3:
                         tmp = r'\textbf{' + tmp + '}'
                     tmpstr += ' & ' + tmp
+                tmpstr += ' & %s' % algnames[i] # Repeated algorithm name.
 
                 lines.append(tmpstr)
 
             lines.append(r'\end{tabular}')
-            f = open(os.path.join(outputdir, 'pptablef%d_%02dD.tex' % (numgroup, d)), 'w')
+            #f = open(os.path.join(outputdir, 'pptablef%d_%02dD.tex' % (numgroup + 1, d)), 'w')
+            #Line below preferred because the numgroup corresponds to the
+            #function number which is the case as long as each group has only
+            #one function
+            f = open(os.path.join(outputdir, 'pptablef%d_%02dD.tex' % (g[0], d)), 'w')
             f.write('\n'.join(lines) + '\n')
             f.close()
