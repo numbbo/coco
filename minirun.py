@@ -380,7 +380,7 @@ def main(argv=None):
                 for k, t in dictTarget.iteritems():
                     #if k == '_fE1.0':
                     #    set_trace()
-                    ppperfprof.main2(entries, target=t, order=sortedAlgs,
+                    ppperfprof.main(entries, target=t, order=sortedAlgs,
                                     plotArgs=algPlotInfos,
                                     outputdir=outputdir,
                                     info=('%02d%s' % (d, k)),

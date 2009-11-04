@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """Routines for the comparison of 2 algorithms
 Synopsis:
@@ -122,7 +123,7 @@ def main(argv=None):
             opts, args = getopt.getopt(argv, "hvo:",
                                        ["help", "output-dir",
                                         "fig-only", "rld-only",
-                                        "verbose", "final"])
+                                        "verbose"])
         except getopt.error, msg:
              raise Usage(msg)
 
@@ -258,11 +259,18 @@ def main(argv=None):
             #set_trace()
             for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
                 if dim in rldDimsOfInterest:
-                    pprldistr2.main(dictDim0[dim], dictDim1[dim],
-                                    rldValsOfInterest, False,
-                                    outputdir, 'dim%02dall' % dim, verbose)
+                    try:
+                        pprldistr2.main(dictDim0[dim], dictDim1[dim],
+                                        rldValsOfInterest, False,
+                                        outputdir, 'dim%02dall' % dim, verbose)
+                    except KeyError:
+                        warnings.warn('Could not find some data in %d-D.'
+                                      % (dim))
+                        continue
+
                     dictFG0 = dictDim0[dim].dictByFuncGroup()
                     dictFG1 = dictDim1[dim].dictByFuncGroup()
+
                     for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
                         pprldistr2.main(dictFG0[fGroup], dictFG1[fGroup],
                                         rldValsOfInterest, False,
@@ -273,10 +281,19 @@ def main(argv=None):
             print "ECDF relative target graphs",
             for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
                 if dim in rldDimsOfInterest:
-                    pprldistr2.main(dictDim0[dim], dictDim1[dim], None, True,
-                                    outputdir, 'dim%02dall' % dim, verbose)
+                    try:
+
+                        pprldistr2.main(dictDim0[dim], dictDim1[dim], None,
+                                        True, outputdir, 'dim%02dall' % dim,
+                                        verbose)
+                    except KeyError:
+                        warnings.warn('Could not find some data in %d-D.'
+                                      % (dim))
+                        continue
+
                     dictFG0 = dictDim0[dim].dictByFuncGroup()
                     dictFG1 = dictDim1[dim].dictByFuncGroup()
+
                     for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
                         pprldistr2.main(dictFG0[fGroup], dictFG1[fGroup], None,
                                         True, outputdir,

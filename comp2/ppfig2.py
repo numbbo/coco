@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """ Creates ENFEs and convergence figures for BBOB post-processing for the
 comparison of 2 algorithms.
@@ -191,16 +192,16 @@ def generateData(indexEntry):
     ##set_trace()
     #return numpy.vstack(res)
 
-def computeERT(hdata):
+def computeERT(hdata, maxevals):
     res = []
     for i in hdata:
         data = i.copy()
         data = data[1:]
         succ = (numpy.isnan(data)==False)
         if any(numpy.isnan(data)):
-            data[numpy.isnan(data)] = self.maxevals[numpy.isnan(data)]
+            data[numpy.isnan(data)] = maxevals[numpy.isnan(data)]
         tmp = [i[0]]
-        tmp.extend(bootstrap.sp(data, issuccessful=success))
+        tmp.extend(bootstrap.sp(data, issuccessful=succ))
         res.append(tmp)
     #set_trace()
     return numpy.vstack(res)
@@ -246,21 +247,20 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
             indexEntry0 = dictFunc0[func][dim][0]
             indexEntry1 = dictFunc1[func][dim][0]
             # align together and split again (the data are mixed together):
-            res = readalign.alignData(readalign.HArrayMultiReader([indexEntry0.evals,
+            res = readalign.alignArrayData(readalign.HArrayMultiReader([indexEntry0.evals,
                                                                    indexEntry1.evals]))
-            set_trace()
             idxM = (numpy.shape(res)[1]-1)/2
             idxCur = 1
             idxNext = idxCur+indexEntry0.nbRuns()
             data0 = res[:, numpy.r_[0, idxCur:idxNext]]
-            data0 = computeERT(data0)
+            data0 = computeERT(data0, indexEntry0.maxevals)
             data0 = data0[data0[:,0] <= min(indexEntry0.evals[0,0], indexEntry1.evals[0,0]),:]
 
             idxCur += indexEntry0.nbRuns()
             idxNext = idxCur+indexEntry1.nbRuns()
             data1 = res[:, numpy.r_[0, idxCur:idxNext]]
-            data1 = computeERT(data1)
-            data1 = data1[data1[:,0] <= min(indexEntry0.hData[0,0], indexEntry1.hData[0,0]),:]
+            data1 = computeERT(data1, indexEntry1.maxevals)
+            data1 = data1[data1[:,0] <= min(indexEntry0.evals[0,0], indexEntry1.evals[0,0]),:]
 
             data = numpy.vstack((data0[:, 0],
                                  data1[:, 1]/data0[:, 1])).transpose()

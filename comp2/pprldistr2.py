@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """Creates run length distribution figures for the comparison of 2 algorithms."""
 
@@ -69,6 +70,13 @@ def beautify(figHandle, figureName, fileFormat=('png'), isByInstance=True,
                 print 'Wrote figure in %s.' %(figureName + '.' + entry)
 
 
+def computeERT(fevals, maxevals):
+    data = fevals.copy()
+    success = (numpy.isnan(data)==False)
+    if any(numpy.isnan(data)):
+        data[numpy.isnan(data)] = maxevals[numpy.isnan(data)]
+    res = bootstrap.sp(data, issuccessful=success)
+    return res[0]
 
 def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
                verbose=True):
@@ -103,16 +111,10 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
         ERT = []
         if not isByInstance:
             for i, entry in enumerate((i0, i1)):
-                for j in entry.hData:
+                for j in entry.evals:
                     if j[0] <= fvalueToReach:
                         break
-                success = (j[entry.nbRuns()+1:] <= fvalueToReach)
-                fevals = j[1:entry.nbRuns()+1]
-                for j, issuccess in enumerate(success):
-                    if not issuccess:
-                        fevals[j] = entry.vData[-1, 1+j]
-                tmp = bootstrap.sp(fevals, issuccessful=success)
-                ERT.append(tmp[0])
+                ERT.append(computeERT(j, entry.maxevals))
             if not all(numpy.isinf(ERT)):
                 if numpy.isnan(ERT[1]/ERT[0]):
                     x.append(ERT[1]/ERT[0])
@@ -125,16 +127,11 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
                     dictinstance.setdefault(entry.itrials[j], []).append(j)
                 ERT.append(dictinstance.copy())
                 for k in dictinstance:
-                    for j in entry.hData:
+                    for j in entry.evals:
                         if j[0] <= fvalueToReach:
                             break
-                    success = (j[list(entry.nbRuns()+i for i in dictinstance[k])] <= fvalueToReach)
-                    fevals = j[list(1+i for i in dictinstance[k])]
-                    for l, issuccess in enumerate(success):
-                        if issuccess:
-                            fevals[l] = entry.vData[-1, 1+dictinstance[k][l]]
-                    tmp = bootstrap.sp(fevals, issuccessful=success)
-                    ERT[i][k] = tmp[0]
+                    ERT[i][k] = computeERT(j[list(1+i for i in dictinstance[k])],
+                            entry.maxevals[list(i for i in dictinstance[k])])
             s0 = set(ERT[0])
             s1 = set(ERT[1])
             #Could be done simpler
@@ -227,8 +224,8 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
 
             #Could gain time by storing the iterators over all functions...
             #Get the curDf
-            it0 = iter(i0.vData)
-            it1 = iter(i1.vData)
+            it0 = iter(i0.funvals)
+            it1 = iter(i1.funvals)
             try:
                 nline0 = it0.next()
                 while nline0[0] < curevals:
@@ -247,19 +244,13 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
             ERT = []
             if not isByInstance:
                 #set_trace()
-                curDf = min(numpy.append(line0[i0.nbRuns()+1:], line1[i1.nbRuns()+1:]))
+                curDf = min(numpy.append(line0[1:], line1[1:]))
                 for i, entry in enumerate((i0, i1)):
-                    for j in entry.hData:
+                    for j in entry.evals:
                         if j[0] <= curDf:
                             break
-                    success = (j[entry.nbRuns()+1:] <= curDf)
-                    fevals = j[1:entry.nbRuns()+1]
-                    for j, issuccess in enumerate(success):
-                        if not issuccess:
-                            fevals[j] = entry.vData[-1, 1+j]
-                    tmp = bootstrap.sp(fevals, issuccessful=success)
                     #set_trace()
-                    ERT.append(tmp[0])
+                    ERT.append(computeERT(j, entry.maxevals))
 
                 if not numpy.isnan(ERT[1]/ERT[0]):
                     x.append(ERT[1]/ERT[0])
@@ -274,7 +265,7 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
                     for i, entry in enumerate((i0, i1)):
                         for j in range(len(entry.itrials)):
                             if entry.itrials[j] == k:
-                                curDf[k].append(lines[i][entry.nbRuns()+j])
+                                curDf[k].append(lines[i][1+j])
                     curDf[k] = min(curDf[k])
 
                 for i, entry in enumerate((i0, i1)):
@@ -283,16 +274,11 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
                         dictinstance.setdefault(entry.itrials[j], []).append(j)
                     ERT.append(dictinstance.copy())
                     for k in dictinstance:
-                        for j in entry.hData:
+                        for j in entry.evals:
                             if j[0] <= curDf[k]:
                                 break
-                        success = (j[list(entry.nbRuns()+i for i in dictinstance[k])] <= curDf[k])
-                        fevals = j[list(1+i for i in dictinstance[k])]
-                        for l, issuccess in enumerate(success):
-                            if issuccess:
-                                fevals[l] = entry.vData[-1, 1+dictinstance[k][l]]
-                        tmp = bootstrap.sp(fevals, issuccessful=success)
-                        ERT[i][k] = tmp[0]
+                        ERT[i][k] = computeERT(j[list(1+i for i in dictinstance[k])],
+                            entry.maxevals[list(i for i in dictinstance[k])])
 
                 s0 = set(ERT[0])
                 s1 = set(ERT[1])
