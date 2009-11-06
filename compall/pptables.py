@@ -37,6 +37,123 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
 
+def cite(algName, isNoisefree, isNoisy):
+    """Returns the citation key associated to the algorithm name.
+    Hard coded while no other solution is found.
+    """
+    res = []
+    #The names of the algorithms must correspond to what is in the labels of
+    #algorithmshortinfos.txt. The citations keys must be in bbob.bib.
+    if isNoisefree:
+        if algName == "ALPS":
+            res.append("Hornby:2009")
+        if algName in ("AMaLGaM IDEA", "iAMaLGaM IDEA"):
+            res.append("DBLP:conf/gecco/BosmanGT09")
+        if algName == "BayEDAcG":
+            res.append("DBLP:conf/gecco/Gallagher09")
+        if algName == "BFGS":
+            res.append("DBLP:conf/gecco/Ros09")
+        if algName == "Cauchy EDA":
+            res.append("DBLP:conf/gecco/Posik09")
+        if algName == "BIPOP-CMA-ES":
+            res.append("DBLP:conf/gecco/Hansen09")
+        if algName == "(1+1)-CMA-ES":
+            res.append("DBLP:conf/gecco/AugerH09")
+        if algName == "DASA":
+            res.append("DBLP:conf/gecco/KorosecS09")
+        if algName == "DEPSO":
+            res.append("DBLP:conf/gecco/Garcia-NietoAA09")
+        if algName == "DIRECT":
+            res.append("DBLP:conf/gecco/Posik09a")
+        if algName == "EDA-PSO":
+            res.append("DBLP:conf/gecco/El-AbdK09")
+        if algName == "CMA-EGS":
+            res.append("Finck:2009")
+        if algName == "G3-PCX":
+            res.append("DBLP:conf/gecco/Posik09b")
+        if algName == "simple GA":
+            res.append("DBLP:conf/gecco/Nicolau09")
+        if algName == "GLOBAL":
+            res.append("Pal:2009a")
+        if algName in ("LSfminbnd", "LSstep"):
+            res.append("DBLP:conf/gecco/Posik09c")
+        if algName == "MA-LS-Chain":
+            res.append("DBLP:conf/gecco/MolinaLH09")
+        if algName == "MCS (Neum)":
+            res.append("Huyer:2009b")
+        if algName == "NELDER (Han)":
+            res.append("DBLP:conf/gecco/Hansen09b")
+        if algName == "NELDER (Doe)":
+            res.append("DBLP:conf/gecco/DoerrFSW09")
+        if algName in ("NEWUOA", "avg NEWUOA", "full NEWUOA"):
+            res.append("DBLP:conf/gecco/Ros09b")
+        if algName == "(1+1)-ES":
+            res.append("DBLP:conf/gecco/Auger09")
+        if algName == "POEMS":
+            res.append("DBLP:conf/gecco/Kubalik09a")
+        if algName == "PSO":
+            res.append("DBLP:conf/gecco/El-AbdK09a")
+        if algName == "PSO\_Bounds":
+            res.append("DBLP:conf/gecco/El-AbdK09b")
+        if algName == "Monte Carlo":
+            res.append("DBLP:conf/gecco/AugerR09")
+        if algName == "Rosenbrock":
+            res.append("DBLP:conf/gecco/Posik09d")
+        if algName == "IPOP-SEP-CMA-ES":
+            res.append("DBLP:conf/gecco/Ros09d")
+        if algName == "VNS (Garcia)":
+            res.append("DBLP:conf/gecco/Garcia-MartinezL09")
+    if isNoisy:
+        if algName == "ALPS":
+            res.append("Hornby:2009a")
+        elif algName in ("AMaLGaM IDEA", "iAMaLGaM IDEA"):
+            res.append("DBLP:conf/gecco/BosmanGT09a")
+        elif algName in ("avg NEWUOA", "full NEWUOA", "NEWUOA"):
+            res.append("DBLP:conf/gecco/Ros09c")
+        elif algName == "BayEDAcG":
+            res.append("DBLP:conf/gecco/Gallagher09a")
+        elif algName == "BFGS":
+            res.append("DBLP:conf/gecco/Ros09a")
+        elif algName == "BIPOP-CMA-ES":
+            res.append("DBLP:conf/gecco/Hansen09a")
+        elif algName == "(1+1)-CMA-ES":
+            res.append("DBLP:conf/gecco/AugerH09a")
+        elif algName == "DASA":
+            res.append("DBLP:conf/gecco/KorosecS09a")
+        elif algName == "DEPSO":
+            res.append("DBLP:conf/gecco/Garcia-NietoAA09a")
+        elif algName == "EDA-PSO":
+            res.append("DBLP:conf/gecco/El-AbdK09")
+        elif algName == "CMA-EGS":
+            res.append("Finck:2009a")
+        elif algName == "GLOBAL":
+            res.append("Pal:2009")
+        elif algName == "MA-LS-Chain":
+            res.append("DBLP:conf/gecco/MolinaLH09a")
+        elif algName == "MCS (Neum)":
+            res.append("Huyer:2009a")
+        elif algName == "(1+1)-ES":
+            res.append("DBLP:conf/gecco/Auger09a")
+        elif algName == "PSO":
+            res.append("DBLP:conf/gecco/El-AbdK09a")
+        elif algName == "PSO\_Bounds":
+            res.append("DBLP:conf/gecco/El-AbdK09b")
+        elif algName == "Monte Carlo":
+            res.append("DBLP:conf/gecco/AugerR09a")
+        elif algName == "IPOP-SEP-CMA-ES":
+            res.append("DBLP:conf/gecco/Ros09e")
+        elif algName == "SNOBFIT":
+            res.append("Huyer:2009")
+        elif algName == "VNS (Garcia)":
+            res.append("DBLP:conf/gecco/Garcia-MartinezL09a")
+
+    if res:
+        res = ', '.join(res)
+    else:
+        res = "add_an_entry_for_%s_in_bbob.bib" % algName
+    return res
+
+
 def sortColumns(table, maxRank=None):
     """For each column in table, returns a list of the maxRank-ranked
     elements. This list may have a length larger than maxRank in the case of
@@ -352,6 +469,8 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
         groups = list([i] for i in funcs)
         #set_trace()
         for numgroup, g in enumerate(groups):
+            isFunNoisefree = False
+            isFunNoisy = False
             if not g:
                 continue
 
@@ -401,16 +520,17 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                 replacement.append(replacementLine)
                 table.append(curline)
 
-            try:
-                table = numpy.array(table)
-            except ValueError:
-                set_trace()
+            table = numpy.array(table)
             # Process data
             boldface = sortColumns(table, maxRank=3)
 
             # Format data
             lines = [r'\begin{tabular}{c', '', r'$\Delta$ftarget', r'ERT$_{\textrm{best}}$/D']
             for func in g:
+                if func in range(1, 25):
+                    isFunNoisefree = True
+                elif func in range(101, 131):
+                    isFunNoisy = True
                 curtargets = []
                 for t in stargets:
                     try:
@@ -421,9 +541,9 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                 lines[0] += len(curtargets) * 'c'
                 lines[0] += 'c' # algname in the end.
                 if isBenchmarkinfosFound:
-                    lines[1] += (r' & \multicolumn{%d}{c}{%s}' % (len(curtargets), funInfos[func]))
+                    lines[1] += (r' & \multicolumn{%d}{c}{{\normalsize \textbf{%s}}}' % (len(curtargets), funInfos[func]))
                 else:
-                    lines[1] += (r' & \multicolumn{%d}{c}{f%d}' % (len(curtargets), func))
+                    lines[1] += (r' & \multicolumn{%d}{c}{{\normalsize \textbf{f%d}}}' % (len(curtargets), func))
 
                 for t in curtargets:
                     try:
@@ -446,7 +566,7 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                     lines[-1] += r'\\'
                 tmpstr = '%s' % algnames[i]
                 # Regroup entries by algorithm
-                dictF = algentries.dictByFunc()
+                #dictF = algentries.dictByFunc()
                 for j in range(len(line)):
                     if replacement[i][j]:
                         tmp = '%s' % replacement[i][j]
@@ -456,7 +576,9 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                     if i in boldface[j] or line[j] < 3:
                         tmp = r'\textbf{' + tmp + '}'
                     tmpstr += ' & ' + tmp
-                tmpstr += ' & %s' % algnames[i] # Repeated algorithm name.
+                # Repeated algorithm name.
+                tmpstr += ' & %s \cite{%s}' % (algnames[i], cite(algnames[i],
+                                                   isFunNoisefree, isFunNoisy))
 
                 lines.append(tmpstr)
 
