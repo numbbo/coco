@@ -50,4 +50,5 @@ SPSAv5:SPSA:%  10 restarts with increasing lambda and decreasing step, if improv
 SPSAv6:SPSA:% 10 restarts, maxFunevals = 1e4*dim:{"label":"SPSAv6","color":"green"}
 SPSAv5:SPSA:% 10 restarts, kmax = 1e3, for improvement step kmax = 5e2, restart changes lambda and step:{"label":"SPSAv5","color":"blue"}
 ALPS:ALPS:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"ALPS"}
+EGSv2:EGS_ipopcma_newCMAcoeff:% 10 independent restarts, EGS-CMA implementation from D.Arnold with new coefficients, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda:{"label":"EGSv2","color":"blue"}
 
