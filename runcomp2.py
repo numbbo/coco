@@ -134,7 +134,7 @@ def main(argv=None):
         isfigure = True
         isrldistr = True
         isNoisy = False
-        isNoiseFree = False # Discern noisy and noisefree data?
+        isNoiseFree = True # Discern noisy and noisefree data?
         verbose = False
         outputdir = 'cmpdata'
 
@@ -237,6 +237,7 @@ def main(argv=None):
             except KeyError:
                 pass
 
+        #set_trace()
 
         #for i, entry in enumerate(sortedAlgs): #Nota: key is sortedAlgs
             #print "Alg%d is: %s" % (i, entry)

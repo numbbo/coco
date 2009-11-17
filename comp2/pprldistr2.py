@@ -296,18 +296,20 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
 
         label = '1e%+d * DIM' % numpy.log10(curevals/indexEntries0[0].dim)
         n = len(x)
-        try:
-            x.sort()
-            #Catch negative values, those could be a problem with the log scale...
-            #tmp = 0
-            tmp = len(list(i for i in x if i <= 0))
-            x = x[tmp:]
-            #Catch inf, those could be a problem with the log scale...
-            #tmp2 = 0
-            tmp2 = len(list(i for i in x if numpy.isinf(i))) #Also catches negative inf
-            if tmp2 > 0:
-                x = x[:-tmp2]
+        x.sort()
+        #Catch negative values, those could be a problem with the log scale...
+        #tmp = 0
+        tmp = len(list(i for i in x if i <= 0))
+        x = x[tmp:]
+        #Catch inf, those could be a problem with the log scale...
+        #tmp2 = 0
+        tmp2 = len(list(i for i in x if numpy.isinf(i))) #Also catches negative inf
+        if tmp2 > 0:
+            x = x[:-tmp2]
 
+        if not x:
+            res = plt.plot([], [], label=label)
+        else:
             xbound = max(abs(numpy.floor(numpy.log10(x[0]))),
                          abs(numpy.ceil(numpy.log10(x[-1]))))
             x2 = numpy.hstack([10.**(-xbound),
@@ -318,8 +320,6 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
                                numpy.repeat(numpy.arange(tmp+1, n-tmp2) / float(nn), 2),
                                (n-tmp2)/float(nn), (n-tmp2)/float(nn)])
             res.append(plt.plot(x2, y2, label=label))
-        except OverflowError: #TODO Check this exception
-            res = plt.plot([], [], label=label)
 
         #Update the curDf
         curevals *= 10
