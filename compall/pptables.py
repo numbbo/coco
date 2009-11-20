@@ -467,7 +467,7 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
         #groups = [[1, 2], [3], [4], [5, 6], [7], [8, 9], [10], [11], [12], [13], [14], [15], [16], [17], [18], [19], [20], [21, 22], [23], [24]]
         #groups = list(funcs[i*widthtable:(i+1)*widthtable] for i in range(len(funcs)/widthtable + 1))
         groups = list([i] for i in funcs)
-        #set_trace()
+
         for numgroup, g in enumerate(groups):
             isFunNoisefree = False
             isFunNoisy = False
@@ -487,7 +487,6 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                         algentries.extend(dictAlg[a])
                 if not algentries:
                     continue
-                algnames.append(writeLabels(algPlotInfos[alg[0]]['label']))
                 dictF = algentries.dictByFunc()
                 for func in g:
                     isLastInfoWritten = False
@@ -499,7 +498,11 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                             raise Usage('Problem with the entries')
 
                     except KeyError:
-                        pass # empty data
+                        if curline or replacementLine:
+                            curline.extend([numpy.inf]*len(stargets))
+                            replacementLine.extend(['.']*len(stargets))
+                            
+                        continue # empty data
 
                     for t in stargets:
                         try:
@@ -517,10 +520,15 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                                 isLastInfoWritten = True
                             else:
                                 replacementLine.append('.')
-                replacement.append(replacementLine)
-                table.append(curline)
+                if replacementLine and curline:
+                    algnames.append(writeLabels(algPlotInfos[alg[0]]['label']))
+                    replacement.append(replacementLine)
+                    table.append(curline)
 
-            table = numpy.array(table)
+            try:
+                table = numpy.array(table)
+            except ValueError:
+                pass
             # Process data
             boldface = sortColumns(table, maxRank=3)
 
