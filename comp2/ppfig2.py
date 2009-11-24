@@ -311,7 +311,7 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
                 h = createFigure(tmp, figHandle=fig)
                 plt.setp(h, 'color', colors[i])
 
-        legend = True #func in (1, 24, 101, 130)
+        legend = func in (1,101)  # (1, 24, 101, 130)
         customizeFigure(fig, filename, title=title,
                         fileFormat=('png'), labels=['', ''],
                         legend=legend, locLegend='best', verbose=verbose)
