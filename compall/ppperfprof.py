@@ -17,6 +17,10 @@ best = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-C
    'BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'GLOBAL', 'MCS (Neum)',
    'DIRECT', 'DASA', 'POEMS', 'Cauchy EDA', 'Monte Carlo')
 
+best2 = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', 'BFGS', 'NEWUOA', 'GLOBAL')
+
+eseda = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', '(1+1)-CMA-ES', '(1+1)-ES')
+
 bestnoisy = ()
 
 nikos = ('AMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', '(1+1)-CMA-ES', 'G3-PCX', 'NEWUOA', 
@@ -47,7 +51,7 @@ fmulti = [4] + range(15,25) # without paired Rastrigin
 funisep = [1,2,5]
 
 # input parameter settings
-show_algorithms = () # ()==all
+show_algorithms = eseda + ('BFGS',) # ()==all
 function_IDs = [8]  # range(103, 131, 3)   # displayed functions
 function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 #function_IDs = [1,2,3,4,5] # seperable functions
@@ -221,7 +225,7 @@ def plotLegend(handles, maxval):
     #plt.axvline(x=maxval, color='k') # Not as efficient?
     plt.plot((maxval, maxval), (0., 1.), color='k')
 
-def main(dsList, target, order=None, plotArgs={}, outputdir='',
+def main2(dsList, target, order=None, plotArgs={}, outputdir='',
           info='default', fileFormat=('eps', 'png'), verbose=True):
     """From a dataSetList, generates the performance profiles for multiple
     functions for multiple targets altogether.

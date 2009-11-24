@@ -37,11 +37,10 @@ from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
-# constant_target_function_values = (1e2, 1e1, 1e-0, 1e-1, 1e-3, 1e-6)
-constant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7)
+constant_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6)
 # constant_target_function_values = (1e-6, )  # single 
 # constant_target_function_values = (1e1, 1e-0, 1e-1)  # light&easy 
-constant_target_function_values = (1e-3, 1e-5, 1e-7) # tight&heavy
+# constant_target_function_values = (1e-3, 1e-5, 1e-7) # tight&heavy
 # constant_target_function_values = 10**numpy.array(list(numpy.r_[2:0:-0.5]) + range(0,-9,-1))  # movie
 # constant_target_function_values = 10**(numpy.array(list(numpy.r_[0:-7:-0.1]) + list(numpy.r_[-7:-8:-0.05])))  # dense 
 # constant_target_function_values = 10**numpy.array([1, 0] + sorted(2*(-1,-2,-3,-4,-5,-6,-7,-7.98,-7.99), reverse=True))  # try for multimodal single functions

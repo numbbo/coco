@@ -199,7 +199,7 @@ class FunTarget:
         self.ertbest = self.detertbest(dataset)
 
         # check and print lists
-        if 1 < 3:  # should not be necessary, includes some testing
+        if 11 < 3:  # should not be necessary, includes some testing
             if len(self.minFtarget) == 0:
                 print 'empty minFtarget list in determineFtarget2.py'
             print 'f', dataset[0].funcId, dim, '-D', ':'
