@@ -351,7 +351,10 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
 
         if ertvec[2] > 0: # if at least one success
             #TODO: use drawSP(N[success], N[!success],...)
-            #      replacing the next 15 lines (up to curLine = ...)
+            #      which is always finite here and can better 
+            #      replace the next 15 lines (up to curLine = ...)
+            #      Also the above code to generate N can becomes 
+            #      simpler than. 
             #Probability that a bootstrap sample contains no success
             pbu = ((len(N) - ertvec[2]) / float(len(N))) ** len(N)
             bpercentiles = list(j/100. <= 1.-pbu for j in percentiles)
