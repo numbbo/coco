@@ -54,7 +54,7 @@ funisep = [1,2,5]
 show_algorithms = eseda + ('BFGS',) # ()==all
 function_IDs = [8]  # range(103, 131, 3)   # displayed functions
 function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
-#function_IDs = [1,2,3,4,5] # seperable functions
+function_IDs = [1,2,3,4,5] # seperable functions
 #function_IDs = [6,7,8,9]   # moderate functions
 #function_IDs = [10,11,12,13,14] # ill-conditioned functions
 #function_IDs = [15,16,17,18,19] # multi-modal functions
