@@ -5,7 +5,6 @@ from __future__ import absolute_import
 
 import os
 from pdb import set_trace
-import pickle
 import numpy
 from bbob_pproc import pptex
 from bbob_pproc.bootstrap import prctile

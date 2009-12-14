@@ -486,6 +486,38 @@ def generateData2(dataSet, targetFuncValues, samplesize=1000):
         res.append(curLine)
     return numpy.vstack(res)
 
+def tableLaTeX(table, spec, extraeol=(), pos=''):
+    """Generates a latex tabular from a sequence of sequence (table) of strings.
+
+    Keyword arguments:
+    table -- sequence of sequence of strings
+    spec -- string for table specification, see http://en.wikibooks.org/wiki/LaTeX/Tables#The_tabular_environment 
+    extraeol -- sequence of string the same length as the table (same number of
+                lines) which are added at the end of each line. 
+    pos -- string that is a valid vertical position, optional argument to the tabular
+           environment, either string t, c or b.
+    """
+
+    # TODO: should it write in a file or store in a string
+    # TODO: implement unit test!
+    
+    if pos:
+        pos = '['+pos+']'
+
+    if not extraeol:
+        extraeol = len(table) * ['']
+
+    # TODO: check that spec and extraeol have the right format? 
+
+    res = [r'\begin{tabular}' + pos + '{' + spec + '}']
+    for i, line in enumerate(table):
+        curline = ' & '.join(line) + r'\\'
+        curline += extraeol[i]
+        res.append(curline)
+
+    res.append(r'\end{tabular}')
+    res = '\n'.join(res)
+    return res
 
 def main(indexEntries, valOfInterests, filename, isDraft=False, verbose=True):
     """Generates latex tabular from IndexEntries.
