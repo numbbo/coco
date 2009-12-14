@@ -42,8 +42,8 @@ except IOError, (errno, strerror):
 def generateData(dsList0, dsList1):
     """Will create a numpy.array of the rank sum test values."""
     table = []
-    it0 = iter(dsList0).evals
-    it1 = iter(dsList1).evals
+    it0 = iter(dsList0.evals)
+    it1 = iter(dsList1.evals)
 
     def setNextLine(it, target):
         """Use the iterator of the evals array from DataSet to set nline to
@@ -61,10 +61,10 @@ def generateData(dsList0, dsList1):
            
         
     for t in targetsOfInterest:
-        nline0 = (numpy.power(setNextLine(it0, t)[1:]), -1).copy()
+        nline0 = (numpy.power(setNextLine(it0, t)[1:], -1)).copy()
         idxNan = numpy.isnan(nline0)
         nline0[idxNan] = -dsList0.finalfunvals[idxNan]
-        nline1 = (numpy.power(setNextLine(it0, t)[1:]), -1).copy()
+        nline1 = (numpy.power(setNextLine(it0, t)[1:], -1)).copy()
         idxNan = numpy.isnan(nline1)
         nline1[idxNan] = -dsList0.finalfunvals[idxNan]
         #table.append(numpy.array([t, ranksumtest.ranksums(nline0, nline1)[0]]))
@@ -72,18 +72,19 @@ def generateData(dsList0, dsList1):
 
     table = numpy.vstack(table)
     header = ['\Delta f', 'U']
-    format = ('spec', '%3.1g' )
+    format = ('spec', '%3.2g' )
     return table, header, format
 
 def formatData(table, header, format, fun):
     """Will try to format the data, if possible just from the table."""
     
-    funname = '%d' % fun
     if isBenchmarkinfosFound:
-        funname += ' %s' % funInfos[fun]
-    
-    header = '\multicolumn{%d}{c}{%s}' % (max(len(l) for l in table) + 1,
-                                          funname)
+        funname = ' %s' % funInfos[fun]
+    else:
+        funname = '%d' % fun
+
+    header = ['\multicolumn{%d}{c}{%s}' % (max(len(l) for l in table),
+                                          funname)]
     tableStrings = [header]
     for line in table:
          curline = []
@@ -96,11 +97,11 @@ def formatData(table, header, format, fun):
                      tmpstring = tmpstring.split('e')
                      tmpstring = (tmpstring[0]
                                   + '\\!\\mathrm{\\hspace{0.10em}e}'
-                                  + '%d' % int(tmpstring[1])
+                                  + '%d' % int(tmpstring[1]))
                  curline.append(tmpstring)
              else:
                  curline.append(format[i] % elem)
-            
+        tableStrings.append(curline)
     
     return tableStrings
 
