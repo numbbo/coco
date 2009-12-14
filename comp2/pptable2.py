@@ -72,9 +72,10 @@ def generateData(dsList0, dsList1):
 
     table = numpy.vstack(table)
     header = ['\Delta f', 'U']
-    return table, header
+    format = ('spec', '%3.1g' )
+    return table, header, format
 
-def formatData(table,fun):
+def formatData(table, header, format, fun):
     """Will try to format the data, if possible just from the table."""
     
     funname = '%d' % fun
@@ -84,8 +85,22 @@ def formatData(table,fun):
     header = '\multicolumn{%d}{c}{%s}' % (max(len(l) for l in table) + 1,
                                           funname)
     tableStrings = [header]
-    for l in table:
-        
+    for line in table:
+         curline = []
+         for i, elem in enumerate(line):
+             if format[i] == 'spec':
+                 if elem >= 1 and elem <= 100:
+                     tmpstring = str(int(round(elem)))
+                 else:
+                     tmpstring = '%2.0e' % elem
+                     tmpstring = tmpstring.split('e')
+                     tmpstring = (tmpstring[0]
+                                  + '\\!\\mathrm{\\hspace{0.10em}e}'
+                                  + '%d' % int(tmpstring[1])
+                 curline.append(tmpstring)
+             else:
+                 curline.append(format[i] % elem)
+            
     
     return tableStrings
 
@@ -106,9 +121,10 @@ def main(dsList0, dsList1, outputdir, verbose=True):
         for d in dims:
             outputfile = os.path.join(outputdir, 'cmptable_f%02d_%02dD'
                                                  % (f, d))
-            table = generateData(dictFunc0[f][d][0], dictFunc1[f][d][0])
+            table, header, format = generateData(dictFunc0[f][d][0],
+                                                 dictFunc1[f][d][0])
             # Both dictFun[f][d] should be of length 1.
-            tableofstrings = formatData(table)
+            tableofstrings = formatData(table, header, format, f)
             res = tableLaTeX(tableofstrings)
             f = open(outputfile, 'w')
             f.write(res)
