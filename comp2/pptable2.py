@@ -1,0 +1,115 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Rank-sum tests table on "Final Data Points".
+that is, for example, using 1/#fevals(ftarget) if ftarget was reached and
+-f_final otherwise as input for the rank-sum test, where obviously the larger
+the better.
+One table per function and dimension."""
+
+from __future__ import absolute_import
+
+import os
+import numpy
+import matplotlib.pyplot as plt
+from bbob_pproc.pptex import tableLaTeX
+#from bbob_pproc import ranksumtest
+from scipy.stats import mannwhitneyu
+from pdb import set_trace
+
+targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # Needs to be sorted
+
+#Get benchmark short infos: put this part in a function?
+funInfos = {}
+isBenchmarkinfosFound = False
+infofile = os.path.join(os.path.split(__file__)[0], '..',
+                        'benchmarkshortinfos.txt')
+
+try:
+    f = open(infofile,'r')
+    for line in f:
+        if len(line) == 0 or line.startswith('%') or line.isspace() :
+            continue
+        funcId, funcInfo = line[0:-1].split(None,1)
+        funInfos[int(funcId)] = funcId + ' ' + funcInfo
+    f.close()
+    isBenchmarkinfosFound = True
+except IOError, (errno, strerror):
+    print "I/O error(%s): %s" % (errno, strerror)
+    print 'Could not find file', infofile, \
+          'Titles in scaling figures will not be displayed.'
+
+def generateData(dsList0, dsList1):
+    """Will create a numpy.array of the rank sum test values."""
+    table = []
+    it0 = iter(dsList0).evals
+    it1 = iter(dsList1).evals
+
+    def setNextLine(it, target):
+        """Use the iterator of the evals array from DataSet to set nline to
+           the current target function value."""
+
+        try:
+           nline = it.next()
+           while target > nline[0]:
+               nline = it.next()
+        except StopIteration:
+           #The algorithm did not reach the target function value.
+           nline = numpy.array([-numpy.inf] + (len(nline) - 1) * [numpy.nan])
+
+        return nline
+           
+        
+    for t in targetsOfInterest:
+        nline0 = (numpy.power(setNextLine(it0, t)[1:]), -1).copy()
+        idxNan = numpy.isnan(nline0)
+        nline0[idxNan] = -dsList0.finalfunvals[idxNan]
+        nline1 = (numpy.power(setNextLine(it0, t)[1:]), -1).copy()
+        idxNan = numpy.isnan(nline1)
+        nline1[idxNan] = -dsList0.finalfunvals[idxNan]
+        #table.append(numpy.array([t, ranksumtest.ranksums(nline0, nline1)[0]]))
+        table.append(numpy.array([t, mannwhitneyu(nline0, nline1)[0]]))
+
+    table = numpy.vstack(table)
+    header = ['\Delta f', 'U']
+    return table, header
+
+def formatData(table,fun):
+    """Will try to format the data, if possible just from the table."""
+    
+    funname = '%d' % fun
+    if isBenchmarkinfosFound:
+        funname += ' %s' % funInfos[fun]
+    
+    header = '\multicolumn{%d}{c}{%s}' % (max(len(l) for l in table) + 1,
+                                          funname)
+    tableStrings = [header]
+    for l in table:
+        
+    
+    return tableStrings
+
+def main(dsList0, dsList1, outputdir, verbose=True):
+    """Will loop over the functions, dimension and so on."""
+
+    dictFunc0 = dsList0.dictByFunc()
+    dictFunc1 = dsList1.dictByFunc()
+    funcs = set.union(set(dictFunc0), set(dictFunc1))
+
+    for f in funcs:
+        #replace dictFunc0[func] (a DataSetList) with a dictionary of DataSetList 
+        dictFunc0[f] = dictFunc0[func].dictByDim()
+        dictFunc1[f] = dictFunc1[func].dictByDim()
+        #TODO: what if all functions were not tested for alg0 et alg1?
+        #TODO: what if all dimensions were not tested for alg0 et alg1?
+        dims = set.union(set(dictFunc0[f]), set(dictFunc1[f]))
+        for d in dims:
+            outputfile = os.path.join(outputdir, 'cmptable_f%02d_%02dD'
+                                                 % (f, d))
+            table = generateData(dictFunc0[f][d][0], dictFunc1[f][d][0])
+            # Both dictFun[f][d] should be of length 1.
+            tableofstrings = formatData(table)
+            res = tableLaTeX(tableofstrings)
+            f = open(outputfile, 'w')
+            f.write(res)
+            f.close()
