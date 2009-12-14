@@ -51,7 +51,8 @@ fmulti = [4] + range(15,25) # without paired Rastrigin
 funisep = [1,2,5]
 
 # input parameter settings
-show_algorithms = eseda + ('BFGS',) # ()==all
+# show_algorithms = eseda + ('BFGS',) # ()==all
+show_algorithms = ();
 function_IDs = [8]  # range(103, 131, 3)   # displayed functions
 function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 function_IDs = [1,2,3,4,5] # seperable functions
@@ -59,6 +60,9 @@ function_IDs = [1,2,3,4,5] # seperable functions
 #function_IDs = [10,11,12,13,14] # ill-conditioned functions
 #function_IDs = [15,16,17,18,19] # multi-modal functions
 #function_IDs = [20,21,22,23,24] # weak structure functions
+#function_IDs = range(1,25)  # noise-free testbed
+function_IDs = range(101,131) # noisy testbed
+
 x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 
 
@@ -225,7 +229,7 @@ def plotLegend(handles, maxval):
     #plt.axvline(x=maxval, color='k') # Not as efficient?
     plt.plot((maxval, maxval), (0., 1.), color='k')
 
-def main2(dsList, target, order=None, plotArgs={}, outputdir='',
+def main(dsList, target, order=None, plotArgs={}, outputdir='',
           info='default', fileFormat=('eps', 'png'), verbose=True):
     """From a dataSetList, generates the performance profiles for multiple
     functions for multiple targets altogether.
