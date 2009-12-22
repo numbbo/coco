@@ -30,6 +30,7 @@ if __name__ == "__main__":
 
 from bbob_pproc.pproc import DataSetList
 from bbob_pproc.comp2 import ppfig2, pprldistr2
+from bbob_pproc.compall import dataoutput
 from bbob_pproc.compall.dataoutput import algLongInfos, algPlotInfos
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
@@ -250,7 +251,7 @@ def main(argv=None):
 
         if isfigure:
             ppfig2.main(dsList0, dsList1,
-                        figDimsOfInterest, outputdir, verbose)
+                        figDimsOfInterest, outputdir, 1e-8, verbose)
 
         if isrldistr:
             dictDim0 = dsList0.dictByDim()

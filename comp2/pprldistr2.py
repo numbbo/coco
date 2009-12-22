@@ -21,7 +21,7 @@ rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  
 fmax = None
 evalfmax = None
 
-def beautify(figHandle, figureName, fileFormat=('png'), isByInstance=True,
+def beautify(figHandle, figureName, fileFormat=('pdf',), isByInstance=True,
              legend=False, verbose=True):
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
