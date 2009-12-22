@@ -15,6 +15,7 @@ from bbob_pproc import bootstrap, readalign
 
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')
+linewidth = 3
 
 #Get benchmark short infos.
 funInfos = {}
@@ -68,16 +69,33 @@ def createFigure(data, label=None, figHandle=None):
         # Plot figure
         tmp = numpy.where(numpy.isfinite(data[:,i]))[0]
         if tmp.size > 0:
-            lines.extend(plt.plot(data[tmp,0], yValues[tmp], label=label))
+            lines.extend(plt.plot(data[tmp,0], yValues[tmp], label=label,
+                                  linewidth=linewidth))
             lines.extend(plt.plot([data[tmp[-1],0]], [yValues[tmp[-1]]],
-                                  marker='+'))
+                                  marker='+', markersize=5*linewidth,
+                                  markeredgewidth=linewidth))
             #TODO: larger size.
         #else: ???
 
     return lines
 
 
-def customizeFigure(figHandle, figureName = None, title='',
+def customLegend():
+    """
+    o In the end of each graph + the dimension is annotated, if no trial was
+    successful, or both algorithms have more than 5 successful trials.
+    Otherwise the #succ is annotated for both algorithms using >9 in case, e.g.
+    2/>9.
+    """
+    
+    #Set Text
+    
+    
+    #Plot Text
+    plt.text()
+    
+#TODO improve interface.
+def customizeFigure(figHandle, figureName = None, xmin=None, title='',
                     fileFormat=('png','eps'), labels=None,
                     legend=True, locLegend='best', verbose=True):
     """ Customize a figure by adding a legend, axis label, etc. At the
@@ -85,9 +103,10 @@ def customizeFigure(figHandle, figureName = None, title='',
 
         Inputs:
         figHandle - handle to existing figure
-        figureName - name of the output figure
 
         Optional Inputs:
+        figureName - name of the output figure
+        xmin - boundary value of the x-axis
         fileFormat - list of formats of output files
         labels - list with xlabel and ylabel
         legend - if this list is not empty a legend will be generated from
@@ -103,12 +122,16 @@ def customizeFigure(figHandle, figureName = None, title='',
     axisHandle.set_xscale('log')
     axisHandle.set_yscale('log')
 
-    xmin, xmax = plt.xlim()
-    plt.xlim(max(xmin, 1e-8), xmax)
+    # We are setting xmin
+    if xmin:
+        xminauto, xmaxauto = plt.xlim()
+        #plt.xlim(max(xminauto, 1e-8), xmaxauto)
+        plt.xlim(xmin, xmaxauto)
+
     axisHandle.invert_xaxis()
 
     # Annotate figure
-    if not labels is None: #Couldn't it be ''?
+    if not labels is None:
         axisHandle.set_xlabel(labels[0])
         axisHandle.set_ylabel(labels[1])
 
@@ -206,8 +229,48 @@ def computeERT(hdata, maxevals):
     #set_trace()
     return numpy.vstack(res)
 
+
+def completion1(data, data0, data1, color, fig):
+    """Completes the figure of the log(ERT1/ERT0) with -log(ERT1) or log(ERT0)
+       from the last point depending on whether algorithm 0 or 1 stopped early.
+    """
+    if (data0[:, 2] == 0).any():
+        #set_trace()
+        tmp = data1[(data0[:, 2] == 0), 0:2]
+        tmp = numpy.vstack([data1[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 0:2], tmp])
+        #set_trace()
+        tmp[:,1] = tmp[0,1] / tmp[:,1] * data[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 1]
+        h = createFigure(tmp, figHandle=fig)
+        plt.setp(h, 'color', color)
+    if (data1[:, 2] == 0).any():
+        #set_trace()
+        tmp = data0[(data1[:, 2] == 0), 0:2]
+        tmp = numpy.vstack([data0[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 0:2], tmp])
+        #set_trace()
+        tmp[:,1] = tmp[:,1] / tmp[0,1] * data[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 1]
+        h = createFigure(tmp, figHandle=fig)
+        plt.setp(h, 'color', color)
+
+def completion2(data0, data1, fig):
+    '''* If Alg0 does not reach the respective Df, plot the number of
+    successful trials of Alg1 on a linear scale between -2==100% and 0=0%.
+    Change the line style (to dashed) when ERT_Alg1 becomes larger than
+    median(maxevals_Alg0). The line ends where both algorithms fail to reach
+    the target. The same applies equivalently if Alg1 does not reach the
+    respective Df first with a line above zero.
+    o Two well-visible marks are shown (in case): (a) for the largest Df, where
+    one algorithm fails to reach Df, (b) for the largest Df, where ERT>maxevals
+    (at switch to dashed line style). Probably also each dimension should have
+    different markers over the graph.
+    o  + markers give the (two-sided) significance level between the
+    algorithm, one *-marker for p<0.05 or k>=2 *-markers for p<1/10**k. The
+    significance correction for multiple testing is applied within each figure
+    according to Bonferroni.
+    '''
+
+
 def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
-         verbose=True):
+         mintargetfunvalue = 1e-8, verbose=True):
     """From a list of IndexEntry, returns ERT figure."""
 
     plt.rc("axes", labelsize=20, titlesize=24)
@@ -249,11 +312,13 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
             # align together and split again (the data are mixed together):
             res = readalign.alignArrayData(readalign.HArrayMultiReader([indexEntry0.evals,
                                                                    indexEntry1.evals]))
-            idxM = (numpy.shape(res)[1]-1)/2
+            # idxM = (numpy.shape(res)[1]-1)/2
             idxCur = 1
             idxNext = idxCur+indexEntry0.nbRuns()
+            
+            #split the data back
             data0 = res[:, numpy.r_[0, idxCur:idxNext]]
-            data0 = computeERT(data0, indexEntry0.maxevals)
+            data0 = computeERT(data0, indexEntry0.maxevals) #TODO is this necessary?
             data0 = data0[data0[:,0] <= min(indexEntry0.evals[0,0], indexEntry1.evals[0,0]),:]
 
             idxCur += indexEntry0.nbRuns()
@@ -294,26 +359,12 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
             plt.setp(h, 'color', colors[i])
             plt.setp(h[0], 'label', '%d-D' % dim)
 
-            if (data0[:, 2] == 0).any():
-                #set_trace()
-                tmp = data1[(data0[:, 2] == 0), 0:2]
-                tmp = numpy.vstack([data1[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 0:2], tmp])
-                #set_trace()
-                tmp[:,1] = tmp[0,1] / tmp[:,1] * data[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 1]
-                h = createFigure(tmp, figHandle=fig)
-                plt.setp(h, 'color', colors[i])
-            if (data1[:, 2] == 0).any():
-                #set_trace()
-                tmp = data0[(data1[:, 2] == 0), 0:2]
-                tmp = numpy.vstack([data0[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 0:2], tmp])
-                #set_trace()
-                tmp[:,1] = tmp[:,1] / tmp[0,1] * data[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 1]
-                h = createFigure(tmp, figHandle=fig)
-                plt.setp(h, 'color', colors[i])
+            #completion1(data, data0, data1, colors[i], fig)
+            #completion2()
 
-        legend = func in (1,101)  # (1, 24, 101, 130)
-        customizeFigure(fig, filename, title=title,
-                        fileFormat=('png'), labels=['', ''],
+        legend = True #func in (1,101)  # (1, 24, 101, 130)
+        customizeFigure(fig, filename, mintargetfunvalue, title=title,
+                        fileFormat=('png', 'pdf'), labels=['', ''],
                         legend=legend, locLegend='best', verbose=verbose)
 
         #for i in h:
