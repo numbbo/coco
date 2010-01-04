@@ -250,8 +250,7 @@ def main(argv=None):
                     print 'Folder %s was created.' % (outputdir)
 
         if isfigure:
-            ppfig2.main(dsList0, dsList1,
-                        figDimsOfInterest, outputdir, 1e-8, verbose)
+            ppfig2.main(dsList0, dsList1, outputdir, 1e-8, verbose)
 
         if isrldistr:
             dictDim0 = dsList0.dictByDim()
