@@ -15,6 +15,7 @@ from bbob_pproc import bootstrap, readalign
 
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')
+markers = ('o', 'v', 's', '*', '+', 'x', 'D')
 linewidth = 3
 
 #Get benchmark short infos.
@@ -189,21 +190,6 @@ def sortIndexEntries(indexEntries):
     return sortByFunc
 
 
-def generateData(indexEntry):
-    res = []
-    for i in indexEntry.hData:
-        tmp = numpy.array(i[0])
-        tmp2 = []
-        for j in i[indexEntry.nbRuns+1:]:
-            tmp2.append(j <= i[0])
-        tmp = numpy.append(tmp, bootstrap.sp1(i[1:indexEntry.nbRuns + 1], 
-                                              issuccessful=tmp2))
-        tmp = numpy.append(tmp, bootstrap.prctile(i[1:indexEntry.nbRuns + 1], 
-                                                  [0.5])[0])
-        #set_trace()
-        res.append(tmp)
-    return numpy.vstack(res)
-
 #def computeERT(hdata):
     #res = []
     #nbRuns = (numpy.shape(hdata)[1]-1)/2
@@ -268,8 +254,133 @@ def completion2(data0, data1, fig):
     according to Bonferroni.
     '''
 
+    
 
-def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
+def ranksumtest(N1, N2):
+    """Custom rank-sum (Mann-Whitney-Wilcoxon) test
+    http://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U
+    Small sample sizes (direct method).
+    Keyword arguments:
+    N1    sample 1
+    N2    sample 2
+    """
+
+    # Possible optimization by setting sample 1 to be the one with the smallest
+    # rank.
+
+    #TODO: deal with more general type of sorting.
+    s1 = sorted(N1)
+    s2 = sorted(N2)
+    U = 0.
+    for i in s1:
+        Ui = 0. # increment of U
+        for j in s2:
+            if j < i:
+                Ui += 1.
+            elif j == i:
+                Ui += .5
+            else:
+                break
+        #if Ui == 0.:
+            #break
+        U += Ui
+    return U
+
+def alignData(i0, i1):
+    """Align the data in i0.evals and i1.evals, returns two arrays of aligned
+    data.
+    """
+
+    res = readalign.alignArrayData(readalign.HArrayMultiReader([i0.evals,
+                                                                i1.evals]))
+    idx = 1 + i0.nbRuns()
+    data0 = res[:, numpy.r_[0, 1:idx]]
+    #data0 = computeERT(data0, i0.maxevals)
+    data1 = res[:, numpy.r_[0, idx:idx+i1.nbRuns()]]
+    #data1 = computeERT(data1, i1.maxevals)
+    return data0, data1
+
+def generateERT(i0, i1):
+    """Align the data in i0.ert and i1.ert
+    """
+
+    data0 = numpy.vstack((i0.evals[:, 0], i0.ert)).transpose()
+    data1 = numpy.vstack((i1.evals[:, 0], i1.ert)).transpose()
+    res = readalign.alignArrayData(readalign.HArrayMultiReader([data0, data1]))
+
+    data0 = res[:, numpy.r_[0, 1]]
+    data1 = res[:, numpy.r_[0, 2]]
+    return data0, data1
+
+def generatePlot(dataset0, dataset1, i, dim):
+    [data0, data1] = alignData(dataset0, dataset1)
+    ert0 = computeERT(data0, dataset0.maxevals)
+    ert1 = computeERT(data1, dataset1.maxevals)
+    data = numpy.vstack((ert0[:, 0], (ert1[:, 1]/ert0[:, 1]))).transpose()
+
+    isfinite = data[numpy.isfinite(ert0[:, 1]) * numpy.isfinite(ert1[:, 1]), :]
+    idx = len(isfinite) # index for which either alg0 or alg1 stopped
+
+    plt.plot(isfinite[:, 0], isfinite[:, 1], color=colors[i],
+             linewidth=linewidth, ls='--')
+    plt.plot((isfinite[-1, 0], ), (isfinite[-1, 1], ), marker=markers[i],
+             markersize=6*linewidth, markeredgewidth=linewidth,
+             markeredgecolor=colors[i], markerfacecolor=None, color='w')
+    #completion1(data, data0, data1, colors[i], fig)
+
+    #The following part is new.
+    #set_trace()
+    remainingert = None
+    if idx == len(data):
+        #Both went as far
+        soliddata = isfinite
+
+    else:
+        #set_trace()
+        if numpy.isinf(ert0[idx, 1]) and numpy.isfinite(ert1[idx, 1]): #alg0 stopped first
+            medmaxeval = numpy.median(dataset0.maxevals)
+            soliddata = data[data1[:, 1] <= medmaxeval, :]
+            remainingert = ert1[idx-1:, :]
+            isalg1 = True
+        elif numpy.isinf(ert1[idx, 1]) and numpy.isfinite(ert0[idx, 1]): #alg1 stopped first
+            medmaxeval = numpy.median(dataset1.maxevals)
+            soliddata = data[data0[:, 1] <= medmaxeval, :]
+            remainingert = ert0[idx-1:, :]
+            isalg1 = False
+        else:
+            soliddata = isfinite
+
+    plt.plot(soliddata[:, 0], soliddata[:, 1], label='%d-D' % dim,
+             color=colors[i], linewidth=linewidth)
+    plt.plot((soliddata[-1, 0], ), (soliddata[-1, 1], ), marker=markers[i],
+             markersize=6*linewidth, markeredgewidth=linewidth,
+             markeredgecolor=colors[i], markerfacecolor=None, color='w')
+
+    #Number of successful trials on a linear scale!
+    if not remainingert is None:
+        #set_trace()
+        additionallines = numpy.array([
+        [remainingert[-1, 0] * 10.**(-0.2), remainingert[-1, 1]] + [0.] * (numpy.shape(remainingert)[1] - 2),
+        [remainingert[-1, 0] * 10.**(-16.), remainingert[-1, 1]] + [0.] * (numpy.shape(remainingert)[1] - 2)])
+        remainingert = numpy.concatenate((remainingert, additionallines))
+        ydata = numpy.power(10., 2. * remainingert[:, 2])
+        if isalg1:
+            ydata = numpy.power(ydata, -1.)
+
+        #set_trace()
+        plt.plot(remainingert[:, 0], ydata,  color=colors[i],
+             linewidth=linewidth, marker='d', markeredgecolor=colors[i],
+             ls='--')
+        plt.plot(remainingert[remainingert[:, 1] <= medmaxeval, 0],
+                 ydata[remainingert[:, 1] <= medmaxeval],  color=colors[i],
+                 linewidth=linewidth, marker='d', markeredgecolor=colors[i])
+
+        #Go to the right? meaning with 0 as probability of success...?
+
+    #completion2()
+
+
+def main(dsList0, dsList1, outputdir,
          mintargetfunvalue = 1e-8, verbose=True):
     """From a list of IndexEntry, returns ERT figure."""
 
@@ -279,93 +390,41 @@ def main(indexEntriesAlg0, indexEntriesAlg1, dimsOfInterest, outputdir,
     plt.rc("font", size=20)
     plt.rc("legend", fontsize=20)
 
-    dictFunc0 = indexEntriesAlg0.dictByFunc()
-    dictFunc1 = indexEntriesAlg1.dictByFunc()
-    funcs = set.union(set(dictFunc0), set(dictFunc0))
+    dictFun0 = dsList0.dictByFunc()
+    dictFun1 = dsList1.dictByFunc()
 
-    for func in funcs:
-        dictFunc0[func] = dictFunc0[func].dictByDim()
-        dictFunc1[func] = dictFunc1[func].dictByDim()
+    for fun in set.union(set(dictFun0), set(dictFun1)):
+        dictDim0 = dictFun0[fun].dictByDim()
+        dictDim1 = dictFun1[fun].dictByDim()
         if isBenchmarkinfosFound:
-            title = funInfos[func]
+            title = funInfos[fun]
         else:
             title = ''
 
-        filename = os.path.join(outputdir,'cmpdata_f%d' % (func))
+        filename = os.path.join(outputdir,'cmpdata_f%d' % (fun))
         fig = plt.figure()
-        for i, dim in enumerate(dimsOfInterest):
-            #compare dictFunc0[func][dim][0] and dictFunc1[func][dim][0]
+        dims = sorted(set.union(set(dictDim0), set(dictDim1)))
+        for i, dim in enumerate(dims):
             try:
-                if len(dictFunc0[func][dim]) != 1 or len(dictFunc1[func][dim]) != 1:
+                if len(dictDim0[dim]) != 1 or len(dictDim1[dim]) != 1:
                     warnings.warn('Could not find some data for f%d in %d-D.'
-                                  % (func, dim))
-                    #set_trace()
+                                  % (fun, dim))
                     continue
             except KeyError:
                 warnings.warn('Could not find some data for f%d in %d-D.'
-                              % (func, dim))
-                #set_trace()
+                              % (fun, dim))
                 continue
 
-            indexEntry0 = dictFunc0[func][dim][0]
-            indexEntry1 = dictFunc1[func][dim][0]
-            # align together and split again (the data are mixed together):
-            res = readalign.alignArrayData(readalign.HArrayMultiReader([indexEntry0.evals,
-                                                                   indexEntry1.evals]))
-            # idxM = (numpy.shape(res)[1]-1)/2
-            idxCur = 1
-            idxNext = idxCur+indexEntry0.nbRuns()
-            
-            #split the data back
-            data0 = res[:, numpy.r_[0, idxCur:idxNext]]
-            data0 = computeERT(data0, indexEntry0.maxevals) #TODO is this necessary?
-            data0 = data0[data0[:,0] <= min(indexEntry0.evals[0,0], indexEntry1.evals[0,0]),:]
+            dataset0 = dictDim0[dim][0]
+            dataset1 = dictDim1[dim][0]
+            # TODO: warn if there are not one element in each of those dictionaries
 
-            idxCur += indexEntry0.nbRuns()
-            idxNext = idxCur+indexEntry1.nbRuns()
-            data1 = res[:, numpy.r_[0, idxCur:idxNext]]
-            data1 = computeERT(data1, indexEntry1.maxevals)
-            data1 = data1[data1[:,0] <= min(indexEntry0.evals[0,0], indexEntry1.evals[0,0]),:]
+            generatePlot(dataset0, dataset1, i, dim)
 
-            data = numpy.vstack((data0[:, 0],
-                                 data1[:, 1]/data0[:, 1])).transpose()
-
-            data = data[(data0[:, 2] > 0) * (data1[:, 2] > 0)]
-
-            #res = pproc.alignData(pproc.HArrayMultiReader([indexEntry0.hData,
-                                                           #indexEntry1.hData]))
-            #idxM = (numpy.shape(res)[1]-1)/2
-            #idxCur = 1
-            #idxNext = idxCur+indexEntry0.nbRuns()
-            #data0 = res[:, numpy.r_[0, idxCur:idxNext]]
-            #data0 = numpy.hstack((data0,
-                                  #res[:, numpy.r_[idxM+idxCur:idxM+idxNext]]))
-            #data0 = computeERT(data0)
-            #data0 = data0[data0[:,0] <= min(indexEntry0.hData[0,0], indexEntry1.hData[0,0]),:]
-
-            #idxCur += indexEntry0.nbRuns()
-            #idxNext = idxCur+indexEntry1.nbRuns()
-            #data1 = res[:, numpy.r_[0, idxCur:idxNext]]
-            #data1 = numpy.hstack((data1,
-                                  #res[:, numpy.r_[idxM+idxCur:idxM+idxNext]]))
-            #data1 = computeERT(data1)
-            #data1 = data1[data1[:,0] <= min(indexEntry0.hData[0,0], indexEntry1.hData[0,0]),:]
-
-            #data = numpy.vstack((data0[:, 0],
-                                 #data1[:, 1]/data0[:, 1])).transpose()
-
-            #data = data[(data0[:, 2] > 0) * (data1[:, 2] > 0)]
-            h = createFigure(data, label='%d-D' % dim, figHandle=fig)
-            plt.setp(h, 'color', colors[i])
-            plt.setp(h[0], 'label', '%d-D' % dim)
-
-            #completion1(data, data0, data1, colors[i], fig)
-            #completion2()
-
-        legend = True #func in (1,101)  # (1, 24, 101, 130)
+        #legend = True # if func in (1, 24, 101, 130):
         customizeFigure(fig, filename, mintargetfunvalue, title=title,
                         fileFormat=('png', 'pdf'), labels=['', ''],
-                        legend=legend, locLegend='best', verbose=verbose)
+                        legend=False, locLegend='best', verbose=verbose)
 
         #for i in h:
             #plt.setp(i,'color',colors[dim])
