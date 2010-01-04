@@ -14,7 +14,7 @@ import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc.pptex import tableLaTeX
 #from bbob_pproc import ranksumtest
-from scipy.stats import mannwhitneyu
+from scipy.stats import ranksums
 from pdb import set_trace
 
 targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # Needs to be sorted
@@ -68,7 +68,8 @@ def generateData(dsList0, dsList1):
         idxNan = numpy.isnan(nline1)
         nline1[idxNan] = -dsList0.finalfunvals[idxNan]
         #table.append(numpy.array([t, ranksumtest.ranksums(nline0, nline1)[0]]))
-        table.append(numpy.array([t, mannwhitneyu(nline0, nline1)[0]]))
+        table.append(numpy.array([t, ranksums(nline0, nline1)[0]]))
+        set_trace()
 
     table = numpy.vstack(table)
     header = ['\Delta f', 'U']
@@ -101,7 +102,7 @@ def formatData(table, header, format, fun):
                  curline.append(tmpstring)
              else:
                  curline.append(format[i] % elem)
-        tableStrings.append(curline)
+         tableStrings.append(curline)
     
     return tableStrings
 
