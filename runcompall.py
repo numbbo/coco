@@ -18,6 +18,7 @@ import sys
 import glob
 import getopt
 import pickle
+import tarfile
 from pdb import set_trace
 import warnings
 import numpy
@@ -111,7 +112,11 @@ def main(argv=None):
     argv -- list of strings containing options and arguments. If not provided,
     sys.argv is accessed.
 
-    argv must list folders containing pickle files.
+    argv must list either : (i) folders containing pickle files, (ii) folders
+    containing raw data files, (iii) tar archive files (eventually compressed
+    using gzip or bzip2). Each of these white-space separated arguments should
+    correspond to the data of one algorithm.
+
     Furthermore, argv can begin with, in any order, facultative option
     flags listed below.
 
@@ -155,7 +160,7 @@ def main(argv=None):
     * Loading this package and calling the main from the command line
       (requires that the path to this package is in python search path):
 
-        $ python -m bbob_pproc -h
+        $ python -m bbob_pproc.runcompall -h
 
 
     This will print out this help message.
@@ -163,11 +168,12 @@ def main(argv=None):
     * From the python interactive shell (requires that the path to this
       package is in python search path):
 
-        >>> import bbob_pproc
-        >>> bbob_pproc.runcompall.main('-o outputfolder folder1'.split())
+        >>> from bbob_pproc import runcompall
+        >>> bbob_pproc.runcompall.main('-o outputfolder folder1 folder2'.split())
 
-    This will execute the post-processing on the pickle files found in folder1.
-    The -o option changes the output folder from the default ppdata to
+    This will execute the post-processing on the pickle files found in folder1
+    and folder2.
+    The -o option changes the output folder from the default cmpalldata to
     outputfolder.
 
     If you need to process new data, you must add a line in the file
@@ -187,6 +193,9 @@ def main(argv=None):
 
     """
 
+    #TODO: check xor,
+    #TODO: check input arguments work.
+
     if argv is None:
         argv = sys.argv[1:]
 
@@ -205,7 +214,7 @@ def main(argv=None):
             sys.exit()
 
         verbose = False
-        outputdir = 'defaultoutputdirectory'
+        outputdir = 'cmpalldata'
         isWritePickle = False
         isNoisy = False
         isNoiseFree = False
@@ -236,34 +245,34 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        #Get only pickles!
         tmpargs = []
         sortedAlgs = []
         for i in args:
-            #TODO: Check that i is a valid directory
             if not os.path.exists(i):
                 warntxt = ('The folder %s does not exist.' % i)
                 warnings.warn(warntxt)
                 continue
 
-            if isNoisy and isNoiseFree:
+            if not (isNoisy ^ isNoiseFree):
                 ext = "*.pickle"
             elif isNoisy:
                 ext = "*f1*.pickle"
             elif isNoiseFree:
                 ext = "*f0*.pickle"
-            else:
-                ext = "*.pickle"
 
             tmpargs.extend(glob.glob(os.path.join(i, ext)))
+
             # remove trailing slashes and keep only the folder name which is
             # supposed to be the algorithm name.
             tmpalg = os.path.split(i.rstrip(os.path.sep))[1]
+
+            # Bug below that eventually stop the execution of the script
+            # if the entry is new
             if not tmpalg in algLongInfos:
                 warntxt = ('The algorithm %s is not an entry in' %(tmpalg)
                            + '%s.' %(os.path.join([os.path.split(__file__)[0],
                                                     'algorithmshortinfos.txt']))
-                           + 'An entry will be created.' )
+                           + ' An entry will be created.' )
                 warnings.warn(warntxt)
                 tmpdsList = DataSetList(glob.glob(os.path.join(i, ext)),
                                         verbose=False)

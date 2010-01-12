@@ -137,7 +137,7 @@ def main(argv=None):
         isNoisy = False
         isNoiseFree = True # Discern noisy and noisefree data?
         verbose = False
-        outputdir = 'cmpdata'
+        outputdir = 'cmp2data'
 
         #Process options
         for o, a in opts:
