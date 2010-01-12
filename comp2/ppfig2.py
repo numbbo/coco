@@ -12,10 +12,10 @@ import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap, readalign
-
+from scipy.stats import ranksums
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')
-markers = ('o', 'v', 's', '*', '+', 'x', 'D')
+markers = ('o', 'v', 's', '+', 'x', 'D')
 linewidth = 3
 
 #Get benchmark short infos.
@@ -40,65 +40,10 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in scaling figures will not be displayed.'
 
-
-def createFigure(data, label=None, figHandle=None):
-    """ Create a plot in a figure (eventually new) from a data array.
-
-        Mandatory input:
-        data - 2d-array where the 1st column contains x-values
-               and the remaining columns contain y-values
-
-        Optional inputs:
-        figHandle - handle to existing figure, if omitted a new figure
-                    will be created
-
-        Output:
-        lines - handles of the Line2D instances.
-    """
-
-    # initialize figure and handles
-    if figHandle is None:
-        figHandle = plt.figure()
-    else:
-        plt.figure(figHandle.number)
-
-    lines = []
-    # Plot data sets
-    for i in range(1,len(data[0,:])):
-        yValues = data[:,i]
-
-        # Plot figure
-        tmp = numpy.where(numpy.isfinite(data[:,i]))[0]
-        if tmp.size > 0:
-            lines.extend(plt.plot(data[tmp,0], yValues[tmp], label=label,
-                                  linewidth=linewidth))
-            lines.extend(plt.plot([data[tmp[-1],0]], [yValues[tmp[-1]]],
-                                  marker='+', markersize=5*linewidth,
-                                  markeredgewidth=linewidth))
-            #TODO: larger size.
-        #else: ???
-
-    return lines
-
-
-def customLegend():
-    """
-    o In the end of each graph + the dimension is annotated, if no trial was
-    successful, or both algorithms have more than 5 successful trials.
-    Otherwise the #succ is annotated for both algorithms using >9 in case, e.g.
-    2/>9.
-    """
-    
-    #Set Text
-    
-    
-    #Plot Text
-    plt.text()
-    
 #TODO improve interface.
 def customizeFigure(figHandle, figureName = None, xmin=None, title='',
-                    fileFormat=('png','eps'), labels=None,
-                    legend=True, locLegend='best', verbose=True):
+                    fileFormat=('png','eps'), legend=True, locLegend='best',
+                    verbose=True):
     """ Customize a figure by adding a legend, axis label, etc. At the
         end the figure is saved.
 
@@ -132,9 +77,10 @@ def customizeFigure(figHandle, figureName = None, xmin=None, title='',
     axisHandle.invert_xaxis()
 
     # Annotate figure
-    if not labels is None:
-        axisHandle.set_xlabel(labels[0])
-        axisHandle.set_ylabel(labels[1])
+    #axisHandle.set_xlabel(r'$ \log 10(\Delta \mathrm{ftarget}) $')
+    #axisHandle.set_ylabel(r'$ \log 10(ERT1 / ERT0) $')
+    axisHandle.set_xlabel('log10(Delta ftarget)')
+    axisHandle.set_ylabel('log10(ERT1/ERT0)')
 
     # Grid options
     axisHandle.grid('True')
@@ -175,32 +121,6 @@ def customizeFigure(figHandle, figureName = None, xmin=None, title='',
     # TODO:    *much more options available (styles, colors, markers ...)
     #       *output directory - contained in the file name or extra parameter?
 
-
-def sortIndexEntries(indexEntries):
-    """From a list of IndexEntry, returns a sorted dictionary."""
-    sortByFunc = {}
-    dims = set()
-    funcs = set()
-    for elem in indexEntries:
-        sortByFunc.setdefault(elem.funcId,{})
-        sortByFunc[elem.funcId][elem.dim] = elem
-        funcs.add(funcId)
-        dims.add(elem.dim)
-
-    return sortByFunc
-
-
-#def computeERT(hdata):
-    #res = []
-    #nbRuns = (numpy.shape(hdata)[1]-1)/2
-    #for i in hdata:
-        #success = i[nbRuns+1:] <= i[0]
-        #tmp = [i[0]]
-        #tmp.extend(bootstrap.sp(i[1:nbRuns+1], issuccessful=success))
-        #res.append(tmp)
-    ##set_trace()
-    #return numpy.vstack(res)
-
 def computeERT(hdata, maxevals):
     res = []
     for i in hdata:
@@ -214,47 +134,6 @@ def computeERT(hdata, maxevals):
         res.append(tmp)
     #set_trace()
     return numpy.vstack(res)
-
-
-def completion1(data, data0, data1, color, fig):
-    """Completes the figure of the log(ERT1/ERT0) with -log(ERT1) or log(ERT0)
-       from the last point depending on whether algorithm 0 or 1 stopped early.
-    """
-    if (data0[:, 2] == 0).any():
-        #set_trace()
-        tmp = data1[(data0[:, 2] == 0), 0:2]
-        tmp = numpy.vstack([data1[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 0:2], tmp])
-        #set_trace()
-        tmp[:,1] = tmp[0,1] / tmp[:,1] * data[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 1]
-        h = createFigure(tmp, figHandle=fig)
-        plt.setp(h, 'color', color)
-    if (data1[:, 2] == 0).any():
-        #set_trace()
-        tmp = data0[(data1[:, 2] == 0), 0:2]
-        tmp = numpy.vstack([data0[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 0:2], tmp])
-        #set_trace()
-        tmp[:,1] = tmp[:,1] / tmp[0,1] * data[(data0[:, 2] > 0) * (data1[:, 2] > 0)][-1, 1]
-        h = createFigure(tmp, figHandle=fig)
-        plt.setp(h, 'color', color)
-
-def completion2(data0, data1, fig):
-    '''* If Alg0 does not reach the respective Df, plot the number of
-    successful trials of Alg1 on a linear scale between -2==100% and 0=0%.
-    Change the line style (to dashed) when ERT_Alg1 becomes larger than
-    median(maxevals_Alg0). The line ends where both algorithms fail to reach
-    the target. The same applies equivalently if Alg1 does not reach the
-    respective Df first with a line above zero.
-    o Two well-visible marks are shown (in case): (a) for the largest Df, where
-    one algorithm fails to reach Df, (b) for the largest Df, where ERT>maxevals
-    (at switch to dashed line style). Probably also each dimension should have
-    different markers over the graph.
-    o  + markers give the (two-sided) significance level between the
-    algorithm, one *-marker for p<0.05 or k>=2 *-markers for p<1/10**k. The
-    significance correction for multiple testing is applied within each figure
-    according to Bonferroni.
-    '''
-
-    
 
 def ranksumtest(N1, N2):
     """Custom rank-sum (Mann-Whitney-Wilcoxon) test
@@ -300,88 +179,273 @@ def alignData(i0, i1):
     #data1 = computeERT(data1, i1.maxevals)
     return data0, data1
 
-def generateERT(i0, i1):
-    """Align the data in i0.ert and i1.ert
-    """
+def generatelogERTData(ert0, dataset0, ert1, dataset1):
+    data = numpy.vstack((ert0[:, 0], (ert1[:, 1]/ert0[:, 1]))).transpose()
+    soliddata = data
+    isfinite = data[numpy.isfinite(ert0[:, 1]) * numpy.isfinite(ert1[:, 1]), :]
+    isfiniteidx = len(isfinite)
+    if isfiniteidx < len(data): # which is the same as len(ert1) and len(ert0)
+        if (numpy.isinf(ert0[isfiniteidx, 1])
+            and numpy.isfinite(ert1[isfiniteidx, 1])): #alg0 stopped first
+            medmaxeval = numpy.median(dataset0.maxevals)
+            soliddata = data[ert1[:isfiniteidx, 1] <= medmaxeval, :]
+        elif (numpy.isinf(ert1[isfiniteidx, 1])
+              and numpy.isfinite(ert0[isfiniteidx, 1])): #alg1 stopped first
+            medmaxeval = numpy.median(dataset1.maxevals)
+            soliddata = data[ert0[:isfiniteidx, 1] <= medmaxeval, :]
 
-    data0 = numpy.vstack((i0.evals[:, 0], i0.ert)).transpose()
-    data1 = numpy.vstack((i1.evals[:, 0], i1.ert)).transpose()
-    res = readalign.alignArrayData(readalign.HArrayMultiReader([data0, data1]))
+    return soliddata[:, 0:2], isfinite[:, 0:2]
 
-    data0 = res[:, numpy.r_[0, 1]]
-    data1 = res[:, numpy.r_[0, 2]]
-    return data0, data1
+def generatePSData(ert0, ert1):
+    remainingert = None
+    isfinite = numpy.isfinite(ert0[:, 1]) * numpy.isfinite(ert1[:, 1])
+    isfiniteidx = len(isfinite)
 
-def generatePlot(dataset0, dataset1, i, dim):
+    if isfiniteidx != len(ert0): # which is the same as len(ert1)
+        if (numpy.isinf(ert0[isfiniteidx, 1])
+            and numpy.isfinite(ert1[isfiniteidx, 1])): #alg0 stopped first
+            remainingert = ert1[isfiniteidx:, :]
+            isalg1 = True
+            # isfiniteidx-1 to keep the last value for which both ert was still finite
+        elif (numpy.isinf(ert1[isfiniteidx, 1])
+              and numpy.isfinite(ert0[isfiniteidx, 1])): #alg1 stopped first
+            remainingert = ert0[isfiniteidx:, :]
+            # isfiniteidx-1 to keep the last value for which both ert was still finite
+            isalg1 = False
+
+    else:
+        return None
+
+    # Line added to the data to show the probability of success going to
+    # zero, TODO: the value 10**(-0.2) is benchmark dependent
+    additionallines = numpy.array([[remainingert[-1, 0] * 10.**(-0.2),
+         remainingert[-1, 1]] + [0.] * (numpy.shape(remainingert)[1] - 2)])
+    remainingert = numpy.concatenate((remainingert, additionallines))
+    ydata = numpy.power(10., 2. * remainingert[:, 2])
+    # have the probability of success below 10**0 if alg0 stopped first,
+    # above 10**0 otherwise
+    if isalg1:
+        ydata = numpy.power(ydata, -1.)
+    remainingert[:, 2] = ydata
+
+    return remaingert[:, numpy.r_[0, 2]]
+
+def generatePlotData(data, minfvalue):
+    if minfvalue is None:
+        return data, False
+
+    isPlotFinished = False
+    plotdata = data
+    idx = numpy.shape(numpy.nonzero(plotdata[:, 0] > minfvalue))[1]
+    if idx < len(plotdata):
+        plotdata = plotdata[0:idx+1, :] # the last value is smaller or equal to minfvalue
+        # Hack: replace function values of zero by min/max function values.
+        idxzero = (plotdata[:, 0] == 0)
+        plotdata[idxzero, 0] = (min(minfvalue,
+                                    numpy.min(plotdata[idxzero == False, 0]))
+                                / numpy.max(plotdata[:, 0]))
+        isPlotFinished = True
+    return plotdata, isPlotFinished
+
+def generatePlot(dataset0, dataset1, i, dim, minfvalue=None, nbtests=1):
+
     [data0, data1] = alignData(dataset0, dataset1)
     ert0 = computeERT(data0, dataset0.maxevals)
     ert1 = computeERT(data1, dataset1.maxevals)
-    data = numpy.vstack((ert0[:, 0], (ert1[:, 1]/ert0[:, 1]))).transpose()
 
-    isfinite = data[numpy.isfinite(ert0[:, 1]) * numpy.isfinite(ert1[:, 1]), :]
-    idx = len(isfinite) # index for which either alg0 or alg1 stopped
+    handles = []
+    #resdata = []
+    resplotdata = []
+    isPlotFinished = False
 
-    plt.plot(isfinite[:, 0], isfinite[:, 1], color=colors[i],
-             linewidth=linewidth, ls='--')
-    plt.plot((isfinite[-1, 0], ), (isfinite[-1, 1], ), marker=markers[i],
-             markersize=6*linewidth, markeredgewidth=linewidth,
-             markeredgecolor=colors[i], markerfacecolor=None, color='w')
-    #completion1(data, data0, data1, colors[i], fig)
+    soliddata, data = generatelogERTData(ert0, dataset0, ert1, dataset1)
+    plotdata, isPlotFinished = generatePlotData(soliddata, minfvalue)
+    resplotdata.append(plotdata.copy())
 
-    #The following part is new.
-    #set_trace()
-    remainingert = None
-    if idx == len(data):
-        #Both went as far
-        soliddata = isfinite
+    # Solid line for when the ert of the still going algorithm is smaller than
+    # the median of the number of function evaluations of the other algorithm.
+    h = plt.plot(plotdata[:, 0], plotdata[:, 1], label='%d-D' % dim,
+                 color=colors[i], linewidth=linewidth)
+    handles.extend(h)
 
+    # A marker is put when the ERT is larger than the median of number of
+    # function evaluations of the other algorithm.
+    if not isPlotFinished:
+        h = plt.plot((plotdata[-1, 0], ), (plotdata[-1, 1], ),
+                     marker=markers[i], markersize=6*linewidth,
+                     markeredgewidth=linewidth, markeredgecolor=colors[i],
+                     markerfacecolor=None, color='w')
+        handles.extend(h)
+
+    # Dashed line for while both algorithm have a finite ert
+    if not isPlotFinished:
+        plotdata, isPlotFinished = generatePlotData(data, minfvalue) # replace isPlotFinished
+        resplotdata.append(plotdata.copy())
+        h = plt.plot(plotdata[:, 0], plotdata[:, 1], color=colors[i],
+                     linewidth=linewidth, ls='--')
+        handles.extend(h)
+
+        if not isPlotFinished:
+            # Marker for when an algorithm stopped
+            h = plt.plot((plotdata[-1, 0], ), (plotdata[-1, 1], ),
+                         marker=markers[i], markersize=6*linewidth,
+                         markeredgewidth=linewidth, markeredgecolor=colors[i],
+                         markerfacecolor=None, color='w')
+            handles.extend(h)
+
+    #Number of successful trials on a linear scale
+    if not isPlotFinished:
+        data = generatePSData(ert0, ert1)
+        if not data is None:
+            plotdata, isPlotFinished = generatePlotData(data, minfvalue)
+            resplotdata.append(plotdata.copy())
+
+            h = plt.plot(plotdata[:, 0], plotdata[:, 1],  color=colors[i],
+                         linewidth=linewidth, marker='d', markeredgecolor=colors[i],
+                         ls='--')
+            handles.extend(h)
+        #handles.append(plt.plot(tmpplotdata[tmpplotdata[:, 1] <= medmaxeval, 0],
+                                #tmpplotdata[tmpplotdata[:, 1] <= medmaxeval],  color=colors[i],
+                                #linewidth=linewidth, marker='d', markeredgecolor=colors[i]))
+
+    annot = {}
+    annot["isPlotFinished"] = isPlotFinished
+    annot["coord"] = plotdata[-1].copy()
+    # Should correspond to the last value for which delta ftarget is larger than minfvalue
+
+    tmp = data0[:, 0] <= annot["coord"][0]
+    if any(tmp):
+        line0 = data0[tmp, :][0]
     else:
-        #set_trace()
-        if numpy.isinf(ert0[idx, 1]) and numpy.isfinite(ert1[idx, 1]): #alg0 stopped first
-            medmaxeval = numpy.median(dataset0.maxevals)
-            soliddata = data[data1[:, 1] <= medmaxeval, :]
-            remainingert = ert1[idx-1:, :]
-            isalg1 = True
-        elif numpy.isinf(ert1[idx, 1]) and numpy.isfinite(ert0[idx, 1]): #alg1 stopped first
-            medmaxeval = numpy.median(dataset1.maxevals)
-            soliddata = data[data0[:, 1] <= medmaxeval, :]
-            remainingert = ert0[idx-1:, :]
-            isalg1 = False
+        tmp = [annot["coord"][0]]
+        tmp.extend([numpy.nan] * (numpy.shape(data0)[1] - 1))
+        line0 = numpy.array(tmp)
+    nbsucc0 = numpy.sum(numpy.isnan(line0[1:]) == False)
+
+    tmp = data1[:, 0] <= annot["coord"][0]
+    line1 = data1[-1]
+    if any(tmp):
+        line1 = data1[tmp, :][0]
+    else:
+        tmp = [annot["coord"][0]]
+        tmp.extend([numpy.nan] * (numpy.shape(data1)[1] - 1))
+        line1 = numpy.array(tmp)
+    nbsucc1 = numpy.sum(numpy.isnan(line1[1:]) == False)
+
+    if (nbsucc0 == 0 and nbsucc1 == 0) or (nbsucc0 > 5 and nbsucc1 >= 5):
+        txt = '%d-D' % dim
+    else:
+        txt = str(int(nbsucc1))
+        if nbsucc1 > 9:
+            txt = '>9'
+
+        tmp = str(int(nbsucc0))
+        if nbsucc0 > 9:
+            tmp = '>9'
+        txt += '/' + tmp
+
+    annot["label"] = txt
+
+    # Do the rank-sum-test on the final values... (the larger the better)
+    # Prepare the data:
+    line0[1:] = numpy.power(line0[1:], -1.)
+    line0[1:][numpy.isnan(line0[1:])] = -dataset0.finalfunvals[numpy.isnan(line0[1:])]
+    line1[1:] = numpy.power(line1[1:], -1.)
+    line1[1:][numpy.isnan(line1[1:])] = -dataset1.finalfunvals[numpy.isnan(line1[1:])]
+
+    # one-tailed statistics: scipy.stats.mannwhitneyu, two-tailed statistics: scipy.stats.ranksums
+    z, p = ranksums(line0[1:], line1[1:])
+
+    annot["p"] = p
+
+    return handles, annot
+
+def annotate(annotations, minfvalue):
+    # End of graph annotation:
+    # Determine where to put the annotation
+    handles = []
+    nbtests = len(annotations)
+    annotcoords = []
+    axh = plt.gca()
+    axh.set_yscale('log')
+    ylim = plt.getp(axh, 'ylim')
+    yrange = (numpy.ceil(numpy.log10(ylim[1]))
+              - numpy.floor(numpy.log10(ylim[0])))
+    space = numpy.power(10., yrange/40.)
+    axh.set_yscale('linear')
+    yrange = 2.
+
+    for i, a in enumerate(annotations):
+        # Set the annotation
+        ha = "left"
+        va = "center"
+        annotcoord = a["coord"].copy()
+        if a["isPlotFinished"]: # should be false if minfvalue is None
+            annotcoord[0] = minfvalue * 10.**(-0.1)
+            #annotcoord[1] should be moved depending on the values of the others...
         else:
-            soliddata = isfinite
+            factor = 1.3 * yrange / 2.
+            va = "top"
+            if annotcoord[1] < 1:
+                factor **= -1.
+                va = "bottom"
+            annotcoord[1] *= factor
+            ha = "center"
+        #a["annotcoord"] = annotcoord
+        annotcoords.append(numpy.hstack((annotcoord, i)))
+        a["ha"] = ha
+        a["va"] = va
 
-    plt.plot(soliddata[:, 0], soliddata[:, 1], label='%d-D' % dim,
-             color=colors[i], linewidth=linewidth)
-    plt.plot((soliddata[-1, 0], ), (soliddata[-1, 1], ), marker=markers[i],
-             markersize=6*linewidth, markeredgewidth=linewidth,
-             markeredgecolor=colors[i], markerfacecolor=None, color='w')
+        # Set the correct line in data0 and data1
+        if (nbtests * a["p"]) < 0.05:
+            nbstars = -numpy.ceil(numpy.log10(nbtests * a["p"]))
+            incr = 1.5
+            tmp = a["coord"][0]
+            if not minfvalue is None:
+                tmp = max(a["coord"][0], minfvalue)
+            #set_trace()
+            xtmp = tmp * numpy.power(incr, numpy.arange(1., 1. + nbstars))
+            # the additional slicing [0:int(nbstars)] is due to
+            # numpy.arange(1., 1. - 0.1 * nbstars, -0.1) not having the right number
+            # of elements due to numerical error
+            ytmp = [a["coord"][1]] * nbstars
+            h = plt.plot(xtmp, ytmp, marker='*', ls='', markersize=2.5*linewidth,
+                         markeredgecolor='k', zorder=20,
+                         markeredgewidth = 0.2 * linewidth, color='w')
+            #h = plt.plot(xtmp, ytmp, marker='*', ls='', markersize=4*linewidth,
+                         #markeredgecolor='k', zorder=20)
+            #set_trace()
+            #plt.setp(h, "markerfacecolor", "none") #transparent
+            handles.extend(h)
 
-    #Number of successful trials on a linear scale!
-    if not remainingert is None:
-        #set_trace()
-        additionallines = numpy.array([
-        [remainingert[-1, 0] * 10.**(-0.2), remainingert[-1, 1]] + [0.] * (numpy.shape(remainingert)[1] - 2),
-        [remainingert[-1, 0] * 10.**(-16.), remainingert[-1, 1]] + [0.] * (numpy.shape(remainingert)[1] - 2)])
-        remainingert = numpy.concatenate((remainingert, additionallines))
-        ydata = numpy.power(10., 2. * remainingert[:, 2])
-        if isalg1:
-            ydata = numpy.power(ydata, -1.)
+        #handles.append(plt.text(annotcoords[-1][0], annotcoords[-1][1],
+                       #a["label"], fontsize=10,
+                       #horizontalalignment=ha, verticalalignment=va))
 
-        #set_trace()
-        plt.plot(remainingert[:, 0], ydata,  color=colors[i],
-             linewidth=linewidth, marker='d', markeredgecolor=colors[i],
-             ls='--')
-        plt.plot(remainingert[remainingert[:, 1] <= medmaxeval, 0],
-                 ydata[remainingert[:, 1] <= medmaxeval],  color=colors[i],
-                 linewidth=linewidth, marker='d', markeredgecolor=colors[i])
+    #set_trace()
+    if len(annotcoords) > 1 and not minfvalue is None:
+        annotcoords = numpy.vstack(annotcoords)
+        closeannot = annotcoords[annotcoords[:, 0] == minfvalue * 10.**(-0.1), :]
+        closeannot = closeannot[numpy.argsort(closeannot[:, 1]), :]
+        for i in reversed(range(0, len(closeannot)/2)):
+            while closeannot[i+1][1] / closeannot[i][1] < space:
+                closeannot[i][1] /= numpy.sqrt(space)
+        for i in range(int(round(len(closeannot)/2.)), len(closeannot)):
+            while closeannot[i][1] / closeannot[i-1][1] < space:
+                closeannot[i][1] *= numpy.sqrt(space)
+        for i in closeannot:
+            annotcoords[annotcoords[:, 2] == i[2], 1] = i[1]
 
-        #Go to the right? meaning with 0 as probability of success...?
+    #set_trace()
+    for i, a in enumerate(annotations):
+        coords = annotcoords[i]
+        handles.append(plt.text(coords[0], coords[1],
+                       a["label"], fontsize=10,
+                       horizontalalignment=a["ha"], verticalalignment=a["va"]))
 
-    #completion2()
+    return handles
 
-
-def main(dsList0, dsList1, outputdir,
-         mintargetfunvalue = 1e-8, verbose=True):
+def main(dsList0, dsList1, outputdir, minfvalue = 1e-8, verbose=True):
     """From a list of IndexEntry, returns ERT figure."""
 
     plt.rc("axes", labelsize=20, titlesize=24)
@@ -394,6 +458,7 @@ def main(dsList0, dsList1, outputdir,
     dictFun1 = dsList1.dictByFunc()
 
     for fun in set.union(set(dictFun0), set(dictFun1)):
+        annotations = []
         dictDim0 = dictFun0[fun].dictByDim()
         dictDim1 = dictFun1[fun].dictByDim()
         if isBenchmarkinfosFound:
@@ -418,14 +483,15 @@ def main(dsList0, dsList1, outputdir,
             dataset0 = dictDim0[dim][0]
             dataset1 = dictDim1[dim][0]
             # TODO: warn if there are not one element in each of those dictionaries
+            h, a = generatePlot(dataset0, dataset1, i, dim, minfvalue, len(dims))
+            annotations.append(a)
 
-            generatePlot(dataset0, dataset1, i, dim)
-
+        #set_trace()
+        annotate(annotations, minfvalue)
         #legend = True # if func in (1, 24, 101, 130):
-        customizeFigure(fig, filename, mintargetfunvalue, title=title,
-                        fileFormat=('png', 'pdf'), labels=['', ''],
+        customizeFigure(fig, filename, minfvalue, title=title,
+                        fileFormat=('png', 'pdf'),
                         legend=False, locLegend='best', verbose=verbose)
-
         #for i in h:
             #plt.setp(i,'color',colors[dim])
         #h = ppfig.createFigure(entry.arrayFullTab[:,[0,medianindex]], fig)
