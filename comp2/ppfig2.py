@@ -199,7 +199,7 @@ def generatelogERTData(ert0, dataset0, ert1, dataset1):
 def generatePSData(ert0, ert1):
     remainingert = None
     isfinite = numpy.isfinite(ert0[:, 1]) * numpy.isfinite(ert1[:, 1])
-    isfiniteidx = len(isfinite)
+    isfiniteidx = len(numpy.nonzero(isfinite)[0])
 
     if isfiniteidx != len(ert0): # which is the same as len(ert1)
         if (numpy.isinf(ert0[isfiniteidx, 1])
@@ -228,7 +228,7 @@ def generatePSData(ert0, ert1):
         ydata = numpy.power(ydata, -1.)
     remainingert[:, 2] = ydata
 
-    return remaingert[:, numpy.r_[0, 2]]
+    return remainingert[:, numpy.r_[0, 2]]
 
 def generatePlotData(data, minfvalue):
     if minfvalue is None:
@@ -486,7 +486,6 @@ def main(dsList0, dsList1, outputdir, minfvalue = 1e-8, verbose=True):
             h, a = generatePlot(dataset0, dataset1, i, dim, minfvalue, len(dims))
             annotations.append(a)
 
-        #set_trace()
         annotate(annotations, minfvalue)
         #legend = True # if func in (1, 24, 101, 130):
         customizeFigure(fig, filename, minfvalue, title=title,
