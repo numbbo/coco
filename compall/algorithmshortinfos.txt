@@ -53,5 +53,6 @@ ALPS:ALPS:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"ALPS
 IPOPSEPCMA1e5:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e5*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize) diag=1st start, 1 + 100 * N / sqrt(lambda) iterations:{"label":"IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
 EGSv2:EGS_ipopcma_newCMAcoeff:% 10 independent restarts, EGS-CMA implementation from D.Arnold with new coefficients, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda:{"label":"EGSv2","color":"blue"}
 IPOPSEPCMA:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e6*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize), only the first restart uses mixed strategies for 1+100*N/sqrt(popsize):{"label":"IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
-IPOPCMA:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e6*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
 IPOPCMA1e5:cmaes V3.23.beta:% sigma0=2 maxfunevals=1e5*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
+IPOPCMA:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e6*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
+bipopactivecmaes:bipopactivecmaes:% active CMA on BBOB-2009:{"label":"bipopactivecmaes"}

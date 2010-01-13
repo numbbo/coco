@@ -268,12 +268,7 @@ def main(argv=None):
 
             # Bug below that eventually stop the execution of the script
             # if the entry is new
-            if not tmpalg in algLongInfos:
-                warntxt = ('The algorithm %s is not an entry in' %(tmpalg)
-                           + '%s.' %(os.path.join([os.path.split(__file__)[0],
-                                                    'algorithmshortinfos.txt']))
-                           + ' An entry will be created.' )
-                warnings.warn(warntxt)
+            if not dataoutput.isListed(tmpalg):
                 tmpdsList = DataSetList(glob.glob(os.path.join(i, ext)),
                                         verbose=False)
                 tmpdsList = tmpdsList.dictByAlg()
