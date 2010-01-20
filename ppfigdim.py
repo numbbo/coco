@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # Creates ERTs and convergence figures for BBOB post-processing.
 
@@ -195,7 +196,7 @@ def generateData2(dataSet, targetFuncValue):
     res = []
     #TODO: use dataSet.ert instead?
     res.extend(bootstrap.sp(data, issuccessful=succ, allowinf=False))
-    res.append(numpy.sum(data)) #Sum(FE)
+    res.append(numpy.mean(data)) #mean(FE)
     res.append(bootstrap.prctile(data, 50)[0])
 
     return numpy.array(res)
