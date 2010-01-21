@@ -94,9 +94,9 @@ def main(argv=None):
 
     Examples:
 
-    * Calling the run.py interface from the command line:
+    * Calling the runcomp2.py interface from the command line:
 
-        $ python bbob_pproc/run.py -v CMA-ES RANDOMSEARCH
+        $ python bbob_pproc/runcomp2.py -v CMA-ES RANDOMSEARCH
 
     will post-process the pickle files of folder CMA-ES and RANDOMSEARCH. The
     result will appear in folder cmpdata. The -v option adds verbosity.
@@ -104,8 +104,8 @@ def main(argv=None):
     * From the python interactive shell (requires that the path to this
       package is in python search path):
 
-        >>> import bbob_pproc
-        >>> bbob_pproc.main('-o outputfolder PSO DEPSO'.split())
+        >>> from bbob_pproc import runcomp2
+        >>> runcomp2.main('-o outputfolder PSO DEPSO'.split())
 
     This will execute the post-processing on the pickle files found in folder
     PSO and DEPSO. The -o option changes the output folder from the default

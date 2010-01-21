@@ -169,7 +169,7 @@ def main(argv=None):
       package is in python search path):
 
         >>> from bbob_pproc import runcompall
-        >>> bbob_pproc.runcompall.main('-o outputfolder folder1 folder2'.split())
+        >>> runcompall.main('-o outputfolder folder1 folder2'.split())
 
     This will execute the post-processing on the pickle files found in folder1
     and folder2.

@@ -10,7 +10,6 @@ import os
 import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
-from bbob_pproc import readindexfiles
 from pdb import set_trace
 
 #__all__ = []
