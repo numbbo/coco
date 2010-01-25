@@ -466,7 +466,7 @@ def main(dsList0, dsList1, outputdir, minfvalue = 1e-8, verbose=True):
         else:
             title = ''
 
-        filename = os.path.join(outputdir,'cmpdata_f%d' % (fun))
+        filename = os.path.join(outputdir,'ppcmpfig_f%d' % (fun))
         fig = plt.figure()
         dims = sorted(set.union(set(dictDim0), set(dictDim1)))
         for i, dim in enumerate(dims):
