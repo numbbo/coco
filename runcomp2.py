@@ -81,7 +81,7 @@ def main(argv=None):
 
         -o, --output-dir OUTPUTDIR
 
-            change the default output directory ('cmpdata') to OUTPUTDIR
+            change the default output directory ('cmp2data') to OUTPUTDIR
 
         --fig-only, --rld-only
 
@@ -99,7 +99,7 @@ def main(argv=None):
         $ python bbob_pproc/runcomp2.py -v CMA-ES RANDOMSEARCH
 
     will post-process the pickle files of folder CMA-ES and RANDOMSEARCH. The
-    result will appear in folder cmpdata. The -v option adds verbosity.
+    result will appear in folder cmp2data. The -v option adds verbosity.
 
     * From the python interactive shell (requires that the path to this
       package is in python search path):
@@ -109,7 +109,7 @@ def main(argv=None):
 
     This will execute the post-processing on the pickle files found in folder
     PSO and DEPSO. The -o option changes the output folder from the default
-    cmpdata to outputfolder.
+    cmp2data to outputfolder.
 
     """
 
