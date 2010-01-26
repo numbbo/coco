@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """Calls the main function of bbob_pproc with arguments from the
    command line. Executes the BBOB postprocessing on the given
@@ -33,6 +34,8 @@ from bbob_pproc.pproc import DataSetList
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
+instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
+                           11:1, 12:1, 13:1, 14:1, 15:1}
 
 # function-dependent target function values: hard coded here before we come up
 # with something smarter. It is supposed the number of level of difficulties
@@ -405,8 +408,10 @@ def main(argv=None):
 
         if (verbose):
             for i in dsList:
-                if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
-                    instancesOfInterest):
+                if ((dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
+                    instancesOfInterest) or
+                    (dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
+                    instancesOfInterest2010)):
                     warnings.warn('The data of %s do not list ' %(i) +
                                   'the correct instances ' +
                                   'of function F%d or the ' %(i.funcId) +

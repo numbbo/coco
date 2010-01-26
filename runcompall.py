@@ -32,9 +32,9 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc.compall import ppperfprof, pptables
-from bbob_pproc.compall import organizeRTDpictures, dataoutput
+from bbob_pproc.compall import organizeRTDpictures
 from bbob_pproc.compall.dataoutput import algLongInfos, algPlotInfos
-from bbob_pproc.pproc import DataSetList
+from bbob_pproc.pproc import DataSetList, dataoutput
 import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.

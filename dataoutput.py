@@ -12,13 +12,20 @@ import os
 import sys
 import pickle
 import warnings
-from bbob_pproc import pproc
+import getopt
+
+if __name__ == "__main__":
+    (filepath, filename) = os.path.split(sys.argv[0])
+    #Test system independent method:
+    sys.path.append(os.path.join(filepath, os.path.pardir))
+
+from bbob_pproc.pproc import DataSetList
 
 from pdb import set_trace
 
 # Will read in this file where to put the pickle files.
 infofilename = 'algorithmshortinfos.txt'
-infofile = os.path.join(os.path.split(__file__)[0], infofilename)
+infofile = os.path.join(os.path.split(__file__)[0], 'compall', infofilename)
 algShortInfos = {}
 algLongInfos = {}
 algPlotInfos = {}
@@ -40,10 +47,14 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Will not generate any output.'
 
+class Usage(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
 def updateAlgorithmInfo(alg, verbose=True):
-    """Input one pair of algorithm id and comment and update the text
-     file.
+    """Input one pair of algorithm id and comment and update the text file.
     """
+
     try:
         f = open(infofile, 'a')
         if not alg in algLongInfos:
@@ -65,7 +76,6 @@ def updateAlgorithmInfo(alg, verbose=True):
 def isListed(alg):
     res = True
     if not (alg in algLongInfos or alg in algShortInfos):
-        set_trace()
         warntxt = ('The algorithm %s is not an entry in %s.' %(alg, infofile))
         warnings.warn(warntxt)
         res = False
@@ -124,7 +134,7 @@ def main(argv=None):
 
     * Calling the minirun.py interface from the command line:
 
-        $ python bbob_pproc/compall/dataoutput.py -v
+        $ python bbob_pproc/dataoutput.py -v
 
         $ python bbob_pproc/dataoutput.py experiment2/*.info
 
@@ -132,14 +142,14 @@ def main(argv=None):
     * Loading this package and calling the main from the command line
       (requires that the path to this package is in python search path):
 
-        $ python -m bbob_pproc.compall -h
+        $ python -m bbob_pproc.dataoutput -h
 
     This will print out this help message.
 
     * From the python interactive shell (requires that the path to this
       package is in python search path):
 
-        >>> from bbob_pproc.compall import dataoutput
+        >>> from bbob_pproc import dataoutput
         >>> dataoutput.main('folder1')
 
     This will execute the post-processing on the index files found in folder1.
@@ -186,7 +196,7 @@ def main(argv=None):
                 assert False, "unhandled option"
 
         dsList = DataSetList(args)
-        dataoutput.outputPickle(dsList, verbose=verbose)
+        outputPickle(dsList, verbose=verbose)
         sys.exit()
 
     except Usage, err:
@@ -196,4 +206,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-   sys.exit(main())
+    sys.exit(main())
