@@ -152,6 +152,7 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
     n = len(x)
     try:
         x.sort()
+        xtmp = x[:]
         #Catch negative values: zeros are not a problem...
         #tmp = 0
         tmp = len(list(i for i in x if i <= 0))
@@ -173,8 +174,12 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
                            (n-tmp2)/float(nn), (n-tmp2)/float(nn)])
         #set_trace()
         res = plt.plot(x2, y2, label=label)
-    except OverflowError: #TODO Check this exception
+    except (OverflowError, IndexError): #TODO Check this exception
+        # OverflowError would be because of ?
+        # IndexError because x is reduced to an empty list
+        #set_trace()
         res = plt.plot([], [], label=label)
+
 
     #set_trace()
     return res
