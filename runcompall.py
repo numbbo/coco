@@ -33,8 +33,9 @@ if __name__ == "__main__":
 
 from bbob_pproc.compall import ppperfprof, pptables
 from bbob_pproc.compall import organizeRTDpictures
-from bbob_pproc.compall.dataoutput import algLongInfos, algPlotInfos
-from bbob_pproc.pproc import DataSetList, dataoutput
+from bbob_pproc import dataoutput
+from bbob_pproc.dataoutput import algLongInfos, algPlotInfos
+from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
