@@ -12,7 +12,7 @@ import sys
 from bbob_pproc.run import main as main
 
 __all__  = ['readalign', 'findindexfiles', 'pptex', 'pprldistr',
-            'main', 'ppfigdim', 'pproc', 'dataoutput', 'generate_pickle']
+            'main', 'ppfigdim', 'pproc', 'dataoutput']
 
 if __name__ == "__main__":
     sys.exit(main())
