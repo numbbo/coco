@@ -425,8 +425,13 @@ def annotate(annotations, minfvalue):
     #set_trace()
     if len(annotcoords) > 1 and not minfvalue is None:
         annotcoords = numpy.vstack(annotcoords)
+        # The following lines are used to spread out the annotations on the
+        # right of the figure.
         closeannot = annotcoords[annotcoords[:, 0] == minfvalue * 10.**(-0.1), :]
-        closeannot = closeannot[numpy.argsort(closeannot[:, 1]), :]
+        #set_trace()
+        tmp = numpy.argsort(closeannot[:, 1])
+        if len(tmp) > 0:
+            closeannot = closeannot[tmp, :]
         for i in reversed(range(0, len(closeannot)/2)):
             while closeannot[i+1][1] / closeannot[i][1] < space:
                 closeannot[i][1] /= numpy.sqrt(space)
