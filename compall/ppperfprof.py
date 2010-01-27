@@ -57,9 +57,6 @@ funisep = [1,2,5]
 #'avg NEWUOA', 'NEWUOA', 'full NEWUOA', 'BFGS', 'MCS (Neum)', 'GLOBAL', 'NELDER (Han)',
 #'NELDER (Doe)', 'Monte Carlo') # ()==all
 show_algorithms = ()
-show_algorithms = ('IPOPSEPCMA', 'BIPOPCMA', 'BFGS', 'NEWUOA', 'AVGNEWUOA',
-'FULLNEWUOA', 'RANDOMSEARCH', 'NELDER', 'NELDERDOERR', 'GLOBAL', 'MCS',
-'IPOPCMA', 'CMA-ES');
 #function_IDs = [8]  # range(103, 131, 3)   # displayed functions
 function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 #function_IDs = [1,2,3,4,5] # seperable functions
