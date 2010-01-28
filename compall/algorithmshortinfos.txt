@@ -1,3 +1,13 @@
+%    If you need to process new data, you must add a line in the file
+%    algorithmshortinfos.txt
+%    The line in question must have 4 fields separated by colon (:) character.
+%    The 1st must be the name of the folder which will contain the
+%    post-processed pickle data file, the 2nd is the exact string used as algId
+%    in the info files, the 3rd is the exact string for the comment. The 4th
+%    will be a python dictionary which will be use for the plotting.
+%    If different comment lines (3rd field) have been used for a single
+%    algorithm, there should be a line in algorithmshortinfos.txt corresponding
+%    to each of these.
 cmaes28noikappa2:cmaes V3.30.beta:% cmaes28noikappa2 BIPOP like 24 with kappa=10, deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{}
 cmaes30noikappa2:cmaes V3.30.beta:% cmaes26noi BIPOP like 24 with kappa=10, deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{}
 BFGS:BFGS:% [-5, 5]^n, max 100 independent restarts.:{"label": "BFGS", "color": "r"}

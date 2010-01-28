@@ -32,15 +32,23 @@ algPlotInfos = {}
 isAlgorithminfosFound = True
 try:
     f = open(infofile,'r')
-    for line in f:
+    for i, line in enumerate(f):
         if len(line) == 0 or line.startswith('%') or line.isspace() :
             continue
-        algShortInfo, algId, comment, plotinfo = line.strip().split(':', 3)
-        algShortInfos[(algId, comment)] = algShortInfo
-        algLongInfos.setdefault(algShortInfo, []).append((algId, comment))
-        # Could have multiple entries...
-        algPlotInfos[(algId, comment)] = eval(plotinfo)
+        try:
+            algShortInfo, algId, comment, plotinfo = line.strip().split(':', 3)
+            algShortInfos[(algId, comment)] = algShortInfo
+            algLongInfos.setdefault(algShortInfo, []).append((algId, comment))
+            # Could have multiple entries...
+            algPlotInfos[(algId, comment)] = eval(plotinfo)
+        except ValueError:
+            # Occurs when the split line does not result in 4 elements.
+            txt = ("\n  Line %d in %s\n  is not formatted correctly " % (i, infofile)
+                   +"(see documentation of bbob_pproc.dataoutput.main)\n  "
+                   +"and will be disregarded:\n    > %s" % (line))
+            warnings.warn(txt)
     f.close()
+
 except IOError, (errno, strerror):
     print "I/O error(%s): %s" % (errno, strerror)
     isAlgorithminfosFound = False

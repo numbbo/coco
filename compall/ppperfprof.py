@@ -13,6 +13,8 @@ from pdb import set_trace
 """Generates Empirical Cumulative Distribution of the bootstrap distribution of
 the Expected Running Time (ERT) divided by the dimension."""
 
+figformat = ('eps', 'png') # Controls the output when using the main method
+
 best = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES',  
    'BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'GLOBAL', 'MCS (Neum)',
    'DIRECT', 'DASA', 'POEMS', 'Cauchy EDA', 'Monte Carlo')
@@ -234,7 +236,7 @@ def plotLegend(handles, maxval):
     plt.plot((maxval, maxval), (0., 1.), color='k')
 
 def main(dsList, target, order=None, plotArgs={}, outputdir='',
-          info='default', fileFormat=('pdf', 'png'), verbose=True):
+          info='default', verbose=True):
     """From a dataSetList, generates the performance profiles for multiple
     functions for multiple targets altogether.
     keyword arguments:
@@ -340,6 +342,6 @@ def main(dsList, target, order=None, plotArgs={}, outputdir='',
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
     #set_trace()
-    beautify(figureName, funcsolved, xlim*100, False, fileFormat=fileFormat)
+    beautify(figureName, funcsolved, xlim*100, False, fileFormat=figformat)
 
     plt.close()
