@@ -44,7 +44,6 @@ tableconstant_target_function_values = [1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 #Deterministic instance of interest: only one trial is required.
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
-figformat = ('png', 'pdf')
 
 #CLASS DEFINITIONS
 
@@ -176,17 +175,6 @@ def main(argv=None):
     and folder2.
     The -o option changes the output folder from the default cmpalldata to
     outputfolder.
-
-    If you need to process new data, you must add a line in the file
-    algorithmshortinfos.txt
-    The line in question must have 4 fields separated by colon (:) character.
-    The 1st must be the name of the folder which will contain the
-    post-processed pickle data file, the 2nd is the exact string used as algId
-    in the info files, the 3rd is the exact string for the comment. The 4th
-    will be a python dictionary which will be use for the plotting.
-    If different comment lines (3rd field) have been used for a single
-    algorithm, there should be a line in algorithmshortinfos.txt corresponding
-    to each of these.
 
     * Generate post-processing data for some algorithms:
 

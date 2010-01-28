@@ -18,6 +18,8 @@ colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')
 markers = ('o', 'v', 's', '+', 'x', 'D')
 linewidth = 3
 
+figformat = ('eps', 'png') # Controls the output when using the main method
+
 #Get benchmark short infos.
 funInfos = {}
 isBenchmarkinfosFound = True
@@ -494,7 +496,7 @@ def main(dsList0, dsList1, outputdir, minfvalue = 1e-8, verbose=True):
         annotate(annotations, minfvalue)
         #legend = True # if func in (1, 24, 101, 130):
         customizeFigure(fig, filename, minfvalue, title=title,
-                        fileFormat=('png', 'pdf'),
+                        fileFormat=figformat,
                         legend=False, locLegend='best', verbose=verbose)
         #for i in h:
             #plt.setp(i,'color',colors[dim])

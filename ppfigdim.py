@@ -18,6 +18,7 @@ colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of
 
 #Get benchmark short infos.
 funInfos = {}
+figformat = ('eps', 'png') # Controls the output when using the main method
 isBenchmarkinfosFound = True
 #infofile = os.path.join(os.path.split(__file__)[0], '..', '..',
                         #'benchmarkshortinfos.txt')
@@ -276,7 +277,7 @@ def main(indexEntries, _valuesOfInterest, outputdir, verbose=True):
         legend = func in (1, 24, 101, 130)
 
         customizeFigure(fig, filename, title=title, legend=legend,
-                        fileFormat=('eps','png'), labels=['', ''],
+                        fileFormat=figformat, labels=['', ''],
                         scale=['log','log'], verbose=verbose)
 
         plt.close(fig)
