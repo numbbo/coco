@@ -105,20 +105,24 @@ def detTarget(dsList):
 def usage():
     print main.__doc__
 
-
+#    Tentative new doc:
+#    argv must list either : (i) folders containing pickle files, (ii) folders
+#    containing raw data files, (iii) tar archive files (eventually compressed
+#    using gzip or bzip2). Each of these white-space separated arguments should
+#    correspond to the data of one algorithm.
 def main(argv=None):
     """
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not provided,
     sys.argv is accessed.
 
-    argv must list either : (i) folders containing pickle files, (ii) folders
-    containing raw data files, (iii) tar archive files (eventually compressed
-    using gzip or bzip2). Each of these white-space separated arguments should
-    correspond to the data of one algorithm.
+    argv must list folders containing pickle files. Each of these folders
+    should correspond to the data of one algorithm and should be listed in
+    algorithmshortinfos.txt, a file from the bbob_pproc package listing the
+    information of various algorithms treated using bbob_pproc.dataoutput
 
-    Furthermore, argv can begin with, in any order, facultative option
-    flags listed below.
+    Furthermore, argv can begin with, in any order, facultative option flags
+    listed below.
 
         -h, --help
 
@@ -161,7 +165,6 @@ def main(argv=None):
       (requires that the path to this package is in python search path):
 
         $ python -m bbob_pproc.runcompall -h
-
 
     This will print out this help message.
 
@@ -250,6 +253,17 @@ def main(argv=None):
                 ext = "*f0*.pickle"
 
             tmpargs.extend(glob.glob(os.path.join(i, ext)))
+            #else:
+            #    if not (isNoisy ^ isNoiseFree):
+            #        ext = "*.info"
+            #        tmp = glob.glob(os.path.join(i, ext))
+            #    elif isNoisy:
+            #        ext = "*f1*.info"
+            #        tmp = glob.glob(os.path.join(i, ext))
+            #    elif isNoiseFree:
+            #        ext = "*f[0-9].info"
+            #        tmp = glob.glob(os.path.join(i, ext))
+            #        tmp.extend(glob.glob(os.path.join(i, "*f[0-9].info")))
 
             # remove trailing slashes and keep only the folder name which is
             # supposed to be the algorithm name.
@@ -311,7 +325,6 @@ def main(argv=None):
                                     plotArgs=algPlotInfos,
                                     outputdir=outputdir,
                                     info=('%02d%s' % (d, k)),
-                                    fileFormat=figformat,
                                     verbose=verbose)
             organizeRTDpictures.do(outputdir)
 

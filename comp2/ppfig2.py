@@ -167,6 +167,66 @@ def ranksumtest(N1, N2):
         U += Ui
     return U
 
+# def ranksums(x, y):
+#     """Calculates the rank sums statistic on the provided scores and
+#     returns the result.
+# 
+#     Returns: z-statistic, two-tailed p-value
+#     """
+#     x,y = map(numpy.asarray, (x, y))
+#     n1 = len(x)
+#     n2 = len(y)
+#     alldata = numpy.concatenate((x,y))
+#     ranked = rankdata(alldata)
+#     x = ranked[:n1]
+#     y = ranked[n1:]
+#     s = numpy.sum(x,axis=0)
+#     expected = n1*(n1+n2+1) / 2.0
+#     z = (s - expected) / numpy.sqrt(n1*n2*(n1+n2+1)/12.0)
+#     prob = 2*(1.0 -zprob(abs(z)))
+#     return z, prob
+# 
+# def rankdata(a):
+#     """Ranks the data in a, dealing with ties appropriately.
+# 
+#     Equal values are assigned a rank that is the average of the ranks that
+#     would have been otherwise assigned to all of the values within that set.
+#     Ranks begin at 1, not 0.
+# 
+#     Example
+#     -------
+#     In [15]: stats.rankdata([0, 2, 2, 3])
+#     Out[15]: array([ 1. ,  2.5,  2.5,  4. ])
+# 
+#     Parameters
+#     ----------
+#     a : array
+#         This array is first flattened.
+# 
+#     Returns
+#     -------
+#     An array of length equal to the size of a, containing rank scores.
+#     """
+#     a = numpy.ravel(a)
+#     n = len(a)
+#     svec, ivec = fastsort(a)
+#     sumranks = 0
+#     dupcount = 0
+#     newarray = numpy.zeros(n, float)
+#     for i in xrange(n):
+#         sumranks += i
+#         dupcount += 1
+#         if i==n-1 or svec[i] != svec[i+1]:
+#             averank = sumranks / float(dupcount) + 1
+#             for j in xrange(i-dupcount+1,i+1):
+#                 newarray[ivec[j]] = averank
+#             sumranks = 0
+#             dupcount = 0
+#     return newarray
+# 
+# import _cephes as cephes
+# zprob = cephes.ndtr
+
 def alignData(i0, i1):
     """Align the data in i0.evals and i1.evals, returns two arrays of aligned
     data.
