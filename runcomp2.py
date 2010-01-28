@@ -111,8 +111,13 @@ def main(argv=None):
     argv -- list of strings containing options and arguments. If not given,
     sys.argv is accessed.
 
-    argv should list names of folders containing pickle files. Furthermore,
-    argv can begin with, in any order, facultative option flags listed below.
+    argv must list folders containing pickle files. Each of these folders
+    should correspond to the data of one algorithm and should be listed in
+    algorithmshortinfos.txt, a file from the bbob_pproc package listing the
+    information of various algorithms treated using bbob_pproc.dataoutput
+    
+    Furthermore, argv can begin with, in any order, facultative option flags
+    listed below.
 
         -h, --help
 
