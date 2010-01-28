@@ -83,6 +83,12 @@ def main(argv=None):
 
             change the default output directory ('cmp2data') to OUTPUTDIR
 
+        --noise-free, --noisy
+
+            restrain the post-processing to part of the data set only. Actually
+            quicken the post-processing since it loads only part of the pickle
+            files.
+
         --fig-only, --rld-only
 
             these options can be used to output respectively the ERT graphs
@@ -122,8 +128,8 @@ def main(argv=None):
 
         try:
             opts, args = getopt.getopt(argv, "hvo:",
-                                       ["help", "output-dir",
-                                        "fig-only", "rld-only",
+                                       ["help", "output-dir", "noisy",
+                                        "noise-free", "fig-only", "rld-only",
                                         "verbose"])
         except getopt.error, msg:
              raise Usage(msg)
@@ -135,7 +141,7 @@ def main(argv=None):
         isfigure = True
         isrldistr = True
         isNoisy = False
-        isNoiseFree = True # Discern noisy and noisefree data?
+        isNoiseFree = False # Discern noisy and noisefree data?
         verbose = False
         outputdir = 'cmp2data'
 
@@ -152,6 +158,10 @@ def main(argv=None):
                 isrldistr = False
             elif o == "--rld-only":
                 isfigure = False
+            elif o == "--noisy":
+                isNoisy = True
+            elif o == "--noise-free":
+                isNoiseFree = True
             else:
                 assert False, "unhandled option"
 
@@ -165,14 +175,12 @@ def main(argv=None):
                 warnings.warn(warntxt)
                 continue
 
-            if isNoisy and isNoiseFree:
+            if not (isNoisy ^ isNoiseFree):
                 ext = "*.pickle"
             elif isNoisy:
                 ext = "*f1*.pickle"
             elif isNoiseFree:
                 ext = "*f0*.pickle"
-            else:
-                ext = "*.pickle"
 
             tmpargs.extend(glob.glob(os.path.join(i, ext)))
             # remove trailing slashes and keep only the folder name which is
@@ -233,8 +241,6 @@ def main(argv=None):
             except KeyError:
                 pass
 
-        #set_trace()
-
         #for i, entry in enumerate(sortedAlgs): #Nota: key is sortedAlgs
             #print "Alg%d is: %s" % (i, entry)
 
@@ -272,6 +278,15 @@ def main(argv=None):
                                         rldValsOfInterest, False,
                                         outputdir, 'dim%02d%s' % (dim, fGroup),
                                         verbose)
+
+                    dictFN0 = dictDim0[dim].dictByNoise()
+                    dictFN1 = dictDim1[dim].dictByNoise()
+                    for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
+                        pprldistr2.main(dictFN0[fGroup], dictFN1[fGroup],
+                                        rldValsOfInterest, False, outputdir,
+                                        'dim%02d%s' % (dim, fGroup),
+                                        verbose)
+
             print "done."
 
             print "ECDF relative target graphs",
@@ -294,17 +309,15 @@ def main(argv=None):
                         pprldistr2.main(dictFG0[fGroup], dictFG1[fGroup], None,
                                         True, outputdir,
                                         'dim%02d%s' % (dim, fGroup), verbose)
+
+                    dictFN0 = dictDim0[dim].dictByNoise()
+                    dictFN1 = dictDim1[dim].dictByNoise()
+                    for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
+                        pprldistr2.main(dictFN0[fGroup], dictFN1[fGroup],
+                                        None, True, outputdir,
+                                        'dim%02d%s' % (dim, fGroup), verbose)
+
             print "done."
-
-
-        #if verbose:
-            #tmp = []
-            #tmp.extend(tabValsOfInterest)
-            #tmp.extend(figValsOfInterest)
-            #tmp.extend(rldValsOfInterest)
-            #if indexEntries:
-                #print ('Overall ps = %g\n'
-                       #% indexEntries.successProbability(min(tmp)))
 
         if isfigure or isrldistr:
             print "Output data written to folder %s." % outputdir
