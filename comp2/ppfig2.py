@@ -134,7 +134,6 @@ def computeERT(hdata, maxevals):
         tmp = [i[0]]
         tmp.extend(bootstrap.sp(data, issuccessful=succ))
         res.append(tmp)
-    #set_trace()
     return numpy.vstack(res)
 
 def ranksumtest(N1, N2):
@@ -547,7 +546,7 @@ def annotate(annotations, minfvalue):
             tmp = a["coord"][0]
             if not minfvalue is None:
                 tmp = max(a["coord"][0], minfvalue)
-            #set_trace()
+
             xtmp = tmp * numpy.power(incr, numpy.arange(1., 1. + nbstars))
             # the additional slicing [0:int(nbstars)] is due to
             # numpy.arange(1., 1. - 0.1 * nbstars, -0.1) not having the right number
@@ -558,7 +557,7 @@ def annotate(annotations, minfvalue):
                          markeredgewidth = 0.2 * linewidth, color='w')
             #h = plt.plot(xtmp, ytmp, marker='*', ls='', markersize=4*linewidth,
                          #markeredgecolor='k', zorder=20)
-            #set_trace()
+
             #plt.setp(h, "markerfacecolor", "none") #transparent
             handles.extend(h)
 
@@ -566,13 +565,12 @@ def annotate(annotations, minfvalue):
                        #a["label"], fontsize=10,
                        #horizontalalignment=ha, verticalalignment=va))
 
-    #set_trace()
     if len(annotcoords) > 1 and not minfvalue is None:
         annotcoords = numpy.vstack(annotcoords)
         # The following lines are used to spread out the annotations on the
         # right of the figure.
         closeannot = annotcoords[annotcoords[:, 0] == minfvalue * 10.**(-0.1), :]
-        #set_trace()
+
         tmp = numpy.argsort(closeannot[:, 1])
         if len(tmp) > 0:
             closeannot = closeannot[tmp, :]
@@ -585,7 +583,6 @@ def annotate(annotations, minfvalue):
         for i in closeannot:
             annotcoords[annotcoords[:, 2] == i[2], 1] = i[1]
 
-    #set_trace()
     for i, a in enumerate(annotations):
         coords = annotcoords[i]
         handles.append(plt.text(coords[0], coords[1],
@@ -608,8 +605,14 @@ def main(dsList0, dsList1, outputdir, minfvalue = 1e-8, verbose=True):
 
     for fun in set.union(set(dictFun0), set(dictFun1)):
         annotations = []
-        dictDim0 = dictFun0[fun].dictByDim()
-        dictDim1 = dictFun1[fun].dictByDim()
+        try:
+            dictDim0 = dictFun0[fun].dictByDim()
+            dictDim1 = dictFun1[fun].dictByDim()
+        except KeyError:
+            txt = ("Data on function f%d could not be found for " % (fun) +
+                   "both algorithms.")
+            warnings.warn(txt)
+            continue
         if isBenchmarkinfosFound:
             title = funInfos[fun]
         else:

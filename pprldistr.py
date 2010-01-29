@@ -75,65 +75,7 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
         if verbose:
             print 'Wrote figure in %s.' %(figureName + '.' + entry)
 
-
-
-def plotRLDistr(indexEntries, fvalueToReach, maxEvalsF, plotArgs={}, 
-                verbose=True):
-    """Creates run length distributions from a sequence of indexEntries.
-
-    Keyword arguments:
-    indexEntries
-    fvalueToReach
-    verbose
-
-    Outputs:
-    res -- resulting plot.
-    fsolved -- number of different functions solved.
-    funcs -- number of different function considered.
-    """
-
-    x = []
-    nn = 0
-    fsolved = set()
-    funcs = set()
-    for i in indexEntries:
-        funcs.add(i.funcId)
-        for j in i.hData:
-            if j[0] <= fvalueToReach[i.funcId]:
-                #This loop is needed because though some number of function
-                #evaluations might be below maxEvals, the target function value
-                #might not be reached yet. This is because the horizontal data
-                #do not go to maxEvals.
-
-                for k in range(1, i.nbRuns() + 1):
-                    if j[i.nbRuns() + k] <= fvalueToReach[i.funcId]:
-                        x.append(j[k] / i.dim)
-                        fsolved.add(i.funcId)
-                break
-        nn += i.nbRuns()
-
-    # For the label the last i.funcId is used.
-    kwargs = plotArgs.copy()
-    kwargs['label'] = (kwargs.get('label', '') +
-                       ('%+d:%d/%d' % (numpy.log10(fvalueToReach[i.funcId]),
-                                      len(fsolved), len(funcs))))
-
-    #res = plotECDF(x, nn, kwargs)
-    n = len(x)
-    if n == 0:
-        res = plt.plot([], [], **kwargs)
-    else:
-        x.sort()
-        x2 = numpy.hstack([numpy.repeat(x, 2), maxEvalsF ** 1.05])
-        # maxEvalsF: used for the limit of the plot
-        y2 = numpy.hstack([0.0,
-                           numpy.repeat(numpy.arange(1, n+1)/float(nn), 2)])
-        res = plt.plot(x2, y2, **kwargs)
-
-    return res#, fsolved, funcs
-
-
-def plotRLDistr2(dsList, fvalueToReach, maxEvalsF, plotArgs={},
+def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={},
                  verbose=True):
     """Creates run length distributions from a sequence dataSetList.
 
@@ -164,17 +106,15 @@ def plotRLDistr2(dsList, fvalueToReach, maxEvalsF, plotArgs={},
                 break
         nn += i.nbRuns()
 
-    #set_trace()
-    #if len(x) > 0:
-        #x.append(maxEvalsF ** 1.05)
-    # For the label the last i.funcId is used.
     kwargs = plotArgs.copy()
-    #set_trace()
     try:
-        kwargs['label'] = kwargs.setdefault('label',
-                          ('%+d:%d/%d' % (numpy.log10(fvalueToReach[i.funcId]),
-                                          len(fsolved), len(funcs))))
+        label = ''
+        if len(set(fvalueToReach.values())):
+            label += '%+d:' % (numpy.log10(fvalueToReach[i.funcId]))
+        label += '%d/%d' % (len(fsolved), len(funcs))
+        kwargs['label'] = kwargs.setdefault('label', label)
     except TypeError: # fvalueToReach == 0. for instance...
+        # no label
         pass
 
     #res = plotECDF(x, nn, kwargs)
@@ -273,33 +213,7 @@ def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'),
         if verbose:
             print 'Wrote figure in %s.' %(figureName + '.' + entry)
 
-def plotFVDistr(indexEntries, fvalueToReach, maxEvalsF, verbose=True):
-    """Creates empirical cumulative distribution functions of final function
-    values plot from a sequence of indexEntries.
-
-    Keyword arguments:
-    indexEntries -- sequence of IndexEntry to process.
-    fvalueToReach -- float used for the lower limit of the plot
-    maxEvalsF -- indicates which vertical data to display.
-    verbose -- controls verbosity.
-
-    Outputs: a plot of a run length distribution.
-    """
-
-    x = []
-    nn = 0
-    for i in indexEntries:
-        for j in i.vData:
-            if j[0] >= maxEvalsF * i.dim:
-                break
-        x.extend(j[i.nbRuns()+1:] / fvalueToReach[i.funcId])
-        nn += i.nbRuns()
-
-    res = plotECDF(x, nn)
-
-    return res
-
-def plotFVDistr2(dataSetList, fvalueToReach, maxEvalsF, plotArgs={},
+def plotFVDistr(dataSetList, fvalueToReach, maxEvalsF, plotArgs={},
                  verbose=True):
     """Creates empirical cumulative distribution functions of final function
     values plot from a sequence of indexEntries.
@@ -373,11 +287,11 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     if not evalfmax:
         evalfmax = maxEvalsFactor
 
-    figureName = os.path.join(outputdir,'pprldistr%s' %('_' + info))
+    figureName = os.path.join(outputdir,'pprldistr2_%s' %(info))
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):
-        tmp = plotRLDistr2(dsList0, valuesOfInterest[j], evalfmax,
+        tmp = plotRLDistr(dsList0, valuesOfInterest[j], evalfmax,
                           verbose=verbose)
         #set_trace()
         if not tmp is None:
@@ -388,7 +302,7 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
             if rldColors[j] == 'r':  # 1e-8 in bold
                 plt.setp(tmp, 'linewidth', 3)
 
-        tmp = plotRLDistr2(dsList1, valuesOfInterest[j], evalfmax,
+        tmp = plotRLDistr(dsList1, valuesOfInterest[j], evalfmax,
                           verbose=verbose)
         #set_trace()
         if not tmp is None:
@@ -411,11 +325,11 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
 
     # The figures generated by the lines below are not displayed in the
     # BBOB2010 template: should they be done?
-    #figureName = os.path.join(outputdir,'ppfvdistr_%s' %(info))
+    #figureName = os.path.join(outputdir,'ppfvdistr2_%s' %(info))
     #fig = plt.figure()
     #for j in range(len(valuesOfInterest)):
         ##set_trace()
-        #tmp = plotFVDistr2(dsList0, valuesOfInterest[j],
+        #tmp = plotFVDistr(dsList0, valuesOfInterest[j],
                           #evalfmax, verbose=verbose)
         ##if not tmp is None:
         #plt.setp(tmp, 'color', rldColors[j])
@@ -423,7 +337,7 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
         #if rldColors [j] == 'r':  # 1e-8 in bold
             #plt.setp(tmp, 'linewidth', 3)
 
-        #tmp = plotFVDistr2(dsList1, valuesOfInterest[j],
+        #tmp = plotFVDistr(dsList1, valuesOfInterest[j],
                           #evalfmax, verbose=verbose)
         ##if not tmp is None:
         #plt.setp(tmp, 'color', rldColors[j])
@@ -441,12 +355,12 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     ##set_trace()
     ## Plot lines for different number of function evaluations
     #for k in range(len(maxEvalsF)):
-        #tmp = plotFVDistr2(dsList0, valuesOfInterest[j],
+        #tmp = plotFVDistr(dsList0, valuesOfInterest[j],
                            #maxEvalsF=maxEvalsF[k], verbose=verbose)
         #plt.setp(tmp, 'color', rldUnsuccColors[k])
         #plt.setp(tmp, 'ls', '--')
 
-        #tmp = plotFVDistr2(dsList1, valuesOfInterest[j],
+        #tmp = plotFVDistr(dsList1, valuesOfInterest[j],
                            #maxEvalsF=maxEvalsF[k], verbose=verbose)
         #plt.setp(tmp, 'color', rldUnsuccColors[k])
 
@@ -498,11 +412,11 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     if not evalfmax:
         evalfmax = maxEvalsFactor
 
-    figureName = os.path.join(outputdir,'pprldistr%s' %('_' + info))
+    figureName = os.path.join(outputdir,'pprldistr_%s' %(info))
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):
-        tmp = plotRLDistr2(dsList, valuesOfInterest[j], evalfmax,
+        tmp = plotRLDistr(dsList, valuesOfInterest[j], evalfmax,
                           verbose=verbose)
         #set_trace()
         if not tmp is None:
@@ -528,7 +442,7 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     fig = plt.figure()
     for j in range(len(valuesOfInterest)):
         #set_trace()
-        tmp = plotFVDistr2(dsList, valuesOfInterest[j],
+        tmp = plotFVDistr(dsList, valuesOfInterest[j],
                           evalfmax, verbose=verbose)
         #if not tmp is None:
         plt.setp(tmp, 'color', rldColors[j])
@@ -544,7 +458,7 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     #The last index of valuesOfInterest is still used in this loop.
     #set_trace()
     for k in range(len(maxEvalsF)):
-        tmp = plotFVDistr2(dsList, valuesOfInterest[j],
+        tmp = plotFVDistr(dsList, valuesOfInterest[j],
                           maxEvalsF=maxEvalsF[k], verbose=verbose)
         plt.setp(tmp, 'color', rldUnsuccColors[k])
 

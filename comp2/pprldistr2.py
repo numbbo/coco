@@ -25,8 +25,6 @@ def beautify(figHandle, figureName, fileFormat=('png', 'eps'), isByInstance=True
              legend=False, verbose=True):
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
-    #try:
-    #set_trace()
     axisHandle.set_xscale('log')
     plt.ylim(0.0, 1.0)
     plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
@@ -51,7 +49,6 @@ def beautify(figHandle, figureName, fileFormat=('png', 'eps'), isByInstance=True
              #transform=axisHandle.transAxes)
              #bbox=dict(ec='k', fill=False), 
 
-    #set_trace()
     if legend:
         plt.legend(loc='best')
 
@@ -112,7 +109,7 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
         if not isByInstance:
             for i, entry in enumerate((i0, i1)):
                 for j in entry.evals:
-                    if j[0] <= fvalueToReach:
+                    if j[0] <= fvalueToReach[func]:
                         break
                 ERT.append(computeERT(j, entry.maxevals))
             if not all(numpy.isinf(ERT)):
@@ -128,7 +125,7 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
                 ERT.append(dictinstance.copy())
                 for k in dictinstance:
                     for j in entry.evals:
-                        if j[0] <= fvalueToReach:
+                        if j[0] <= fvalueToReach[func]:
                             break
                     ERT[i][k] = computeERT(j[list(1+i for i in dictinstance[k])],
                             entry.maxevals[list(i for i in dictinstance[k])])
@@ -146,10 +143,9 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
                 x.append(inf)
                 nn += 1
 
-    #set_trace()
-    #label = ('%+d:%d/%d' %
-             #(numpy.log10(fvalueToReach), len(fsolved), len(funcs)))
-    label = '%+d' % numpy.log10(fvalueToReach)
+    if len(set(fvalueToReach.values())):
+        label = '%+d' % numpy.log10(fvalueToReach[func])
+        #all target function values are the same
     n = len(x)
     try:
         x.sort()
@@ -173,16 +169,12 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
         y2 = numpy.hstack([tmp/float(nn), tmp/float(nn),
                            numpy.repeat(numpy.arange(tmp+1, n-tmp2) / float(nn), 2),
                            (n-tmp2)/float(nn), (n-tmp2)/float(nn)])
-        #set_trace()
         res = plt.plot(x2, y2, label=label)
     except (OverflowError, IndexError): #TODO Check this exception
         # OverflowError would be because of ?
         # IndexError because x is reduced to an empty list
-        #set_trace()
         res = plt.plot([], [], label=label)
 
-
-    #set_trace()
     return res
 
 def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
@@ -216,7 +208,6 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
     #Suppose we only have one dimension...
     curevals = indexEntries0[0].dim # is supposed to be the same as i1.dim    
 
-    #set_trace()
     while curevals < maxevals:
         x = []
         nn = 0
@@ -248,13 +239,11 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
 
             ERT = []
             if not isByInstance:
-                #set_trace()
                 curDf = min(numpy.append(line0[1:], line1[1:]))
                 for i, entry in enumerate((i0, i1)):
                     for j in entry.evals:
                         if j[0] <= curDf:
                             break
-                    #set_trace()
                     ERT.append(computeERT(j, entry.maxevals))
 
                 if not numpy.isnan(ERT[1]/ERT[0]):
@@ -373,13 +362,11 @@ def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest=None,
         for j in range(len(valuesOfInterest)):
             tmp = plotLogAbs(indexEntriesAlg0, indexEntriesAlg1,
                              valuesOfInterest[j], verbose=verbose)
-            #set_trace()
             if not tmp is None:
                 plt.setp(tmp, 'color', rldColors[j])
                 #if rldColors[j] == 'r':  # 1e-8 in bold
                     #plt.setp(tmp, 'linewidth', 3)
 
-    #set_trace()
     beautify(fig, figureName, fileFormat=figformat, legend=True,
              verbose=verbose)
     plt.close(fig)

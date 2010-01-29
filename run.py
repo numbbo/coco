@@ -409,7 +409,7 @@ def main(argv=None):
         if (verbose):
             for i in dsList:
                 if ((dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
-                    instancesOfInterest) or
+                    instancesOfInterest) and
                     (dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
                     instancesOfInterest2010)):
                     warnings.warn('The data of %s do not list ' %(i) +
@@ -477,12 +477,17 @@ def main(argv=None):
                     sliceDim = dictDim[dim]
                     pprldistr.main(sliceDim, rldValsOfInterest, True,
                                    outputdir, 'dim%02dall' % dim, verbose)
+                    dictNoise = sliceDim.dictByNoise()
+                    for noise, sliceNoise in dictNoise.items():
+                        pprldistr.main(sliceFuncGroup, rldValsOfInterest, True,
+                                       outputdir, 'dim%02d%s' % (dim, noise),
+                                       verbose)
                     dictFG = sliceDim.dictByFuncGroup()
-                    #set_trace()
                     for fGroup, sliceFuncGroup in dictFG.items():
                         pprldistr.main(sliceFuncGroup, rldValsOfInterest, True,
                                        outputdir, 'dim%02d%s' % (dim, fGroup),
                                        verbose)
+
                     pprldistr.fmax = None #Resetting the max final value
                     pprldistr.evalfmax = None #Resetting the max #fevalsfactor
                 except KeyError:

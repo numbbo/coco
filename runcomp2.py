@@ -36,6 +36,8 @@ from bbob_pproc.dataoutput import algLongInfos, algPlotInfos
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
+instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
+                           11:1, 12:1, 13:1, 14:1, 15:1}
 
 #figValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)
@@ -115,7 +117,7 @@ def main(argv=None):
     should correspond to the data of one algorithm and should be listed in
     algorithmshortinfos.txt, a file from the bbob_pproc package listing the
     information of various algorithms treated using bbob_pproc.dataoutput
-    
+
     Furthermore, argv can begin with, in any order, facultative option flags
     listed below.
 
@@ -257,8 +259,10 @@ def main(argv=None):
             else:
                 tmpInstancesOfInterest = instancesOfInterest
 
-            if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
-                tmpInstancesOfInterest):
+            if ((dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
+                tmpInstancesOfInterest) and
+                (dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
+                instancesOfInterest2010)):
                 warnings.warn('The data of %s do not list ' %(i) +
                               'the correct instances ' +
                               'of function F%d or the ' %(i.funcId) +
@@ -278,15 +282,14 @@ def main(argv=None):
         for elem in sortedAlgs[0]:
             try:
                 dsList0.extend(dictAlg[elem])
-                break
             except KeyError:
                 pass
+        #set_trace()
 
         dsList1 = DataSetList()
         for elem in sortedAlgs[1]:
             try:
                 dsList1.extend(dictAlg[elem])
-                break
             except KeyError:
                 pass
 
@@ -301,6 +304,8 @@ def main(argv=None):
 
         if isfigure:
             ppfig2.main(dsList0, dsList1, outputdir, 1e-8, verbose)
+            if verbose:
+                print "log ERT1/ERT0 vs target function values done."
 
         if isrldistr:
             dictFN0 = dsList0.dictByNoise()
@@ -314,8 +319,6 @@ def main(argv=None):
             dictDim0 = dsList0.dictByDim()
             dictDim1 = dsList1.dictByDim()
 
-            print "ECDF absolute target graphs",
-            #set_trace()
             for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
                 if dim in rldDimsOfInterest:
                     try:
@@ -344,10 +347,9 @@ def main(argv=None):
                                         rldValsOfInterest, False, outputdir,
                                         'dim%02d%s' % (dim, fGroup),
                                         verbose)
+            if verbose:
+                print "ECDF absolute target graphs done."
 
-            print "done."
-
-            print "ECDF relative target graphs",
             for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
                 if dim in rldDimsOfInterest:
                     try:
@@ -375,10 +377,9 @@ def main(argv=None):
                                         None, True, outputdir,
                                         'dim%02d%s' % (dim, fGroup), verbose)
 
-            print "done."
+            if verbose:
+                print "ECDF relative target graphs done."
 
-            print "ECDF dashed-solid graphs"
-            #set_trace()
             for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
                 pprldistr.fmax = None #Resetting the max final value
                 pprldistr.evalfmax = None #Resetting the max #fevalsfactor
@@ -407,10 +408,12 @@ def main(argv=None):
                                        rldValsOfInterest, True, outputdir,
                                        'dim%02d%s' % (dim, fGroup), verbose)
 
-            print "done."
+            if verbose:
+                print "ECDF dashed-solid graphs done."
 
-        if isfigure or isrldistr:
-            print "Output data written to folder %s." % outputdir
+        if verbose:
+            if isfigure or isrldistr:
+                print "Output data written to folder %s." % outputdir
 
     except Usage, err:
         print >>sys.stderr, err.msg
