@@ -27,6 +27,14 @@ bestnoisy = ()
 
 nikos = ('AMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', '(1+1)-CMA-ES', 'G3-PCX', 'NEWUOA', 
          'Monte Carlo', 'NELDER (Han)', 'NELDER (Doe)', 'GLOBAL', 'MCS (Neum)')
+nikos = ('iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 
+         '(1+1)-CMA-ES', '(1+1)-ES', 'IPOP-SEP-CMA-ES', 
+         'NEWUOA', 
+         'NELDER (Doe)', 'BFGS', 'Monte Carlo')
+
+nikos40D = ('iAMaLGaM IDEA', 'BIPOP-CMA-ES', 
+            '(1+1)-CMA-ES', '(1+1)-ES', 'IPOP-SEP-CMA-ES', 
+            'NEWUOA', 'NELDER (Han)', 'BFGS', 'Monte Carlo')
 
 # three groups which include all algorithms: 
 GA = ('DE-PSO', '(1+1)-ES', 'PSO_Bounds', 'DASA', 'G3-PCX', 'simple GA', 'POEMS', 'Monte Carlo')  # 7+1
@@ -74,7 +82,7 @@ x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = 100 # resolution of the performance profile.
-dpi_global_var = 60  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
+dpi_global_var = 120  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 
 def get_plot_args(args):
     """args is one dict element according to algorithmshortinfos
@@ -188,9 +196,9 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None, 
         res = plt.plot(x2, y2, **kwargs)
         if maxevals: # Should cover the case where maxevals is None or empty
             x3 = numpy.median(maxevals)
-            if x3 <= maxval and numpy.any(x2 <= x3):
+            if x3 <= maxval and numpy.any(x2 <= x3) and plt.getp(res[0], 'color') is not 'wheat':
                 y3 = y2[x2<=x3][-1]
-                plt.plot((x3,), (y3,), marker='x',
+                plt.plot((x3,), (y3,), marker='x', markersize=15, markeredgecolor=plt.getp(res[0], 'color'),
                          ls=plt.getp(res[0], 'ls'),
                          color=plt.getp(res[0], 'color'))
                 # Only take sequences for x and y!
