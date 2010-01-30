@@ -53,6 +53,7 @@ petr = ('DIRECT', 'LSfminbnd', 'LSstep', 'Rosenbrock', 'G3-PCX', 'Cauchy EDA', '
 TAO = ('BFGS', 'NELDER (Han)', 'NEWUOA', 'full NEWUOA', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', 
        '(1+1)-CMA-ES', '(1+1)-ES', 'simple GA', 'Monte Carlo')
 TAOp = TAO + ('NELDER (Doe)',) 
+MC = ('Monte Carlo',)
 
 third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'EDA-PSO', 'PSO_Bounds', 'PSO', 'AMaLGaM IDEA', 'iAMaLGaM IDEA',
          'MA-LS-Chain', 'DASA', 'BayEDAcG')
@@ -69,7 +70,7 @@ funisep = [1,2,5]
 #show_algorithms = ('IPOP-SEP-CMA-ES', 'IPOP-CMA-ES', 'BIPOP-CMA-ES',
 #'avg NEWUOA', 'NEWUOA', 'full NEWUOA', 'BFGS', 'MCS (Neum)', 'GLOBAL', 'NELDER (Han)',
 #'NELDER (Doe)', 'Monte Carlo') # ()==all
-show_algorithms = ()
+show_algorithms = ()  
 #function_IDs = [8]  # range(103, 131, 3)   # displayed functions
 function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 #function_IDs = [1,2,3,4,5] # seperable functions
@@ -81,7 +82,7 @@ function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 1
 #function_IDs = range(101,131) # noisy testbed
 
 x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
-
+x_annote_factor = 90
 
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = 100 # resolution of the performance profile.
@@ -353,6 +354,6 @@ def main(dsList, target, order=None, plotArgs={}, outputdir='',
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
     #set_trace()
-    beautify(figureName, funcsolved, xlim*90, False, fileFormat=figformat)
+    beautify(figureName, funcsolved, xlim*x_annote_factor, False, fileFormat=figformat)
 
     plt.close()
