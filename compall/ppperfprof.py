@@ -23,8 +23,11 @@ best2 = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-
 
 eseda = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', '(1+1)-CMA-ES', '(1+1)-ES')
 
+ess = ('BIPOP-CMA-ES', '(1+1)-CMA-ES', '(1+1)-ES')
+
 bestnoisy = ()
 
+bestbest = ('BIPOP-CMA-ES', 'NEWUOA', 'GLOBAL', 'NELDER (Doe)')
 nikos = ('AMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', '(1+1)-CMA-ES', 'G3-PCX', 'NEWUOA', 
          'Monte Carlo', 'NELDER (Han)', 'NELDER (Doe)', 'GLOBAL', 'MCS (Neum)')
 nikos = ('iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 
@@ -350,6 +353,6 @@ def main(dsList, target, order=None, plotArgs={}, outputdir='',
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
     #set_trace()
-    beautify(figureName, funcsolved, xlim*100, False, fileFormat=figformat)
+    beautify(figureName, funcsolved, xlim*90, False, fileFormat=figformat)
 
     plt.close()
