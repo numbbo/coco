@@ -401,6 +401,13 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
+        if (not verbose):
+            warnings.simplefilter('ignore')
+
+        print ("BBOB Post-processing: will generate post-processing " +
+               "data in folder %s" % outputdir)
+        print "  This might take several minutes."
+
         dsList = DataSetList(args, verbose)
 
         if not dsList:
@@ -417,7 +424,6 @@ def main(argv=None):
                                   'of function F%d or the ' %(i.funcId) +
                                   'correct number of trials for each.')
 
-        #set_trace()
         dictAlg = dsList.dictByAlg()
         if len(dictAlg) > 1:
             warnings.warn('Data with multiple algId %s ' % (dictAlg) +
@@ -479,7 +485,7 @@ def main(argv=None):
                                    outputdir, 'dim%02dall' % dim, verbose)
                     dictNoise = sliceDim.dictByNoise()
                     for noise, sliceNoise in dictNoise.items():
-                        pprldistr.main(sliceFuncGroup, rldValsOfInterest, True,
+                        pprldistr.main(sliceNoise, rldValsOfInterest, True,
                                        outputdir, 'dim%02d%s' % (dim, noise),
                                        verbose)
                     dictFG = sliceDim.dictByFuncGroup()

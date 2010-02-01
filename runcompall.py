@@ -238,6 +238,13 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
+        if (not verbose):
+            warnings.simplefilter('ignore')
+
+        print ("BBOB Post-processing: will generate comparison " +
+               "data in folder %s" % outputdir)
+        print "  This might take several minutes."
+
         tmpargs = []
         sortedAlgs = []
         for i in args:
@@ -330,12 +337,14 @@ def main(argv=None):
                                     info=('%02d%s' % (d, k)),
                                     verbose=verbose)
             organizeRTDpictures.do(outputdir)
+            print "ECDFs of ERT figures done."
 
         allmintarget, allertbest = detTarget(dsList)
 
         if isTab:
             pptables.tablemanyalgonefunc(dsList, allmintarget, allertbest,
                                          sortedAlgs, outputdir)
+            print "Comparison tables done."
 
     except Usage, err:
         print >>sys.stderr, err.msg
