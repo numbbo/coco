@@ -311,9 +311,9 @@ def main(argv=None):
             dictFN0 = dsList0.dictByNoise()
             dictFN1 = dsList1.dictByNoise()
             if len(dictFN0) > 1 or len(dictFN1) > 1:
-                warnings.warn('Data for functions from both the noisy and '
-                              'non-noisy testbeds have been found. Their '
-                              'results will be mixed in the "all functions"'
+                warnings.warn('Data for functions from both the noisy and ' +
+                              'non-noisy testbeds have been found. Their ' +
+                              'results will be mixed in the "all functions" ' +
                               'ECDF figures.')
 
             dictDim0 = dsList0.dictByDim()
