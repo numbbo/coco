@@ -216,6 +216,13 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
+        if (not verbose):
+            warnings.simplefilter('ignore')
+
+        print ("BBOB Post-processing: will generate comparison " +
+               "data in folder %s" % outputdir)
+        print "  This might take several minutes."
+
         #Get only pickles!
         tmpargs = []
         sortedAlgs = []
@@ -304,8 +311,7 @@ def main(argv=None):
 
         if isfigure:
             ppfig2.main(dsList0, dsList1, outputdir, 1e-8, verbose)
-            if verbose:
-                print "log ERT1/ERT0 vs target function values done."
+            print "log ERT1/ERT0 vs target function values done."
 
         if isrldistr:
             dictFN0 = dsList0.dictByNoise()
@@ -347,8 +353,7 @@ def main(argv=None):
                                         rldValsOfInterest, False, outputdir,
                                         'dim%02d%s' % (dim, fGroup),
                                         verbose)
-            if verbose:
-                print "ECDF absolute target graphs done."
+            print "ECDF absolute target graphs done."
 
             for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
                 if dim in rldDimsOfInterest:
@@ -377,8 +382,7 @@ def main(argv=None):
                                         None, True, outputdir,
                                         'dim%02d%s' % (dim, fGroup), verbose)
 
-            if verbose:
-                print "ECDF relative target graphs done."
+            print "ECDF relative target graphs done."
 
             for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
                 pprldistr.fmax = None #Resetting the max final value
@@ -408,12 +412,10 @@ def main(argv=None):
                                        rldValsOfInterest, True, outputdir,
                                        'dim%02d%s' % (dim, fGroup), verbose)
 
-            if verbose:
-                print "ECDF dashed-solid graphs done."
+            print "ECDF dashed-solid graphs done."
 
-        if verbose:
-            if isfigure or isrldistr:
-                print "Output data written to folder %s." % outputdir
+        if isfigure or isrldistr:
+            print "Output data written to folder %s." % outputdir
 
     except Usage, err:
         print >>sys.stderr, err.msg
