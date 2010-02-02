@@ -35,7 +35,7 @@ nikos = ('iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES',
          'NEWUOA', 
          'NELDER (Doe)', 'BFGS', 'Monte Carlo')
 
-nikos40D = ('iAMaLGaM IDEA', 'BIPOP-CMA-ES', 
+nikos40D = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'BIPOP-CMA-ES', 
             '(1+1)-CMA-ES', '(1+1)-ES', 'IPOP-SEP-CMA-ES', 
             'NEWUOA', 'NELDER (Han)', 'BFGS', 'Monte Carlo')
 
@@ -85,8 +85,8 @@ x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 x_annote_factor = 90
 
 save_zoom = False  # save zoom into left and right part of the figures
-perfprofsamplesize = 100 # resolution of the performance profile.
-dpi_global_var = 120  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
+perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
+dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 
 def get_plot_args(args):
     """args is one dict element according to algorithmshortinfos
