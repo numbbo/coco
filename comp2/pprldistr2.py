@@ -363,9 +363,10 @@ def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest=None,
             tmp = plotLogAbs(indexEntriesAlg0, indexEntriesAlg1,
                              valuesOfInterest[j], verbose=verbose)
             if not tmp is None:
-                plt.setp(tmp, 'color', rldColors[j])
+                plt.rc("ytick",labelsize=0)
+                plt.setp(tmp, 'color', rldColors[j],'linewidth',3)
                 #if rldColors[j] == 'r':  # 1e-8 in bold
-                    #plt.setp(tmp, 'linewidth', 3)
+                # plt.setp(tmp, 'linewidth', 5)
 
     beautify(fig, figureName, fileFormat=figformat, legend=True,
              verbose=verbose)
