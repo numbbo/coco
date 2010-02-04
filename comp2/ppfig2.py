@@ -503,6 +503,124 @@ def generatePlot(dataset0, dataset1, i, dim, minfvalue=None, nbtests=1):
 
     return handles, annot
 
+def generatePlot2(dataset0, dataset1, i, dim, minfvalue=None, nbtests=1):
+    """Generate a graph.
+    Differences with generatePlot:
+      no dashed,
+      no graph for the success probability
+      annotations for the success probability
+    """
+
+    [data0, data1] = alignData(dataset0, dataset1)
+    ert0 = computeERT(data0, dataset0.maxevals)
+    ert1 = computeERT(data1, dataset1.maxevals)
+
+    handles = []
+    #resdata = []
+    resplotdata = []
+    isPlotFinished = False
+
+    soliddata, data = generatelogERTData(ert0, dataset0, ert1, dataset1)
+    plotdata, isPlotFinished = generatePlotData(soliddata, minfvalue)
+    resplotdata.append(plotdata.copy())
+
+    # Solid line for when the ert of the still going algorithm is smaller than
+    # the median of the number of function evaluations of the other algorithm.
+    #h = plt.plot(plotdata[:, 0], plotdata[:, 1], label='%d-D' % dim,
+                 #color=colors[i], linewidth=linewidth)
+    #handles.extend(h)
+
+    ## A marker is put when the ERT is larger than the median of number of
+    ## function evaluations of the other algorithm.
+    #if not isPlotFinished:
+        #h = plt.plot((plotdata[-1, 0], ), (plotdata[-1, 1], ),
+                     #marker=markers[i], markersize=6*linewidth,
+                     #markeredgewidth=linewidth, markeredgecolor=colors[i],
+                     #markerfacecolor=None, color='w')
+        #handles.extend(h)
+
+    # Solid line while both algorithm have a finite ert
+    plotdata, isPlotFinished = generatePlotData(data, minfvalue) # replace isPlotFinished
+    resplotdata.append(plotdata.copy())
+    h = plt.plot(plotdata[:, 0], plotdata[:, 1], color=colors[i],
+                 linewidth=linewidth)
+    handles.extend(h)
+
+    if not isPlotFinished:
+        # Marker for when an algorithm stopped
+        h = plt.plot((plotdata[-1, 0], ), (plotdata[-1, 1], ),
+                     marker=markers[i], markersize=6*linewidth,
+                     markeredgewidth=linewidth, markeredgecolor=colors[i],
+                     markerfacecolor=None, color='w')
+        handles.extend(h)
+
+    #Number of successful trials on a linear scale
+    if not isPlotFinished:
+        data = generatePSData(ert0, ert1)
+        if not data is None:
+            plotdata, isPlotFinished = generatePlotData(data, minfvalue)
+            resplotdata.append(plotdata.copy())
+
+            h = plt.plot(plotdata[:, 0], plotdata[:, 1],  color=colors[i],
+                         linewidth=linewidth, marker='d', markeredgecolor=colors[i],
+                         ls='--')
+            handles.extend(h)
+        #handles.append(plt.plot(tmpplotdata[tmpplotdata[:, 1] <= medmaxeval, 0],
+                                #tmpplotdata[tmpplotdata[:, 1] <= medmaxeval],  color=colors[i],
+                                #linewidth=linewidth, marker='d', markeredgecolor=colors[i]))
+
+    annot = {}
+    annot["isPlotFinished"] = isPlotFinished
+    annot["coord"] = plotdata[-1].copy()
+    # Should correspond to the last value for which delta ftarget is larger than minfvalue
+
+    tmp = data0[:, 0] <= annot["coord"][0]
+    if any(tmp):
+        line0 = data0[tmp, :][0]
+    else:
+        tmp = [annot["coord"][0]]
+        tmp.extend([numpy.nan] * (numpy.shape(data0)[1] - 1))
+        line0 = numpy.array(tmp)
+    nbsucc0 = numpy.sum(numpy.isnan(line0[1:]) == False)
+
+    tmp = data1[:, 0] <= annot["coord"][0]
+    line1 = data1[-1]
+    if any(tmp):
+        line1 = data1[tmp, :][0]
+    else:
+        tmp = [annot["coord"][0]]
+        tmp.extend([numpy.nan] * (numpy.shape(data1)[1] - 1))
+        line1 = numpy.array(tmp)
+    nbsucc1 = numpy.sum(numpy.isnan(line1[1:]) == False)
+
+    if (nbsucc0 == 0 and nbsucc1 == 0) or (nbsucc0 > 5 and nbsucc1 >= 5):
+        txt = '%d-D' % dim
+    else:
+        txt = str(int(nbsucc1))
+        if nbsucc1 > 9:
+            txt = '>9'
+
+        tmp = str(int(nbsucc0))
+        if nbsucc0 > 9:
+            tmp = '>9'
+        txt += '/' + tmp
+
+    annot["label"] = txt
+
+    # Do the rank-sum-test on the final values... (the larger the better)
+    # Prepare the data:
+    line0[1:] = numpy.power(line0[1:], -1.)
+    line0[1:][numpy.isnan(line0[1:])] = -dataset0.finalfunvals[numpy.isnan(line0[1:])]
+    line1[1:] = numpy.power(line1[1:], -1.)
+    line1[1:][numpy.isnan(line1[1:])] = -dataset1.finalfunvals[numpy.isnan(line1[1:])]
+
+    # one-tailed statistics: scipy.stats.mannwhitneyu, two-tailed statistics: scipy.stats.ranksums
+    z, p = ranksums(line0[1:], line1[1:])
+
+    annot["p"] = p
+
+    return handles, annot
+
 def annotate(annotations, minfvalue):
     # End of graph annotation:
     # Determine where to put the annotation
