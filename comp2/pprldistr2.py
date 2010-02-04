@@ -27,8 +27,10 @@ def beautify(figHandle, figureName, fileFormat=('png', 'eps'), isByInstance=True
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
     plt.ylim(0.0, 1.0)
+    # plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
+    #            ('0.0', '', '0.5', '', '1.0'))
     plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
-               ('0.0', '', '0.5', '', '1.0'))
+               ('', '', '', '', ''))
     xlim = plt.xlim()
     plt.xlim(min(0.1, 10.**(-max(numpy.abs(numpy.log10(xlim))))),
              max(10., 10.**(max(numpy.abs(numpy.log10(xlim))))))
