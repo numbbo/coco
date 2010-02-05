@@ -13,7 +13,7 @@ from pdb import set_trace
 """Generates Empirical Cumulative Distribution of the bootstrap distribution of
 the Expected Running Time (ERT) divided by the dimension."""
 
-figformat = ('eps', 'png') # Controls the output when using the main method
+figformat = ('eps', 'png', 'pdf') # Controls the output when using the main method
 
 best = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES',  
    'BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'GLOBAL', 'MCS (Neum)',
@@ -30,7 +30,7 @@ bestnoisy = ()
 bestbest = ('BIPOP-CMA-ES', 'NEWUOA', 'GLOBAL', 'NELDER (Doe)')
 nikos = ('AMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', '(1+1)-CMA-ES', 'G3-PCX', 'NEWUOA', 
          'Monte Carlo', 'NELDER (Han)', 'NELDER (Doe)', 'GLOBAL', 'MCS (Neum)')
-nikos = ('iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 
+nikos = ('AMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 
          '(1+1)-CMA-ES', '(1+1)-ES', 'IPOP-SEP-CMA-ES', 
          'NEWUOA', 
          'NELDER (Doe)', 'BFGS', 'Monte Carlo')
@@ -61,6 +61,7 @@ third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'EDA-PSO', 'PSO_Bounds', 'PSO', 'AMa
 # MORE TO COME
 
 funi = [1] + range(5, 15)  # without paired Ellipsoid 
+funilipschitz = [1] + [5,6] + range(8,13) + [14] # + [13]  #13=sharp ridge, 7=step-ellipsoid 
 fmulti = [4] + range(15,25) # without paired Rastrigin
 funisep = [1,2,5]
 
@@ -70,7 +71,7 @@ funisep = [1,2,5]
 #show_algorithms = ('IPOP-SEP-CMA-ES', 'IPOP-CMA-ES', 'BIPOP-CMA-ES',
 #'avg NEWUOA', 'NEWUOA', 'full NEWUOA', 'BFGS', 'MCS (Neum)', 'GLOBAL', 'NELDER (Han)',
 #'NELDER (Doe)', 'Monte Carlo') # ()==all
-show_algorithms = ()  
+show_algorithms = ()    
 #function_IDs = [8]  # range(103, 131, 3)   # displayed functions
 function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 #function_IDs = [1,2,3,4,5] # seperable functions

@@ -39,11 +39,12 @@ from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
-constant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7)
-# constant_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)
+single_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7)  # one figure for each
+summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # all in one figure
 tableconstant_target_function_values = [1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7]
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
-#Deterministic instance of interest: only one trial is required.
+
+# Deterministic instance of interest: only one trial is required.
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
 instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
                            11:1, 12:1, 13:1, 14:1, 15:1}
@@ -313,14 +314,16 @@ def main(argv=None):
 
         # group targets:
         dictTarget = {}
-        for t in constant_target_function_values:
+        for t in sorted(set(single_target_function_values + summarized_target_function_values)):
             tmpdict = dict.fromkeys(((f, d) for f in range(0, 25) + range(101, 131) for d in (2, 3, 5, 10, 20, 40)), t)
             stmp = 'E'
             if t == 1:
                 stmp = 'E-'
             # dictTarget['_f' + stmp + '%2.1f' % numpy.log10(t)] = (tmpdict, )
-            dictTarget['_f' + stmp + '%02d' % numpy.log10(t)] = (tmpdict, )
-            dictTarget.setdefault('_allfs', []).append(tmpdict)
+            if t in single_target_function_values: 
+                dictTarget['_f' + stmp + '%02d' % numpy.log10(t)] = (tmpdict, )
+            if t in summarized_target_function_values: 
+                dictTarget.setdefault('_allfs', []).append(tmpdict)
 
         if not os.path.exists(outputdir):
             os.mkdir(outputdir)
