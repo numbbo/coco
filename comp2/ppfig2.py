@@ -81,8 +81,8 @@ def customizeFigure(figHandle, figureName = None, xmin=None, title='',
     # Annotate figure
     #axisHandle.set_xlabel(r'$ \log 10(\Delta \mathrm{ftarget}) $')
     #axisHandle.set_ylabel(r'$ \log 10(ERT1 / ERT0) $')
-    axisHandle.set_xlabel('log10(Delta ftarget)')
-    axisHandle.set_ylabel('log10(ERT1/ERT0)')
+    axisHandle.set_xlabel('log10 of Delta ftarget')
+    axisHandle.set_ylabel('log10 of ERT1/ERT0')
 
     # Grid options
     axisHandle.grid('True')
