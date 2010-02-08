@@ -23,7 +23,7 @@ best2 = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-
 
 eseda = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', '(1+1)-CMA-ES', '(1+1)-ES')
 
-ess = ('BIPOP-CMA-ES', '(1+1)-CMA-ES', '(1+1)-ES')
+ESs = ('BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', '(1+1)-CMA-ES', '(1+1)-ES')
 
 bestnoisy = ()
 
@@ -71,8 +71,8 @@ funisep = [1,2,5]
 #show_algorithms = ('IPOP-SEP-CMA-ES', 'IPOP-CMA-ES', 'BIPOP-CMA-ES',
 #'avg NEWUOA', 'NEWUOA', 'full NEWUOA', 'BFGS', 'MCS (Neum)', 'GLOBAL', 'NELDER (Han)',
 #'NELDER (Doe)', 'Monte Carlo') # ()==all
-show_algorithms = ()    
-#function_IDs = [8]  # range(103, 131, 3)   # displayed functions
+show_algorithms = ()   
+function_IDs = funi  # range(103, 131, 3)   # displayed functions
 function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 #function_IDs = [1,2,3,4,5] # seperable functions
 #function_IDs = [6,7,8,9]   # moderate functions
