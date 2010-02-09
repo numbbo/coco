@@ -67,3 +67,6 @@ IPOPCMA1e5:cmaes V3.23.beta:% sigma0=2 maxfunevals=1e5*DIM restarts=8 maxiter=10
 IPOPCMA:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e6*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
 bipopactivecmaes:bipopactivecmaes:% active CMA on BBOB-2009:{"label":"bipopactivecmaes"}
 vCMSA_1e6:vCMSA_1e6:% vCMSA with sigma_stop = 1e-10, all tau_*_factors = 1, initial popsize = 4, theta = 1/4, initial mutation = 1:{"label":"vCMSA_1e6"}
+(1+1)-CMA-ES:(1+1)-CMA-ES:% sigma_0=2.0, ccov^-=0, sigma_stop<1e-9:{"label":"(1+1)-CMA-ES"}
+(1+1)-active-CMA-ES:(1+1)-active-CMA-ES:% sigma_0=2.0, ccov^-=0.3/(pow(n, 1.5)+2.0), sigma_stop<1e-9:{"label":"(1+1)-active-CMA-ES"}
+AFTERWS-BIPOP-ES:bipopes:% bipop without CMA on BBOB-2009, 1e4*N fevals:{"label":"BIPOP-ES"}
