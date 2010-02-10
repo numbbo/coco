@@ -17,8 +17,6 @@ import glob
 import warnings
 import getopt
 from pdb import set_trace
-import matplotlib
-matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -28,9 +26,9 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
+from bbob_pproc import dataoutput, pprldistr
 from bbob_pproc.pproc import DataSetList
 from bbob_pproc.comp2 import ppfig2, pprldistr2
-from bbob_pproc import dataoutput, pprldistr
 from bbob_pproc.dataoutput import algLongInfos, algPlotInfos
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
@@ -229,9 +227,7 @@ def main(argv=None):
         for i in args:
             #TODO: Check that i is a valid directory
             if not os.path.exists(i):
-                warntxt = ('The folder %s does not exist.' % i)
-                warnings.warn(warntxt)
-                continue
+                raise Usage('The folder %s does not exist.' % i)
 
             if not (isNoisy ^ isNoiseFree):
                 ext = "*.pickle"
@@ -276,9 +272,8 @@ def main(argv=None):
                               'correct number of trials for each.')
 
         if len(sortedAlgs) < 2:
-            Usage('Expect data from two different algorithms, could only find '
-                  'one.')
-            sys.exit()
+            raise Usage('Expect data from two different algorithms, could ' +
+                        'only find one.')
         elif len(sortedAlgs) > 2:
             warnings.warn('Data with multiple algId %s ' % (sortedAlgs) +
                           'were found, the first two among will be processed.')
@@ -291,6 +286,8 @@ def main(argv=None):
                 dsList0.extend(dictAlg[elem])
             except KeyError:
                 pass
+        if not dsList0:
+            raise Usage('Could not find data for algorithm %s.' % (sortedAlgs[0][0][0]))
         #set_trace()
 
         dsList1 = DataSetList()
@@ -299,6 +296,8 @@ def main(argv=None):
                 dsList1.extend(dictAlg[elem])
             except KeyError:
                 pass
+        if not dsList1:
+            raise Usage('Could not find data for algorithm %s.' % (sortedAlgs[0][0][0]))
 
         #for i, entry in enumerate(sortedAlgs): #Nota: key is sortedAlgs
             #print "Alg%d is: %s" % (i, entry)
@@ -309,13 +308,33 @@ def main(argv=None):
                 if verbose:
                     print 'Folder %s was created.' % (outputdir)
 
+        dictFN0 = dsList0.dictByNoise()
+        dictFN1 = dsList1.dictByNoise()
+        k0 = set(dictFN0.keys())
+        k1 = set(dictFN1.keys())
+        if k1 ^ k0: # symmetric difference
+            txt = []
+            for i, ng in enumerate((k0, k1)):
+                tmp = []
+                if ng:
+                    for j in ng:
+                        if j == 'nzall':
+                            tmp.append('noisy')
+                        elif j == 'noiselessall':
+                            tmp.append('noiseless')
+                    txt.append('Algorithm %s lists %s data.' % (sortedAlgs[i][0][0],
+                                                            ' and '.join(tmp)))
+                else:
+                    txt.append('Algorithm %s lists no data.')
+
+            raise Usage('Data Mismatch: \n' + ' '.join(txt)
+                        + '\nTry using --noise-free or --noisy flags')
+
         if isfigure:
             ppfig2.main(dsList0, dsList1, outputdir, 1e-8, verbose)
             print "log ERT1/ERT0 vs target function values done."
 
         if isrldistr:
-            dictFN0 = dsList0.dictByNoise()
-            dictFN1 = dsList1.dictByNoise()
             if len(dictFN0) > 1 or len(dictFN1) > 1:
                 warnings.warn('Data for functions from both the noisy and ' +
                               'non-noisy testbeds have been found. Their ' +
@@ -419,7 +438,7 @@ def main(argv=None):
 
     except Usage, err:
         print >>sys.stderr, err.msg
-        print >>sys.stderr, "for help use -h or --help"
+        print >>sys.stderr, "For help use -h or --help"
         return 2
 
 

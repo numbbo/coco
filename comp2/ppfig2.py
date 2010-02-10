@@ -43,7 +43,7 @@ except IOError, (errno, strerror):
           'Titles in scaling figures will not be displayed.'
 
 #TODO improve interface.
-def customizeFigure(figHandle, figureName = None, xmin=None, title='',
+def customizeFigure(figHandle, figureName=None, xmin=None, title='',
                     fileFormat=('png','eps'), legend=True, locLegend='best',
                     verbose=True):
     """ Customize a figure by adding a legend, axis label, etc. At the
@@ -81,8 +81,8 @@ def customizeFigure(figHandle, figureName = None, xmin=None, title='',
     # Annotate figure
     #axisHandle.set_xlabel(r'$ \log 10(\Delta \mathrm{ftarget}) $')
     #axisHandle.set_ylabel(r'$ \log 10(ERT1 / ERT0) $')
-    axisHandle.set_xlabel('log10 of Delta ftarget')
-    axisHandle.set_ylabel('log10 of ERT1/ERT0')
+    axisHandle.set_xlabel('log10(Delta ftarget)')
+    axisHandle.set_ylabel('log10(ERT1/ERT0)')
 
     # Grid options
     axisHandle.grid('True')
@@ -373,7 +373,33 @@ def generatePSData(ert0, ert1):
 
     return remainingert[:, numpy.r_[0, 2]]
 
+def generatePSData2(ert0, ert1, plotdata):
+    xdata = None
+    isfinite = numpy.isfinite(ert0[:, 1]) * numpy.isfinite(ert1[:, 1])
+    isfiniteidx = len(numpy.nonzero(isfinite)[0])
+
+    if isfiniteidx != len(ert0): # which is the same as len(ert1)
+        if (numpy.isinf(ert0[isfiniteidx, 1])
+            and numpy.isfinite(ert1[isfiniteidx, 1])): #alg0 stopped first
+            xdata = ert1[isfiniteidx-1:, 0]
+            isalg1 = True
+            # isfiniteidx-1 to keep the last value for which both ert was still finite
+        elif (numpy.isinf(ert1[isfiniteidx, 1])
+              and numpy.isfinite(ert0[isfiniteidx, 1])): #alg1 stopped first
+            xdata = ert0[isfiniteidx-1:, 0]
+            # isfiniteidx-1 to keep the last value for which both ert was still finite
+            isalg1 = False
+    else:
+        return None
+
+    ydata = [ert1[isfiniteidx-1, 1]/ert0[isfiniteidx-1, 1]] * len(xdata)
+    return numpy.transpose(numpy.vstack((xdata, numpy.array(ydata))))
+
 def generatePlotData(data, minfvalue):
+    """Process data according to a xmax bound.
+       cuts off some data if minfvalue is defined.
+    """
+
     if minfvalue is None:
         return data, False
 
@@ -384,9 +410,15 @@ def generatePlotData(data, minfvalue):
         plotdata = plotdata[0:idx+1, :] # the last value is smaller or equal to minfvalue
         # Hack: replace function values of zero by min/max function values.
         idxzero = (plotdata[:, 0] == 0)
-        plotdata[idxzero, 0] = (min(minfvalue,
-                                    numpy.min(plotdata[idxzero == False, 0]))
-                                / numpy.max(plotdata[:, 0]))
+        if len(plotdata[idxzero == False, 0]) > 0:
+            plotdata[idxzero, 0] = (min(minfvalue,
+                                        numpy.min(plotdata[idxzero == False, 0]))
+                                    / numpy.max(plotdata[:, 0]))
+        else:
+            # in this case all x data is zero.
+            #TODO: How should we deal with this case?
+            plotdata[idxzero, 0] = minfvalue / numpy.max(plotdata[:, 0])
+
         isPlotFinished = True
     return plotdata, isPlotFinished
 
@@ -417,7 +449,7 @@ def generatePlot(dataset0, dataset1, i, dim, minfvalue=None, nbtests=1):
         h = plt.plot((plotdata[-1, 0], ), (plotdata[-1, 1], ),
                      marker=markers[i], markersize=6*linewidth,
                      markeredgewidth=linewidth, markeredgecolor=colors[i],
-                     markerfacecolor=None, color='w')
+                     markerfacecolor='None', color='w')
         handles.extend(h)
 
     # Dashed line for while both algorithm have a finite ert
@@ -429,11 +461,11 @@ def generatePlot(dataset0, dataset1, i, dim, minfvalue=None, nbtests=1):
         handles.extend(h)
 
         if not isPlotFinished:
-            # Marker for when an algorithm stopped
+            # Marker for when an algorithm stopped$
             h = plt.plot((plotdata[-1, 0], ), (plotdata[-1, 1], ),
                          marker=markers[i], markersize=6*linewidth,
                          markeredgewidth=linewidth, markeredgecolor=colors[i],
-                         markerfacecolor=None, color='w')
+                         markerfacecolor='None', color='w')
             handles.extend(h)
 
     #Number of successful trials on a linear scale
@@ -443,10 +475,12 @@ def generatePlot(dataset0, dataset1, i, dim, minfvalue=None, nbtests=1):
             plotdata, isPlotFinished = generatePlotData(data, minfvalue)
             resplotdata.append(plotdata.copy())
 
-            h = plt.plot(plotdata[:, 0], plotdata[:, 1],  color=colors[i],
-                         linewidth=linewidth, marker='d', markeredgecolor=colors[i],
-                         ls='--')
-            handles.extend(h)
+            if any(numpy.isfinite(plotdata[:, 0])):
+                h = plt.plot(plotdata[:, 0], plotdata[:, 1],  color=colors[i],
+                             linewidth=linewidth, marker='d', markeredgecolor=colors[i],
+                             ls='--')
+                handles.extend(h)
+
         #handles.append(plt.plot(tmpplotdata[tmpplotdata[:, 1] <= medmaxeval, 0],
                                 #tmpplotdata[tmpplotdata[:, 1] <= medmaxeval],  color=colors[i],
                                 #linewidth=linewidth, marker='d', markeredgecolor=colors[i]))
@@ -524,21 +558,6 @@ def generatePlot2(dataset0, dataset1, i, dim, minfvalue=None, nbtests=1):
     plotdata, isPlotFinished = generatePlotData(soliddata, minfvalue)
     resplotdata.append(plotdata.copy())
 
-    # Solid line for when the ert of the still going algorithm is smaller than
-    # the median of the number of function evaluations of the other algorithm.
-    #h = plt.plot(plotdata[:, 0], plotdata[:, 1], label='%d-D' % dim,
-                 #color=colors[i], linewidth=linewidth)
-    #handles.extend(h)
-
-    ## A marker is put when the ERT is larger than the median of number of
-    ## function evaluations of the other algorithm.
-    #if not isPlotFinished:
-        #h = plt.plot((plotdata[-1, 0], ), (plotdata[-1, 1], ),
-                     #marker=markers[i], markersize=6*linewidth,
-                     #markeredgewidth=linewidth, markeredgecolor=colors[i],
-                     #markerfacecolor=None, color='w')
-        #handles.extend(h)
-
     # Solid line while both algorithm have a finite ert
     plotdata, isPlotFinished = generatePlotData(data, minfvalue) # replace isPlotFinished
     resplotdata.append(plotdata.copy())
@@ -551,23 +570,24 @@ def generatePlot2(dataset0, dataset1, i, dim, minfvalue=None, nbtests=1):
         h = plt.plot((plotdata[-1, 0], ), (plotdata[-1, 1], ),
                      marker=markers[i], markersize=6*linewidth,
                      markeredgewidth=linewidth, markeredgecolor=colors[i],
-                     markerfacecolor=None, color='w')
+                     markerfacecolor='None', color='w')
+
         handles.extend(h)
 
-    #Number of successful trials on a linear scale
+    # At this point one algorithm stopped.
+    # Straight line for until the second algorithm stops
     if not isPlotFinished:
-        data = generatePSData(ert0, ert1)
+        data = generatePSData2(ert0, ert1, plotdata)
         if not data is None:
             plotdata, isPlotFinished = generatePlotData(data, minfvalue)
             resplotdata.append(plotdata.copy())
 
-            h = plt.plot(plotdata[:, 0], plotdata[:, 1],  color=colors[i],
-                         linewidth=linewidth, marker='d', markeredgecolor=colors[i],
-                         ls='--')
-            handles.extend(h)
-        #handles.append(plt.plot(tmpplotdata[tmpplotdata[:, 1] <= medmaxeval, 0],
-                                #tmpplotdata[tmpplotdata[:, 1] <= medmaxeval],  color=colors[i],
-                                #linewidth=linewidth, marker='d', markeredgecolor=colors[i]))
+            if any(numpy.isfinite(plotdata[:, 0])):
+            
+                h = plt.plot(plotdata[:, 0], plotdata[:, 1],  color=colors[i],
+                             linewidth=linewidth, markeredgecolor=colors[i],
+                             ls='-')
+                handles.extend(h)
 
     annot = {}
     annot["isPlotFinished"] = isPlotFinished
@@ -670,9 +690,15 @@ def annotate(annotations, minfvalue):
             # numpy.arange(1., 1. - 0.1 * nbstars, -0.1) not having the right number
             # of elements due to numerical error
             ytmp = [a["coord"][1]] * nbstars
-            h = plt.plot(xtmp, ytmp, marker='*', ls='', markersize=2.5*linewidth,
-                         markeredgecolor='k', zorder=20,
-                         markeredgewidth = 0.2 * linewidth, color='w')
+            try:
+                h = plt.plot(xtmp, ytmp, marker='*', ls='', color='w',
+                             markersize=2.5*linewidth, markeredgecolor='k',
+                             zorder=20, markeredgewidth = 0.2 * linewidth)
+            except KeyError:
+                #Version problem
+                h = plt.plot(xtmp, ytmp, marker='+', ls='', color='w',
+                             markersize=2.5*linewidth, markeredgecolor='k',
+                             zorder=20, markeredgewidth = 0.2 * linewidth)
             #h = plt.plot(xtmp, ytmp, marker='*', ls='', markersize=4*linewidth,
                          #markeredgecolor='k', zorder=20)
 
@@ -753,7 +779,7 @@ def main(dsList0, dsList1, outputdir, minfvalue = 1e-8, verbose=True):
             dataset0 = dictDim0[dim][0]
             dataset1 = dictDim1[dim][0]
             # TODO: warn if there are not one element in each of those dictionaries
-            h, a = generatePlot(dataset0, dataset1, i, dim, minfvalue, len(dims))
+            h, a = generatePlot2(dataset0, dataset1, i, dim, minfvalue, len(dims))
             annotations.append(a)
 
         annotate(annotations, minfvalue)
