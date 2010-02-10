@@ -290,7 +290,7 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
 
 
 def generateData(indexEntry, targetFuncValues, samplesize=1000):
-    """Returns data for the tables.
+    """Deperecated: Returns data for the tables.
 
     Data are supposed to be function-value aligned on some specific function
     values, information on the number of function evaluations to reach the
@@ -353,7 +353,7 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
             #TODO: use drawSP(N[success], N[!success],...)
             #      which is always finite here and can better 
             #      replace the next 15 lines (up to curLine = ...)
-            #      Also the above code to generate N can becomes 
+            #      Also the above code to generate N can become
             #      simpler than. 
             #Probability that a bootstrap sample contains no success
             pbu = ((len(N) - ertvec[2]) / float(len(N))) ** len(N)
@@ -392,9 +392,8 @@ def generateData(indexEntry, targetFuncValues, samplesize=1000):
         #set_trace()
     return numpy.vstack(res)
 
-
 def generateData2(dataSet, targetFuncValues, samplesize=1000):
-    """Returns data for the tables.
+    """Deprecated: Returns data for the tables.
 
     Data are supposed to be function-value aligned on some specific function
     values, information on the number of function evaluations to reach the
@@ -486,6 +485,106 @@ def generateData2(dataSet, targetFuncValues, samplesize=1000):
         res.append(curLine)
     return numpy.vstack(res)
 
+def generateData3(dataSet, targetFuncValues, samplesize=1000):
+    """Returns data for the tables.
+
+    Data are supposed to be function-value aligned on some specific function
+    values, information on the number of function evaluations to reach the
+    target function value complete a row in the resulting array. If some runs
+    from indexEntry did not reach the target function value, information on the
+    final function value reached by these runs will be stored instead.
+
+    Keyword arguments:
+    indexEntry -- input IndexEntry.
+    targetFuncValues -- function values to be displayed
+    samplesize -- sample size used for the bootstrapping. The larger this value
+    is the longer it takes.
+
+    Outputs:
+    Array of data to be displayed in the tables.
+
+    """
+
+    #TODO loop over header to know what to append to curLine.
+    res = []
+    it = iter(dataSet.evals)
+    i = it.next()
+
+    for targetF in reversed(sorted(targetFuncValues)):
+        while i[0] > targetF:
+            try:
+                i = it.next()
+            except(StopIteration):
+                break
+
+        if i[0] <= targetF: # if at least one success
+            N = i.copy()[1:]
+            success = numpy.isfinite(N)
+            N[numpy.isnan(N)] = dataSet.maxevals[numpy.isnan(N)]
+
+            ertvec = bootstrap.sp(N, issuccessful=success, allowinf=False)
+
+            sumfevals = numpy.sum(N)
+            if any(success):
+                dispersion = bootstrap.drawSP(N[success], N[success==False],
+                                              percentiles, samplesize)[0]
+            else:
+                #Should never occur...
+                dispersion = [-sumfevals]*percentiles
+                # we put a negative number to have a different output in
+                # the tables.
+
+            # #Probability that a bootstrap sample contains no success
+            # pbu = ((len(N) - ertvec[2]) / float(len(N))) ** len(N)
+            # bpercentiles = list(j/100. <= 1.-pbu for j in percentiles)
+            # if any(bpercentiles):
+            #     #Line below: percentiles instead of bpercentiles
+            #     #We compute all the percentiles though some might be infinite
+            #     dispersion = bootstrap.draw(N, percentiles,
+            #                                 samplesize=samplesize,
+            #                                 func=bootstrap.sp,
+            #                                 args=[0, success])[0]
+            #
+            # for j in range(len(bpercentiles)):
+            #     #the percentile is larger than 1-pbu or we still have inf
+            #     # (which has a chance of happening though not in the limit).
+            #     if not bpercentiles[j] or numpy.isinf(percentiles[j]):
+            #         dispersion[j] = -sumfevals
+            #         # we put a negative number to have a different output in
+            #         # the tables.
+
+            curLine = [targetF, ertvec[2], ertvec[0],
+                       dispersion[0], dispersion[1],
+                       numpy.mean(N[success])]
+
+        else: # 0 success.
+            #set_trace()
+            vals = numpy.sort(dataSet.finalfunvals)
+            #Get the function values for maxEvals.
+
+            curLine = [targetF, 0] # 0 success
+            tmp = [50]
+            tmp.extend(percentiles)
+            # it's the same prctiles for the funvals as for the bootstrapping.
+            curLine.extend(bootstrap.prctile(vals, tmp))
+
+            # unsucc is an array of the largest number of function evaluations
+            # for which f is STRICTLY larger to fbest
+            unsucc = []
+            for j in range(1, dataSet.nbRuns()+1):
+                # Get the alignment number of function evaluations
+                # corresponding to the 1st occurrence of the best function
+                # value obtained.
+                k = -1
+                while (dataSet.funvals[k - 1, j] == dataSet.finalfunvals[j-1]
+                       and k > -len(dataSet.funvals) + 1):
+                    k -= 1
+                unsucc.append(dataSet.funvals[k, 0])
+            curLine.append(bootstrap.prctile(unsucc, [50], issorted=False)[0])
+
+        res.append(curLine)
+    return numpy.vstack(res)
+
 def tableLaTeX(table, spec, extraeol=(), pos=''):
     """Generates a latex tabular from a sequence of sequence (table) of strings.
 
@@ -537,6 +636,6 @@ def main(indexEntries, valOfInterests, filename, isDraft=False, verbose=True):
     #TODO give an array of indexEntries and have a vertical formatter.
     for i in indexEntries:
         curValOfInterests = list(j[i.funcId] for j in valOfInterests)
-        i.tabData = generateData2(i, curValOfInterests, samplesize)
+        i.tabData = generateData3(i, curValOfInterests, samplesize)
 
     writeTable(indexEntries, filename, fontSize='tiny', verbose=verbose)

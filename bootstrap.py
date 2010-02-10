@@ -113,17 +113,17 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
 
 
 def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
-    """Input:
+    """Returns the percentiles of the bootstrap distribution of ERT.
+    Input:
     runlengths_succ--array of running lengths of successful runs
     runlengths_unsucc--array of running lengths of unsuccessful runs
     Return:
        (percentiles, all_sampled_values_sorted)
     Details:
-       SP is computed by adding uniformly randomly chosen running lengths
+       ERT is computed by adding uniformly randomly chosen running lengths
        until the first time a successful one is chosen. In case of no
        successful run the sum of unsuccessful runs is bootstrapped.
     """
-    #print 'to be implemented'  # TODO
 
     Nsucc = len(runlengths_succ)
     Nunsucc = len(runlengths_unsucc)
@@ -165,7 +165,8 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
             arrStats)
 
 def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
-    """Input:
+    """Generates the empirical bootstrap distribution from a sample.
+    Input:
     data--a sequence of data values
     percentiles--a single scalar value or a sequence of percentiles
         to be computed from the bootstrapped distribution.
@@ -195,7 +196,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     N = len(data)
     adata = numpy.array(data)  # more efficient indexing
     succ = None
-    # there is a third argument to func which is the arrayof success
+    # there is a third argument to func which is the array of success
     if len(args) > 1:
         succ = numpy.array(args[1])
     # should NaNs also be bootstrapped?
@@ -221,7 +222,6 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
 
     return (prctile(arrStats, percentiles, issorted=True),
             arrStats)
-
 
 # utils not really part of bootstrap module though:
 def prctile(x, arrprctiles, issorted=False):
