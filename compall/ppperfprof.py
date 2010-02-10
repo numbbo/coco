@@ -23,7 +23,7 @@ best2 = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-
 
 eseda = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', '(1+1)-CMA-ES', '(1+1)-ES')
 
-ESs = ('BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', '(1+1)-CMA-ES', '(1+1)-ES')
+ESs = ('BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', '(1+1)-CMA-ES', '(1+1)-ES', 'BIPOP-ES')
 
 bestnoisy = ()
 
@@ -31,7 +31,7 @@ bestbest = ('BIPOP-CMA-ES', 'NEWUOA', 'GLOBAL', 'NELDER (Doe)')
 nikos = ('AMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', '(1+1)-CMA-ES', 'G3-PCX', 'NEWUOA', 
          'Monte Carlo', 'NELDER (Han)', 'NELDER (Doe)', 'GLOBAL', 'MCS (Neum)')
 nikos = ('AMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 
-         '(1+1)-CMA-ES', '(1+1)-ES', 'IPOP-SEP-CMA-ES', 
+         '(1+1)-CMA-ES', '(1+1)-ES', 'IPOP-SEP-CMA-ES', 'BIPOP-ES',
          'NEWUOA', 
          'NELDER (Doe)', 'BFGS', 'Monte Carlo')
 
@@ -72,9 +72,9 @@ funisep = [1,2,5]
 #'avg NEWUOA', 'NEWUOA', 'full NEWUOA', 'BFGS', 'MCS (Neum)', 'GLOBAL', 'NELDER (Han)',
 #'NELDER (Doe)', 'Monte Carlo') # ()==all
 show_algorithms = ()   
-function_IDs = funi  # range(103, 131, 3)   # displayed functions
+function_IDs = fmulti  # range(103, 131, 3)   # displayed functions
 function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
-#function_IDs = [1,2,3,4,5] # seperable functions
+#function_IDs = [1,2,3,4,5] # separable functions
 #function_IDs = [6,7,8,9]   # moderate functions
 #function_IDs = [10,11,12,13,14] # ill-conditioned functions
 #function_IDs = [15,16,17,18,19] # multi-modal functions
