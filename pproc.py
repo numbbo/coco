@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
 """Helper routines for read index files.
    Defines class IndexEntry, unit element in the post-processing and the list
@@ -15,7 +15,7 @@ import pickle
 import warnings
 from pdb import set_trace
 import numpy
-from bbob_pproc import findindexfiles, readalign, bootstrap
+from bbob_pproc import findfiles, readalign, bootstrap
 from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
 from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 
@@ -32,6 +32,7 @@ class DataSet:
     Class attributes:
         funcId -- function Id (integer)
         dim -- dimension (integer)
+        indexFiles -- associated index files (list)
         dataFiles -- associated data files (list)
         comment -- comment for the setting (string)
         targetFuncValue -- target function value (float)
@@ -45,6 +46,7 @@ class DataSet:
                         file (array)
         readfinalFminusFtarget -- final function values - ftarget read from
                                   index file (array)
+        pickleFile -- associated pickle file name (string)
 
     evals and funvals are arrays of data collected from N data sets. Both have
     the same format: zero-th column is the value on which the data of a row is
@@ -78,6 +80,7 @@ class DataSet:
             self.comment = ''
 
         # Split line in data file name(s) and run time information.
+        self.indexFiles = [indexfile]
         self.dataFiles = []
         self.itrials = []
         self.evals = []
@@ -219,13 +222,32 @@ class DataSet:
 
         return
 
-    def pickle(self, outputdir, verbose=True):
+    def pickle(self, outputdir=None, verbose=True):
+        """Save DataSet instance to a pickle file.
+        Saves the instance of DataSet to a pickle file. If not specified by
+        argument outputdir, the location of the pickle is given by the location
+        of the first index file associated to the DataSet.
+        """
+
+        # the associated pickle file does not exist
         if not getattr(self, 'pickleFile', False):
+            if outputdir is None:
+                outputdir = os.path.split(self.indexFiles[0])[0] + '-pickle'
+                if not os.path.isdir(outputdir):
+                    try:
+                        os.mkdir(outputdir)
+                    except OSError:
+                        print ('Could not create output directory % for pickle files'
+                               % outputdir)
+                        raise
+
             self.pickleFile = os.path.join(outputdir,
                                            'ppdata_f%03d_%02d.pickle'
                                             %(self.funcId, self.dim))
+
+        if getattr(self, 'modsFromPickleVersion', True):
             try:
-                f = open(self.pickleFile, 'w')
+                f = open(self.pickleFile, 'w') # TODO: what if file already exist?
                 pickle.dump(self, f)
                 f.close()
                 if verbose:
@@ -303,12 +325,16 @@ class DataSetList(list):
         if isinstance(args, basestring):
             args = [args]
 
+        tmp = []
         for i in args:
+            if os.path.isdir(i):
+                tmp.extend(findfiles.main(i, verbose))
+            else:
+                tmp.append(i)
+
+        for i in tmp:
             if i.endswith('.info'):
                 self.processIndexFile(i, verbose)
-            elif os.path.isdir(i):
-                for j in findindexfiles.main(i, verbose):
-                    self.processIndexFile(j, verbose)
             elif i.endswith('.pickle'):
                 try:
                     f = open(i,'r')
@@ -379,35 +405,53 @@ class DataSetList(list):
 
     def append(self, o):
         """Redefines the append method to check for unicity."""
-        #TODO: Watchout! extend does not call append.
 
-        #set_trace()
         if not isinstance(o, DataSet):
             raise Exception()
         isFound = False
         for i in self:
             if i == o:
                 isFound = True
-                if set(i.dataFiles).symmetric_difference(set(o.dataFiles)):
+                tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
+                #Check if there are new data considered.
+                if tmp:
+                    i.dataFiles.extend(tmp)
+                    i.indexFiles.extend(o.indexFiles)
                     i.funvals = alignArrayData(VArrayMultiReader([i.funvals, o.funvals]))
                     i.finalfunvals = numpy.r_[i.finalfunvals, o.finalfunvals]
                     i.evals = alignArrayData(HArrayMultiReader([i.evals, o.evals]))
                     i.maxevals = numpy.r_[i.maxevals, o.maxevals]
                     i.computeERTfromEvals()
                     if getattr(i, 'pickleFile', False):
-                        del i.pickleFile
+                        i.modsFromPickleVersion = True
+
                     for j in dir(i):
                         if isinstance(getattr(i, j), list):
                             getattr(i, j).extend(getattr(o, j))
+
+                else:
+                    if getattr(i, 'pickleFile', False):
+                        i.modsFromPickleVersion = False
+                    elif getattr(o, 'pickleFile', False):
+                        i.modsFromPickleVersion = False
+                        i.pickleFile = o.pickleFile
                 break
         if not isFound:
             list.append(self, o)
 
-    def pickle(self, outputdir, verbose=True):
+    def extend(self, o):
+        """Extend a DataSetList with elements.
+        This method is implemented to prevent problems since append was
+        superseded. This could be the cause of efficiency issue.
+        """
+
+        for i in o:
+            self.append(i)
+
+    def pickle(self, outputdir=None, verbose=True):
         """Loop over self to pickle each elements."""
 
         for i in self:
-            #set_trace()
             i.pickle(outputdir, verbose)
 
     def dictByAlg(self):
@@ -483,3 +527,60 @@ class DataSetList(list):
 
         return sorted
 
+def processInputArgs(args, plotInfo=None, verbose=True):
+    """Process command line arguments into data useable by bbob_pproc scripts
+    Returns an instance of DataSetList, a list of algorithms from
+    a list of strings representing file and folder names.
+    This command will operate folder-wise: one folder will correspond to an
+    algorithm.
+    It is recommended that if a folder listed in args contain both info files
+    and the associated pickle files, they be kept in different locations for
+    efficiency reasons.
+    Keyword arguments:
+      args -- list of string arguments for folder names
+      plotInfo -- a dictionary which associates a tuple (algId, comment) to
+                  a dictionary to be provided to matplotlib.pyplot.plot
+      verbose -- bool controlling verbosity
+
+    Returns: (dsList, sortedAlgs, dictAlg), where
+      dsList is a list containing all DataSet instances, this is to prevent the
+        regrouping done in instances of DataSetList
+      dictAlg is a dictionary which associates algorithms to an instance of
+        DataSetList,
+      sortedAlgs is the sorted list of keys of dictAlg, the sorting is given
+        by the input argument args.
+    """
+
+    dsList = list()
+    sortedAlgs = list()
+    dictAlg = {}
+
+    for i in args:
+        if os.path.isfile(i):
+            txt = ('The post-processing cannot operate on the single file'
+                   + ' %s.' % i)
+            warnings.warn(txt)
+            continue
+        elif os.path.isdir(i):
+            tmpDsList = DataSetList(findfiles.main(i, verbose), verbose)
+            #Nota: findfiles will find all info AND pickle files in folder i.
+            #No problem should arise if the info and pickle files have
+            #redundant information. Only, the process could be more efficient
+            #if pickle files were in a whole other location.
+            dsList.extend(tmpDsList)
+            #Find an appropriate name for the algorithm considered?
+            #could either refer to dataoutput.plotInfo['label'] or algId
+            #tmp = set((i.algId, i.comment) for i in tmpDsList)
+            #if not plotInfo is None:
+                #alg = plotInfo[tmp.pop()]
+            #else:
+                #alg = tmp.pop()[0]
+            alg = i
+            sortedAlgs.append(alg)
+            dictAlg[alg] = tmpDsList
+        else:
+            txt = 'Input folder %s could not be found.'
+            #raise Usage(txt) #TODO how to call Usage?
+            warnings.warn(txt)
+
+    return dsList, sortedAlgs, dictAlg

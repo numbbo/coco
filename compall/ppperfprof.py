@@ -1,17 +1,17 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""Generates Empirical Cumulative Distribution of the bootstrap distribution of
+the Expected Running Time (ERT) divided by the dimension."""
+
 from __future__ import absolute_import
 
 import os
 import warnings
+from pdb import set_trace
 import numpy # According to PEP 8 imports should be on different lines
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
-from pdb import set_trace
-
-"""Generates Empirical Cumulative Distribution of the bootstrap distribution of
-the Expected Running Time (ERT) divided by the dimension."""
 
 figformat = ('eps', 'png', 'pdf') # Controls the output when using the main method
 
@@ -248,16 +248,18 @@ def plotLegend(handles, maxval):
     #plt.axvline(x=maxval, color='k') # Not as efficient?
     plt.plot((maxval, maxval), (0., 1.), color='k')
 
-def main(dsList, target, order=None, plotArgs={}, outputdir='',
+def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
           info='default', verbose=True):
-    """From a dataSetList, generates the performance profiles for multiple
-    functions for multiple targets altogether.
-    keyword arguments:
-    target: list of dictionaries with (function, dimension) as keys, target
+    """Generates a figure showing the performance of algorithms.
+    From a dictionary of DataSetList sorted by algorithms, generates the
+    cumulative distribution function of the bootstrap distribution of ERT
+    for algorithms on multiple functions for multiple targets altogether.
+    Keyword arguments:
+    dictAlg --
+    target -- list of dictionaries with (function, dimension) as keys, target
     function values as values
-    order: determines the plotting order of the algorithm (used by the legend
+    order -- determines the plotting order of the algorithm (used by the legend
     and in the case the algorithm has no plotting arguments specified).
-
     """
 
     xlim = x_limit
@@ -268,27 +270,30 @@ def main(dsList, target, order=None, plotArgs={}, outputdir='',
     bestERT = [] # best ert per function, not necessarily sorted as well.
     funcsolved = [0] * len(target)
 
-    dictFunc = dsList.dictByFunc()
+    for alg, sameAlgEntries in dictAlg.iteritems():
 
-    for f, samefuncEntries in dictFunc.iteritems():
-        if f not in function_IDs:
-           continue
-        dictDim = samefuncEntries.dictByDim()
-        for d, samedimEntries in dictDim.iteritems():
-            dictAlg = samedimEntries.dictByAlg()
+        dictFunc = sameAlgEntries.dictByFunc()
 
-            for j, t in enumerate(target):
-                try:
-                    #set_trace()
-                    if numpy.isnan(t[(f, d)]):
+        for f, samefuncEntries in dictFunc.iteritems():
+            if f not in function_IDs:
+               continue
+            dictDim = samefuncEntries.dictByDim()
+
+            for d, entries in dictDim.iteritems():
+
+                for j, t in enumerate(target):
+                    try:
+                        #set_trace()
+                        if numpy.isnan(t[(f, d)]):
+                            continue
+                    except KeyError:
                         continue
-                except KeyError:
-                    continue
-                funcsolved[j] += 1
+                    funcsolved[j] += 1
 
-                for alg, entry in dictAlg.iteritems():
-                    # entry is supposed to be a single item DataSetList
-                    entry = entry[0]
+                    # entry is supposed to be a single item DataSetList, TODO: if not?
+                    if len(entries) != 1:
+                        set_trace()
+                    entry = entries[0]
                     x = [numpy.inf] * perfprofsamplesize
                     y = numpy.inf
                     runlengthunsucc = entry.maxevals / entry.dim
@@ -317,39 +322,29 @@ def main(dsList, target, order=None, plotArgs={}, outputdir='',
 
     lines = []
     for i, alg in enumerate(order):
-        data = []
         maxevals = []
-        isData = False
-        for elem in alg:
-            if dictData.has_key(elem):
-                isData = True
-                data.extend(dictData[elem])
-                maxevals.extend(dictMaxEvals[elem])
 
-        if isData:
-            CrE = 0 
-            # need to know noisy or non-noisy functions here!
-            if max(function_IDs) < 100:  # non-noisy functions
-                if alg[0][0] == 'GLOBAL':
-                    CrE = 0.5117
-                    # print 'GLOBAL corrected'
-            elif min(function_IDs) > 100 :  # noisy functions
-                if alg[0][0] == 'GLOBAL':
-                    CrE = 0.6572
-            else:
-                pass 
-                # print 'mixing noisy and non-noisy functions will yield questionable results'
+        data = dictData[alg]
+        maxevals = dictMaxEvals[alg]
 
-            lines.append(plotPerfProf(numpy.array(data),
-                         xlim, maxevals, order=(i, len(order)), CrE=CrE, 
-                         kwargs=get_plot_args(plotArgs[elem]), )) #elem is an element in alg...
+        CrE = 0
+        # need to know noisy or non-noisy functions here!
+        if max(function_IDs) < 100:  # non-noisy functions
+            if alg[0][0] == 'GLOBAL':
+                CrE = 0.5117
+                # print 'GLOBAL corrected'
+        elif min(function_IDs) > 100 :  # noisy functions
+            if alg[0][0] == 'GLOBAL':
+                CrE = 0.6572
+        else:
+            pass 
+            # print 'mixing noisy and non-noisy functions will yield questionable results'
 
-    # re-plot show_algorithms in front, does not work
-    #for i, alg in enumerate(order):
-    #    if plotArgs[alg[0]] in show_algorithms:
-    #        lines.append(plotPerfProf(numpy.array(data),
-    #                     xlim, maxevals, order=(i, len(order)),
-    #                     kwargs=get_plot_args(plotArgs[alg[0]]))) #elem is an element in alg...
+        #Get one element in the set of the algorithm description
+        elem = set((i.algId, i.comment) for i in dictAlg[alg]).pop()
+        lines.append(plotPerfProf(numpy.array(data),
+                     xlim, maxevals, order=(i, len(order)), CrE=CrE,
+                     kwargs=get_plot_args(plotArgs[elem]), ))
 
     plotLegend(lines, xlim)
 

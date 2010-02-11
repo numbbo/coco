@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" Creates ENFEs and convergence figures for BBOB post-processing for the
-comparison of 2 algorithms.
-"""
+"""Creates ERTs and convergence figures for the comparison of 2 algorithms."""
+
+from __future__ import absolute_import
 
 import os
 import sys
@@ -583,7 +583,6 @@ def generatePlot2(dataset0, dataset1, i, dim, minfvalue=None, nbtests=1):
             resplotdata.append(plotdata.copy())
 
             if any(numpy.isfinite(plotdata[:, 0])):
-            
                 h = plt.plot(plotdata[:, 0], plotdata[:, 1],  color=colors[i],
                              linewidth=linewidth, markeredgecolor=colors[i],
                              ls='-')
@@ -779,7 +778,7 @@ def main(dsList0, dsList1, outputdir, minfvalue = 1e-8, verbose=True):
             dataset0 = dictDim0[dim][0]
             dataset1 = dictDim1[dim][0]
             # TODO: warn if there are not one element in each of those dictionaries
-            h, a = generatePlot2(dataset0, dataset1, i, dim, minfvalue, len(dims))
+            h, a = generatePlot(dataset0, dataset1, i, dim, minfvalue, len(dims))
             annotations.append(a)
 
         annotate(annotations, minfvalue)

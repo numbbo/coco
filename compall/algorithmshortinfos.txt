@@ -1,72 +1,81 @@
-%    If you need to process new data, you must add a line in the file
-%    algorithmshortinfos.txt
-%    The line in question must have 4 fields separated by colon (:) character.
-%    The 1st must be the name of the folder which will contain the
-%    post-processed pickle data file, the 2nd is the exact string used as algId
-%    in the info files, the 3rd is the exact string for the comment. The 4th
-%    will be a python dictionary which will be use for the plotting.
-%    If different comment lines (3rd field) have been used for a single
-%    algorithm, there should be a line in algorithmshortinfos.txt corresponding
-%    to each of these.
-cmaes28noikappa2:cmaes V3.30.beta:% cmaes28noikappa2 BIPOP like 24 with kappa=10, deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{}
-cmaes30noikappa2:cmaes V3.30.beta:% cmaes26noi BIPOP like 24 with kappa=10, deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{}
-BFGS:BFGS:% [-5, 5]^n, max 100 independent restarts.:{"label": "BFGS", "color": "r"}
-NELDER:fminsearch:% 1e4*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1:{"label": "NELDER (Han)", "color": "c", "ls": "--"}
-NELDER:fminsearch:% 1e5*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1:{"label": "NELDER (Han)", "color": "c", "ls": "--"}
-NEWUOA:NEWUOA:% NPT=2*DIM+1, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "NEWUOA", "color": "g"}
-AVGNEWUOA:NEWUOA:% NPT=AVG, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "avg NEWUOA", "color": "g", "linestyle": "-."}
-FULLNEWUOA:NEWUOA:% NPT=(DIM+1)(DIM+2)/2, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "full NEWUOA", "color": "g", "linestyle": "--"}
-CMA-ES:cmaes V3.30.beta:% cmaes25 ccum=new stopstagnation, sigmaUp=10^20, maxrestartfunevals=1e7*DIM restarts=9 maxiter=100 + 50 * (N+3)^2/sqrt(popsize) no xopt sigma0=2:{"label": "BIPOP-CMA-ES", "color": "b"}
-CMA-ES:cmaes V3.30.beta:% cmaes24noi BIPOP like 21 with deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{"label": "BIPOP-CMA-ES", "color": "b"}
-DE-PSO:DEPSO:% MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "DEPSO", "color": "springgreen", "ls": "--"}
-CMA-ESPLUSSEL:cmaesplussel:%:{"label": "(1+1)-CMA-ES", "color": "b", "ls": "--"}
-ONEFIFTH:One-Fifth Variant3:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "(1+1)-ES", "color": "m"}
-RANDOMSEARCH:PureRandomSearchOnNoise:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "Monte Carlo", "color": "k", "ls": "--"}
-EDA-PSO:EDA-PSO:% All historical information with correlation-triggered adaptive variance scaling.:{"label": "EDA-PSO", "color": "springgreen"}
-EDA-PSO:EDA-PSO:% An EDA and PSO hybrid algorithm.:{"label": "EDA-PSO", "color": "springgreen"}
-PSO_Bounds:PSO_Bounds_R:% hmin=0.2, hmax=0.8, alpha=0.05 and T=0.0001.:{"label": "PSO_Bounds", "color": "y"}
-PSO_Bounds:PSO_Bounds algorithm:% A PSO algortihm with Adaptive Varying Bounds, pmin = 0.2, pmax = 0.8, alpha = 0.05, T = 0.0001.:{"label": "PSO_Bounds", "color": "y"}
-PSO:PSO:% A gbest PSO algorithm.:{"label": "PSO", "color": "y", "ls": "--"}
-DASA:DASA:% test:{"label": "DASA", "color": "sienna"}
-Cauchy-EDA:Cauchy EDA:% restarts up to 100, outermaxfevals 5e4*dim, inner maxfunevals 5e4*dim:{"label": "Cauchy EDA", "color": "slategray"}
-DIRECT:Original DIRECT:% No restarts, outermaxfevals 1e5, inner maxfunevals 1e5:{"label": "DIRECT", "color": "violet"}
-G3PCX:G3PCX:% restarts up to 100, outermaxfevals 5e4*dim, inner maxfunevals 5e4*dim:{"label": "G3-PCX", "color": "springgreen"}
-LSfminbnd:Line Search - fminbnd:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "LSfminbnd", "color": "steelblue"}
-LSstep:Line Search - STEP:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "LSstep", "color": "teal"}
-Rosenbrock:Local Search - Rosenbrock:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "Rosenbrock", "color": "peru"}
-AMALGAM:AMaLGaM-Full-Free:% AMaLGaM-Full-Free:{"label": "AMaLGaM IDEA", "color": "tomato"}
-iAMALGAM:iAMaLGaM-Full-Free:% iAMaLGaM-Full-Free:{"label": "iAMaLGaM IDEA", "color": "tomato", "ls": "--"}
-BAYEDA:BAYEDA:% Simple continuous BAYEDA with 0.8 selection, population=10*DIM, 2000*DIM fn evals, so 200 generations:{"label": "BayEDAcG", "color": "pink"}
-GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =8;Maxfevnr=5000;Method =simplex2:{"label": "GLOBAL", "color": "salmon"}
-GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=5000;Method =simplex2:{"label": "GLOBAL", "color": "salmon"}
-GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =bfgs:{"label": "GLOBAL", "color": "salmon"}
-GLOBAL:GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =simplex2:{"label": "GLOBAL", "color": "salmon"}
-POEMS:POEMS:% no comments:{"label": "POEMS", "color": "slategray", "ls": "--"}
-GA:Simple GA:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "simple GA", "color": "royalblue"}
-SEP-CMA-ES:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e4*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize), only the first restart uses mixed strategies for 1+100*N/sqrt(popsize):{"label": "IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
-VNS:VNS_with_ECs:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "VNS (Garcia)", "color": "rosybrown"}
-NELDERDOERR:NELDERDOERR:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "NELDER (Doe)", "color": "c"}
-SPSAHA:SPSA2:%  maxFunevals = 5e4*DIM with 10 restarts, blocking = 10, lambda_start = 10:{"label":"adaptive SPSA", "color": "purple"}
-SPSAHA:SPSA2:%  maxFunevals = 5e4*DIM with restarts, c0=0.1, initial lambda = 5, blocking = 10, restart changes c0:{"label":"adaptive SPSA", "color": "purple", "ls": "--"}
-SNOBFIT:SNOBFIT:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"SNOBFIT", "color": "powderblue"}
-MCS:MCS:% default parameters except for local = maxfunevals/5:{"label":"MCS (Neum)", "color": "thistle"}
-MCS:MCS:% default parameters, no local search:{"label":"MCS (Neum)", "color": "thistle"}
-MA-LS-CHAIN:MA2LSI_5DIMF_ssga_cmaesn05:% RatioBL=0.5,Intensity=500:{"label":"MA-LS-Chain", "color": "turquoise"}
-SPSA:SPSA:% maxFuneval = 5e4*dim with 20 restarts, with blocking, A = 10% of kmax, lambda = 2, 20% of choosing a new start point/increase lambda:{"label":"SPSA","color":"purple"}
-SPSA:SPSA:%  maxFuneval = 5e4*DIM with 20 restarts, blocking, change lambda in restarts, lambda_start = 1, lambda_max = 16:{"label":"SPSA","color":"purple"}
-EGS:EGSipopcma:% 10 independent restarts, EGS-CMA implementation from D.Arnold, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda:{"label":"CMA-EGS","color":"red","ls":"--"}
-EGS:EGS_ipopcma_KappaAdapt:% 10 independent restarts, EGS-CMA implementation from D.Arnold, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda, kappa adaptation (new version), each pop has size lambda:{"label":"CMA-EGS","color":"red","ls":"--"}
-SPSAv5:SPSA:%  10 restarts with increasing lambda and decreasing step, if improvement was found then kmax = 1e3, else kmax = 1e4:{"label":"SPSAv5","color":"blue"}
-SPSAv6:SPSA:% 10 restarts, maxFunevals = 1e4*dim:{"label":"SPSAv6","color":"green"}
-SPSAv5:SPSA:% 10 restarts, kmax = 1e3, for improvement step kmax = 5e2, restart changes lambda and step:{"label":"SPSAv5","color":"blue"}
-ALPS:ALPS:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"ALPS"}
-IPOPSEPCMA1e5:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e5*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize) diag=1st start, 1 + 100 * N / sqrt(lambda) iterations:{"label":"IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
-EGSv2:EGS_ipopcma_newCMAcoeff:% 10 independent restarts, EGS-CMA implementation from D.Arnold with new coefficients, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda:{"label":"EGSv2","color":"blue"}
-IPOPSEPCMA:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e6*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize), only the first restart uses mixed strategies for 1+100*N/sqrt(popsize):{"label":"IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
-IPOPCMA1e5:cmaes V3.23.beta:% sigma0=2 maxfunevals=1e5*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
-IPOPCMA:sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e6*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
-bipopactivecmaes:bipopactivecmaes:% active CMA on BBOB-2009:{"label":"bipopactivecmaes"}
-vCMSA_1e6:vCMSA_1e6:% vCMSA with sigma_stop = 1e-10, all tau_*_factors = 1, initial popsize = 4, theta = 1/4, initial mutation = 1:{"label":"vCMSA_1e6"}
-(1+1)-CMA-ES:(1+1)-CMA-ES:% sigma_0=2.0, ccov^-=0, sigma_stop<1e-9:{"label":"(1+1)-CMA-ES"}
-(1+1)-active-CMA-ES:(1+1)-active-CMA-ES:% sigma_0=2.0, ccov^-=0.3/(pow(n, 1.5)+2.0), sigma_stop<1e-9:{"label":"(1+1)-active-CMA-ES"}
-AFTERWS-BIPOP-ES:bipopes:% bipop without CMA on BBOB-2009, 1e4*N fevals:{"label":"BIPOP-ES", "color":"m", "ls": "--"}
+%    If you need to process new data, a new line will be appendded to this file
+%    The line in question will have 3 fields separated by colon (:) character.
+%    The 1st field must be the exact string used as algId in the info files in
+%    your data, the 2nd the exact string for the comment. The 3rd will be
+%    a python dictionary which will be used for the plotting.
+%    If different pairs of (algId, comment lines) (1st and 2nd field) have been
+%    used for a single algorithm, only one of the corresponding dictionary (3rd
+%    field) will be used. To avoid undesired behaviour, it is best to have
+%    the exact same dictionary for each line (each pair (algId, comment lines)
+%    corresponding to a single algorithm.
+%
+%    Lines beginning with the % character will not be processed.
+%
+%    The label field in the dictionary correspond to the label used by modules
+%    pptables and ppperfprof. The color and linestyle, if specified, are used
+%    by ppperfprof. By default the label field will take the string defined as
+%    algId. This can be changed a posteriori.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+cmaes V3.30.beta:% cmaes28noikappa2 BIPOP like 24 with kappa=10, deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{}
+cmaes V3.30.beta:% cmaes26noi BIPOP like 24 with kappa=10, deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{}
+BFGS:% [-5, 5]^n, max 100 independent restarts.:{"label": "BFGS", "color": "r"}
+fminsearch:% 1e4*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1:{"label": "NELDER (Han)", "color": "c", "ls": "--"}
+fminsearch:% 1e5*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1:{"label": "NELDER (Han)", "color": "c", "ls": "--"}
+NEWUOA:% NPT=2*DIM+1, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "NEWUOA", "color": "g"}
+NEWUOA:% NPT=AVG, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "avg NEWUOA", "color": "g", "linestyle": "-."}
+NEWUOA:% NPT=(DIM+1)(DIM+2)/2, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "full NEWUOA", "color": "g", "linestyle": "--"}
+cmaes V3.30.beta:% cmaes25 ccum=new stopstagnation, sigmaUp=10^20, maxrestartfunevals=1e7*DIM restarts=9 maxiter=100 + 50 * (N+3)^2/sqrt(popsize) no xopt sigma0=2:{"label": "BIPOP-CMA-ES", "color": "b"}
+cmaes V3.30.beta:% cmaes24noi BIPOP like 21 with deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{"label": "BIPOP-CMA-ES", "color": "b"}
+DEPSO:% MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "DEPSO", "color": "springgreen", "ls": "--"}
+cmaesplussel:%:{"label": "(1+1)-CMA-ES", "color": "b", "ls": "--"}
+One-Fifth Variant3:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "(1+1)-ES", "color": "m"}
+PureRandomSearchOnNoise:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "Monte Carlo", "color": "k", "ls": "--"}
+EDA-PSO:% All historical information with correlation-triggered adaptive variance scaling.:{"label": "EDA-PSO", "color": "springgreen"}
+EDA-PSO:% An EDA and PSO hybrid algorithm.:{"label": "EDA-PSO", "color": "springgreen"}
+PSO_Bounds_R:% hmin=0.2, hmax=0.8, alpha=0.05 and T=0.0001.:{"label": "PSO_Bounds", "color": "y"}
+PSO_Bounds algorithm:% A PSO algortihm with Adaptive Varying Bounds, pmin = 0.2, pmax = 0.8, alpha = 0.05, T = 0.0001.:{"label": "PSO_Bounds", "color": "y"}
+PSO:% A gbest PSO algorithm.:{"label": "PSO", "color": "y", "ls": "--"}
+DASA:% test:{"label": "DASA", "color": "sienna"}
+Cauchy EDA:% restarts up to 100, outermaxfevals 5e4*dim, inner maxfunevals 5e4*dim:{"label": "Cauchy EDA", "color": "slategray"}
+Original DIRECT:% No restarts, outermaxfevals 1e5, inner maxfunevals 1e5:{"label": "DIRECT", "color": "violet"}
+G3PCX:% restarts up to 100, outermaxfevals 5e4*dim, inner maxfunevals 5e4*dim:{"label": "G3-PCX", "color": "springgreen"}
+Line Search - fminbnd:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "LSfminbnd", "color": "steelblue"}
+Line Search - STEP:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "LSstep", "color": "teal"}
+Local Search - Rosenbrock:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "Rosenbrock", "color": "peru"}
+AMaLGaM-Full-Free:% AMaLGaM-Full-Free:{"label": "AMaLGaM IDEA", "color": "tomato"}
+iAMaLGaM-Full-Free:% iAMaLGaM-Full-Free:{"label": "iAMaLGaM IDEA", "color": "tomato", "ls": "--"}
+BAYEDA:% Simple continuous BAYEDA with 0.8 selection, population=10*DIM, 2000*DIM fn evals, so 200 generations:{"label": "BayEDAcG", "color": "pink"}
+GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =8;Maxfevnr=5000;Method =simplex2:{"label": "GLOBAL", "color": "salmon"}
+GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=5000;Method =simplex2:{"label": "GLOBAL", "color": "salmon"}
+GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =bfgs:{"label": "GLOBAL", "color": "salmon"}
+GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =simplex2:{"label": "GLOBAL", "color": "salmon"}
+POEMS:% no comments:{"label": "POEMS", "color": "slategray", "ls": "--"}
+Simple GA:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "simple GA", "color": "royalblue"}
+sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e4*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize), only the first restart uses mixed strategies for 1+100*N/sqrt(popsize):{"label": "IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
+VNS_with_ECs:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "VNS (Garcia)", "color": "rosybrown"}
+NELDERDOERR:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "NELDER (Doe)", "color": "c"}
+SPSA2:%  maxFunevals = 5e4*DIM with 10 restarts, blocking = 10, lambda_start = 10:{"label":"adaptive SPSA", "color": "purple"}
+SPSA2:%  maxFunevals = 5e4*DIM with restarts, c0=0.1, initial lambda = 5, blocking = 10, restart changes c0:{"label":"adaptive SPSA", "color": "purple", "ls": "--"}
+SNOBFIT:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"SNOBFIT", "color": "powderblue"}
+MCS:% default parameters except for local = maxfunevals/5:{"label":"MCS (Neum)", "color": "thistle"}
+MCS:% default parameters, no local search:{"label":"MCS (Neum)", "color": "thistle"}
+MA2LSI_5DIMF_ssga_cmaesn05:% RatioBL=0.5,Intensity=500:{"label":"MA-LS-Chain", "color": "turquoise"}
+SPSA:% maxFuneval = 5e4*dim with 20 restarts, with blocking, A = 10% of kmax, lambda = 2, 20% of choosing a new start point/increase lambda:{"label":"SPSA","color":"purple"}
+SPSA:%  maxFuneval = 5e4*DIM with 20 restarts, blocking, change lambda in restarts, lambda_start = 1, lambda_max = 16:{"label":"SPSA","color":"purple"}
+EGSipopcma:% 10 independent restarts, EGS-CMA implementation from D.Arnold, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda:{"label":"CMA-EGS","color":"red","ls":"--"}
+EGS_ipopcma_KappaAdapt:% 10 independent restarts, EGS-CMA implementation from D.Arnold, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda, kappa adaptation (new version), each pop has size lambda:{"label":"CMA-EGS","color":"red","ls":"--"}
+SPSA:%  10 restarts with increasing lambda and decreasing step, if improvement was found then kmax = 1e3, else kmax = 1e4:{"label":"SPSAv5","color":"blue"}
+SPSA:% 10 restarts, maxFunevals = 1e4*dim:{"label":"SPSAv6","color":"green"}
+SPSA:% 10 restarts, kmax = 1e3, for improvement step kmax = 5e2, restart changes lambda and step:{"label":"SPSAv5","color":"blue"}
+ALPS:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"ALPS"}
+sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e5*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize) diag=1st start, 1 + 100 * N / sqrt(lambda) iterations:{"label":"IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
+EGS_ipopcma_newCMAcoeff:% 10 independent restarts, EGS-CMA implementation from D.Arnold with new coefficients, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda:{"label":"EGSv2","color":"blue"}
+sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e6*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize), only the first restart uses mixed strategies for 1+100*N/sqrt(popsize):{"label":"IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
+cmaes V3.23.beta:% sigma0=2 maxfunevals=1e5*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
+sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e6*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
+bipopactivecmaes:% active CMA on BBOB-2009:{"label":"bipopactivecmaes"}
+vCMSA_1e6:% vCMSA with sigma_stop = 1e-10, all tau_*_factors = 1, initial popsize = 4, theta = 1/4, initial mutation = 1:{"label":"vCMSA_1e6"}
+(1+1)-CMA-ES:% sigma_0=2.0, ccov^-=0, sigma_stop<1e-9:{"label":"(1+1)-CMA-ES"}
+(1+1)-active-CMA-ES:% sigma_0=2.0, ccov^-=0.3/(pow(n, 1.5)+2.0), sigma_stop<1e-9:{"label":"(1+1)-active-CMA-ES"}
+bipopes:% bipop without CMA on BBOB-2009, 1e4*N fevals:{"label":"BIPOP-ES", "color":"m", "ls": "--"}

@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generates output either pickle files or elaborate data files. 1 file per
-solver per function and per dimension (unit experiment).
-
+"""Routines for outputting python-formatted data.
+1 file per solver per function and per dimension (unit experiment).
 """
 
 from __future__ import absolute_import
@@ -23,11 +22,8 @@ from bbob_pproc.pproc import DataSetList
 
 from pdb import set_trace
 
-# Will read in this file where to put the pickle files.
 infofilename = 'algorithmshortinfos.txt'
 infofile = os.path.join(os.path.split(__file__)[0], 'compall', infofilename)
-algShortInfos = {}
-algLongInfos = {}
 algPlotInfos = {}
 isAlgorithminfosFound = True
 try:
@@ -36,13 +32,10 @@ try:
         if len(line) == 0 or line.startswith('%') or line.isspace() :
             continue
         try:
-            algShortInfo, algId, comment, plotinfo = line.strip().split(':', 3)
-            algShortInfos[(algId, comment)] = algShortInfo
-            algLongInfos.setdefault(algShortInfo, []).append((algId, comment))
-            # Could have multiple entries...
+            algId, comment, plotinfo = line.strip().split(':', 2)
             algPlotInfos[(algId, comment)] = eval(plotinfo)
         except ValueError:
-            # Occurs when the split line does not result in 4 elements.
+            # Occurs when the split line does not result in 3 elements.
             txt = ("\n  Line %d in %s\n  is not formatted correctly " % (i, infofile)
                    +"(see documentation of bbob_pproc.dataoutput.main)\n  "
                    +"and will be disregarded:\n    > %s" % (line))
@@ -52,8 +45,7 @@ try:
 except IOError, (errno, strerror):
     print "I/O error(%s): %s" % (errno, strerror)
     isAlgorithminfosFound = False
-    print 'Could not find file', infofile, \
-          'Will not generate any output.'
+    print 'Could not find file: ', infofile
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -65,12 +57,12 @@ def updateAlgorithmInfo(alg, verbose=True):
 
     try:
         f = open(infofile, 'a')
-        if not alg in algLongInfos:
-            algShortInfos[alg] = alg[0]
-            algLongInfos.setdefault(alg[0], []).append(alg)
-            f.write(':'.join([algShortInfos[alg],
-                             ':'.join(alg),
-                            '{"label":"%s"}\n' %  algShortInfos[alg]]))
+        if not alg in algPlotInfos:
+            plotinfo = '{"label":"%s"}' % alg[0]
+            #TODO find a default color and line style to use.
+            #plotinfo = '{"label":"%s", "color": "c", "ls": "--"}' % alg[0]
+            algPlotInfos[alg] = eval(plotinfo)
+            f.write(':'.join(alg) + ':' + plotinfo + '\n')
             if verbose:
                 print ('A new entry for %s was added in %s.'
                        % (alg, infofile))
@@ -83,12 +75,11 @@ def updateAlgorithmInfo(alg, verbose=True):
 
 def isListed(alg):
     res = True
-    if not (alg in algLongInfos or alg in algShortInfos):
+    if not (alg in algPlotInfos):
         warntxt = ('The algorithm %s is not an entry in %s.' %(alg, infofile))
         warnings.warn(warntxt)
         res = False
     return res
-
 
 def outputPickle(dsList, verbose=True):
     """Generates pickle files from a DataSetList."""
@@ -97,26 +88,31 @@ def outputPickle(dsList, verbose=True):
         if not isListed(alg):
             updateAlgorithmInfo(alg)
 
-        if not os.path.exists(algShortInfos[alg]):
-            os.mkdir(algShortInfos[alg])
-
-        entries.pickle(outputdir=algShortInfos[alg], verbose=verbose)
-
-
-def outputDataFiles(dsList, verbose=True):
-    """Generates data files from a DataSetList."""
-    dictAlg = dsList.dictByAlg()
-    for alg, entries in dictAlg.iteritems():
-        # TODO: entries.dataf(outputdiralgInfos[alg], verbose=verbose)
-        pass
-
+        entries.pickle(verbose=verbose)
 
 def usage():
     print main.__doc__
 
-
 def main(argv=None):
-    """
+    """Generate python-formatted data from raw BBOB experimental data.
+
+    The raw experimental data (files with the extension 'info' pointing to
+    files with extension 'dat' and 'tdat') are post-processed and stored in a
+    more condensed way as files with the extension 'pickle'. Supposing the
+    raw data are stored in folder 'mydata', the new pickle files will be put in
+    folder 'mydata-pickle'.
+
+    Running this will also add an entry in file algorithmshortinfos.txt if it
+    does not exist already.
+    algorithmshortinfos.txt is a file which contain meta-information that are
+    used by modules from the bbob_pproc.compall package.
+    The new entry in algorithmshortinfos.txt is represented as a new line
+    appended at the end of the file.
+    The line in question will have 3 fields separated by colon (:) character.
+    The 1st field must be the exact string used as algId in the info files in
+    your data, the 2nd the exact string for the comment. The 3rd will be
+    a python dictionary which will be used for the plotting.
+
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not provided,
     sys.argv is accessed.
@@ -140,7 +136,7 @@ def main(argv=None):
 
     Examples:
 
-    * Calling the minirun.py interface from the command line:
+    * Calling the dataoutput.py interface from the command line:
 
         $ python bbob_pproc/dataoutput.py -v
 
@@ -159,21 +155,6 @@ def main(argv=None):
 
         >>> from bbob_pproc import dataoutput
         >>> dataoutput.main('folder1')
-
-    This will execute the post-processing on the index files found in folder1.
-
-    If you need to process new data, you must add a line in the file
-    algorithmshortinfos.txt
-    The line in question must have 4 fields separated by colon (:) character.
-    The 1st must be the name of the folder which will contain the
-    post-processed pickle data file, the 2nd is the exact string used as algId
-    in the info files, the 3rd is the exact string for the comment. The 4th
-    will be a python dictionary which will be use for the plotting.
-    If different comment lines (3rd field) have been used for a single
-    algorithm, there should be a line in algorithmshortinfos.txt corresponding
-    to each of these.
-    The line will be added automatically if it does not exist, the data will
-    be put in a folder bearing the name of the algorithm.
 
     """
 
@@ -203,6 +184,9 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
+        if (not verbose):
+            warnings.simplefilter('ignore')
+
         dsList = DataSetList(args)
         outputPickle(dsList, verbose=verbose)
         sys.exit()
@@ -211,7 +195,6 @@ def main(argv=None):
         print >>sys.stderr, err.msg
         print >>sys.stderr, "for help use -h or --help"
         return 2
-
 
 if __name__ == "__main__":
     sys.exit(main())

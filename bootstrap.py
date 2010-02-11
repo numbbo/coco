@@ -1,4 +1,7 @@
-# bootstrapping
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Bootstrapping and statistics routines."""
 
 import numpy
 from pdb import set_trace

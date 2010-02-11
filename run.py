@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Calls the main function of bbob_pproc with arguments from the
+"""Main module for post-processing the data of one algorithm.
+   Calls the main function of bbob_pproc with arguments from the
    command line. Executes the BBOB postprocessing on the given
    filename and folder arguments, using all found .info files.
 Synopsis:
@@ -29,7 +30,7 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import pptex, pprldistr, ppfigdim
+from bbob_pproc import pptex, pprldistr, ppfigdim, findfiles
 from bbob_pproc.pproc import DataSetList
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
@@ -408,7 +409,17 @@ def main(argv=None):
                "data in folder %s" % outputdir)
         print "  This might take several minutes."
 
-        dsList = DataSetList(args, verbose)
+        filelist = list()
+        for i in args:
+            if os.path.isdir(i):
+                filelist.extend(findfiles.main(i, verbose))
+            elif os.path.isfile(i):
+                filelist.append(i)
+            else:
+                txt = 'Input file or folder %s could not be found.'
+                raise Usage(txt)
+
+        dsList = DataSetList(filelist, verbose)
 
         if not dsList:
             sys.exit() #raise Usage("Nothing to do: post-processing stopped.")
@@ -428,16 +439,20 @@ def main(argv=None):
         if len(dictAlg) > 1:
             warnings.warn('Data with multiple algId %s ' % (dictAlg) +
                           'will be processed together.')
+            #TODO: in this case, all is well as long as for a given problem
+            #(given dimension and function) there is a single instance of
+            #DataSet associated. If there are more than one, the first one only
+            #will be considered... which is probably not what one would expect.
+            #TODO: put some errors where this case would be a problem.
 
-
-        if isPickled or isfigure or istab or isrldistr:
+        if isfigure or istab or isrldistr:
             if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
                 if verbose:
                     print 'Folder %s was created.' % (outputdir)
 
         if isPickled:
-            dsList.pickle(outputdir, verbose)
+            dsList.pickle(verbose=verbose)
 
         if isfigure:
             ppfigdim.main(dsList, figValsOfInterest, outputdir,
@@ -499,15 +514,6 @@ def main(argv=None):
                 except KeyError:
                     pass
             print "ECDF graphs done."
-
-        #if verbose:
-        #    tmp = []
-        #    tmp.extend(tabValsOfInterest)
-        #    tmp.extend(figValsOfInterest)
-        #    tmp.extend(rldValsOfInterest)
-        #    if dsList:
-        #        print ('Overall ps = %g\n'
-        #               % dsList.successProbability(min(tmp)))
 
         if isfigure or istab or isrldistr:
             print "Output data written to folder %s." % outputdir

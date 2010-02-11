@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Routines for the comparison of 2 algorithms
+"""Routines for the comparison of 2 algorithms.
 Synopsis:
     python path_to_folder/bbob_pproc/runcomp2.py [OPTIONS] FOLDER_NAME1 FOLDER_NAME2...
 Help:
@@ -27,9 +27,9 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc import dataoutput, pprldistr
-from bbob_pproc.pproc import DataSetList
+from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.comp2 import ppfig2, pprldistr2
-from bbob_pproc.dataoutput import algLongInfos, algPlotInfos
+from bbob_pproc.dataoutput import algPlotInfos
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
@@ -103,18 +103,15 @@ class Usage(Exception):
 def usage():
     print main.__doc__
 
-
 def main(argv=None):
-    """Generates from BBOB experiment data sets of two algorithms some outputs.
+    """Generates some outputs from BBOB experiment data sets of two algorithms.
 
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not given,
     sys.argv is accessed.
 
-    argv must list folders containing pickle files. Each of these folders
-    should correspond to the data of one algorithm and should be listed in
-    algorithmshortinfos.txt, a file from the bbob_pproc package listing the
-    information of various algorithms treated using bbob_pproc.dataoutput
+    argv must list folders containing BBOB data files. Each of these folders
+    should correspond to the data of ONE algorithm.
 
     Furthermore, argv can begin with, in any order, facultative option flags
     listed below.
@@ -153,7 +150,7 @@ def main(argv=None):
 
         $ python bbob_pproc/runcomp2.py -v CMA-ES RANDOMSEARCH
 
-    will post-process the pickle files of folder CMA-ES and RANDOMSEARCH. The
+    will post-process the data of folder CMA-ES and RANDOMSEARCH. The
     result will appear in folder cmp2data. The -v option adds verbosity.
 
     * From the python interactive shell (requires that the path to this
@@ -162,7 +159,7 @@ def main(argv=None):
         >>> from bbob_pproc import runcomp2
         >>> runcomp2.main('-o outputfolder PSO DEPSO'.split())
 
-    This will execute the post-processing on the pickle files found in folder
+    This will execute the post-processing on the data found in folder
     PSO and DEPSO. The -o option changes the output folder from the default
     cmp2data to outputfolder.
 
@@ -221,37 +218,16 @@ def main(argv=None):
                "data in folder %s" % outputdir)
         print "  This might take several minutes."
 
-        #Get only pickles!
-        tmpargs = []
-        sortedAlgs = []
-        for i in args:
-            #TODO: Check that i is a valid directory
-            if not os.path.exists(i):
-                raise Usage('The folder %s does not exist.' % i)
-
-            if not (isNoisy ^ isNoiseFree):
-                ext = "*.pickle"
-            elif isNoisy:
-                ext = "*f1*.pickle"
-            elif isNoiseFree:
-                ext = "*f0*.pickle"
-
-            tmpargs.extend(glob.glob(os.path.join(i, ext)))
-            # remove trailing slashes and keep only the folder name which is
-            # supposed to be the algorithm name.
-            tmpalg = os.path.split(i.rstrip(os.path.sep))[1]
-            if not dataoutput.isListed(tmpalg):
-                tmpdsList = DataSetList(glob.glob(os.path.join(i, ext)),
-                                        verbose=False)
-                tmpdsList = tmpdsList.dictByAlg()
-                for alg in tmpdsList:
-                    dataoutput.updateAlgorithmInfo(alg)
-            sortedAlgs.append(algLongInfos[tmpalg])
-
-        dsList = DataSetList(tmpargs, verbose=verbose)
+        dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
 
         if not dsList:
             sys.exit()
+
+        for i in dictAlg:
+            if isNoisy:
+                dictAlg[i] = dictAlg[i].dictByNoise().get('nzall', DataSetList())
+            if isNoiseFree:
+                dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
 
         for i in dsList:
             if not i.dim in (2, 3, 5, 10, 20):
@@ -279,25 +255,14 @@ def main(argv=None):
                           'were found, the first two among will be processed.')
 
         # Group by algorithm
-        dictAlg = dsList.dictByAlg()
-        dsList0 = DataSetList()
-        for elem in sortedAlgs[0]:
-            try:
-                dsList0.extend(dictAlg[elem])
-            except KeyError:
-                pass
+        dsList0 = dictAlg[sortedAlgs[0]]
         if not dsList0:
-            raise Usage('Could not find data for algorithm %s.' % (sortedAlgs[0][0][0]))
+            raise Usage('Could not find data for algorithm %s.' % (sortedAlgs[0]))
         #set_trace()
 
-        dsList1 = DataSetList()
-        for elem in sortedAlgs[1]:
-            try:
-                dsList1.extend(dictAlg[elem])
-            except KeyError:
-                pass
+        dsList1 = dictAlg[sortedAlgs[1]]
         if not dsList1:
-            raise Usage('Could not find data for algorithm %s.' % (sortedAlgs[0][0][0]))
+            raise Usage('Could not find data for algorithm %s.' % (sortedAlgs[0]))
 
         #for i, entry in enumerate(sortedAlgs): #Nota: key is sortedAlgs
             #print "Alg%d is: %s" % (i, entry)
@@ -312,23 +277,28 @@ def main(argv=None):
         dictFN1 = dsList1.dictByNoise()
         k0 = set(dictFN0.keys())
         k1 = set(dictFN1.keys())
-        if k1 ^ k0: # symmetric difference
-            txt = []
-            for i, ng in enumerate((k0, k1)):
-                tmp = []
-                if ng:
-                    for j in ng:
-                        if j == 'nzall':
-                            tmp.append('noisy')
-                        elif j == 'noiselessall':
-                            tmp.append('noiseless')
-                    txt.append('Algorithm %s lists %s data.' % (sortedAlgs[i][0][0],
-                                                            ' and '.join(tmp)))
-                else:
-                    txt.append('Algorithm %s lists no data.')
+        symdiff = k1 ^ k0
+        if symdiff: # symmetric difference
+            tmpdict = {}
+            for i, noisegrp in enumerate(symdiff):
+                if noisegrp == 'nzall':
+                    tmp = 'noisy'
+                elif noisegrp == 'noiselessall':
+                    tmp = 'noiseless'
 
-            raise Usage('Data Mismatch: \n' + ' '.join(txt)
-                        + '\nTry using --noise-free or --noisy flags')
+                if dictFN0.has_key(noisegrp):
+                    tmp2 = sortedAlgs[0]
+                elif dictFN1.has_key(noisegrp):
+                    tmp2 = sortedAlgs[1]
+
+                tmpdict.setdefault(tmp2, []).append(tmp)
+
+            txt = []
+            for i, j in tmpdict.iteritems():
+                txt.append('Only input folder %s lists %s data.'
+                            % (i, ' and '.join(j)))
+            raise Usage('Data Mismatch: \n  ' + ' '.join(txt)
+                        + '\nTry using --noise-free or --noisy flags.')
 
         if isfigure:
             ppfig2.main(dsList0, dsList1, outputdir, 1e-8, verbose)
@@ -374,34 +344,34 @@ def main(argv=None):
                                         verbose)
             print "ECDF absolute target graphs done."
 
-            for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
-                if dim in rldDimsOfInterest:
-                    try:
+            #for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
+                #if dim in rldDimsOfInterest:
+                    #try:
 
-                        pprldistr2.main(dictDim0[dim], dictDim1[dim], None,
-                                        True, outputdir, 'dim%02dall' % dim,
-                                        verbose)
-                    except KeyError:
-                        warnings.warn('Could not find some data in %d-D.'
-                                      % (dim))
-                        continue
+                        #pprldistr2.main(dictDim0[dim], dictDim1[dim], None,
+                                        #True, outputdir, 'dim%02dall' % dim,
+                                        #verbose)
+                    #except KeyError:
+                        #warnings.warn('Could not find some data in %d-D.'
+                                      #% (dim))
+                        #continue
 
-                    dictFG0 = dictDim0[dim].dictByFuncGroup()
-                    dictFG1 = dictDim1[dim].dictByFuncGroup()
+                    #dictFG0 = dictDim0[dim].dictByFuncGroup()
+                    #dictFG1 = dictDim1[dim].dictByFuncGroup()
 
-                    for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
-                        pprldistr2.main(dictFG0[fGroup], dictFG1[fGroup], None,
-                                        True, outputdir,
-                                        'dim%02d%s' % (dim, fGroup), verbose)
+                    #for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
+                        #pprldistr2.main(dictFG0[fGroup], dictFG1[fGroup], None,
+                                        #True, outputdir,
+                                        #'dim%02d%s' % (dim, fGroup), verbose)
 
-                    dictFN0 = dictDim0[dim].dictByNoise()
-                    dictFN1 = dictDim1[dim].dictByNoise()
-                    for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
-                        pprldistr2.main(dictFN0[fGroup], dictFN1[fGroup],
-                                        None, True, outputdir,
-                                        'dim%02d%s' % (dim, fGroup), verbose)
+                    #dictFN0 = dictDim0[dim].dictByNoise()
+                    #dictFN1 = dictDim1[dim].dictByNoise()
+                    #for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
+                        #pprldistr2.main(dictFN0[fGroup], dictFN1[fGroup],
+                                        #None, True, outputdir,
+                                        #'dim%02d%s' % (dim, fGroup), verbose)
 
-            print "ECDF relative target graphs done."
+            #print "ECDF relative target graphs done."
 
             for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
                 pprldistr.fmax = None #Resetting the max final value
@@ -440,7 +410,6 @@ def main(argv=None):
         print >>sys.stderr, err.msg
         print >>sys.stderr, "For help use -h or --help"
         return 2
-
 
 if __name__ == "__main__":
    sys.exit(main())

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """Black-Box Optimization Benchmarking (BBOB) comparing two algorithms
-post processing tool:
+post-processing tool:
 
-Contains routines for the comparison of multiple algorithms.
+Contains routines for the comparison of two algorithms.
 
 """

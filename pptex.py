@@ -1,6 +1,7 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
-# Creates tex-file with table entries.
+""" Creates tex-file with table entries."""
 
 import os
 import sys
