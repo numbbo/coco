@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Creates ERTs and convergence figures for BBOB post-processing.
+"""Creates ERTs and convergence figures for BBOB post-processing."""
 
 import os
 import sys

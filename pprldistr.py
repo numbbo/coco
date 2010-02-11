@@ -3,7 +3,6 @@
 
 """Creates run length distribution figures."""
 
-
 from __future__ import absolute_import
 
 import os

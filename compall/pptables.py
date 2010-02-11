@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""Routines for the generation of TeX tables.
+See Section Comparison Tables in
+http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
+"""
+
 from __future__ import absolute_import
 
 import os
@@ -8,16 +13,11 @@ from pdb import set_trace
 import numpy
 from bbob_pproc import pptex
 from bbob_pproc.bootstrap import prctile
-from bbob_pproc.dataoutput import algShortInfos, algPlotInfos
+from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList
 
 allmintarget = {}
 allmedtarget = {}
-
-"""Routines for the generation of TeX tables.
-See Section Comparison Tables in
-http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
-"""
 
 funInfos = {}
 isBenchmarkinfosFound = True
@@ -332,8 +332,6 @@ def tableonealg(dsList, allmintarget, allertbest, sortedAlgs=None,
             f.write('\n'.join(lines) + '\n')
             f.close()
 
-
-
 def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None,
                  outputdir='.'):
     """Generate a table with the figures of multiple algorithms.
@@ -446,25 +444,32 @@ def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None,
         f.write('\n'.join(lines) + '\n')
         f.close()
 
-def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
+def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                         outputdir='.'):
-    """Generate multiple tables with the figures of multiple algorithms with
-    one table per function.
+    """Generate one table per function showing results of multiple algorithms.
     """
 
-    dictDim = dsList.dictByDim()
+    dictDim = {}
+    for alg, tmpdsList in dictAlg.iteritems():
+        tmpdictDim = tmpdsList.dictByDim()
+        for d, entries in tmpdictDim.iteritems():
+            dictDim.setdefault(d, {})[alg] = entries
+
     #widthtable = 3 # Put in as global? 3 functions wide
+    #TODO: what about the keys of allmintarget and allertbest: why are they negative?
     # TODO: split the generation of the tables from their formatting/output
     # ... if its possible
-    for d, dentries in dictDim.iteritems():
-        dictFunc = dentries.dictByFunc()
-        dictAlg = dentries.dictByAlg()
+    for d, dictAlgbyDim in dictDim.iteritems():
         # Summary table: multiple algorithm for each function
-        funcs = sorted(dictFunc.keys())
         nbtarget = len(allmintarget)
         stargets = sorted(allmintarget.keys())
         #groups = [[1, 2], [3], [4], [5, 6], [7], [8, 9], [10], [11], [12], [13], [14], [15], [16], [17], [18], [19], [20], [21, 22], [23], [24]]
+        #funcs = sorted(dictAlgbyDim.dictByFunc().keys())
         #groups = list(funcs[i*widthtable:(i+1)*widthtable] for i in range(len(funcs)/widthtable + 1))
+        funcs = set()
+        for i in dictAlgbyDim.values():
+            funcs |= set(j.funcId for j in i)
+
         groups = list([i] for i in funcs)
 
         for numgroup, g in enumerate(groups):
@@ -476,23 +481,23 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
             algnames = []
             table = []
             replacement = []
+            if sortedAlgs is None:
+                sortedAlgs = dictAlgbyDim.keys()
+
             for alg in sortedAlgs:
                 curline = []
                 replacementLine = []
                 # Regroup entries by algorithm
-                algentries = DataSetList()
-                for a in alg:
-                    if dictAlg.has_key(a):
-                        algentries.extend(dictAlg[a])
+                algentries = dictAlgbyDim[alg]
                 if not algentries:
                     continue
                 dictF = algentries.dictByFunc()
                 for func in g:
                     isLastInfoWritten = False
                     try:
-                        entry = dictF[func]
+                        entries = dictF[func]
                         try:
-                            entry = entry[0]
+                            entry = entries[0]
                         except:
                             raise Usage('Problem with the entries')
 
@@ -500,7 +505,7 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                         if curline or replacementLine:
                             curline.extend([numpy.inf]*len(stargets))
                             replacementLine.extend(['.']*len(stargets))
-                            
+
                         continue # empty data
 
                     for t in stargets:
@@ -519,8 +524,10 @@ def tablemanyalgonefunc(dsList, allmintarget, allertbest, sortedAlgs=None,
                                 isLastInfoWritten = True
                             else:
                                 replacementLine.append('.')
+
+                tmp = set((i.algId, i.comment) for i in algentries)
                 if replacementLine and curline:
-                    algnames.append(writeLabels(algPlotInfos[alg[0]]['label']))
+                    algnames.append(writeLabels(algPlotInfos[tmp.pop()]['label']))
                     replacement.append(replacementLine)
                     table.append(curline)
 

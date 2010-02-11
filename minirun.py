@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Process data and generates some comparison results from either
+"""Deprecated
+   Process data and generates some comparison results from either
    raw data files or pickle data files.
    Synopsis:
       python path_to_folder/bbob_pproc/minirun.py [OPTIONS] FILE_NAME FOLDER_NAME...

@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Process data and generates some comparison results from pickle data files
-   only.
+"""Process data and generates some comparison results.
 
    Synopsis:
       python path_to_folder/bbob_pproc/runcompall.py [OPTIONS] FOLDER_NAME...
@@ -31,12 +30,11 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
+from bbob_pproc import dataoutput, pproc
+from bbob_pproc.dataoutput import algPlotInfos
+from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.compall import ppperfprof, pptables
 from bbob_pproc.compall import organizeRTDpictures
-from bbob_pproc import dataoutput
-from bbob_pproc.dataoutput import algLongInfos, algPlotInfos
-from bbob_pproc.pproc import DataSetList
-import matplotlib.pyplot as plt
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
 single_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7, 1e-8)  # one figure for each
@@ -87,13 +85,20 @@ def detertbest(dsList, minFtarget):
 def detTarget(dsList):
     """Creates the data structure of the target function values.
     """
+
     allmintarget = {}
     allertbest = {}
-    dictDim = dsList.dictByDim()
     targets = tableconstant_target_function_values
 
+    dictDim = {}
+    for i in dsList:
+        dictDim.setdefault(i.dim, []).append(i)
+
     for d, dimentries in dictDim.iteritems():
-        dictFunc = dimentries.dictByFunc()
+        dictFunc = {}
+        for i in dimentries:
+            dictFunc.setdefault(i.funcId, []).append(i)
+
         for f, funentries in dictFunc.iteritems():
             tmpertbest = detertbest(funentries, targets)
             for i in range(len(targets)):
@@ -119,10 +124,10 @@ def main(argv=None):
     argv -- list of strings containing options and arguments. If not provided,
     sys.argv is accessed.
 
-    argv must list folders containing pickle files. Each of these folders
-    should correspond to the data of one algorithm and should be listed in
-    algorithmshortinfos.txt, a file from the bbob_pproc package listing the
-    information of various algorithms treated using bbob_pproc.dataoutput
+    argv must list folders containing BBOB data files. Each of these folders
+    should correspond to the data of ONE algorithm and should be listed in
+    algorithmshortinfos.txt, a file from the bbob_pproc.compall package listing
+    the information of various algorithms treated using bbob_pproc.dataoutput
 
     Furthermore, argv can begin with, in any order, facultative option flags
     listed below.
@@ -177,7 +182,7 @@ def main(argv=None):
         >>> from bbob_pproc import runcompall
         >>> runcompall.main('-o outputfolder folder1 folder2'.split())
 
-    This will execute the post-processing on the pickle files found in folder1
+    This will execute the post-processing on the data found in folder1
     and folder2.
     The -o option changes the output folder from the default cmpalldata to
     outputfolder.
@@ -187,9 +192,6 @@ def main(argv=None):
         $ python runcompall.py AMALGAM BFGS CMA-ES
 
     """
-
-    #TODO: check xor,
-    #TODO: check input arguments work.
 
     if argv is None:
         argv = sys.argv[1:]
@@ -247,52 +249,18 @@ def main(argv=None):
                "data in folder %s" % outputdir)
         print "  This might take several minutes."
 
-        tmpargs = []
-        sortedAlgs = []
-        for i in args:
-            if not os.path.exists(i):
-                warntxt = ('The folder %s does not exist.' % i)
-                warnings.warn(warntxt)
-                continue
-
-            if not (isNoisy ^ isNoiseFree):
-                ext = "*.pickle"
-            elif isNoisy:
-                ext = "*f1*.pickle"
-            elif isNoiseFree:
-                ext = "*f0*.pickle"
-
-            tmpargs.extend(glob.glob(os.path.join(i, ext)))
-            #else:
-            #    if not (isNoisy ^ isNoiseFree):
-            #        ext = "*.info"
-            #        tmp = glob.glob(os.path.join(i, ext))
-            #    elif isNoisy:
-            #        ext = "*f1*.info"
-            #        tmp = glob.glob(os.path.join(i, ext))
-            #    elif isNoiseFree:
-            #        ext = "*f[0-9].info"
-            #        tmp = glob.glob(os.path.join(i, ext))
-            #        tmp.extend(glob.glob(os.path.join(i, "*f[0-9].info")))
-
-            # remove trailing slashes and keep only the folder name which is
-            # supposed to be the algorithm name.
-            tmpalg = os.path.split(i.rstrip(os.path.sep))[1]
-
-            # Bug below that eventually stop the execution of the script
-            # if the entry is new
-            if not dataoutput.isListed(tmpalg):
-                tmpdsList = DataSetList(glob.glob(os.path.join(i, ext)),
-                                        verbose=False)
-                tmpdsList = tmpdsList.dictByAlg()
-                for alg in tmpdsList:
-                    dataoutput.updateAlgorithmInfo(alg)
-            sortedAlgs.append(algLongInfos[tmpalg])
-
-        dsList = DataSetList(tmpargs, verbose=verbose)
+        dsList, sortedAlgs, dictAlg = processInputArgs(args,
+                                                       plotInfo=algPlotInfos,
+                                                       verbose=verbose)
 
         if not dsList:
             sys.exit()
+
+        for i in dictAlg:
+            if isNoisy:
+                dictAlg[i] = dictAlg[i].dictByNoise().get('nzall', DataSetList())
+            if isNoiseFree:
+                dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
 
         for i in dsList:
             if not i.dim in (2, 3, 5, 10, 20):
@@ -332,7 +300,17 @@ def main(argv=None):
 
         # Performance profiles
         if isPer:
-            dictDim = dsList.dictByDim()
+            dictDim = {}
+            for alg, tmpdsList in dictAlg.iteritems():
+                tmpdictDim = tmpdsList.dictByDim()
+                for d, entries in tmpdictDim.iteritems():
+                    tmp = dictDim.setdefault(d, {})
+                    if tmp.get(alg, False):
+                        set_trace()
+                    if not isinstance(entries, DataSetList):
+                        set_trace()
+                    tmp[alg] = entries #TODO: check
+
             for d, entries in dictDim.iteritems():
                 for k, t in dictTarget.iteritems():
                     ppperfprof.main(entries, target=t, order=sortedAlgs,
@@ -346,7 +324,7 @@ def main(argv=None):
         allmintarget, allertbest = detTarget(dsList)
 
         if isTab:
-            pptables.tablemanyalgonefunc(dsList, allmintarget, allertbest,
+            pptables.tablemanyalgonefunc(dictAlg, allmintarget, allertbest,
                                          sortedAlgs, outputdir)
             print "Comparison tables done."
 
