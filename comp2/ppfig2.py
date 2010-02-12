@@ -18,7 +18,8 @@ colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')
 markers = ('o', 'v', 's', '+', 'x', 'D')
 linewidth = 3
 
-figformat = ('eps', 'png') # Controls the output when using the main method
+#figformat = ('eps', 'png') # Controls the output when using the main method
+figformat = ('eps', 'pdf') # Controls the output when using the main method
 
 #Get benchmark short infos.
 funInfos = {}
@@ -44,7 +45,7 @@ except IOError, (errno, strerror):
 
 #TODO improve interface.
 def customizeFigure(figHandle, figureName=None, xmin=None, title='',
-                    fileFormat=('png','eps'), legend=True, locLegend='best',
+                    fileFormat=('pdf','eps'), legend=True, locLegend='best',
                     verbose=True):
     """ Customize a figure by adding a legend, axis label, etc. At the
         end the figure is saved.

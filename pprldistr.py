@@ -18,7 +18,7 @@ rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
 evalfmax = None
-figformat = ('eps', 'png') # Controls the output when using the main method
+figformat = ('eps', 'pdf') # Controls the output when using the main method
 
 def plotECDF(x, n=None, plotArgs={}):
     if n is None:
@@ -40,7 +40,7 @@ def beautifyECDF(axish=None):
     plt.ylim(0.0, 1.0)
     axish.grid('True')
 
-def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('png', 'eps'),
+def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('pdf', 'eps'),
                 text=None, verbose=True):
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
@@ -166,7 +166,7 @@ def plotERTDistr(dsList, fvalueToReach, plotArgs=None, verbose=True):
 
     return res
 
-def beautifyFVD(figHandle, figureName, fileFormat=('png','eps'),
+def beautifyFVD(figHandle, figureName, fileFormat=('pdf','eps'),
                 isStoringXMax=False, text=None, verbose=True):
     """Formats the figure of the run length distribution.
 

@@ -15,12 +15,12 @@ from pdb import set_trace
 
 rldColors = ('k', 'c', 'm', 'r', 'k', 'c', 'm', 'r', 'k', 'c', 'm', 'r')
 rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  # should not be too short
-figformat = ('eps', 'png') # Controls the output when using the main method
+figformat = ('eps', 'pdf') # Controls the output when using the main method
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
 evalfmax = None
 
-def beautify(figHandle, figureName, fileFormat=('png', 'eps'), isByInstance=True,
+def beautify(figHandle, figureName, fileFormat=('pdf', 'eps'), isByInstance=True,
              legend=False, verbose=True):
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()

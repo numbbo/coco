@@ -13,7 +13,7 @@ import numpy # According to PEP 8 imports should be on different lines
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
 
-figformat = ('eps', 'png', 'pdf') # Controls the output when using the main method
+figformat = ('eps', 'pdf') # Controls the output when using the main method
 
 best = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES',  
    'BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'GLOBAL', 'MCS (Neum)',
@@ -101,7 +101,7 @@ def get_plot_args(args):
     return args
 
 def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
-             isLegend=True, fileFormat=('pdf', 'png')):
+             isLegend=True, fileFormat=('pdf', 'eps')):
     """Format the figure."""
 
     #plt.xscale('log') # Does not work with matplotlib 0.91.2
