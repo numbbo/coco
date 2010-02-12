@@ -18,7 +18,7 @@ colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of
 
 #Get benchmark short infos.
 funInfos = {}
-figformat = ('eps', 'png') # Controls the output when using the main method
+figformat = ('eps', 'pdf') # Controls the output when using the main method
 isBenchmarkinfosFound = True
 #infofile = os.path.join(os.path.split(__file__)[0], '..', '..',
                         #'benchmarkshortinfos.txt')
@@ -39,7 +39,7 @@ except IOError, (errno, strerror):
           'Titles in figures will not be displayed.'
 
 def customizeFigure(figHandle, figureName = None, title='',
-                    fileFormat=('png', 'eps'), labels=None,
+                    fileFormat=('pdf', 'eps'), labels=None,
                     scale=('linear','linear'), legend=True,
                     locLegend='best', verbose=True):
     """ Customize a figure by adding a legend, axis label, etc. At the
