@@ -69,7 +69,7 @@ def generateData(dsList0, dsList1):
         nline1[idxNan] = -dsList0.finalfunvals[idxNan]
         #table.append(numpy.array([t, ranksumtest.ranksums(nline0, nline1)[0]]))
         table.append(numpy.array([t, ranksums(nline0, nline1)[0]]))
-        set_trace()
+        #set_trace()
 
     table = numpy.vstack(table)
     header = ['\Delta f', 'U']

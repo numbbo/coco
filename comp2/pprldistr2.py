@@ -141,7 +141,7 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
                     x.append(ERT[1][j]/ERT[0][j])
                     nn += 1
             for j in s1 - s0:
-                x.append(inf)
+                x.append(numpy.inf) # TODO: why hasn't this ever be called?
                 nn += 1
 
     if len(set(fvalueToReach.values())):

@@ -256,7 +256,8 @@ def onealg(dsList, allmintarget, allertbest):
                             if numpy.isfinite(list(tmpline[j+1] for j in idx)).any():
                                 tmpsolinstances += 1
                         except IndexError:
-                            set_trace() # TODO: problem with the instances... MCS!
+                            pass
+                            #set_trace() # TODO: problem with the instances... MCS!
                     solinstances += tmpsolinstances
                     tmp['unsolinstances'] = len(dictinstance) - tmpsolinstances
                     erts.append(float(entry.ert[l]) / allertbest[t][(entry.funcId, entry.dim)])
@@ -279,7 +280,8 @@ def onealg(dsList, allmintarget, allertbest):
     if unsolvedrl:
         unsolvedrl.sort()
         if float(sum(i['unsolinstances'] for i in unsolved))/sum(i['nbinstances'] for i in unsolved) > 1:
-            set_trace()
+            #set_trace() # TODO: problem
+            pass
         line = [numpy.inf,
                 float(sum(i['unsoltrials'] for i in unsolved))/sum(i['nbtrials'] for i in unsolved) * 100,
                 float(sum(i['unsolinstances'] for i in unsolved))/sum(i['nbinstances'] for i in unsolved) * 100,
@@ -488,7 +490,11 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                 curline = []
                 replacementLine = []
                 # Regroup entries by algorithm
-                algentries = dictAlgbyDim[alg]
+                try:
+                    algentries = dictAlgbyDim[alg]
+                except KeyError:
+                    continue
+
                 if not algentries:
                     continue
                 dictF = algentries.dictByFunc()
