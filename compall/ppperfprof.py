@@ -89,17 +89,6 @@ save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
 dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 
-def get_plot_args(args):
-    """args is one dict element according to algorithmshortinfos
-    """
-    if args['label'] in show_algorithms:
-        args['linewidth'] = 2
-    elif len(show_algorithms) > 0:
-        args['color'] = 'wheat'
-        args['ls'] = '-'
-        args['zorder'] = -1
-    return args
-
 def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
              isLegend=True, fileFormat=('pdf', 'eps')):
     """Format the figure."""
@@ -113,16 +102,15 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
 
     if not funcsolved is None and funcsolved:
         txt = ''
-        try:
-            if len(list(i for i in funcsolved if i > 0)) > 1:
-                txt = '(%d' % funcsolved[0]
-                for i in range(1, len(funcsolved)):
-                    if funcsolved[i] > 0:
-                        txt += ', %d' % funcsolved[i]
-                txt += ') = '
-            txt += '%d funcs' % numpy.sum(funcsolved)
-        except TypeError:
-            txt = '%d funcs' % funcsolved
+
+        if len(list(i for i in funcsolved if len(i) > 0)) > 1:
+            txt = '(%d' % len(funcsolved[0])
+            for i in range(1, len(funcsolved)):
+                if len(funcsolved[i]) > 0:
+                    txt += ', %d' % len(funcsolved[i])
+            txt += ') = '
+
+        txt += ('%d funcs' % numpy.sum(len(i) for i in funcsolved))
 
         #plt.figtext(0.01, 1.01, txt, horizontalalignment='left',
                  #verticalalignment="bottom")
@@ -153,6 +141,16 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
     for entry in fileFormat:
         plt.savefig(figureName + '.' + entry, dpi = dpi_global_var, format = entry)
 
+def get_plot_args(args):
+    """args is one dict element according to algorithmshortinfos
+    """
+    if args['label'] in show_algorithms:
+        args['linewidth'] = 2
+    elif len(show_algorithms) > 0:
+        args['color'] = 'wheat'
+        args['ls'] = '-'
+        args['zorder'] = -1
+    return args
 
 def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None, CrE=0,
                  kwargs={}):
@@ -268,7 +266,7 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
     # the functions will not necessarily sorted.
 
     bestERT = [] # best ert per function, not necessarily sorted as well.
-    funcsolved = [0] * len(target)
+    funcsolved = [set()] * len(target)
 
     for alg, sameAlgEntries in dictAlg.iteritems():
 
@@ -288,11 +286,12 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
                             continue
                     except KeyError:
                         continue
-                    funcsolved[j] += 1
+                    
+                    funcsolved[j].add(f)
 
                     # entry is supposed to be a single item DataSetList, TODO: if not?
-                    if len(entries) != 1:
-                        set_trace()
+                    #if len(entries) != 1:
+                    #    set_trace()
                     entry = entries[0]
                     x = [numpy.inf] * perfprofsamplesize
                     y = numpy.inf
@@ -324,8 +323,11 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
     for i, alg in enumerate(order):
         maxevals = []
 
-        data = dictData[alg]
-        maxevals = dictMaxEvals[alg]
+        try:
+            data = dictData[alg]
+            maxevals = dictMaxEvals[alg]
+        except KeyError:
+            continue
 
         CrE = 0
         # need to know noisy or non-noisy functions here!
@@ -352,4 +354,5 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
     #set_trace()
     beautify(figureName, funcsolved, xlim*x_annote_factor, False, fileFormat=figformat)
 
+    #set_trace()
     plt.close()

@@ -116,7 +116,7 @@ def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={},
         # no label
         pass
 
-    #res = plotECDF(x, nn, kwargs)
+    #res = plotECDF(x, nn, kwargs) # Why not?
     n = len(x)
     if n == 0:
         res = plt.plot([], [], **kwargs)
@@ -166,7 +166,26 @@ def plotERTDistr(dsList, fvalueToReach, plotArgs=None, verbose=True):
 
     return res
 
-def beautifyFVD(figHandle, figureName, fileFormat=('pdf','eps'),
+def generateRLData(evals, targets):
+    """Determine the running lengths for attaining the targets.
+
+    Keyword arguments:
+    evals -- numpy array with the first column corresponding to the function
+      values and the following columns being the number of function evaluations
+      for reaching this function value
+    targets -- target function values of interest
+
+    Output:
+    list of arrays containing the number of function evaluations for reaching
+    the target function values in target.
+    """
+
+    res = {}
+    for t in revert(sorted(targets)):
+        pass
+        
+
+def beautifyFVD(figHandle, figureName, fileFormat=('pdf', 'eps'),
                 isStoringXMax=False, text=None, verbose=True):
     """Formats the figure of the run length distribution.
 
@@ -369,7 +388,6 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     #plt.close(fig)
 
     plt.rcdefaults()
-
 
 def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
          info='default', verbose=True):

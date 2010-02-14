@@ -224,9 +224,9 @@ def main(argv=None):
             sys.exit()
 
         for i in dictAlg:
-            if isNoisy:
+            if isNoisy and not isNoiseFree:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('nzall', DataSetList())
-            if isNoiseFree:
+            if isNoiseFree and not isNoisy:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
 
         for i in dsList:

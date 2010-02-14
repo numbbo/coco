@@ -113,13 +113,13 @@ def detTarget(dsList):
 def usage():
     print main.__doc__
 
-#    Tentative new doc:
-#    argv must list either : (i) folders containing pickle files, (ii) folders
-#    containing raw data files, (iii) tar archive files (eventually compressed
+#    TODO: Next step: archive files as input arguments
+#    (iii) tar archive files (eventually compressed
 #    using gzip or bzip2). Each of these white-space separated arguments should
 #    correspond to the data of one algorithm.
 def main(argv=None):
-    """
+    """Main routine for post-processing the data of multiple algorithms.
+
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not provided,
     sys.argv is accessed.
@@ -198,11 +198,10 @@ def main(argv=None):
 
     try:
         try:
-            opts, args = getopt.getopt(argv, "hvpo:",
+            opts, args = getopt.getopt(argv, "hvo:",
                                        ["help", "output-dir=", "noisy",
-                                        "noise-free", "write-pickles",
-                                        "perfprof-only", "tab-only", 
-                                        "targets=", "verbose"])
+                                        "noise-free", "perfprof-only",
+                                        "tab-only", "verbose"])
         except getopt.error, msg:
              raise Usage(msg)
 
@@ -212,10 +211,8 @@ def main(argv=None):
 
         verbose = False
         outputdir = 'cmpalldata'
-        isWritePickle = False
         isNoisy = False
         isNoiseFree = False
-        targets = False
 
         isPer = True
         isTab = True
@@ -257,9 +254,9 @@ def main(argv=None):
             sys.exit()
 
         for i in dictAlg:
-            if isNoisy:
+            if isNoisy and not isNoiseFree:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('nzall', DataSetList())
-            if isNoiseFree:
+            elif isNoiseFree and not isNoisy:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
 
         for i in dsList:
@@ -306,9 +303,11 @@ def main(argv=None):
                 for d, entries in tmpdictDim.iteritems():
                     tmp = dictDim.setdefault(d, {})
                     if tmp.get(alg, False):
-                        set_trace()
+                        #set_trace()
+                        pass
                     if not isinstance(entries, DataSetList):
-                        set_trace()
+                        #set_trace()
+                        pass
                     tmp[alg] = entries #TODO: check
 
             for d, entries in dictDim.iteritems():
