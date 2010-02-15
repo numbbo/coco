@@ -490,7 +490,7 @@ def main(argv=None):
             if len(dictNoise) > 1:
                 warnings.warn('Data for functions from both the noisy and '
                               'non-noisy testbeds have been found. Their '
-                              'results will be mixed in the "all functions"'
+                              'results will be mixed in the "all functions" '
                               'ECDF figures.')
             dictDim = dsList.dictByDim()
             for dim in rldDimsOfInterest:

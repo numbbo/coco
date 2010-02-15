@@ -7,6 +7,7 @@ from __future__ import absolute_import
 
 import os
 import numpy
+import pickle
 import matplotlib.pyplot as plt
 from pdb import set_trace
 from bbob_pproc import bootstrap
@@ -19,6 +20,19 @@ rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  
 fmax = None
 evalfmax = None
 figformat = ('eps', 'pdf') # Controls the output when using the main method
+
+filename = 'pprldistr2009_1e-8.pickle'
+filename = os.path.join(os.path.split(__file__)[0], filename)
+isAlgorithm2009Found = True
+try:
+    f = open(filename,'r')
+    dict2009 = pickle.load(f)
+except IOError, (errno, strerror):
+    print "I/O error(%s): %s" % (errno, strerror)
+    isAlgorithm2009Found = False
+    print 'Could not find file: ', filename
+else:
+    f.close()
 
 def plotECDF(x, n=None, plotArgs={}):
     if n is None:
@@ -43,6 +57,7 @@ def beautifyECDF(axish=None):
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('pdf', 'eps'),
                 text=None, verbose=True):
     """Format the figure of the run length distribution and save into files."""
+
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
     plt.axvline(x=maxEvalsF, color='k')
@@ -181,9 +196,26 @@ def generateRLData(evals, targets):
     """
 
     res = {}
-    for t in revert(sorted(targets)):
-        pass
-        
+    it = reversed(evals) # expect evals to be sorted by decreasing function values
+    prevline = numpy.array([-numpy.inf] + [numpy.nan] * (numpy.shape(evals)[1]-1))
+    try:
+        line = it.next()
+    except StopIteration:
+        # evals is an empty array
+        return res
+
+    for t in sorted(targets):
+        while line[0] <= t:
+            prevline = line
+            try:
+                line = it.next()
+            except StopIteration:
+                break
+        #if prevline[0] > t:
+            #prevline.copy()
+        #set_trace()
+        res[t] = prevline.copy() # is copy necessary?
+    return res
 
 def beautifyFVD(figHandle, figureName, fileFormat=('pdf', 'eps'),
                 isStoringXMax=False, text=None, verbose=True):
@@ -451,8 +483,30 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     else:
         text = 'f%d' %(funcs[0])
 
+    if isAlgorithm2009Found:
+        d = set(i.dim for i in dsList).pop() # Get only one element...
+        for alg in dict2009:
+            x = []
+            nn = 0
+            for f in funcs:
+                try:
+                    tmp = dict2009[alg][f][d][0]
+                    x.append(tmp)
+                    nn += len(tmp)
+                except KeyError:
+                    #set_trace()
+                    continue
+
+            if x:
+                x.append([evalfmax ** 1.05])
+                x = numpy.hstack(x)
+
+                plotECDF(x[numpy.isfinite(x)], nn,
+                         {'color': 'wheat', 'ls': '-', 'zorder': -1})
+
     beautifyRLD(fig, figureName, evalfmax, fileFormat=figformat, text=text,
                 verbose=verbose)
+
     plt.close(fig)
 
     figureName = os.path.join(outputdir,'ppfvdistr_%s' %(info))
