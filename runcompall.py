@@ -297,32 +297,21 @@ def main(argv=None):
 
         # Performance profiles
         if isPer:
-            dictDim = {}
-            for alg, tmpdsList in dictAlg.iteritems():
-                tmpdictDim = tmpdsList.dictByDim()
-                for d, entries in tmpdictDim.iteritems():
-                    tmp = dictDim.setdefault(d, {})
-                    if tmp.get(alg, False):
-                        #set_trace()
-                        pass
-                    if not isinstance(entries, DataSetList):
-                        #set_trace()
-                        pass
-                    tmp[alg] = entries #TODO: check
-
-            for d, entries in dictDim.iteritems():
-                for k, t in dictTarget.iteritems():
-                    ppperfprof.main(entries, target=t, order=sortedAlgs,
-                                    plotArgs=algPlotInfos,
-                                    outputdir=outputdir,
-                                    info=('%02d%s' % (d, k)),
-                                    verbose=verbose)
+            dictNoi = pproc.dictAlgByNoi(dictAlg)
+            for ng, tmpdictAlg in dictNoi.iteritems():
+                dictDim = pproc.dictAlgByDim(tmpdictAlg)
+                for d, entries in dictDim.iteritems():
+                    for k, t in dictTarget.iteritems():
+                        ppperfprof.main(entries, target=t, order=sortedAlgs,
+                                        plotArgs=algPlotInfos,
+                                        outputdir=outputdir,
+                                        info=('%02d%s_%s' % (d, k, ng)),
+                                        verbose=verbose)
             organizeRTDpictures.do(outputdir)
             print "ECDFs of ERT figures done."
 
-        allmintarget, allertbest = detTarget(dsList)
-
         if isTab:
+            allmintarget, allertbest = detTarget(dsList)
             pptables.tablemanyalgonefunc(dictAlg, allmintarget, allertbest,
                                          sortedAlgs, outputdir)
             print "Comparison tables done."

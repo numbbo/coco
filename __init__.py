@@ -9,10 +9,11 @@ article summarizing the experiments.
 
 """
 import sys
+from bbob_pproc.run import Usage as Usage
 from bbob_pproc.run import main as main
 
 __all__  = ['readalign', 'pptex', 'pprldistr', 'findfiles',
-            'main', 'ppfigdim', 'pproc', 'dataoutput']
+            'main', 'ppfigdim', 'pproc', 'dataoutput', 'Usage']
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -584,3 +584,96 @@ def processInputArgs(args, plotInfo=None, verbose=True):
             warnings.warn(txt)
 
     return dsList, sortedAlgs, dictAlg
+
+def dictAlgByDim(dictAlg):
+    res = {}
+    dims = set()
+    tmpdictAlg = {}
+    for alg, dsList in dictAlg.iteritems():
+        tmp = dsList.dictByDim()
+        tmpdictAlg[alg] = tmp
+        dims |= set(tmp.keys())
+
+    for d in dims:
+        for alg in dictAlg:
+            tmp = DataSetList()
+            try:
+                tmp = tmpdictAlg[alg][d]
+            except KeyError:
+                txt = ('No data for algorithm %s in %d-D.'
+                       % (alg, d))
+                warnings.warn(txt)
+
+            if res.setdefault(d, {}).has_key(alg):
+                txt = ('Duplicate data for algorithm %s in %d-D.'
+                       % (alg, d))
+                warnings.warn(txt)
+
+            res.setdefault(d, {}).setdefault(alg, tmp)
+            # Only the first data for a given algorithm in a given dimension
+
+    return res
+
+def dictAlgByFun(dictAlg):
+    res = {}
+    funcs = set()
+    tmpdictAlg = {}
+    for alg, dsList in dictAlg.iteritems():
+        tmp = dsList.dictByFunc()
+        tmpdictAlg[alg] = tmp
+        funcs |= set(tmp.keys())
+
+    for f in funcs:
+        for alg in dictAlg:
+            tmp = DataSetList()
+            try:
+                tmp = tmpdictAlg[alg][f]
+            except KeyError:
+                txt = ('No data for algorithm %s on function %d.'
+                       % (alg, f))
+                warnings.warn(txt)
+
+            if res.setdefault(f, {}).has_key(alg):
+                txt = ('Duplicate data for algorithm %s on function %d-D.'
+                       % (alg, f))
+                warnings.warn(txt)
+
+            res.setdefault(f, {}).setdefault(alg, tmp)
+            # Only the first data for a given algorithm in a given dimension
+
+    return res
+
+def dictAlgByNoi(dictAlg):
+    res = {}
+    ng = set()
+    tmpdictAlg = {}
+    for alg, dsList in dictAlg.iteritems():
+        tmp = dsList.dictByNoise()
+        tmpdictAlg[alg] = tmp
+        ng |= set(tmp.keys())
+
+    for n in ng:
+        stmp = ''
+        if n == 'nzall':
+            stmp = 'noisy'
+        elif n == 'noiselessall':
+            stmp = 'noiseless'
+
+        for alg in dictAlg:
+            tmp = DataSetList()
+            try:
+                tmp = tmpdictAlg[alg][n]
+            except KeyError:
+                txt = ('No data for algorithm %s on %s function.'
+                       % (alg, stmp))
+                warnings.warn(txt)
+
+            if res.setdefault(n, {}).has_key(alg):
+                txt = ('Duplicate data for algorithm %s on %s functions.'
+                       % (alg, stmp))
+                warnings.warn(txt)
+
+            res.setdefault(n, {}).setdefault(alg, tmp)
+            # Only the first data for a given algorithm in a given dimension
+
+    return res

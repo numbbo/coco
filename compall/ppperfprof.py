@@ -8,6 +8,7 @@ from __future__ import absolute_import
 
 import os
 import warnings
+#import pickle
 from pdb import set_trace
 import numpy # According to PEP 8 imports should be on different lines
 import matplotlib.pyplot as plt
@@ -268,53 +269,71 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
     bestERT = [] # best ert per function, not necessarily sorted as well.
     funcsolved = [set()] * len(target)
 
-    for alg, sameAlgEntries in dictAlg.iteritems():
+    dictFunc = {}
+    d = set()
+    for alg, tmpdsList in dictAlg.iteritems():
+        for i in tmpdsList:
+            d.add(i.dim)
+            tmp = dictFunc.setdefault(i.funcId, {})
+            if tmp.has_key(alg):
+                txt = ('Duplicate data: algorithm %s, function %f'
+                       % (alg, i.funcId))
+                warnings.warn(txt)
+            tmp.setdefault(alg, i)
+            # if the number of entries is larger than 1, the rest of
+            # the data is disregarded.
 
-        dictFunc = sameAlgEntries.dictByFunc()
+    if len(d) != 1:
+        raise Usage('We never integrate over dimension.')
+    d = d.pop()
 
-        for f, samefuncEntries in dictFunc.iteritems():
-            if f not in function_IDs:
-               continue
-            dictDim = samefuncEntries.dictByDim()
+    for f, tmpdictAlg in dictFunc.iteritems():
+        if f not in function_IDs:
+            continue
 
-            for d, entries in dictDim.iteritems():
+        for j, t in enumerate(target):
+            try:
+                if numpy.isnan(t[(f, d)]):
+                    continue
+            except KeyError:
+                continue
 
-                for j, t in enumerate(target):
-                    try:
-                        #set_trace()
-                        if numpy.isnan(t[(f, d)]):
-                            continue
-                    except KeyError:
-                        continue
-                    
-                    funcsolved[j].add(f)
+            funcsolved[j].add(f)
 
-                    # entry is supposed to be a single item DataSetList, TODO: if not?
-                    #if len(entries) != 1:
-                    #    set_trace()
-                    entry = entries[0]
-                    x = [numpy.inf] * perfprofsamplesize
-                    y = numpy.inf
+            # Loop over all algs, not only those with data for f
+            for alg in dictAlg:
+                x = [numpy.inf] * perfprofsamplesize
+                y = numpy.inf
+
+                try:
+                    entry = tmpdictAlg[alg]
                     runlengthunsucc = entry.maxevals / entry.dim
                     for line in entry.evals:
                         if line[0] <= t[(f, d)]:
                             tmp = line[1:]
                             runlengthsucc = tmp[numpy.isfinite(tmp)] / entry.dim
                             runlengthunsucc = entry.maxevals[numpy.isnan(tmp)] / entry.dim
-                            #if len(runlengthunsucc) > 0:
-                            #if info == '20_fE1.0':
-                            #    set_trace()
                             x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
                                                  percentiles=[50],
                                                  samplesize=perfprofsamplesize)[1]
-                            #else: # Problem in this case due to samplesize.
-                            #    x = runlengthsucc
-
                             break
 
-                    dictData.setdefault(alg, []).extend(x)
-                    dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
-                    #TODO: there may be addition for every target... is it the desired behaviour?
+                except KeyError:
+                    txt = ('Data for algorithm %s on function %d in %d-D '
+                           % (alg, f, d)
+                           + 'are missing.')
+                    warnings.warn(txt)
+                    #raise Usage(txt)
+                    #pass
+
+                dictData.setdefault(alg, []).extend(x)
+                dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
+
+    #picklefilename = os.path.join(outputdir,'perfprofdata_%s.pickle' %(info))
+    #f = file(picklefilename, 'w')
+    #pickle.dump(dictData, f)
+    #pickle.dump(dictMaxEvals, f)
+    #f.close()
 
     if order is None:
         order = dictData.keys()
@@ -343,10 +362,14 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
             # print 'mixing noisy and non-noisy functions will yield questionable results'
 
         #Get one element in the set of the algorithm description
-        elem = set((i.algId, i.comment) for i in dictAlg[alg]).pop()
-        lines.append(plotPerfProf(numpy.array(data),
-                     xlim, maxevals, order=(i, len(order)), CrE=CrE,
-                     kwargs=get_plot_args(plotArgs[elem]), ))
+        try:
+            elem = set((i.algId, i.comment) for i in dictAlg[alg]).pop()
+            lines.append(plotPerfProf(numpy.array(data),
+                         xlim, maxevals, order=(i, len(order)), CrE=CrE,
+                         kwargs=get_plot_args(plotArgs[elem]), ))
+        except KeyError:
+            #No data
+            pass
 
     plotLegend(lines, xlim)
 
