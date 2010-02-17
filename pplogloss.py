@@ -61,21 +61,24 @@ from matplotlib import mlab as mlab
 from bbob_pproc.bestalg import BestAlgSet
 
 figformat = ('eps', 'pdf')
+f_thresh = 1.e-8
 bestalgentries = {}
-bestalgfilepath = os.path.join(os.path.split(__file__)[0], 'bestalg')
-for fun in range(1, 25)+range(101, 131):
-    for D in [2, 3, 5, 10, 20, 40]:
-        picklefilename = os.path.join(bestalgfilepath,
-                                      'bestalg_f%03d_%02d.pickle.gz' % (fun, D))
-        #TODO: what if file is not found?
-        fid = gzip.open(picklefilename, 'r')
-        bestalgentries[(D, fun)] = pickle.load(fid)
-        fid.close()
-#picklefilename = os.path.join(bestalgfilepath, 'bestalgentries.pickle.gz')
-##TODO: what if file is not found?
-#fid = gzip.open(picklefilename, 'r')
-#bestalgentries = pickle.load(fid)
-#fid.close()
+#bestalgfilepath = os.path.join(os.path.split(__file__)[0], 'bestalg')
+#for fun in range(1, 25)+range(101, 131):
+    #for D in [2, 3, 5, 10, 20, 40]:
+        #picklefilename = os.path.join(bestalgfilepath,
+                                      #'bestalg_f%03d_%02d.pickle.gz' % (fun, D))
+        ##TODO: what if file is not found?
+        #fid = gzip.open(picklefilename, 'r')
+        #bestalgentries[(D, fun)] = pickle.load(fid)
+        #fid.close()
+
+bestalgfilepath = os.path.split(__file__)[0]
+picklefilename = os.path.join(bestalgfilepath, 'bestalgentries.pickle.gz')
+#TODO: what if file is not found?
+fid = gzip.open(picklefilename, 'r')
+bestalgentries = pickle.load(fid)
+fid.close()
 
 def detERT(entry, funvals):
     res = []
@@ -108,7 +111,7 @@ def detf(entry, evals):
     for fevals in evals:
         tmp = (entry.ert <= fevals)
         idx = numpy.argmin(entry.target[tmp])
-        res.append(entry.target[idx])
+        res.append(max(entry.target[idx], f_thresh))
         #res2.append(entry.ert[dix])
         #TODO numpy.min(empty)
     return res
@@ -150,9 +153,9 @@ def generateData(dsList, evals, CrE_A):
             else:
                 tmp = bestalgentry.target[bestalgentry.target < i]
                 try:
-                    nextbestf.append(tmp[0])
+                    nextbestf.append(max(tmp[0], f_thresh))
                 except IndexError:
-                    nextbestf.append(i * 10.**(-0.2)) # TODO: this is a hack
+                    nextbestf.append(max(i * 10.**(-0.2), f_thresh)) # TODO: this is a hack
                     #set_trace()
 
         ERT_best_nextbestf = detERT(bestalgentry, nextbestf)
