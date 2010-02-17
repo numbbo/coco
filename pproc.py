@@ -157,8 +157,6 @@ class DataSet:
         self.ert = numpy.array(self.ert)
         self.target = numpy.array(self.target)
 
-
-
     def __eq__(self, other):
         """Compare indexEntry instances."""
         return (self.__class__ is other.__class__ and
@@ -296,6 +294,37 @@ class DataSet:
                 return funvals
 
         return (evals, funvals)
+
+    def generateRLData(self, inputtarget):
+        """Determine the running lengths for attaining the targetf.
+
+        Keyword arguments:
+        targets -- list of target function values of interest
+
+        Output:
+        list of arrays containing the number of function evaluations for reaching
+        the target function values in target.
+        """
+
+        res = {}
+        it = reversed(self.evals) # expect evals to be sorted by decreasing function values
+        prevline = numpy.array([-numpy.inf] + [numpy.nan] * self.nbRuns())
+        try:
+            line = it.next()
+        except StopIteration:
+            # evals is an empty array
+            return res #list()
+
+        for t in sorted(inputtarget):
+            while line[0] <= t:
+                prevline = line
+                try:
+                    line = it.next()
+                except StopIteration:
+                    break
+            res[t] = prevline.copy() # is copy necessary?
+
+        return res # list(res[i] for i in inputtarget)
 
 class DataSetList(list):
     """Set of instances of DataSet objects, implement some useful slicing
@@ -562,7 +591,10 @@ def processInputArgs(args, plotInfo=None, verbose=True):
             warnings.warn(txt)
             continue
         elif os.path.isdir(i):
-            tmpDsList = DataSetList(findfiles.main(i, verbose), verbose)
+            filelist = findfiles.main(i, verbose)
+            #Do here any sorting or filtering necessary.
+            #filelist = list(i for i in filelist if i.count('ppdata_f005'))
+            tmpDsList = DataSetList(filelist, verbose)
             #Nota: findfiles will find all info AND pickle files in folder i.
             #No problem should arise if the info and pickle files have
             #redundant information. Only, the process could be more efficient

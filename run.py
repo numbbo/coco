@@ -30,7 +30,7 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import pptex, pprldistr, ppfigdim, findfiles
+from bbob_pproc import pptex, pprldistr, ppfigdim, pplogloss, findfiles
 from bbob_pproc.pproc import DataSetList
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
@@ -296,6 +296,11 @@ def main(argv=None):
 
             change the default output directory ('ppdata') to OUTPUTDIR
 
+        --crafting-effort=VALUE
+
+            sets the crafting effort to VALUE. Otherwise the user will be
+            prompted. This flag is useful when running this script in batch.
+
         -f, --final
 
             lengthens the bootstrapping process used as dispersion measure in
@@ -357,8 +362,9 @@ def main(argv=None):
 
         try:
             opts, args = getopt.getopt(argv, "hvpfo:",
-                                       ["help", "output-dir",
+                                       ["help", "output-dir=",
                                         "tab-only", "fig-only", "rld-only",
+                                        "los-only", "crafting-effort=",
                                         "pickle", "verbose", "final"])
         except getopt.error, msg:
              raise Usage(msg)
@@ -367,9 +373,11 @@ def main(argv=None):
             usage()
             sys.exit()
 
+        CrE = None
         isfigure = True
         istab = True
         isrldistr = True
+        islogloss = True
         isPostProcessed = False
         isPickled = False
         isDraft = True
@@ -393,12 +401,24 @@ def main(argv=None):
             elif o == "--tab-only":
                 isfigure = False
                 isrldistr = False
+                islogloss = False
             elif o == "--fig-only":
                 istab = False
                 isrldistr = False
+                islogloss = False
             elif o == "--rld-only":
                 istab = False
                 isfigure = False
+                islogloss = False
+            elif o == "--los-only":
+                istab = False
+                isfigure = False
+                isrldistr = False
+            elif o == "--crafting-effort":
+                try:
+                    CrE = float(a)
+                except ValueError:
+                    raise Usage('Expect a valid float for flag crafting-effort.')
             else:
                 assert False, "unhandled option"
 
@@ -445,7 +465,7 @@ def main(argv=None):
             #will be considered... which is probably not what one would expect.
             #TODO: put some errors where this case would be a problem.
 
-        if isfigure or istab or isrldistr:
+        if isfigure or istab or isrldistr or islogloss:
             if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
                 if verbose:
@@ -499,7 +519,7 @@ def main(argv=None):
                     pprldistr.main(sliceDim, rldValsOfInterest, True,
                                    outputdir, 'dim%02dall' % dim, verbose)
                     dictNoise = sliceDim.dictByNoise()
-                    for noise, sliceNoise in dictNoise.items():
+                    for noise, sliceNoise in dictNoise.iteritems():
                         pprldistr.main(sliceNoise, rldValsOfInterest, True,
                                        outputdir, 'dim%02d%s' % (dim, noise),
                                        verbose)
@@ -515,7 +535,39 @@ def main(argv=None):
                     pass
             print "ECDF graphs done."
 
-        if isfigure or istab or isrldistr:
+        #EXPERIMENTAL#
+        #islogloss = True
+        if islogloss:
+            for ng, sliceNoise in dsList.dictByNoise().iteritems():
+                if ng == 'noiselessall':
+                    testbed = 'noiseless'
+                elif ng == 'nzall':
+                    testbed = 'noisy'
+                txt = ("Please input crafting effort value"
+                       +"for %s testbed, CrE?\n" % testbed)
+                while CrE is None:
+                    try:
+                        CrE = input(txt)
+                        if not isinstance(CrE, float):
+                            CrE = None
+                            raise SyntaxError
+                    except SyntaxError:
+                        print "Float value required."
+                    except NameError:
+                        print "Float value required."
+                for d, sliceDim in sliceNoise.dictByDim().iteritems():
+                    info = 'dim%02d%s' % (d, ng)
+                    pplogloss.main(sliceDim, CrE, outputdir, info,
+                                   verbose=verbose)
+                    for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
+                        info = 'dim%02d%s' % (d, fGroup)
+                        pplogloss.main(sliceFuncGroup, CrE, outputdir, info,
+                                       verbose=verbose)
+
+            print "ERT Log loss figures done."
+        #/EXPERIMENTAL#
+
+        if isfigure or istab or isrldistr or islogloss:
             print "Output data written to folder %s." % outputdir
 
     except Usage, err:

@@ -73,9 +73,7 @@ def customizeFigure(figHandle, figureName=None, xmin=None, title='',
 
     # We are setting xmin
     if xmin:
-        xminauto, xmaxauto = plt.xlim()
-        #plt.xlim(max(xminauto, 1e-8), xmaxauto)
-        plt.xlim(xmin, xmaxauto)
+        plt.xlim(xmin=xmin)
 
     axisHandle.invert_xaxis()
 

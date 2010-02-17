@@ -72,9 +72,6 @@ def customizeFigure(figHandle, figureName = None, title='',
 
     # Grid options
     axisHandle.grid('True')
-    #ylim_org = axisHandle.get_ylim()
-    #set_trace()
-    ymin, ymax = plt.ylim()
 
     # linear and quadratic "grid"
     plt.plot((2,200), (1,1e2), 'k:')    # TODO: this should be done before the real lines are plotted? 
@@ -86,9 +83,7 @@ def customizeFigure(figHandle, figureName = None, title='',
 
     # axes limites
     plt.xlim(1.8, 45)                # TODO should become input arg?
-    #set_trace()
-    plt.ylim(10**-0.2, ymax)
-    #plt.ylim(10**-0.2, ylim_org[1])
+    plt.ylim(ymin=10**-0.2)
 
     # ticks on axes
     #axisHandle.invert_xaxis()
