@@ -61,6 +61,7 @@ from matplotlib import mlab as mlab
 from bbob_pproc.bestalg import BestAlgSet
 
 figformat = ('eps', 'pdf')
+bestalgentries = {}
 bestalgfilepath = os.path.join(os.path.split(__file__)[0], 'bestalg')
 for fun in range(1, 25)+range(101, 131):
     for D in [2, 3, 5, 10, 20, 40]:
@@ -68,8 +69,13 @@ for fun in range(1, 25)+range(101, 131):
                                       'bestalg_f%03d_%02d.pickle.gz' % (fun, D))
         #TODO: what if file is not found?
         fid = gzip.open(picklefilename, 'r')
-        bestalgentries[D][fun] = pickle.load(fid)
+        bestalgentries[(D, fun)] = pickle.load(fid)
         fid.close()
+#picklefilename = os.path.join(bestalgfilepath, 'bestalgentries.pickle.gz')
+##TODO: what if file is not found?
+#fid = gzip.open(picklefilename, 'r')
+#bestalgentries = pickle.load(fid)
+#fid.close()
 
 def detERT(entry, funvals):
     res = []
@@ -122,7 +128,7 @@ def generateData(dsList, evals, CrE_A):
         #fid = gzip.open(picklefilename, 'r')
         #bestalgentry = pickle.load(fid)
         #fid.close()
-        bestalgentry = bestalgentries[D][fun]
+        bestalgentry = bestalgentries[(D, fun)]
 
         #ERT_A
         f_A = detf(entry, evals)
@@ -159,7 +165,8 @@ def generateData(dsList, evals, CrE_A):
         ERT_best = numpy.array(ERT_best)
         #CrE_A = 0 #TODO: set!
         loss_A = numpy.exp(CrE_A) * ERT_A / ERT_best
-        if numpy.isnan(loss_A).any() or numpy.isinf(loss_A).any() or (loss_A == 0).any():
+        #set_trace()
+        if numpy.isnan(loss_A).any() or numpy.isinf(loss_A).any() or (loss_A == 0.).any():
             txt = 'Problem with entry %s' % str(entry)
             warnings.warn(txt)
             #set_trace()
@@ -436,6 +443,8 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
     EVALS = [2.*D]
     EVALS.extend(numpy.power(10, numpy.arange(1, 8))*D)
 
+    #if D == 3:
+        #set_trace()
     data = generateData(dsList, EVALS, CrE)
     #set_trace()
     ydata = []
@@ -446,8 +455,6 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
     xdata = numpy.log10(numpy.array(EVALS)/D)
     xticklabels = ['2']
     xticklabels.extend('1E%d' % i for i in xdata[1:])
-    #if D == 20:
-        #set_trace()
     plot(xdata, ydata)
 
     filename = os.path.join(outputdir, 'pplogloss_%s' % suffix)
@@ -456,9 +463,8 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
     ymax = max(EVALS)
     plt.plot(numpy.log10((2, float(ymax)/D)), (D * 2., ymax), color='k',
              ls=':', zorder=-1)
-    #if D == 20:
-        #set_trace()
-    if len(set(dsList.dictByFun().keys)) >= 10:
+
+    if len(set(dsList.dictByFunc().keys())) >= 10:
         #TODO: hopefully this means we are not considering function groups.
         plt.text(0.01, 0.98, 'CrE = %5g' % CrE, fontsize=20,
                  horizontalalignment='left', verticalalignment='top',
