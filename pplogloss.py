@@ -51,7 +51,7 @@ from __future__ import absolute_import
 
 import os
 import warnings
-import pickle
+import cPickle as pickle
 import gzip
 from pdb import set_trace
 import numpy
@@ -74,7 +74,7 @@ bestalgentries = {}
         #fid.close()
 
 bestalgfilepath = os.path.split(__file__)[0]
-picklefilename = os.path.join(bestalgfilepath, 'bestalgentries.pickle.gz')
+picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
 #TODO: what if file is not found?
 fid = gzip.open(picklefilename, 'r')
 bestalgentries = pickle.load(fid)
@@ -353,7 +353,7 @@ def plot(xdata, ydata):
         for i, y in enumerate(ydata):
             res.extend(plt.plot([xdata[i]]*len(y), 10**numpy.array(y),
                                 marker='+', color='b',
-                                ls='', markersize=20))
+                                ls='', markersize=20, markeredgewidth=3))
     else:
         dictboxwhisker = boxplot(list(10**numpy.array(i) for i in ydata),
                                  sym='', notch=0, widths=None,
@@ -372,40 +372,6 @@ def plot(xdata, ydata):
 
     return res
 
-#def plot2(xdata, ydata):
-    #"""
-    #"""
-    #res = []
-
-    #tmp = list(numpy.mean(i) for i in ydata)
-    #res.extend(plt.plot(xdata, tmp, ls='-', color='k', lw=3, #marker='+',
-                        #markersize=20, markeredgewidth=3))
-
-    #if max(len(i) for i in ydata) < 10: # TODO: subgroups of function, hopefully.
-        #for i, y in enumerate(ydata):
-            #res.extend(plt.plot([xdata[i]]*len(y), numpy.array(y),
-                                #marker='+', color='b',
-                                #ls='', markersize=20))
-    #else:
-        #dictboxwhisker = boxplot(ydata,
-                                 #sym='', notch=0, widths=None,
-                                 #positions=xdata)
-        #plt.setp(dictboxwhisker['medians'], lw=3)
-        #plt.setp(dictboxwhisker['boxes'], lw=3)
-        #plt.setp(dictboxwhisker['caps'], lw=3)
-        #plt.setp(dictboxwhisker['whiskers'], lw=3)
-        #for i in dictboxwhisker.values():
-            #res.extend(i)
-        #res.extend(plt.plot(xdata, list(min(i) for i in ydata), marker='.',
-                            #markersize=20, color='k', ls=''))
-        #res.extend(plt.plot(xdata, list(max(i) for i in ydata), marker='.',
-                             #markersize=20, color='k', ls=''))
-
-    ##for i,  in dictboxwhisker.iteritems():
-    ##'medians', 'fliers', 'whiskers', 'boxes', 'caps'
-    ##dictboxwhisker['fliers']
-    #return res
-
 def beautify(figureName, fileFormat, verbose):
     """Format the figure."""
 
@@ -413,7 +379,7 @@ def beautify(figureName, fileFormat, verbose):
     a.set_yscale('log')
     plt.ylim(ymin=1e-1, ymax=1e7)
     plt.xlabel('#Evals / dimension')
-    plt.ylabel('ERT log loss ratio')
+    plt.ylabel('ERT loss ratio')
     a.yaxis.grid(True, which='minor')
     a.yaxis.grid(True, which='major')
 
@@ -459,6 +425,8 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
     xticklabels = ['2']
     xticklabels.extend('1E%d' % i for i in xdata[1:])
     plot(xdata, ydata)
+    #a = plt.gca()
+    #a.set_yscale('log')
 
     filename = os.path.join(outputdir, 'pplogloss_%s' % suffix)
     plt.xticks(xdata, xticklabels)
