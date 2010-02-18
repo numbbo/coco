@@ -378,9 +378,12 @@ def beautify(figureName, fileFormat, verbose):
     a = plt.gca()
     a.set_yscale('log')
     plt.ylim(ymin=1e-1, ymax=1e7)
+    ydata = numpy.power(10., numpy.arange(-1., 8))
+    yticklabels = list(str(i) for i in range(-1, 8))
+    plt.yticks(ydata, yticklabels)
     plt.xlabel('#Evals / dimension')
-    plt.ylabel('ERT loss ratio')
-    a.yaxis.grid(True, which='minor')
+    plt.ylabel('log10 of ERT loss ratio')
+    #a.yaxis.grid(True, which='minor')
     a.yaxis.grid(True, which='major')
 
     if isinstance(fileFormat, basestring):
@@ -431,9 +434,9 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
     filename = os.path.join(outputdir, 'pplogloss_%s' % suffix)
     plt.xticks(xdata, xticklabels)
     #Is there an upper bound?
-    ymax = max(EVALS)
-    plt.plot(numpy.log10((2, float(ymax)/D)), (D * 2., ymax), color='k',
-             ls=':', zorder=-1)
+    #ymax = max(EVALS)
+    #plt.plot(numpy.log10((2, float(ymax)/D)), (D * 2., ymax), color='k',
+             #ls=':', zorder=-1)
 
     if len(set(dsList.dictByFunc().keys())) >= 10:
         #TODO: hopefully this means we are not considering function groups.
