@@ -83,7 +83,7 @@ fid.close()
 def detERT(entry, funvals):
     res = []
     for f in funvals:
-        idx = (entry.target==f) # Should be True only once
+        idx = (entry.target<=f)
         #set_trace()
         try:
             #if numpy.isnan(entry.ert[idx][0]):
@@ -120,6 +120,8 @@ def generateData(dsList, evals, CrE_A):
     res = {}
 
     D = set(i.dim for i in dsList).pop() # should have only one element
+    #if D == 5:
+    #    set_trace()
 
     for fun, tmpdsList in dsList.dictByFunc().iteritems():
         entry = tmpdsList[0] # TODO: check for problems
@@ -153,15 +155,17 @@ def generateData(dsList, evals, CrE_A):
             else:
                 tmp = bestalgentry.target[bestalgentry.target < i]
                 try:
-                    nextbestf.append(max(tmp[0], f_thresh))
+                    nextbestf.append(tmp[0])
                 except IndexError:
-                    nextbestf.append(max(i * 10.**(-0.2), f_thresh)) # TODO: this is a hack
+                    nextbestf.append(i * 10.**(-0.2)) # TODO: this is a hack
                     #set_trace()
 
         ERT_best_nextbestf = detERT(bestalgentry, nextbestf)
-        #TODO: watch that ERT_best_nextbestf is finite.
+           
         for i in range(len(ERT_A)):
-            if ERT_best_nextbestf[i] < evals[i]: # check vs nan and inf.
+            # nextbestf[i] >= f_thresh: this is tested because if it is not true
+            # ERT_best_nextbestf[i] is supposed to be infinite.
+            if nextbestf[i] >= f_thresh and ERT_best_nextbestf[i] < evals[i]:
                 ERT_A[i] = evals[i]
 
         ERT_A = numpy.array(ERT_A)
@@ -169,10 +173,10 @@ def generateData(dsList, evals, CrE_A):
         #CrE_A = 0 #TODO: set!
         loss_A = numpy.exp(CrE_A) * ERT_A / ERT_best
         #set_trace()
-        if numpy.isnan(loss_A).any() or numpy.isinf(loss_A).any() or (loss_A == 0.).any():
-            txt = 'Problem with entry %s' % str(entry)
-            warnings.warn(txt)
-            #set_trace()
+        #if numpy.isnan(loss_A).any() or numpy.isinf(loss_A).any() or (loss_A == 0.).any():
+        #    txt = 'Problem with entry %s' % str(entry)
+        #    warnings.warn(txt)
+        #    #set_trace()
         res[fun] = loss_A
 
         #set_trace()
@@ -413,7 +417,7 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
     # do not aggregate over dimensions
     D = set(i.dim for i in dsList).pop() # should have only one element
     EVALS = [2.*D]
-    EVALS.extend(numpy.power(10, numpy.arange(1, 8))*D)
+    EVALS.extend(numpy.power(10, numpy.arange(1, 10))*D)
 
     #if D == 3:
         #set_trace()
@@ -445,7 +449,8 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
                  transform = plt.gca().transAxes,
                  bbox=dict(facecolor='w'))
 
-    plt.plot(plt.xlim(), (1., 1.), color='k', ls='-', zorder=-1)
+    plt.axhline(1., color='k', ls='-', zorder=-1)
+    plt.axvline(x=numpy.log10(max(i.mMaxEvals()/D for i in dsList)), color='k')
 
     beautify(filename, fileFormat=figformat, verbose=verbose)
 

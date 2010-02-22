@@ -564,7 +564,7 @@ def main(argv=None):
                         pplogloss.main(sliceFuncGroup, CrE, outputdir, info,
                                        verbose=verbose)
 
-            print "ERT Log loss figures done."
+            print "ERT loss ratio figures done."
         #/EXPERIMENTAL#
 
         if isfigure or istab or isrldistr or islogloss:
