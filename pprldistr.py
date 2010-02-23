@@ -491,8 +491,12 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
             nn = 0
             for f in funcs:
                 try:
-                    tmp = dict2009[alg][f][d][0]
-                    x.append(tmp)
+                    tmp = dict2009[alg][f][d][0][1:]
+                    # [0] because the maximum #evals is recorded
+                    # [1:] because the target function value is recorded
+                    x.append(tmp[numpy.isnan(tmp) == False])
+                    #if (tmp <= 0).any():
+                        #set_trace()
                     nn += len(tmp)
                 except KeyError:
                     #set_trace()
