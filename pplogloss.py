@@ -110,6 +110,9 @@ def detf(entry, evals):
     res = []
     for fevals in evals:
         tmp = (entry.ert <= fevals)
+        #set_trace()
+        #if len(entry.target[tmp]) == 0:
+            #set_trace()
         idx = numpy.argmin(entry.target[tmp])
         res.append(max(entry.target[idx], f_thresh))
         #res2.append(entry.ert[dix])
@@ -161,7 +164,7 @@ def generateData(dsList, evals, CrE_A):
                     #set_trace()
 
         ERT_best_nextbestf = detERT(bestalgentry, nextbestf)
-           
+
         for i in range(len(ERT_A)):
             # nextbestf[i] >= f_thresh: this is tested because if it is not true
             # ERT_best_nextbestf[i] is supposed to be infinite.
@@ -417,8 +420,8 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
     # do not aggregate over dimensions
     D = set(i.dim for i in dsList).pop() # should have only one element
     EVALS = [2.*D]
-    EVALS.extend(numpy.power(10, numpy.arange(1, 10))*D)
-
+    EVALS.extend(numpy.power(10., numpy.arange(1, 10))*D)
+    #set_trace()
     #if D == 3:
         #set_trace()
     data = generateData(dsList, EVALS, CrE)
@@ -429,8 +432,8 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
         ydata.append(numpy.log10(list(data[f][i] for f in data)))
 
     xdata = numpy.log10(numpy.array(EVALS)/D)
-    xticklabels = ['2']
-    xticklabels.extend('1E%d' % i for i in xdata[1:])
+    xticklabels = ['']
+    xticklabels.extend('%d' % i for i in xdata[1:])
     plot(xdata, ydata)
     #a = plt.gca()
     #a.set_yscale('log')
@@ -442,7 +445,7 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
     #plt.plot(numpy.log10((2, float(ymax)/D)), (D * 2., ymax), color='k',
              #ls=':', zorder=-1)
 
-    if len(set(dsList.dictByFunc().keys())) >= 10:
+    if len(set(dsList.dictByFunc().keys())) >= 20:
         #TODO: hopefully this means we are not considering function groups.
         plt.text(0.01, 0.98, 'CrE = %5g' % CrE, fontsize=20,
                  horizontalalignment='left', verticalalignment='top',
@@ -451,7 +454,13 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
 
     plt.axhline(1., color='k', ls='-', zorder=-1)
     plt.axvline(x=numpy.log10(max(i.mMaxEvals()/D for i in dsList)), color='k')
-
+    funcs = set(i.funcId for i in dsList)
+    if len(funcs) > 1:
+        text = 'f%d-%d' %(min(funcs), max(funcs))
+    else:
+        text = 'f%d' %(funcs[0])
+    plt.text(0.5, 0.93, text, horizontalalignment="center",
+             transform=plt.gca().transAxes)
     beautify(filename, fileFormat=figformat, verbose=verbose)
 
     #plt.show()

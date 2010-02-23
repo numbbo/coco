@@ -60,7 +60,7 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('pdf', 'eps'),
 
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
-    plt.axvline(x=maxEvalsF, color='k')
+    #plt.axvline(x=maxEvalsF, color='k')
     plt.xlim(1.0, maxEvalsF ** 1.05)
     axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of trials')
@@ -369,6 +369,7 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     else:
         text = 'f%d' %(funcs[0])
 
+    plt.axvline(x=maxEvalsFactor, color='k')
     beautifyRLD(fig, figureName, evalfmax, fileFormat=figformat, text=text,
                 verbose=verbose)
     plt.close(fig)
@@ -459,7 +460,7 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
         evalfmax = None
 
     if not evalfmax:
-        evalfmax = maxEvalsFactor
+        evalfmax = 1e9 #maxEvalsFactor
 
     figureName = os.path.join(outputdir,'pprldistr_%s' %(info))
     fig = plt.figure()
@@ -504,6 +505,7 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
                 plotECDF(x[numpy.isfinite(x)], nn,
                          {'color': 'wheat', 'ls': '-', 'zorder': -1})
 
+    plt.axvline(x=maxEvalsFactor, color='k')
     beautifyRLD(fig, figureName, evalfmax, fileFormat=figformat, text=text,
                 verbose=verbose)
 
