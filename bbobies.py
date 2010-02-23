@@ -130,6 +130,13 @@ def main(argv=None):
         except getopt.error, msg:
              raise Usage(msg)
 
+        args = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
+                "CMA-ES", "CMA-ESPLUSSEL", "DASA", "DE-PSO", "DIRECT", "EDA-PSO",
+                "FULLNEWUOA", "G3PCX", "GA", "GLOBAL", "iAMALGAM", "LSfminbnd", "LSstep",
+                "MA-LS-CHAIN", "MCS", "NELDER", "NELDERDOERR", "NEWUOA", "ONEFIFTH", "POEMS",
+                "PSO", "PSO_Bounds", "RANDOMSEARCH", "Rosenbrock", "SEP-CMA-ES", "SNOBFIT",
+                "VNS")
+
         if not (args):
             usage()
             sys.exit()
@@ -201,23 +208,26 @@ def main(argv=None):
             if verbose:
                 print 'Folder %s was created.' % (outputdir)
 
-        #dictres = {}
-        #for alg, tmpdictAlg in dictAlg.iteritems():
-            #tmpdict = dictres.setdefault(alg, {})
-            #for f, tmpdictFunc in tmpdictAlg.dictByFunc().iteritems():
-                #tmpdict1 = tmpdict.setdefault(f, {})
-                #for d, entries in tmpdictFunc.dictByDim().iteritems():
-                    #if len(entries) != 1:
-                        #raise Usage('Problem for alg %s, f%d, %d-D' % alg, f, d)
-                    #entry = entries[0]
-                    #tmp = entry.generateRLData([1e-08])[1e-08]
-                    #if numpy.isfinite(tmp[0]):
-                    ##set_trace()
-                        #tmpdict1.setdefault(d, (tmp, entry.maxevals))
-        #picklefilename = os.path.join(outputdir, 'testdata.pickle')
-        #f = open(picklefilename, 'w')
-        #pickle.dump(dictres, f)
-        #f.close()
+        # Generate RLD data
+        dictres = {}
+        for alg, tmpdictAlg in dictAlg.iteritems():
+            tmpdict = dictres.setdefault(alg, {})
+            for f, tmpdictFunc in tmpdictAlg.dictByFunc().iteritems():
+                tmpdict1 = tmpdict.setdefault(f, {})
+                for d, entries in tmpdictFunc.dictByDim().iteritems():
+                    if len(entries) != 1:
+                        raise Usage('Problem for alg %s, f%d, %d-D' % alg, f, d)
+                    entry = entries[0]
+                    tmp = entry.generateRLData([1e-08])[1e-08]
+                    if numpy.isfinite(tmp[0]):
+                    #set_trace()
+                        if (tmp[1:] == 0.).any():
+                            set_trace()
+                        tmpdict1.setdefault(d, (tmp, entry.maxevals))
+        picklefilename = os.path.join(outputdir, 'testdata.pickle')
+        f = open(picklefilename, 'w')
+        pickle.dump(dictres, f)
+        f.close()
 
     except Usage, err:
         print >>sys.stderr, err.msg
