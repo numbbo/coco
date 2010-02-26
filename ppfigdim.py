@@ -10,8 +10,6 @@ import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap
 
-#maxEvalsFactor = 1e6
-
 #colors = ('k', 'g', 'c', 'b', 'y', 'm', 'r', 'g', 'b', 'c', 'r', 'm')  # should not be too short
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 # should correspond with the colors in pprldistr.
@@ -20,8 +18,6 @@ colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of
 funInfos = {}
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 isBenchmarkinfosFound = True
-#infofile = os.path.join(os.path.split(__file__)[0], '..', '..',
-                        #'benchmarkshortinfos.txt')
 infofile = os.path.join(os.path.split(__file__)[0], 'benchmarkshortinfos.txt')
 
 try:
@@ -38,12 +34,11 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
 
-def customizeFigure(figHandle, figureName = None, title='',
+def beautify(figHandle, figureName = None, title='',
                     fileFormat=('pdf', 'eps'), labels=None,
                     scale=('linear','linear'), legend=True,
                     locLegend='best', verbose=True):
-    """ Customize a figure by adding a legend, axis label, etc. At the
-        end the figure is saved.
+    """ Customize a figure by adding a legend, axis label, etc and save to a file.
 
         Inputs:
         figHandle - handle to existing figure
@@ -73,6 +68,8 @@ def customizeFigure(figHandle, figureName = None, title='',
     # Grid options
     axisHandle.grid('True')
 
+    ymin, ymax = plt.ylim()
+
     # linear and quadratic "grid"
     plt.plot((2,200), (1,1e2), 'k:')    # TODO: this should be done before the real lines are plotted? 
     plt.plot((2,200), (1,1e4), 'k:')
@@ -83,7 +80,7 @@ def customizeFigure(figHandle, figureName = None, title='',
 
     # axes limites
     plt.xlim(1.8, 45)                # TODO should become input arg?
-    plt.ylim(ymin=10**-0.2)
+    plt.ylim(ymin=10**-0.2, ymax=ymax) # Set back the default maximum.
 
     # ticks on axes
     #axisHandle.invert_xaxis()
@@ -120,51 +117,7 @@ def customizeFigure(figHandle, figureName = None, title='',
                     if verbose:
                         print 'Wrote figure in %s.' %(figureName + '.' + entry)
 
-    # TODO:    *much more options available (styles, colors, markers ...)
-
-
-def generateData(indexEntry, targetFuncValue):
-    """Returns an array of results to be plotted. 1st column is ert, 2nd is
-    the number of success, 3rd the success rate, 4th the sum of the number of
-    function evaluations, and finally the median."""
-    # TODO: describe the data which are returned
-
-    res = []
-    data = []
-    for i in indexEntry.hData:
-        if i[0] <= targetFuncValue:
-            tmp = []
-            data = i.copy()
-            for j in range(1, indexEntry.nbRuns()+1):
-                if data[j + indexEntry.nbRuns()] <= i[0]:
-                    tmp.append(True)
-                else:
-                    tmp.append(False)
-                    data[j] = indexEntry.vData[-1, j]
-            res.extend(bootstrap.sp(data[1:indexEntry.nbRuns()+1],
-                                    issuccessful=tmp, allowinf=False))
-            res.append(res[0] * max(res[2], 1)) #Sum(FE)
-            res.append(bootstrap.prctile(data[1:indexEntry.nbRuns()+1], 50)[0])
-            break
-
-    # if targetFuncValue was not reached
-    if not res and len(indexEntry.vData) > 0:
-        #try:
-            #while i[0] <= maxEvalsFactor * indexEntry.dim:
-                #i = it.next()
-        #except StopIteration:
-            #pass
-        i = indexEntry.vData[-1]
-        res.extend(bootstrap.sp(i[1:indexEntry.nbRuns() + 1],
-                                issuccessful=[False]*indexEntry.nbRuns(),
-                                allowinf=False))
-        res.append(res[0] * max(res[2], 1)) #Sum(FE)
-        res.append(bootstrap.prctile(i[1:indexEntry.nbRuns() + 1], 50)[0])
-
-    return numpy.array(res)
-
-
-def generateData2(dataSet, targetFuncValue):
+def generateData(dataSet, targetFuncValue):
     """Returns an array of results to be plotted. 1st column is ert, 2nd is
     the number of success, 3rd the success rate, 4th the sum of the number of
     function evaluations, and finally the median."""
@@ -172,7 +125,6 @@ def generateData2(dataSet, targetFuncValue):
     res = []
     data = []
 
-    # TODO: Exception when dataSet.evals is empty?
     it = iter(reversed(dataSet.evals))
     i = it.next()
     prev = numpy.array([numpy.nan] * len(i))
@@ -187,20 +139,16 @@ def generateData2(dataSet, targetFuncValue):
     data = prev[1:].copy() # keep only the number of function evaluations.
     succ = numpy.isfinite(data)
     data[numpy.isnan(data)] = dataSet.maxevals[numpy.isnan(data)]
-    #TODO: numpy.isnan(data) is close to numpy.logical_not(succ)
 
     res = []
-    #TODO: use dataSet.ert instead?
     res.extend(bootstrap.sp(data, issuccessful=succ, allowinf=False))
     res.append(numpy.mean(data)) #mean(FE)
     res.append(bootstrap.prctile(data, 50)[0])
 
     return numpy.array(res)
 
-def main(indexEntries, _valuesOfInterest, outputdir, verbose=True):
-    """From a list of IndexEntry, returns a convergence and ENFEs figure vs dim
-
-    """
+def main(dsList, _valuesOfInterest, outputdir, verbose=True):
+    """From a DataSetList, returns a convergence and ERT figure vs dim."""
 
     plt.rc("axes", labelsize=20, titlesize=24)
     plt.rc("xtick", labelsize=20)
@@ -208,7 +156,7 @@ def main(indexEntries, _valuesOfInterest, outputdir, verbose=True):
     plt.rc("font", size=20)
     plt.rc("legend", fontsize=20)
 
-    dictFunc = indexEntries.dictByFunc()
+    dictFunc = dsList.dictByFunc()
 
     for func in dictFunc:
         dictFunc[func] = dictFunc[func].dictByDim()
@@ -219,15 +167,13 @@ def main(indexEntries, _valuesOfInterest, outputdir, verbose=True):
         valuesOfInterest = list(j[func] for j in _valuesOfInterest)
         valuesOfInterest.sort(reverse=True)
         for i in range(len(valuesOfInterest)):
-            #data = []
             succ = []
             unsucc = []
             displaynumber = []
             data = []
             #Collect data that have the same function and different dimension.
             for dim in sorted(dictFunc[func]):
-                #set_trace()
-                tmp = generateData2(dictFunc[func][dim][0],
+                tmp = generateData(dictFunc[func][dim][0],
                                    valuesOfInterest[i])
                 #data.append(numpy.append(dim, tmp))
                 if tmp[2] > 0: #Number of success is larger than 0
@@ -271,7 +217,7 @@ def main(indexEntries, _valuesOfInterest, outputdir, verbose=True):
 
         legend = func in (1, 24, 101, 130)
 
-        customizeFigure(fig, filename, title=title, legend=legend,
+        beautify(fig, filename, title=title, legend=legend,
                         fileFormat=figformat, labels=['', ''],
                         scale=['log','log'], verbose=verbose)
 
@@ -279,4 +225,3 @@ def main(indexEntries, _valuesOfInterest, outputdir, verbose=True):
 
     plt.rcdefaults()
 
-    # TODO: make a user define what color or line style

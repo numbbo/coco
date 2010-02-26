@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """Helper routines for read index files.
-   Defines class IndexEntry, unit element in the post-processing and the list
-of instances of IndexEntry: DataSetList.
+   Defines class DataSet, unit element in the post-processing and the list
+   of instances of DataSet: DataSetList.
 
 """
 
@@ -27,8 +27,8 @@ indexmainsep = ', '
 
 # CLASS DEFINITIONS
 class DataSet:
-    """Unit element for the post-processing with given funcId, algId and
-    dimension.
+    """Unit element for the BBOB post-processing.
+    It corresponds to data with given funcId, algId and dimension.
     Class attributes:
         funcId -- function Id (integer)
         dim -- dimension (integer)
@@ -47,6 +47,10 @@ class DataSet:
         readfinalFminusFtarget -- final function values - ftarget read from
                                   index file (array)
         pickleFile -- associated pickle file name (string)
+        target -- target function values attained at least by one trial (array)
+        ert -- ert for reaching the target function values in target (array)
+        itrials -- list of numbers corresponding to the instance of the test
+           function considered
 
     evals and funvals are arrays of data collected from N data sets. Both have
     the same format: zero-th column is the value on which the data of a row is
@@ -61,9 +65,15 @@ class DataSet:
                     'algId': ('algId', str)}
 
     def __init__(self, header, comment, data, indexfile, verbose=True):
-        """Instantiate an IndexEntry from 3 strings constituting an index
-        entry in an index file.
-
+        """Instantiate a DataSet.
+        The first three input argument corresponds to three consecutive lines
+        of a data file.
+        Keyword argument:
+        header -- string presenting the information of the experiment
+        comment -- more information on the experiment
+        data -- information on the runs of the experiment
+        indexfile -- string for the file name from where the information come
+        verbose -- controls verbosity. Default is True.
         """
 
         # Extract information from the header line.
@@ -115,7 +125,6 @@ class DataSet:
                     self.readmaxevals.append(int(elem[0]))
                     self.readfinalFminusFtarget.append(float(elem[1]))
 
-        #set_trace()
         if verbose:
             print "%s" % self.__repr__()
 
@@ -139,9 +148,9 @@ class DataSet:
 
         # Compute ERT
         self.computeERTfromEvals()
-        #set_trace()
 
     def computeERTfromEvals(self):
+        """Sets the attributes ert and target from the attribute evals."""
         self.ert = []
         self.target = []
         for i in self.evals:
@@ -153,7 +162,6 @@ class DataSet:
             self.ert.append(bootstrap.sp(data, issuccessful=succ)[0])
             self.target.append(i[0])
 
-        #set_trace()
         self.ert = numpy.array(self.ert)
         self.target = numpy.array(self.target)
 
@@ -174,9 +182,11 @@ class DataSet:
                 % (self.algId, self.funcId, self.dim))
 
     def mMaxEvals(self):
+        """Returns the maximum number of function evaluations."""
         return max(self.maxevals)
 
     def nbRuns(self):
+        """Returns the number of runs."""
         return numpy.shape(self.funvals)[1]-1
 
     def __parseHeader(self, header):
@@ -260,8 +270,8 @@ class DataSet:
                        #% self.pickleFile)
 
     def createDictInstance(self):
-        """Returns a dictionary of the instances: the key is the instance id,
-        the value is a list of index.
+        """Returns a dictionary of the instances.
+        The key is the instance id, the value is a list of index.
         """
         dictinstance = {}
         for i in range(len(self.itrials)):
@@ -332,7 +342,8 @@ class DataSetList(list):
 
     """
 
-    #Do not inherit from set because DataSet instances are mutable.
+    #Do not inherit from set because DataSet instances are mutable which means
+    #they might change over time.
 
     def __init__(self, args=[], verbose=True):
         """Instantiate self from a list of inputs.
@@ -346,6 +357,9 @@ class DataSetList(list):
         pickle.UnpicklingError
 
         """
+
+        #Nota: part of the input argument processing is now in
+        #pproc.processInputArguments.
 
         if not args:
             super(DataSetList, self).__init__()
@@ -471,7 +485,7 @@ class DataSetList(list):
     def extend(self, o):
         """Extend a DataSetList with elements.
         This method is implemented to prevent problems since append was
-        superseded. This could be the cause of efficiency issue.
+        superseded. This method could be the origin of efficiency issue.
         """
 
         for i in o:
@@ -557,7 +571,7 @@ class DataSetList(list):
         return sorted
 
 def processInputArgs(args, plotInfo=None, verbose=True):
-    """Process command line arguments into data useable by bbob_pproc scripts
+    """Process command line arguments into data useable by bbob_pproc scripts.
     Returns an instance of DataSetList, a list of algorithms from
     a list of strings representing file and folder names.
     This command will operate folder-wise: one folder will correspond to an
@@ -618,6 +632,14 @@ def processInputArgs(args, plotInfo=None, verbose=True):
     return dsList, sortedAlgs, dictAlg
 
 def dictAlgByDim(dictAlg):
+    """Returns a dictionary with problem dimension as key.
+    This method is meant to be used with an input argument which is a
+    dictionary with algorithm names as keys and which has list of DataSet
+    instances as values.
+    The resulting dictionary will have dimension as key and as values
+    dictionaries with algorithm names as keys.
+    """
+
     res = {}
     dims = set()
     tmpdictAlg = {}
@@ -647,6 +669,14 @@ def dictAlgByDim(dictAlg):
     return res
 
 def dictAlgByFun(dictAlg):
+    """Returns a dictionary with function id as key.
+    This method is meant to be used with an input argument which is a
+    dictionary with algorithm names as keys and which has list of DataSet
+    instances as values.
+    The resulting dictionary will have function id as key and as values
+    dictionaries with algorithm names as keys.
+    """
+
     res = {}
     funcs = set()
     tmpdictAlg = {}
@@ -676,6 +706,15 @@ def dictAlgByFun(dictAlg):
     return res
 
 def dictAlgByNoi(dictAlg):
+    """Returns a dictionary with noise group as key.
+    This method is meant to be used with an input argument which is a
+    dictionary with algorithm names as keys and which has list of DataSet
+    instances as values.
+    The resulting dictionary will have a string denoting the noise group
+    ('noiselessall' or 'nzall') and as values dictionaries with algorithm names
+    as keys.
+    """
+
     res = {}
     ng = set()
     tmpdictAlg = {}

@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
 """Helper routines to read in data files."""
 
@@ -343,7 +343,7 @@ def split(dataFiles, dim=None):
                     data[id] = numpy.nan
                 else:
                     data[id] = float(data[id])
-            #set_trace()
+
             content.append(numpy.array(data))
             #Check that it always have the same length?
         if content:

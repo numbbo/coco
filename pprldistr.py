@@ -12,10 +12,9 @@ import matplotlib.pyplot as plt
 from pdb import set_trace
 from bbob_pproc import bootstrap
 
-#__all__ = []
-
 rldColors = ('k', 'c', 'm', 'r', 'k', 'c', 'm', 'r', 'k', 'c', 'm', 'r')
 rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  # should not be too short
+
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
 evalfmax = None
@@ -131,7 +130,7 @@ def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={},
         # no label
         pass
 
-    #res = plotECDF(x, nn, kwargs) # Why not?
+    #TODO: res = plotECDF(x, nn, kwargs) # Why not?
     n = len(x)
     if n == 0:
         res = plt.plot([], [], **kwargs)
@@ -149,7 +148,7 @@ def plotERTDistr(dsList, fvalueToReach, plotArgs=None, verbose=True):
     """Creates estimated run time distributions from a sequence dataSetList.
 
     Keyword arguments:
-    dataSetList
+    dsList
     fvalueToReach
     verbose
 
@@ -283,13 +282,12 @@ def plotFVDistr(dataSetList, fvalueToReach, maxEvalsF, plotArgs={},
         for j in i.funvals:
             if j[0] >= maxEvalsF * i.dim:
                 break
-        #set_trace()
+
         tmp = j[1:].copy() / fvalueToReach[i.funcId]
         tmp[tmp==0] = 1. # HACK
         x.extend(tmp)
         nn += i.nbRuns()
 
-    #set_trace()
     res = plotECDF(x, nn, plotArgs)
 
     return res
@@ -316,8 +314,6 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     Image files of the empirical cumulative distribution functions.
     """
 
-    #sortedIndexEntries = sortIndexEntries(indexEntries)
-
     plt.rc("axes", labelsize=20, titlesize=24)
     plt.rc("xtick", labelsize=20)
     plt.rc("ytick", labelsize=20)
@@ -326,8 +322,6 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
 
     maxEvalsFactor = max(max(i.mMaxEvals()/i.dim for i in dsList0),
                          max(i.mMaxEvals()/i.dim for i in dsList1))
-    #maxEvalsFactorCeil = numpy.power(10,
-                                     #numpy.ceil(numpy.log10(maxEvalsFactor)))
 
     if isStoringXMax:
         global evalfmax
@@ -343,7 +337,7 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     for j in range(len(valuesOfInterest)):
         tmp = plotRLDistr(dsList0, valuesOfInterest[j], evalfmax,
                           verbose=verbose)
-        #set_trace()
+
         if not tmp is None:
             plt.setp(tmp, 'color', rldColors[j])
             plt.setp(tmp, 'ls', '--')
@@ -354,7 +348,7 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
 
         tmp = plotRLDistr(dsList1, valuesOfInterest[j], evalfmax,
                           verbose=verbose)
-        #set_trace()
+
         if not tmp is None:
             plt.setp(tmp, 'color', rldColors[j])
             # Hack for the legend.
@@ -432,17 +426,12 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     isStoringXMax -- if set to True, the first call BeautifyVD sets the globals
                      fmax and maxEvals and all subsequent calls will use these
                      values as rightmost xlim in the generated figures.
-     -- if set to True, the first call BeautifyVD sets the global
-                     fmax and all subsequent call will have the same maximum
-                     xlim.
     outputdir -- output directory (must exist)
     info --- string suffix for output file names.
 
     Outputs:
     Image files of the empirical cumulative distribution functions.
     """
-
-    #sortedIndexEntries = sortIndexEntries(indexEntries)
 
     plt.rc("axes", labelsize=20, titlesize=24)
     plt.rc("xtick", labelsize=20)
@@ -460,7 +449,7 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
         evalfmax = None
 
     if not evalfmax:
-        evalfmax = 1e9 #maxEvalsFactor
+        evalfmax = maxEvalsFactor
 
     figureName = os.path.join(outputdir,'pprldistr_%s' %(info))
     fig = plt.figure()
@@ -468,13 +457,9 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     for j in range(len(valuesOfInterest)):
         tmp = plotRLDistr(dsList, valuesOfInterest[j], evalfmax,
                           verbose=verbose)
-        #set_trace()
+
         if not tmp is None:
             plt.setp(tmp, 'color', rldColors[j])
-            #set_trace()
-            #legend.append('%+d:%d/%d' %  
-                          #(numpy.log10(valuesOfInterest[j]), len(fsolved), 
-                           #len(f)))
             if rldColors[j] == 'r':  # 1e-8 in bold
                 plt.setp(tmp, 'linewidth', 3)
 
@@ -495,11 +480,8 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
                     # [0] because the maximum #evals is recorded
                     # [1:] because the target function value is recorded
                     x.append(tmp[numpy.isnan(tmp) == False])
-                    #if (tmp <= 0).any():
-                        #set_trace()
                     nn += len(tmp)
                 except KeyError:
-                    #set_trace()
                     continue
 
             if x:
@@ -518,10 +500,10 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     figureName = os.path.join(outputdir,'ppfvdistr_%s' %(info))
     fig = plt.figure()
     for j in range(len(valuesOfInterest)):
-        #set_trace()
+
         tmp = plotFVDistr(dsList, valuesOfInterest[j],
                           evalfmax, verbose=verbose)
-        #if not tmp is None:
+
         plt.setp(tmp, 'color', rldColors[j])
         if rldColors [j] == 'r':  # 1e-8 in bold
             plt.setp(tmp, 'linewidth', 3)
@@ -532,10 +514,8 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     # coloring right to left:
     maxEvalsF = numpy.power(10, numpy.arange(0, tmp))
 
-    #The last index of valuesOfInterest is still used in this loop.
-    #set_trace()
     for k in range(len(maxEvalsF)):
-        tmp = plotFVDistr(dsList, valuesOfInterest[j],
+        tmp = plotFVDistr(dsList, valuesOfInterest[-1],
                           maxEvalsF=maxEvalsF[k], verbose=verbose)
         plt.setp(tmp, 'color', rldUnsuccColors[k])
 

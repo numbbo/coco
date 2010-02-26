@@ -16,9 +16,7 @@ percentiles = [10, 90]
 header = ['$\Delta f$', '$\#$', '$\ERT$', '%d\%%' % percentiles[0],
           '%d\%%' % percentiles[1], '$\\text{RT}_{\\text{succ}}$']
 format = ['%1.1e', '%d', '%1.1e', '%1.1e', '%1.1e', '%1.1e']
-#This has to be synchronized with what's computed in generateData.
-
-#maxEvalsFactor = 1e6
+#These have to be synchronized with what's computed in generateData.
 
 #CLASS DEFINITION
 class Error(Exception):
@@ -96,8 +94,8 @@ def writeTable(entries, filename, fontSize='scriptsize',
 
     data = numpy.transpose(numpy.concatenate(data, 1))
     suppr = numpy.transpose(numpy.concatenate(suppr, 1))
-    #Why transposing?
-    #set_trace()
+    #Transposing, otherwise the concatenation might not behave as expected
+
     # Input checking and reshape data
     #if len(fullformat) != data.shape[0] and len(fullformat) != data.shape[1]:
         #raise WrongInputSizeError('data',data.shape,len(format))
@@ -109,18 +107,13 @@ def writeTable(entries, filename, fontSize='scriptsize',
     # Generate LaTex commands for vertical lines and aligment of the entries.
     tabColumns = '@{$\;$}c@{$\;$}'
     tabColumns += ('|' + (len(header) - 1) * '@{$\;$}c@{$\;$}') * width
-    #tabColumns += (r'|@{$\;$}c@{$\;$}' + (len(header) - 2) *
-                   #r'@{$\;$}>{\centering}X@{$\;$}') * (width-1)
-    #tabColumns += (r'|@{$\;$}c@{$\;$}' +
-                   #(len(header) - 3) * r'@{$\;$}>{\centering}X@{$\;$}' +
-                   #r'@{$\;$}>{\centering\arraybackslash}X@{$\;$}')
+
     # Create output file
     if verbose:
         if os.path.exists(filename):
             print 'Overwrite old file %s!' %(filename + '.tex')
         else:
             print 'Write in %s.' %(filename+'.tex')
-
 
     try:
         f = open(filename + '.tex','w')
@@ -137,7 +130,6 @@ def writeTable(entries, filename, fontSize='scriptsize',
         caption = ('\\textbf{\\textit{f}\\raisebox{-0.35ex}{' + str(entries[i].funcId) +
                    '} in ' + str(entries[i].dim)) + '-D}'
         caption = caption + ', N=' + str(entries[i].nbRuns())
-        #maxEvals = min(entries[i].mMaxEvals, entries[i].dim * maxEvalsFactor)
         maxEvals = entries[i].mMaxEvals()
         caption = caption + ', mFE='
         if maxEvals >= 1e6:
@@ -156,28 +148,10 @@ def writeTable(entries, filename, fontSize='scriptsize',
         else:
             f.write('& \multicolumn{' + str(len(format)-1) + '}{@{$\;$}c@{$\;$}}{' + caption + '}')
     f.write('\\\\ \n')
-    # f.write('\hline \n')
     f.write(' & '.join(fullheader) + '\\\\ \n \hline \n')
 
     # Write data
     for i in range(0,data.shape[1]):
-        #suppr = None
-        # suppress the same f-value entries from being written more than once
-        #if len(data[:,i]) > 9:
-            #suppr = [data[j, i] < 0 for j in xrange(data.shape[0])] # suppress f-values by default
-            #ftarget = data[0,i]
-            #fbest = -data[5,i]
-            #if ((fbest > ftarget and (i == 0 or fbest <= data[0,i-1])) or  # first line without any #FEvals entry
-                #(i + 1 == data.shape[1] and fbest < data[0,i-1])):         # or last line, if not printed before
-                #for j in numpy.r_[5:10]:
-                    #suppr[j] = False
-        #if len(data[:,i]) > 18:
-            #fbest = -data[14,i]
-            #if ((fbest > ftarget and (i == 0 or fbest <= data[0,i-1])) or  # first line without any #FEvals entry
-                #(i + 1 == data.shape[1] and fbest < data[0,i-1])):         # or last line, if not printed before
-                #for j in numpy.r_[14:19]:
-                    #suppr[j] = False
-
         writeArray(f, data[:,i], fullformat, fontSize2,
                    suppress_entry = suppr[:,i]) # only one line of f-values
 
@@ -289,214 +263,17 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
         # Write to file
         file.write(tmp2)
 
-
-def generateData(indexEntry, targetFuncValues, samplesize=1000):
-    """Deperecated: Returns data for the tables.
-
-    Data are supposed to be function-value aligned on some specific function
-    values, information on the number of function evaluations to reach the
-    target function value complete a row in the resulting array. If some runs
-    from indexEntry did not reach the target function value, information on the
-    final function value reached by these runs will be stored instead.
-
-    Keyword arguments:
-    indexEntry -- input IndexEntry.
-    targetFuncValues -- function values to be displayed
-    samplesize -- sample size used for the bootstrapping. The larger this value
-    is the longer it takes.
-
-    Outputs:
-    Array of data to be displayed in the tables.
-
-    """
-
-    #TODO loop over header to know what to append to curLine.
-    res = []
-    it = iter(indexEntry.hData)
-    i = it.next()
-    curLine = []
-
-    #maxEvals = indexEntry.mMaxEvals
-
-    #set_trace()
-    for targetF in targetFuncValues:
-        while i[0] > targetF:
-            try:
-                i = it.next()
-            except(StopIteration):
-                break
-        success = []
-        unsucc = []
-
-        # Create a vector that contains a mix of hData and vData:
-        # the fevals for successes and maxEvals for failures.
-        data = i.copy()
-        for j in range(1, indexEntry.nbRuns() + 1):
-            tmpsucc = (data[indexEntry.nbRuns() + j] <= targetF)
-            success.append(tmpsucc)
-            if not tmpsucc:
-                data[j] = indexEntry.vData[-1, j]
-
-                tmpvalue = indexEntry.vData[-1, indexEntry.nbRuns() + j]
-                for k in reversed(indexEntry.vData):
-                    if k[indexEntry.nbRuns() + j] > tmpvalue:
-                        break
-                unsucc.append(k[j])
-                #if the target function value is not reached, we get the
-                #largest number of function evaluations for which f > fbest.
-
-        N = numpy.sort(data[1:indexEntry.nbRuns() + 1])
-
-        #set_trace()
-        ertvec = bootstrap.sp(N, issuccessful=success, allowinf=False)
-
-        if ertvec[2] > 0: # if at least one success
-            #TODO: use drawSP(N[success], N[!success],...)
-            #      which is always finite here and can better 
-            #      replace the next 15 lines (up to curLine = ...)
-            #      Also the above code to generate N can become
-            #      simpler than. 
-            #Probability that a bootstrap sample contains no success
-            pbu = ((len(N) - ertvec[2]) / float(len(N))) ** len(N)
-            bpercentiles = list(j/100. <= 1.-pbu for j in percentiles)
-            if any(bpercentiles):
-                #Line below: percentiles instead of bpercentiles
-                #We compute all the percentiles though some might be infinite
-                dispersion = bootstrap.draw(N, percentiles,
-                                            samplesize=samplesize,
-                                            func=bootstrap.sp,
-                                            args=[0, success])[0]
-
-            sumfevals = numpy.sum(list(i for i in N if not numpy.isnan(i)))
-            for j in range(len(bpercentiles)):
-                #the percentile is larger than 1-pbu or we still have inf
-                # (which has a chance of happening though not in the limit).
-                if not bpercentiles[j] or numpy.isinf(percentiles[j]):
-                    dispersion[j] = -sumfevals
-
-            curLine = [targetF, ertvec[2], ertvec[0],
-                       dispersion[0], dispersion[1],
-                       #float(numpy.sum(unsucc))/ertvec[2]]
-                       numpy.mean(list(N[i] for i in range(len(N)) if
-                                       success[i]))]
-        else: # 0 success.
-            vals = numpy.sort(indexEntry.vData[-1, indexEntry.nbRuns() + 1:])
-            #Get the function values for maxEvals.
-
-            curLine = [targetF, ertvec[2]]
-            tmp = [50]
-            tmp.extend(percentiles)
-            curLine.extend(bootstrap.prctile(vals, tmp))
-            curLine.append(bootstrap.prctile(unsucc, [50], issorted=False)[0])
-
-        res.append(curLine)
-        #set_trace()
-    return numpy.vstack(res)
-
-def generateData2(dataSet, targetFuncValues, samplesize=1000):
-    """Deprecated: Returns data for the tables.
-
-    Data are supposed to be function-value aligned on some specific function
-    values, information on the number of function evaluations to reach the
-    target function value complete a row in the resulting array. If some runs
-    from indexEntry did not reach the target function value, information on the
-    final function value reached by these runs will be stored instead.
-
-    Keyword arguments:
-    indexEntry -- input IndexEntry.
-    targetFuncValues -- function values to be displayed
-    samplesize -- sample size used for the bootstrapping. The larger this value
-    is the longer it takes.
-
-    Outputs:
-    Array of data to be displayed in the tables.
-
-    """
-
-    #TODO loop over header to know what to append to curLine.
-    res = []
-    it = iter(dataSet.evals)
-    i = it.next()
-
-    #TODO: targetFuncValues needs to be sorted.
-    for targetF in reversed(sorted(targetFuncValues)):
-        while i[0] > targetF:
-            try:
-                i = it.next()
-            except(StopIteration):
-                break
-
-        # Create a vector that contains a mix of hData and vData:
-        # the fevals for successes and maxEvals for failures.
-        if i[0] <= targetF: # if at least one success
-            N = i.copy()[1:]
-            success = numpy.isfinite(N)
-            N[numpy.isnan(N)] = dataSet.maxevals[numpy.isnan(N)]
-
-            ertvec = bootstrap.sp(N, issuccessful=success, allowinf=False)
-
-            #Probability that a bootstrap sample contains no success
-            pbu = ((len(N) - ertvec[2]) / float(len(N))) ** len(N)
-            bpercentiles = list(j/100. <= 1.-pbu for j in percentiles)
-            if any(bpercentiles):
-                #Line below: percentiles instead of bpercentiles
-                #We compute all the percentiles though some might be infinite
-                dispersion = bootstrap.draw(N, percentiles,
-                                            samplesize=samplesize,
-                                            func=bootstrap.sp,
-                                            args=[0, success])[0]
-            sumfevals = numpy.sum(N)
-            for j in range(len(bpercentiles)):
-                #the percentile is larger than 1-pbu or we still have inf
-                # (which has a chance of happening though not in the limit).
-                if not bpercentiles[j] or numpy.isinf(percentiles[j]):
-                    dispersion[j] = -sumfevals
-                    # we put a negative number to have a different output in
-                    # the tables.
-
-            curLine = [targetF, ertvec[2], ertvec[0],
-                       dispersion[0], dispersion[1],
-                       numpy.mean(N[success])]
-
-        else: # 0 success.
-            #set_trace()
-            vals = numpy.sort(dataSet.finalfunvals)
-            #Get the function values for maxEvals.
-
-            curLine = [targetF, 0] # 0 success
-            tmp = [50]
-            tmp.extend(percentiles)
-            # it's the same prctiles for the funvals as for the bootstrapping.
-            curLine.extend(bootstrap.prctile(vals, tmp))
-
-            # unsucc is an array of the largest number of function evaluations
-            # for which f is STRICTLY larger to fbest
-            unsucc = []
-            for j in range(1, dataSet.nbRuns()+1):
-                # Get the alignment number of function evaluations
-                # corresponding to the 1st occurrence of the best function
-                # value obtained.
-                k = -1
-                while (dataSet.funvals[k - 1, j] == dataSet.finalfunvals[j-1]
-                       and k > -len(dataSet.funvals) + 1):
-                    k -= 1
-                unsucc.append(dataSet.funvals[k, 0])
-            curLine.append(bootstrap.prctile(unsucc, [50], issorted=False)[0])
-
-        res.append(curLine)
-    return numpy.vstack(res)
-
-def generateData3(dataSet, targetFuncValues, samplesize=1000):
+def generateData(dataSet, targetFuncValues, samplesize=1000):
     """Returns data for the tables.
 
     Data are supposed to be function-value aligned on some specific function
     values, information on the number of function evaluations to reach the
     target function value complete a row in the resulting array. If some runs
-    from indexEntry did not reach the target function value, information on the
+    from dataSet did not reach the target function value, information on the
     final function value reached by these runs will be stored instead.
 
     Keyword arguments:
-    indexEntry -- input IndexEntry.
+    dataSet -- input DataSet instance.
     targetFuncValues -- function values to be displayed
     samplesize -- sample size used for the bootstrapping. The larger this value
     is the longer it takes.
@@ -535,31 +312,11 @@ def generateData3(dataSet, targetFuncValues, samplesize=1000):
                 # we put a negative number to have a different output in
                 # the tables.
 
-            # #Probability that a bootstrap sample contains no success
-            # pbu = ((len(N) - ertvec[2]) / float(len(N))) ** len(N)
-            # bpercentiles = list(j/100. <= 1.-pbu for j in percentiles)
-            # if any(bpercentiles):
-            #     #Line below: percentiles instead of bpercentiles
-            #     #We compute all the percentiles though some might be infinite
-            #     dispersion = bootstrap.draw(N, percentiles,
-            #                                 samplesize=samplesize,
-            #                                 func=bootstrap.sp,
-            #                                 args=[0, success])[0]
-            #
-            # for j in range(len(bpercentiles)):
-            #     #the percentile is larger than 1-pbu or we still have inf
-            #     # (which has a chance of happening though not in the limit).
-            #     if not bpercentiles[j] or numpy.isinf(percentiles[j]):
-            #         dispersion[j] = -sumfevals
-            #         # we put a negative number to have a different output in
-            #         # the tables.
-
             curLine = [targetF, ertvec[2], ertvec[0],
                        dispersion[0], dispersion[1],
                        numpy.mean(N[success])]
 
         else: # 0 success.
-            #set_trace()
             vals = numpy.sort(dataSet.finalfunvals)
             #Get the function values for maxEvals.
 
@@ -586,6 +343,92 @@ def generateData3(dataSet, targetFuncValues, samplesize=1000):
         res.append(curLine)
     return numpy.vstack(res)
 
+def writeFEvals(fevals, precision='.2'):
+    """Returns string representation of a number of function evaluations to use
+    in a table.
+    """
+
+    if numpy.isinf(fevals):
+        return r'$\infty$'
+
+    tmp = (('%' + precision + 'g') % fevals)
+    res = tmp.split('e')
+    if len(res) > 1:
+        res[1] = '%d' % int(res[1])
+        res = '%s' % 'e'.join(res)
+        pr2 = str(float(precision) + .2)
+        #res2 = (('%' + pr2 + 'g') % fevals)
+        res2 = (('%' + pr2 + 'g') % float(tmp))
+        # To have the same number of significant digits.
+        if len(res) >= len(res2):
+            res = res2
+    else:
+        res = res[0]
+    return res
+
+def writeFEvals2(fevals, precision=2, maxdigits=None):
+    """Returns string representation of a number of function evaluations or ERT
+    This method is supposed to be used for filling up a LaTeX tabular.
+
+    To address the eventual need to keep their string representation short, the
+    method here proposes the shortest representation between the full
+    representation and a modified scientific representation.
+    Examples:
+    Number | Precision | Output Representation
+    102345  | 2 digits  | 1.0e5
+
+    Keyword arguments:
+    fevals --
+    precision -- number of significant digits
+    """
+
+    #Printf:
+    # %[flags][width][.precision][length]specifier
+
+    if numpy.isinf(fevals):
+        return r'$\infty$'
+
+    if maxdigits is None:
+        precision = int(precision)
+
+        #repr1 is the alternative scientific notation
+        #repr2 is the full notation but with a number of significant digits given
+        #by the variable precision.
+
+        res = (('%.' + str(precision-1) + 'e') % fevals)
+        repr1 = res
+        tmp = repr1.split('e')
+        tmp[1] = '%d' % int(tmp[1]) # Drop the eventual plus sign and trailing zero
+        repr1 = 'e'.join(tmp)
+
+        repr2 = (('%.' + str(precision+1) + 'f') % float(res)).rstrip('0').rstrip('.')
+        #set_trace()
+        if len(repr1) > len(repr2):
+            return repr2
+
+        return repr1
+
+    else:
+        # takes precedence, in this case we expect a positive integer
+        if not isinstance(fevals, int):
+            return '%d' % fevals
+
+        repr2 = '%.0f' % fevals
+        if len(repr2) > maxdigits:
+            precision = maxdigits - 4
+            # 1) one symbol for the most significant digit
+            # 2) one for the dot, 3) one for the e, 4) one for the exponent
+            if numpy.log10(fevals) > 10:
+                precision -= 1
+            if precision < 0:
+                precision = 0
+            repr1 = (('%.' + str(precision) + 'e') % fevals).split('e')
+            repr1[1] = '%d' % int(repr1[1]) # drop the sign and trailing zero
+            repr1 = 'e'.join(repr1)
+            return repr1
+
+        return repr2
+
 def tableLaTeX(table, spec, extraeol=(), pos=''):
     """Generates a latex tabular from a sequence of sequence (table) of strings.
 
@@ -598,9 +441,6 @@ def tableLaTeX(table, spec, extraeol=(), pos=''):
            environment, either string t, c or b.
     """
 
-    # TODO: should it write in a file or store in a string
-    # TODO: implement unit test!
-    
     if pos:
         pos = '['+pos+']'
 
@@ -619,11 +459,11 @@ def tableLaTeX(table, spec, extraeol=(), pos=''):
     res = '\n'.join(res)
     return res
 
-def main(indexEntries, valOfInterests, filename, isDraft=False, verbose=True):
-    """Generates latex tabular from IndexEntries.
+def main(dsList, valOfInterests, filename, isDraft=False, verbose=True):
+    """Generates latex tabular from a DataSetList.
 
     Keyword arguments:
-    indexEntries -- list of indexEntry to put together in a tabular.
+    dsList -- list of DataSet instances to put together in a tabular.
     valOfInterests -- list of function values to be displayed.
     filename -- output file name.
     isDraft -- if true, quickens the bootstrapping step.
@@ -634,9 +474,8 @@ def main(indexEntries, valOfInterests, filename, isDraft=False, verbose=True):
     if isDraft:
         samplesize = 100
 
-    #TODO give an array of indexEntries and have a vertical formatter.
-    for i in indexEntries:
+    for i in dsList:
         curValOfInterests = list(j[i.funcId] for j in valOfInterests)
-        i.tabData = generateData3(i, curValOfInterests, samplesize)
+        i.tabData = generateData(i, curValOfInterests, samplesize)
 
-    writeTable(indexEntries, filename, fontSize='tiny', verbose=verbose)
+    writeTable(dsList, filename, fontSize='tiny', verbose=verbose)

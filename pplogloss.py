@@ -58,7 +58,9 @@ import numpy
 from matplotlib import pyplot as plt
 from matplotlib import mlab as mlab
 
+from bbob_pproc import bootstrap
 from bbob_pproc.bestalg import BestAlgSet
+from bbob_pproc.pptex import writeFEvals2
 
 figformat = ('eps', 'pdf')
 f_thresh = 1.e-8
@@ -185,7 +187,6 @@ def generateData(dsList, evals, CrE_A):
         #set_trace()
     return res
 
-#def boxplot():
 def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
     """
     Adapted from matplotlib.axes 0.98.5.2
@@ -356,7 +357,7 @@ def plot(xdata, ydata):
     res.extend(plt.plot(xdata, tmp, ls='-', color='k', lw=3, #marker='+',
                         markersize=20, markeredgewidth=3))
 
-    if max(len(i) for i in ydata) < 10: # TODO: subgroups of function, hopefully.
+    if max(len(i) for i in ydata) < 20: # TODO: subgroups of function, hopefully.
         for i, y in enumerate(ydata):
             res.extend(plt.plot([xdata[i]]*len(y), 10**numpy.array(y),
                                 marker='+', color='b',
@@ -405,9 +406,239 @@ def beautify(figureName, fileFormat, verbose):
             if verbose:
                 print 'Wrote figure in %s.' %(filename)
 
-def main(dsList, CrE, outputdir, suffix, verbose=True):
+def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
+    """Generates ERT loss ratio tables.
+    dsList is a list of the DataSet instance for a given algorithm in a given
+    dimension.
     """
-    dsList must a list of the DataSet instance for a given algorithm in a given
+
+    res = []
+
+    #Set variables
+    prcOfInterest = [0, 10, 25, 50, 75, 90]
+    D = set()
+    maxevals = []
+    funcs = []
+    mFE = []
+    for i in dsList:
+        D.add(i.dim)
+        maxevals.append(max(i.ert[numpy.isinf(i.ert)==False]))
+        funcs.append(i.funcId)
+        mFE.append(max(i.maxevals))
+
+    maxevals = max(maxevals)
+    mFE = max(mFE)
+    D = D.pop() # should have only one element
+    EVALS = [2.*D]
+    EVALS.extend(numpy.power(10., numpy.arange(1, numpy.ceil(numpy.log10(maxevals))))*D)
+    #Set variables: Done
+
+    data = generateData(dsList, EVALS, CrE)
+
+    #TODO: runlength distribution for which 1e-8 was not reached.
+    tmp = "f%d-%d in %d-D, mFE=%s" % (min(funcs), max(funcs), D, writeFEvals2(int(mFE), maxdigits=6))
+    res.append(r" & \multicolumn{" + str(len(prcOfInterest)) + "}{|c}{" + tmp + "}")
+
+    header = ["evals/D"]
+    for i in prcOfInterest:
+        if i == 0:
+            tmp = "best"
+        elif i == 50:
+            tmp = "med"
+        else:
+            tmp = "%d" % i
+        header.append(tmp)
+
+    #set_trace()
+    res.append(" & ".join(header))
+    for i in range(len(EVALS)):
+        tmpdata = list(data[f][i] for f in data)
+        #set_trace()
+        tmpdata = bootstrap.prctile(tmpdata, prcOfInterest)
+        # format entries
+        #tmp = [writeFEvals(EVALS[i]/D, '.0')]
+        tmp = [writeFEvals2(EVALS[i]/D, 1)]
+        for j in tmpdata:
+            #tmp.append(writeFEvals(j, '.2'))
+            tmp.append(writeFEvals2(j, 2))
+        res.append(" & ".join(tmp))
+
+    # add last line
+    #lastline = [writeFEVals2(numpy.inf)]
+    #for
+
+    res = (r"\\"+ "\n").join(res)
+    res = r"\begin{tabular}{c|" + len(prcOfInterest) * "c" +"}\n" + res
+    #res = r"\begin{tabular}{ccccc}" + "\n" + res
+    res = res + r"\end{tabular}" + "\n"
+
+    filename = os.path.join(outputdir, 'pploglosstable_%s.tex' % (suffix))
+    f = open(filename, 'w')
+    f.write(res)
+    f.close()
+    if verbose:
+        print "Wrote ERT loss ratio table in %s." % filename
+    return res
+
+def generateTable2(dsList, CrE, outputdir, suffix, verbose=True):
+    """Generates ERT loss ratio tables.
+    dsList is a list of the DataSet instance for a given algorithm in a given
+    dimension.
+    """
+
+    res = []
+
+    #Set variables
+    prcOfInterest = [0, 10, 25, 50, 75, 90]
+    D = set()
+    maxevals = []
+    funcs = []
+    mFE = []
+    for i in dsList:
+        D.add(i.dim)
+        maxevals.append(max(i.ert[numpy.isinf(i.ert)==False]))
+        funcs.append(i.funcId)
+        mFE.append(max(i.maxevals))
+
+    maxevals = max(maxevals)
+    mFE = max(mFE)
+    D = D.pop() # should have only one element
+    EVALS = [2.*D]
+    EVALS.extend(numpy.power(10., numpy.arange(1, numpy.ceil(numpy.log10(maxevals))))*D)
+    #Set variables: Done
+
+    data = generateData(dsList, EVALS, CrE)
+
+    #TODO: runlength distribution for which 1e-8 was not reached.
+    tmp = "f%d-%d in %d-D, mFE=%s" % (min(funcs), max(funcs), D, writeFEvals2(int(mFE), maxdigits=6))
+    res.append(r" & \multicolumn{" + str(len(prcOfInterest)) + "}{|c}{" + tmp + "}")
+
+    header = ["evals/D"]
+    for i in prcOfInterest:
+        if i == 0:
+            tmp = "best"
+        elif i == 50:
+            tmp = "med"
+        else:
+            tmp = "%d" % i
+        header.append(tmp)
+
+    #set_trace()
+    res.append(" & ".join(header))
+    for i in range(len(EVALS)):
+        tmpdata = list(data[f][i] for f in data)
+        #set_trace()
+        tmpdata = bootstrap.prctile(tmpdata, prcOfInterest)
+        # format entries
+        #tmp = [writeFEvals(EVALS[i]/D, '.0')]
+        tmp = [writeFEvals2(EVALS[i]/D, 1)]
+        for j in tmpdata:
+            #tmp.append(writeFEvals(j, '.2'))
+            tmp.append(writeFEvals2(j, 2))
+        res.append(" & ".join(tmp))
+
+    # add last line
+    #lastline = [writeFEVals2(numpy.inf)]
+    #for
+
+    res = (r"\\"+ "\n").join(res)
+    res = r"\begin{tabular}{c|" + len(prcOfInterest) * "c" +"}\n" + res
+    #res = r"\begin{tabular}{ccccc}" + "\n" + res
+    res = res + r"\end{tabular}" + "\n"
+
+    filename = os.path.join(outputdir, 'pploglosstable_%s.tex' % (suffix))
+    f = open(filename, 'w')
+    f.write(res)
+    f.close()
+    if verbose:
+        print "Wrote ERT loss ratio table in %s." % filename
+    return res
+
+def onealg(dsList, allmintarget, allertbest):
+    """Helper routine for the generation of a table for one algorithm."""
+
+    table = []
+    unsolved = {}
+
+    for t in sorted(allmintarget.keys()):
+        erts = []
+        soltrials = 0
+        nbtrials = 0
+        solinstances = 0
+        nbinstances = 0
+        solfcts = 0
+        nbfcts = 0
+        for i, entry in enumerate(dsList):
+            try:
+                if numpy.isnan(allmintarget[t][(entry.funcId, entry.dim)]):
+                    continue
+            except KeyError:
+                continue
+            nbtrials += numpy.shape(entry.evals)[1] - 1
+            dictinstance = entry.createDictInstance()
+            nbinstances += len(dictinstance)
+            nbfcts += 1
+            tmp = unsolved.setdefault(i, {})
+            tmp['unsoltrials'] = numpy.shape(entry.evals)[1] - 1 # may be modified a posteriori
+            tmp['nbtrials'] = numpy.shape(entry.evals)[1] - 1
+            tmp['unsolinstances'] = len(dictinstance) # may be modified a posteriori
+            tmp['nbinstances'] = len(dictinstance)
+            tmp['unsolved'] = True
+            tmp['runlengths'] = entry.maxevals
+
+            for l in range(len(entry.evals)):
+                tmpline = entry.evals[l]
+                if tmpline[0] < allmintarget[t][(entry.funcId, entry.dim)]:
+                    solfcts += 1
+                    tmp['unsolved'] = False
+                    soltrials += numpy.sum(numpy.isfinite(tmpline[1:]))
+                    tmp['runlengths'] = entry.maxevals[numpy.isnan(tmpline[1:])]
+                    tmp['unsoltrials'] = len(tmp['runlengths'])
+                    #TODO: hard to read
+                    tmpsolinstances = 0
+                    for idx in dictinstance.values():
+                        try:
+                            if numpy.isfinite(list(tmpline[j+1] for j in idx)).any():
+                                tmpsolinstances += 1
+                        except IndexError:
+                            pass
+                            #set_trace() # TODO: problem with the instances... MCS!
+                    solinstances += tmpsolinstances
+                    tmp['unsolinstances'] = len(dictinstance) - tmpsolinstances
+                    erts.append(float(entry.ert[l]) / allertbest[t][(entry.funcId, entry.dim)])
+                    break
+
+        if len(erts) > 0:
+            erts.sort()
+            line = [t]
+            line.extend((float(soltrials)/nbtrials*100., float(solinstances)/nbinstances*100.,
+                         solfcts, nbfcts))
+            line.append(erts[0])
+            line.extend(prctile(erts, [10, 25, 50, 75, 90]))
+            table.append(line)
+
+    unsolved = unsolved.values()
+    unsolvedrl = []
+    for i in unsolved:
+        unsolvedrl.extend(i['runlengths'])
+
+    if unsolvedrl:
+        unsolvedrl.sort()
+        if float(sum(i['unsolinstances'] for i in unsolved))/sum(i['nbinstances'] for i in unsolved) > 1:
+            #set_trace() # TODO: problem
+            pass
+        line = [numpy.inf,
+                float(sum(i['unsoltrials'] for i in unsolved))/sum(i['nbtrials'] for i in unsolved) * 100,
+                float(sum(i['unsolinstances'] for i in unsolved))/sum(i['nbinstances'] for i in unsolved) * 100,
+                sum(list(i['unsolved'] for i in unsolved)), len(dsList), unsolvedrl[0]]
+        line.extend(prctile(unsolvedrl, [10, 25, 50, 75, 90]))
+        table.append(line)
+
+    return table
+
+def generateFigure(dsList, CrE, outputdir, suffix, verbose=True):
+    """Generates ERT loss ratio figures.
+    dsList is a list of the DataSet instances for a given algorithm in a given
     dimension.
     """
 
@@ -419,8 +650,10 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
 
     # do not aggregate over dimensions
     D = set(i.dim for i in dsList).pop() # should have only one element
+    maxevals = max(max(i.ert[numpy.isinf(i.ert)==False]) for i in dsList)
     EVALS = [2.*D]
-    EVALS.extend(numpy.power(10., numpy.arange(1, 10))*D)
+    EVALS.extend(numpy.power(10., numpy.arange(1, numpy.ceil(numpy.log10(maxevals))))*D)
+    #EVALS.extend(numpy.power(10., numpy.arange(1, 10))*D)
     #set_trace()
     #if D == 3:
         #set_trace()
@@ -467,3 +700,9 @@ def main(dsList, CrE, outputdir, suffix, verbose=True):
     plt.close()
 
     plt.rcdefaults()
+
+def main(dsList, CrE, outputdir, suffix, verbose=True):
+
+    generateFigure(dsList, CrE, outputdir, suffix, verbose)
+    #table = generateTable(dsList, CrE, outputdir, verbose)
+    #set_trace()

@@ -83,8 +83,7 @@ def detertbest(dsList, minFtarget):
     return numpy.array(ertbest)
 
 def detTarget(dsList):
-    """Creates the data structure of the target function values.
-    """
+    """Creates the data structure of the target function values."""
 
     allmintarget = {}
     allertbest = {}
