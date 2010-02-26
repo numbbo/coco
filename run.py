@@ -442,7 +442,7 @@ def main(argv=None):
         dsList = DataSetList(filelist, verbose)
 
         if not dsList:
-            sys.exit() #raise Usage("Nothing to do: post-processing stopped.")
+            raise Usage("Nothing to do: post-processing stopped.")
 
         if (verbose):
             for i in dsList:
@@ -535,8 +535,6 @@ def main(argv=None):
                     pass
             print "ECDF graphs done."
 
-        #EXPERIMENTAL#
-        #islogloss = True
         if islogloss:
             for ng, sliceNoise in dsList.dictByNoise().iteritems():
                 if ng == 'noiselessall':
@@ -559,13 +557,14 @@ def main(argv=None):
                     info = 'dim%02d%s' % (d, ng)
                     pplogloss.main(sliceDim, CrE, outputdir, info,
                                    verbose=verbose)
+                    pplogloss.generateTable(sliceDim, CrE, outputdir, info,
+                                            verbose=verbose)
                     for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
                         info = 'dim%02d%s' % (d, fGroup)
                         pplogloss.main(sliceFuncGroup, CrE, outputdir, info,
                                        verbose=verbose)
 
-            print "ERT loss ratio figures done."
-        #/EXPERIMENTAL#
+            print "ERT loss ratio figures and tables done."
 
         if isfigure or istab or isrldistr or islogloss:
             print "Output data written to folder %s." % outputdir

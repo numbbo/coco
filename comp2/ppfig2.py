@@ -12,13 +12,16 @@ import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap, readalign
-#from scipy.stats import ranksums
+#try:
+    #supersede this module own ranksums method
+    #from scipy.stats import ranksums as ranksums
+#except ImportError:
+    #pass
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')
 markers = ('o', 'v', 's', '+', 'x', 'D')
 linewidth = 3
 
-#figformat = ('eps', 'png') # Controls the output when using the main method
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
 #Get benchmark short infos.

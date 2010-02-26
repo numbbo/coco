@@ -8,15 +8,14 @@ from __future__ import absolute_import
 
 import os
 import warnings
-#import pickle
 from pdb import set_trace
-import numpy # According to PEP 8 imports should be on different lines
+import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
-best = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES',  
+best = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES',
    'BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'GLOBAL', 'MCS (Neum)',
    'DIRECT', 'DASA', 'POEMS', 'Cauchy EDA', 'Monte Carlo')
 
@@ -40,20 +39,20 @@ nikos40D = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'BIPOP-CMA-ES',
             '(1+1)-CMA-ES', '(1+1)-ES', 'IPOP-SEP-CMA-ES', 
             'NEWUOA', 'NELDER (Han)', 'BFGS', 'Monte Carlo')
 
-# three groups which include all algorithms: 
+# three groups which include all algorithms:
 GA = ('DE-PSO', '(1+1)-ES', 'PSO_Bounds', 'DASA', 'G3-PCX', 'simple GA', 'POEMS', 'Monte Carlo')  # 7+1
 
-classics = ('BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'DIRECT', 'LSfminbnd', 
-            'LSstep', 'Rosenbrock', 'GLOBAL', 'SNOBFIT', 'MCS (Neum)', 'adaptive SPSA', 'Monte Carlo')  # 13+1 
+classics = ('BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'DIRECT', 'LSfminbnd',
+            'LSstep', 'Rosenbrock', 'GLOBAL', 'SNOBFIT', 'MCS (Neum)', 'adaptive SPSA', 'Monte Carlo')  # 13+1
 
 EDA = ('BIPOP-CMA-ES', '(1+1)-CMA-ES', 'VNS (Garcia)', 'EDA-PSO', 'IPOP-SEP-CMA-ES', 'AMaLGaM IDEA',
        'iAMaLGaM IDEA', 'Cauchy EDA', 'BayEDAcG', 'MA-LS-Chain', 'Monte Carlo')  # 10+1
 
 # groups according to the talks
 petr = ('DIRECT', 'LSfminbnd', 'LSstep', 'Rosenbrock', 'G3-PCX', 'Cauchy EDA', 'Monte Carlo')
-TAO = ('BFGS', 'NELDER (Han)', 'NEWUOA', 'full NEWUOA', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', 
+TAO = ('BFGS', 'NELDER (Han)', 'NEWUOA', 'full NEWUOA', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES',
        '(1+1)-CMA-ES', '(1+1)-ES', 'simple GA', 'Monte Carlo')
-TAOp = TAO + ('NELDER (Doe)',) 
+TAOp = TAO + ('NELDER (Doe)',)
 MC = ('Monte Carlo',)
 
 third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'EDA-PSO', 'PSO_Bounds', 'PSO', 'AMaLGaM IDEA', 'iAMaLGaM IDEA',
@@ -61,7 +60,7 @@ third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'EDA-PSO', 'PSO_Bounds', 'PSO', 'AMa
 
 # MORE TO COME
 
-funi = [1] + range(5, 15)  # without paired Ellipsoid 
+funi = [1] + range(5, 15)  # without paired Ellipsoid
 funilipschitz = [1] + [5,6] + range(8,13) + [14] # + [13]  #13=sharp ridge, 7=step-ellipsoid 
 fmulti = [4] + range(15,25) # without paired Rastrigin
 funisep = [1,2,5]
@@ -72,7 +71,7 @@ funisep = [1,2,5]
 #show_algorithms = ('IPOP-SEP-CMA-ES', 'IPOP-CMA-ES', 'BIPOP-CMA-ES',
 #'avg NEWUOA', 'NEWUOA', 'full NEWUOA', 'BFGS', 'MCS (Neum)', 'GLOBAL', 'NELDER (Han)',
 #'NELDER (Doe)', 'Monte Carlo') # ()==all
-show_algorithms = ()   
+show_algorithms = ()
 function_IDs = fmulti  # range(103, 131, 3)   # displayed functions
 function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 #function_IDs = [1,2,3,4,5] # separable functions
@@ -113,8 +112,6 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
 
         txt += ('%d funcs' % numpy.sum(len(i) for i in funcsolved))
 
-        #plt.figtext(0.01, 1.01, txt, horizontalalignment='left',
-                 #verticalalignment="bottom")
         plt.text(0.01, 1.01, txt, horizontalalignment='left',
                  verticalalignment="bottom", transform=plt.gca().transAxes)
 
@@ -123,10 +120,9 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
 
     plt.ylim(0, 1)
 
-    plt.xlim(xmax=1e3) #TODO: save default value?
+    plt.xlim(xmax=1e3)
     plt.xlim(xmin=1e-2)
     if save_zoom:  # first half only, takes about 2.5 seconds
-        #set_trace()
         for entry in fileFormat:
             plt.savefig(figureName + 'a.' + entry, dpi = 300, format = entry)
 
@@ -134,7 +130,6 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
     if not maxval is None: # TODO: reset to default value...
         plt.xlim(xmax=maxval)
     if save_zoom:  # second half only
-        #plt.ylim(0, 1)
         for entry in fileFormat:
             plt.savefig(figureName + 'b.' + entry, dpi = 300, format = entry)
 
@@ -145,6 +140,7 @@ def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
 def get_plot_args(args):
     """args is one dict element according to algorithmshortinfos
     """
+
     if args['label'] in show_algorithms:
         args['linewidth'] = 2
     elif len(show_algorithms) > 0:
@@ -160,7 +156,6 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None, 
 
     #Expect data to be a ndarray.
     x = data[numpy.isnan(data)==False] # Take away the nans
-    #set_trace()
     nn = len(x)
 
     x = x[numpy.isinf(x)==False] # Take away the infs
@@ -169,9 +164,8 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None, 
     x = numpy.exp(CrE) * x  # correction by crafting effort CrE
 
     if n == 0:
-        #TODO: problem if no maxval
         if maxval is None:
-            res = plt.plot([], [], **kwargs) # TODO: plot a horizontal line instead?
+            res = plt.plot([], [], **kwargs) # TODO: plot a horizontal line instead
         else:
             res = plt.plot([1., maxval], [0., 0.], **kwargs)
     else:
@@ -210,8 +204,8 @@ def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None, 
     return res
 
 def plotLegend(handles, maxval):
-    """Display right-side legend.
-    """
+    """Display right-side legend."""
+
     ys = {}
     lh = 0
     for h in handles:
@@ -374,8 +368,6 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
     plotLegend(lines, xlim)
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
-    #set_trace()
     beautify(figureName, funcsolved, xlim*x_annote_factor, False, fileFormat=figformat)
 
-    #set_trace()
     plt.close()

@@ -11,7 +11,7 @@ from __future__ import absolute_import
 import os
 from pdb import set_trace
 import numpy
-from bbob_pproc import pptex
+from bbob_pproc.pptex import writeFEvals
 from bbob_pproc.bootstrap import prctile
 from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList
@@ -41,8 +41,8 @@ def cite(algName, isNoisefree, isNoisy):
     Hard coded while no other solution is found.
     """
     res = []
-    #The names of the algorithms must correspond to what is in the labels of
-    #algorithmshortinfos.txt. The citations keys must be in bbob.bib.
+    # The names of the algorithms must correspond to the name of the folder
+    # containing the data. The citations keys must be in bbob.bib.
     if isNoisefree:
         if algName == "ALPS":
             res.append("Hornby:2009")
@@ -154,9 +154,8 @@ def cite(algName, isNoisefree, isNoisy):
 
 
 def sortColumns(table, maxRank=None):
-    """For each column in table, returns a list of the maxRank-ranked
-    elements. This list may have a length larger than maxRank in the case of
-    ties.
+    """For each column in table, returns a list of the maxRank-ranked elements.
+    This list may have a length larger than maxRank in the case of ties.
     """
     if maxRank is None:
         maxRank = numpy.shape(table)[0]
@@ -189,28 +188,8 @@ def writeFunVal(funval):
     res[1] = '%+d' % (int(res[1]) - 1)
     return r'\textit{%s}' % 'e'.join(res)
 
-def writeFEvals(fevals, precision='.2'):
-    """Returns string representation of a number of function evaluations to use
-    in a table.
-    """
-    tmp = (('%' + precision + 'g') % fevals)
-    res = tmp.split('e')
-    if len(res) > 1:
-        res[1] = '%d' % int(res[1])
-        res = '%s' % 'e'.join(res)
-        pr2 = str(float(precision) + .2)
-        #res2 = (('%' + pr2 + 'g') % fevals)
-        res2 = (('%' + pr2 + 'g') % float(tmp))
-        # To have the same number of significant digits.
-        if len(res) >= len(res2):
-            res = res2
-    else:
-        res = res[0]
-    return res
-
 def onealg(dsList, allmintarget, allertbest):
-    """Helper routine for the generation of a table for one algorithm.
-    """
+    """Helper routine for the generation of a table for one algorithm."""
 
     table = []
     unsolved = {}
@@ -293,8 +272,7 @@ def onealg(dsList, allmintarget, allertbest):
 
 def tableonealg(dsList, allmintarget, allertbest, sortedAlgs=None,
                 outputdir='.'):
-    """Routine for the generation of a table for an algorithm.
-    """
+    """Routine for the generation of a table for an algorithm."""
 
     header2 = ('evals/D', '\%trials', '\%inst', '\multicolumn{2}{c|}{fcts}', 'best', '10', '25', 'med', '75', '90')
     format2 = ('%.3g', '%d', '%d', '%d', '%d', '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e', '%1.1e')
@@ -336,8 +314,7 @@ def tableonealg(dsList, allmintarget, allertbest, sortedAlgs=None,
 
 def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None,
                  outputdir='.'):
-    """Generate a table with the figures of multiple algorithms.
-    """
+    """Generate a table with the figures of multiple algorithms."""
 
     stargets = sorted(allmintarget.keys())
     dictDim = dsList.dictByDim()
