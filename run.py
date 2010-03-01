@@ -477,6 +477,8 @@ def main(argv=None):
         if isfigure:
             ppfigdim.main(dsList, figValsOfInterest, outputdir,
                           verbose)
+            ppfigdim.main2(dsList, figValsOfInterest, outputdir,
+                          verbose)
             print "Scaling figures done."
 
         if istab:
@@ -553,16 +555,22 @@ def main(argv=None):
                         print "Float value required."
                     except NameError:
                         print "Float value required."
-                for d, sliceDim in sliceNoise.dictByDim().iteritems():
+                dictDim = sliceNoise.dictByDim()
+                for d in rldDimsOfInterest:
+                    try:
+                        sliceDim = dictDim[d]
+                    except KeyError:
+                        continue
                     info = 'dim%02d%s' % (d, ng)
-                    pplogloss.main(sliceDim, CrE, outputdir, info,
+                    pplogloss.main(sliceDim, CrE, True, outputdir, info,
                                    verbose=verbose)
                     pplogloss.generateTable(sliceDim, CrE, outputdir, info,
                                             verbose=verbose)
                     for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
                         info = 'dim%02d%s' % (d, fGroup)
-                        pplogloss.main(sliceFuncGroup, CrE, outputdir, info,
+                        pplogloss.main(sliceFuncGroup, CrE, True, outputdir, info,
                                        verbose=verbose)
+                    pplogloss.evalfmax = None #Resetting the max #fevalsfactor
 
             print "ERT loss ratio figures and tables done."
 
