@@ -477,8 +477,9 @@ def main(argv=None):
         if isfigure:
             ppfigdim.main(dsList, figValsOfInterest, outputdir,
                           verbose)
-            ppfigdim.main2(dsList, figValsOfInterest, outputdir,
-                          verbose)
+            #ERT/dim vs dim.
+            #ppfigdim.main2(dsList, figValsOfInterest, outputdir,
+                          #verbose)
             print "Scaling figures done."
 
         if istab:
