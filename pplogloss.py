@@ -446,7 +446,7 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
         elif i == 50:
             tmp = "med"
         else:
-            tmp = "%d" % i
+            tmp = "%d\\%%" % i
         header.append(tmp)
 
     #set_trace()
@@ -520,7 +520,7 @@ def generateTable2(dsList, CrE, outputdir, suffix, verbose=True):
         elif i == 50:
             tmp = "med"
         else:
-            tmp = "%d" % i
+            tmp = "%d\\%%" % i
         header.append(tmp)
 
     #set_trace()
