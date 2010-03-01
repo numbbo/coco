@@ -446,12 +446,12 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
 
     data = generateData(dsList, EVALS, CrE)
 
-    tmp = "f%d-%d in %d-D, maxFE/D=%s" % (min(funcs), max(funcs), D,
-                                          writeFEvals2(int(mFE/D), maxdigits=6))
+    tmp = "\\textbf{\\textit{f}\\raisebox{-0.35ex}{%d}--\\textit{f}\\raisebox{-0.35ex}{%d} in %d-D}, maxFE/D=%s" \
+        % (min(funcs), max(funcs), D, writeFEvals2(int(mFE/D), maxdigits=6))
 
     res.append(r" & \multicolumn{" + str(len(prcOfInterest)) + "}{|c}{" + tmp + "}")
 
-    header = ["evals/D"]
+    header = ["\\#FEs/D"]
     for i in prcOfInterest:
         if i == 0:
             tmp = "best"
@@ -469,7 +469,10 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
         tmpdata = bootstrap.prctile(tmpdata, prcOfInterest)
         # format entries
         #tmp = [writeFEvals(EVALS[i]/D, '.0')]
-        tmp = [writeFEvals2(EVALS[i]/D, 1)]
+        if EVALS[i]/D < 200:
+            tmp = [writeFEvals2(EVALS[i]/D, 3)]
+        else:
+            tmp = [writeFEvals2(EVALS[i]/D, 1)]
         for j in tmpdata:
             #tmp.append(writeFEvals(j, '.2'))
             tmp.append(writeFEvals2(j, 2))
