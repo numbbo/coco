@@ -386,7 +386,7 @@ def beautify(figureName, maxEvalsF, fileFormat, verbose):
 
     a = plt.gca()
     a.set_yscale('log')
-    plt.ylim(ymin=1e-1, ymax=1e7)
+    plt.ylim(ymin=1e-2, ymax=1e5)
     if maxEvalsF:
         plt.xlim(xmax=maxEvalsF ** 1.025)
 

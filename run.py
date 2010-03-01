@@ -543,11 +543,13 @@ def main(argv=None):
                     testbed = 'noiseless'
                 elif ng == 'nzall':
                     testbed = 'noisy'
-                txt = ("Please input crafting effort value"
-                       +"for %s testbed, CrE?\n" % testbed)
+                txt = ("Please input crafting effort value "
+                       + "for %s testbed:\n  CrE = " % testbed)
                 while CrE is None:
                     try:
                         CrE = input(txt)
+                        if CrE == 0: 
+                            CrE = float(CrE)
                         if not isinstance(CrE, float):
                             CrE = None
                             raise SyntaxError
