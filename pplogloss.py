@@ -76,12 +76,14 @@ bestalgentries = {}
         #bestalgentries[(D, fun)] = pickle.load(fid)
         #fid.close()
 
+print "Loading best algorithm data from BBOB-2009."
 bestalgfilepath = os.path.split(__file__)[0]
 picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
 #TODO: what if file is not found?
 fid = gzip.open(picklefilename, 'r')
 bestalgentries = pickle.load(fid)
 fid.close()
+print "Done."
 
 def detERT(entry, funvals):
     res = []
@@ -390,7 +392,8 @@ def beautify(figureName, evalfrange, fileFormat, verbose):
     ymax = 1e5
     plt.ylim(ymin=ymin, ymax=ymax)
     ydata = numpy.power(10., numpy.arange(numpy.log10(ymin), numpy.log10(ymax)+1))
-    yticklabels = list(str(i) for i in range(numpy.log10(ymin), numpy.log10(ymax)+1))
+    yticklabels = list(str(i) for i in range(int(numpy.log10(ymin)),
+                                             int(numpy.log10(ymax)+1)))
     plt.yticks(ydata, yticklabels)
 
     if evalfrange:
@@ -497,7 +500,7 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
     res = (r"\\"+ "\n").join(res)
     res = r"\begin{tabular}{c|" + len(prcOfInterest) * "c" +"}\n" + res
     #res = r"\begin{tabular}{ccccc}" + "\n" + res
-    res = res + r"\end{tabular}" + "\n"
+    res = res + "\n" + r"\end{tabular}" + "\n"
 
     filename = os.path.join(outputdir, 'pploglosstable_%s.tex' % (suffix))
     f = open(filename, 'w')
