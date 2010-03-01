@@ -62,7 +62,7 @@ from bbob_pproc import bootstrap
 from bbob_pproc.bestalg import BestAlgSet
 from bbob_pproc.pptex import writeFEvals2
 
-evalfmax = None
+evalf = None
 figformat = ('eps', 'pdf')
 f_thresh = 1.e-8
 bestalgentries = {}
@@ -381,18 +381,22 @@ def plot(xdata, ydata):
 
     return res
 
-def beautify(figureName, maxEvalsF, fileFormat, verbose):
+def beautify(figureName, evalfrange, fileFormat, verbose):
     """Format the figure."""
 
     a = plt.gca()
     a.set_yscale('log')
-    plt.ylim(ymin=1e-2, ymax=1e5)
-    if maxEvalsF:
-        plt.xlim(xmax=maxEvalsF ** 1.025)
-
-    ydata = numpy.power(10., numpy.arange(-1., 8))
-    yticklabels = list(str(i) for i in range(-1, 8))
+    ymin = 1e-2
+    ymax = 1e5
+    plt.ylim(ymin=ymin, ymax=ymax)
+    ydata = numpy.power(10., numpy.arange(numpy.log10(ymin), numpy.log10(ymax)+1))
+    yticklabels = list(str(i) for i in range(numpy.log10(ymin), numpy.log10(ymax)+1))
     plt.yticks(ydata, yticklabels)
+
+    if evalfrange:
+        #set_trace()
+        plt.xlim(xmin=evalfrange[0]-0.5, xmax=evalfrange[1]+0.5)
+
     plt.xlabel('#Evals / dimension')
     plt.ylabel('log10 of ERT loss ratio')
     #a.yaxis.grid(True, which='minor')
@@ -434,7 +438,7 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
     mFE = max(mFE)
     D = D.pop() # should have only one element
     EVALS = [2.*D]
-    EVALS.extend(numpy.power(10., numpy.arange(1, numpy.round(numpy.log10(maxevals))))*D)
+    EVALS.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals))))*D)
     #Set variables: Done
 
     data = generateData(dsList, EVALS, CrE)
@@ -503,7 +507,7 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
         print "Wrote ERT loss ratio table in %s." % filename
     return res
 
-def generateFigure(dsList, CrE, isStoringXMax, outputdir, suffix, verbose=True):
+def generateFigure(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True):
     """Generates ERT loss ratio figures.
     dsList is a list of the DataSet instances for a given algorithm in a given
     dimension.
@@ -515,19 +519,19 @@ def generateFigure(dsList, CrE, isStoringXMax, outputdir, suffix, verbose=True):
     plt.rc("font", size=20)
     plt.rc("legend", fontsize=20)
 
-    if isStoringXMax:
-        global evalfmax
+    if isStoringXRange:
+        global evalf
     else:
-        evalfmax = None
+        evalf = None
 
     # do not aggregate over dimensions
     D = set(i.dim for i in dsList).pop() # should have only one element
     maxevals = max(max(i.ert[numpy.isinf(i.ert)==False]) for i in dsList)
     EVALS = [2.*D]
-    EVALS.extend(numpy.power(10., numpy.arange(1, numpy.round(numpy.log10(maxevals))))*D)
+    EVALS.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals))))*D)
 
-    if not evalfmax:
-        evalfmax = numpy.log10(EVALS[-1]/D)
+    if not evalf:
+        evalf = (numpy.log10(EVALS[0]/D), numpy.log10(EVALS[-1]/D))
 
     #set_trace()
     #EVALS.extend(numpy.power(10., numpy.arange(1, 10))*D)
@@ -571,15 +575,15 @@ def generateFigure(dsList, CrE, isStoringXMax, outputdir, suffix, verbose=True):
         text = 'f%d' %(funcs[0])
     plt.text(0.5, 0.93, text, horizontalalignment="center",
              transform=plt.gca().transAxes)
-    beautify(filename, evalfmax, fileFormat=figformat, verbose=verbose)
+    beautify(filename, evalf, fileFormat=figformat, verbose=verbose)
 
     #plt.show()
     plt.close()
 
     plt.rcdefaults()
 
-def main(dsList, CrE, isStoringXMax, outputdir, suffix, verbose=True):
+def main(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True):
 
-    generateFigure(dsList, CrE, isStoringXMax, outputdir, suffix, verbose)
+    generateFigure(dsList, CrE, isStoringXRange, outputdir, suffix, verbose)
     #table = generateTable(dsList, CrE, outputdir, verbose)
     #set_trace()
