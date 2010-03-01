@@ -436,7 +436,7 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
     data = generateData(dsList, EVALS, CrE)
 
     #TODO: runlength distribution for which 1e-8 was not reached.
-    tmp = "f%d-%d in %d-D, mFE=%s" % (min(funcs), max(funcs), D, writeFEvals2(int(mFE), maxdigits=6))
+    tmp = "f%d-%d in %d-D, maxFE=%s" % (min(funcs), max(funcs), D, writeFEvals2(int(mFE), maxdigits=6))
     res.append(r" & \multicolumn{" + str(len(prcOfInterest)) + "}{|c}{" + tmp + "}")
 
     header = ["evals/D"]
@@ -510,7 +510,7 @@ def generateTable2(dsList, CrE, outputdir, suffix, verbose=True):
     data = generateData(dsList, EVALS, CrE)
 
     #TODO: runlength distribution for which 1e-8 was not reached.
-    tmp = "f%d-%d in %d-D, mFE=%s" % (min(funcs), max(funcs), D, writeFEvals2(int(mFE), maxdigits=6))
+    tmp = "f%d-%d in %d-D, maxFE=%s" % (min(funcs), max(funcs), D, writeFEvals2(int(mFE), maxdigits=6))
     res.append(r" & \multicolumn{" + str(len(prcOfInterest)) + "}{|c}{" + tmp + "}")
 
     header = ["evals/D"]
