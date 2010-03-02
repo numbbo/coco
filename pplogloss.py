@@ -400,7 +400,7 @@ def beautify(figureName, evalfrange, fileFormat, verbose):
         #set_trace()
         plt.xlim(xmin=evalfrange[0]-0.5, xmax=evalfrange[1]+0.5)
 
-    plt.xlabel('#Evals / dimension')
+    plt.xlabel('log10 of FEvals / dimension')
     plt.ylabel('log10 of ERT loss ratio')
     #a.yaxis.grid(True, which='minor')
     a.yaxis.grid(True, which='major')
