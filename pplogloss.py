@@ -456,7 +456,7 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
         if i == 0:
             tmp = "best"
         elif i == 50:
-            tmp = "med"
+            tmp = "\\textbf{med}"
         else:
             tmp = "%d\\%%" % i
         header.append(tmp)
@@ -474,8 +474,18 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
         else:
             tmp = [writeFEvals2(EVALS[i]/D, 1)]
         for j in tmpdata:
-            #tmp.append(writeFEvals(j, '.2'))
-            tmp.append(writeFEvals2(j, 2))
+            # tmp.append(writeFEvals(j, '.2'))
+            # tmp.append(writeFEvals2(j, 2))
+            if j < 1:
+                tmp.append("~\\,%1.2f" % j)
+            elif j < 10:
+                tmp.append("\\hspace*{1ex}%1.1f" % j)
+            elif j < 100:
+                tmp.append("%2.0f" % j)
+            else:
+                ar = ("%1.1e" % j).split('e')
+                tmp.append(ar[0] + 'e' + str(int(ar[1])))
+            # print tmp[-1]
         res.append(" & ".join(tmp))
 
     # add last line: runlength distribution for which 1e-8 was not reached.
@@ -501,7 +511,7 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
         res.append(" & ".join(tmp))
 
     res = (r"\\"+ "\n").join(res)
-    res = r"\begin{tabular}{c|" + len(prcOfInterest) * "c" +"}\n" + res
+    res = r"\begin{tabular}{c|" + len(prcOfInterest) * "l" +"}\n" + res
     #res = r"\begin{tabular}{ccccc}" + "\n" + res
     res = res + "\n" + r"\end{tabular}" + "\n"
 
