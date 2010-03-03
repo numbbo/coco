@@ -367,10 +367,10 @@ def plot(xdata, ydata):
                                 color='k',  # marker='+', 
                                 ls='--', linewidth=2) #, markersize=20, markeredgewidth=3)
             # plot min and max with different symbol
-            plt.plot([xdata[i]], 10**min(numpy.array(y)),
+            plt.plot([xdata[i]], [10**min(numpy.array(y))],
                                 marker='+', color='k',
                                 ls='', markersize=20, markeredgewidth=3)
-            plt.plot([xdata[i]], 10**max(numpy.array(y)),
+            plt.plot([xdata[i]], [10**max(numpy.array(y))],
                                 marker='+', color='k',
                                 ls='', markersize=20, markeredgewidth=3)
             # plot all single data points
