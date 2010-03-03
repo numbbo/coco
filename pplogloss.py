@@ -401,7 +401,7 @@ def beautify(figureName, evalfrange, fileFormat, verbose):
     a = plt.gca()
     a.set_yscale('log')
     ymin = 1e-2
-    ymax = 1e5
+    ymax = 1e4
     plt.ylim(ymin=ymin, ymax=ymax)
     ydata = numpy.power(10., numpy.arange(numpy.log10(ymin), numpy.log10(ymax)+1))
     yticklabels = list(str(i) for i in range(int(numpy.log10(ymin)),
