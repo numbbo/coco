@@ -362,21 +362,21 @@ def plot(xdata, ydata):
 
     if max(len(i) for i in ydata) < 20: # TODO: subgroups of function, hopefully.
         for i, y in enumerate(ydata):
+            # plot all single data points
+            res.extend(plt.plot([xdata[i]]*len(y), 10**numpy.array(y),
+                                marker='+', color='b',
+                                ls='', markersize=20, markeredgewidth=3))
             # plot dashed vertical line between min and max 
             plt.plot([xdata[i]]*2, 10**numpy.array([min(y), max(y)]),
                                 color='k',  # marker='+', 
                                 ls='--', linewidth=2) #, markersize=20, markeredgewidth=3)
             # plot min and max with different symbol
-            plt.plot([xdata[i]], [10**min(numpy.array(y))],
-                                marker='+', color='k',
-                                ls='', markersize=20, markeredgewidth=3)
-            plt.plot([xdata[i]], [10**max(numpy.array(y))],
-                                marker='+', color='k',
-                                ls='', markersize=20, markeredgewidth=3)
-            # plot all single data points
-            res.extend(plt.plot([xdata[i]]*len(y), 10**numpy.array(y),
-                                marker='.', color='b',
-                                ls='', markersize=20, markeredgewidth=3))
+            #plt.plot([xdata[i]], 10**min(numpy.array(y)),
+            #                    marker='+', color='k',
+            #                    ls='', markersize=20, markeredgewidth=3)
+            #plt.plot([xdata[i]], 10**max(numpy.array(y)),
+            #                    marker='+', color='k',
+            #                    ls='', markersize=20, markeredgewidth=3)
     else:
         dictboxwhisker = boxplot(list(10**numpy.array(i) for i in ydata),
                                  sym='', notch=0, widths=None,
