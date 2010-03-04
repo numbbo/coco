@@ -15,11 +15,14 @@ import matplotlib.pyplot as plt
 from bbob_pproc import bestalg
 from bbob_pproc.pptex import tableLaTeX
 #from bbob_pproc import ranksumtest
-from bbob_pproc.comp2.ppfig2 import ranksums
+from bbob_pproc.bootstrap import ranksums
+from bbob_pproc.pplogloss import detERT
+from bbob_pproc.pptex import writeFEvals2
 #try:
     #supersede this module own ranksums method
     #from scipy.stats import ranksums as ranksums
 #except ImportError:
+    #from bbob_pproc.bootstrap import ranksums
     #pass
 
 from pdb import set_trace
