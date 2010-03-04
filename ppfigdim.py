@@ -8,11 +8,12 @@ import sys
 import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
-from bbob_pproc import bootstrap
+from bbob_pproc import bootstrap, bestalg
 
 #colors = ('k', 'g', 'c', 'b', 'y', 'm', 'r', 'g', 'b', 'c', 'r', 'm')  # should not be too short
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 # should correspond with the colors in pprldistr.
+dimsBBOB = (2, 3, 5, 10, 20, 40)
 
 #Get benchmark short infos.
 funInfos = {}
@@ -288,6 +289,20 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             plt.plot(tmp[:, 0], tmp[:, -2], figure=fig, color=colors[i],
                      marker='x', markersize=20)
 
+        if not bestalg.bestalgentries:
+            bestalg.loadBBOB2009()
+
+        bestalgdata = []
+        for d in dimsBBOB:
+            entry = bestalg.bestalgentries[(d, func)]
+            tmp = entry.ert[entry.target<=1e-8]
+            try:
+                bestalgdata.append(tmp[0])
+            except IndexError:
+                bestalgdata.append(None)
+                
+        plt.plot(dimsBBOB, bestalgdata, figure=fig, color='wheat', zorder=-1)
+
         if displaynumber: #displayed only for the smallest valuesOfInterest
             a = fig.gca()
             for j in displaynumber:
@@ -311,7 +326,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     plt.rcdefaults()
 
 def main2(dsList, _valuesOfInterest, outputdir, verbose=True):
-    """From a DataSetList, returns a convergence and ERT figure vs dim."""
+    """From a DataSetList, returns a convergence and ERT/dim figure vs dim."""
 
     plt.rc("axes", labelsize=20, titlesize=24)
     plt.rc("xtick", labelsize=20)
