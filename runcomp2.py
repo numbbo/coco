@@ -417,7 +417,7 @@ def main(argv=None):
             print "ECDF dashed-solid graphs done."
 
         if istable:
-            pptable2.main2(dsList0, dsList1, outputdir, verbose=verbose)
+            pptable2.main(dsList0, dsList1, outputdir, verbose=verbose)
 
         if isfigure or isrldistr or istable:
             print "Output data written to folder %s." % outputdir
