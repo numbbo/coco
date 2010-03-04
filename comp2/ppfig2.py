@@ -12,10 +12,12 @@ import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap, readalign
+from bbob_pproc.bootstrap import ranksums
 #try:
     #supersede this module own ranksums method
     #from scipy.stats import ranksums as ranksums
 #except ImportError:
+    #from bbob_pproc.bootstrap import ranksums
     #pass
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')
@@ -137,178 +139,6 @@ def computeERT(hdata, maxevals):
         tmp.extend(bootstrap.sp(data, issuccessful=succ))
         res.append(tmp)
     return numpy.vstack(res)
-
-def ranksumtest(N1, N2):
-    """Custom rank-sum (Mann-Whitney-Wilcoxon) test
-    http://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U
-    Small sample sizes (direct method).
-    Keyword arguments:
-    N1    sample 1
-    N2    sample 2
-    """
-
-    # Possible optimization by setting sample 1 to be the one with the smallest
-    # rank.
-
-    #TODO: deal with more general type of sorting.
-    s1 = sorted(N1)
-    s2 = sorted(N2)
-    U = 0.
-    for i in s1:
-        Ui = 0. # increment of U
-        for j in s2:
-            if j < i:
-                Ui += 1.
-            elif j == i:
-                Ui += .5
-            else:
-                break
-        #if Ui == 0.:
-            #break
-        U += Ui
-    return U
-
-###############################################################################
-# Copyrights from Gary Strangman due to inclusion of his code for the ranksums
-# method and related.
-# Found at: http://www.nmr.mgh.harvard.edu/Neural_Systems_Group/gary/python.html
-
-# Copyright (c) 1999-2007 Gary Strangman; All Rights Reserved.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-# 
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
-def zprob(z):
-    """Returns the area under the normal curve 'to the left of' the given z value.
-    http://www.nmr.mgh.harvard.edu/Neural_Systems_Group/gary/python.html
-    Thus, 
-        for z<0, zprob(z) = 1-tail probability
-        for z>0, 1.0-zprob(z) = 1-tail probability
-        for any z, 2.0*(1.0-zprob(abs(z))) = 2-tail probability
-    Adapted from z.c in Gary Perlman's |Stat.  Can handle multiple dimensions.
-
-    Usage:   azprob(z)    where z is a z-value
-    """
-    def yfunc(y):
-        x = (((((((((((((-0.000045255659 * y
-                         +0.000152529290) * y -0.000019538132) * y
-                       -0.000676904986) * y +0.001390604284) * y
-                     -0.000794620820) * y -0.002034254874) * y
-                   +0.006549791214) * y -0.010557625006) * y
-                 +0.011630447319) * y -0.009279453341) * y
-               +0.005353579108) * y -0.002141268741) * y
-             +0.000535310849) * y +0.999936657524
-        return x
-
-    def wfunc(w):
-        x = ((((((((0.000124818987 * w
-                    -0.001075204047) * w +0.005198775019) * w
-                  -0.019198292004) * w +0.059054035642) * w
-                -0.151968751364) * w +0.319152932694) * w
-              -0.531923007300) * w +0.797884560593) * numpy.sqrt(w) * 2.0
-        return x
-
-    Z_MAX = 6.0    # maximum meaningful z-value
-    x = numpy.zeros(z.shape, numpy.float_) # initialize
-    y = 0.5 * numpy.fabs(z)
-    x = numpy.where(numpy.less(y,1.0),wfunc(y*y),yfunc(y-2.0)) # get x's
-    x = numpy.where(numpy.greater(y,Z_MAX*0.5),1.0,x)          # kill those with big Z
-    prob = numpy.where(numpy.greater(z,0),(x+1)*0.5,(1-x)*0.5)
-    return prob
-
-def ranksums(x, y):
-    """Calculates the rank sums statistic on the provided scores and
-    returns the result.
-    This method returns a slight difference compared to scipy.stats.ranksums
-    in the two-tailed p-value. Should be test drived...
-
-    Returns: z-statistic, two-tailed p-value
-    """
-    x,y = map(numpy.asarray, (x, y))
-    n1 = len(x)
-    n2 = len(y)
-    alldata = numpy.concatenate((x,y))
-    ranked = rankdata(alldata)
-    x = ranked[:n1]
-    y = ranked[n1:]
-    s = numpy.sum(x,axis=0)
-    expected = n1*(n1+n2+1) / 2.0
-    z = (s - expected) / numpy.sqrt(n1*n2*(n1+n2+1)/12.0)
-    prob = 2*(1.0 -zprob(abs(z)))
-    return z, prob
-
-def rankdata(a):
-    """Ranks the data in a, dealing with ties appropriately.
-
-    Equal values are assigned a rank that is the average of the ranks that
-    would have been otherwise assigned to all of the values within that set.
-    Ranks begin at 1, not 0.
-
-    Example
-    -------
-    In [15]: stats.rankdata([0, 2, 2, 3])
-    Out[15]: array([ 1. ,  2.5,  2.5,  4. ])
-
-    Parameters
-    ----------
-    a : array
-        This array is first flattened.
-
-    Returns
-    -------
-    An array of length equal to the size of a, containing rank scores.
-    """
-    a = numpy.ravel(a)
-    n = len(a)
-    svec, ivec = fastsort(a)
-    sumranks = 0
-    dupcount = 0
-    newarray = numpy.zeros(n, float)
-    for i in xrange(n):
-        sumranks += i
-        dupcount += 1
-        if i==n-1 or svec[i] != svec[i+1]:
-            averank = sumranks / float(dupcount) + 1
-            for j in xrange(i-dupcount+1,i+1):
-                newarray[ivec[j]] = averank
-            sumranks = 0
-            dupcount = 0
-    return newarray
-
-def fastsort(a):
-    # fixme: the wording in the docstring is nonsense.
-    """Sort an array and provide the argsort.
-
-    Parameters
-    ----------
-    a : array
-
-    Returns
-    -------
-    (sorted array,
-     indices into the original array,
-    )
-    """
-    it = numpy.argsort(a)
-    as_ = a[it]
-    return as_, it
-
-###############################################################################
 
 def alignData(i0, i1):
     """Align the data in i0.evals and i1.evals, returns two arrays of aligned
