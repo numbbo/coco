@@ -363,6 +363,29 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     else:
         text = 'f%d' %(funcs[0])
 
+    if isAlgorithm2009Found:
+        d = set.union(set(i.dim for i in dsList0),
+                      set(i.dim for i in dsList1)).pop() # Get only one element...
+        for alg in dict2009:
+            x = []
+            nn = 0
+            for f in funcs:
+                try:
+                    tmp = dict2009[alg][f][d][0][1:]
+                    # [0] because the maximum #evals is recorded
+                    # [1:] because the target function value is recorded
+                    x.append(tmp[numpy.isnan(tmp) == False])
+                    nn += len(tmp)
+                except KeyError:
+                    continue
+
+            if x:
+                x.append([evalfmax ** 1.05])
+                x = numpy.hstack(x)
+
+                plotECDF(x[numpy.isfinite(x)], nn,
+                         {'color': 'wheat', 'ls': '-', 'zorder': -1})
+
     plt.axvline(x=maxEvalsFactor, color='k')
     beautifyRLD(fig, figureName, evalfmax, fileFormat=figformat, text=text,
                 verbose=verbose)

@@ -398,7 +398,10 @@ def writeFEvals2(fevals, precision=2, maxdigits=None):
         res = (('%.' + str(precision-1) + 'e') % fevals)
         repr1 = res
         tmp = repr1.split('e')
-        tmp[1] = '%d' % int(tmp[1]) # Drop the eventual plus sign and trailing zero
+        try:
+            tmp[1] = '%d' % int(tmp[1]) # Drop the eventual plus sign and trailing zero
+        except IndexError:
+            set_trace()
         repr1 = 'e'.join(tmp)
 
         repr2 = (('%.' + str(precision+1) + 'f') % float(res)).rstrip('0').rstrip('.')
@@ -450,10 +453,10 @@ def tableLaTeX(table, spec, extraeol=(), pos=''):
     # TODO: check that spec and extraeol have the right format? 
 
     res = [r'\begin{tabular}' + pos + '{' + spec + '}']
-    for i, line in enumerate(table):
-        curline = ' & '.join(line) + r'\\'
-        curline += extraeol[i]
+    for i, line in enumerate(table[:-1]):
+        curline = ' & '.join(line) + r'\\' + extraeol[i]
         res.append(curline)
+    res.append(' & '.join(table[-1]) + extraeol[-1])
 
     res.append(r'\end{tabular}')
     res = '\n'.join(res)

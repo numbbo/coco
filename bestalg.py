@@ -10,6 +10,7 @@ import sys
 import glob
 import getopt
 import pickle
+import gzip
 from pdb import set_trace
 import warnings
 import numpy
@@ -24,6 +25,8 @@ if __name__ == "__main__":
 from bbob_pproc import readalign
 from bbob_pproc.pproc import DataSetList, processInputArgs, dictAlgByFun, dictAlgByDim
 from bbob_pproc.dataoutput import algPlotInfos
+
+bestalgentries = {}
 
 algs = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
 "CMA-ES", "CMA-ESPLUSSEL", "DASA", "DE-PSO", "DIRECT", "EDA-PSO",
@@ -216,6 +219,31 @@ class BestAlgSet:
         return dictinstance
 
 #FUNCTION DEFINITIONS
+
+def loadBBOB2009():
+    global bestalgentries
+    # global statement necessary to change the variable bestalg.bestalgentries
+
+    #bestalgfilepath = os.path.join(os.path.split(__file__)[0], 'bestalg')
+    #for fun in range(1, 25)+range(101, 131):
+        #for D in [2, 3, 5, 10, 20, 40]:
+            #picklefilename = os.path.join(bestalgfilepath,
+                                          #'bestalg_f%03d_%02d.pickle.gz' % (fun, D))
+            ##TODO: what if file is not found?
+            #fid = gzip.open(picklefilename, 'r')
+            #bestalgentries[(D, fun)] = pickle.load(fid)
+            #fid.close()
+
+    print "Loading best algorithm data from BBOB-2009."
+    bestalgfilepath = os.path.split(__file__)[0]
+    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
+    #TODO: what if file is not found?
+    fid = gzip.open(picklefilename, 'r')
+    #set_trace()
+    bestalgentries = pickle.load(fid)
+    fid.close()
+    print "Done."
+
 
 def usage():
     print main.__doc__

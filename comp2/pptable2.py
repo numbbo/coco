@@ -12,9 +12,19 @@ from __future__ import absolute_import
 import os
 import numpy
 import matplotlib.pyplot as plt
+from bbob_pproc import bestalg
 from bbob_pproc.pptex import tableLaTeX
 #from bbob_pproc import ranksumtest
-from scipy.stats import ranksums
+from bbob_pproc.bootstrap import ranksums
+from bbob_pproc.pplogloss import detERT
+from bbob_pproc.pptex import writeFEvals2
+#try:
+    #supersede this module own ranksums method
+    #from scipy.stats import ranksums as ranksums
+#except ImportError:
+    #from bbob_pproc.bootstrap import ranksums
+    #pass
+
 from pdb import set_trace
 
 targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # Needs to be sorted
@@ -58,8 +68,7 @@ def generateData(dsList0, dsList1):
            nline = numpy.array([-numpy.inf] + (len(nline) - 1) * [numpy.nan])
 
         return nline
-           
-        
+
     for t in targetsOfInterest:
         nline0 = (numpy.power(setNextLine(it0, t)[1:], -1)).copy()
         idxNan = numpy.isnan(nline0)
@@ -78,7 +87,7 @@ def generateData(dsList0, dsList1):
 
 def formatData(table, header, format, fun):
     """Will try to format the data, if possible just from the table."""
-    
+
     if isBenchmarkinfosFound:
         funname = ' %s' % funInfos[fun]
     else:
@@ -103,10 +112,84 @@ def formatData(table, header, format, fun):
              else:
                  curline.append(format[i] % elem)
          tableStrings.append(curline)
-    
+
     return tableStrings
 
+def main2(dsList0, dsList1, outputdir, verbose=True):
+    """Generate comparison tables.
+    One table per dimension...
+    """
+
+    dictDim0 = dsList0.dictByDim()
+    dictDim1 = dsList1.dictByDim()
+
+    dims = set.intersection(set(dictDim0.keys()), set(dictDim1.keys()))
+    if not bestalg.bestalgentries:
+        bestalg.loadBBOB2009()
+
+    header = [r'$\Delta f$']
+    for i in targetsOfInterest:
+        header.append('$10^{%d}$' % (int(numpy.log10(i))))
+    header.append(r'\#succ')
+
+    for d in (3, 5, 10, 20):
+        table = [header]
+        extraeol = [r'\hline']
+        dictFunc0 = dictDim0[d].dictByFunc()
+        dictFunc1 = dictDim1[d].dictByFunc()
+        funcs = set.union(set(dictFunc0.keys()), set(dictFunc1.keys()))
+
+        for f in sorted(funcs):
+            bestalgentry = bestalg.bestalgentries[(d, f)]
+            curline = ['$f_{%d}$ -- best 2009' % f]
+            bestalgdata = detERT(bestalgentry, targetsOfInterest)
+            for i in bestalgdata:
+                curline.append(writeFEvals2(i, 2))
+            table.append(curline[:])
+            extraeol.append('')
+
+            for nb, entries in enumerate((dictFunc0, dictFunc1)):
+                try:
+                    entry = entries[f][0] # take the first element
+                except KeyError:
+                    continue
+                if nb == 0:
+                    tmp = 'zero'
+                else:
+                    tmp = 'one'
+                curline = [r'\alg%s' % tmp]
+
+                data = detERT(entry, targetsOfInterest)
+                for i, j in enumerate(data):
+                    curline.append(writeFEvals2(float(j)/bestalgdata[i], 2))
+
+                tmp = entry.evals[entry.evals[:, 0] <= 1e-8, 1:] # set as global variable?
+                try:
+                    tmp = tmp[0]
+                    curline.append('%d/%d' % (numpy.sum(numpy.isnan(tmp) == False),
+                                              len(tmp)))
+                except IndexError:
+                    curline.append('%d/%d' % (0, entry.nbRuns()))
+                if any(numpy.isinf(data)) and numpy.sum(numpy.isnan(tmp) == False) == 15:
+                    set_trace()
+
+                table.append(curline[:])
+                extraeol.append('')
+
+            extraeol[-1] = r'\hline'
+        extraeol[-1] = ''
+
+        outputfile = os.path.join(outputdir, 'cmptable_%02dD.tex' % (d))
+        spec = 'c|' + 'l' * len(targetsOfInterest) + '|c'
+        res = tableLaTeX(table, spec=spec, extraeol=extraeol)
+        f = open(outputfile, 'w')
+        f.write(res)
+        f.close()
+        if verbose:
+            print "Table written in %s" % outputfile
+
 def main(dsList0, dsList1, outputdir, verbose=True):
+
     """Will loop over the functions, dimension and so on."""
 
     dictFunc0 = dsList0.dictByFunc()
@@ -115,8 +198,8 @@ def main(dsList0, dsList1, outputdir, verbose=True):
 
     for f in funcs:
         #replace dictFunc0[func] (a DataSetList) with a dictionary of DataSetList 
-        dictFunc0[f] = dictFunc0[func].dictByDim()
-        dictFunc1[f] = dictFunc1[func].dictByDim()
+        dictFunc0[f] = dictFunc0[f].dictByDim()
+        dictFunc1[f] = dictFunc1[f].dictByDim()
         #TODO: what if all functions were not tested for alg0 et alg1?
         #TODO: what if all dimensions were not tested for alg0 et alg1?
         dims = set.union(set(dictFunc0[f]), set(dictFunc1[f]))
@@ -127,6 +210,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                                                  dictFunc1[f][d][0])
             # Both dictFun[f][d] should be of length 1.
             tableofstrings = formatData(table, header, format, f)
+            set_trace()
             res = tableLaTeX(tableofstrings)
             f = open(outputfile, 'w')
             f.write(res)

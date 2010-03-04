@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
 from bbob_pproc import dataoutput, pprldistr
 from bbob_pproc.pproc import DataSetList, processInputArgs
-from bbob_pproc.comp2 import ppfig2, pprldistr2
+from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2
 from bbob_pproc.dataoutput import algPlotInfos
 
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
@@ -106,6 +106,13 @@ def usage():
 def main(argv=None):
     """Generates some outputs from BBOB experiment data sets of two algorithms.
 
+    If provided with some data, this should return many output files in the
+    folder 'cmp2data' needed for the compilation of the latex document
+    templateBBOBcmparticle.tex. These output files will contain performance
+    tables, performance scaling figures and empirical cumulative distribution
+    figures. On subsequent executions, new files will be added to the output
+    directory, overwriting existing older files in the process.
+
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not given,
     sys.argv is accessed.
@@ -135,11 +142,11 @@ def main(argv=None):
             quicken the post-processing since it loads only part of the pickle
             files.
 
-        --fig-only, --rld-only
+        --fig-only, --rld-only, --tab-only
 
             these options can be used to output respectively the ERT graphs
-            figures, run length distribution figures only. A combination of
-            these options results in no output.
+            figures, run length distribution figures or the comparison tables
+            only. Any combination of these options results in no output.
 
     Exceptions raised:
     Usage -- Gives back a usage message.
@@ -176,7 +183,7 @@ def main(argv=None):
             opts, args = getopt.getopt(argv, "hvo:",
                                        ["help", "output-dir", "noisy",
                                         "noise-free", "fig-only", "rld-only",
-                                        "verbose"])
+                                        "tab-only", "verbose"])
         except getopt.error, msg:
              raise Usage(msg)
 
@@ -186,6 +193,7 @@ def main(argv=None):
 
         isfigure = True
         isrldistr = True
+        istable = True
         isNoisy = False
         isNoiseFree = False # Discern noisy and noisefree data?
         verbose = False
@@ -202,8 +210,13 @@ def main(argv=None):
                 outputdir = a
             elif o == "--fig-only":
                 isrldistr = False
+                istable = False
             elif o == "--rld-only":
                 isfigure = False
+                istable = False
+            elif o == "--tab-only":
+                isfigure = False
+                isrldistr = False
             elif o == "--noisy":
                 isNoisy = True
             elif o == "--noise-free":
@@ -267,7 +280,7 @@ def main(argv=None):
         #for i, entry in enumerate(sortedAlgs): #Nota: key is sortedAlgs
             #print "Alg%d is: %s" % (i, entry)
 
-        if isfigure or isrldistr:
+        if isfigure or isrldistr or istable:
             if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
                 if verbose:
@@ -403,7 +416,10 @@ def main(argv=None):
 
             print "ECDF dashed-solid graphs done."
 
-        if isfigure or isrldistr:
+        if istable:
+            pptable2.main2(dsList0, dsList1, outputdir, verbose=verbose)
+
+        if isfigure or isrldistr or istable:
             print "Output data written to folder %s." % outputdir
 
     except Usage, err:

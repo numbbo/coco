@@ -58,41 +58,19 @@ import numpy
 from matplotlib import pyplot as plt
 from matplotlib import mlab as mlab
 
-from bbob_pproc import bootstrap
-from bbob_pproc.bestalg import BestAlgSet
+from bbob_pproc import bootstrap, bestalg
 from bbob_pproc.pptex import writeFEvals2
 
 evalf = None
 figformat = ('eps', 'pdf')
 f_thresh = 1.e-8
-bestalgentries = {}
-#bestalgfilepath = os.path.join(os.path.split(__file__)[0], 'bestalg')
-#for fun in range(1, 25)+range(101, 131):
-    #for D in [2, 3, 5, 10, 20, 40]:
-        #picklefilename = os.path.join(bestalgfilepath,
-                                      #'bestalg_f%03d_%02d.pickle.gz' % (fun, D))
-        ##TODO: what if file is not found?
-        #fid = gzip.open(picklefilename, 'r')
-        #bestalgentries[(D, fun)] = pickle.load(fid)
-        #fid.close()
-
-print "Loading best algorithm data from BBOB-2009."
-bestalgfilepath = os.path.split(__file__)[0]
-picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
-#TODO: what if file is not found?
-fid = gzip.open(picklefilename, 'r')
-bestalgentries = pickle.load(fid)
-fid.close()
-print "Done."
 
 def detERT(entry, funvals):
+    # could be more efficient given that funvals is sorted...
     res = []
     for f in funvals:
         idx = (entry.target<=f)
-        #set_trace()
         try:
-            #if numpy.isnan(entry.ert[idx][0]):
-                #set_trace()
             res.append(entry.ert[idx][0])
         except IndexError:
             res.append(numpy.inf)
@@ -130,32 +108,19 @@ def generateData(dsList, evals, CrE_A):
     D = set(i.dim for i in dsList).pop() # should have only one element
     #if D == 3:
        #set_trace()
+    if not bestalg.bestalgentries:
+        bestalg.loadBBOB2009()
 
     for fun, tmpdsList in dsList.dictByFunc().iteritems():
         entry = tmpdsList[0] # TODO: check for problems
 
-        # Load bestalgentry:
-        #picklefilename = os.path.join(bestalgfilepath,
-                                      #'bestalg_f%03d_%02d.pickle.gz' % (fun, D))
-        ##TODO: what if file is not found?
-        #fid = gzip.open(picklefilename, 'r')
-        #bestalgentry = pickle.load(fid)
-        #fid.close()
-        bestalgentry = bestalgentries[(D, fun)]
+        bestalgentry = bestalg.bestalgentries[(D, fun)]
 
         #ERT_A
         f_A = detf(entry, evals)
 
         ERT_best = detERT(bestalgentry, f_A)
         ERT_A = detERT(entry, f_A)
-        #runlengths = entry.generateRLData(f_A)
-        #for i, f in enumerate(f_A):
-            #tmp = numpy.isnan(runlengths)
-            #perc, allerts = bootstrap.drawSP(runlengths[i][tmp == False],
-                                             #entry.maxevals[tmp],
-                                             #percentiles=[0, 10, ,25, 50, 75, 90, 100],
-                                             #samplesize=100)
-            #res[fun] = perc / ERT_best[i]
         nextbestf = []
         for i in f_A:
             if i == 0.:
@@ -166,7 +131,6 @@ def generateData(dsList, evals, CrE_A):
                     nextbestf.append(tmp[0])
                 except IndexError:
                     nextbestf.append(i * 10.**(-0.2)) # TODO: this is a hack
-                    #set_trace()
 
         ERT_best_nextbestf = detERT(bestalgentry, nextbestf)
 
@@ -178,7 +142,6 @@ def generateData(dsList, evals, CrE_A):
 
         ERT_A = numpy.array(ERT_A)
         ERT_best = numpy.array(ERT_best)
-        #CrE_A = 0 #TODO: set!
         loss_A = numpy.exp(CrE_A) * ERT_A / ERT_best
         #set_trace()
         #if numpy.isnan(loss_A).any() or numpy.isinf(loss_A).any() or (loss_A == 0.).any():
@@ -187,7 +150,6 @@ def generateData(dsList, evals, CrE_A):
         #    #set_trace()
         res[fun] = loss_A
 
-        #set_trace()
     return res
 
 def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
