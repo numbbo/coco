@@ -284,7 +284,8 @@ def plotFVDistr(dataSetList, fvalueToReach, maxEvalsF, plotArgs={},
                 break
 
         tmp = j[1:].copy() / fvalueToReach[i.funcId]
-        tmp[tmp==0] = 1. # HACK
+        tmp[tmp<=0.] = 1.
+        # TODO: HACK, is almost ok since the xmin in the figure is 1
         x.extend(tmp)
         nn += i.nbRuns()
 

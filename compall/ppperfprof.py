@@ -141,7 +141,7 @@ def get_plot_args(args):
     """args is one dict element according to algorithmshortinfos
     """
 
-    if args['label'] in show_algorithms:
+    if not args.has_key('label') or args['label'] in show_algorithms:
         args['linewidth'] = 2
     elif len(show_algorithms) > 0:
         args['color'] = 'wheat'
@@ -228,7 +228,9 @@ def plotLegend(handles, maxval):
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
             for h in ys[j][k]:
-                if len(show_algorithms) == 0 or plt.getp(h, 'label') in show_algorithms: 
+                if (not plt.getp(h, 'label').startswith('_line') and
+                    (len(show_algorithms) == 0 or
+                     plt.getp(h, 'label') in show_algorithms)):
                     y = 0.02 + i * 0.96/(lh-1)
                     plt.plot((maxval, maxval*10), (j, y),
                              ls=plt.getp(h, 'ls'), color=plt.getp(h, 'color'),
@@ -358,9 +360,13 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
         #Get one element in the set of the algorithm description
         try:
             elem = set((i.algId, i.comment) for i in dictAlg[alg]).pop()
+            try:
+                tmp = plotArgs[elem]
+            except KeyError:
+                tmp = {}
             lines.append(plotPerfProf(numpy.array(data),
                          xlim, maxevals, order=(i, len(order)), CrE=CrE,
-                         kwargs=get_plot_args(plotArgs[elem]), ))
+                         kwargs=get_plot_args(tmp)))
         except KeyError:
             #No data
             pass

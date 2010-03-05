@@ -510,7 +510,11 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
 
                 tmp = set((i.algId, i.comment) for i in algentries)
                 if replacementLine and curline:
-                    algnames.append(writeLabels(algPlotInfos[tmp.pop()]['label']))
+                    try:
+                        tmp = algPlotInfos[tmp.pop()]['label']
+                    except KeyError:
+                        tmp = algentries[0].algId # Take the first reasonable one.
+                    algnames.append(writeLabels(tmp))
                     replacement.append(replacementLine)
                     table.append(curline)
 

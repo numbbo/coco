@@ -570,7 +570,7 @@ class DataSetList(list):
 
         return sorted
 
-def processInputArgs(args, plotInfo=None, verbose=True):
+def processInputArgs(args, verbose=True):
     """Process command line arguments into data useable by bbob_pproc scripts.
     Returns an instance of DataSetList, a list of algorithms from
     a list of strings representing file and folder names.
@@ -581,8 +581,6 @@ def processInputArgs(args, plotInfo=None, verbose=True):
     efficiency reasons.
     Keyword arguments:
       args -- list of string arguments for folder names
-      plotInfo -- a dictionary which associates a tuple (algId, comment) to
-                  a dictionary to be provided to matplotlib.pyplot.plot
       verbose -- bool controlling verbosity
 
     Returns: (dsList, sortedAlgs, dictAlg), where
@@ -614,13 +612,7 @@ def processInputArgs(args, plotInfo=None, verbose=True):
             #redundant information. Only, the process could be more efficient
             #if pickle files were in a whole other location.
             dsList.extend(tmpDsList)
-            #Find an appropriate name for the algorithm considered?
-            #could either refer to dataoutput.plotInfo['label'] or algId
-            #tmp = set((i.algId, i.comment) for i in tmpDsList)
-            #if not plotInfo is None:
-                #alg = plotInfo[tmp.pop()]
-            #else:
-                #alg = tmp.pop()[0]
+            #TODO: Find an appropriate name for the algorithm considered?
             alg = i
             sortedAlgs.append(alg)
             dictAlg[alg] = tmpDsList
