@@ -245,9 +245,7 @@ def main(argv=None):
                "data in folder %s" % outputdir)
         print "  This might take several minutes."
 
-        dsList, sortedAlgs, dictAlg = processInputArgs(args,
-                                                       plotInfo=algPlotInfos,
-                                                       verbose=verbose)
+        dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
 
         if not dsList:
             sys.exit()
@@ -257,6 +255,11 @@ def main(argv=None):
                 dictAlg[i] = dictAlg[i].dictByNoise().get('nzall', DataSetList())
             elif isNoiseFree and not isNoisy:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
+
+            tmp = set((j.algId, j.comment) for j in dictAlg[i])
+            for j in tmp:
+                if not dataoutput.isListed(j):
+                    dataoutput.updateAlgorithmInfo(j, verbose=verbose)
 
         for i in dsList:
             if not i.dim in (2, 3, 5, 10, 20):
@@ -301,6 +304,7 @@ def main(argv=None):
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
                     for k, t in dictTarget.iteritems():
+                        #set_trace()
                         ppperfprof.main(entries, target=t, order=sortedAlgs,
                                         plotArgs=algPlotInfos,
                                         outputdir=outputdir,
