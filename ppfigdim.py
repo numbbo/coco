@@ -301,7 +301,8 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             except IndexError:
                 bestalgdata.append(None)
                 
-        plt.plot(dimsBBOB, bestalgdata, figure=fig, color='wheat', zorder=-1)
+        plt.plot(dimsBBOB, bestalgdata, figure=fig, color='wheat', linewidth=10, zorder=-1)
+        plt.plot(dimsBBOB, bestalgdata, figure=fig, ls='', marker='d', markersize=25, color='wheat', zorder=-1)
 
         if displaynumber: #displayed only for the smallest valuesOfInterest
             a = fig.gca()
