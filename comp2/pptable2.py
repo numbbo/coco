@@ -16,7 +16,7 @@ from bbob_pproc import bestalg
 from bbob_pproc.pptex import tableLaTeX
 #from bbob_pproc import ranksumtest
 from bbob_pproc.bootstrap import ranksums
-from bbob_pproc.pplogloss import detERT
+#from bbob_pproc.pplogloss import detERT
 from bbob_pproc.pptex import writeFEvals2
 #try:
     #supersede this module own ranksums method
@@ -115,7 +115,7 @@ def formatData(table, header, format, fun):
 
     return tableStrings
 
-def main2(dsList0, dsList1, outputdir, verbose=True):
+def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
     """Generate comparison tables.
     One table per dimension...
     """
@@ -132,7 +132,7 @@ def main2(dsList0, dsList1, outputdir, verbose=True):
         header.append('$10^{%d}$' % (int(numpy.log10(i))))
     header.append(r'\#succ')
 
-    for d in (3, 5, 10, 20):
+    for d in dimsOfInterest: # TODO set as input arguments
         table = [header]
         extraeol = [r'\hline']
         dictFunc0 = dictDim0[d].dictByFunc()
@@ -142,7 +142,8 @@ def main2(dsList0, dsList1, outputdir, verbose=True):
         for f in sorted(funcs):
             bestalgentry = bestalg.bestalgentries[(d, f)]
             curline = ['$f_{%d}$ -- best 2009' % f]
-            bestalgdata = detERT(bestalgentry, targetsOfInterest)
+            bestalgdata = bestalgentry.detERT(targetsOfInterest)
+            bestalgevals = bestalgentry.detEvals(targetsOfInterest)
             for i in bestalgdata:
                 curline.append(writeFEvals2(i, 2))
             table.append(curline[:])
@@ -159,9 +160,18 @@ def main2(dsList0, dsList1, outputdir, verbose=True):
                     tmp = 'one'
                 curline = [r'\alg%s' % tmp]
 
-                data = detERT(entry, targetsOfInterest)
+                data = entry.detERT(targetsOfInterest)
+                evals = entry.detEvals(targetsOfInterest)
                 for i, j in enumerate(data):
-                    curline.append(writeFEvals2(float(j)/bestalgdata[i], 2))
+                    tableentry = writeFEvals2(float(j)/bestalgdata[i], 2)
+                    if not numpy.isinf(j):
+                        z, p = ranksums(bestalgevals[i], evals[i])
+                        nbtests = 1 # TODO?
+                        if (nbtests * p) < 0.05:
+                            nbstars = -numpy.ceil(numpy.log10(nbtests * p))
+                            tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
+                            tableentry += '$^{' + tmp + '}$'
+                    curline.append(tableentry)
 
                 tmp = entry.evals[entry.evals[:, 0] <= 1e-8, 1:] # set as global variable?
                 try:
@@ -170,8 +180,8 @@ def main2(dsList0, dsList1, outputdir, verbose=True):
                                               len(tmp)))
                 except IndexError:
                     curline.append('%d/%d' % (0, entry.nbRuns()))
-                if any(numpy.isinf(data)) and numpy.sum(numpy.isnan(tmp) == False) == 15:
-                    set_trace()
+                #if any(numpy.isinf(data)) and numpy.sum(numpy.isnan(tmp) == False) == 15:
+                    #set_trace()
 
                 table.append(curline[:])
                 extraeol.append('')
@@ -180,7 +190,7 @@ def main2(dsList0, dsList1, outputdir, verbose=True):
         extraeol[-1] = ''
 
         outputfile = os.path.join(outputdir, 'cmptable_%02dD.tex' % (d))
-        spec = 'c|' + 'l' * len(targetsOfInterest) + '|c'
+        spec = '@{}c@{}|' + '@{}l@{}' * len(targetsOfInterest) + '|@{}c@{}'
         res = tableLaTeX(table, spec=spec, extraeol=extraeol)
         f = open(outputfile, 'w')
         f.write(res)

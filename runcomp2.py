@@ -90,6 +90,8 @@ rldValsOfInterest = ({1: 10, 2: 10, 3: 10, 4: 10, 5: 10, 6: 10, 7: 10, 8: 10,
                        130: 1e-08})
 #Put backward to have the legend in the same order as the lines.
 
+tabDimsOfInterest = (5, 20)
+
 #CLASS DEFINITIONS
 
 class Usage(Exception):
@@ -416,7 +418,8 @@ def main(argv=None):
             print "ECDF dashed-solid graphs done."
 
         if istable:
-            pptable2.main2(dsList0, dsList1, outputdir, verbose=verbose)
+            pptable2.main2(dsList0, dsList1, tabDimsOfInterest, outputdir,
+                           verbose=verbose)
 
         if isfigure or isrldistr or istable:
             print "Output data written to folder %s." % outputdir

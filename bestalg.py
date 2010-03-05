@@ -218,6 +218,29 @@ class BestAlgSet:
 
         return dictinstance
 
+    def detERT(self, targets):
+        res = []
+        for f in targets:
+            idx = (self.target<=f)
+            try:
+                res.append(self.ert[idx][0])
+            except IndexError:
+                res.append(numpy.inf)
+        return res
+
+    def detEvals(self, targets):
+        res = []
+        for f in targets:
+            lines = list(i for i in self.evals if i[0] <= f)
+            try:
+                res.append(lines[0][1:])
+            except IndexError:
+                #res.append() # TODO!!!
+                res.append([numpy.nan])
+                pass
+                #res.append(numpy.inf)
+        return res
+
 #FUNCTION DEFINITIONS
 
 def loadBBOB2009():
