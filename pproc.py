@@ -336,6 +336,28 @@ class DataSet:
 
         return res # list(res[i] for i in inputtarget)
 
+    def detERT(self, targets):
+        res = []
+        for f in targets:
+            idx = (self.target<=f)
+            try:
+                res.append(self.ert[idx][0])
+            except IndexError:
+                res.append(numpy.inf)
+        return res
+
+    def detEvals(self, targets):
+        res = []
+        for f in targets:
+            idx = (self.target<=f)
+            try:
+                res.append(self.evals[idx, 1:][0])
+            except IndexError:
+                res.append(numpy.array(self.nbRuns()*[numpy.nan]))
+                pass
+                #res.append(numpy.inf)
+        return res
+
 class DataSetList(list):
     """Set of instances of DataSet objects, implement some useful slicing
     functions.
