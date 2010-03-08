@@ -78,6 +78,7 @@ class BestAlgSet:
         d = d.pop()
         rmkeys = []
         dictMaxEvals = {}
+        dictFinalFunVals = {}
         for alg, i in dictAlg.iteritems():
             if len(i) != 1:
                 # Special case could occur?
@@ -90,6 +91,7 @@ class BestAlgSet:
                 dictAlg[alg] = i[0] # Assign the first element as value for alg
                 #TODO: check it was not assigned already.
                 dictMaxEvals[alg] = i[0].maxevals
+                dictFinalFunVals[alg] = i[0].finalfunvals
         for i in rmkeys:
             del dictAlg[i]
 
@@ -140,8 +142,10 @@ class BestAlgSet:
         #TODO: do some testings.
         #TODO: resds should be an instance of DataSet
         self.evals = resDataSet
-        # not a numpy array but a list of arrays because they may not all be of the same size.
+        # evals is not a numpy array but a list of arrays because they may not
+        # all be of the same size.
         self.maxevals = dictMaxEvals
+        self.finalfunvals = dictFinalFunVals
         self.dim = d
         self.funcId = f
         # What if some algorithms don't have the same number of runs
@@ -230,16 +234,18 @@ class BestAlgSet:
 
     def detEvals(self, targets):
         res = []
+        res2 = []
         for f in targets:
-            lines = list(i for i in self.evals if i[0] <= f)
-            try:
-                res.append(lines[0][1:])
-            except IndexError:
-                #res.append() # TODO!!!
-                res.append([numpy.nan])
-                pass
-                #res.append(numpy.inf)
-        return res
+            tmp = numpy.array([numpy.nan])
+            tmp2 = None
+            for i, line in enumerate(self.evals):
+                if line[0] <= f:
+                    tmp = line[1:]
+                    tmp2 = self.algs[i]
+                    break
+            res.append(tmp)
+            res2.append(tmp2)
+        return res, res2
 
 #FUNCTION DEFINITIONS
 
@@ -301,9 +307,7 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        dsList, sortedAlgs, dictAlg = processInputArgs(args,
-                                                       plotInfo=algPlotInfos,
-                                                       verbose=verbose)
+        dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
 
         #set_trace()
         if not os.path.exists(outputdir):
@@ -318,9 +322,13 @@ def main(argv=None):
                 picklefilename = os.path.join(outputdir,
                                              'bestalg_f%03d_%02d.pickle' % (f, d))
                 fid = open(picklefilename, 'w')
-                pickle.dump(tmp, fid)
+                pickle.dump(tmp, fid, 2)
                 fid.close()
-                res[(f, d)] = tmp
+                res[(d, f)] = tmp
+        picklefilename = os.path.join(outputdir, 'bestalg.pickle')
+        fid = open(picklefilename, 'w')
+        pickle.dump(res, fid, 2)
+        fid.close()
 
         #dataoutput.outputPickle(resDsList)
 
