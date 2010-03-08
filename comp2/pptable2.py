@@ -28,6 +28,7 @@ from bbob_pproc.pptex import writeFEvals2
 from pdb import set_trace
 
 targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # Needs to be sorted
+targetf = 1e-8
 
 #Get benchmark short infos: put this part in a function?
 funInfos = {}
@@ -129,8 +130,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
 
     header = [r'$\Delta f$']
     for i in targetsOfInterest:
-        header.append('$10^{%d}$' % (int(numpy.log10(i))))
-    header.append(r'\#succ')
+        header.append(r'\multicolumn{2}{c}{$10^{%d}$}' % (int(numpy.log10(i))))
+    header.append(r'\multicolumn{2}{|l}{\#succ}')
 
     for d in dimsOfInterest: # TODO set as input arguments
         table = [header]
@@ -141,11 +142,28 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
 
         for f in sorted(funcs):
             bestalgentry = bestalg.bestalgentries[(d, f)]
-            curline = ['$f_{%d}$ -- best 2009' % f]
+            curline = [r'${\bf f_{%d}}$ -- best 2009' % f]
             bestalgdata = bestalgentry.detERT(targetsOfInterest)
-            bestalgevals = bestalgentry.detEvals(targetsOfInterest)
+            bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)
+
             for i in bestalgdata:
-                curline.append(writeFEvals2(i, 2))
+                curline.append(r'\multicolumn{2}{c}{%s}' % writeFEvals2(i, 2))
+            line0 = []
+            for i, j in enumerate(bestalgevals):
+                line0.append(numpy.power(j, -1.))
+                #if bestalgalgs[i] is None:
+                    #set_trace()
+                line0[i][numpy.isnan(line0[i])] = -bestalgentry.finalfunvals[bestalgalgs[i]][numpy.isnan(line0[i])]
+
+            tmp = bestalgentry.detEvals([targetf])[0][0]
+            if not tmp is numpy.array([numpy.nan]):
+                #set_trace()
+                curline.append('%d' % (numpy.sum(numpy.isnan(tmp) == False)))
+                curline.append('/%d' % len(tmp))
+            else:
+                curline.append('%d' % 0)
+                curline.append('/%d' % 0)
+
             table.append(curline[:])
             extraeol.append('')
 
@@ -164,33 +182,53 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
                 evals = entry.detEvals(targetsOfInterest)
                 for i, j in enumerate(data):
                     tableentry = writeFEvals2(float(j)/bestalgdata[i], 2)
+                    if tableentry.find('e') > -1:
+                        tableentry = r'\multicolumn{2}{c}{%s}' % tableentry
+                    else:
+                        if tableentry.find('.') > -1:
+                            tableentry = ' & .'.join(tableentry.split('.'))
+                        else:
+                            tableentry += '&'
+
                     if not numpy.isinf(j):
-                        z, p = ranksums(bestalgevals[i], evals[i])
+                        line1 = numpy.power(evals[i], -1.)
+                        line1[numpy.isnan(line1)] = -entry.finalfunvals[numpy.isnan(line1)]
+
+                        z, p = ranksums(line0[i], line1)
                         nbtests = 1 # TODO?
                         if (nbtests * p) < 0.05:
                             nbstars = -numpy.ceil(numpy.log10(nbtests * p))
-                            tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
-                            tableentry += '$^{' + tmp + '}$'
+                            #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
+                            if nbstars > 0:
+                                tmp = r'\star'
+                                if nbstars > 1:
+                                    tmp += str(int(nbstars))
+                                if tableentry.endswith('}'):
+                                    tableentry = tableentry[:-1]
+                                    tableentry += '$^{' + tmp + '}$}'
+                                else:
+                                    tableentry += '$^{' + tmp + '}$'
+
                     curline.append(tableentry)
 
-                tmp = entry.evals[entry.evals[:, 0] <= 1e-8, 1:] # set as global variable?
+                tmp = entry.evals[entry.evals[:, 0] <= targetf, 1:] # set as global variable?
                 try:
                     tmp = tmp[0]
-                    curline.append('%d/%d' % (numpy.sum(numpy.isnan(tmp) == False),
-                                              len(tmp)))
+                    curline.append('%d' % numpy.sum(numpy.isnan(tmp) == False))
                 except IndexError:
-                    curline.append('%d/%d' % (0, entry.nbRuns()))
+                    curline.append('%d' % 0)
+                curline.append('/%d' % entry.nbRuns())
                 #if any(numpy.isinf(data)) and numpy.sum(numpy.isnan(tmp) == False) == 15:
                     #set_trace()
 
                 table.append(curline[:])
                 extraeol.append('')
 
-            extraeol[-1] = r'\hline'
-        extraeol[-1] = ''
+            #extraeol[-1] = r'\hline'
+        #extraeol[-1] = ''
 
         outputfile = os.path.join(outputdir, 'cmptable_%02dD.tex' % (d))
-        spec = '@{}c@{}|' + '@{}l@{}' * len(targetsOfInterest) + '|@{}c@{}'
+        spec = '@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         res = tableLaTeX(table, spec=spec, extraeol=extraeol)
         f = open(outputfile, 'w')
         f.write(res)
