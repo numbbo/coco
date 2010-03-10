@@ -142,7 +142,7 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
 
         for f in sorted(funcs):
             bestalgentry = bestalg.bestalgentries[(d, f)]
-            curline = [r'${\bf f_{%d}}$ -- best 2009' % f]
+            curline = [r'${\bf f_{%d}}$' % f]
             bestalgdata = bestalgentry.detERT(targetsOfInterest)
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)
 
@@ -172,11 +172,12 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
                     entry = entries[f][0] # take the first element
                 except KeyError:
                     continue
-                if nb == 0:
-                    tmp = 'zero'
-                else:
-                    tmp = 'one'
-                curline = [r'\alg%s' % tmp]
+                #if nb == 0:
+                    #tmp = 'zero'
+                #else:
+                    #tmp = 'one'
+                #curline = [r'\alg%s' % tmp]
+                curline = [r'Alg%d' % nb]
 
                 data = entry.detERT(targetsOfInterest)
                 evals = entry.detEvals(targetsOfInterest)
@@ -190,24 +191,23 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
                         else:
                             tableentry += '&'
 
-                    if not numpy.isinf(j):
-                        line1 = numpy.power(evals[i], -1.)
-                        line1[numpy.isnan(line1)] = -entry.finalfunvals[numpy.isnan(line1)]
+                    line1 = numpy.power(evals[i], -1.)
+                    line1[numpy.isnan(line1)] = -entry.finalfunvals[numpy.isnan(line1)]
 
-                        z, p = ranksums(line0[i], line1)
-                        nbtests = 1 # TODO?
-                        if (nbtests * p) < 0.05:
-                            nbstars = -numpy.ceil(numpy.log10(nbtests * p))
-                            #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
-                            if nbstars > 0:
-                                tmp = r'\star'
-                                if nbstars > 1:
-                                    tmp += str(int(nbstars))
-                                if tableentry.endswith('}'):
-                                    tableentry = tableentry[:-1]
-                                    tableentry += '$^{' + tmp + '}$}'
-                                else:
-                                    tableentry += '$^{' + tmp + '}$'
+                    z, p = ranksums(line0[i], line1)
+                    nbtests = 1 # TODO?
+                    if (nbtests * p) < 0.05:
+                        nbstars = -numpy.ceil(numpy.log10(nbtests * p))
+                        #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
+                        if nbstars > 0:
+                            tmp = r'\star'
+                            if nbstars > 1:
+                                tmp += str(int(nbstars))
+                            if tableentry.endswith('}'):
+                                tableentry = tableentry[:-1]
+                                tableentry += '$^{' + tmp + '}$}'
+                            else:
+                                tableentry += '$^{' + tmp + '}$'
 
                     curline.append(tableentry)
 
@@ -224,8 +224,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
                 table.append(curline[:])
                 extraeol.append('')
 
-            #extraeol[-1] = r'\hline'
-        #extraeol[-1] = ''
+            extraeol[-1] = r'\hline'
+        extraeol[-1] = ''
 
         outputfile = os.path.join(outputdir, 'cmptable_%02dD.tex' % (d))
         spec = '@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'

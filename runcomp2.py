@@ -40,7 +40,8 @@ instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
 figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)
 figDimsOfInterest = (2, 3, 5, 10, 20, 40)
 
-rldDimsOfInterest = (2, 3, 5, 10, 20, 40)
+#rldDimsOfInterest = (2, 3, 5, 10, 20, 40)
+rldDimsOfInterest = (5, 10, 20, 40)
 #rldValsOfInterest = (1e-4, 1e-8)
 #rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 rldValsOfInterest = ({1: 10, 2: 10, 3: 10, 4: 10, 5: 10, 6: 10, 7: 10, 8: 10,
