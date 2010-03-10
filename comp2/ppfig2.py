@@ -49,7 +49,7 @@ except IOError, (errno, strerror):
           'Titles in scaling figures will not be displayed.'
 
 #TODO improve interface.
-def customizeFigure(figHandle, figureName=None, xmin=None, title='',
+def beautify(figHandle, figureName=None, xmin=None, title='',
                     fileFormat=('pdf','eps'), legend=True, locLegend='best',
                     verbose=True):
     """ Customize a figure by adding a legend, axis label, etc. At the
@@ -79,6 +79,7 @@ def customizeFigure(figHandle, figureName=None, xmin=None, title='',
     # We are setting xmin
     if xmin:
         plt.xlim(xmin=xmin)
+    plt.xlim(xmax=1000)
 
     axisHandle.invert_xaxis()
 
@@ -95,11 +96,23 @@ def customizeFigure(figHandle, figureName=None, xmin=None, title='',
     for i in tmp:
         tmp2.append('%d' % round(numpy.log10(i)))
     axisHandle.set_xticklabels(tmp2)
+    ymin, ymax = plt.ylim()
+    ybnd = max(1./ymin, ymax)
+    plt.ylim(1./ybnd, ybnd)
+
     tmp = axisHandle.get_yticks()
+    #set_trace()
     tmp2 = []
     for i in tmp:
         tmp2.append('%d' % round(numpy.log10(i)))
     axisHandle.set_yticklabels(tmp2)
+
+    tmp = axisHandle.get_yticks(minor=True)
+    #Hack:
+    tmp[tmp<1] = sorted(1/(tmp[tmp<1]*numpy.power(10, -2*numpy.floor(numpy.log10(tmp[tmp<1]))-1)))
+    tmp = tmp[tmp<ybnd] # TODO: watch this...
+    tmp = tmp[tmp>1./ybnd] # TODO: watch this...
+    axisHandle.set_yticks(tmp, minor=True)
 
     # Legend
     if legend:
@@ -402,9 +415,14 @@ def generatePlot2(dataset0, dataset1, i, dim, minfvalue=None, nbtests=1):
         h = plt.plot((plotdata[-1, 0], ), (plotdata[-1, 1], ),
                      marker=markers[i], markersize=6*linewidth,
                      markeredgewidth=linewidth, markeredgecolor=colors[i],
-                     markerfacecolor='None', color='w')
+                     markerfacecolor='None', color=colors[i])
 
         handles.extend(h)
+
+    #for the legend
+    plt.plot((plotdata[-1, 0], ), (plotdata[-1, 1], ),
+             marker=markers[i], markeredgecolor=colors[i],
+             markerfacecolor='None', color=colors[i], label='%2d-D' % dim)
 
     # At this point one algorithm stopped.
     # Straight line for until the second algorithm stops
@@ -523,8 +541,9 @@ def annotate(annotations, minfvalue):
             ytmp = [a["coord"][1]] * nbstars
             try:
                 h = plt.plot(xtmp, ytmp, marker='*', ls='', color='w',
-                             markersize=2.5*linewidth, markeredgecolor='k',
-                             zorder=20, markeredgewidth = 0.2 * linewidth)
+                             markersize=5*linewidth, markeredgecolor='k',
+                             markerfacecolor='None',
+                             zorder=20, markeredgewidth = 0.4 * linewidth)
             except KeyError:
                 #Version problem
                 h = plt.plot(xtmp, ytmp, marker='+', ls='', color='w',
@@ -561,7 +580,7 @@ def annotate(annotations, minfvalue):
     for i, a in enumerate(annotations):
         coords = annotcoords[i]
         handles.append(plt.text(coords[0], coords[1],
-                       a["label"], fontsize=10,
+                       a["label"], fontsize=15,
                        horizontalalignment=a["ha"], verticalalignment=a["va"]))
 
     return handles
@@ -578,46 +597,49 @@ def main(dsList0, dsList1, outputdir, minfvalue = 1e-8, verbose=True):
     dictFun0 = dsList0.dictByFunc()
     dictFun1 = dsList1.dictByFunc()
 
-    for fun in set.union(set(dictFun0), set(dictFun1)):
+    for func in set.union(set(dictFun0), set(dictFun1)):
         annotations = []
         try:
-            dictDim0 = dictFun0[fun].dictByDim()
-            dictDim1 = dictFun1[fun].dictByDim()
+            dictDim0 = dictFun0[func].dictByDim()
+            dictDim1 = dictFun1[func].dictByDim()
         except KeyError:
-            txt = ("Data on function f%d could not be found for " % (fun) +
+            txt = ("Data on function f%d could not be found for " % (func) +
                    "both algorithms.")
             warnings.warn(txt)
             continue
         if isBenchmarkinfosFound:
-            title = funInfos[fun]
+            title = funInfos[func]
         else:
             title = ''
 
-        filename = os.path.join(outputdir,'ppcmpfig_f%d' % (fun))
+        filename = os.path.join(outputdir,'ppcmpfig_f%d' % (func))
         fig = plt.figure()
-        dims = sorted(set.union(set(dictDim0), set(dictDim1)))
-        for i, dim in enumerate(dims):
+        dims = sorted(set.intersection(set(dictDim0), set(dictDim1)))
+        #set_trace()
+        for i, dim in enumerate((2, 3, 5, 10, 20, 40)):
             try:
-                if len(dictDim0[dim]) != 1 or len(dictDim1[dim]) != 1:
-                    warnings.warn('Could not find some data for f%d in %d-D.'
-                                  % (fun, dim))
-                    continue
+                dataset0 = dictDim0[dim][0]
+                dataset1 = dictDim1[dim][0]
+                #if len(dictDim0[dim]) != 1 or len(dictDim1[dim]) != 1:
+                    #warnings.warn('Could not find some data for f%d in %d-D.'
+                                  #% (fun, dim))
+                    #continue
             except KeyError:
-                warnings.warn('Could not find some data for f%d in %d-D.'
-                              % (fun, dim))
+                #warnings.warn('Could not find some data for f%d in %d-D.'
+                              #% (fun, dim))
                 continue
 
-            dataset0 = dictDim0[dim][0]
-            dataset1 = dictDim1[dim][0]
             # TODO: warn if there are not one element in each of those dictionaries
             h, a = generatePlot(dataset0, dataset1, i, dim, minfvalue, len(dims))
             annotations.append(a)
 
         annotate(annotations, minfvalue)
-        #legend = True # if func in (1, 24, 101, 130):
-        customizeFigure(fig, filename, minfvalue, title=title,
+        legend = False
+        if func in (1, 24, 101, 130):
+            legend = True
+        beautify(fig, filename, minfvalue, title=title,
                         fileFormat=figformat,
-                        legend=False, locLegend='best', verbose=verbose)
+                        legend=legend, locLegend='best', verbose=verbose)
         #for i in h:
             #plt.setp(i,'color',colors[dim])
         #h = ppfig.createFigure(entry.arrayFullTab[:,[0,medianindex]], fig)
