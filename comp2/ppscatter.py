@@ -19,8 +19,8 @@ from matplotlib import pyplot as plt
 from bbob_pproc import readalign
 
 figFormat = ('eps', 'pdf')
-colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')
-markers = ('o', 'v', 's', '+', 'x', 'D')
+colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
+markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 
 def beautify():
     a = plt.gca()

@@ -124,8 +124,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     dictDim0 = dsList0.dictByDim()
     dictDim1 = dsList1.dictByDim()
 
-    alg0 = set(i[0] for i in dsList0.dictByAlg().keys()).pop()[0:3] + '-0'
-    alg1 = set(i[0] for i in dsList1.dictByAlg().keys()).pop()[0:3] + '-1'
+    alg0 = '0:\:' + set(i[0] for i in dsList0.dictByAlg().keys()).pop()[0:3]
+    alg1 = '1:\:' + set(i[0] for i in dsList1.dictByAlg().keys()).pop()[0:3]
 
     if info:
         info = '_' + info
