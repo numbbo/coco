@@ -20,8 +20,10 @@ from bbob_pproc.bootstrap import ranksums
     #from bbob_pproc.bootstrap import ranksums
     #pass
 
-colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')
-markers = ('o', 'v', 's', '+', 'x', 'D')
+# colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')
+# markers = ('o', 'v', 's', '+', 'x', 'D')
+colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
+markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 linewidth = 3
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
