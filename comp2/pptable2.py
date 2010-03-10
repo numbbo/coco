@@ -134,7 +134,7 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     header = [r'$\Delta f$']
     for i in targetsOfInterest:
         header.append(r'\multicolumn{2}{c}{$10^{%d}$}' % (int(numpy.log10(i))))
-    header.append(r'\multicolumn{2}{|l}{\#succ}')
+    header.append(r'\multicolumn{2}{|@{}l}{\#succ}')
 
     for d in dimsOfInterest: # TODO set as input arguments
         table = [header]
