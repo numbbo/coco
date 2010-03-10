@@ -159,10 +159,10 @@ def main(argv=None):
 
     * Calling the runcomp2.py interface from the command line:
 
-        $ python bbob_pproc/runcomp2.py -v CMA-ES RANDOMSEARCH
+        $ python bbob_pproc/runcomp2.py -v Alg0-baseline Alg1-of-interest
 
-    will post-process the data of folder CMA-ES and RANDOMSEARCH. The
-    result will appear in folder cmp2data. The -v option adds verbosity.
+    will post-process the data from folders Alg0-baseline and Alg1-of-interest. 
+    The result will appear in folder cmp2data. The -v option adds verbosity.
 
     * From the python interactive shell (requires that the path to this
       package is in python search path):
