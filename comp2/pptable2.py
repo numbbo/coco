@@ -124,6 +124,9 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     dictDim0 = dsList0.dictByDim()
     dictDim1 = dsList1.dictByDim()
 
+    alg0 = set(i[0] for i in dsList0.dictByAlg().keys()).pop()[0:3] + '-0'
+    alg1 = set(i[0] for i in dsList1.dictByAlg().keys()).pop()[0:3] + '-1'
+
     if info:
         info = '_' + info
 
@@ -133,8 +136,13 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
     header = [r'$\Delta f$']
     for i in targetsOfInterest:
+<<<<<<< .mine
+        header.append(r'\multicolumn{2}{@{}c@{}}{$10^{%d}$}' % (int(numpy.log10(i))))
+    header.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
+=======
         header.append(r'\multicolumn{2}{c}{$10^{%d}$}' % (int(numpy.log10(i))))
     header.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
+>>>>>>> .r1881
 
     for d in dimsOfInterest: # TODO set as input arguments
         table = [header]
@@ -150,8 +158,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)
 
             for i in bestalgdata[:-1]:
-                curline.append(r'\multicolumn{2}{c}{%s}' % writeFEvals2(i, 2))
-            curline.append(r'\multicolumn{2}{c|}{%s}' % writeFEvals2(bestalgdata[-1], 2))
+                curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % writeFEvals2(i, 2))
+            curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}' % writeFEvals2(bestalgdata[-1], 2))
             line0 = []
             for i, j in enumerate(bestalgevals):
                 if bestalgalgs[i] is None:
@@ -162,13 +170,10 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                 line0.append(tmp)
 
             tmp = bestalgentry.detEvals([targetf])[0][0]
-            if not tmp is numpy.array([numpy.nan]):
-                #set_trace()
-                curline.append('%d' % (numpy.sum(numpy.isnan(tmp) == False)))
+            tmp2 = numpy.sum(numpy.isnan(tmp) == False)                
+            curline.append('%d' % (tmp2))
+            if tmp2 > 0:
                 curline.append('/%d' % len(tmp))
-            else:
-                curline.append('%d' % 0)
-                curline.append('/%d' % 0)
 
             table.append(curline[:])
             extraeol.append('')
@@ -178,14 +183,13 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     entry = entries[f][0] # take the first element
                 except KeyError:
                     continue
-                #if nb == 0:
-                    #tmp = 'zero'
-                #else:
-                    #tmp = 'one'
-                #curline = [r'\alg%s' % tmp]
+                if nb == 0:
+                    tmp = 'zero'
+                else:
+                    tmp = 'one'
+                curline = [r'\alg%sshort' % tmp]
                 #curline = [r'Alg%d' % nb]
-                curline = [r'%.3s%d' % (entry.algId, nb)]
-
+                #curline = [r'%.3s%d' % (entry.algId, nb)]
 
                 data = entry.detERT(targetsOfInterest)
                 evals = entry.detEvals(targetsOfInterest)
@@ -193,13 +197,13 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     #if numpy.isnan(float(j)/bestalgdata[i]):
                     #    set_trace()
                     if numpy.isinf(bestalgdata[i]):
-                        tableentry = r'\multicolumn{2}{c}{\textit{%s}}' % writeFEvals2(float(j), 2)
+                        tableentry = r'\multicolumn{2}{@{}c@{}}{\textit{%s}}' % writeFEvals2(float(j), 2)
                     else:
                         # Formatting
                         tableentry = writeFEvals2(float(j)/bestalgdata[i], 2)
     
                         if tableentry.find('e') > -1:
-                            tableentry = r'\multicolumn{2}{c}{%s}' % tableentry
+                            tableentry = r'\multicolumn{2}{@{}c@{}}{%s}' % tableentry
                         else:
                             if tableentry.find('.') > -1:
                                 tableentry = ' & .'.join(tableentry.split('.'))
@@ -244,7 +248,9 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
         outputfile = os.path.join(outputdir, 'cmptable_%02dD%s.tex' % (d, info))
         spec = '@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
-        res = tableLaTeX(table, spec=spec, extraeol=extraeol)
+        res = r'\providecommand{\algzeroshort}{%s}' % alg0 + '\n'
+        res += r'\providecommand{\algoneshort}{%s}' % alg1 + '\n'        
+        res += tableLaTeX(table, spec=spec, extraeol=extraeol)
         f = open(outputfile, 'w')
         f.write(res)
         f.close()
