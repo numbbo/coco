@@ -116,13 +116,16 @@ def formatData(table, header, format, fun):
 
     return tableStrings
 
-def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
+def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     """Generate comparison tables.
     One table per dimension...
     """
 
     dictDim0 = dsList0.dictByDim()
     dictDim1 = dsList1.dictByDim()
+
+    if info:
+        info = '_' + info
 
     dims = set.intersection(set(dictDim0.keys()), set(dictDim1.keys()))
     if not bestalg.bestalgentries:
@@ -146,14 +149,17 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
             bestalgdata = bestalgentry.detERT(targetsOfInterest)
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)
 
-            for i in bestalgdata:
+            for i in bestalgdata[:-1]:
                 curline.append(r'\multicolumn{2}{c}{%s}' % writeFEvals2(i, 2))
+            curline.append(r'\multicolumn{2}{c|}{%s}' % writeFEvals2(bestalgdata[-1], 2))
             line0 = []
             for i, j in enumerate(bestalgevals):
-                line0.append(numpy.power(j, -1.))
-                #if bestalgalgs[i] is None:
-                    #set_trace()
-                line0[i][numpy.isnan(line0[i])] = -bestalgentry.finalfunvals[bestalgalgs[i]][numpy.isnan(line0[i])]
+                if bestalgalgs[i] is None:
+                    tmp = -bestalgentry.finalfunvals[bestalgentry.algs[-1]]
+                else:
+                    tmp = numpy.power(j, -1.)
+                    tmp[numpy.isnan(tmp)] = -bestalgentry.finalfunvals[bestalgalgs[i]][numpy.isnan(tmp)]
+                line0.append(tmp)
 
             tmp = bestalgentry.detEvals([targetf])[0][0]
             if not tmp is numpy.array([numpy.nan]):
@@ -177,19 +183,28 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
                 #else:
                     #tmp = 'one'
                 #curline = [r'\alg%s' % tmp]
-                curline = [r'Alg%d' % nb]
+                #curline = [r'Alg%d' % nb]
+                curline = [r'%.3s%d' % (entry.algId, nb)]
+
 
                 data = entry.detERT(targetsOfInterest)
                 evals = entry.detEvals(targetsOfInterest)
                 for i, j in enumerate(data):
-                    tableentry = writeFEvals2(float(j)/bestalgdata[i], 2)
-                    if tableentry.find('e') > -1:
-                        tableentry = r'\multicolumn{2}{c}{%s}' % tableentry
+                    #if numpy.isnan(float(j)/bestalgdata[i]):
+                    #    set_trace()
+                    if numpy.isinf(bestalgdata[i]):
+                        tableentry = r'\multicolumn{2}{c}{\textit{%s}}' % writeFEvals2(float(j), 2)
                     else:
-                        if tableentry.find('.') > -1:
-                            tableentry = ' & .'.join(tableentry.split('.'))
+                        # Formatting
+                        tableentry = writeFEvals2(float(j)/bestalgdata[i], 2)
+    
+                        if tableentry.find('e') > -1:
+                            tableentry = r'\multicolumn{2}{c}{%s}' % tableentry
                         else:
-                            tableentry += '&'
+                            if tableentry.find('.') > -1:
+                                tableentry = ' & .'.join(tableentry.split('.'))
+                            else:
+                                tableentry += '&'
 
                     line1 = numpy.power(evals[i], -1.)
                     line1[numpy.isnan(line1)] = -entry.finalfunvals[numpy.isnan(line1)]
@@ -227,7 +242,7 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
             extraeol[-1] = r'\hline'
         extraeol[-1] = ''
 
-        outputfile = os.path.join(outputdir, 'cmptable_%02dD.tex' % (d))
+        outputfile = os.path.join(outputdir, 'cmptable_%02dD%s.tex' % (d, info))
         spec = '@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         res = tableLaTeX(table, spec=spec, extraeol=extraeol)
         f = open(outputfile, 'w')
@@ -236,13 +251,16 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, verbose=True):
         if verbose:
             print "Table written in %s" % outputfile
 
-def main(dsList0, dsList1, outputdir, verbose=True):
+def main(dsList0, dsList1, outputdir, info='', verbose=True):
 
     """Will loop over the functions, dimension and so on."""
 
     dictFunc0 = dsList0.dictByFunc()
     dictFunc1 = dsList1.dictByFunc()
     funcs = set.union(set(dictFunc0), set(dictFunc1))
+
+    if info:
+        info = '_' + info
 
     for f in funcs:
         #replace dictFunc0[func] (a DataSetList) with a dictionary of DataSetList 
@@ -252,8 +270,8 @@ def main(dsList0, dsList1, outputdir, verbose=True):
         #TODO: what if all dimensions were not tested for alg0 et alg1?
         dims = set.union(set(dictFunc0[f]), set(dictFunc1[f]))
         for d in dims:
-            outputfile = os.path.join(outputdir, 'cmptable_f%02d_%02dD'
-                                                 % (f, d))
+            outputfile = os.path.join(outputdir, 'cmptable_f%02d_%02dD%s'
+                                                 % (f, d, info))
             table, header, format = generateData(dictFunc0[f][d][0],
                                                  dictFunc1[f][d][0])
             # Both dictFun[f][d] should be of length 1.

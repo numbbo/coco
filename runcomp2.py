@@ -108,7 +108,7 @@ def usage():
 def main(argv=None):
     """Generates some outputs from BBOB experiment data sets of two algorithms.
 
-    If provided with some data, this should return many output files in the
+    Provided with some data, this routine outputs figure and TeX files in the
     folder 'cmp2data' needed for the compilation of the latex document
     templateBBOBcmparticle.tex. These output files will contain performance
     tables, performance scaling figures, scatter plot figures and empirical
@@ -161,8 +161,10 @@ def main(argv=None):
 
         $ python bbob_pproc/runcomp2.py -v Alg0-baseline Alg1-of-interest
 
-    will post-process the data from folders Alg0-baseline and Alg1-of-interest. 
-    The result will appear in folder cmp2data. The -v option adds verbosity.
+    will post-process the data from folders Alg0-baseline and Alg1-of-interest,
+    the former containing data for the reference algorithm (zero-th) and the
+    latter data for the algorithm of concern (first). The results will be
+    output in folder cmp2data. The -v option adds verbosity.
 
     * From the python interactive shell (requires that the path to this
       package is in python search path):
@@ -288,6 +290,12 @@ def main(argv=None):
         dsList1 = dictAlg[sortedAlgs[1]]
         if not dsList1:
             raise Usage('Could not find data for algorithm %s.' % (sortedAlgs[0]))
+
+        #TODO: Watch out: the following lines modify the dsList...
+        for i in dsList0:
+            i.algId = sortedAlgs[0]
+        for i in dsList1:
+            i.algId = sortedAlgs[1]
 
         #for i, entry in enumerate(sortedAlgs): #Nota: key is sortedAlgs
             #print "Alg%d is: %s" % (i, entry)
@@ -429,8 +437,16 @@ def main(argv=None):
             print "ECDF dashed-solid graphs done."
 
         if istable:
-            pptable2.main2(dsList0, dsList1, tabDimsOfInterest, outputdir,
-                           verbose=verbose)
+            dictFN0 = dsList0.dictByNoise()
+            dictFN1 = dsList1.dictByNoise()
+
+            for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
+                pptable2.main2(dictFN0[fGroup], dictFN1[fGroup],
+                               tabDimsOfInterest, outputdir,
+                               '%s' % (fGroup), verbose)
+
+            #pptable2.main2(dsList0, dsList1, tabDimsOfInterest, outputdir,
+            #               verbose=verbose)
 
         if isscatter:
             ppscatter.main(dsList0, dsList1, outputdir, verbose=verbose)
