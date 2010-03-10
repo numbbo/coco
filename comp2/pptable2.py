@@ -124,8 +124,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     dictDim0 = dsList0.dictByDim()
     dictDim1 = dsList1.dictByDim()
 
-    alg0 = '0:\:' + set(i[0] for i in dsList0.dictByAlg().keys()).pop()[0:3]
-    alg1 = '1:\:' + set(i[0] for i in dsList1.dictByAlg().keys()).pop()[0:3]
+    alg0 = set(i[0] for i in dsList0.dictByAlg().keys()).pop()[0:3]
+    alg1 = set(i[0] for i in dsList1.dictByAlg().keys()).pop()[0:3]
 
     if info:
         info = '_' + info
@@ -179,10 +179,11 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                 except KeyError:
                     continue
                 if nb == 0:
-                    tmp = 'zero'
+                    curline = [r'0:\:\algzeroshort\hspace*{\fill}']
                 else:
-                    tmp = 'one'
-                curline = [r'\alg%sshort' % tmp]
+                    curline = [r'1:\:\algoneshort\hspace*{\fill}']
+
+                #curline = [r'\alg%sshort' % tmp]
                 #curline = [r'Alg%d' % nb]
                 #curline = [r'%.3s%d' % (entry.algId, nb)]
 
