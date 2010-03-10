@@ -101,7 +101,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             try:
                 entry0 = dictDim0[d][0] # should be only one element
                 entry1 = dictDim1[d][0] # should be only one element
-            except IndexError:
+            except (IndexError, KeyError):
                 continue
 
             targets, xdata, ydata = generateData(entry0, entry1)

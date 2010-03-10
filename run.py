@@ -263,12 +263,13 @@ def usage():
 def main(argv=None):
     """Generates from BBOB experiment data some outputs for a tex document.
 
-    If provided with some index entries (from info files), this should return
-    many output files in the folder 'ppdata' needed for the compilation of
-    latex document templateBBOBarticle.tex. These output files will contain
-    performance tables, performance scaling figures and empirical cumulative
-    distribution figures. On subsequent executions, new files will be added 
-    to the output directory, overwriting existing older files in the process.
+    Provided with some index entries (found in files with the 'info' extension)
+    this routine outputs figure and TeX files in the folder 'ppdata' needed for
+    the compilation of  latex document templateBBOBarticle.tex. These output
+    files will contain performance tables, performance scaling figures and
+    empirical cumulative distribution figures. On subsequent executions, new
+    files will be added to the output directory, overwriting existing older
+    files in the process.
 
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not given,

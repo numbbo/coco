@@ -635,7 +635,7 @@ def processInputArgs(args, verbose=True):
             #if pickle files were in a whole other location.
             dsList.extend(tmpDsList)
             #TODO: Find an appropriate name for the algorithm considered?
-            alg = i
+            alg = os.path.split(i)[1]
             sortedAlgs.append(alg)
             dictAlg[alg] = tmpDsList
         else:
