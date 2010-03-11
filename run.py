@@ -309,12 +309,12 @@ def main(argv=None):
             whole post-processing. Please use this option when generating your
             final paper.
 
-        --tab-only, --fig-only, --rld-only
+        --tab-only, --fig-only, --rld-only, --los-only
 
             these options can be used to output respectively the tex tables,
             convergence and ENFEs graphs figures, run length distribution
-            figures only. A combination of any two of these options results in
-            no output.
+            figures, ERT loss ratio figures only. A combination of any two of
+            these options results in no output.
 
     Exceptions raised:
     Usage -- Gives back a usage message.
@@ -549,15 +549,8 @@ def main(argv=None):
                        + "for %s testbed:\n  CrE = " % testbed)
                 while CrE is None:
                     try:
-                        CrE = input(txt)
-                        if CrE == 0: 
-                            CrE = float(CrE)
-                        if not isinstance(CrE, float):
-                            CrE = None
-                            raise SyntaxError
-                    except SyntaxError:
-                        print "Float value required."
-                    except NameError:
+                        CrE = float(input(txt))
+                    except (SyntaxError, NameError, ValueError):
                         print "Float value required."
                 dictDim = sliceNoise.dictByDim()
                 for d in rldDimsOfInterest:
