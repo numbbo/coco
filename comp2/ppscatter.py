@@ -23,6 +23,26 @@ figFormat = ('eps', 'pdf')
 colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 
+#Get benchmark short infos.
+funInfos = {}
+figformat = ('eps', 'pdf') # Controls the output when using the main method
+isBenchmarkinfosFound = True
+infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
+
+try:
+    f = open(infofile,'r')
+    for line in f:
+        if len(line) == 0 or line.startswith('%') or line.isspace() :
+            continue
+        funcId, funcInfo = line[0:-1].split(None,1)
+        funInfos[int(funcId)] = funcId + ' ' + funcInfo
+    f.close()
+except IOError, (errno, strerror):
+    print "I/O error(%s): %s" % (errno, strerror)
+    isBenchmarkinfosFound = False
+    print 'Could not find file', infofile, \
+          'Titles in figures will not be displayed.'
+
 def beautify():
     a = plt.gca()
     a.set_xscale('log')
@@ -165,6 +185,9 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                 #set_trace()
 
         beautify()
+
+        #if isBenchmarkinfosFound:
+        #    plt.ylabel(funInfos[f])
 
         filename = os.path.join(outputdir, 'scatter_f%d' % f)
         saveFigure(filename, figFormat=figFormat, verbose=verbose)
