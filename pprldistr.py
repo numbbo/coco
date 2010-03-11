@@ -118,7 +118,7 @@ def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={},
                 #TODO: what if j[numpy.isfinite(j)] is empty
                 break
         nn += i.nbRuns()
-
+    #set_trace()
     kwargs = plotArgs.copy()
     try:
         label = ''
@@ -370,21 +370,25 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
         for alg in dict2009:
             x = []
             nn = 0
+            try:
+                tmp = dict2009[alg]
+                for f in funcs:
+                    tmp[f][d] # simply test that they exists
+            except KeyError:
+                continue
+
             for f in funcs:
-                try:
-                    tmp = dict2009[alg][f][d][0][1:]
-                    # [0] because the maximum #evals is recorded
-                    # [1:] because the target function value is recorded
-                    x.append(tmp[numpy.isnan(tmp) == False])
-                    nn += len(tmp)
-                except KeyError:
-                    continue
+                tmp2 = tmp[f][d][0][1:]
+                # [0], because the maximum #evals is also recorded
+                # [1:] because the target function value is recorded
+                x.append(tmp2[numpy.isnan(tmp2) == False])
+                nn += len(tmp2)
 
             if x:
-                x.append([evalfmax ** 1.05])
+                x.append([(evalfmax*d) ** 1.05])
                 x = numpy.hstack(x)
 
-                plotECDF(x[numpy.isfinite(x)], nn,
+                plotECDF(x[numpy.isfinite(x)]/d, nn,
                          {'color': 'wheat', 'ls': '-', 'zorder': -1})
 
     plt.axvline(x=maxEvalsFactor, color='k')
@@ -498,21 +502,25 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
         for alg in dict2009:
             x = []
             nn = 0
+            try:
+                tmp = dict2009[alg]
+                for f in funcs:
+                    tmp[f][d] # simply test that they exists
+            except KeyError:
+                continue
+
             for f in funcs:
-                try:
-                    tmp = dict2009[alg][f][d][0][1:]
-                    # [0] because the maximum #evals is recorded
-                    # [1:] because the target function value is recorded
-                    x.append(tmp[numpy.isnan(tmp) == False])
-                    nn += len(tmp)
-                except KeyError:
-                    continue
+                tmp2 = tmp[f][d][0][1:]
+                # [0], because the maximum #evals is also recorded
+                # [1:] because the target function value is recorded
+                x.append(tmp2[numpy.isnan(tmp2) == False])
+                nn += len(tmp2)
 
             if x:
-                x.append([evalfmax ** 1.05])
+                x.append([(evalfmax*d) ** 1.05])
                 x = numpy.hstack(x)
 
-                plotECDF(x[numpy.isfinite(x)], nn,
+                plotECDF(x[numpy.isfinite(x)]/float(d), nn,
                          {'color': 'wheat', 'ls': '-', 'zorder': -1})
 
     plt.axvline(x=maxEvalsFactor, color='k')

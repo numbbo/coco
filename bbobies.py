@@ -179,7 +179,6 @@ def main(argv=None):
         print "  This might take several minutes."
 
         dsList, sortedAlgs, dictAlg = processInputArgs(args,
-                                                       plotInfo=algPlotInfos,
                                                        verbose=verbose)
 
         if not dsList:
@@ -219,13 +218,10 @@ def main(argv=None):
                         raise Usage('Problem for alg %s, f%d, %d-D' % alg, f, d)
                     entry = entries[0]
                     tmp = entry.generateRLData([1e-08])[1e-08]
-                    if numpy.isfinite(tmp[0]):
                     #set_trace()
-                        if (tmp[1:] == 0.).any():
-                            set_trace()
-                        tmpdict1.setdefault(d, (tmp, entry.maxevals))
+                    tmpdict1.setdefault(d, (tmp, entry.maxevals))
         picklefilename = os.path.join(outputdir, 'testdata.pickle')
-        f = open(picklefilename, 'w')
+        f = open(picklefilename, 'w', 2)
         pickle.dump(dictres, f)
         f.close()
 

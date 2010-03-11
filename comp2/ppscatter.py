@@ -15,6 +15,7 @@ import os
 import numpy
 from pdb import set_trace
 from matplotlib import pyplot as plt
+from matplotlib import transforms
 
 from bbob_pproc import readalign
 
@@ -30,10 +31,11 @@ def beautify():
     #a.set_ylabel('ERT1')
     xmin, xmax = plt.xlim()
     ymin, ymax = plt.ylim()
-    plt.plot([max(xmin, ymin), min(xmax, ymax)],
-             [max(xmin, ymin), min(xmax, ymax)], ls='--', color='k')
-    plt.xlim(max(xmin, ymin), min(xmax, ymax))
-    plt.ylim(max(xmin, ymin), min(xmax, ymax))
+    minbnd = min(xmin, ymin)
+    maxbnd = max(xmax, ymax)
+    plt.plot([minbnd, maxbnd], [minbnd, maxbnd], ls='--', color='k')
+    plt.xlim(minbnd, maxbnd)
+    plt.ylim(minbnd, maxbnd)
     a.set_aspect(1./a.get_data_ratio())
     plt.grid(True)
     tmp = a.get_yticks()
@@ -91,6 +93,8 @@ def main(dsList0, dsList1, outputdir, verbose=True):
     dictFunc1 = dsList1.dictByFunc()
     funcs = set(dictFunc0.keys()) & set(dictFunc1.keys())
 
+    targets = numpy.power(10, numpy.arange(-40, 6)/5.)
+    
     for f in funcs:
         dictDim0 = dictFunc0[f].dictByDim()
         dictDim1 = dictFunc1[f].dictByDim()
@@ -104,15 +108,67 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             except (IndexError, KeyError):
                 continue
 
-            targets, xdata, ydata = generateData(entry0, entry1)
-            plt.plot(xdata, ydata, ls='', color=colors[i], marker=markers[i],
-                     markerfacecolor='None', markeredgecolor=colors[i],
-                     markersize=10, markeredgewidth=3)
+            xdata = numpy.array(entry0.detERT(targets))
+            ydata = numpy.array(entry1.detERT(targets))
+            #targets, xdata, ydata = generateData(entry0, entry1)
+
+            #plt.plot(xdata, ydata, ls='', color=colors[i], marker=markers[i],
+            #         markerfacecolor='None', markeredgecolor=colors[i],
+            #         markersize=10, markeredgewidth=3)
+            tmp = (numpy.isinf(xdata)==False) * (numpy.isinf(ydata)==False)
+            if tmp.any():
+                plt.plot(xdata[tmp], ydata[tmp], ls='', markersize=10,
+                         marker=markers[i], markerfacecolor='None',
+                         markeredgecolor=colors[i], markeredgewidth=3)
+                #try:
+                #    plt.scatter(xdata[tmp], ydata[tmp], s=10, marker=markers[i],
+                #            facecolor='None', edgecolor=colors[i], linewidth=3)
+                #except ValueError:
+                #    set_trace()
+
+            #ax = plt.gca()
+            ax = plt.axes()
+            
+            tmp = numpy.isinf(xdata) * (numpy.isinf(ydata)==False)
+            if tmp.any():
+                trans = transforms.blended_transform_factory(ax.transAxes, ax.transData)
+                #plt.scatter([1.]*numpy.sum(tmp), ydata[tmp], s=10, marker=markers[i],
+                #            facecolor='None', edgecolor=colors[i], linewidth=3,
+                #            transform=trans)
+                plt.plot([1.]*numpy.sum(tmp), ydata[tmp], markersize=10, ls='',
+                         marker=markers[i], markerfacecolor='None',
+                         markeredgecolor=colors[i], markeredgewidth=3,
+                         transform=trans)
+                #set_trace()
+
+            tmp = (numpy.isinf(xdata)==False) * numpy.isinf(ydata)
+            if tmp.any():
+                trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
+            #    plt.scatter(xdata[tmp], [1.]*numpy.sum(tmp), s=10, marker=markers[i],
+            #                facecolor='None', edgecolor=colors[i], linewidth=3,
+            #                transform=trans)
+                plt.plot(xdata[tmp], [1.]*numpy.sum(tmp), markersize=10, ls='',
+                         marker=markers[i], markerfacecolor='None',
+                         markeredgecolor=colors[i], markeredgewidth=3,
+                         transform=trans)
+                #set_trace()
+
+            tmp = numpy.isinf(xdata) * numpy.isinf(ydata)
+            if tmp.any():
+            #    plt.scatter(xdata[tmp], [1.]*numpy.sum(tmp), s=10, marker=markers[i],
+            #                facecolor='None', edgecolor=colors[i], linewidth=3,
+            #                transform=trans)
+                plt.plot([1.]*numpy.sum(tmp), [1.]*numpy.sum(tmp), markersize=10, ls='',
+                         marker=markers[i], markerfacecolor='None',
+                         markeredgecolor=colors[i], markeredgewidth=3,
+                         transform=ax.transAxes)
+                #set_trace()
 
         beautify()
 
         filename = os.path.join(outputdir, 'scatter_f%d' % f)
         saveFigure(filename, figFormat=figFormat, verbose=verbose)
         plt.close()
+        #set_trace()
 
     plt.rcdefaults()

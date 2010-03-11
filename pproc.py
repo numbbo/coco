@@ -337,26 +337,51 @@ class DataSet:
         return res # list(res[i] for i in inputtarget)
 
     def detERT(self, targets):
-        res = []
-        for f in targets:
-            idx = (self.target<=f)
-            try:
-                res.append(self.ert[idx][0])
-            except IndexError:
-                res.append(numpy.inf)
-        return res
+        res = {}
+        tmparray = numpy.vstack((self.target, self.ert)).transpose()
+        it = reversed(tmparray) # expect this array to be sorted by decreasing function values
+        prevline = numpy.array([-numpy.inf, numpy.inf])
+        try:
+            line = it.next()
+        except StopIteration:
+            # evals is an empty array
+            return list()
+
+        for t in sorted(targets):
+            while line[0] <= t:
+                prevline = line
+                try:
+                    line = it.next()
+                except StopIteration:
+                    break
+            res[t] = prevline.copy() # is copy necessary?
+
+        # Return a list of ERT corresponding to the input targets in
+        # targets, sorted along targets
+        return list(res[i][1] for i in targets)
+
+        #res = []
+        #for f in targets:
+        #    idx = (self.target<=f)
+        #    try:
+        #        res.append(self.ert[idx][0])
+        #    except IndexError:
+        #        res.append(numpy.inf)
+        #return res
 
     def detEvals(self, targets):
-        res = []
-        for f in targets:
-            idx = (self.target<=f)
-            try:
-                res.append(self.evals[idx, 1:][0])
-            except IndexError:
-                res.append(numpy.array(self.nbRuns()*[numpy.nan]))
-                pass
-                #res.append(numpy.inf)
-        return res
+        tmp = self.generateRLData(targets)
+        return list(tmp[i][1:] for i in targets)
+        # res = []
+        # for f in targets:
+        #     idx = (self.target<=f)
+        #     try:
+        #         res.append(self.evals[idx, 1:][0])
+        #     except IndexError:
+        #         res.append(numpy.array(self.nbRuns()*[numpy.nan]))
+        #         pass
+        #         #res.append(numpy.inf)
+        # return res
 
 class DataSetList(list):
     """Set of instances of DataSet objects, implement some useful slicing

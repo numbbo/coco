@@ -196,6 +196,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         tableentry = r'\multicolumn{2}{@{}c@{}}{\textit{%s}}' % writeFEvals2(float(j), 2)
                     else:
                         # Formatting
+                        if numpy.isnan(float(j)/bestalgdata[i]):
+                            set_trace()
                         tableentry = writeFEvals2(float(j)/bestalgdata[i], 2)
     
                         if tableentry.find('e') > -1:
