@@ -300,6 +300,7 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
             for alg in dictAlg:
                 x = [numpy.inf] * perfprofsamplesize
                 y = numpy.inf
+                runlengthunsucc = []
 
                 try:
                     entry = tmpdictAlg[alg]
