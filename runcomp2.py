@@ -334,7 +334,7 @@ def main(argv=None):
                         + '\nTry using --noise-free or --noisy flags.')
 
         if isfigure:
-            ppfig2.main(dsList0, dsList1, outputdir, 1e-8, verbose)
+            ppfig2.main(dsList0, dsList1, 1e-8, outputdir, verbose)
             print "log ERT1/ERT0 vs target function values done."
 
         if isrldistr:

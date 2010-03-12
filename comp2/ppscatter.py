@@ -54,6 +54,11 @@ def beautify():
     minbnd = min(xmin, ymin)
     maxbnd = max(xmax, ymax)
     plt.plot([minbnd, maxbnd], [minbnd, maxbnd], ls='--', color='k')
+    plt.plot([10*minbnd, 10*maxbnd], [minbnd, maxbnd], ls='--', color='k')
+    plt.plot([100*minbnd, 100*maxbnd], [minbnd, maxbnd], ls='--', color='k')
+    plt.plot([minbnd, maxbnd], [10*minbnd, 10*maxbnd], ls='--', color='k')
+    plt.plot([minbnd, maxbnd], [100*minbnd, 100*maxbnd], ls='--', color='k')
+
     plt.xlim(minbnd, maxbnd)
     plt.ylim(minbnd, maxbnd)
     a.set_aspect(1./a.get_data_ratio())
