@@ -166,8 +166,8 @@ def annotate(data, dim, minfvalue=1e-8):
     elif line[0][3] > 9 and line[1][3] > 9.:
         txt = '%d-D' % dim    
     else:
-        tmp = str(int(line[0][3]))
-        tmp2 = str(int(line[1][3]))
+        tmp = str(int(line[1][3]))
+        tmp2 = str(int(line[0][3]))
         if line[0][3] > 9:
             tmp = '>9'
         elif line[1][3] > 9:
