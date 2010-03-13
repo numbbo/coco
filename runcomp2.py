@@ -41,7 +41,7 @@ figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)
 figDimsOfInterest = (2, 3, 5, 10, 20, 40)
 
 #rldDimsOfInterest = (2, 3, 5, 10, 20, 40)
-rldDimsOfInterest = (5, 10, 20, 40)
+rldDimsOfInterest = (5, 20)
 #rldValsOfInterest = (1e-4, 1e-8)
 #rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 rldValsOfInterest = ({1: 10, 2: 10, 3: 10, 4: 10, 5: 10, 6: 10, 7: 10, 8: 10,
@@ -350,9 +350,9 @@ def main(argv=None):
             for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
                 if dim in rldDimsOfInterest:
                     try:
-                        pprldistr2.main(dictDim0[dim], dictDim1[dim],
-                                        rldValsOfInterest, False,
-                                        outputdir, 'dim%02dall' % dim, verbose)
+                        pprldistr2.main2(dictDim0[dim], dictDim1[dim],
+                                         rldValsOfInterest,
+                                         outputdir, 'dim%02dall' % dim, verbose)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.'
                                       % (dim))
@@ -362,19 +362,19 @@ def main(argv=None):
                     dictFG1 = dictDim1[dim].dictByFuncGroup()
 
                     for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
-                        pprldistr2.main(dictFG0[fGroup], dictFG1[fGroup],
-                                        rldValsOfInterest, False,
-                                        outputdir, 'dim%02d%s' % (dim, fGroup),
-                                        verbose)
+                        pprldistr2.main2(dictFG0[fGroup], dictFG1[fGroup],
+                                         rldValsOfInterest, 
+                                         outputdir, 'dim%02d%s' % (dim, fGroup),
+                                         verbose)
 
                     dictFN0 = dictDim0[dim].dictByNoise()
                     dictFN1 = dictDim1[dim].dictByNoise()
 
                     for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
-                        pprldistr2.main(dictFN0[fGroup], dictFN1[fGroup],
-                                        rldValsOfInterest, False, outputdir,
-                                        'dim%02d%s' % (dim, fGroup),
-                                        verbose)
+                        pprldistr2.main2(dictFN0[fGroup], dictFN1[fGroup],
+                                         rldValsOfInterest, outputdir,
+                                         'dim%02d%s' % (dim, fGroup),
+                                         verbose)
             print "ECDF absolute target graphs done."
 
             #for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
