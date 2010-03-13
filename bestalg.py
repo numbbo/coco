@@ -263,7 +263,7 @@ def loadBBOB2009():
             #bestalgentries[(D, fun)] = pickle.load(fid)
             #fid.close()
 
-    print "Loading best algorithm data from BBOB-2009."
+    print "Loading best algorithm data from BBOB-2009..."
     bestalgfilepath = os.path.split(__file__)[0]
     picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
     #TODO: what if file is not found?
@@ -271,7 +271,7 @@ def loadBBOB2009():
     #set_trace()
     bestalgentries = pickle.load(fid)
     fid.close()
-    print "Done."
+    print "  done."
 
 
 def usage():
