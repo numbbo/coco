@@ -11,7 +11,6 @@ import warnings
 import matplotlib.pyplot as plt
 from pdb import set_trace
 try:
-    set_trace()
     from matplotlib.transforms import blended_transform_factory as blend
 except ImportError:
     # compatibility matplotlib 0.8
