@@ -15,8 +15,11 @@ import os
 import numpy
 from pdb import set_trace
 from matplotlib import pyplot as plt
-from matplotlib import transforms
-
+try:
+    from matplotlib.transforms import blend_transform_factory as blend
+except ImportError:
+    # compatibility matplotlib 0.8
+    from matplotlib.transforms import blend_xy_sep_transform as blend
 from bbob_pproc import readalign
 
 figFormat = ('eps', 'pdf')
@@ -156,7 +159,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             
             tmp = numpy.isinf(xdata) * (numpy.isinf(ydata)==False)
             if tmp.any():
-                trans = transforms.blended_transform_factory(ax.transAxes, ax.transData)
+                trans = blend(ax.transAxes, ax.transData)
                 #plt.scatter([1.]*numpy.sum(tmp), ydata[tmp], s=10, marker=markers[i],
                 #            facecolor='None', edgecolor=colors[i], linewidth=3,
                 #            transform=trans)
@@ -168,7 +171,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
 
             tmp = (numpy.isinf(xdata)==False) * numpy.isinf(ydata)
             if tmp.any():
-                trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
+                trans = blend(ax.transData, ax.transAxes)
             #    plt.scatter(xdata[tmp], [1.]*numpy.sum(tmp), s=10, marker=markers[i],
             #                facecolor='None', edgecolor=colors[i], linewidth=3,
             #                transform=trans)

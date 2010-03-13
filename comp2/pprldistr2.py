@@ -517,7 +517,6 @@ def main2(dsList0, dsList1, valuesOfInterest=None,
         xdata = plt.getp(i, 'xdata')
         xdata = numpy.insert(xdata, 0, xmin)
         xdata = numpy.insert(xdata, len(xdata), xmax)
-        plt.setp(i, 'xdata', xdata)
         ydata = plt.getp(i, 'ydata')
         ydata = numpy.insert(ydata, 0, ydata[0])
         ydata = numpy.insert(ydata, len(ydata), ydata[-1])

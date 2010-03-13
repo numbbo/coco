@@ -9,7 +9,12 @@ import os
 import sys
 import warnings
 import matplotlib.pyplot as plt
-from matplotlib import transforms
+try:
+    from matplotlib.transforms import blend_transform_factory as blend
+except ImportError:
+    # compatibility matplotlib 0.8
+    from matplotlib.transforms import blend_xy_sep_transform as blend
+
 import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap, readalign
@@ -192,13 +197,13 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     elif line[0][2] == 0 and line[1][2] == 0:
         set_trace() # should not occur
     elif line[0][2] == 0:
-        trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
+        trans = blend(ax.transData, ax.transAxes)
         annotcoord = [minfvalue, -line[1][1]/2 + 0.5 + offset*(5-dims[dim])]
         if va == 'top':
             va = 'bottom'
         #plt.text(annotcoord[0], annotcoord[1], txt, transform=trans)
     elif line[1][2] == 0:
-        trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
+        trans = blend(ax.transData, ax.transAxes)
         annotcoord = [minfvalue, line[0][1]/2 + 0.5 - offset*(5-dims[dim])]
         #plt.text(annotcoord[0], annotcoord[1], txt, transform=trans)
 
