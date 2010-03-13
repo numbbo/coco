@@ -28,6 +28,7 @@ colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 linewidth = 3
 offset = 0.005
+incrstars = 1.5
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
@@ -140,37 +141,45 @@ def beautify(xmin=None):
     tmp = tmp[tmp>plt.ylim()[0]]
     ax.set_yticks(tmp, minor=True)
 
-def annotate(data, dim, minfvalue=1e-8):
+def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     """Display some annotations associated to the graphs generated."""
     
     isEarlyStop = False
     ha = 'left'
     va = 'center'
-    if minfvalue < data[0][-1, 0]:
+    lastfvalue = min(entry0.evals[-1][0], entry1.evals[-1][0])
+    if minfvalue < lastfvalue:
         isEarlyStop = True
         ha = 'center'
         va = 'top'
 
-    if not minfvalue or minfvalue < data[0][-1, 0]:
-        minfvalue = data[0][-1, 0]
+    if not minfvalue or minfvalue < lastfvalue:
+        minfvalue = lastfvalue
 
-    # Locate the data corresponding to minfvalue
     line = []
-    for d in data:
-        line.append(d[d[:, 0] >= minfvalue, :][-1])
-    
+    data0 = entry0.detEvals([minfvalue])[0]
+    evals0 = data0[:]
+    succ = (numpy.isnan(evals0) == False)
+    evals0[numpy.isnan(evals0)] = entry0.maxevals[numpy.isnan(evals0)]
+    line.append(bootstrap.sp(evals0, issuccessful=succ))
+    data1 = entry1.detEvals([minfvalue])[0]
+    evals1 = data1[:]
+    succ = (numpy.isnan(evals1) == False)
+    evals1[numpy.isnan(evals1)] = entry1.maxevals[numpy.isnan(evals1)]
+    line.append(bootstrap.sp(evals1, issuccessful=succ))
+
     # What's the situation?
     txt = '%d-D'
     if line[0][2] == 0 or line[1][2] == 0:
         txt = '%d-D' % dim
-    elif line[0][3] > 9 and line[1][3] > 9.:
+    elif line[0][2] > 9 and line[1][2] > 9:
         txt = '%d-D' % dim    
     else:
-        tmp = str(int(line[1][3]))
-        tmp2 = str(int(line[0][3]))
-        if line[0][3] > 9:
+        tmp = str(int(line[1][2]))
+        tmp2 = str(int(line[0][2]))
+        if line[0][2] > 9:
             tmp = '>9'
-        elif line[1][3] > 9:
+        elif line[1][2] > 9:
             tmp2 = '>9'
         txt = tmp + '/' + tmp2
 
@@ -178,26 +187,54 @@ def annotate(data, dim, minfvalue=1e-8):
     ax = plt.gca()
     if line[0][2] > 0 and line[1][2] > 0:
         trans = ax.transData
-        annotcoord = [line[0][0], line[1][1]/line[0][1]]
+        annotcoord = [minfvalue, line[1][0]/line[0][0]]
         #plt.text(annotcoord[0], annotcoord[1], txt)
-    elif line[0][2] == 0. and line[1][2] == 0.:
+    elif line[0][2] == 0 and line[1][2] == 0:
         set_trace() # should not occur
-    elif line[0][2] == 0.:
+    elif line[0][2] == 0:
         trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
-        annotcoord = [line[1][0], -line[1][2]/2 + 0.5 + offset*(5-dims[dim])]
+        annotcoord = [minfvalue, -line[1][1]/2 + 0.5 + offset*(5-dims[dim])]
         if va == 'top':
             va = 'bottom'
         #plt.text(annotcoord[0], annotcoord[1], txt, transform=trans)
-    elif line[1][2] == 0.:
+    elif line[1][2] == 0:
         trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
-        annotcoord = [line[0][0], line[0][2]/2 + 0.5 - offset*(5-dims[dim])]
+        annotcoord = [minfvalue, line[0][1]/2 + 0.5 - offset*(5-dims[dim])]
         #plt.text(annotcoord[0], annotcoord[1], txt, transform=trans)
 
     plt.text(annotcoord[0], annotcoord[1], txt, horizontalalignment=ha,
              verticalalignment=va, transform=trans)
-    #    if annotcoord[1] > 
-    #    annotcoord[0] = 
-    # Annotate correspondingly
+
+    #ranksum test
+    line0 = numpy.power(data0, -1.)
+    line0[numpy.isnan(line0)] = -entry0.finalfunvals[numpy.isnan(line0)]
+    line1 = numpy.power(data1, -1.)
+    line1[numpy.isnan(line1)] = -entry1.finalfunvals[numpy.isnan(line1)]
+    # one-tailed statistics: scipy.stats.mannwhitneyu, two-tailed statistics: scipy.stats.ranksums
+    z, p = ranksums(line0[1:], line1[1:])
+    # Set the correct line in data0 and data1
+    nbstars = 0
+    if (nbtests * p) < 0.05:
+        nbstars = -numpy.ceil(numpy.log10(nbtests * p))
+    if nbstars > 0:
+        xstars = annotcoord[0] * numpy.power(incrstars, numpy.arange(1., 1. + nbstars))
+        # the additional slicing [0:int(nbstars)] is due to
+        # numpy.arange(1., 1. - 0.1 * nbstars, -0.1) not having the right number
+        # of elements due to numerical error
+        ystars = [annotcoord[1]] * nbstars
+    
+        try:
+            h = plt.plot(xstars, ystars, marker='*', ls='', color='w',
+                         markersize=5*linewidth, markeredgecolor='k',
+                         markerfacecolor='None',
+                         zorder=20, markeredgewidth = 0.4 * linewidth,
+                         transform=trans)
+        except KeyError:
+            #Version problem
+            h = plt.plot(xstars, ystars, marker='+', ls='', color='w',
+                         markersize=2.5*linewidth, markeredgecolor='k',
+                         zorder=20, markeredgewidth = 0.2 * linewidth,
+                         transform=trans)
 
 def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
     """Returns ERT1/ERT0 comparison figure."""
@@ -227,6 +264,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
         handles = []
         dataperdim = {}
         fvalueswitch = {}
+        nbtests = 0
         for i, dim in enumerate((2, 3, 5, 10, 20, 40)):
             try:
                 entry0 = dictDim0[dim][0]
@@ -234,6 +272,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             except KeyError:
                 continue
 
+            nbtests += 1
             # generateData:
             data = generateData(entry0, entry1)
             dataperdim[dim] = data
@@ -270,14 +309,15 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
 
         # Plot everything else
         for i, dim in enumerate((2, 3, 5, 10, 20, 40)):
-
             try:
+                entry0 = dictDim0[dim][0]
+                entry1 = dictDim1[dim][0]
                 data = dataperdim[dim]
             except KeyError:
                 continue
 
             # annotation
-            annotate(data, dim, minfvalue)
+            annotate(entry0, entry1, dim, minfvalue, nbtests=nbtests)
 
             tmp0 = numpy.isfinite(data[0][:, 1])
             tmp1 = numpy.isfinite(data[1][:, 1])
