@@ -78,7 +78,7 @@ def beautify2():
                ('', '', '', '', ''))
     xlim = max(numpy.abs(numpy.log10(plt.xlim())))
     xlim = (min(0.1, 10.**(-xlim)), max(10., 10.**(xlim)))
-    plt.plot(xlim, [0.5, 0.5], ls='-', color='k', lw=2);  # symmetry line at y=0.5
+    plt.plot(xlim, [0.5, 0.5], ls=':', color='k', lw=2);  # symmetry line at y=0.5
     plt.xlim(xlim)
     axisHandle.set_xlabel('log10 of RL1/RL0')
     axisHandle.set_ylabel('proportion')
