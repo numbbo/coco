@@ -64,7 +64,8 @@ def beautify():
 
     plt.xlim(minbnd, maxbnd)
     plt.ylim(minbnd, maxbnd)
-    a.set_aspect(1./a.get_data_ratio())
+    #a.set_aspect(1./a.get_data_ratio())
+    a.set_aspect('equal')
     plt.grid(True)
     tmp = a.get_yticks()
     tmp2 = []
