@@ -239,8 +239,6 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
             # Compute the pair-wise ratio
             tmp1 = numpy.reshape(evals1[func][i], (1, len(evals1[func][i])))
             tmp0 = numpy.reshape(evals0[func][i], (len(evals0[func][i]), 1))
-            if numpy.isinf(tmp0).any():# or numpy.isinf(tmp1).any():
-                set_trace()
             x.append((tmp1/tmp0).flatten())
             #TODO: check division, check numpy.inf...
 
