@@ -9,7 +9,7 @@ import os
 import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
-from bbob_pproc.ppfig import saveFigure
+from bbob_pproc.ppfig import saveFigure, consecutiveNumbers
 from pdb import set_trace
 
 #__all__ = []
@@ -73,15 +73,14 @@ def beautify2():
     """Format the figure of the run length distribution."""
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    plt.plot([1, 1], [0, 1], ls='-', color='k');  # symmetry line for ERT1/ERT0 = 1
-    plt.ylim(0.0, 1.0)
-    # plt.ylim(-0.02, 1.02)  # this seems not have any effect
-    plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
-               ('', '', '', '', ''))
+    plt.axvline(1, ls='-', color='k');  # symmetry line for ERT1/ERT0 = 1
     xlim = max(numpy.abs(numpy.log10(plt.xlim())))
     xlim = (min(0.1, 10.**(-xlim)), max(10., 10.**(xlim)))
-    plt.plot(xlim, [0.5, 0.5], ls=':', color='k', lw=2);  # symmetry line at y=0.5
+    plt.axhline(0.5, ls=':', color='k', lw=2);  # symmetry line at y=0.5
     plt.xlim(xlim)
+    plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
+               ('', '', '', '', ''))
+    plt.ylim(-0.02, 1.02)
     axisHandle.set_xlabel('log10 of RL1/RL0')
     axisHandle.set_ylabel('proportion')
     axisHandle.grid('True')
@@ -221,20 +220,32 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
 
     targets = list(i[1] for i in fvalueToReach)
 
+    succ0 = [0] * len(targets)
+    succ1 = [0] * len(targets)
+
     # TODO: check all functions are there...
     for func in set(dictFunc0.keys()) & set(dictFunc1.keys()):
         i0 = dictFunc0[func][0]
         i1 = dictFunc1[func][0]
 
-        tmp = list(i[func] for i in fvalueToReach)
-        if tmp != targets:
-            set_trace() # should not occur
+        #tmp = list(i[func] for i in fvalueToReach)
+        #if tmp != targets:
+        #    set_trace() # should not occur
+        #    warnings.warn('')
+
         evals0[func] = i0.detEvals(targets)
-        for i in evals0[func]:
-            i[numpy.isnan(i)] = numpy.inf
+        for i, evals in enumerate(evals0[func]):
+            tmp = numpy.isnan(evals)
+            evals[tmp] = numpy.inf
+            if not tmp.all():
+                succ0[i] += 1
+
         evals1[func] = i1.detEvals(targets)
-        for i in evals1[func]:
-            i[numpy.isnan(i)] = numpy.inf
+        for i, evals in enumerate(evals1[func]):
+            tmp = numpy.isnan(evals)
+            evals[tmp] = numpy.inf
+            if not tmp.all():
+                succ1[i] += 1
 
     for i, target in enumerate(reversed(sorted(targets))):
 
@@ -246,7 +257,7 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
             x.append((tmp1/tmp0).flatten())
             #TODO: check division, check numpy.inf...
 
-        label = '%+d' % numpy.log10(target)
+        label = '%+d: %d/%d' % (numpy.log10(target), succ1[i], succ0[i])
         x = numpy.hstack(x)
         x = x[numpy.isnan(x)==False] # Is it correct?
         n = len(x)
@@ -467,7 +478,7 @@ def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest=None,
     else:
         figureName = os.path.join(outputdir,'pplogabs_%s' %(info))
         for j in range(len(valuesOfInterest)):
-            tmp = plotLogAbs2(indexEntriesAlg0, indexEntriesAlg1,
+            tmp = plotLogAbs(indexEntriesAlg0, indexEntriesAlg1,
                               valuesOfInterest[j], verbose=verbose)
             if not tmp is None:
                 plt.rc("ytick",labelsize=0)
@@ -518,15 +529,24 @@ def main2(dsList0, dsList1, valuesOfInterest=None,
     # Prolong to the boundary
     xmin, xmax = plt.xlim()
     for i in tmp:
-        xdata = plt.getp(i, 'xdata')
+        xdata, ydata = i.get_data()
+        if len(xdata) == 0 or len(ydata) == 0:
+            continue
         xdata = numpy.insert(xdata, 0, xmin)
         xdata = numpy.insert(xdata, len(xdata), xmax)
-        ydata = plt.getp(i, 'ydata')
         ydata = numpy.insert(ydata, 0, ydata[0])
         ydata = numpy.insert(ydata, len(ydata), ydata[-1])
         i.set_data(xdata, ydata)
 
     plt.legend(loc='best')
+    #plt.text(0.5, 0.93, text, horizontalalignment="center",
+    #         transform=axisHandle.transAxes)
+    funcs = set(dsList0.dictByFunc().keys()) & set(dsList1.dictByFunc().keys())
+    text = 'f%s' % consecutiveNumbers(sorted(funcs))
+    plt.text(0.98, 0.02, text, horizontalalignment="right",
+             transform=plt.gca().transAxes)
+
+    #set_trace()
     saveFigure(figureName, figFormat=figformat, verbose=verbose)
     plt.close(fig)
     #set_trace()

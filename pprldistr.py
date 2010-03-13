@@ -11,6 +11,7 @@ import pickle
 import matplotlib.pyplot as plt
 from pdb import set_trace
 from bbob_pproc import bootstrap
+from bbob_pproc.ppfig import consecutiveNumbers
 
 rldColors = ('k', 'c', 'm', 'r', 'k', 'c', 'm', 'r', 'k', 'c', 'm', 'r')
 rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  # should not be too short
@@ -361,10 +362,7 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
                 plt.setp(tmp, 'linewidth', 3)
 
     funcs = set(i.funcId for i in dsList0) | set(i.funcId for i in dsList1)
-    if len(funcs) > 1:
-        text = 'f%d-%d' %(min(funcs), max(funcs))
-    else:
-        text = 'f%d' %(funcs[0])
+    text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
 
     if isAlgorithm2009Found:
         d = set.union(set(i.dim for i in dsList0),
@@ -495,10 +493,7 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
                 plt.setp(tmp, 'linewidth', 3)
 
     funcs = list(i.funcId for i in dsList)
-    if len(funcs) > 1:
-        text = 'f%d-%d' %(min(funcs), max(funcs))
-    else:
-        text = 'f%d' %(funcs[0])
+    text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
 
     if isAlgorithm2009Found:
         d = set(i.dim for i in dsList).pop() # Get only one element...
