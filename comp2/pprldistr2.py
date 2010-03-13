@@ -9,6 +9,7 @@ import os
 import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
+from bbob_pproc.ppfig import saveFigure
 from pdb import set_trace
 
 #__all__ = []
@@ -67,6 +68,24 @@ def beautify(figHandle, figureName, fileFormat=('pdf', 'eps'), isByInstance=True
             if verbose:
                 print 'Wrote figure in %s.' %(figureName + '.' + entry)
 
+def beautify2():
+    """Format the figure of the run length distribution."""
+    axisHandle = plt.gca()
+    axisHandle.set_xscale('log')
+    plt.ylim(0.0, 1.0)
+    plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
+               ('', '', '', '', ''))
+    xlim = plt.xlim()
+    plt.xlim(min(0.1, 10.**(-max(numpy.abs(numpy.log10(xlim))))),
+             max(10., 10.**(max(numpy.abs(numpy.log10(xlim))))))
+    axisHandle.set_xlabel('log10 of RL1/RL0')
+    axisHandle.set_ylabel('proportion')
+    axisHandle.grid('True')
+    xticks = axisHandle.get_xticks()
+    newxticks = []
+    for i in xticks:
+        newxticks.append('%d' % round(numpy.log10(i)))
+    axisHandle.set_xticklabels(newxticks)
 
 def computeERT(fevals, maxevals):
     data = fevals.copy()
@@ -175,6 +194,91 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
         # OverflowError would be because of ?
         # IndexError because x is reduced to an empty list
         res = plt.plot([], [], label=label)
+
+    return res
+
+def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
+    """Creates ECDF of run length ratios.
+
+    Keyword arguments:
+    dsList0 -- reference
+    dsList1
+    fvalueToReach -- List of target function values
+    verbose
+
+    Outputs:
+    """
+
+    res = []
+    dictFunc0 = dsList0.dictByFunc()
+    dictFunc1 = dsList1.dictByFunc()
+    evals0 = {}
+    evals1 = {}
+
+    targets = list(i[1] for i in fvalueToReach)
+
+    # TODO: check all functions are there...
+    for func in set(dictFunc0.keys()) & set(dictFunc1.keys()):
+        i0 = dictFunc0[func][0]
+        i1 = dictFunc1[func][0]
+
+        tmp = list(i[func] for i in fvalueToReach)
+        if tmp != targets:
+            set_trace() # should not occur
+        evals0[func] = i0.detEvals(targets)
+        for i in evals0[func]:
+            i[numpy.isnan(i)] = numpy.inf
+        evals1[func] = i1.detEvals(targets)
+        for i in evals1[func]:
+            i[numpy.isnan(i)] = numpy.inf
+
+    for i, target in enumerate(reversed(sorted(targets))):
+
+        x = []
+        for func in evals0:
+            # Compute the pair-wise ratio
+            tmp1 = numpy.reshape(evals1[func][i], (1, len(evals1[func][i])))
+            tmp0 = numpy.reshape(evals0[func][i], (len(evals0[func][i]), 1))
+            if numpy.isinf(tmp0).any():# or numpy.isinf(tmp1).any():
+                set_trace()
+            x.append((tmp1/tmp0).flatten())
+            #TODO: check division, check numpy.inf...
+
+        label = '%+d' % numpy.log10(target)
+        x = numpy.hstack(x)
+        x = x[numpy.isnan(x)==False] # Is it correct?
+        n = len(x)
+
+        if n == 0:
+            res.extend(plt.plot([], [], label=label, color=rldColors[i], linewidth=3))
+            continue # no plot?
+        set_trace()
+        x.sort()
+        xtmp = x[:]
+        #Catch negative values: zeros are not a problem...
+        #tmp = 0
+        tmp = len(list(i for i in x if i <= 0))
+        x = x[tmp:]
+        #Catch inf, those could be a problem with the log scale...
+        #tmp2 = 0
+        tmp2 = len(list(i for i in x if i > 0 and numpy.isinf(i)))
+        if tmp2 > 0:
+            x = x[:-tmp2]
+
+        #xbound = max(abs(numpy.floor(numpy.log10(x[0]))),
+        #             abs(numpy.ceil(numpy.log10(x[-1]))))
+        if len(x) == 0:
+            res.append(plt.axhline(tmp/float(n), label=label, color=rldColors[i], linewidth=3))
+            # tmp/float(n) == (n-tmp2)/float(n) # TODO: check
+        else:
+            x2 = numpy.hstack([numpy.repeat(x, 2)])
+            #maxEvalsF: used for the limit of the plot.
+            y2 = numpy.hstack([tmp/float(n),
+                               numpy.repeat(numpy.arange(tmp+1, n-tmp2) / float(n), 2),
+                               (n-tmp2)/float(n)])
+            res.extend(plt.plot(x2, y2, label=label, color=rldColors[i], linewidth=3))
+
+        # TODO: check if all of evalsX[func] is numpy.inf and so on...
 
     return res
 
@@ -361,8 +465,8 @@ def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest=None,
     else:
         figureName = os.path.join(outputdir,'pplogabs_%s' %(info))
         for j in range(len(valuesOfInterest)):
-            tmp = plotLogAbs(indexEntriesAlg0, indexEntriesAlg1,
-                             valuesOfInterest[j], verbose=verbose)
+            tmp = plotLogAbs2(indexEntriesAlg0, indexEntriesAlg1,
+                              valuesOfInterest[j], verbose=verbose)
             if not tmp is None:
                 plt.rc("ytick",labelsize=0)
                 plt.setp(tmp, 'color', rldColors[j],'linewidth',3)
@@ -372,5 +476,58 @@ def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest=None,
     beautify(fig, figureName, fileFormat=figformat, legend=True,
              verbose=verbose)
     plt.close(fig)
+
+    plt.rcdefaults()
+
+def main2(dsList0, dsList1, valuesOfInterest=None,
+          outputdir='', info='default', verbose=True):
+    """Generate figures of empirical cumulative distribution functions.
+
+    Keyword arguments:
+    indexEntries -- list of IndexEntry instances to process.
+    valuesOfInterest -- target function values to be displayed.
+    isStoringXMax -- if set to True, the first call BeautifyVD sets the globals
+                     fmax and maxEvals and all subsequent calls will use these
+                     values as rightmost xlim in the generated figures.
+     -- if set to True, the first call BeautifyVD sets the global
+                     fmax and all subsequent call will have the same maximum
+                     xlim.
+    outputdir -- output directory (must exist)
+    info --- string suffix for output file names.
+
+    Outputs:
+    Image files of the empirical cumulative distribution functions.
+    """
+
+    plt.rc("axes", labelsize=20, titlesize=24)
+    plt.rc("xtick", labelsize=20)
+    plt.rc("ytick", labelsize=20)
+    plt.rc("font", size=20)
+    plt.rc("legend", fontsize=20)
+
+    fig = plt.figure()
+
+    figureName = os.path.join(outputdir,'pplogabs_%s' %(info))
+    tmp = plotLogAbs2(dsList0, dsList1,
+                      valuesOfInterest, verbose=verbose)
+
+    beautify2()
+
+    # Prolong to the boundary
+    xmin, xmax = plt.xlim()
+    for i in tmp:
+        xdata = plt.getp(i, 'xdata')
+        xdata = numpy.insert(xdata, 0, xmin)
+        xdata = numpy.insert(xdata, len(xdata), xmax)
+        plt.setp(i, 'xdata', xdata)
+        ydata = plt.getp(i, 'ydata')
+        ydata = numpy.insert(ydata, 0, ydata[0])
+        ydata = numpy.insert(ydata, len(ydata), ydata[-1])
+        i.set_data(xdata, ydata)
+
+    plt.legend(loc='best')
+    saveFigure(figureName, figFormat=figformat, verbose=verbose)
+    plt.close(fig)
+    #set_trace()
 
     plt.rcdefaults()

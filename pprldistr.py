@@ -51,6 +51,8 @@ def beautifyECDF(axish=None):
     if axish is None:
         axish = plt.gca()
     plt.ylim(0.0, 1.0)
+    plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
+               ('0.0', '', '0.5', '', '1.0'))
     axish.grid('True')
 
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('pdf', 'eps'),
@@ -391,7 +393,8 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
                 plotECDF(x[numpy.isfinite(x)]/d, nn,
                          {'color': 'wheat', 'ls': '-', 'zorder': -1})
 
-    plt.axvline(x=maxEvalsFactor, color='k')
+    plt.axvline(max(i.mMaxEvals()/i.dim for i in dsList0), ls='--', color='k')
+    plt.axvline(max(i.mMaxEvals()/i.dim for i in dsList1), color='k')
     beautifyRLD(fig, figureName, evalfmax, fileFormat=figformat, text=text,
                 verbose=verbose)
     plt.close(fig)
