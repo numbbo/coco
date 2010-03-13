@@ -252,7 +252,7 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
         if n == 0:
             res.extend(plt.plot([], [], label=label, color=rldColors[i], linewidth=3))
             continue # no plot?
-        set_trace()
+
         x.sort()
         xtmp = x[:]
         #Catch negative values: zeros are not a problem...
