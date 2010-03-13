@@ -175,11 +175,11 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     line.append(bootstrap.sp(evals1, issuccessful=succ))
 
     # What's the situation?
-    txt = '%d-D'
+    txt = '%dD'
     if line[0][2] == 0 or line[1][2] == 0:
-        txt = '%d-D' % dim
+        txt = '%dD' % dim
     elif line[0][2] > 9 and line[1][2] > 9:
-        txt = '%d-D' % dim    
+        txt = '%dD' % dim    
     else:
         tmp = str(int(line[1][2]))
         tmp2 = str(int(line[0][2]))
