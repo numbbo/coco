@@ -278,10 +278,10 @@ def main(argv=None):
             raise Usage('Expect data from two different algorithms, could ' +
                         'only find one.')
         elif len(sortedAlgs) > 2:
-            raise Usage('Expect data from two different algorithms, found ' +
-                        'more than two.')
-            #raise Usage('Data with multiple algId %s ' % (sortedAlgs) +
-            #             'were found, the first two among will be processed.')
+            #raise Usage('Expect data from two different algorithms, found ' +
+            #            'more than two.')
+            warnings.warn('Data from folders: %s ' % (sortedAlgs) +
+                          'were found, the first two will be processed.')
 
         # Group by algorithm
         dsList0 = dictAlg[sortedAlgs[0]]

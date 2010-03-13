@@ -658,9 +658,8 @@ def processInputArgs(args, verbose=True):
             #redundant information. Only, the process could be more efficient
             #if pickle files were in a whole other location.
             dsList.extend(tmpDsList)
-            #TODO: Find an appropriate name for the algorithm considered?
-            alg = os.path.split(i)[1]
-            if alg == '':  # trailing slash or backslash
+            alg = os.path.split(i.rstrip(os.sep))[1]  # trailing slash or backslash
+            if alg == '':
                 alg = os.path.split(os.path.split(i)[0])[1]
               
             print '  using:', alg
