@@ -16,7 +16,7 @@ import numpy
 from pdb import set_trace
 from matplotlib import pyplot as plt
 try:
-    from matplotlib.transforms import blend_transform_factory as blend
+    from matplotlib.transforms import blended_transform_factory as blend
 except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend

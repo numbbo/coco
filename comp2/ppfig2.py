@@ -9,14 +9,16 @@ import os
 import sys
 import warnings
 import matplotlib.pyplot as plt
+from pdb import set_trace
 try:
-    from matplotlib.transforms import blend_transform_factory as blend
+    set_trace()
+    from matplotlib.transforms import blended_transform_factory as blend
 except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
 
 import numpy
-from pdb import set_trace
+
 from bbob_pproc import bootstrap, readalign
 from bbob_pproc.bootstrap import ranksums
 from bbob_pproc.ppfig import saveFigure
