@@ -72,12 +72,14 @@ def beautify2():
     """Format the figure of the run length distribution."""
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
+    plt.plot([1, 1], [0, 1], ls='-', color='k');  # symmetry line for ERT1/ERT0 = 1
     plt.ylim(0.0, 1.0)
     plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
                ('', '', '', '', ''))
-    xlim = plt.xlim()
-    plt.xlim(min(0.1, 10.**(-max(numpy.abs(numpy.log10(xlim))))),
-             max(10., 10.**(max(numpy.abs(numpy.log10(xlim))))))
+    xlim = max(numpy.abs(numpy.log10(plt.xlim())))
+    xlim = (min(0.1, 10.**(-xlim)), max(10., 10.**(xlim)))
+    plt.plot(xlim, [0.5, 0.5], ls='-', color='k', lw=2);  # symmetry line at y=0.5
+    plt.xlim(xlim)
     axisHandle.set_xlabel('log10 of RL1/RL0')
     axisHandle.set_ylabel('proportion')
     axisHandle.grid('True')
