@@ -156,8 +156,8 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     lastfvalue = min(entry0.evals[-1][0], entry1.evals[-1][0])
     if minfvalue < lastfvalue:
         isEarlyStop = True
-        ha = 'center'
-        va = 'top'
+        #ha = 'center'
+        #va = 'top'
 
     if not minfvalue or minfvalue < lastfvalue:
         minfvalue = lastfvalue
@@ -175,18 +175,10 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     line.append(bootstrap.sp(evals1, issuccessful=succ))
 
     # What's the situation?
-    txt = '%dD'
-    if line[0][2] == 0 or line[1][2] == 0:
-        txt = '%dD' % dim
-    elif line[0][2] > 9 and line[1][2] > 9:
-        txt = '%dD' % dim    
-    else:
+    txt = '%dD' % dim
+    if (line[0][2] > 0 and line[1][2] > 0 and line[1][2] < 10):
         tmp = str(int(line[1][2]))
         tmp2 = str(int(line[0][2]))
-        if line[0][2] > 9:
-            tmp = '>9'
-        elif line[1][2] > 9:
-            tmp2 = '>9'
         txt = tmp + '/' + tmp2
 
     dims = {2:0, 3:1, 5:2, 10:3, 20:4, 40:5}
@@ -200,8 +192,8 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     elif line[0][2] == 0:
         trans = blend(ax.transData, ax.transAxes)
         annotcoord = [minfvalue, -line[1][1]/2 + 0.5 + offset*(5-dims[dim])]
-        if va == 'top':
-            va = 'bottom'
+        #if va == 'top':
+        #    va = 'bottom'
         #plt.text(annotcoord[0], annotcoord[1], txt, transform=trans)
     elif line[1][2] == 0:
         trans = blend(ax.transData, ax.transAxes)

@@ -518,9 +518,8 @@ def main2(dsList0, dsList1, valuesOfInterest=None,
     plt.rc("font", size=20)
     plt.rc("legend", fontsize=20)
 
-    fig = plt.figure()
-
     figureName = os.path.join(outputdir,'pplogabs_%s' %(info))
+
     tmp = plotLogAbs2(dsList0, dsList1,
                       valuesOfInterest, verbose=verbose)
 
@@ -529,11 +528,20 @@ def main2(dsList0, dsList1, valuesOfInterest=None,
     # Prolong to the boundary
     xmin, xmax = plt.xlim()
     for i in tmp:
-        xdata, ydata = i.get_data()
+        try:
+            xdata, ydata = i.get_data()
+        except AttributeError:
+            xdata = i.get_xdata()
+            ydata = i.get_ydata()
         if len(xdata) == 0 or len(ydata) == 0:
             continue
         xdata = numpy.insert(xdata, 0, xmin)
-        xdata = numpy.insert(xdata, len(xdata), xmax)
+        try:
+            xdata = numpy.insert(xdata, len(xdata), xmax)
+        except OverflowError:
+            xdata = xdata + 0.0
+            # TODO: Hack for float conversion, compatibility with 0.8
+            xdata = numpy.insert(xdata, len(xdata), xmax)
         ydata = numpy.insert(ydata, 0, ydata[0])
         ydata = numpy.insert(ydata, len(ydata), ydata[-1])
         i.set_data(xdata, ydata)
@@ -548,7 +556,7 @@ def main2(dsList0, dsList1, valuesOfInterest=None,
 
     #set_trace()
     saveFigure(figureName, figFormat=figformat, verbose=verbose)
-    plt.close(fig)
+    plt.close()
     #set_trace()
 
     plt.rcdefaults()

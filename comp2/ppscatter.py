@@ -145,9 +145,14 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             #         markersize=10, markeredgewidth=3)
             tmp = (numpy.isinf(xdata)==False) * (numpy.isinf(ydata)==False)
             if tmp.any():
-                plt.plot(xdata[tmp], ydata[tmp], ls='', markersize=10,
-                         marker=markers[i], markerfacecolor='None',
-                         markeredgecolor=colors[i], markeredgewidth=3)
+                try:
+                    plt.plot(xdata[tmp], ydata[tmp], ls='', markersize=10,
+                             marker=markers[i], markerfacecolor='None',
+                             markeredgecolor=colors[i], markeredgewidth=3)
+                except KeyError:
+                    plt.plot(xdata[tmp], ydata[tmp], ls='', markersize=10,
+                             marker='x', markerfacecolor='None',
+                             markeredgecolor=colors[i], markeredgewidth=3)
                 #try:
                 #    plt.scatter(xdata[tmp], ydata[tmp], s=10, marker=markers[i],
                 #            facecolor='None', edgecolor=colors[i], linewidth=3)
@@ -163,10 +168,16 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                 #plt.scatter([1.]*numpy.sum(tmp), ydata[tmp], s=10, marker=markers[i],
                 #            facecolor='None', edgecolor=colors[i], linewidth=3,
                 #            transform=trans)
-                plt.plot([1.]*numpy.sum(tmp), ydata[tmp], markersize=10, ls='',
-                         marker=markers[i], markerfacecolor='None',
-                         markeredgecolor=colors[i], markeredgewidth=3,
-                         transform=trans)
+                try:
+                    plt.plot([1.]*numpy.sum(tmp), ydata[tmp], markersize=10, ls='',
+                             marker=markers[i], markerfacecolor='None',
+                             markeredgecolor=colors[i], markeredgewidth=3,
+                             transform=trans)
+                except KeyError:
+                    plt.plot([1.]*numpy.sum(tmp), ydata[tmp], markersize=10, ls='',
+                             marker='x', markerfacecolor='None',
+                             markeredgecolor=colors[i], markeredgewidth=3,
+                             transform=trans)
                 #set_trace()
 
             tmp = (numpy.isinf(xdata)==False) * numpy.isinf(ydata)
@@ -175,10 +186,17 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             #    plt.scatter(xdata[tmp], [1.]*numpy.sum(tmp), s=10, marker=markers[i],
             #                facecolor='None', edgecolor=colors[i], linewidth=3,
             #                transform=trans)
-                plt.plot(xdata[tmp], [1.]*numpy.sum(tmp), markersize=10, ls='',
-                         marker=markers[i], markerfacecolor='None',
-                         markeredgecolor=colors[i], markeredgewidth=3,
-                         transform=trans)
+                try:
+                    plt.plot(xdata[tmp], [1.]*numpy.sum(tmp), markersize=10, ls='',
+                             marker=markers[i], markerfacecolor='None',
+                             markeredgecolor=colors[i], markeredgewidth=3,
+                             transform=trans)
+                except KeyError:
+                    plt.plot(xdata[tmp], [1.]*numpy.sum(tmp), markersize=10, ls='',
+                             marker='x', markerfacecolor='None',
+                             markeredgecolor=colors[i], markeredgewidth=3,
+                             transform=trans)
+
                 #set_trace()
 
             tmp = numpy.isinf(xdata) * numpy.isinf(ydata)
@@ -186,10 +204,17 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             #    plt.scatter(xdata[tmp], [1.]*numpy.sum(tmp), s=10, marker=markers[i],
             #                facecolor='None', edgecolor=colors[i], linewidth=3,
             #                transform=trans)
-                plt.plot([1.]*numpy.sum(tmp), [1.]*numpy.sum(tmp), markersize=10, ls='',
-                         marker=markers[i], markerfacecolor='None',
-                         markeredgecolor=colors[i], markeredgewidth=3,
-                         transform=ax.transAxes)
+                try:
+                    plt.plot([1.]*numpy.sum(tmp), [1.]*numpy.sum(tmp), markersize=10, ls='',
+                             marker=markers[i], markerfacecolor='None',
+                             markeredgecolor=colors[i], markeredgewidth=3,
+                             transform=ax.transAxes)
+                except KeyError:
+                    plt.plot([1.]*numpy.sum(tmp), [1.]*numpy.sum(tmp), markersize=10, ls='',
+                             marker='x', markerfacecolor='None',
+                             markeredgecolor=colors[i], markeredgewidth=3,
+                             transform=ax.transAxes)
+
                 #set_trace()
 
         beautify()
