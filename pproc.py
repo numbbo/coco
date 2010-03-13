@@ -642,7 +642,6 @@ def processInputArgs(args, verbose=True):
     dsList = list()
     sortedAlgs = list()
     dictAlg = {}
-
     for i in args:
         if os.path.isfile(i):
             txt = ('The post-processing cannot operate on the single file'
@@ -661,6 +660,10 @@ def processInputArgs(args, verbose=True):
             dsList.extend(tmpDsList)
             #TODO: Find an appropriate name for the algorithm considered?
             alg = os.path.split(i)[1]
+            if alg == '':  # trailing slash or backslash
+                alg = os.path.split(os.path.split(i)[0])[1]
+              
+            print '  using:', alg
             sortedAlgs.append(alg)
             dictAlg[alg] = tmpDsList
         else:
