@@ -25,6 +25,8 @@ from bbob_pproc import readalign
 figFormat = ('eps', 'pdf')
 colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
+offset = 0. #0.02
+# offset provides a way to move away the box boundaries to display the outer markers fully 
 
 #Get benchmark short infos.
 funInfos = {}
@@ -56,6 +58,7 @@ def beautify():
     ymin, ymax = plt.ylim()
     minbnd = min(xmin, ymin)
     maxbnd = max(xmax, ymax)
+    maxbnd = maxbnd ** (1 + 11.*offset/(numpy.log10(float(maxbnd)/minbnd)))
     plt.plot([minbnd, maxbnd], [minbnd, maxbnd], ls='-', color='k')
     plt.plot([10*minbnd, 10*maxbnd], [minbnd, maxbnd], ls=':', color='k')
     plt.plot([100*minbnd, 100*maxbnd], [minbnd, maxbnd], ls=':', color='k')
@@ -73,6 +76,9 @@ def beautify():
         tmp2.append('%d' % round(numpy.log10(i)))
     a.set_yticklabels(tmp2)
     a.set_xticklabels(tmp2)
+    #for line in a.get_xticklines():# + a.get_yticklines():
+    #    plt.setp(line, color='b', marker='o', markersize=10)
+    #set_trace()
 
 def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
 
@@ -173,48 +179,46 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                     plt.plot([1.]*numpy.sum(tmp), ydata[tmp], markersize=10, ls='',
                              marker=markers[i], markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3,
-                             transform=trans)
+                             transform=trans, clip_on=False)
                 except KeyError:
                     plt.plot([1.]*numpy.sum(tmp), ydata[tmp], markersize=10, ls='',
                              marker='x', markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3,
-                             transform=trans)
+                             transform=trans, clip_on=False)
                 #set_trace()
 
             tmp = (numpy.isinf(xdata)==False) * numpy.isinf(ydata)
             if tmp.any():
                 trans = blend(ax.transData, ax.transAxes)
-            #    plt.scatter(xdata[tmp], [1.]*numpy.sum(tmp), s=10, marker=markers[i],
-            #                facecolor='None', edgecolor=colors[i], linewidth=3,
-            #                transform=trans)
+                #    plt.scatter(xdata[tmp], [1.-offset]*numpy.sum(tmp), s=10, marker=markers[i],
+                #                facecolor='None', edgecolor=colors[i], linewidth=3,
+                #                transform=trans)
                 try:
-                    plt.plot(xdata[tmp], [1.]*numpy.sum(tmp), markersize=10, ls='',
+                    plt.plot(xdata[tmp], [1.-offset]*numpy.sum(tmp), markersize=10, ls='',
                              marker=markers[i], markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3,
-                             transform=trans)
+                             transform=trans, clip_on=False)
                 except KeyError:
-                    plt.plot(xdata[tmp], [1.]*numpy.sum(tmp), markersize=10, ls='',
+                    plt.plot(xdata[tmp], [1.-offset]*numpy.sum(tmp), markersize=10, ls='',
                              marker='x', markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3,
-                             transform=trans)
-
-                #set_trace()
+                             transform=trans, clip_on=False)
 
             tmp = numpy.isinf(xdata) * numpy.isinf(ydata)
             if tmp.any():
-            #    plt.scatter(xdata[tmp], [1.]*numpy.sum(tmp), s=10, marker=markers[i],
-            #                facecolor='None', edgecolor=colors[i], linewidth=3,
-            #                transform=trans)
+                #    plt.scatter(xdata[tmp], [1.-offset]*numpy.sum(tmp), s=10, marker=markers[i],
+                #                facecolor='None', edgecolor=colors[i], linewidth=3,
+                #                transform=trans)
                 try:
-                    plt.plot([1.]*numpy.sum(tmp), [1.]*numpy.sum(tmp), markersize=10, ls='',
+                    plt.plot([1.-offset]*numpy.sum(tmp), [1.-offset]*numpy.sum(tmp), markersize=10, ls='',
                              marker=markers[i], markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3,
-                             transform=ax.transAxes)
+                             transform=ax.transAxes, clip_on=False)
                 except KeyError:
-                    plt.plot([1.]*numpy.sum(tmp), [1.]*numpy.sum(tmp), markersize=10, ls='',
+                    plt.plot([1.-offset]*numpy.sum(tmp), [1.-offset]*numpy.sum(tmp), markersize=10, ls='',
                              marker='x', markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3,
-                             transform=ax.transAxes)
+                             transform=ax.transAxes, clip_on=False)
 
                 #set_trace()
 
@@ -226,6 +230,5 @@ def main(dsList0, dsList1, outputdir, verbose=True):
         filename = os.path.join(outputdir, 'scatter_f%d' % f)
         saveFigure(filename, figFormat=figFormat, verbose=verbose)
         plt.close()
-        #set_trace()
 
     plt.rcdefaults()
