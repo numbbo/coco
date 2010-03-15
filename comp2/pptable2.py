@@ -165,7 +165,7 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                 line0.append(tmp)
 
             tmp = bestalgentry.detEvals([targetf])[0][0]
-            tmp2 = numpy.sum(numpy.isnan(tmp) == False)                
+            tmp2 = numpy.sum(numpy.isnan(tmp) == False)
             curline.append('%d' % (tmp2))
             if tmp2 > 0:
                 curline.append('/%d' % len(tmp))
@@ -199,7 +199,7 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         if numpy.isnan(float(j)/bestalgdata[i]):
                             set_trace()
                         tableentry = writeFEvals2(float(j)/bestalgdata[i], 2)
-    
+
                         if tableentry.find('e') > -1:
                             tableentry = r'\multicolumn{2}{@{}c@{}}{%s}' % tableentry
                         else:
@@ -212,7 +212,7 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     line1[numpy.isnan(line1)] = -entry.finalfunvals[numpy.isnan(line1)]
 
                     z, p = ranksums(line0[i], line1)
-                    nbtests = 1 # TODO?
+                    nbtests = len(funcs) * 2. #len(dimsOfInterest)
                     if (nbtests * p) < 0.05:
                         nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                         #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])

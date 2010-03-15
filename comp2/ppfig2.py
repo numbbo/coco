@@ -220,19 +220,19 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
         # numpy.arange(1., 1. - 0.1 * nbstars, -0.1) not having the right number
         # of elements due to numerical error
         ystars = [annotcoord[1]] * nbstars
-    
+
         try:
             h = plt.plot(xstars, ystars, marker='*', ls='', color='w',
                          markersize=5*linewidth, markeredgecolor='k',
                          markerfacecolor='None',
                          zorder=20, markeredgewidth = 0.4 * linewidth,
-                         transform=trans)
+                         transform=trans, clip_on=False)
         except KeyError:
             #Version problem
             h = plt.plot(xstars, ystars, marker='+', ls='', color='w',
                          markersize=2.5*linewidth, markeredgecolor='k',
                          zorder=20, markeredgewidth = 0.2 * linewidth,
-                         transform=trans)
+                         transform=trans, clip_on=False)
 
 def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
     """Returns ERT1/ERT0 comparison figure."""
@@ -372,14 +372,13 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             plt.plot((dataofinterest[idx, 0][0], ), (ydata[0], ), marker='D',
                      color=colors[i], lw=linewidth, markeredgecolor=colors[i],
                      markerfacecolor='None', markeredgewidth=linewidth,
-                     markersize=3*linewidth)
+                     markersize=3*linewidth, clip_on=False)
 
             # marker for the other algorithm stop
             plt.plot((dataofinterest[idx, 0][-1], ), (ydata[-1], ), marker='D',
                      color=colors[i], lw=linewidth, markeredgecolor=colors[i],
                      markerfacecolor='None', markeredgewidth=linewidth,
-                     markersize=3*linewidth)
-            
+                     markersize=3*linewidth, clip_on=False)
 
         if isBenchmarkinfosFound:
             plt.title(funInfos[func])
