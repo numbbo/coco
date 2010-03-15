@@ -129,7 +129,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
     funcs = set(dictFunc0.keys()) & set(dictFunc1.keys())
 
     targets = numpy.power(10, numpy.arange(-40, 6)/5.)
-    
+
     for f in funcs:
         dictDim0 = dictFunc0[f].dictByDim()
         dictDim1 = dictFunc1[f].dictByDim()
@@ -168,7 +168,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
 
             #ax = plt.gca()
             ax = plt.axes()
-            
+
             tmp = numpy.isinf(xdata) * (numpy.isinf(ydata)==False)
             if tmp.any():
                 trans = blend(ax.transAxes, ax.transData)
