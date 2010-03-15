@@ -192,16 +192,21 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                 for i, j in enumerate(data):
                     #if numpy.isnan(float(j)/bestalgdata[i]):
                     #    set_trace()
+                    alignment = 'c'
+                    if i == len(data) - 1: # last element
+                        alignment = 'c|'
                     if numpy.isinf(bestalgdata[i]):
-                        tableentry = r'\multicolumn{2}{@{}c@{}}{\textit{%s}}' % writeFEvals2(float(j), 2)
+                        tableentry = (r'\multicolumn{2}{@{}%s@{}}{\textit{%s}}'
+                                      % (alignment, writeFEvals2(float(j), 2)))
                     else:
                         # Formatting
-                        if numpy.isnan(float(j)/bestalgdata[i]):
-                            set_trace()
+                        #if numpy.isnan(float(j)/bestalgdata[i]):
+                        #    set_trace()
                         tableentry = writeFEvals2(float(j)/bestalgdata[i], 2)
 
                         if tableentry.find('e') > -1:
-                            tableentry = r'\multicolumn{2}{@{}c@{}}{%s}' % tableentry
+                            tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
+                                          % (alignment, tableentry))
                         else:
                             if tableentry.find('.') > -1:
                                 tableentry = ' & .'.join(tableentry.split('.'))
@@ -247,7 +252,7 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         outputfile = os.path.join(outputdir, 'cmptable_%02dD%s.tex' % (d, info))
         spec = '@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         res = r'\providecommand{\algzeroshort}{%s}' % alg0 + '\n'
-        res += r'\providecommand{\algoneshort}{%s}' % alg1 + '\n'        
+        res += r'\providecommand{\algoneshort}{%s}' % alg1 + '\n'
         res += tableLaTeX(table, spec=spec, extraeol=extraeol)
         f = open(outputfile, 'w')
         f.write(res)
