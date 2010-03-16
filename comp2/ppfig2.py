@@ -35,6 +35,7 @@ markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 linewidth = 3
 offset = 0.005
 incrstars = 1.5
+fthresh = 1e-8
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
@@ -58,19 +59,19 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in scaling figures will not be displayed.'
 
-def generateData(entry0, entry1):
+def generateData(entry0, entry1, fthresh=None):
 
     def alignData(i0, i1):
         """Returns two arrays of fevals aligned on function evaluations.
         """
-    
+
         res = readalign.alignArrayData(readalign.HArrayMultiReader([i0.evals,
                                                                     i1.evals]))
         idx = 1 + i0.nbRuns()
         data0 = res[:, numpy.r_[0, 1:idx]]
         data1 = res[:, numpy.r_[0, idx:idx+i1.nbRuns()]]
         return data0, data1
-    
+
     def computeERT(hdata, maxevals):
         res = []
         for i in hdata:
@@ -88,6 +89,22 @@ def generateData(entry0, entry1):
     data0 = computeERT(tmpdata0, entry0.maxevals)
     data1 = computeERT(tmpdata1, entry1.maxevals)
 
+    if fthresh and (tmpdata0[:, 0] < fthresh).any():
+        if not (tmpdata0[:, 0] == fthresh).any():
+            tmp0 = entry0.detEvals([fthresh])[0]
+            tmp0 = numpy.reshape(numpy.insert(tmp0, 0, fthresh), (1, -1))
+            tmp0 = computeERT(tmp0, entry0.maxevals)
+            data0 = numpy.concatenate((data0, tmp0))
+
+            tmp1 = entry1.detEvals([fthresh])[0]
+            tmp1 = numpy.reshape(numpy.insert(tmp1, 0, fthresh), (1, -1))
+            tmp1 = computeERT(tmp1, entry1.maxevals)
+            data1 = numpy.concatenate((data1, tmp1))
+
+        data0 = data0[data0[:, 0] >= fthresh]
+        data1 = data1[data1[:, 0] >= fthresh]
+        #set_trace()
+
     return data0, data1
 
 def plotERTRatio(data, plotargs={}):
@@ -97,13 +114,13 @@ def plotERTRatio(data, plotargs={}):
     which first column is the target function values and the second the 
     ERT.
     """
-    
+
     res = []
     idx = numpy.isfinite(data[0][:, 1]) * numpy.isfinite(data[1][:, 1])
     ydata = data[1][idx, 1]/data[0][idx, 1]
     h = plt.plot(data[0][idx, 0] , ydata, ls='--', **plotargs)
     res.extend(h)
-    
+
     return h
 
 def beautify(xmin=None):
@@ -148,7 +165,7 @@ def beautify(xmin=None):
 
 def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     """Display some annotations associated to the graphs generated."""
-    
+
     isEarlyStop = False
     ha = 'left'
     va = 'center'
@@ -271,7 +288,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
 
             nbtests += 1
             # generateData:
-            data = generateData(entry0, entry1)
+            data = generateData(entry0, entry1, fthresh=fthresh)
             dataperdim[dim] = data
 
             # TODO: hack, modify slightly so line goes to 'zero'
@@ -318,6 +335,17 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
 
             tmp0 = numpy.isfinite(data[0][:, 1])
             tmp1 = numpy.isfinite(data[1][:, 1])
+            idx = tmp0 * tmp1
+
+            #Do not plot anything else if it happens after minfvalue
+            if data[0][idx, 0][-1] <= minfvalue:
+                # hack for the legend
+                plt.plot((data[0][idx, 0][-1]**2, ), (ydata[-1], ), marker='D',
+                         color=colors[i], lw=linewidth, label='%2d-D' % dim,
+                         markeredgecolor=colors[i], markerfacecolor='None',
+                         markeredgewidth=linewidth, markersize=3*linewidth)
+                continue
+
             # Determine which algorithm went further
             algstoppedlast = 0
             algstoppedfirst = 1
@@ -327,7 +355,6 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
                 algstoppedfirst = 0
 
             #marker if an algorithm stopped
-            idx = tmp0 * tmp1
             ydata = data[1][idx, 1]/data[0][idx, 1]
             plt.plot((data[0][idx, 0][-1], ), (ydata[-1], ), marker='D',
                      color=colors[i], lw=linewidth, label='%2d-D' % dim,
@@ -373,7 +400,9 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
                      markerfacecolor='None', markeredgewidth=linewidth,
                      markersize=3*linewidth)
 
-            # marker for the other algorithm stop
+            #Do not plot anything else if it happens after minfvalue
+            if dataofinterest[idx, 0][-1] <= minfvalue:
+                continue
             plt.plot((dataofinterest[idx, 0][-1], ), (ydata[-1], ), marker='D',
                      color=colors[i], lw=linewidth, markeredgecolor=colors[i],
                      markerfacecolor='None', markeredgewidth=linewidth,
