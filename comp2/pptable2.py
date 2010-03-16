@@ -218,7 +218,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
                     z, p = ranksums(line0[i], line1)
                     nbtests = len(funcs) * 2. #len(dimsOfInterest)
-                    if (nbtests * p) < 0.05 and z * numpy.log10(j) > 0:  # z-value and ERT-ratio must agree   
+                    if (nbtests * p) < 0.05 and ((numpy.isinf(bestalgdata[i]) and numpy.isinf(j)) 
+                                                 or z * (bestalgdata[i] - j) > 0):  # z-value and ERT-ratio must agree   
                         nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                         #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
                         if nbstars > 0:
