@@ -128,7 +128,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
     dictFunc1 = dsList1.dictByFunc()
     funcs = set(dictFunc0.keys()) & set(dictFunc1.keys())
 
-    nbmarkers = 23
+    nbmarkers = 46
     inc = 45./(nbmarkers-1)
     targets = numpy.power(10, numpy.arange(-40, 5 + inc, inc)/5.)
 
