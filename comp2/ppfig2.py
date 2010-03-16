@@ -242,13 +242,13 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
                          markersize=5*linewidth, markeredgecolor='k',
                          markerfacecolor='None',
                          zorder=20, markeredgewidth = 0.4 * linewidth,
-                         transform=trans)
+                         transform=trans, clip_on=False)
         except KeyError:
             #Version problem
             h = plt.plot(xstars, ystars, marker='+', ls='', color='w',
                          markersize=2.5*linewidth, markeredgecolor='k',
                          zorder=20, markeredgewidth = 0.2 * linewidth,
-                         transform=trans)
+                         transform=trans, clip_on=False)
 
 def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
     """Returns ERT1/ERT0 comparison figure."""
