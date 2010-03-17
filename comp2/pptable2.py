@@ -224,11 +224,11 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
                         if nbstars > 0:
                             if z > 0: 
-                                tmp = '+'
+                                tmp = '+' * nbstars
                             else: 
-                                tmp = '-'
+                                tmp = '-' * nbstars
                                 # print z, line0[i], line1
-                            if nbstars > 1:
+                            if 11 < 3 and nbstars > 1:
                                 tmp += str(int(nbstars))
                             if tableentry.endswith('}'):
                                 tableentry = tableentry[:-1]
