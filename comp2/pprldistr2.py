@@ -163,7 +163,7 @@ def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
                     x.append(ERT[1][j]/ERT[0][j])
                     nn += 1
             for j in s1 - s0:
-                x.append(numpy.inf) # TODO: why hasn't this ever be called?
+                x.append(numpy.inf)
                 nn += 1
 
     if len(set(fvalueToReach.values())):
@@ -267,7 +267,7 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
             continue # no plot?
 
         x.sort()
-        xtmp = x[:]
+        #xtmp = x.copy()
         #Catch negative values: zeros are not a problem...
         #tmp = 0
         tmp = len(list(i for i in x if i <= 0))

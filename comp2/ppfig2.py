@@ -180,12 +180,12 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
 
     line = []
     data0 = entry0.detEvals([minfvalue])[0]
-    evals0 = data0[:]
+    evals0 = data0.copy()
     succ = (numpy.isnan(evals0) == False)
     evals0[numpy.isnan(evals0)] = entry0.maxevals[numpy.isnan(evals0)]
     line.append(bootstrap.sp(evals0, issuccessful=succ))
     data1 = entry1.detEvals([minfvalue])[0]
-    evals1 = data1[:]
+    evals1 = data1.copy()
     succ = (numpy.isnan(evals1) == False)
     evals1[numpy.isnan(evals1)] = entry1.maxevals[numpy.isnan(evals1)]
     line.append(bootstrap.sp(evals1, issuccessful=succ))
@@ -199,22 +199,20 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
 
     dims = {2:0, 3:1, 5:2, 10:3, 20:4, 40:5}
     ax = plt.gca()
+    assert line[0][2] > 0 or line[1][2] > 0
+    signdata = line[1][0] - line[0][0]
+
     if line[0][2] > 0 and line[1][2] > 0:
         trans = ax.transData
         annotcoord = [minfvalue, line[1][0]/line[0][0]]
-        #plt.text(annotcoord[0], annotcoord[1], txt)
-    elif line[0][2] == 0 and line[1][2] == 0:
-        set_trace() # should not occur
     elif line[0][2] == 0:
         trans = blend(ax.transData, ax.transAxes)
         annotcoord = [minfvalue, -line[1][1]/2 + 0.5 + offset*(5-dims[dim])]
         #if va == 'top':
         #    va = 'bottom'
-        #plt.text(annotcoord[0], annotcoord[1], txt, transform=trans)
     elif line[1][2] == 0:
         trans = blend(ax.transData, ax.transAxes)
         annotcoord = [minfvalue, line[0][1]/2 + 0.5 - offset*(5-dims[dim])]
-        #plt.text(annotcoord[0], annotcoord[1], txt, transform=trans)
 
     plt.text(annotcoord[0], annotcoord[1], txt, horizontalalignment=ha,
              verticalalignment=va, transform=trans)
@@ -225,10 +223,11 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     line1 = numpy.power(data1, -1.)
     line1[numpy.isnan(line1)] = -entry1.finalfunvals[numpy.isnan(line1)]
     # one-tailed statistics: scipy.stats.mannwhitneyu, two-tailed statistics: scipy.stats.ranksums
-    z, p = ranksums(line0[1:], line1[1:])
+    z, p = ranksums(line0, line1)
     # Set the correct line in data0 and data1
     nbstars = 0
-    if (nbtests * p) < 0.05:
+    # sign of z-value and data must agree
+    if ((nbtests * p) < 0.05 and (z * signdata) > 0):
         nbstars = -numpy.ceil(numpy.log10(nbtests * p))
     if nbstars > 0:
         xstars = annotcoord[0] * numpy.power(incrstars, numpy.arange(1., 1. + nbstars))
