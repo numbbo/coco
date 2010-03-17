@@ -393,6 +393,7 @@ def ranksums(x, y):
     x = ranked[:n1]
     y = ranked[n1:]
     s = numpy.sum(x,axis=0)
+    assert s + numpy.sum(y,axis=0) == numpy.sum(range(n1+n2+1))
     expected = n1*(n1+n2+1) / 2.0
     z = (s - expected) / numpy.sqrt(n1*n2*(n1+n2+1)/12.0)
     prob = 2*(1.0 -zprob(abs(z)))
