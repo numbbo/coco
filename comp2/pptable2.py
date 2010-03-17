@@ -146,6 +146,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         dictFunc1 = dictDim1[d].dictByFunc()
         funcs = set.union(set(dictFunc0.keys()), set(dictFunc1.keys()))
 
+        nbtests = len(funcs) * 2. #len(dimsOfInterest)
+
         for f in sorted(funcs):
             bestalgentry = bestalg.bestalgentries[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
@@ -155,14 +157,14 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             for i in bestalgdata[:-1]:
                 curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % writeFEvals2(i, 2))
             curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}' % writeFEvals2(bestalgdata[-1], 2))
-            line0 = []
+            rankdatabest = []
             for i, j in enumerate(bestalgevals):
                 if bestalgalgs[i] is None:
                     tmp = -bestalgentry.finalfunvals[bestalgentry.algs[-1]]
                 else:
                     tmp = numpy.power(j, -1.)
                     tmp[numpy.isnan(tmp)] = -bestalgentry.finalfunvals[bestalgalgs[i]][numpy.isnan(tmp)]
-                line0.append(tmp)
+                rankdatabest.append(tmp)
 
             tmp = bestalgentry.detEvals([targetf])[0][0]
             tmp2 = numpy.sum(numpy.isnan(tmp) == False)
@@ -172,6 +174,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
             table.append(curline[:])
             extraeol.append('')
+
+            rankdata0 = []
 
             for nb, entries in enumerate((dictFunc0, dictFunc1)):
                 try:
@@ -189,7 +193,11 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
                 data = entry.detERT(targetsOfInterest)
                 evals = entry.detEvals(targetsOfInterest)
-                for i, j in enumerate(data):  # is j an appropriate identifier here? 
+                if nb == 0:
+                    assert not isinstance(data, numpy.ndarray)
+                    data0 = data[:] # check if it is not an array
+
+                for i, j in enumerate(data):  # is j an appropriate identifier here?
                     #if numpy.isnan(float(j)/bestalgdata[i]):
                     #    set_trace()
                     alignment = 'c'
@@ -200,8 +208,7 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                                       % (alignment, writeFEvals2(float(j), 2)))
                     else:
                         # Formatting
-                        #if numpy.isnan(float(j)/bestalgdata[i]):
-                        #    set_trace()
+                        assert not numpy.isnan(float(j)/bestalgdata[i])
                         tableentry = writeFEvals2(float(j)/bestalgdata[i], 2)
 
                         if tableentry.find('e') > -1:
@@ -213,41 +220,66 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             else:
                                 tableentry += '&'
 
-                    line1 = numpy.power(evals[i], -1.)
-                    line1[numpy.isnan(line1)] = -entry.finalfunvals[numpy.isnan(line1)]
+                    currankdata = numpy.power(evals[i], -1.)
+                    currankdata[numpy.isnan(currankdata)] = -entry.finalfunvals[numpy.isnan(currankdata)]
 
-                    z, p = ranksums(line0[i], line1)
-                    nbtests = len(funcs) * 2. #len(dimsOfInterest)
+                    if nb == 0:
+                        rankdata0.append(currankdata.copy())
+                        addition = ''
+                    else: #nb==1
+                        z, p = ranksums(rankdata0[i], currankdata)
+                        tmp = '.'
+                        #addition = '' # Uncomment to gain space. Meanwhile it displays the worst case scenario
+                        if ((nbtests * p) < 0.05
+                            and ((numpy.isinf(data0[i]) and numpy.isinf(j))
+                                 or z * (j - data0[i]) > 0)):  # z-value and ERT-ratio must agree
+                            nbstars = -numpy.ceil(numpy.log10(nbtests * p))
+                            if z > 0:
+                                tmp = '+' * nbstars
+                            else:
+                                tmp = '-' * nbstars
+                                # print z, linebest[i], line1
+                            if 11 < 3 and nbstars > 1:
+                                tmp += str(int(nbstars))
+                            #addition = '/' + tmp # uncomment to gain space.
+                        addition = '/' + tmp # Comment and uncomment line above to gain space
+
+                    superscript = ''
+                    if addition:
+                        superscript = '.'
+
+                    #set_trace()
+                    z, p = ranksums(rankdatabest[i], currankdata)
                     if ((nbtests * p) < 0.05
                         and ((numpy.isinf(bestalgdata[i]) and numpy.isinf(j))
                              or z * (j - bestalgdata[i]) > 0)):  # z-value and ERT-ratio must agree
                         nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                         #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
-                        if nbstars > 0:
-                            if z > 0: 
-                                tmp = '+' * nbstars
-                            else: 
-                                tmp = '-' * nbstars
-                                # print z, line0[i], line1
-                            if 11 < 3 and nbstars > 1:
-                                tmp += str(int(nbstars))
-                            if tableentry.endswith('}'):
-                                tableentry = tableentry[:-1]
-                                tableentry += '$^{' + tmp + '}$}'
-                            else:
-                                tableentry += '$^{' + tmp + '}$'
+                        #set_trace()
+                        if z > 0:
+                            superscript = '+' * nbstars
+                        else:
+                            superscript = '-' * nbstars
+                            # print z, linebest[i], line1
+                        if 11 < 3 and nbstars > 1:
+                            superscript += str(int(nbstars))
+
+                    if superscript or addition:
+                        if tableentry.endswith('}'):
+                            tableentry = tableentry[:-1]
+                            tableentry += '$^{' + superscript + addition + '}$}'
+                        else:
+                            tableentry += '$^{' + superscript + addition + '}$'
 
                     curline.append(tableentry)
 
-                tmp = entry.evals[entry.evals[:, 0] <= targetf, 1:] # set as global variable?
+                tmp = entry.evals[entry.evals[:, 0] <= targetf, 1:]
                 try:
                     tmp = tmp[0]
                     curline.append('%d' % numpy.sum(numpy.isnan(tmp) == False))
                 except IndexError:
                     curline.append('%d' % 0)
                 curline.append('/%d' % entry.nbRuns())
-                #if any(numpy.isinf(data)) and numpy.sum(numpy.isnan(tmp) == False) == 15:
-                    #set_trace()
 
                 table.append(curline[:])
                 extraeol.append('')
