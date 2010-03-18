@@ -432,7 +432,7 @@ def writeFEvals2(fevals, precision=2, maxdigits=None):
 
         return repr2
 
-def tableLaTeX(table, spec, extraeol=(), pos=''):
+def tableLaTeX(table, spec, extraeol=()):
     """Generates a latex tabular from a sequence of sequence (table) of strings.
 
     Keyword arguments:
@@ -440,25 +440,47 @@ def tableLaTeX(table, spec, extraeol=(), pos=''):
     spec -- string for table specification, see http://en.wikibooks.org/wiki/LaTeX/Tables#The_tabular_environment 
     extraeol -- sequence of string the same length as the table (same number of
                 lines) which are added at the end of each line. 
-    pos -- string that is a valid vertical position, optional argument to the tabular
-           environment, either string t, c or b.
     """
-
-    if pos:
-        pos = '['+pos+']'
 
     if not extraeol:
         extraeol = len(table) * ['']
 
     # TODO: check that spec and extraeol have the right format? 
 
-    res = [r'\begin{tabular}' + pos + '{' + spec + '}']
+    res = [r'\begin{tabular}{%s}' % spec]
     for i, line in enumerate(table[:-1]):
         curline = ' & '.join(line) + r'\\' + extraeol[i]
         res.append(curline)
     res.append(' & '.join(table[-1]) + extraeol[-1])
 
     res.append(r'\end{tabular}')
+    res = '\n'.join(res)
+    return res
+
+def tableLaTeXStar(table, width, spec, extraeol=()):
+    """Generates a latex tabular* from a sequence of sequence (table) of strings
+
+    Keyword arguments:
+    table -- sequence of sequence of strings
+    width -- string for the width of the table
+    spec -- string for table specification, see http://en.wikibooks.org/wiki/LaTeX/Tables#The_tabular_environment 
+    extraeol -- sequence of string the same length as the table (same number of
+                lines) which are added at the end of each line.
+    """
+
+    if not extraeol:
+        extraeol = len(table) * ['']
+
+
+    # TODO: check that spec and extraeol have the right format?
+
+    res = [r'\begin{tabular*}{%s}{%s}' % (width, spec)]
+    for i, line in enumerate(table[:-1]):
+        curline = ' & '.join(line) + r'\\' + extraeol[i]
+        res.append(curline)
+    res.append(' & '.join(table[-1]) + extraeol[-1])
+
+    res.append(r'\end{tabular*}')
     res = '\n'.join(res)
     return res
 

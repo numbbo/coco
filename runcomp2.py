@@ -259,20 +259,28 @@ def main(argv=None):
         for i in dsList:
             if not i.dim in (2, 3, 5, 10, 20):
                 continue
-            # Deterministic algorithms
-            if i.algId in ('Original DIRECT', ):
-                tmpInstancesOfInterest = instancesOfInterestDet
-            else:
-                tmpInstancesOfInterest = instancesOfInterest
 
-            if ((dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
-                tmpInstancesOfInterest) and
-                (dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
-                instancesOfInterest2010)):
+            #### The following lines are BBOB 2009 checking.###################
+            # Deterministic algorithms
+            #if i.algId in ('Original DIRECT', ):
+                #tmpInstancesOfInterest = instancesOfInterestDet
+            #else:
+                #tmpInstancesOfInterest = instancesOfInterest
+            #if ((dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
+                #tmpInstancesOfInterest) and
+                #(dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
+                #instancesOfInterest2010)):
+                #warnings.warn('The data of %s do not list ' %(i) +
+                              #'the correct instances ' +
+                              #'of function F%d or the ' %(i.funcId) +
+                              #'correct number of trials for each.')
+            ###################################################################
+
+            if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
+                instancesOfInterest2010):
                 warnings.warn('The data of %s do not list ' %(i) +
                               'the correct instances ' +
-                              'of function F%d or the ' %(i.funcId) +
-                              'correct number of trials for each.')
+                              'of function F%d.' %(i.funcId))
 
         if len(sortedAlgs) < 2:
             raise Usage('Expect data from two different algorithms, could ' +
