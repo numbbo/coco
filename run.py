@@ -447,14 +447,21 @@ def main(argv=None):
 
         if (verbose):
             for i in dsList:
-                if ((dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
-                    instancesOfInterest) and
-                    (dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
-                    instancesOfInterest2010)):
+                if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
+                    instancesOfInterest2010):
                     warnings.warn('The data of %s do not list ' %(i) +
                                   'the correct instances ' +
-                                  'of function F%d or the ' %(i.funcId) +
-                                  'correct number of trials for each.')
+                                  'of function F%d.' %(i.funcId))
+
+                # BBOB 2009 Checking
+                #if ((dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
+                    #instancesOfInterest) and
+                    #(dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
+                    #instancesOfInterest2010)):
+                    #warnings.warn('The data of %s do not list ' %(i) +
+                                  #'the correct instances ' +
+                                  #'of function F%d or the ' %(i.funcId) +
+                                  #'correct number of trials for each.')
 
         dictAlg = dsList.dictByAlg()
         if len(dictAlg) > 1:

@@ -13,7 +13,7 @@ import os
 import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bestalg
-from bbob_pproc.pptex import tableLaTeX
+from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar
 #from bbob_pproc import ranksumtest
 from bbob_pproc.bootstrap import ranksums
 #from bbob_pproc.pplogloss import detERT
@@ -136,8 +136,9 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
     header = [r'$\Delta f$']
     for i in targetsOfInterest:
-        header.append(r'\multicolumn{2}{@{}c@{}}{$10^{%d}$}' % (int(numpy.log10(i))))
-    header.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
+        #header.append(r'\multicolumn{2}{@{}c@{}}{$10^{%d}$}' % (int(numpy.log10(i))))
+        header.append(r'\multicolumn{2}{@{}c@{}}{1e%+d}' % (int(numpy.log10(i))))
+    header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}')
 
     for d in dimsOfInterest: # TODO set as input arguments
         table = [header]
@@ -183,9 +184,9 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                 except KeyError:
                     continue
                 if nb == 0:
-                    curline = [r'0:\:\algzeroshort\hspace*{\fill}']
+                    curline = [r'0:\:\algzeroshort']#\hspace*{\fill}']
                 else:
-                    curline = [r'1:\:\algoneshort\hspace*{\fill}']
+                    curline = [r'1:\:\algoneshort']#\hspace*{\fill}']
 
                 #curline = [r'\alg%sshort' % tmp]
                 #curline = [r'Alg%d' % nb]
@@ -204,20 +205,29 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     if i == len(data) - 1: # last element
                         alignment = 'c|'
                     if numpy.isinf(bestalgdata[i]):
-                        tableentry = (r'\multicolumn{2}{@{}%s@{}}{\textit{%s}}'
+                        tableentry = (r'\multicolumn{2}{@{}%s@{}}{\textbf{\textit{%s}}}'
                                       % (alignment, writeFEvals2(float(j), 2)))
+                        # TODO: is this the correct behaviour?
                     else:
                         # Formatting
                         assert not numpy.isnan(float(j)/bestalgdata[i])
-                        tableentry = writeFEvals2(float(j)/bestalgdata[i], 2)
+                        tmp = float(j)/bestalgdata[i]
+                        tableentry = writeFEvals2(tmp, 2)
+                        isBold = False
+                        if tmp <= 3:
+                            isBold = True
 
                         if tableentry.find('e') > -1:
+                            if isBold:
+                                tableentry = r'\textbf{%s}' % tableentry
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
                         else:
-                            if tableentry.find('.') > -1:
-                                tableentry = ' & .'.join(tableentry.split('.'))
-                            else:
+                            tmp = tableentry.split('.', 1)
+                            if isBold:
+                                tmp = list(r'\textbf{%s}' % i for i in tmp)
+                            tableentry = ' & .'.join(tmp)
+                            if len(tmp) == 1:
                                 tableentry += '&'
 
                     currankdata = numpy.power(evals[i], -1.)
@@ -235,20 +245,21 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                                  or z * (j - data0[i]) > 0)):  # z-value and ERT-ratio must agree
                             nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                             if z > 0:
-                                tmp = '+' * nbstars
+                                tmp = r'\wedge' #* nbstars
                             else:
-                                tmp = '-' * nbstars
+                                tmp = r'\vee' #* nbstars
                                 # print z, linebest[i], line1
-                            if 11 < 3 and nbstars > 1:
+                            if nbstars > 1:
                                 tmp += str(int(nbstars))
-                            #addition = '/' + tmp # uncomment to gain space.
-                        addition = '/' + tmp # Comment and uncomment line above to gain space
+                            #addition = tmp # uncomment to gain space.
+                        addition = r'/' + tmp # Comment and uncomment line above to gain space
+                        #addition = tmp # Comment and uncomment line above to gain space
 
-                    superscript = ''
-                    if addition:
-                        superscript = '.'
+                    superscript = '\wedge'
+                    #superscript = ''
+                    #if addition:
+                        #superscript = '.'
 
-                    #set_trace()
                     z, p = ranksums(rankdatabest[i], currankdata)
                     if ((nbtests * p) < 0.05
                         and ((numpy.isinf(bestalgdata[i]) and numpy.isinf(j))
@@ -257,21 +268,28 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
                         #set_trace()
                         if z > 0:
-                            superscript = '+' * nbstars
+                            superscript = r'\wedge' #* nbstars
                         else:
-                            superscript = '-' * nbstars
+                            superscript = r'\vee' #* nbstars
                             # print z, linebest[i], line1
-                        if 11 < 3 and nbstars > 1:
+                        if nbstars > 1:
                             superscript += str(int(nbstars))
 
                     if superscript or addition:
+                        isClosingBrace = False
                         if tableentry.endswith('}'):
+                            isClosingBrace = True
                             tableentry = tableentry[:-1]
-                            tableentry += '$^{' + superscript + addition + '}$}'
-                        else:
-                            tableentry += '$^{' + superscript + addition + '}$'
+                        #tableentry += r'$^{' + superscript + '}_{' + addition + '}$'
+                        tableentry += r'$^{' + superscript + addition + '}$'
+                        if isClosingBrace:
+                            tableentry += '}'
 
                     curline.append(tableentry)
+
+                # Two cases: both tabular give an overfull hbox
+                # AND generate a LaTeX Warning: Float too large for page by 16.9236pt on input line 421. (noisy)
+                # OR  generate a LaTeX Warning: Float too large for page by 33.57658pt on input line 421. (noisy)
 
                 tmp = entry.evals[entry.evals[:, 0] <= targetf, 1:]
                 try:
@@ -288,10 +306,12 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         extraeol[-1] = ''
 
         outputfile = os.path.join(outputdir, 'cmptable_%02dD%s.tex' % (d, info))
-        spec = '@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
+        spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         res = r'\providecommand{\algzeroshort}{%s}' % alg0 + '\n'
         res += r'\providecommand{\algoneshort}{%s}' % alg1 + '\n'
-        res += tableLaTeX(table, spec=spec, extraeol=extraeol)
+        res += tableLaTeXStar(table, width=r'0.45\textwidth', spec=spec,
+                              extraeol=extraeol)
+        #res += tableLaTeX(table, spec=spec, extraeol=extraeol)
         f = open(outputfile, 'w')
         f.write(res)
         f.close()
