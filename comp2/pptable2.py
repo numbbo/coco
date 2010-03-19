@@ -135,6 +135,8 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     assert not isinstance(data, numpy.ndarray)
                     data0 = data[:] # check if it is not an array
 
+                previsinf = False
+
                 for i, j in enumerate(data):  # is j an appropriate identifier here?
                     #if numpy.isnan(float(j)/bestalgdata[i]):
                     #    set_trace()
@@ -168,7 +170,6 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         # Formatting
                         tmp = float(j)/bestalgdata[i]
                         assert not numpy.isnan(tmp)
-
                         isscientific = False
                         if tmp >= 1000:
                             isscientific = True
@@ -178,7 +179,16 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         if significance0vs1 > 0:
                            isBold = True
 
-                        if tableentry.find('e') > -1:
+                        if numpy.isinf(tmp) and not previsinf:
+                            tableentry = writeFEvals2(numpy.median(entry.maxevals), 2) + tableentry
+                            previsinf = True
+                            if isBold:
+                                tableentry = r'\textbf{%s}' % tableentry
+                            elif significance0vs1 < 0:
+                                tableentry = r'\textit{%s}' % tableentry
+                            tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
+                                          % (alignment, tableentry))
+                        elif tableentry.find('e') > -1 or (numpy.isinf(tmp) and not previsinf):
                             if isBold:
                                 tableentry = r'\textbf{%s}' % tableentry
                             elif significance0vs1 < 0:
