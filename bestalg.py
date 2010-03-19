@@ -76,49 +76,55 @@ class BestAlgSet:
 
         f = f.pop()
         d = d.pop()
-        rmkeys = []
+
         dictMaxEvals = {}
         dictFinalFunVals = {}
+        tmpdictAlg = {}
         for alg, i in dictAlg.iteritems():
             if len(i) != 1:
                 # Special case could occur?
                 txt = ('Algorithm %s has problem in this case: f%d %d-D.'
                        % (alg, f, d))
                 warnings.warn(txt)
-                #set_trace()
-                rmkeys.append(alg)
-            else:
-                dictAlg[alg] = i[0] # Assign the first element as value for alg
-                #TODO: check it was not assigned already.
-                dictMaxEvals[alg] = i[0].maxevals
-                dictFinalFunVals[alg] = i[0].finalfunvals
-        for i in rmkeys:
-            del dictAlg[i]
+                continue
+
+            tmpdictAlg[alg] = i[0] # Assign the first element as value for alg
+            dictMaxEvals[alg] = i[0].maxevals
+            dictFinalFunVals[alg] = i[0].finalfunvals
+
+        dictAlg = tmpdictAlg
 
         sortedAlgs = dictAlg.keys()
+        # get a fixed list of the algs, algorithms will be sorted along sortedAlgs
 
         #Align ERT
         erts = list(numpy.transpose(numpy.vstack([dictAlg[i].target, dictAlg[i].ert]))
                     for i in sortedAlgs)
         res = readalign.alignArrayData(readalign.HArrayMultiReader(erts))
-        #TODO: check
 
         resalgs = []
         reserts = []
         #Foreach function value
         for i in res:
             #find best algorithm
-            tmp = i[1:]
-            idxfinite = (numpy.isnan(tmp) == False)
-            tmp = tmp[idxfinite]
-            # Check that it is not empty.
-            tmpsortedAlgs = []
-            for j, k in enumerate(idxfinite):
-                if k:
-                    tmpsortedAlgs.append(sortedAlgs[j])
-            idx = numpy.argmin(tmp) # TODO: What in case of ties?
-            reserts.append(tmp[idx])
-            resalgs.append(tmpsortedAlgs[idx])
+            curerts = i[1:]
+            assert len((numpy.isnan(curerts) == False)) > 0
+
+            currentbestert = numpy.inf
+            currentbestalg = ''
+            #currentbestval = dictMaxEvals[alg]
+            for j, tmpert in enumerate(curerts[1:]):
+                if numpy.isnan(tmpert):
+                    continue
+                if tmpert == currentbestert:
+                    # in case of tie? TODO: look at function values corresponding to the ERT?
+                    pass
+                elif tmpert < currentbestert:
+                    currentbestert = tmpert
+                    currentbestalg = sortedAlgs[j]
+
+            reserts.append(currentbestert)
+            resalgs.append(currentbestalg)
 
         dictiter = {}
         dictcurLine = {}
@@ -138,14 +144,21 @@ class BestAlgSet:
             tmp[0] = funval
             resDataSet.append(tmp)
 
-        #set_trace()
-        #TODO: do some testings.
-        #TODO: resds should be an instance of DataSet
+        setalgs = set(resalgs)
+        dictFunValsNoFail = {}
+        for alg in setalgs:
+            for curline in dictAlg[alg].funvals:
+                if (curline[1:] == dictAlg[alg].finalfunvals).any():
+                    # only works because the funvals are monotonous
+                    break
+            dictFunValsNoFail[alg] = curline[1:].copy()
+
         self.evals = resDataSet
         # evals is not a numpy array but a list of arrays because they may not
         # all be of the same size.
-        self.maxevals = dictMaxEvals
-        self.finalfunvals = dictFinalFunVals
+        self.maxevals = dict((i, dictMaxEvals[i]) for i in setalgs)
+        self.finalfunvals = dict((i, dictFinalFunVals[i]) for i in setalgs)
+        self.funvalsnofail = dictFunValsNoFail
         self.dim = d
         self.funcId = f
         # What if some algorithms don't have the same number of runs
@@ -156,6 +169,14 @@ class BestAlgSet:
         self.ert = numpy.array(reserts)
         self.target = res[:, 0]
         #return resds
+
+        bestfinalfunvals = numpy.array([numpy.inf])
+        for alg in sortedAlgs:
+            if numpy.median(dictAlg[alg].finalfunvals) < numpy.median(bestfinalfunvals):
+                bestfinalfunvals = dictAlg[alg].finalfunvals
+                algbestfinalfunvals = alg
+        self.bestfinalfunvals = bestfinalfunvals
+        self.algbestfinalfunvals = algbestfinalfunvals
 
     def __eq__(self, other):
         """Compare indexEntry instances."""
