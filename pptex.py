@@ -366,7 +366,7 @@ def writeFEvals(fevals, precision='.2'):
         res = res[0]
     return res
 
-def writeFEvals2(fevals, precision=2, maxdigits=None):
+def writeFEvals2(fevals, precision=2, maxdigits=None, isscientific=False):
     """Returns string representation of a number of function evaluations or ERT
     This method is supposed to be used for filling up a LaTeX tabular.
 
@@ -385,6 +385,8 @@ def writeFEvals2(fevals, precision=2, maxdigits=None):
     #Printf:
     # %[flags][width][.precision][length]specifier
 
+    assert not numpy.isnan(fevals)
+
     if numpy.isinf(fevals):
         return r'$\infty$'
 
@@ -398,15 +400,12 @@ def writeFEvals2(fevals, precision=2, maxdigits=None):
         res = (('%.' + str(precision-1) + 'e') % fevals)
         repr1 = res
         tmp = repr1.split('e')
-        try:
-            tmp[1] = '%d' % int(tmp[1]) # Drop the eventual plus sign and trailing zero
-        except IndexError:
-            set_trace()
+        tmp[1] = '%d' % int(tmp[1]) # Drop the eventual plus sign and trailing zero
         repr1 = 'e'.join(tmp)
 
         repr2 = (('%.' + str(precision+1) + 'f') % float(res)).rstrip('0').rstrip('.')
         #set_trace()
-        if len(repr1) > len(repr2):
+        if len(repr1) > len(repr2) and not isscientific:
             return repr2
 
         return repr1

@@ -451,7 +451,7 @@ def main(argv=None):
             dictFN1 = dsList1.dictByNoise()
 
             for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
-                pptable2.main2(dictFN0[fGroup], dictFN1[fGroup],
+                pptable2.mainnew(dictFN0[fGroup], dictFN1[fGroup],
                                tabDimsOfInterest, outputdir,
                                '%s' % (fGroup), verbose)
 

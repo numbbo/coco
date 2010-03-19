@@ -661,7 +661,7 @@ def processInputArgs(args, verbose=True):
             alg = os.path.split(i.rstrip(os.sep))[1]  # trailing slash or backslash
             if alg == '':
                 alg = os.path.split(os.path.split(i)[0])[1]
-              
+
             print '  using:', alg
             sortedAlgs.append(alg)
             dictAlg[alg] = tmpDsList
@@ -788,4 +788,37 @@ def dictAlgByNoi(dictAlg):
             res.setdefault(n, {}).setdefault(alg, tmp)
             # Only the first data for a given algorithm in a given dimension
 
+    return res
+
+def significancetest(entry0, entry1, targets):
+    res = []
+    evals = [entry0.detEvals(targets), entry1.detEvals(targets)]
+
+    # Determine the best function values obtained while there is still no failure
+    # is not the same as finalfunvals
+    funvalsnofail = []
+    for i, entry in enumerate((entry0, entry1)):
+        tmp = []
+        try:
+            for j in evals[i][1]: # loop over the algorithms
+                tmp.append(entry.funvalsnofail[j])
+            evals[i] = evals[i][0]
+        except AttributeError:
+            for curline in entry.funvals:
+                if (curline[1:] == entry.finalfunvals).any():
+                    # only works because the funvals are monotonous
+                    break
+            tmp = [curline[1:]] * len(targets)
+        funvalsnofail.append(tmp)
+
+    for i, t in enumerate(targets):
+        curdata = []
+        for j, entry in enumerate((entry0, entry1)):
+            tmp = numpy.power(evals[j][i], -1.)
+            tmp[numpy.isnan(tmp)] = -funvalsnofail[j][i][numpy.isnan(tmp)]
+            curdata.append(tmp)
+
+        tmpres = bootstrap.ranksums(curdata[0], curdata[1])
+        #set_trace()
+        res.append(tmpres)
     return res
