@@ -94,7 +94,7 @@ def formatData(table, header, format, fun):
     else:
         funname = '%d' % fun
 
-    header = ['\multicolumn{%d}{c}{%s}' % (max(len(l) for l in table),
+    header = ['\multicolumn{%d}{@{}c@{}}{%s}' % (max(len(l) for l in table),
                                           funname)]
     tableStrings = [header]
     for line in table:
@@ -178,6 +178,21 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
             rankdata0 = []
 
+            # generate all data for ranksum test
+            rankdata = {}  # rankdata[nb +/- 1,i] is of interest later
+            ertdata = {}
+            for nb, entries in enumerate((dictFunc0, dictFunc1)):  # copy paste of loop below
+                try:
+                    entry = entries[f][0] # take the first element
+                except KeyError:
+                    continue
+                ertdata[nb] = entry.detERT(targetsOfInterest)
+                evals = entry.detEvals(targetsOfInterest)
+                for i, tmp in enumerate(ertdata[nb]): 
+                    # print i
+                    rankdata[nb,i] = numpy.power(evals[i], -1.)
+                    rankdata[nb,i][numpy.isnan(rankdata[nb,i])] = -entry.finalfunvals[numpy.isnan(rankdata[nb,i])]
+
             for nb, entries in enumerate((dictFunc0, dictFunc1)):
                 try:
                     entry = entries[f][0] # take the first element
@@ -197,10 +212,27 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                 if nb == 0:
                     assert not isinstance(data, numpy.ndarray)
                     data0 = data[:] # check if it is not an array
-
+                 
                 for i, j in enumerate(data):  # is j an appropriate identifier here?
                     #if numpy.isnan(float(j)/bestalgdata[i]):
                     #    set_trace()
+
+                    # assign significance flag
+                    significance0vs1 = 0
+                    if nb == 0:
+                          istat0 = 0
+                          istat1 = 1 
+                    else: 
+                          istat0 = 1
+                          istat1 = 0 
+                    z, p = ranksums(rankdata[istat0,i], rankdata[istat1,i])
+                    if (nbtests * p < 0.05
+                            and z > 0 and not numpy.isinf(ertdata[istat0][i]) and 
+                            z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0):  # z-value and ERT-ratio must agree
+                          significance0vs1 = -int(numpy.ceil(numpy.log10(nbtests * p)))
+                    if nbtests * p < 0.05 and z < 0 and z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0:
+                          significance0vs1 = int(numpy.ceil(numpy.log10(nbtests * p)))
+
                     alignment = 'c'
                     if i == len(data) - 1: # last element
                         alignment = 'c|'
@@ -214,18 +246,25 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         tmp = float(j)/bestalgdata[i]
                         tableentry = writeFEvals2(tmp, 2)
                         isBold = False
-                        if tmp <= 3:
+                        if 11 < 3 and tmp <= 3:
                             isBold = True
+
+                        if significance0vs1 > 0: 
+                           isBold = True
 
                         if tableentry.find('e') > -1:
                             if isBold:
                                 tableentry = r'\textbf{%s}' % tableentry
+                            elif significance0vs1 < 0:
+                                tableentry = r'\textit{%s}' % tableentry
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
                         else:
                             tmp = tableentry.split('.', 1)
                             if isBold:
                                 tmp = list(r'\textbf{%s}' % i for i in tmp)
+                            elif significance0vs1 < 0:
+                                tmp = list(r'\textit{%s}' % i for i in tmp)
                             tableentry = ' & .'.join(tmp)
                             if len(tmp) == 1:
                                 tableentry += '&'
@@ -233,10 +272,10 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     currankdata = numpy.power(evals[i], -1.)
                     currankdata[numpy.isnan(currankdata)] = -entry.finalfunvals[numpy.isnan(currankdata)]
 
-                    if nb == 0:
+                    if 11 < 3 and nb == 0:
                         rankdata0.append(currankdata.copy())
                         addition = ''
-                    else: #nb==1
+                    elif 11 < 3: #nb==1
                         z, p = ranksums(rankdata0[i], currankdata)
                         tmp = '.'
                         #addition = '' # Uncomment to gain space. Meanwhile it displays the worst case scenario
@@ -245,9 +284,9 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                                  or z * (j - data0[i]) > 0)):  # z-value and ERT-ratio must agree
                             nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                             if z > 0:
-                                tmp = r'\wedge' #* nbstars
+                                tmp = r'\uparrow' #* nbstars
                             else:
-                                tmp = r'\vee' #* nbstars
+                                tmp = r'\downarrow' #* nbstars
                                 # print z, linebest[i], line1
                             if nbstars > 1:
                                 tmp += str(int(nbstars))
@@ -255,8 +294,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         addition = r'/' + tmp # Comment and uncomment line above to gain space
                         #addition = tmp # Comment and uncomment line above to gain space
 
-                    superscript = '\wedge'
-                    #superscript = ''
+                    superscript = '\uparrow'
+                    superscript = ''
                     #if addition:
                         #superscript = '.'
 
@@ -268,14 +307,28 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
                         #set_trace()
                         if z > 0:
-                            superscript = r'\wedge' #* nbstars
+                            superscript = r'\uparrow' #* nbstars
                         else:
-                            superscript = r'\vee' #* nbstars
+                            superscript = r'\downarrow' #* nbstars
                             # print z, linebest[i], line1
                         if nbstars > 1:
                             superscript += str(int(nbstars))
 
-                    if superscript or addition:
+                    addition = '' 
+                    if superscript or significance0vs1:
+                        s = ''
+                        if significance0vs1 > 0:
+                           s = '\star'
+                        if significance0vs1 > 1:
+                           s += str(significance0vs1)
+                        s = r'$^{' + s + superscript + r'}$'
+
+                        if tableentry.endswith('}'):
+                            tableentry = tableentry[:-1] + s + r'}'
+                        else:  
+                            tableentry += s
+
+                    if 11 < 3 and (superscript or addition):
                         isClosingBrace = False
                         if tableentry.endswith('}'):
                             isClosingBrace = True
