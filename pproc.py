@@ -812,6 +812,8 @@ def significancetest(entry0, entry1, targets):
                 else: # the best alg did not reach the target, j is None
                     tmp.append(entry.bestfinalfunvals)
                     tmp2.append(numpy.inf)
+                    evals[i][0][j] = [numpy.nan] * len(entry.bestfinalfunvals)
+
             evals[i] = evals[i][0] # lose the information of the algorithm making up best 2009
             evalsnofail.append(tmp2)
         except AttributeError:
