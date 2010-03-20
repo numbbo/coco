@@ -808,6 +808,7 @@ def significancetest(entry0, entry1, targets):
             for j in evals[i][1]: # loop over the algorithms making up best 2009
                 if j: # the best alg reached the target
                     tmp.append(entry.funvalsnofail[j][1:])
+                    assert entry.funvalsnofail[j][0] >= 1 # also it should be an integer.
                     tmp2.append(entry.funvalsnofail[j][0])
                 else: # the best alg did not reach the target, j is None
                     tmp.append(entry.bestfinalfunvals)
