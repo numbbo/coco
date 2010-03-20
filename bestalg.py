@@ -151,7 +151,7 @@ class BestAlgSet:
                 if (curline[1:] == dictAlg[alg].finalfunvals).any():
                     # only works because the funvals are monotonous
                     break
-            dictFunValsNoFail[alg] = curline[1:].copy()
+            dictFunValsNoFail[alg] = curline.copy()
 
         self.evals = resDataSet
         # evals is not a numpy array but a list of arrays because they may not
