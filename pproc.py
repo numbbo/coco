@@ -794,28 +794,43 @@ def significancetest(entry0, entry1, targets):
     res = []
     evals = [entry0.detEvals(targets), entry1.detEvals(targets)]
 
-    # Determine the best function values obtained while there is still no failure
-    # is not the same as finalfunvals
+    # Determine the best function values obtained while there is still no
+    # failure, is not the same as finalfunvals
     funvalsnofail = []
+    evalsnofail = []
     for i, entry in enumerate((entry0, entry1)):
         tmp = []
         try:
-            for j in evals[i][1]: # loop over the algorithms
-                tmp.append(entry.funvalsnofail[j])
-            evals[i] = evals[i][0]
+            entry.funvalsnofail
+            # entry.funvalsnofail only works if entry is an instance
+            # of BestAlgDataSet.
+            tmp2 = []
+            for j in evals[i][1]: # loop over the algorithms making up best 2009
+                if j: # the best alg reached the target
+                    tmp.append(entry.funvalsnofail[j][1:])
+                    tmp2.append(entry.funvalsnofail[j][0])
+                else: # the best alg did not reach the target, j is None
+                    tmp.append(entry.bestfinalfunvals)
+                    tmp2.append(numpy.inf)
+            evals[i] = evals[i][0] # lose the information of the algorithm making up best 2009
+            evalsnofail.append(tmp2)
         except AttributeError:
+            # We are in the general case of an instance of DataSet.
             for curline in entry.funvals:
                 if (curline[1:] == entry.finalfunvals).any():
                     # only works because the funvals are monotonous
                     break
             tmp = [curline[1:]] * len(targets)
+            evalsnofail.append([curline[0]] * len(targets))
         funvalsnofail.append(tmp)
 
     for i, t in enumerate(targets):
         curdata = []
         for j, entry in enumerate((entry0, entry1)):
-            tmp = numpy.power(evals[j][i], -1.)
-            tmp[numpy.isnan(tmp)] = -funvalsnofail[j][i][numpy.isnan(tmp)]
+            tmp = evals[j][i]
+            idx = numpy.isnan(tmp) + (tmp > evalsnofail[j][i])
+            tmp = numpy.power(tmp, -1.)
+            tmp[idx] = -funvalsnofail[j][i][idx]
             curdata.append(tmp)
 
         tmpres = bootstrap.ranksums(curdata[0], curdata[1])
