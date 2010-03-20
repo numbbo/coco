@@ -658,15 +658,17 @@ def processInputArgs(args, verbose=True):
             #redundant information. Only, the process could be more efficient
             #if pickle files were in a whole other location.
             dsList.extend(tmpDsList)
-            alg = os.path.split(i.rstrip(os.sep))[1]  # trailing slash or backslash
-            if alg == '':
-                alg = os.path.split(os.path.split(i)[0])[1]
+            #alg = os.path.split(i.rstrip(os.sep))[1]  # trailing slash or backslash
+            #if alg == '':
+            #    alg = os.path.split(os.path.split(i)[0])[1]
+            alg = i
 
             print '  using:', alg
-            sortedAlgs.append(alg)
-            dictAlg[alg] = tmpDsList
+            if all(i != alg for i in sortedAlgs):
+                sortedAlgs.append(alg) # TODO: watch out there could be duplicates.
+                dictAlg[alg] = tmpDsList
         else:
-            txt = 'Input folder %s could not be found.'
+            txt = 'Input folder %s could not be found.' % i
             #raise Usage(txt) #TODO how to call Usage?
             warnings.warn(txt)
 
@@ -805,11 +807,11 @@ def significancetest(entry0, entry1, targets):
             # entry.funvalsnofail only works if entry is an instance
             # of BestAlgDataSet.
             tmp2 = []
-            for j in evals[i][1]: # loop over the algorithms making up best 2009
-                if j: # the best alg reached the target
-                    tmp.append(entry.funvalsnofail[j][1:])
-                    assert entry.funvalsnofail[j][0] >= 1 # also it should be an integer.
-                    tmp2.append(entry.funvalsnofail[j][0])
+            for j, alg in enumerate(evals[i][1]): # loop over the algorithms making up best 2009
+                if alg: # the best alg reached the target
+                    tmp.append(entry.funvalsnofail[alg][1:])
+                    assert entry.funvalsnofail[alg][0] >= 1 # also it should be an integer.
+                    tmp2.append(entry.funvalsnofail[alg][0])
                 else: # the best alg did not reach the target, j is None
                     tmp.append(entry.bestfinalfunvals)
                     tmp2.append(numpy.inf)
