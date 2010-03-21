@@ -301,11 +301,20 @@ def main(argv=None):
         if not dsList1:
             raise Usage('Could not find data for algorithm %s.' % (sortedAlgs[0]))
 
-        alg0name = os.path.split(sortedAlgs[0].rstrip(os.sep))[1]
-        alg1name = os.path.split(sortedAlgs[1].rstrip(os.sep))[1]
+        tmppath0, alg0name = os.path.split(sortedAlgs[0].rstrip(os.sep))
+        tmppath1, alg1name = os.path.split(sortedAlgs[1].rstrip(os.sep))
         while alg0name == alg1name:
-            alg0name = os.path.split(alg0name)[1]
-            alg1name = os.path.split(alg1name)[1]
+            tmppath0, alg0name = os.path.split(tmppath0)
+            tmppath1, alg1name = os.path.split(tmppath1)
+
+            if not tmppath0 and not tmppath1:
+                break
+            else:
+                if not tmppath0:
+                    tmppath0 = alg0name
+                if not tmppath1:
+                    tmppath1 = alg1name
+            
         #TODO: Watch out: the following lines modify the dsList...
         for i in dsList0:
             i.algId = alg0name
