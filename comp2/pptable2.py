@@ -180,18 +180,19 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                            isBold = True
 
                         if numpy.isinf(tmp) and not previsinf:
-                            tableentry = writeFEvals2(numpy.median(entry.maxevals), 2) + tableentry
+                            tableentry = (r'\textit{%s}' % writeFEvals2(numpy.median(entry.maxevals), 2)
+                                          + tableentry)
                             previsinf = True
                             if isBold:
                                 tableentry = r'\textbf{%s}' % tableentry
-                            elif significance0vs1 < 0:
+                            elif 11 < 3 and significance0vs1 < 0:
                                 tableentry = r'\textit{%s}' % tableentry
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
                         elif tableentry.find('e') > -1 or (numpy.isinf(tmp) and not previsinf):
                             if isBold:
                                 tableentry = r'\textbf{%s}' % tableentry
-                            elif significance0vs1 < 0:
+                            elif 11 < 3 and significance0vs1 < 0:
                                 tableentry = r'\textit{%s}' % tableentry
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
@@ -199,7 +200,7 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             tmp = tableentry.split('.', 1)
                             if isBold:
                                 tmp = list(r'\textbf{%s}' % i for i in tmp)
-                            elif significance0vs1 < 0:
+                            elif 11 < 3 and significance0vs1 < 0:
                                 tmp = list(r'\textit{%s}' % i for i in tmp)
                             tableentry = ' & .'.join(tmp)
                             if len(tmp) == 1:
@@ -209,9 +210,24 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
                     z, p = testresbestvs1[i]
                     #z, p = ranksums(rankdatabest[i], currankdata)
-                    if ((nbtests * p) < 0.05
-                        and ((numpy.isinf(bestalgdata[i]) and numpy.isinf(j))
-                             or z * (j - bestalgdata[i]) > 0)):  # z-value and ERT-ratio must agree
+                    #if ((nbtests * p) < 0.05
+                    #    and ((numpy.isinf(bestalgdata[i]) and numpy.isinf(j))
+                    #         or z * (j - bestalgdata[i]) > 0)):  # z-value and ERT-ratio must agree
+                    #The conditions are now that ERT < ERT_best and 
+                    # all(sorted(FEvals_best) > sorted(FEvals_current)).
+                    if j - bestalgdata[i] < 0. and not numpy.isinf(bestalgdata[i]):
+                        evals = entry.detEvals([targetsOfInterest[i]])[0]
+                        evals[numpy.isnan(evals)] = entry.maxevals[numpy.isnan(evals)]
+                        bestevals = bestalgentry.detEvals([targetsOfInterest[i]])
+                        bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
+                        bestevals[numpy.isnan(bestevals)] = bestalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
+
+                    #The conditions are now that ERT < ERT_best and 
+                    # all(sorted(FEvals_best) > sorted(FEvals_current)).
+                    if ((nbtests * p) < 0.05 and j - bestalgdata[i] < 0.
+                        and z < 0.
+                        and (numpy.isinf(bestalgdata[i])
+                             or all(sorted(bestevals) < sorted(evals)))):
                         nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                         #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
                         #set_trace()
