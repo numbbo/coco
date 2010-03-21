@@ -221,16 +221,17 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         bestevals = bestalgentry.detEvals([targetsOfInterest[i]])
                         bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
                         bestevals[numpy.isnan(bestevals)] = bestalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
+                        evals = numpy.array(sorted(evals))[0:min(len(evals), len(bestevals))]
+                        bestevals = numpy.array(sorted(bestevals))[0:min(len(evals), len(bestevals))]                        
 
                     #The conditions are now that ERT < ERT_best and 
                     # all(sorted(FEvals_best) > sorted(FEvals_current)).
                     if ((nbtests * p) < 0.05 and j - bestalgdata[i] < 0.
                         and z < 0.
                         and (numpy.isinf(bestalgdata[i])
-                             or all(sorted(bestevals) < sorted(evals)))):
+                             or all(evals < bestevals))):
                         nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                         #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
-                        #set_trace()
                         if z > 0:
                             superscript = r'\uparrow' #* nbstars
                         else:

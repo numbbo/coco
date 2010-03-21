@@ -113,11 +113,12 @@ class BestAlgSet:
             currentbestert = numpy.inf
             currentbestalg = ''
             #currentbestval = dictMaxEvals[alg]
-            for j, tmpert in enumerate(curerts[1:]):
+            for j, tmpert in enumerate(curerts):
                 if numpy.isnan(tmpert):
                     continue
                 if tmpert == currentbestert:
                     # in case of tie? TODO: look at function values corresponding to the ERT?
+                    # Look at the function evaluations? the success ratio?
                     pass
                 elif tmpert < currentbestert:
                     currentbestert = tmpert
