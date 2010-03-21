@@ -303,19 +303,21 @@ def main(argv=None):
 
         tmppath0, alg0name = os.path.split(sortedAlgs[0].rstrip(os.sep))
         tmppath1, alg1name = os.path.split(sortedAlgs[1].rstrip(os.sep))
-        while alg0name == alg1name:
-            tmppath0, alg0name = os.path.split(tmppath0)
-            tmppath1, alg1name = os.path.split(tmppath1)
-
-            if not tmppath0 and not tmppath1:
-                break
-            else:
-                if not tmppath0:
-                    tmppath0 = alg0name
-                if not tmppath1:
-                    tmppath1 = alg1name
-            
-        #TODO: Watch out: the following lines modify the dsList...
+        #Trick for having different algorithm names in the tables...
+        #Does not really work.
+        #while alg0name == alg1name:
+        #    tmppath0, alg0name = os.path.split(tmppath0)
+        #    tmppath1, alg1name = os.path.split(tmppath1)
+        #
+        #    if not tmppath0 and not tmppath1:
+        #        break
+        #    else:
+        #        if not tmppath0:
+        #            tmppath0 = alg0name
+        #        if not tmppath1:
+        #            tmppath1 = alg1name
+        #assert alg0name != alg1name
+        # should not be a problem, these are only used in the tables.
         for i in dsList0:
             i.algId = alg0name
         for i in dsList1:

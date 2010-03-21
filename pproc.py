@@ -793,52 +793,88 @@ def dictAlgByNoi(dictAlg):
     return res
 
 def significancetest(entry0, entry1, targets):
+    """Compute the significance test.
+    """
+
     res = []
-    evals = [entry0.detEvals(targets), entry1.detEvals(targets)]
+    evals = []
+    bestalgs = []
+    isBestAlg = False
+    # one of the entry is an instance of BestAlgDataSet
+    for entry in (entry0, entry1):
+        tmp = entry.detEvals(targets)
+        if not entry.__dict__.has_key('funvals'):
+            evals.append(tmp[0])
+            bestalgs.append(tmp[1])
+            isBestAlg = True
+        else:
+            evals.append(tmp)
+            bestalgs.append(None)
 
-    # Determine the best function values obtained while there is still no
-    # failure, is not the same as finalfunvals
-    funvalsnofail = []
-    evalsnofail = []
-    for i, entry in enumerate((entry0, entry1)):
-        tmp = []
-        try:
-            entry.funvalsnofail
-            # entry.funvalsnofail only works if entry is an instance
-            # of BestAlgDataSet.
-            tmp2 = []
-            for j, alg in enumerate(evals[i][1]): # loop over the algorithms making up best 2009
-                if alg: # the best alg reached the target
-                    tmp.append(entry.funvalsnofail[alg][1:])
-                    assert entry.funvalsnofail[alg][0] >= 1 # also it should be an integer.
-                    tmp2.append(entry.funvalsnofail[alg][0])
-                else: # the best alg did not reach the target, j is None
-                    tmp.append(entry.bestfinalfunvals)
-                    tmp2.append(numpy.inf)
-                    evals[i][0][j] = [numpy.nan] * len(entry.bestfinalfunvals)
+    for i in range(len(targets)):
+        # 1. Determine FE_umin
+        FE_umin = numpy.inf
 
-            evals[i] = evals[i][0] # lose the information of the algorithm making up best 2009
-            evalsnofail.append(tmp2)
-        except AttributeError:
-            # We are in the general case of an instance of DataSet.
-            for curline in entry.funvals:
-                if (curline[1:] == entry.finalfunvals).any():
+        # if there is at least one unsuccessful run
+        if (numpy.isnan(evals[0][i]).any() or numpy.isnan(evals[1][i]).any()):
+            fvalues = []
+            if isBestAlg:
+                for j, entry in enumerate((entry0, entry1)):
+                    if isinstance(entry.finalfunvals, dict):
+                       alg = bestalgs[j][i]
+                       if alg is None:
+                           tmpfvalues = entry.bestfinalfunvals
+                       else:
+                           tmpfvalues = entry.finalfunvals[alg]
+                    else:
+                       tmpfvalues = entry.finalfunvals
+                    fvalues.append(tmpfvalues)
+            else:
+                FE = []
+                for j, entry in enumerate((entry0, entry1)):
+                    unsucc = numpy.isnan(evals[j][i])
+                    tmpfe = numpy.inf
+                    tmpfvalues = numpy.array([0] * entry.nbRuns())
+                    for curline in entry.funvals:
+                        # only works because the funvals are monotonous
+                        if (curline[1:][unsucc] == entry.finalfunvals[unsucc]).any():
+                            tmpfe = curline[0]
+                            tmpfvalues = curline[1:]
+                            break
+                    FE.append(tmpfe)
+                    fvalues.append(tmpfvalues)
+                FE_umin = min(FE)
+
+                entry = entry0
+                j = 0
+                if FE[0] == FE_umin:
+                    entry = entry1
+                    j = 1
+
+                # get the fun vals of the other run
+                prevline = numpy.array([numpy.inf] * entry.nbRuns())
+                for curline in entry.funvals:
                     # only works because the funvals are monotonous
-                    break
-            tmp = [curline[1:]] * len(targets)
-            evalsnofail.append([curline[0]] * len(targets))
-        funvalsnofail.append(tmp)
+                    if curline[0] > FE_umin:
+                        break
+                    prevline = curline[1:]
+                fvalues[j] = prevline
 
-    for i, t in enumerate(targets):
+        # 2. 3. 4. Collect data for the significance test:
         curdata = []
         for j, entry in enumerate((entry0, entry1)):
-            tmp = evals[j][i]
-            idx = numpy.isnan(tmp) + (tmp > evalsnofail[j][i])
+            tmp = evals[j][i].copy()
+            idx = numpy.isnan(tmp) + (tmp > FE_umin)
             tmp = numpy.power(tmp, -1.)
-            tmp[idx] = -funvalsnofail[j][i][idx]
+            if idx.any():
+                tmp[idx] = -fvalues[j][idx]
             curdata.append(tmp)
 
         tmpres = bootstrap.ranksums(curdata[0], curdata[1])
-        #set_trace()
+        if isBestAlg:
+            tmpres = list(tmpres)
+            tmpres[1] /= 2.
+
         res.append(tmpres)
+
     return res
