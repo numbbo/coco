@@ -12,6 +12,7 @@ def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
     Need to make sure the file location is available.
     """
 
+    #TODO: make sure the file is writeable.
     if isinstance(figFormat, basestring):
         plt.savefig(filename + '.' + figFormat, dpi = 300,
                     format=figFormat)

@@ -830,35 +830,30 @@ def significancetest(entry0, entry1, targets):
                        tmpfvalues = entry.finalfunvals
                     fvalues.append(tmpfvalues)
             else:
-                FE = []
-                for j, entry in enumerate((entry0, entry1)):
-                    unsucc = numpy.isnan(evals[j][i])
-                    tmpfe = numpy.inf
-                    tmpfvalues = numpy.array([0] * entry.nbRuns())
-                    for curline in entry.funvals:
-                        # only works because the funvals are monotonous
-                        if (curline[1:][unsucc] == entry.finalfunvals[unsucc]).any():
-                            tmpfe = curline[0]
-                            tmpfvalues = curline[1:]
-                            break
-                    FE.append(tmpfe)
-                    fvalues.append(tmpfvalues)
-                FE_umin = min(FE)
+                # 1) find min_{both algorithms}(conducted FEvals in
+                # unsuccessful trials) =: FE_umin
+                FE_umin = numpy.inf
+                if numpy.isnan(evals[0][i]).any() or numpy.isnan(evals[1][i]).any():
+                    FE = []
+                    for j, entry in enumerate((entry0, entry1)):
+                        unsucc = numpy.isnan(evals[j][i])
+                        if unsucc.any():
+                            tmpfe = min(entry.maxevals[unsucc])
+                        else:
+                            tmpfe = numpy.inf
+                        FE.append(tmpfe)
+                    FE_umin = min(FE)
 
-                entry = entry0
-                j = 0
-                if FE[0] == FE_umin:
-                    entry = entry1
-                    j = 1
-
-                # get the fun vals of the other run
-                prevline = numpy.array([numpy.inf] * entry.nbRuns())
-                for curline in entry.funvals:
-                    # only works because the funvals are monotonous
-                    if curline[0] > FE_umin:
-                        break
-                    prevline = curline[1:]
-                fvalues[j] = prevline
+                    # Determine the function values for FE_umin
+                    fvalues = []
+                    for j, entry in enumerate((entry0, entry1)):
+                        prevline = numpy.array([numpy.inf] * entry.nbRuns())
+                        for curline in entry.funvals:
+                            # only works because the funvals are monotonous
+                            if curline[0] > FE_umin:
+                                break
+                            prevline = curline[1:]
+                        fvalues.append(prevline)
 
         # 2. 3. 4. Collect data for the significance test:
         curdata = []
