@@ -180,8 +180,8 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                            isBold = True
 
                         if numpy.isinf(tmp) and not previsinf:
-                            tableentry = (r'\textit{%s}' % writeFEvals2(numpy.median(entry.maxevals), 2)
-                                          + tableentry)
+                            tableentry = (tableentry 
+                                          + r'\textit{%s}' % writeFEvals2(numpy.median(entry.maxevals), 2))
                             previsinf = True
                             if isBold:
                                 tableentry = r'\textbf{%s}' % tableentry
