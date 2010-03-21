@@ -243,7 +243,7 @@ def main(argv=None):
 
         print ("BBOB Post-processing: will generate comparison " +
                "data in folder %s" % outputdir)
-        print "  This might take several minutes."
+        print "  this might take several minutes."
 
         dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
 

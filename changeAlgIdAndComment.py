@@ -54,7 +54,7 @@ def main(argv=None):
     * Changing algorithm name and comments for given output folder from the
        command line:
 
-        $ python bbob_pproc/changeAlgoName.py outfolder "CMA-ES" "lambda 100"
+        $ python bbob_pproc/changeAlgoName.py outfolder "CMA-ES" "CMA_with_lambda_100"
 
     * Changing algorithm name and comments for given output folder
        interactively:
