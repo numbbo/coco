@@ -428,7 +428,7 @@ def main(argv=None):
 
         print ("BBOB Post-processing: will generate post-processing " +
                "data in folder %s" % outputdir)
-        print "  This might take several minutes."
+        print "  this might take several minutes."
 
         filelist = list()
         for i in args:
