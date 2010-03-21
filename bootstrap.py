@@ -116,17 +116,22 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
 
 
 def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
-    """Returns the percentiles of the bootstrap distribution of ERT.
+    """Returns the percentiles of the bootstrap distribution of 'simulated'  
+       running lengths of successful runs.
     Input:
-    runlengths_succ--array of running lengths of successful runs
-    runlengths_unsucc--array of running lengths of unsuccessful runs
+      runlengths_succ--array of running lengths of successful runs
+      runlengths_unsucc--array of running lengths of unsuccessful runs
     Return:
        (percentiles, all_sampled_values_sorted)
     Details:
-       ERT is computed by adding uniformly randomly chosen running lengths
-       until the first time a successful one is chosen. In case of no
-       successful run the sum of unsuccessful runs is bootstrapped.
+       A single successful running length is computed by adding uniformly
+       randomly chosen running lengths until the first time a successful one is
+       chosen. In case of no successful run the sum of unsuccessful runs is
+       bootstrapped. 
     """
+
+    # TODO: for efficiency reasons a special treatment in the case, 
+    #   where all runs are successful and all_sampled_values_sorted is not needed
 
     Nsucc = len(runlengths_succ)
     Nunsucc = len(runlengths_unsucc)
@@ -135,8 +140,20 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
         # return (numpy.Inf*numpy.array(percentiles), )
         return draw(runlengths_unsucc, percentiles, samplesize=samplesize, func=sum)
 
+
     #if Nunsucc == 0: # Special case: all success, how can we improve efficiency?
     #    return 
+    if 11 < 3 and Nunsucc == 0:  # not tested yet: draw each once without replacement and repeat  
+        idx = numpy.random.shuffle(range(Nsucc))
+        arrStats = [runlengths_succ[idx[i % Nsucc]] for i in xrange(int(samplesize))]
+        arrStats.sort()  # could be avoided
+        return (prctile(runlengths_succ, percentiles, issorted=False),
+            arrStats)
+    if 11 < 3 and Nunsucc == 0:  # not tested yet: bootstrap, but more efficient
+        arrStats = [runlengths_succ[numpy.random.randint(Nsucc)] 
+                      for i in xrange(int(samplesize))]
+        arrStats.sort()  # could be avoided
+        return (prctile(arrStats, percentiles, issorted=True), arrStats)
 
     # geometric distribution for number of unsuccessful runs
     # The samplesize depends on the number of unsuccessful runs?
