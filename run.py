@@ -437,7 +437,7 @@ def main(argv=None):
             elif os.path.isfile(i):
                 filelist.append(i)
             else:
-                txt = 'Input file or folder %s could not be found.'
+                txt = 'Input file or folder %s could not be found.' % i
                 raise Usage(txt)
 
         dsList = DataSetList(filelist, verbose)
