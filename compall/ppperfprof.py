@@ -62,7 +62,7 @@ third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'EDA-PSO', 'PSO_Bounds', 'PSO', 'AMa
 
 funi = [1] + range(5, 15)  # without paired Ellipsoid
 funilipschitz = [1] + [5,6] + range(8,13) + [14] # + [13]  #13=sharp ridge, 7=step-ellipsoid 
-fmulti = [4] + range(15,25) # without paired Rastrigin
+fmulti = [3, 4] + range(15,25) # 3 = paired Rastrigin
 funisep = [1,2,5]
 
 # input parameter settings
@@ -72,8 +72,8 @@ funisep = [1,2,5]
 #'avg NEWUOA', 'NEWUOA', 'full NEWUOA', 'BFGS', 'MCS (Neum)', 'GLOBAL', 'NELDER (Han)',
 #'NELDER (Doe)', 'Monte Carlo') # ()==all
 show_algorithms = ()
+function_IDs = funi #range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 function_IDs = fmulti  # range(103, 131, 3)   # displayed functions
-function_IDs = range(1,999)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 #function_IDs = [1,2,3,4,5] # separable functions
 #function_IDs = [6,7,8,9]   # moderate functions
 #function_IDs = [10,11,12,13,14] # ill-conditioned functions
@@ -147,6 +147,8 @@ def get_plot_args(args):
         args['color'] = 'wheat'
         args['ls'] = '-'
         args['zorder'] = -1
+    elif not (args.has_key('linewidth') or args.has_key('lw')):
+        args['linewidth'] = 1.3
     return args
 
 def plotPerfProf(data, maxval=None, maxevals=None, isbeautify=True, order=None, CrE=0,
@@ -348,11 +350,11 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
         CrE = 0
         # need to know noisy or non-noisy functions here!
         if max(function_IDs) < 100:  # non-noisy functions
-            if alg[0][0] == 'GLOBAL':
+            if alg[-6:] == 'GLOBAL' and len(function_IDs) > 4:
                 CrE = 0.5117
                 # print 'GLOBAL corrected'
         elif min(function_IDs) > 100 :  # noisy functions
-            if alg[0][0] == 'GLOBAL':
+            if alg[-6:] == 'GLOBAL'  and len(function_IDs) > 4:
                 CrE = 0.6572
         else:
             pass 

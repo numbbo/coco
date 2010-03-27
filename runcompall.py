@@ -37,8 +37,13 @@ from bbob_pproc.compall import ppperfprof, pptables
 from bbob_pproc.compall import organizeRTDpictures
 
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
-single_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7, 1e-8)  # one figure for each
+single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each
 summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # all in one figure
+summarized_target_function_values = (100, 10, 1e0, 1e-1, 1e-2, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8) 
+summarized_target_function_values = tuple(10**numpy.r_[-8:2:0.2]) # 1e2 and 1e-8  
+#summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-8  
+#summarized_target_function_values = tuple(10**numpy.r_[-1:2:0.2]) # easy easy 
+# summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure
 tableconstant_target_function_values = [1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7]
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 
