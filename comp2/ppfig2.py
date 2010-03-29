@@ -393,8 +393,6 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             if dataofinterest[idx, 0][0] < fvalueswitch[dim]:
                 ls = '--'
 
-            if func == 20 and dim == 40:
-                set_trace()
             plt.plot([dataofinterest[idx, 0][0]]*2,
                      (tmpy, ydata[0]), ls=ls, lw=linewidth, color=colors[i])
 
