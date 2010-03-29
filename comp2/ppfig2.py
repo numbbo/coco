@@ -36,6 +36,7 @@ linewidth = 3
 offset = 0.005
 incrstars = 1.5
 fthresh = 1e-8
+xmax = 1000
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
@@ -103,6 +104,11 @@ def generateData(entry0, entry1, fthresh=None):
 
         data0 = data0[data0[:, 0] >= fthresh]
         data1 = data1[data1[:, 0] >= fthresh]
+
+    if xmax:
+        data0 = data0[data0[:, 0] <= xmax]
+        data1 = data1[data1[:, 0] <= xmax]
+        # TODO: watch that it does not become empty.
         #set_trace()
 
     return data0, data1
@@ -135,7 +141,7 @@ def beautify(xmin=None):
     # We are setting xmin
     if xmin:
         plt.xlim(xmin=xmin)
-    plt.xlim(xmax=1000)
+    plt.xlim(xmax=xmax)
     ax.invert_xaxis()
 
     # Annotate figure
@@ -369,7 +375,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             idx = (data[algstoppedfirst][:, 2] == 0.) * (dataofinterest[:, 2] > 0.)
             idx[tmp] = True
 
-            if len(idx) == 0 or not idx.any():
+            if numpy.sum(idx) <= 1:#len(idx) == 0 or not idx.any():
                 continue
 
             ymin, ymax = plt.ylim()
@@ -387,6 +393,8 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             if dataofinterest[idx, 0][0] < fvalueswitch[dim]:
                 ls = '--'
 
+            if func == 20 and dim == 40:
+                set_trace()
             plt.plot([dataofinterest[idx, 0][0]]*2,
                      (tmpy, ydata[0]), ls=ls, lw=linewidth, color=colors[i])
 

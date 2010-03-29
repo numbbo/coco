@@ -315,6 +315,19 @@ def main(argv=None):
                                         outputdir=outputdir,
                                         info=('%02d%s_%s' % (d, k, ng)),
                                         verbose=verbose)
+
+            #dictFun = pproc.dictAlgByFun(dictAlg)
+            #for fun, tmpdictAlg in dictFun.iteritems():
+            #    dictDim = pproc.dictAlgByDim(tmpdictAlg)
+            #    for d, entries in dictDim.iteritems():
+            #        for k, t in dictTarget.iteritems():
+            #            #set_trace()
+            #            ppperfprof.main(entries, target=t, order=sortedAlgs,
+            #                            plotArgs=algPlotInfos,
+            #                            outputdir=outputdir,
+            #                            info=('%03d_%02d%s' % (fun, d, k)),
+            #                            verbose=verbose)
+
             organizeRTDpictures.do(outputdir)
             print "ECDFs of ERT figures done."
 
