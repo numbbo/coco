@@ -575,6 +575,7 @@ def main(argv=None):
                         pplogloss.main(sliceFuncGroup, CrE, True, outputdir, info,
                                        verbose=verbose)
                     pplogloss.evalfmax = None #Resetting the max #fevalsfactor
+                CrE = None
 
             print "ERT loss ratio figures and tables done."
 

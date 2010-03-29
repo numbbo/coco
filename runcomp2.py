@@ -326,7 +326,7 @@ def main(argv=None):
         #for i, entry in enumerate(sortedAlgs): #Nota: key is sortedAlgs
             #print "Alg%d is: %s" % (i, entry)
 
-        if isfigure or isrldistr or istable:
+        if isfigure or isrldistr or istable or isscatter:
             if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
                 if verbose:

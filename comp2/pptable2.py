@@ -76,8 +76,11 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     for d in dimsOfInterest: # TODO set as input arguments
         table = [header]
         extraeol = [r'\hline']
-        dictFunc0 = dictDim0[d].dictByFunc()
-        dictFunc1 = dictDim1[d].dictByFunc()
+        try:
+            dictFunc0 = dictDim0[d].dictByFunc()
+            dictFunc1 = dictDim1[d].dictByFunc()
+        except KeyError:
+            continue
         funcs = set.union(set(dictFunc0.keys()), set(dictFunc1.keys()))
 
         nbtests = len(funcs) * 2. #len(dimsOfInterest)
