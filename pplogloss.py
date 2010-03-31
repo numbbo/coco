@@ -56,6 +56,11 @@ import gzip
 from pdb import set_trace
 import numpy
 from matplotlib import pyplot as plt
+try:
+    from matplotlib.transforms import blended_transform_factory as blend
+except ImportError:
+    # compatibility matplotlib 0.8
+    from matplotlib.transforms import blend_xy_sep_transform as blend
 from matplotlib import mlab as mlab
 
 from bbob_pproc import bootstrap, bestalg
@@ -140,9 +145,13 @@ def generateData(dsList, evals, CrE_A):
             if nextbestf[i] >= f_thresh and ERT_best_nextbestf[i] < evals[i]:
                 ERT_A[i] = evals[i]
 
+        # For test purpose:
+        #ERT_A[-2] = 1.
+        #ERT_best[-2] = numpy.inf
         ERT_A = numpy.array(ERT_A)
         ERT_best = numpy.array(ERT_best)
         loss_A = numpy.exp(CrE_A) * ERT_A / ERT_best
+        assert (numpy.isnan(loss_A) == False).all()
         #set_trace()
         #if numpy.isnan(loss_A).any() or numpy.isinf(loss_A).any() or (loss_A == 0.).any():
         #    txt = 'Problem with entry %s' % str(entry)
@@ -316,18 +325,41 @@ def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
                 medians=medians, fliers=fliers)
 
 def plot(xdata, ydata):
+    """Plot the ERT log loss figures.
+    Two cases: box-whisker plot is used for representing the data of all
+    functions, otherwise all data is represented using crosses.
+    """
+
     res = []
 
-    tmp = list(10**numpy.mean(i) for i in ydata)
+    tmp = list(10**numpy.mean(i[numpy.isfinite(i)]) for i in ydata)
     res.extend(plt.plot(xdata, tmp, ls='-', color='k', lw=3, #marker='+',
                         markersize=20, markeredgewidth=3))
 
     if max(len(i) for i in ydata) < 20: # TODO: subgroups of function, hopefully.
         for i, y in enumerate(ydata):
             # plot all single data points
+            if (numpy.isfinite(y)==False).any():
+                assert not (numpy.isinf(y) * y > 0.).any()
+                assert not numpy.isnan(y).any()
+
+                ax = plt.gca()
+                trans = blend(ax.transData, ax.transAxes)
+                res.extend(plt.plot((xdata[i], ), (0., ),
+                                    marker='+', color='b',
+                                    ls='', markersize=20, markeredgewidth=3,
+                                    transform=trans, clip_on=False))
+                res.append(plt.text(xdata[i], 0, '%d' % len(y),
+                                    transform=trans, horizontalalignment='left',
+                                    verticalalignment='bottom'))
+                y = y[numpy.isfinite(y)]
+                if len(y) == 0:
+                    continue
+                
             res.extend(plt.plot([xdata[i]]*len(y), 10**numpy.array(y),
                                 marker='+', color='b',
                                 ls='', markersize=20, markeredgewidth=3))
+
             # plot dashed vertical line between min and max 
             plt.plot([xdata[i]]*2, 10**numpy.array([min(y), max(y)]),
                                 color='k',  # marker='+', 
@@ -340,6 +372,23 @@ def plot(xdata, ydata):
             #                    marker='+', color='k',
             #                    ls='', markersize=20, markeredgewidth=3)
     else:
+        for i, y in enumerate(ydata):
+            # plot all single data points
+            if (numpy.isfinite(y)==False).any():
+                assert not (numpy.isinf(y) * y > 0.).any()
+                assert not numpy.isnan(y).any()
+
+                ax = plt.gca()
+                trans = blend(ax.transData, ax.transAxes)
+                res.extend(plt.plot((xdata[i], ), (0, ),
+                                    marker='.', color='k',
+                                    ls='', markersize=20, markeredgewidth=3,
+                                    transform=trans, clip_on=False))
+                res.append(plt.text(xdata[i], 0, '%d' % len(y),
+                                    transform=trans, horizontalalignment='left',
+                                    verticalalignment='bottom'))
+                y = y[numpy.isfinite(y)]
+
         dictboxwhisker = boxplot(list(10**numpy.array(i) for i in ydata),
                                  sym='', notch=0, widths=None,
                                  positions=xdata)
@@ -450,7 +499,9 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
         for j in tmpdata:
             # tmp.append(writeFEvals(j, '.2'))
             # tmp.append(writeFEvals2(j, 2))
-            if j < 1:
+            if j == 0.:
+                tmp.append("~\\,0")
+            elif j < 1:
                 tmp.append("~\\,%1.2f" % j)
             elif j < 10:
                 tmp.append("\\hspace*{1ex}%1.1f" % j)
