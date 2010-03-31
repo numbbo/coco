@@ -146,8 +146,9 @@ def generateData(dsList, evals, CrE_A):
                 ERT_A[i] = evals[i]
 
         # For test purpose:
-        #ERT_A[-2] = 1.
-        #ERT_best[-2] = numpy.inf
+        #if fun % 10 == 0:
+        #    ERT_A[-2] = 1.
+        #    ERT_best[-2] = numpy.inf
         ERT_A = numpy.array(ERT_A)
         ERT_best = numpy.array(ERT_best)
         loss_A = numpy.exp(CrE_A) * ERT_A / ERT_best
@@ -349,7 +350,7 @@ def plot(xdata, ydata):
                                     marker='+', color='b',
                                     ls='', markersize=20, markeredgewidth=3,
                                     transform=trans, clip_on=False))
-                res.append(plt.text(xdata[i], 0, '%d' % len(y),
+                res.append(plt.text(xdata[i], 0.02, '%d' % len(y[numpy.isinf(y)]),
                                     transform=trans, horizontalalignment='left',
                                     verticalalignment='bottom'))
                 y = y[numpy.isfinite(y)]
@@ -384,7 +385,7 @@ def plot(xdata, ydata):
                                     marker='.', color='k',
                                     ls='', markersize=20, markeredgewidth=3,
                                     transform=trans, clip_on=False))
-                res.append(plt.text(xdata[i], 0, '%d' % len(y),
+                res.append(plt.text(xdata[i], 0.02, '%d' % len(y[numpy.isinf(y)]),
                                     transform=trans, horizontalalignment='left',
                                     verticalalignment='bottom'))
                 y = y[numpy.isfinite(y)]
