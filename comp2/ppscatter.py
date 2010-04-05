@@ -145,6 +145,9 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             except (IndexError, KeyError):
                 continue
 
+            plt.axvline(entry0.mMaxEvals(), ls='--', color=colors[i])
+            plt.axhline(entry1.mMaxEvals(), ls='--', color=colors[i])
+
             xdata = numpy.array(entry0.detERT(targets))
             ydata = numpy.array(entry1.detERT(targets))
             #targets, xdata, ydata = generateData(entry0, entry1)
