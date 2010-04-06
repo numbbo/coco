@@ -258,7 +258,7 @@ class BestAlgSet:
         res = []
         res2 = []
         for f in targets:
-            tmp = numpy.array([numpy.nan])
+            tmp = numpy.array([numpy.nan] * len(self.bestfinalfunvals))
             tmp2 = None
             for i, line in enumerate(self.evals):
                 if line[0] <= f:

@@ -804,6 +804,11 @@ def significancetest(entry0, entry1, targets):
     for entry in (entry0, entry1):
         tmp = entry.detEvals(targets)
         if not entry.__dict__.has_key('funvals'):
+            #for i, j in enumerate(tmp[0]):
+                #if numpy.isnan(j).all():
+                    #tmp[0][i] = numpy.array([numpy.nan]*len(entry.bestfinalfunvals))
+            #Make sure that the length of elements of tmp[0] is the same as
+            #that of the associated function values
             evals.append(tmp[0])
             bestalgs.append(tmp[1])
             isBestAlg = True
