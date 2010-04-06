@@ -131,12 +131,15 @@ def plotERTRatio(data, plotargs={}):
 
 def beautify(xmin=None):
     ax = plt.gca()
+    yax = ax.get_yaxis()
     ax.set_xscale('log')
     ax.set_yscale('log')
 
     ymin, ymax = plt.ylim()
     ybnd = max(1./ymin, ymax)
     plt.ylim(1./ybnd, ybnd)
+    if ybnd < 100:
+        yax.grid(True, which='minor')
 
     # We are setting xmin
     if xmin:
@@ -168,6 +171,11 @@ def beautify(xmin=None):
     tmp = tmp[tmp<plt.ylim()[1]]
     tmp = tmp[tmp>plt.ylim()[0]]
     ax.set_yticks(tmp, minor=True)
+    tmp = ax.get_yticklines()
+    tmp.extend(yax.get_minorticklines())
+    #set_trace()
+    for i in tmp:
+        i.set_markeredgewidth(2)
 
 def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     """Display some annotations associated to the graphs generated."""

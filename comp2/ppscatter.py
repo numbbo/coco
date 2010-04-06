@@ -224,10 +224,28 @@ def main(dsList0, dsList1, outputdir, verbose=True):
 
                 #set_trace()
 
-            plt.axvline(entry0.mMaxEvals(), ls='--', color=colors[i])
-            plt.axhline(entry1.mMaxEvals(), ls='--', color=colors[i])
-
         beautify()
+
+        for i, d in enumerate((2, 3, 5, 10, 20, 40)):
+            try:
+                entry0 = dictDim0[d][0] # should be only one element
+                entry1 = dictDim1[d][0] # should be only one element
+            except (IndexError, KeyError):
+                continue
+
+            minbnd, maxbnd = plt.xlim()
+            plt.plot((entry0.mMaxEvals(), entry0.mMaxEvals()),
+                     (minbnd, entry1.mMaxEvals()), ls='--', color=colors[i],
+                     zorder=-1)
+            plt.plot((minbnd, entry0.mMaxEvals()),
+                     (entry1.mMaxEvals(), entry1.mMaxEvals()), ls='--',
+                     color=colors[i], zorder=-1)
+            plt.xlim(minbnd, maxbnd)
+            plt.ylim(minbnd, maxbnd)
+            #Set the boundaries again: they changed due to new plots.
+
+            #plt.axvline(entry0.mMaxEvals(), ls='--', color=colors[i])
+            #plt.axhline(entry1.mMaxEvals(), ls='--', color=colors[i])
 
         #if isBenchmarkinfosFound:
         #    plt.ylabel(funInfos[f])
