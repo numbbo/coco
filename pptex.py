@@ -466,19 +466,23 @@ def writeFEvals3(fevals, maxsymbols, isscientific=False):
     if float(tmp[-1]) < 0:
         tmp2 = '-' + tmp2
     tmp[-1] = tmp2
-    remainingsymbols = max(maxsymbols - len(tmp2) - 3 + 1, 0)
+    remainingsymbols = max(maxsymbols - len(tmp2) - 3, 0)
     tmp[0] = (('%.' + str(remainingsymbols) + 'f') % float(tmp[0]))
     repr1 = 'e'.join(tmp)
     #len(repr1) <= maxsymbols is not always the case but should be most usual
 
     tmp = '%.0f' % fevals
     remainingsymbols = max(maxsymbols - len(tmp) - 1, 0)
-    repr2 = (('%.' + str(remainingsymbols) + 'f') % fevals).rstrip('.0')
-
+    repr2 = (('%.' + str(remainingsymbols) + 'f') % fevals)
+    tmp = repr2.split('.', 1)
+    if len(tmp) > 1:
+        tmp[-1] = tmp[-1].rstrip('0')
+    repr2 = '.'.join(tmp)
+    repr2 = repr2.rstrip('.')
     #set_trace()
 
-    if len(repr1) > len(repr2) and not isscientific:
-        return repr2
+    if len(repr1) < len(repr2) or isscientific:
+        return repr1
 
     #tmp1 = '%4.0f' % bestalgdata[-1]
     #tmp2 = ('%2.2g' % bestalgdata[-1]).split('e', 1)
@@ -490,7 +494,7 @@ def writeFEvals3(fevals, maxsymbols, isscientific=False):
     #        tmp = tmp2
     #    curline.append(r'\multicolumn{2}{c|}{%s}' % tmp)
 
-    return repr1
+    return repr2
 
 def tableLaTeX(table, spec, extraeol=()):
     """Generates a latex tabular from a sequence of sequence (table) of strings.
