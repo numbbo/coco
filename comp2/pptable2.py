@@ -13,7 +13,7 @@ import os
 import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bestalg
-from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2
+from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvals3
 from bbob_pproc.pproc import significancetest
 from bbob_pproc.bootstrap import ranksums
 
@@ -91,11 +91,12 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             bestalgdata = bestalgentry.detERT(targetsOfInterest)
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)
 
+            #for i in bestalgdata[:-1]:
+            #    curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % writeFEvals2(i, 2))
+            #curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}' % writeFEvals2(bestalgdata[-1], 2))
             for i in bestalgdata[:-1]:
-                #if numpy.isnan(i):
-                    #set_trace()
-                curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % writeFEvals2(i, 2))
-            curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}' % writeFEvals2(bestalgdata[-1], 2))
+                curline.append(r'\multicolumn{2}{c}{%s}' % writeFEvals3(i, 5))
+            curline.append(r'\multicolumn{2}{c|}{%s}' % writeFEvals3(bestalgdata[-1], 5))
 
             tmp = bestalgentry.detEvals([targetf])[0][0]
             tmp2 = numpy.sum(numpy.isnan(tmp) == False)
