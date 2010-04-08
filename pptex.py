@@ -431,6 +431,67 @@ def writeFEvals2(fevals, precision=2, maxdigits=None, isscientific=False):
 
         return repr2
 
+def writeFEvals3(fevals, maxsymbols, isscientific=False):
+    """Return the smallest string representation of a number.
+    Two alternatives:
+    1) modified scientific notation (without the trailing + and zero in the exponent) 
+    2) float notation
+    
+    Returns string representation of a number of function evaluations or ERT
+    This method is supposed to be used for filling up a LaTeX tabular.
+
+    Compared to writeFEvals2 this method is only concerned with the maximum
+    number of digits.
+    """
+
+    #Printf:
+    # %[flags][width][.precision][length]specifier
+
+    assert not numpy.isnan(fevals)
+
+    if numpy.isinf(fevals):
+        return r'$\infty$'
+
+    #repr1 is the alternative scientific notation
+    #repr2 is the full notation but with a number of significant digits given
+    #by the variable precision.
+
+    # modified scientific notation:
+    #smallest representation of the decimal part
+    #drop + and starting zeros of the exponent part
+    repr1 = (('%.' + str(maxsymbols) + 'e') % fevals)
+    size1 = len(repr1)
+    tmp = repr1.split('e', 1)
+    tmp2 = tmp[-1].lstrip('+-0')
+    if float(tmp[-1]) < 0:
+        tmp2 = '-' + tmp2
+    tmp[-1] = tmp2
+    remainingsymbols = max(maxsymbols - len(tmp2) - 3 + 1, 0)
+    tmp[0] = (('%.' + str(remainingsymbols) + 'f') % float(tmp[0]))
+    repr1 = 'e'.join(tmp)
+    #len(repr1) <= maxsymbols is not always the case but should be most usual
+
+    tmp = '%.0f' % fevals
+    remainingsymbols = max(maxsymbols - len(tmp) - 1, 0)
+    repr2 = (('%.' + str(remainingsymbols) + 'f') % fevals).rstrip('.0')
+
+    #set_trace()
+
+    if len(repr1) > len(repr2) and not isscientific:
+        return repr2
+
+    #tmp1 = '%4.0f' % bestalgdata[-1]
+    #tmp2 = ('%2.2g' % bestalgdata[-1]).split('e', 1)
+    #if len(tmp2) > 1:
+    #    tmp2[-1] = tmp2[-1].lstrip('+0')
+    #    tmp2 = 'e'.join(tmp2)
+    #    tmp = tmp1
+    #    if len(tmp1) >= len(tmp2):
+    #        tmp = tmp2
+    #    curline.append(r'\multicolumn{2}{c|}{%s}' % tmp)
+
+    return repr1
+
 def tableLaTeX(table, spec, extraeol=()):
     """Generates a latex tabular from a sequence of sequence (table) of strings.
 
