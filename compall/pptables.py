@@ -44,7 +44,7 @@ def cite(algName, isNoisefree, isNoisy):
     # The names of the algorithms must correspond to the name of the folder
     # containing the data. The citations keys must be in bbob.bib.
     if isNoisefree:
-        if algName == "ALPS":
+        if algName == "ALPS-GA":
             res.append("Hornby:2009")
         if algName in ("AMaLGaM IDEA", "iAMaLGaM IDEA"):
             res.append("DBLP:conf/gecco/BosmanGT09")
@@ -78,7 +78,7 @@ def cite(algName, isNoisefree, isNoisy):
             res.append("DBLP:conf/gecco/Posik09c")
         if algName == "MA-LS-Chain":
             res.append("DBLP:conf/gecco/MolinaLH09")
-        if algName == "MCS (Neum)":
+        if algName == "MCS":
             res.append("Huyer:2009b")
         if algName == "NELDER (Han)":
             res.append("DBLP:conf/gecco/Hansen09b")
@@ -103,7 +103,7 @@ def cite(algName, isNoisefree, isNoisy):
         if algName == "VNS (Garcia)":
             res.append("DBLP:conf/gecco/Garcia-MartinezL09")
     if isNoisy:
-        if algName == "ALPS":
+        if algName == "ALPS-GA":
             res.append("Hornby:2009a")
         elif algName in ("AMaLGaM IDEA", "iAMaLGaM IDEA"):
             res.append("DBLP:conf/gecco/BosmanGT09a")
@@ -129,7 +129,7 @@ def cite(algName, isNoisefree, isNoisy):
             res.append("Pal:2009")
         elif algName == "MA-LS-Chain":
             res.append("DBLP:conf/gecco/MolinaLH09a")
-        elif algName == "MCS (Neum)":
+        elif algName == "MCS":
             res.append("Huyer:2009a")
         elif algName == "(1+1)-ES":
             res.append("DBLP:conf/gecco/Auger09a")
@@ -552,7 +552,12 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                     except KeyError:
                         lines[2] += (r'& .')
                     try:
-                        lines[3] += (r'& %s' % (writeFEvals3(float(allertbest[t][(func, d)])/d, 6)))
+                        if numpy.isnan(allertbest[t][(func, d)]):
+                            tmp = 'nan'
+                        else:
+                            tmp = (writeFEvals3(float(allertbest[t][(func, d)])/d, 5))
+                        lines[3] += (r'& %s' % tmp)
+                        #lines[3] += (r'& %s' % (writeFEvals(float(allertbest[t][(func, d)])/d, '.3')))
                     except KeyError:
                         lines[3] += (r'& .')
 
@@ -572,7 +577,8 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                     if replacement[i][j]:
                         tmp = '%s' % replacement[i][j]
                     else:
-                        tmp = '%s' % writeFEvals3(line[j], 5)
+                        tmp = '%s' % writeFEvals3(line[j], 4)
+                        #tmp = '%s' % writeFEvals(line[j])
 
                     if i in boldface[j] or line[j] < 3:
                         tmp = r'\textbf{' + tmp + '}'
