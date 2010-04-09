@@ -95,8 +95,8 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             #    curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % writeFEvals2(i, 2))
             #curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}' % writeFEvals2(bestalgdata[-1], 2))
             for i in bestalgdata[:-1]:
-                curline.append(r'\multicolumn{2}{c}{%s}' % writeFEvals3(i, 5))
-            curline.append(r'\multicolumn{2}{c|}{%s}' % writeFEvals3(bestalgdata[-1], 5))
+                curline.append(r'\multicolumn{2}{c}{%s}' % writeFEvals3(i, 4))
+            curline.append(r'\multicolumn{2}{c|}{%s}' % writeFEvals3(bestalgdata[-1], 4))
 
             tmp = bestalgentry.detEvals([targetf])[0][0]
             tmp2 = numpy.sum(numpy.isnan(tmp) == False)
@@ -186,10 +186,11 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         # Formatting
                         tmp = float(j)/bestalgdata[i]
                         assert not numpy.isnan(tmp)
-                        isscientific = False
-                        if tmp >= 1000:
-                            isscientific = True
-                        tableentry = writeFEvals2(tmp, 2, isscientific=isscientific)
+                        #isscientific = False
+                        #if tmp >= 1000:
+                            #isscientific = True
+                        #tableentry = writeFEvals2(tmp, 2, isscientific=isscientific)
+                        tableentry = writeFEvals3(tmp, 4)
 
                         isBold = False
                         if significance0vs1 > 0:

@@ -436,7 +436,7 @@ def writeFEvals3(fevals, maxsymbols, isscientific=False):
     Two alternatives:
     1) modified scientific notation (without the trailing + and zero in the exponent) 
     2) float notation
-    
+
     Returns string representation of a number of function evaluations or ERT
     This method is supposed to be used for filling up a LaTeX tabular.
 
@@ -466,7 +466,7 @@ def writeFEvals3(fevals, maxsymbols, isscientific=False):
     if float(tmp[-1]) < 0:
         tmp2 = '-' + tmp2
     tmp[-1] = tmp2
-    remainingsymbols = max(maxsymbols - len(tmp2) - 3, 0)
+    remainingsymbols = max(maxsymbols - len(tmp2) - 2, 0)
     tmp[0] = (('%.' + str(remainingsymbols) + 'f') % float(tmp[0]))
     repr1 = 'e'.join(tmp)
     #len(repr1) <= maxsymbols is not always the case but should be most usual
@@ -481,7 +481,7 @@ def writeFEvals3(fevals, maxsymbols, isscientific=False):
     repr2 = repr2.rstrip('.')
     #set_trace()
 
-    if len(repr1) < len(repr2) or isscientific:
+    if len(repr1)-repr1.count('.') < len(repr2)-repr2.count('.') or isscientific:
         return repr1
 
     #tmp1 = '%4.0f' % bestalgdata[-1]
