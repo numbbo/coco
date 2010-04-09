@@ -11,7 +11,7 @@ from __future__ import absolute_import
 import os
 from pdb import set_trace
 import numpy
-from bbob_pproc.pptex import writeFEvals
+from bbob_pproc.pptex import writeFEvals, writeFEvals3
 from bbob_pproc.bootstrap import prctile
 from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList
@@ -552,7 +552,7 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                     except KeyError:
                         lines[2] += (r'& .')
                     try:
-                        lines[3] += (r'& %s' % (writeFEvals(float(allertbest[t][(func, d)])/d, '.3')))
+                        lines[3] += (r'& %s' % (writeFEvals3(float(allertbest[t][(func, d)])/d, 6)))
                     except KeyError:
                         lines[3] += (r'& .')
 
@@ -572,7 +572,7 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                     if replacement[i][j]:
                         tmp = '%s' % replacement[i][j]
                     else:
-                        tmp = '%s' % writeFEvals(line[j])
+                        tmp = '%s' % writeFEvals3(line[j], 5)
 
                     if i in boldface[j] or line[j] < 3:
                         tmp = r'\textbf{' + tmp + '}'
