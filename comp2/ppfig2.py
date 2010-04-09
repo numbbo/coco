@@ -304,6 +304,9 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             data = generateData(entry0, entry1, fthresh=fthresh)
             dataperdim[dim] = data
 
+            if len(data[0]) == 0 and len(data[1]) == 0:
+                continue
+
             # TODO: hack, modify slightly so line goes to 'zero'
             if minfvalue:
                 for d in data:
@@ -316,12 +319,16 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             plt.plot(data[0][idx, 0], ydata, ls='--', color=colors[i],
                      lw=linewidth)
 
-            # This is one possibility:
+            # This is only one possibility:
             #idx = (data[0][:, 3] >= 5) * (data[1][:, 3] >= 5)
             idx = ((data[0][:, 1] <= 3 * numpy.median(entry0.maxevals))
                    * (data[1][:, 1] <= 3 * numpy.median(entry1.maxevals)))
-            #if func==5:
-            #    set_trace()
+
+            if not idx.any():
+                continue
+
+            if len(data[0][idx, 0]) == 0:
+                set_trace()
             fvalueswitch[dim] = min(data[0][idx, 0])
             ydata = data[1][idx, 1]/data[0][idx, 1]
             plt.plot(data[0][idx, 0], ydata, color=colors[i], lw=linewidth)
@@ -343,12 +350,18 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             except KeyError:
                 continue
 
+            if len(data[0]) == 0 and len(data[1]) == 0:
+                continue
+
             # annotation
             annotate(entry0, entry1, dim, minfvalue, nbtests=nbtests)
 
             tmp0 = numpy.isfinite(data[0][:, 1])
             tmp1 = numpy.isfinite(data[1][:, 1])
             idx = tmp0 * tmp1
+
+            if not idx.any():
+                continue
 
             #Do not plot anything else if it happens after minfvalue
             if data[0][idx, 0][-1] <= minfvalue:
