@@ -472,7 +472,7 @@ def writeFEvals3(fevals, maxsymbols, isscientific=False):
     #len(repr1) <= maxsymbols is not always the case but should be most usual
 
     tmp = '%.0f' % fevals
-    remainingsymbols = max(maxsymbols - len(tmp) - 1, 0)
+    remainingsymbols = max(maxsymbols - len(tmp), 0)
     repr2 = (('%.' + str(remainingsymbols) + 'f') % fevals)
     tmp = repr2.split('.', 1)
     if len(tmp) > 1:
