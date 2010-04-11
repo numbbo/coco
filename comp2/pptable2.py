@@ -13,7 +13,7 @@ import os
 import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bestalg
-from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvals3
+from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
 from bbob_pproc.pproc import significancetest
 from bbob_pproc.bootstrap import ranksums
 
@@ -95,8 +95,8 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             #    curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % writeFEvals2(i, 2))
             #curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}' % writeFEvals2(bestalgdata[-1], 2))
             for i in bestalgdata[:-1]:
-                curline.append(r'\multicolumn{2}{c}{%s}' % writeFEvals3(i, 4))
-            curline.append(r'\multicolumn{2}{c|}{%s}' % writeFEvals3(bestalgdata[-1], 4))
+                curline.append(r'\multicolumn{2}{c}{%s}' % writeFEvalsMaxPrec(i, 2))
+            curline.append(r'\multicolumn{2}{c|}{%s}' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
 
             tmp = bestalgentry.detEvals([targetf])[0][0]
             tmp2 = numpy.sum(numpy.isnan(tmp) == False)
@@ -190,7 +190,7 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         #if tmp >= 1000:
                             #isscientific = True
                         #tableentry = writeFEvals2(tmp, 2, isscientific=isscientific)
-                        tableentry = writeFEvals3(tmp, 4)
+                        tableentry = writeFEvalsMaxPrec(tmp, 2)
 
                         isBold = False
                         if significance0vs1 > 0:
