@@ -325,10 +325,11 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
                    * (data[1][:, 1] <= 3 * numpy.median(entry1.maxevals)))
 
             if not idx.any():
+                fvalueswitch[dim] = numpy.inf
+                # Hack: fvalueswitch is the smallest value of f where the line
+                # was still solid.
                 continue
 
-            if len(data[0][idx, 0]) == 0:
-                set_trace()
             fvalueswitch[dim] = min(data[0][idx, 0])
             ydata = data[1][idx, 1]/data[0][idx, 1]
             plt.plot(data[0][idx, 0], ydata, color=colors[i], lw=linewidth)
