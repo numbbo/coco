@@ -431,19 +431,19 @@ def writeFEvals2(fevals, precision=2, maxdigits=None, isscientific=False):
 
         return repr2
 
-def writeFEvals3(fevals, maxsymbols, isscientific=False):
+def writeFEvalsMaxSymbols(fevals, maxsymbols, isscientific=False):
     """Return the smallest string representation of a number.
     Two alternatives:
     1) modified scientific notation (without the trailing + and zero in the exponent) 
     2) float notation
 
-    Returns string representation of a number of function evaluations or ERT
+    Returns string representation of a number of function evaluations or ERT.
     This method is supposed to be used for filling up a LaTeX tabular.
 
-    Compared to writeFEvals2 this method is only concerned with the maximum
-    number of digits.
+    This method is only concerned with the maximum number of significant digits.
     """
 
+    #Compared to writeFEvals2?
     #Printf:
     # %[flags][width][.precision][length]specifier
 
@@ -495,6 +495,52 @@ def writeFEvals3(fevals, maxsymbols, isscientific=False):
     #    curline.append(r'\multicolumn{2}{c|}{%s}' % tmp)
 
     return repr2
+
+def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=100000.):
+    """Return a string representation of a number.
+    Two alternatives:
+    1) float notation with a precision smaller or equal to SIG (if the entry is
+    one, then the result is 1).
+    2) if the number is larger or equal to maxfloatrepr, a modified scientific
+    notation (without the trailing + and zero in the exponent)
+
+    Returns string representation of a number of function evaluations or ERT
+    This method is supposed to be used for filling up a LaTeX tabular.
+    CAVE: what if entry is smaller than 10**(-SIG)?
+    """
+
+    #Printf:
+    # %[flags][width][.precision][length]specifier
+
+    assert not numpy.isnan(entry)
+
+    if numpy.isinf(entry):
+        return r'$\infty$'
+
+    if entry == 1.:
+        repr = '1'
+    elif entry < maxfloatrepr:
+        # the full notation but with given maximum precision
+        corr = 0
+        if abs(entry) < 1:
+            corr = 1
+        tmp = '%.0f' % entry
+        remainingsymbols = max(SIG - len(tmp) + corr, 0)
+        repr = (('%.' + str(remainingsymbols) + 'f') % entry)
+    else:
+        # modified scientific notation:
+        #smallest representation of the decimal part
+        #drop + and starting zeros of the exponent part
+        repr = (('%.' + str(SIG) + 'e') % entry)
+        size1 = len(repr)
+        tmp = repr.split('e', 1)
+        tmp2 = tmp[-1].lstrip('+-0')
+        if float(tmp[-1]) < 0:
+            tmp2 = '-' + tmp2
+        tmp[-1] = tmp2
+        repr = 'e'.join(tmp)
+
+    return repr
 
 def tableLaTeX(table, spec, extraeol=()):
     """Generates a latex tabular from a sequence of sequence (table) of strings.

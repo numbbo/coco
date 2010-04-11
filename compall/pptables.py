@@ -11,7 +11,7 @@ from __future__ import absolute_import
 import os
 from pdb import set_trace
 import numpy
-from bbob_pproc.pptex import writeFEvals, writeFEvals3
+from bbob_pproc.pptex import writeFEvals, writeFEvalsMaxPrec
 from bbob_pproc.bootstrap import prctile
 from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList
@@ -555,7 +555,7 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                         if numpy.isnan(allertbest[t][(func, d)]):
                             tmp = 'nan'
                         else:
-                            tmp = (writeFEvals3(float(allertbest[t][(func, d)])/d, 5))
+                            tmp = (writeFEvalsMaxPrec(float(allertbest[t][(func, d)])/d, 2))
                         lines[3] += (r'& %s' % tmp)
                         #lines[3] += (r'& %s' % (writeFEvals(float(allertbest[t][(func, d)])/d, '.3')))
                     except KeyError:
@@ -577,7 +577,7 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                     if replacement[i][j]:
                         tmp = '%s' % replacement[i][j]
                     else:
-                        tmp = '%s' % writeFEvals3(line[j], 4)
+                        tmp = '%s' % writeFEvalsMaxPrec(line[j], 2)
                         #tmp = '%s' % writeFEvals(line[j])
 
                     if i in boldface[j] or line[j] < 3:
