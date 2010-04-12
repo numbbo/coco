@@ -374,7 +374,7 @@ def main(argv=None):
             usage()
             sys.exit()
 
-        CrE = None
+        inputCrE = None
         isfigure = True
         istab = True
         isrldistr = True
@@ -417,7 +417,7 @@ def main(argv=None):
                 isrldistr = False
             elif o == "--crafting-effort":
                 try:
-                    CrE = float(a)
+                    inputCrE = float(a)
                 except ValueError:
                     raise Usage('Expect a valid float for flag crafting-effort.')
             else:
@@ -554,6 +554,7 @@ def main(argv=None):
                     testbed = 'noisy'
                 txt = ("Please input crafting effort value "
                        + "for %s testbed:\n  CrE = " % testbed)
+                CrE = inputCrE
                 while CrE is None:
                     try:
                         CrE = float(input(txt))
@@ -575,7 +576,6 @@ def main(argv=None):
                         pplogloss.main(sliceFuncGroup, CrE, True, outputdir, info,
                                        verbose=verbose)
                     pplogloss.evalfmax = None #Resetting the max #fevalsfactor
-                CrE = None
 
             print "ERT loss ratio figures and tables done."
 
