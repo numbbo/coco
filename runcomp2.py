@@ -476,6 +476,7 @@ def main(argv=None):
 
         if isscatter:
             ppscatter.main(dsList0, dsList1, outputdir, verbose=verbose)
+            print "Scatter plots done."
 
         if isfigure or isrldistr or istable or isscatter:
             print "Output data written to folder %s." % outputdir
