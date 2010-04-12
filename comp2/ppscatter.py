@@ -235,10 +235,10 @@ def main(dsList0, dsList1, outputdir, verbose=True):
 
             minbnd, maxbnd = plt.xlim()
             plt.plot((entry0.mMaxEvals(), entry0.mMaxEvals()),
-                     (minbnd, entry1.mMaxEvals()), ls='--', color=colors[i],
+                     (minbnd, entry1.mMaxEvals()), ls='-', color=colors[i],
                      zorder=-1)
             plt.plot((minbnd, entry0.mMaxEvals()),
-                     (entry1.mMaxEvals(), entry1.mMaxEvals()), ls='--',
+                     (entry1.mMaxEvals(), entry1.mMaxEvals()), ls='-',
                      color=colors[i], zorder=-1)
             plt.xlim(minbnd, maxbnd)
             plt.ylim(minbnd, maxbnd)
