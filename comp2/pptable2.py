@@ -169,13 +169,15 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         if significance0vs1 > 0:
                            isBold = True
 
-                        tmp = writeFEvals2(float(j), 2, isscientific=True)
+                        #tmp = writeFEvals2(float(j), 2, isscientific=True)
+                        tmp = writeFEvalsMaxPrec(float(j), 2)
                         if not numpy.isinf(j):
-                            tmp = tmp.rsplit('e', 1)
-                            if len(tmp) > 1:
-                                tmp[0] = tmp[0].replace('.', '', 1)
-                                tmp[-1] = str(int(tmp[-1]) - 1)
-                            tmp = r'\textit{%s}' % ('e'.join(tmp))
+                            #tmp = tmp.rsplit('e', 1)
+                            #if len(tmp) > 1:
+                                #tmp[0] = tmp[0].replace('.', '', 1)
+                                #tmp[-1] = str(int(tmp[-1]) - 1)
+                            #tmp = r'\textit{%s}' % ('e'.join(tmp))
+                            tmp = r'\textit{%s}' % (tmp)
                             if isBold:
                                 tmp = r'\textbf{%s}' % tmp
 
