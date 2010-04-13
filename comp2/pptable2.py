@@ -95,8 +95,8 @@ def mainnew(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             #    curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % writeFEvals2(i, 2))
             #curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}' % writeFEvals2(bestalgdata[-1], 2))
             for i in bestalgdata[:-1]:
-                curline.append(r'\multicolumn{2}{c}{%s}' % writeFEvalsMaxPrec(i, 2))
-            curline.append(r'\multicolumn{2}{c|}{%s}' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
+                curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % writeFEvalsMaxPrec(i, 2))
+            curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
 
             tmp = bestalgentry.detEvals([targetf])[0][0]
             tmp2 = numpy.sum(numpy.isnan(tmp) == False)
