@@ -22,7 +22,6 @@ except ImportError:
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from bbob_pproc import readalign
 
-figFormat = ('eps', 'pdf')
 colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 offset = 0. #0.02
@@ -30,7 +29,7 @@ offset = 0. #0.02
 
 #Get benchmark short infos.
 funInfos = {}
-figformat = ('eps', 'pdf') # Controls the output when using the main method
+figFormat = ('eps', 'pdf') # Controls the output when using the main method
 isBenchmarkinfosFound = True
 infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
 
