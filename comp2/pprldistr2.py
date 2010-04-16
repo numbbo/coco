@@ -69,7 +69,7 @@ def beautify(figHandle, figureName, fileFormat=('pdf', 'eps'), isByInstance=True
             if verbose:
                 print 'Wrote figure in %s.' %(figureName + '.' + entry)
 
-def beautify2():
+def beautify2(handles):
     """Format the figure of the run length distribution."""
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
@@ -89,6 +89,36 @@ def beautify2():
     for i in xticks:
         newxticks.append('%d' % round(numpy.log10(i)))
     axisHandle.set_xticklabels(newxticks)
+
+    # Prolong to the boundary ... could provide tmp to beautify2
+    xmin, xmax = plt.xlim()
+    for i in handles:
+        try:
+            xdata, ydata = i.get_data()
+        except AttributeError:
+            xdata = i.get_xdata()
+            ydata = i.get_ydata()
+        if len(xdata) == 0 or len(ydata) == 0:
+            continue
+        xdata = numpy.insert(xdata, 0, xmin)
+        try:
+            xdata = numpy.insert(xdata, len(xdata), xmax)
+        except OverflowError:
+            xdata = xdata + 0.0
+            # TODO: Hack for float conversion, compatibility with 0.8
+            xdata = numpy.insert(xdata, len(xdata), xmax)
+        ydata = numpy.insert(ydata, 0, ydata[0])
+        ydata = numpy.insert(ydata, len(ydata), ydata[-1])
+        i.set_data(xdata, ydata)
+
+    plt.legend(loc='best')
+
+    # Inverted xticks
+    x = axisHandle.get_xticks(minor=True)
+    # Operation for reverting the ticks for x < 1
+    x[x<1] = sorted(1/(x[x<1]*numpy.power(10, -2*numpy.floor(numpy.log10(x[x<1]))-1)))
+    x = x[(x<xmax) * (x>xmin)] # why?
+    axisHandle.set_xticks(x, minor=True)
 
 def computeERT(fevals, maxevals):
     data = fevals.copy()
@@ -520,43 +550,17 @@ def main2(dsList0, dsList1, valuesOfInterest=None,
 
     figureName = os.path.join(outputdir,'pplogabs_%s' %(info))
 
-    tmp = plotLogAbs2(dsList0, dsList1,
+    handles = plotLogAbs2(dsList0, dsList1,
                       valuesOfInterest, verbose=verbose)
 
-    beautify2()
+    beautify2(handles)
 
-    # Prolong to the boundary
-    xmin, xmax = plt.xlim()
-    for i in tmp:
-        try:
-            xdata, ydata = i.get_data()
-        except AttributeError:
-            xdata = i.get_xdata()
-            ydata = i.get_ydata()
-        if len(xdata) == 0 or len(ydata) == 0:
-            continue
-        xdata = numpy.insert(xdata, 0, xmin)
-        try:
-            xdata = numpy.insert(xdata, len(xdata), xmax)
-        except OverflowError:
-            xdata = xdata + 0.0
-            # TODO: Hack for float conversion, compatibility with 0.8
-            xdata = numpy.insert(xdata, len(xdata), xmax)
-        ydata = numpy.insert(ydata, 0, ydata[0])
-        ydata = numpy.insert(ydata, len(ydata), ydata[-1])
-        i.set_data(xdata, ydata)
-
-    plt.legend(loc='best')
-    #plt.text(0.5, 0.93, text, horizontalalignment="center",
-    #         transform=axisHandle.transAxes)
     funcs = set(dsList0.dictByFunc().keys()) & set(dsList1.dictByFunc().keys())
     text = 'f%s' % consecutiveNumbers(sorted(funcs))
     plt.text(0.98, 0.02, text, horizontalalignment="right",
              transform=plt.gca().transAxes)
 
-    #set_trace()
     saveFigure(figureName, figFormat=figformat, verbose=verbose)
     plt.close()
-    #set_trace()
 
     plt.rcdefaults()
