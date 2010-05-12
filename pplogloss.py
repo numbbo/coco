@@ -356,7 +356,7 @@ def plot(xdata, ydata):
                 y = y[numpy.isfinite(y)]
                 if len(y) == 0:
                     continue
-                
+
             res.extend(plt.plot([xdata[i]]*len(y), 10**numpy.array(y),
                                 marker='+', color='b',
                                 ls='', markersize=20, markeredgewidth=3))

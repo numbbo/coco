@@ -475,7 +475,7 @@ def main(argv=None):
 
         if isfigure or istab or isrldistr or islogloss:
             if not os.path.exists(outputdir):
-                os.mkdir(outputdir)
+                os.makedirs(outputdir)
                 if verbose:
                     print 'Folder %s was created.' % (outputdir)
 

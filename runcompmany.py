@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Process data and generates some comparison results.
+"""Process data to be included in a generic template.
 
    Synopsis:
-      python path_to_folder/bbob_pproc/runcompall.py [OPTIONS] FOLDER_NAME...
+      python path_to_folder/bbob_pproc/runcompmany.py [OPTIONS] FOLDER_NAME...
     Help:
-      python path_to_folder/bbob_pproc/runcompall.py -h
+      python path_to_folder/bbob_pproc/runcompmany.py -h
 
 """
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import dataoutput, pproc
+from bbob_pproc import dataoutput, pproc, run
 from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.compall import ppperfprof, pptables
@@ -147,7 +147,7 @@ def main(argv=None):
 
         -o, --output-dir OUTPUTDIR
 
-            change the default output directory ('cmpalldata') to
+            change the default output directory ('cmpmanydata') to
             OUTPUTDIR
 
         --noise-free, --noisy
@@ -170,30 +170,30 @@ def main(argv=None):
 
     * Calling the runcompall.py interface from the command line:
 
-        $ python bbob_pproc/runcompall.py -v
+        $ python bbob_pproc/runcompmany.py -v
 
 
     * Loading this package and calling the main from the command line
       (requires that the path to this package is in python search path):
 
-        $ python -m bbob_pproc.runcompall -h
+        $ python -m bbob_pproc.runcompamny -h
 
     This will print out this help message.
 
     * From the python interactive shell (requires that the path to this
       package is in python search path):
 
-        >>> from bbob_pproc import runcompall
-        >>> runcompall.main('-o outputfolder folder1 folder2'.split())
+        >>> from bbob_pproc import runcompmany
+        >>> runcompmany.main('-o outputfolder folder1 folder2'.split())
 
     This will execute the post-processing on the data found in folder1
     and folder2.
-    The -o option changes the output folder from the default cmpalldata to
+    The -o option changes the output folder from the default cmpmanydata to
     outputfolder.
 
     * Generate post-processing data for some algorithms:
 
-        $ python runcompall.py AMALGAM BFGS BIPOP-CMA-ES
+        $ python runcompmany.py AMALGAM BFGS BIPOP-CMA-ES
 
     """
 
@@ -214,7 +214,7 @@ def main(argv=None):
             sys.exit()
 
         verbose = False
-        outputdir = 'cmpalldata'
+        outputdir = 'cmpmanydata'
         isNoisy = False
         isNoiseFree = False
 
@@ -222,6 +222,7 @@ def main(argv=None):
         isTab = True
 
         #Process options
+        genopts = []
         for o, a in opts:
             if o in ("-v","--verbose"):
                 verbose = True
@@ -231,111 +232,35 @@ def main(argv=None):
             elif o in ("-o", "--output-dir"):
                 outputdir = a
             elif o == "--noisy":
-                isNoisy = True
+                genopts.append(o)
             elif o == "--noise-free":
-                isNoiseFree = True
+                genopts.append(o)
+            elif o in ("-f", "--final"):
+                genopts.append(o)
+            #The next 3 are for testing purpose
             elif o == "--tab-only":
-                isPer = False
-                isEff = False
-            elif o == "--perfprof-only":
-                isEff = False
-                isTab = False
+                genopts.append(o)
+            elif o == "--fig-only":
+                genopts.append(o)
+            elif o == "--rld-only":
+                genopts.append(o)
+            elif o == "--los-only":
+                genopts.append(o)
             else:
                 assert False, "unhandled option"
 
         if (not verbose):
             warnings.simplefilter('ignore')
 
-        print ("BBOB Post-processing: will generate comparison " +
+        print ("BBOB Post-processing: will generate output " +
                "data in folder %s" % outputdir)
         print "  this might take several minutes."
 
-        dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
-
-        if not dsList:
-            sys.exit()
-
-        for i in dictAlg:
-            if isNoisy and not isNoiseFree:
-                dictAlg[i] = dictAlg[i].dictByNoise().get('nzall', DataSetList())
-            elif isNoiseFree and not isNoisy:
-                dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
-
-            tmp = set((j.algId, j.comment) for j in dictAlg[i])
-            for j in tmp:
-                if not dataoutput.isListed(j):
-                    dataoutput.updateAlgorithmInfo(j, verbose=verbose)
-
-        for i in dsList:
-            if not i.dim in (2, 3, 5, 10, 20):
-                continue
-            # Deterministic algorithms
-            if i.algId in ('Original DIRECT', ):
-                tmpInstancesOfInterest = instancesOfInterestDet
-            else:
-                tmpInstancesOfInterest = instancesOfInterest
-
-            if ((dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
-                tmpInstancesOfInterest) and
-                (dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
-                instancesOfInterest2010)):
-                warnings.warn('The data of %s do not list ' %(i) +
-                              'the correct instances ' +
-                              'of function F%d or the ' %(i.funcId) +
-                              'correct number of trials for each.')
-
-        # group targets:
-        dictTarget = {}
-        for t in sorted(set(single_target_function_values + summarized_target_function_values)):
-            tmpdict = dict.fromkeys(((f, d) for f in range(0, 25) + range(101, 131) for d in (2, 3, 5, 10, 20, 40)), t)
-            stmp = 'E'
-            if t == 1:
-                stmp = 'E-'
-            # dictTarget['_f' + stmp + '%2.1f' % numpy.log10(t)] = (tmpdict, )
-            if t in single_target_function_values: 
-                dictTarget['_f' + stmp + '%02d' % numpy.log10(t)] = (tmpdict, )
-            if t in summarized_target_function_values: 
-                dictTarget.setdefault('_allfs', []).append(tmpdict)
-
-        if not os.path.exists(outputdir):
-            os.mkdir(outputdir)
-            if verbose:
-                print 'Folder %s was created.' % (outputdir)
-
-        # Performance profiles
-        if isPer:
-            dictNoi = pproc.dictAlgByNoi(dictAlg)
-            for ng, tmpdictAlg in dictNoi.iteritems():
-                dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                for d, entries in dictDim.iteritems():
-                    for k, t in dictTarget.iteritems():
-                        #set_trace()
-                        ppperfprof.main(entries, target=t, order=sortedAlgs,
-                                        plotArgs=algPlotInfos,
-                                        outputdir=outputdir,
-                                        info=('%02d%s_%s' % (d, k, ng)),
-                                        verbose=verbose)
-
-            #dictFun = pproc.dictAlgByFun(dictAlg)
-            #for fun, tmpdictAlg in dictFun.iteritems():
-                #dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                #for d, entries in dictDim.iteritems():
-                    #for k, t in dictTarget.iteritems():
-                        ##set_trace()
-                        #ppperfprof.main(entries, target=t, order=sortedAlgs,
-                                        #plotArgs=algPlotInfos,
-                                        #outputdir=outputdir,
-                                        #info=('%03d_%02d%s' % (fun, d, k)),
-                                        #verbose=verbose)
-
-            organizeRTDpictures.do(outputdir)
-            print "ECDFs of ERT figures done."
-
-        if isTab:
-            allmintarget, allertbest = detTarget(dsList)
-            pptables.tablemanyalgonefunc(dictAlg, allmintarget, allertbest,
-                                         sortedAlgs, outputdir)
-            print "Comparison tables done."
+        for alg in args:
+            tmpoutputdir = os.path.join(outputdir, alg)
+            # TODO: if there is a problem, skip: try except...
+            run.main(genopts
+                     + ["-o", tmpoutputdir, "--crafting-effort", "0", alg])
 
     except Usage, err:
         print >>sys.stderr, err.msg

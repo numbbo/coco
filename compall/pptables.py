@@ -15,6 +15,7 @@ from bbob_pproc.pptex import writeFEvals, writeFEvalsMaxPrec
 from bbob_pproc.bootstrap import prctile
 from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList
+from bbob_pproc.pplogloss import detf
 
 allmintarget = {}
 allmedtarget = {}
@@ -423,6 +424,78 @@ def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None,
         f.write('\n'.join(lines) + '\n')
         f.close()
 
+def tablemanyalg2(dsListperAlg, dimsOfInterest=None, outputdir='.', info=''):
+    """Generate tables with the results of many algorithms over many functions.
+
+    One table per dimension.
+
+    """
+
+    # TODO: how for the significance test?
+    # When aggregating over functions, choose to display data with a fixed budget
+
+    maxRank = 3
+
+    #dimensions = set.union(set(i.dim for i in dsList for dsList in dsListperAlg))
+    dictDim = {}
+    for dsList in dsListperAlg:
+        tmp = dsList.dictByDim()
+        for dim, curdsList in tmp.iteritems():
+            dictDim.setdefault(dim, []).append(curdsList)
+
+    if not dimsOfInterest:
+        dimsOfInterest = dictDim.keys()
+
+    for dim in dimsOfInterest:
+        dentries = dictDim.get(dim, False)
+        if not dentries:
+            continue
+
+        # dentries should be a list of DataSetList, each corresponding to one
+        # algorithm in one dimension
+
+        # Generate data
+        table = []
+        algnames = []
+
+        funcs = set(i.funcId for i in dsList for dsList in dentries)
+        maxevals = max(i.mMaxEvals() for i in dsList for dsList in dentries)
+        budgets = [2.*dim]
+        budgets.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals))))*dim)
+
+        # determine targets and best algorithms, one per budget, function
+        targets = {}
+        bestalg = {}
+        for b in budgets:
+            for f in funcs:
+                for dsList in dentries: # loop over algorithms
+                    entry = dsList.dictByFunc()[f][0]
+                    curtarget = detf(entry, [b])[0] # does this output a distribution?
+                    set_trace()
+                    if curtarget < targets.get((b, f), numpy.inf): # what in case of ties?
+                        targets[(b, f)] = curtarget
+                        bestalg[(b, f)] = (entry.funcId, entry.comment)
+                        bestert[(b, f)] = entry.detERT([curtarget])[0]
+
+        #algnames.append(writeLabels(algPlotInfos[tmp]['label']))
+
+        # compute the ERT for all algorithms adn divide by ERT_best
+        for dsList in dentries:
+            dictFunc = dsList.dictByFunc()
+            for b in budgets:
+                erts = []
+                ertratios = []
+                for f in dictFunc:
+                    entry = dictFunc[f]
+                    tmp = entry.detERT([targets[(b, f)]])[0]
+                    erts.append(tmp)
+                    ertratios = tmp/bestert[(b, f)]
+                    #TODO: statistics on ertratios...
+                    set_trace()
+
+
+        # TODO: write table
+
 def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                         outputdir='.'):
     """Generate one table per function showing results of multiple algorithms.
@@ -598,8 +671,7 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
             f.write('\n'.join(lines) + '\n')
             f.close()
 
-def tablemanyalgonefunc2(dictAlg, allmintarget, allertbest, sortedAlgs=None,
-                        outputdir='.'):
+def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
     """Generate one table per function showing results of multiple algorithms.
 
     Difference with the first version:
@@ -609,173 +681,29 @@ def tablemanyalgonefunc2(dictAlg, allmintarget, allertbest, sortedAlgs=None,
     * table width...
     """
 
-    # Sort the data per function and dimension
-    dictDim = {}
-    for alg, tmpdsList in dictAlg.iteritems():
-        tmpdictDim = tmpdsList.dictByDim()
-        for d, entries in tmpdictDim.iteritems():
-            dictDim.setdefault(d, {})[alg] = entries
+    # Sort data per dimension and function
+    dictData = {}
+    for entries in dsListperAlg:
+        tmpdictdim = entries.dictByDim()
+        for d in tmp:
+            tmpdictfun = tmp[d].dictByFunc()
+            for f in tmpdictfun:
+                dictData.setdefault((d, f), []).append(tmpdictfun[f])
 
-    #widthtable = 3 # Put in as global? 3 functions wide
-    #TODO: what about the keys of allmintarget and allertbest: why are they negative?
-    # TODO: split the generation of the tables from their formatting/output
-    # ... if its possible
-    for d, dictAlgbyDim in dictDim.iteritems():
-        # Summary table: multiple algorithm for each function
-        nbtarget = len(allmintarget)
-        stargets = sorted(allmintarget.keys())
-        #groups = [[1, 2], [3], [4], [5, 6], [7], [8, 9], [10], [11], [12], [13], [14], [15], [16], [17], [18], [19], [20], [21, 22], [23], [24]]
-        #funcs = sorted(dictAlgbyDim.dictByFunc().keys())
-        #groups = list(funcs[i*widthtable:(i+1)*widthtable] for i in range(len(funcs)/widthtable + 1))
-        funcs = set()
-        for i in dictAlgbyDim.values():
-            funcs |= set(j.funcId for j in i)
+    for df in dictData:
+        for alg, entries in dictData[df].iteritems():
+            assert len(entries[alg]) < 2
+            entry = entries[alg][0]
+            erts = entry.detERT(targets)
 
-        groups = list([i] for i in funcs)
+            # Process the data
+            # Generate the table
 
-        for numgroup, g in enumerate(groups):
-            isFunNoisefree = False
-            isFunNoisy = False
-            if not g:
-                continue
-
-            algnames = []
-            table = []
-            replacement = []
-            if sortedAlgs is None:
-                sortedAlgs = dictAlgbyDim.keys()
-
-            for alg in sortedAlgs:
-                curline = []
-                replacementLine = []
-                # Regroup entries by algorithm
-                try:
-                    algentries = dictAlgbyDim[alg]
-                except KeyError:
-                    continue
-
-                if not algentries:
-                    continue
-                dictF = algentries.dictByFunc()
-                for func in g:
-                    isLastInfoWritten = False
-                    try:
-                        entries = dictF[func]
-                        try:
-                            entry = entries[0]
-                        except:
-                            raise Usage('Problem with the entries')
-
-                    except KeyError:
-                        if curline or replacementLine:
-                            curline.extend([numpy.inf]*len(stargets))
-                            replacementLine.extend(['.']*len(stargets))
-
-                        continue # empty data
-
-                    for t in stargets:
-                        try:
-                            if numpy.isnan(allmintarget[t][(func, d)]):
-                                continue
-                        except KeyError:
-                            continue
-                        try:
-                            curline.append(entry.ert[entry.target<=allmintarget[t][(func, d)]][0]/allertbest[t][(func, d)])
-                            replacementLine.append('')
-                        except LookupError: #IndexError, KeyError:
-                            curline.append(numpy.inf)
-                            if not isLastInfoWritten:
-                                replacementLine.append(r'%s\textit{/%s}' % (writeFunVal(numpy.median(entry.finalfunvals)), writeFEvals(numpy.median(entry.maxevals)/entry.dim, precision='.1')))
-                                isLastInfoWritten = True
-                            else:
-                                replacementLine.append('.')
-
-                tmp = set((i.algId, i.comment) for i in algentries)
-                if replacementLine and curline:
-                    try:
-                        tmp = algPlotInfos[tmp.pop()]['label']
-                    except KeyError:
-                        tmp = algentries[0].algId # Take the first reasonable one.
-                    algnames.append(writeLabels(tmp))
-                    replacement.append(replacementLine)
-                    table.append(curline)
-
-            try:
-                table = numpy.array(table)
-            except ValueError:
-                pass
-            # Process data
-            boldface = sortColumns(table, maxRank=3)
-
-            # Format data
-            lines = [r'\begin{tabular}{c', '', r'$\Delta$ftarget', r'ERT$_{\textrm{best}}$/D']
-            for func in g:
-                if func in range(1, 25):
-                    isFunNoisefree = True
-                elif func in range(101, 131):
-                    isFunNoisy = True
-                curtargets = []
-                for t in stargets:
-                    try:
-                        if numpy.isfinite(allmintarget[t][(func, d)]):
-                            curtargets.append(t)
-                    except KeyError:
-                        continue
-                lines[0] += len(curtargets) * 'c'
-                lines[0] += 'c' # algname in the end.
-                if isBenchmarkinfosFound:
-                    lines[1] += (r' & \multicolumn{%d}{c}{{\normalsize \textbf{%s}}}' % (len(curtargets), funInfos[func]))
-                else:
-                    lines[1] += (r' & \multicolumn{%d}{c}{{\normalsize \textbf{f%d}}}' % (len(curtargets), func))
-
-                for t in curtargets:
-                    try:
-                        lines[2] += (r'& %1.0e' % allmintarget[t][(func, d)])
-                    except KeyError:
-                        lines[2] += (r'& .')
-                    try:
-                        if numpy.isnan(allertbest[t][(func, d)]):
-                            tmp = 'nan'
-                        else:
-                            tmp = (writeFEvalsMaxPrec(float(allertbest[t][(func, d)])/d, 2))
-                        lines[3] += (r'& %s' % tmp)
-                        #lines[3] += (r'& %s' % (writeFEvals(float(allertbest[t][(func, d)])/d, '.3')))
-                    except KeyError:
-                        lines[3] += (r'& .')
-
-            lines[0] += '}'
-            lines[1] += r'\\'
-            lines[2] += r' & $\Delta$ftarget \\'
-            lines[3] += r' & ERT$_{\textrm{best}}$/D \\'
-            lines.append(r'\hline')
-
-            for i, line in enumerate(table):
-                if lines[-1] != r'\hline':
-                    lines[-1] += r'\\'
-                tmpstr = '%s' % algnames[i]
-                # Regroup entries by algorithm
-                #dictF = algentries.dictByFunc()
-                for j in range(len(line)):
-                    if replacement[i][j]:
-                        tmp = '%s' % replacement[i][j]
-                    else:
-                        tmp = '%s' % writeFEvalsMaxPrec(line[j], 2)
-                        #tmp = '%s' % writeFEvals(line[j])
-
-                    if i in boldface[j] or line[j] < 3:
-                        tmp = r'\textbf{' + tmp + '}'
-                    tmpstr += ' & ' + tmp
-                # Repeated algorithm name.
-                tmpstr += ' & %s \cite{%s}' % (algnames[i], cite(algnames[i],
-                                                   isFunNoisefree, isFunNoisy))
-
-                lines.append(tmpstr)
-
-            lines.append(r'\end{tabular}')
             #f = open(os.path.join(outputdir, 'pptablef%d_%02dD.tex' % (numgroup + 1, d)), 'w')
             #Line below preferred because the numgroup corresponds to the
             #function number which is the case as long as each group has only
             #one function
-            f = open(os.path.join(outputdir, 'pptablef%d_%02dD.tex' % (g[0], d)), 'w')
+
+            f = open(os.path.join(outputdir, 'pptablef%d_%02dD.tex' % (df[1], df[0])), 'w')
             f.write('\n'.join(lines) + '\n')
             f.close()

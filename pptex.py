@@ -518,7 +518,7 @@ def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=100000.):
         return r'$\infty$'
 
     if entry == 1.:
-        repr = '1'
+        res = '1'
     elif entry < maxfloatrepr:
         # the full notation but with given maximum precision
         corr = 0
@@ -526,21 +526,24 @@ def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=100000.):
             corr = 1
         tmp = '%.0f' % entry
         remainingsymbols = max(SIG - len(tmp) + corr, 0)
-        repr = (('%.' + str(remainingsymbols) + 'f') % entry)
+        res = (('%.' + str(remainingsymbols) + 'f') % entry)
     else:
         # modified scientific notation:
         #smallest representation of the decimal part
         #drop + and starting zeros of the exponent part
-        repr = (('%.' + str(SIG) + 'e') % entry)
-        size1 = len(repr)
-        tmp = repr.split('e', 1)
+        res = (('%.' + str(SIG) + 'e') % entry)
+        size1 = len(res)
+        tmp = res.split('e', 1)
         tmp2 = tmp[-1].lstrip('+-0')
         if float(tmp[-1]) < 0:
             tmp2 = '-' + tmp2
         tmp[-1] = tmp2
-        repr = 'e'.join(tmp)
+        if len(tmp) > 1 and tmp[-1]:
+            res = 'e'.join(tmp)
+        else:
+            res = tmp[0]
 
-    return repr
+    return res
 
 def tableLaTeX(table, spec, extraeol=()):
     """Generates a latex tabular from a sequence of sequence (table) of strings.
