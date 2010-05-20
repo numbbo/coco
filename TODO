@@ -40,7 +40,6 @@ data for all ppXXX modules.
 *Readable output instead of pickle files?
 
 Misc.
-*Provide a clean doc page that is helpful and useful -> pydoc.writedocs('.') in BBOB/code/python
 *Problem with some fonts missing for tex compilation.
 *Explicit demo post processing.
 *Update the readme from the demo folder.
@@ -50,6 +49,7 @@ Profiling:
 
 ###############################################################################
 SOLVED:
+*Provide a clean doc page that is helpful and useful -> pydoc.writedocs('.') in BBOB/code/python
 *Think about adding bbob.bib to the release.
 *Put the pydoc online.
 *Manage multiple algorithms
