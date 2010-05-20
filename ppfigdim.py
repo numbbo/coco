@@ -9,9 +9,17 @@ import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap, bestalg
+from bbob_pproc.ppfig import saveFigure
 
-#colors = ('k', 'g', 'c', 'b', 'y', 'm', 'r', 'g', 'b', 'c', 'r', 'm')  # should not be too short
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
+styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
+          {'color': 'b'},
+          {'color': 'c', 'marker': 'v', 'markeredgecolor': 'c'},
+          {'color': 'g'},
+          {'color': 'y', 'marker': '^', 'markeredgecolor': 'y'},
+          {'color': 'm'},
+          {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
+
 # should correspond with the colors in pprldistr.
 dimsBBOB = (2, 3, 5, 10, 20, 40)
 
@@ -35,11 +43,8 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
 
-def beautify(figHandle, figureName = None, title='',
-                    fileFormat=('pdf', 'eps'), labels=None,
-                    scale=('linear','linear'), legend=True,
-                    locLegend='best', verbose=True):
-    """ Customize a figure by adding a legend, axis label, etc and save to a file.
+def beautify(title='', legend=True):
+    """ Customize a figure by adding a legend, axis label, etc.
 
         Inputs:
         figHandle - handle to existing figure
@@ -57,14 +62,9 @@ def beautify(figHandle, figureName = None, title='',
     # Input checking
 
     # Get axis handle and set scale for each axis
-    axisHandle = figHandle.gca()
-    axisHandle.set_xscale(scale[0])
-    axisHandle.set_yscale(scale[1])
-
-    # Annotate figure
-    if labels is not None: #Couldn't it be ''?
-        axisHandle.set_xlabel(labels[0])
-        axisHandle.set_ylabel(labels[1])
+    axisHandle = plt.gca()
+    axisHandle.set_xscale("log")
+    axisHandle.set_yscale("log")
 
     # Grid options
     axisHandle.grid('True')
@@ -74,9 +74,9 @@ def beautify(figHandle, figureName = None, title='',
     # linear and quadratic "grid"
     plt.plot((2,200), (1,1e2), 'k:')    # TODO: this should be done before the real lines are plotted? 
     plt.plot((2,200), (1,1e4), 'k:')
-    plt.plot((2,200), (1e3,1e5), 'k:')  
+    plt.plot((2,200), (1e3,1e5), 'k:')
     plt.plot((2,200), (1e3,1e7), 'k:')
-    plt.plot((2,200), (1e6,1e8), 'k:')  
+    plt.plot((2,200), (1e6,1e8), 'k:')
     plt.plot((2,200), (1e6,1e10), 'k:')
 
     # axes limites
@@ -100,29 +100,13 @@ def beautify(figHandle, figureName = None, title='',
 
     # Legend
     if legend:
-        plt.legend(loc=locLegend)
+        plt.legend(loc='best')
     axisHandle.set_title(title)
 
-    # Save figure
-    if not (figureName is None or fileFormat is None):
-        if isinstance(fileFormat, basestring):
-            plt.savefig(figureName + '.' + fileFormat, dpi = 300,
-                        format = entry)
-            if verbose:
-                print 'Wrote figure in %s.' %(figureName + '.' + fileFormat)
-        else:
-            if not isinstance(fileFormat, basestring):
-                for entry in fileFormat:
-                    plt.savefig(figureName + '.' + entry, dpi = 300,
-                                format = entry)
-                    if verbose:
-                        print 'Wrote figure in %s.' %(figureName + '.' + entry)
-
-def beautify2(figHandle, figureName = None, title='',
-                    fileFormat=('pdf', 'eps'), labels=None,
-                    scale=('linear','linear'), legend=True,
-                    locLegend='best', verbose=True):
+def beautify2(title='', legend=True):
     """ Customize a figure by adding a legend, axis label, etc and save to a file.
+        Is identical to beautify except for the linear and quadratic scaling
+        lines.
 
         Inputs:
         figHandle - handle to existing figure
@@ -140,14 +124,9 @@ def beautify2(figHandle, figureName = None, title='',
     # Input checking
 
     # Get axis handle and set scale for each axis
-    axisHandle = figHandle.gca()
-    axisHandle.set_xscale(scale[0])
-    axisHandle.set_yscale(scale[1])
-
-    # Annotate figure
-    if labels is not None: #Couldn't it be ''?
-        axisHandle.set_xlabel(labels[0])
-        axisHandle.set_ylabel(labels[1])
+    axisHandle = plt.gca()
+    axisHandle.set_xscale("log")
+    axisHandle.set_yscale("log")
 
     # Grid options
     axisHandle.grid('True')
@@ -183,24 +162,8 @@ def beautify2(figHandle, figureName = None, title='',
 
     # Legend
     if legend:
-        plt.legend(loc=locLegend)
+        plt.legend(loc="best")
     axisHandle.set_title(title)
-
-    # Save figure
-    if not (figureName is None or fileFormat is None):
-        if isinstance(fileFormat, basestring):
-            plt.savefig(figureName + '.' + fileFormat, dpi = 300,
-                        format = entry)
-            if verbose:
-                print 'Wrote figure in %s.' %(figureName + '.' + fileFormat)
-        else:
-            if not isinstance(fileFormat, basestring):
-                for entry in fileFormat:
-                    plt.savefig(figureName + '.' + entry, dpi = 300,
-                                format = entry)
-                    if verbose:
-                        print 'Wrote figure in %s.' %(figureName + '.' + entry)
-
 
 def generateData(dataSet, targetFuncValue):
     """Returns an array of results to be plotted. 1st column is ert, 2nd is
@@ -246,7 +209,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     for func in dictFunc:
         dictFunc[func] = dictFunc[func].dictByDim()
         filename = os.path.join(outputdir,'ppdata_f%d' % (func))
-        fig = plt.figure()
+
         #legend = []
         line = []
         valuesOfInterest = list(j[func] for j in _valuesOfInterest)
@@ -271,10 +234,10 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             if succ:
                 tmp = numpy.vstack(succ)
                 #ERT
-                plt.plot(tmp[:, 0], tmp[:, 1], figure=fig, color=colors[i],
+                plt.plot(tmp[:, 0], tmp[:, 1], color=colors[i],
                          marker='o', markersize=20)
                 #median
-                plt.plot(tmp[:, 0], tmp[:, -1], figure=fig, color=colors[i],
+                plt.plot(tmp[:, 0], tmp[:, -1], color=colors[i],
                          linestyle='', marker='+', markersize=30,
                          markeredgewidth=5)
 
@@ -286,7 +249,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         if unsucc:
             #set_trace()
             tmp = numpy.vstack(unsucc)
-            plt.plot(tmp[:, 0], tmp[:, -2], figure=fig, color=colors[i],
+            plt.plot(tmp[:, 0], tmp[:, -2], color=colors[i],
                      marker='x', markersize=20)
 
         if not bestalg.bestalgentries:
@@ -300,12 +263,12 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
                 bestalgdata.append(tmp[0])
             except IndexError:
                 bestalgdata.append(None)
-                
-        plt.plot(dimsBBOB, bestalgdata, figure=fig, color='wheat', linewidth=10, zorder=-1)
-        plt.plot(dimsBBOB, bestalgdata, figure=fig, ls='', marker='d', markersize=25, color='wheat', zorder=-1)
+
+        plt.plot(dimsBBOB, bestalgdata, color='wheat', linewidth=10, zorder=-1)
+        plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25, color='wheat', zorder=-1)
 
         if displaynumber: #displayed only for the smallest valuesOfInterest
-            a = fig.gca()
+            a = plt.gca()
             for j in displaynumber:
                 plt.text(j[0], j[1]*1.85, "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
@@ -318,15 +281,14 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
         legend = func in (1, 24, 101, 130)
 
-        beautify(fig, filename, title=title, legend=legend,
-                        fileFormat=figformat, labels=['', ''],
-                        scale=['log','log'], verbose=verbose)
+        beautify(title=title, legend=legend)
+        saveFigure(filename, figFormat=figformat, verbose=verbose)
 
-        plt.close(fig)
+        plt.close()
 
     plt.rcdefaults()
 
-def main2(dsList, _valuesOfInterest, outputdir, verbose=True):
+def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
     """From a DataSetList, returns a convergence and ERT/dim figure vs dim."""
 
     plt.rc("axes", labelsize=20, titlesize=24)
@@ -340,7 +302,7 @@ def main2(dsList, _valuesOfInterest, outputdir, verbose=True):
     for func in dictFunc:
         dictFunc[func] = dictFunc[func].dictByDim()
         filename = os.path.join(outputdir,'ppdata2_f%d' % (func))
-        fig = plt.figure()
+
         #legend = []
         line = []
         valuesOfInterest = list(j[func] for j in _valuesOfInterest)
@@ -365,25 +327,41 @@ def main2(dsList, _valuesOfInterest, outputdir, verbose=True):
             if succ:
                 tmp = numpy.vstack(succ)
                 #ERT
-                plt.plot(tmp[:, 0], tmp[:,1]/tmp[:, 0], figure=fig, color=colors[i],
-                         marker='o', markersize=20)
+                plt.plot(tmp[:, 0], tmp[:,1]/tmp[:, 0], markersize=20, **styles[i])
                 #median
-                plt.plot(tmp[:, 0], tmp[:,-1]/tmp[:, 0], figure=fig, color=colors[i],
-                         linestyle='', marker='+', markersize=30,
-                         markeredgewidth=5)
+                #plt.plot(tmp[:, 0], tmp[:,-1]/tmp[:, 0], color=styles[i]['color'],
+                         #linestyle='', marker='+', markersize=30,
+                         #markeredgewidth=5)
 
             # To have the legend displayed whatever happens with the data.
-            plt.plot([], [], color=colors[i],
-                     label=' %+d' % (numpy.log10(valuesOfInterest[i])))
+            plt.plot([], [], markersize=10,
+                     label=' %+d' % (numpy.log10(valuesOfInterest[i])),
+                     **styles[i])
 
         #Only for the last target function value...
         if unsucc:
             tmp = numpy.vstack(unsucc)
-            plt.plot(tmp[:, 0], tmp[:, -2]/tmp[:, 0], figure=fig, color=colors[i],
+            plt.plot(tmp[:, 0], tmp[:, -2]/tmp[:, 0], color=styles[i]['color'],
                      marker='x', markersize=20)
 
+        if not bestalg.bestalgentries:
+            bestalg.loadBBOB2009()
+
+        bestalgdata = []
+        for d in dimsBBOB:
+            entry = bestalg.bestalgentries[(d, func)]
+            tmp = entry.ert[entry.target<=1e-8]
+            try:
+                bestalgdata.append(tmp[0]/d)
+            except IndexError:
+                bestalgdata.append(None)
+
+        plt.plot(dimsBBOB, bestalgdata, color='wheat', linewidth=10, zorder=-1)
+        plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25,
+                 color='wheat', markeredgecolor='wheat', zorder=-1)
+
         if displaynumber: #displayed only for the smallest valuesOfInterest
-            a = fig.gca()
+            a = plt.gca()
             for j in displaynumber:
                 plt.text(j[0], j[1]*1.85/j[0], "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
@@ -396,10 +374,9 @@ def main2(dsList, _valuesOfInterest, outputdir, verbose=True):
 
         legend = func in (1, 24, 101, 130)
 
-        beautify2(fig, filename, title=title, legend=legend,
-                        fileFormat=figformat, labels=['', ''],
-                        scale=['log','log'], verbose=verbose)
+        beautify2(title=title, legend=legend)
+        saveFigure(filename, figFormat=figformat, verbose=verbose)
 
-        plt.close(fig)
+        plt.close()
 
     plt.rcdefaults()

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """ Creates tex-file with table entries."""
+#TODO: should become a util module for generating tables
 
 import os
 import sys
