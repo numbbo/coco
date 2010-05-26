@@ -344,6 +344,10 @@ def generateData(dataSet, targetFuncValues, samplesize=1000):
         res.append(curLine)
     return numpy.vstack(res)
 
+def writeLabels(label):
+    """Format text to be output by LaTeX."""
+    return label.replace('_', r'\_')
+
 def writeFEvals(fevals, precision='.2'):
     """Returns string representation of a number of function evaluations to use
     in a table.

@@ -381,3 +381,134 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
     beautify(figureName, funcsolved, xlim*x_annote_factor, False, fileFormat=figformat)
 
     plt.close()
+
+def main2(dictAlg, target, order=None, plotArgs={}, outputdir='',
+          info='default', verbose=True):
+    """Generates a figure showing the performance of algorithms.
+    From a dictionary of DataSetList sorted by algorithms, generates the
+    cumulative distribution function of the bootstrap distribution of ERT
+    for algorithms on multiple functions for multiple targets altogether.
+    Keyword arguments:
+    dictAlg --
+    target -- list of dictionaries with (function, dimension) as keys, target
+    function values as values
+    order -- determines the plotting order of the algorithm (used by the legend
+    and in the case the algorithm has no plotting arguments specified).
+    """
+
+    xlim = x_limit
+    dictData = {} # list of (ert per function) per algorithm
+    dictMaxEvals = {} # list of (maxevals per function) per algorithm
+    # the functions will not necessarily sorted.
+
+    bestERT = [] # best ert per function, not necessarily sorted as well.
+    funcsolved = [set()] * len(target)
+
+    dictFunc = {}
+    d = set()
+    for alg, tmpdsList in dictAlg.iteritems():
+        for i in tmpdsList:
+            d.add(i.dim)
+            tmp = dictFunc.setdefault(i.funcId, {})
+            if tmp.has_key(alg):
+                txt = ('Duplicate data: algorithm %s, function %f'
+                       % (alg, i.funcId))
+                warnings.warn(txt)
+            tmp.setdefault(alg, i)
+            # if the number of entries is larger than 1, the rest of
+            # the data is disregarded.
+
+    if len(d) != 1:
+        raise Usage('We never integrate over dimension.')
+    d = d.pop()
+
+    for f, tmpdictAlg in dictFunc.iteritems():
+        if f not in function_IDs:
+            continue
+
+        for j, t in enumerate(target):
+
+            funcsolved[j].add(f)
+
+            # Loop over all algs, not only those with data for f
+            for alg in dictAlg:
+                x = [numpy.inf] * perfprofsamplesize
+                y = numpy.inf
+                runlengthunsucc = []
+
+                try:
+                    entry = tmpdictAlg[alg]
+                    runlengthunsucc = entry.maxevals / entry.dim
+                    for line in entry.evals:
+                        if line[0] <= t:
+                            tmp = line[1:]
+                            runlengthsucc = tmp[numpy.isfinite(tmp)] / entry.dim
+                            runlengthunsucc = entry.maxevals[numpy.isnan(tmp)] / entry.dim
+                            x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                                                 percentiles=[50],
+                                                 samplesize=perfprofsamplesize)[1]
+                            break
+
+                except KeyError:
+                    txt = ('Data for algorithm %s on function %d in %d-D '
+                           % (alg, f, d)
+                           + 'are missing.')
+                    warnings.warn(txt)
+                    #raise Usage(txt)
+                    #pass
+
+                dictData.setdefault(alg, []).extend(x)
+                dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
+
+    #picklefilename = os.path.join(outputdir,'perfprofdata_%s.pickle' %(info))
+    #f = file(picklefilename, 'w')
+    #pickle.dump(dictData, f)
+    #pickle.dump(dictMaxEvals, f)
+    #f.close()
+
+    if order is None:
+        order = dictData.keys()
+
+    lines = []
+    for i, alg in enumerate(order):
+        maxevals = []
+
+        try:
+            data = dictData[alg]
+            maxevals = dictMaxEvals[alg]
+        except KeyError:
+            continue
+
+        CrE = 0
+        # need to know noisy or non-noisy functions here!
+        if max(function_IDs) < 100:  # non-noisy functions
+            if alg[-6:] == 'GLOBAL' and len(function_IDs) > 5:
+                CrE = 0.5117
+                # print 'GLOBAL corrected'
+        elif min(function_IDs) > 100 :  # noisy functions
+            if alg[-6:] == 'GLOBAL'  and len(function_IDs) > 5:
+                CrE = 0.6572
+        else:
+            pass 
+            # print 'mixing noisy and non-noisy functions will yield questionable results'
+
+        #Get one element in the set of the algorithm description
+        try:
+            elem = set((i.algId, i.comment) for i in dictAlg[alg]).pop()
+            try:
+                tmp = plotArgs[elem]
+            except KeyError:
+                tmp = {}
+            lines.append(plotPerfProf(numpy.array(data),
+                         xlim, maxevals, order=(i, len(order)), CrE=CrE,
+                         kwargs=get_plot_args(tmp)))
+        except KeyError:
+            #No data
+            pass
+
+    plotLegend(lines, xlim)
+
+    figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
+    beautify(figureName, funcsolved, xlim*x_annote_factor, False, fileFormat=figformat)
+
+    plt.close()
