@@ -792,6 +792,43 @@ def dictAlgByNoi(dictAlg):
 
     return res
 
+def dictAlgByFuncGroup(dictAlg):
+    """Returns a dictionary with function group as key.
+    This method is meant to be used with an input argument which is a
+    dictionary with algorithm names as keys and which has list of DataSet
+    instances as values.
+    The resulting dictionary will have a string denoting the function group
+    and as values dictionaries with algorithm names as keys.
+    """
+
+    res = {}
+    fg = set()
+    tmpdictAlg = {}
+    for alg, dsList in dictAlg.iteritems():
+        tmp = dsList.dictByFuncGroup()
+        tmpdictAlg[alg] = tmp
+        fg |= set(tmp.keys())
+
+    for g in fg:
+        for alg in dictAlg:
+            tmp = DataSetList()
+            try:
+                tmp = tmpdictAlg[alg][g]
+            except KeyError:
+                txt = ('No data for algorithm %s on %s functions.'
+                       % (alg, g))
+                warnings.warn(txt)
+
+            if res.setdefault(g, {}).has_key(alg):
+                txt = ('Duplicate data for algorithm %s on %s functions.'
+                       % (alg, g))
+                warnings.warn(txt)
+
+            res.setdefault(g, {}).setdefault(alg, tmp)
+            # Only the first data for a given algorithm in a given dimension
+
+    return res
+
 def significancetest(entry0, entry1, targets):
     """Compute the significance test.
     """

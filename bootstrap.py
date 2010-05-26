@@ -77,6 +77,8 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
       of successful entries in data divided by the number of success.
     """
 
+    #TODO allowinf is obsolete.
+
     # check input args
     if not getattr(data, '__iter__', False):  # is not iterable
         raise Exception, 'data must be a sequence'
@@ -138,8 +140,8 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
 
     if Nsucc == 0:
         # return (numpy.Inf*numpy.array(percentiles), )
-        return draw(runlengths_unsucc, percentiles, samplesize=samplesize, func=sum)
-
+        #TODO: the following line does not work because of the use of function sum which interface is different than that of sp or sp1
+        return (draw(runlengths_unsucc, percentiles, samplesize=samplesize, func=sum), sorted(runlengths_unsucc))
 
     #if Nunsucc == 0: # Special case: all success, how can we improve efficiency?
     #    return 
@@ -212,6 +214,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
        unexpected results.
     """
 
+    set_trace()
     arrStats = []
     N = len(data)
     adata = numpy.array(data)  # more efficient indexing

@@ -24,33 +24,19 @@ import numpy
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
-    # append path without trailing '/bbob_pproc', using os.sep fails in mingw32
-    #sys.path.append(filepath.replace('\\', '/').rsplit('/', 1)[0])
     (filepath, filename) = os.path.split(sys.argv[0])
-    #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import dataoutput, pproc, run
+from bbob_pproc import dataoutput, pproc
 from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.compall import ppperfprof, pptables
 from bbob_pproc.compall import organizeRTDpictures
 
-# GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
-single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each
-summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # all in one figure
-summarized_target_function_values = (100, 10, 1e0, 1e-1, 1e-2, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8) 
-summarized_target_function_values = tuple(10**numpy.r_[-8:2:0.2]) # 1e2 and 1e-8  
-#summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-8  
-#summarized_target_function_values = tuple(10**numpy.r_[-1:2:0.2]) # easy easy 
-# summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure
-tableconstant_target_function_values = [1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7]
-instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
-
-# Deterministic instance of interest: only one trial is required.
-instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
-instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
-                           11:1, 12:1, 13:1, 14:1, 15:1}
+# Used by getopt:
+shortoptlist = "hvfo:"
+longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
+               "per-only", "verbose"]
 #CLASS DEFINITIONS
 
 class Usage(Exception):
@@ -59,68 +45,9 @@ class Usage(Exception):
 
 #FUNCTION DEFINITIONS
 
-def detertbest(dsList, minFtarget):
-    """Determines the best ert for a given target function value."""
-    erts = []
-    ertbest = []
-    for alg in dsList:
-        idx = 0  # index of ert or target.
-        for i, val in enumerate(minFtarget):
-            try:
-                erts[i]
-            except IndexError:
-                erts.append([])
-            if numpy.isfinite(val):
-                while (idx < len(alg.target) and alg.target[idx] > val):
-                    idx += 1
-                try:
-                    erts[i].append(alg.ert[idx])
-                except IndexError:
-                    pass
-                    #TODO: what value to put?
-                    #erts[i].append(numpy.nan)
-
-    for elem in erts:
-        if not elem:
-            ertbest.append(numpy.nan) # TODO: what value to put?
-        else:
-            ertbest.append(min(elem))
-    return numpy.array(ertbest)
-
-def detTarget(dsList):
-    """Creates the data structure of the target function values."""
-
-    allmintarget = {}
-    allertbest = {}
-    targets = tableconstant_target_function_values
-
-    dictDim = {}
-    for i in dsList:
-        dictDim.setdefault(i.dim, []).append(i)
-
-    for d, dimentries in dictDim.iteritems():
-        dictFunc = {}
-        for i in dimentries:
-            dictFunc.setdefault(i.funcId, []).append(i)
-
-        for f, funentries in dictFunc.iteritems():
-            tmpertbest = detertbest(funentries, targets)
-            for i in range(len(targets)):
-               tmp = allmintarget.setdefault(-targets[i], {}) # Why the minus?
-               tmp.setdefault((f, d), targets[i])
-
-               tmp = allertbest.setdefault(-targets[i], {}) # Why the minus?
-               tmp.setdefault((f, d), tmpertbest[i])
-
-    return allmintarget, allertbest
-
 def usage():
     print main.__doc__
 
-#    TODO: Next step: archive files as input arguments
-#    (iii) tar archive files (eventually compressed
-#    using gzip or bzip2). Each of these white-space separated arguments should
-#    correspond to the data of one algorithm.
 def main(argv=None):
     """Main routine for post-processing the data of multiple algorithms.
 
@@ -168,23 +95,23 @@ def main(argv=None):
 
     Examples:
 
-    * Calling the runcompall.py interface from the command line:
+    * Calling the rungenericmany.py interface from the command line:
 
-        $ python bbob_pproc/runcompmany.py -v
+        $ python bbob_pproc/rungenericmany.py -v
 
 
     * Loading this package and calling the main from the command line
       (requires that the path to this package is in python search path):
 
-        $ python -m bbob_pproc.runcompamny -h
+        $ python -m bbob_pproc.rungenericmany -h
 
     This will print out this help message.
 
     * From the python interactive shell (requires that the path to this
       package is in python search path):
 
-        >>> from bbob_pproc import runcompmany
-        >>> runcompmany.main('-o outputfolder folder1 folder2'.split())
+        >>> from bbob_pproc import rungenericmany
+        >>> rungenericmany.main('-o outputfolder folder1 folder2'.split())
 
     This will execute the post-processing on the data found in folder1
     and folder2.
@@ -193,7 +120,7 @@ def main(argv=None):
 
     * Generate post-processing data for some algorithms:
 
-        $ python runcompmany.py AMALGAM BFGS BIPOP-CMA-ES
+        $ python rungenericmany.py AMALGAM BFGS BIPOP-CMA-ES
 
     """
 
@@ -202,11 +129,7 @@ def main(argv=None):
 
     try:
         try:
-            opts, args = getopt.getopt(argv, "hvfo:",
-                                       ["help", "output-dir=", "noisy",
-                                        "noise-free", "fig-only", "rld-only",
-                                        "los-only", "crafting-effort=",
-                                        "final", "tab-only", "verbose"])
+            opts, args = getopt.getopt(argv, shortoptlist, longoptlist)
         except getopt.error, msg:
              raise Usage(msg)
 
@@ -234,21 +157,23 @@ def main(argv=None):
                 outputdir = a
             elif o == "--noisy":
                 genopts.append(o)
+                isNoisy = True
             elif o == "--noise-free":
                 genopts.append(o)
+                isNoiseFree = True
             elif o in ("-f", "--final"):
                 genopts.append(o)
             #The next 3 are for testing purpose
             elif o == "--tab-only":
                 genopts.append(o)
-            elif o == "--fig-only":
-                genopts.append(o)
-            elif o == "--rld-only":
-                genopts.append(o)
-            elif o == "--los-only":
-                genopts.append(o)
+                isPer = False
+            elif o == "--per-only":
+                isTab = False
             else:
                 assert False, "unhandled option"
+
+        from bbob_pproc import bbob2010 as inset # input settings
+        # is here because variables setting could be modified by flags
 
         if (not verbose):
             warnings.simplefilter('ignore')
@@ -257,11 +182,60 @@ def main(argv=None):
                "data in folder %s" % outputdir)
         print "  this might take several minutes."
 
-        for alg in args:
-            tmpoutputdir = os.path.join(outputdir, alg)
-            # TODO: if there is a problem, skip: try except...
-            run.main(genopts
-                     + ["-o", tmpoutputdir, "--crafting-effort", "0", alg])
+        if not os.path.exists(outputdir):
+            os.makedirs(outputdir)
+            if verbose:
+                print 'Folder %s was created.' % (outputdir)
+
+        dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
+
+        if not dsList:
+            sys.exit()
+
+        for i in dictAlg:
+            if isNoisy and not isNoiseFree:
+                dictAlg[i] = dictAlg[i].dictByNoise().get('nzall', DataSetList())
+            if isNoiseFree and not isNoisy:
+                dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
+
+        for i in dsList:
+            if not i.dim in (2, 3, 5, 10, 20):
+                continue
+
+            if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
+                inset.instancesOfInterest):
+                warnings.warn('The data of %s do not list ' %(i) +
+                              'the correct instances ' +
+                              'of function F%d.' %(i.funcId))
+
+        # Performance profiles
+        if isPer:
+            dictNoi = pproc.dictAlgByNoi(dictAlg)
+            for ng, tmpdictAlg in dictNoi.iteritems():
+                dictDim = pproc.dictAlgByDim(tmpdictAlg)
+                for d, entries in dictDim.iteritems():
+                    ppperfprof.main2(entries, target=inset.summarized_target_function_values,
+                                     order=sortedAlgs,
+                                     plotArgs=algPlotInfos,
+                                     outputdir=outputdir,
+                                     info=('%02dD_%s' % (d, ng)),
+                                     verbose=verbose)
+            dictFG = pproc.dictAlgByFuncGroup(dictAlg)
+            for fg, tmpdictAlg in dictFG.iteritems():
+                dictDim = pproc.dictAlgByDim(tmpdictAlg)
+                for d, entries in dictDim.iteritems():
+                    ppperfprof.main2(entries, target=inset.summarized_target_function_values,
+                                     order=sortedAlgs,
+                                     plotArgs=algPlotInfos,
+                                     outputdir=outputdir,
+                                     info=('%02dD_%s' % (d, fg)),
+                                     verbose=verbose)
+            print "ECDFs of ERT figures done."
+
+        if isTab:
+            dsListperAlg = list(dictAlg[i] for i in sortedAlgs)
+            pptables.tablemanyalgonefunc2(dsListperAlg, inset.tableconstant_target_function_values, outputdir)
+            print "Comparison tables done."
 
     except Usage, err:
         print >>sys.stderr, err.msg

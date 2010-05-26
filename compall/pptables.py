@@ -11,7 +11,8 @@ from __future__ import absolute_import
 import os
 from pdb import set_trace
 import numpy
-from bbob_pproc.pptex import writeFEvals, writeFEvalsMaxPrec
+from bbob_pproc import bestalg, bootstrap
+from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, writeLabels, tableLaTeX
 from bbob_pproc.bootstrap import prctile
 from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList
@@ -36,6 +37,9 @@ except IOError, (errno, strerror):
     isBenchmarkinfosFound = False
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
+
+maxfloatrepr = 100000.
+samplesize = 100
 
 def cite(algName, isNoisefree, isNoisy):
     """Returns the citation key associated to the algorithm name.
@@ -158,6 +162,7 @@ def sortColumns(table, maxRank=None):
     """For each column in table, returns a list of the maxRank-ranked elements.
     This list may have a length larger than maxRank in the case of ties.
     """
+
     if maxRank is None:
         maxRank = numpy.shape(table)[0]
 
@@ -177,10 +182,6 @@ def sortColumns(table, maxRank=None):
         ranked.append(rank)
 
     return ranked
-
-def writeLabels(label):
-    """Format text to be output by LaTeX."""
-    return label.replace('_', r'\_')
 
 def writeFunVal(funval):
     """Returns string representation of a function value to use in a table."""
@@ -681,29 +682,157 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
     * table width...
     """
 
+    if not bestalg.bestalgentries:
+        bestalg.loadBBOB2009()
+
     # Sort data per dimension and function
     dictData = {}
     for entries in dsListperAlg:
         tmpdictdim = entries.dictByDim()
-        for d in tmp:
-            tmpdictfun = tmp[d].dictByFunc()
+        for d in tmpdictdim:
+            tmpdictfun = tmpdictdim[d].dictByFunc()
             for f in tmpdictfun:
                 dictData.setdefault((d, f), []).append(tmpdictfun[f])
 
     for df in dictData:
-        for alg, entries in dictData[df].iteritems():
-            assert len(entries[alg]) < 2
-            entry = entries[alg][0]
-            erts = entry.detERT(targets)
+        # Generate one table per df
+        bestalgentry = bestalg.bestalgentries[df]
+        bestalgdata = bestalgentry.detERT(targets)
 
-            # Process the data
-            # Generate the table
+        # Process the data
+        data = []
+        dispersion = []
+        algnames = []
+        medmaxevals = [] # divided by Dim
+        medfinalfunvals = []
+        for entries in dictData[df]:
+            assert len(entries) == 1 # TODO: could be 0?
+            entry = entries[0]
 
-            #f = open(os.path.join(outputdir, 'pptablef%d_%02dD.tex' % (numgroup + 1, d)), 'w')
-            #Line below preferred because the numgroup corresponds to the
-            #function number which is the case as long as each group has only
-            #one function
+            try:
+                algname = algPlotInfos[(entry.algId, entry.comment)]['label']
+            except KeyError:
+                algname = algentries[0].algId # Take the first reasonable one.
+            algnames.append(writeLabels(algname))
 
-            f = open(os.path.join(outputdir, 'pptablef%d_%02dD.tex' % (df[1], df[0])), 'w')
-            f.write('\n'.join(lines) + '\n')
-            f.close()
+            evals = entry.detEvals(targets)
+            tmpdata = []
+            tmpdisp = []
+            for i, e in enumerate(evals):
+                succ = (numpy.isnan(e) == False)
+                e[succ == False] = entry.maxevals[succ == False]
+                ert = bootstrap.sp(e, issuccessful=succ)[0]
+                tmpdata.append(ert/bestalgdata[i])
+
+                if succ.any():
+                    tmp = bootstrap.drawSP(e[succ], entry.maxevals[succ == False],
+                                           [10, 50, 90], samplesize=samplesize)[0]
+                    tmpdisp.append((tmp[-1] - tmp[0])/bestalgdata[i]/2.)
+                else:
+                    tmpdisp.append(numpy.nan)
+            data.append(tmpdata)
+            dispersion.append(tmpdisp)
+            medmaxevals.append(numpy.median(entry.maxevals)/df[0])
+            medfinalfunvals.append(numpy.median(entry.finalfunvals))
+
+        # find best values...
+        if len(dictData[df]) <= 3:
+            maxRank = 1
+        else:
+            maxRank = 3
+
+        isBoldArray = [] # Point out the best values
+        isItalArray = [] # Store median function values/median number of function evaluations (divided by dim?)
+        tmparray = sortColumns(data, maxRank=3)
+        for i, line in enumerate(data):
+            tmp = []
+            tmp2 = []
+            isInfoWritten = False
+            for j, e in enumerate(line):
+                tmp.append(i in tmparray[j] or data[i][j] <= 3.)
+                if numpy.isinf(e) and not isInfoWritten:
+                    isInfoWritten = True
+                    tmp2.append((medfinalfunvals[i], medmaxevals[i]))
+                else:
+                    tmp2.append(None)
+            isBoldArray.append(tmp)
+            isItalArray.append(tmp2)
+
+        # Create the table
+        spec = r'@{}c@{}*{%d}{@{}r@{}l@{}l@{}}@{}c@{}' % (len(targets))
+        extraeol = []
+
+        # Generate header lines
+        if isBenchmarkinfosFound:
+            header = funInfos[df[1]]
+        else:
+            header = '%d' % df[1]
+
+        table = [[r'\multicolumn{%d}{c}{{\normalsize \textbf{%s}}}'
+                 % (3 * len(targets) + 2, header)]]
+
+        curline = [r'$\Delta$ftarget']
+        for t in targets:
+            curline.append(r'\multicolumn{3}{c}{%s}'
+                           % writeFEvals2(t, precision=1, isscientific=True))
+        curline.append(curline[0])
+        table.append(curline)
+        extraeol.append('')
+
+        curline = [r'ERT$_{\text{best}}$/D']
+        for i in bestalgdata:
+            curline.append(r'\multicolumn{3}{c}{%s}'
+                           % writeFEvalsMaxPrec(float(i)/df[0], 2))
+        curline.append(curline[0])
+        table.append(curline)
+        extraeol.append('')
+
+        # Format data
+        for algname, entries, irs, line, line2 in zip(algnames, data, dispersion,
+                                                      isBoldArray, isItalArray):
+            curline = [algname]
+            for e, ir, isBold, isItal in zip(entries, irs, line, line2):
+                # format number e
+                if numpy.isnan(e):
+                    #TODO: italics
+                    curline.append(r'\multicolumn{2}{c}{.}')
+                    curline.append('') # empty dispersion measure
+                    #TODO: check the first time it's nan
+                else:
+                    tmp = writeFEvalsMaxPrec(e, 2, maxfloatrepr=maxfloatrepr)
+                    if e >= maxfloatrepr: # either inf or scientific notation
+                        if isItal:
+                            tmp += r'\textit{%s}' % writeFunVal(isItal[0])
+                        else:
+                            if isBold:
+                                tmp = r'\textbf{%s}' % tmp
+                        curline.append(r'\multicolumn{2}{c}{%s}' % tmp)
+                    else:
+                        tmp2 = tmp.split('.', 1)
+                        if len(tmp2) < 2:
+                            tmp2.append('')
+                        else:
+                            tmp2[-1] = '.' + tmp2[-1]
+                        if isBold:
+                            tmp3 = []
+                            for i in tmp2:
+                                tmp3.append(r'\textbf{%s}' % i)
+                            tmp2 = tmp3
+                        curline.extend(tmp2)
+
+                    if not numpy.isnan(ir):
+                        curline.append('(%s)' % writeFEvalsMaxPrec(ir, 2))
+                    else:
+                        if isItal:
+                            curline.append(r'\textit{%s}' % writeFEvalsMaxPrec(isItal[1], 0))
+                        else:
+                            curline.append('')
+            curline.append(curline[0])
+            table.append(curline)
+            extraeol.append('')
+
+        # Write table
+        res = tableLaTeX(table, spec=spec, extraeol=extraeol)
+        f = open(os.path.join(outputdir, 'pptablef%03d_%02dD.tex' % (df[1], df[0])), 'w')
+        f.write(res)
+        f.close()
