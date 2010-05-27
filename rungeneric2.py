@@ -52,11 +52,10 @@ def main(argv=None):
 
     Provided with some data, this routine outputs figure and TeX files in the
     folder 'cmp2data' needed for the compilation of the latex document
-    templateBBOBcmparticle.tex. These output files will contain performance
-    tables, performance scaling figures, scatter plot figures and empirical
-    cumulative distribution figures. On subsequent executions, new files will
-    be added to the output directory, overwriting existing files in the
-    process.
+    template2.tex. These output files will contain performance tables,
+    performance scaling figures, scatter plot figures and empirical cumulative
+    distribution figures. On subsequent executions, new files will be added to
+    the output directory, overwriting existing files in the process.
 
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not given,
@@ -83,9 +82,7 @@ def main(argv=None):
 
         --noise-free, --noisy
 
-            restrain the post-processing to part of the data set only. Actually
-            quicken the post-processing since it loads only part of the pickle
-            files.
+            restrain the post-processing to part of the data set only.
 
         --fig-only, --rld-only, --tab-only, --sca-only
 
@@ -141,7 +138,7 @@ def main(argv=None):
         istable = True
         isscatter = True
         isNoisy = False
-        isNoiseFree = False # Discern noisy and noisefree data?
+        isNoiseFree = False
         verbose = False
         outputdir = 'cmp2data'
 
@@ -202,22 +199,6 @@ def main(argv=None):
             if not i.dim in (2, 3, 5, 10, 20):
                 continue
 
-            #### The following lines are BBOB 2009 checking.###################
-            # Deterministic algorithms
-            #if i.algId in ('Original DIRECT', ):
-                #tmpInstancesOfInterest = instancesOfInterestDet
-            #else:
-                #tmpInstancesOfInterest = instancesOfInterest
-            #if ((dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
-                #tmpInstancesOfInterest) and
-                #(dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
-                #instancesOfInterest2010)):
-                #warnings.warn('The data of %s do not list ' %(i) +
-                              #'the correct instances ' +
-                              #'of function F%d or the ' %(i.funcId) +
-                              #'correct number of trials for each.')
-            ###################################################################
-
             if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) <
                 inset.instancesOfInterest):
                 warnings.warn('The data of %s do not list ' %(i) +
@@ -240,40 +221,29 @@ def main(argv=None):
         if not dsList1:
             raise Usage('Could not find data for algorithm %s.' % (sortedAlgs[0]))
 
+        # get the name of each algorithm from the input arguments
         tmppath0, alg0name = os.path.split(sortedAlgs[0].rstrip(os.sep))
         tmppath1, alg1name = os.path.split(sortedAlgs[1].rstrip(os.sep))
-        #Trick for having different algorithm names in the tables...
-        #Does not really work.
-        #while alg0name == alg1name:
-        #    tmppath0, alg0name = os.path.split(tmppath0)
-        #    tmppath1, alg1name = os.path.split(tmppath1)
-        #
-        #    if not tmppath0 and not tmppath1:
-        #        break
-        #    else:
-        #        if not tmppath0:
-        #            tmppath0 = alg0name
-        #        if not tmppath1:
-        #            tmppath1 = alg1name
-        #assert alg0name != alg1name
-        # should not be a problem, these are only used in the tables.
+
         for i in dsList0:
             i.algId = alg0name
         for i in dsList1:
             i.algId = alg1name
 
+        ######################### Post-processing #############################
         if isfigure or isrldistr or istable or isscatter:
             if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
                 if verbose:
                     print 'Folder %s was created.' % (outputdir)
 
+        # Check whether both input arguments list noisy and noise-free data
         dictFN0 = dsList0.dictByNoise()
         dictFN1 = dsList1.dictByNoise()
         k0 = set(dictFN0.keys())
         k1 = set(dictFN1.keys())
-        symdiff = k1 ^ k0
-        if symdiff: # symmetric difference
+        symdiff = k1 ^ k0 # symmetric difference
+        if symdiff:
             tmpdict = {}
             for i, noisegrp in enumerate(symdiff):
                 if noisegrp == 'nzall':
@@ -305,12 +275,13 @@ def main(argv=None):
                               'non-noisy testbeds have been found. Their ' +
                               'results will be mixed in the "all functions" ' +
                               'ECDF figures.')
-
             dictDim0 = dsList0.dictByDim()
             dictDim1 = dsList1.dictByDim()
 
+            # ECDFs of ERT ratios
             for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
                 if dim in inset.rldDimsOfInterest:
+                    # ECDF for all functions altogether
                     try:
                         pprldistr2.main2(dictDim0[dim], dictDim1[dim],
                                          inset.rldValsOfInterest,
@@ -320,6 +291,7 @@ def main(argv=None):
                                       % (dim))
                         continue
 
+                    # ECDFs per function groups
                     dictFG0 = dictDim0[dim].dictByFuncGroup()
                     dictFG1 = dictDim1[dim].dictByFuncGroup()
 
@@ -329,6 +301,7 @@ def main(argv=None):
                                          outputdir, 'dim%02d%s' % (dim, fGroup),
                                          verbose)
 
+                    # ECDFs per noise groups
                     dictFN0 = dictDim0[dim].dictByNoise()
                     dictFN1 = dictDim1[dim].dictByNoise()
 
@@ -342,6 +315,7 @@ def main(argv=None):
             for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
                 pprldistr.fmax = None #Resetting the max final value
                 pprldistr.evalfmax = None #Resetting the max #fevalsfactor
+                # ECDFs of all functions altogether
                 if dim in inset.rldDimsOfInterest:
                     try:
                         pprldistr.comp(dictDim0[dim], dictDim1[dim],
@@ -352,6 +326,7 @@ def main(argv=None):
                                       % (dim))
                         continue
 
+                    # ECDFs per function groups
                     dictFG0 = dictDim0[dim].dictByFuncGroup()
                     dictFG1 = dictDim1[dim].dictByFuncGroup()
 
@@ -360,6 +335,7 @@ def main(argv=None):
                                        inset.rldValsOfInterest, True, outputdir,
                                        'dim%02d%s' % (dim, fGroup), verbose)
 
+                    # ECDFs per noise groups
                     dictFN0 = dictDim0[dim].dictByNoise()
                     dictFN1 = dictDim1[dim].dictByNoise()
                     for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
@@ -377,6 +353,7 @@ def main(argv=None):
                 pptable2.main2(dictNG0[nGroup], dictFN1[nGroup],
                                inset.tabDimsOfInterest, outputdir,
                                '%s' % (nGroup), verbose)
+            print "Tables done."
 
         if isscatter:
             ppscatter.main(dsList0, dsList1, outputdir, verbose=verbose)

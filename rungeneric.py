@@ -64,8 +64,8 @@ def usage():
 def main(argv=None):
     """Main routine for post-processing data from BBOB.
     This routine will call sub-routine rungeneric1 for each input arguments
-    and sub-routines rungeneric2 and rungenericmany for the input arguments
-    altogether.
+    and either sub-routines rungeneric2 (2 input arguments) or rungenericmany
+    (more than 2) for the input arguments altogether.
 
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not provided,
@@ -87,14 +87,8 @@ def main(argv=None):
 
         -o, --output-dir OUTPUTDIR
 
-            change the default output directory ('cmpmanydata') to
+            change the default output directory ('ppdata') to
             OUTPUTDIR
-
-        --noise-free, --noisy
-
-            restrain the post-processing to part of the data set only. Actually
-            quicken the post-processing since it loads only part of the pickle
-            files.
 
     Exceptions raised:
     Usage -- Gives back a usage message.
@@ -121,7 +115,7 @@ def main(argv=None):
 
     This will execute the post-processing on the data found in folder1
     and folder2.
-    The -o option changes the output folder from the default cmpmanydata to
+    The -o option changes the output folder from the default ppdata to
     outputfolder.
 
     * Generate post-processing data for some algorithms:

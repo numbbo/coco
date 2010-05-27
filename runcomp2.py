@@ -470,6 +470,7 @@ def main(argv=None):
                 pptable2.main(dictNG0[nGroup], dictFN1[nGroup],
                               tabDimsOfInterest, outputdir,
                               '%s' % (nGroup), verbose)
+            print "Tables done."
 
         if isscatter:
             ppscatter.main(dsList0, dsList1, outputdir, verbose=verbose)

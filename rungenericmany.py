@@ -34,7 +34,7 @@ from bbob_pproc.compall import ppperfprof, pptables
 from bbob_pproc.compall import organizeRTDpictures
 
 # Used by getopt:
-shortoptlist = "hvfo:"
+shortoptlist = "hvo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
                "per-only", "verbose"]
 #CLASS DEFINITIONS
@@ -50,6 +50,13 @@ def usage():
 
 def main(argv=None):
     """Main routine for post-processing the data of multiple algorithms.
+
+    Provided with some data, this routine outputs figure and TeX files in the
+    folder 'cmpmanydata' needed for the compilation of the latex document
+    template3.tex. These output files will contain performance tables and
+    empirical cumulative distribution figures. On subsequent executions, new
+    files will be added to the output directory, overwriting existing files in
+    the process.
 
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not provided,
@@ -83,7 +90,7 @@ def main(argv=None):
             quicken the post-processing since it loads only part of the pickle
             files.
 
-        --tab-only, --perfprof-only
+        --tab-only, --per-only
 
             these options can be used to output respectively the comparison
             tex tables or the performance profiles only.
@@ -161,8 +168,6 @@ def main(argv=None):
             elif o == "--noise-free":
                 genopts.append(o)
                 isNoiseFree = True
-            elif o in ("-f", "--final"):
-                genopts.append(o)
             #The next 3 are for testing purpose
             elif o == "--tab-only":
                 genopts.append(o)
@@ -210,6 +215,7 @@ def main(argv=None):
 
         # Performance profiles
         if isPer:
+            # ECDFs per noise groups
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictAlg in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
@@ -220,6 +226,7 @@ def main(argv=None):
                                      outputdir=outputdir,
                                      info=('%02dD_%s' % (d, ng)),
                                      verbose=verbose)
+            # ECDFs per function groups
             dictFG = pproc.dictAlgByFuncGroup(dictAlg)
             for fg, tmpdictAlg in dictFG.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)

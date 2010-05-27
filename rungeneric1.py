@@ -5,6 +5,7 @@
    Calls the function main with arguments from the command line. Executes the
    postprocessing on the given files and folders arguments, using the .info
    files found recursively.
+
 Synopsis:
     python path_to_folder/bbob_pproc/rungeneric1.py [OPTIONS] FILE_NAME FOLDER_NAME...
 Help:
@@ -54,8 +55,8 @@ def main(argv=None):
 
     Provided with some index entries (found in files with the 'info' extension)
     this routine outputs figure and TeX files in the folder 'ppdata' needed for
-    the compilation of latex document templateBBOBarticle.tex. These output
-    files will contain performance tables, performance scaling figures and
+    the compilation of latex document template1.tex. These output files will
+    contain performance tables, performance scaling figures and
     empirical cumulative distribution figures. On subsequent executions, new
     files will be added to the output directory, overwriting existing older
     files in the process.
@@ -88,15 +89,18 @@ def main(argv=None):
 
         --crafting-effort=VALUE
 
-            sets the crafting effort to VALUE. Otherwise the user will be
-            prompted. This flag is useful when running this script in batch.
+            sets the crafting effort to VALUE (float). Otherwise the user will
+            be prompted. This flag is useful when running this script in batch.
 
         -f, --final
 
             lengthens the bootstrapping process used as dispersion measure in
             the tables generation. This might at least double the time of the
-            whole post-processing. Please use this option when generating your
-            final paper.
+            whole post-processing.
+
+        --noise-free, --noisy
+
+            restrain the post-processing to part of the data set only.
 
         --tab-only, --fig-only, --rld-only, --los-only
 
@@ -127,7 +131,7 @@ def main(argv=None):
     * Loading this package and calling the main from the command line
       (requires that the path to this package is in python search path):
 
-        $ python -m bbob_pproc -h
+        $ python -m bbob_pproc.rungeneric1 -h
 
     This will print out this help message.
 
@@ -249,7 +253,7 @@ def main(argv=None):
         if (verbose):
             for i in dsList:
                 if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
-                    inset.instancesOfInterest2010):
+                    inset.instancesOfInterest):
                     warnings.warn('The data of %s do not list ' %(i) +
                                   'the correct instances ' +
                                   'of function F%d.' %(i.funcId))
@@ -276,14 +280,15 @@ def main(argv=None):
 
         if isfigure:
             #ERT/dim vs dim.
-            ppfigdim.ertoverdimvsdim(dsList, inset.figValsOfInterest, outputdir, verbose)
+            ppfigdim.ertoverdimvsdim(dsList, inset.figValsOfInterest,
+                                     outputdir, verbose)
             print "Scaling figures done."
 
         if istab:
             dictNoise = dsList.dictByNoise()
             for noise, sliceNoise in dictNoise.iteritems():
-                pptable.main(sliceNoise, inset.tabDimsOfInterest, outputdir, noise,
-                             verbose)
+                pptable.main(sliceNoise, inset.tabDimsOfInterest, outputdir,
+                             noise, verbose)
             print "TeX tables",
             if isDraft:
                 print ("(draft) done. To get final version tables, please "
