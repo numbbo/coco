@@ -12,25 +12,31 @@ def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
     Need to make sure the file location is available.
     """
 
-    #TODO: make sure the file is writeable.
     if isinstance(figFormat, basestring):
-        plt.savefig(filename + '.' + figFormat, dpi = 300,
-                    format=figFormat)
-        if verbose:
-            print 'Wrote figure in %s.' %(filename + '.' + figFormat)
+        try:
+            plt.savefig(filename + '.' + figFormat, dpi = 300,
+                        format=figFormat)
+            if verbose:
+                print 'Wrote figure in %s.' %(filename + '.' + figFormat)
+        except IOError:
+            warnings.warn('%s is not writeable.' filename + '.' + figFormat)
     else:
-        if not isinstance(figFormat, basestring):
-            for entry in figFormat:
+        #if not isinstance(figFormat, basestring):
+        for entry in figFormat:
+            try:
                 plt.savefig(filename + '.' + entry, dpi = 300,
                             format=entry)
                 if verbose:
                     print 'Wrote figure in %s.' %(filename + '.' + entry)
+            except IOError:
+                warnings.warn('%s is not writeable.' filename + '.' + entry)
 
 def consecutiveNumbers(data):
-    """Find runs of consecutive numbers using groupby. 
+    """Find runs of consecutive numbers using groupby.
+
     The key to the solution is differencing with a range so that consecutive
     numbers all appear in same group.
-    Interesting for determining ranges of functions...
+    Useful for determining ranges of functions.
     """
 
     res = []
