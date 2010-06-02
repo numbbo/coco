@@ -219,6 +219,8 @@ def main(argv=None):
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictAlg in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
+                dictDim2 = pproc.dictAlgByDim2(tmpdictAlg)
+                set_trace()
                 for d, entries in dictDim.iteritems():
                     ppperfprof.main2(entries, target=inset.summarized_target_function_values,
                                      order=sortedAlgs,
