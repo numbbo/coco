@@ -15,25 +15,22 @@ import pickle
 import warnings
 from pdb import set_trace
 import numpy
-from bbob_pproc import findfiles, readalign, bootstrap
+from bbob_pproc import findfiles, bootstrap
 from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
 from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
-
-#GLOBAL VARIABLES
-idxEvals = 0
-idxF = 2
-nbPtsF = 5;
-indexmainsep = ', '
 
 # CLASS DEFINITIONS
 class DataSet:
     """Unit element for the BBOB post-processing.
-    It corresponds to data with given funcId, algId and dimension.
+
+    One unit element corresponds to data with given algId and comment, a
+    funcId, and dimension.
+
     Class attributes:
         funcId -- function Id (integer)
         dim -- dimension (integer)
-        indexFiles -- associated index files (list)
-        dataFiles -- associated data files (list)
+        indexFiles -- associated index files (list of strings)
+        dataFiles -- associated data files (list of strings)
         comment -- comment for the setting (string)
         targetFuncValue -- target function value (float)
         algId -- algorithm name (string)
@@ -49,14 +46,17 @@ class DataSet:
         pickleFile -- associated pickle file name (string)
         target -- target function values attained at least by one trial (array)
         ert -- ert for reaching the target function values in target (array)
-        itrials -- list of numbers corresponding to the instance of the test
-           function considered
+        itrials -- list of numbers corresponding to the instances of the test
+           function considered (list of int)
+        isFinalized -- list of bool for if runs were properly finalized
 
     evals and funvals are arrays of data collected from N data sets. Both have
     the same format: zero-th column is the value on which the data of a row is
     aligned, the N subsequent columns are either the numbers of function
     evaluations for evals or function values for funvals.
     """
+
+    # TODO: unit element of the post-processing: one algorithm, one problem
 
     # Private attribute used for the parsing of info files.
     __attributes = {'funcId': ('funcId', int), 'DIM': ('dim',int),
@@ -66,14 +66,16 @@ class DataSet:
 
     def __init__(self, header, comment, data, indexfile, verbose=True):
         """Instantiate a DataSet.
+
         The first three input argument corresponds to three consecutive lines
-        of a data file.
+        of an index file (info extension).
+
         Keyword argument:
         header -- string presenting the information of the experiment
         comment -- more information on the experiment
         data -- information on the runs of the experiment
         indexfile -- string for the file name from where the information come
-        verbose -- controls verbosity. Default is True.
+        verbose -- controls verbosity
         """
 
         # Extract information from the header line.
@@ -89,7 +91,6 @@ class DataSet:
                           'it does not start with \%.')
             self.comment = ''
 
-        # Split line in data file name(s) and run time information.
         self.indexFiles = [indexfile]
         self.dataFiles = []
         self.itrials = []
@@ -97,22 +98,23 @@ class DataSet:
         self.isFinalized = []
         self.readmaxevals = []
         self.readfinalFminusFtarget = []
+
+        # Split line in data file name(s) and run time information.
         parts = data.split(', ')
         for elem in parts:
             if elem.endswith('dat'):
                 #Windows data to Linux processing
-                elem = elem.replace('\\', os.sep)
+                filename = elem.replace('\\', os.sep)
                 #Linux data to Windows processing
-                elem = elem.replace('/', os.sep)
-
-                self.dataFiles.append(elem)
+                filename = filename.replace('/', os.sep)
+                self.dataFiles.append(filename)
             else:
-                elem = elem.split(':')
-                self.itrials.append(int(elem[0]))
-                if len(elem) < 2:
-                    # Caught a ill-finalized run, in this case, what should we
-                    # do? Either we try to process the corresponding data
-                    # anyway or we leave it out.
+                if ':' in elem:
+                    # if elem does not have ':' it means the run was not
+                    # finalized properly.
+                    self.itrials.append(int(elem))
+                    # In this case, what should we do? Either we try to process
+                    # the corresponding data anyway or we leave it out.
                     # For now we leave it in.
                     self.isFinalized.append(False)
                     warnings.warn('Caught an ill-finalized run in %s for %s'
@@ -120,37 +122,74 @@ class DataSet:
                     self.readmaxevals.append(0)
                     self.readfinalFminusFtarget.append(numpy.inf)
                 else:
+                    itrial, info = elem.split(':', 1)
+                    self.itrials.append(int(itrial))
                     self.isFinalized.append(True)
-                    elem = elem[1].split('|')
-                    self.readmaxevals.append(int(elem[0]))
-                    self.readfinalFminusFtarget.append(float(elem[1]))
+                    readmaxevals, readfinalf = info.split('|')
+                    self.readmaxevals.append(int(readmaxevals))
+                    self.readfinalFminusFtarget.append(float(readfinalf))
 
         if verbose:
             print "%s" % self.__repr__()
 
-        ext = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
-        for extension, info in ext.iteritems():
-            dataFiles = list('.'.join(i.split('.')[:-1]) + extension
-                             for i in self.dataFiles)
-            data = info[0](split(dataFiles))
-            if verbose:
-                print ("Processing %s: %d/%d trials found."
-                       % (dataFiles, len(data), len(self.itrials)))
-            (adata, maxevals, finalfunvals) = alignData(data)
-            setattr(self, info[1], adata)
-            try:
-                if all(maxevals > self.maxevals):
-                    self.maxevals = maxevals
-                    self.finalfunvals = finalfunvals
-            except AttributeError:
+        # Treat successively the data in dat and tdat files:
+        # put into variable dataFiles the files where to look for data
+        dataFiles = list(i.rsplit('.', 1)[0] + '.dat' for i in self.dataFiles)
+        data = HMultiReader(split(dataFiles))
+        if verbose:
+            print ("Processing %s: %d/%d trials found."
+                   % (dataFiles, len(data), len(self.itrials)))
+        (adata, maxevals, finalfunvals) = alignData(data)
+        self.evals = adata
+        try:
+            if all(maxevals > self.maxevals):
                 self.maxevals = maxevals
                 self.finalfunvals = finalfunvals
+        except AttributeError:
+            self.maxevals = maxevals
+            self.finalfunvals = finalfunvals
+
+        dataFiles = list(i.rsplit('.', 1)[0] + '.tdat' for i in self.dataFiles)
+        data = VMultiReader(split(dataFiles))
+        if verbose:
+            print ("Processing %s: %d/%d trials found."
+                   % (dataFiles, len(data), len(self.itrials)))
+        (adata, maxevals, finalfunvals) = alignData(data)
+        self.funvals = adata
+        try:
+            if all(maxevals > self.maxevals):
+                self.maxevals = maxevals
+                self.finalfunvals = finalfunvals
+        except AttributeError:
+            self.maxevals = maxevals
+            self.finalfunvals = finalfunvals
+
+        #extensions = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
+        #for ext, info in extensions.iteritems(): # ext is defined as global
+            ## put into variable dataFiles the files where to look for data
+            ## basically append 
+            #dataFiles = list(i.rsplit('.', 1)[0] + ext for i in self.dataFiles)
+            #data = info[0](split(dataFiles))
+            ## split is a method from readalign, info[0] is a method of readalign
+            #if verbose:
+                #print ("Processing %s: %d/%d trials found."
+                       #% (dataFiles, len(data), len(self.itrials)))
+            #(adata, maxevals, finalfunvals) = alignData(data)
+            #setattr(self, info[1], adata)
+            #try:
+                #if all(maxevals > self.maxevals):
+                    #self.maxevals = maxevals
+                    #self.finalfunvals = finalfunvals
+            #except AttributeError:
+                #self.maxevals = maxevals
+                #self.finalfunvals = finalfunvals
 
         # Compute ERT
         self.computeERTfromEvals()
 
     def computeERTfromEvals(self):
         """Sets the attributes ert and target from the attribute evals."""
+
         self.ert = []
         self.target = []
         for i in self.evals:
@@ -192,8 +231,8 @@ class DataSet:
     def __parseHeader(self, header):
         """Extract data from a header line in an index entry."""
 
-        # Split header into a list of key-value based on indexmainsep
-        headerList = header.split(indexmainsep)
+        # Split header into a list of key-value
+        headerList = header.split(', ')
 
         # Loop over all elements in the list and extract the relevant data.
         # We loop backward to make sure that we did not split inside quotes.
@@ -232,9 +271,11 @@ class DataSet:
 
     def pickle(self, outputdir=None, verbose=True):
         """Save DataSet instance to a pickle file.
+
         Saves the instance of DataSet to a pickle file. If not specified by
         argument outputdir, the location of the pickle is given by the location
         of the first index file associated to the DataSet.
+        This method will overwrite existing files.
         """
 
         # the associated pickle file does not exist
@@ -264,15 +305,13 @@ class DataSet:
                 print "I/O error(%s): %s" % (errno, strerror)
             except pickle.PicklingError:
                 print "Could not pickle %s" %(self)
-        #else: #What?
-            #if verbose:
-                #print ('Skipped update of pickle file %s: no new data.'
-                       #% self.pickleFile)
 
     def createDictInstance(self):
         """Returns a dictionary of the instances.
+
         The key is the instance id, the value is a list of index.
         """
+
         dictinstance = {}
         for i in range(len(self.itrials)):
             dictinstance.setdefault(self.itrials[i], []).append(i)
@@ -282,6 +321,7 @@ class DataSet:
 
     def splitByTrials(self, whichdata=None):
         """Splits the post-processed data arrays by trials.
+
         Returns a two-element list of dictionaries of arrays, the key of the
         dictionary being the instance id, the value being a smaller
         post-processed data array corresponding to the instance id.
@@ -305,19 +345,22 @@ class DataSet:
 
         return (evals, funvals)
 
-    def generateRLData(self, inputtarget):
-        """Determine the running lengths for attaining the targetf.
+    def generateRLData(self, targets):
+        """Determine the running lengths for reaching the target values.
 
         Keyword arguments:
         targets -- list of target function values of interest
 
         Output:
-        list of arrays containing the number of function evaluations for reaching
-        the target function values in target.
+        dict of arrays, one array has for first element a target function value
+        smaller or equal to the element of inputtargets considered and has for
+        other consecutive elements the corresponding number of function
+        evaluations.
         """
 
         res = {}
-        it = reversed(self.evals) # expect evals to be sorted by decreasing function values
+        # expect evals to be sorted by decreasing function values
+        it = reversed(self.evals)
         prevline = numpy.array([-numpy.inf] + [numpy.nan] * self.nbRuns())
         try:
             line = it.next()
@@ -325,21 +368,34 @@ class DataSet:
             # evals is an empty array
             return res #list()
 
-        for t in sorted(inputtarget):
+        for t in sorted(targets):
             while line[0] <= t:
                 prevline = line
                 try:
                     line = it.next()
                 except StopIteration:
                     break
-            res[t] = prevline.copy() # is copy necessary?
+            res[t] = prevline.copy()
 
-        return res # list(res[i] for i in inputtarget)
+        return res
+        # return list(res[i] for i in targets)
+        # alternative output sorted by targets
 
     def detERT(self, targets):
+        """Determine the expected running time for reaching target values.
+
+        Keyword arguments:
+        targets -- list of target function values of interest
+
+        Output:
+        list of expected running times corresponding to the targets
+        """
+
         res = {}
         tmparray = numpy.vstack((self.target, self.ert)).transpose()
-        it = reversed(tmparray) # expect this array to be sorted by decreasing function values
+        it = reversed(tmparray)
+        # expect this array to be sorted by decreasing function values
+
         prevline = numpy.array([-numpy.inf, numpy.inf])
         try:
             line = it.next()
@@ -360,33 +416,42 @@ class DataSet:
         # targets, sorted along targets
         return list(res[i][1] for i in targets)
 
-        #res = []
-        #for f in targets:
-        #    idx = (self.target<=f)
-        #    try:
-        #        res.append(self.ert[idx][0])
-        #    except IndexError:
-        #        res.append(numpy.inf)
-        #return res
-
     def detEvals(self, targets):
-        tmp = self.generateRLData(targets)
+        """Determine the number of evaluations for reaching target values.
+
+        Keyword arguments:
+        targets -- list of target function values of interest
+
+        Output:
+        list of arrays each corresponding to one value in targets
+        """
+
+        tmp = {}
+        # expect evals to be sorted by decreasing function values
+        it = reversed(self.evals)
+        prevline = numpy.array([-numpy.inf] + [numpy.nan] * self.nbRuns())
+        try:
+            line = it.next()
+        except StopIteration:
+            # evals is an empty array
+            return tmp #list()
+
+        for t in sorted(targets):
+            while line[0] <= t:
+                prevline = line
+                try:
+                    line = it.next()
+                except StopIteration:
+                    break
+            tmp[t] = prevline.copy()
+
         return list(tmp[i][1:] for i in targets)
-        # res = []
-        # for f in targets:
-        #     idx = (self.target<=f)
-        #     try:
-        #         res.append(self.evals[idx, 1:][0])
-        #     except IndexError:
-        #         res.append(numpy.array(self.nbRuns()*[numpy.nan]))
-        #         pass
-        #         #res.append(numpy.inf)
-        # return res
 
 class DataSetList(list):
-    """Set of instances of DataSet objects, implement some useful slicing
-    functions.
+    """List of instances of DataSet objects with some useful slicing functions.
 
+    Will merge data of DataSet instances that are identical (according to
+    function __eq__ of DataSet).
     """
 
     #Do not inherit from set because DataSet instances are mutable which means
@@ -394,6 +459,7 @@ class DataSetList(list):
 
     def __init__(self, args=[], verbose=True):
         """Instantiate self from a list of inputs.
+
         Keyword arguments:
         args -- list of strings being either info file names, folder containing
                 info files or pickled data files.
@@ -402,11 +468,9 @@ class DataSetList(list):
         Exception:
         Warning -- Unexpected user input.
         pickle.UnpicklingError
-
         """
 
-        #Nota: part of the input argument processing is now in
-        #pproc.processInputArguments.
+        # TODO: initialize a DataSetList from a sequence of DataSet
 
         if not args:
             super(DataSetList, self).__init__()
@@ -474,24 +538,25 @@ class DataSetList(list):
                     tmpline = f.next()
                     nbLine += 3
                     #TODO: check that something is not wrong with the 3 lines.
+
                     # Add the path to the index file to the file names
                     data = []
-                    for i in tmpline.split(indexmainsep):
+                    for i in tmpline.split(', '):
                         if i.endswith('dat'): #filenames
                             data.append(os.path.join(indexpath, i))
                         else: #other information
                             data.append(i)
-                    data = indexmainsep.join(data)
+                    data = ', '.join(data)
                     self.append(DataSet(header, comment, data, indexFile,
                                         verbose))
                 except StopIteration:
                     break
+                finally:
+                    # Close index file
+                    f.close()
 
         except IOError:
             print 'Could not open %s.' % indexFile
-
-            # Close index file
-            f.close()
 
     def append(self, o):
         """Redefines the append method to check for unicity."""
@@ -531,6 +596,7 @@ class DataSetList(list):
 
     def extend(self, o):
         """Extend a DataSetList with elements.
+
         This method is implemented to prevent problems since append was
         superseded. This method could be the origin of efficiency issue.
         """
@@ -545,8 +611,10 @@ class DataSetList(list):
             i.pickle(outputdir, verbose)
 
     def dictByAlg(self):
-        """Returns a dictionary with algId and comment as keys and
-        the corresponding slices of DataSetList as values.
+        """Returns a dictionary of DataSetList instances by algorithm.
+
+        The resulting dict uses algId and comment as keys and the corresponding
+        slices of DataSetList as values.
         """
 
         d = {}
@@ -555,7 +623,9 @@ class DataSetList(list):
         return d
 
     def dictByDim(self):
-        """Returns a dictionary with dimension as keys and the corresponding
+        """Returns a dictionary of DataSetList instances by dimensions.
+
+        Returns a dictionary with dimension as keys and the corresponding
         slices of DataSetList as values.
         """
 
@@ -565,7 +635,9 @@ class DataSetList(list):
         return d
 
     def dictByFunc(self):
-        """Returns a dictionary with the function id as keys and the
+        """Returns a dictionary of DataSetList instances by functions.
+
+        Returns a dictionary with the function id as keys and the
         corresponding slices of DataSetList as values.
         """
 
@@ -575,8 +647,7 @@ class DataSetList(list):
         return d
 
     def dictByNoise(self):
-        """Returns a dictionary splitting noisy and non-noisy entries.
-        """
+        """Returns a dictionary splitting noisy and non-noisy entries."""
 
         sorted = {}
         for i in self:
@@ -590,7 +661,9 @@ class DataSetList(list):
         return sorted
 
     def dictByFuncGroup(self):
-        """Returns a dictionary with function group names as keys and the
+        """Returns a dictionary of DataSetList instances by function groups.
+
+        Returns a dictionary with function group names as keys and the
         corresponding slices of DataSetList as values.
         """
 
@@ -619,6 +692,7 @@ class DataSetList(list):
 
 def processInputArgs(args, verbose=True):
     """Process command line arguments into data useable by bbob_pproc scripts.
+
     Returns an instance of DataSetList, a list of algorithms from
     a list of strings representing file and folder names.
     This command will operate folder-wise: one folder will correspond to an
@@ -626,6 +700,7 @@ def processInputArgs(args, verbose=True):
     It is recommended that if a folder listed in args contain both info files
     and the associated pickle files, they be kept in different locations for
     efficiency reasons.
+
     Keyword arguments:
       args -- list of string arguments for folder names
       verbose -- bool controlling verbosity
@@ -662,10 +737,11 @@ def processInputArgs(args, verbose=True):
             #if alg == '':
             #    alg = os.path.split(os.path.split(i)[0])[1]
             alg = i
-
             print '  using:', alg
+
+            # Prevent duplicates
             if all(i != alg for i in sortedAlgs):
-                sortedAlgs.append(alg) # TODO: watch out there could be duplicates.
+                sortedAlgs.append(alg)
                 dictAlg[alg] = tmpDsList
         else:
             txt = 'Input folder %s could not be found.' % i
@@ -676,6 +752,7 @@ def processInputArgs(args, verbose=True):
 
 def dictAlgByDim(dictAlg):
     """Returns a dictionary with problem dimension as key.
+
     This method is meant to be used with an input argument which is a
     dictionary with algorithm names as keys and which has list of DataSet
     instances as values.
@@ -684,8 +761,10 @@ def dictAlgByDim(dictAlg):
     """
 
     res = {}
+
+    # get the set of problem dimensions
     dims = set()
-    tmpdictAlg = {}
+    tmpdictAlg = {} # will store DataSet by alg and dim
     for alg, dsList in dictAlg.iteritems():
         tmp = dsList.dictByDim()
         tmpdictAlg[alg] = tmp
@@ -709,10 +788,35 @@ def dictAlgByDim(dictAlg):
             res.setdefault(d, {}).setdefault(alg, tmp)
             # Only the first data for a given algorithm in a given dimension
 
+    #for alg, dsList in dictAlg.iteritems():
+        #for i in dsList:
+            #res.setdefault(i.dim, {}).setdefault(alg, DataSetList()).append(i)
+
+    return res
+
+def dictAlgByDim2(dictAlg):
+    """Returns a dictionary with problem dimension as key.
+
+    This method is meant to be used with an input argument which is a
+    dictionary with algorithm names as keys and which has list of DataSet
+    instances as values.
+    The resulting dictionary will have dimension as key and as values
+    dictionaries with algorithm names as keys.
+    The difference with dictAlgByDim is that there is an entry for each
+    algorithms even if the resulting DataSetList is empty...
+    """
+
+    res = {}
+
+    for alg, dsList in dictAlg.iteritems():
+        for i in dsList:
+            res.setdefault(i.dim, {}).setdefault(alg, DataSetList()).append(i)
+
     return res
 
 def dictAlgByFun(dictAlg):
     """Returns a dictionary with function id as key.
+
     This method is meant to be used with an input argument which is a
     dictionary with algorithm names as keys and which has list of DataSet
     instances as values.
@@ -750,6 +854,7 @@ def dictAlgByFun(dictAlg):
 
 def dictAlgByNoi(dictAlg):
     """Returns a dictionary with noise group as key.
+
     This method is meant to be used with an input argument which is a
     dictionary with algorithm names as keys and which has list of DataSet
     instances as values.
@@ -794,6 +899,7 @@ def dictAlgByNoi(dictAlg):
 
 def dictAlgByFuncGroup(dictAlg):
     """Returns a dictionary with function group as key.
+
     This method is meant to be used with an input argument which is a
     dictionary with algorithm names as keys and which has list of DataSet
     instances as values.
@@ -830,7 +936,20 @@ def dictAlgByFuncGroup(dictAlg):
     return res
 
 def significancetest(entry0, entry1, targets):
-    """Compute the significance test.
+    """Compute the rank sum test between two data sets for given target values.
+
+    For a given target function value, the performances of two algorithms
+    are compared. The result of a significance test is computed on the number
+    of function evaluations for reaching the target and/or function values.
+
+    Keyword arguments:
+      entry0 -- data set 0
+      entry1 -- data set 1
+      targets -- list of target function values
+
+    Returns:
+    list of (z, p) for each target function values in input argument targets.
+    z and p are values returned by the ranksums method.
     """
 
     res = []

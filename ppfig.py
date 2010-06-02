@@ -17,9 +17,9 @@ def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
             plt.savefig(filename + '.' + figFormat, dpi = 300,
                         format=figFormat)
             if verbose:
-                print 'Wrote figure in %s.' %(filename + '.' + figFormat)
+                print 'Wrote figure in %s.' % (filename + '.' + figFormat)
         except IOError:
-            warnings.warn('%s is not writeable.' filename + '.' + figFormat)
+            warnings.warn('%s is not writeable.' % (filename + '.' + figFormat))
     else:
         #if not isinstance(figFormat, basestring):
         for entry in figFormat:
@@ -29,7 +29,7 @@ def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
                 if verbose:
                     print 'Wrote figure in %s.' %(filename + '.' + entry)
             except IOError:
-                warnings.warn('%s is not writeable.' filename + '.' + entry)
+                warnings.warn('%s is not writeable.' % (filename + '.' + entry))
 
 def consecutiveNumbers(data):
     """Find runs of consecutive numbers using groupby.

@@ -1,3 +1,39 @@
+bbob_pproc package random thoughts:
+__init__.py: what for?
+run.py: main interface?
+post-processing raw data: how? make it clear(er)
+Feature missing: output data that is human readable
+documentation
+web: unify, clean up
+class DataSet: makes sense, what attributes and methods?
+class DataSetList: does it make sense? sort per problem
+dictAlg: what is this?
+
+make it easier to work from the python command-line: operations such as loading and generating figures...
+
+different outputs: have to work with a template
+1 alg:
+ppfigdim: scaling figures, show ERT for different target vs dim for one algorithm
+pptable: table of bootstrap distribution of ERT for numerous functions and different dimensions
+ppecdf: ec distribution of run lengths for reaching different targets and also ecdf of function values
+pplos: figure and table of ERT log loss for given budgets
+
+2 algs:
+ppfig2: ert ratios over target function values
+pptable2: ert for different target function values
+ppscatter: scatter plot ERT1 vs ERT0
+ppecdf2: superposition of ECD of run lengths for given target function values
+
+more algs:
+ppfigs: bootstrap distribution of ert over multiple targets
+pptables: bootstrap distribution ert over multiple targets
+
+targets -> ERT
+targets -> bootstrap distribution of ERT
+targets -> run lengths
+budget -> targets -> ERT
+
+
 TODO:
 *provide individual performance tables on the web with (a) fixed targets and (b) run-length-based targets using 1e-8 as last additional target row
 *Do higher dim benchmark functions

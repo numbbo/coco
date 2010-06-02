@@ -12,9 +12,9 @@ from pdb import set_trace
 
 
 #GLOBAL VARIABLES
-idxEvals = 0 # TODO: problem-dependent
-idxF = 2 # TODO: problem-dependent
-nbPtsF = 5
+idxEvals = 0 # index of the column where to find the evaluations
+idxF = 2 # index of the column where to find the function values
+nbPtsF = 5 # nb of target function values for each decade.
 
 #CLASS DEFINITIONS
 class MultiReader(list):
@@ -295,7 +295,6 @@ def alignArrayData(data):
         res.append(data.align(currentValue))
         currentValue = data.newCurrentValue()
 
-    #set_trace()
     return numpy.vstack(res)
     # Hack: at this point nextLine contains all information on the last line
     # of the data.

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generate the best algorithm dataset."""
+""" Best algorithm dataset module """
 
 from __future__ import absolute_import
 
@@ -16,10 +16,7 @@ import warnings
 import numpy
 
 if __name__ == "__main__":
-    # append path without trailing '/bbob_pproc', using os.sep fails in mingw32
-    #sys.path.append(filepath.replace('\\', '/').rsplit('/', 1)[0])
     (filepath, filename) = os.path.split(sys.argv[0])
-    #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc import readalign
@@ -34,8 +31,6 @@ algs = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
 "MA-LS-CHAIN", "MCS", "NELDER", "NELDERDOERR", "NEWUOA", "ONEFIFTH", "POEMS",
 "PSO", "PSO_Bounds", "RANDOMSEARCH", "Rosenbrock", "SEP-CMA-ES", "SNOBFIT",
 "VNS")
-#Shorter list for test purpose
-#algs = ("ALPS", "AMALGAM", "AVGNEWUOA")
 
 #CLASS DEFINITIONS
 
@@ -46,6 +41,9 @@ class Usage(Exception):
 class BestAlgSet:
     """Unit element for the post-processing with given funcId, algId and
     dimension.
+
+    is derived from class DataSet but not does inherit from it.
+
     Class attributes:
         funcId -- function Id (integer)
         dim -- dimension (integer)
@@ -71,7 +69,6 @@ class BestAlgSet:
             f |= set(j.funcId for j in i)
 
         if len(f) > 1 or len(d) > 1:
-            #set_trace()
             Usage('Expect the data of algorithms for only one function and one dimension.')
 
         f = f.pop()
