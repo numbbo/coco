@@ -75,8 +75,8 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('pdf', 'eps'),
 
     beautifyECDF()
 
-    plt.text(0.5, 0.93, text, horizontalalignment="center",
-             transform=axisHandle.transAxes)
+    plt.text(0.5, 0.98, text, horizontalalignment="center",
+             verticalalignment="top", transform=axisHandle.transAxes)
              #bbox=dict(ec='k', fill=False), 
 
     #set_trace()
@@ -318,11 +318,11 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     Image files of the empirical cumulative distribution functions.
     """
 
-    plt.rc("axes", labelsize=20, titlesize=24)
-    plt.rc("xtick", labelsize=20)
-    plt.rc("ytick", labelsize=20)
-    plt.rc("font", size=20)
-    plt.rc("legend", fontsize=20)
+    #plt.rc("axes", labelsize=20, titlesize=24)
+    #plt.rc("xtick", labelsize=20)
+    #plt.rc("ytick", labelsize=20)
+    #plt.rc("font", size=20)
+    #plt.rc("legend", fontsize=20)
 
     maxEvalsFactor = max(max(i.mMaxEvals()/i.dim for i in dsList0),
                          max(i.mMaxEvals()/i.dim for i in dsList1))
@@ -443,7 +443,7 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
 
     #plt.close(fig)
 
-    plt.rcdefaults()
+    #plt.rcdefaults()
 
 def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
          info='default', verbose=True):
@@ -462,11 +462,11 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     Image files of the empirical cumulative distribution functions.
     """
 
-    plt.rc("axes", labelsize=20, titlesize=24)
-    plt.rc("xtick", labelsize=20)
-    plt.rc("ytick", labelsize=20)
-    plt.rc("font", size=20)
-    plt.rc("legend", fontsize=20)
+    #plt.rc("axes", labelsize=20, titlesize=24)
+    #plt.rc("xtick", labelsize=20)
+    #plt.rc("ytick", labelsize=20)
+    #plt.rc("font", size=20)
+    #plt.rc("legend", fontsize=20)
 
     maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in dsList)
     #maxEvalsFactorCeil = numpy.power(10,
@@ -554,4 +554,4 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
 
     plt.close(fig)
 
-    plt.rcdefaults()
+    #plt.rcdefaults()

@@ -555,11 +555,11 @@ def generateFigure(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True
     dimension.
     """
 
-    plt.rc("axes", labelsize=20, titlesize=24)
-    plt.rc("xtick", labelsize=20)
-    plt.rc("ytick", labelsize=20)
-    plt.rc("font", size=20)
-    plt.rc("legend", fontsize=20)
+    #plt.rc("axes", labelsize=20, titlesize=24)
+    #plt.rc("xtick", labelsize=20)
+    #plt.rc("ytick", labelsize=20)
+    #plt.rc("font", size=20)
+    #plt.rc("legend", fontsize=20)
 
     if isStoringXRange:
         global evalf
@@ -622,7 +622,7 @@ def generateFigure(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True
     #plt.show()
     plt.close()
 
-    plt.rcdefaults()
+    #plt.rcdefaults()
 
 def main(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True):
 

@@ -198,11 +198,11 @@ def generateData(dataSet, targetFuncValue):
 def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     """From a DataSetList, returns a convergence and ERT figure vs dim."""
 
-    plt.rc("axes", labelsize=20, titlesize=24)
-    plt.rc("xtick", labelsize=20)
-    plt.rc("ytick", labelsize=20)
-    plt.rc("font", size=20)
-    plt.rc("legend", fontsize=20)
+    #plt.rc("axes", labelsize=20, titlesize=24)
+    #plt.rc("xtick", labelsize=20)
+    #plt.rc("ytick", labelsize=20)
+    #plt.rc("font", size=20)
+    #plt.rc("legend", fontsize=20)
 
     dictFunc = dsList.dictByFunc()
 
@@ -286,16 +286,16 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
         plt.close()
 
-    plt.rcdefaults()
+    #plt.rcdefaults()
 
 def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
     """From a DataSetList, returns a convergence and ERT/dim figure vs dim."""
 
-    plt.rc("axes", labelsize=20, titlesize=24)
-    plt.rc("xtick", labelsize=20)
-    plt.rc("ytick", labelsize=20)
-    plt.rc("font", size=20)
-    plt.rc("legend", fontsize=20)
+    #plt.rc("axes", labelsize=20, titlesize=24)
+    #plt.rc("xtick", labelsize=20)
+    #plt.rc("ytick", labelsize=20)
+    #plt.rc("font", size=20)
+    #plt.rc("legend", fontsize=20)
 
     dictFunc = dsList.dictByFunc()
 
@@ -379,4 +379,4 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
 
         plt.close()
 
-    plt.rcdefaults()
+    #plt.rcdefaults()

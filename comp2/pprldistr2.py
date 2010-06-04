@@ -488,11 +488,11 @@ def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest=None,
     Image files of the empirical cumulative distribution functions.
     """
 
-    plt.rc("axes", labelsize=20, titlesize=24)
-    plt.rc("xtick", labelsize=20)
-    plt.rc("ytick", labelsize=20)
-    plt.rc("font", size=20)
-    plt.rc("legend", fontsize=20)
+    #plt.rc("axes", labelsize=20, titlesize=24)
+    #plt.rc("xtick", labelsize=20)
+    #plt.rc("ytick", labelsize=20)
+    #plt.rc("font", size=20)
+    #plt.rc("legend", fontsize=20)
 
     fig = plt.figure()
 
@@ -511,8 +511,8 @@ def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest=None,
             tmp = plotLogAbs(indexEntriesAlg0, indexEntriesAlg1,
                               valuesOfInterest[j], verbose=verbose)
             if not tmp is None:
-                plt.rc("ytick",labelsize=0)
-                plt.setp(tmp, 'color', rldColors[j],'linewidth',3)
+                plt.rc("ytick", labelsize=0)
+                plt.setp(tmp, 'color', rldColors[j], 'linewidth', 3) # ???
                 #if rldColors[j] == 'r':  # 1e-8 in bold
                 # plt.setp(tmp, 'linewidth', 5)
 
@@ -520,7 +520,7 @@ def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest=None,
              verbose=verbose)
     plt.close(fig)
 
-    plt.rcdefaults()
+    #plt.rcdefaults()
 
 def main2(dsList0, dsList1, valuesOfInterest=None,
           outputdir='', info='default', verbose=True):
@@ -542,11 +542,11 @@ def main2(dsList0, dsList1, valuesOfInterest=None,
     Image files of the empirical cumulative distribution functions.
     """
 
-    plt.rc("axes", labelsize=20, titlesize=24)
-    plt.rc("xtick", labelsize=20)
-    plt.rc("ytick", labelsize=20)
-    plt.rc("font", size=20)
-    plt.rc("legend", fontsize=20)
+    #plt.rc("axes", labelsize=20, titlesize=24)
+    #plt.rc("xtick", labelsize=20)
+    #plt.rc("ytick", labelsize=20)
+    #plt.rc("font", size=20)
+    #plt.rc("legend", fontsize=20)
 
     figureName = os.path.join(outputdir,'pplogabs_%s' %(info))
 
@@ -563,4 +563,4 @@ def main2(dsList0, dsList1, valuesOfInterest=None,
     saveFigure(figureName, figFormat=figformat, verbose=verbose)
     plt.close()
 
-    plt.rcdefaults()
+    #plt.rcdefaults()

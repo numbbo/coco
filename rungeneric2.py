@@ -30,6 +30,8 @@ from bbob_pproc import pprldistr
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 
+import matplotlib.pyplot as plt
+
 # Used by getopt:
 shortoptlist = "hvo:"
 longoptlist = ["help", "output-dir", "noisy", "noise-free", "fig-only",
@@ -174,8 +176,11 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        from bbob_pproc import bbob2010 as inset # input settings
-        # is here because variables setting could be modified by flags
+        if False:
+            from bbob_pproc import bbob2010 as inset # input settings
+            # is here because variables setting could be modified by flags
+        else:
+            from bbob_pproc import genericsettings as inset # input settings
 
         if (not verbose):
             warnings.simplefilter('ignore')
@@ -266,8 +271,19 @@ def main(argv=None):
                         + '\nTry using --noise-free or --noisy flags.')
 
         if isfigure:
+            plt.rc("axes", **inset.rcaxeslarger)
+            plt.rc("xtick", **inset.rcticklarger)
+            plt.rc("ytick", **inset.rcticklarger)
+            plt.rc("font", **inset.rcfontlarger)
+            plt.rc("legend", **inset.rclegendlarger)
             ppfig2.main2(dsList0, dsList1, 1e-8, outputdir, verbose)
             print "log ERT1/ERT0 vs target function values done."
+
+        plt.rc("axes", **inset.rcaxes)
+        plt.rc("xtick", **inset.rctick)
+        plt.rc("ytick", **inset.rctick)
+        plt.rc("font", **inset.rcfont)
+        plt.rc("legend", **inset.rclegend)
 
         if isrldistr:
             if len(dictFN0) > 1 or len(dictFN1) > 1:
@@ -361,6 +377,8 @@ def main(argv=None):
 
         if isfigure or isrldistr or istable or isscatter:
             print "Output data written to folder %s." % outputdir
+
+        plt.rcdefaults()
 
     except Usage, err:
         print >>sys.stderr, err.msg

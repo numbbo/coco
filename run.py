@@ -33,6 +33,8 @@ if __name__ == "__main__":
 from bbob_pproc import pptex, pprldistr, ppfigdim, pplogloss, findfiles
 from bbob_pproc.pproc import DataSetList
 
+import matplotlib.pyplot as plt
+
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
@@ -482,6 +484,12 @@ def main(argv=None):
         if isPickled:
             dsList.pickle(verbose=verbose)
 
+        plt.rc("axes", labelsize=24, titlesize=24)
+        plt.rc("xtick", labelsize=20)
+        plt.rc("ytick", labelsize=20)
+        plt.rc("font", size=20)
+        plt.rc("legend", fontsize=20)
+
         if isfigure:
             ppfigdim.main(dsList, figValsOfInterest, outputdir,
                           verbose)
@@ -581,6 +589,8 @@ def main(argv=None):
 
         if isfigure or istab or isrldistr or islogloss:
             print "Output data written to folder %s." % outputdir
+
+        plt.rcdefaults()
 
     except Usage, err:
         print >>sys.stderr, err.msg
