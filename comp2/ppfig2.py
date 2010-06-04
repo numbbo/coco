@@ -78,7 +78,7 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in scaling figures will not be displayed.'
 
-def generateData(entry0, entry1, fthresh=None):
+def generateData(entry0, entry1, fthresh=None, downsampling=None):
 
     def alignData(i0, i1):
         """Returns two arrays of fevals aligned on function evaluations.
@@ -105,6 +105,8 @@ def generateData(entry0, entry1, fthresh=None):
         return numpy.vstack(res)
 
     tmpdata0, tmpdata1 = alignData(entry0, entry1)
+    tmpdata0 = tmpdata0[::downsampling] #downsampling
+    tmpdata1 = tmpdata1[::downsampling]
     data0 = computeERT(tmpdata0, entry0.maxevals)
     data1 = computeERT(tmpdata1, entry1.maxevals)
 
@@ -284,11 +286,11 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
 def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
     """Returns ERT1/ERT0 comparison figure."""
 
-    plt.rc("axes", labelsize=20, titlesize=24)
-    plt.rc("xtick", labelsize=20)
-    plt.rc("ytick", labelsize=20)
-    plt.rc("font", size=20)
-    plt.rc("legend", fontsize=20)
+    #plt.rc("axes", labelsize=20, titlesize=24)
+    #plt.rc("xtick", labelsize=20)
+    #plt.rc("ytick", labelsize=20)
+    #plt.rc("font", size=20)
+    #plt.rc("legend", fontsize=20)
 
     dictFun0 = dsList0.dictByFunc()
     dictFun1 = dsList1.dictByFunc()
@@ -320,6 +322,8 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             nbtests += 1
             # generateData:
             data = generateData(entry0, entry1, fthresh=fthresh)
+            data[0] = data[0]
+            data[1] = data[1]
             dataperdim[dim] = data
 
             if len(data[0]) == 0 and len(data[1]) == 0:
@@ -464,16 +468,18 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
         plt.close()
         #set_trace()
 
-    plt.rcdefaults()
+    #plt.rcdefaults()
 
 def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
-    """Returns ERT1/ERT0 comparison figure."""
+    """Returns ERT1/ERT0 comparison figure.
+    For black and white purpose (symbols, etc.)
+    """
 
-    plt.rc("axes", labelsize=20, titlesize=24)
-    plt.rc("xtick", labelsize=20)
-    plt.rc("ytick", labelsize=20)
-    plt.rc("font", size=20)
-    plt.rc("legend", fontsize=20)
+    #plt.rc("axes", labelsize=20, titlesize=24)
+    #plt.rc("xtick", labelsize=20)
+    #plt.rc("ytick", labelsize=20)
+    #plt.rc("font", size=20)
+    #plt.rc("legend", fontsize=20)
 
     dictFun0 = dsList0.dictByFunc()
     dictFun1 = dsList1.dictByFunc()
@@ -504,7 +510,7 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
 
             nbtests += 1
             # generateData:
-            data = generateData(entry0, entry1, fthresh=fthresh)
+            data = generateData(entry0, entry1, fthresh=fthresh, downsampling=2)
             dataperdim[dim] = data
 
             if len(data[0]) == 0 and len(data[1]) == 0:
@@ -521,8 +527,8 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             ydata = data[1][idx, 1]/data[0][idx, 1]
             #plt.plot(data[0][idx, 0], ydata, ls='--', color=colors[i],
                      #lw=linewidth)
-            plt.plot(data[0][idx, 0], ydata, ls='', markersize=2*linewidth,
-                     **styles[i])
+            plt.plot(data[0][idx, 0], ydata, ls='', markersize=3*linewidth,
+                     label='%2d-D' % dim, **styles[i])
 
             # This is only one possibility:
             #idx = (data[0][:, 3] >= 5) * (data[1][:, 3] >= 5)
@@ -538,7 +544,7 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             fvalueswitch[dim] = min(data[0][idx, 0])
             ydata = data[1][idx, 1]/data[0][idx, 1]
             #plt.plot(data[0][idx, 0], ydata, color=colors[i], lw=linewidth)
-            plt.plot(data[0][idx, 0], ydata, ls='', markersize=2*linewidth, 
+            plt.plot(data[0][idx, 0], ydata, ls='', markersize=3*linewidth, 
                      **styles[i])
             #h = plotERTRatio(data, plotargs)
 
@@ -578,8 +584,6 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
                          #color=colors[i], lw=linewidth, label='%2d-D' % dim,
                          #markeredgecolor=colors[i], markerfacecolor='None',
                          #markeredgewidth=linewidth, markersize=3*linewidth)
-                plt.plot((data[0][idx, 0][-1]**2, ), (ydata[-1], ), ls='',
-                         label='%2d-D' % dim, markersize=3*linewidth, **styles[i])
                 continue
 
             # Determine which algorithm went further
@@ -597,9 +601,8 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
                      #markeredgecolor=colors[i], markerfacecolor='None',
                      #markeredgewidth=linewidth, markersize=3*linewidth)
             plt.plot((data[0][idx, 0][-1], ), (ydata[-1], ), marker='D', ls='',
-                     color=styles[i]['color'], label='%2d-D' % dim,
-                     markeredgecolor=styles[i]['color'], markerfacecolor='None',
-                     markersize=3*linewidth)
+                     color=styles[i]['color'], markeredgecolor=styles[i]['color'],
+                     markerfacecolor='None', markersize=4*linewidth)
             tmpy = ydata[-1]
 
             # plot probability of success line
@@ -649,22 +652,22 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
                      #markersize=3*linewidth)
 
             plt.plot([dataofinterest[idx, 0][0]]*2, (tmpy, ydata[0]), ls='',
-                     markersize=2*linewidth, **styles[i])
+                     markersize=3*linewidth, **styles[i])
 
             plt.plot(dataofinterest[idx, 0], ydata, ls='',
-                     markersize=2*linewidth, **styles[i])
+                     markersize=3*linewidth, **styles[i])
 
             # marker for when the first algorithm stop
             plt.plot((dataofinterest[idx, 0][0], ), (ydata[0], ), marker='D',
                      color=styles[i]['color'], markeredgecolor=styles[i]['color'],
-                     markerfacecolor='None', markersize=3*linewidth)
+                     markerfacecolor='None', markersize=4*linewidth)
 
             #Do not plot anything else if it happens after minfvalue
             if dataofinterest[idx, 0][-1] <= minfvalue:
                 continue
             plt.plot((dataofinterest[idx, 0][-1], ), (ydata[-1], ), marker='D',
                      color=styles[i]['color'], markeredgecolor=styles[i]['color'],
-                     markerfacecolor='None', markersize=3*linewidth)
+                     markerfacecolor='None', markersize=4*linewidth)
 
 
         if isBenchmarkinfosFound:
@@ -678,4 +681,4 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
         plt.close()
         #set_trace()
 
-    plt.rcdefaults()
+    #plt.rcdefaults()

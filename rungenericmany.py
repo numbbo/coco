@@ -33,6 +33,8 @@ from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.compall import ppperfprof, pptables
 from bbob_pproc.compall import organizeRTDpictures
 
+import matplotlib.pyplot as plt
+
 # Used by getopt:
 shortoptlist = "hvo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
@@ -177,8 +179,11 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        from bbob_pproc import bbob2010 as inset # input settings
-        # is here because variables setting could be modified by flags
+        if False:
+            from bbob_pproc import bbob2010 as inset # input settings
+            # is here because variables setting could be modified by flags
+        else:
+            from bbob_pproc import genericsettings as inset # input settings
 
         if (not verbose):
             warnings.simplefilter('ignore')
@@ -213,14 +218,18 @@ def main(argv=None):
                               'the correct instances ' +
                               'of function F%d.' %(i.funcId))
 
+        plt.rc("axes", **inset.rcaxes)
+        plt.rc("xtick", **inset.rctick)
+        plt.rc("ytick", **inset.rctick)
+        plt.rc("font", **inset.rcfont)
+        plt.rc("legend", **inset.rclegend)
+
         # Performance profiles
         if isPer:
             # ECDFs per noise groups
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictAlg in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                dictDim2 = pproc.dictAlgByDim2(tmpdictAlg)
-                set_trace()
                 for d, entries in dictDim.iteritems():
                     ppperfprof.main2(entries, target=inset.summarized_target_function_values,
                                      order=sortedAlgs,
@@ -245,6 +254,8 @@ def main(argv=None):
             dsListperAlg = list(dictAlg[i] for i in sortedAlgs)
             pptables.tablemanyalgonefunc2(dsListperAlg, inset.tableconstant_target_function_values, outputdir)
             print "Comparison tables done."
+
+        plt.rcdefaults()
 
     except Usage, err:
         print >>sys.stderr, err.msg

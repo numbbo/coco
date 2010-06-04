@@ -1,7 +1,7 @@
 1 Sphere
 2 Ellipsoid separable
 3 Rastrigin separable
-4 Skew Rastrigin-Bueche separable
+4 Skew Rastrigin-Bueche separ
 5 Linear slope
 6 Attractive sector
 7 Step-ellipsoid
@@ -40,9 +40,9 @@
 116 Ellipsoid Gauss
 117 Ellipsoid unif
 118 Ellipsoid Cauchy
-119 Sum of different powers Gauss
-120 Sum of different powers unif
-121 Sum of different powers Cauchy
+119 Sum of diff powers Gauss
+120 Sum of diff powers unif
+121 Sum of diff powers Cauchy
 122 Schaffer F7 Gauss
 123 Schaffer F7 unif
 124 Schaffer F7 Cauchy

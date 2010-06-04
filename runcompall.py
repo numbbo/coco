@@ -36,6 +36,8 @@ from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.compall import ppperfprof, pptables
 from bbob_pproc.compall import organizeRTDpictures
 
+import matplotlib.pyplot as plt
+
 # GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
 single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each
 summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # all in one figure
@@ -302,6 +304,12 @@ def main(argv=None):
             if verbose:
                 print 'Folder %s was created.' % (outputdir)
 
+        plt.rc("axes", labelsize=24, titlesize=24)
+        plt.rc("xtick", labelsize=20)
+        plt.rc("ytick", labelsize=20)
+        plt.rc("font", size=20)
+        plt.rc("legend", fontsize=20)
+
         # Performance profiles
         if isPer:
             dictNoi = pproc.dictAlgByNoi(dictAlg)
@@ -336,6 +344,8 @@ def main(argv=None):
             pptables.tablemanyalgonefunc(dictAlg, allmintarget, allertbest,
                                          sortedAlgs, outputdir)
             print "Comparison tables done."
+
+        plt.rcdefaults()
 
     except Usage, err:
         print >>sys.stderr, err.msg

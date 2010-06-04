@@ -30,6 +30,8 @@ from bbob_pproc import pprldistr
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 
+import matplotlib.pyplot as plt
+
 # GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
@@ -332,6 +334,12 @@ def main(argv=None):
                 if verbose:
                     print 'Folder %s was created.' % (outputdir)
 
+        plt.rc("axes", labelsize=24, titlesize=24)
+        plt.rc("xtick", labelsize=20)
+        plt.rc("ytick", labelsize=20)
+        plt.rc("font", size=20)
+        plt.rc("legend", fontsize=20)
+
         dictFN0 = dsList0.dictByNoise()
         dictFN1 = dsList1.dictByNoise()
         k0 = set(dictFN0.keys())
@@ -478,6 +486,8 @@ def main(argv=None):
 
         if isfigure or isrldistr or istable or isscatter:
             print "Output data written to folder %s." % outputdir
+
+        plt.rcdefaults()
 
     except Usage, err:
         print >>sys.stderr, err.msg

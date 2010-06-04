@@ -117,11 +117,11 @@ def generateData(ds0, ds1):
 
 def main(dsList0, dsList1, outputdir, verbose=True):
 
-    plt.rc("axes", labelsize=20, titlesize=24)
-    plt.rc("xtick", labelsize=20)
-    plt.rc("ytick", labelsize=20)
-    plt.rc("font", size=20)
-    plt.rc("legend", fontsize=20)
+    #plt.rc("axes", labelsize=24, titlesize=24)
+    #plt.rc("xtick", labelsize=20)
+    #plt.rc("ytick", labelsize=20)
+    #plt.rc("font", size=20)
+    #plt.rc("legend", fontsize=20)
 
     dictFunc0 = dsList0.dictByFunc()
     dictFunc1 = dsList1.dictByFunc()
@@ -246,11 +246,14 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             #plt.axvline(entry0.mMaxEvals(), ls='--', color=colors[i])
             #plt.axhline(entry1.mMaxEvals(), ls='--', color=colors[i])
 
-        #if isBenchmarkinfosFound:
-        #    plt.ylabel(funInfos[f])
+        if isBenchmarkinfosFound:
+            try:
+                plt.ylabel(funInfos[f])
+            except IndexError:
+                pass
 
         filename = os.path.join(outputdir, 'scatter_f%d' % f)
         saveFigure(filename, figFormat=figFormat, verbose=verbose)
         plt.close()
 
-    plt.rcdefaults()
+    #plt.rcdefaults()

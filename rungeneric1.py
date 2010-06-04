@@ -32,6 +32,8 @@ if __name__ == "__main__":
 from bbob_pproc import pptex, pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from bbob_pproc.pproc import DataSetList
 
+import matplotlib.pyplot as plt
+
 # Used by getopt:
 shortoptlist = "hvpfo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
@@ -220,8 +222,11 @@ def main(argv=None):
 
         #TODO what if multiple output dir and crafting effort?
 
-        from bbob_pproc import bbob2010 as inset # input settings
-        # is here because variables setting could be modified by flags
+        if False:
+            from bbob_pproc import bbob2010 as inset # input settings
+            # is here because variables setting could be modified by flags
+        else:
+            from bbob_pproc import genericsettings as inset # input settings
 
         if (not verbose):
             warnings.simplefilter('ignore')
@@ -280,9 +285,20 @@ def main(argv=None):
 
         if isfigure:
             #ERT/dim vs dim.
+            plt.rc("axes", **inset.rcaxeslarger)
+            plt.rc("xtick", **inset.rcticklarger)
+            plt.rc("ytick", **inset.rcticklarger)
+            plt.rc("font", **inset.rcfontlarger)
+            plt.rc("legend", **inset.rclegendlarger)
             ppfigdim.ertoverdimvsdim(dsList, inset.figValsOfInterest,
                                      outputdir, verbose)
             print "Scaling figures done."
+
+        plt.rc("axes", **inset.rcaxes)
+        plt.rc("xtick", **inset.rctick)
+        plt.rc("ytick", **inset.rctick)
+        plt.rc("font", **inset.rcfont)
+        plt.rc("legend", **inset.rclegend)
 
         if istab:
             dictNoise = dsList.dictByNoise()
@@ -361,6 +377,8 @@ def main(argv=None):
 
         if isfigure or istab or isrldistr or islogloss:
             print "Output data written to folder %s." % outputdir
+
+        plt.rcdefaults()
 
     except Usage, err:
         print >>sys.stderr, err.msg
