@@ -12,6 +12,7 @@ from pdb import set_trace
 import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
+from bbob_pproc.ppfig import saveFigure
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
@@ -84,59 +85,25 @@ function_IDs = range(1,99)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 10
 #function_IDs = range(101,131) # noisy testbed
 
 x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
-x_annote_factor = 90
+x_annote_factor = 90 # make space for right-hand legend
 
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
 dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 
-def beautify(figureName='perfprofile', funcsolved=None, maxval=None,
-             isLegend=True, fileFormat=('pdf', 'eps')):
+def beautify():
     """Format the figure."""
 
     #plt.xscale('log') # Does not work with matplotlib 0.91.2
     a = plt.gca()
     a.set_xscale('log')
+    #Tick label handling
+
     plt.xlabel('Running length / dimension')
     plt.ylabel('Proportion of functions')
     plt.grid(True)
 
-    if not funcsolved is None and funcsolved:
-        txt = ''
-
-        if len(list(i for i in funcsolved if len(i) > 0)) > 1:
-            txt = '(%d' % len(funcsolved[0])
-            for i in range(1, len(funcsolved)):
-                if len(funcsolved[i]) > 0:
-                    txt += ', %d' % len(funcsolved[i])
-            txt += ') = '
-
-        txt += ('%d funcs' % numpy.sum(len(i) for i in funcsolved))
-
-        plt.text(0.01, 1.01, txt, horizontalalignment='left',
-                 verticalalignment="bottom", transform=plt.gca().transAxes)
-
-    if isLegend:
-        plt.legend(loc='best')
-
     plt.ylim(0, 1)
-
-    plt.xlim(xmax=1e3)
-    plt.xlim(xmin=1e-2)
-    if save_zoom:  # first half only, takes about 2.5 seconds
-        for entry in fileFormat:
-            plt.savefig(figureName + 'a.' + entry, dpi = 300, format = entry)
-
-    plt.xlim(xmin=1e2)
-    if not maxval is None: # TODO: reset to default value...
-        plt.xlim(xmax=maxval)
-    if save_zoom:  # second half only
-        for entry in fileFormat:
-            plt.savefig(figureName + 'b.' + entry, dpi = 300, format = entry)
-
-    plt.xlim(xmin=1e-0)
-    for entry in fileFormat:
-        plt.savefig(figureName + '.' + entry, dpi = dpi_global_var, format = entry)
 
 def get_plot_args(args):
     """args is one dict element according to algorithmshortinfos
@@ -378,7 +345,50 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
     plotLegend(lines, xlim)
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
-    beautify(figureName, funcsolved, xlim*x_annote_factor, False, fileFormat=figformat)
+    beautify()
+
+    if not funcsolved is None:
+        txt = ''
+
+        if len(list(i for i in funcsolved if len(i) > 0)) > 1:
+            txt = '(%d' % len(funcsolved[0])
+            for i in range(1, len(funcsolved)):
+                if len(funcsolved[i]) > 0:
+                    txt += ', %d' % len(funcsolved[i])
+            txt += ') = '
+
+        txt += ('%d funcs' % numpy.sum(len(i) for i in funcsolved))
+
+        plt.text(0.01, 1.01, txt, horizontalalignment='left',
+                 verticalalignment="bottom", transform=plt.gca().transAxes)
+
+    if save_zoom:  # first half only, takes about 2.5 seconds
+        plt.xlim(xmin=1e-2, xmax=1e3)
+        xticks, labels = plt.xticks()
+        tmp = []
+        for i in xticks:
+            tmp.append('%d' % round(numpy.log10(i)))
+        a.set_xticklabels(tmp)
+
+        saveFigure(figureName + 'a', figFormat=figformat)
+
+    if save_zoom:  # second half only
+        plt.xlim(xmin=1e2, xmax=xlim*x_annote_factor)
+        xticks, labels = plt.xticks()
+        tmp = []
+        for i in xticks:
+            tmp.append('%d' % round(numpy.log10(i)))
+        a.set_xticklabels(tmp)
+        saveFigure(figureName + 'b', figFormat=figformat, verbose=verbose)
+
+    plt.xlim(xmin=1e-0, xmax=xlim*x_annote_factor, verbose=verbose)
+    xticks, labels = plt.xticks()
+    tmp = []
+    for i in xticks:
+        tmp.append('%d' % round(numpy.log10(i)))
+    a.set_xticklabels(tmp)
+    saveFigure(figureName, figFormat=figformat, verbose=verbose)
+
 
     plt.close()
 
@@ -509,6 +519,50 @@ def main2(dictAlg, target, order=None, plotArgs={}, outputdir='',
     plotLegend(lines, xlim)
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' %(info))
-    beautify(figureName, funcsolved, xlim*x_annote_factor, False, fileFormat=figformat)
+    #beautify(figureName, funcsolved, xlim*x_annote_factor, False, fileFormat=figformat)
+    beautify()
+
+    if False: #not funcsolved is None:
+        txt = ''
+
+        if len(list(i for i in funcsolved if len(i) > 0)) > 1:
+            txt = '(%d' % len(funcsolved[0])
+            for i in range(1, len(funcsolved)):
+                if len(funcsolved[i]) > 0:
+                    txt += ', %d' % len(funcsolved[i])
+            txt += ') = '
+
+        txt += ('%d funcs' % numpy.sum(len(i) for i in funcsolved))
+
+        plt.text(0.01, 1.01, txt, horizontalalignment='left',
+                 verticalalignment="bottom", transform=plt.gca().transAxes)
+
+    a = plt.gca()
+
+    if save_zoom:  # second half only
+        plt.xlim(xmin=1e-2, xmax=1e3)
+        xticks, labels = plt.xticks()
+        tmp = []
+        for i in xticks:
+            tmp.append('%d' % round(numpy.log10(i)))
+        a.set_xticklabels(tmp)
+
+        saveFigure(figureName + 'a', figFormat=figformat, verbose=verbose)
+
+        plt.xlim(xmin=1e2, xmax=xlim*x_annote_factor)
+        xticks, labels = plt.xticks()
+        tmp = []
+        for i in xticks:
+            tmp.append('%d' % round(numpy.log10(i)))
+        a.set_xticklabels(tmp)
+        saveFigure(figureName + 'b', figFormat=figformat, verbose=verbose)
+
+    plt.xlim(xmin=1e-0, xmax=xlim*x_annote_factor)
+    xticks, labels = plt.xticks()
+    tmp = []
+    for i in xticks:
+        tmp.append('%d' % round(numpy.log10(i)))
+    a.set_xticklabels(tmp)
+    saveFigure(figureName, figFormat=figformat, verbose=verbose)
 
     plt.close()
