@@ -113,10 +113,8 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 if any(succ):
                     tmp2 = bootstrap.drawSP(tmp[succ], tmp[succ==False],
                                             (10, 50, 90), samplesize)[0]
-                    dispersion.append(tmp2[-1]-tmp2[0])
-                    #set_trace()
+                    dispersion.append((tmp2[-1]-tmp2[0])/2.)
                 else:
-                    #set_trace()
                     dispersion.append(None)
 
             for i, ert in enumerate(data):
@@ -230,7 +228,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 if dispersion[i] is None or numpy.isinf(bestalgdata[i]):
                     curline.append('')
                 else:
-                    tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i]/2., 2)
+                    tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
                     curline.append('(%s)' % tmp)
 
             tmp = entry.evals[entry.evals[:, 0] <= targetf, 1:]
