@@ -326,7 +326,7 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     header = [r'$\Delta f$']
     for i in targetsOfInterest:
         #header.append(r'\multicolumn{2}{@{}c@{}}{$10^{%d}$}' % (int(numpy.log10(i))))
-        header.append(r'\multicolumn{3}{@{}c@{}}{1e%+d}' % (int(numpy.log10(i))))
+        header.append(r'\multicolumn{2}{@{}c@{}}{1e%+d}' % (int(numpy.log10(i))))
     header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}')
 
     for d in dimsOfInterest: # TODO set as input arguments
@@ -348,8 +348,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)
 
             for i in bestalgdata[:-1]:
-                curline.append(r'\multicolumn{3}{@{}c@{}}{%s}' % writeFEvalsMaxPrec(i, 2))
-            curline.append(r'\multicolumn{3}{@{}c@{}|}{%s}' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
+                curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % writeFEvalsMaxPrec(i, 2))
+            curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
 
             tmp = bestalgentry.detEvals([targetf])[0][0]
             tmp2 = numpy.sum(numpy.isnan(tmp) == False)
@@ -530,12 +530,17 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         else:
                             tableentry += s
 
-                    curline.append(tableentry)
-                    if dispersion[i] is None or numpy.isinf(bestalgdata[i]):
-                        curline.append('')
-                    else:
+                    if dispersion[i] and not numpy.isinf(bestalgdata[i]):
                         tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
-                        curline.append('(%s)' % tmp)
+                        tableentry += ('\,(%s)' % tmp)
+                    curline.append(tableentry)
+
+                    #curline.append(tableentry)
+                    #if dispersion[i] is None or numpy.isinf(bestalgdata[i]):
+                        #curline.append('')
+                    #else:
+                        #tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
+                        #curline.append('(%s)' % tmp)
 
                 tmp = entry.evals[entry.evals[:, 0] <= targetf, 1:]
                 try:
@@ -552,7 +557,7 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         extraeol[-1] = ''
 
         outputfile = os.path.join(outputdir, 'table_%02dD%s.tex' % (d, info))
-        spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
+        spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         res = r'\providecommand{\algzeroshort}{%s}' % alg0 + '\n'
         res += r'\providecommand{\algoneshort}{%s}' % alg1 + '\n'
         #res += tableLaTeXStar(table, width=r'0.45\textwidth', spec=spec,

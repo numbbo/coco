@@ -90,3 +90,32 @@ cmaes V3.40.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(popsi
 cmaes V3.41.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(popsize):{"label":"cmaes V3.41.beta"}
 cmaes V3.40.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(popsize):{"label":"cmaes V3.40.beta"}
 cmaes V3.41.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(popsize):{"label":"cmaes V3.41.beta"}
+(1,2)CMA-ES:% (1,2)CMA-ES with restarts, non-mirrored version):{"label":"(1,2)CMA-ES"}
+EGS:% EGS-CMA as given by Arnold, sigma = 10/6, ipop-factor 2, sigma stop if < 1e-14:{"label":"EGS"}
+(1,2_m)CMA-ES:% (1,2)CMA-ES with restarts, mirrored version):{"label":"(1,2_m)CMA-ES"}
+(1,2_m^s)CMA-ES:% serial (1,2)CMA-ES with restarts, mirrored version):{"label":"(1,2_m^s)CMA-ES"}
+(1,2^s)CMA-ES:% serial (1,2)CMA-ES with restarts, non-mirrored version):{"label":"(1,2^s)CMA-ES"}
+(1,4)CMA-ES:% (1,4)CMA-ES with restarts, non-mirrored version:{"label":"(1,4)CMA-ES"}
+(1,4_m)CMA-ES:% (1,4)CMA-ES with restarts, mirrored version:{"label":"(1,4_m)CMA-ES"}
+(1,4_m^s)CMA-ES:% serial (1,4)CMA-ES with restarts, mirrored version:{"label":"(1,4_m^s)CMA-ES"}
+(1,4^s)CMA-ES:% serial (1,4)CMA-ES with restarts, non-mirrored version:{"label":"(1,4^s)CMA-ES"}
+1p1:% (1+1)CMA:{"label":"1p1"}
+1p2_m^s:% serial (1+2)CMA with mirroring:{"label":"1p2_m^s"}
+Artificial Bee Colony:% Colony_Size=40, Limit=20*DIM, No Bounding:{"label":"Artificial Bee Colony"}
+Harmony search algorithm:% Normal parameters settings:{"label":"Harmony search algorithm"}
+mos:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"mos"}
+NBC-CMA:% debug:{"label":"NBC-CMA"}
+nPOEMS:% no comments:{"label":"nPOEMS"}
+Basic RCGA:% Run from 2010.03.25 at 0:50; popsize=100, 2 Stopping criteria, maxfunevals=5e4*D:{"label":"Basic RCGA"}
+SPSA:% SPSA with lambda = 1 (1st run), lambda = 1 + 2^restart, c0 approx. standard deviation at initial point (max c0 = 10), alpha and gamma theoretical minimal, a0 calculated:{"label":"SPSA"}
+PSO_Bounds with randomly selected parameters:% Parameters selected randomly from a set:{"label":"PSO_Bounds with randomly selected parameters"}
+AUCplus-NDCG-S.5_W50:% AUCplus_on_DE_with_stGECCOset:{"label":"AUCplus-NDCG-S.5_W50"}
+F-AUCv2_NoCut_NDCG-MAB-Adaptive_Strategy_Selection:% NDCG_C.5_D1.0_W50_stGECCO:{"label":"F-AUCv2_NoCut_NDCG-MAB-Adaptive_Strategy_Selection"}
+F-SUM_NoCut_NDCG-MAB-Adaptive_Strategy_Selection:% NDCG_C.5_D1.0_W50_stGECCO:{"label":"F-SUM_NoCut_NDCG-MAB-Adaptive_Strategy_Selection"}
+stRand1Bin:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"stRand1Bin"}
+stRand2Bin:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"stRand2Bin"}
+stRandToBest2Bin:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"stRandToBest2Bin"}
+stTargetToRand1Bin:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"stTargetToRand1Bin"}
+SUMplus-NDCG-S.5_W50:% SUMplus_on_DE_with_stGECCOset:{"label":"SUMplus-NDCG-S.5_W50"}
+DE_Uniform_stGECCOset:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"DE_Uniform_stGECCOset"}
+PM-AdapSS-DE:% Probability Matching with absolute average of the relative fitness improvement as Credit Assignment (see GECCO10 paper).:{"label":"PM-AdapSS-DE"}

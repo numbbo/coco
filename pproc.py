@@ -109,7 +109,7 @@ class DataSet:
                 filename = filename.replace('/', os.sep)
                 self.dataFiles.append(filename)
             else:
-                if ':' in elem:
+                if not ':' in elem:
                     # if elem does not have ':' it means the run was not
                     # finalized properly.
                     self.itrials.append(int(elem))
@@ -125,7 +125,7 @@ class DataSet:
                     itrial, info = elem.split(':', 1)
                     self.itrials.append(int(itrial))
                     self.isFinalized.append(True)
-                    readmaxevals, readfinalf = info.split('|')
+                    readmaxevals, readfinalf = info.split('|', 1)
                     self.readmaxevals.append(int(readmaxevals))
                     self.readfinalFminusFtarget.append(float(readfinalf))
 
@@ -551,9 +551,8 @@ class DataSetList(list):
                                         verbose))
                 except StopIteration:
                     break
-                finally:
-                    # Close index file
-                    f.close()
+            # Close index file
+            f.close()
 
         except IOError:
             print 'Could not open %s.' % indexFile
@@ -981,14 +980,30 @@ def significancetest(entry0, entry1, targets):
             fvalues = []
             if isBestAlg:
                 for j, entry in enumerate((entry0, entry1)):
+                    # if best alg entry
                     if isinstance(entry.finalfunvals, dict):
-                       alg = bestalgs[j][i]
-                       if alg is None:
-                           tmpfvalues = entry.bestfinalfunvals
-                       else:
-                           tmpfvalues = entry.finalfunvals[alg]
+                        alg = bestalgs[j][i]
+                        if alg is None:
+                            tmpfvalues = entry.bestfinalfunvals
+                        else:
+                            tmpfvalues = entry.finalfunvals[alg]
                     else:
-                       tmpfvalues = entry.finalfunvals
+                        unsucc = numpy.isnan(evals[j][i])
+                        if unsucc.any():
+                            FE_umin = min(entry.maxevals[unsucc])
+                        else:
+                            FE_umin = numpy.inf
+                        # Determine the function values for FE_umin
+                        tmpfvalues = numpy.array([numpy.inf] * entry.nbRuns())
+                        for curline in entry.funvals:
+                            # only works because the funvals are monotonous
+                            if curline[0] > FE_umin:
+                                break
+                            prevline = curline[1:]
+                        tmpfvalues = prevline.copy()
+                        #tmpfvalues = entry.finalfunvals
+                        #if (tmpfvalues != entry.finalfunvals).any():
+                            #set_trace()
                     fvalues.append(tmpfvalues)
             else:
                 # 1) find min_{both algorithms}(conducted FEvals in

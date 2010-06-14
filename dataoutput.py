@@ -33,6 +33,15 @@ try:
             continue
         try:
             algId, comment, plotinfo = line.strip().split(':', 2)
+            # hack
+            while comment[0] != '%':
+                tmp, newcomment = comment.split(':', 1)
+                algId = ':'.join((algId, tmp))
+                comment = newcomment
+            while plotinfo[0] != '{':
+                tmp, newplotinfo = plotinfo.split(':', 1)
+                comment = ':'.join((comment, tmp))
+                plotinfo = newplotinfo
             algPlotInfos[(algId, comment)] = eval(plotinfo)
         except ValueError:
             # Occurs when the split line does not result in 3 elements.
