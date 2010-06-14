@@ -759,7 +759,7 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
             isItalArray.append(tmp2)
 
         # Create the table
-        spec = r'@{}c@{}*{%d}{@{}r@{}l@{}l@{}}@{}c@{}' % (len(targets))
+        spec = r'@{}c@{}*{%d}{@{}r@{}l@{}}' % (len(targets))
         extraeol = []
 
         # Generate header lines
@@ -769,21 +769,21 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
             header = '%d' % df[1]
 
         table = [[r'\multicolumn{%d}{c}{{\normalsize \textbf{%s}}}'
-                 % (3 * len(targets) + 2, header)]]
+                 % (2 * len(targets) + 1, header)]]
 
         curline = [r'$\Delta$ftarget']
         for t in targets:
-            curline.append(r'\multicolumn{3}{c}{%s}'
+            curline.append(r'\multicolumn{2}{c}{%s}'
                            % writeFEvals2(t, precision=1, isscientific=True))
-        curline.append(curline[0])
+        #curline.append(curline[0])
         table.append(curline)
         extraeol.append('')
 
         curline = [r'ERT$_{\text{best}}$/D']
         for i in bestalgdata:
-            curline.append(r'\multicolumn{3}{c}{%s}'
+            curline.append(r'\multicolumn{2}{c}{%s}'
                            % writeFEvalsMaxPrec(float(i)/df[0], 2))
-        curline.append(curline[0])
+        #curline.append(curline[0])
         table.append(curline)
         extraeol.append('')
 
@@ -818,16 +818,20 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
                             for i in tmp2:
                                 tmp3.append(r'\textbf{%s}' % i)
                             tmp2 = tmp3
-                        curline.extend(tmp2)
-
-                    if not numpy.isnan(ir):
-                        curline.append('(%s)' % writeFEvalsMaxPrec(ir, 2))
-                    else:
-                        if isItal:
-                            curline.append(r'\textit{%s}' % writeFEvalsMaxPrec(isItal[1], 0))
+                        if not numpy.isnan(ir):
+                            tmp2[-1] += ('\,(%s)' % writeFEvalsMaxPrec(ir, 2))
                         else:
-                            curline.append('')
-            curline.append(curline[0])
+                            if isItal:
+                                tmp2[-1] += (r'\,\textit{%s}' % writeFEvalsMaxPrec(isItal[1], 0))
+                        curline.extend(tmp2)
+                    #if not numpy.isnan(ir):
+                        #curline.append('(%s)' % writeFEvalsMaxPrec(ir, 2))
+                    #else:
+                        #if isItal:
+                            #curline.append(r'\textit{%s}' % writeFEvalsMaxPrec(isItal[1], 0))
+                        #else:
+                            #curline.append('')
+            #curline.append(curline[0])
             table.append(curline)
             extraeol.append('')
 
