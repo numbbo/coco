@@ -40,6 +40,7 @@ except IOError, (errno, strerror):
 
 maxfloatrepr = 100000.
 samplesize = 100
+targetf = 1e-8
 
 def cite(algName, isNoisefree, isNoisy):
     """Returns the citation key associated to the algorithm name.
@@ -698,11 +699,14 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
         # Generate one table per df
         bestalgentry = bestalg.bestalgentries[df]
         bestalgdata = bestalgentry.detERT(targets)
+        bestalgsucc = bestalgentry.detEvals((targetf, ))[0][0]
 
         # Process the data
         data = []
         dispersion = []
         algnames = []
+        nbsucc = []
+        nbruns = []
         medmaxevals = [] # divided by Dim
         medfinalfunvals = []
         for entries in dictData[df]:
@@ -735,6 +739,11 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
             medmaxevals.append(numpy.median(entry.maxevals)/df[0])
             medfinalfunvals.append(numpy.median(entry.finalfunvals))
 
+            # determine success probability for Df = 1e-8
+            e = entry.detEvals((targetf ,))[0]
+            nbsucc.append(numpy.sum(numpy.isnan(e) == False))
+            nbruns.append(len(e))
+
         # find best values...
         if len(dictData[df]) <= 3:
             maxRank = 1
@@ -747,11 +756,9 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
         for i, line in enumerate(data):
             tmp = []
             tmp2 = []
-            isInfoWritten = False
             for j, e in enumerate(line):
                 tmp.append(i in tmparray[j] or data[i][j] <= 3.)
-                if numpy.isinf(e) and not isInfoWritten:
-                    isInfoWritten = True
+                if numpy.isinf(e) and j == len(line) - 1:
                     tmp2.append((medfinalfunvals[i], medmaxevals[i]))
                 else:
                     tmp2.append(None)
@@ -759,7 +766,7 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
             isItalArray.append(tmp2)
 
         # Create the table
-        spec = r'@{}c@{}*{%d}{@{}r@{}l@{}}' % (len(targets))
+        spec = r'@{}c@{}|*{%d}{@{}r@{}l@{}}|@{}r@{}@{}l@{}' % (len(targets))
         extraeol = []
 
         # Generate header lines
@@ -768,45 +775,66 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
         else:
             header = '%d' % df[1]
 
-        table = [[r'\multicolumn{%d}{c}{{\normalsize \textbf{%s}}}'
-                 % (2 * len(targets) + 1, header)]]
-
+        table = []
+        #table.append([r'\multicolumn{%d}{c}{{\normalsize \textbf{%s}}}'
+                      #% (2 * len(targets) + 2, header)])
+        #extraeol.append('')
         curline = [r'$\Delta$ftarget']
-        for t in targets:
+        for t in targets[0:-1]:
             curline.append(r'\multicolumn{2}{c}{%s}'
                            % writeFEvals2(t, precision=1, isscientific=True))
-        #curline.append(curline[0])
+        curline.append(r'\multicolumn{2}{c|}{%s}'
+                       % writeFEvals2(targets[-1], precision=1, isscientific=True))
+        curline.append(r'\multicolumn{2}{l}{\#succ}')
         table.append(curline)
         extraeol.append('')
 
         curline = [r'ERT$_{\text{best}}$/D']
-        for i in bestalgdata:
+        for i in bestalgdata[0:-1]:
             curline.append(r'\multicolumn{2}{c}{%s}'
                            % writeFEvalsMaxPrec(float(i)/df[0], 2))
+        curline.append(r'\multicolumn{2}{c|}{%s}'
+                       % writeFEvalsMaxPrec(float(bestalgdata[-1])/df[0], 2))
+        tmp = (numpy.isnan(bestalgsucc) == False)
+        curline.append('%d' % numpy.sum(tmp))
+        if tmp.any():
+            curline.append('/%d' % len(tmp))
         #curline.append(curline[0])
         table.append(curline)
-        extraeol.append('')
+        extraeol.append(r'\hline')
 
+        #for i, gna in enumerate(zip((1, 2, 3), ('bla', 'blo', 'bli'))):
+            #print i, gna, gno
+            #set_trace()
         # Format data
-        for algname, entries, irs, line, line2 in zip(algnames, data, dispersion,
-                                                      isBoldArray, isItalArray):
-            curline = [algname]
-            for e, ir, isBold, isItal in zip(entries, irs, line, line2):
+        #if df == (5, 17):
+            #set_trace()
+
+        for algname, entries, irs, line, line2, succ, runs in zip(algnames,
+                   data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns):
+
+            curline = [algname + r'\hspace*{\fill}']
+            for j, tmp in enumerate(zip(entries, irs, line, line2)):
+                alignment = 'c'
+                if j == len(entries) - 1:
+                    alignment = 'c|'
+
+                e, ir, isBold, isItal = tmp
                 # format number e
                 if numpy.isnan(e):
                     #TODO: italics
-                    curline.append(r'\multicolumn{2}{c}{.}')
-                    curline.append('') # empty dispersion measure
+                    curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
                     #TODO: check the first time it's nan
                 else:
                     tmp = writeFEvalsMaxPrec(e, 2, maxfloatrepr=maxfloatrepr)
                     if e >= maxfloatrepr: # either inf or scientific notation
-                        if isItal:
-                            tmp += r'\textit{%s}' % writeFunVal(isItal[0])
+                        if isItal and j == len(entries) - 1:
+                            #tmp += r'\textit{%s}' % writeFunVal(isItal[0])
+                            tmp += r'\textit{%s}' % writeFEvalsMaxPrec(isItal[1], 0)
                         else:
                             if isBold:
                                 tmp = r'\textbf{%s}' % tmp
-                        curline.append(r'\multicolumn{2}{c}{%s}' % tmp)
+                        curline.append(r'\multicolumn{2}{%s}{%s}' % (alignment, tmp))
                     else:
                         tmp2 = tmp.split('.', 1)
                         if len(tmp2) < 2:
@@ -818,11 +846,12 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
                             for i in tmp2:
                                 tmp3.append(r'\textbf{%s}' % i)
                             tmp2 = tmp3
+                        #set_trace()
                         if not numpy.isnan(ir):
                             tmp2[-1] += ('\,(%s)' % writeFEvalsMaxPrec(ir, 2))
-                        else:
-                            if isItal:
-                                tmp2[-1] += (r'\,\textit{%s}' % writeFEvalsMaxPrec(isItal[1], 0))
+                        #else:
+                            #if isItal:
+                                #tmp2[-1] += (r'\,\textit{%s}' % writeFEvalsMaxPrec(isItal[1], 0))
                         curline.extend(tmp2)
                     #if not numpy.isnan(ir):
                         #curline.append('(%s)' % writeFEvalsMaxPrec(ir, 2))
@@ -832,6 +861,8 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
                         #else:
                             #curline.append('')
             #curline.append(curline[0])
+            curline.append('%d' % succ)
+            curline.append('/%d' % runs)
             table.append(curline)
             extraeol.append('')
 

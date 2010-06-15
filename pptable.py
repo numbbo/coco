@@ -119,8 +119,8 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
             for i, ert in enumerate(data):
                 alignment = 'c'
-                #if i == len(data) - 1: # last element
-                    #alignment = 'c|'
+                if i == len(data) - 1: # last element
+                    alignment = 'c|'
 
                 nbstars = 0
                 z, p = testresbestvs1[i]
@@ -215,6 +215,10 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     #else:
                         #tableentry += s
 
+                if dispersion[i] and not numpy.isinf(bestalgdata[i]):
+                    tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
+                    tableentry += ('\,(%s)' % tmp)
+
                 if superscript:
                     s = r'$^{' + superscript + r'}$'
 
@@ -223,9 +227,6 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     else:
                         tableentry += s
 
-                if dispersion[i] and not numpy.isinf(bestalgdata[i]):
-                    tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
-                    tableentry += ('\,(%s)' % tmp)
                 curline.append(tableentry)
 
                 #curline.append(tableentry)
