@@ -165,6 +165,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     alignment = 'c'
                     if i == len(data) - 1: # last element
                         alignment = 'c|'
+
                     if numpy.isinf(bestalgdata[i]): # if the 2009 best did not solve the problem
                         isBold = False
                         if significance0vs1 > 0:
@@ -426,8 +427,9 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         significance0vs1 = int(numpy.ceil(numpy.log10(nbtests * p)))
 
                     alignment = 'c'
-                    #if i == len(data) - 1: # last element
-                        #alignment = 'c|'
+                    if i == len(data) - 1: # last element
+                        alignment = 'c|'
+
                     if numpy.isinf(bestalgdata[i]): # if the 2009 best did not solve the problem
                         isBold = False
                         if significance0vs1 > 0:
