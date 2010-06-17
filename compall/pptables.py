@@ -15,7 +15,7 @@ from bbob_pproc import bestalg, bootstrap
 from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, writeLabels, tableLaTeX
 from bbob_pproc.bootstrap import prctile
 from bbob_pproc.dataoutput import algPlotInfos
-from bbob_pproc.pproc import DataSetList
+from bbob_pproc.pproc import DataSetList, significancetest
 from bbob_pproc.pplogloss import detf
 
 allmintarget = {}
@@ -695,55 +695,77 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
             for f in tmpdictfun:
                 dictData.setdefault((d, f), []).append(tmpdictfun[f])
 
+    nbtests = len(dictData)
+
     for df in dictData:
         # Generate one table per df
-        bestalgentry = bestalg.bestalgentries[df]
-        bestalgdata = bestalgentry.detERT(targets)
-        bestalgsucc = bestalgentry.detEvals((targetf, ))[0][0]
+
+        # best 2009
+        refalgentry = bestalg.bestalgentries[df]
+        refalgert = refalgentry.detERT(targets)
+        refalgevals = (refalgentry.detEvals((targetf, ))[0][0])
+        refalgnbruns = len(refalgevals)
+        refalgnbsucc = numpy.sum(numpy.isnan(refalgevals) == False)
 
         # Process the data
-        data = []
-        dispersion = []
+        # The following variables will be lists of elements each corresponding
+        # to an algorithm
         algnames = []
-        nbsucc = []
-        nbruns = []
-        medmaxevals = [] # divided by Dim
-        medfinalfunvals = []
+        #algdata = []
+        algert = []
+        algevals = []
+        algdisp = []
+        algnbsucc = []
+        algnbruns = []
+        algmedmaxevals = []
+        algmedfinalfunvals = []
+        algtestres = []
+        algentry = []
+
         for entries in dictData[df]:
             assert len(entries) == 1 # TODO: could be 0?
             entry = entries[0]
+            algentry.append(entry)
 
             try:
-                algname = algPlotInfos[(entry.algId, entry.comment)]['label']
+                alg = algPlotInfos[(entry.algId, entry.comment)]['label']
             except KeyError:
-                algname = algentries[0].algId # Take the first reasonable one.
-            algnames.append(writeLabels(algname))
+                alg = algentries[0].algId # Take the first reasonable one.
+            algnames.append(writeLabels(alg))
 
             evals = entry.detEvals(targets)
-            tmpdata = []
+            #tmpdata = []
             tmpdisp = []
+            tmpert = []
             for i, e in enumerate(evals):
                 succ = (numpy.isnan(e) == False)
                 e[succ == False] = entry.maxevals[succ == False]
                 ert = bootstrap.sp(e, issuccessful=succ)[0]
-                tmpdata.append(ert/bestalgdata[i])
-
+                #tmpdata.append(ert/refalgert[i])
                 if succ.any():
                     tmp = bootstrap.drawSP(e[succ], entry.maxevals[succ == False],
                                            [10, 50, 90], samplesize=samplesize)[0]
-                    tmpdisp.append((tmp[-1] - tmp[0])/bestalgdata[i]/2.)
+                    tmpdisp.append((tmp[-1] - tmp[0])/2.)
                 else:
                     tmpdisp.append(numpy.nan)
-            data.append(tmpdata)
-            dispersion.append(tmpdisp)
-            medmaxevals.append(numpy.median(entry.maxevals)/df[0])
-            medfinalfunvals.append(numpy.median(entry.finalfunvals))
+                tmpert.append(ert)
+            algert.append(tmpert)
+            algevals.append(evals)
+            #algdata.append(tmpdata)
+            algdisp.append(tmpdisp)
+            algmedmaxevals.append(numpy.median(entry.maxevals))
+            algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
+            #algmedmaxevals.append(numpy.median(entry.maxevals)/df[0])
+            #algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
+
+            algtestres.append(significancetest(refalgentry, entry, targets))
 
             # determine success probability for Df = 1e-8
             e = entry.detEvals((targetf ,))[0]
-            nbsucc.append(numpy.sum(numpy.isnan(e) == False))
-            nbruns.append(len(e))
+            algnbsucc.append(numpy.sum(numpy.isnan(e) == False))
+            algnbruns.append(len(e))
 
+        # Process over all data
         # find best values...
         if len(dictData[df]) <= 3:
             maxRank = 1
@@ -751,34 +773,29 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
             maxRank = 3
 
         isBoldArray = [] # Point out the best values
-        isItalArray = [] # Store median function values/median number of function evaluations (divided by dim?)
-        tmparray = sortColumns(data, maxRank=3)
-        for i, line in enumerate(data):
+        algfinaldata = [] # Store median function values/median number of function evaluations
+        tmparray = sortColumns(algert, maxRank=3)
+        for i, line in enumerate(algert):
             tmp = []
-            tmp2 = []
             for j, e in enumerate(line):
-                tmp.append(i in tmparray[j] or data[i][j] <= 3.)
-                if numpy.isinf(e) and j == len(line) - 1:
-                    tmp2.append((medfinalfunvals[i], medmaxevals[i]))
-                else:
-                    tmp2.append(None)
+                tmp.append(i in tmparray[j] or algert[i][j] <= 3. * refalgert[j])
             isBoldArray.append(tmp)
-            isItalArray.append(tmp2)
+            algfinaldata.append((algmedfinalfunvals[i], algmedmaxevals[i]))
 
         # Create the table
+        table = []
         spec = r'@{}c@{}|*{%d}{@{}r@{}l@{}}|@{}r@{}@{}l@{}' % (len(targets))
         extraeol = []
 
         # Generate header lines
-        if isBenchmarkinfosFound:
-            header = funInfos[df[1]]
-        else:
-            header = '%d' % df[1]
-
-        table = []
+        #if isBenchmarkinfosFound:
+            #header = funInfos[df[1]]
+        #else:
+            #header = '%d' % df[1]
         #table.append([r'\multicolumn{%d}{c}{{\normalsize \textbf{%s}}}'
                       #% (2 * len(targets) + 2, header)])
         #extraeol.append('')
+
         curline = [r'$\Delta$ftarget']
         for t in targets[0:-1]:
             curline.append(r'\multicolumn{2}{c}{%s}'
@@ -789,16 +806,15 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
         table.append(curline)
         extraeol.append('')
 
-        curline = [r'ERT$_{\text{best}}$/D']
-        for i in bestalgdata[0:-1]:
+        curline = [r'ERT$_{\text{best}}$']
+        for i in refalgert[0:-1]:
             curline.append(r'\multicolumn{2}{c}{%s}'
-                           % writeFEvalsMaxPrec(float(i)/df[0], 2))
+                           % writeFEvalsMaxPrec(float(i), 2))
         curline.append(r'\multicolumn{2}{c|}{%s}'
-                       % writeFEvalsMaxPrec(float(bestalgdata[-1])/df[0], 2))
-        tmp = (numpy.isnan(bestalgsucc) == False)
-        curline.append('%d' % numpy.sum(tmp))
-        if tmp.any():
-            curline.append('/%d' % len(tmp))
+                       % writeFEvalsMaxPrec(float(refalgert[-1]), 2))
+        curline.append('%d' % refalgnbsucc)
+        if refalgnbsucc:
+            curline.append('/%d' % refalgnbruns)
         #curline.append(curline[0])
         table.append(curline)
         extraeol.append(r'\hline')
@@ -810,30 +826,40 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
         #if df == (5, 17):
             #set_trace()
 
-        for algname, entries, irs, line, line2, succ, runs in zip(algnames,
-                   data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns):
+        for i, alg in enumerate(algnames):
+        #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
+                   #data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
+            curline = [alg + r'\hspace*{\fill}']
 
-            curline = [algname + r'\hspace*{\fill}']
-            for j, tmp in enumerate(zip(entries, irs, line, line2)):
+            for j, tmp in enumerate(zip(algert[i], algdisp[i],
+                                        isBoldArray[i], algtestres[i])):
+                ert, dispersion, isBold, testres = tmp
+
                 alignment = 'c'
-                if j == len(entries) - 1:
+                if j == len(algert[i]) - 1:
                     alignment = 'c|'
 
-                e, ir, isBold, isItal = tmp
-                # format number e
-                if numpy.isnan(e):
-                    #TODO: italics
+                data = ert/refalgert[j]
+
+                # format number in variable data
+                if numpy.isnan(data):
                     curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
-                    #TODO: check the first time it's nan
                 else:
-                    tmp = writeFEvalsMaxPrec(e, 2, maxfloatrepr=maxfloatrepr)
-                    if e >= maxfloatrepr: # either inf or scientific notation
-                        if isItal and j == len(entries) - 1:
-                            #tmp += r'\textit{%s}' % writeFunVal(isItal[0])
-                            tmp += r'\textit{%s}' % writeFEvalsMaxPrec(isItal[1], 0)
+                    if numpy.isinf(refalgert[j]):
+                        curline.append(r'\multicolumn{2}{%s}{\textbf{%s}\,(%s)}'
+                                       % (alignment,
+                                          writeFEvalsMaxPrec(algert[i][j], 2),
+                                          dispersion))
+                        continue
+
+                    tmp = writeFEvalsMaxPrec(data, 2, maxfloatrepr=maxfloatrepr)
+                    if data >= maxfloatrepr: # either inf or scientific notation
+                        if numpy.isinf(data) and j == len(algert[i]) - 1:
+                            tmp += r'\,\textit{%s}' % writeFEvalsMaxPrec(algfinaldata[i][1], 0)
                         else:
                             if isBold:
                                 tmp = r'\textbf{%s}' % tmp
+
                         curline.append(r'\multicolumn{2}{%s}{%s}' % (alignment, tmp))
                     else:
                         tmp2 = tmp.split('.', 1)
@@ -843,26 +869,43 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
                             tmp2[-1] = '.' + tmp2[-1]
                         if isBold:
                             tmp3 = []
-                            for i in tmp2:
-                                tmp3.append(r'\textbf{%s}' % i)
+                            for k in tmp2:
+                                tmp3.append(r'\textbf{%s}' % k)
                             tmp2 = tmp3
-                        #set_trace()
-                        if not numpy.isnan(ir):
-                            tmp2[-1] += ('\,(%s)' % writeFEvalsMaxPrec(ir, 2))
-                        #else:
-                            #if isItal:
-                                #tmp2[-1] += (r'\,\textit{%s}' % writeFEvalsMaxPrec(isItal[1], 0))
+                        if not numpy.isnan(dispersion):
+                            tmp2[-1] += ('\,(%s)' % writeFEvalsMaxPrec(dispersion/refalgert[j], 2))
+
+                        #if df == (20, 15) and alg == 'cmaes V3.40.beta':
+                            #set_trace()
+                        z, p = testres
+                        if data < 1. and not numpy.isinf(refalgert[j]):
+                            tmpevals = algevals[i][j].copy()
+                            tmpevals[numpy.isnan(tmpevals)] = algentry[i].maxevals[numpy.isnan(tmpevals)]
+                            bestevals = refalgentry.detEvals([targets[j]])
+                            bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
+                            try:
+                                bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
+                            except KeyError:
+                                set_trace()
+                            tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
+                            bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
+
+                        #The conditions are now that ERT < ERT_best and
+                        # all(sorted(FEvals_best) > sorted(FEvals_current)).
+                        if ((nbtests * p) < 0.05 and data < 1.
+                            and z < 0.
+                            and (numpy.isinf(refalgert[j])
+                                 or all(tmpevals < bestevals))):
+                            nbstars = -numpy.ceil(numpy.log10(nbtests * p))
+                            superscript = r'\downarrow' #* nbstars
+                            if nbstars > 1:
+                                superscript += str(int(nbstars))
+                            tmp2[-1] += r'$^{%s}$' % superscript
+
                         curline.extend(tmp2)
-                    #if not numpy.isnan(ir):
-                        #curline.append('(%s)' % writeFEvalsMaxPrec(ir, 2))
-                    #else:
-                        #if isItal:
-                            #curline.append(r'\textit{%s}' % writeFEvalsMaxPrec(isItal[1], 0))
-                        #else:
-                            #curline.append('')
-            #curline.append(curline[0])
-            curline.append('%d' % succ)
-            curline.append('/%d' % runs)
+
+            curline.append('%d' % algnbsucc[i])
+            curline.append('/%d' % algnbruns[i])
             table.append(curline)
             extraeol.append('')
 

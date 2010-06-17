@@ -251,8 +251,13 @@ def main(argv=None):
             print "ECDFs of ERT figures done."
 
         if isTab:
-            dsListperAlg = list(dictAlg[i] for i in sortedAlgs)
-            pptables.tablemanyalgonefunc2(dsListperAlg, inset.tableconstant_target_function_values, outputdir)
+            dictNoi = pproc.dictAlgByNoi(dictAlg)
+            for ng, tmpdictAlg in dictNoi.iteritems():
+                dictDim = pproc.dictAlgByDim(tmpdictAlg)
+                for d, entries in dictDim.iteritems():
+                    dsListperAlg = list(entries[i] for i in sortedAlgs)
+                    pptables.tablemanyalgonefunc2(dsListperAlg,
+                         inset.tableconstant_target_function_values, outputdir)
             print "Comparison tables done."
 
         plt.rcdefaults()
