@@ -231,7 +231,7 @@ def main(argv=None):
             for ng, tmpdictAlg in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
-                    ppperfprof.main2(entries, target=inset.summarized_target_function_values,
+                    ppperfprof.main2(entries, inset.summarized_target_function_values,
                                      order=sortedAlgs,
                                      plotArgs=algPlotInfos,
                                      outputdir=outputdir,
@@ -242,7 +242,7 @@ def main(argv=None):
             for fg, tmpdictAlg in dictFG.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
-                    ppperfprof.main2(entries, target=inset.summarized_target_function_values,
+                    ppperfprof.main2(entries, inset.summarized_target_function_values,
                                      order=sortedAlgs,
                                      plotArgs=algPlotInfos,
                                      outputdir=outputdir,

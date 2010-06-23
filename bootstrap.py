@@ -214,7 +214,6 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
        unexpected results.
     """
 
-    set_trace()
     arrStats = []
     N = len(data)
     adata = numpy.array(data)  # more efficient indexing
