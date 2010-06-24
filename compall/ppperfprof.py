@@ -74,7 +74,7 @@ funisep = [1,2,5]
 #'avg NEWUOA', 'NEWUOA', 'full NEWUOA', 'BFGS', 'MCS (Neum)', 'GLOBAL', 'NELDER (Han)',
 #'NELDER (Doe)', 'Monte Carlo') # ()==all
 show_algorithms = ()
-function_IDs = () # range(1,200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
+function_IDs = range(1,200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 # function_IDs = range(101,199)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 # function_IDs = funi # fmulti  # range(103, 131, 3)   # displayed functions
 #function_IDs = [1,2,3,4,5] # separable functions
