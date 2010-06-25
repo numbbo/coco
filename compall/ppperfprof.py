@@ -84,6 +84,7 @@ function_IDs = range(1,200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 1
 #function_IDs = [20,21,22,23,24] # weak structure functions
 #function_IDs = range(122,131)  # noise-free testbed
 #function_IDs = range(101,131) # noisy testbed
+function_IDs = ()
 
 x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 x_annote_factor = 90 # make space for right-hand legend
@@ -92,7 +93,7 @@ save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
 dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 
-nbperdecade = 5
+nbperdecade = 3
 
 styles = [{'marker': 'o', 'linestyle': '-', 'color': 'b'},
           {'marker': 'v', 'linestyle': '-', 'color': 'g'},
@@ -199,7 +200,7 @@ def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
         y2 = numpy.hstack([0.0,
                            numpy.repeat(y / float(nn), 2)])
 
-        if 1 < 3:
+        if 11 < 3:
             # Downsampling
             # first try to downsample for reduced figure size, is not effective while reducing dvi is
             idx = range(0, len(x2), 2*perfprofsamplesize)
@@ -208,6 +209,8 @@ def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
             x2 = x2[idx]
             y2 = y2[idx]
 
+        if not 'markeredgecolor' in kwargs and 'color' in kwargs:
+            kwargs['markeredgecolor'] = kwargs['color']
         res = plt.plot(x2, y2, **kwargs)
         if maxevals: # Should cover the case where maxevals is None or empty
             x3 = numpy.median(maxevals)
@@ -272,10 +275,15 @@ def plotPerfProf2(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
 
         x2bis, y2bis = downsample(x2, y2)
         kwargs2bis = kwargs.copy()
+        for attr in ('markeredgewidth', 'markerfacecolor', 'markeredgecolor',
+                     'markersize'):
+            kwargs2bis[attr] = plt.getp(res[0], attr) # TODO: check len(res) is 1
         kwargs2bis['ls'] = ''
+        kwargs2bis['linestyle'] = ''
         res.extend(plt.plot(x2bis, y2bis, **kwargs2bis))
-
+        #res = plt.plot(x2bis, y2bis, **kwargs2bis)
         #set_trace()
+
         if maxevals: # Should cover the case where maxevals is None or empty
             x3 = numpy.median(maxevals)
             if x3 <= maxval and numpy.any(x2 <= x3) and plt.getp(res[0], 'color') is not 'wheat':
@@ -322,8 +330,12 @@ def plotLegend(handles, maxval):
                                  'markeredgewidth', 'markerfacecolor',
                                  'markeredgecolor', 'markersize'):
                         tmp[attr] = plt.getp(h, attr)
-                    plt.plot((maxval, maxval*10), (j, y),
+                    legx = maxval * 10
+                    if 'marker' in attr:
+                        legx = maxval * 9
+                    plt.plot((maxval, legx), (j, y),
                              color=plt.getp(h, 'markeredgecolor'), ls='-', **tmp)
+
                     plt.text(maxval*11, y,
                              plt.getp(h, 'label'), horizontalalignment="left",
                              verticalalignment="center")
@@ -373,7 +385,7 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
     d = d.pop()
 
     for f, tmpdictAlg in dictFunc.iteritems():
-        if f not in function_IDs:
+        if function_IDs and f not in function_IDs:
             continue
 
         for j, t in enumerate(target):
@@ -436,15 +448,15 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
 
         CrE = 0
         # need to know noisy or non-noisy functions here!
-        if max(function_IDs) < 100:  # non-noisy functions
+        if function_IDs and max(function_IDs) < 100:  # non-noisy functions
             if alg[-6:] == 'GLOBAL' and len(function_IDs) > 5:
                 CrE = 0.5117
                 # print 'GLOBAL corrected'
-        elif min(function_IDs) > 100 :  # noisy functions
+        elif function_IDs and min(function_IDs) > 100 :  # noisy functions
             if alg[-6:] == 'GLOBAL'  and len(function_IDs) > 5:
                 CrE = 0.6572
         else:
-            pass 
+            pass
             # print 'mixing noisy and non-noisy functions will yield questionable results'
 
         #Get one element in the set of the algorithm description
@@ -556,8 +568,7 @@ def main2(dictAlg, targets, order=None, plotArgs={}, outputdir='',
     bestERT = [] # best ert per function
     funcsolved = [set()] * len(targets) # number of functions solved per target
     for f, dictAlgperFunc in dictFunc.iteritems():
-        # TODO: this is not really necessary...
-        if f not in function_IDs:
+        if function_IDs and f not in function_IDs:
             continue
 
         for j, t in enumerate(targets):
@@ -602,9 +613,9 @@ def main2(dictAlg, targets, order=None, plotArgs={}, outputdir='',
                                   #CrE=CrE, kwargs=get_plot_args(tmp)))
         #if not args.has_key('label') or args['label'] in show_algorithms:
         args = styles[i]
-        args['linewidth'] = 2
+        args['linewidth'] = 1.5
         args['markersize'] = 10
-        args['markeredgewidth'] = 2
+        args['markeredgewidth'] = 1.5
         args['markerfacecolor'] = 'None'
         args['markeredgecolor'] = args['color']
         args['label'] = alg

@@ -305,11 +305,11 @@ def main(argv=None):
             if verbose:
                 print 'Folder %s was created.' % (outputdir)
 
-        plt.rc("axes", labelsize=24, titlesize=24)
-        plt.rc("xtick", labelsize=20)
-        plt.rc("ytick", labelsize=20)
-        plt.rc("font", size=20)
-        plt.rc("legend", fontsize=20)
+        plt.rc("axes", labelsize='medium', titlesize='large')
+        plt.rc("xtick", labelsize='medium')
+        plt.rc("ytick", labelsize='medium')
+        plt.rc("font", size=12.0)
+        plt.rc("legend", fontsize='large')
 
         # Performance profiles
         if isPer:
