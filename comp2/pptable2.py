@@ -260,7 +260,6 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         if nbstars > 1:
                             superscript += str(int(nbstars))
 
-                    addition = '' 
                     if superscript or significance0vs1:
                         s = ''
                         if significance0vs1 > 0:
@@ -441,9 +440,10 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             if isBold:
                                 tmp = r'\textbf{%s}' % tmp
 
+                        if dispersion[i] and numpy.isfinite(dispersion[i]):
+                            tmp += '\,(%s)' % writeFEvalsMaxPrec(dispersion[i], 2)
                         tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                       % (alignment, tmp))
-                        # TODO: is this the desired behaviour?
                     else:
                         # Formatting
                         tmp = float(j)/bestalgdata[i]
@@ -465,13 +465,18 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                                 tableentry = r'\textbf{%s}' % tableentry
                             elif 11 < 3 and significance0vs1 < 0:
                                 tableentry = r'\textit{%s}' % tableentry
+                            if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
+                                tableentry += '\,(%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
+
                         elif tableentry.find('e') > -1 or (numpy.isinf(tmp) and i != len(data) - 1):
                             if isBold:
                                 tableentry = r'\textbf{%s}' % tableentry
                             elif 11 < 3 and significance0vs1 < 0:
                                 tableentry = r'\textit{%s}' % tableentry
+                            if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
+                                tableentry += '\,(%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
                         else:
@@ -483,6 +488,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             tableentry = ' & .'.join(tmp)
                             if len(tmp) == 1:
                                 tableentry += '&'
+                            if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
+                                tableentry += '\,(%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
 
                     superscript = ''
 
@@ -518,7 +525,6 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         if nbstars > 1:
                             superscript += str(int(nbstars))
 
-                    addition = '' 
                     if superscript or significance0vs1:
                         s = ''
                         if significance0vs1 > 0:
@@ -532,9 +538,6 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         else:
                             tableentry += s
 
-                    if dispersion[i] and not numpy.isinf(bestalgdata[i]):
-                        tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
-                        tableentry += ('\,(%s)' % tmp)
                     curline.append(tableentry)
 
                     #curline.append(tableentry)

@@ -153,9 +153,11 @@ def cite(algName, isNoisefree, isNoisy):
             res.append("DBLP:conf/gecco/Garcia-MartinezL09a")
 
     if res:
-        res = ', '.join(res)
+        res = r"\cite{%s}" % (", ".join(res))
+        #set_trace()
     else:
-        res = "add_an_entry_for_%s_in_bbob.bib" % algName
+        #res = r"\cite{add_an_entry_for_%s_in_bbob.bib}" % algName
+        res = ""
     return res
 
 
@@ -657,9 +659,9 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
 
                     if i in boldface[j] or line[j] < 3:
                         tmp = r'\textbf{' + tmp + '}'
-                    tmpstr += ' & ' + tmp
+                    tmpstr += r' & ' + tmp
                 # Repeated algorithm name.
-                tmpstr += ' & %s \cite{%s}' % (algnames[i], cite(algnames[i],
+                tmpstr += r' & %s %s' % (algnames[i], cite(algnames[i],
                                                    isFunNoisefree, isFunNoisy))
 
                 lines.append(tmpstr)
@@ -673,7 +675,7 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
             f.write('\n'.join(lines) + '\n')
             f.close()
 
-def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
+def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.'):
     """Generate one table per function showing results of multiple algorithms.
 
     Difference with the first version:
@@ -688,6 +690,7 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
 
     # Sort data per dimension and function
     dictData = {}
+    dsListperAlg = list(dictAlg[i] for i in sortedAlgs)
     for entries in dsListperAlg:
         tmpdictdim = entries.dictByDim()
         for d in tmpdictdim:
@@ -722,16 +725,12 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
         algtestres = []
         algentry = []
 
-        for entries in dictData[df]:
+        for n, entries in enumerate(dictData[df]):
             assert len(entries) == 1 # TODO: could be 0?
             entry = entries[0]
             algentry.append(entry)
 
-            try:
-                alg = algPlotInfos[(entry.algId, entry.comment)]['label']
-            except KeyError:
-                alg = algentries[0].algId # Take the first reasonable one.
-            algnames.append(writeLabels(alg))
+            algnames.append(sortedAlgs[n][0:5]) # TODO: check
 
             evals = entry.detEvals(targets)
             #tmpdata = []
@@ -798,19 +797,19 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
 
         curline = [r'$\Delta$ftarget']
         for t in targets[0:-1]:
-            curline.append(r'\multicolumn{2}{c}{%s}'
+            curline.append(r'\multicolumn{2}{@{}c@{}}{%s}'
                            % writeFEvals2(t, precision=1, isscientific=True))
-        curline.append(r'\multicolumn{2}{c|}{%s}'
+        curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
                        % writeFEvals2(targets[-1], precision=1, isscientific=True))
-        curline.append(r'\multicolumn{2}{l}{\#succ}')
+        curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
         table.append(curline)
         extraeol.append('')
 
         curline = [r'ERT$_{\text{best}}$']
         for i in refalgert[0:-1]:
-            curline.append(r'\multicolumn{2}{c}{%s}'
+            curline.append(r'\multicolumn{2}{@{}c@{}}{%s}'
                            % writeFEvalsMaxPrec(float(i), 2))
-        curline.append(r'\multicolumn{2}{c|}{%s}'
+        curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
                        % writeFEvalsMaxPrec(float(refalgert[-1]), 2))
         curline.append('%d' % refalgnbsucc)
         if refalgnbsucc:
@@ -829,15 +828,15 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
         for i, alg in enumerate(algnames):
         #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
                    #data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
-            curline = [alg + r'\hspace*{\fill}']
+            curline = [writeLabels(alg) + r'\hspace*{\fill}']
 
             for j, tmp in enumerate(zip(algert[i], algdisp[i],
                                         isBoldArray[i], algtestres[i])):
                 ert, dispersion, isBold, testres = tmp
 
-                alignment = 'c'
+                alignment = '@{}c@{}'
                 if j == len(algert[i]) - 1:
-                    alignment = 'c|'
+                    alignment = '@{}c@{}|'
 
                 data = ert/refalgert[j]
 
@@ -860,7 +859,12 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
                             if isBold:
                                 tmp = r'\textbf{%s}' % tmp
 
-                        curline.append(r'\multicolumn{2}{%s}{%s}' % (alignment, tmp))
+                        if not numpy.isnan(dispersion):
+                            curline.append(r'\multicolumn{2}{%s}{%s\,(%s)}'
+                                           % (alignment, tmp, dispersion))
+                        else:
+                            curline.append(r'\multicolumn{2}{%s}{%s}'
+                                           % (alignment, tmp))
                     else:
                         tmp2 = tmp.split('.', 1)
                         if len(tmp2) < 2:
@@ -875,18 +879,13 @@ def tablemanyalgonefunc2(dsListperAlg, targets, outputdir='.'):
                         if not numpy.isnan(dispersion):
                             tmp2[-1] += ('\,(%s)' % writeFEvalsMaxPrec(dispersion/refalgert[j], 2))
 
-                        #if df == (20, 15) and alg == 'cmaes V3.40.beta':
-                            #set_trace()
                         z, p = testres
                         if data < 1. and not numpy.isinf(refalgert[j]):
                             tmpevals = algevals[i][j].copy()
                             tmpevals[numpy.isnan(tmpevals)] = algentry[i].maxevals[numpy.isnan(tmpevals)]
                             bestevals = refalgentry.detEvals([targets[j]])
                             bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
-                            try:
-                                bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
-                            except KeyError:
-                                set_trace()
+                            bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
                             tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
                             bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
 

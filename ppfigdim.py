@@ -100,6 +100,10 @@ def beautify(title='', legend=True):
 
     # Legend
     if legend:
+        #handles, labels = axisHandle.get_legend_handles_labels()
+        #only compatible v0.99.3
+        # reverse the order
+        #axisHandle.legend(handles[::-1], labels[::-1], loc='best')
         plt.legend(loc='best')
     axisHandle.set_title(title)
 
@@ -162,6 +166,10 @@ def beautify2(title='', legend=True):
 
     # Legend
     if legend:
+        #handles, labels = axisHandle.get_legend_handles_labels()
+        # only compatible v0.99
+        # reverse the order
+        #axisHandle.legend(handles[::-1], labels[::-1], loc='best')
         plt.legend(loc="best")
     axisHandle.set_title(title)
 
@@ -327,7 +335,8 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
             if succ:
                 tmp = numpy.vstack(succ)
                 #ERT
-                plt.plot(tmp[:, 0], tmp[:,1]/tmp[:, 0], markersize=20, **styles[i])
+                plt.plot(tmp[:, 0], tmp[:,1]/tmp[:, 0], markersize=20,
+                         **styles[i])
                 #median
                 #plt.plot(tmp[:, 0], tmp[:,-1]/tmp[:, 0], color=styles[i]['color'],
                          #linestyle='', marker='+', markersize=30,
