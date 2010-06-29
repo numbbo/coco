@@ -5,7 +5,9 @@
 
 from operator import itemgetter
 from itertools import groupby
+import numpy
 from matplotlib import pyplot as plt
+from pdb import set_trace
 
 def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
     """Save figure into a file.
@@ -30,6 +32,59 @@ def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
                     print 'Wrote figure in %s.' %(filename + '.' + entry)
             except IOError:
                 warnings.warn('%s is not writeable.' % (filename + '.' + entry))
+
+def plotUnifLogXMarkers(x, y, nbperdecade, kwargs={}):
+    """Proxy plot function: puts markers regularly spaced on the x-scale.
+
+    This method generates plots with markers regularly spaced on the x-scale
+    whereas the matplotlib.pyplot.plot function will put markers on data
+    points.
+
+    This method outputs a list of three lines.Line2D objects: the first with
+    the line style, the second for the markers and the last for the label.
+    """
+
+    res = plt.plot(x, y, **kwargs)
+
+    def downsample(xdata, ydata):
+        """Downsample arrays of data, zero-th column elements are evenly spaced."""
+
+        # powers of ten 10**(i/nbperdecade)
+        minidx = numpy.ceil(numpy.log10(xdata[0]) * nbperdecade)
+        maxidx = numpy.floor(numpy.log10(xdata[-1]) * nbperdecade)
+        alignmentdata = 10.**(numpy.arange(minidx, maxidx)/nbperdecade)
+        # Look in the original data
+        res = []
+        for i in alignmentdata:
+            res.append(ydata[xdata <= i][-1])
+
+        return alignmentdata, res
+
+    x2 = ()
+    y2 = ()
+    if 'marker' in kwargs:
+        x2, y2 = downsample(x, y)
+        res2 = plt.plot(x2, y2, **kwargs)
+        for attr in ('linestyle', 'marker', 'markeredgewidth',
+                     'markerfacecolor', 'markeredgecolor',
+                     'markersize', 'color', 'linewidth', 'markeredgewidth'):
+            plt.setp(res2, attr, plt.getp(res[0], attr))
+        plt.setp(res2, linestyle='', label='')
+        res.extend(res2)
+
+    if 'label' in kwargs:
+        if len(x2) > 0 and len(y2) > 0:
+            res3 = plt.plot((x2[0], ), (y2[0], ), **kwargs)
+        else:
+            res3 = plt.plot((x[0], ), (y[0], ), **kwargs)
+        for attr in ('linestyle', 'marker', 'markeredgewidth',
+                     'markerfacecolor', 'markeredgecolor',
+                     'markersize', 'color', 'linewidth', 'markeredgewidth'):
+            plt.setp(res3, attr, plt.getp(res[0], attr))
+        res.extend(res3)
+
+    plt.setp(res[0], marker='', label='')
+    return res
 
 def consecutiveNumbers(data):
     """Find runs of consecutive numbers using groupby.

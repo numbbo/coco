@@ -255,8 +255,8 @@ def main(argv=None):
             for ng, tmpdictAlg in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
-                    dsListperAlg = list(entries[i] for i in sortedAlgs)
-                    pptables.tablemanyalgonefunc2(dsListperAlg,
+                    #dsListperAlg = list(entries[i] for i in sortedAlgs)
+                    pptables.tablemanyalgonefunc2(entries, sortedAlgs,
                          inset.tableconstant_target_function_values, outputdir)
             print "Comparison tables done."
 

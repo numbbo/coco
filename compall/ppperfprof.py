@@ -13,7 +13,7 @@ import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
 from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
-from bbob_pproc.ppfig import saveFigure
+from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
@@ -88,6 +88,7 @@ function_IDs = ()
 
 x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 x_annote_factor = 90 # make space for right-hand legend
+fontsize = 10.0 # default setting, is modified in genericsettings.py
 
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
@@ -96,23 +97,22 @@ dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 
 nbperdecade = 3
 
 styles = [{'marker': 'o', 'linestyle': '-', 'color': 'b'},
-          {'marker': 'v', 'linestyle': '-', 'color': 'g'},
-          {'marker': '^', 'linestyle': '-', 'color': 'r'},
+          {'marker': '+', 'linestyle': '-', 'color': 'g'},
+          {'marker': 'd', 'linestyle': '-', 'color': 'r'},
+          {'marker': 's', 'linestyle': '-', 'color': 'c'},
+          {'marker': 'v', 'linestyle': '-', 'color': 'm'},
+          {'marker': '*', 'linestyle': '-', 'color': 'y'},
+          {'marker': 'h', 'linestyle': '-', 'color': 'k'},
+          {'marker': '^', 'linestyle': '-', 'color': 'b'},
+          {'marker': 'p', 'linestyle': '-', 'color': 'g'},
+          {'marker': 'H', 'linestyle': '-', 'color': 'r'},
           {'marker': '<', 'linestyle': '-', 'color': 'c'},
-          {'marker': '>', 'linestyle': '-', 'color': 'm'},
-          {'marker': '1', 'linestyle': '-', 'color': 'y'},
-          {'marker': '2', 'linestyle': '-', 'color': 'k'},
-          {'marker': '3', 'linestyle': '-', 'color': 'b'},
-          {'marker': '4', 'linestyle': '-', 'color': 'g'},
-          {'marker': 's', 'linestyle': '-', 'color': 'r'},
-          {'marker': 'p', 'linestyle': '-', 'color': 'c'},
-          {'marker': '*', 'linestyle': '-', 'color': 'm'},
-          {'marker': 'h', 'linestyle': '-', 'color': 'y'},
-          {'marker': 'H', 'linestyle': '-', 'color': 'k'},
-          {'marker': '+', 'linestyle': '-', 'color': 'b'},
-          {'marker': 'x', 'linestyle': '-', 'color': 'g'},
-          {'marker': 'D', 'linestyle': '-', 'color': 'r'},
-          {'marker': 'd', 'linestyle': '-', 'color': 'c'}]
+          {'marker': 'D', 'linestyle': '-', 'color': 'm'},
+          {'marker': '>', 'linestyle': '-', 'color': 'y'},
+          {'marker': '1', 'linestyle': '-', 'color': 'k'},
+          {'marker': '2', 'linestyle': '-', 'color': 'b'},
+          {'marker': '3', 'linestyle': '-', 'color': 'g'},
+          {'marker': '4', 'linestyle': '-', 'color': 'r'}]
 #'-'     solid line style
 #'--'    dashed line style
 #'-.'    dash-dot line style
@@ -269,20 +269,7 @@ def plotPerfProf2(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
         y2 = numpy.hstack([0.0,
                            numpy.repeat(y / float(nn), 2)])
 
-        kwargs2 = kwargs.copy()
-        kwargs2['marker'] = ''
-        res = plt.plot(x2, y2, **kwargs2)
-
-        x2bis, y2bis = downsample(x2, y2)
-        kwargs2bis = kwargs.copy()
-        for attr in ('markeredgewidth', 'markerfacecolor', 'markeredgecolor',
-                     'markersize'):
-            kwargs2bis[attr] = plt.getp(res[0], attr) # TODO: check len(res) is 1
-        kwargs2bis['ls'] = ''
-        kwargs2bis['linestyle'] = ''
-        res.extend(plt.plot(x2bis, y2bis, **kwargs2bis))
-        #res = plt.plot(x2bis, y2bis, **kwargs2bis)
-        #set_trace()
+        res = plotUnifLogXMarkers(x2, y2, nbperdecade, kwargs)
 
         if maxevals: # Should cover the case where maxevals is None or empty
             x3 = numpy.median(maxevals)
@@ -302,9 +289,14 @@ def plotLegend(handles, maxval):
     ys = {}
     lh = 0
     for h in handles:
+        x2 = []
+        y2 = []
+        for i in h:
+            x2.append(plt.getp(i, "xdata"))
+            y2.append(plt.getp(i, "ydata"))
+        x2 = numpy.sort(numpy.hstack(x2))
+        y2 = numpy.sort(numpy.hstack(y2))
         h = h[-1]
-        x2 = plt.getp(h, "xdata")
-        y2 = plt.getp(h, "ydata")
         try:
             tmp = sum(x2 <= maxval) - 1
             x2bis = x2[sum(y2 < y2[tmp]) - 1]
@@ -326,7 +318,7 @@ def plotLegend(handles, maxval):
                      plt.getp(h, 'label') in show_algorithms)):
                     y = 0.02 + i * 0.96/(lh-1)
                     tmp = {}
-                    for attr in ('lw', 'marker',
+                    for attr in ('lw', 'ls', 'marker',
                                  'markeredgewidth', 'markerfacecolor',
                                  'markeredgecolor', 'markersize'):
                         tmp[attr] = plt.getp(h, attr)
@@ -334,11 +326,12 @@ def plotLegend(handles, maxval):
                     if 'marker' in attr:
                         legx = maxval * 9
                     plt.plot((maxval, legx), (j, y),
-                             color=plt.getp(h, 'markeredgecolor'), ls='-', **tmp)
+                             color=plt.getp(h, 'markeredgecolor'), **tmp)
 
                     plt.text(maxval*11, y,
                              plt.getp(h, 'label'), horizontalalignment="left",
-                             verticalalignment="center")
+                             verticalalignment="center", size=fontsize)
+                    #set_trace()
                     i += 1
 
     #plt.axvline(x=maxval, color='k') # Not as efficient?
@@ -612,9 +605,9 @@ def main2(dictAlg, targets, order=None, plotArgs={}, outputdir='',
         #lines.append(plotPerfProf(numpy.array(data), xlim, maxevals,
                                   #CrE=CrE, kwargs=get_plot_args(tmp)))
         #if not args.has_key('label') or args['label'] in show_algorithms:
-        args = styles[i]
+        args = styles[i % len(styles)]
         args['linewidth'] = 1.5
-        args['markersize'] = 10
+        args['markersize'] = 15.
         args['markeredgewidth'] = 1.5
         args['markerfacecolor'] = 'None'
         args['markeredgecolor'] = args['color']
