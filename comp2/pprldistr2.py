@@ -9,12 +9,28 @@ import os
 import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap
-from bbob_pproc.ppfig import saveFigure, consecutiveNumbers
+from bbob_pproc.ppfig import saveFigure, consecutiveNumbers, plotUnifLogXMarkers
 from pdb import set_trace
 
 #__all__ = []
 
 rldColors = ('k', 'c', 'm', 'r', 'k', 'c', 'm', 'r', 'k', 'c', 'm', 'r')
+rldStyles = ({'color': 'k'},
+             {'color': 'c', 'marker': 'o', 'markersize': 10.,
+              'markeredgewidth': 3., 'markeredgecolor': 'c',
+              'markerfacecolor': 'None'},
+             {'color': 'm'},
+             {'color': 'r', 'marker': '*', 'markersize': 10.,
+              'markeredgewidth': 3., 'markeredgecolor': 'r',
+              'markerfacecolor': 'None'},
+             {'color': 'k'},
+             {'color': 'c'},
+             {'color': 'm'},
+             {'color': 'r'},
+             {'color': 'k'},
+             {'color': 'c'},
+             {'color': 'm'},
+             {'color': 'r'})
 rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  # should not be too short
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 # Used as a global to store the largest xmax and align the FV ECD figures.
@@ -311,7 +327,8 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
         #xbound = max(abs(numpy.floor(numpy.log10(x[0]))),
         #             abs(numpy.ceil(numpy.log10(x[-1]))))
         if len(x) == 0:
-            res.append(plt.axhline(tmp/float(n), label=label, color=rldColors[i], linewidth=3))
+            res.append(plt.axhline(tmp/float(n), label=label, 
+                                   linewidth=3., **rldStyles[i]))
             # tmp/float(n) == (n-tmp2)/float(n) # TODO: check
         else:
             x2 = numpy.hstack([numpy.repeat(x, 2)])
@@ -319,7 +336,11 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
             y2 = numpy.hstack([tmp/float(n),
                                numpy.repeat(numpy.arange(tmp+1, n-tmp2) / float(n), 2),
                                (n-tmp2)/float(n)])
-            res.extend(plt.plot(x2, y2, label=label, color=rldColors[i], linewidth=3))
+            #res.extend(plt.plot(x2, y2, label=label, linewidth=3., **rldStyles[i]))
+            plotArgs = rldStyles[i].copy()
+            plotArgs['label'] = label
+            plotArgs['linewidth'] = 3.
+            res.extend(plotUnifLogXMarkers(x2, y2, 3, plotArgs))
 
         # TODO: check if all of evalsX[func] is numpy.inf and so on...
 
@@ -551,7 +572,7 @@ def main2(dsList0, dsList1, valuesOfInterest=None,
     figureName = os.path.join(outputdir,'pplogabs_%s' %(info))
 
     handles = plotLogAbs2(dsList0, dsList1,
-                      valuesOfInterest, verbose=verbose)
+                          valuesOfInterest, verbose=verbose)
 
     beautify2(handles)
 

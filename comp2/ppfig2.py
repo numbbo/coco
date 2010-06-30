@@ -32,17 +32,17 @@ from bbob_pproc.ppfig import saveFigure
 # markers = ('o', 'v', 's', '+', 'x', 'D')
 colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
-styles = [{'color': 'c', 'marker': 'o', 'markeredgecolor': 'c',
+styles = [{'color': 'c', 'marker': '+', 'markeredgecolor': 'c',
            'markerfacecolor': 'None'},
           {'color': 'g', 'marker': 'v', 'markeredgecolor': 'g',
            'markerfacecolor': 'None'},
-          {'color': 'b', 'marker': 's', 'markeredgecolor': 'b',
+          {'color': 'b', 'marker': '*', 'markeredgecolor': 'b',
            'markerfacecolor': 'None'},
-          {'color': 'k', 'marker': '+', 'markeredgecolor': 'k',
+          {'color': 'k', 'marker': 'o', 'markeredgecolor': 'k',
            'markerfacecolor': 'None'},
-          {'color': 'r', 'marker': 'x', 'markeredgecolor': 'r',
+          {'color': 'r', 'marker': 's', 'markeredgecolor': 'r',
            'markerfacecolor': 'None'},
-          {'color': 'm', 'marker': 'd', 'markeredgecolor': 'm',
+          {'color': 'm', 'marker': 'D', 'markeredgecolor': 'm',
            'markerfacecolor': 'None'},
           {'color': 'k'},
           {'color': 'y'},
@@ -50,6 +50,9 @@ styles = [{'color': 'c', 'marker': 'o', 'markeredgecolor': 'c',
           {'color': 'c'},
           {'color': 'r'},
           {'color': 'm'}]
+#from scatter
+#colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
+#markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 linewidth = 3
 offset = 0.005
 incrstars = 1.5
@@ -658,14 +661,14 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
                      markersize=3*linewidth, **styles[i])
 
             # marker for when the first algorithm stop
-            plt.plot((dataofinterest[idx, 0][0], ), (ydata[0], ), marker='D',
+            plt.plot((dataofinterest[idx, 0][0], ), (ydata[0], ), marker='d',
                      color=styles[i]['color'], markeredgecolor=styles[i]['color'],
                      markerfacecolor='None', markersize=4*linewidth)
 
             #Do not plot anything else if it happens after minfvalue
             if dataofinterest[idx, 0][-1] <= minfvalue:
                 continue
-            plt.plot((dataofinterest[idx, 0][-1], ), (ydata[-1], ), marker='D',
+            plt.plot((dataofinterest[idx, 0][-1], ), (ydata[-1], ), marker='d',
                      color=styles[i]['color'], markeredgecolor=styles[i]['color'],
                      markerfacecolor='None', markersize=4*linewidth)
 

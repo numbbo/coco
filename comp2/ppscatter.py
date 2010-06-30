@@ -25,6 +25,7 @@ from bbob_pproc import readalign
 colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 offset = 0. #0.02
+markersize = 10.
 # offset provides a way to move away the box boundaries to display the outer markers fully 
 
 #Get benchmark short infos.
@@ -154,11 +155,11 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             tmp = (numpy.isinf(xdata)==False) * (numpy.isinf(ydata)==False)
             if tmp.any():
                 try:
-                    plt.plot(xdata[tmp], ydata[tmp], ls='', markersize=10,
+                    plt.plot(xdata[tmp], ydata[tmp], ls='', markersize=markersize,
                              marker=markers[i], markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3)
                 except KeyError:
-                    plt.plot(xdata[tmp], ydata[tmp], ls='', markersize=10,
+                    plt.plot(xdata[tmp], ydata[tmp], ls='', markersize=markersize,
                              marker='x', markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3)
                 #try:
@@ -177,12 +178,12 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                 #            facecolor='None', edgecolor=colors[i], linewidth=3,
                 #            transform=trans)
                 try:
-                    plt.plot([1.]*numpy.sum(tmp), ydata[tmp], markersize=10, ls='',
+                    plt.plot([1.]*numpy.sum(tmp), ydata[tmp], markersize=markersize, ls='',
                              marker=markers[i], markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3,
                              transform=trans, clip_on=False)
                 except KeyError:
-                    plt.plot([1.]*numpy.sum(tmp), ydata[tmp], markersize=10, ls='',
+                    plt.plot([1.]*numpy.sum(tmp), ydata[tmp], markersize=markersize, ls='',
                              marker='x', markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3,
                              transform=trans, clip_on=False)
@@ -195,12 +196,12 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                 #                facecolor='None', edgecolor=colors[i], linewidth=3,
                 #                transform=trans)
                 try:
-                    plt.plot(xdata[tmp], [1.-offset]*numpy.sum(tmp), markersize=10, ls='',
+                    plt.plot(xdata[tmp], [1.-offset]*numpy.sum(tmp), markersize=markersize, ls='',
                              marker=markers[i], markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3,
                              transform=trans, clip_on=False)
                 except KeyError:
-                    plt.plot(xdata[tmp], [1.-offset]*numpy.sum(tmp), markersize=10, ls='',
+                    plt.plot(xdata[tmp], [1.-offset]*numpy.sum(tmp), markersize=markersize, ls='',
                              marker='x', markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3,
                              transform=trans, clip_on=False)
@@ -211,12 +212,12 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                 #                facecolor='None', edgecolor=colors[i], linewidth=3,
                 #                transform=trans)
                 try:
-                    plt.plot([1.-offset]*numpy.sum(tmp), [1.-offset]*numpy.sum(tmp), markersize=10, ls='',
+                    plt.plot([1.-offset]*numpy.sum(tmp), [1.-offset]*numpy.sum(tmp), markersize=markersize, ls='',
                              marker=markers[i], markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3,
                              transform=ax.transAxes, clip_on=False)
                 except KeyError:
-                    plt.plot([1.-offset]*numpy.sum(tmp), [1.-offset]*numpy.sum(tmp), markersize=10, ls='',
+                    plt.plot([1.-offset]*numpy.sum(tmp), [1.-offset]*numpy.sum(tmp), markersize=markersize, ls='',
                              marker='x', markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=3,
                              transform=ax.transAxes, clip_on=False)
