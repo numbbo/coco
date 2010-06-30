@@ -334,9 +334,9 @@ def main(argv=None):
                 # ECDFs of all functions altogether
                 if dim in inset.rldDimsOfInterest:
                     try:
-                        pprldistr.comp(dictDim0[dim], dictDim1[dim],
-                                       inset.rldValsOfInterest, True,
-                                       outputdir, 'dim%02dall' % dim, verbose)
+                        pprldistr.comp2(dictDim0[dim], dictDim1[dim],
+                                        inset.rldValsOfInterest, True,
+                                        outputdir, 'dim%02dall' % dim, verbose)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.'
                                       % (dim))
@@ -347,17 +347,17 @@ def main(argv=None):
                     dictFG1 = dictDim1[dim].dictByFuncGroup()
 
                     for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
-                        pprldistr.comp(dictFG0[fGroup], dictFG1[fGroup],
-                                       inset.rldValsOfInterest, True, outputdir,
-                                       'dim%02d%s' % (dim, fGroup), verbose)
+                        pprldistr.comp2(dictFG0[fGroup], dictFG1[fGroup],
+                                        inset.rldValsOfInterest, True, outputdir,
+                                        'dim%02d%s' % (dim, fGroup), verbose)
 
                     # ECDFs per noise groups
                     dictFN0 = dictDim0[dim].dictByNoise()
                     dictFN1 = dictDim1[dim].dictByNoise()
                     for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
-                        pprldistr.comp(dictFN0[fGroup], dictFN1[fGroup],
-                                       inset.rldValsOfInterest, True, outputdir,
-                                       'dim%02d%s' % (dim, fGroup), verbose)
+                        pprldistr.comp2(dictFN0[fGroup], dictFN1[fGroup],
+                                        inset.rldValsOfInterest, True, outputdir,
+                                        'dim%02d%s' % (dim, fGroup), verbose)
 
             print "ECDF dashed-solid graphs done."
 

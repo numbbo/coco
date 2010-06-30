@@ -323,23 +323,25 @@ def main(argv=None):
             for dim in inset.rldDimsOfInterest:
                 try:
                     sliceDim = dictDim[dim]
-                    pprldistr.main(sliceDim, inset.rldValsOfInterest, True,
-                                   outputdir, 'dim%02dall' % dim, verbose)
-                    dictNoise = sliceDim.dictByNoise()
-                    for noise, sliceNoise in dictNoise.iteritems():
-                        pprldistr.main(sliceNoise, inset.rldValsOfInterest, True,
-                                       outputdir, 'dim%02d%s' % (dim, noise),
-                                       verbose)
-                    dictFG = sliceDim.dictByFuncGroup()
-                    for fGroup, sliceFuncGroup in dictFG.items():
-                        pprldistr.main(sliceFuncGroup, inset.rldValsOfInterest, True,
-                                       outputdir, 'dim%02d%s' % (dim, fGroup),
-                                       verbose)
-
-                    pprldistr.fmax = None #Resetting the max final value
-                    pprldistr.evalfmax = None #Resetting the max #fevalsfactor
                 except KeyError:
-                    pass
+                    continue
+
+                pprldistr.main2(sliceDim, inset.rldValsOfInterest, True,
+                               outputdir, 'dim%02dall' % dim, verbose)
+                dictNoise = sliceDim.dictByNoise()
+                for noise, sliceNoise in dictNoise.iteritems():
+                    pprldistr.main2(sliceNoise, inset.rldValsOfInterest, True,
+                                   outputdir, 'dim%02d%s' % (dim, noise),
+                                   verbose)
+                dictFG = sliceDim.dictByFuncGroup()
+                for fGroup, sliceFuncGroup in dictFG.items():
+                    pprldistr.main2(sliceFuncGroup, inset.rldValsOfInterest, True,
+                                   outputdir, 'dim%02d%s' % (dim, fGroup),
+                                   verbose)
+
+                pprldistr.fmax = None #Resetting the max final value
+                pprldistr.evalfmax = None #Resetting the max #fevalsfactor
+
             print "ECDF graphs done."
 
         if islogloss:
