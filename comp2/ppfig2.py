@@ -325,8 +325,6 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             nbtests += 1
             # generateData:
             data = generateData(entry0, entry1, fthresh=fthresh)
-            data[0] = data[0]
-            data[1] = data[1]
             dataperdim[dim] = data
 
             if len(data[0]) == 0 and len(data[1]) == 0:

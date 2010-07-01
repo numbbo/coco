@@ -13,7 +13,7 @@ import os
 import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bestalg, bootstrap
-from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
+from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec, writeLabels
 from bbob_pproc.pproc import significancetest
 from bbob_pproc.bootstrap import ranksums
 
@@ -190,7 +190,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             z, p = testresbestvs1[i]
 
                         if (significance0vs1 > 0
-                            or (ertdata[itstat0][i] - ertdata[istat1][i] < 0
+                            or (ertdata[istat0][i] - ertdata[istat1][i] < 0
                                 and ((nbtests * p) < 0.05 and j - bestalgdata[i] < 0.
                                      and z < 0.))):
                            isBold = True
@@ -275,8 +275,8 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
         outputfile = os.path.join(outputdir, 'cmptable_%02dD%s.tex' % (d, info))
         spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
-        res = r'\providecommand{\algzeroshort}{%s}' % alg0 + '\n'
-        res += r'\providecommand{\algoneshort}{%s}' % alg1 + '\n'
+        res = r'\providecommand{\algzeroshort}{%s}' % writeLabels(alg0) + '\n'
+        res += r'\providecommand{\algoneshort}{%s}' % writeLabels(alg1) + '\n'
         #res += tableLaTeXStar(table, width=r'0.45\textwidth', spec=spec,
                               #extraeol=extraeol)
         res += tableLaTeX(table, spec=spec, extraeol=extraeol)
@@ -538,8 +538,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
         outputfile = os.path.join(outputdir, 'table_%02dD%s.tex' % (d, info))
         spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
-        res = r'\providecommand{\algzeroshort}{%s}' % alg0 + '\n'
-        res += r'\providecommand{\algoneshort}{%s}' % alg1 + '\n'
+        res = r'\providecommand{\algzeroshort}{%s}' % writeLabels(alg0) + '\n'
+        res += r'\providecommand{\algoneshort}{%s}' % writeLabels(alg1) + '\n'
         #res += tableLaTeXStar(table, width=r'0.45\textwidth', spec=spec,
                               #extraeol=extraeol)
         res += tableLaTeX(table, spec=spec, extraeol=extraeol)
