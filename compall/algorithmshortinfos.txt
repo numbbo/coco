@@ -77,19 +77,19 @@ sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e6*DIM restarts=8 maxiter=100 + 3
 bipopactivecmaes:% active CMA on BBOB-2009:{"label":"bipopactivecmaes"}
 vCMSA_1e6:% vCMSA with sigma_stop = 1e-10, all tau_*_factors = 1, initial popsize = 4, theta = 1/4, initial mutation = 1:{"label":"vCMSA_1e6"}
 (1+1)-CMA-ES:% sigma_0=2.0, ccov^-=0, sigma_stop<1e-9:{"label":"(1+1)-CMA-ES"}
-(1+1)-active-CMA-ES:% sigma_0=2.0, ccov^-=0.3/(pow(n, 1.5)+2.0), sigma_stop<1e-9:{"label":"(1+1)-active-CMA-ES"}
+(1+1)-active-CMA-ES:% sigma_0=2.0, ccov^-=0.3/(pow(n, 1.5)+2.0), sigma_stop<1e-9:{"label":"(1+1)-actCMA-ES"}
 bipopes:% bipop without CMA on BBOB-2009, 1e4*N fevals:{"label":"BIPOP-ES", "color":"m", "ls": "--"}
-cmaes V3.41.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(N/popsize)/10:{"label":"aCMA-ES"}
+cmaes V3.41.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(N/popsize)/10:{"label":"IPOP-aCMA-ES"}
 cmaes V3.40.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
 cmaes V3.41.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e5*N, maxiter=100 + 50 * (N + 3)^2 / sqrt(N/popsize)/10:{"label":"active-CMA-ES"}
 cmaes V3.40.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e5*N, maxiter=100 + 50 * (N + 3)^2 / sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
 cmaes V3.40.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
-cmaes V3.41.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(N/popsize):{"label":"IPOP-act-CMA-ES"}
-cmaes V3.41.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(N/popsize):{"label":"active-CMA-ES"}
+cmaes V3.41.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(N/popsize):{"label":"IPOP-aCMA-ES"}
+cmaes V3.41.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(N/popsize):{"label":"IPOP-aCMA-ES"}
 cmaes V3.40.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
-cmaes V3.41.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(popsize):{"label":"IPOP-act-CMA-ES"}
+cmaes V3.41.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(popsize):{"label":"IPOP-aCMA-ES"}
 cmaes V3.40.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
-cmaes V3.41.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(popsize):{"label":"IPOP-act-CMA-ES"}
+cmaes V3.41.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(popsize):{"label":"IPOP-aCMA-ES"}
 (1,2)CMA-ES:% (1,2)CMA-ES with restarts, non-mirrored version):{"label":"(1,2)-CMA-ES"}
 EGS:% EGS-CMA as given by Arnold, sigma = 10/6, ipop-factor 2, sigma stop if < 1e-14:{"label":"EGS"}
 (1,2_m)CMA-ES:% (1,2)CMA-ES with restarts, mirrored version):{"label":"(1,2m)-CMA-ES"}
