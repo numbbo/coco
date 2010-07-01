@@ -28,7 +28,7 @@ from pdb import set_trace
 
 targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # Needs to be sorted
 targetf = 1e-8 # value for determining the success ratio
-samplesize = 100 # TODO change samplesize
+samplesize = 3000 # TODO change samplesize
 
 #Get benchmark short infos: put this part in a function?
 funInfos = {}
@@ -123,16 +123,13 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
             testres0vs1 = significancetest(entries[0], entries[1], targetsOfInterest)
             testresbestvs1 = significancetest(bestalgentry, entries[1], targetsOfInterest)
+            testresbestvs0 = significancetest(bestalgentry, entries[0], targetsOfInterest)
 
             for nb, entry in enumerate(entries):
                 if nb == 0:
                     curline = [r'0:\:\algzeroshort\hspace*{\fill}']
                 else:
                     curline = [r'1:\:\algoneshort\hspace*{\fill}']
-
-                #curline = [r'\alg%sshort' % tmp]
-                #curline = [r'Alg%d' % nb]
-                #curline = [r'%.3s%d' % (entry.algId, nb)]
 
                 data = entry.detERT(targetsOfInterest)
 
@@ -144,7 +141,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     #if numpy.isnan(float(j)/bestalgdata[i]):
                     #    set_trace()
 
-                    z, p = testres0vs1[i] #TODO: there is something with the sign that I don't get
+                    z, p = testres0vs1[i]
                     # assign significance flag
                     significance0vs1 = 0
                     if nb == 0:
@@ -154,9 +151,9 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         z = -z
                         istat0 = 1
                         istat1 = 0
-                    # TODO: I don't understand the thing with the sign of significance0vs1
+
                     if (nbtests * p < 0.05
-                        and z > 0 and not numpy.isinf(ertdata[istat0][i]) and 
+                        and z > 0 and not numpy.isinf(ertdata[istat0][i]) and
                         z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0):  # z-value and ERT-ratio must agree
                         significance0vs1 = -int(numpy.ceil(numpy.log10(nbtests * p)))
                     elif nbtests * p < 0.05 and z < 0 and z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0:
@@ -171,33 +168,31 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         if significance0vs1 > 0:
                            isBold = True
 
-                        #tmp = writeFEvals2(float(j), 2, isscientific=True)
                         tmp = writeFEvalsMaxPrec(float(j), 2)
                         if not numpy.isinf(j):
-                            #tmp = tmp.rsplit('e', 1)
-                            #if len(tmp) > 1:
-                                #tmp[0] = tmp[0].replace('.', '', 1)
-                                #tmp[-1] = str(int(tmp[-1]) - 1)
-                            #tmp = r'\textit{%s}' % ('e'.join(tmp))
                             tmp = r'\textit{%s}' % (tmp)
                             if isBold:
                                 tmp = r'\textbf{%s}' % tmp
 
                         tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                       % (alignment, tmp))
-                        # TODO: is this the desired behaviour?
                     else:
                         # Formatting
                         tmp = float(j)/bestalgdata[i]
                         assert not numpy.isnan(tmp)
-                        #isscientific = False
-                        #if tmp >= 1000:
-                            #isscientific = True
-                        #tableentry = writeFEvals2(tmp, 2, isscientific=isscientific)
                         tableentry = writeFEvalsMaxPrec(tmp, 2)
 
                         isBold = False
-                        if significance0vs1 > 0:
+
+                        if nb == 0:
+                            z, p = testresbestvs0[i]
+                        else:
+                            z, p = testresbestvs1[i]
+
+                        if (significance0vs1 > 0
+                            or (ertdata[itstat0][i] - ertdata[istat1][i] < 0
+                                and ((nbtests * p) < 0.05 and j - bestalgdata[i] < 0.
+                                     and z < 0.))):
                            isBold = True
 
                         if numpy.isinf(tmp) and i == len(data)-1:
@@ -228,28 +223,13 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
                     superscript = ''
 
-                    z, p = testresbestvs1[i]
-                    #z, p = ranksums(rankdatabest[i], currankdata)
-                    #if ((nbtests * p) < 0.05
-                    #    and ((numpy.isinf(bestalgdata[i]) and numpy.isinf(j))
-                    #         or z * (j - bestalgdata[i]) > 0)):  # z-value and ERT-ratio must agree
-                    #The conditions are now that ERT < ERT_best and 
-                    # all(sorted(FEvals_best) > sorted(FEvals_current)).
-                    if j - bestalgdata[i] < 0. and not numpy.isinf(bestalgdata[i]):
-                        evals = entry.detEvals([targetsOfInterest[i]])[0]
-                        evals[numpy.isnan(evals)] = entry.maxevals[numpy.isnan(evals)]
-                        bestevals = bestalgentry.detEvals([targetsOfInterest[i]])
-                        bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
-                        bestevals[numpy.isnan(bestevals)] = bestalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
-                        evals = numpy.array(sorted(evals))[0:min(len(evals), len(bestevals))]
-                        bestevals = numpy.array(sorted(bestevals))[0:min(len(evals), len(bestevals))]
+                    if nb == 0:
+                        z, p = testresbestvs0[i]
+                    else:
+                        z, p = testresbestvs1[i]
 
-                    #The conditions are now that ERT < ERT_best and
-                    # all(sorted(FEvals_best) > sorted(FEvals_current)).
                     if ((nbtests * p) < 0.05 and j - bestalgdata[i] < 0.
-                        and z < 0.
-                        and (numpy.isinf(bestalgdata[i])
-                             or all(evals < bestevals))):
+                        and z < 0.):
                         nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                         #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
                         if z > 0:
@@ -375,6 +355,7 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
             testres0vs1 = significancetest(entries[0], entries[1], targetsOfInterest)
             testresbestvs1 = significancetest(bestalgentry, entries[1], targetsOfInterest)
+            testresbestvs0 = significancetest(bestalgentry, entries[0], targetsOfInterest)
 
             for nb, entry in enumerate(entries):
                 if nb == 0:
@@ -455,7 +436,15 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         tableentry = writeFEvalsMaxPrec(tmp, 2)
 
                         isBold = False
-                        if significance0vs1 > 0:
+                        if nb == 0:
+                            z, p = testresbestvs0[i]
+                        else:
+                            z, p = testresbestvs1[i]
+
+                        if (significance0vs1 > 0
+                            or (ertdata[istat0][i] - ertdata[istat1][i] < 0
+                                and (nbtests * p) < 0.05 and j - bestalgdata[i] < 0.
+                                     and z < 0.)):
                            isBold = True
 
                         if numpy.isinf(tmp) and i == len(data)-1:
@@ -493,28 +482,14 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
                     superscript = ''
 
-                    z, p = testresbestvs1[i]
-                    #z, p = ranksums(rankdatabest[i], currankdata)
-                    #if ((nbtests * p) < 0.05
-                    #    and ((numpy.isinf(bestalgdata[i]) and numpy.isinf(j))
-                    #         or z * (j - bestalgdata[i]) > 0)):  # z-value and ERT-ratio must agree
-                    #The conditions are now that ERT < ERT_best and 
-                    # all(sorted(FEvals_best) > sorted(FEvals_current)).
-                    if j - bestalgdata[i] < 0. and not numpy.isinf(bestalgdata[i]):
-                        tmpevals = evals[i]
-                        tmpevals[numpy.isnan(tmpevals)] = entry.maxevals[numpy.isnan(tmpevals)]
-                        bestevals = bestalgentry.detEvals([targetsOfInterest[i]])
-                        bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
-                        bestevals[numpy.isnan(bestevals)] = bestalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
-                        tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
-                        bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
+                    if nb == 0:
+                        z, p = testresbestvs0[i]
+                    else:
+                        z, p = testresbestvs1[i]
 
-                    #The conditions are now that ERT < ERT_best and
-                    # all(sorted(FEvals_best) > sorted(FEvals_current)).
+                    #The conditions are now that ERT < ERT_best
                     if ((nbtests * p) < 0.05 and j - bestalgdata[i] < 0.
-                        and z < 0.
-                        and (numpy.isinf(bestalgdata[i])
-                             or all(tmpevals < bestevals))):
+                        and z < 0.):
                         nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                         #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
                         if z > 0:
