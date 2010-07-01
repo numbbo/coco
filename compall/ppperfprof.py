@@ -91,7 +91,7 @@ x_annote_factor = 90 # make space for right-hand legend
 fontsize = 10.0 # default setting, is modified in genericsettings.py
 
 save_zoom = False  # save zoom into left and right part of the figures
-perfprofsamplesize = 3000  # number of bootstrap samples drawn for each fct+target in the performance profile
+perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
 dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 
 nbperdecade = 3
