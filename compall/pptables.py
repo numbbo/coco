@@ -540,6 +540,9 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
             if sortedAlgs is None:
                 sortedAlgs = dictAlgbyDim.keys()
 
+            #if g == [4] and d == 40:
+                #set_trace()
+
             for alg in sortedAlgs:
                 curline = []
                 replacementLine = []
@@ -575,7 +578,10 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                         except KeyError:
                             continue
                         try:
-                            curline.append(entry.ert[entry.target<=allmintarget[t][(func, d)]][0]/allertbest[t][(func, d)])
+                            if not numpy.isfinite(allertbest[t][(func, d)]):
+                                curline.append(entry.ert[entry.target<=allmintarget[t][(func, d)]][0])
+                            else:
+                                curline.append(entry.ert[entry.target<=allmintarget[t][(func, d)]][0]/allertbest[t][(func, d)])
                             replacementLine.append('')
                         except LookupError: #IndexError, KeyError:
                             curline.append(numpy.inf)
@@ -599,8 +605,14 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                 table = numpy.array(table)
             except ValueError:
                 pass
+
             # Process data
             boldface = sortColumns(table, maxRank=3)
+            # do not use bold face for infinite ert entries
+            for i, line in enumerate(table):
+                for j, entry in enumerate(line):
+                    if numpy.isinf(entry) and i in boldface[j]:
+                        boldface[j].remove(i)
 
             # Format data
             lines = [r'\begin{tabular}{c', '', r'$\Delta$ftarget', r'ERT$_{\textrm{best}}$/D']
@@ -630,7 +642,7 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                         lines[2] += (r'& .')
                     try:
                         if numpy.isnan(allertbest[t][(func, d)]):
-                            tmp = 'nan'
+                            tmp = '$\infty$'
                         else:
                             tmp = (writeFEvalsMaxPrec(float(allertbest[t][(func, d)])/d, 2))
                         lines[3] += (r'& %s' % tmp)
@@ -654,7 +666,11 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                     if replacement[i][j]:
                         tmp = '%s' % replacement[i][j]
                     else:
-                        tmp = '%s' % writeFEvalsMaxPrec(line[j], 2)
+                        try:
+                            tmp = '%s' % writeFEvalsMaxPrec(line[j], 2)
+                        except AssertionError:
+                            tmp = '.'
+                            #set_trace()
                         #tmp = '%s' % writeFEvals(line[j])
 
                     if i in boldface[j] or line[j] < 3:
@@ -783,7 +799,7 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.'):
 
         # Create the table
         table = []
-        spec = r'@{}c@{}|*{%d}{r@{}l}|@{}r@{}@{}l@{}' % (len(targets))
+        spec = r'@{}c@{}|*{%d}{@{\,}r@{}l@{\,}}|@{}r@{}@{}l@{}' % (len(targets))
         extraeol = []
 
         # Generate header lines
@@ -791,15 +807,15 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.'):
             header = funInfos[df[1]]
         else:
             header = 'f%d' % df[1]
-        table.append([r'\multicolumn{%d}{c}{{\normalsize \textbf{%s}}}'
+        table.append([r'\multicolumn{%d}{@{\,}c@{\,}}{{\normalsize \textbf{%s}}}'
                       % (2 * len(targets) + 2, header)])
         extraeol.append('')
 
         curline = [r'$\Delta$ftarget']
         for t in targets[0:-1]:
-            curline.append(r'\multicolumn{2}{@{}c@{}}{%s}'
+            curline.append(r'\multicolumn{2}{@{\,}c@{\,}}{%s}'
                            % writeFEvals2(t, precision=1, isscientific=True))
-        curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
+        curline.append(r'\multicolumn{2}{@{\,}c@{}|}{%s}'
                        % writeFEvals2(targets[-1], precision=1, isscientific=True))
         curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
         table.append(curline)
@@ -807,9 +823,9 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.'):
 
         curline = [r'ERT$_{\text{best}}$']
         for i in refalgert[0:-1]:
-            curline.append(r'\multicolumn{2}{@{}c@{}}{%s}'
+            curline.append(r'\multicolumn{2}{@{\,}c@{\,}}{%s}'
                            % writeFEvalsMaxPrec(float(i), 2))
-        curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
+        curline.append(r'\multicolumn{2}{@{\,}c@{\,}|}{%s}'
                        % writeFEvalsMaxPrec(float(refalgert[-1]), 2))
         curline.append('%d' % refalgnbsucc)
         if refalgnbsucc:
@@ -834,9 +850,9 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.'):
                                         isBoldArray[i], algtestres[i])):
                 ert, dispersion, isBold, testres = tmp
 
-                alignment = '@{}c@{}'
+                alignment = '@{\,}c@{\,}'
                 if j == len(algert[i]) - 1:
-                    alignment = '@{}c@{}|'
+                    alignment = '@{\,}c@{\,}|'
 
                 data = ert/refalgert[j]
 
@@ -848,7 +864,7 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.'):
                         curline.append(r'\multicolumn{2}{%s}{\textbf{%s}\,(%s)}'
                                        % (alignment,
                                           writeFEvalsMaxPrec(algert[i][j], 2),
-                                          dispersion))
+                                          writeFEvalsMaxPrec(dispersion, 2)))
                         continue
 
                     tmp = writeFEvalsMaxPrec(data, 2, maxfloatrepr=maxfloatrepr)
@@ -860,11 +876,8 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.'):
                                 tmp = r'\textbf{%s}' % tmp
 
                         if not numpy.isnan(dispersion):
-                            curline.append(r'\multicolumn{2}{%s}{%s\,(%s)}'
-                                           % (alignment, tmp, dispersion))
-                        else:
-                            curline.append(r'\multicolumn{2}{%s}{%s}'
-                                           % (alignment, tmp))
+                            tmp += '\,(%s)' % writeFEvalsMaxPrec(dispersion/refalgert[j], 2)
+                        curline.append(r'\multicolumn{2}{%s}{%s}' % (alignment, tmp))
                     else:
                         tmp2 = tmp.split('.', 1)
                         if len(tmp2) < 2:

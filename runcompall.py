@@ -341,7 +341,17 @@ def main(argv=None):
             print "ECDFs of ERT figures done."
 
         if isTab:
-            allmintarget, allertbest = detTarget(dsList)
+            #allmintarget, allertbest = detTarget(dsList)
+            # load targets
+            f=open('2009best.pickle')
+            allmintarget = pickle.load(f)
+            allertbest = pickle.load(f)
+            f.close()
+            # save targets, etc.
+            #f=open('2009best.pickle')
+            #pickle.load(allmintarget, f)
+            #pickle.dump(allertbest, f)
+            #f.close()
             pptables.tablemanyalgonefunc(dictAlg, allmintarget, allertbest,
                                          sortedAlgs, outputdir)
             print "Comparison tables done."

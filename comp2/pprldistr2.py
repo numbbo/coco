@@ -87,6 +87,7 @@ def beautify(figHandle, figureName, fileFormat=('pdf', 'eps'), isByInstance=True
 
 def beautify2(handles):
     """Format the figure of the run length distribution."""
+
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
     plt.axvline(1, ls='-', color='k');  # symmetry line for ERT1/ERT0 = 1
@@ -106,7 +107,7 @@ def beautify2(handles):
         newxticks.append('%d' % round(numpy.log10(i)))
     axisHandle.set_xticklabels(newxticks)
 
-    # Prolong to the boundary ... could provide tmp to beautify2
+    # Prolong to the boundary...
     xmin, xmax = plt.xlim()
     for i in handles:
         try:
@@ -313,9 +314,7 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
             continue # no plot?
 
         x.sort()
-        #xtmp = x.copy()
         #Catch negative values: zeros are not a problem...
-        #tmp = 0
         tmp = len(list(i for i in x if i <= 0))
         x = x[tmp:]
         #Catch inf, those could be a problem with the log scale...
@@ -327,7 +326,7 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
         #xbound = max(abs(numpy.floor(numpy.log10(x[0]))),
         #             abs(numpy.ceil(numpy.log10(x[-1]))))
         if len(x) == 0:
-            res.append(plt.axhline(tmp/float(n), label=label, 
+            res.append(plt.axhline(tmp/float(n), label=label,
                                    linewidth=3., **rldStyles[i]))
             # tmp/float(n) == (n-tmp2)/float(n) # TODO: check
         else:
@@ -340,7 +339,8 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
             plotArgs = rldStyles[i].copy()
             plotArgs['label'] = label
             plotArgs['linewidth'] = 3.
-            res.extend(plotUnifLogXMarkers(x2, y2, 3, plotArgs))
+            #res.extend(plotUnifLogXMarkers(x2, y2, 3, plotArgs))
+            res.append(plotUnifLogXMarkers(x2, y2, 3, plotArgs)[0])
 
         # TODO: check if all of evalsX[func] is numpy.inf and so on...
 
