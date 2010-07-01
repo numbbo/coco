@@ -91,7 +91,7 @@ cmaes V3.41.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(popsi
 cmaes V3.40.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": ":"}
 cmaes V3.41.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(popsize):{"label":"IPOP-aCMA-ES"}
 (1,2)CMA-ES:% (1,2)CMA-ES with restarts, non-mirrored version):{"label":"(1,2)-CMA-ES"}
-EGS:% EGS-CMA as given by Arnold, sigma = 10/6, ipop-factor 2, sigma stop if < 1e-14:{"label":"EGS"}
+EGS:% EGS-CMA as given by Arnold, sigma = 10/6, ipop-factor 2, sigma stop if < 1e-14:{"label":"CMA-EGS"}
 (1,2_m)CMA-ES:% (1,2)CMA-ES with restarts, mirrored version):{"label":"(1,2m)-CMA-ES"}
 (1,2_m^s)CMA-ES:% serial (1,2)CMA-ES with restarts, mirrored version):{"label":"(1,2ms)-CMA-ES"}
 (1,2^s)CMA-ES:% serial (1,2)CMA-ES with restarts, non-mirrored version):{"label":"(1,2s)-CMA-ES"}
