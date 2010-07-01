@@ -39,7 +39,7 @@ except IOError, (errno, strerror):
           'Titles in figures will not be displayed.'
 
 maxfloatrepr = 100000.
-samplesize = 100
+samplesize = 3000
 targetf = 1e-8
 
 def cite(algName, isNoisefree, isNoisy):
@@ -783,17 +783,17 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.'):
 
         # Create the table
         table = []
-        spec = r'@{}c@{}|*{%d}{@{}r@{}l@{}}|@{}r@{}@{}l@{}' % (len(targets))
+        spec = r'@{}c@{}|*{%d}{r@{}l}|@{}r@{}@{}l@{}' % (len(targets))
         extraeol = []
 
         # Generate header lines
-        #if isBenchmarkinfosFound:
-            #header = funInfos[df[1]]
-        #else:
-            #header = '%d' % df[1]
-        #table.append([r'\multicolumn{%d}{c}{{\normalsize \textbf{%s}}}'
-                      #% (2 * len(targets) + 2, header)])
-        #extraeol.append('')
+        if isBenchmarkinfosFound:
+            header = funInfos[df[1]]
+        else:
+            header = 'f%d' % df[1]
+        table.append([r'\multicolumn{%d}{c}{{\normalsize \textbf{%s}}}'
+                      % (2 * len(targets) + 2, header)])
+        extraeol.append('')
 
         curline = [r'$\Delta$ftarget']
         for t in targets[0:-1]:

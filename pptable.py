@@ -28,7 +28,7 @@ from pdb import set_trace
 
 targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 targetf = 1e-8 # value for determining the success ratio
-samplesize = 100 # TODO: change samplesize
+samplesize = 3000 # TODO: change samplesize
 
 def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     """Generate one result table per dimension of ERT over ERTbest.
