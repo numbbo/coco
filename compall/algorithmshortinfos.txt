@@ -103,7 +103,7 @@ EGS:% EGS-CMA as given by Arnold, sigma = 10/6, ipop-factor 2, sigma stop if < 1
 1p2_m^s:% serial (1+2)CMA with mirroring:{"label":"(1+2ms)-CMA-ES"}
 Artificial Bee Colony:% Colony_Size=40, Limit=20*DIM, No Bounding:{"label":"ABC (El Abd)"}
 Harmony search algorithm:% Normal parameters settings:{"label":"Harmony Search"}
-mos:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"MOS (LaTorre)"}
+mos:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"CMA-ES-MOS"}
 NBC-CMA:% debug:{"label":"NBC-CMA"}
 nPOEMS:% no comments:{"label":"nPOEMS"}
 Basic RCGA:% Run from 2010.03.25 at 0:50; popsize=100, 2 Stopping criteria, maxfunevals=5e4*D:{"label":"Basic RCGA"}
