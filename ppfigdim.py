@@ -145,6 +145,14 @@ def beautify2(title='', legend=True):
     #plt.plot((2,200), (1e6,1e8), 'k:')  
     #plt.plot((2,200), (1e6,1e10), 'k:')
 
+    # quadratic and cubic "grid"
+    plt.plot((2,200), (1, 1e2), 'k:')    # TODO: this should be done before the real lines are plotted? 
+    plt.plot((2,200), (1, 1e4), 'k:')
+    plt.plot((2,200), (1e3, 1e5), 'k:')  
+    plt.plot((2,200), (1e3, 1e7), 'k:')
+    plt.plot((2,200), (1e6, 1e8), 'k:')  
+    plt.plot((2,200), (1e6, 1e10), 'k:')
+
     # axes limites
     plt.xlim(1.8, 45)                # TODO should become input arg?
     plt.ylim(ymin=10**-0.2, ymax=ymax) # Set back the default maximum.
