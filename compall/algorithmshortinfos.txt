@@ -105,7 +105,7 @@ Artificial Bee Colony:% Colony_Size=40, Limit=20*DIM, No Bounding:{"label":"Arti
 Harmony search algorithm:% Normal parameters settings:{"label":"Harmony Search"}
 mos:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"CMA+DE-MOS"}
 NBC-CMA:% debug:{"label":"NBC-CMA"}
-nPOEMS:% no comments:{"label":"nPOEMS"}
+nPOEMS:% no comments:{"label":"pPOEMS"}
 Basic RCGA:% Run from 2010.03.25 at 0:50; popsize=100, 2 Stopping criteria, maxfunevals=5e4*D:{"label":"Basic RCGA"}
 SPSA:% SPSA with lambda = 1 (1st run), lambda = 1 + 2^restart, c0 approx. standard deviation at initial point (max c0 = 10), alpha and gamma theoretical minimal, a0 calculated:{"label":"SPSA", "color": "purple"}
 PSO_Bounds with randomly selected parameters:% Parameters selected randomly from a set:{"label":"PSO_Bounds updated"}
@@ -119,3 +119,4 @@ stTargetToRand1Bin:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"DE stTargetToRand1Bi
 SUMplus-NDCG-S.5_W50:% SUMplus_on_DE_with_stGECCOset:{"label":"Adap DE (SUM)"}
 DE_Uniform_stGECCOset:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"DE (Uniform)"}
 PM-AdapSS-DE:% Probability Matching with absolute average of the relative fitness improvement as Credit Assignment (see GECCO10 paper).:{"label":"PM-AdapSS-DE"}
+oPOEMS:% no comments:{"label":"POEMS"}
