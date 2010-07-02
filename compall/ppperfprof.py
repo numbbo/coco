@@ -11,7 +11,7 @@ import warnings
 from pdb import set_trace
 import numpy
 import matplotlib.pyplot as plt
-from bbob_pproc import bootstrap
+from bbob_pproc import bootstrap, bestalg
 from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
 from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
 
@@ -59,6 +59,8 @@ MC = ('Monte Carlo',)
 
 third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'EDA-PSO', 'PSO_Bounds', 'PSO', 'AMaLGaM IDEA', 'iAMaLGaM IDEA',
          'MA-LS-Chain', 'DASA', 'BayEDAcG')
+
+displaybest2009 = True
 
 # MORE TO COME
 
@@ -312,6 +314,16 @@ def plotLegend(handles, maxval):
     i = 0 # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
+            #set_trace()
+            #enforce best 2009 comes first in case of equality
+            tmp = []
+            for h in ys[j][k]:
+                if plt.getp(h, 'label') == 'best 2009':
+                    tmp.insert(0, h)
+                else:
+                    tmp.append(h)
+            ys[j][k] = tmp
+
             for h in ys[j][k]:
                 if (not plt.getp(h, 'label').startswith('_line') and
                     (len(show_algorithms) == 0 or
@@ -320,7 +332,7 @@ def plotLegend(handles, maxval):
                     tmp = {}
                     for attr in ('lw', 'ls', 'marker',
                                  'markeredgewidth', 'markerfacecolor',
-                                 'markeredgecolor', 'markersize'):
+                                 'markeredgecolor', 'markersize', 'zorder'):
                         tmp[attr] = plt.getp(h, attr)
                     legx = maxval * 10
                     if 'marker' in attr:
@@ -355,6 +367,8 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
     dictData = {} # list of (ert per function) per algorithm
     dictMaxEvals = {} # list of (maxevals per function) per algorithm
     # the functions will not necessarily sorted.
+    xbest = []
+    maxevalsbest = []
 
     bestERT = [] # best ert per function, not necessarily sorted as well.
     funcsolved = [set()] * len(target)
@@ -420,6 +434,28 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
                 dictData.setdefault(alg, []).extend(x)
                 dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
 
+        if displaybest2009:
+            if not bestalg.bestalgentries:
+                bestalg.loadBBOB2009()
+            bestalgentry = bestalg.bestalgentries[(d, f)]
+            #set_trace()
+            tmptargets = list(t[(f, d)] for t in target)
+            bestalgevals = bestalgentry.detEvals(tmptargets)
+            for j in range(len(tmptargets)):
+                if bestalgevals[1][j]:
+                    evals = bestalgevals[0][j]
+                    #set_trace()
+                    runlengthsucc = evals[numpy.isnan(evals) == False] / bestalgentry.dim
+                    runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][numpy.isnan(evals)] / bestalgentry.dim
+                    x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                                         percentiles=[50],
+                                         samplesize=perfprofsamplesize)[1]
+                else:
+                    x = perfprofsamplesize * [numpy.inf]
+                    runlengthunsucc = []
+                xbest.extend(x)
+                maxevalsbest.extend(runlengthunsucc)
+
     #picklefilename = os.path.join(outputdir,'perfprofdata_%s.pickle' %(info))
     #f = file(picklefilename, 'w')
     #pickle.dump(dictData, f)
@@ -464,6 +500,14 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
         except KeyError:
             #No data
             pass
+
+    if displaybest2009:
+        args = {'ls': '-', 'linewidth': 1.5, 'marker': 'D', 'markersize': 15.,
+                'markeredgewidth': 1.5, 'markerfacecolor': 'wheat',
+                'markeredgecolor': 'wheat', 'color': 'wheat',
+                'label': 'best 2009', 'zorder': -1}
+        lines.append(plotPerfProf2(numpy.array(xbest), xlim, maxevalsbest,
+                                   CrE = 0., kwargs=args))
 
     plotLegend(lines, xlim)
 
@@ -514,7 +558,6 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
     a.set_xticklabels(tmp)
     saveFigure(figureName, figFormat=figformat, verbose=verbose)
 
-
     plt.close()
 
 def main2(dictAlg, targets, order=None, plotArgs={}, outputdir='',
@@ -560,6 +603,8 @@ def main2(dictAlg, targets, order=None, plotArgs={}, outputdir='',
     dictMaxEvals = {} # list of (maxevals per function) per algorithm
     bestERT = [] # best ert per function
     funcsolved = [set()] * len(targets) # number of functions solved per target
+    xbest = []
+    maxevalsbest = []
     for f, dictAlgperFunc in dictFunc.iteritems():
         if function_IDs and f not in function_IDs:
             continue
@@ -590,6 +635,26 @@ def main2(dictAlg, targets, order=None, plotArgs={}, outputdir='',
                 dictData.setdefault(alg, []).extend(x)
                 dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
 
+        if displaybest2009:
+            if not bestalg.bestalgentries:
+                bestalg.loadBBOB2009()
+            bestalgentry = bestalg.bestalgentries[(d, f)]
+            bestalgevals = bestalgentry.detEvals(targets)
+            for j in range(len(targets)):
+                if bestalgevals[1][j]:
+                    evals = bestalgevals[0][j]
+                    #set_trace()
+                    runlengthsucc = evals[numpy.isnan(evals) == False] / bestalgentry.dim
+                    runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][numpy.isnan(evals)] / bestalgentry.dim
+                    x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                                         percentiles=[50],
+                                         samplesize=perfprofsamplesize)[1]
+                else:
+                    x = perfprofsamplesize * [numpy.inf]
+                    runlengthunsucc = []
+                xbest.extend(x)
+                maxevalsbest.extend(runlengthunsucc)
+
     if order is None:
         order = dictData.keys()
 
@@ -619,6 +684,14 @@ def main2(dictAlg, targets, order=None, plotArgs={}, outputdir='',
             #args['zorder'] = -1
         lines.append(plotPerfProf2(numpy.array(data), xlim, maxevals,
                                    CrE=0., kwargs=args))
+
+    if displaybest2009:
+        args = {'ls': '-', 'linewidth': 1.5, 'marker': 'D', 'markersize': 15.,
+                'markeredgewidth': 1.5, 'markerfacecolor': 'wheat',
+                'markeredgecolor': 'wheat', 'color': 'wheat',
+                'label': 'best 2009', 'zorder': -1}
+        lines.append(plotPerfProf2(numpy.array(xbest), xlim, maxevalsbest,
+                                   CrE = 0., kwargs=args))
 
     plotLegend(lines, xlim)
 
