@@ -101,7 +101,7 @@ EGS:% EGS-CMA as given by Arnold, sigma = 10/6, ipop-factor 2, sigma stop if < 1
 (1,4^s)CMA-ES:% serial (1,4)CMA-ES with restarts, non-mirrored version:{"label":"(1,4s)-CMA-ES"}
 1p1:% (1+1)CMA:{"label":"(1+1)-CMA-ES", "color": "b", "ls": "--"}
 1p2_m^s:% serial (1+2)CMA with mirroring:{"label":"(1+2ms)-CMA-ES"}
-Artificial Bee Colony:% Colony_Size=40, Limit=20*DIM, No Bounding:{"label":"ABC (El Abd)"}
+Artificial Bee Colony:% Colony_Size=40, Limit=20*DIM, No Bounding:{"label":"Artif Bee Colony"}
 Harmony search algorithm:% Normal parameters settings:{"label":"Harmony Search"}
 mos:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"CMA+DE-MOS"}
 NBC-CMA:% debug:{"label":"NBC-CMA"}
