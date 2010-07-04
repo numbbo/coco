@@ -33,7 +33,7 @@ if __name__ == "__main__":
 from bbob_pproc import dataoutput, pproc
 from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList, processInputArgs
-from bbob_pproc.compall import ppperfprof, pptables
+from bbob_pproc.compall import ppperfprof, pptables, ppfigs
 from bbob_pproc.compall import organizeRTDpictures
 
 import matplotlib.pyplot as plt
@@ -208,7 +208,7 @@ def main(argv=None):
             opts, args = getopt.getopt(argv, "hvo:",
                                        ["help", "output-dir=", "noisy",
                                         "noise-free", "perfprof-only",
-                                        "tab-only", "verbose"])
+                                        "tab-only", "fig-only", "verbose"])
         except getopt.error, msg:
              raise Usage(msg)
 
@@ -223,6 +223,7 @@ def main(argv=None):
 
         isPer = True
         isTab = True
+        isFig = True
 
         #Process options
         for o, a in opts:
@@ -239,10 +240,13 @@ def main(argv=None):
                 isNoiseFree = True
             elif o == "--tab-only":
                 isPer = False
-                isEff = False
+                isFig = False
             elif o == "--perfprof-only":
-                isEff = False
                 isTab = False
+                isFig = False
+            elif o == "--fig-only":
+                isTab = False
+                isPer = False
             else:
                 assert False, "unhandled option"
 
@@ -357,6 +361,15 @@ def main(argv=None):
             print "Comparison tables done."
 
         plt.rcdefaults()
+
+        if isFig:
+            plt.rc("axes", labelsize=20, titlesize=24)
+            plt.rc("xtick", labelsize=20)
+            plt.rc("ytick", labelsize=20)
+            plt.rc("font", size=20)
+            plt.rc("legend", fontsize=20)
+            ppfigs.main(dictAlg, sortedAlgs, 1e-8, outputdir)
+            plt.rcdefaults()
 
     except Usage, err:
         print >>sys.stderr, err.msg
