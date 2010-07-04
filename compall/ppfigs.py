@@ -12,13 +12,30 @@ from bbob_pproc import bootstrap, bestalg, pproc
 from bbob_pproc.ppfig import saveFigure
 from bbob_pproc.dataoutput import algPlotInfos
 
-styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
-          {'color': 'b'},
-          {'color': 'c', 'marker': 'v', 'markeredgecolor': 'c'},
-          {'color': 'g'},
-          {'color': 'y', 'marker': '^', 'markeredgecolor': 'y'},
-          {'color': 'm'},
-          {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
+# styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
+#           {'color': 'b'},
+#           {'color': 'c', 'marker': 'v', 'markeredgecolor': 'c'},
+#           {'color': 'g'},
+#           {'color': 'y', 'marker': '^', 'markeredgecolor': 'y'},
+#           {'color': 'm'},
+#           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
+styles = [{'marker': 'o', 'linestyle': '-', 'color': 'b'},
+          {'marker': '+', 'linestyle': '-', 'color': 'g'},
+          {'marker': 'd', 'linestyle': '-', 'color': 'r'},
+          {'marker': 's', 'linestyle': '-', 'color': 'c'},
+          {'marker': 'v', 'linestyle': '-', 'color': 'm'},
+          {'marker': '*', 'linestyle': '-', 'color': 'y'},
+          {'marker': 'h', 'linestyle': '-', 'color': 'k'},
+          {'marker': '^', 'linestyle': '-', 'color': 'b'},
+          {'marker': 'p', 'linestyle': '-', 'color': 'g'},
+          {'marker': 'H', 'linestyle': '-', 'color': 'r'},
+          {'marker': '<', 'linestyle': '-', 'color': 'c'},
+          {'marker': 'D', 'linestyle': '-', 'color': 'm'},
+          {'marker': '>', 'linestyle': '-', 'color': 'y'},
+          {'marker': '1', 'linestyle': '-', 'color': 'k'},
+          {'marker': '2', 'linestyle': '-', 'color': 'b'},
+          {'marker': '3', 'linestyle': '-', 'color': 'g'},
+          {'marker': '4', 'linestyle': '-', 'color': 'r'}]
 
 #Get benchmark short infos.
 funInfos = {}
@@ -53,7 +70,10 @@ def beautify(title='', legend=True):
     # Get axis handle and set scale for each axis
     axisHandle = plt.gca()
     axisHandle.set_xscale("log")
-    axisHandle.set_yscale("log")
+    try:
+        axisHandle.set_yscale("log")
+    except OverflowError:
+        set_trace()
 
     # Grid options
     axisHandle.grid('True')
@@ -133,6 +153,97 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
             maxevals = []
             dimmedian = []
             medianfes = []
+            infos = set()
+            for dim in sorted(dictDim):
+                entry = dictDim[dim][0]
+                infos.add((entry.algId, entry.comment))
+                data = generateData(entry, target)
+                if data[2] == 0: # No success
+                    dimmaxevals.append(dim)
+                    maxevals.append(float(data[3])/dim)
+                else:
+                    dimmedian.append(dim)
+                    medianfes.append(data[4]/dim)
+                    dimert.append(dim)
+                    ert.append(float(data[0])/dim)
+                    if data[1] < 1.:
+                        dimnbsucc.append(dim)
+                        ynbsucc.append(float(data[0])/dim)
+                        nbsucc.append('%d' % data[2])
+
+            if not infos: # empty for any reason...
+                continue
+            infos = infos.pop()
+            # Draw lines
+            tmp = plt.plot(dimert, ert, marker='.', markersize=30,
+                          **algPlotInfos[infos])[0]
+            plt.setp(tmp, markeredgecolor=plt.getp(tmp, 'color'))
+            tmp = plt.plot(dimmaxevals, maxevals, marker='x', markersize=20,
+                           **algPlotInfos[infos])[0]
+            plt.setp(tmp, markeredgecolor=plt.getp(tmp, 'color'))
+            #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',
+            #               markersize=30, markeredgewidth=5,
+            #               markeredgecolor=plt.getp(tmp, 'color'))[0]
+            #for i, n in enumerate(nbsucc):
+            #    plt.text(dimnbsucc[i], numpy.array(ynbsucc[i])*1.85, n,
+            #             verticalalignment='bottom',
+            #             horizontalalignment='center')
+
+        if not bestalg.bestalgentries:
+            bestalg.loadBBOB2009()
+
+        bestalgdata = []
+        dimbestalg = list(df[0] for df in bestalg.bestalgentries if df[1] == f)
+        dimbestalg.sort()
+        dimbestalg2 = []
+        for d in dimbestalg:
+            entry = bestalg.bestalgentries[(d, f)]
+            tmp = entry.detERT([target])[0]
+            if numpy.isfinite(tmp):
+                bestalgdata.append(float(tmp)/d)
+                dimbestalg2.append(d)
+
+        plt.plot(dimbestalg2, bestalgdata, color='wheat', linewidth=10,
+                 marker='d', markersize=25, markeredgecolor='wheat',
+                 zorder=-1)
+
+        if isBenchmarkinfosFound:
+            title = funInfos[f]
+            plt.gca().set_title(title)
+
+        beautify()
+
+        saveFigure(filename, figFormat=figformat, verbose=verbose)
+
+        plt.close()
+
+def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
+    """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
+    
+    Differ from main method by the line style policy: in the case of main2
+    the variable styles (defined in header) is used instead of
+    bbob_pproc.dataoutput.algPlotInfos.
+    One function and one target per figure.
+    
+    """
+
+    dictFunc = pproc.dictAlgByFun(dictAlg)
+
+    for f in dictFunc:
+        filename = os.path.join(outputdir,'ppfigs_f%d' % (f))
+        for i, alg in enumerate(sortedAlgs):
+            dictDim = dictFunc[f][alg].dictByDim()
+
+            #Collect data
+            dimert = []
+            ert = []
+            dimnbsucc = []
+            ynbsucc = []
+            nbsucc = []
+            dimmaxevals = []
+            maxevals = []
+            dimmedian = []
+            medianfes = []
             for dim in sorted(dictDim):
                 entry = dictDim[dim][0]
                 data = generateData(entry, target)
@@ -149,12 +260,15 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                         ynbsucc.append(float(data[0])/dim)
                         nbsucc.append('%d' % data[2])
 
+            if not dimert: # empty for whatever reason
+                continue
+
             # Draw lines
-            tmp = plt.plot(dimert, ert, marker='.', markersize=30,
-                          **algPlotInfos[(entry.algId, entry.comment)])[0]
+            tmp = plt.plot(dimert, ert, markersize=30,
+                          **styles[i])[0]
             plt.setp(tmp, markeredgecolor=plt.getp(tmp, 'color'))
             tmp = plt.plot(dimmaxevals, maxevals, marker='x', markersize=20,
-                           **algPlotInfos[(entry.algId, entry.comment)])[0]
+                           **styles[i][(entry.algId, entry.comment)])[0]
             plt.setp(tmp, markeredgecolor=plt.getp(tmp, 'color'))
             #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',
             #               markersize=30, markeredgewidth=5,
@@ -168,13 +282,17 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
             bestalg.loadBBOB2009()
 
         bestalgdata = []
-        dimsbestalg = list(df[0] for df in bestalg.bestalgentries if df[1] == f)
-        dimsbestalg.sort()
-        for d in dimsbestalg:
+        dimbestalg = list(df[0] for df in bestalg.bestalgentries if df[1] == f)
+        dimbestalg.sort()
+        dimbestalg2 = []
+        for d in dimbestalg:
             entry = bestalg.bestalgentries[(d, f)]
-            bestalgdata.append(float(entry.detERT([target])[0])/d)
+            tmp = entry.detERT([target])[0]
+            if numpy.isfinite(tmp):
+                bestalgdata.append(float(tmp)/d)
+                dimbestalg2.append(d)
 
-        plt.plot(dimsbestalg, bestalgdata, color='wheat', linewidth=10,
+        plt.plot(dimbestalg2, bestalgdata, color='wheat', linewidth=10,
                  marker='d', markersize=25, markeredgecolor='wheat',
                  zorder=-1)
 
