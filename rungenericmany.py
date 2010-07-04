@@ -153,9 +153,9 @@ def main(argv=None):
 
         isPer = True
         isTab = True
+        isFig = True
 
         #Process options
-        genopts = []
         for o, a in opts:
             if o in ("-v","--verbose"):
                 verbose = True
@@ -168,13 +168,16 @@ def main(argv=None):
                 genopts.append(o)
                 isNoisy = True
             elif o == "--noise-free":
-                genopts.append(o)
                 isNoiseFree = True
             #The next 3 are for testing purpose
             elif o == "--tab-only":
-                genopts.append(o)
                 isPer = False
+                isFig = False
             elif o == "--per-only":
+                isTab = False
+                isFig = False
+            elif o == "--fig-only":
+                isPer = False
                 isTab = False
             else:
                 assert False, "unhandled option"
@@ -257,8 +260,14 @@ def main(argv=None):
                 for d, entries in dictDim.iteritems():
                     #dsListperAlg = list(entries[i] for i in sortedAlgs)
                     pptables.tablemanyalgonefunc2(entries, sortedAlgs,
-                         inset.tableconstant_target_function_values, outputdir)
+                         inset.tableconstant_target_function_values, outputdir,
+                         verbose)
             print "Comparison tables done."
+
+        if isFig:
+            # TODO: put the target function value in header or sthg.
+            ppfigs.main2(dictAlg, sortedAlgs, 1e-8, outputdir, verbose)
+            print "Scaling figures done."
 
         plt.rcdefaults()
 

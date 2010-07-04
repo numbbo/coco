@@ -501,7 +501,7 @@ def tablemanyalg2(dsListperAlg, dimsOfInterest=None, outputdir='.', info=''):
         # TODO: write table
 
 def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
-                        outputdir='.'):
+                        outputdir='.', verbose=True):
     """Generate one table per function showing results of multiple algorithms.
     """
 
@@ -691,7 +691,8 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
             f.write('\n'.join(lines) + '\n')
             f.close()
 
-def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.'):
+def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.',
+                         verbose=True):
     """Generate one table per function showing results of multiple algorithms.
 
     Difference with the first version:

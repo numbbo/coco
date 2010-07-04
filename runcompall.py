@@ -357,7 +357,7 @@ def main(argv=None):
             #pickle.dump(allertbest, f)
             #f.close()
             pptables.tablemanyalgonefunc(dictAlg, allmintarget, allertbest,
-                                         sortedAlgs, outputdir)
+                                         sortedAlgs, outputdir, verbose)
             print "Comparison tables done."
 
         plt.rcdefaults()
@@ -368,7 +368,7 @@ def main(argv=None):
             plt.rc("ytick", labelsize=20)
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
-            ppfigs.main(dictAlg, sortedAlgs, 1e-8, outputdir)
+            ppfigs.main(dictAlg, sortedAlgs, 1e-8, outputdir, verbose)
             plt.rcdefaults()
 
     except Usage, err:
