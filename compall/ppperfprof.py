@@ -322,6 +322,7 @@ def plotLegend(handles, maxval):
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)
+            tmp.reverse()
             ys[j][k] = tmp
 
             for h in ys[j][k]:
