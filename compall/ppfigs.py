@@ -37,6 +37,9 @@ styles = [{'marker': 'o', 'linestyle': '-', 'color': 'b'},
           {'marker': '3', 'linestyle': '-', 'color': 'g'},
           {'marker': '4', 'linestyle': '-', 'color': 'r'}]
 
+show_algorithms = []
+fontsize = 20.0
+
 #Get benchmark short infos.
 funInfos = {}
 figformat = ('eps', 'pdf') # Controls the output when using the main method
@@ -56,14 +59,101 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
 
-def beautify(title='', legend=True):
+def plotLegend(handles, maxval=None):
+    """Display right-side legend."""
+
+    ys = {}
+    lh = 0 # Number of labels to display on the right
+    if not maxval:
+        tmpmaxval = []
+
+    for h in handles:
+        x2 = []
+        y2 = []
+        for i in h:
+            x2.append(plt.getp(i, "xdata"))
+            y2.append(plt.getp(i, "ydata"))
+        x2 = numpy.sort(numpy.hstack(x2))
+        y2 = numpy.sort(numpy.hstack(y2))
+        h = h[-1]
+        try:
+            if maxval:
+                tmp = sum(x2 <= maxval) - 1
+                x2bis = x2[sum(y2 < y2[tmp]) - 1]
+            else:
+                tmp = len(x2) - 1
+                x2bis = x2[-1]
+                tmpmaxval.append(x2[-1])
+            ys.setdefault(y2[tmp], {}).setdefault(x2bis, []).append(h)
+            lh += 1
+        except IndexError:
+            pass
+            #pass
+
+    if not maxval:
+        maxval = max(tmpmaxval)
+
+    if len(show_algorithms) > 0:
+        lh = min(lh, len(show_algorithms))
+    if lh <= 1:
+        lh = 2
+
+    ymin, ymax = plt.ylim()
+    xmin, xmax = plt.xlim()
+
+    i = 0 # loop over the elements of ys
+    for j in sorted(ys.keys()):
+        for k in reversed(sorted(ys[j].keys())):
+            #enforce best 2009 comes first in case of equality
+            tmp = []
+            for h in ys[j][k]:
+                if plt.getp(h, 'label') == 'best 2009':
+                    tmp.insert(0, h)
+                else:
+                    tmp.append(h)
+            #tmp.reverse()
+            ys[j][k] = tmp
+
+            for h in ys[j][k]:
+                if (not plt.getp(h, 'label').startswith('_line') and
+                    (len(show_algorithms) == 0 or
+                     plt.getp(h, 'label') in show_algorithms)):
+                    y = 0.02 + i * 0.96/(lh-1)
+                    # transform y in the axis coordinates
+                    #inv = plt.gca().transLimits.inverted()
+                    #legx, ydat = inv.transform((.9, y))
+                    #leglabx, ydat = inv.transform((.92, y))
+                    #set_trace()
+
+                    ydat = 10**(y * numpy.log10(ymax/ymin)) * ymin
+                    legx = 10**(.85 * numpy.log10(xmax/xmin)) * xmin
+                    leglabx = 10**(.87 * numpy.log10(xmax/xmin)) * xmin
+                    tmp = {}
+                    for attr in ('lw', 'ls', 'marker',
+                                 'markeredgewidth', 'markerfacecolor',
+                                 'markeredgecolor', 'markersize', 'zorder'):
+                        tmp[attr] = plt.getp(h, attr)
+                    plt.plot((maxval, legx), (j, ydat),
+                             color=plt.getp(h, 'markeredgecolor'), **tmp)
+
+                    plt.text(leglabx, ydat,
+                             plt.getp(h, 'label'), horizontalalignment="left",
+                             verticalalignment="center", size=fontsize)
+                    i += 1
+
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+    if maxval:
+        plt.axvline(40, color='k')
+
+
+def beautify(rightlegend=False):
     """ Customize a figure by adding a legend, axis label, etc and save to a file.
         Is identical to beautify except for the linear and quadratic scaling
         lines which are quadratic and cubic
 
         Keyword arguments:
-        title -- 
-        legend --
+        rightlegend -- if True, makes some space on the right for legend
 
     """
 
@@ -88,8 +178,6 @@ def beautify(title='', legend=True):
     plt.plot((2,200), (1e6, 1e8), 'k:', zorder=-1)  
     plt.plot((2,200), (1e6, 1e10), 'k:', zorder=-1)
 
-    # axes limites
-    plt.xlim(1.8, 45)                # Should depend on xmin and xmax
     plt.ylim(ymin=10**-0.2, ymax=ymax) # Set back the default maximum.
 
     # ticks on axes
@@ -100,6 +188,12 @@ def beautify(title='', legend=True):
 
     axisHandle.set_xticks(dimticklist)
     axisHandle.set_xticklabels([str(n) for n in dimannlist])
+
+    # axes limites
+    if rightlegend:
+        plt.xlim(1.8, 101) # 101 is 10 ** (numpy.log10(45/1.8)*1.25) * 1.8
+    else:
+        plt.xlim(1.8, 45)                # Should depend on xmin and xmax
 
     tmp = axisHandle.get_yticks()
     tmp2 = []
@@ -140,6 +234,7 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
 
     for f in dictFunc:
         filename = os.path.join(outputdir,'ppfigs_f%d' % (f))
+        handles = []
         for alg in sortedAlgs:
             dictDim = dictFunc[f][alg].dictByDim()
 
@@ -176,11 +271,13 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
             infos = infos.pop()
             # Draw lines
             tmp = plt.plot(dimert, ert, marker='.', markersize=30,
-                          **algPlotInfos[infos])[0]
-            plt.setp(tmp, markeredgecolor=plt.getp(tmp, 'color'))
-            tmp = plt.plot(dimmaxevals, maxevals, marker='x', markersize=20,
-                           **algPlotInfos[infos])[0]
-            plt.setp(tmp, markeredgecolor=plt.getp(tmp, 'color'))
+                          **algPlotInfos[infos])
+            plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
+            if dimmaxevals:
+                tmp = plt.plot(dimmaxevals, maxevals, marker='x', markersize=20,
+                               **algPlotInfos[infos])
+                plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
+            handles.append(tmp)
             #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',
             #               markersize=30, markeredgewidth=5,
             #               markeredgecolor=plt.getp(tmp, 'color'))[0]
@@ -203,15 +300,18 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                 bestalgdata.append(float(tmp)/d)
                 dimbestalg2.append(d)
 
-        plt.plot(dimbestalg2, bestalgdata, color='wheat', linewidth=10,
-                 marker='d', markersize=25, markeredgecolor='wheat',
-                 zorder=-1)
+        tmp = plt.plot(dimbestalg2, bestalgdata, color='wheat', linewidth=10,
+                       marker='d', markersize=25, markeredgecolor='wheat',
+                       label='best 2009', zorder=-1)
+        handles.append(tmp)
 
         if isBenchmarkinfosFound:
             title = funInfos[f]
             plt.gca().set_title(title)
 
-        beautify()
+        beautify(rightlegend=True)
+
+        plotLegend(handles)
 
         saveFigure(filename, figFormat=figformat, verbose=verbose)
 
@@ -231,6 +331,7 @@ def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
 
     for f in dictFunc:
         filename = os.path.join(outputdir,'ppfigs_f%d' % (f))
+        handles = []
         for i, alg in enumerate(sortedAlgs):
             dictDim = dictFunc[f][alg].dictByDim()
 
@@ -265,11 +366,14 @@ def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
 
             # Draw lines
             tmp = plt.plot(dimert, ert, markersize=30,
-                          **styles[i])[0]
-            plt.setp(tmp, markeredgecolor=plt.getp(tmp, 'color'))
-            tmp = plt.plot(dimmaxevals, maxevals, marker='x', markersize=20,
-                           **styles[i][(entry.algId, entry.comment)])[0]
-            plt.setp(tmp, markeredgecolor=plt.getp(tmp, 'color'))
+                           label=alg, **styles[i])
+            plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
+            if dimmaxevals:
+                tmp = plt.plot(dimmaxevals, maxevals, marker='x', markersize=20,
+                               label=alg, **styles[i][(entry.algId, entry.comment)])
+                plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
+
+            handles.append(tmp)
             #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',
             #               markersize=30, markeredgewidth=5,
             #               markeredgecolor=plt.getp(tmp, 'color'))[0]
@@ -292,15 +396,18 @@ def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                 bestalgdata.append(float(tmp)/d)
                 dimbestalg2.append(d)
 
-        plt.plot(dimbestalg2, bestalgdata, color='wheat', linewidth=10,
-                 marker='d', markersize=25, markeredgecolor='wheat',
-                 zorder=-1)
+        tmp = plt.plot(dimbestalg2, bestalgdata, color='wheat', linewidth=10,
+                       marker='d', markersize=25, markeredgecolor='wheat',
+                       label='best 2009', zorder=-1)
+        handles.append(tmp)
 
         if isBenchmarkinfosFound:
             title = funInfos[f]
             plt.gca().set_title(title)
 
-        beautify()
+        beautify(rightlegend=Trues)
+
+        plotLegend(handles)
 
         saveFigure(filename, figFormat=figformat, verbose=verbose)
 
