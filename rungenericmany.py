@@ -30,7 +30,7 @@ if __name__ == "__main__":
 from bbob_pproc import dataoutput, pproc
 from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList, processInputArgs
-from bbob_pproc.compall import ppperfprof, pptables
+from bbob_pproc.compall import ppperfprof, pptables, ppfigs
 from bbob_pproc.compall import organizeRTDpictures
 
 import matplotlib.pyplot as plt
