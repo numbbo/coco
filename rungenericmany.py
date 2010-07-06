@@ -38,7 +38,7 @@ import matplotlib.pyplot as plt
 # Used by getopt:
 shortoptlist = "hvo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
-               "per-only", "verbose"]
+               "per-only", "fig-only", "verbose"]
 #CLASS DEFINITIONS
 
 class Usage(Exception):
@@ -265,8 +265,13 @@ def main(argv=None):
             print "Comparison tables done."
 
         if isFig:
-            # TODO: put the target function value in header or sthg.
+            plt.rc("axes", labelsize=20, titlesize=24)
+            plt.rc("xtick", labelsize=20)
+            plt.rc("ytick", labelsize=20)
+            plt.rc("font", size=20)
+            plt.rc("legend", fontsize=20)
             ppfigs.main2(dictAlg, sortedAlgs, 1e-8, outputdir, verbose)
+            plt.rcdefaults()
             print "Scaling figures done."
 
         plt.rcdefaults()

@@ -60,41 +60,54 @@ except IOError, (errno, strerror):
           'Titles in figures will not be displayed.'
 
 def plotLegend(handles, maxval=None):
-    """Display right-side legend."""
+    """Display right-side legend.
+    
+    Sorted from smaller to larger y-coordinate values.
+    
+    """
 
     ys = {}
     lh = 0 # Number of labels to display on the right
     if not maxval:
-        tmpmaxval = []
+        maxval = []
+        for h in handles:
+            x2 = []
+            y2 = []
+            for i in h:
+                x2.append(plt.getp(i, "xdata"))
+            x2 = numpy.sort(numpy.hstack(x2))
+            maxval.append(max(x2))
+        maxval = max(maxval)
 
     for h in handles:
         x2 = []
         y2 = []
+
         for i in h:
             x2.append(plt.getp(i, "xdata"))
             y2.append(plt.getp(i, "ydata"))
-        x2 = numpy.sort(numpy.hstack(x2))
-        y2 = numpy.sort(numpy.hstack(y2))
+        tmp = numpy.argsort(numpy.hstack(x2))
+        x2 = (numpy.hstack(x2))[tmp]
+        y2 = (numpy.hstack(y2))[tmp]
         h = h[-1]
+
+        # ybis is used to sort in case of ties
         try:
-            if maxval:
-                tmp = sum(x2 <= maxval) - 1
-                x2bis = x2[sum(y2 < y2[tmp]) - 1]
+            tmp = x2 <= maxval
+            y = y2[tmp][-1]
+            ybis = y2[tmp][y2[tmp] < y]
+            if len(ybis) > 0:
+                ybis = ybis[-1]
             else:
-                tmp = len(x2) - 1
-                x2bis = x2[-1]
-                tmpmaxval.append(x2[-1])
-            ys.setdefault(y2[tmp], {}).setdefault(x2bis, []).append(h)
+                ybis = y2[tmp][-2]
+            ys.setdefault(y, {}).setdefault(ybis, []).append(h)
             lh += 1
         except IndexError:
             pass
-            #pass
-
-    if not maxval:
-        maxval = max(tmpmaxval)
 
     if len(show_algorithms) > 0:
         lh = min(lh, len(show_algorithms))
+
     if lh <= 1:
         lh = 2
 
@@ -103,7 +116,7 @@ def plotLegend(handles, maxval=None):
 
     i = 0 # loop over the elements of ys
     for j in sorted(ys.keys()):
-        for k in reversed(sorted(ys[j].keys())):
+        for k in sorted(ys[j].keys()):
             #enforce best 2009 comes first in case of equality
             tmp = []
             for h in ys[j][k]:
@@ -274,9 +287,9 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                           **algPlotInfos[infos])
             plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
             if dimmaxevals:
-                tmp = plt.plot(dimmaxevals, maxevals, marker='x', markersize=20,
-                               **algPlotInfos[infos])
-                plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
+                tmp = plt.plot(dimmaxevals, maxevals, **algPlotInfos[infos])
+                plt.setp(tmp[0],  marker='x', markersize=20,
+                         markeredgecolor=plt.getp(tmp[0], 'color'))
             handles.append(tmp)
             #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',
             #               markersize=30, markeredgewidth=5,
@@ -369,9 +382,9 @@ def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                            label=alg, **styles[i])
             plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
             if dimmaxevals:
-                tmp = plt.plot(dimmaxevals, maxevals, marker='x', markersize=20,
-                               label=alg, **styles[i][(entry.algId, entry.comment)])
-                plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
+                tmp = plt.plot(dimmaxevals, maxevals, **styles[i])
+                plt.setp(tmp[0], marker='x', markersize=20, label=alg,
+                         markeredgecolor=plt.getp(tmp[0], 'color'))
 
             handles.append(tmp)
             #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',
@@ -405,7 +418,7 @@ def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
             title = funInfos[f]
             plt.gca().set_title(title)
 
-        beautify(rightlegend=Trues)
+        beautify(rightlegend=True)
 
         plotLegend(handles)
 
