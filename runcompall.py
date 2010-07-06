@@ -370,6 +370,7 @@ def main(argv=None):
             plt.rc("legend", fontsize=20)
             ppfigs.main(dictAlg, sortedAlgs, 1e-8, outputdir, verbose)
             plt.rcdefaults()
+            print "Scaling figures done."
 
     except Usage, err:
         print >>sys.stderr, err.msg
