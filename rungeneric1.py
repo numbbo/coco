@@ -293,6 +293,7 @@ def main(argv=None):
             ppfigdim.ertoverdimvsdim(dsList, inset.figValsOfInterest,
                                      outputdir, verbose)
             print "Scaling figures done."
+            plt.rcdefault()
 
         plt.rc("axes", **inset.rcaxes)
         plt.rc("xtick", **inset.rctick)
