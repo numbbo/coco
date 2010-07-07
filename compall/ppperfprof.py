@@ -296,13 +296,14 @@ def plotLegend(handles, maxval):
         for i in h:
             x2.append(plt.getp(i, "xdata"))
             y2.append(plt.getp(i, "ydata"))
-        x2 = numpy.sort(numpy.hstack(x2))
-        y2 = numpy.sort(numpy.hstack(y2))
+        tmp = numpy.argsort(numpy.hstack(x2))
+        x2 = numpy.hstack(x2)[tmp]
+        y2 = numpy.hstack(y2)[tmp]
         h = h[-1]
         try:
-            tmp = sum(x2 <= maxval) - 1
-            x2bis = x2[sum(y2 < y2[tmp]) - 1]
-            ys.setdefault(y2[tmp], {}).setdefault(x2bis, []).append(h)
+            tmp = (x2 <= maxval)
+            x2bis = x2[y2 < y2[tmp][-1]][-1]
+            ys.setdefault(y2[tmp][-1], {}).setdefault(x2bis, []).append(h)
             lh += 1
         except IndexError:
             pass
@@ -314,8 +315,7 @@ def plotLegend(handles, maxval):
     i = 0 # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
-            #set_trace()
-            #enforce best 2009 comes first in case of equality
+            #enforce best 2009 comes last in case of equality
             tmp = []
             for h in ys[j][k]:
                 if plt.getp(h, 'label') == 'best 2009':
@@ -671,7 +671,7 @@ def main2(dictAlg, targets, order=None, plotArgs={}, outputdir='',
         #lines.append(plotPerfProf(numpy.array(data), xlim, maxevals,
                                   #CrE=CrE, kwargs=get_plot_args(tmp)))
         #if not args.has_key('label') or args['label'] in show_algorithms:
-        args = styles[i % len(styles)]
+        args = styles[(i) % len(styles)]
         args['linewidth'] = 1.5
         args['markersize'] = 15.
         args['markeredgewidth'] = 1.5
