@@ -157,8 +157,7 @@ def plotLegend(handles, maxval=None):
     plt.xlim(xmin, xmax)
     plt.ylim(ymin, ymax)
     if maxval:
-        plt.axvline(40, color='k')
-
+        plt.axvline(maxval, color='k')
 
 def beautify(rightlegend=False):
     """ Customize a figure by adding a legend, axis label, etc and save to a file.
@@ -374,13 +373,11 @@ def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                         ynbsucc.append(float(data[0])/dim)
                         nbsucc.append('%d' % data[2])
 
-            if not dimert: # empty for whatever reason
-                continue
-
             # Draw lines
             tmp = plt.plot(dimert, ert, markersize=30,
                            label=alg, **styles[i])
             plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
+
             if dimmaxevals:
                 tmp = plt.plot(dimmaxevals, maxevals, **styles[i])
                 plt.setp(tmp[0], marker='x', markersize=20, label=alg,
