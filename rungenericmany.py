@@ -165,7 +165,6 @@ def main(argv=None):
             elif o in ("-o", "--output-dir"):
                 outputdir = a
             elif o == "--noisy":
-                genopts.append(o)
                 isNoisy = True
             elif o == "--noise-free":
                 isNoiseFree = True
