@@ -184,7 +184,7 @@ def beautify2(title='', legend=True):
 def generateData(dataSet, targetFuncValue):
     """Returns an array of results to be plotted. 1st column is ert, 2nd is
     the number of success, 3rd the success rate, 4th the sum of the number of
-    function evaluations, and finally the median."""
+    function evaluations, and finally the median of all runs."""
 
     res = []
     data = []
@@ -201,7 +201,7 @@ def generateData(dataSet, targetFuncValue):
             break
 
     data = prev[1:].copy() # keep only the number of function evaluations.
-    succ = numpy.isfinite(data)
+    succ = (numpy.isnan(data) == False)
     data[numpy.isnan(data)] = dataSet.maxevals[numpy.isnan(data)]
 
     res = []
@@ -280,8 +280,8 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             except IndexError:
                 bestalgdata.append(None)
 
-        plt.plot(dimsBBOB, bestalgdata, color='wheat', linewidth=10, zorder=-1)
-        plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25, color='wheat', zorder=-1)
+        plt.plot(dimsBBOB, bestalgdata, color='wheat', linewidth=10, zorder=-2)
+        plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25, color='wheat', zorder=-2)
 
         if displaynumber: #displayed only for the smallest valuesOfInterest
             a = plt.gca()
@@ -323,6 +323,7 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
         line = []
         valuesOfInterest = list(j[func] for j in _valuesOfInterest)
         valuesOfInterest.sort(reverse=True)
+        mediandata ={}
         for i in range(len(valuesOfInterest)):
             succ = []
             unsucc = []
@@ -337,6 +338,7 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
                     succ.append(numpy.append(dim, tmp))
                     if tmp[2] < dictFunc[func][dim][0].nbRuns():
                         displaynumber.append((dim, tmp[0], tmp[2]))
+                    mediandata[dim] = (i, tmp[-1])
                 else:
                     unsucc.append(numpy.append(dim, tmp))
 
@@ -345,11 +347,6 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
                 #ERT
                 plt.plot(tmp[:, 0], tmp[:,1]/tmp[:, 0], markersize=20,
                          **styles[i])
-                #median
-                if i == len(valuesOfInterest) - 1:
-                    plt.plot(tmp[:, 0], tmp[:,-1]/tmp[:, 0], color=styles[i]['color'],
-                             linestyle='', marker='+', markersize=30,
-                             markeredgewidth=5)
 
             # To have the legend displayed whatever happens with the data.
             plt.plot([], [], markersize=10,
@@ -359,8 +356,16 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
         #Only for the last target function value...
         if unsucc:
             tmp = numpy.vstack(unsucc)
-            plt.plot(tmp[:, 0], tmp[:, -2]/tmp[:, 0], color=styles[i]['color'],
+            plt.plot(tmp[:, 0], tmp[:, -2]/tmp[:, 0],
+                     color=styles[len(valuesOfInterest)-1]['color'],
                      marker='x', markersize=20)
+
+        #median # TODO only the best target for each dimension (and not the last)
+        if mediandata:
+            for i, tm in mediandata.iteritems():
+                plt.plot(i, tm[1]/i, color=styles[tm[0]]['color'],
+                         linestyle='', marker='+', markersize=30,
+                         markeredgewidth=5, zorder=-1)
 
         if not bestalg.bestalgentriesever:
             bestalg.loadBBOBever()
@@ -374,9 +379,9 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
             except IndexError:
                 bestalgdata.append(None)
 
-        plt.plot(dimsBBOB, bestalgdata, color='wheat', linewidth=10, zorder=-1)
+        plt.plot(dimsBBOB, bestalgdata, color='wheat', linewidth=10, zorder=-2)
         plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25,
-                 color='wheat', markeredgecolor='wheat', zorder=-1)
+                 color='wheat', markeredgecolor='wheat', zorder=-2)
 
         if displaynumber: #displayed only for the smallest valuesOfInterest
             a = plt.gca()
