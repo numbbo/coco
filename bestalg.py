@@ -15,22 +15,28 @@ from pdb import set_trace
 import warnings
 import numpy
 
-if __name__ == "__main__":
-    (filepath, filename) = os.path.split(sys.argv[0])
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-
 from bbob_pproc import readalign
 from bbob_pproc.pproc import DataSetList, processInputArgs, dictAlgByFun, dictAlgByDim
 from bbob_pproc.dataoutput import algPlotInfos
 
-bestalgentries = {}
+bestalgentries2009 = {}
+bestalgentries2010 = {}
+bestalgentriesever = {}
 
-algs = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
+algs2009 = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
 "BIPOP-CMA-ES", "CMA-ESPLUSSEL", "DASA", "DE-PSO", "DIRECT", "EDA-PSO",
-"FULLNEWUOA", "G3PCX", "GA", "GLOBAL", "iAMALGAM", "LSfminbnd", "LSstep",
-"MA-LS-CHAIN", "MCS", "NELDER", "NELDERDOERR", "NEWUOA", "ONEFIFTH", "POEMS",
-"PSO", "PSO_Bounds", "RANDOMSEARCH", "Rosenbrock", "SEP-CMA-ES", "SNOBFIT",
+"FULLNEWUOA", "G3PCX", "GA", "GLOBAL", "iAMALGAM", "IPOPSEPCMA", "LSfminbnd",
+"LSstep", "MA-LS-CHAIN", "MCS", "NELDER", "NELDERDOERR", "NEWUOA", "ONEFIFTH",
+"POEMS", "PSO", "PSO_Bounds", "RANDOMSEARCH", "Rosenbrock", "SNOBFIT",
 "VNS")
+
+algs2010 = ("1komma2", "1komma2mir", "1komma2mirser", "1komma2ser", "1komma4",
+"1komma4mir", "1komma4mirser", "1komma4ser", "1plus1", "1plus2mirser", "ABC",
+"AVGNEWUOA", "CMAEGS", "DE-F-AUC", "DEuniform", "IPOP-ACTCMA-ES",
+"IPOP-CMA-ES", "MOS", "NBC-CMA", "NEWUOA", "PM-AdapSS-DE", "RCGA", "SPSA",
+"oPOEMS", "pPOEMS")
+# Warning: NEWUOA is there twice: NEWUOA noiseless is a 2009 entry, NEWUOA
+# noisy is a 2010 entry
 
 #CLASS DEFINITIONS
 
@@ -116,6 +122,7 @@ class BestAlgSet:
                 if tmpert == currentbestert:
                     # in case of tie? TODO: look at function values corresponding to the ERT?
                     # Look at the function evaluations? the success ratio?
+                    #set_trace()
                     pass
                 elif tmpert < currentbestert:
                     currentbestert = tmpert
@@ -162,8 +169,8 @@ class BestAlgSet:
         # What if some algorithms don't have the same number of runs
         # How do we save maxfunevals (to compute the ERT...?)
         self.algs = resalgs
-        self.algId = 'Virtual Best Algorithm of BBOB 2009'
-        self.comment = 'Combination of ' + ', '.join(algs)
+        self.algId = 'Virtual Best Algorithm of BBOB'
+        self.comment = 'Combination of ' + ', '.join(sortedAlgs)
         self.ert = numpy.array(reserts)
         self.target = res[:, 0]
         #return resds
@@ -269,95 +276,87 @@ class BestAlgSet:
 #FUNCTION DEFINITIONS
 
 def loadBBOB2009():
-    global bestalgentries
-    # global statement necessary to change the variable bestalg.bestalgentries
-
-    #bestalgfilepath = os.path.join(os.path.split(__file__)[0], 'bestalg')
-    #for fun in range(1, 25)+range(101, 131):
-        #for D in [2, 3, 5, 10, 20, 40]:
-            #picklefilename = os.path.join(bestalgfilepath,
-                                          #'bestalg_f%03d_%02d.pickle.gz' % (fun, D))
-            ##TODO: what if file is not found?
-            #fid = gzip.open(picklefilename, 'r')
-            #bestalgentries[(D, fun)] = pickle.load(fid)
-            #fid.close()
+    """
+    """
+    global bestalgentries2009
+    # global statement necessary to change the variable bestalg.bestalgentries2009
 
     print "Loading best algorithm data from BBOB-2009...",  
     bestalgfilepath = os.path.split(__file__)[0]
     picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
-    #TODO: what if file is not found?
     fid = gzip.open(picklefilename, 'r')
-    #set_trace()
-    bestalgentries = pickle.load(fid)
+    bestalgentries2009 = pickle.load(fid)
     fid.close()
     print " done."
 
+def loadBBOB2010():
+    global bestalgentries2010
+    # global statement necessary to change the variable bestalg.bestalgentries2010
+
+    print "Loading best algorithm data from BBOB-2010...",  
+    bestalgfilepath = os.path.split(__file__)[0]
+    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2010.pickle.gz')
+    fid = gzip.open(picklefilename, 'r')
+    bestalgentries2010 = pickle.load(fid)
+    fid.close()
+    print " done."
+
+def loadBBOBever():
+    global bestalgentriesever
+    # global statement necessary to change the variable bestalg.bestalgentriesever
+
+    print "Loading best algorithm data from BBOB...",  
+    bestalgfilepath = os.path.split(__file__)[0]
+    picklefilename = os.path.join(bestalgfilepath, 'bestalgentriesever.pickle.gz')
+    fid = gzip.open(picklefilename, 'r')
+    bestalgentriesever = pickle.load(fid)
+    fid.close()
+    print " done."
 
 def usage():
     print main.__doc__
 
-def main(argv=None):
+def generate():
+    """Generates best algorithm data set.
+
+    It will create a folder bestAlg in the current working directory with
+    a pickle file corresponding to the bestalg dataSet of the algorithms
+    listed in variable args.
+
+    This method is called from the python command line:
+    >>> from bbob_pproc import bestalg
+    >>> bestalg.generate()
+
+    The current working directory has to contain the data. 
     """
-    """
 
-    if argv is None:
-        argv = sys.argv[1:]
+    #args = set(algs2010 + algs2009)
+    args = algs2009
 
-    try:
-        try:
-            opts, args = getopt.getopt(argv, "h",
-                                       ["help"])
-        except getopt.error, msg:
-             raise Usage(msg)
+    outputdir = 'bestAlg'
 
-        args = algs
-        # if not (args):
-        #     usage()
-        #     sys.exit()
-        outputdir = 'bestAlg'
+    verbose = True
 
-        verbose = True
+    dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
 
-        #Process options
-        for o, a in opts:
-            if o in ("-h", "--help"):
-                usage()
-                sys.exit()
-            else:
-                assert False, "unhandled option"
+    if not os.path.exists(outputdir):
+        os.mkdir(outputdir)
+        if verbose:
+            print 'Folder %s was created.' % (outputdir)
 
-        dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
+    res = {}
+    for f, i in dictAlgByFun(dictAlg).iteritems():
+        for d, j in dictAlgByDim(i).iteritems():
+            tmp = BestAlgSet(j)
+#             picklefilename = os.path.join(outputdir,
+#                                           'bestalg_f%03d_%02d.pickle' % (f, d))
+#             fid = open(picklefilename, 'w')
+#             pickle.dump(tmp, fid, 2)
+#             fid.close()
+            res[(d, f)] = tmp
+    picklefilename = os.path.join(outputdir, 'bestalg.pickle')
+    fid = open(picklefilename, 'w')
+    pickle.dump(res, fid, 2)
+    fid.close()
 
-        #set_trace()
-        if not os.path.exists(outputdir):
-            os.mkdir(outputdir)
-            if verbose:
-                print 'Folder %s was created.' % (outputdir)
 
-        res = {}
-        for f, i in dictAlgByFun(dictAlg).iteritems():
-            for d, j in dictAlgByDim(i).iteritems():
-                tmp = BestAlgSet(j)
-                picklefilename = os.path.join(outputdir,
-                                             'bestalg_f%03d_%02d.pickle' % (f, d))
-                fid = open(picklefilename, 'w')
-                pickle.dump(tmp, fid, 2)
-                fid.close()
-                res[(d, f)] = tmp
-        picklefilename = os.path.join(outputdir, 'bestalg.pickle')
-        fid = open(picklefilename, 'w')
-        pickle.dump(res, fid, 2)
-        fid.close()
-
-        #dataoutput.outputPickle(resDsList)
-
-    except Usage, err:
-        print >>sys.stderr, err.msg
-        print >>sys.stderr, "for help use -h or --help"
-        return 2
-
-if __name__ == "__main__":
-   from bbob_pproc.bestalg import BestAlgSet
-   # Above line is necessary to specify from which module the BestAlgset class
-   # is from.
-   sys.exit(main())

@@ -603,7 +603,7 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
                      #markeredgewidth=linewidth, markersize=3*linewidth)
             plt.plot((data[0][idx, 0][-1], ), (ydata[-1], ), marker='D', ls='',
                      color=styles[i]['color'], markeredgecolor=styles[i]['color'],
-                     markerfacecolor='None', markersize=4*linewidth)
+                     markerfacecolor=styles[i]['color'], markersize=4*linewidth)
             tmpy = ydata[-1]
 
             # plot probability of success line
@@ -661,15 +661,14 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             # marker for when the first algorithm stop
             plt.plot((dataofinterest[idx, 0][0], ), (ydata[0], ), marker='d',
                      color=styles[i]['color'], markeredgecolor=styles[i]['color'],
-                     markerfacecolor='None', markersize=4*linewidth)
+                     markerfacecolor=styles[i]['color'], markersize=4*linewidth)
 
             #Do not plot anything else if it happens after minfvalue
             if dataofinterest[idx, 0][-1] <= minfvalue:
                 continue
             plt.plot((dataofinterest[idx, 0][-1], ), (ydata[-1], ), marker='d',
                      color=styles[i]['color'], markeredgecolor=styles[i]['color'],
-                     markerfacecolor='None', markersize=4*linewidth)
-
+                     markerfacecolor=styles[i]['color'], markersize=4*linewidth)
 
         if isBenchmarkinfosFound:
             plt.title(funInfos[func])

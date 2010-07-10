@@ -37,7 +37,7 @@ from bbob_pproc.dataoutput import algLongInfos, algShortInfos, algPlotInfos
 from bbob_pproc.pproc import DataSetList
 import matplotlib.pyplot as plt
 
-# GLOBAL VARIABLES used in the routines defining desired output for BBOB 2009.
+# GLOBAL VARIABLES used in the routines defining desired output for BBOB.
 constant_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6)
 # constant_target_function_values = (1e-6, )  # single 
 # constant_target_function_values = (1e1, 1e-0, 1e-1)  # light&easy 

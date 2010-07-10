@@ -36,7 +36,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
     #TODO: check that it works for any reference algorithm?
     #in the following the reference algorithm is the one given in
-    #bestalg.bestalgentries which is the virtual best of BBOB 2009
+    #bestalg.bestalgentries which is the virtual best of BBOB
 
     dictDim = dsList.dictByDim()
 
@@ -46,8 +46,8 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         # information string.
 
     dims = set(dictDim.keys())
-    if not bestalg.bestalgentries:
-        bestalg.loadBBOB2009()
+    if not bestalg.bestalgentriesever:
+        bestalg.loadBBOBever()
 
     header = [r'$\Delta f$']
     for i in targetsOfInterest:
@@ -67,7 +67,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         nbtests = float(len(funcs)) # #funcs tests times one algorithm
 
         for f in sorted(funcs):
-            bestalgentry = bestalg.bestalgentries[(d, f)]
+            bestalgentry = bestalg.bestalgentriesever[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
             bestalgdata = bestalgentry.detERT(targetsOfInterest)
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)
@@ -141,7 +141,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                          or all(evals < bestevals))):
                     nbstars = -numpy.ceil(numpy.log10(nbtests * p))
 
-                if numpy.isinf(bestalgdata[i]): # if the 2009 best did not solve the problem
+                if numpy.isinf(bestalgdata[i]): # if the best did not solve the problem
                     isBold = False
                     if nbstars > 0:
                        isBold = True

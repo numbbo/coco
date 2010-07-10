@@ -32,7 +32,7 @@ from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 
 import matplotlib.pyplot as plt
 
-# GLOBAL VARIABLES used in the routines defining desired output  for BBOB 2009.
+# GLOBAL VARIABLES used in the routines defining desired output for BBOB.
 instancesOfInterest = {1:3, 2:3, 3:3, 4:3, 5:3}
 instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
 instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,

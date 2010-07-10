@@ -5,7 +5,7 @@
 These comparisons are based on computing the ratio between an ERT value and a
 reference (best) ERT value (or the inverse)
 
-ERT loss ratio of an algorithm A for comparison to BBOB-2009. This works
+ERT loss ratio of an algorithm A for comparison to BBOB-bestever. This works
 only as comparison to a set of algorithms that reach at least the same
 target values. Let f=f_A(EVALS) be the smallest target value such that the
 expected running time of algorithm A was smaller than or equal to EVALS.
@@ -24,7 +24,7 @@ The ERT loss ratio for algorithm A is defined as:
       For a function subgroup the Box-Whisker is replaced with the four or five
       actual points with the function number written.
       Caption: ERT loss ratio: expected running time, ERT (measured in number
-      of function evaluations), divided by the best ERT seen in BBOB-2009 for
+      of function evaluations), divided by the best ERT seen in BBOB-bestever for
       the respectively same function and target function value, plotted versus
       number of function evaluations for the functions $f_1$--$f_{24}$ in
       dimension $D=XXX$, corrected by the parameter-crafting-effort
@@ -113,13 +113,13 @@ def generateData(dsList, evals, CrE_A):
     D = set(i.dim for i in dsList).pop() # should have only one element
     #if D == 3:
        #set_trace()
-    if not bestalg.bestalgentries:
-        bestalg.loadBBOB2009()
+    if not bestalg.bestalgentriesever:
+        bestalg.loadBBOBever()
 
     for fun, tmpdsList in dsList.dictByFunc().iteritems():
         entry = tmpdsList[0] # TODO: check for problems
 
-        bestalgentry = bestalg.bestalgentries[(D, fun)]
+        bestalgentry = bestalg.bestalgentriesever[(D, fun)]
 
         #ERT_A
         f_A = detf(entry, evals)

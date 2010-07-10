@@ -65,8 +65,8 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         info = '_' + info
 
     dims = set.intersection(set(dictDim0.keys()), set(dictDim1.keys()))
-    if not bestalg.bestalgentries:
-        bestalg.loadBBOB2009()
+    if not bestalg.bestalgentriesever:
+        bestalg.loadBBOBever()
 
     header = [r'$\Delta f$']
     for i in targetsOfInterest:
@@ -87,7 +87,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         nbtests = len(funcs) * 2. #len(dimsOfInterest)
 
         for f in sorted(funcs):
-            bestalgentry = bestalg.bestalgentries[(d, f)]
+            bestalgentry = bestalg.bestalgentriesever[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
             bestalgdata = bestalgentry.detERT(targetsOfInterest)
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)
@@ -300,8 +300,8 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         info = '_' + info
 
     dims = set.intersection(set(dictDim0.keys()), set(dictDim1.keys()))
-    if not bestalg.bestalgentries:
-        bestalg.loadBBOB2009()
+    if not bestalg.bestalgentriesever:
+        bestalg.loadBBOBever()
 
     header = [r'$\Delta f$']
     for i in targetsOfInterest:
@@ -322,7 +322,7 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         nbtests = len(funcs) * 2. #len(dimsOfInterest)
 
         for f in sorted(funcs):
-            bestalgentry = bestalg.bestalgentries[(d, f)]
+            bestalgentry = bestalg.bestalgentriesever[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
             bestalgdata = bestalgentry.detERT(targetsOfInterest)
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)

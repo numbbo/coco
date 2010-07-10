@@ -254,11 +254,10 @@ def main(argv=None):
 
         if isTab:
             dictNoi = pproc.dictAlgByNoi(dictAlg)
-            for ng, tmpdictAlg in dictNoi.iteritems():
-                dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                for d, entries in dictDim.iteritems():
-                    #dsListperAlg = list(entries[i] for i in sortedAlgs)
-                    pptables.tablemanyalgonefunc2(entries, sortedAlgs,
+            for ng, tmpdictng in dictNoi.iteritems():
+                dictDim = pproc.dictAlgByDim(tmpdictng)
+                for d, tmpdictdim in dictDim.iteritems():
+                    pptables.tablemanyalgonefunc2(tmpdictdim, sortedAlgs,
                          inset.tableconstant_target_function_values, outputdir,
                          verbose)
             print "Comparison tables done."

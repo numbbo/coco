@@ -17,6 +17,7 @@ import glob
 import warnings
 import getopt
 from pdb import set_trace
+import numpy
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -366,9 +367,39 @@ def main(argv=None):
             dictNG1 = dsList1.dictByNoise()
 
             for nGroup in set(dictNG0.keys()) & set(dictNG1.keys()):
-                pptable2.main2(dictNG0[nGroup], dictFN1[nGroup],
-                               inset.tabDimsOfInterest, outputdir,
-                               '%s' % (nGroup), verbose)
+                # split table in as many as necessary
+                dictFunc0 = dictNG0[nGroup].dictByFunc()
+                dictFunc1 = dictNG1[nGroup].dictByFunc()
+                funcs = list(set(dictFunc0.keys()) & set(dictFunc1.keys()))
+                if len(funcs) > 24:
+                    funcs.sort()
+                    nbgroups = int(numpy.ceil(len(funcs)/24.))
+                    def split_seq(seq, nbgroups):
+                        newseq = []
+                        splitsize = 1.0/nbgroups*len(seq)
+                        for i in range(nbgroups):
+                            newseq.append(seq[int(round(i*splitsize)):int(round((i+1)*splitsize))])
+                        return newseq
+
+                    groups = split_seq(funcs, nbgroups)
+                    # merge
+                    group0 = []
+                    group1 = []
+                    for i, g in enumerate(groups):
+                        tmp0 = DataSetList()
+                        tmp1 = DataSetList()
+                        for f in g:
+                            tmp0.extend(dictFunc0[f])
+                            tmp1.extend(dictFunc1[f])
+                        group0.append(tmp0)
+                        group1.append(tmp1)
+                    for i, g in enumerate(zip(group0, group1)):
+                        pptable2.main2(g[0], g[1], inset.tabDimsOfInterest,
+                                       outputdir, '%s%d' % (nGroup, i), verbose)
+                else:
+                    pptable2.main2(dictNG0[nGroup], dictNG1[nGroup],
+                                   inset.tabDimsOfInterest, outputdir,
+                                   '%s' % (nGroup), verbose)
             print "Tables done."
 
         if isscatter:
