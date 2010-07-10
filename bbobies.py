@@ -49,6 +49,19 @@ instancesOfInterestDet = {1:1, 2:1, 3:1, 4:1, 5:1}
 instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
                            11:1, 12:1, 13:1, 14:1, 15:1}
 
+algs2009 = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
+"BIPOP-CMA-ES", "CMA-ESPLUSSEL", "DASA", "DE-PSO", "DIRECT", "EDA-PSO",
+"FULLNEWUOA", "G3PCX", "GA", "GLOBAL", "iAMALGAM", "IPOPSEPCMA", "LSfminbnd",
+"LSstep", "MA-LS-CHAIN", "MCS", "NELDER", "NELDERDOERR", "NEWUOA", "ONEFIFTH",
+"POEMS", "PSO", "PSO_Bounds", "RANDOMSEARCH", "Rosenbrock", "SNOBFIT",
+"VNS")
+
+algs2010 = ("1komma2", "1komma2mir", "1komma2mirser", "1komma2ser", "1komma4",
+"1komma4mir", "1komma4mirser", "1komma4ser", "1plus1", "1plus2mirser", "ABC",
+"AVGNEWUOA", "CMAEGS", "DE-F-AUC", "DEuniform", "IPOP-ACTCMA-ES",
+"IPOP-CMA-ES", "MOS", "NBC-CMA", "NEWUOA", "PM-AdapSS-DE", "RCGA", "SPSA",
+"oPOEMS", "pPOEMS")
+
 #CLASS DEFINITIONS
 
 class Usage(Exception):
@@ -130,12 +143,7 @@ def main(argv=None):
         except getopt.error, msg:
              raise Usage(msg)
 
-        args = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
-                "CMA-ES", "CMA-ESPLUSSEL", "DASA", "DE-PSO", "DIRECT", "EDA-PSO",
-                "FULLNEWUOA", "G3PCX", "GA", "GLOBAL", "iAMALGAM", "LSfminbnd", "LSstep",
-                "MA-LS-CHAIN", "MCS", "NELDER", "NELDERDOERR", "NEWUOA", "ONEFIFTH", "POEMS",
-                "PSO", "PSO_Bounds", "RANDOMSEARCH", "Rosenbrock", "SEP-CMA-ES", "SNOBFIT",
-                "VNS")
+        args = set(algs2009) | set(algs2010)
 
         if not (args):
             usage()

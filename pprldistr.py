@@ -62,15 +62,16 @@ fmax = None
 evalfmax = None
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
-filename = 'pprldistr2009_1e-8.pickle'
+#filename = 'pprldistr2009_1e-8.pickle'
+filename = 'pprldistrever_1e-8.pickle'
 filename = os.path.join(os.path.split(__file__)[0], filename)
-isAlgorithm2009Found = True
+isBestAlgorithmFound = True
 try:
     f = open(filename,'r')
-    dict2009 = pickle.load(f)
+    dictbestalg = pickle.load(f)
 except IOError, (errno, strerror):
     print "I/O error(%s): %s" % (errno, strerror)
-    isAlgorithm2009Found = False
+    isBestAlgorithmFound = False
     print 'Could not find file: ', filename
 else:
     f.close()
@@ -405,14 +406,14 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     funcs = set(i.funcId for i in dsList0) | set(i.funcId for i in dsList1)
     text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
 
-    if isAlgorithm2009Found:
+    if isBestAlgorithmFound:
         d = set.union(set(i.dim for i in dsList0),
                       set(i.dim for i in dsList1)).pop() # Get only one element...
-        for alg in dict2009:
+        for alg in dictbestalg:
             x = []
             nn = 0
             try:
-                tmp = dict2009[alg]
+                tmp = dictbestalg[alg]
                 for f in funcs:
                     tmp[f][d] # simply test that they exists
             except KeyError:
@@ -536,13 +537,13 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     funcs = list(i.funcId for i in dsList)
     text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
 
-    if isAlgorithm2009Found:
+    if isBestAlgorithmFound:
         d = set(i.dim for i in dsList).pop() # Get only one element...
-        for alg in dict2009:
+        for alg in dictbestalg:
             x = []
             nn = 0
             try:
-                tmp = dict2009[alg]
+                tmp = dictbestalg[alg]
                 for f in funcs:
                     tmp[f][d] # simply test that they exists
             except KeyError:
@@ -757,14 +758,14 @@ def comp2(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     funcs = set(i.funcId for i in dsList0) | set(i.funcId for i in dsList1)
     text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
 
-    if isAlgorithm2009Found:
+    if isBestAlgorithmFound:
         d = set.union(set(i.dim for i in dsList0),
                       set(i.dim for i in dsList1)).pop() # Get only one element...
-        for alg in dict2009:
+        for alg in dictbestalg:
             x = []
             nn = 0
             try:
-                tmp = dict2009[alg]
+                tmp = dictbestalg[alg]
                 for f in funcs:
                     tmp[f][d] # simply test that they exists
             except KeyError:
@@ -839,13 +840,13 @@ def main2(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     funcs = list(i.funcId for i in dsList)
     text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
 
-    if isAlgorithm2009Found:
+    if isBestAlgorithmFound:
         d = set(i.dim for i in dsList).pop() # Get only one element...
-        for alg in dict2009:
+        for alg in dictbestalg:
             x = []
             nn = 0
             try:
-                tmp = dict2009[alg]
+                tmp = dictbestalg[alg]
                 for f in funcs:
                     tmp[f][d] # simply test that they exists
             except KeyError:

@@ -117,10 +117,10 @@ def plotLegend(handles, maxval=None):
     i = 0 # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in sorted(ys[j].keys()):
-            #enforce best 2009 comes first in case of equality
+            #enforce best ever comes first in case of equality
             tmp = []
             for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best 2009':
+                if plt.getp(h, 'label') == 'best ever':
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)
@@ -298,15 +298,15 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
             #             verticalalignment='bottom',
             #             horizontalalignment='center')
 
-        if not bestalg.bestalgentries:
-            bestalg.loadBBOB2009()
+        if not bestalg.bestalgentriesever:
+            bestalg.loadBBOBever()
 
         bestalgdata = []
-        dimbestalg = list(df[0] for df in bestalg.bestalgentries if df[1] == f)
+        dimbestalg = list(df[0] for df in bestalg.bestalgentriesever if df[1] == f)
         dimbestalg.sort()
         dimbestalg2 = []
         for d in dimbestalg:
-            entry = bestalg.bestalgentries[(d, f)]
+            entry = bestalg.bestalgentriesever[(d, f)]
             tmp = entry.detERT([target])[0]
             if numpy.isfinite(tmp):
                 bestalgdata.append(float(tmp)/d)
@@ -314,7 +314,7 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
 
         tmp = plt.plot(dimbestalg2, bestalgdata, color='wheat', linewidth=10,
                        marker='d', markersize=25, markeredgecolor='wheat',
-                       label='best 2009', zorder=-1)
+                       label='best ever', zorder=-1)
         handles.append(tmp)
 
         if isBenchmarkinfosFound:
@@ -392,15 +392,15 @@ def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
             #             verticalalignment='bottom',
             #             horizontalalignment='center')
 
-        if not bestalg.bestalgentries:
-            bestalg.loadBBOB2009()
+        if not bestalg.bestalgentriesever:
+            bestalg.loadBBOBever()
 
         bestalgdata = []
-        dimbestalg = list(df[0] for df in bestalg.bestalgentries if df[1] == f)
+        dimbestalg = list(df[0] for df in bestalg.bestalgentriesever if df[1] == f)
         dimbestalg.sort()
         dimbestalg2 = []
         for d in dimbestalg:
-            entry = bestalg.bestalgentries[(d, f)]
+            entry = bestalg.bestalgentriesever[(d, f)]
             tmp = entry.detERT([target])[0]
             if numpy.isfinite(tmp):
                 bestalgdata.append(float(tmp)/d)
@@ -408,7 +408,7 @@ def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
 
         tmp = plt.plot(dimbestalg2, bestalgdata, color='wheat', linewidth=10,
                        marker='d', markersize=25, markeredgecolor='wheat',
-                       label='best 2009', zorder=-1)
+                       label='best ever', zorder=-1)
         handles.append(tmp)
 
         if isBenchmarkinfosFound:

@@ -702,8 +702,8 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.',
     * table width...
     """
 
-    if not bestalg.bestalgentries:
-        bestalg.loadBBOB2009()
+    if not bestalg.bestalgentriesever:
+        bestalg.loadBBOBever()
 
     # Sort data per dimension and function
     dictData = {}
@@ -720,8 +720,8 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.',
     for df in dictData:
         # Generate one table per df
 
-        # best 2009
-        refalgentry = bestalg.bestalgentries[df]
+        # best ever
+        refalgentry = bestalg.bestalgentriesever[df]
         refalgert = refalgentry.detERT(targets)
         refalgevals = (refalgentry.detEvals((targetf, ))[0][0])
         refalgnbruns = len(refalgevals)

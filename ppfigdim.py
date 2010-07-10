@@ -268,12 +268,12 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             plt.plot(tmp[:, 0], tmp[:, -2], color=colors[i],
                      marker='x', markersize=20)
 
-        if not bestalg.bestalgentries:
-            bestalg.loadBBOB2009()
+        if not bestalg.bestalgentriesever:
+            bestalg.loadBBOBever()
 
         bestalgdata = []
         for d in dimsBBOB:
-            entry = bestalg.bestalgentries[(d, func)]
+            entry = bestalg.bestalgentriesever[(d, func)]
             tmp = entry.ert[entry.target<=1e-8]
             try:
                 bestalgdata.append(tmp[0])
@@ -361,12 +361,12 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
             plt.plot(tmp[:, 0], tmp[:, -2]/tmp[:, 0], color=styles[i]['color'],
                      marker='x', markersize=20)
 
-        if not bestalg.bestalgentries:
-            bestalg.loadBBOB2009()
+        if not bestalg.bestalgentriesever:
+            bestalg.loadBBOBever()
 
         bestalgdata = []
         for d in dimsBBOB:
-            entry = bestalg.bestalgentries[(d, func)]
+            entry = bestalg.bestalgentriesever[(d, func)]
             tmp = entry.ert[entry.target<=1e-8]
             try:
                 bestalgdata.append(tmp[0]/d)
