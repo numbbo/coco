@@ -346,9 +346,10 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
                 plt.plot(tmp[:, 0], tmp[:,1]/tmp[:, 0], markersize=20,
                          **styles[i])
                 #median
-                #plt.plot(tmp[:, 0], tmp[:,-1]/tmp[:, 0], color=styles[i]['color'],
-                         #linestyle='', marker='+', markersize=30,
-                         #markeredgewidth=5)
+                if i == len(valuesOfInterest) - 1:
+                    plt.plot(tmp[:, 0], tmp[:,-1]/tmp[:, 0], color=styles[i]['color'],
+                             linestyle='', marker='+', markersize=30,
+                             markeredgewidth=5)
 
             # To have the legend displayed whatever happens with the data.
             plt.plot([], [], markersize=10,
