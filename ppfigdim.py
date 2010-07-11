@@ -317,7 +317,7 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     for func in dictFunc:
         dictFunc[func] = dictFunc[func].dictByDim()
-        filename = os.path.join(outputdir,'ppdata2_f%d' % (func))
+        filename = os.path.join(outputdir,'ppfigdim_f%03d' % (func))
 
         #legend = []
         line = []

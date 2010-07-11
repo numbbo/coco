@@ -101,22 +101,21 @@ dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 
 nbperdecade = 3
 
 styles = [{'marker': 'o', 'linestyle': '-', 'color': 'b'},
-          {'marker': '+', 'linestyle': '-', 'color': 'g'},
-          {'marker': 'd', 'linestyle': '-', 'color': 'r'},
-          {'marker': 's', 'linestyle': '-', 'color': 'c'},
-          {'marker': 'v', 'linestyle': '-', 'color': 'm'},
-          {'marker': '*', 'linestyle': '-', 'color': 'y'},
-          {'marker': 'h', 'linestyle': '-', 'color': 'k'},
-          {'marker': '^', 'linestyle': '-', 'color': 'b'},
-          {'marker': 'p', 'linestyle': '-', 'color': 'g'},
-          {'marker': 'H', 'linestyle': '-', 'color': 'r'},
-          {'marker': '<', 'linestyle': '-', 'color': 'c'},
-          {'marker': 'D', 'linestyle': '-', 'color': 'm'},
-          {'marker': '>', 'linestyle': '-', 'color': 'y'},
-          {'marker': '1', 'linestyle': '-', 'color': 'k'},
-          {'marker': '2', 'linestyle': '-', 'color': 'b'},
-          {'marker': '3', 'linestyle': '-', 'color': 'g'},
-          {'marker': '4', 'linestyle': '-', 'color': 'r'}]
+          {'marker': 'd', 'linestyle': '-', 'color': 'g'},
+          {'marker': 's', 'linestyle': '-', 'color': 'r'},
+          {'marker': 'v', 'linestyle': '-', 'color': 'c'},
+          {'marker': '*', 'linestyle': '-', 'color': 'm'},
+          {'marker': 'h', 'linestyle': '-', 'color': 'y'},
+          {'marker': '^', 'linestyle': '-', 'color': 'k'},
+          {'marker': 'p', 'linestyle': '-', 'color': 'b'},
+          {'marker': 'H', 'linestyle': '-', 'color': 'g'},
+          {'marker': '<', 'linestyle': '-', 'color': 'r'},
+          {'marker': 'D', 'linestyle': '-', 'color': 'c'},
+          {'marker': '>', 'linestyle': '-', 'color': 'm'},
+          {'marker': '1', 'linestyle': '-', 'color': 'y'},
+          {'marker': '2', 'linestyle': '-', 'color': 'k'},
+          {'marker': '3', 'linestyle': '-', 'color': 'b'},
+          {'marker': '4', 'linestyle': '-', 'color': 'g'}]
 #'-'     solid line style
 #'--'    dashed line style
 #'-.'    dash-dot line style

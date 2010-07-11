@@ -143,7 +143,7 @@ def main(argv=None):
         isNoisy = False
         isNoiseFree = False
         verbose = False
-        outputdir = 'cmp2data'
+        outputdir = 'ppdata2'
 
         #Process options
         for o, a in opts:
@@ -302,7 +302,7 @@ def main(argv=None):
                     try:
                         pprldistr2.main2(dictDim0[dim], dictDim1[dim],
                                          inset.rldValsOfInterest,
-                                         outputdir, 'dim%02dall' % dim, verbose)
+                                         outputdir, '%02dD_all' % dim, verbose)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.'
                                       % (dim))
@@ -315,7 +315,7 @@ def main(argv=None):
                     for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
                         pprldistr2.main2(dictFG0[fGroup], dictFG1[fGroup],
                                          inset.rldValsOfInterest,
-                                         outputdir, 'dim%02d%s' % (dim, fGroup),
+                                         outputdir, '%02dD_%s' % (dim, fGroup),
                                          verbose)
 
                     # ECDFs per noise groups
@@ -325,7 +325,7 @@ def main(argv=None):
                     for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
                         pprldistr2.main2(dictFN0[fGroup], dictFN1[fGroup],
                                          inset.rldValsOfInterest, outputdir,
-                                         'dim%02d%s' % (dim, fGroup),
+                                         '%02dD_%s' % (dim, fGroup),
                                          verbose)
             print "ECDF absolute target graphs done."
 
@@ -337,7 +337,7 @@ def main(argv=None):
                     try:
                         pprldistr.comp2(dictDim0[dim], dictDim1[dim],
                                         inset.rldValsOfInterest, True,
-                                        outputdir, 'dim%02dall' % dim, verbose)
+                                        outputdir, '%02dD_all' % dim, verbose)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.'
                                       % (dim))
@@ -350,7 +350,7 @@ def main(argv=None):
                     for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
                         pprldistr.comp2(dictFG0[fGroup], dictFG1[fGroup],
                                         inset.rldValsOfInterest, True, outputdir,
-                                        'dim%02d%s' % (dim, fGroup), verbose)
+                                        '%02dD_%s' % (dim, fGroup), verbose)
 
                     # ECDFs per noise groups
                     dictFN0 = dictDim0[dim].dictByNoise()
@@ -358,7 +358,7 @@ def main(argv=None):
                     for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
                         pprldistr.comp2(dictFN0[fGroup], dictFN1[fGroup],
                                         inset.rldValsOfInterest, True, outputdir,
-                                        'dim%02d%s' % (dim, fGroup), verbose)
+                                        '%02dD_%s' % (dim, fGroup), verbose)
 
             print "ECDF dashed-solid graphs done."
 

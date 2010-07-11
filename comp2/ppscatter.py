@@ -253,7 +253,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             except IndexError:
                 pass
 
-        filename = os.path.join(outputdir, 'scatter_f%d' % f)
+        filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
         saveFigure(filename, figFormat=figFormat, verbose=verbose)
         plt.close()
 

@@ -248,7 +248,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             extraeol.append(r'\hline')
         extraeol[-1] = ''
 
-        outputfile = os.path.join(outputdir, 'table_%02dD%s.tex' % (d, info))
+        outputfile = os.path.join(outputdir, 'pptable_%02dD%s.tex' % (d, info))
         spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         #res = r'\providecommand{\algshort}{%s}' % alg1 + '\n'
         #res += tableLaTeXStar(table, width=r'0.45\textwidth', spec=spec,

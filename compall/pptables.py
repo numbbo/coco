@@ -924,6 +924,6 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.',
 
         # Write table
         res = tableLaTeX(table, spec=spec, extraeol=extraeol)
-        f = open(os.path.join(outputdir, 'pptablef%03d_%02dD.tex' % (df[1], df[0])), 'w')
+        f = open(os.path.join(outputdir, 'pptables_f%03d_%02dD.tex' % (df[1], df[0])), 'w')
         f.write(res)
         f.close()

@@ -20,22 +20,21 @@ from bbob_pproc.dataoutput import algPlotInfos
 #           {'color': 'm'},
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
 styles = [{'marker': 'o', 'linestyle': '-', 'color': 'b'},
-          {'marker': '+', 'linestyle': '-', 'color': 'g'},
-          {'marker': 'd', 'linestyle': '-', 'color': 'r'},
-          {'marker': 's', 'linestyle': '-', 'color': 'c'},
-          {'marker': 'v', 'linestyle': '-', 'color': 'm'},
-          {'marker': '*', 'linestyle': '-', 'color': 'y'},
-          {'marker': 'h', 'linestyle': '-', 'color': 'k'},
-          {'marker': '^', 'linestyle': '-', 'color': 'b'},
-          {'marker': 'p', 'linestyle': '-', 'color': 'g'},
-          {'marker': 'H', 'linestyle': '-', 'color': 'r'},
-          {'marker': '<', 'linestyle': '-', 'color': 'c'},
-          {'marker': 'D', 'linestyle': '-', 'color': 'm'},
-          {'marker': '>', 'linestyle': '-', 'color': 'y'},
-          {'marker': '1', 'linestyle': '-', 'color': 'k'},
-          {'marker': '2', 'linestyle': '-', 'color': 'b'},
-          {'marker': '3', 'linestyle': '-', 'color': 'g'},
-          {'marker': '4', 'linestyle': '-', 'color': 'r'}]
+          {'marker': 'd', 'linestyle': '-', 'color': 'g'},
+          {'marker': 's', 'linestyle': '-', 'color': 'r'},
+          {'marker': 'v', 'linestyle': '-', 'color': 'c'},
+          {'marker': '*', 'linestyle': '-', 'color': 'm'},
+          {'marker': 'h', 'linestyle': '-', 'color': 'y'},
+          {'marker': '^', 'linestyle': '-', 'color': 'k'},
+          {'marker': 'p', 'linestyle': '-', 'color': 'b'},
+          {'marker': 'H', 'linestyle': '-', 'color': 'g'},
+          {'marker': '<', 'linestyle': '-', 'color': 'r'},
+          {'marker': 'D', 'linestyle': '-', 'color': 'c'},
+          {'marker': '>', 'linestyle': '-', 'color': 'm'},
+          {'marker': '1', 'linestyle': '-', 'color': 'y'},
+          {'marker': '2', 'linestyle': '-', 'color': 'k'},
+          {'marker': '3', 'linestyle': '-', 'color': 'b'},
+          {'marker': '4', 'linestyle': '-', 'color': 'g'}]
 
 show_algorithms = []
 fontsize = 20.0
@@ -245,7 +244,7 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
     dictFunc = pproc.dictAlgByFun(dictAlg)
 
     for f in dictFunc:
-        filename = os.path.join(outputdir,'ppfigs_f%d' % (f))
+        filename = os.path.join(outputdir,'ppfigs_f%03d' % (f))
         handles = []
         for alg in sortedAlgs:
             dictDim = dictFunc[f][alg].dictByDim()
@@ -342,7 +341,7 @@ def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
     dictFunc = pproc.dictAlgByFun(dictAlg)
 
     for f in dictFunc:
-        filename = os.path.join(outputdir,'ppfigs_f%d' % (f))
+        filename = os.path.join(outputdir,'ppfigs_f%03d' % (f))
         handles = []
         for i, alg in enumerate(sortedAlgs):
             dictDim = dictFunc[f][alg].dictByDim()
@@ -380,8 +379,9 @@ def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
 
             if dimmaxevals:
                 tmp = plt.plot(dimmaxevals, maxevals, **styles[i])
-                plt.setp(tmp[0], marker='x', markersize=20, label=alg,
-                         markeredgecolor=plt.getp(tmp[0], 'color'))
+                plt.setp(tmp[0], markersize=20, label=alg,
+                         markeredgecolor=plt.getp(tmp[0], 'color'),
+                         markerfacecolor='None')
 
             handles.append(tmp)
             #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',

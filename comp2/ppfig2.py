@@ -494,7 +494,7 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
         else:
             title = ''
 
-        filename = os.path.join(outputdir,'ppcmpfig_f%d' % (func))
+        filename = os.path.join(outputdir,'ppfig2_f%03d' % (func))
 
         dims = sorted(set.intersection(set(dictDim0), set(dictDim1)))
 
