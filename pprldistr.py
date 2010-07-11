@@ -739,7 +739,7 @@ def comp2(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     if not evalfmax:
         evalfmax = maxEvalsFactor
 
-    figureName = os.path.join(outputdir,'pprldistr2_%s' %(info))
+    figureName = os.path.join(outputdir,'pprldistr_%s' %(info))
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):

@@ -147,7 +147,7 @@ def main(argv=None):
             sys.exit()
 
         verbose = False
-        outputdir = 'cmpmanydata'
+        outputdir = 'ppdatamany'
         isNoisy = False
         isNoiseFree = False
 

@@ -172,7 +172,7 @@ def main(argv=None):
         isPickled = False
         isDraft = True
         verbose = False
-        outputdir = 'ppdata'
+        outputdir = 'ppdata1'
         isNoisy = False
         isNoiseFree = False
 
@@ -326,16 +326,16 @@ def main(argv=None):
                     continue
 
                 pprldistr.main2(sliceDim, inset.rldValsOfInterest, True,
-                               outputdir, 'dim%02dall' % dim, verbose)
+                               outputdir, '%02dD_all' % dim, verbose)
                 dictNoise = sliceDim.dictByNoise()
                 for noise, sliceNoise in dictNoise.iteritems():
                     pprldistr.main2(sliceNoise, inset.rldValsOfInterest, True,
-                                   outputdir, 'dim%02d%s' % (dim, noise),
+                                   outputdir, '%02dD_%s' % (dim, noise),
                                    verbose)
                 dictFG = sliceDim.dictByFuncGroup()
                 for fGroup, sliceFuncGroup in dictFG.items():
                     pprldistr.main2(sliceFuncGroup, inset.rldValsOfInterest, True,
-                                   outputdir, 'dim%02d%s' % (dim, fGroup),
+                                   outputdir, '%02dD_%s' % (dim, fGroup),
                                    verbose)
 
                 pprldistr.fmax = None #Resetting the max final value
@@ -363,13 +363,13 @@ def main(argv=None):
                         sliceDim = dictDim[d]
                     except KeyError:
                         continue
-                    info = 'dim%02d%s' % (d, ng)
+                    info = '%02dD_%s' % (d, ng)
                     pplogloss.main(sliceDim, CrE, True, outputdir, info,
                                    verbose=verbose)
                     pplogloss.generateTable(sliceDim, CrE, outputdir, info,
                                             verbose=verbose)
                     for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
-                        info = 'dim%02d%s' % (d, fGroup)
+                        info = '%02dD_%s' % (d, fGroup)
                         pplogloss.main(sliceFuncGroup, CrE, True, outputdir, info,
                                        verbose=verbose)
                     pplogloss.evalfmax = None #Resetting the max #fevalsfactor
