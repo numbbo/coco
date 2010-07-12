@@ -20,7 +20,7 @@ import numpy
 
 from bbob_pproc import bootstrap, readalign
 from bbob_pproc.bootstrap import ranksums
-from bbob_pproc.ppfig import saveFigure
+from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
 #try:
     #supersede this module own ranksums method
     #from scipy.stats import ranksums as ranksums
@@ -511,7 +511,7 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
 
             nbtests += 1
             # generateData:
-            data = generateData(entry0, entry1, fthresh=fthresh, downsampling=2)
+            data = generateData(entry0, entry1, fthresh=fthresh)
             dataperdim[dim] = data
 
             if len(data[0]) == 0 and len(data[1]) == 0:
@@ -526,10 +526,11 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             # plot
             idx = numpy.isfinite(data[0][:, 1]) * numpy.isfinite(data[1][:, 1])
             ydata = data[1][idx, 1]/data[0][idx, 1]
-            #plt.plot(data[0][idx, 0], ydata, ls='--', color=colors[i],
-                     #lw=linewidth)
-            plt.plot(data[0][idx, 0], ydata, ls='', markersize=3*linewidth,
-                     label='%2d-D' % dim, **styles[i])
+            kwargs = styles[i].copy()
+            kwargs['label'] = '%2d-D' % dim
+            tmp = plotUnifLogXMarkers(data[0][idx, 0], ydata, 1, kwargs)
+            plt.setp(tmp, markersize=3*linewidth)
+            plt.setp(tmp[0], ls='--')
 
             # This is only one possibility:
             #idx = (data[0][:, 3] >= 5) * (data[1][:, 3] >= 5)
@@ -544,10 +545,8 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
 
             fvalueswitch[dim] = min(data[0][idx, 0])
             ydata = data[1][idx, 1]/data[0][idx, 1]
-            #plt.plot(data[0][idx, 0], ydata, color=colors[i], lw=linewidth)
-            plt.plot(data[0][idx, 0], ydata, ls='', markersize=3*linewidth, 
-                     **styles[i])
-            #h = plotERTRatio(data, plotargs)
+            tmp = plotUnifLogXMarkers(data[0][idx, 0], ydata, 1, styles[i])
+            plt.setp(tmp[1], markersize=3*linewidth)
 
         beautify(xmin=minfvalue)
         #beautify()
@@ -581,10 +580,6 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             #Do not plot anything else if it happens after minfvalue
             if data[0][idx, 0][-1] <= minfvalue:
                 # hack for the legend
-                #plt.plot((data[0][idx, 0][-1]**2, ), (ydata[-1], ), marker='D',
-                         #color=colors[i], lw=linewidth, label='%2d-D' % dim,
-                         #markeredgecolor=colors[i], markerfacecolor='None',
-                         #markeredgewidth=linewidth, markersize=3*linewidth)
                 continue
 
             # Determine which algorithm went further
@@ -597,10 +592,6 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
 
             #marker if an algorithm stopped
             ydata = data[1][idx, 1]/data[0][idx, 1]
-            #plt.plot((data[0][idx, 0][-1], ), (ydata[-1], ), marker='D',
-                     #color=colors[i], lw=linewidth, label='%2d-D' % dim,
-                     #markeredgecolor=colors[i], markerfacecolor='None',
-                     #markeredgewidth=linewidth, markersize=3*linewidth)
             plt.plot((data[0][idx, 0][-1], ), (ydata[-1], ), marker='D', ls='',
                      color=styles[i]['color'], markeredgecolor=styles[i]['color'],
                      markerfacecolor=styles[i]['color'], markersize=4*linewidth)
@@ -628,47 +619,28 @@ def main2(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             ydata = numpy.power(10, numpy.log10(ybnd) * (dataofinterest[idx, 2]
                                                          -offset*(5-i)*numpy.log10(ymax/ymin)/numpy.abs(numpy.log10(ybnd))))
 
-            #ls = '-'
-            #if dataofinterest[idx, 0][0] < fvalueswitch[dim]:
-                #ls = '--'
+            ls = '-'
+            if dataofinterest[idx, 0][0] < fvalueswitch[dim]:
+                ls = '--'
 
-            #plt.plot([dataofinterest[idx, 0][0]]*2,
-                     #(tmpy, ydata[0]), ls=ls, lw=linewidth, color=colors[i])
-
-            #plt.plot(dataofinterest[idx, 0], ydata, ls='--', lw=linewidth,
-                     #color=colors[i])
-
-            ## marker for when the first algorithm stop
-            #plt.plot((dataofinterest[idx, 0][0], ), (ydata[0], ), marker='D',
-                     #color=colors[i], lw=linewidth, markeredgecolor=colors[i],
-                     #markerfacecolor='None', markeredgewidth=linewidth,
-                     #markersize=3*linewidth)
-
-            ##Do not plot anything else if it happens after minfvalue
-            #if dataofinterest[idx, 0][-1] <= minfvalue:
-                #continue
-            #plt.plot((dataofinterest[idx, 0][-1], ), (ydata[-1], ), marker='D',
-                     #color=colors[i], lw=linewidth, markeredgecolor=colors[i],
-                     #markerfacecolor='None', markeredgewidth=linewidth,
-                     #markersize=3*linewidth)
-
-            plt.plot([dataofinterest[idx, 0][0]]*2, (tmpy, ydata[0]), ls='',
-                     markersize=3*linewidth, **styles[i])
-
-            plt.plot(dataofinterest[idx, 0], ydata, ls='',
-                     markersize=3*linewidth, **styles[i])
-
-            # marker for when the first algorithm stop
-            plt.plot((dataofinterest[idx, 0][0], ), (ydata[0], ), marker='d',
+            tmp = plt.plot([dataofinterest[idx, 0][0]]*2, (tmpy, ydata[0]),
+                           **styles[i])
+            plt.setp(tmp, ls=ls, marker='')
+            tmp = plt.plot((dataofinterest[idx, 0][0], ), (ydata[0], ), marker='D', ls='',
                      color=styles[i]['color'], markeredgecolor=styles[i]['color'],
                      markerfacecolor=styles[i]['color'], markersize=4*linewidth)
+
+            kwargs = styles[i].copy()
+            kwargs['ls'] = ls
+            tmp = plotUnifLogXMarkers(dataofinterest[idx, 0], ydata, 1, kwargs)
+            plt.setp(tmp, markersize=3*linewidth)
 
             #Do not plot anything else if it happens after minfvalue
             if dataofinterest[idx, 0][-1] <= minfvalue:
                 continue
-            plt.plot((dataofinterest[idx, 0][-1], ), (ydata[-1], ), marker='d',
-                     color=styles[i]['color'], markeredgecolor=styles[i]['color'],
-                     markerfacecolor=styles[i]['color'], markersize=4*linewidth)
+            #plt.plot((dataofinterest[idx, 0][-1], ), (ydata[-1], ), marker='d',
+            #         color=styles[i]['color'], markeredgecolor=styles[i]['color'],
+            #         markerfacecolor=styles[i]['color'], markersize=4*linewidth)
 
         if isBenchmarkinfosFound:
             plt.title(funInfos[func])
