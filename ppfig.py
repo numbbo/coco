@@ -50,19 +50,18 @@ def plotUnifLogXMarkers(x, y, nbperdecade, kwargs={}):
         """Downsample arrays of data, zero-th column elements are evenly spaced."""
 
         # powers of ten 10**(i/nbperdecade)
-        minidx = numpy.ceil(numpy.log10(xdata[0]) * nbperdecade)
-        maxidx = numpy.floor(numpy.log10(xdata[-1]) * nbperdecade)
+        minidx = numpy.ceil(numpy.log10(min(xdata)) * nbperdecade)
+        maxidx = numpy.floor(numpy.log10(max(xdata)) * nbperdecade) + 1
         alignmentdata = 10.**(numpy.arange(minidx, maxidx)/nbperdecade)
         # Look in the original data
         res = []
+        tmp = numpy.argsort(xdata)
         for i in alignmentdata:
-            res.append(ydata[xdata <= i][-1])
+            res.append(ydata[tmp][xdata[tmp] <= i][-1])
 
         return alignmentdata, res
 
-    x2 = ()
-    y2 = ()
-    if 'marker' in kwargs:
+    if 'marker' in kwargs and len(x) > 0:
         x2, y2 = downsample(x, y)
         res2 = plt.plot(x2, y2, **kwargs)
         for attr in ('linestyle', 'marker', 'markeredgewidth',
@@ -73,10 +72,7 @@ def plotUnifLogXMarkers(x, y, nbperdecade, kwargs={}):
         res.extend(res2)
 
     if 'label' in kwargs:
-        if len(x2) > 0 and len(y2) > 0:
-            res3 = plt.plot((x2[0], ), (y2[0], ), **kwargs)
-        else:
-            res3 = plt.plot((x[0], ), (y[0], ), **kwargs)
+        res3 = plt.plot([], [], **kwargs)
         for attr in ('linestyle', 'marker', 'markeredgewidth',
                      'markerfacecolor', 'markeredgecolor',
                      'markersize', 'color', 'linewidth', 'markeredgewidth'):

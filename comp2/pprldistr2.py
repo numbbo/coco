@@ -15,14 +15,10 @@ from pdb import set_trace
 #__all__ = []
 
 rldColors = ('k', 'c', 'm', 'r', 'k', 'c', 'm', 'r', 'k', 'c', 'm', 'r')
-rldStyles = ({'color': 'k'},
-             {'color': 'c', 'marker': 'o', 'markersize': 10.,
-              'markeredgewidth': 3., 'markeredgecolor': 'c',
-              'markerfacecolor': 'None'},
-             {'color': 'm'},
-             {'color': 'r', 'marker': '*', 'markersize': 10.,
-              'markeredgewidth': 3., 'markeredgecolor': 'r',
-              'markerfacecolor': 'None'},
+rldStyles = ({'color': 'k', 'ls': '--'},
+             {'color': 'c'},
+             {'color': 'm', 'ls': '--'},
+             {'color': 'r'},
              {'color': 'k'},
              {'color': 'c'},
              {'color': 'm'},
@@ -31,7 +27,7 @@ rldStyles = ({'color': 'k'},
              {'color': 'c'},
              {'color': 'm'},
              {'color': 'r'})
-rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  # should not be too short
+
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
@@ -310,7 +306,7 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
         n = len(x)
 
         if n == 0:
-            res.extend(plt.plot([], [], label=label, color=rldColors[i], linewidth=3))
+            res.extend(plt.plot([], [], label=label, color=rldStyles[i], linewidth=3.))
             continue # no plot?
 
         x.sort()

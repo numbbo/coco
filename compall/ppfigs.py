@@ -38,6 +38,7 @@ styles = [{'marker': 'o', 'linestyle': '-', 'color': 'b'},
 
 show_algorithms = []
 fontsize = 20.0
+legend = False
 
 #Get benchmark short infos.
 funInfos = {}
@@ -373,13 +374,16 @@ def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                         nbsucc.append('%d' % data[2])
 
             # Draw lines
-            tmp = plt.plot(dimert, ert, markersize=30,
-                           label=alg, **styles[i])
+            tmp = plt.plot(dimert, ert, markersize=30, **styles[i])
+                           #label=alg, )
+            plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
+            # For legend
+            tmp = plt.plot([], [], markersize=12., label=alg, **styles[i])
             plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
 
             if dimmaxevals:
                 tmp = plt.plot(dimmaxevals, maxevals, **styles[i])
-                plt.setp(tmp[0], markersize=20, label=alg,
+                plt.setp(tmp[0], markersize=20, #label=alg,
                          markeredgecolor=plt.getp(tmp[0], 'color'),
                          markerfacecolor='None')
 
@@ -407,17 +411,21 @@ def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                 dimbestalg2.append(d)
 
         tmp = plt.plot(dimbestalg2, bestalgdata, color='wheat', linewidth=10,
-                       marker='d', markersize=25, markeredgecolor='wheat',
-                       label='best ever', zorder=-1)
+                       marker='d', markersize=25, markeredgecolor='wheat', zorder=-1)
+                       #label='best ever', 
         handles.append(tmp)
 
         if isBenchmarkinfosFound:
             title = funInfos[f]
             plt.gca().set_title(title)
 
-        beautify(rightlegend=True)
+        beautify(rightlegend=legend)
 
-        plotLegend(handles)
+        if legend:
+            plotLegend(handles)
+        else:
+            if f in (1, 24, 101, 130):
+                plt.legend()
 
         saveFigure(filename, figFormat=figformat, verbose=verbose)
 

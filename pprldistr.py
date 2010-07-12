@@ -16,14 +16,10 @@ from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers
 rldColors = ('k', 'c', 'm', 'r', 'k', 'c', 'm', 'r', 'k', 'c', 'm', 'r')
 rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  # should not be too short
 
-rldStyles = ({'color': 'k'},
-             {'color': 'c', 'marker': 'o', 'markersize': 10.,
-              'markeredgecolor': 'c',
-              'markerfacecolor': 'None'},
-             {'color': 'm'},
-             {'color': 'r', 'marker': '*', 'linewidth': 3., 'markersize': 10.,
-              'markeredgewidth': 3., 'markeredgecolor': 'r',
-              'markerfacecolor': 'None'},
+rldStyles = ({'color': 'k', 'ls': '--'},
+             {'color': 'c'},
+             {'color': 'm', 'ls': '--'},
+             {'color': 'r', 'linewidth': 3.},
              {'color': 'k'},
              {'color': 'c'},
              {'color': 'm'},
@@ -32,30 +28,18 @@ rldStyles = ({'color': 'k'},
              {'color': 'c'},
              {'color': 'm'},
              {'color': 'r'})
-rldUnsuccStyles = ({'color': 'k'},
-                   {'color': 'c', 'marker': 'x', 'markersize': 10.,
-                    'markeredgewidth': 1., 'markeredgecolor': 'c',
-                    'markerfacecolor': 'None'},
-                   {'color': 'm'},
-                   {'color': 'k', 'marker': '+', 'markersize': 10.,
-                    'markeredgewidth': 1., 'markeredgecolor': 'k',
-                    'markerfacecolor': 'None'},
+rldUnsuccStyles = ({'color': 'k', 'ls': '--'},
                    {'color': 'c'},
-                   {'color': 'm', 'marker': 'x', 'markersize': 10.,
-                    'markeredgewidth': 1., 'markeredgecolor': 'm',
-                    'markerfacecolor': 'None'},
+                   {'color': 'm', 'ls': '--'},
                    {'color': 'k'},
-                   {'color': 'c', 'marker': '+', 'markersize': 10.,
-                    'markeredgewidth': 1., 'markeredgecolor': 'c',
-                    'markerfacecolor': 'None'},
+                   {'color': 'c', 'ls': '--'},
                    {'color': 'm'},
-                   {'color': 'k', 'marker': 'x', 'markersize': 10.,
-                    'markeredgewidth': 1., 'markeredgecolor': 'k',
-                    'markerfacecolor': 'None'},
+                   {'color': 'k', 'ls': '--'},
                    {'color': 'c'},
-                   {'color': 'm', 'marker': '+', 'markersize': 10.,
-                    'markeredgewidth': 1., 'markeredgecolor': '+',
-                    'markerfacecolor': 'None'})  # should not be too short
+                   {'color': 'm', 'ls': '--'},
+                   {'color': 'k'},
+                   {'color': 'c', 'ls': '--'},
+                   {'color': 'm'})  # should not be too short
 
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
@@ -649,7 +633,7 @@ def plotRLDistr2(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
         # maxEvalsF: used for the limit of the plot
         y2 = numpy.hstack([0.0,
                            numpy.repeat(numpy.arange(1, n+1)/float(nn), 2)])
-        res = plotUnifLogXMarkers(x2, y2, 3, kwargs)
+        res = plotUnifLogXMarkers(x2, y2, 1, kwargs)
 
     return res#, fsolved, funcs
 
@@ -743,17 +727,29 @@ def comp2(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):
-        tmp = plotRLDistr2(dsList0, valuesOfInterest[j], evalfmax, rldStyles[j])
+        kwargs = rldStyles[j].copy()
+        kwargs['marker'] = '+'
+        tmp = plotRLDistr2(dsList0, valuesOfInterest[j], evalfmax, kwargs)
 
         if not tmp is None:
-            plt.setp(tmp, 'ls', '--')
             plt.setp(tmp, 'label', None) # Hack for the legend
+            plt.setp(tmp, markersize=20.,
+                     markeredgewidth=plt.getp(tmp[-1], 'linewidth'),
+                     markeredgecolor=plt.getp(tmp[-1], 'color'),
+                     markerfacecolor='none')
 
-        tmp = plotRLDistr2(dsList1, valuesOfInterest[j], evalfmax, rldStyles[j])
+        kwargs = rldStyles[j].copy()
+        kwargs['marker'] = 'o'
+        tmp = plotRLDistr2(dsList1, valuesOfInterest[j], evalfmax, kwargs)
 
         if not tmp is None:
             ## Hack for the legend.
-            plt.setp(tmp[-1], 'label', ('%+d' % (numpy.log10(valuesOfInterest[j][1]))))
+            plt.setp(tmp[-1], 'marker', '',
+                     'label', ('%+d' % (numpy.log10(valuesOfInterest[j][1]))))
+            plt.setp(tmp, markersize=15.,
+                     markeredgewidth=plt.getp(tmp[-1], 'linewidth'),
+                     markeredgecolor=plt.getp(tmp[-1], 'color'),
+                     markerfacecolor='none')
 
     funcs = set(i.funcId for i in dsList0) | set(i.funcId for i in dsList1)
     text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
