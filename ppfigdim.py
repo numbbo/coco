@@ -184,7 +184,7 @@ def beautify2(title='', legend=True):
 def generateData(dataSet, targetFuncValue):
     """Returns an array of results to be plotted. 1st column is ert, 2nd is
     the number of success, 3rd the success rate, 4th the sum of the number of
-    function evaluations, and finally the median of all runs."""
+    function evaluations, and finally the median on successful runs."""
 
     res = []
     data = []
@@ -202,12 +202,16 @@ def generateData(dataSet, targetFuncValue):
 
     data = prev[1:].copy() # keep only the number of function evaluations.
     succ = (numpy.isnan(data) == False)
+    if succ.any():
+        med = bootstrap.prctile(data, 50)[0]
+    else:
+        med = numpy.nan
     data[numpy.isnan(data)] = dataSet.maxevals[numpy.isnan(data)]
 
     res = []
     res.extend(bootstrap.sp(data, issuccessful=succ, allowinf=False))
     res.append(numpy.mean(data)) #mean(FE)
-    res.append(bootstrap.prctile(data, 50)[0])
+    res.append(med)
 
     return numpy.array(res)
 
