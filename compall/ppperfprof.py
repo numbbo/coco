@@ -78,17 +78,22 @@ funisep = [1,2,5]
 #'avg NEWUOA', 'NEWUOA', 'full NEWUOA', 'BFGS', 'MCS (Neum)', 'GLOBAL', 'NELDER (Han)',
 #'NELDER (Doe)', 'Monte Carlo') # ()==all
 show_algorithms = ()
+function_IDs = ()
 function_IDs = range(1,200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
-# function_IDs = range(101,199)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
-# function_IDs = funi # fmulti  # range(103, 131, 3)   # displayed functions
+#function_IDs = range(101,199)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
+#function_IDs = fmulti # funi fmulti  # range(103, 131, 3)   # displayed functions
 #function_IDs = [1,2,3,4,5] # separable functions
 #function_IDs = [6,7,8,9]   # moderate functions
 #function_IDs = [10,11,12,13,14] # ill-conditioned functions
 #function_IDs = [15,16,17,18,19] # multi-modal functions
 #function_IDs = [20,21,22,23,24] # weak structure functions
-#function_IDs = range(122,131)  # noise-free testbed
 #function_IDs = range(101,131) # noisy testbed
-function_IDs = ()
+#function_IDs = range(101,106+1)  # moderate noise
+#function_IDs = range(107,130+1)  # severe noise
+#function_IDs = range(101,130+1, 3)  # gauss noise
+#function_IDs = range(102,130+1, 3)  # unif noise
+#function_IDs = range(103,130+1, 3)  # cauchy noise
+# function_IDs = range(15,25) # multimodal nonseparable
 
 x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 x_annote_factor = 90 # make space for right-hand legend
@@ -552,25 +557,25 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
             pass
 
     if displaybest2009:
-        args = {'ls': '-', 'linewidth': 3, 'marker': 'D', 'markersize': 15.,
-                'markeredgewidth': 3, 'markerfacecolor': 'green',
-                'markeredgecolor': 'green', 'color': 'green',
+        args = {'ls': '-', 'linewidth': 1.5, 'marker': 'D', 'markersize': 7.,
+                'markeredgewidth': 1.5, 'markerfacecolor': 'wheat',
+                'markeredgecolor': 'wheat', 'color': 'wheat',
                 'label': 'best 2009', 'zorder': -1}
         lines.append(plotPerfProf2(numpy.array(xbest), xlim, maxevalsbest,
                                    CrE = 0., kwargs=args))
     if displaybest2010:
-        args = {'ls': '-', 'linewidth': 3, 'marker': 'D', 'markersize': 15.,
-                'markeredgewidth': 3, 'markerfacecolor': 'blue',
-                'markeredgecolor': 'blue', 'color': 'blue',
+        args = {'ls': '-', 'linewidth': 3, 'marker': 'D', 'markersize': 7.,
+                'markeredgewidth': 3, 'markerfacecolor': 'wheat',
+                'markeredgecolor': 'wheat', 'color': 'wheat',
                 'label': 'best 2010', 'zorder': -1}
         lines.append(plotPerfProf2(numpy.array(xbest2), xlim, maxevalsbest2,
                                    CrE = 0., kwargs=args))
 
     if displaybestever:
-        args = {'ls': '-', 'linewidth': 3, 'marker': 'D', 'markersize': 15.,
-                'markeredgewidth': 3, 'markerfacecolor': 'red',
-                'markeredgecolor': 'red', 'color': 'red',
-                'label': 'best ever', 'zorder': -1}
+        args = {'ls': '-', 'linewidth': 3, 'marker': 'D', 'markersize': 7.,
+                'markeredgewidth': 3, 'markerfacecolor': 'wheat',
+                'markeredgecolor': 'wheat', 'color': 'wheat',
+                'label': 'best 09/10', 'zorder': -1}
         lines.append(plotPerfProf2(numpy.array(xbestever), xlim, maxevalsbestever,
                                    CrE = 0., kwargs=args))
 
@@ -750,7 +755,7 @@ def main2(dictAlg, targets, order=None, plotArgs={}, outputdir='',
                                    CrE=0., kwargs=args))
 
     if displaybestever:
-        args = {'ls': '-', 'linewidth': 1.5, 'marker': 'D', 'markersize': 15.,
+        args = {'ls': '-', 'linewidth': 1.5, 'marker': 'D', 'markersize': 7.,
                 'markeredgewidth': 1.5, 'markerfacecolor': 'wheat',
                 'markeredgecolor': 'wheat', 'color': 'wheat',
                 'label': 'best ever', 'zorder': -1}
