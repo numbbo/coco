@@ -307,7 +307,7 @@ def loadBBOBever():
 
     print "Loading best algorithm data from BBOB...",  
     bestalgfilepath = os.path.split(__file__)[0]
-    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
+    picklefilename = os.path.join(bestalgfilepath, 'bestalgentriesever.pickle.gz')
     fid = gzip.open(picklefilename, 'r')
     bestalgentriesever = pickle.load(fid)
     fid.close()
