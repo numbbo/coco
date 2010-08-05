@@ -217,7 +217,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
                 if dispersion[i] and not numpy.isinf(bestalgdata[i]):
                     tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
-                    tableentry += ('\,(%s)' % tmp)
+                    tableentry += (r'${\scriptscriptstyle(%s)}$' % tmp)
 
                 if superscript:
                     s = r'$^{' + superscript + r'}$'

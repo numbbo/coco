@@ -862,7 +862,7 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.',
                     curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
                 else:
                     if numpy.isinf(refalgert[j]):
-                        curline.append(r'\multicolumn{2}{%s}{\textbf{%s}\,(%s)}'
+                        curline.append(r'\multicolumn{2}{%s}{\textbf{%s}${\scriptscriptstyle (%s)}$}'
                                        % (alignment,
                                           writeFEvalsMaxPrec(algert[i][j], 2),
                                           writeFEvalsMaxPrec(dispersion, 2)))
