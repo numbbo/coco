@@ -142,7 +142,7 @@ def generateData(dsList, evals, CrE_A):
         for i in range(len(ERT_A)):
             # nextbestf[i] >= f_thresh: this is tested because if it is not true
             # ERT_best_nextbestf[i] is supposed to be infinite.
-            if nextbestf[i] >= f_thresh and ERT_best_nextbestf[i] < evals[i]:
+            if nextbestf[i] >= f_thresh and ERT_best_nextbestf[i] < evals[i]: # is different from the specification...
                 ERT_A[i] = evals[i]
 
         # For test purpose:
@@ -629,3 +629,4 @@ def main(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True):
     generateFigure(dsList, CrE, isStoringXRange, outputdir, suffix, verbose)
     #table = generateTable(dsList, CrE, outputdir, verbose)
     #set_trace()
+
