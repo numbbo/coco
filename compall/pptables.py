@@ -877,7 +877,7 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.',
                                 tmp = r'\textbf{%s}' % tmp
 
                         if not numpy.isnan(dispersion):
-                            tmp += '\,(%s)' % writeFEvalsMaxPrec(dispersion/refalgert[j], 2)
+                            tmp += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion/refalgert[j], 2)
                         curline.append(r'\multicolumn{2}{%s}{%s}' % (alignment, tmp))
                     else:
                         tmp2 = tmp.split('.', 1)
@@ -891,7 +891,7 @@ def tablemanyalgonefunc2(dictAlg, sortedAlgs, targets, outputdir='.',
                                 tmp3.append(r'\textbf{%s}' % k)
                             tmp2 = tmp3
                         if not numpy.isnan(dispersion):
-                            tmp2[-1] += ('\,(%s)' % writeFEvalsMaxPrec(dispersion/refalgert[j], 2))
+                            tmp2[-1] += (r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion/refalgert[j], 2))
 
                         z, p = testres
                         if data < 1. and not numpy.isinf(refalgert[j]):
