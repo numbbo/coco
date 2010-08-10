@@ -53,7 +53,7 @@ def beautify(figHandle, figureName, fileFormat=('pdf', 'eps'), isByInstance=True
     else:
         axisHandle.set_ylabel('proportion of functions')
     # Grid options
-    axisHandle.grid('True')
+    axisHandle.grid(True)
     xtic = axisHandle.get_xticks()
     newxtic = []
     for j in xtic:
@@ -96,7 +96,7 @@ def beautify2(handles):
     plt.ylim(-0.01, 1.01)
     axisHandle.set_xlabel('log10 of FEvals(A1)/FEvals(A0)')
     axisHandle.set_ylabel('proportion')
-    axisHandle.grid('True')
+    axisHandle.grid(True)
     xticks = axisHandle.get_xticks()
     newxticks = []
     for i in xticks:
@@ -306,7 +306,7 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
         n = len(x)
 
         if n == 0:
-            res.extend(plt.plot([], [], label=label, color=rldStyles[i], linewidth=3.))
+            res.extend(plt.plot([], [], label=label, linewidth=3., **rldStyles[i]))
             continue # no plot?
 
         x.sort()

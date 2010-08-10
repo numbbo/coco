@@ -178,7 +178,7 @@ def beautify(rightlegend=False):
         set_trace()
 
     # Grid options
-    axisHandle.grid('True')
+    axisHandle.grid(True)
 
     ymin, ymax = plt.ylim()
 

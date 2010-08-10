@@ -173,7 +173,7 @@ def beautify(xmin=None):
     # Annotate figure
     ax.set_xlabel('log10(Delta ftarget)')
     ax.set_ylabel(r'log10(ERT1/ERT0) or ~#succ')  # TODO: replace hard-coded 15
-    ax.grid('True')
+    ax.grid(True)
 
     #Tick label handling
     xticks = ax.get_xticks()
