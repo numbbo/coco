@@ -80,7 +80,7 @@ def beautifyECDF(axish=None):
     plt.ylim(0.0, 1.0)
     plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
                ('0.0', '', '0.5', '', '1.0'))
-    axish.grid('True')
+    axish.grid(True)
 
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('pdf', 'eps'),
                 text=None, verbose=True):

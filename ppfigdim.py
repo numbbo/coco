@@ -67,7 +67,7 @@ def beautify(title='', legend=True):
     axisHandle.set_yscale("log")
 
     # Grid options
-    axisHandle.grid('True')
+    axisHandle.grid(True)
 
     ymin, ymax = plt.ylim()
 
@@ -133,7 +133,7 @@ def beautify2(title='', legend=True):
     axisHandle.set_yscale("log")
 
     # Grid options
-    axisHandle.grid('True')
+    axisHandle.grid(True)
 
     ymin, ymax = plt.ylim()
 
