@@ -25,10 +25,10 @@ bestalgentriesever = {}
 
 algs2009 = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
 "BIPOP-CMA-ES", "CMA-ESPLUSSEL", "DASA", "DE-PSO", "DIRECT", "EDA-PSO",
-"FULLNEWUOA", "G3PCX", "GA", "GLOBAL", "iAMALGAM", "IPOPSEPCMA", "LSfminbnd",
-"LSstep", "MA-LS-CHAIN", "MCS", "NELDER", "NELDERDOERR", "NEWUOA", "ONEFIFTH",
-"POEMS", "PSO", "PSO_Bounds", "RANDOMSEARCH", "Rosenbrock", "SNOBFIT",
-"VNS")
+"FULLNEWUOA", "G3PCX", "GA", "GLOBAL", "iAMALGAM", "IPOP-SEP-CMA-ES",
+"LSfminbnd", "LSstep", "MA-LS-CHAIN", "MCS", "NELDER", "NELDERDOERR", "NEWUOA",
+"ONEFIFTH", "POEMS", "PSO", "PSO_Bounds", "RANDOMSEARCH", "Rosenbrock",
+"SNOBFIT", "VNS")
 
 algs2010 = ("1komma2", "1komma2mir", "1komma2mirser", "1komma2ser", "1komma4",
 "1komma4mir", "1komma4mirser", "1komma4ser", "1plus1", "1plus2mirser", "ABC",
@@ -84,11 +84,16 @@ class BestAlgSet:
         dictFinalFunVals = {}
         tmpdictAlg = {}
         for alg, i in dictAlg.iteritems():
-            if len(i) != 1:
-                # Special case could occur?
-                txt = ('Algorithm %s has problem in this case: f%d %d-D.'
+            if len(i) == 0:
+                txt = ('Algorithm %s was not tested on f%d %d-D.'
                        % (alg, f, d))
                 warnings.warn(txt)
+                continue
+            elif len(i) > 1:
+                txt = ('Algorithm %s has a problem on f%d %d-D.'
+                       % (alg, f, d))
+                warnings.warn(txt)
+                set_trace()
                 continue
 
             tmpdictAlg[alg] = i[0] # Assign the first element as value for alg
@@ -330,8 +335,8 @@ def generate():
     The current working directory has to contain the data. 
     """
 
-    #args = set(algs2010 + algs2009)
-    args = algs2009
+    args = set(algs2010 + algs2009)
+    #args = algs2009
 
     outputdir = 'bestAlg'
 
