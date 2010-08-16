@@ -302,7 +302,7 @@ def plotLegend(handles, maxval):
         for i in h:
             x2.append(plt.getp(i, "xdata"))
             y2.append(plt.getp(i, "ydata"))
-        tmp = numpy.argsort(numpy.hstack(x2))
+        tmp = numpy.argsort(numpy.array(numpy.hstack(x2)))
         x2 = numpy.hstack(x2)[tmp]
         y2 = numpy.hstack(y2)[tmp]
         h = h[-1]
