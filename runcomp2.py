@@ -475,7 +475,7 @@ def main(argv=None):
             dictNG1 = dsList1.dictByNoise()
 
             for nGroup in set(dictNG0.keys()) & set(dictNG1.keys()):
-                pptable2.main(dictNG0[nGroup], dictFN1[nGroup],
+                pptable2.main(dictNG0[nGroup], dictNG1[nGroup],
                               tabDimsOfInterest, outputdir,
                               '%s' % (nGroup), verbose)
             print "Tables done."
