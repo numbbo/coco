@@ -548,3 +548,4 @@ def main2(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         f.close()
         if verbose:
             print "Table written in %s" % outputfile
+

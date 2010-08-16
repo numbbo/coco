@@ -13,7 +13,7 @@ import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap, bestalg
 from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
-from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
+from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
@@ -156,7 +156,7 @@ def beautify():
     a.set_xscale('log')
     #Tick label handling
 
-    plt.xlabel('Running length / dimension')
+    plt.xlabel('log10 of (ERT / dimension)')
     plt.ylabel('Proportion of functions')
     plt.grid(True)
 
@@ -767,6 +767,10 @@ def main2(dictAlg, targets, order=None, plotArgs={}, outputdir='',
     figureName = os.path.join(outputdir,'ppperfprof_%s' % (info))
     #beautify(figureName, funcsolved, xlim*x_annote_factor, False, fileFormat=figformat)
     beautify()
+
+    text = 'f%s' % (consecutiveNumbers(sorted(dictFunc.keys())))
+    plt.text(0.01, 0.98, text, horizontalalignment="left",
+             verticalalignment="top", transform=plt.gca().transAxes)
 
     a = plt.gca()
 
