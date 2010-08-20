@@ -27,7 +27,7 @@ if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import pptex, pptable, pprldistr, ppfigdim, pplogloss, findfiles
+from bbob_pproc import pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from bbob_pproc.pproc import DataSetList
 
 import matplotlib.pyplot as plt
@@ -325,16 +325,16 @@ def main(argv=None):
                 except KeyError:
                     continue
 
-                pprldistr.main2(sliceDim, inset.rldValsOfInterest, True,
+                pprldistr.main(sliceDim, inset.rldValsOfInterest, True,
                                outputdir, '%02dD_all' % dim, verbose)
                 dictNoise = sliceDim.dictByNoise()
                 for noise, sliceNoise in dictNoise.iteritems():
-                    pprldistr.main2(sliceNoise, inset.rldValsOfInterest, True,
+                    pprldistr.main(sliceNoise, inset.rldValsOfInterest, True,
                                    outputdir, '%02dD_%s' % (dim, noise),
                                    verbose)
                 dictFG = sliceDim.dictByFuncGroup()
                 for fGroup, sliceFuncGroup in dictFG.items():
-                    pprldistr.main2(sliceFuncGroup, inset.rldValsOfInterest, True,
+                    pprldistr.main(sliceFuncGroup, inset.rldValsOfInterest, True,
                                    outputdir, '%02dD_%s' % (dim, fGroup),
                                    verbose)
 

@@ -26,9 +26,9 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import pprldistr
 from bbob_pproc.pproc import DataSetList, processInputArgs
-from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
+from bbob_pproc.bbob2010 import pprldistr
+from bbob_pproc.bbob2010.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 
 import matplotlib.pyplot as plt
 
