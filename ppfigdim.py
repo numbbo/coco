@@ -367,7 +367,7 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
         #median # TODO only the best target for each dimension (and not the last)
         if mediandata:
             for i, tm in mediandata.iteritems():
-                plt.plot(i, tm[1]/i, color=styles[tm[0]]['color'],
+                plt.plot((i, ), (tm[1]/i, ), color=styles[tm[0]]['color'],
                          linestyle='', marker='+', markersize=30,
                          markeredgewidth=5, zorder=-1)
 

@@ -280,7 +280,7 @@ def main(argv=None):
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
-            ppfig2.main2(dsList0, dsList1, 1e-8, outputdir, verbose)
+            ppfig2.main(dsList0, dsList1, 1e-8, outputdir, verbose)
             print "log ERT1/ERT0 vs target function values done."
 
         plt.rc("axes", **inset.rcaxes)
@@ -303,43 +303,8 @@ def main(argv=None):
                 if dim in inset.rldDimsOfInterest:
                     # ECDF for all functions altogether
                     try:
-                        pprldistr2.main2(dictDim0[dim], dictDim1[dim],
-                                         inset.rldValsOfInterest,
-                                         outputdir, '%02dD_all' % dim, verbose)
-                    except KeyError:
-                        warnings.warn('Could not find some data in %d-D.'
-                                      % (dim))
-                        continue
-
-                    # ECDFs per function groups
-                    dictFG0 = dictDim0[dim].dictByFuncGroup()
-                    dictFG1 = dictDim1[dim].dictByFuncGroup()
-
-                    for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
-                        pprldistr2.main2(dictFG0[fGroup], dictFG1[fGroup],
-                                         inset.rldValsOfInterest,
-                                         outputdir, '%02dD_%s' % (dim, fGroup),
-                                         verbose)
-
-                    # ECDFs per noise groups
-                    dictFN0 = dictDim0[dim].dictByNoise()
-                    dictFN1 = dictDim1[dim].dictByNoise()
-
-                    for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
-                        pprldistr2.main2(dictFN0[fGroup], dictFN1[fGroup],
-                                         inset.rldValsOfInterest, outputdir,
-                                         '%02dD_%s' % (dim, fGroup),
-                                         verbose)
-            print "ECDF absolute target graphs done."
-
-            for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
-                pprldistr.fmax = None #Resetting the max final value
-                pprldistr.evalfmax = None #Resetting the max #fevalsfactor
-                # ECDFs of all functions altogether
-                if dim in inset.rldDimsOfInterest:
-                    try:
-                        pprldistr.comp2(dictDim0[dim], dictDim1[dim],
-                                        inset.rldValsOfInterest, True,
+                        pprldistr2.main(dictDim0[dim], dictDim1[dim],
+                                        inset.rldValsOfInterest,
                                         outputdir, '%02dD_all' % dim, verbose)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.'
@@ -351,17 +316,52 @@ def main(argv=None):
                     dictFG1 = dictDim1[dim].dictByFuncGroup()
 
                     for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
-                        pprldistr.comp2(dictFG0[fGroup], dictFG1[fGroup],
-                                        inset.rldValsOfInterest, True, outputdir,
-                                        '%02dD_%s' % (dim, fGroup), verbose)
+                        pprldistr2.main(dictFG0[fGroup], dictFG1[fGroup],
+                                        inset.rldValsOfInterest,
+                                        outputdir, '%02dD_%s' % (dim, fGroup),
+                                        verbose)
+
+                    # ECDFs per noise groups
+                    dictFN0 = dictDim0[dim].dictByNoise()
+                    dictFN1 = dictDim1[dim].dictByNoise()
+
+                    for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
+                        pprldistr2.main(dictFN0[fGroup], dictFN1[fGroup],
+                                        inset.rldValsOfInterest, outputdir,
+                                        '%02dD_%s' % (dim, fGroup),
+                                        verbose)
+            print "ECDF absolute target graphs done."
+
+            for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
+                pprldistr.fmax = None #Resetting the max final value
+                pprldistr.evalfmax = None #Resetting the max #fevalsfactor
+                # ECDFs of all functions altogether
+                if dim in inset.rldDimsOfInterest:
+                    try:
+                        pprldistr.comp(dictDim0[dim], dictDim1[dim],
+                                       inset.rldValsOfInterest, True,
+                                       outputdir, '%02dD_all' % dim, verbose)
+                    except KeyError:
+                        warnings.warn('Could not find some data in %d-D.'
+                                      % (dim))
+                        continue
+
+                    # ECDFs per function groups
+                    dictFG0 = dictDim0[dim].dictByFuncGroup()
+                    dictFG1 = dictDim1[dim].dictByFuncGroup()
+
+                    for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
+                        pprldistr.comp(dictFG0[fGroup], dictFG1[fGroup],
+                                       inset.rldValsOfInterest, True, outputdir,
+                                       '%02dD_%s' % (dim, fGroup), verbose)
 
                     # ECDFs per noise groups
                     dictFN0 = dictDim0[dim].dictByNoise()
                     dictFN1 = dictDim1[dim].dictByNoise()
                     for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
-                        pprldistr.comp2(dictFN0[fGroup], dictFN1[fGroup],
-                                        inset.rldValsOfInterest, True, outputdir,
-                                        '%02dD_%s' % (dim, fGroup), verbose)
+                        pprldistr.comp(dictFN0[fGroup], dictFN1[fGroup],
+                                       inset.rldValsOfInterest, True, outputdir,
+                                       '%02dD_%s' % (dim, fGroup), verbose)
 
             print "ECDF dashed-solid graphs done."
 
@@ -397,12 +397,12 @@ def main(argv=None):
                         group0.append(tmp0)
                         group1.append(tmp1)
                     for i, g in enumerate(zip(group0, group1)):
-                        pptable2.main2(g[0], g[1], inset.tabDimsOfInterest,
-                                       outputdir, '%s%d' % (nGroup, i), verbose)
+                        pptable2.main(g[0], g[1], inset.tabDimsOfInterest,
+                                      outputdir, '%s%d' % (nGroup, i), verbose)
                 else:
-                    pptable2.main2(dictNG0[nGroup], dictNG1[nGroup],
-                                   inset.tabDimsOfInterest, outputdir,
-                                   '%s' % (nGroup), verbose)
+                    pptable2.main(dictNG0[nGroup], dictNG1[nGroup],
+                                  inset.tabDimsOfInterest, outputdir,
+                                  '%s' % (nGroup), verbose)
             print "Tables done."
 
         if isscatter:

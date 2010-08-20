@@ -233,23 +233,23 @@ def main(argv=None):
             for ng, tmpdictAlg in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
-                    ppperfprof.main2(entries, inset.summarized_target_function_values,
-                                     order=sortedAlgs,
-                                     plotArgs=algPlotInfos,
-                                     outputdir=outputdir,
-                                     info=('%02dD_%s' % (d, ng)),
-                                     verbose=verbose)
+                    ppperfprof.main(entries, inset.summarized_target_function_values,
+                                    order=sortedAlgs,
+                                    plotArgs=algPlotInfos,
+                                    outputdir=outputdir,
+                                    info=('%02dD_%s' % (d, ng)),
+                                    verbose=verbose)
             # ECDFs per function groups
             dictFG = pproc.dictAlgByFuncGroup(dictAlg)
             for fg, tmpdictAlg in dictFG.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
-                    ppperfprof.main2(entries, inset.summarized_target_function_values,
-                                     order=sortedAlgs,
-                                     plotArgs=algPlotInfos,
-                                     outputdir=outputdir,
-                                     info=('%02dD_%s' % (d, fg)),
-                                     verbose=verbose)
+                    ppperfprof.main(entries, inset.summarized_target_function_values,
+                                    order=sortedAlgs,
+                                    plotArgs=algPlotInfos,
+                                    outputdir=outputdir,
+                                    info=('%02dD_%s' % (d, fg)),
+                                    verbose=verbose)
             print "ECDFs of ERT figures done."
 
         if isTab:
@@ -257,9 +257,9 @@ def main(argv=None):
             for ng, tmpdictng in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
                 for d, tmpdictdim in dictDim.iteritems():
-                    pptables.tablemanyalgonefunc2(tmpdictdim, sortedAlgs,
-                         inset.tableconstant_target_function_values, outputdir,
-                         verbose)
+                    pptables.main(tmpdictdim, sortedAlgs,
+                                  inset.tableconstant_target_function_values,
+                                  outputdir, verbose)
             print "Comparison tables done."
 
         if isFig:
@@ -268,7 +268,7 @@ def main(argv=None):
             plt.rc("ytick", labelsize=20)
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
-            ppfigs.main2(dictAlg, sortedAlgs, 1e-8, outputdir, verbose)
+            ppfigs.main(dictAlg, sortedAlgs, 1e-8, outputdir, verbose)
             plt.rcdefaults()
             print "Scaling figures done."
 
@@ -281,3 +281,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main())
+

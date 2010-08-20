@@ -1,0 +1,54 @@
+1 Sphere
+2 Ellipsoid separable
+3 Rastrigin separable
+4 Skew Rastrigin-Bueche separ
+5 Linear slope
+6 Attractive sector
+7 Step-ellipsoid
+8 Rosenbrock original
+9 Rosenbrock rotated
+10 Ellipsoid
+11 Discus
+12 Bent cigar
+13 Sharp ridge
+14 Sum of different powers
+15 Rastrigin
+16 Weierstrass
+17 Schaffer F7, condition 10
+18 Schaffer F7, condition 1000
+19 Griewank-Rosenbrock F8F2
+20 Schwefel x*sin(x)
+21 Gallagher 101 peaks
+22 Gallagher 21 peaks
+23 Katsuuras
+24 Lunacek bi-Rastrigin
+101 Sphere moderate Gauss
+102 Sphere moderate unif
+103 Sphere moderate Cauchy
+104 Rosenbrock moderate Gauss
+105 Rosenbrock moderate unif
+106 Rosenbrock moderate Cauchy
+107 Sphere Gauss
+108 Sphere unif
+109 Sphere Cauchy
+110 Rosenbrock Gauss
+111 Rosenbrock unif
+112 Rosenbrock Cauchy
+113 Step-ellipsoid Gauss
+114 Step-ellipsoid unif
+115 Step-ellipsoid Cauchy
+116 Ellipsoid Gauss
+117 Ellipsoid unif
+118 Ellipsoid Cauchy
+119 Sum of diff powers Gauss
+120 Sum of diff powers unif
+121 Sum of diff powers Cauchy
+122 Schaffer F7 Gauss
+123 Schaffer F7 unif
+124 Schaffer F7 Cauchy
+125 Griewank-Rosenbrock Gauss
+126 Griewank-Rosenbrock unif
+127 Griewank-Rosenbrock Cauchy
+128 Gallagher Gauss
+129 Gallagher unif
+130 Gallagher Cauchy

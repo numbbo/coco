@@ -485,62 +485,8 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
 
     return res#, fsolved, funcs
 
-def main(indexEntriesAlg0, indexEntriesAlg1, valuesOfInterest=None,
-         isRelative=True, outputdir='', info='default', verbose=True):
-    """Generate figures of empirical cumulative distribution functions.
-
-    Keyword arguments:
-    indexEntries -- list of IndexEntry instances to process.
-    valuesOfInterest -- target function values to be displayed.
-    isStoringXMax -- if set to True, the first call BeautifyVD sets the globals
-                     fmax and maxEvals and all subsequent calls will use these
-                     values as rightmost xlim in the generated figures.
-     -- if set to True, the first call BeautifyVD sets the global
-                     fmax and all subsequent call will have the same maximum
-                     xlim.
-    outputdir -- output directory (must exist)
-    info --- string suffix for output file names.
-
-    Outputs:
-    Image files of the empirical cumulative distribution functions.
-    """
-
-    #plt.rc("axes", labelsize=20, titlesize=24)
-    #plt.rc("xtick", labelsize=20)
-    #plt.rc("ytick", labelsize=20)
-    #plt.rc("font", size=20)
-    #plt.rc("legend", fontsize=20)
-
-    fig = plt.figure()
-
-    if isRelative:
-        figureName = os.path.join(outputdir,'pplogrel_%s' %(info))
-        tmp = plotLogRel(indexEntriesAlg0, indexEntriesAlg1, verbose=verbose)
-
-    #funcs = list(i.funcId for i in indexEntries)
-    #if len(funcs) > 1:
-        #text = 'f%d-%d' %(min(funcs), max(funcs))
-    #else:
-        #text = 'f%d' %(funcs[0])
-    else:
-        figureName = os.path.join(outputdir,'pplogabs_%s' %(info))
-        for j in range(len(valuesOfInterest)):
-            tmp = plotLogAbs(indexEntriesAlg0, indexEntriesAlg1,
-                              valuesOfInterest[j], verbose=verbose)
-            if not tmp is None:
-                plt.rc("ytick", labelsize=0)
-                plt.setp(tmp, 'color', rldColors[j], 'linewidth', 3) # ???
-                #if rldColors[j] == 'r':  # 1e-8 in bold
-                # plt.setp(tmp, 'linewidth', 5)
-
-    beautify(fig, figureName, fileFormat=figformat, legend=True,
-             verbose=verbose)
-    plt.close(fig)
-
-    #plt.rcdefaults()
-
-def main2(dsList0, dsList1, valuesOfInterest=None,
-          outputdir='', info='default', verbose=True):
+def main(dsList0, dsList1, valuesOfInterest=None,
+         outputdir='', info='default', verbose=True):
     """Generate figures of empirical cumulative distribution functions.
 
     Keyword arguments:
@@ -581,3 +527,4 @@ def main2(dsList0, dsList1, valuesOfInterest=None,
     plt.close()
 
     #plt.rcdefaults()
+

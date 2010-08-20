@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Black-Box Optimization Benchmarking (BBOB) post processing tool:
+"""COmparing Continuous Optimisers (COCO):
 
-The BBOB post-processing tool takes as input data from BBOB experiments and
-generates output that will be used in the generation of the LateX-formatted
-article summarizing the experiments.
+This package is meant to generate output figures and tables for the
+benchmarking of continuous optimisers in the case of black-box optimisation.
+The post-processing tool takes as input data from experiments and generates
+output that will be used in the generation of the LateX-formatted article
+summarizing the experiments.
 
 """
 import sys

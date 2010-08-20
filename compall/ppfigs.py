@@ -86,9 +86,12 @@ def plotLegend(handles, maxval=None):
         for i in h:
             x2.append(plt.getp(i, "xdata"))
             y2.append(plt.getp(i, "ydata"))
-        tmp = numpy.argsort(numpy.hstack(x2))
-        x2 = (numpy.hstack(x2))[tmp]
-        y2 = (numpy.hstack(y2))[tmp]
+
+        x2 = numpy.array(numpy.hstack(x2))
+        y2 = numpy.array(numpy.hstack(y2))
+        tmp = numpy.argsort(x2)
+        x2 = x2[tmp]
+        y2 = y2[tmp]
         h = h[-1]
 
         # ybis is used to sort in case of ties
@@ -236,100 +239,6 @@ def generateData(dataSet, target):
     return res
 
 def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
-    """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
-    
-    One function and one target per figure.
-    
-    """
-
-    dictFunc = pproc.dictAlgByFun(dictAlg)
-
-    for f in dictFunc:
-        filename = os.path.join(outputdir,'ppfigs_f%03d' % (f))
-        handles = []
-        for alg in sortedAlgs:
-            dictDim = dictFunc[f][alg].dictByDim()
-
-            #Collect data
-            dimert = []
-            ert = []
-            dimnbsucc = []
-            ynbsucc = []
-            nbsucc = []
-            dimmaxevals = []
-            maxevals = []
-            dimmedian = []
-            medianfes = []
-            infos = set()
-            for dim in sorted(dictDim):
-                entry = dictDim[dim][0]
-                infos.add((entry.algId, entry.comment))
-                data = generateData(entry, target)
-                if data[2] == 0: # No success
-                    dimmaxevals.append(dim)
-                    maxevals.append(float(data[3])/dim)
-                else:
-                    dimmedian.append(dim)
-                    medianfes.append(data[4]/dim)
-                    dimert.append(dim)
-                    ert.append(float(data[0])/dim)
-                    if data[1] < 1.:
-                        dimnbsucc.append(dim)
-                        ynbsucc.append(float(data[0])/dim)
-                        nbsucc.append('%d' % data[2])
-
-            if not infos: # empty for any reason...
-                continue
-            infos = infos.pop()
-            # Draw lines
-            tmp = plt.plot(dimert, ert, marker='.', markersize=30,
-                          **algPlotInfos[infos])
-            plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
-            if dimmaxevals:
-                tmp = plt.plot(dimmaxevals, maxevals, **algPlotInfos[infos])
-                plt.setp(tmp[0],  marker='x', markersize=20,
-                         markeredgecolor=plt.getp(tmp[0], 'color'))
-            handles.append(tmp)
-            #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',
-            #               markersize=30, markeredgewidth=5,
-            #               markeredgecolor=plt.getp(tmp, 'color'))[0]
-            #for i, n in enumerate(nbsucc):
-            #    plt.text(dimnbsucc[i], numpy.array(ynbsucc[i])*1.85, n,
-            #             verticalalignment='bottom',
-            #             horizontalalignment='center')
-
-        if not bestalg.bestalgentriesever:
-            bestalg.loadBBOBever()
-
-        bestalgdata = []
-        dimbestalg = list(df[0] for df in bestalg.bestalgentriesever if df[1] == f)
-        dimbestalg.sort()
-        dimbestalg2 = []
-        for d in dimbestalg:
-            entry = bestalg.bestalgentriesever[(d, f)]
-            tmp = entry.detERT([target])[0]
-            if numpy.isfinite(tmp):
-                bestalgdata.append(float(tmp)/d)
-                dimbestalg2.append(d)
-
-        tmp = plt.plot(dimbestalg2, bestalgdata, color='wheat', linewidth=10,
-                       marker='d', markersize=25, markeredgecolor='wheat',
-                       label='best ever', zorder=-1)
-        handles.append(tmp)
-
-        if isBenchmarkinfosFound:
-            title = funInfos[f]
-            plt.gca().set_title(title)
-
-        beautify(rightlegend=True)
-
-        plotLegend(handles)
-
-        saveFigure(filename, figFormat=figformat, verbose=verbose)
-
-        plt.close()
-
-def main2(dictAlg, sortedAlgs, target, outputdir, verbose=True):
     """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
     
     Differ from main method by the line style policy: in the case of main2

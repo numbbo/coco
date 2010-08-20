@@ -30,7 +30,8 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import pptex, pprldistr, ppfigdim, pplogloss, findfiles
+from bbob_pproc import pptex, findfiles
+from bbob_pproc.bbob2010 import pprldistr, ppfigdim, pplogloss
 from bbob_pproc.pproc import DataSetList
 
 import matplotlib.pyplot as plt
@@ -493,9 +494,6 @@ def main(argv=None):
         if isfigure:
             ppfigdim.main(dsList, figValsOfInterest, outputdir,
                           verbose)
-            #ERT/dim vs dim.
-            #ppfigdim.main2(dsList, figValsOfInterest, outputdir,
-                          #verbose)
             print "Scaling figures done."
 
         if istab:
