@@ -34,8 +34,8 @@ from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 import matplotlib.pyplot as plt
 
 # Used by getopt:
-shortoptlist = "hvo:s:"
-longoptlist = ["help", "output-dir=", "style=", "noisy", "noise-free",
+shortoptlist = "hvo:"
+longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "fig-only", "rld-only", "tab-only", "sca-only", "verbose"]
 
 #CLASS DEFINITIONS
@@ -155,8 +155,8 @@ def main(argv=None):
                 sys.exit()
             elif o in ("-o", "--output-dir"):
                 outputdir = a
-            elif o in ("-s", "--style"):
-                inputsettings = a
+            #elif o in ("-s", "--style"):
+            #    inputsettings = a
             elif o == "--fig-only":
                 isrldistr = False
                 istable = False
@@ -180,7 +180,7 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        if inputsettings is "bbob-2010":
+        if False #inputsettings is "bbob-2010":
             from bbob_pproc import bbob2010 as inset # input settings
             # is here because variables setting could be modified by flags
         else:
