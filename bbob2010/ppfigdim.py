@@ -27,7 +27,7 @@ dimsBBOB = (2, 3, 5, 10, 20, 40)
 funInfos = {}
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 isBenchmarkinfosFound = True
-infofile = os.path.join(os.path.split(__file__)[0], 'benchmarkshortinfos.txt')
+infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
 
 try:
     f = open(infofile,'r')
@@ -222,7 +222,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     for func in dictFunc:
         dictFunc[func] = dictFunc[func].dictByDim()
-        filename = os.path.join(outputdir,'ppdata_f%d' % (func))
+        filename = os.path.join(outputdir,'ppfigdim_f%03d' % (func))
 
         #legend = []
         line = []
@@ -266,12 +266,12 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             plt.plot(tmp[:, 0], tmp[:, -2], color=colors[i],
                      marker='x', markersize=20)
 
-        if not bestalg.bestalgentriesever:
-            bestalg.loadBBOBever()
+        if not bestalg.bestalgentries2009:
+            bestalg.loadBBOB2009()
 
         bestalgdata = []
         for d in dimsBBOB:
-            entry = bestalg.bestalgentriesever[(d, func)]
+            entry = bestalg.bestalgentries2009[(d, func)]
             tmp = entry.ert[entry.target<=1e-8]
             try:
                 bestalgdata.append(tmp[0])

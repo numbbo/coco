@@ -77,7 +77,7 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
       of successful entries in data divided by the number of success.
     """
 
-    #TODO allowinf is obsolete.
+    #TODO allowinf is obsolete
 
     # check input args
     if not getattr(data, '__iter__', False):  # is not iterable

@@ -32,7 +32,7 @@ markersize = 10.
 funInfos = {}
 figFormat = ('eps', 'pdf') # Controls the output when using the main method
 isBenchmarkinfosFound = True
-infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
+infofile = os.path.join(os.path.split(__file__)[0], '..', '..', 'benchmarkshortinfos.txt')
 
 try:
     f = open(infofile,'r')

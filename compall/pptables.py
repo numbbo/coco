@@ -204,8 +204,8 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
 
     # TODO: method is long, split if possible
 
-    if not bestalg.bestalgentriesever:
-        bestalg.loadBBOBever()
+    if not bestalg.bestalgentries2009:
+        bestalg.loadBBOB2009()
 
     # Sort data per dimension and function
     dictData = {}
@@ -222,8 +222,8 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
     for df in dictData:
         # Generate one table per df
 
-        # best ever
-        refalgentry = bestalg.bestalgentriesever[df]
+        # best 2009
+        refalgentry = bestalg.bestalgentries2009[df]
         refalgert = refalgentry.detERT(targets)
         refalgevals = (refalgentry.detEvals((targetf, ))[0][0])
         refalgnbruns = len(refalgevals)

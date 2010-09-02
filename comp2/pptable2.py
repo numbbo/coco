@@ -59,8 +59,8 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         info = '_' + info
 
     dims = set.intersection(set(dictDim0.keys()), set(dictDim1.keys()))
-    if not bestalg.bestalgentriesever:
-        bestalg.loadBBOBever()
+    if not bestalg.bestalgentries2009:
+        bestalg.loadBBOB2009()
 
     header = [r'$\Delta f$']
     for i in targetsOfInterest:
@@ -81,7 +81,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         nbtests = len(funcs) * 2. #len(dimsOfInterest)
 
         for f in sorted(funcs):
-            bestalgentry = bestalg.bestalgentriesever[(d, f)]
+            bestalgentry = bestalg.bestalgentries2009[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
             bestalgdata = bestalgentry.detERT(targetsOfInterest)
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)

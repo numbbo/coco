@@ -180,7 +180,7 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        if False #inputsettings is "bbob-2010":
+        if False: #inputsettings is "bbob-2010":
             from bbob_pproc import bbob2010 as inset # input settings
             # is here because variables setting could be modified by flags
         else:

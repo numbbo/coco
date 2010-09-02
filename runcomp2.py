@@ -386,7 +386,7 @@ def main(argv=None):
                     try:
                         pprldistr2.main2(dictDim0[dim], dictDim1[dim],
                                          rldValsOfInterest,
-                                         outputdir, 'dim%02dall' % dim, verbose)
+                                         outputdir, '%02dD_all' % dim, verbose)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.'
                                       % (dim))
@@ -398,7 +398,7 @@ def main(argv=None):
                     for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
                         pprldistr2.main2(dictFG0[fGroup], dictFG1[fGroup],
                                          rldValsOfInterest, 
-                                         outputdir, 'dim%02d%s' % (dim, fGroup),
+                                         outputdir, '%02dD_%s' % (dim, fGroup),
                                          verbose)
 
                     dictFN0 = dictDim0[dim].dictByNoise()
@@ -407,7 +407,7 @@ def main(argv=None):
                     for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
                         pprldistr2.main2(dictFN0[fGroup], dictFN1[fGroup],
                                          rldValsOfInterest, outputdir,
-                                         'dim%02d%s' % (dim, fGroup),
+                                         '%02dD_%s' % (dim, fGroup),
                                          verbose)
             print "ECDF absolute target graphs done."
 
@@ -447,7 +447,7 @@ def main(argv=None):
                     try:
                         pprldistr.comp(dictDim0[dim], dictDim1[dim],
                                        rldValsOfInterest, True,
-                                       outputdir, 'dim%02dall' % dim, verbose)
+                                       outputdir, '%02dD_all' % dim, verbose)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.'
                                       % (dim))
@@ -459,14 +459,14 @@ def main(argv=None):
                     for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
                         pprldistr.comp(dictFG0[fGroup], dictFG1[fGroup],
                                        rldValsOfInterest, True, outputdir,
-                                       'dim%02d%s' % (dim, fGroup), verbose)
+                                       '%02dD_%s' % (dim, fGroup), verbose)
 
                     dictFN0 = dictDim0[dim].dictByNoise()
                     dictFN1 = dictDim1[dim].dictByNoise()
                     for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
                         pprldistr.comp(dictFN0[fGroup], dictFN1[fGroup],
                                        rldValsOfInterest, True, outputdir,
-                                       'dim%02d%s' % (dim, fGroup), verbose)
+                                       '%02dD_%s' % (dim, fGroup), verbose)
 
             print "ECDF dashed-solid graphs done."
 
@@ -496,3 +496,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
    sys.exit(main())
+

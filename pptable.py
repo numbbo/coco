@@ -42,8 +42,8 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         # information string.
 
     dims = set(dictDim.keys())
-    if not bestalg.bestalgentriesever:
-        bestalg.loadBBOBever()
+    if not bestalg.bestalgentries2009:
+        bestalg.loadBBOB2009()
 
     header = [r'$\Delta f$']
     for i in targetsOfInterest:
@@ -63,7 +63,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         nbtests = float(len(funcs)) # #funcs tests times one algorithm
 
         for f in sorted(funcs):
-            bestalgentry = bestalg.bestalgentriesever[(d, f)]
+            bestalgentry = bestalg.bestalgentries2009[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
             bestalgdata = bestalgentry.detERT(targetsOfInterest)
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)

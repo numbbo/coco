@@ -336,7 +336,7 @@ def generate():
     """
 
     args = set(algs2010 + algs2009)
-    #args = algs2009
+    #args = algs2010
 
     outputdir = 'bestAlg'
 

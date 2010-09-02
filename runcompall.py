@@ -352,10 +352,11 @@ def main(argv=None):
             #allertbest = pickle.load(f)
             #f.close()
             # save targets, etc.
-            #f=open('2009best.pickle')
-            #pickle.load(allmintarget, f)
+            #f=open('2009best.pickle', 'w')
+            #pickle.dump(allmintarget, f)
             #pickle.dump(allertbest, f)
             #f.close()
+            #set_trace()
             pptables.tablemanyalgonefunc(dictAlg, allmintarget, allertbest,
                                          sortedAlgs, outputdir, verbose)
             print "Comparison tables done."
