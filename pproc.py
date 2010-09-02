@@ -142,9 +142,9 @@ class DataSet:
         (adata, maxevals, finalfunvals) = alignData(data)
         self.evals = adata
         try:
-            if all(maxevals > self.maxevals):
-                self.maxevals = maxevals
-                self.finalfunvals = finalfunvals
+            for i in range(len(maxevals)):
+                self.maxevals[i] = max(maxevals[i], self.maxevals[i])
+                self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
         except AttributeError:
             self.maxevals = maxevals
             self.finalfunvals = finalfunvals
@@ -157,12 +157,13 @@ class DataSet:
         (adata, maxevals, finalfunvals) = alignData(data)
         self.funvals = adata
         try:
-            if all(maxevals > self.maxevals):
-                self.maxevals = maxevals
-                self.finalfunvals = finalfunvals
+            for i in range(len(maxevals)):
+                self.maxevals[i] = max(maxevals[i], self.maxevals[i])
+                self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
         except AttributeError:
             self.maxevals = maxevals
             self.finalfunvals = finalfunvals
+        #TODO: take for maxevals the max for each trial, for finalfunvals the min...
 
         #extensions = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
         #for ext, info in extensions.iteritems(): # ext is defined as global
@@ -183,6 +184,14 @@ class DataSet:
             #except AttributeError:
                 #self.maxevals = maxevals
                 #self.finalfunvals = finalfunvals
+        #CHECKING PROCEDURE
+        tmp = []
+        for i in range(len(maxevals)):
+            tmp.append(self.maxevals[i] == self.readmaxevals[i])
+        if not all(tmp):
+            txt = ("There is a difference between the maxevals in the *.info "
+                   + "file and in the data files.")
+            warnings.warn(txt)
 
         # Compute ERT
         self.computeERTfromEvals()
@@ -838,7 +847,7 @@ def dictAlgByFun(dictAlg):
                 tmp = tmpdictAlg[alg][f]
             except KeyError:
                 txt = ('No data for algorithm %s on function %d.'
-                       % (alg, f))
+                       % (alg, f)) # This message is misleading.
                 warnings.warn(txt)
 
             if res.setdefault(f, {}).has_key(alg):

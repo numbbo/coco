@@ -83,19 +83,40 @@ def plotUnifLogXMarkers(x, y, nbperdecade, kwargs={}):
     return res
 
 def consecutiveNumbers(data):
-    """Find runs of consecutive numbers using groupby.
+    """Groups a sequence of integers into ranges of consecutive numbers.
+    For instance: [0, 1, 2, 4, 5, 7, 8, 9] -> "0-2, 4, 5, 7-9"
+
+    Range of consecutive numbers is at least 3 (therefore [4, 5] is represented
+    as "4, 5".
+    """
+
+    # TODO: give reference: it is seemingly in the Python Library Reference
+
+    res = []
+    tmp = groupByRange(data)
+    for i in tmp:
+        tmpstring = list(str(j) for j in i)
+        if len(i) <= 2 : # This means length of ranges are at least 3
+            res.append(', '.join(tmpstring))
+        else:
+            res.append('-'.join((tmpstring[0], tmpstring[-1])))
+
+    return ', '.join(res)
+
+def groupByRange(data):
+    """Groups a sequence of integers into ranges of consecutive numbers.
+    Helper function of consecutiveNumbers(data), returns a list of lists.
 
     The key to the solution is differencing with a range so that consecutive
     numbers all appear in same group.
     Useful for determining ranges of functions.
+
+    Ref: http://docs.python.org/release/3.0.1/library/itertools.html
     """
 
     res = []
     for k, g in groupby(enumerate(data), lambda (i,x):i-x):
-        tmp = list(str(i) for i in map(itemgetter(1), g))
-        if len(tmp) <= 2 :
-            res.append(', '.join(tmp))
-        else:
-            res.append('-'.join((tmp[0], tmp[-1])))
+        res.append(list(i for i in map(itemgetter(1), g)))
 
-    return ', '.join(res)
+    return res
+

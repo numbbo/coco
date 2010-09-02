@@ -30,8 +30,8 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import pptex, findfiles
-from bbob_pproc.bbob2010 import pprldistr, ppfigdim, pplogloss
+from bbob_pproc import findfiles
+from bbob_pproc.bbob2010 import pprldistr, ppfigdim, pplogloss, pptable
 from bbob_pproc.pproc import DataSetList
 
 import matplotlib.pyplot as plt
@@ -512,8 +512,8 @@ def main(argv=None):
                     except KeyError:
                         pass
                 if tmp:
-                    filename = os.path.join(outputdir,'ppdata_f%d' % fun)
-                    pptex.main(tmp, tabValsOfInterest, filename, isDraft,
+                    filename = os.path.join(outputdir,'pptable_f%03d' % fun)
+                    pptable.main(tmp, tabValsOfInterest, filename, isDraft,
                                verbose)
             print "TeX tables",
             if isDraft:
@@ -534,16 +534,16 @@ def main(argv=None):
                 try:
                     sliceDim = dictDim[dim]
                     pprldistr.main(sliceDim, rldValsOfInterest, True,
-                                   outputdir, 'dim%02dall' % dim, verbose)
+                                   outputdir, '%02dD_all' % dim, verbose)
                     dictNoise = sliceDim.dictByNoise()
                     for noise, sliceNoise in dictNoise.iteritems():
                         pprldistr.main(sliceNoise, rldValsOfInterest, True,
-                                       outputdir, 'dim%02d%s' % (dim, noise),
+                                       outputdir, '%02dD_%s' % (dim, noise),
                                        verbose)
                     dictFG = sliceDim.dictByFuncGroup()
                     for fGroup, sliceFuncGroup in dictFG.items():
                         pprldistr.main(sliceFuncGroup, rldValsOfInterest, True,
-                                       outputdir, 'dim%02d%s' % (dim, fGroup),
+                                       outputdir, '%02dD_%s' % (dim, fGroup),
                                        verbose)
 
                     pprldistr.fmax = None #Resetting the max final value
@@ -572,13 +572,13 @@ def main(argv=None):
                         sliceDim = dictDim[d]
                     except KeyError:
                         continue
-                    info = 'dim%02d%s' % (d, ng)
+                    info = '%02dD_%s' % (d, ng)
                     pplogloss.main(sliceDim, CrE, True, outputdir, info,
                                    verbose=verbose)
                     pplogloss.generateTable(sliceDim, CrE, outputdir, info,
                                             verbose=verbose)
                     for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
-                        info = 'dim%02d%s' % (d, fGroup)
+                        info = '%02dD_%s' % (d, fGroup)
                         pplogloss.main(sliceFuncGroup, CrE, True, outputdir, info,
                                        verbose=verbose)
                     pplogloss.evalfmax = None #Resetting the max #fevalsfactor
@@ -598,3 +598,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
    sys.exit(main())
+

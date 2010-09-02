@@ -60,9 +60,9 @@ MC = ('Monte Carlo',)
 third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'EDA-PSO', 'PSO_Bounds', 'PSO', 'AMaLGaM IDEA', 'iAMaLGaM IDEA',
          'MA-LS-Chain', 'DASA', 'BayEDAcG')
 
-displaybest2009 = False
+displaybest2009 = True
 displaybest2010 = False
-displaybestever = True
+displaybestever = False
 
 # MORE TO COME
 
@@ -328,7 +328,7 @@ def plotLegend(handles, maxval):
             #enforce best ever comes last in case of equality
             tmp = []
             for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best ever':
+                if plt.getp(h, 'label') == 'best 2009':
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)
@@ -401,8 +401,8 @@ def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
     dictMaxEvals = {} # list of (maxevals per function) per algorithm
     bestERT = [] # best ert per function
     funcsolved = [set()] * len(targets) # number of functions solved per target
-    xbestever = []
-    maxevalsbestever = []
+    xbest2009 = []
+    maxevalsbest2009 = []
 
     for f, dictAlgperFunc in dictFunc.iteritems():
         if function_IDs and f not in function_IDs:
@@ -434,11 +434,11 @@ def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
                 dictData.setdefault(alg, []).extend(x)
                 dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
 
-        if displaybestever:
+        if displaybest2009:
             #set_trace()
-            if not bestalg.bestalgentriesever:
-                bestalg.loadBBOBever()
-            bestalgentry = bestalg.bestalgentriesever[(d, f)]
+            if not bestalg.bestalgentries2009:
+                bestalg.loadBBOB2009()
+            bestalgentry = bestalg.bestalgentries2009[(d, f)]
             bestalgevals = bestalgentry.detEvals(targets)
             for j in range(len(targets)):
                 if bestalgevals[1][j]:
@@ -452,8 +452,8 @@ def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
                 else:
                     x = perfprofsamplesize * [numpy.inf]
                     runlengthunsucc = []
-                xbestever.extend(x)
-                maxevalsbestever.extend(runlengthunsucc)
+                xbest2009.extend(x)
+                maxevalsbest2009.extend(runlengthunsucc)
 
     if order is None:
         order = dictData.keys()
@@ -482,12 +482,12 @@ def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
         lines.append(plotPerfProf2(numpy.array(data), xlim, maxevals,
                                    CrE=0., kwargs=args))
 
-    if displaybestever:
+    if displaybest2009:
         args = {'ls': '-', 'linewidth': 1.5, 'marker': 'D', 'markersize': 7.,
                 'markeredgewidth': 1.5, 'markerfacecolor': 'wheat',
                 'markeredgecolor': 'wheat', 'color': 'wheat',
-                'label': 'best ever', 'zorder': -1}
-        lines.append(plotPerfProf2(numpy.array(xbestever), xlim, maxevalsbestever,
+                'label': 'best 2009', 'zorder': -1}
+        lines.append(plotPerfProf2(numpy.array(xbest2009), xlim, maxevalsbest2009,
                                    CrE = 0., kwargs=args))
 
     plotLegend(lines, xlim)

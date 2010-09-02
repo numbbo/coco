@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap, bestalg
-from bbob_pproc.ppfig import saveFigure
+from bbob_pproc.ppfig import saveFigure, groupByRange
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
@@ -203,9 +203,12 @@ def generateData(dataSet, targetFuncValue):
     data = prev[1:].copy() # keep only the number of function evaluations.
     succ = (numpy.isnan(data) == False)
     if succ.any():
-        med = bootstrap.prctile(data, 50)[0]
+        med = bootstrap.prctile(data[succ], 50)[0]
+        #Line above was modified at rev 3050 to make sure that we consider only
+        #successful trials in the median
     else:
         med = numpy.nan
+
     data[numpy.isnan(data)] = dataSet.maxevals[numpy.isnan(data)]
 
     res = []
@@ -228,6 +231,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     for func in dictFunc:
         dictFunc[func] = dictFunc[func].dictByDim()
+        dimensions = sorted(dictFunc[func])
         filename = os.path.join(outputdir,'ppdata_f%d' % (func))
 
         #legend = []
@@ -240,7 +244,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             displaynumber = []
             data = []
             #Collect data that have the same function and different dimension.
-            for dim in sorted(dictFunc[func]):
+            for dim in dimensions:
                 tmp = generateData(dictFunc[func][dim][0],
                                    valuesOfInterest[i])
                 #data.append(numpy.append(dim, tmp))
@@ -265,23 +269,32 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             plt.plot([], [], color=colors[i],
                      label=' %+d' % (numpy.log10(valuesOfInterest[i])))
 
-        #Only for the last target function value...
+        #Only for the last target function value
         if unsucc:
             #set_trace()
-            tmp = numpy.vstack(unsucc)
-            plt.plot(tmp[:, 0], tmp[:, -2], color=colors[i],
-                     marker='x', markersize=20)
+            # Find range of consecutive numbers for displaying k lines where
+            # k is the number of ranges of consecutive numbers
+            dimtoindex = dict((dim, i) for i, dim in enumerate(dimensions))
+            tmp = numpy.vstack(unsucc) # tmp[:, 0] needs to be sorted!
+            listindex = list(dimtoindex[i] for i in tmp[:, 0])
+            consecindex = groupByRange(listindex)
+            dimarray = numpy.array(dimensions)
+            for i in consecindex:
+                data = list(tmp[tmp[:, 0] == dimensions[j], -2]/dimensions[j] for j in i)
+                plt.plot(dimarray[i], numpy.hstack(data),
+                         color=styles[len(valuesOfInterest)-1]['color'],
+                         marker='x', markersize=20)
 
-        if not bestalg.bestalgentriesever:
-            bestalg.loadBBOBever()
+        if not bestalg.bestalgentries2009:
+            bestalg.loadBBOB2009()
 
         bestalgdata = []
         for d in dimsBBOB:
-            entry = bestalg.bestalgentriesever[(d, func)]
-            tmp = entry.ert[entry.target<=1e-8]
-            try:
-                bestalgdata.append(tmp[0])
-            except IndexError:
+            entry = bestalg.bestalgentries2009[(d, func)]
+            tmp = entry.detERT([1e-8])[0]
+            if not numpy.isinf(tmp):
+                bestalgdata.append(tmp)
+            else:
                 bestalgdata.append(None)
 
         plt.plot(dimsBBOB, bestalgdata, color='wheat', linewidth=10, zorder=-2)
@@ -321,6 +334,7 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     for func in dictFunc:
         dictFunc[func] = dictFunc[func].dictByDim()
+        dimensions = sorted(dictFunc[func])
         filename = os.path.join(outputdir,'ppfigdim_f%03d' % (func))
 
         #legend = []
@@ -334,7 +348,7 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
             displaynumber = []
             data = []
             #Collect data that have the same function and different dimension.
-            for dim in sorted(dictFunc[func]):
+            for dim in dimensions:
                 tmp = generateData(dictFunc[func][dim][0],
                                    valuesOfInterest[i])
                 #data.append(numpy.append(dim, tmp))
@@ -357,12 +371,25 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
                      label=' %+d' % (numpy.log10(valuesOfInterest[i])),
                      **styles[i])
 
-        #Only for the last target function value...
+        #Only for the last target function value
         if unsucc:
-            tmp = numpy.vstack(unsucc)
-            plt.plot(tmp[:, 0], tmp[:, -2]/tmp[:, 0],
-                     color=styles[len(valuesOfInterest)-1]['color'],
-                     marker='x', markersize=20)
+            #set_trace()
+            #tmp = numpy.vstack(unsucc) # tmp[:, 0] needs to be sorted!
+            #plt.plot(tmp[:, 0], tmp[:, -2]/tmp[:, 0],
+            #         color=styles[len(valuesOfInterest)-1]['color'],
+            #         marker='x', markersize=20)
+            # Find range of consecutive numbers for displaying k lines where
+            # k is the number of ranges of consecutive numbers
+            dimtoindex = dict((dim, i) for i, dim in enumerate(dimensions))
+            tmp = numpy.vstack(unsucc) # tmp[:, 0] needs to be sorted!
+            listindex = list(dimtoindex[i] for i in tmp[:, 0])
+            consecindex = groupByRange(listindex)
+            dimarray = numpy.array(dimensions)
+            for i in consecindex:
+                data = list(tmp[tmp[:, 0] == dimensions[j], -2]/dimensions[j] for j in i)
+                plt.plot(dimarray[i], numpy.hstack(data),
+                         color=styles[len(valuesOfInterest)-1]['color'],
+                         marker='x', markersize=20)
 
         #median # TODO only the best target for each dimension (and not the last)
         if mediandata:
@@ -371,16 +398,16 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
                          linestyle='', marker='+', markersize=30,
                          markeredgewidth=5, zorder=-1)
 
-        if not bestalg.bestalgentriesever:
-            bestalg.loadBBOBever()
+        if not bestalg.bestalgentries2009:
+            bestalg.loadBBOB2009()
 
         bestalgdata = []
         for d in dimsBBOB:
-            entry = bestalg.bestalgentriesever[(d, func)]
-            tmp = entry.ert[entry.target<=1e-8]
-            try:
-                bestalgdata.append(tmp[0]/d)
-            except IndexError:
+            entry = bestalg.bestalgentries2009[(d, func)]
+            tmp = entry.detERT([1e-8])[0]
+            if not numpy.isinf(tmp):
+                bestalgdata.append(tmp/d)
+            else:
                 bestalgdata.append(None)
 
         plt.plot(dimsBBOB, bestalgdata, color='wheat', linewidth=10, zorder=-2)
@@ -406,4 +433,3 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
 
         plt.close()
 
-    #plt.rcdefaults()
