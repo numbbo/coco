@@ -46,8 +46,8 @@ fmax = None
 evalfmax = None
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
-#filename = 'pprldistr2009_1e-8.pickle'
-filename = 'pprldistrever_1e-8.pickle'
+#filename = 'pprldistrever_1e-8.pickle'
+filename = 'pprldistr2009_1e-8.pickle'
 filename = os.path.join(os.path.split(__file__)[0], filename)
 isBestAlgorithmFound = True
 try:
