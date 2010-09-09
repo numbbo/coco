@@ -309,7 +309,7 @@ def plotLegend(handles, maxval):
         x2 = x2[tmp]
         y2 = y2[tmp]
 
-        h = h[-1]
+        h = h[-1] # we expect the label to be in the last element of h
         try:
             tmp = (x2 <= maxval)
             x2bis = x2[y2 < y2[tmp][-1]][-1]
