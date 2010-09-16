@@ -54,7 +54,7 @@ def main(argv=None):
     """Main routine for post-processing the data of multiple algorithms.
 
     Provided with some data, this routine outputs figure and TeX files in the
-    folder 'cmpmanydata' needed for the compilation of the latex document
+    folder 'cmpmanydata' needed for the compilation of the LaTeX document
     template3.tex. These output files will contain performance tables and
     empirical cumulative distribution figures. On subsequent executions, new
     files will be added to the output directory, overwriting existing files in
@@ -64,10 +64,10 @@ def main(argv=None):
     argv -- list of strings containing options and arguments. If not provided,
     sys.argv is accessed.
 
-    argv must list folders containing BBOB data files. Each of these folders
-    should correspond to the data of ONE algorithm and should be listed in
-    algorithmshortinfos.txt, a file from the bbob_pproc.compall package listing
-    the information of various algorithms treated using bbob_pproc.dataoutput
+    argv must list folders containing BBOB data files.
+    The name of these folders will be used in the output figures and tables to
+    designate the algorithms. Therefore you should name the folders with
+    differentiating names.
 
     Furthermore, argv can begin with, in any order, facultative option flags
     listed below.
@@ -78,26 +78,25 @@ def main(argv=None):
 
         -v, --verbose
 
-            verbose mode, prints out operations. When not in verbose mode, no
-            output is to be expected, except for errors.
+            verbose mode, prints out operations, warnings. When not in verbose
+            mode, only a little output is to be expected, except for errors.
+            In case of error, we suggest providing with the output of the
+            command with the addition of this option.
 
         -o, --output-dir OUTPUTDIR
 
-            change the default output directory ('cmpmanydata') to
-            OUTPUTDIR
+            change the default output directory ('cmpmanydata') to OUTPUTDIR
 
         --noise-free, --noisy
 
-            restrain the post-processing to part of the data set only. Actually
-            quicken the post-processing since it loads only part of the pickle
-            files.
+            restrain the post-processing to part of the data set only.
 
-        --tab-only, --per-only
+        --tab-only, --per-only, --fig-only
 
             these options can be used to output respectively the comparison
-            tex tables or the performance profiles only.
-            A combination of any two of these options results in
-            no output.
+            TeX tables, the performance profiles or the figures of ERT/dim vs
+            dim only. A combination of any two or more of these options results
+            in no output.
 
     Exceptions raised:
     Usage -- Gives back a usage message.
@@ -106,7 +105,7 @@ def main(argv=None):
 
     * Calling the rungenericmany.py interface from the command line:
 
-        $ python bbob_pproc/rungenericmany.py -v
+        $ python bbob_pproc/rungenericmany.py -v AMALGAM BFGS BIPOP-CMA-ES
 
 
     * Loading this package and calling the main from the command line
@@ -122,10 +121,9 @@ def main(argv=None):
         >>> from bbob_pproc import rungenericmany
         >>> rungenericmany.main('-o outputfolder folder1 folder2'.split())
 
-    This will execute the post-processing on the data found in folder1
-    and folder2.
-    The -o option changes the output folder from the default cmpmanydata to
-    outputfolder.
+    This will execute the post-processing on the data found in folder1 and
+    folder2.
+    The -o option changes the output folder from the default to outputfolder.
 
     * Generate post-processing data for some algorithms:
 

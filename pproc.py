@@ -753,8 +753,7 @@ def processInputArgs(args, verbose=True):
                 dictAlg[alg] = tmpDsList
         else:
             txt = 'Input folder %s could not be found.' % i
-            #raise Usage(txt) #TODO how to call Usage?
-            warnings.warn(txt)
+            raise Exception(txt)
 
     return dsList, sortedAlgs, dictAlg
 

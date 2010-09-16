@@ -10,6 +10,7 @@ from __future__ import absolute_import
 
 import os
 from pdb import set_trace
+import warnings
 import numpy
 from bbob_pproc import bestalg, bootstrap
 from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, writeLabels, tableLaTeX
@@ -245,7 +246,15 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
         algentry = []
 
         for n, entries in enumerate(dictData[df]):
-            assert len(entries) == 1 # TODO: could be 0?
+            # the number of datasets for a given dimension and function (df)
+            # should be strictly 1. TODO: find a way to warn
+            # TODO: do this checking before... why wasn't it triggered by ppperprof?
+            # TODO: could len(entries) be 0 as well?
+            if len(entries) > 1:
+                txt = ("There is more than a single entry associated with "
+                      + "folder %s on %d-D f%d." % (sortedAlgs[n], df[0], df[1]))
+                raise Exception(txt)
+
             entry = entries[0]
             algentry.append(entry)
 
