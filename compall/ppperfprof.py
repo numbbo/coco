@@ -368,17 +368,18 @@ def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
     for algorithms on multiple functions for multiple targets altogether.
 
     Keyword arguments:
-    dictAlg --
+    dictAlg -- dictionary of dataSetList instances containing all data to be
+        represented in the figure
     targets -- list of target function values
-    order -- determines the plotting order of the algorithm (used by the legend
-    and in the case the algorithm has no plotting arguments specified).
+    order -- list of keys to dictAlg that determines the plotting order of the
+        algorithm (used in the legend).
     """
 
     xlim = x_limit # variable defined in header
 
     tmp = dictAlgByDim(dictAlg)
     if len(tmp) != 1:
-        raise Usage('We never integrate over dimension.')
+        raise Exception('We never integrate over dimension.')
     d = tmp.keys()[0]
 
     dictFunc = dictAlgByFun(dictAlg)

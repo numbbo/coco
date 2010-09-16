@@ -11,11 +11,11 @@ summarizing the experiments.
 
 """
 import sys
-from bbob_pproc.run import Usage as Usage
+
 from bbob_pproc.run import main as main
 
 __all__  = ['readalign', 'pptex', 'pprldistr', 'findfiles',
-            'main', 'ppfigdim', 'pplogloss', 'pproc', 'dataoutput', 'Usage']
+            'main', 'ppfigdim', 'pplogloss', 'pproc', 'dataoutput']
 
 if __name__ == "__main__":
     sys.exit(main())

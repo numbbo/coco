@@ -395,10 +395,7 @@ def tablemanyalg(dsList, allmintarget, allertbest, sortedAlgs=None,
                 dictFunc = algentries.dictByFunc()
                 erts = []
                 for func, entry in dictFunc.iteritems():
-                    try:
-                        entry = entry[0]
-                    except:
-                        raise Usage('oops too many entries')
+                    entry = entry[0]
 
                     try:
                         if numpy.isnan(allmintarget[t][(func, d)]):
@@ -608,10 +605,7 @@ def tablemanyalgonefunc(dictAlg, allmintarget, allertbest, sortedAlgs=None,
                     isLastInfoWritten = False
                     try:
                         entries = dictF[func]
-                        try:
-                            entry = entries[0]
-                        except:
-                            raise Usage('Problem with the entries')
+                        entry = entries[0]
 
                     except KeyError:
                         if curline or replacementLine:

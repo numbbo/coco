@@ -403,7 +403,7 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
             # the data is disregarded.
 
     if len(d) != 1:
-        raise Usage('We never integrate over dimension.')
+        raise Exception('We never integrate over dimension.')
     d = d.pop()
 
     for f, tmpdictAlg in dictFunc.iteritems():
@@ -443,8 +443,6 @@ def main(dictAlg, target, order=None, plotArgs={}, outputdir='',
                            % (alg, f, d)
                            + 'are missing.')
                     warnings.warn(txt)
-                    #raise Usage(txt)
-                    #pass
 
                 dictData.setdefault(alg, []).extend(x)
                 dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
@@ -654,7 +652,7 @@ def main2(dictAlg, targets, order=None, plotArgs={}, outputdir='',
 
     tmp = dictAlgByDim(dictAlg)
     if len(tmp) != 1:
-        raise Usage('We never integrate over dimension.')
+        raise Exception('We never integrate over dimension.')
     d = tmp.keys()[0]
 
     dictFunc = dictAlgByFun(dictAlg)
@@ -809,7 +807,7 @@ def mainbis(dictAlg, targets, order=None, plotArgs={}, outputdir='',
 
     tmp = dictAlgByDim(dictAlg)
     if len(tmp) != 1:
-        raise Usage('We never integrate over dimension.')
+        raise Exception('We never integrate over dimension.')
     d = tmp.keys()[0]
 
     dictFunc = dictAlgByFun(dictAlg)
