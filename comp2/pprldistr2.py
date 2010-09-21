@@ -14,7 +14,6 @@ from pdb import set_trace
 
 #__all__ = []
 
-rldColors = ('k', 'c', 'm', 'r', 'k', 'c', 'm', 'r', 'k', 'c', 'm', 'r')
 rldStyles = ({'color': 'k', 'ls': '--'},
              {'color': 'c'},
              {'color': 'm', 'ls': '--'},

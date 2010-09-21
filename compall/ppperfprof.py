@@ -60,16 +60,12 @@ MC = ('Monte Carlo',)
 third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'EDA-PSO', 'PSO_Bounds', 'PSO', 'AMaLGaM IDEA', 'iAMaLGaM IDEA',
          'MA-LS-Chain', 'DASA', 'BayEDAcG')
 
-displaybest2009 = True
-displaybest2010 = False
-displaybestever = False
-
-# MORE TO COME
-
 funi = [1,2] + range(5, 15)  # 2 is paired Ellipsoid
 funilipschitz = [1] + [5,6] + range(8,13) + [14] # + [13]  #13=sharp ridge, 7=step-ellipsoid 
 fmulti = [3, 4] + range(15,25) # 3 = paired Rastrigin
 funisep = [1,2,5]
+
+displaybest2009 = True
 
 # input parameter settings
 #show_algorithms = eseda + ('BFGS',) # ()==all
@@ -121,6 +117,7 @@ styles = [{'marker': 'o', 'linestyle': '-', 'color': 'b'},
           {'marker': '2', 'linestyle': '-', 'color': 'k'},
           {'marker': '3', 'linestyle': '-', 'color': 'b'},
           {'marker': '4', 'linestyle': '-', 'color': 'g'}]
+refcolor = 'wheat'
 #'-'     solid line style
 #'--'    dashed line style
 #'-.'    dash-dot line style
@@ -169,67 +166,12 @@ def get_plot_args(args):
     if not args.has_key('label') or args['label'] in show_algorithms:
         args['linewidth'] = 2
     elif len(show_algorithms) > 0:
-        args['color'] = 'wheat'
+        args['color'] = refcolor
         args['ls'] = '-'
         args['zorder'] = -1
     elif not (args.has_key('linewidth') or args.has_key('lw')):
         args['linewidth'] = 1.3
     return args
-
-def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
-    """Draw a performance profile."""
-
-    #Expect data to be a ndarray.
-    x = data[numpy.isnan(data)==False] # Take away the nans
-    nn = len(x)
-
-    x = x[numpy.isinf(x)==False] # Take away the infs
-    n = len(x)
-
-    x = numpy.exp(CrE) * x  # correction by crafting effort CrE
-
-    if n == 0:
-        if maxval is None:
-            res = plt.plot([], [], **kwargs) # TODO: plot a horizontal line instead
-        else:
-            res = plt.plot([1., maxval], [0., 0.], **kwargs)
-    else:
-        dictx = {}
-        for i in x:
-            dictx[i] = dictx.get(i, 0) + 1
-
-        x = numpy.array(sorted(dictx))
-        if maxval is None:
-            maxval = max(x)
-        x = x[x <= maxval]
-        y = numpy.cumsum(list(dictx[i] for i in x))
-
-        x2 = numpy.hstack([numpy.repeat(x, 2), maxval])
-        y2 = numpy.hstack([0.0,
-                           numpy.repeat(y / float(nn), 2)])
-
-        if 11 < 3:
-            # Downsampling
-            # first try to downsample for reduced figure size, is not effective while reducing dvi is
-            idx = range(0, len(x2), 2*perfprofsamplesize)
-            if numpy.mod(len(x2), 2*perfprofsamplesize) != 1:
-                idx.append(len(x2) - 1)
-            x2 = x2[idx]
-            y2 = y2[idx]
-
-        if not 'markeredgecolor' in kwargs and 'color' in kwargs:
-            kwargs['markeredgecolor'] = kwargs['color']
-        res = plt.plot(x2, y2, **kwargs)
-        if maxevals: # Should cover the case where maxevals is None or empty
-            x3 = numpy.median(maxevals)
-            if x3 <= maxval and numpy.any(x2 <= x3) and plt.getp(res[0], 'color') is not 'wheat':
-                y3 = y2[x2<=x3][-1]
-                plt.plot((x3,), (y3,), marker='x', markersize=15, markeredgecolor=plt.getp(res[0], 'color'),
-                         ls=plt.getp(res[0], 'ls'),
-                         color=plt.getp(res[0], 'color'))
-                # Only take sequences for x and y!
-
-    return res
 
 def downsample(xdata, ydata):
     """Downsample arrays of data, zero-th column elements are evenly spaced."""
@@ -245,7 +187,7 @@ def downsample(xdata, ydata):
 
     return alignmentdata, res
 
-def plotPerfProf2(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
+def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
     """Draw a performance profile.
     Difference with the above: trying something smart for the markers.
     """
@@ -281,7 +223,8 @@ def plotPerfProf2(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
 
         if maxevals: # Should cover the case where maxevals is None or empty
             x3 = numpy.median(maxevals)
-            if x3 <= maxval and numpy.any(x2 <= x3) and plt.getp(res[0], 'color') is not 'wheat':
+            if (x3 <= maxval and numpy.any(x2 <= x3)
+                and not plt.getp(res[-1], 'label').startswith('best')): # TODO: HACK for not considering the best 2009 line
                 y3 = y2[x2<=x3][-1]
                 plt.plot((x3,), (y3,), marker='x', markersize=30,
                          markeredgecolor=plt.getp(res[0], 'color'),
@@ -480,16 +423,16 @@ def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
             #args['color'] = 'wheat'
             #args['ls'] = '-'
             #args['zorder'] = -1
-        lines.append(plotPerfProf2(numpy.array(data), xlim, maxevals,
-                                   CrE=0., kwargs=args))
+        lines.append(plotPerfProf(numpy.array(data), xlim, maxevals,
+                                  CrE=0., kwargs=args))
 
     if displaybest2009:
         args = {'ls': '-', 'linewidth': 1.5, 'marker': 'D', 'markersize': 7.,
-                'markeredgewidth': 1.5, 'markerfacecolor': 'wheat',
-                'markeredgecolor': 'wheat', 'color': 'wheat',
+                'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
+                'markeredgecolor': refcolor, 'color': refcolor,
                 'label': 'best 2009', 'zorder': -1}
-        lines.append(plotPerfProf2(numpy.array(xbest2009), xlim, maxevalsbest2009,
-                                   CrE = 0., kwargs=args))
+        lines.append(plotPerfProf(numpy.array(xbest2009), xlim, maxevalsbest2009,
+                                  CrE = 0., kwargs=args))
 
     plotLegend(lines, xlim)
 

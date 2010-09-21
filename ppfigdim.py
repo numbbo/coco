@@ -19,6 +19,7 @@ styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
           {'color': 'y', 'marker': '^', 'markeredgecolor': 'y'},
           {'color': 'm'},
           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
+refcolor = 'wheat'
 
 # should correspond with the colors in pprldistr.
 dimsBBOB = (2, 3, 5, 10, 20, 40)
@@ -218,7 +219,7 @@ def generateData(dataSet, targetFuncValue):
 
     return numpy.array(res)
 
-def main(dsList, _valuesOfInterest, outputdir, verbose=True):
+def ertvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
     """From a DataSetList, returns a convergence and ERT figure vs dim."""
 
     #plt.rc("axes", labelsize=20, titlesize=24)
@@ -297,8 +298,8 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             else:
                 bestalgdata.append(None)
 
-        plt.plot(dimsBBOB, bestalgdata, color='wheat', linewidth=10, zorder=-2)
-        plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25, color='wheat', zorder=-2)
+        plt.plot(dimsBBOB, bestalgdata, color=refcolor, linewidth=10, zorder=-2)
+        plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25, color=refcolor, zorder=-2)
 
         if displaynumber: #displayed only for the smallest valuesOfInterest
             a = plt.gca()
@@ -321,7 +322,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     #plt.rcdefaults()
 
-def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
+def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     """From a DataSetList, returns a convergence and ERT/dim figure vs dim."""
 
     #plt.rc("axes", labelsize=20, titlesize=24)
@@ -410,9 +411,9 @@ def ertoverdimvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
             else:
                 bestalgdata.append(None)
 
-        plt.plot(dimsBBOB, bestalgdata, color='wheat', linewidth=10, zorder=-2)
+        plt.plot(dimsBBOB, bestalgdata, color=refcolor, linewidth=10, zorder=-2)
         plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25,
-                 color='wheat', markeredgecolor='wheat', zorder=-2)
+                 color=refcolor, markeredgecolor=refcolor, zorder=-2)
 
         if displaynumber: #displayed only for the smallest valuesOfInterest
             a = plt.gca()

@@ -28,10 +28,6 @@ from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
     #from bbob_pproc.bootstrap import ranksums
     #pass
 
-# colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')
-# markers = ('o', 'v', 's', '+', 'x', 'D')
-colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
-markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 styles = [{'color': 'c', 'marker': '+', 'markeredgecolor': 'c',
            'markerfacecolor': 'None'},
           {'color': 'g', 'marker': 'v', 'markeredgecolor': 'g',
@@ -50,9 +46,6 @@ styles = [{'color': 'c', 'marker': '+', 'markeredgecolor': 'c',
           {'color': 'c'},
           {'color': 'r'},
           {'color': 'm'}]
-#from scatter
-#colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
-#markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 linewidth = 3
 offset = 0.005
 incrstars = 1.5

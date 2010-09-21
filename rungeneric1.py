@@ -36,7 +36,7 @@ import matplotlib.pyplot as plt
 shortoptlist = "hvpfo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
                "fig-only", "rld-only", "los-only", "crafting-effort=",
-               "pickle", "verbose", "final"]
+               "pickle", "verbose", "final", "settings="]
 
 #CLASS DEFINITIONS
 
@@ -101,6 +101,13 @@ def main(argv=None):
         --noise-free, --noisy
 
             restrain the post-processing to part of the data set only.
+
+        --settings SETTING
+
+            change the style of the output figures and tables. At the moment
+            only the only differences are in the colors of the output figures.
+            SETTINGS can be either "grayscale", "color" or "black-white". The
+            default setting is "color".
 
         --tab-only, --fig-only, --rld-only, --los-only
 
@@ -175,6 +182,7 @@ def main(argv=None):
         outputdir = 'ppdata1'
         isNoisy = False
         isNoiseFree = False
+        inputsettings = 'color'
 
         #Process options
         for o, a in opts:
@@ -215,16 +223,22 @@ def main(argv=None):
                     inputCrE = float(a)
                 except ValueError:
                     raise Usage('Expect a valid float for flag crafting-effort.')
+            elif o == "--settings":
+                inputsettings = a
             else:
                 assert False, "unhandled option"
 
-        #TODO what if multiple output dir and crafting effort?
-
-        if False:
-            from bbob_pproc import bbob2010 as inset # input settings
-            # is here because variables setting could be modified by flags
-        else:
+        # from bbob_pproc import bbob2010 as inset # input settings
+        if inputsettings == "color":
             from bbob_pproc import genericsettings as inset # input settings
+        elif inputsettings == "grayscale":
+            from bbob_pproc import grayscalesettings as inset # input settings
+        elif inputsettings == "black-white":
+            from bbob_pproc import bwsettings as inset # input settings
+        else:
+            txt = ('Settings: %s is not an appropriate ' % inputsettings
+                   + 'argument for input flag "--settings".')
+            raise Usage(txt)
 
         if (not verbose):
             warnings.simplefilter('ignore')
@@ -288,8 +302,7 @@ def main(argv=None):
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
-            ppfigdim.ertoverdimvsdim(dsList, inset.figValsOfInterest,
-                                     outputdir, verbose)
+            ppfigdim.main(dsList, inset.figValsOfInterest, outputdir, verbose)
             print "Scaling figures done."
             plt.rcdefaults()
 
