@@ -35,8 +35,8 @@ import matplotlib.pyplot as plt
 
 # Used by getopt:
 shortoptlist = "hvo:"
-longoptlist = ["help", "output-dir=", "noisy", "noise-free",
-               "fig-only", "rld-only", "tab-only", "sca-only", "verbose"]
+longoptlist = ["help", "output-dir=", "noisy", "noise-free", "fig-only",
+               "rld-only", "tab-only", "sca-only", "verbose", "settings="]
 
 #CLASS DEFINITIONS
 
@@ -86,6 +86,13 @@ def main(argv=None):
         --noise-free, --noisy
 
             restrain the post-processing to part of the data set only.
+
+        --settings SETTING
+
+            change the style of the output figures and tables. At the moment
+            only the only differences are in the colors of the output figures.
+            SETTINGS can be either "grayscale", "color" or "black-white". The
+            default setting is "color".
 
         --fig-only, --rld-only, --tab-only, --sca-only
 
@@ -144,7 +151,7 @@ def main(argv=None):
         isNoiseFree = False
         verbose = False
         outputdir = 'ppdata2'
-        inputsettings = 'generic'
+        inputsettings = 'color'
 
         #Process options
         for o, a in opts:
@@ -177,14 +184,22 @@ def main(argv=None):
                 isNoisy = True
             elif o == "--noise-free":
                 isNoiseFree = True
+            elif o == "--settings":
+                inputsettings = a
             else:
                 assert False, "unhandled option"
 
-        if False: #inputsettings is "bbob-2010":
-            from bbob_pproc import bbob2010 as inset # input settings
-            # is here because variables setting could be modified by flags
-        else:
+        # from bbob_pproc import bbob2010 as inset # input settings
+        if inputsettings == "color":
             from bbob_pproc import genericsettings as inset # input settings
+        elif inputsettings == "grayscale":
+            from bbob_pproc import grayscalesettings as inset # input settings
+        elif inputsettings == "black-white":
+            from bbob_pproc import bwsettings as inset # input settings
+        else:
+            txt = ('Settings: %s is not an appropriate ' % inputsettings
+                   + 'argument for input flag "--settings".')
+            raise Usage(txt)
 
         if (not verbose):
             warnings.simplefilter('ignore')

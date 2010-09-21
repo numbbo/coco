@@ -69,6 +69,11 @@ from bbob_pproc.pptex import writeFEvals2
 evalf = None
 figformat = ('eps', 'pdf')
 f_thresh = 1.e-8
+whiskerscolor = 'b'
+boxescolor = 'b'
+medianscolor = 'r'
+capscolor = 'k'
+flierscolor = 'b'
 
 def detERT(entry, funvals):
     # could be more efficient given that funvals is sorted...
@@ -165,7 +170,8 @@ def generateData(dsList, evals, CrE_A):
 def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
     """
     Adapted from matplotlib.axes 0.98.5.2
-    Modified such that the caps are set to the 10th and 90th percentiles.
+    Modified such that the caps are set to the 10th and 90th percentiles,
+    and to have some control on the colors.
 
     call signature::
 
@@ -308,12 +314,12 @@ def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
             med_y = [med, med]
 
         doplot = plt.plot
-        whiskers.extend(doplot(wisk_x, [q1, wisk_lo], 'b--',
-                               wisk_x, [q3, wisk_hi], 'b--'))
-        caps.extend(doplot(cap_x, [wisk_hi, wisk_hi], 'k-',
-                           cap_x, [wisk_lo, wisk_lo], 'k-'))
-        boxes.extend(doplot(box_x, box_y, 'b-'))
-        medians.extend(doplot(med_x, med_y, 'r-'))
+        whiskers.extend(doplot(wisk_x, [q1, wisk_lo], color=whiskerscolor, linestyle='--'))
+        whiskers.extend(doplot(wisk_x, [q3, wisk_hi], color=whiskerscolor, linestyle='--'))
+        caps.extend(doplot(cap_x, [wisk_hi, wisk_hi], color=capscolor, linestyle='-'))
+        caps.extend(doplot(cap_x, [wisk_lo, wisk_lo], color=capscolor, linestyle='-'))
+        boxes.extend(doplot(box_x, box_y, color=boxescolor, linestyle='-'))
+        medians.extend(doplot(med_x, med_y, color=medianscolor, linestyle='-'))
         fliers.extend(doplot(flier_hi_x, flier_hi, sym,
                              flier_lo_x, flier_lo, sym))
 
@@ -347,7 +353,7 @@ def plot(xdata, ydata):
                 ax = plt.gca()
                 trans = blend(ax.transData, ax.transAxes)
                 res.extend(plt.plot((xdata[i], ), (0., ),
-                                    marker='+', color='b',
+                                    marker='+', color=flierscolor,
                                     ls='', markersize=20, markeredgewidth=3,
                                     transform=trans, clip_on=False))
                 res.append(plt.text(xdata[i], 0.02, '%d' % len(y[numpy.isinf(y)]),
@@ -358,7 +364,7 @@ def plot(xdata, ydata):
                     continue
 
             res.extend(plt.plot([xdata[i]]*len(y), 10**numpy.array(y),
-                                marker='+', color='b',
+                                marker='+', color=flierscolor,
                                 ls='', markersize=20, markeredgewidth=3))
 
             # plot dashed vertical line between min and max 

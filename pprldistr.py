@@ -40,6 +40,7 @@ rldUnsuccStyles = ({'color': 'k', 'ls': '--'},
                    {'color': 'k'},
                    {'color': 'c', 'ls': '--'},
                    {'color': 'm'})  # should not be too short
+refcolor = 'wheat'
 
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
@@ -517,7 +518,7 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
                 x = numpy.hstack(x)
 
                 plotECDF(x[numpy.isfinite(x)]/d, nn,
-                         {'color': 'wheat', 'ls': '-', 'zorder': -1})
+                         {'color': refcolor, 'ls': '-', 'zorder': -1})
 
     plt.axvline(max(i.mMaxEvals()/i.dim for i in dsList0), ls='--', color='k')
     plt.axvline(max(i.mMaxEvals()/i.dim for i in dsList1), color='k')
@@ -596,7 +597,7 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
                 x = numpy.hstack(x)
 
                 plotECDF(x[numpy.isfinite(x)]/float(d), nn,
-                         {'color': 'wheat', 'ls': '-', 'zorder': -1})
+                         {'color': refcolor, 'ls': '-', 'zorder': -1})
 
     plt.axvline(x=maxEvalsFactor, color='k')
     beautifyRLD(fig, figureName, evalfmax, fileFormat=figformat, text=text,

@@ -35,6 +35,7 @@ styles = [{'marker': 'o', 'linestyle': '-', 'color': 'b'},
           {'marker': '2', 'linestyle': '-', 'color': 'k'},
           {'marker': '3', 'linestyle': '-', 'color': 'b'},
           {'marker': '4', 'linestyle': '-', 'color': 'g'}]
+refcolor = 'wheat'
 
 show_algorithms = []
 fontsize = 20.0
@@ -319,8 +320,8 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                 bestalgdata.append(float(tmp)/d)
                 dimbestalg2.append(d)
 
-        tmp = plt.plot(dimbestalg2, bestalgdata, color='wheat', linewidth=10,
-                       marker='d', markersize=25, markeredgecolor='wheat', zorder=-1)
+        tmp = plt.plot(dimbestalg2, bestalgdata, color=refcolor, linewidth=10,
+                       marker='d', markersize=25, markeredgecolor=refcolor, zorder=-1)
                        #label='best 2009', 
         handles.append(tmp)
 

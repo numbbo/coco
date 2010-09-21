@@ -38,7 +38,7 @@ import matplotlib.pyplot as plt
 # Used by getopt:
 shortoptlist = "hvo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
-               "per-only", "fig-only", "verbose"]
+               "per-only", "fig-only", "verbose", "settings="]
 #CLASS DEFINITIONS
 
 class Usage(Exception):
@@ -91,6 +91,13 @@ def main(argv=None):
 
             restrain the post-processing to part of the data set only.
 
+        --settings SETTING
+
+            change the style of the output figures and tables. At the moment
+            only the only differences are in the colors of the output figures.
+            SETTINGS can be either "grayscale", "color" or "black-white". The
+            default setting is "color".
+
         --tab-only, --per-only, --fig-only
 
             these options can be used to output respectively the comparison
@@ -125,9 +132,10 @@ def main(argv=None):
     folder2.
     The -o option changes the output folder from the default to outputfolder.
 
-    * Generate post-processing data for some algorithms:
+    * Generate post-processing data for some algorithms with figures in shades
+      of gray:
 
-        $ python rungenericmany.py AMALGAM BFGS BIPOP-CMA-ES
+        $ python rungenericmany.py --settings grayscale NEWUOA NELDER LSSTEP
 
     """
 
@@ -152,6 +160,7 @@ def main(argv=None):
         isPer = True
         isTab = True
         isFig = True
+        inputsettings = "color"
 
         #Process options
         for o, a in opts:
@@ -176,14 +185,22 @@ def main(argv=None):
             elif o == "--fig-only":
                 isPer = False
                 isTab = False
+            elif o == "--settings":
+                inputsettings = a
             else:
                 assert False, "unhandled option"
 
-        if False:
-            from bbob_pproc import bbob2010 as inset # input settings
-            # is here because variables setting could be modified by flags
-        else:
+        # from bbob_pproc import bbob2010 as inset # input settings
+        if inputsettings == "color":
             from bbob_pproc import genericsettings as inset # input settings
+        elif inputsettings == "grayscale":
+            from bbob_pproc import grayscalesettings as inset # input settings
+        elif inputsettings == "black-white":
+            from bbob_pproc import bwsettings as inset # input settings
+        else:
+            txt = ('Settings: %s is not an appropriate ' % inputsettings
+                   + 'argument for input flag "--settings".')
+            raise Usage(txt)
 
         if (not verbose):
             warnings.simplefilter('ignore')

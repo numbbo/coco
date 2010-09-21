@@ -35,17 +35,22 @@ from bbob_pproc.compall import ppperfprof, pptables
 from bbob_pproc.compall import organizeRTDpictures
 
 # Combine optlist for getopt:
+# Make a set of the short option list, has one-letter elements that could be
+# followed by colon
 shortoptlist = set()
 for i in (rungeneric1.shortoptlist, rungeneric2.shortoptlist,
           rungenericmany.shortoptlist):
-    tmp = i.split(':')
-    for j in tmp[0:-1]:
-        for k in j[0:-1]:
-            shortoptlist.add(k)
-        shortoptlist.add(j[-1] + ':')
-    for k in tmp[-1]:
-        shortoptlist.add(k)
+    tmp = i[:]
+    # split into logical elements: one-letter that could be followed by colon
+    while tmp:
+        if len(tmp) > 1 and tmp[1] is ':':
+            shortoptlist.add(tmp[0:2])
+            tmp = tmp[2:]
+        else:
+            shortoptlist.add(tmp[0])
+            tmp = tmp[1:]
 shortoptlist = ''.join(shortoptlist)
+
 longoptlist = list(set.union(set(rungeneric1.longoptlist),
                              set(rungeneric2.longoptlist),
                              set(rungenericmany.longoptlist)))
@@ -57,6 +62,24 @@ class Usage(Exception):
         self.msg = msg
 
 #FUNCTION DEFINITIONS
+
+def splitshortoptlist(shortoptlist):
+    """Split short options list used by getopt.
+    Returns a set of the options.
+    """
+
+    res = set()
+    tmp = shortoptlist[:]
+    # split into logical elements: one-letter that could be followed by colon
+    while tmp:
+        if len(tmp) > 1 and tmp[1] is ':':
+            res.add(tmp[0:2])
+            tmp = tmp[2:]
+        else:
+            res.add(tmp[0])
+            tmp = tmp[1:]
+
+    return res
 
 def usage():
     print main.__doc__
@@ -141,6 +164,15 @@ def main(argv=None):
         outputdir = 'ppdata'
 
         #Process options
+        shortoptlist1 = list("-" + i.rstrip(":")
+                             for i in splitshortoptlist(rungeneric1.shortoptlist))
+        shortoptlist2 = list("-" + i.rstrip(":")
+                             for i in splitshortoptlist(rungeneric2.shortoptlist))
+        shortoptlistmany = list("-" + i.rstrip(":")
+                                for i in splitshortoptlist(rungenericmany.shortoptlist))
+        shortoptlist1.remove("-o")
+        shortoptlist2.remove("-o")
+        shortoptlistmany.remove("-o")
         longoptlist1 = list( "--" + i.rstrip("=") for i in rungeneric1.longoptlist)
         longoptlist2 = list( "--" + i.rstrip("=") for i in rungeneric2.longoptlist)
         longoptlistmany = list( "--" + i.rstrip("=") for i in rungenericmany.longoptlist)
@@ -149,28 +181,32 @@ def main(argv=None):
         genopts2 = []
         genoptsmany = []
         for o, a in opts:
-            if o in ("-v","--verbose"):
-                verbose = True
-            elif o in ("-h", "--help"):
+            if o in ("-h", "--help"):
                 usage()
                 sys.exit()
             elif o in ("-o", "--output-dir"):
                 outputdir = a
-            elif o in ("-f", "--final"):
-                genopts1.append(o)
-            elif o == "--crafting-effort":
-                genopts1.append(o)
-                genopts1.append(a)
             else:
                 isAssigned = False
-                if o in longoptlist1:
+                if o in longoptlist1 or o in shortoptlist1:
                     genopts1.append(o)
+                    # Append o and then a separately otherwise the list of
+                    # command line arguments might be incorrect
+                    if a:
+                        genopts1.append(a)
                     isAssigned = True
-                if o in longoptlist2:
+                if o in longoptlist2 or o in shortoptlist2:
                     genopts2.append(o)
+                    if a:
+                        genopts2.append(a)
                     isAssigned = True
-                if o in longoptlistmany:
+                if o in longoptlistmany or o in shortoptlistmany:
                     genoptsmany.append(o)
+                    if a:
+                        genoptsmany.append(a)
+                    isAssigned = True
+                if o in ("-v","--verbose"):
+                    verbose = True
                     isAssigned = True
                 if not isAssigned:
                     assert False, "unhandled option"
@@ -192,7 +228,6 @@ def main(argv=None):
             # TODO: if there is a problem, skip: try except...
             rungeneric1.main(genopts1
                              + ["-o", tmpoutputdir, alg])
-
         if len(args) == 2:
             rungeneric2.main(genopts2 + ["-o", outputdir] + args)
         elif len(args) > 2:
