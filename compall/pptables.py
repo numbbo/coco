@@ -13,7 +13,7 @@ from pdb import set_trace
 import warnings
 import numpy
 from bbob_pproc import bestalg, bootstrap
-from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, writeLabels, tableLaTeX
+from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, writeLabels, tableLaTeX, numtotext
 from bbob_pproc.bootstrap import prctile
 from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList, significancetest
@@ -39,7 +39,7 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
 
-maxfloatrepr = 100000.
+maxfloatrepr = 10000.
 samplesize = 3000
 targetf = 1e-8
 
@@ -186,13 +186,6 @@ def sortColumns(table, maxRank=None):
 
     return ranked
 
-def writeFunVal(funval):
-    """Returns string representation of a function value to use in a table."""
-    res = ('%.1e' % funval).split('e')
-    res[0] = res[0].replace('.', '')
-    res[1] = '%+d' % (int(res[1]) - 1)
-    return r'\textit{%s}' % 'e'.join(res)
-
 def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
     """Generate one table per function showing results of multiple algorithms.
 
@@ -258,7 +251,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
             entry = entries[0]
             algentry.append(entry)
 
-            algnames.append(sortedAlgs[n][0:5]) # TODO: check
+            algnames.append(sortedAlgs[n])
 
             evals = entry.detEvals(targets)
             #tmpdata = []
@@ -353,10 +346,13 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
         #if df == (5, 17):
             #set_trace()
 
+        header = ''
         for i, alg in enumerate(algnames):
         #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
                    #data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
-            curline = [writeLabels(alg) + r'\hspace*{\fill}']
+            commandname = r'\alg%stables' % numtotext(i)
+            header += r'\providecommand{%s}{%s}' % (commandname, writeLabels(alg))
+            curline = [commandname + r'\hspace*{\fill}']
 
             for j, tmp in enumerate(zip(algert[i], algdisp[i],
                                         isBoldArray[i], algtestres[i])):
@@ -435,7 +431,16 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
 
         # Write table
         res = tableLaTeX(table, spec=spec, extraeol=extraeol)
-        f = open(os.path.join(outputdir, 'pptables_f%03d_%02dD.tex' % (df[1], df[0])), 'w')
-        f.write(res)
-        f.close()
+        try:
+            filename = os.path.join(outputdir, 'pptables_f%03d_%02dD.tex' % (df[1], df[0]))
+            f = open(filename, 'w')
+            f.write(header + '\n')
+            f.write(res)
+            if verbose:
+                print 'Wrote table in %s' % filename
+        except:
+            raise
+        else:
+            f.close()
+        # TODO: return status
 

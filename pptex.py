@@ -5,12 +5,14 @@
 
 import os
 import sys
+import string
 import numpy
 
 from bbob_pproc import bootstrap
 from pdb import set_trace
 
 #GLOBAL VARIABLES DEFINITION
+alphabet = string.letters
 
 #CLASS DEFINITION
 class Error(Exception):
@@ -37,6 +39,19 @@ class WrongInputSizeError(Error):
 
 
 #TOP LEVEL METHODS
+def numtotext(n):
+    """Returns a text from a positive integer.
+
+    Is to be used for generating command names: they cannot include number
+    characters.
+    WARNING: n can only be smaller than 51
+    """
+
+    if n > 51:
+        raise Exception('Cannot handle a number of algorithms that large.')
+
+    return alphabet[n]
+
 def writeLabels(label):
     """Format text to be output by LaTeX."""
     return label.replace('_', r'\_')
