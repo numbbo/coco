@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap, bestalg
 from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
 from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers
+from bbob_pproc.pptex import writeLabels, numtotext
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
@@ -144,6 +145,10 @@ refcolor = 'wheat'
 #'d'     thin_diamond marker
 #'|'     vline marker
 #'_'     hline marker
+headleg = (r'\raisebox{.037\textwidth}{\hspace{-0.003\textwidth}\parbox[b]'
+           + r'[.3\textwidth]{.0868\textwidth}{\begin{scriptsize}')
+footleg = (r'%do not remove the empty line below' + '\n\n' +
+           r'\end{scriptsize}}}')
 
 def beautify():
     """Format the figure."""
@@ -235,8 +240,18 @@ def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
     return res
 
 def plotLegend(handles, maxval):
-    """Display right-side legend."""
+    """Display right-side legend. Returns list of (ordered) labels and handles.
 
+    The figure is stopped at maxval (upper x-bound), and the graphs in the
+    figure are prolonged with straight lines to the right to connect with
+    labels of the graphs (uniformly spread out vertically). The order of the
+    graphs at the upper x-bound line give the order of the labels, in case of
+    ties, the best is the graph for which the x-value of the first step (from
+    the right) is smallest.
+    """
+
+    reslabels = []
+    reshandles = []
     ys = {}
     lh = 0
     for h in handles:
@@ -291,17 +306,20 @@ def plotLegend(handles, maxval):
                     legx = maxval * 10
                     if 'marker' in attr:
                         legx = maxval * 9
-                    plt.plot((maxval, legx), (j, y),
-                             color=plt.getp(h, 'markeredgecolor'), **tmp)
-
-                    plt.text(maxval*11, y,
-                             plt.getp(h, 'label'), horizontalalignment="left",
-                             verticalalignment="center", size=fontsize)
+                    reshandles.extend(plt.plot((maxval, legx), (j, y),
+                                      color=plt.getp(h, 'markeredgecolor'), **tmp))
+                    reshandles.append(plt.text(maxval*11, y,
+                                               plt.getp(h, 'label'),
+                                               horizontalalignment="left",
+                                               verticalalignment="center", size=fontsize))
+                    reslabels.append(plt.getp(h, 'label'))
                     #set_trace()
                     i += 1
 
     #plt.axvline(x=maxval, color='k') # Not as efficient?
-    plt.plot((maxval, maxval), (0., 1.), color='k')
+    reshandles.append(plt.plot((maxval, maxval), (0., 1.), color='k'))
+    reslabels.reverse()
+    return reslabels, reshandles
 
 def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
          info='default', verbose=True):
@@ -434,7 +452,27 @@ def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
         lines.append(plotPerfProf(numpy.array(xbest2009), xlim, maxevalsbest2009,
                                   CrE = 0., kwargs=args))
 
-    plotLegend(lines, xlim)
+    labels, handles = plotLegend(lines, xlim)
+    if True: #isLateXLeg:
+        fileName = os.path.join(outputdir,'ppperfprof_%s.tex' % (info))
+        try:
+            f = open(fileName, 'w')
+            commandnames = []
+            for i, l in enumerate(labels):
+                tmp = r'\alg%sperfprof' % numtotext(i)
+                commandnames.append(tmp)
+                f.write(r'\providecommand{%s}{%s}' % (tmp, writeLabels(l)))
+            f.write(headleg)
+            f.write(r'\mbox{%s}' % commandnames[0]) # TODO: check len(labels) > 0
+            for i in range(1, len(labels)):
+                f.write('\n' + r'\vfill \mbox{%s}' % commandnames[i])
+            f.write(footleg)
+            if verbose:
+                print 'Wrote right-hand legend in %s' % fileName
+        except:
+            raise # TODO: Does this make sense?
+        else:
+            f.close()
 
     figureName = os.path.join(outputdir,'ppperfprof_%s' % (info))
     #beautify(figureName, funcsolved, xlim*x_annote_factor, False, fileFormat=figformat)
@@ -455,4 +493,6 @@ def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
     saveFigure(figureName, figFormat=figformat, verbose=verbose)
 
     plt.close()
+
+    # TODO: should return status or sthg
 
