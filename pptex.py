@@ -13,12 +13,35 @@ from pdb import set_trace
 
 #GLOBAL VARIABLES DEFINITION
 alphabet = string.letters
+#conversion of matplotlib elements to LaTeX
+convmarker = {'o': r'$\circ$',
+              'd': r'$\Diamond$',
+              's': r'$\Box$',
+              'v': r'$\triangledown$',
+              '*': r'$\star$',
+              'h': '',
+              '^': '',
+              'p': '',
+              'H': '',
+              '<': '',
+              'D': '',
+              '>': '',
+              '1': '',
+              '2': '',
+              '3': '',
+              '4': ''}
+convcolor = {'g': 'green!45!black',
+             'r': 'red',
+             'c': 'cyan',
+             'm': 'magenta',
+             'y': 'yellow',
+             'k': 'black',
+             'b': 'blue'}
 
 #CLASS DEFINITION
 class Error(Exception):
     """ Base class for errors. """
     pass
-
 
 class WrongInputSizeError(Error):
     """ Error if an array has the wrong size for the following operation.
@@ -39,6 +62,20 @@ class WrongInputSizeError(Error):
 
 
 #TOP LEVEL METHODS
+def convcolo(color):
+    try:
+        res = '\color{%s}' % convcolor[color]
+    except KeyError as err:
+        try:
+            float(color)
+            res = '\color[gray]{%s}' % color
+        except ValueError:
+            raise err
+    return res
+
+def convmark(marker):
+    return convmarker[marker]
+
 def numtotext(n):
     """Returns a text from a positive integer.
 
