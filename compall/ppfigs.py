@@ -10,6 +10,7 @@ import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap, bestalg, pproc
 from bbob_pproc.ppfig import saveFigure
+from bbob_pproc.pptex import convcolo, convmark
 from bbob_pproc.dataoutput import algPlotInfos
 
 # styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
@@ -188,11 +189,11 @@ def beautify(rightlegend=False):
 
     # quadratic and cubic "grid"
     plt.plot((2,200), (1, 1e2), 'k:', zorder=-1)
-    plt.plot((2,200), (1, 1e4), 'k:', zorder=-1)
-    plt.plot((2,200), (1e3, 1e5), 'k:', zorder=-1)  
-    plt.plot((2,200), (1e3, 1e7), 'k:', zorder=-1)
-    plt.plot((2,200), (1e6, 1e8), 'k:', zorder=-1)  
-    plt.plot((2,200), (1e6, 1e10), 'k:', zorder=-1)
+    # plt.plot((2,200), (1, 1e4), 'k:', zorder=-1)
+    plt.plot((2,200), (1e3, 1e5), 'k:', zorder=-1)
+    # plt.plot((2,200), (1e3, 1e7), 'k:', zorder=-1)
+    plt.plot((2,200), (1e6, 1e8), 'k:', zorder=-1)
+    # plt.plot((2,200), (1e6, 1e10), 'k:', zorder=-1)
 
     plt.ylim(ymin=10**-0.2, ymax=ymax) # Set back the default maximum.
 
@@ -331,13 +332,33 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
 
         beautify(rightlegend=legend)
 
-        if legend:
-            plotLegend(handles)
-        else:
-            if f in (1, 24, 101, 130):
-                plt.legend()
+        # if legend:
+        #     plotLegend(handles)
+        # else:
+        #     if f in (1, 24, 101, 130):
+        #         plt.legend()
 
         saveFigure(filename, figFormat=figformat, verbose=verbose)
 
         plt.close()
+
+    # generate legend:
+    try:
+        filename = os.path.join(outputdir,'ppfigs.tex')
+        f = open(filename, 'w')
+        f.write('Legend: ')
+        
+        symb = r'{%s%s}' % (convcolo(styles[0]['color']),
+                            convmark(styles[0]['marker']))
+        f.write('%s: %s' % (symb, sortedAlgs[0]))
+        for i in range(1, len(sortedAlgs)):
+            symb = r'{%s%s}' % (convcolo(styles[i]['color']),
+                                convmark(styles[i]['marker']))
+            f.write(', %s: %s' % (symb, sortedAlgs[i]))
+        if verbose:
+            print 'Wrote legend in %s' % filename
+    except IOError:
+        raise
+    else:
+        f.close()
 

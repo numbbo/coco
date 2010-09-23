@@ -145,7 +145,7 @@ refcolor = 'wheat'
 #'d'     thin_diamond marker
 #'|'     vline marker
 #'_'     hline marker
-headleg = (r'\raisebox{.037\textwidth}{\hspace{-0.003\textwidth}\parbox[b]'
+headleg = (r'\raisebox{.037\textwidth}{\parbox[b]'
            + r'[.3\textwidth]{.0868\textwidth}{\begin{scriptsize}')
 footleg = (r'%do not remove the empty line below' + '\n\n' +
            r'\end{scriptsize}}}')
@@ -332,8 +332,7 @@ def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
     dictAlg -- dictionary of dataSetList instances containing all data to be
         represented in the figure
     targets -- list of target function values
-    order -- list of keys to dictAlg that determines the plotting order of the
-        algorithm (used in the legend).
+    order -- sorted list of keys to dictAlg for plotting order
     """
 
     xlim = x_limit # variable defined in header
@@ -457,11 +456,20 @@ def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
         fileName = os.path.join(outputdir,'ppperfprof_%s.tex' % (info))
         try:
             f = open(fileName, 'w')
-            commandnames = []
-            for i, l in enumerate(labels):
+            algtocommand = {}
+            for i, alg in enumerate(order):
                 tmp = r'\alg%sperfprof' % numtotext(i)
+                f.write(r'\providecommand{%s}{%s}' % (tmp, writeLabels(alg)))
+                algtocommand[alg] = tmp
+            commandnames = []
+            if displaybest2009:
+                tmp = r'\algzeroperfprof'
                 commandnames.append(tmp)
-                f.write(r'\providecommand{%s}{%s}' % (tmp, writeLabels(l)))
+                f.write(r'\providecommand{%s}{%s}' % (tmp, writeLabels(alg)))
+                algtocommand['best 2009'] = tmp
+
+            for l in labels:
+                commandnames.append(algtocommand[l])
             f.write(headleg)
             f.write(r'\mbox{%s}' % commandnames[0]) # TODO: check len(labels) > 0
             for i in range(1, len(labels)):
