@@ -345,21 +345,21 @@ ppperfprof.styles = [{'marker': 'o', 'linestyle': '-', 'color': 'k'},
                      {'marker': '4', 'linestyle': '-', 'color': 'k'}]
 ppperfprof.refcolor = '0.9'
 
-ppfigs.styles = [{'marker': 'o', 'linestyle': '-', 'color': 'k'},
-                 {'marker': 'd', 'linestyle': '-', 'color': 'k'},
-                 {'marker': 's', 'linestyle': '-', 'color': 'k'},
-                 {'marker': 'v', 'linestyle': '-', 'color': 'k'},
-                 {'marker': '*', 'linestyle': '-', 'color': 'k'},
-                 {'marker': 'h', 'linestyle': '-', 'color': 'k'},
-                 {'marker': '^', 'linestyle': '-', 'color': 'k'},
-                 {'marker': 'p', 'linestyle': '-', 'color': 'k'},
-                 {'marker': 'H', 'linestyle': '-', 'color': 'k'},
-                 {'marker': '<', 'linestyle': '-', 'color': 'k'},
-                 {'marker': 'D', 'linestyle': '-', 'color': 'k'},
-                 {'marker': '>', 'linestyle': '-', 'color': 'k'},
-                 {'marker': '1', 'linestyle': '-', 'color': 'k'},
-                 {'marker': '2', 'linestyle': '-', 'color': 'k'},
-                 {'marker': '3', 'linestyle': '-', 'color': 'k'},
-                 {'marker': '4', 'linestyle': '-', 'color': 'k'}]
+ppfigs.styles = [{'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'k'},
+                 {'marker': 'd', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': 's', 'markersize': 25, 'linestyle': '-', 'color': 'k'},
+                 {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': '*', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': 'h', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': '^', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': 'p', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': 'H', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': '<', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': 'D', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': '>', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': '1', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': '2', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': '3', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
+                 {'marker': '4', 'markersize': 30, 'linestyle': '-', 'color': 'k'}]
 ppfigs.refcolor = '0.9'
 

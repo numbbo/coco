@@ -12,24 +12,24 @@ from bbob_pproc import bootstrap
 from pdb import set_trace
 
 #GLOBAL VARIABLES DEFINITION
-alphabet = string.letters
+alphabet = string.ascii_letters
 #conversion of matplotlib elements to LaTeX
 convmarker = {'o': r'$\circ$',
-              'd': r'$\Diamond$',
+              'd': r'$\diamondsuit$',
               's': r'$\Box$',
               'v': r'$\triangledown$',
               '*': r'$\star$',
-              'h': '',
-              '^': '',
-              'p': '',
-              'H': '',
-              '<': '',
-              'D': '',
-              '>': '',
-              '1': '',
-              '2': '',
-              '3': '',
-              '4': ''}
+              'h': r'$\varhexagon$', # need \usepackage{wasysymb}
+              '^': r'$\triangle$',
+              'p': r'$\pentagon$', # need \usepackage{wasysymb}
+              'H': r'$\hexagon$', # need \usepackage{wasysymb}
+              '<': r'$\triangleleft$',
+              'D': r'$\Diamond$',
+              '>': r'$\triangleright$',
+              '1': r'$\downY$', # need \usepackage{MnSymbol}
+              '2': r'$\upY$', # need \usepackage{MnSymbol}
+              '3': r'$\rightY$', # need \usepackage{MnSymbol}
+              '4': r'$\leftY$'} # need \usepackage{MnSymbol}
 convcolor = {'g': 'green!45!black',
              'r': 'red',
              'c': 'cyan',
