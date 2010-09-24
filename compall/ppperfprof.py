@@ -308,7 +308,7 @@ def plotLegend(handles, maxval):
                         legx = maxval * 9
                     reshandles.extend(plt.plot((maxval, legx), (j, y),
                                       color=plt.getp(h, 'markeredgecolor'), **tmp))
-                    reshandles.append(plt.text(maxval*11, y,
+                    reshandles.append(plt.text(maxval*15, y,
                                                plt.getp(h, 'label'),
                                                horizontalalignment="left",
                                                verticalalignment="center", size=fontsize))
@@ -456,16 +456,16 @@ def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
         fileName = os.path.join(outputdir,'ppperfprof_%s.tex' % (info))
         try:
             f = open(fileName, 'w')
+            f.write(r'\providecommand{\nperfprof}{7}')
             algtocommand = {}
             for i, alg in enumerate(order):
                 tmp = r'\alg%sperfprof' % numtotext(i)
-                f.write(r'\providecommand{%s}{%s}' % (tmp, writeLabels(alg)))
+                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, writeLabels(alg)))
                 algtocommand[alg] = tmp
             commandnames = []
             if displaybest2009:
                 tmp = r'\algzeroperfprof'
-                commandnames.append(tmp)
-                f.write(r'\providecommand{%s}{%s}' % (tmp, writeLabels(alg)))
+                f.write(r'\providecommand{%s}{best 2009}' % (tmp))
                 algtocommand['best 2009'] = tmp
 
             for l in labels:

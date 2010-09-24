@@ -42,6 +42,8 @@ except IOError, (errno, strerror):
 maxfloatrepr = 10000.
 samplesize = 3000
 targetf = 1e-8
+precfloat = 2
+precscien = 1
 
 def cite(algName, isNoisefree, isNoisy):
     """Returns the citation key associated to the algorithm name.
@@ -346,12 +348,12 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
         #if df == (5, 17):
             #set_trace()
 
-        header = ''
+        header = r'\providecommand{\ntables}{7}'
         for i, alg in enumerate(algnames):
         #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
                    #data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
             commandname = r'\alg%stables' % numtotext(i)
-            header += r'\providecommand{%s}{%s}' % (commandname, writeLabels(alg))
+            header += r'\providecommand{%s}{\StrLeft{%s}{\ntables}}' % (commandname, writeLabels(alg))
             curline = [commandname + r'\hspace*{\fill}']
 
             for j, tmp in enumerate(zip(algert[i], algdisp[i],
@@ -375,16 +377,22 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                                           writeFEvalsMaxPrec(dispersion, 2)))
                         continue
 
-                    tmp = writeFEvalsMaxPrec(data, 2, maxfloatrepr=maxfloatrepr)
-                    if data >= maxfloatrepr: # either inf or scientific notation
+                    tmp = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
+                    if data >= maxfloatrepr or data < 0.01: # either inf or scientific notation
                         if numpy.isinf(data) and j == len(algert[i]) - 1:
-                            tmp += r'\,\textit{%s}' % writeFEvalsMaxPrec(algfinaldata[i][1], 0)
+                            tmp += r'\,\textit{%s}' % writeFEvalsMaxPrec(algfinaldata[i][1], 0, maxfloatrepr=maxfloatrepr)
                         else:
+                            tmp = writeFEvalsMaxPrec(data, precscien, maxfloatrepr=data)
                             if isBold:
                                 tmp = r'\textbf{%s}' % tmp
 
                         if not numpy.isnan(dispersion):
-                            tmp += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion/refalgert[j], 2)
+                            tmpdisp = dispersion/refalgert[j]
+                            if tmpdisp >= maxfloatrepr or tmpdisp < 0.01: # TODO: hack
+                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precscien, maxfloatrepr=tmpdisp)
+                            else:
+                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precfloat, maxfloatrepr=maxfloatrepr)
+                            tmp += r'${\scriptscriptstyle (%s)}$' % tmpdisp
                         curline.append(r'\multicolumn{2}{%s}{%s}' % (alignment, tmp))
                     else:
                         tmp2 = tmp.split('.', 1)
@@ -398,7 +406,12 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                                 tmp3.append(r'\textbf{%s}' % k)
                             tmp2 = tmp3
                         if not numpy.isnan(dispersion):
-                            tmp2[-1] += (r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion/refalgert[j], 2))
+                            tmpdisp = dispersion/refalgert[j]
+                            if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
+                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precscien, maxfloatrepr=tmpdisp)
+                            else:
+                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precfloat, maxfloatrepr=maxfloatrepr)
+                            tmp2[-1] += (r'${\scriptscriptstyle (%s)}$' % tmpdisp)
 
                         z, p = testres
                         if data < 1. and not numpy.isinf(refalgert[j]):
