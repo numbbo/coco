@@ -164,7 +164,7 @@ def plotLegend(handles, maxval=None):
     if maxval:
         plt.axvline(maxval, color='k')
 
-def beautify(rightlegend=False):
+def beautify(legend=False, rightlegend=False):
     """ Customize a figure by adding a legend, axis label, etc and save to a file.
         Is identical to beautify except for the linear and quadratic scaling
         lines which are quadratic and cubic
@@ -217,6 +217,9 @@ def beautify(rightlegend=False):
     for i in tmp:
         tmp2.append('%d' % round(numpy.log10(i)))
     axisHandle.set_yticklabels(tmp2)
+
+    if legend:
+        plt.legend(loc=0, numpoints=1)
 
 def generateData(dataSet, target):
     """Returns an array of results to be plotted.
@@ -331,13 +334,14 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
             title = funInfos[f]
             plt.gca().set_title(title)
 
-        beautify(rightlegend=legend)
-
+        isLegend = False
         if legend:
             plotLegend(handles)
         else:
             if f in (1, 24, 101, 130):
-                plt.legend()
+                isLegend = True
+
+        beautify(legend=isLegend, rightlegend=legend)
 
         saveFigure(filename, figFormat=figformat, verbose=verbose)
 
