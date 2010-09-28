@@ -10,7 +10,7 @@ import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap, bestalg, pproc
 from bbob_pproc.ppfig import saveFigure
-from bbob_pproc.pptex import convcolo, convmark
+from bbob_pproc.pptex import convcolo, convmark, writeLabels
 from bbob_pproc.dataoutput import algPlotInfos
 
 # styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
@@ -338,7 +338,7 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
         if legend:
             plotLegend(handles)
         else:
-            if f in (1, 24, 101, 130):
+            if f in (1, 24, 101, 130) and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
                 isLegend = True
 
         beautify(legend=isLegend, rightlegend=legend)
@@ -355,11 +355,11 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
         
         symb = r'{%s%s}' % (convcolo(styles[0]['color']),
                             convmark(styles[0]['marker']))
-        f.write('%s: %s' % (symb, sortedAlgs[0]))
+        f.write('%s: %s' % (symb, writeLabels(sortedAlgs[0])))
         for i in range(1, len(sortedAlgs)):
             symb = r'{%s%s}' % (convcolo(styles[i]['color']),
                                 convmark(styles[i]['marker']))
-            f.write(', %s: %s' % (symb, sortedAlgs[i]))
+            f.write(', %s: %s' % (symb, writeLabels(sortedAlgs[i])))
         if verbose:
             print 'Wrote legend in %s' % filename
     except IOError:
