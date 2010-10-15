@@ -347,10 +347,12 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
 
         plt.close()
 
-    # generate legend:
+    # generate legend tex file:
     try:
         filename = os.path.join(outputdir,'ppfigs.tex')
         f = open(filename, 'w')
+        f.write('% Do not modify this file: calls to post-processing software'
+                + ' will overwrite any modification.\n')
         f.write('Legend: ')
         
         symb = r'{%s%s}' % (convcolo(styles[0]['color']),
