@@ -120,3 +120,13 @@ SUMplus-NDCG-S.5_W50:% SUMplus_on_DE_with_stGECCOset:{"label":"Adap DE (SUM)"}
 DE_Uniform_stGECCOset:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"DE (Uniform)"}
 PM-AdapSS-DE:% Probability Matching with absolute average of the relative fitness improvement as Credit Assignment (see GECCO10 paper).:{"label":"PM-AdapSS-DE"}
 oPOEMS:% no comments:{"label":"POEMS"}
+SPSA_rho_6:% SPSA with rho = 0.6, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_6"}
+SPSA_rho_7:% SPSA with rho = 0.7, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_7"}
+SPSA_rho_4:% SPSA with rho = 0.4, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_4"}
+SPSA_rho_5:% SPSA with rho = 0.5, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_5"}
+SPSA_rho_2:% SPSA with rho = 0.2, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_2"}
+SPSA_rho_3:% SPSA with rho = 0.3, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_3"}
+SPSA_rho_0:% SPSA with rho = 0, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_0"}
+SPSA_rho_1:% SPSA with rho = .1, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_1"}
+SPSA_rho_8:% SPSA with rho = 0.8, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_8"}
+SPSA_rho_9:% SPSA with rho = 0.9, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_9"}
