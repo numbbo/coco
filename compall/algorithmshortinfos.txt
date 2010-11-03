@@ -130,3 +130,7 @@ SPSA_rho_0:% SPSA with rho = 0, c0 const., gamma = 0, a0 calculated, alpha = 0.6
 SPSA_rho_1:% SPSA with rho = .1, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_1"}
 SPSA_rho_8:% SPSA with rho = 0.8, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_8"}
 SPSA_rho_9:% SPSA with rho = 0.9, c0 const., gamma = 0, a0 calculated, alpha = 0.601, lambda increased by 2 in each restart, A equals 5 percent of maxIter, no fit histroy:{"label":"SPSA_rho_9"}
+cmaes V3.51.beta:% runnoisycmaes_futu, sigma0=2, restarts=9, popsize=IPOP starting with def, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(popsize):{"label":"cmaes V3.51.beta"}
+cmaes V3.51.beta:% runcmaes_ipop, sigma0=2, restarts=9, popsize=IPOP starting with def, maxiter=100 + 50 * (N + 3)^2 / sqrt(popsize):{"label":"cmaes V3.51.beta"}
+cmaes V3.51.beta:% runnoisycmaes_ipop, sigma0=2, restarts=9, popsize=IPOP starting with def, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(popsize):{"label":"cmaes V3.51.beta"}
+cmaes V3.51.beta:% runcmaes_futu, sigma0=2, restarts=9, popsize=IPOP starting with def, maxiter=100 + 50 * (N + 3)^2 / sqrt(popsize):{"label":"cmaes V3.51.beta"}
