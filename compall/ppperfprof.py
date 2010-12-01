@@ -162,7 +162,7 @@ def beautify():
     plt.ylabel('Proportion of functions')
     plt.grid(True)
 
-    plt.ylim(0, 1)
+    plt.ylim(-0.01, 1.01)
 
 def get_plot_args(args):
     """args is one dict element according to algorithmshortinfos

@@ -49,15 +49,21 @@ def plotUnifLogXMarkers(x, y, nbperdecade, kwargs={}):
     def downsample(xdata, ydata):
         """Downsample arrays of data, zero-th column elements are evenly spaced."""
 
+        assert all(xdata == numpy.sort(xdata)) and all(ydata == numpy.sort(ydata))
+        # otherwise xdata and ydata need to be sorted
+        # they cannot be sorted individually
+
         # powers of ten 10**(i/nbperdecade)
         minidx = numpy.ceil(numpy.log10(min(xdata)) * nbperdecade)
-        maxidx = numpy.floor(numpy.log10(max(xdata)) * nbperdecade) + 1
-        alignmentdata = 10.**(numpy.arange(minidx, maxidx)/nbperdecade)
+        maxidx = numpy.floor(numpy.log10(max(xdata)) * nbperdecade)
+        alignmentdata = 10.**(numpy.arange(minidx, maxidx + 1)/nbperdecade)
         # Look in the original data
         res = []
-        tmp = numpy.argsort(xdata)
         for i in alignmentdata:
-            res.append(ydata[tmp][xdata[tmp] <= i][-1])
+            if (xdata > i).any():
+                res.append(ydata[xdata > i][0])
+            else:
+                res.append(ydata[-1])
 
         return alignmentdata, res
 

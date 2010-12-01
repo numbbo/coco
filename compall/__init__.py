@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
 """COmparing Continuous Optimisers (COCO) post-processing tool for comparing
 multiple algorithms:
@@ -7,3 +7,4 @@ multiple algorithms:
 Contains routines for the comparison of multiple algorithms.
 
 """
+

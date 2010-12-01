@@ -38,7 +38,7 @@ def beautify(figHandle, figureName, fileFormat=('pdf', 'eps'), isByInstance=True
     """Format the figure of the run length distribution and save into files."""
     axisHandle = figHandle.gca()
     axisHandle.set_xscale('log')
-    plt.ylim(0.01, 1.01)
+    plt.ylim(-0.01, 1.01)
     # plt.ylim(-0.02, 1.02)  # this seems not have any effect
     # plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
     #            ('0.0', '', '0.5', '', '1.0'))
