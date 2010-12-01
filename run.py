@@ -514,7 +514,7 @@ def main(argv=None):
                 if tmp:
                     filename = os.path.join(outputdir,'pptable_f%03d' % fun)
                     pptable.main(tmp, tabValsOfInterest, filename, isDraft,
-                               verbose)
+                                 verbose)
             print "TeX tables",
             if isDraft:
                 print ("(draft) done. To get final version tables, please "

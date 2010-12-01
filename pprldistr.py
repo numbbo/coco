@@ -78,10 +78,13 @@ def plotECDF(x, n=None, plotArgs={}):
 def beautifyECDF(axish=None):
     if axish is None:
         axish = plt.gca()
-    plt.ylim(0.0, 1.0)
+    plt.ylim(-0.01, 1.01)
     plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
                ('0.0', '', '0.5', '', '1.0'))
     axish.grid(True)
+    #    handles = plt.getp(axish, 'children')
+    #    for h in handles:
+    #        plt.setp(h, 'clip_on', False)
 
 def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('pdf', 'eps'),
                 text=None, verbose=True):
