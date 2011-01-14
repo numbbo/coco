@@ -9,6 +9,7 @@
 
 from __future__ import absolute_import
 
+import sys
 import os
 import re
 import pickle
@@ -18,6 +19,10 @@ import numpy
 from bbob_pproc import findfiles, bootstrap
 from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
 from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
+from bbob_pproc.ppfig import consecutiveNumbers
+from bbob_pproc.bootstrap import prctile
+
+dataSetTargets = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]
 
 # CLASS DEFINITIONS
 class DataSet:
@@ -226,8 +231,12 @@ class DataSet:
         return not self.__eq__(other)
 
     def __repr__(self):
-        return ('{alg: %s, F%d, dim: %d}'
+        return ('DataSet(%s on f%d %d-D)'
                 % (self.algId, self.funcId, self.dim))
+
+    def info(self):
+        """Return some text info to display onscreen."""
+        pass
 
     def mMaxEvals(self):
         """Returns the maximum number of function evaluations."""
@@ -235,7 +244,7 @@ class DataSet:
 
     def nbRuns(self):
         """Returns the number of runs."""
-        return numpy.shape(self.funvals)[1]-1
+        return numpy.shape(self.evals)[1]-1
 
     def __parseHeader(self, header):
         """Extract data from a header line in an index entry."""
@@ -327,7 +336,6 @@ class DataSet:
 
         return dictinstance
 
-
     def splitByTrials(self, whichdata=None):
         """Splits the post-processed data arrays by trials.
 
@@ -340,7 +348,7 @@ class DataSet:
         evals = {}
         funvals = {}
 
-        for instanceid, idx in iteritems(dictinstance):
+        for instanceid, idx in dictinstance.iteritems():
             evals[instanceid] = self.evals[:,
                                            numpy.ix_(list(i + 1 for i in idx))]
             funvals[instanceid] = self.funvals[:,
@@ -697,6 +705,67 @@ class DataSetList(list):
                 warnings.warn('Unknown function id.')
 
         return sorted
+
+    def info(self, opt='all'):
+        """Display some information onscreen.
+        Keyword arguments:
+        opt -- changes size of output, can be 'all' (default), 'short'
+
+        """
+
+        #TODO: do not integrate over dimension!!!
+
+        if len(self) > 0:
+            print '%d data set(s)' % (len(self))
+            dictAlg = self.dictByAlg()
+            algs = dictAlg.keys()
+            algs.sort()
+            sys.stdout.write('Algorithm(s): %s' % (algs[0][0]))
+            for i in range(1, len(algs)):
+                sys.stdout.write(', %s' % (algs[0][0]))
+            sys.stdout.write('\n')
+            dictDim = self.dictByDim()
+            dimensions = dictDim.keys()
+            dimensions.sort()
+            sys.stdout.write('Dimension(s): %d' % (dimensions[0]))
+            for i in range(1, len(dimensions)):
+                sys.stdout.write(', %d' % (dimensions[i]))
+            sys.stdout.write('\n')
+            dictFun = self.dictByFunc()
+            functions = dictFun.keys()
+            functions.sort()
+            print 'Function(s): %s' % (consecutiveNumbers(functions))
+            maxevals = 0
+            for i in self:
+                maxevals = max(i.mMaxEvals(), maxevals)
+            print 'Max evals: %d' % (maxevals)
+
+            if opt == 'all':
+                print 'Df      |     min       10      med       90      max'
+                print '--------|--------------------------------------------'
+                evals = list([] for i in dataSetTargets)
+                for i in self:
+                    tmpevals = i.detEvals(dataSetTargets)
+                    for j in range(len(dataSetTargets)):
+                        evals[j].extend(tmpevals[j])
+                for i, j in enumerate(dataSetTargets): # never aggregate over dim...
+                    tmp = prctile(evals[i], [0, 10, 50, 90, 100])
+                    tmp2 = []
+                    for k in tmp:
+                        if not numpy.isfinite(k):
+                            tmp2.append('%8f' % k)
+                        else:
+                            tmp2.append('%8d' % k)
+                    print '%2.1e |%s' % (j, ' '.join(tmp2))
+
+            # display distributions of final values
+        else:
+            print self
+
+        # interested in algorithms, number of datasets, functions, dimensions
+        # maxevals?, funvals?, success rate?
+
+        pass
 
 def processInputArgs(args, verbose=True):
     """Process command line arguments into data useable by bbob_pproc scripts.

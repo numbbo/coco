@@ -150,6 +150,8 @@ headleg = (r'\raisebox{.037\textwidth}{\parbox[b]'
 footleg = (r'%do not remove the empty line below' + '\n\n' +
            r'\end{scriptsize}}}')
 
+tg = tuple(10**numpy.r_[-8:2:0.2])
+
 def beautify():
     """Format the figure."""
 
@@ -163,6 +165,11 @@ def beautify():
     plt.grid(True)
 
     plt.ylim(-0.01, 1.01)
+    xticks, labels = plt.xticks()
+    tmp = []
+    for i in xticks:
+        tmp.append('%d' % round(numpy.log10(i)))
+    a.set_xticklabels(tmp)
 
 def get_plot_args(args):
     """args is one dict element according to algorithmshortinfos
@@ -224,17 +231,18 @@ def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
         y2 = numpy.hstack([0.0,
                            numpy.repeat(y / float(nn), 2)])
 
-        res = plotUnifLogXMarkers(x2, y2, nbperdecade, kwargs)
+        res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, kwargs=kwargs)
 
         if maxevals: # Should cover the case where maxevals is None or empty
             x3 = numpy.median(maxevals)
             if (x3 <= maxval and numpy.any(x2 <= x3)
                 and not plt.getp(res[-1], 'label').startswith('best')): # TODO: HACK for not considering the best 2009 line
                 y3 = y2[x2<=x3][-1]
-                plt.plot((x3,), (y3,), marker='x', markersize=30,
-                         markeredgecolor=plt.getp(res[0], 'color'),
-                         ls=plt.getp(res[0], 'ls'),
-                         color=plt.getp(res[0], 'color'))
+                h = plt.plot((x3,), (y3,), marker='x', markersize=30,
+                             markeredgecolor=plt.getp(res[0], 'color'),
+                             ls=plt.getp(res[0], 'ls'),
+                             color=plt.getp(res[0], 'color'))
+                res.extend(h)
                 # Only take sequences for x and y!
 
     return res
@@ -320,6 +328,72 @@ def plotLegend(handles, maxval):
     reshandles.append(plt.plot((maxval, maxval), (0., 1.), color='k'))
     reslabels.reverse()
     return reslabels, reshandles
+
+def plot(dsList, targets=tg, kwargs={}):
+    """Generates a plot showing the performance of an algorithm.
+
+    Keyword arguments:
+    dsList -- a DataSetList instance
+    targets -- list of target function values
+    kwargs
+    """
+
+    res = []
+    xlim = x_limit # variable defined in header
+
+    dictDim = dsList.dictByDim()
+    for d, dsListperDim in dictDim.iteritems(): # We never integrate over dimensions...
+        dictFunc = dsListperDim.dictByFunc()
+
+        data = []
+        maxevals = []
+        dictMaxEvals = {} # list of (maxevals per function) per algorithm
+        bestERT = [] # best ert per function
+        funcsolved = [set()] * len(targets) # number of functions solved per target
+        xbest2009 = []
+        maxevalsbest2009 = []
+
+        for f, dsListperFunc in dictFunc.iteritems():
+
+            for j, t in enumerate(targets):
+                funcsolved[j].add(f) # TODO: weird
+
+                x = [numpy.inf] * perfprofsamplesize
+                runlengthunsucc = []
+                try:
+                    entry = dsListperFunc[0]
+                    evals = entry.detEvals([t])[0]
+                    runlengthsucc = evals[numpy.isnan(evals) == False] / entry.dim
+                    runlengthunsucc = entry.maxevals[numpy.isnan(evals)] / entry.dim
+                    if len(runlengthsucc) > 0:
+                        x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                                             percentiles=[50],
+                                             samplesize=perfprofsamplesize)[1]
+                except (KeyError, IndexError):
+                    #set_trace()
+                    txt = ('Data on function %d in %d-D ' % (f, d)
+                           + 'are missing.')
+                    warnings.warn(txt)
+
+                data.extend(x)
+                maxevals.extend(runlengthunsucc)
+
+        # Display data
+        #args = styles[(i) % len(styles)]
+        #args['linewidth'] = 1.5
+        #args['markersize'] = 15.
+        #args['markeredgewidth'] = 1.5
+        #args['markerfacecolor'] = 'None'
+        #args['markeredgecolor'] = args['color']
+        #args['label'] = alg
+        res.extend(plotPerfProf(numpy.array(data), xlim, maxevals,
+                                CrE=0., kwargs=kwargs))
+
+        #labels, handles = plotLegend(lines, xlim)
+
+        plt.xlim(xmin=1e-0, xmax=xlim*x_annote_factor)
+
+    return res
 
 def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
          info='default', verbose=True):
