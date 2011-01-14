@@ -35,8 +35,8 @@ def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
             except IOError:
                 warnings.warn('%s is not writeable.' % (filename + '.' + entry))
 
-def plotUnifLogXMarkers(x, y, nbperdecade, kwargs={}):
-    """Proxy plot function: puts markers regularly spaced on the x-scale.
+def plotUnifLogXMarkers(x, y, nbperdecade, logscale=True, kwargs={}):
+    """Proxy plot function: puts markers regularly spaced on the log x-scale.
 
     This method generates plots with markers regularly spaced on the x-scale
     whereas the matplotlib.pyplot.plot function will put markers on data
@@ -48,30 +48,54 @@ def plotUnifLogXMarkers(x, y, nbperdecade, kwargs={}):
 
     res = plt.plot(x, y, **kwargs)
 
-    def downsample(xdata, ydata):
-        """Downsample arrays of data, zero-th column elements are evenly spaced."""
-
-        assert all(xdata == numpy.sort(xdata)) and all(ydata == numpy.sort(ydata))
-        # otherwise xdata and ydata need to be sorted
-        # they cannot be sorted individually
+    def downsample(xdata, ydata, logscale=True):
+        """Downsample arrays of data."""
 
         # powers of ten 10**(i/nbperdecade)
         minidx = numpy.ceil(numpy.log10(min(xdata)) * nbperdecade)
         maxidx = numpy.floor(numpy.log10(max(xdata)) * nbperdecade)
         alignmentdata = 10.**(numpy.arange(minidx, maxidx + 1)/nbperdecade)
+        xdataarray = numpy.array(xdata)
+
         # Look in the original data
         res = []
         for i in alignmentdata:
-            if (xdata > i).any():
-                res.append(ydata[xdata > i][0])
+            diffarray = xdataarray - i
+            assert (diffarray >= 0.).any() and (diffarray <= 0.).any()
+            if (diffarray == 0.).any():
+                idx = (diffarray == 0.)
+                if logscale:
+                    y = 10.**((numpy.log10(max(ydata[idx])) + numpy.log10(min(ydata[idx])))/2.)
+                else:
+                    y = (max(ydata[idx]) + min(ydata[idx]))/2.
             else:
-                res.append(ydata[-1])
+                # find the indices of the element that is the closest greater than i
+                idx1 = numpy.nonzero((diffarray == min(diffarray[diffarray >= 0.])))[0]
+                # find the indices of the element that is the closest smaller than i
+                idx2 = numpy.nonzero((diffarray == max(diffarray[diffarray <= 0.])))[0]
+                x1 = xdata[idx1][0]
+                x2 = xdata[idx2][0]
+                if abs(min(idx1)-max(idx2)) > abs(max(idx1)-min(idx2)):
+                    y1 = ydata[max(idx1)]
+                    y2 = ydata[min(idx2)]
+                else:
+                    y1 = ydata[min(idx1)]
+                    y2 = ydata[max(idx2)]
+                # log interpolation / semi-log
+                if logscale:
+                    y = 10.**(numpy.log10(y1) + (numpy.log10(i) - numpy.log10(x1)) * (numpy.log10(y2) - numpy.log10(y1))/(numpy.log10(x2) - numpy.log10(x1)))
+                else:
+                    y = y1 + (numpy.log10(i) - numpy.log10(x1)) * (y2 - y1)/(numpy.log10(x2) - numpy.log10(x1))
+            res.append(y)
 
         return alignmentdata, res
 
     if 'marker' in kwargs and len(x) > 0:
-        x2, y2 = downsample(x, y)
-        res2 = plt.plot(x2, y2, **kwargs)
+        x2, y2 = downsample(x, y, logscale=logscale)
+        try:
+            res2 = plt.plot(x2, y2, **kwargs)
+        except ValueError:
+            set_trace()
         for attr in ('linestyle', 'marker', 'markeredgewidth',
                      'markerfacecolor', 'markeredgecolor',
                      'markersize', 'color', 'linewidth', 'markeredgewidth'):

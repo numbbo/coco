@@ -277,7 +277,7 @@ def plotPerfProf2(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
         y2 = numpy.hstack([0.0,
                            numpy.repeat(y / float(nn), 2)])
 
-        res = plotUnifLogXMarkers(x2, y2, nbperdecade, kwargs)
+        res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, kwargs=kwargs)
 
         if maxevals: # Should cover the case where maxevals is None or empty
             x3 = numpy.median(maxevals)
