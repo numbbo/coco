@@ -495,5 +495,7 @@ def main(argv=None):
         return 2
 
 if __name__ == "__main__":
-   sys.exit(main())
+    import matplotlib
+    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
+    sys.exit(main())
 
