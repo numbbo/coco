@@ -44,21 +44,8 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
 
-def beautify(title='', legend=True):
-    """ Customize a figure by adding a legend, axis label, etc.
-
-        Inputs:
-        figHandle - handle to existing figure
-        figureName - name of the output figure
-
-        Optional Inputs:
-        fileFormat - list of formats of output files
-        labels - list with xlabel and ylabel
-        scale - scale for x-axis and y-axis
-        legend - show legend
-        locLegend - location of legend
-
-    """
+def beautify():
+    """ Customize a figure by adding a legend, axis label, etc."""
 
     # Input checking
 
@@ -99,30 +86,11 @@ def beautify(title='', legend=True):
         tmp2.append('%d' % round(numpy.log10(i)))
     axisHandle.set_yticklabels(tmp2)
 
-    # Legend
-    if legend:
-        #handles, labels = axisHandle.get_legend_handles_labels()
-        #only compatible v0.99.3
-        # reverse the order
-        #axisHandle.legend(handles[::-1], labels[::-1], loc='best')
-        plt.legend(loc='best')
-    axisHandle.set_title(title)
-
-def beautify2(title='', legend=True):
+def beautify2():
     """ Customize a figure by adding a legend, axis label, etc and save to a file.
+
         Is identical to beautify except for the linear and quadratic scaling
         lines.
-
-        Inputs:
-        figHandle - handle to existing figure
-        figureName - name of the output figure
-
-        Optional Inputs:
-        fileFormat - list of formats of output files
-        labels - list with xlabel and ylabel
-        scale - scale for x-axis and y-axis
-        legend - show legend
-        locLegend - location of legend
 
     """
 
@@ -173,15 +141,6 @@ def beautify2(title='', legend=True):
         tmp2.append('%d' % round(numpy.log10(i)))
     axisHandle.set_yticklabels(tmp2)
 
-    # Legend
-    if legend:
-        #handles, labels = axisHandle.get_legend_handles_labels()
-        # only compatible v0.99
-        # reverse the order
-        #axisHandle.legend(handles[::-1], labels[::-1], loc='best')
-        plt.legend(loc="best")
-    axisHandle.set_title(title)
-
 def generateData(dataSet, targetFuncValue):
     """Returns an array of results to be plotted. 1st column is ert, 2nd is
     the number of success, 3rd the success rate, 4th the sum of the number of
@@ -219,25 +178,23 @@ def generateData(dataSet, targetFuncValue):
 
     return numpy.array(res)
 
-def ertvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
-    """From a DataSetList, returns a convergence and ERT figure vs dim."""
-
-    #plt.rc("axes", labelsize=20, titlesize=24)
-    #plt.rc("xtick", labelsize=20)
-    #plt.rc("ytick", labelsize=20)
-    #plt.rc("font", size=20)
-    #plt.rc("legend", fontsize=20)
+def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
+    """From a DataSetList, plot a figure of ERT/dim vs dim."""
 
     dictFunc = dsList.dictByFunc()
+    res = []
 
     for func in dictFunc:
+
         dictFunc[func] = dictFunc[func].dictByDim()
         dimensions = sorted(dictFunc[func])
-        filename = os.path.join(outputdir,'ppdata_f%d' % (func))
 
         #legend = []
         line = []
-        valuesOfInterest = list(j[func] for j in _valuesOfInterest)
+        try:
+            valuesOfInterest = list(j[func] for j in _valuesOfInterest)
+        except TypeError:
+            valuesOfInterest = list(_valuesOfInterest)
         valuesOfInterest.sort(reverse=True)
         for i in range(len(valuesOfInterest)):
             succ = []
@@ -259,16 +216,16 @@ def ertvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
             if succ:
                 tmp = numpy.vstack(succ)
                 #ERT
-                plt.plot(tmp[:, 0], tmp[:, 1], color=colors[i],
-                         marker='o', markersize=20)
+                res.extend(plt.plot(tmp[:, 0], tmp[:, 1], color=colors[i],
+                           marker='o', markersize=20))
                 #median
-                plt.plot(tmp[:, 0], tmp[:, -1], color=colors[i],
-                         linestyle='', marker='+', markersize=30,
-                         markeredgewidth=5)
+                res.extend(plt.plot(tmp[:, 0], tmp[:, -1], color=colors[i],
+                           linestyle='', marker='+', markersize=30,
+                           markeredgewidth=5))
 
             # To have the legend displayed whatever happens with the data.
-            plt.plot([], [], color=colors[i],
-                     label=' %+d' % (numpy.log10(valuesOfInterest[i])))
+            res.extend(plt.plot([], [], color=colors[i],
+                       label=' %+d' % (numpy.log10(valuesOfInterest[i]))))
 
         #Only for the last target function value
         if unsucc:
@@ -282,9 +239,9 @@ def ertvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
             dimarray = numpy.array(dimensions)
             for i in consecindex:
                 data = list(tmp[tmp[:, 0] == dimensions[j], -2]/dimensions[j] for j in i)
-                plt.plot(dimarray[i], numpy.hstack(data),
-                         color=styles[len(valuesOfInterest)-1]['color'],
-                         marker='x', markersize=20)
+                res.extend(plt.plot(dimarray[i], numpy.hstack(data),
+                           color=styles[len(valuesOfInterest)-1]['color'],
+                           marker='x', markersize=20))
 
         if not bestalg.bestalgentries2009:
             bestalg.loadBBOB2009()
@@ -301,21 +258,35 @@ def ertvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
         plt.plot(dimsBBOB, bestalgdata, color=refcolor, linewidth=10, zorder=-2)
         plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25, color=refcolor, zorder=-2)
 
+        a = plt.gca()
         if displaynumber: #displayed only for the smallest valuesOfInterest
-            a = plt.gca()
             for j in displaynumber:
                 plt.text(j[0], j[1]*1.85, "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
                          verticalalignment="bottom")
 
-        if isBenchmarkinfosFound:
-            title = funInfos[func]
-        else:
-            title = ''
+#         if isBenchmarkinfosFound:
+#             a.set_title(funInfos[func])
+# 
+#         if func in (1, 24, 101, 130):
+#             plt.legend(loc='best')
 
-        legend = func in (1, 24, 101, 130)
+    return res
 
-        beautify(title=title, legend=legend)
+def ertvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
+    """From a DataSetList, returns a convergence and ERT figure vs dim."""
+
+    #plt.rc("axes", labelsize=20, titlesize=24)
+    #plt.rc("xtick", labelsize=20)
+    #plt.rc("ytick", labelsize=20)
+    #plt.rc("font", size=20)
+    #plt.rc("legend", fontsize=20)
+
+    dictFunc = dsList.dictByFunc()
+
+    for func in dictFunc:
+        plot(dictFunc[func], _valuesOfInterest)
+        filename = os.path.join(outputdir,'ppdata_f%d' % (func))
         saveFigure(filename, figFormat=figformat, verbose=verbose)
 
         plt.close()
@@ -415,21 +386,20 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25,
                  color=refcolor, markeredgecolor=refcolor, zorder=-2)
 
+        a = plt.gca()
         if displaynumber: #displayed only for the smallest valuesOfInterest
-            a = plt.gca()
             for j in displaynumber:
                 plt.text(j[0], j[1]*1.85/j[0], "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
                          verticalalignment="bottom")
 
+        beautify2()
+
+        if func in (1, 24, 101, 130):
+            plt.legend(loc="best")
         if isBenchmarkinfosFound:
-            title = funInfos[func]
-        else:
-            title = ''
+            a.set_title(title)
 
-        legend = func in (1, 24, 101, 130)
-
-        beautify2(title=title, legend=legend)
         saveFigure(filename, figFormat=figformat, verbose=verbose)
 
         plt.close()
