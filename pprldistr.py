@@ -379,7 +379,7 @@ def plotRLDistr2(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
         # maxEvalsF: used for the limit of the plot
         y2 = numpy.hstack([0.0,
                            numpy.repeat(numpy.arange(1, n+1)/float(nn), 2)])
-        res = plotUnifLogXMarkers(x2, y2, 1, kwargs)
+        res = plotUnifLogXMarkers(x2, y2, 1, logscale=True, **kwargs)
 
     return res#, fsolved, funcs
 
@@ -395,7 +395,7 @@ def plotECDF2(x, n=None, plotArgs={}):
                            numpy.repeat(numpy.arange(1, nx) / float(n), 2),
                            float(nx)/n])
         #res = plt.plot(x2, y2, **plotArgs)
-        res = plotUnifLogXMarkers(x2, y2, 1, plotArgs)
+        res = plotUnifLogXMarkers(x2, y2, 1, logscale=True, **plotArgs)
     return res
 
 def plotFVDistr2(dataSetList, fvalueToReach, maxEvalsF, plotArgs={}):

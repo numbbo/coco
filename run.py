@@ -19,8 +19,6 @@ import sys
 import warnings
 import getopt
 from pdb import set_trace
-#import matplotlib
-#matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -29,6 +27,8 @@ if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
+    import matplotlib
+    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import findfiles
 from bbob_pproc.bbob2010 import pprldistr, ppfigdim, pplogloss, pptable
@@ -597,7 +597,5 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
     sys.exit(main())
 

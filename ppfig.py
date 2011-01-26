@@ -35,7 +35,7 @@ def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
             except IOError:
                 warnings.warn('%s is not writeable.' % (filename + '.' + entry))
 
-def plotUnifLogXMarkers(x, y, nbperdecade, logscale=True, kwargs={}):
+def plotUnifLogXMarkers(x, y, nbperdecade, logscale=True, **kwargs):
     """Proxy plot function: puts markers regularly spaced on the log x-scale.
 
     This method generates plots with markers regularly spaced on the x-scale
@@ -95,7 +95,7 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=True, kwargs={}):
         try:
             res2 = plt.plot(x2, y2, **kwargs)
         except ValueError:
-            set_trace()
+            raise # TODO
         for attr in ('linestyle', 'marker', 'markeredgewidth',
                      'markerfacecolor', 'markeredgecolor',
                      'markersize', 'color', 'linewidth', 'markeredgewidth'):

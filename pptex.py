@@ -65,7 +65,7 @@ class WrongInputSizeError(Error):
 def convcolo(color):
     try:
         res = '\color{%s}' % convcolor[color]
-    except KeyError as err:
+    except KeyError, err:
         try:
             float(color)
             res = '\color[gray]{%s}' % color

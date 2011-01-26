@@ -27,6 +27,8 @@ if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
+    import matplotlib
+    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import dataoutput, pproc, rungeneric1, rungeneric2, rungenericmany
 from bbob_pproc.dataoutput import algPlotInfos
@@ -89,6 +91,18 @@ def main(argv=None):
     This routine will call sub-routine rungeneric1 for each input arguments
     and either sub-routines rungeneric2 (2 input arguments) or rungenericmany
     (more than 2) for the input arguments altogether.
+
+    The output figures and tables are included in
+    * template1generic.tex, template1ecj.tex, noisytemplate1generic.tex,
+    noisytemplate1ecj.tex for single algorithm results on the noise-free and
+    noisy testbeds respectively
+    * template2generic.tex, template2ecj.tex, noisytemplate2generic.tex,
+    noisytemplate2ecj.tex for showing the comparison of 2 algorithms
+    * template3generic.tex, template3ecj.tex, noisytemplate3generic.tex,
+    noisytemplate3ecj.tex for showing the comparison of more than 2 algorithms.
+    Given that the folder with all output figures and tables and the template
+    files are in the current working directory, compiling the template file
+    with LaTeX should produce a document.
 
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not provided,
@@ -224,7 +238,7 @@ def main(argv=None):
                 print 'Folder %s was created.' % (outputdir)
 
         for alg in args:
-            tmpoutputdir = os.path.join(outputdir, alg)
+            tmpoutputdir = os.path.join(outputdir, os.path.split(alg)[-1])
             # TODO: if there is a problem, skip: try except...
             rungeneric1.main(genopts1
                              + ["-o", tmpoutputdir, alg])
@@ -240,7 +254,5 @@ def main(argv=None):
         return 2
 
 if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
     sys.exit(main())
 

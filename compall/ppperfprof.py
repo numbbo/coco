@@ -231,7 +231,7 @@ def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
         y2 = numpy.hstack([0.0,
                            numpy.repeat(y / float(nn), 2)])
 
-        res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, kwargs=kwargs)
+        res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, **kwargs)
 
         if maxevals: # Should cover the case where maxevals is None or empty
             x3 = numpy.median(maxevals)
@@ -242,7 +242,8 @@ def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
                              markeredgecolor=plt.getp(res[0], 'color'),
                              ls=plt.getp(res[0], 'ls'),
                              color=plt.getp(res[0], 'color'))
-                res.extend(h)
+                h.extend(res)
+                res = h # so the last element in res still has the label.
                 # Only take sequences for x and y!
 
     return res
@@ -329,7 +330,7 @@ def plotLegend(handles, maxval):
     reslabels.reverse()
     return reslabels, reshandles
 
-def plot(dsList, targets=tg, kwargs={}):
+def plot(dsList, targets=tg, rhleg=False, kwargs={}):
     """Generates a plot showing the performance of an algorithm.
 
     Keyword arguments:
@@ -389,7 +390,8 @@ def plot(dsList, targets=tg, kwargs={}):
         res.extend(plotPerfProf(numpy.array(data), xlim, maxevals,
                                 CrE=0., kwargs=kwargs))
 
-        #labels, handles = plotLegend(lines, xlim)
+        if rhleg:
+            labels, handles = plotLegend(lines, xlim)
 
         plt.xlim(xmin=1e-0, xmax=xlim*x_annote_factor)
 

@@ -20,7 +20,7 @@ import numpy
 
 from bbob_pproc import bootstrap, readalign
 from bbob_pproc.bootstrap import ranksums
-from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
+from bbob_pproc.ppfig import saveFigure
 #try:
     #supersede this module own ranksums method
     #from scipy.stats import ranksums as ranksums

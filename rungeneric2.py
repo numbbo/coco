@@ -26,6 +26,8 @@ if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
+    import matplotlib
+    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import pprldistr
 from bbob_pproc.pproc import DataSetList, processInputArgs
@@ -53,12 +55,16 @@ def usage():
 def main(argv=None):
     """Generates some outputs from BBOB experiment data sets of two algorithms.
 
-    Provided with some data, this routine outputs figure and TeX files in the
-    folder 'cmp2data' needed for the compilation of the latex document
-    template2.tex. These output files will contain performance tables,
-    performance scaling figures, scatter plot figures and empirical cumulative
-    distribution figures. On subsequent executions, new files will be added to
-    the output directory, overwriting existing files in the process.
+    Provided with some data, this routine outputs figure and TeX files in a
+    folder needed for the compilation of latex document template2XXX.tex or
+    noisytemplate2XXX, where XXX is either ecj or generic. The template file
+    needs to be edited so that the command \\bbobdatapath points to the output
+    folder.
+
+    These output files will contain performance tables, performance scaling
+    figures and empirical cumulative distribution figures. On subsequent
+    executions, new files will be added to the output folder, overwriting
+    existing older files in the process.
 
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not given,
@@ -314,7 +320,7 @@ def main(argv=None):
             dictDim1 = dsList1.dictByDim()
 
             # ECDFs of ERT ratios
-            for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
+            for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
                 if dim in inset.rldDimsOfInterest:
                     # ECDF for all functions altogether
                     try:
@@ -330,7 +336,7 @@ def main(argv=None):
                     dictFG0 = dictDim0[dim].dictByFuncGroup()
                     dictFG1 = dictDim1[dim].dictByFuncGroup()
 
-                    for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
+                    for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr2.main(dictFG0[fGroup], dictFG1[fGroup],
                                         inset.rldValsOfInterest,
                                         outputdir, '%02dD_%s' % (dim, fGroup),
@@ -340,14 +346,14 @@ def main(argv=None):
                     dictFN0 = dictDim0[dim].dictByNoise()
                     dictFN1 = dictDim1[dim].dictByNoise()
 
-                    for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
+                    for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr2.main(dictFN0[fGroup], dictFN1[fGroup],
                                         inset.rldValsOfInterest, outputdir,
                                         '%02dD_%s' % (dim, fGroup),
                                         verbose)
             print "ECDF absolute target graphs done."
 
-            for dim in set(dictDim0.keys()) | set(dictDim1.keys()):
+            for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
                 pprldistr.fmax = None #Resetting the max final value
                 pprldistr.evalfmax = None #Resetting the max #fevalsfactor
                 # ECDFs of all functions altogether
@@ -365,7 +371,7 @@ def main(argv=None):
                     dictFG0 = dictDim0[dim].dictByFuncGroup()
                     dictFG1 = dictDim1[dim].dictByFuncGroup()
 
-                    for fGroup in set(dictFG0.keys()) | set(dictFG1.keys()):
+                    for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr.comp(dictFG0[fGroup], dictFG1[fGroup],
                                        inset.rldValsOfInterest, True, outputdir,
                                        '%02dD_%s' % (dim, fGroup), verbose)
@@ -373,7 +379,7 @@ def main(argv=None):
                     # ECDFs per noise groups
                     dictFN0 = dictDim0[dim].dictByNoise()
                     dictFN1 = dictDim1[dim].dictByNoise()
-                    for fGroup in set(dictFN0.keys()) | set(dictFN1.keys()):
+                    for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr.comp(dictFN0[fGroup], dictFN1[fGroup],
                                        inset.rldValsOfInterest, True, outputdir,
                                        '%02dD_%s' % (dim, fGroup), verbose)
@@ -435,7 +441,5 @@ def main(argv=None):
         return 2
 
 if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
     sys.exit(main())
 

@@ -265,12 +265,6 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
                          horizontalalignment="center",
                          verticalalignment="bottom")
 
-#         if isBenchmarkinfosFound:
-#             a.set_title(funInfos[func])
-# 
-#         if func in (1, 24, 101, 130):
-#             plt.legend(loc='best')
-
     return res
 
 def ertvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
@@ -286,6 +280,10 @@ def ertvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest)
+        if isBenchmarkinfosFound:
+            a.set_title(funInfos[func])
+        if func in (1, 24, 101, 130):
+            plt.legend(loc='best')
         filename = os.path.join(outputdir,'ppdata_f%d' % (func))
         saveFigure(filename, figFormat=figformat, verbose=verbose)
 
@@ -398,7 +396,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         if func in (1, 24, 101, 130):
             plt.legend(loc="best")
         if isBenchmarkinfosFound:
-            a.set_title(title)
+            a.set_title(funInfos[func])
 
         saveFigure(filename, figFormat=figformat, verbose=verbose)
 
