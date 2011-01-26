@@ -336,7 +336,7 @@ def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
             plotArgs['label'] = label
             plotArgs['linewidth'] = 3.
             #res.extend(plotUnifLogXMarkers(x2, y2, 3, plotArgs))
-            res.append(plotUnifLogXMarkers(x2, y2, 3, logscale=False, kwargs=plotArgs)[0])
+            res.append(plotUnifLogXMarkers(x2, y2, 3, logscale=False, **plotArgs)[0])
 
         # TODO: check if all of evalsX[func] is numpy.inf and so on...
 

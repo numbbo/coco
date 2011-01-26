@@ -25,6 +25,8 @@ if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
+    import matplotlib
+    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.bbob2010 import pprldistr
@@ -495,7 +497,5 @@ def main(argv=None):
         return 2
 
 if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
     sys.exit(main())
 

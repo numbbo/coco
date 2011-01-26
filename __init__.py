@@ -19,7 +19,6 @@ from __future__ import absolute_import
 
 import sys
 
-#from bbob_pproc.run import main as main
 from bbob_pproc.cococommands import *
 
 __version__ = '10.7'

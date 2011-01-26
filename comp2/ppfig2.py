@@ -337,7 +337,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             ydata = data[1][idx, 1]/data[0][idx, 1]
             kwargs = styles[i].copy()
             kwargs['label'] = '%2d-D' % dim
-            tmp = plotUnifLogXMarkers(data[0][idx, 0], ydata, nbperdecade=1, logscale=True, kwargs=kwargs)
+            tmp = plotUnifLogXMarkers(data[0][idx, 0], ydata, nbperdecade=1, logscale=True, **kwargs)
             plt.setp(tmp, markersize=3*linewidth)
             plt.setp(tmp[0], ls='--')
 
@@ -354,7 +354,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
 
             fvalueswitch[dim] = min(data[0][idx, 0])
             ydata = data[1][idx, 1]/data[0][idx, 1]
-            tmp = plotUnifLogXMarkers(data[0][idx, 0], ydata, nbperdecade=1, logscale=True, kwargs=styles[i])
+            tmp = plotUnifLogXMarkers(data[0][idx, 0], ydata, nbperdecade=1, logscale=True, **styles[i])
             plt.setp(tmp[1], markersize=3*linewidth)
 
         beautify(xmin=minfvalue)
@@ -441,7 +441,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
 
             kwargs = styles[i].copy()
             kwargs['ls'] = ls
-            tmp = plotUnifLogXMarkers(dataofinterest[idx, 0], ydata, nbperdecade=1, logscale=True, kwargs=kwargs)
+            tmp = plotUnifLogXMarkers(dataofinterest[idx, 0], ydata, nbperdecade=1, logscale=True, **kwargs)
             plt.setp(tmp, markersize=3*linewidth)
 
             #Do not plot anything else if it happens after minfvalue

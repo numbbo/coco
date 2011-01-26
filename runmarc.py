@@ -22,6 +22,8 @@ if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
+    import matplotlib
+    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import ppperfprof, pprldistr
 from bbob_pproc import dataoutput

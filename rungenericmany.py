@@ -26,6 +26,8 @@ import numpy
 if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     sys.path.append(os.path.join(filepath, os.path.pardir))
+    import matplotlib
+    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import dataoutput, pproc
 from bbob_pproc.dataoutput import algPlotInfos
@@ -53,12 +55,21 @@ def usage():
 def main(argv=None):
     """Main routine for post-processing the data of multiple algorithms.
 
-    Provided with some data, this routine outputs figure and TeX files in the
-    folder 'cmpmanydata' needed for the compilation of the LaTeX document
-    template3.tex. These output files will contain performance tables and
-    empirical cumulative distribution figures. On subsequent executions, new
-    files will be added to the output directory, overwriting existing files in
-    the process.
+    Provided with some data, this routine outputs figure and TeX files in a
+    folder needed for the compilation of latex document template3XXX.tex or
+    noisytemplate3XXX, where XXX is either ecj or generic. The template file
+    needs to be edited so that the command \\bbobdatapath points to the output
+    folder.
+
+    Provided with some data, this routine outputs figure and TeX files in a
+    folder needed for the compilation of latex document template3XXX.tex, where
+    XXX is either ecj or generic. The template file needs to be edited so that
+    the command \\bbobdatapath points to the output folder.
+
+    These output files will contain performance tables, performance scaling
+    figures and empirical cumulative distribution figures. On subsequent
+    executions, new files will be added to the output folder, overwriting
+    existing older files in the process.
 
     Keyword arguments:
     argv -- list of strings containing options and arguments. If not provided,
@@ -295,7 +306,5 @@ def main(argv=None):
         return 2
 
 if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
     sys.exit(main())
 
