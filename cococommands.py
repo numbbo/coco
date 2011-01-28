@@ -6,7 +6,6 @@
 The package heavily relies on matplotlib plotting facilities:
 http://matplotlib.sourceforge.net/
 
-
 """
 
 from __future__ import absolute_import

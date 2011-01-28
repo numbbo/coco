@@ -1,7 +1,21 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" Best algorithm dataset module """
+""" Best algorithm dataset module 
+
+    This module holds the BestAlgSet class which is used as data
+    structure for the data set of the virtual best algorithm. Therefore
+    this module will be imported by other modules which need to access
+    best algorithm data set.
+
+    The best algorithm data set can be accessed by the
+    bestalgentriesXXX variables. These variables need to be initialized
+    by executing methods loadBBOBXXX()
+
+    This module can also be used generate the best algorithm data set
+    with its generate method.
+
+"""
 
 from __future__ import absolute_import
 
@@ -13,10 +27,11 @@ import pickle
 import gzip
 from pdb import set_trace
 import warnings
-import numpy
+import numpy as np
 
 from bbob_pproc import readalign
-from bbob_pproc.pproc import DataSetList, processInputArgs, dictAlgByFun, dictAlgByDim
+from bbob_pproc.pproc import DataSetList, processInputArgs
+from bbob_pproc.pproc import dictAlgByFun, dictAlgByDim
 from bbob_pproc.dataoutput import algPlotInfos
 
 bestalgentries2009 = {}
@@ -44,7 +59,7 @@ class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
-class BestAlgSet:
+class BestAlgSet():
     """Unit element for the post-processing with given funcId, algId and
     dimension.
 
@@ -58,10 +73,12 @@ class BestAlgSet:
         evals -- collected data aligned by function values (array)
         maxevals -- maximum number of function evaluations (array)
 
-    evals and funvals are arrays of data collected from N data sets. Both have
-    the same format: zero-th column is the value on which the data of a row is
-    aligned, the N subsequent columns are either the numbers of function
-    evaluations for evals or function values for funvals.
+    evals and funvals are arrays of data collected from N data sets.
+    Both have the same format: zero-th column is the value on which the
+    data of a row is aligned, the N subsequent columns are either the
+    numbers of function evaluations for evals or function values for
+    funvals.
+
     """
 
     def __init__(self, dictAlg):
@@ -75,7 +92,8 @@ class BestAlgSet:
             f |= set(j.funcId for j in i)
 
         if len(f) > 1 or len(d) > 1:
-            Usage('Expect the data of algorithms for only one function and one dimension.')
+            Usage('Expect the data of algorithms for only one function and '
+                  'one dimension.')
 
         f = f.pop()
         d = d.pop()
@@ -85,65 +103,59 @@ class BestAlgSet:
         tmpdictAlg = {}
         for alg, i in dictAlg.iteritems():
             if len(i) == 0:
-                txt = ('Algorithm %s was not tested on f%d %d-D.'
-                       % (alg, f, d))
-                warnings.warn(txt)
+                warnings.warn('Algorithm %s was not tested on f%d %d-D.'
+                              % (alg, f, d))
                 continue
             elif len(i) > 1:
-                txt = ('Algorithm %s has a problem on f%d %d-D.'
-                       % (alg, f, d))
-                warnings.warn(txt)
-                set_trace()
+                warnings.warn('Algorithm %s has a problem on f%d %d-D.'
+                              % (alg, f, d))
                 continue
 
-            tmpdictAlg[alg] = i[0] # Assign the first element as value for alg
+            tmpdictAlg[alg] = i[0] # Assign ONLY the first element as value
             dictMaxEvals[alg] = i[0].maxevals
             dictFinalFunVals[alg] = i[0].finalfunvals
 
         dictAlg = tmpdictAlg
 
         sortedAlgs = dictAlg.keys()
-        # get a fixed list of the algs, algorithms will be sorted along sortedAlgs
+        # algorithms will be sorted along sortedAlgs which is now a fixed list
 
-        #Align ERT
-        erts = list(numpy.transpose(numpy.vstack([dictAlg[i].target, dictAlg[i].ert]))
+        # Align ERT
+        erts = list(np.transpose(np.vstack([dictAlg[i].target, dictAlg[i].ert]))
                     for i in sortedAlgs)
         res = readalign.alignArrayData(readalign.HArrayMultiReader(erts))
 
         resalgs = []
         reserts = []
-        #Foreach function value
+        # For each function value
         for i in res:
-            #find best algorithm
+            # Find best algorithm
             curerts = i[1:]
-            assert len((numpy.isnan(curerts) == False)) > 0
-
-            currentbestert = numpy.inf
+            assert len((np.isnan(curerts) == False)) > 0
+            currentbestert = np.inf
             currentbestalg = ''
-            #currentbestval = dictMaxEvals[alg]
             for j, tmpert in enumerate(curerts):
-                if numpy.isnan(tmpert):
+                if np.isnan(tmpert):
                     continue
                 if tmpert == currentbestert:
-                    # in case of tie? TODO: look at function values corresponding to the ERT?
+                    # TODO: what do we do in case of ties?
+                    # look at function values corresponding to the ERT?
                     # Look at the function evaluations? the success ratio?
-                    #set_trace()
                     pass
                 elif tmpert < currentbestert:
                     currentbestert = tmpert
                     currentbestalg = sortedAlgs[j]
-
             reserts.append(currentbestert)
             resalgs.append(currentbestalg)
 
         dictiter = {}
         dictcurLine = {}
         resDataSet = []
-        #write down the #fevals to reach the function value.
+
+        # write down the #fevals to reach the function value.
         for funval, alg in zip(res[:, 0], resalgs):
             it = dictiter.setdefault(alg, iter(dictAlg[alg].evals))
-            curLine = dictcurLine.setdefault(alg, numpy.array([numpy.inf, 0]))
-
+            curLine = dictcurLine.setdefault(alg, np.array([np.inf, 0]))
             while curLine[0] > funval:
                try:
                    curLine = it.next()
@@ -164,32 +176,28 @@ class BestAlgSet:
             dictFunValsNoFail[alg] = curline.copy()
 
         self.evals = resDataSet
-        # evals is not a numpy array but a list of arrays because they may not
+        # evals is not a np array but a list of arrays because they may not
         # all be of the same size.
         self.maxevals = dict((i, dictMaxEvals[i]) for i in setalgs)
         self.finalfunvals = dict((i, dictFinalFunVals[i]) for i in setalgs)
         self.funvalsnofail = dictFunValsNoFail
         self.dim = d
         self.funcId = f
-        # What if some algorithms don't have the same number of runs
-        # How do we save maxfunevals (to compute the ERT...?)
         self.algs = resalgs
         self.algId = 'Virtual Best Algorithm of BBOB'
         self.comment = 'Combination of ' + ', '.join(sortedAlgs)
-        self.ert = numpy.array(reserts)
+        self.ert = np.array(reserts)
         self.target = res[:, 0]
-        #return resds
 
-        bestfinalfunvals = numpy.array([numpy.inf])
+        bestfinalfunvals = np.array([np.inf])
         for alg in sortedAlgs:
-            if numpy.median(dictAlg[alg].finalfunvals) < numpy.median(bestfinalfunvals):
+            if np.median(dictAlg[alg].finalfunvals) < np.median(bestfinalfunvals):
                 bestfinalfunvals = dictAlg[alg].finalfunvals
                 algbestfinalfunvals = alg
         self.bestfinalfunvals = bestfinalfunvals
         self.algbestfinalfunvals = algbestfinalfunvals
 
     def __eq__(self, other):
-        """Compare indexEntry instances."""
         return (self.__class__ is other.__class__ and
                 self.funcId == other.funcId and
                 self.dim == other.dim and
@@ -206,9 +214,11 @@ class BestAlgSet:
 
     def pickle(self, outputdir=None, verbose=True):
         """Save DataSet instance to a pickle file.
-        Saves the instance of DataSet to a pickle file. If not specified by
-        argument outputdir, the location of the pickle is given by the location
-        of the first index file associated to the DataSet.
+
+        Saves the instance of DataSet to a pickle file. If not specified
+        by argument outputdir, the location of the pickle is given by
+        the location of the first index file associated to the DataSet.
+
         """
 
         # the associated pickle file does not exist
@@ -244,9 +254,12 @@ class BestAlgSet:
                        #% self.pickleFile)
 
     def createDictInstance(self):
-        """Returns a dictionary of the instances: the key is the instance id,
-        the value is a list of index.
+        """Returns a dictionary of the instances
+
+        The key is the instance id, the value is a list of index.
+
         """
+
         dictinstance = {}
         for i in range(len(self.itrials)):
             dictinstance.setdefault(self.itrials[i], []).append(i)
@@ -260,14 +273,14 @@ class BestAlgSet:
             try:
                 res.append(self.ert[idx][0])
             except IndexError:
-                res.append(numpy.inf)
+                res.append(np.inf)
         return res
 
     def detEvals(self, targets):
         res = []
         res2 = []
         for f in targets:
-            tmp = numpy.array([numpy.nan] * len(self.bestfinalfunvals))
+            tmp = np.array([np.nan] * len(self.bestfinalfunvals))
             tmp2 = None
             for i, line in enumerate(self.evals):
                 if line[0] <= f:
@@ -281,8 +294,17 @@ class BestAlgSet:
 #FUNCTION DEFINITIONS
 
 def loadBBOB2009():
+    """Assigns bestalgentries2009.
+
+    This function is needed to set the global variable
+    bestalgentries2009. It unpickles file bestalgentries2009.pickle.gz
+    bestalgentries2009 is a dictionary accessed by providing a tuple
+    (dimension, function). This returns an instance of BestAlgSet.
+    The data is that of algorithms submitted to BBOB 2009, the list of
+    which can be found in variable algs2009.
+
     """
-    """
+
     global bestalgentries2009
     # global statement necessary to change the variable bestalg.bestalgentries2009
 
@@ -295,6 +317,17 @@ def loadBBOB2009():
     print " done."
 
 def loadBBOB2010():
+    """Assigns bestalgentries2010.
+
+    This function is needed to set the global variable
+    bestalgentries2010. It unpickles file bestalgentries2010.pickle.gz
+    bestalgentries2010 is a dictionary accessed by providing a tuple
+    (dimension, function). This returns an instance of BestAlgSet.
+    The data is that of algorithms submitted to BBOB 2010, the list of
+    which can be found in variable algs2010.
+
+    """
+
     global bestalgentries2010
     # global statement necessary to change the variable bestalg.bestalgentries2010
 
@@ -307,6 +340,17 @@ def loadBBOB2010():
     print " done."
 
 def loadBBOBever():
+    """Assigns bestalgentriesever.
+
+    This function is needed to set the global variable
+    bestalgentries2010. It unpickles file bestalgentries2010.pickle.gz
+    bestalgentries2010 is a dictionary accessed by providing a tuple
+    (dimension, function). This returns an instance of BestAlgSet.
+    The data is that of algorithms submitted to BBOB 2009 and BBOB 2010,
+    the list of which can be found in variables algs2009 and alg2010.
+
+    """
+
     global bestalgentriesever
     # global statement necessary to change the variable bestalg.bestalgentriesever
 
@@ -324,15 +368,17 @@ def usage():
 def generate():
     """Generates best algorithm data set.
 
-    It will create a folder bestAlg in the current working directory with
-    a pickle file corresponding to the bestalg dataSet of the algorithms
-    listed in variable args.
+    It will create a folder bestAlg in the current working directory
+    with a pickle file corresponding to the bestalg dataSet of the
+    algorithms listed in variable args.
 
     This method is called from the python command line:
     >>> from bbob_pproc import bestalg
     >>> bestalg.generate()
 
-    The current working directory has to contain the data. 
+    The current working directory has to contain the data corresponding
+    to the algorithms listed in variable args (see source code).
+
     """
 
     args = set(algs2010 + algs2009)
@@ -363,5 +409,4 @@ def generate():
     fid = open(picklefilename, 'w')
     pickle.dump(res, fid, 2)
     fid.close()
-
 

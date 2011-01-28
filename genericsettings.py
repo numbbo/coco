@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """This module contains some variables settings for BBOB 2010.
+
 These variables are used for producing figures and tables used in BBOB 2010.
+
 """
 
 import numpy
@@ -249,3 +251,4 @@ rcaxes = {"labelsize": 20, "titlesize": 24}
 rctick = {"labelsize": 20}
 rcfont = {"size": 20}
 rclegend = {"fontsize": 20}
+

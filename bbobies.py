@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Process data and generates some comparison results.
+"""Module based on runcompall.py used by BBOBies.
+
+This module has not been updated for a while. Process data and generates some
+comparison results.
 
    Synopsis:
       python path_to_folder/bbob_pproc/runcompall.py [OPTIONS] FOLDER_NAME...
@@ -239,4 +242,5 @@ def main(argv=None):
         return 2
 
 if __name__ == "__main__":
-   sys.exit(main())
+    sys.exit(main())
+
