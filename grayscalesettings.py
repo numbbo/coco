@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """This module contains some variables settings for BBOB 2010.
+
 These variables are used for producing figures and tables used in BBOB 2010.
+
 """
 
 import numpy
@@ -13,12 +15,14 @@ from bbob_pproc.compall import ppperfprof, ppfigs
 
 def convtograyscale(rgb):
     """Conversion of RGB to grayscale.
+
     http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
     Keyword arguments:
     rgb -- sequence of rgb float values (0 to 1)
 
-    Returns:
+    Returns: 
     Float for grayscale value
+
     """
 
     return (rgb[0]*.3 + rgb[1]*.59 + rgb[2]*.11)

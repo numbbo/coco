@@ -12,9 +12,7 @@ from pdb import set_trace
 from bbob_pproc import bootstrap
 
 def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
-    """Save figure into a file.
-    Need to make sure the file location is available.
-    """
+    """Save figure into an image file."""
 
     if isinstance(figFormat, basestring):
         try:
@@ -38,12 +36,14 @@ def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
 def plotUnifLogXMarkers(x, y, nbperdecade, logscale=True, **kwargs):
     """Proxy plot function: puts markers regularly spaced on the log x-scale.
 
-    This method generates plots with markers regularly spaced on the x-scale
-    whereas the matplotlib.pyplot.plot function will put markers on data
-    points.
+    This method generates plots with markers regularly spaced on the
+    x-scale whereas the matplotlib.pyplot.plot function will put markers
+    on data points.
 
-    This method outputs a list of three lines.Line2D objects: the first with
-    the line style, the second for the markers and the last for the label.
+    This method outputs a list of three lines.Line2D objects: the first
+    with the line style, the second for the markers and the last for the
+    label.
+
     """
 
     res = plt.plot(x, y, **kwargs)

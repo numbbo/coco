@@ -105,29 +105,30 @@ def usage():
 def main(argv=None):
     """Generate python-formatted data from raw BBOB experimental data.
 
-    The raw experimental data (files with the extension 'info' pointing to
-    files with extension 'dat' and 'tdat') are post-processed and stored in a
-    more condensed way as files with the extension 'pickle'. Supposing the
-    raw data are stored in folder 'mydata', the new pickle files will be put in
-    folder 'mydata-pickle'.
+    The raw experimental data (files with the extension 'info' pointing
+    to files with extension 'dat' and 'tdat') are post-processed and
+    stored in a more condensed way as files with the extension 'pickle'.
+    Supposing the raw data are stored in folder 'mydata', the new pickle
+    files will be put in folder 'mydata-pickle'.
 
-    Running this will also add an entry in file algorithmshortinfos.txt if it
-    does not exist already.
-    algorithmshortinfos.txt is a file which contain meta-information that are
-    used by modules from the bbob_pproc.compall package.
-    The new entry in algorithmshortinfos.txt is represented as a new line
-    appended at the end of the file.
-    The line in question will have 3 fields separated by colon (:) character.
-    The 1st field must be the exact string used as algId in the info files in
-    your data, the 2nd the exact string for the comment. The 3rd will be
-    a python dictionary which will be used for the plotting.
+    Running this will also add an entry in file algorithmshortinfos.txt
+    if it does not exist already.
+    algorithmshortinfos.txt is a file which contain meta-information
+    that are used by modules from the bbob_pproc.compall package.
+    The new entry in algorithmshortinfos.txt is represented as a new
+    line appended at the end of the file.
+    The line in question will have 3 fields separated by colon (:)
+    character. The 1st field must be the exact string used as algId in
+    the info files in your data, the 2nd the exact string for the
+    comment. The 3rd will be a python dictionary which will be used for
+    the plotting.
 
     Keyword arguments:
-    argv -- list of strings containing options and arguments. If not provided,
-    sys.argv is accessed.
+    argv -- list of strings containing options and arguments. If not
+    provided, sys.argv is accessed.
 
-    argv should list either names of info files or folders containing info
-    files or folders containing pickle files (preferred).
+    argv should list either names of info files or folders containing
+    info files.
     Furthermore, argv can begin with, in any order, facultative option
     flags listed below.
 
@@ -137,8 +138,8 @@ def main(argv=None):
 
         -v, --verbose
  
-            verbose mode, prints out operations. When not in verbose mode, no
-            output is to be expected, except for errors.
+            verbose mode prints out operations. When not in verbose
+            mode, no output is to be expected, except for errors.
 
     Exceptions raised:
     Usage -- Gives back a usage message.
