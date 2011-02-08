@@ -147,8 +147,8 @@ def main(argv=None):
     * From the python interactive shell (requires that the path to this
       package is in python search path):
 
-        >>> from bbob_pproc import rungeneric
-        >>> rungeneric.main('-o outputfolder folder1 folder2'.split())
+        >> from bbob_pproc import rungeneric
+        >> rungeneric.main('-o outputfolder folder1 folder2'.split())
 
     This will execute the post-processing on the data found in folder1
     and folder2.

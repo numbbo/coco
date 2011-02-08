@@ -96,7 +96,7 @@ def main(argv=None):
 
         -o, --output-dir OUTPUTDIR
 
-            change the default output directory ('cmpmanydata') to OUTPUTDIR
+            change the default output directory ('ppdatamany') to gDIR
 
         --noise-free, --noisy
 
@@ -136,8 +136,8 @@ def main(argv=None):
     * From the python interactive shell (requires that the path to this
       package is in python search path):
 
-        >>> from bbob_pproc import rungenericmany
-        >>> rungenericmany.main('-o outputfolder folder1 folder2'.split())
+        >> from bbob_pproc import rungenericmany
+        >> rungenericmany.main('-o outputfolder folder1 folder2'.split())
 
     This will execute the post-processing on the data found in folder1 and
     folder2.
