@@ -150,8 +150,8 @@ def main(argv=None):
     * From the python interactive shell (requires that the path to this
       package is in python search path):
 
-        >>> from bbob_pproc import rungeneric1
-        >>> rungeneric1.main('-o outputfolder folder1'.split())
+        >> from bbob_pproc import rungeneric1
+        >> rungeneric1.main('-o outputfolder folder1'.split())
 
     This will execute the post-processing on the index files found in folder1.
     The -o option changes the output folder from the default ppdata to

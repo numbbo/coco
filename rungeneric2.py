@@ -87,7 +87,7 @@ def main(argv=None):
 
         -o, --output-dir OUTPUTDIR
 
-            change the default output directory ('cmp2data') to OUTPUTDIR
+            change the default output directory ('ppdata2') to OUTPUTDIR
 
         --noise-free, --noisy
 
@@ -114,7 +114,7 @@ def main(argv=None):
 
     * Calling the runcomp2.py interface from the command line:
 
-        $ python bbob_pproc/runcomp2.py -v Alg0-baseline Alg1-of-interest
+        $ python bbob_pproc/rungeneric2.py -v Alg0-baseline Alg1-of-interest
 
     will post-process the data from folders Alg0-baseline and Alg1-of-interest,
     the former containing data for the reference algorithm (zero-th) and the
@@ -124,8 +124,8 @@ def main(argv=None):
     * From the python interactive shell (requires that the path to this
       package is in python search path):
 
-        >>> from bbob_pproc import runcomp2
-        >>> runcomp2.main('-o outputfolder PSO DEPSO'.split())
+        >> from bbob_pproc import rungeneric2
+        >> rungeneric2.main('-o outputfolder PSO DEPSO'.split())
 
     This will execute the post-processing on the data found in folder
     PSO and DEPSO. The -o option changes the output folder from the default
