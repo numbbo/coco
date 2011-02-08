@@ -238,7 +238,8 @@ def main(argv=None):
                 print 'Folder %s was created.' % (outputdir)
 
         for alg in args:
-            tmpoutputdir = os.path.join(outputdir, os.path.split(alg)[-1])
+            # tmpoutputdir = os.path.join(outputdir, os.path.split(alg.rstrip(os.sep))[-1])
+            tmpoutputdir = os.path.join(outputdir, alg)
             # TODO: if there is a problem, skip: try except...
             rungeneric1.main(genopts1
                              + ["-o", tmpoutputdir, alg])
