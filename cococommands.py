@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Module for using COCO from the (i)python interpreter.
+"""Module for using COCO from the (i)Python interpreter.
+
+    For all operations in the Python interpreter, it will be assumed
+    that the package has been imported as bb, just like it is done
+    in the first line of the examples below.
 
     The main data structures used in COCO are DataSet, which corresponds
     to data of one algorithm on one problem, and DataSetList, which is
     for collections of DataSet instances. Both classes DataSetList and
-    DataSet are implemented in module bbob_pproc.pproc.
+    DataSet are implemented in module bb.pproc.
 
     Examples:
 
