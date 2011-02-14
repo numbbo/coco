@@ -1,10 +1,42 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Module containing the main commands to use on the (i)python command shell.
+"""Module for using COCO from the (i)python interpreter.
 
-The package heavily relies on matplotlib plotting facilities:
-http://matplotlib.sourceforge.net/
+    The main data structures used in COCO are DataSet, which corresponds
+    to data of one algorithm on one problem, and DataSetList, which is
+    for collections of DataSet instances. Both classes DataSetList and
+    DataSet are implemented in module bbob_pproc.pproc.
+
+    Examples:
+
+    >>> import bbob_pproc as bb # load bbob_pproc
+
+    * Load a data set, assign to variable ds:
+
+    >>> ds = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info') # doctest:+ELLIPSIS
+    Processing BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info.
+    ...
+    Processing ['BIPOP-CMA-ES_hansen_noiseless/data_f2/bbobexp_f2_DIM40.tdat']: 15/15 trials found.
+
+    * Get some information on a DataSetList instance:
+
+    >>> print ds # doctest:+ELLIPSIS
+    [DataSet(cmaes V3.30.beta on f2 2-D), ..., DataSet(cmaes V3.30.beta on f2 40-D)]
+    >>> bb.info(ds)
+    6 data set(s)
+    Algorithm(s): cmaes V3.30.beta
+    Dimension(s): 2, 3, 5, 10, 20, 40
+    Function(s): 2
+    Max evals: 75017
+    Df      |     min       10      med       90      max
+    --------|--------------------------------------------
+    1.0e+01 |      55      151     2182    49207    55065
+    1.0e+00 |     124      396     2820    56879    59765
+    1.0e-01 |     309      466     2972    61036    66182
+    1.0e-03 |     386      519     3401    67530    72091
+    1.0e-05 |     446      601     3685    70739    73472
+    1.0e-08 |     538      688     4052    72540    75010
 
 """
 
@@ -13,27 +45,27 @@ from __future__ import absolute_import
 #from bbob_pproc import ppsingle, ppfigdim, dataoutput
 from bbob_pproc.pproc import DataSetList, DataSet
 
+__all__ = ['load', 'info', 'pickle', 'systeminfo', 'DataSetList', 'DataSet']
+
 def load(filename):
-    """Create a DataSetList instance from a file which filename is provided.
+    """Create a DataSetList instance from a file or folder.
     
-    Input argument filename can be a single info filename, a single pickle
-    filename or a folder name.
+    Input argument filename can be a single info filename, a single
+    pickle filename or a folder name. In the latter case, the folder is
+    browsed recursively for info or pickle files.
 
     """
-
     return DataSetList(filename)
 
 # info on the DataSetList: algId, function, dim
 
 def info(dsList):
     """Display more info on an instance of DatasetList."""
-
     dsList.info()
 
 # TODO: method for pickling data in the current folder!
 def pickle(dsList):
     """Pickle a DataSetList."""
-
     dsList.pickle(verbose=True)
     # TODO this will create a folder with suffix -pickle from anywhere:
     # make sure the output folder is created at the right location
@@ -78,7 +110,6 @@ def systeminfo():
 # do something to lead a single DataSet instead?
 
 # TODO: make sure each module have at least one method that deals with DataSetList instances.
-# Figure should show up and not close afterwards (=> do something about this: matplotlib.use('Agg') )
 
 # TODO: data structure dictAlg?
 # TODO: hide modules that are not necessary

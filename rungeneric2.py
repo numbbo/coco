@@ -53,28 +53,28 @@ def usage():
     print main.__doc__
 
 def main(argv=None):
-    """Generates some outputs from BBOB experiment data sets of two algorithms.
+    r"""Routine for post-processing COCO data from two algorithms.
 
-    Provided with some data, this routine outputs figure and TeX files in a
-    folder needed for the compilation of latex document template2XXX.tex or
-    noisytemplate2XXX, where XXX is either ecj or generic. The template file
-    needs to be edited so that the command \\bbobdatapath points to the output
-    folder.
+    Provided with some data, this routine outputs figure and TeX files
+    in a folder needed for the compilation of latex document
+    template2XXX.tex or noisytemplate2XXX, where XXX is either ecj or
+    generic. The template file needs to be edited so that the command
+    \bbobdatapath points to the output folder.
 
-    These output files will contain performance tables, performance scaling
-    figures and empirical cumulative distribution figures. On subsequent
-    executions, new files will be added to the output folder, overwriting
-    existing older files in the process.
+    These output files will contain performance tables, performance
+    scaling figures and empirical cumulative distribution figures. On
+    subsequent executions, new files will be added to the output folder,
+    overwriting existing older files in the process.
 
     Keyword arguments:
-    argv -- list of strings containing options and arguments. If not given,
-    sys.argv is accessed.
+    argv -- list of strings containing options and arguments. If not
+    given, sys.argv is accessed.
 
-    argv must list folders containing BBOB data files. Each of these folders
-    should correspond to the data of ONE algorithm.
+    argv must list folders containing BBOB data files. Each of these
+    folders should correspond to the data of ONE algorithm.
 
-    Furthermore, argv can begin with, in any order, facultative option flags
-    listed below.
+    Furthermore, argv can begin with, in any order, facultative option
+    flags listed below.
 
         -h, --help
 
@@ -82,8 +82,7 @@ def main(argv=None):
 
         -v, --verbose
 
-            verbose mode, prints out operations. When not in verbose mode, no
-            output is to be expected, except for errors.
+            verbose mode, prints out operations.
 
         -o, --output-dir OUTPUTDIR
 
@@ -95,17 +94,17 @@ def main(argv=None):
 
         --settings SETTING
 
-            change the style of the output figures and tables. At the moment
-            only the only differences are in the colors of the output figures.
-            SETTINGS can be either "grayscale", "color" or "black-white". The
-            default setting is "color".
+            change the style of the output figures and tables. At the
+            moment only the only differences are in the colors of the
+            output figures. SETTING can be either "grayscale", "color"
+            or "black-white". The default setting is "color".
 
         --fig-only, --rld-only, --tab-only, --sca-only
 
-            these options can be used to output respectively the ERT graphs
-            figures, run length distribution figures or the comparison tables
-            scatter plot figures only. Any combination of these options results
-            in no output.
+            these options can be used to output respectively the ERT
+            graphs figures, run length distribution figures or the
+            comparison tables scatter plot figures only. Any combination
+            of these options results in no output.
 
     Exceptions raised:
     Usage -- Gives back a usage message.
@@ -116,10 +115,11 @@ def main(argv=None):
 
         $ python bbob_pproc/rungeneric2.py -v Alg0-baseline Alg1-of-interest
 
-    will post-process the data from folders Alg0-baseline and Alg1-of-interest,
-    the former containing data for the reference algorithm (zero-th) and the
-    latter data for the algorithm of concern (first). The results will be
-    output in folder cmp2data. The -v option adds verbosity.
+    will post-process the data from folders Alg0-baseline and
+    Alg1-of-interest, the former containing data for the reference
+    algorithm (zero-th) and the latter data for the algorithm of concern
+    (first). The results will be output in the default output folder.
+    The -v option adds verbosity.
 
     * From the python interactive shell (requires that the path to this
       package is in python search path):
@@ -128,8 +128,8 @@ def main(argv=None):
         >> rungeneric2.main('-o outputfolder PSO DEPSO'.split())
 
     This will execute the post-processing on the data found in folder
-    PSO and DEPSO. The -o option changes the output folder from the default
-    cmp2data to outputfolder.
+    PSO and DEPSO. The -o option changes the output folder from the
+    default to outputfolder.
 
     """
 

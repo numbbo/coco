@@ -7,8 +7,12 @@ This package is meant to generate output figures and tables for the
 benchmarking of continuous optimisers in the case of black-box
 optimisation.
 The post-processing tool takes as input data from experiments and
-generates output that will be used in the generation of the LateX-
+generates outputs that will be used in the generation of the LateX-
 formatted article summarizing the experiments.
+
+The main method of this package is the main in bbob_pproc.rungeneric
+This method allows to use the post-processing through a command-line
+interface.
 
 To obtain more information on the use of this package from the python
 shell, type:

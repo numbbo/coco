@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Creates ERTs and convergence figures for BBOB post-processing."""
+"""Generate performance scaling figures."""
 
 import os
 import sys
@@ -10,6 +10,8 @@ import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap, bestalg
 from bbob_pproc.ppfig import saveFigure, groupByRange
+
+__all__ = ['beautify', 'plot', 'main']
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
@@ -44,8 +46,8 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
 
-def beautify():
-    """ Customize a figure by adding a legend, axis label, etc."""
+def beautifyold():
+    """Deprecated: Customize figure presentation"""
 
     # Input checking
 
@@ -86,11 +88,11 @@ def beautify():
         tmp2.append('%d' % round(numpy.log10(i)))
     axisHandle.set_yticklabels(tmp2)
 
-def beautify2():
-    """ Customize a figure by adding a legend, axis label, etc and save to a file.
+def beautify():
+    """Customize figure presentation.
 
-        Is identical to beautify except for the linear and quadratic scaling
-        lines.
+       Is identical to beautify except for the linear and quadratic
+       scaling lines.
 
     """
 
@@ -391,7 +393,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
                          horizontalalignment="center",
                          verticalalignment="bottom")
 
-        beautify2()
+        beautify()
 
         if func in (1, 24, 101, 130):
             plt.legend(loc="best")
