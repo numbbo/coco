@@ -1,8 +1,14 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generates Empirical Cumulative Distribution of the bootstrap distribution of
-the Expected Running Time (ERT) divided by the dimension."""
+"""Generates figure of the bootstrap distribution of ERT.
+    
+The main method in this module generates figures of Empirical
+Cumulative Distribution Functions of the bootstrap distribution of
+the Expected Running Time (ERT) divided by the dimension for many
+algorithms.
+    
+"""
 
 from __future__ import absolute_import
 
@@ -155,7 +161,7 @@ footleg = (r'%do not remove the empty line below' + '\n\n' +
 tg = tuple(10**numpy.r_[-8:2:0.2])
 
 def beautify():
-    """Format the figure."""
+    """Customize figure presentation."""
 
     #plt.xscale('log') # Does not work with matplotlib 0.91.2
     a = plt.gca()
@@ -403,14 +409,16 @@ def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
          info='default', verbose=True):
     """Generates a figure showing the performance of algorithms.
     From a dictionary of DataSetList sorted by algorithms, generates the
-    cumulative distribution function of the bootstrap distribution of ERT
-    for algorithms on multiple functions for multiple targets altogether.
+    cumulative distribution function of the bootstrap distribution of
+    ERT for algorithms on multiple functions for multiple targets
+    altogether.
 
     Keyword arguments:
-    dictAlg -- dictionary of dataSetList instances containing all data to be
-        represented in the figure
+    dictAlg -- dictionary of dataSetList instances containing all data
+        to be represented in the figure
     targets -- list of target function values
     order -- sorted list of keys to dictAlg for plotting order
+
     """
 
     xlim = x_limit # variable defined in header

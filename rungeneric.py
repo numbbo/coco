@@ -87,7 +87,7 @@ def usage():
     print main.__doc__
 
 def main(argv=None):
-    """Main routine for post-processing data from COCO.
+    r"""Main routine for post-processing data from COCO.
 
     This routine will call sub-routine rungeneric1 for each input
     arguments and either sub-routines rungeneric2 (2 input arguments) or

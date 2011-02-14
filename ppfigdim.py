@@ -47,7 +47,12 @@ except IOError, (errno, strerror):
           'Titles in figures will not be displayed.'
 
 def beautifyold():
-    """Deprecated: Customize figure presentation"""
+    """Deprecated: Customize figure presentation.
+    
+    Is identical to beautify except for the linear and quadratic
+    scaling lines.
+    
+    """
 
     # Input checking
 
@@ -89,12 +94,7 @@ def beautifyold():
     axisHandle.set_yticklabels(tmp2)
 
 def beautify():
-    """Customize figure presentation.
-
-       Is identical to beautify except for the linear and quadratic
-       scaling lines.
-
-    """
+    """Customize figure presentation."""
 
     # Input checking
 
