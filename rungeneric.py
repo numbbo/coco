@@ -4,7 +4,7 @@
 """Process data to be included in a generic template.
 
    Synopsis:
-      python path_to_folder/bbob_pproc/rungeneric.py [OPTIONS] FOLDER_NAME...
+      python path_to_folder/bbob_pproc/rungeneric.py [OPTIONS] FOLDERS
     Help:
       python path_to_folder/bbob_pproc/rungeneric.py -h
 
@@ -87,55 +87,56 @@ def usage():
     print main.__doc__
 
 def main(argv=None):
-    """Main routine for post-processing data from BBOB.
-    This routine will call sub-routine rungeneric1 for each input arguments
-    and either sub-routines rungeneric2 (2 input arguments) or rungenericmany
-    (more than 2) for the input arguments altogether.
+    """Main routine for post-processing data from COCO.
+
+    This routine will call sub-routine rungeneric1 for each input
+    arguments and either sub-routines rungeneric2 (2 input arguments) or
+    rungenericmany (more than 2) for the input arguments altogether.
 
     The output figures and tables are included in
     * template1generic.tex, template1ecj.tex, noisytemplate1generic.tex,
-    noisytemplate1ecj.tex for single algorithm results on the noise-free and
-    noisy testbeds respectively
+    noisytemplate1ecj.tex for single algorithm results on the noise-free
+    and noisy testbeds respectively
     * template2generic.tex, template2ecj.tex, noisytemplate2generic.tex,
     noisytemplate2ecj.tex for showing the comparison of 2 algorithms
     * template3generic.tex, template3ecj.tex, noisytemplate3generic.tex,
-    noisytemplate3ecj.tex for showing the comparison of more than 2 algorithms.
-    Given that the folder with all output figures and tables and the template
-    files are in the current working directory, compiling the template file
-    with LaTeX should produce a document.
+    noisytemplate3ecj.tex for showing the comparison of more than 2
+    algorithms.
+    These files needs to be copied in the current working directory and
+    edited so that the LaTeX commands \bbobdatapath and \algfolder (for
+    xxxtemplate1xxx.tex) need to be set to the output folder of the
+    post-processing. Compiling the template file with LaTeX should then
+    produce a document.
 
     Keyword arguments:
-    argv -- list of strings containing options and arguments. If not provided,
-    sys.argv is accessed.
+    argv -- list of strings containing options and arguments. If not
+    provided, sys.argv is accessed.
 
-    argv must list folders containing BBOB data files. Each of these folders
-    should correspond to the data of ONE algorithm.
+    argv must list folders containing COCO data files. Each of these
+    folders should correspond to the data of ONE algorithm.
 
-    Furthermore, argv can begin with, in any order, facultative option flags.
+    Furthermore, argv can begin with facultative option flags.
 
         -h, --help
-
+    
             display this message
 
         -v, --verbose
 
-            verbose mode, prints out operations. When not in verbose mode, no
-            output is to be expected, except for errors.
+            verbose mode, prints out operations.
 
         -o, --output-dir OUTPUTDIR
 
-            change the default output directory ('ppdata') to
-            OUTPUTDIR
+            change the default output directory ('ppdata') to OUTPUTDIR
 
     Exceptions raised:
     Usage -- Gives back a usage message.
 
     Examples:
 
-    * Calling the rungenericmany.py interface from the command line:
+    * Calling the rungeneric.py interface from the command line:
 
-        $ python bbob_pproc/rungeneric.py -v
-
+        $ python bbob_pproc/rungeneric.py -v AMALGAM BIPOP-CMA-ES
 
     * Loading this package and calling the main from the command line
       (requires that the path to this package is in python search path):
@@ -147,17 +148,12 @@ def main(argv=None):
     * From the python interactive shell (requires that the path to this
       package is in python search path):
 
-        >> from bbob_pproc import rungeneric
-        >> rungeneric.main('-o outputfolder folder1 folder2'.split())
+        >> import bbob_pproc as bb
+        >> bb.rungeneric.main('-o outputfolder folder1 folder2'.split())
 
     This will execute the post-processing on the data found in folder1
-    and folder2.
-    The -o option changes the output folder from the default ppdata to
-    outputfolder.
-
-    * Generate post-processing data for some algorithms:
-
-        $ python rungeneric.py AMALGAM BFGS BIPOP-CMA-ES
+    and folder2. The -o option changes the output folder from the
+    default ppdata to outputfolder.
 
     """
 

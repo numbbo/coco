@@ -16,6 +16,8 @@ from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
 from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers
 from bbob_pproc.pptex import writeLabels, numtotext
 
+__all__ = ['beautify', 'main', 'plot']
+
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
 best = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES',

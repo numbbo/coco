@@ -4,7 +4,7 @@
 """Process data to be included in a generic template.
 
    Synopsis:
-      python path_to_folder/bbob_pproc/runcompmany.py [OPTIONS] FOLDER_NAME...
+      python path_to_folder/bbob_pproc/runcompmany.py [OPTIONS] FOLDER
     Help:
       python path_to_folder/bbob_pproc/runcompmany.py -h
 
@@ -53,35 +53,30 @@ def usage():
     print main.__doc__
 
 def main(argv=None):
-    """Main routine for post-processing the data of multiple algorithms.
+    r"""Main routine for post-processing the data of multiple algorithms.
 
-    Provided with some data, this routine outputs figure and TeX files in a
-    folder needed for the compilation of latex document template3XXX.tex or
-    noisytemplate3XXX, where XXX is either ecj or generic. The template file
-    needs to be edited so that the command \\bbobdatapath points to the output
-    folder.
+    Provided with some data, this routine outputs figure and TeX files
+    in a folder needed for the compilation of latex document
+    template3XXX.tex or noisytemplate3XXX, where XXX is either ecj or
+    generic. The template file needs to be edited so that the command
+    \bbobdatapath points to the output folder.
 
-    Provided with some data, this routine outputs figure and TeX files in a
-    folder needed for the compilation of latex document template3XXX.tex, where
-    XXX is either ecj or generic. The template file needs to be edited so that
-    the command \\bbobdatapath points to the output folder.
-
-    These output files will contain performance tables, performance scaling
-    figures and empirical cumulative distribution figures. On subsequent
-    executions, new files will be added to the output folder, overwriting
-    existing older files in the process.
+    These output files will contain performance tables, performance
+    scaling figures and empirical cumulative distribution figures. On
+    subsequent executions, new files will be added to the output folder,
+    overwriting existing older files in the process.
 
     Keyword arguments:
-    argv -- list of strings containing options and arguments. If not provided,
-    sys.argv is accessed.
+    argv -- list of strings containing options and arguments. If not
+    provided, sys.argv is accessed.
 
     argv must list folders containing BBOB data files.
-    The name of these folders will be used in the output figures and tables to
-    designate the algorithms. Therefore you should name the folders with
-    differentiating names.
+    The name of these folders will be used in the output figures and
+    tables to designate the algorithms. Therefore you should name the
+    folders with differentiating names.
 
-    Furthermore, argv can begin with, in any order, facultative option flags
-    listed below.
+    Furthermore, argv can begin with facultative option flags listed
+    below.
 
         -h, --help
 
@@ -89,14 +84,11 @@ def main(argv=None):
 
         -v, --verbose
 
-            verbose mode, prints out operations, warnings. When not in verbose
-            mode, only a little output is to be expected, except for errors.
-            In case of error, we suggest providing with the output of the
-            command with the addition of this option.
+            verbose mode, prints out operations, warnings.
 
-        -o, --output-dir OUTPUTDIR
+        -o, --output-dir DIR
 
-            change the default output directory ('ppdatamany') to gDIR
+            change the default output directory ('ppdatamany') to DIR.
 
         --noise-free, --noisy
 
@@ -104,17 +96,17 @@ def main(argv=None):
 
         --settings SETTING
 
-            change the style of the output figures and tables. At the moment
-            only the only differences are in the colors of the output figures.
-            SETTINGS can be either "grayscale", "color" or "black-white". The
-            default setting is "color".
+            change the style of the output figures and tables. At the
+            moment only the only differences are in the colors of the
+            output figures. SETTING can be either "grayscale", "color"
+            or "black-white". The default setting is "color".
 
         --tab-only, --per-only, --fig-only
 
-            these options can be used to output respectively the comparison
-            TeX tables, the performance profiles or the figures of ERT/dim vs
-            dim only. A combination of any two or more of these options results
-            in no output.
+            these options can be used to output respectively the
+            comparison TeX tables, the performance profiles or the
+            figures of ERT/dim vs dim only. A combination of any two or
+            more of these options results in no output.
 
     Exceptions raised:
     Usage -- Gives back a usage message.
@@ -136,15 +128,16 @@ def main(argv=None):
     * From the python interactive shell (requires that the path to this
       package is in python search path):
 
-        >> from bbob_pproc import rungenericmany
-        >> rungenericmany.main('-o outputfolder folder1 folder2'.split())
+        >> import bbob_pproc as bb
+        >> bb.rungenericmany.main('-o outputfolder folder1 folder2'.split())
 
-    This will execute the post-processing on the data found in folder1 and
-    folder2.
-    The -o option changes the output folder from the default to outputfolder.
+    This will execute the post-processing on the data found in folder1
+    and folder2.
+    The -o option changes the output folder from the default to
+    outputfolder.
 
-    * Generate post-processing data for some algorithms with figures in shades
-      of gray:
+    * Generate post-processing data for some algorithms with figures in
+    shades of gray:
 
         $ python rungenericmany.py --settings grayscale NEWUOA NELDER LSSTEP
 

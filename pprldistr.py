@@ -11,7 +11,9 @@ import pickle
 import matplotlib.pyplot as plt
 from pdb import set_trace
 from bbob_pproc import bootstrap
-from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers
+from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure
+
+__all__ = ['beautify', 'comp', 'main', 'plot']
 
 rldColors = ('k', 'c', 'm', 'r', 'k', 'c', 'm', 'r', 'k', 'c', 'm', 'r')
 rldUnsuccColors = ('k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm', 'k', 'c', 'm')  # should not be too short
@@ -86,14 +88,15 @@ def beautifyECDF(axish=None):
     #    for h in handles:
     #        plt.setp(h, 'clip_on', False)
 
-def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('pdf', 'eps'),
-                text=None, verbose=True):
-    """Format the figure of the run length distribution and save into files."""
+def beautifyRLD():
+    """Format and save the figure of the run length distribution."""
 
-    axisHandle = figHandle.gca()
+    # TODO: This method should not save file.
+
+    axisHandle = plt.gca()
     axisHandle.set_xscale('log')
     #plt.axvline(x=maxEvalsF, color='k')
-    plt.xlim(1.0, maxEvalsF ** 1.05)
+
     axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of trials')
     # Grid options
@@ -105,36 +108,27 @@ def beautifyRLD(figHandle, figureName, maxEvalsF, fileFormat=('pdf', 'eps'),
 
     beautifyECDF()
 
-    plt.text(0.5, 0.98, text, horizontalalignment="center",
-             verticalalignment="top", transform=axisHandle.transAxes)
-             #bbox=dict(ec='k', fill=False), 
-
     #set_trace()
     plt.legend(loc='best')
     #if legend:
         #axisHandle.legend(legend, locLegend)
 
-    # Save figure
-    for entry in fileFormat:
-        plt.savefig(figureName + '.' + entry, dpi = 300,
-                    format = entry)
-        if verbose:
-            print 'Wrote figure in %s.' %(figureName + '.' + entry)
-
-def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={},
-                 verbose=True):
+def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
     """Creates run length distributions from a sequence dataSetList.
 
     Keyword arguments:
-    dataSetList
-    fvalueToReach
-    verbose
+    dsList -- Input data sets
+    fvalueToReach -- dictionary of the function value to reach.
+    maxEvalsF -- maximum number of function evaluations. Helps set the
+    rightmost boundary
+    plotArgs -- arguments to pass to the plot command
 
     Outputs:
     res -- resulting plot.
-    fsolved -- number of different functions solved.
-    funcs -- number of different function considered.
+
     """
+
+    # TODO use **kwargs
 
     x = []
     nn = 0
@@ -177,19 +171,20 @@ def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={},
 
     return res#, fsolved, funcs
 
-def plotERTDistr(dsList, fvalueToReach, plotArgs=None, verbose=True):
-    """Creates estimated run time distributions from a sequence dataSetList.
+def plotERTDistr(dsList, fvalueToReach, plotArgs=None):
+    """Creates estimated run time distributions from a DataSetList.
 
     Keyword arguments:
-    dsList
-    fvalueToReach
-    verbose
+    dsList -- Input data sets
+    fvalueToReach -- target function value
+    plotArgs -- keyword arguments to pass to plot command
 
     Outputs:
     res -- resulting plot.
-    fsolved -- number of different functions solved.
-    funcs -- number of different function considered.
+
     """
+
+    # TODO: **plotArgs
 
     x = []
     nn = 0
@@ -217,14 +212,15 @@ def generateRLData(evals, targets):
     """Determine the running lengths for attaining the targets.
 
     Keyword arguments:
-    evals -- numpy array with the first column corresponding to the function
-      values and the following columns being the number of function evaluations
-      for reaching this function value
+    evals -- numpy array with the first column corresponding to the
+      function values and the following columns being the number of
+      function evaluations for reaching this function value
     targets -- target function values of interest
 
     Output:
-    list of arrays containing the number of function evaluations for reaching
-    the target function values in target.
+    list of arrays containing the number of function evaluations for
+    reaching the target function values in target.
+
     """
 
     res = {}
@@ -243,23 +239,23 @@ def generateRLData(evals, targets):
                 line = it.next()
             except StopIteration:
                 break
-        #if prevline[0] > t:
-            #prevline.copy()
-        #set_trace()
-        res[t] = prevline.copy() # is copy necessary?
+        res[t] = prevline.copy()
     return res
 
-def beautifyFVD(figHandle, figureName, fileFormat=('pdf', 'eps'),
-                isStoringXMax=False, text=None, verbose=True):
+def beautifyFVD(isStoringXMax=False):
     """Formats the figure of the run length distribution.
 
+    This function is to be used with plotFVDistr
+
     Keyword arguments:
-    isStoringMaxF -- if set to True, the first call BeautifyVD sets the global
-                     fmax and all subsequent call will have the same maximum
-                     xlim.
+    isStoringMaxF -- if set to True, the first call beautifyFVD sets the
+    global fmax and all subsequent call will have the same maximum xlim
+
     """
 
-    axisHandle = figHandle.gca()
+    # TODO: This method should not save file.
+
+    axisHandle = plt.gca()
     axisHandle.set_xscale('log')
 
     if isStoringXMax:
@@ -284,21 +280,10 @@ def beautifyFVD(figHandle, figureName, fileFormat=('pdf', 'eps'),
     axisHandle.set_xticklabels(newxtic)
     axisHandle.set_yticklabels(())
 
-    plt.text(0.98, 0.02, text, horizontalalignment="right",
-             transform=axisHandle.transAxes)
-             #bbox=dict(ec='k', fill=False), 
-
-    # Save figure
-    for entry in fileFormat:
-        plt.savefig(figureName + '.' + entry, dpi = 300,
-                    format = entry)
-        if verbose:
-            print 'Wrote figure in %s.' %(figureName + '.' + entry)
-
 def plotFVDistr(dataSetList, fvalueToReach, maxEvalsF, plotArgs={},
                  verbose=True):
-    """Creates empirical cumulative distribution functions of final function
-    values plot from a sequence of indexEntries.
+    """Creates empirical cumulative distribution functions of final
+    function values plot from a sequence of indexEntries.
 
     Keyword arguments:
     indexEntries -- sequence of IndexEntry to process.
@@ -307,7 +292,10 @@ def plotFVDistr(dataSetList, fvalueToReach, maxEvalsF, plotArgs={},
     verbose -- controls verbosity.
 
     Outputs: a plot of a run length distribution.
+
     """
+
+    # TODO: **plotArgs
 
     x = []
     nn = 0
@@ -330,15 +318,20 @@ def plotRLDistr2(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
     """Creates run length distributions from a sequence dataSetList.
 
     Keyword arguments:
-    dataSetList
+    dsList
     fvalueToReach
-    verbose
+    maxEvalsF
+    plotArgs
 
     Outputs:
     res -- resulting plot.
     fsolved -- number of different functions solved.
     funcs -- number of different function considered.
+
     """
+
+    # TODO: check for plotRLDistr
+    # TODO: **plotArgs
 
     x = []
     nn = 0
@@ -409,6 +402,7 @@ def plotFVDistr2(dataSetList, fvalueToReach, maxEvalsF, plotArgs={}):
     verbose -- controls verbosity.
 
     Outputs: a plot of a run length distribution.
+
     """
 
     x = []
@@ -439,17 +433,12 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     dsList0 -- list of DataSet instances for ALG0.
     dsList1 -- list of DataSet instances for ALG1
     valuesOfInterest -- target function values to be displayed.
-    isStoringXMax -- if set to True, the first call BeautifyVD sets the globals
-                     fmax and maxEvals and all subsequent calls will use these
-                     values as rightmost xlim in the generated figures.
-     -- if set to True, the first call BeautifyVD sets the global
-                     fmax and all subsequent call will have the same maximum
-                     xlim.
+    isStoringXMax -- if set to True, the first call BeautifyFVD sets the
+      globals fmax and maxEvals and all subsequent calls will use these
+      values as rightmost xlim in the generated figures.
     outputdir -- output directory (must exist)
     info --- string suffix for output file names.
 
-    Outputs:
-    Image files of the empirical cumulative distribution functions.
     """
 
     #plt.rc("axes", labelsize=20, titlesize=24)
@@ -469,7 +458,7 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     if not evalfmax:
         evalfmax = maxEvalsFactor
 
-    figureName = os.path.join(outputdir,'pprldistr_%s' %(info))
+    filename = os.path.join(outputdir,'pprldistr_%s' %(info))
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):
@@ -529,12 +518,17 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
 
     plt.axvline(max(i.mMaxEvals()/i.dim for i in dsList0), ls='--', color='k')
     plt.axvline(max(i.mMaxEvals()/i.dim for i in dsList1), color='k')
-    beautifyRLD(fig, figureName, evalfmax, fileFormat=figformat, text=text,
-                verbose=verbose)
+    beautifyRLD()
+    plt.xlim(1.0, evalfmax ** 1.05)
+    plt.text(0.5, 0.98, text, horizontalalignment="center",
+             verticalalignment="top", transform=plt.gca().transAxes)
+             #bbox=dict(ec='k', fill=False), 
+    saveFigure(filename, figFormat=figformat, verbose=verbose)
+
     plt.close(fig)
 
 def beautify():
-    """Format the figure of the run length distribution and save into files."""
+    """Format the figure of the run length distribution."""
 
     plt.subplot(121)
     axisHandle = plt.gca()
@@ -578,6 +572,8 @@ def beautify():
 def plot(dsList, valuesOfInterest=(10., 1e-1, 1e-4, 1e-8), kwargs={}):
     """Plot ECDF of final function values and evaluations."""
 
+    # TODO: **kwargs
+
     res = []
     plt.subplot(121)
     maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in dsList)
@@ -619,14 +615,15 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     Keyword arguments:
     dsList -- list of DataSet instances to process.
     valuesOfInterest -- target function values to be displayed.
-    isStoringXMax -- if set to True, the first call BeautifyVD sets the globals
-                     fmax and maxEvals and all subsequent calls will use these
-                     values as rightmost xlim in the generated figures.
+    isStoringXMax -- if set to True, the first call geautifyFVD sets the
+      globals fmax and maxEvals and all subsequent calls will use these
+      values as rightmost xlim in the generated figures.
     outputdir -- output directory (must exist)
     info --- string suffix for output file names.
 
     Outputs:
     Image files of the empirical cumulative distribution functions.
+
     """
 
     #plt.rc("axes", labelsize=20, titlesize=24)
@@ -647,7 +644,7 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     if not evalfmax:
         evalfmax = maxEvalsFactor
 
-    figureName = os.path.join(outputdir,'pprldistr_%s' %(info))
+    filename = os.path.join(outputdir,'pprldistr_%s' %(info))
     fig = plt.figure()
     legend = []
     for j in range(len(valuesOfInterest)):
@@ -686,12 +683,16 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
                          {'color': refcolor, 'ls': '-', 'zorder': -1})
 
     plt.axvline(x=maxEvalsFactor, color='k')
-    beautifyRLD(fig, figureName, evalfmax, fileFormat=figformat, text=text,
-                verbose=verbose)
+    beautifyRLD()
+    plt.xlim(1.0, evalfmax ** 1.05)
+    plt.text(0.5, 0.98, text, horizontalalignment="center",
+             verticalalignment="top", transform=plt.gca().transAxes)
+             #bbox=dict(ec='k', fill=False), 
+    saveFigure(filename, figFormat=figformat, verbose=verbose)
 
     plt.close(fig)
 
-    figureName = os.path.join(outputdir,'ppfvdistr_%s' %(info))
+    filename = os.path.join(outputdir,'ppfvdistr_%s' %(info))
     fig = plt.figure()
     for j in range(len(valuesOfInterest)):
         tmp = plotFVDistr2(dsList, valuesOfInterest[j], evalfmax,
@@ -708,9 +709,13 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
         tmp = plotFVDistr2(dsList, valuesOfInterest[-1], maxEvalsF[j],
                            rldUnsuccStyles[j % len(rldUnsuccStyles)])
 
-    beautifyFVD(fig, figureName, fileFormat=figformat, text=text,
-                isStoringXMax=isStoringXMax, verbose=verbose)
+    beautifyFVD(isStoringXMax=isStoringXMax)
+    plt.text(0.98, 0.02, text, horizontalalignment="right",
+             transform=plt.gca().transAxes)
+             #bbox=dict(ec='k', fill=False), 
+    saveFigure(filename, figFormat=figformat, verbose=verbose)
 
     plt.close(fig)
 
     #plt.rcdefaults()
+
