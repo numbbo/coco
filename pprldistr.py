@@ -1,7 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Creates run length distribution figures."""
+"""For generating empirical cumulative distribution function figures.
+
+Empirical Cumulative Distribution Functions (ECDF).
+
+"""
 
 from __future__ import absolute_import
 
@@ -63,7 +67,17 @@ except IOError, (errno, strerror):
 else:
     f.close()
 
-def plotECDF(x, n=None, plotArgs={}):
+def plotECDF(x, n=None, **plotArgs):
+    """Deprecated: Plot an empirical cumulative distribution function.
+    
+    Keyword arguments:
+    x -- data
+    n -- number of samples, if not provided, len(x) is assigned to n
+    **plotArgs -- additional keyword arguments provided to plot.
+    Returns:
+    handles of the plot elements
+
+    """
     if n is None:
         n = len(x)
     nx = len(x)
@@ -78,6 +92,7 @@ def plotECDF(x, n=None, plotArgs={}):
     return res
 
 def beautifyECDF(axish=None):
+    """Generic formatting of ECDF figures."""
     if axish is None:
         axish = plt.gca()
     plt.ylim(-0.01, 1.01)
@@ -90,7 +105,6 @@ def beautifyECDF(axish=None):
 
 def beautifyRLD():
     """Format and save the figure of the run length distribution."""
-
     # TODO: This method should not save file.
 
     axisHandle = plt.gca()
@@ -114,7 +128,7 @@ def beautifyRLD():
         #axisHandle.legend(legend, locLegend)
 
 def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
-    """Creates run length distributions from a sequence dataSetList.
+    """Deprecated: Creates run length distributions from a sequence dataSetList.
 
     Keyword arguments:
     dsList -- Input data sets
@@ -127,7 +141,6 @@ def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
     res -- resulting plot.
 
     """
-
     # TODO use **kwargs
 
     x = []
@@ -171,7 +184,7 @@ def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
 
     return res#, fsolved, funcs
 
-def plotERTDistr(dsList, fvalueToReach, plotArgs=None):
+def plotERTDistr(dsList, fvalueToReach, plotArgs={}):
     """Creates estimated run time distributions from a DataSetList.
 
     Keyword arguments:
@@ -183,7 +196,6 @@ def plotERTDistr(dsList, fvalueToReach, plotArgs=None):
     res -- resulting plot.
 
     """
-
     # TODO: **plotArgs
 
     x = []
@@ -204,7 +216,7 @@ def plotERTDistr(dsList, fvalueToReach, plotArgs=None):
                 break
         nn += samplesize
     #set_trace()
-    res = plotECDF(x, nn, plotArgs)
+    res = plotECDF(x, nn, **plotArgs)
 
     return res
 
@@ -222,7 +234,6 @@ def generateRLData(evals, targets):
     reaching the target function values in target.
 
     """
-
     res = {}
     it = reversed(evals) # expect evals to be sorted by decreasing function values
     prevline = numpy.array([-numpy.inf] + [numpy.nan] * (numpy.shape(evals)[1]-1))
@@ -252,7 +263,6 @@ def beautifyFVD(isStoringXMax=False):
     global fmax and all subsequent call will have the same maximum xlim
 
     """
-
     # TODO: This method should not save file.
 
     axisHandle = plt.gca()
@@ -282,8 +292,7 @@ def beautifyFVD(isStoringXMax=False):
 
 def plotFVDistr(dataSetList, fvalueToReach, maxEvalsF, plotArgs={},
                  verbose=True):
-    """Creates empirical cumulative distribution functions of final
-    function values plot from a sequence of indexEntries.
+    """Deprecated: Creates ECDF of final function values plot from a DataSetList.
 
     Keyword arguments:
     indexEntries -- sequence of IndexEntry to process.
@@ -294,7 +303,6 @@ def plotFVDistr(dataSetList, fvalueToReach, maxEvalsF, plotArgs={},
     Outputs: a plot of a run length distribution.
 
     """
-
     # TODO: **plotArgs
 
     x = []
@@ -310,7 +318,7 @@ def plotFVDistr(dataSetList, fvalueToReach, maxEvalsF, plotArgs={},
         x.extend(tmp)
         nn += i.nbRuns()
 
-    res = plotECDF(x, nn, plotArgs)
+    res = plotECDF(x, nn, **plotArgs)
 
     return res
 
@@ -318,18 +326,16 @@ def plotRLDistr2(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
     """Creates run length distributions from a sequence dataSetList.
 
     Keyword arguments:
-    dsList
-    fvalueToReach
-    maxEvalsF
-    plotArgs
+    dsList -- Input data sets
+    fvalueToReach -- dictionary of the function value to reach.
+    maxEvalsF -- maximum number of function evaluations. Helps set the
+    rightmost boundary
+    plotArgs -- arguments to pass to the plot command
 
     Outputs:
-    res -- resulting plot.
-    fsolved -- number of different functions solved.
-    funcs -- number of different function considered.
+    handles of the resulting plot.
 
     """
-
     # TODO: check for plotRLDistr
     # TODO: **plotArgs
 
@@ -362,7 +368,7 @@ def plotRLDistr2(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
     label += '%d/%d' % (len(fsolved), len(funcs))
     kwargs['label'] = kwargs.setdefault('label', label)
 
-    #TODO: res = plotECDF(x, nn, kwargs) # Why not?
+    #TODO: res = plotECDF(x, nn, **kwargs) # Why not?
     n = len(x)
     if n == 0:
         res = plt.plot([], [], **kwargs)
@@ -376,7 +382,20 @@ def plotRLDistr2(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
 
     return res#, fsolved, funcs
 
-def plotECDF2(x, n=None, plotArgs={}):
+def plotECDF2(x, n=None, **plotArgs):
+    """Plot an empirical cumulative distribution function.
+    
+    Difference with plotECDF: this method calls
+    ppfig.plotUnifLogXMarkers instead of plot.
+    
+    Keyword argument:
+    x -- data
+    n -- number of samples, if not provided len(x) is assigned to n
+    **plotArgs -- optional keyword arguments provided to plot.
+    Returns:
+    handles of the plot elements.
+
+    """
     if n is None:
         n = len(x)
     nx = len(x)
@@ -392,8 +411,7 @@ def plotECDF2(x, n=None, plotArgs={}):
     return res
 
 def plotFVDistr2(dataSetList, fvalueToReach, maxEvalsF, plotArgs={}):
-    """Creates empirical cumulative distribution functions of final function
-    values plot from a sequence of indexEntries.
+    """Creates ECDF of final function values plot from a DataSetList.
 
     Keyword arguments:
     indexEntries -- sequence of IndexEntry to process.
@@ -404,7 +422,6 @@ def plotFVDistr2(dataSetList, fvalueToReach, maxEvalsF, plotArgs={}):
     Outputs: a plot of a run length distribution.
 
     """
-
     x = []
     nn = 0
     for i in dataSetList:
@@ -420,13 +437,14 @@ def plotFVDistr2(dataSetList, fvalueToReach, maxEvalsF, plotArgs={}):
         x.extend(tmp)
         nn += i.nbRuns()
 
-    res = plotECDF2(x, nn, plotArgs)
+    res = plotECDF2(x, nn, **plotArgs)
 
     return res
 
 def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
          outputdir='', info='default', verbose=True):
-    """Generate figures of empirical cumulative distribution functions.
+    """Generate figures of ECDF for 2 algorithms.
+
     Dashed lines will correspond to ALG0 and solid lines to ALG1.
 
     Keyword arguments:
@@ -439,8 +457,10 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     outputdir -- output directory (must exist)
     info --- string suffix for output file names.
 
-    """
+    Outputs:
+    Image files of comparison ECDF.
 
+    """
     #plt.rc("axes", labelsize=20, titlesize=24)
     #plt.rc("xtick", labelsize=20)
     #plt.rc("ytick", labelsize=20)
@@ -514,7 +534,7 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
                 x = numpy.hstack(x)
 
                 plotECDF(x[numpy.isfinite(x)]/d, nn,
-                         {'color': refcolor, 'ls': '-', 'zorder': -1})
+                         color=refcolor, ls='-', zorder=-1)
 
     plt.axvline(max(i.mMaxEvals()/i.dim for i in dsList0), ls='--', color='k')
     plt.axvline(max(i.mMaxEvals()/i.dim for i in dsList1), color='k')
@@ -528,8 +548,11 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     plt.close(fig)
 
 def beautify():
-    """Format the figure of the run length distribution."""
+    """Format the figure of the run length distribution.
+    
+    Used in conjunction with plot method.
 
+    """
     plt.subplot(121)
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
@@ -625,7 +648,6 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     Image files of the empirical cumulative distribution functions.
 
     """
-
     #plt.rc("axes", labelsize=20, titlesize=24)
     #plt.rc("xtick", labelsize=20)
     #plt.rc("ytick", labelsize=20)
@@ -680,7 +702,7 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
                 x = numpy.hstack(x)
 
                 plotECDF(x[numpy.isfinite(x)]/float(d), nn,
-                         {'color': refcolor, 'ls': '-', 'zorder': -1})
+                         color=refcolor, ls='-', zorder=-1)
 
     plt.axvline(x=maxEvalsFactor, color='k')
     beautifyRLD()
@@ -718,4 +740,3 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     plt.close(fig)
 
     #plt.rcdefaults()
-

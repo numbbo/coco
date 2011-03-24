@@ -49,7 +49,6 @@ class WrongInputSizeError(Error):
         size.
 
     """
-
     def __init__(self,arrName, arrSize, reqSize):
         self.arrName = arrName
         self.arrSize = arrSize
@@ -82,8 +81,8 @@ def numtotext(n):
     Is to be used for generating command names: they cannot include number
     characters.
     WARNING: n can only be smaller than 51
-    """
 
+    """
     if n > 51:
         raise Exception('Cannot handle a number of algorithms that large.')
 

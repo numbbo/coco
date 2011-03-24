@@ -6,6 +6,9 @@
 Folders BIPOP-CMA-ES_hansen_noiseless, BIPOP-CMA-ES, NEWUOA need to be
 in the current working directory.
 
+The corresponding archives of these folders can be found at
+http://coco.lri.fr/BBOB2009/
+
 """
 
 # grep '^>>>\|^\.\.\.' firstsession.tex |sed -e 's/^.\{4\}//'
@@ -48,27 +51,10 @@ budgets1 = d1.funvals[:, 0]
 funvals1 = d1.funvals[:, 1:]
 for i in range(0, funvals1.shape[1]):
     loglog(budgets1, funvals1[:, i], linestyle='--')
-loglog(budgets1, np.median(funvals1, axis=1), linewidth=3, color='g',
+loglog(budgets1, median(funvals1, axis=1), linewidth=3, color='g',
        label='median NEWUOA')
 legend() # updates legend
 savefig('examplefigure')  # save active figure as image
-
-figure() # open a new figure
-from bbob_pproc.bootstrap import prctile
-q = np.array(list(prctile(i, [25, 50, 75]) for i in funvals))
-ymed = q[:, 1]
-ylow = ymed - q[:, 0]
-yhig = q[:, 2] - ymed
-yerr = np.vstack((ylow, yhig))
-errorbar(budgets, ymed, yerr, color='r', label='CMA-ES')
-xscale('log')
-yscale('log')
-grid()
-q1 = array(list(prctile(i, [25, 50, 75]) for i in funvals1))
-ymed1 = q1[:, 1]
-yerr1 = vstack((ymed1 - q1[:, 0], q1[:, 2] - ymed1))
-errorbar(budgets1, ymed1, yerr1, color='g', label='NEWUOA')
-legend()
 
 targets = d.evals[:, 0]
 evals =  d.evals[:, 1:]
@@ -91,6 +77,21 @@ xlabel('Function Evaluations')
 ylabel('Targets')
 loglog(d.ert[d.target>=1e-8], d.target[d.target>=1e-8], lw=3,
        color='r', label='ert')
+legend()
+
+figure() # open a new figure
+from bbob_pproc.bootstrap import prctile
+q = array(list(prctile(i, [25, 50, 75]) for i in evals))
+xmed = q[:, 1]
+xlow = xmed - q[:, 0]
+xhig = q[:, 2] - xmed
+xerr = vstack((xlow, xhig))
+errorbar(xmed, targets, xerr=xerr, color='r', label='Median')
+xscale('log')
+yscale('log')
+xlabel('Function Evaluations')
+ylabel('Targets')
+grid()
 legend()
 
 from bbob_pproc import pprldistr

@@ -423,7 +423,6 @@ class DataSet:
         list of expected running times corresponding to the targets
 
         """
-
         res = {}
         tmparray = numpy.vstack((self.target, self.ert)).transpose()
         it = reversed(tmparray)
@@ -459,7 +458,6 @@ class DataSet:
         list of arrays each corresponding to one value in targets
 
         """
-
         tmp = {}
         # expect evals to be sorted by decreasing function values
         it = reversed(self.evals)
@@ -488,7 +486,6 @@ class DataSetList(list):
     to function __eq__ of DataSet).
 
     """
-
     #Do not inherit from set because DataSet instances are mutable which means
     #they might change over time.
 
@@ -636,13 +633,11 @@ class DataSetList(list):
         superseded. This method could be the origin of efficiency issue.
 
         """
-
         for i in o:
             self.append(i)
 
     def pickle(self, outputdir=None, verbose=True):
         """Loop over self to pickle each elements."""
-
         for i in self:
             i.pickle(outputdir, verbose)
 
@@ -653,7 +648,6 @@ class DataSetList(list):
         corresponding slices of DataSetList as values.
 
         """
-
         d = {}
         for i in self:
             d.setdefault((i.algId, i.comment), DataSetList()).append(i)
@@ -666,7 +660,6 @@ class DataSetList(list):
         corresponding slices of DataSetList as values.
 
         """
-
         d = {}
         for i in self:
             d.setdefault(i.dim, DataSetList()).append(i)
@@ -679,7 +672,6 @@ class DataSetList(list):
         corresponding slices of DataSetList as values.
 
         """
-
         d = {}
         for i in self:
             d.setdefault(i.funcId, DataSetList()).append(i)
@@ -687,7 +679,6 @@ class DataSetList(list):
 
     def dictByNoise(self):
         """Returns a dictionary splitting noisy and non-noisy entries."""
-
         sorted = {}
         for i in self:
             if i.funcId in range(1, 25):
@@ -706,7 +697,6 @@ class DataSetList(list):
         corresponding slices of DataSetList as values.
 
         """
-
         sorted = {}
         for i in self:
             if i.funcId in range(1, 6):
@@ -737,7 +727,6 @@ class DataSetList(list):
         opt -- changes size of output, can be 'all' (default), 'short'
 
         """
-
         #TODO: do not integrate over dimension!!!
 
         if len(self) > 0:
@@ -816,7 +805,6 @@ def processInputArgs(args, verbose=True):
         given by the input argument args.
 
     """
-
     dsList = list()
     sortedAlgs = list()
     dictAlg = {}
@@ -862,7 +850,6 @@ def dictAlgByDim(dictAlg):
     dictionaries with algorithm names as keys.
 
     """
-
     res = {}
 
     # get the set of problem dimensions
@@ -900,16 +887,16 @@ def dictAlgByDim(dictAlg):
 def dictAlgByDim2(dictAlg):
     """Returns a dictionary with problem dimension as key.
 
-    This method is meant to be used with an input argument which is a
-    dictionary with algorithm names as keys and which has list of DataSet
-    instances as values.
-    The resulting dictionary will have dimension as key and as values
-    dictionaries with algorithm names as keys.
     The difference with dictAlgByDim is that there is an entry for each
     algorithms even if the resulting DataSetList is empty...
 
-    """
+    This method is meant to be used with an input argument which is a
+    dictionary with algorithm names as keys and which has list of
+    DataSet instances as values.
+    The resulting dictionary will have dimension as key and as values
+    dictionaries with algorithm names as keys.
 
+    """
     res = {}
 
     for alg, dsList in dictAlg.iteritems():
@@ -922,13 +909,12 @@ def dictAlgByFun(dictAlg):
     """Returns a dictionary with function id as key.
 
     This method is meant to be used with an input argument which is a
-    dictionary with algorithm names as keys and which has list of DataSet
-    instances as values.
+    dictionary with algorithm names as keys and which has list of
+    DataSet instances as values.
     The resulting dictionary will have function id as key and as values
     dictionaries with algorithm names as keys.
 
     """
-
     res = {}
     funcs = set()
     tmpdictAlg = {}
@@ -968,7 +954,6 @@ def dictAlgByNoi(dictAlg):
     algorithm names as keys.
 
     """
-
     res = {}
     ng = set()
     tmpdictAlg = {}
@@ -1013,7 +998,6 @@ def dictAlgByFuncGroup(dictAlg):
     group and as values dictionaries with algorithm names as keys.
 
     """
-
     res = {}
     fg = set()
     tmpdictAlg = {}
@@ -1159,4 +1143,3 @@ def significancetest(entry0, entry1, targets):
         res.append(tmpres)
 
     return res
-

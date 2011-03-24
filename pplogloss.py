@@ -1,10 +1,34 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-These comparisons are based on computing the ratio between an ERT value and a
+"""Module for computing ERT loss ratio
+
+This module outputs figures and tables showing ERT loss ratios.
+Comparisons are based on computing the ratio between an ERT value and a
 reference (best) ERT value (or the inverse)
 
+"""
+
+from __future__ import absolute_import
+
+import os
+import warnings
+import cPickle as pickle
+import gzip
+from pdb import set_trace
+import numpy
+from matplotlib import pyplot as plt
+try:
+    from matplotlib.transforms import blended_transform_factory as blend
+except ImportError:
+    # compatibility matplotlib 0.8
+    from matplotlib.transforms import blend_xy_sep_transform as blend
+from matplotlib import mlab as mlab
+
+from bbob_pproc import bootstrap, bestalg
+from bbob_pproc.pptex import writeFEvals2
+
+"""
 ERT loss ratio of an algorithm A for comparison to BBOB-best2009. This works
 only as comparison to a set of algorithms that reach at least the same
 target values. Let f=f_A(EVALS) be the smallest target value such that the
@@ -47,25 +71,6 @@ The ERT loss ratio for algorithm A is defined as:
       remaining 15*D ($75\%=1-1/4$) function evaluations.
 """
 
-from __future__ import absolute_import
-
-import os
-import warnings
-import cPickle as pickle
-import gzip
-from pdb import set_trace
-import numpy
-from matplotlib import pyplot as plt
-try:
-    from matplotlib.transforms import blended_transform_factory as blend
-except ImportError:
-    # compatibility matplotlib 0.8
-    from matplotlib.transforms import blend_xy_sep_transform as blend
-from matplotlib import mlab as mlab
-
-from bbob_pproc import bootstrap, bestalg
-from bbob_pproc.pptex import writeFEvals2
-
 evalf = None
 figformat = ('eps', 'pdf')
 f_thresh = 1.e-8
@@ -87,10 +92,11 @@ def detERT(entry, funvals):
     return res
 
 def detf(entry, evals):
-    """Determines a function value given a number of function evaluations.
-    Let A be the algorithm considered. Let f=f_A(evals) be the smallest target
-    value such that the expected running time of algorithm A was smaller than
-    or equal to evals.
+    """Determines a function value given a number of evaluations.
+
+    Let A be the algorithm considered. Let f=f_A(evals) be the smallest
+    target value such that the expected running time of algorithm A was
+    smaller than or equal to evals.
     ----
     Keyword arguments:
     entry
@@ -99,7 +105,6 @@ def detf(entry, evals):
     Returns:
     res -- list of the target function values
     """
-
     res = []
     for fevals in evals:
         tmp = (entry.ert <= fevals)
@@ -168,10 +173,11 @@ def generateData(dsList, evals, CrE_A):
     return res
 
 def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
-    """
+    """Makes a box and whisker plot.
+
     Adapted from matplotlib.axes 0.98.5.2
-    Modified such that the caps are set to the 10th and 90th percentiles,
-    and to have some control on the colors.
+    Modified such that the caps are set to the 10th and 90th
+    percentiles, and to have some control on the colors.
 
     call signature::
 
@@ -206,10 +212,8 @@ def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
     Returns a dictionary mapping each component of the boxplot
     to a list of the :class:`matplotlib.lines.Line2D`
     instances created.
-
-    **Example:**
-
-    .. plot:: pyplots/boxplot_demo.py
+    
+    Copyright (c) 2002-2009 John D. Hunter; All Rights Reserved
     """
     whiskers, caps, boxes, medians, fliers = [], [], [], [], []
 
@@ -333,10 +337,11 @@ def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
 
 def plot(xdata, ydata):
     """Plot the ERT log loss figures.
+
     Two cases: box-whisker plot is used for representing the data of all
     functions, otherwise all data is represented using crosses.
-    """
 
+    """
     res = []
 
     tmp = list(10**numpy.mean(i[numpy.isfinite(i)]) for i in ydata)
@@ -449,10 +454,11 @@ def beautify(figureName, evalfrange, fileFormat, verbose):
 
 def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
     """Generates ERT loss ratio tables.
-    dsList is a list of the DataSet instance for a given algorithm in a given
-    dimension.
-    """
 
+    dsList is a list of the DataSet instance for a given algorithm in a
+    given dimension.
+
+    """
     res = []
 
     #Set variables
@@ -557,8 +563,10 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
 
 def generateFigure(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True):
     """Generates ERT loss ratio figures.
-    dsList is a list of the DataSet instances for a given algorithm in a given
-    dimension.
+
+    dsList is a list of the DataSet instances for a given algorithm in a
+    given dimension.
+
     """
 
     #plt.rc("axes", labelsize=20, titlesize=24)
@@ -631,8 +639,9 @@ def generateFigure(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True
     #plt.rcdefaults()
 
 def main(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True):
+    """Generates ERT loss ratio boxplot figures.
+    
+    Calls method generateFigure.
+    """
 
     generateFigure(dsList, CrE, isStoringXRange, outputdir, suffix, verbose)
-    #table = generateTable(dsList, CrE, outputdir, verbose)
-    #set_trace()
-

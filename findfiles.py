@@ -1,7 +1,16 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Recursively find all *.info and *.pickle files within a directory."""
+"""Recursively find all *.info and *.pickle files within a directory.
+
+This module can be called from the shell, it will recursively look for
+*.info and *.pickle files in the current working directory:
+
+  $ python pathtococo/bbob_pproc/findfiles.py
+  Searching in ...
+  Found ... file(s)!
+
+"""
 
 import os
 import warnings

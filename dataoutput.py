@@ -2,7 +2,23 @@
 # -*- coding: utf-8 -*-
 
 """Routines for outputting python-formatted data.
+
 1 file per solver per function and per dimension (unit experiment).
+
+Example use:
+
+*from the shell, assuming folder FOLDER contains raw experimental
+data:
+
+  $ python pathtococo/python/bbob_pproc/dataoutput.py FOLDER
+
+  Searching in FOLDER ...
+  Searching in FOLDER/data_f1 ...
+  ...
+  A new entry for (...) was added in bbob_pproc/compall/algorithmshortinfos.txt.
+
+This creates folder FOLDER-pickle with python formatted files to use
+with COCO.
 
 """
 
