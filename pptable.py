@@ -19,8 +19,11 @@ targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 targetf = 1e-8 # value for determining the success ratio
 samplesize = 3000 # TODO: change samplesize
 
+# TODO: split into different methods if possible.
 def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
-    """Generate a table of ERT/ERTbest vs Deltaf: 1 per function and dimension
+    """Generate a table of ratio ERT/ERTbest vs target precision.
+    
+    1 table per function and dimension will be generated.
 
     Rank-sum tests table on "Final Data Points" for only one algorithm.
     that is, for example, using 1/#fevals(ftarget) if ftarget was reached and
@@ -28,7 +31,6 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     larger the better.
 
     """
-
     #TODO: check that it works for any reference algorithm?
     #in the following the reference algorithm is the one given in
     #bestalg.bestalgentries which is the virtual best of BBOB
@@ -255,4 +257,3 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         f.close()
         if verbose:
             print "Table written in %s" % outputfile
-

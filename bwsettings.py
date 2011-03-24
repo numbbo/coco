@@ -1,8 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""This module contains some variables settings for BBOB 2010.
-These variables are used for producing figures and tables used in BBOB 2010.
+"""This module contains settings for outputting black and white figures.
+
+This module modifies module-defined variables so
+bbob_pproc.rungeneric.main will output black and white figures.
+
 """
 
 import numpy

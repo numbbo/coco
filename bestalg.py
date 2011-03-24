@@ -60,10 +60,12 @@ class Usage(Exception):
         self.msg = msg
 
 class BestAlgSet():
-    """Unit element for the post-processing with given funcId, algId and
-    dimension.
+    """Unit element of best algorithm data set.
 
-    is derived from class DataSet but not does inherit from it.
+    Here unit element means for a given problem (in the context of BBOB
+    workshop it is one function and one dimension).
+    This class is derived from class DataSet but it does not inherit
+    from it.
 
     Class attributes:
         funcId -- function Id (integer)
@@ -82,6 +84,13 @@ class BestAlgSet():
     """
 
     def __init__(self, dictAlg):
+        """Instantiate one best algorithm data set.
+        
+        Keyword arguments:
+        dictAlg -- dictionary of datasets, keys are algorithm names,
+          values are 1-element DataSetList.
+        
+        """
 
         # values of dict dictAlg are DataSetList which should have only one
         # element which will be assigned as values in the following lines.
@@ -372,17 +381,21 @@ def generate():
     with a pickle file corresponding to the bestalg dataSet of the
     algorithms listed in variable args.
 
-    This method is called from the python command line:
+    This method is called from the python command line from a directory
+    containing all necessary data folders.
     >>> from bbob_pproc import bestalg
     >>> bestalg.generate()
-
-    The current working directory has to contain the data corresponding
-    to the algorithms listed in variable args (see source code).
+    Searching in ALPS ...
+    ...
+    Found 324 file(s)!
+    Unpickled ALPS/ppdata_f001_02.pickle.
+    ...
+    bbob_pproc/bestalg.py:116: UserWarning: Algorithm ... was not tested on f127 20-D.
 
     """
 
-    args = set(algs2010 + algs2009)
-    #args = algs2010
+    #args = set(algs2010 + algs2009)
+    args = algs2009
 
     outputdir = 'bestAlg'
 

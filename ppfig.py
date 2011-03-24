@@ -34,7 +34,7 @@ def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
                 warnings.warn('%s is not writeable.' % (filename + '.' + entry))
 
 def plotUnifLogXMarkers(x, y, nbperdecade, logscale=True, **kwargs):
-    """Proxy plot function: puts markers regularly spaced on the log x-scale.
+    """Proxy plot function: markers are evenly spaced on the log x-scale
 
     This method generates plots with markers regularly spaced on the
     x-scale whereas the matplotlib.pyplot.plot function will put markers
@@ -116,14 +116,13 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=True, **kwargs):
 
 def consecutiveNumbers(data):
     """Groups a sequence of integers into ranges of consecutive numbers.
+
     For instance: [0, 1, 2, 4, 5, 7, 8, 9] -> "0-2, 4, 5, 7-9"
 
     Range of consecutive numbers is at least 3 (therefore [4, 5] is represented
     as "4, 5".
+
     """
-
-    # TODO: give reference: it is seemingly in the Python Library Reference
-
     res = []
     tmp = groupByRange(data)
     for i in tmp:
@@ -137,15 +136,14 @@ def consecutiveNumbers(data):
 
 def groupByRange(data):
     """Groups a sequence of integers into ranges of consecutive numbers.
-    Helper function of consecutiveNumbers(data), returns a list of lists.
 
+    Helper function of consecutiveNumbers(data), returns a list of lists.
     The key to the solution is differencing with a range so that consecutive
     numbers all appear in same group.
     Useful for determining ranges of functions.
-
     Ref: http://docs.python.org/release/3.0.1/library/itertools.html
-    """
 
+    """
     res = []
     for k, g in groupby(enumerate(data), lambda (i,x):i-x):
         res.append(list(i for i in map(itemgetter(1), g)))
@@ -154,7 +152,7 @@ def groupByRange(data):
 
 def beautify():
     """ Customize a figure by adding a legend, axis label, etc."""
-
+    # TODO: what is this function for?
     # Input checking
 
     # Get axis handle and set scale for each axis
@@ -175,10 +173,13 @@ def beautify():
     axisHandle.set_ylabel('log10 of ERT')
 
 def generateData(dataSet, targetFuncValue):
-    """Returns an array of results to be plotted. 1st column is ert, 2nd is
-    the number of success, 3rd the success rate, 4th the sum of the number of
-    function evaluations, and finally the median on successful runs."""
+    """Returns an array of results to be plotted.
 
+    1st column is ert, 2nd is  the number of success, 3rd the success
+    rate, 4th the sum of the number of  function evaluations, and
+    finally the median on successful runs.
+
+    """
     res = []
     data = []
 

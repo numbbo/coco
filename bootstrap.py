@@ -188,6 +188,7 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
 
 def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     """Generates the empirical bootstrap distribution from a sample.
+
     Input:
     data--a sequence of data values
     percentiles--a single scalar value or a sequence of percentiles
