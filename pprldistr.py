@@ -69,13 +69,13 @@ else:
 
 def plotECDF(x, n=None, **plotArgs):
     """Deprecated: Plot an empirical cumulative distribution function.
-    
-    Keyword arguments:
-    x -- data
-    n -- number of samples, if not provided, len(x) is assigned to n
-    **plotArgs -- additional keyword arguments provided to plot.
-    Returns:
-    handles of the plot elements
+
+    :keyword seq x: data
+    :keyword int n: number of samples, if not provided, len(x) is
+                    assigned to n
+    :keyword **plotArgs: -- additional keyword arguments provided to plot.
+
+    :returns: handles of the plot elements
 
     """
     if n is None:
@@ -130,12 +130,11 @@ def beautifyRLD():
 def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
     """Deprecated: Creates run length distributions from a sequence dataSetList.
 
-    Keyword arguments:
-    dsList -- Input data sets
-    fvalueToReach -- dictionary of the function value to reach.
-    maxEvalsF -- maximum number of function evaluations. Helps set the
-    rightmost boundary
-    plotArgs -- arguments to pass to the plot command
+    :param DataSet dsList: Input data sets
+    :param dict fvalueToReach: function value to reach.
+    :param float maxEvalsF: maximum number of function evaluations.
+                            Helps set the rightmost boundary
+    :param plotArgs: arguments to pass to the plot command
 
     Outputs:
     res -- resulting plot.
@@ -187,13 +186,11 @@ def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
 def plotERTDistr(dsList, fvalueToReach, plotArgs={}):
     """Creates estimated run time distributions from a DataSetList.
 
-    Keyword arguments:
-    dsList -- Input data sets
-    fvalueToReach -- target function value
-    plotArgs -- keyword arguments to pass to plot command
+    :keyword DataSet dsList: Input data sets
+    :keyword dict fvalueToReach: target function values
+    :keyword dict plotArgs: keyword arguments to pass to plot command
 
-    Outputs:
-    res -- resulting plot.
+    :return: resulting plot.
 
     """
     # TODO: **plotArgs
@@ -258,9 +255,10 @@ def beautifyFVD(isStoringXMax=False):
 
     This function is to be used with plotFVDistr
 
-    Keyword arguments:
-    isStoringMaxF -- if set to True, the first call beautifyFVD sets the
-    global fmax and all subsequent call will have the same maximum xlim
+    :param bool isStoringMaxF: if set to True, the first call
+                               :py:func:`beautifyFVD` sets the global
+                               :py:data:`fmax` and all subsequent call
+                               will have the same maximum xlim
 
     """
     # TODO: This method should not save file.
@@ -447,15 +445,18 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
 
     Dashed lines will correspond to ALG0 and solid lines to ALG1.
 
-    Keyword arguments:
-    dsList0 -- list of DataSet instances for ALG0.
-    dsList1 -- list of DataSet instances for ALG1
-    valuesOfInterest -- target function values to be displayed.
-    isStoringXMax -- if set to True, the first call BeautifyFVD sets the
-      globals fmax and maxEvals and all subsequent calls will use these
-      values as rightmost xlim in the generated figures.
-    outputdir -- output directory (must exist)
-    info --- string suffix for output file names.
+    :param DataSetList dsList0: list of DataSet instances for ALG0
+    :param DataSetList dsList1: list of DataSet instances for ALG1
+    :param seq valuesOfInterest: target function values to be displayed
+    :param bool isStoringXMax: if set to True, the first call
+                               :py:func:`beautifyFVD` sets the globals
+                               :py:data:`fmax` and :py:data:`maxEvals`
+                               and all subsequent calls will use these
+                               values as rightmost xlim in the generated
+                               figures.
+    :param string outputdir: output directory (must exist)
+    :param string info: string suffix for output file names.
+    :param bool verbose: control verbosity
 
     Outputs:
     Image files of comparison ECDF.
@@ -635,14 +636,17 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
          info='default', verbose=True):
     """Generate figures of empirical cumulative distribution functions.
 
-    Keyword arguments:
-    dsList -- list of DataSet instances to process.
-    valuesOfInterest -- target function values to be displayed.
-    isStoringXMax -- if set to True, the first call geautifyFVD sets the
-      globals fmax and maxEvals and all subsequent calls will use these
-      values as rightmost xlim in the generated figures.
-    outputdir -- output directory (must exist)
-    info --- string suffix for output file names.
+    :param DataSetList dsList: list of DataSet instances to process.
+    :param seq valuesOfInterest: target function values to be displayed
+    :param bool isStoringXMax: if set to True, the first call
+                               :py:func:`beautifyFVD` sets the
+                               globals :py:data:`fmax` and
+                               :py:data:`maxEvals` and all subsequent
+                               calls will use these values as rightmost
+                               xlim in the generated figures.
+    :param string outputdir: output directory (must exist)
+    :param string info: string suffix for output file names.
+    :param bool verbose: control verbosity
 
     Outputs:
     Image files of the empirical cumulative distribution functions.

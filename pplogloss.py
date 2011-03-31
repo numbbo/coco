@@ -97,13 +97,12 @@ def detf(entry, evals):
     Let A be the algorithm considered. Let f=f_A(evals) be the smallest
     target value such that the expected running time of algorithm A was
     smaller than or equal to evals.
-    ----
-    Keyword arguments:
-    entry
-    evals -- list of number of function evaluations considered
 
-    Returns:
-    res -- list of the target function values
+    :keyword DataSet entry: data set
+    :keyword list evals: numbers of function evaluations considered
+
+    :Returns: list of the target function values
+
     """
     res = []
     for fevals in evals:

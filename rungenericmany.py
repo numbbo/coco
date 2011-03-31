@@ -3,10 +3,10 @@
 
 """Process data to be included in a generic template.
 
-   Synopsis:
-      python path_to_folder/bbob_pproc/runcompmany.py [OPTIONS] FOLDER
-    Help:
-      python path_to_folder/bbob_pproc/runcompmany.py -h
+Synopsis:
+    ``python path_to_folder/bbob_pproc/runcompmany.py [OPTIONS] FOLDER``
+Help:
+    ``python path_to_folder/bbob_pproc/runcompmany.py -h``
 
 """
 
@@ -57,9 +57,10 @@ def main(argv=None):
 
     Provided with some data, this routine outputs figure and TeX files
     in a folder needed for the compilation of latex document
-    template3XXX.tex or noisytemplate3XXX, where XXX is either ecj or
-    generic. The template file needs to be edited so that the command
-    \bbobdatapath points to the output folder.
+    :file:`template3XXX.tex` or :file:`noisytemplate3XXX.tex`, where
+    :file:`XXX` is either :file:`ecj` or :file:`generic`. The template
+    file needs to be edited so that the command ``\bbobdatapath`` points
+    to the output folder.
 
     These output files will contain performance tables, performance
     scaling figures and empirical cumulative distribution figures. On
@@ -67,10 +68,11 @@ def main(argv=None):
     overwriting existing older files in the process.
 
     Keyword arguments:
-    argv -- list of strings containing options and arguments. If not
+
+    *argv* -- list of strings containing options and arguments. If not
     provided, sys.argv is accessed.
 
-    argv must list folders containing BBOB data files.
+    *argv* must list folders containing BBOB data files.
     The name of these folders will be used in the output figures and
     tables to designate the algorithms. Therefore you should name the
     folders with differentiating names.
@@ -88,7 +90,8 @@ def main(argv=None):
 
         -o, --output-dir DIR
 
-            change the default output directory ('ppdatamany') to DIR.
+            change the default output directory (:file:`ppdatamany`) to
+            :file:`DIR`.
 
         --noise-free, --noisy
 
@@ -109,35 +112,36 @@ def main(argv=None):
             more of these options results in no output.
 
     Exceptions raised:
-    Usage -- Gives back a usage message.
+
+    *Usage* -- Gives back a usage message.
 
     Examples:
 
-    * Calling the rungenericmany.py interface from the command line:
+    * Calling the rungenericmany.py interface from the command line::
 
         $ python bbob_pproc/rungenericmany.py -v AMALGAM BFGS BIPOP-CMA-ES
 
 
     * Loading this package and calling the main from the command line
-      (requires that the path to this package is in python search path):
+      (requires that the path to this package is in python search path)::
 
         $ python -m bbob_pproc.rungenericmany -h
 
-    This will print out this help message.
+      This will print out this help message.
 
     * From the python interactive shell (requires that the path to this
-      package is in python search path):
+      package is in python search path)::
 
         >> import bbob_pproc as bb
         >> bb.rungenericmany.main('-o outputfolder folder1 folder2'.split())
 
-    This will execute the post-processing on the data found in folder1
-    and folder2.
-    The -o option changes the output folder from the default to
-    outputfolder.
+      This will execute the post-processing on the data found in
+      :file:`folder1` and :file:`folder2`.
+      The ``-o`` option changes the output folder from the default to
+      :file:`outputfolder`.
 
     * Generate post-processing data for some algorithms with figures in
-    shades of gray:
+      shades of gray::
 
         $ python rungenericmany.py --settings grayscale NEWUOA NELDER LSSTEP
 

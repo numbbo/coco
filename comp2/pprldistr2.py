@@ -485,22 +485,23 @@ def main(dsList0, dsList1, valuesOfInterest=None,
          outputdir='', info='default', verbose=True):
     """Generate figures of empirical cumulative distribution functions.
 
-    Keyword arguments:
-    indexEntries -- list of IndexEntry instances to process.
-    valuesOfInterest -- target function values to be displayed.
-    isStoringXMax -- if set to True, the first call BeautifyVD sets the globals
-                     fmax and maxEvals and all subsequent calls will use these
-                     values as rightmost xlim in the generated figures.
-     -- if set to True, the first call BeautifyVD sets the global
-                     fmax and all subsequent call will have the same maximum
-                     xlim.
-    outputdir -- output directory (must exist)
-    info --- string suffix for output file names.
+    :param DataSetList dsList0: data set of reference algorithm
+    :param DataSetList dsList1: data set of algorithm of concern
+    :param sequence valuesOfInterest: target function values to be
+                                      displayed
+    :param bool isStoringXMax: if set to True, the first call BeautifyVD
+                               sets the globals :py:data:`fmax` and 
+                               :py:data:`maxEvals` and all subsequent
+                               calls will use these values as rightmost
+                               xlim in the generated figures.
+    :param string outputdir: output directory (must exist)
+    :param string info: string suffix for output file names.
+    :param bool verbose: control verbosity
 
     Outputs:
     Image files of the empirical cumulative distribution functions.
-    """
 
+    """
     #plt.rc("axes", labelsize=20, titlesize=24)
     #plt.rc("xtick", labelsize=20)
     #plt.rc("ytick", labelsize=20)

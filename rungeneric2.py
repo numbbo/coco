@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """Routines for the comparison of 2 algorithms.
+
 Synopsis:
-    python path_to_folder/bbob_pproc/runcomp2.py [OPTIONS] FOLDER_NAME1 FOLDER_NAME2...
+    ``python path_to_folder/bbob_pproc/runcomp2.py [OPTIONS] FOLDER_NAME1 FOLDER_NAME2...``
+
 Help:
-    python path_to_folder/bbob_pproc/runcomp2.py -h
+    ``python path_to_folder/bbob_pproc/runcomp2.py -h``
 
 """
 
@@ -57,9 +59,10 @@ def main(argv=None):
 
     Provided with some data, this routine outputs figure and TeX files
     in a folder needed for the compilation of latex document
-    template2XXX.tex or noisytemplate2XXX, where XXX is either ecj or
-    generic. The template file needs to be edited so that the command
-    \bbobdatapath points to the output folder.
+    :file:`template2XXX.tex` or :file:`noisytemplate2XXX.tex`, where
+    :file:`XXX` is either :file:`ecj` or :file:`generic`. The template
+    file needs to be edited so that the command ``\bbobdatapath`` points
+    to the output folder.
 
     These output files will contain performance tables, performance
     scaling figures and empirical cumulative distribution figures. On
@@ -67,10 +70,11 @@ def main(argv=None):
     overwriting existing older files in the process.
 
     Keyword arguments:
-    argv -- list of strings containing options and arguments. If not
+
+    *argv* -- list of strings containing options and arguments. If not
     given, sys.argv is accessed.
 
-    argv must list folders containing BBOB data files. Each of these
+    *argv* must list folders containing BBOB data files. Each of these
     folders should correspond to the data of ONE algorithm.
 
     Furthermore, argv can begin with, in any order, facultative option
@@ -86,7 +90,8 @@ def main(argv=None):
 
         -o, --output-dir OUTPUTDIR
 
-            change the default output directory ('ppdata2') to OUTPUTDIR
+            change the default output directory (:file:`ppdata2`) to
+            :file:`OUTPUTDIR`
 
         --noise-free, --noisy
 
@@ -107,29 +112,30 @@ def main(argv=None):
             of these options results in no output.
 
     Exceptions raised:
-    Usage -- Gives back a usage message.
+
+    *Usage* -- Gives back a usage message.
 
     Examples:
 
-    * Calling the runcomp2.py interface from the command line:
+    * Calling the runcomp2.py interface from the command line::
 
         $ python bbob_pproc/rungeneric2.py -v Alg0-baseline Alg1-of-interest
 
-    will post-process the data from folders Alg0-baseline and
-    Alg1-of-interest, the former containing data for the reference
-    algorithm (zero-th) and the latter data for the algorithm of concern
-    (first). The results will be output in the default output folder.
-    The -v option adds verbosity.
+      will post-process the data from folders :file:`Alg0-baseline` and
+      :file:`Alg1-of-interest`, the former containing data for the
+      reference algorithm (zero-th) and the latter data for the
+      algorithm of concern (first). The results will be output in the
+      default output folder. The ``-v`` option adds verbosity.
 
     * From the python interactive shell (requires that the path to this
-      package is in python search path):
+      package is in python search path)::
 
-        >> from bbob_pproc import rungeneric2
-        >> rungeneric2.main('-o outputfolder PSO DEPSO'.split())
+        >> import bbob_pproc as bb
+        >> bb.rungeneric2.main('-o outputfolder PSO DEPSO'.split())
 
     This will execute the post-processing on the data found in folder
-    PSO and DEPSO. The -o option changes the output folder from the
-    default to outputfolder.
+    :file:`PSO` and :file:`DEPSO`. The ``-o`` option changes the output
+    folder from the default to :file:`outputfolder`.
 
     """
 
