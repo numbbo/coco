@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Recursively find all *.info and *.pickle files within a directory.
+"""Recursively find :file:`info` and :file:`pickle` files within a directory
 
 This module can be called from the shell, it will recursively look for
-*.info and *.pickle files in the current working directory:
+:file:`info` and :file:`pickle` files in the current working directory::
 
   $ python pathtococo/bbob_pproc/findfiles.py
   Searching in ...
@@ -19,7 +19,7 @@ import warnings
 
 # Initialization
 def main(directory=os.getcwd(), verbose=True):
-    """Lists *.info and *.pickle files recursively in a given directory."""
+    """Lists :file:`info` and :file:`pickle` files recursively in a given directory."""
 
     filelist = list()
 

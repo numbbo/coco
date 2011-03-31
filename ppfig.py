@@ -117,10 +117,14 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=True, **kwargs):
 def consecutiveNumbers(data):
     """Groups a sequence of integers into ranges of consecutive numbers.
 
-    For instance: [0, 1, 2, 4, 5, 7, 8, 9] -> "0-2, 4, 5, 7-9"
+    Example::
 
-    Range of consecutive numbers is at least 3 (therefore [4, 5] is represented
-    as "4, 5".
+      >>> import bbob_pproc as bb
+      >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9])
+      '0-2, 4, 5, 7-9'
+
+    Range of consecutive numbers is at least 3 (therefore [4, 5] is
+    represented as "4, 5").
 
     """
     res = []
@@ -138,8 +142,8 @@ def groupByRange(data):
     """Groups a sequence of integers into ranges of consecutive numbers.
 
     Helper function of consecutiveNumbers(data), returns a list of lists.
-    The key to the solution is differencing with a range so that consecutive
-    numbers all appear in same group.
+    The key to the solution is differencing with a range so that
+    consecutive numbers all appear in same group.
     Useful for determining ranges of functions.
     Ref: http://docs.python.org/release/3.0.1/library/itertools.html
 

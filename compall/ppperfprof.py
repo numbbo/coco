@@ -341,10 +341,13 @@ def plotLegend(handles, maxval):
 def plot(dsList, targets=tg, rhleg=False, kwargs={}):
     """Generates a plot showing the performance of an algorithm.
 
-    Keyword arguments:
-    dsList -- a DataSetList instance
-    targets -- list of target function values
-    kwargs
+    :param DataSetList dsList: data set for one algorithm
+    :param seq targets: target function values
+    :param bool rhleg: if True, right-hand side legend is added
+    :param dict kwargs: additional parameters provided to plot function.
+    
+    :returns: handles
+
     """
 
     res = []
@@ -408,19 +411,18 @@ def plot(dsList, targets=tg, rhleg=False, kwargs={}):
 def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
          info='default', verbose=True):
     """Generates a figure showing the performance of algorithms.
-    From a dictionary of DataSetList sorted by algorithms, generates the
-    cumulative distribution function of the bootstrap distribution of
-    ERT for algorithms on multiple functions for multiple targets
-    altogether.
 
-    Keyword arguments:
-    dictAlg -- dictionary of dataSetList instances containing all data
-        to be represented in the figure
-    targets -- list of target function values
-    order -- sorted list of keys to dictAlg for plotting order
+    From a dictionary of :py:class:`DataSetList` sorted by algorithms,
+    generates the cumulative distribution function of the bootstrap
+    distribution of ERT for algorithms on multiple functions for
+    multiple targets altogether.
+
+    :param dict dictAlg: dictionary of dataSetList instances containing
+                         all data to be represented in the figure
+    :param list targets: target function values
+    :param list order: sorted list of keys to dictAlg for plotting order
 
     """
-
     xlim = x_limit # variable defined in header
 
     tmp = dictAlgByDim(dictAlg)

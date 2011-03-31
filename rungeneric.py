@@ -3,10 +3,11 @@
 
 """Process data to be included in a generic template.
 
-   Synopsis:
-      python path_to_folder/bbob_pproc/rungeneric.py [OPTIONS] FOLDERS
-    Help:
-      python path_to_folder/bbob_pproc/rungeneric.py -h
+Synopsis:
+    ``python path_to_folder/bbob_pproc/rungeneric.py [OPTIONS] FOLDERS``
+
+Help:
+    ``python path_to_folder/bbob_pproc/rungeneric.py -h``
 
 """
 
@@ -65,11 +66,12 @@ class Usage(Exception):
 
 #FUNCTION DEFINITIONS
 
-def splitshortoptlist(shortoptlist):
+def _splitshortoptlist(shortoptlist):
     """Split short options list used by getopt.
-    Returns a set of the options.
-    """
 
+    Returns a set of the options.
+
+    """
     res = set()
     tmp = shortoptlist[:]
     # split into logical elements: one-letter that could be followed by colon
@@ -89,71 +91,80 @@ def usage():
 def main(argv=None):
     r"""Main routine for post-processing data from COCO.
 
-    This routine will call sub-routine rungeneric1 for each input
-    arguments and either sub-routines rungeneric2 (2 input arguments) or
-    rungenericmany (more than 2) for the input arguments altogether.
+    This routine will call sub-routine :py:mod:`rungeneric1` for each
+    input arguments and either sub-routines :py:mod:`rungeneric2` (2
+    input arguments) or :py:mod:`rungenericmany` (more than 2) for the
+    input arguments altogether.
 
-    The output figures and tables are included in
-    * template1generic.tex, template1ecj.tex, noisytemplate1generic.tex,
-    noisytemplate1ecj.tex for single algorithm results on the noise-free
-    and noisy testbeds respectively
-    * template2generic.tex, template2ecj.tex, noisytemplate2generic.tex,
-    noisytemplate2ecj.tex for showing the comparison of 2 algorithms
-    * template3generic.tex, template3ecj.tex, noisytemplate3generic.tex,
-    noisytemplate3ecj.tex for showing the comparison of more than 2
-    algorithms.
+    The output figures and tables are included in:
+
+    * :file:`template1generic.tex`, :file:`template1ecj.tex`,
+      :file:`noisytemplate1generic.tex`, :file:`noisytemplate1ecj.tex`
+      for **single** algorithm results on the noise-free and noisy
+      testbeds respectively
+    * :file:`template2generic.tex`, :file:`template2ecj.tex`,
+      :file:`noisytemplate2generic.tex`, :file:`noisytemplate2ecj.tex`
+      for showing the comparison of **2** algorithms
+    * :file:`template3generic.tex`, :file:`template3ecj.tex`,
+      :file:`noisytemplate3generic.tex`, :file:`noisytemplate3ecj.tex` 
+      for showing the comparison of **more than 2** algorithms.
+
     These files needs to be copied in the current working directory and
-    edited so that the LaTeX commands \bbobdatapath and \algfolder (for
-    xxxtemplate1xxx.tex) need to be set to the output folder of the
-    post-processing. Compiling the template file with LaTeX should then
-    produce a document.
+    edited so that the LaTeX commands ``\bbobdatapath`` and
+    ``\algfolder`` (for :file:`xxxtemplate1xxx.tex`) need to be set to
+    the output folder of the post-processing. Compiling the template
+    file with LaTeX should then produce a document.
 
     Keyword arguments:
-    argv -- list of strings containing options and arguments. If not
-    provided, sys.argv is accessed.
 
-    argv must list folders containing COCO data files. Each of these
+    *argv* -- list of strings containing options and arguments. If not
+       provided, sys.argv is accessed.
+
+    *argv* must list folders containing COCO data files. Each of these
     folders should correspond to the data of ONE algorithm.
 
     Furthermore, argv can begin with facultative option flags.
 
         -h, --help
-    
+
             display this message
 
         -v, --verbose
 
             verbose mode, prints out operations.
 
-        -o, --output-dir OUTPUTDIR
+        -o, --output-dir=OUTPUTDIR
 
-            change the default output directory ('ppdata') to OUTPUTDIR
+            change the default output directory (:file:`ppdata`) to
+            :file:`OUTPUTDIR`
 
     Exceptions raised:
-    Usage -- Gives back a usage message.
+    
+    *Usage* -- Gives back a usage message.
 
     Examples:
 
-    * Calling the rungeneric.py interface from the command line:
+    * Calling the rungeneric.py interface from the command line::
 
         $ python bbob_pproc/rungeneric.py -v AMALGAM BIPOP-CMA-ES
 
     * Loading this package and calling the main from the command line
-      (requires that the path to this package is in python search path):
+      (requires that the path to this package is in python search path)::
 
         $ python -m bbob_pproc.rungeneric -h
 
-    This will print out this help message.
+      This will print out this help message.
 
     * From the python interactive shell (requires that the path to this
-      package is in python search path):
+      package is in python search path)::
 
         >> import bbob_pproc as bb
         >> bb.rungeneric.main('-o outputfolder folder1 folder2'.split())
 
-    This will execute the post-processing on the data found in folder1
-    and folder2. The -o option changes the output folder from the
-    default ppdata to outputfolder.
+      This will execute the post-processing on the data found in
+      :file:`folder1` and :file:`folder2`. The ``-o`` option changes the
+      output folder from the default :file:`ppdata` to
+      :file:`outputfolder`.
 
     """
 
@@ -175,11 +186,11 @@ def main(argv=None):
 
         #Process options
         shortoptlist1 = list("-" + i.rstrip(":")
-                             for i in splitshortoptlist(rungeneric1.shortoptlist))
+                             for i in _splitshortoptlist(rungeneric1.shortoptlist))
         shortoptlist2 = list("-" + i.rstrip(":")
-                             for i in splitshortoptlist(rungeneric2.shortoptlist))
+                             for i in _splitshortoptlist(rungeneric2.shortoptlist))
         shortoptlistmany = list("-" + i.rstrip(":")
-                                for i in splitshortoptlist(rungenericmany.shortoptlist))
+                                for i in _splitshortoptlist(rungenericmany.shortoptlist))
         shortoptlist1.remove("-o")
         shortoptlist2.remove("-o")
         shortoptlistmany.remove("-o")

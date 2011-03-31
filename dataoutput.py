@@ -7,15 +7,15 @@
 
 Example use:
 
-*from the shell, assuming folder FOLDER contains raw experimental
-data:
+* from the shell, assuming folder FOLDER contains raw experimental
+  data:
 
-  $ python pathtococo/python/bbob_pproc/dataoutput.py FOLDER
+    $ python pathtococo/python/bbob_pproc/dataoutput.py FOLDER
 
-  Searching in FOLDER ...
-  Searching in FOLDER/data_f1 ...
-  ...
-  A new entry for (...) was added in bbob_pproc/compall/algorithmshortinfos.txt.
+    Searching in FOLDER ...
+    Searching in FOLDER/data_f1 ...
+    ...
+    A new entry for (...) was added in bbob_pproc/compall/algorithmshortinfos.txt.
 
 This creates folder FOLDER-pickle with python formatted files to use
 with COCO.
@@ -140,9 +140,8 @@ def main(argv=None):
     comment. The 3rd will be a python dictionary which will be used for
     the plotting.
 
-    Keyword arguments:
-    argv -- list of strings containing options and arguments. If not
-    provided, sys.argv is accessed.
+    :keyword list argv: strings containing options and arguments. If not
+                        provided, sys.argv is accessed.
 
     argv should list either names of info files or folders containing
     info files.
@@ -163,7 +162,7 @@ def main(argv=None):
 
     Examples:
 
-    * Calling the dataoutput.py interface from the command line:
+    * Calling the dataoutput.py interface from the command line::
 
         $ python bbob_pproc/dataoutput.py -v
 
@@ -171,17 +170,17 @@ def main(argv=None):
 
 
     * Loading this package and calling the main from the command line
-      (requires that the path to this package is in python search path):
+      (requires that the path to this package is in the search path)::
 
         $ python -m bbob_pproc.dataoutput -h
 
-    This will print out this help message.
+      This will print out this help message.
 
     * From the python interactive shell (requires that the path to this
-      package is in python search path):
+      package is in python search path)::
 
-        >>> from bbob_pproc import dataoutput
-        >>> dataoutput.main('folder1')
+        >> from bbob_pproc import dataoutput
+        >> dataoutput.main('folder1')
 
     """
 

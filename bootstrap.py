@@ -118,20 +118,24 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
 
 
 def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
-    """Returns the percentiles of the bootstrap distribution of 'simulated'  
-       running lengths of successful runs.
+    """Returns the percentiles of the bootstrap distribution of
+    'simulated' running lengths of successful runs.
+
     Input:
-      runlengths_succ--array of running lengths of successful runs
-      runlengths_unsucc--array of running lengths of unsuccessful runs
+      - *runlengths_succ* -- array of running lengths of successful runs
+      - *runlengths_unsucc* -- array of running lengths of unsuccessful
+                               runs
+
     Return:
        (percentiles, all_sampled_values_sorted)
-    Details:
-       A single successful running length is computed by adding uniformly
-       randomly chosen running lengths until the first time a successful one is
-       chosen. In case of no successful run the sum of unsuccessful runs is
-       bootstrapped. 
-    """
 
+    Details:
+       A single successful running length is computed by adding
+       uniformly randomly chosen running lengths until the first time a
+       successful one is chosen. In case of no successful run the sum of
+       unsuccessful runs is bootstrapped. 
+
+    """
     # TODO: for efficiency reasons a special treatment in the case, 
     #   where all runs are successful and all_sampled_values_sorted is not needed
 
@@ -190,31 +194,35 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     """Generates the empirical bootstrap distribution from a sample.
 
     Input:
-    data--a sequence of data values
-    percentiles--a single scalar value or a sequence of percentiles
-        to be computed from the bootstrapped distribution.
-    func--function that computes the statistics as func(data,*args)
-        or func(data,*args)[0], by default bootstrap.sp1
-    args--arguments to func, the zero-th element of args is expected to be a
-        sequence of boolean giving the success status of the associated data
-        value. This specialization of the draw procedure is due to the
-        interface of the performance computation methods sp1 and sp.
-    samplesize--number of bootstraps drawn, default is 1e3,
-       for more reliable values choose rather 1e4. 
-       performance is linear in samplesize, 0.2s for samplesize=1000.
+      - *data* -- a sequence of data values
+      - *percentiles* -- a single scalar value or a sequence of
+        percentiles to be computed from the bootstrapped distribution.
+      - *func* -- function that computes the statistics as
+        func(data,*args) or func(data,*args)[0], by default bootstrap.sp1
+      - *args* -- arguments to func, the zero-th element of args is
+        expected to be a sequence of boolean giving the success status
+        of the associated data value. This specialization of the draw
+        procedure is due to the interface of the performance computation
+        methods sp1 and sp.
+      - *samplesize* -- number of bootstraps drawn, default is 1e3,
+        for more reliable values choose rather 1e4. 
+        performance is linear in samplesize, 0.2s for samplesize=1000.
+
     Return:
         (prctiles, all_samplesize_bootstrapped_values_sorted)
+
     Example:
-        import bootstrap
-        data = numpy.random.randn(22)
-        res = bootstrap.draw(data, (10,50,90), samplesize=1e4)
-        print res[0]
-    Remark:
+        >> import bootstrap
+        >> data = numpy.random.randn(22)
+        >> res = bootstrap.draw(data, (10,50,90), samplesize=1e4)
+        >> print res[0]
+
+    .. note::
        NaN-values are also bootstrapped, but disregarded for the 
        calculation of percentiles which can lead to somewhat
        unexpected results.
-    """
 
+    """
     arrStats = []
     N = len(data)
     adata = numpy.array(data)  # more efficient indexing
@@ -248,23 +256,23 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
 
 # utils not really part of bootstrap module though:
 def prctile(x, arrprctiles, issorted=False):
-    """prctile -- computes percentile based on data with linear interpolation
-    :Calling Sequence:
-        prctile(data, prctiles, issorted=False)
-    :Arguments:
-        data -- a sequence (list, array) of data values
-        prctiles -- a scalar or a sequence of pertentiles 
-            to be calculated. Values beyond the interval [0,100]
-            also return the respective extreme value in data. 
-        issorted -- indicate if data is sorted
+    """Computes percentile based on data with linear interpolation
+
+    :keyword sequence data: (list, array) of data values
+    :keyword prctiles: percentiles to be calculated. Values beyond the 
+                       interval [0,100] also return the respective
+                       extreme value in data.
+    :type prctiles: scalar or sequence
+    :keyword issorted: indicate if data is sorted
     :Return:
         sequence of percentile values in data according to argument
         prctiles
-    :Remark:
+
+    .. note::
         treats numpy.Inf and -numpy.Inf and numpy.NaN, the latter are
         simply disregarded
-    """
 
+    """
     if not getattr(arrprctiles, '__iter__', False):  # is not iterable
         arrprctiles = (arrprctiles,)
         # makes a tuple even if the arrprctiles is not iterable
@@ -306,13 +314,11 @@ def randint(upper, n):
 
 def ranksumtest(N1, N2):
     """Custom rank-sum (Mann-Whitney-Wilcoxon) test
+
     http://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U
     Small sample sizes (direct method).
-    Keyword arguments:
-    N1    sample 1
-    N2    sample 2
-    """
 
+    """
     # Possible optimization by setting sample 1 to be the one with the smallest
     # rank.
 
@@ -361,14 +367,19 @@ def ranksumtest(N1, N2):
 
 def zprob(z):
     """Returns the area under the normal curve 'to the left of' the given z value.
+
     http://www.nmr.mgh.harvard.edu/Neural_Systems_Group/gary/python.html
-    Thus, 
-        for z<0, zprob(z) = 1-tail probability
-        for z>0, 1.0-zprob(z) = 1-tail probability
-        for any z, 2.0*(1.0-zprob(abs(z))) = 2-tail probability
-    Adapted from z.c in Gary Perlman's |Stat.  Can handle multiple dimensions.
+
+    Thus:
+
+        - for z<0, zprob(z) = 1-tail probability
+        - for z>0, 1.0-zprob(z) = 1-tail probability
+        - for any z, 2.0*(1.0-zprob(abs(z))) = 2-tail probability
+
+    Adapted from z.c in Gary Perlman's \|Stat.  Can handle multiple dimensions.
 
     Usage:   azprob(z)    where z is a z-value
+
     """
     def yfunc(y):
         x = (((((((((((((-0.000045255659 * y
@@ -426,19 +437,17 @@ def rankdata(a):
     would have been otherwise assigned to all of the values within that set.
     Ranks begin at 1, not 0.
 
-    Example
-    -------
-    In [15]: stats.rankdata([0, 2, 2, 3])
-    Out[15]: array([ 1. ,  2.5,  2.5,  4. ])
+    Example:
+      In [15]: stats.rankdata([0, 2, 2, 3])
+      Out[15]: array([ 1. ,  2.5,  2.5,  4. ])
 
-    Parameters
-    ----------
-    a : array
+    Parameters:
+      - *a* : array
         This array is first flattened.
 
-    Returns
-    -------
-    An array of length equal to the size of a, containing rank scores.
+    Returns:
+      An array of length equal to the size of a, containing rank scores.
+
     """
     a = numpy.ravel(a)
     n = len(a)
@@ -461,15 +470,12 @@ def fastsort(a):
     # fixme: the wording in the docstring is nonsense.
     """Sort an array and provide the argsort.
 
-    Parameters
-    ----------
-    a : array
+    Parameters:
+      *a* : array
 
-    Returns
-    -------
-    (sorted array,
-     indices into the original array,
-    )
+    Returns:
+      (sorted array, indices into the original array)
+
     """
     it = numpy.argsort(a)
     as_ = a[it]

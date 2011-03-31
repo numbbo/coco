@@ -15,8 +15,8 @@ This method allows to use the post-processing through a command-line
 interface.
 
 To obtain more information on the use of this package from the python
-interpreter, assuming this package has been imported as bb, type:
-help(bb.cococommands)
+interpreter, assuming this package has been imported as ``bb``, type:
+``help(bb.cococommands)``
 
 """
 

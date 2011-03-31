@@ -122,13 +122,20 @@ def writeFEvals2(fevals, precision=2, maxdigits=None, isscientific=False):
     To address the eventual need to keep their string representation short, the
     method here proposes the shortest representation between the full
     representation and a modified scientific representation.
-    Examples:
-    Number | Precision | Output Representation
-    102345  | 2 digits  | 1.0e5
 
-    Keyword arguments:
-    fevals --
-    precision -- number of significant digits
+    Examples:
+    
+    ======   =========   =====================
+    Number   Precision   Output Representation
+    ======   =========   =====================
+    102345   2 digits    1.0e5
+    ======   =========   =====================
+
+    :param float fevals:
+    :param int precision: number of significant digits
+    :param int maxdigits:
+    :param bool isscientific:
+
     """
 
     #Printf:
@@ -247,15 +254,18 @@ def writeFEvalsMaxSymbols(fevals, maxsymbols, isscientific=False):
 
 def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=100000.):
     """Return a string representation of a number.
+
     Two alternatives:
+
     1) float notation with a precision smaller or equal to SIG (if the entry is
-    one, then the result is 1).
+       one, then the result is 1).
     2) if the number is larger or equal to maxfloatrepr, a modified scientific
-    notation (without the trailing + and zero in the exponent)
+       notation (without the trailing + and zero in the exponent)
 
     Returns string representation of a number of function evaluations or ERT
     This method is supposed to be used for filling up a LaTeX tabular.
     CAVE: what if entry is smaller than 10**(-SIG)?
+
     """
 
     #Printf:
@@ -295,13 +305,16 @@ def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=100000.):
     return res
 
 def tableLaTeX(table, spec, extraeol=()):
-    """Generates a latex tabular from a sequence of sequence (table) of strings.
+    """Generates a tabular from a sequence of sequence of strings.
 
-    Keyword arguments:
-    table -- sequence of sequence of strings
-    spec -- string for table specification, see http://en.wikibooks.org/wiki/LaTeX/Tables#The_tabular_environment 
-    extraeol -- sequence of string the same length as the table (same number of
-                lines) which are added at the end of each line. 
+    :param seq table: sequence of sequence of strings
+    :param string spec: string for table specification, see
+                        http://en.wikibooks.org/wiki/LaTeX/Tables#The_tabular_environment 
+    :param seq extraeol: sequence of string the same length as the table
+                         (same number of lines) which are added at the
+                         end of each line.
+    :returns: sequence of strings of a LaTeX tabular.
+
     """
 
     if not extraeol:
@@ -320,16 +333,17 @@ def tableLaTeX(table, spec, extraeol=()):
     return res
 
 def tableLaTeXStar(table, width, spec, extraeol=()):
-    """Generates a latex tabular* from a sequence of sequence (table) of strings
+    """Generates a tabular\* from a sequence of sequence of strings
 
-    Keyword arguments:
-    table -- sequence of sequence of strings
-    width -- string for the width of the table
-    spec -- string for table specification, see http://en.wikibooks.org/wiki/LaTeX/Tables#The_tabular_environment 
-    extraeol -- sequence of string the same length as the table (same number of
-                lines) which are added at the end of each line.
+    :param seq table: sequence of sequence of strings
+    :param string width: string for the width of the table
+    :param strin spec: string for table specification, see
+                       http://en.wikibooks.org/wiki/LaTeX/Tables#The_tabular_environment 
+    :param seq extraeol: sequence of string the same length as the table
+                         (same number of lines) which are added at the
+                         end of each line.
+
     """
-
     if not extraeol:
         extraeol = len(table) * ['']
 

@@ -3,12 +3,13 @@
 
 """Raw post-processing routines.
 
-   This module implements class DataSet, unit element in the post-
-   processing and class DataSetList, sequence of instances of DataSet.
+   This module implements class :py:class:`DataSet`, unit element in the
+   post-processing and class :py:class:`DataSetList`, sequence of
+   instances of :py:class:`DataSet`.
    Futhermore it implements methods for dealing with a third data
-   structure which is a dictionary of DataSetList which is handy when
-   dealing with DataSetList instances from multiple algorithms for
-   comparisons.
+   structure which is a dictionary of :py:class:`DataSetList` which is
+   handy when dealing with :py:class:`DataSetList` instances from
+   multiple algorithms for comparisons.
 
 """
 
@@ -35,37 +36,40 @@ class DataSet:
 
     An instance of this class is created from one unit element of
     experimental data. One unit element would correspond to data for a
-    given algorithm (a given algId and a comment line) and a given
-    problem (funcId and dimension).
+    given algorithm (a given :py:attr:`algId` and a :py:attr:`comment`
+    line) and a given problem (:py:attr:`funcId` and
+    :py:attr:`dimension`).
 
     Class attributes:
-        funcId -- function Id (integer)
-        dim -- dimension (integer)
-        indexFiles -- associated index files (list of strings)
-        dataFiles -- associated data files (list of strings)
-        comment -- comment for the setting (string)
-        targetFuncValue -- target function value (float)
-        algId -- algorithm name (string)
-        evals -- data aligned by function values (array)
-        funvals -- data aligned by function evaluations (array)
-        maxevals -- maximum number of function evaluations (array)
-        finalfunvals -- final function values (array)
-        readmaxevals -- maximum number of function evaluations read from
-                        index file (array)
-        readfinalFminusFtarget -- final function values - ftarget read
-                                  from index file (array)
-        pickleFile -- associated pickle file name (string)
-        target -- target function values attained (array)
-        ert -- ert for reaching the target values in target (array)
-        itrials -- list of numbers corresponding to the instances of the
-                   test function considered (list of int)
-        isFinalized -- list of bool for if runs were properly finalized
 
-    evals and funvals are arrays of data collected from N data sets.
+      - *funcId* -- function Id (integer)
+      - *dim* -- dimension (integer)
+      - *indexFiles* -- associated index files (list of strings)
+      - *dataFiles* -- associated data files (list of strings)
+      - *comment* -- comment for the setting (string)
+      - *targetFuncValue* -- target function value (float)
+      - *algId* -- algorithm name (string)
+      - *evals* -- data aligned by function values (array)
+      - *funvals* -- data aligned by function evaluations (array)
+      - *maxevals* -- maximum number of function evaluations (array)
+      - *finalfunvals* -- final function values (array)
+      - *readmaxevals* -- maximum number of function evaluations read
+                          from index file (array)
+      - *readfinalFminusFtarget* -- final function values - ftarget read
+                                    from index file (array)
+      - *pickleFile* -- associated pickle file name (string)
+      - *target* -- target function values attained (array)
+      - *ert* -- ert for reaching the target values in target (array)
+      - *itrials* -- list of numbers corresponding to the instances of
+                     the test function considered (list of int)
+      - *isFinalized* -- list of bool for if runs were properly finalized
+
+    :py:attr:`evals` and :py:attr:`funvals` are arrays of data collected
+    from :py:data:`N` data sets.
     Both have the same format: zero-th column is the value on which the
-    data of a row is aligned, the N subsequent columns are either the
-    numbers of function evaluations for evals or function values for
-    funvals.
+    data of a row is aligned, the :py:data:`N` subsequent columns are
+    either the numbers of function evaluations for :py:attr:`evals` or
+    function values for :py:attr:`funvals`.
 
     """
 
@@ -85,15 +89,14 @@ class DataSet:
         The first three input argument corresponds to three consecutive
         lines of an index file (info extension).
 
-        Keyword argument:
-        header -- string presenting the information of the experiment
-        comment -- more information on the experiment
-        data -- information on the runs of the experiment
-        indexfile -- string for the file name from where the information come
-        verbose -- controls verbosity
+        :keyword string header: information of the experiment
+        :keyword string comment: more information on the experiment
+        :keyword string data: information on the runs of the experiment
+        :keyword string indexfile: string for the file name from where
+                                   the information come
+        :keyword bool verbose: controls verbosity
 
         """
-
         # Extract information from the header line.
         self.__parseHeader(header)
 
@@ -214,7 +217,6 @@ class DataSet:
 
     def computeERTfromEvals(self):
         """Sets the attributes ert and target from the attribute evals."""
-
         self.ert = []
         self.target = []
         for i in self.evals:
@@ -259,7 +261,6 @@ class DataSet:
 
     def __parseHeader(self, header):
         """Extract data from a header line in an index entry."""
-
         # Split header into a list of key-value
         headerList = header.split(', ')
 
@@ -299,15 +300,15 @@ class DataSet:
         return
 
     def pickle(self, outputdir=None, verbose=True):
-        """Save DataSet instance to a pickle file.
+        """Save this instance to a pickle file.
 
-        Saves the instance of DataSet to a pickle file. If not specified
+        Saves this instance to a pickle file. If not specified
         by argument outputdir, the location of the pickle is given by
-        the location of the first index file associated to the DataSet.
+        the location of the first index file associated to this
+        instance.
         This method will overwrite existing files.
 
         """
-
         # the associated pickle file does not exist
         if not getattr(self, 'pickleFile', False):
             if outputdir is None:
@@ -342,7 +343,6 @@ class DataSet:
         The key is the instance id, the value is a list of index.
 
         """
-
         dictinstance = {}
         for i in range(len(self.itrials)):
             dictinstance.setdefault(self.itrials[i], []).append(i)
@@ -357,7 +357,6 @@ class DataSet:
         post-processed data array corresponding to the instance id.
 
         """
-
         dictinstance = self.createDictInstance()
         evals = {}
         funvals = {}
@@ -379,8 +378,7 @@ class DataSet:
     def generateRLData(self, targets):
         """Determine the running lengths for reaching the target values.
 
-        Keyword arguments:
-        targets -- list of target function values of interest
+        :keyword list targets: -- list of target function values of interest
 
         Output:
         dict of arrays, one array has for first element a target
@@ -389,7 +387,6 @@ class DataSet:
         corresponding number of function evaluations.
 
         """
-
         res = {}
         # expect evals to be sorted by decreasing function values
         it = reversed(self.evals)
@@ -416,8 +413,7 @@ class DataSet:
     def detERT(self, targets):
         """Determine the expected running time to reach target values.
 
-        Keyword arguments:
-        targets -- list of target function values of interest
+        :keyword list targets: target function values of interest
 
         Output:
         list of expected running times corresponding to the targets
@@ -451,8 +447,7 @@ class DataSet:
     def detEvals(self, targets):
         """Determine the number of evaluations to reach target values.
 
-        Keyword arguments:
-        targets -- list of target function values of interest
+        :keyword list targets: target function values of interest
 
         Output:
         list of arrays each corresponding to one value in targets
@@ -493,9 +488,9 @@ class DataSetList(list):
         """Instantiate self from a list of inputs.
 
         Keyword arguments:
-        args -- list of strings being either info file names, folder containing
-                info files or pickled data files.
-        verbose -- controls verbosity.
+        :keyword list args: strings being either info file names, folder
+                            containing info files or pickled data files.
+        :keyword bool verbose: controls verbosity.
 
         Exception:
         Warning -- Unexpected user input.
@@ -723,8 +718,8 @@ class DataSetList(list):
     def info(self, opt='all'):
         """Display some information onscreen.
 
-        Keyword arguments:
-        opt -- changes size of output, can be 'all' (default), 'short'
+        :keyword string opt: changes size of output, can be 'all'
+                             (default), 'short'
 
         """
         #TODO: do not integrate over dimension!!!
@@ -779,8 +774,6 @@ class DataSetList(list):
         # interested in algorithms, number of datasets, functions, dimensions
         # maxevals?, funvals?, success rate?
 
-        pass
-
 def processInputArgs(args, verbose=True):
     """Process command line arguments into data useable by bbob_pproc.
 
@@ -792,16 +785,18 @@ def processInputArgs(args, verbose=True):
     files and the associated pickle files, they be kept in different
     locations for efficiency reasons.
 
-    Keyword arguments:
-      args -- list of string arguments for folder names
-      verbose -- bool controlling verbosity
+    :keyword list args: string arguments for folder names
+    :keyword bool verbose: controlling verbosity
 
-    Returns: (dsList, sortedAlgs, dictAlg), where
-      dsList is a list containing all DataSet instances, this is to
+    :returns (dsList, sortedAlgs, dictAlg):
+      dsList
+        is a list containing all DataSet instances, this is to
         prevent the regrouping done in instances of DataSetList
-      dictAlg is a dictionary which associates algorithms to an instance
+      dictAlg
+        is a dictionary which associates algorithms to an instance
         of DataSetList,
-      sortedAlgs is the sorted list of keys of dictAlg, the sorting is
+      sortedAlgs
+        is the sorted list of keys of dictAlg, the sorting is
         given by the input argument args.
 
     """
@@ -1034,17 +1029,15 @@ def significancetest(entry0, entry1, targets):
     computed on the number of function evaluations for reaching the
     target and/or function values.
 
-    Keyword arguments:
-      entry0 -- data set 0
-      entry1 -- data set 1
-      targets -- list of target function values
+    :keyword DataSet entry0: -- data set 0
+    :keyword DataSet entry1: -- data set 1
+    :keyword list targets: -- list of target function values
 
-    Returns:
-    list of (z, p) for each target function values in input argument
-    targets. z and p are values returned by the ranksums method.
+    :returns: list of (z, p) for each target function values in
+              input argument targets. z and p are values returned by the
+              ranksums method.
 
     """
-
     res = []
     evals = []
     bestalgs = []
