@@ -15,6 +15,9 @@ The target precisions considered are in :py:data:`targets`: there are
 :py:data:`nbmarkers` targets regularly distributed on the log-scale in
 10**[-8:1].
 
+Boxes correspond to the maximum numbers of function evaluations for
+each algorithm in each dimension.
+
 """
 
 """For two algorithms, ERTs(given target function value) can also be
