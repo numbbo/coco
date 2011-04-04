@@ -2,9 +2,24 @@
 # -*- coding: utf-8 -*-
 
 """Scatter Plot.
-For two algorithms, ERTs(given target function value) can also be plotted in a
-scatter plot (log(ERT0) vs. log(ERT1)), which results in a very attractive
-presentation, see the slides of Frank Hutter at
+
+For two algorithms, this generates the scatter plot of log(ERT1(df)) vs.
+log(ERT0(df)), where ERT0(df) is the ERT of the reference algorithm,
+ERT1(df) is the ERT of the algorithm of concern, both for target
+precision df.
+
+Different symbols are used for different dimension (see
+:py:data:`markers` for the order of the markers, :py:data:`colors` for
+the corresponding colors).
+The target precisions considered are in :py:data:`targets`: there are
+:py:data:`nbmarkers` targets regularly distributed on the log-scale in
+10**[-8:1].
+
+"""
+
+"""For two algorithms, ERTs(given target function value) can also be
+plotted in a scatter plot (log(ERT0) vs. log(ERT1)), which results in a
+very attractive presentation, see the slides of Frank Hutter at
 http://www.msr-inria.inria.fr/events-news/first-search-biology-day. The
 advantage is that the absolute values do not get lost. The disadvantage
 (in our case minor) is that there is an upper limit of data that can be
@@ -21,12 +36,16 @@ except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from bbob_pproc import readalign
+from bbob_pproc.ppfig import saveFigure
 
 colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 offset = 0. #0.02
 markersize = 10.
 # offset provides a way to move away the box boundaries to display the outer markers fully 
+nbmarkers = 46
+_inc = 45./(nbmarkers-1)
+targets = numpy.power(10, numpy.arange(-40, 5 + _inc, _inc)/5.)
 
 #Get benchmark short infos.
 funInfos = {}
@@ -80,43 +99,8 @@ def beautify():
     #    plt.setp(line, color='b', marker='o', markersize=10)
     #set_trace()
 
-def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
-
-    if isinstance(figFormat, basestring):
-        plt.savefig(filename + '.' + figFormat, dpi = 300,
-                    format=figFormat)
-        if verbose:
-            print 'Wrote figure in %s.' %(filename + '.' + figFormat)
-    else:
-        if not isinstance(figFormat, basestring):
-            for entry in figFormat:
-                plt.savefig(filename + '.' + entry, dpi = 300,
-                            format=entry)
-                if verbose:
-                    print 'Wrote figure in %s.' %(filename + '.' + entry)
-
-def generateData(ds0, ds1):
-    #Align ert arrays on targets
-    array0 = numpy.vstack([ds0.target, ds0.ert]).transpose()
-    array1 = numpy.vstack([ds1.target, ds1.ert]).transpose()
-    data = readalign.alignArrayData(readalign.HArrayMultiReader([array0, array1]))
-
-    #Downsample?
-    adata = data[data[:, 0]<=10, :]
-    try:
-        adata = adata[adata[:, 0]>=1e-8, :]
-    except IndexError:
-        #empty data
-        pass
-        #set_trace()
-
-    targets = adata[:, 0]
-    ert0 = adata[:, 1]
-    ert1 = adata[:, 2]
-
-    return targets, ert0, ert1
-
 def main(dsList0, dsList1, outputdir, verbose=True):
+    """Generate a scatter plot figure."""
 
     #plt.rc("axes", labelsize=24, titlesize=24)
     #plt.rc("xtick", labelsize=20)
@@ -127,10 +111,6 @@ def main(dsList0, dsList1, outputdir, verbose=True):
     dictFunc0 = dsList0.dictByFunc()
     dictFunc1 = dsList1.dictByFunc()
     funcs = set(dictFunc0.keys()) & set(dictFunc1.keys())
-
-    nbmarkers = 46
-    inc = 45./(nbmarkers-1)
-    targets = numpy.power(10, numpy.arange(-40, 5 + inc, inc)/5.)
 
     for f in funcs:
         dictDim0 = dictFunc0[f].dictByDim()
@@ -147,11 +127,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
 
             xdata = numpy.array(entry0.detERT(targets))
             ydata = numpy.array(entry1.detERT(targets))
-            #targets, xdata, ydata = generateData(entry0, entry1)
 
-            #plt.plot(xdata, ydata, ls='', color=colors[i], marker=markers[i],
-            #         markerfacecolor='None', markeredgecolor=colors[i],
-            #         markersize=10, markeredgewidth=3)
             tmp = (numpy.isinf(xdata)==False) * (numpy.isinf(ydata)==False)
             if tmp.any():
                 try:
