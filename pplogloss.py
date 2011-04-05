@@ -627,7 +627,7 @@ def generateFigure(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True
     if len(funcs) > 1:
         text = 'f%d-%d' %(min(funcs), max(funcs))
     else:
-        text = 'f%d' %(funcs[0])
+        text = 'f%d' %(funcs.pop())
     plt.text(0.5, 0.93, text, horizontalalignment="center",
              transform=plt.gca().transAxes)
     beautify(filename, evalf, fileFormat=figformat, verbose=verbose)
