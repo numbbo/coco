@@ -7,7 +7,37 @@ The main method in this module generates figures of Empirical
 Cumulative Distribution Functions of the bootstrap distribution of
 the Expected Running Time (ERT) divided by the dimension for many
 algorithms.
+
+The outputs show the ECDFs of the running times of the simulated runs
+divided by dimension for 50 different targets logarithmically uniformly
+distributed in [1e−8, 1e2]. The crosses (×) give the median number of
+function evaluations of unsuccessful runs divided by dimension.
+
+**Example**
+
+.. plot::
+    :width: 50%
+
+    import urllib
+    import tarfile
+    import glob
+    from pylab import *
     
+    import bbob_pproc as bb
+    
+    # Collect and unarchive data (3.4MB)
+    dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
+    filename, headers = urllib.urlretrieve(dataurl)
+    archivefile = tarfile.open(filename)
+    archivefile.extractall()
+    
+    # Empirical cumulative distribution function of bootstrapped ERT figure
+    from bbob_pproc.compall import ppperfprof
+    ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
+    figure()
+    ppperfprof.plot(ds)
+    ppperfprof.beautify()
+
 """
 
 from __future__ import absolute_import

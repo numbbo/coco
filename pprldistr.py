@@ -3,10 +3,39 @@
 
 """For generating empirical cumulative distribution function figures.
 
-Empirical Cumulative Distribution Functions (ECDF).
+The outputs show empirical cumulative distribution functions (ECDFs) of
+the running times of trials. These ECDFs show on the y-axis the fraction
+of cases for which the running time (left subplots) or the df-value
+(right subplots) was smaller than the value given on the x-axis. On the
+left, ECDFs of the running times from trials are shown for different
+target values. On the right, ECDFs of df-values from all trials are
+shown for different numbers of function evaluations.
+
+**Example**
+
+.. plot::
+   :width: 75%
+   
+   import urllib
+   import tarfile
+   import glob
+   from pylab import *
+   import bbob_pproc as bb
+    
+   # Collect and unarchive data (3.4MB)
+   dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
+   filename, headers = urllib.urlretrieve(dataurl)
+   archivefile = tarfile.open(filename)
+   archivefile.extractall()
+    
+   # Empirical cumulative distribution function figure
+   from bbob_pproc import pprldistr
+   ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
+   figure()
+   pprldistr.plot(ds)
+   pprldistr.beautify() # resize the window to view whole figure
 
 """
-
 from __future__ import absolute_import
 
 import os
@@ -136,8 +165,7 @@ def plotRLDistr(dsList, fvalueToReach, maxEvalsF, plotArgs={}):
                             Helps set the rightmost boundary
     :param plotArgs: arguments to pass to the plot command
 
-    Outputs:
-    res -- resulting plot.
+    :returns: handle
 
     """
     # TODO use **kwargs
@@ -458,9 +486,6 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     :param string info: string suffix for output file names.
     :param bool verbose: control verbosity
 
-    Outputs:
-    Image files of comparison ECDF.
-
     """
     #plt.rc("axes", labelsize=20, titlesize=24)
     #plt.rc("xtick", labelsize=20)
@@ -647,10 +672,7 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     :param string outputdir: output directory (must exist)
     :param string info: string suffix for output file names.
     :param bool verbose: control verbosity
-
-    Outputs:
-    Image files of the empirical cumulative distribution functions.
-
+    
     """
     #plt.rc("axes", labelsize=20, titlesize=24)
     #plt.rc("xtick", labelsize=20)
