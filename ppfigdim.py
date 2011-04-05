@@ -1,7 +1,47 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generate performance scaling figures."""
+"""Generate performance scaling figures.
+
+The figures show the scaling of the performance in terms of ERT w.r.t.
+dimensionality on a log-log scale. On the y-axis, data is represented as
+a number of function evaluations divided by dimension, this is in order
+to compare at a glance with a linear scaling for which ERT is
+proportional to the dimension and would therefore be represented by a
+horizontal line in the figure. Crosses (+) give the median number of
+function evaluations for the smallest reached target function value
+(also divided by dimension). Crosses (×) give the average number of
+overall conducted function evaluations in case the smallest target
+function value (1e-8) was not reached. Horizontal lines indicate linear
+scaling with the dimension, additional grid lines show quadratic and
+cubic scaling.
+
+**Example**
+
+.. plot::
+    :width: 50%
+    
+    import urllib
+    import tarfile
+    import glob
+    from pylab import *
+    
+    import bbob_pproc as bb
+    
+    # Collect and unarchive data (3.4MB)
+    dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
+    filename, headers = urllib.urlretrieve(dataurl)
+    archivefile = tarfile.open(filename)
+    archivefile.extractall()
+    
+    # Scaling figure
+    from bbob_pproc import ppfigdim
+    ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_*.pickle'))
+    figure()
+    ppfigdim.plot(ds)
+    ppfigdim.beautify()
+
+"""
 
 import os
 import sys
@@ -258,7 +298,8 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
                 bestalgdata.append(None)
 
         plt.plot(dimsBBOB, bestalgdata, color=refcolor, linewidth=10, zorder=-2)
-        plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25, color=refcolor, zorder=-2)
+        plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25,
+                 color=refcolor, markeredgecolor=refcolor, zorder=-2)
 
         a = plt.gca()
         if displaynumber: #displayed only for the smallest valuesOfInterest

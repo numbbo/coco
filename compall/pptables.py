@@ -189,13 +189,14 @@ def sortColumns(table, maxRank=None):
     return ranked
 
 def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
-    """Generate one table per function showing results of multiple algorithms.
+    """Generate one table per func with results of multiple algorithms."""
+    """Difference with the first version:
 
-    Difference with the first version:
     * numbers aligned using the decimal separator
     * premices for dispersion measure
     * significance test against best algorithm
     * table width...
+
     """
 
     # TODO: method is long, split if possible
