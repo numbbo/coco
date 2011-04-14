@@ -32,7 +32,6 @@ import numpy as np
 from bbob_pproc import readalign
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.pproc import dictAlgByFun, dictAlgByDim
-from bbob_pproc.dataoutput import algPlotInfos
 
 bestalgentries2009 = {}
 bestalgentries2010 = {}

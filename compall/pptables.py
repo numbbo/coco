@@ -15,7 +15,6 @@ import numpy
 from bbob_pproc import bestalg, bootstrap
 from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, writeLabels, tableLaTeX, numtotext
 from bbob_pproc.bootstrap import prctile
-from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList, significancetest
 from bbob_pproc.pplogloss import detf
 

@@ -15,10 +15,13 @@ Example use:
     Searching in FOLDER ...
     Searching in FOLDER/data_f1 ...
     ...
-    A new entry for ... was added in bbob_pproc/compall/algorithmshortinfos.txt.
+    Found ... file(s)!
+    Processing FOLDER/....info.
+    ...
+    Saved pickle in FOLDER-pickle/....pickle.
 
-This creates folder FOLDER-pickle with python formatted files to use
-with COCO.
+This creates folder :file:`FOLDER-pickle` with python formatted files to
+use with COCO.
 
 """
 
@@ -41,80 +44,16 @@ from pdb import set_trace
 
 __all__ = ['main']
 
-infofilename = 'algorithmshortinfos.txt'
-infofile = os.path.join(os.path.split(__file__)[0], 'compall', infofilename)
-algPlotInfos = {}
-isAlgorithminfosFound = True
-try:
-    f = open(infofile,'r')
-    for i, line in enumerate(f):
-        if len(line) == 0 or line.startswith('%') or line.isspace() :
-            continue
-        try:
-            algId, comment, plotinfo = line.strip().split(':', 2)
-            # hack
-            while comment[0] != '%':
-                tmp, newcomment = comment.split(':', 1)
-                algId = ':'.join((algId, tmp))
-                comment = newcomment
-            while plotinfo[0] != '{':
-                tmp, newplotinfo = plotinfo.split(':', 1)
-                comment = ':'.join((comment, tmp))
-                plotinfo = newplotinfo
-            algPlotInfos[(algId, comment)] = eval(plotinfo)
-        except ValueError:
-            # Occurs when the split line does not result in 3 elements.
-            txt = ("\n  Line %d in %s\n  is not formatted correctly " % (i, infofile)
-                   +"(see documentation of bbob_pproc.dataoutput.main)\n  "
-                   +"and will be disregarded:\n    > %s" % (line))
-            warnings.warn(txt)
-    f.close()
-
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    isAlgorithminfosFound = False
-    print 'Could not find file: ', infofile
-
 class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
-
-def updateAlgorithmInfo(alg, verbose=True):
-    """Input one pair of algorithm id and comment and update the text file."""
-
-    try:
-        f = open(infofile, 'a')
-        if not alg in algPlotInfos:
-            plotinfo = '{"label":"%s"}' % alg[0]
-            #TODO find a default color and line style to use.
-            #plotinfo = '{"label":"%s", "color": "c", "ls": "--"}' % alg[0]
-            algPlotInfos[alg] = eval(plotinfo)
-            f.write(':'.join(alg) + ':' + plotinfo + '\n')
-            if verbose:
-                print ('A new entry for %s was added in %s.'
-                       % (alg, infofile))
-        else:
-            raise Usage('The entry %s is already listed' % alg)
-    except:
-        raise Usage('There was a problem here.')
-    else:
-        f.close()
-
-def _isListed(alg):
-    res = True
-    if not (alg in algPlotInfos):
-        warntxt = ('The algorithm %s is not an entry in %s.' %(alg, infofile))
-        warnings.warn(warntxt)
-        res = False
-    return res
 
 def outputPickle(dsList, verbose=True):
     """Generates pickle files from a DataSetList."""
     dictAlg = dsList.dictByAlg()
     for alg, entries in dictAlg.iteritems():
-        if not _isListed(alg):
-            updateAlgorithmInfo(alg)
-
+        #if not _isListed(alg):
+        #    updateAlgorithmInfo(alg)
         entries.pickle(verbose=verbose)
 
 def usage():
@@ -130,33 +69,17 @@ def main(argv=None):
     Supposing the raw data are stored in folder :file:`mydata`, the new
     pickle files will be put in folder :file:`mydata-pickle`.
 
-    Running this will also add an entry in file
-    :file:`algorithmshortinfos.txt` if it does not exist already.
-    The new entry in :file:`algorithmshortinfos.txt` is represented as a
-    new line appended at the end of the file.
-
-    The line in question will have 3 fields separated by colon (:)
-    character. The 1st field must be the exact string used as algId in
-    the info files in your data, the 2nd the exact string for the
-    comment. The 3rd will be a python dictionary which will be used for
-    the plotting.
-
     :keyword list argv: strings containing options and arguments. If not
                         provided, sys.argv is accessed.
 
-    argv should list either names of info files or folders containing
+    *argv* should list either names of info files or folders containing
     info files.
-    Furthermore, argv can begin with, in any order, facultative option
+    Furthermore, *argv* can begin with, in any order, facultative option
     flags listed below.
 
         -h, --help
 
             display this message
-
-        -v, --verbose
- 
-            verbose mode prints out operations. When not in verbose
-            mode, no output is to be expected, except for errors.
 
     :exception Usage: Gives back a usage message.
 
@@ -164,10 +87,7 @@ def main(argv=None):
 
     * Calling the dataoutput.py interface from the command line::
 
-        $ python bbob_pproc/dataoutput.py -v
-
         $ python bbob_pproc/dataoutput.py experiment2/*.info
-
 
     * Loading this package and calling the main from the command line
       (requires that the path to this package is in the search path)::
@@ -179,18 +99,17 @@ def main(argv=None):
     * From the python interactive shell (requires that the path to this
       package is in python search path)::
 
-        >> from bbob_pproc import dataoutput
-        >> dataoutput.main('folder1')
+        >> import bbob_pproc as bb
+        >> bb.dataoutput.main('folder1')
 
     """
-
     if argv is None:
         argv = sys.argv[1:]
 
     try:
         try:
-            opts, args = getopt.getopt(argv, "hv",
-                                       ["help", "verbose"])
+            opts, args = getopt.getopt(argv, "h",
+                                       ["help"])
         except getopt.error, msg:
              raise Usage(msg)
 
@@ -202,9 +121,7 @@ def main(argv=None):
 
         #Process options
         for o, a in opts:
-            if o in ("-v","--verbose"):
-                verbose = True
-            elif o in ("-h", "--help"):
+            if o in ("-h", "--help"):
                 usage()
                 sys.exit()
             else:
@@ -214,8 +131,7 @@ def main(argv=None):
             warnings.simplefilter('ignore')
 
         dsList = DataSetList(args)
-        outputPickle(dsList, verbose=verbose)
-        sys.exit()
+        outputPickle(dsList, verbose=True)
 
     except Usage, err:
         print >>sys.stderr, err.msg
@@ -224,4 +140,3 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main())
-
