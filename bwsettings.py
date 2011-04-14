@@ -4,7 +4,8 @@
 """This module contains settings for outputting black and white figures.
 
 This module modifies module-defined variables so
-bbob_pproc.rungeneric.main will output black and white figures.
+:py:func:`bbob_pproc.rungeneric.main` will output black and white
+figures.
 
 """
 

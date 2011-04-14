@@ -1,7 +1,21 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Helper routines to read in data files."""
+"""Helper routines to read in data files.
+
+The terms horizontal and vertical below refer to the horizontal
+(fixed-target) and vertical (fixed-budget) views. When considering
+convergence graphs of function values over times, we can view it as:
+
+  * costs for different fixed targets represented by horizontal cuts.
+  * function values for different fixed budgets represented by vertical
+    cuts.
+
+COCO collects experimental data with respect to these two complementary
+views. This module provides data structures and methods for dealing with
+the experimental data.
+
+"""
 
 from __future__ import absolute_import
 
@@ -20,13 +34,28 @@ nbPtsF = 5 # nb of target function values for each decade.
 class MultiReader(list):
     """List of data arrays to be aligned.
 
-    The main purpose of this class is to be used as a single container of the
-    data arrays to be aligned by the alignData method in the parent module.
+    The main purpose of this class is to be used as a single container
+    of the data arrays to be aligned by :py:meth:`alignData()` in the
+    parent module.
+    A data array is defined as an array where rows correspond to
+    recordings at different moments of an experiment. Elements of these
+    rows correspond to different measures.
+    These data arrays can be aligned along the time or the function
+    values for instance.
 
-    This class is part abstract. Some methods have to be defined by inheriting
-    classes depending on wanted alignment isFinished, getInitialValue,
-    newCurrentValue, align. Some attributes have to be defined as well idx,
-    idxData.
+    This class is part abstract. Some methods have to be defined by
+    inheriting classes depending on wanted alignment:
+
+      * :py:meth:`isFinished()`, True when all the data is read.
+      * :py:meth:`getInitialValue()`, returns the initial alignment
+        value.
+      * :py:meth:`newCurrentValue()`, returns the next alignment value.
+      * :py:meth:`align()`, process all the elements of self to make
+        them aligned.
+
+    Some attributes have to be defined as well :py:attr:`idx`,
+    the index of the column with alignment values in the data array,
+    :py:attr:`idxData`, the index of the column with the actual data.
 
     """
 
@@ -86,7 +115,6 @@ class MultiReader(list):
             else:
                 self.idxEvals = idxEvals
 
-
         def next(self):
             """Returns the next (last if undefined) line of the array data."""
 
@@ -110,7 +138,8 @@ class VMultiReader(MultiReader):
     """List of data arrays to be aligned vertically.
 
     Aligned vertically means, all number of function evaluations are the
-    closest from below or equal to the alignment number of function evaluations
+    closest from below or equal to the alignment number of function
+    evaluations.
 
     """
 
@@ -148,8 +177,8 @@ class VMultiReader(MultiReader):
 class HMultiReader(MultiReader):
     """List of data arrays to be aligned horizontally.
 
-    Aligned horizontally means all the function values are lesser than (or
-    equal to) the current alignment function value.
+    Aligned horizontally means all the function values are lesser than
+    (or equal to) the current alignment function value.
 
     """
 
@@ -217,7 +246,18 @@ class HMultiReader(MultiReader):
 
 
 class ArrayMultiReader(MultiReader):
-    """Class of ALIGNED data arrays to be aligned together."""
+    """Class of *aligned* data arrays to be aligned together.
+
+    This class is used for dealing with the output of
+    :py:class:`MultiReader`:
+    
+    * From *raw* data arrays, :py:class:`MultiReader` generates aligned
+      data arrays (first column is the alignment value, subsequent
+      columns are aligned data).
+    * This class also generates aligned data arrays but from other
+      aligned data arrays.
+
+    """
 
     idx = 0 # We expect the alignment value to be the 1st column.
 
@@ -234,14 +274,14 @@ class ArrayMultiReader(MultiReader):
         return numpy.hstack(res)
 
 class VArrayMultiReader(ArrayMultiReader, VMultiReader):
-    """Wrapper class of ALIGNED data arrays to be aligned vertically."""
+    """Wrapper class of *aligned* data arrays to be aligned vertically."""
 
     def __init__(self, data):
         ArrayMultiReader.__init__(self, data)
         #TODO: Should this use super?
 
 class HArrayMultiReader(ArrayMultiReader, HMultiReader):
-    """Wrapper class of ALIGNED data arrays to be aligned horizontally."""
+    """Wrapper class of *aligned* data arrays to be aligned horizontally."""
 
     def __init__(self, data):
         ArrayMultiReader.__init__(self, data, isHArray=True)
@@ -253,8 +293,9 @@ class HArrayMultiReader(ArrayMultiReader, HMultiReader):
 
 def alignData(data):
     """Aligns the data from a list of data arrays.
-    This method returns an array for which the alignment value is the first
-    column and the aligned values are in subsequent columns.
+
+    This method returns an array for which the alignment value is the
+    first column and the aligned values are in subsequent columns.
 
     """
 
@@ -278,6 +319,7 @@ def alignData(data):
 
 def alignArrayData(data):
     """Aligns the data from a list of aligned arrays.
+
     This method returns an array for which the alignment value is the first
     column and the aligned values are in subsequent columns.
 

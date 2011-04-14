@@ -4,7 +4,7 @@
 """This module contains settings for outputting grayscale figures.
 
 This module modifies module-defined variables so
-bbob_pproc.rungeneric.main will output grayscale figures.
+:py:func:`bbob_pproc.rungeneric.main` will output grayscale figures.
 
 """
 
@@ -18,11 +18,10 @@ def convtograyscale(rgb):
     """Conversion of RGB to grayscale.
 
     http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
-    Keyword arguments:
-    rgb -- sequence of rgb float values (0 to 1)
 
-    Returns: 
-    Float for grayscale value
+    :keyword seq rgb: sequence of rgb float values (0 to 1)
+
+    :returns: Float for grayscale value
 
     """
 

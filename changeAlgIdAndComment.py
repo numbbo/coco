@@ -8,16 +8,20 @@ import getopt
 from shutil import move
 from os import remove, close
 
-"""While comparing algorithms with the bbob_proc package, it is sometimes
-		needed to change the algorithm name (given as algId in the .info files)
-		or the algorithm comments after a	BBOB run is already finished (for
-		example because two output folders contain results for two different
-		algorithms but with the same name). This script allows to change these
-		things within a specified BBOB output folder.
+"""Modify meta information in raw experimental data.
 
-		written: db 28/01/2010
+While comparing algorithms with the bbob_proc package, it is sometimes
+needed to change the algorithm name (given as algId in the :file`.info`
+files) or the algorithm comments after a run is already finished (for
+example because two output folders contain results for two different
+algorithms but with the same name). This script allows to change these
+within a specified output folder.
+
+written: db 28/01/2010
 
 """
+
+__all__ = ['main']
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -27,18 +31,20 @@ def usage():
     print main.__doc__
 
 def main(argv=None):
-    """
-    This script allows to change algorithm name (algId) and algorithm comment
-    after a BBOB run finished, i.e., after an output folder has been created.
-    
-    Keyword arguments:
-    argv -- list of strings containing options and arguments. If not provided,
-    sys.argv is accessed.
+    """Main routine.
 
-    argv should list an output folder (first argument) and additionally an
-    algorithm name (2nd argument) and the algorithm comment (3rd argument).
-    If only the output folder is given, the script asks for an algorithm name
-    and a comment interactively.
+    This script allows to change algorithm name (algId) and algorithm
+    comment after a run finished, i.e., after an output folder has been
+    created.
+
+    :param seq argv: list of strings containing options and arguments.
+                     If not provided, sys.argv is accessed.
+
+    :py:data:`argv` should list an output folder (first argument) and
+    additionally an algorithm name (2nd argument) and the algorithm
+    comment (3rd argument).
+    If only the output folder is given, the script asks for an algorithm
+    name and a comment interactively.
 
         -h, --help
 
@@ -52,12 +58,12 @@ def main(argv=None):
     Examples:
 
     * Changing algorithm name and comments for given output folder from the
-       command line:
+       command line::
 
         $ python bbob_pproc/changeAlgoName.py outfolder "CMA-ES" "CMA_with_lambda_100"
 
     * Changing algorithm name and comments for given output folder
-       interactively:
+       interactively::
 
         $ python bbob_pproc/changeAlgoName.py outputfolder
 
