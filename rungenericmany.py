@@ -4,9 +4,9 @@
 """Process data to be included in a generic template.
 
 Synopsis:
-    ``python path_to_folder/bbob_pproc/runcompmany.py [OPTIONS] FOLDER``
+    ``python path_to_folder/bbob_pproc/rungenericmany.py [OPTIONS] FOLDER``
 Help:
-    ``python path_to_folder/bbob_pproc/runcompmany.py -h``
+    ``python path_to_folder/bbob_pproc/rungenericmany.py -h``
 
 """
 
@@ -36,6 +36,8 @@ from bbob_pproc.compall import ppperfprof, pptables, ppfigs
 from bbob_pproc.compall import organizeRTDpictures
 
 import matplotlib.pyplot as plt
+
+__all__ = ['main']
 
 # Used by getopt:
 shortoptlist = "hvo:"

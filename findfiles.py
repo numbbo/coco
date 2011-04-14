@@ -18,8 +18,12 @@ import warnings
 #import tarfile
 
 # Initialization
-def main(directory=os.getcwd(), verbose=True):
-    """Lists :file:`info` and :file:`pickle` files recursively in a given directory."""
+def main(directory='.', verbose=True):
+    """Lists data files recursively in a given directory.
+
+    The data files have :file:`info` and :file:`pickle` extensions.
+
+    """
 
     filelist = list()
 

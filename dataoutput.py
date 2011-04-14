@@ -8,14 +8,14 @@
 Example use:
 
 * from the shell, assuming folder FOLDER contains raw experimental
-  data:
+  data::
 
     $ python pathtococo/python/bbob_pproc/dataoutput.py FOLDER
 
     Searching in FOLDER ...
     Searching in FOLDER/data_f1 ...
     ...
-    A new entry for (...) was added in bbob_pproc/compall/algorithmshortinfos.txt.
+    A new entry for ... was added in bbob_pproc/compall/algorithmshortinfos.txt.
 
 This creates folder FOLDER-pickle with python formatted files to use
 with COCO.
@@ -38,6 +38,8 @@ if __name__ == "__main__":
 from bbob_pproc.pproc import DataSetList
 
 from pdb import set_trace
+
+__all__ = ['main']
 
 infofilename = 'algorithmshortinfos.txt'
 infofile = os.path.join(os.path.split(__file__)[0], 'compall', infofilename)
@@ -78,8 +80,7 @@ class Usage(Exception):
         self.msg = msg
 
 def updateAlgorithmInfo(alg, verbose=True):
-    """Input one pair of algorithm id and comment and update the text file.
-    """
+    """Input one pair of algorithm id and comment and update the text file."""
 
     try:
         f = open(infofile, 'a')
@@ -99,7 +100,7 @@ def updateAlgorithmInfo(alg, verbose=True):
     else:
         f.close()
 
-def isListed(alg):
+def _isListed(alg):
     res = True
     if not (alg in algPlotInfos):
         warntxt = ('The algorithm %s is not an entry in %s.' %(alg, infofile))
@@ -111,7 +112,7 @@ def outputPickle(dsList, verbose=True):
     """Generates pickle files from a DataSetList."""
     dictAlg = dsList.dictByAlg()
     for alg, entries in dictAlg.iteritems():
-        if not isListed(alg):
+        if not _isListed(alg):
             updateAlgorithmInfo(alg)
 
         entries.pickle(verbose=verbose)
@@ -122,18 +123,18 @@ def usage():
 def main(argv=None):
     """Generate python-formatted data from raw BBOB experimental data.
 
-    The raw experimental data (files with the extension 'info' pointing
-    to files with extension 'dat' and 'tdat') are post-processed and
-    stored in a more condensed way as files with the extension 'pickle'.
-    Supposing the raw data are stored in folder 'mydata', the new pickle
-    files will be put in folder 'mydata-pickle'.
+    The raw experimental data (files with the extension :file:`info`
+    pointing to files with extension :file:`dat` and :file:`tdat`) are
+    post-processed and stored in a more condensed way as files with the
+    extension :file:`pickle`.
+    Supposing the raw data are stored in folder :file:`mydata`, the new
+    pickle files will be put in folder :file:`mydata-pickle`.
 
-    Running this will also add an entry in file algorithmshortinfos.txt
-    if it does not exist already.
-    algorithmshortinfos.txt is a file which contain meta-information
-    that are used by modules from the bbob_pproc.compall package.
-    The new entry in algorithmshortinfos.txt is represented as a new
-    line appended at the end of the file.
+    Running this will also add an entry in file
+    :file:`algorithmshortinfos.txt` if it does not exist already.
+    The new entry in :file:`algorithmshortinfos.txt` is represented as a
+    new line appended at the end of the file.
+
     The line in question will have 3 fields separated by colon (:)
     character. The 1st field must be the exact string used as algId in
     the info files in your data, the 2nd the exact string for the
@@ -157,8 +158,7 @@ def main(argv=None):
             verbose mode prints out operations. When not in verbose
             mode, no output is to be expected, except for errors.
 
-    Exceptions raised:
-    Usage -- Gives back a usage message.
+    :exception Usage: Gives back a usage message.
 
     Examples:
 

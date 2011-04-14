@@ -3,44 +3,46 @@
 
 """Module for using COCO from the (i)Python interpreter.
 
-    For all operations in the Python interpreter, it will be assumed
-    that the package has been imported as bb, just like it is done
-    in the first line of the examples below.
+For all operations in the Python interpreter, it will be assumed that
+the package has been imported as bb, just like it is done in the first
+line of the examples below.
 
-    The main data structures used in COCO are DataSet, which corresponds
-    to data of one algorithm on one problem, and DataSetList, which is
-    for collections of DataSet instances. Both classes DataSetList and
-    DataSet are implemented in module bb.pproc.
+The main data structures used in COCO are :py:class:`DataSet`, which
+corresponds to data of one algorithm on one problem, and
+:py:class:`DataSetList`, which is for collections of :py:class:`DataSet`
+instances. Both classes are implemented in :py:mod:`bbob_pproc.pproc`.
 
-    Examples:
+Examples:
+
+* Start by importing :py:mod:`bbob_pproc`::
 
     >>> import bbob_pproc as bb # load bbob_pproc
 
-    * Load a data set, assign to variable ds:
+* Load a data set, assign to variable :py:data:`ds`::
 
-    >>> ds = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info') # doctest:+ELLIPSIS
-    Processing BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info.
-    ...
-    Processing ['BIPOP-CMA-ES_hansen_noiseless/data_f2/bbobexp_f2_DIM40.tdat']: 15/15 trials found.
+      >>> ds = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info') # doctest:+ELLIPSIS
+      Processing BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info.
+      ...
+      Processing ['BIPOP-CMA-ES_hansen_noiseless/data_f2/bbobexp_f2_DIM40.tdat']: 15/15 trials found.
 
-    * Get some information on a DataSetList instance:
+* Get some information on a :py:class:`DataSetList` instance::
 
-    >>> print ds # doctest:+ELLIPSIS
-    [DataSet(cmaes V3.30.beta on f2 2-D), ..., DataSet(cmaes V3.30.beta on f2 40-D)]
-    >>> bb.info(ds)
-    6 data set(s)
-    Algorithm(s): cmaes V3.30.beta
-    Dimension(s): 2, 3, 5, 10, 20, 40
-    Function(s): 2
-    Max evals: 75017
-    Df      |     min       10      med       90      max
-    --------|--------------------------------------------
-    1.0e+01 |      55      151     2182    49207    55065
-    1.0e+00 |     124      396     2820    56879    59765
-    1.0e-01 |     309      466     2972    61036    66182
-    1.0e-03 |     386      519     3401    67530    72091
-    1.0e-05 |     446      601     3685    70739    73472
-    1.0e-08 |     538      688     4052    72540    75010
+      >>> print ds # doctest:+ELLIPSIS
+      [DataSet(cmaes V3.30.beta on f2 2-D), ..., DataSet(cmaes V3.30.beta on f2 40-D)]
+      >>> bb.info(ds)
+      6 data set(s)
+      Algorithm(s): cmaes V3.30.beta
+      Dimension(s): 2, 3, 5, 10, 20, 40
+      Function(s): 2
+      Max evals: 75017
+      Df      |     min       10      med       90      max
+      --------|--------------------------------------------
+      1.0e+01 |      55      151     2182    49207    55065
+      1.0e+00 |     124      396     2820    56879    59765
+      1.0e-01 |     309      466     2972    61036    66182
+      1.0e-03 |     386      519     3401    67530    72091
+      1.0e-05 |     446      601     3685    70739    73472
+      1.0e-08 |     538      688     4052    72540    75010
 
 """
 
@@ -52,11 +54,12 @@ from bbob_pproc.pproc import DataSetList, DataSet
 __all__ = ['load', 'info', 'pickle', 'systeminfo', 'DataSetList', 'DataSet']
 
 def load(filename):
-    """Create a DataSetList instance from a file or folder.
+    """Create a :py:class:`DataSetList` instance from a file or folder.
     
-    Input argument filename can be a single info filename, a single
-    pickle filename or a folder name. In the latter case, the folder is
-    browsed recursively for info or pickle files.
+    Input argument filename can be a single :file:`info` file name, a
+    single pickle filename or a folder name. In the latter case, the
+    folder is browsed recursively for :file:`info` or :file:`pickle`
+    files.
 
     """
     return DataSetList(filename)
@@ -76,7 +79,6 @@ def pickle(dsList):
 
 def systeminfo():
     """Display information on the system."""
-
     import sys
     print sys.version
     import numpy

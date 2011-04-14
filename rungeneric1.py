@@ -36,6 +36,8 @@ from bbob_pproc.pproc import DataSetList
 
 import matplotlib.pyplot as plt
 
+__all__ = ['main']
+
 # Used by getopt:
 shortoptlist = "hvpfo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",

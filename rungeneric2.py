@@ -4,10 +4,10 @@
 """Routines for the comparison of 2 algorithms.
 
 Synopsis:
-    ``python path_to_folder/bbob_pproc/runcomp2.py [OPTIONS] FOLDER_NAME1 FOLDER_NAME2...``
+    ``python path_to_folder/bbob_pproc/rungeneric2.py [OPTIONS] FOLDER_NAME1 FOLDER_NAME2...``
 
 Help:
-    ``python path_to_folder/bbob_pproc/runcomp2.py -h``
+    ``python path_to_folder/bbob_pproc/rungeneric2.py -h``
 
 """
 
@@ -36,6 +36,8 @@ from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 
 import matplotlib.pyplot as plt
+
+__all__ = ['main']
 
 # Used by getopt:
 shortoptlist = "hvo:"
@@ -117,7 +119,7 @@ def main(argv=None):
 
     Examples:
 
-    * Calling the runcomp2.py interface from the command line::
+    * Calling the rungeneric2.py interface from the command line::
 
         $ python bbob_pproc/rungeneric2.py -v Alg0-baseline Alg1-of-interest
 

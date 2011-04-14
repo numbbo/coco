@@ -37,6 +37,8 @@ from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.compall import ppperfprof, pptables
 from bbob_pproc.compall import organizeRTDpictures
 
+__all__ = ['main']
+
 # Combine optlist for getopt:
 # Make a set of the short option list, has one-letter elements that could be
 # followed by colon
@@ -91,10 +93,11 @@ def usage():
 def main(argv=None):
     r"""Main routine for post-processing data from COCO.
 
-    This routine will call sub-routine :py:mod:`rungeneric1` for each
-    input arguments and either sub-routines :py:mod:`rungeneric2` (2
-    input arguments) or :py:mod:`rungenericmany` (more than 2) for the
-    input arguments altogether.
+    This routine will call sub-routine
+    :py:func:`bbob_pproc.rungeneric1.main` for each input arguments and
+    either sub-routines :py:func:`bbob_pproc.rungeneric2.main` (2 input
+    arguments) or :py:func:`bbob_pproc.rungenericmany.main` (more than
+    2) for the input arguments altogether.
 
     The output figures and tables are included in:
 

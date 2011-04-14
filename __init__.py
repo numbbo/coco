@@ -10,7 +10,7 @@ The post-processing tool takes as input data from experiments and
 generates outputs that will be used in the generation of the LateX-
 formatted article summarizing the experiments.
 
-The main method of this package is the main in bbob_pproc.rungeneric
+The main method of this package is :py:func:`bbob_pproc.rungeneric.main`
 This method allows to use the post-processing through a command-line
 interface.
 

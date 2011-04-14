@@ -44,9 +44,10 @@ class Error(Exception):
     pass
 
 class WrongInputSizeError(Error):
-    """ Error if an array has the wrong size for the following operation.
-        Returns a message containing the size of the array and the required
-        size.
+    """Error if an array has the wrong size for the following operation.
+
+    :returns: message containing the size of the array and the required
+              size.
 
     """
     def __init__(self,arrName, arrSize, reqSize):
@@ -80,6 +81,7 @@ def numtotext(n):
 
     Is to be used for generating command names: they cannot include number
     characters.
+
     WARNING: n can only be smaller than 51
 
     """
@@ -93,9 +95,7 @@ def writeLabels(label):
     return label.replace('_', r'\_')
 
 def writeFEvals(fevals, precision='.2'):
-    """Returns string representation of a number of function evaluations to use
-    in a table.
-    """
+    """Returns string representation of a number of function evaluations."""
 
     if numpy.isinf(fevals):
         return r'$\infty$'
@@ -116,12 +116,18 @@ def writeFEvals(fevals, precision='.2'):
     return res
 
 def writeFEvals2(fevals, precision=2, maxdigits=None, isscientific=False):
-    """Returns string representation of a number of function evaluations or ERT
+    """Returns string representation of a number of function evaluations.
+
     This method is supposed to be used for filling up a LaTeX tabular.
 
-    To address the eventual need to keep their string representation short, the
-    method here proposes the shortest representation between the full
-    representation and a modified scientific representation.
+    To address the eventual need to keep their string representation
+    short, the method here proposes the shortest representation between
+    the full representation and a modified scientific representation.
+
+    :param float fevals:
+    :param int precision: number of significant digits
+    :param int maxdigits:
+    :param bool isscientific:
 
     Examples:
     
@@ -130,11 +136,6 @@ def writeFEvals2(fevals, precision=2, maxdigits=None, isscientific=False):
     ======   =========   =====================
     102345   2 digits    1.0e5
     ======   =========   =====================
-
-    :param float fevals:
-    :param int precision: number of significant digits
-    :param int maxdigits:
-    :param bool isscientific:
 
     """
 
@@ -189,14 +190,19 @@ def writeFEvals2(fevals, precision=2, maxdigits=None, isscientific=False):
 
 def writeFEvalsMaxSymbols(fevals, maxsymbols, isscientific=False):
     """Return the smallest string representation of a number.
+
+    This method is only concerned with the maximum number of significant
+    digits.
+
     Two alternatives:
-    1) modified scientific notation (without the trailing + and zero in the exponent) 
+
+    1) modified scientific notation (without the trailing + and zero in
+       the exponent) 
     2) float notation
 
-    Returns string representation of a number of function evaluations or ERT.
-    This method is supposed to be used for filling up a LaTeX tabular.
+    :returns: string representation of a number of function evaluations
+              or ERT.
 
-    This method is only concerned with the maximum number of significant digits.
     """
 
     #Compared to writeFEvals2?
@@ -257,17 +263,17 @@ def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=100000.):
 
     Two alternatives:
 
-    1) float notation with a precision smaller or equal to SIG (if the entry is
-       one, then the result is 1).
-    2) if the number is larger or equal to maxfloatrepr, a modified scientific
-       notation (without the trailing + and zero in the exponent)
+    1) float notation with a precision smaller or equal to SIG (if the
+       entry is one, then the result is 1).
+    2) if the number is larger or equal to maxfloatrepr, a modified
+       scientific notation (without the trailing + and zero in the
+       exponent)
 
-    Returns string representation of a number of function evaluations or ERT
-    This method is supposed to be used for filling up a LaTeX tabular.
-    CAVE: what if entry is smaller than 10**(-SIG)?
+    :returns: string representation of a number of function evaluations
+              or ERT.
 
     """
-
+    #CAVE: what if entry is smaller than 10**(-SIG)?
     #Printf:
     # %[flags][width][.precision][length]specifier
 

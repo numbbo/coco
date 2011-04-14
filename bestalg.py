@@ -3,14 +3,14 @@
 
 """ Best algorithm dataset module 
 
-    This module holds the BestAlgSet class which is used as data
-    structure for the data set of the virtual best algorithm. Therefore
-    this module will be imported by other modules which need to access
-    best algorithm data set.
+    This module implements :py:class:`BestAlgSet` class which is used as
+    data structure for the data set of the virtual best algorithm.
+    Therefore this module will be imported by other modules which need
+    to access best algorithm data set.
 
     The best algorithm data set can be accessed by the
-    bestalgentriesXXX variables. These variables need to be initialized
-    by executing methods loadBBOBXXX()
+    :py:data:`bestalgentries2009` variable. This variable needs to be
+    initialized by executing functions :py:func:`loadBBOB2009()`
 
     This module can also be used generate the best algorithm data set
     with its generate method.
@@ -64,16 +64,16 @@ class BestAlgSet():
 
     Here unit element means for a given problem (in the context of BBOB
     workshop it is one function and one dimension).
-    This class is derived from class DataSet but it does not inherit
-    from it.
+    This class is derived from :py:class:`DataSet` but it does not
+    inherit from it.
 
     Class attributes:
-        funcId -- function Id (integer)
-        dim -- dimension (integer)
-        comment -- comment for the setting (string)
-        algId -- algorithm name (string)
-        evals -- collected data aligned by function values (array)
-        maxevals -- maximum number of function evaluations (array)
+        - funcId -- function Id (integer)
+        - dim -- dimension (integer)
+        - comment -- comment for the setting (string)
+        - algId -- algorithm name (string)
+        - evals -- collected data aligned by function values (array)
+        - maxevals -- maximum number of function evaluations (array)
 
     evals and funvals are arrays of data collected from N data sets.
     Both have the same format: zero-th column is the value on which the
@@ -86,9 +86,9 @@ class BestAlgSet():
     def __init__(self, dictAlg):
         """Instantiate one best algorithm data set.
         
-        Keyword arguments:
-        dictAlg -- dictionary of datasets, keys are algorithm names,
-          values are 1-element DataSetList.
+        :keyword dictAlg: dictionary of datasets, keys are algorithm
+                          names, values are 1-element
+                          :py:class:`DataSetList`.
         
         """
 
@@ -222,11 +222,11 @@ class BestAlgSet():
                 % (self.algId, self.funcId, self.dim))
 
     def pickle(self, outputdir=None, verbose=True):
-        """Save DataSet instance to a pickle file.
+        """Save instance to a pickle file.
 
-        Saves the instance of DataSet to a pickle file. If not specified
+        Saves the instance to a pickle file. If not specified
         by argument outputdir, the location of the pickle is given by
-        the location of the first index file associated to the DataSet.
+        the location of the first index file associated.
 
         """
 
@@ -303,17 +303,19 @@ class BestAlgSet():
 #FUNCTION DEFINITIONS
 
 def loadBBOB2009():
-    """Assigns bestalgentries2009.
+    """Assigns :py:data:`bestalgentries2009`.
 
     This function is needed to set the global variable
-    bestalgentries2009. It unpickles file bestalgentries2009.pickle.gz
-    bestalgentries2009 is a dictionary accessed by providing a tuple
-    (dimension, function). This returns an instance of BestAlgSet.
+    :py:data:`bestalgentries2009`. It unpickles file 
+    :file:`bestalgentries2009.pickle.gz`
+
+    :py:data:`bestalgentries2009` is a dictionary accessed by providing
+    a tuple :py:data:`(dimension, function)`. This returns an instance
+    of :py:class:`BestAlgSet`.
     The data is that of algorithms submitted to BBOB 2009, the list of
-    which can be found in variable algs2009.
+    which can be found in variable :py:data:`algs2009`.
 
     """
-
     global bestalgentries2009
     # global statement necessary to change the variable bestalg.bestalgentries2009
 
@@ -326,17 +328,19 @@ def loadBBOB2009():
     print " done."
 
 def loadBBOB2010():
-    """Assigns bestalgentries2010.
+    """Assigns :py:data:`bestalgentries2010`.
 
     This function is needed to set the global variable
-    bestalgentries2010. It unpickles file bestalgentries2010.pickle.gz
-    bestalgentries2010 is a dictionary accessed by providing a tuple
-    (dimension, function). This returns an instance of BestAlgSet.
-    The data is that of algorithms submitted to BBOB 2010, the list of
-    which can be found in variable algs2010.
+    :py:data:`bestalgentries2010`. It unpickles file 
+    :file:`bestalgentries2010.pickle.gz`
+
+    :py:data:`bestalgentries2010` is a dictionary accessed by providing
+    a tuple :py:data:`(dimension, function)`. This returns an instance
+    of :py:class:`BestAlgSet`.
+    The data is that of algorithms submitted to BBOB 20&0, the list of
+    which can be found in variable :py:data:`algs2010`.
 
     """
-
     global bestalgentries2010
     # global statement necessary to change the variable bestalg.bestalgentries2010
 
@@ -349,17 +353,20 @@ def loadBBOB2010():
     print " done."
 
 def loadBBOBever():
-    """Assigns bestalgentriesever.
+    """Assigns :py:data:`bestalgentriesever`.
 
     This function is needed to set the global variable
-    bestalgentries2010. It unpickles file bestalgentries2010.pickle.gz
-    bestalgentries2010 is a dictionary accessed by providing a tuple
-    (dimension, function). This returns an instance of BestAlgSet.
-    The data is that of algorithms submitted to BBOB 2009 and BBOB 2010,
-    the list of which can be found in variables algs2009 and alg2010.
+    :py:data:`bestalgentriesever`. It unpickles file 
+    :file:`bestalgentriesever.pickle.gz`
+
+    :py:data:`bestalgentriesever` is a dictionary accessed by providing
+    a tuple :py:data:`(dimension, function)`. This returns an instance
+    of :py:class:`BestAlgSet`.
+    The data is that of algorithms submitted to BBOB 2009 and 2010, the
+    list of which is the union in variables :py:data:`algs2009`
+    and :py:data:`algs2010`.
 
     """
-
     global bestalgentriesever
     # global statement necessary to change the variable bestalg.bestalgentriesever
 
@@ -382,15 +389,15 @@ def generate():
     algorithms listed in variable args.
 
     This method is called from the python command line from a directory
-    containing all necessary data folders.
-    >>> from bbob_pproc import bestalg
-    >>> bestalg.generate()
-    Searching in ALPS ...
-    ...
-    Found 324 file(s)!
-    Unpickled ALPS/ppdata_f001_02.pickle.
-    ...
-    bbob_pproc/bestalg.py:116: UserWarning: Algorithm ... was not tested on f127 20-D.
+    containing all necessary data folders::
+      >>> from bbob_pproc import bestalg
+      >>> bestalg.generate()
+      Searching in ALPS ...
+      ...
+      Found 324 file(s)!
+      Unpickled ALPS/ppdata_f001_02.pickle.
+      ...
+      bbob_pproc/bestalg.py:116: UserWarning: Algorithm ... was not tested on f127 20-D.
 
     """
 

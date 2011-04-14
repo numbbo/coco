@@ -3,13 +3,14 @@
 
 """Raw post-processing routines.
 
-   This module implements class :py:class:`DataSet`, unit element in the
-   post-processing and class :py:class:`DataSetList`, sequence of
-   instances of :py:class:`DataSet`.
-   Futhermore it implements methods for dealing with a third data
-   structure which is a dictionary of :py:class:`DataSetList` which is
-   handy when dealing with :py:class:`DataSetList` instances from
-   multiple algorithms for comparisons.
+This module implements class :py:class:`DataSet`, unit element in the
+post-processing and class :py:class:`DataSetList`, sequence of instances
+of :py:class:`DataSet`.
+
+Futhermore it implements methods for dealing with a third data structure
+which is a dictionary of :py:class:`DataSetList` which is handy when
+dealing with :py:class:`DataSetList` instances from multiple algorithms
+for comparisons.
 
 """
 
@@ -66,6 +67,7 @@ class DataSet:
 
     :py:attr:`evals` and :py:attr:`funvals` are arrays of data collected
     from :py:data:`N` data sets.
+
     Both have the same format: zero-th column is the value on which the
     data of a row is aligned, the :py:data:`N` subsequent columns are
     either the numbers of function evaluations for :py:attr:`evals` or
@@ -306,6 +308,7 @@ class DataSet:
         by argument outputdir, the location of the pickle is given by
         the location of the first index file associated to this
         instance.
+
         This method will overwrite existing files.
 
         """
@@ -340,7 +343,7 @@ class DataSet:
     def createDictInstance(self):
         """Returns a dictionary of the instances.
 
-        The key is the instance id, the value is a list of index.
+        The key is the instance Id, the value is a list of index.
 
         """
         dictinstance = {}
@@ -352,9 +355,20 @@ class DataSet:
     def splitByTrials(self, whichdata=None):
         """Splits the post-processed data arrays by trials.
 
-        Returns a two-element list of dictionaries of arrays, the key of
-        the dictionary being the instance id, the value being a smaller
-        post-processed data array corresponding to the instance id.
+        :keyword string whichdata: either 'evals' or 'funvals'
+                                   determines the output
+        :returns: this method returns dictionaries of arrays,
+                  the key of the dictionaries being the instance id, the
+                  value being a smaller post-processed data array
+                  corresponding to the instance Id.
+                  If whichdata is 'evals' then the array contains
+                  function evaluations (1st column is alignment
+                  targets).
+                  Else if whichdata is 'funvals' then the output data
+                  contains function values (1st column is alignment
+                  budgets).
+                  Otherwise this method returns a tuple of these two
+                  arrays in this order.
 
         """
         dictinstance = self.createDictInstance()
@@ -378,13 +392,15 @@ class DataSet:
     def generateRLData(self, targets):
         """Determine the running lengths for reaching the target values.
 
-        :keyword list targets: -- list of target function values of interest
+        :keyword list targets: target function values of interest
 
-        Output:
-        dict of arrays, one array has for first element a target
-        function value smaller or equal to the element of inputtargets
-        considered and has for other consecutive elements the
-        corresponding number of function evaluations.
+        :returns: dict of arrays, one array for each target. Each array
+                  are copied from attribute :py:attr:`evals` of
+                  :py:class:`DataSetList`: first element is a target
+                  function value smaller or equal to the element of
+                  targets considered and has for other consecutive
+                  elements the corresponding number of function
+                  evaluations.
 
         """
         res = {}
@@ -415,8 +431,8 @@ class DataSet:
 
         :keyword list targets: target function values of interest
 
-        Output:
-        list of expected running times corresponding to the targets
+        :returns: list of expected running times corresponding to the
+                  targets.
 
         """
         res = {}
@@ -449,8 +465,8 @@ class DataSet:
 
         :keyword list targets: target function values of interest
 
-        Output:
-        list of arrays each corresponding to one value in targets
+        :returns: list of arrays each corresponding to one value in
+                  targets
 
         """
         tmp = {}
@@ -475,10 +491,12 @@ class DataSet:
         return list(tmp[i][1:] for i in targets)
 
 class DataSetList(list):
-    """List of instances of DataSet with some useful slicing functions.
+    """List of instances of :py:class:`DataSet`.
 
-    Will merge data of DataSet instances that are identical (according
-    to function __eq__ of DataSet).
+    This class implements some useful slicing functions.
+
+    Also it will merge data of DataSet instances that are identical
+    (according to function __eq__ of DataSet).
 
     """
     #Do not inherit from set because DataSet instances are mutable which means
@@ -487,12 +505,11 @@ class DataSetList(list):
     def __init__(self, args=[], verbose=True):
         """Instantiate self from a list of inputs.
 
-        Keyword arguments:
         :keyword list args: strings being either info file names, folder
                             containing info files or pickled data files.
         :keyword bool verbose: controls verbosity.
 
-        Exception:
+        Exceptions:
         Warning -- Unexpected user input.
         pickle.UnpicklingError
 
@@ -622,7 +639,7 @@ class DataSetList(list):
             list.append(self, o)
 
     def extend(self, o):
-        """Extend a DataSetList with elements.
+        """Extend with elements.
 
         This method is implemented to prevent problems since append was
         superseded. This method could be the origin of efficiency issue.
@@ -637,10 +654,10 @@ class DataSetList(list):
             i.pickle(outputdir, verbose)
 
     def dictByAlg(self):
-        """Returns a dictionary of DataSetList instances by algorithm.
+        """Returns a dictionary of instances of this class by algorithm.
 
         The resulting dict uses algId and comment as keys and the
-        corresponding slices of DataSetList as values.
+        corresponding slices as values.
 
         """
         d = {}
@@ -649,10 +666,10 @@ class DataSetList(list):
         return d
 
     def dictByDim(self):
-        """Returns a dictionary of DataSetList instances by dimensions.
+        """Returns a dictionary of instances of this class by dimensions.
 
         Returns a dictionary with dimension as keys and the
-        corresponding slices of DataSetList as values.
+        corresponding slices as values.
 
         """
         d = {}
@@ -661,10 +678,10 @@ class DataSetList(list):
         return d
 
     def dictByFunc(self):
-        """Returns a dictionary of DataSetList instances by functions.
+        """Returns a dictionary of instances of this class by functions.
 
         Returns a dictionary with the function id as keys and the
-        corresponding slices of DataSetList as values.
+        corresponding slices as values.
 
         """
         d = {}
@@ -686,10 +703,10 @@ class DataSetList(list):
         return sorted
 
     def dictByFuncGroup(self):
-        """Returns a dictionary of DataSetList instances by function groups.
+        """Returns a dictionary of instances of this class by function groups.
 
-        Returns a dictionary with function group names as keys and the
-        corresponding slices of DataSetList as values.
+        The output dictionary has function group names as keys and the
+        corresponding slices as values.
 
         """
         sorted = {}
@@ -775,15 +792,16 @@ class DataSetList(list):
         # maxevals?, funvals?, success rate?
 
 def processInputArgs(args, verbose=True):
-    """Process command line arguments into data useable by bbob_pproc.
+    """Process command line arguments.
 
-    Returns an instance of DataSetList, a list of algorithms from a
-    list of strings representing file and folder names. This command
-    will operate folder-wise: one folder will correspond to an
+    Returns an instance of :py:class:`DataSetList`, a list of algorithms
+    from a list of strings representing file and folder names. This
+    command will operate folder-wise: one folder will correspond to an
     algorithm.
-    It is recommended that if a folder listed in args contain both info
-    files and the associated pickle files, they be kept in different
-    locations for efficiency reasons.
+
+    It is recommended that if a folder listed in args contain both
+    :file:`info` files and the associated :file:`pickle` files, they be
+    kept in different locations for efficiency reasons.
 
     :keyword list args: string arguments for folder names
     :keyword bool verbose: controlling verbosity
@@ -840,7 +858,7 @@ def dictAlgByDim(dictAlg):
 
     This method is meant to be used with an input argument which is a
     dictionary with algorithm names as keys and which has list of
-    DataSet instances as values.
+    :py:class:`DataSet` instances as values.
     The resulting dictionary will have dimension as key and as values
     dictionaries with algorithm names as keys.
 
@@ -882,12 +900,13 @@ def dictAlgByDim(dictAlg):
 def dictAlgByDim2(dictAlg):
     """Returns a dictionary with problem dimension as key.
 
-    The difference with dictAlgByDim is that there is an entry for each
-    algorithms even if the resulting DataSetList is empty...
+    The difference with :py:func:`dictAlgByDim` is that there is an
+    entry for each algorithms even if the resulting
+    :py:class:`DataSetList` is empty.
 
-    This method is meant to be used with an input argument which is a
+    This function is meant to be used with an input argument which is a
     dictionary with algorithm names as keys and which has list of
-    DataSet instances as values.
+    :py:class:`DataSet` instances as values.
     The resulting dictionary will have dimension as key and as values
     dictionaries with algorithm names as keys.
 
@@ -905,7 +924,7 @@ def dictAlgByFun(dictAlg):
 
     This method is meant to be used with an input argument which is a
     dictionary with algorithm names as keys and which has list of
-    DataSet instances as values.
+    :py:class:`DataSet` instances as values.
     The resulting dictionary will have function id as key and as values
     dictionaries with algorithm names as keys.
 
@@ -943,7 +962,7 @@ def dictAlgByNoi(dictAlg):
 
     This method is meant to be used with an input argument which is a
     dictionary with algorithm names as keys and which has list of
-    DataSet instances as values.
+    :py:class:`DataSet` instances as values.
     The resulting dictionary will have a string denoting the noise group
     ('noiselessall' or 'nzall') and as values dictionaries with
     algorithm names as keys.
@@ -988,7 +1007,7 @@ def dictAlgByFuncGroup(dictAlg):
 
     This method is meant to be used with an input argument which is a
     dictionary with algorithm names as keys and which has list of
-    DataSet instances as values.
+    :py:class:`DataSet` instances as values.
     The resulting dictionary will have a string denoting the function
     group and as values dictionaries with algorithm names as keys.
 
