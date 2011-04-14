@@ -11,7 +11,6 @@ from pdb import set_trace
 from bbob_pproc import bootstrap, bestalg, pproc
 from bbob_pproc.ppfig import saveFigure
 from bbob_pproc.pptex import convcolo, convmark, writeLabels
-from bbob_pproc.dataoutput import algPlotInfos
 
 # styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
 #           {'color': 'b'},
@@ -246,13 +245,9 @@ def generateData(dataSet, target):
 def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
     """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
     
-    Differ from main method by the line style policy: in the case of main2
-    the variable styles (defined in header) is used instead of
-    bbob_pproc.dataoutput.algPlotInfos.
     One function and one target per figure.
     
     """
-
     dictFunc = pproc.dictAlgByFun(dictAlg)
 
     for f in dictFunc:

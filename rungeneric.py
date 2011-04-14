@@ -32,7 +32,6 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import dataoutput, pproc, rungeneric1, rungeneric2, rungenericmany
-from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.compall import ppperfprof, pptables
 from bbob_pproc.compall import organizeRTDpictures

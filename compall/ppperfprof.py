@@ -438,8 +438,8 @@ def plot(dsList, targets=tg, rhleg=False, kwargs={}):
 
     return res
 
-def main(dictAlg, targets, order=None, plotArgs={}, outputdir='',
-         info='default', verbose=True):
+def main(dictAlg, targets, order=None, outputdir='', info='default',
+         verbose=True):
     """Generates a figure showing the performance of algorithms.
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,

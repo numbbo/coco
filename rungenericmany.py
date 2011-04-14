@@ -30,7 +30,6 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import dataoutput, pproc
-from bbob_pproc.dataoutput import algPlotInfos
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.compall import ppperfprof, pptables, ppfigs
 from bbob_pproc.compall import organizeRTDpictures
@@ -260,7 +259,6 @@ def main(argv=None):
                 for d, entries in dictDim.iteritems():
                     ppperfprof.main(entries, inset.summarized_target_function_values,
                                     order=sortedAlgs,
-                                    plotArgs=algPlotInfos,
                                     outputdir=outputdir,
                                     info=('%02dD_%s' % (d, ng)),
                                     verbose=verbose)
@@ -271,7 +269,6 @@ def main(argv=None):
                 for d, entries in dictDim.iteritems():
                     ppperfprof.main(entries, inset.summarized_target_function_values,
                                     order=sortedAlgs,
-                                    plotArgs=algPlotInfos,
                                     outputdir=outputdir,
                                     info=('%02dD_%s' % (d, fg)),
                                     verbose=verbose)
