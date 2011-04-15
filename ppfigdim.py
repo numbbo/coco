@@ -9,10 +9,12 @@ a number of function evaluations divided by dimension, this is in order
 to compare at a glance with a linear scaling for which ERT is
 proportional to the dimension and would therefore be represented by a
 horizontal line in the figure. Crosses (+) give the median number of
-function evaluations for the smallest reached target function value
-(also divided by dimension). Crosses (×) give the average number of
-overall conducted function evaluations in case the smallest target
-function value (1e-8) was not reached. Horizontal lines indicate linear
+function evaluations of successful trials divided by dimension for the
+smallest *reached* target function value. Numbers indicate the number
+of succesfull runs for the smallest *reached* target If the smallest
+target function value (1e-8) is not reached for a given dimension,
+crosses (x) give the average number of overall conducted function
+evaluations divided by the dimension. Horizontal lines indicate linear
 scaling with the dimension, additional grid lines show quadratic and
 cubic scaling.
 
@@ -86,54 +88,8 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
 
-def beautifyold():
-    """Deprecated: Customize figure presentation.
-    
-    Is identical to beautify except for the linear and quadratic
-    scaling lines.
-    
-    """
 
-    # Input checking
-
-    # Get axis handle and set scale for each axis
-    axisHandle = plt.gca()
-    axisHandle.set_xscale("log")
-    axisHandle.set_yscale("log")
-
-    # Grid options
-    axisHandle.grid(True)
-
-    ymin, ymax = plt.ylim()
-
-    # linear and quadratic "grid"
-    plt.plot((2,200), (1,1e2), 'k:')    # TODO: this should be done before the real lines are plotted? 
-    plt.plot((2,200), (1,1e4), 'k:')
-    plt.plot((2,200), (1e3,1e5), 'k:')
-    plt.plot((2,200), (1e3,1e7), 'k:')
-    plt.plot((2,200), (1e6,1e8), 'k:')
-    plt.plot((2,200), (1e6,1e10), 'k:')
-
-    # axes limites
-    plt.xlim(1.8, 45)                # TODO should become input arg?
-    plt.ylim(ymin=10**-0.2, ymax=ymax) # Set back the default maximum.
-
-    # ticks on axes
-    #axisHandle.invert_xaxis()
-    dimticklist = (2, 3, 4, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
-    dimannlist = (2, 3, '', 5, 10, 20, 40)  # TODO: should become input arg at some point? 
-    # TODO: All these should depend on one given input (xlim, ylim)
-
-    axisHandle.set_xticks(dimticklist)
-    axisHandle.set_xticklabels([str(n) for n in dimannlist])
-
-    tmp = axisHandle.get_yticks()
-    tmp2 = []
-    for i in tmp:
-        tmp2.append('%d' % round(numpy.log10(i)))
-    axisHandle.set_yticklabels(tmp2)
-
-def beautify():
+def beautify(axesLabel=True):
     """Customize figure presentation."""
 
     # Input checking
@@ -182,6 +138,9 @@ def beautify():
     for i in tmp:
         tmp2.append('%d' % round(numpy.log10(i)))
     axisHandle.set_yticklabels(tmp2)
+    if axesLabel:
+        plt.xlabel('Dimension')
+        plt.ylabel('Run Lengths / Dimension')
 
 def generateData(dataSet, targetFuncValue):
     """Returns an array of results to be plotted. 1st column is ert, 2nd is
@@ -227,7 +186,6 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
     res = []
 
     for func in dictFunc:
-
         dictFunc[func] = dictFunc[func].dictByDim()
         dimensions = sorted(dictFunc[func])
 
@@ -238,123 +196,7 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
         except TypeError:
             valuesOfInterest = list(_valuesOfInterest)
         valuesOfInterest.sort(reverse=True)
-        for i in range(len(valuesOfInterest)):
-            succ = []
-            unsucc = []
-            displaynumber = []
-            data = []
-            #Collect data that have the same function and different dimension.
-            for dim in dimensions:
-                tmp = generateData(dictFunc[func][dim][0],
-                                   valuesOfInterest[i])
-                #data.append(numpy.append(dim, tmp))
-                if tmp[2] > 0: #Number of success is larger than 0
-                    succ.append(numpy.append(dim, tmp))
-                    if tmp[2] < dictFunc[func][dim][0].nbRuns():
-                        displaynumber.append((dim, tmp[0], tmp[2]))
-                else:
-                    unsucc.append(numpy.append(dim, tmp))
-
-            if succ:
-                tmp = numpy.vstack(succ)
-                #ERT
-                res.extend(plt.plot(tmp[:, 0], tmp[:, 1], color=colors[i],
-                           marker='o', markersize=20))
-                #median
-                res.extend(plt.plot(tmp[:, 0], tmp[:, -1], color=colors[i],
-                           linestyle='', marker='+', markersize=30,
-                           markeredgewidth=5))
-
-            # To have the legend displayed whatever happens with the data.
-            res.extend(plt.plot([], [], color=colors[i],
-                       label=' %+d' % (numpy.log10(valuesOfInterest[i]))))
-
-        #Only for the last target function value
-        if unsucc:
-            #set_trace()
-            # Find range of consecutive numbers for displaying k lines where
-            # k is the number of ranges of consecutive numbers
-            dimtoindex = dict((dim, i) for i, dim in enumerate(dimensions))
-            tmp = numpy.vstack(unsucc) # tmp[:, 0] needs to be sorted!
-            listindex = list(dimtoindex[i] for i in tmp[:, 0])
-            consecindex = groupByRange(listindex)
-            dimarray = numpy.array(dimensions)
-            for i in consecindex:
-                data = list(tmp[tmp[:, 0] == dimensions[j], -2]/dimensions[j] for j in i)
-                res.extend(plt.plot(dimarray[i], numpy.hstack(data),
-                           color=styles[len(valuesOfInterest)-1]['color'],
-                           marker='x', markersize=20))
-
-        if not bestalg.bestalgentries2009:
-            bestalg.loadBBOB2009()
-
-        bestalgdata = []
-        for d in dimsBBOB:
-            entry = bestalg.bestalgentries2009[(d, func)]
-            tmp = entry.detERT([1e-8])[0]
-            if not numpy.isinf(tmp):
-                bestalgdata.append(tmp)
-            else:
-                bestalgdata.append(None)
-
-        plt.plot(dimsBBOB, bestalgdata, color=refcolor, linewidth=10, zorder=-2)
-        plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25,
-                 color=refcolor, markeredgecolor=refcolor, zorder=-2)
-
-        a = plt.gca()
-        if displaynumber: #displayed only for the smallest valuesOfInterest
-            for j in displaynumber:
-                plt.text(j[0], j[1]*1.85, "%.0f" % j[2], axes=a,
-                         horizontalalignment="center",
-                         verticalalignment="bottom")
-
-    return res
-
-def ertvsdim(dsList, _valuesOfInterest, outputdir, verbose=True):
-    """From a DataSetList, returns a convergence and ERT figure vs dim."""
-
-    #plt.rc("axes", labelsize=20, titlesize=24)
-    #plt.rc("xtick", labelsize=20)
-    #plt.rc("ytick", labelsize=20)
-    #plt.rc("font", size=20)
-    #plt.rc("legend", fontsize=20)
-
-    dictFunc = dsList.dictByFunc()
-
-    for func in dictFunc:
-        plot(dictFunc[func], _valuesOfInterest)
-        if isBenchmarkinfosFound:
-            a.set_title(funInfos[func])
-        if func in (1, 24, 101, 130):
-            plt.legend(loc='best')
-        filename = os.path.join(outputdir,'ppdata_f%d' % (func))
-        saveFigure(filename, figFormat=figformat, verbose=verbose)
-
-        plt.close()
-
-    #plt.rcdefaults()
-
-def main(dsList, _valuesOfInterest, outputdir, verbose=True):
-    """From a DataSetList, returns a convergence and ERT/dim figure vs dim."""
-
-    #plt.rc("axes", labelsize=20, titlesize=24)
-    #plt.rc("xtick", labelsize=20)
-    #plt.rc("ytick", labelsize=20)
-    #plt.rc("font", size=20)
-    #plt.rc("legend", fontsize=20)
-
-    dictFunc = dsList.dictByFunc()
-
-    for func in dictFunc:
-        dictFunc[func] = dictFunc[func].dictByDim()
-        dimensions = sorted(dictFunc[func])
-        filename = os.path.join(outputdir,'ppfigdim_f%03d' % (func))
-
-        #legend = []
-        line = []
-        valuesOfInterest = list(j[func] for j in _valuesOfInterest)
-        valuesOfInterest.sort(reverse=True)
-        mediandata ={}
+        mediandata = {}
         for i in range(len(valuesOfInterest)):
             succ = []
             unsucc = []
@@ -370,78 +212,87 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
                     if tmp[2] < dictFunc[func][dim][0].nbRuns():
                         displaynumber.append((dim, tmp[0], tmp[2]))
                     mediandata[dim] = (i, tmp[-1])
+                    unsucc.append(numpy.append(dim, numpy.nan))
                 else:
-                    unsucc.append(numpy.append(dim, tmp))
+                    unsucc.append(numpy.append(dim, tmp[-2]))
 
             if succ:
                 tmp = numpy.vstack(succ)
                 #ERT
-                plt.plot(tmp[:, 0], tmp[:,1]/tmp[:, 0], markersize=20,
-                         **styles[i])
+                res.extend(plt.plot(tmp[:, 0], tmp[:, 1]/tmp[:, 0],
+                           markersize=20, **styles[i]))
 
             # To have the legend displayed whatever happens with the data.
-            plt.plot([], [], markersize=10,
-                     label=' %+d' % (numpy.log10(valuesOfInterest[i])),
-                     **styles[i])
+            res.extend(plt.plot([], [], markersize=10,
+                                label=' %+d' % (numpy.log10(valuesOfInterest[i])),
+                                **styles[i]))
 
         #Only for the last target function value
         if unsucc:
-            #set_trace()
-            #tmp = numpy.vstack(unsucc) # tmp[:, 0] needs to be sorted!
-            #plt.plot(tmp[:, 0], tmp[:, -2]/tmp[:, 0],
-            #         color=styles[len(valuesOfInterest)-1]['color'],
-            #         marker='x', markersize=20)
-            # Find range of consecutive numbers for displaying k lines where
-            # k is the number of ranges of consecutive numbers
-            dimtoindex = dict((dim, i) for i, dim in enumerate(dimensions))
             tmp = numpy.vstack(unsucc) # tmp[:, 0] needs to be sorted!
-            listindex = list(dimtoindex[i] for i in tmp[:, 0])
-            consecindex = groupByRange(listindex)
-            dimarray = numpy.array(dimensions)
-            for i in consecindex:
-                data = list(tmp[tmp[:, 0] == dimensions[j], -2]/dimensions[j] for j in i)
-                plt.plot(dimarray[i], numpy.hstack(data),
-                         color=styles[len(valuesOfInterest)-1]['color'],
-                         marker='x', markersize=20)
+            res.extend(plt.plot(tmp[:, 0], tmp[:, 1]/tmp[:, 0],
+                       color=styles[len(valuesOfInterest)-1]['color'],
+                       marker='x', markersize=20))
 
-        #median # TODO only the best target for each dimension (and not the last)
+        #median
         if mediandata:
             for i, tm in mediandata.iteritems():
                 plt.plot((i, ), (tm[1]/i, ), color=styles[tm[0]]['color'],
                          linestyle='', marker='+', markersize=30,
                          markeredgewidth=5, zorder=-1)
 
-        if not bestalg.bestalgentries2009:
-            bestalg.loadBBOB2009()
-
-        bestalgdata = []
-        for d in dimsBBOB:
-            entry = bestalg.bestalgentries2009[(d, func)]
-            tmp = entry.detERT([1e-8])[0]
-            if not numpy.isinf(tmp):
-                bestalgdata.append(tmp/d)
-            else:
-                bestalgdata.append(None)
-
-        plt.plot(dimsBBOB, bestalgdata, color=refcolor, linewidth=10, zorder=-2)
-        plt.plot(dimsBBOB, bestalgdata, ls='', marker='d', markersize=25,
-                 color=refcolor, markeredgecolor=refcolor, zorder=-2)
-
         a = plt.gca()
+        # the displaynumber is emptied for each new target precision
+        # therefore the displaynumber displayed below correspond to the
+        # last target (must be the hardest)
         if displaynumber: #displayed only for the smallest valuesOfInterest
             for j in displaynumber:
-                plt.text(j[0], j[1]*1.85/j[0], "%.0f" % j[2], axes=a,
+                # the 1.85 factor is a shift up for the digits 
+                plt.text(j[0], j[1] * 1.85 / j[0], "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
                          verticalalignment="bottom")
 
-        beautify()
+    return res
 
+def plotBest2009(func, target=1e-8):
+    """Add graph of the BBOB-2009 virtual best algorithm."""
+    if not bestalg.bestalgentries2009:
+        bestalg.loadBBOB2009()
+    bestalgdata = []
+    for d in dimsBBOB:
+        entry = bestalg.bestalgentries2009[(d, func)]
+        tmp = entry.detERT([target])[0]
+        if not numpy.isinf(tmp):
+            bestalgdata.append(tmp / d)
+        else:
+            bestalgdata.append(None)
+    res = plt.plot(dimsBBOB, bestalgdata, color=refcolor, linewidth=10,
+                   marker='d', markersize=25, markeredgecolor=refcolor,
+                   zorder=-2)
+    return res
+
+def main(dsList, _valuesOfInterest, outputdir, verbose=True):
+    """From a DataSetList, returns a convergence and ERT/dim figure vs dim."""
+
+    #plt.rc("axes", labelsize=20, titlesize=24)
+    #plt.rc("xtick", labelsize=20)
+    #plt.rc("ytick", labelsize=20)
+    #plt.rc("font", size=20)
+    #plt.rc("legend", fontsize=20)
+
+    if not bestalg.bestalgentries2009:
+        bestalg.loadBBOB2009()
+
+    dictFunc = dsList.dictByFunc()
+
+    for func in dictFunc:
+        plot(dictFunc[func], _valuesOfInterest)        
+        beautify(axesLabel=False)
         if func in (1, 24, 101, 130):
             plt.legend(loc="best")
         if isBenchmarkinfosFound:
-            a.set_title(funInfos[func])
-
+            plt.gca().set_title(funInfos[func])
+        plotBest2009(func)
+        filename = os.path.join(outputdir,'ppfigdim_f%03d' % (func))
         saveFigure(filename, figFormat=figformat, verbose=verbose)
-
         plt.close()
-
