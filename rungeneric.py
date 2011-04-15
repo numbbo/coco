@@ -92,11 +92,15 @@ def usage():
 def main(argv=None):
     r"""Main routine for post-processing data from COCO.
 
-    This routine will call sub-routine
-    :py:func:`bbob_pproc.rungeneric1.main` for each input arguments and
-    either sub-routines :py:func:`bbob_pproc.rungeneric2.main` (2 input
-    arguments) or :py:func:`bbob_pproc.rungenericmany.main` (more than
-    2) for the input arguments altogether.
+    The output figures and tables generated will all be contained in an
+    output folder. This routine will:
+
+    * call sub-routine :py:func:`bbob_pproc.rungeneric1.main` for each
+    input arguments; each input argument will be used as output
+    sub-folder relative to the main output folder,
+    * call either sub-routines :py:func:`bbob_pproc.rungeneric2.main`
+    (2 input arguments) or :py:func:`bbob_pproc.rungenericmany.main`
+    (more than 2) for the input arguments altogether.
 
     The output figures and tables are included in:
 
@@ -247,9 +251,7 @@ def main(argv=None):
                 print 'Folder %s was created.' % (outputdir)
 
         for alg in args:
-            # tmpoutputdir = os.path.join(outputdir, os.path.split(alg.rstrip(os.sep))[-1])
             tmpoutputdir = os.path.join(outputdir, alg)
-            # TODO: if there is a problem, skip: try except...
             rungeneric1.main(genopts1
                              + ["-o", tmpoutputdir, alg])
         if len(args) == 2:
@@ -265,4 +267,3 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main())
-
