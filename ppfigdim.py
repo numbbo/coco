@@ -8,15 +8,21 @@ dimensionality on a log-log scale. On the y-axis, data is represented as
 a number of function evaluations divided by dimension, this is in order
 to compare at a glance with a linear scaling for which ERT is
 proportional to the dimension and would therefore be represented by a
-horizontal line in the figure. Crosses (+) give the median number of
-function evaluations of successful trials divided by dimension for the
-smallest *reached* target function value. Numbers indicate the number
-of succesfull runs for the smallest *reached* target If the smallest
-target function value (1e-8) is not reached for a given dimension,
-crosses (x) give the average number of overall conducted function
-evaluations divided by the dimension. Horizontal lines indicate linear
-scaling with the dimension, additional grid lines show quadratic and
-cubic scaling.
+horizontal line in the figure.
+
+Crosses (+) give the median number of function evaluations of successful
+trials divided by dimension for the smallest *reached* target function
+value.
+Numbers indicate the number of succesfull runs for the smallest
+*reached* target.
+If the smallest target function value (1e-8) is not reached for a given
+dimension, crosses (x) give the average number of overall conducted
+function evaluations divided by the dimension.
+
+Horizontal lines indicate linear scaling with the dimension, additional
+grid lines show quadratic and cubic scaling.
+The thick light line with diamond markers shows the single best results
+from BBOB-2009 for df = 1e-8.
 
 **Example**
 
@@ -37,11 +43,11 @@ cubic scaling.
     archivefile.extractall()
     
     # Scaling figure
-    from bbob_pproc import ppfigdim
     ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_*.pickle'))
     figure()
-    ppfigdim.plot(ds)
-    ppfigdim.beautify()
+    bb.ppfigdim.plot(ds)
+    bb.ppfigdim.beautify()
+    bb.ppfigdim.plotBest2009(2) # plot BBOB 2009 best algorithm on fun 2
 
 """
 
@@ -52,8 +58,6 @@ import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap, bestalg
 from bbob_pproc.ppfig import saveFigure, groupByRange
-
-__all__ = ['beautify', 'plot', 'main']
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
@@ -90,7 +94,12 @@ except IOError, (errno, strerror):
 
 
 def beautify(axesLabel=True):
-    """Customize figure presentation."""
+    """Customize figure presentation.
+    
+    Uses information from :file:`benchmarkshortinfos.txt` for figure
+    title. 
+    
+    """
 
     # Input checking
 
@@ -143,10 +152,12 @@ def beautify(axesLabel=True):
         plt.ylabel('Run Lengths / Dimension')
 
 def generateData(dataSet, targetFuncValue):
-    """Returns an array of results to be plotted. 1st column is ert, 2nd is
-    the number of success, 3rd the success rate, 4th the sum of the number of
-    function evaluations, and finally the median on successful runs."""
+    """Computes an array of results to be plotted.
+    
+    :returns: (ert, number of success, success rate, total number of
+               function evaluations, median of successful runs).
 
+    """
     res = []
     data = []
 
@@ -180,8 +191,19 @@ def generateData(dataSet, targetFuncValue):
     return numpy.array(res)
 
 def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
-    """From a DataSetList, plot a figure of ERT/dim vs dim."""
+    """From a DataSetList, plot a figure of ERT/dim vs dim.
+    
+    There will be one set of graphs per function represented in the
+    input data sets. Most usually the data sets of different functions
+    will be represented separately.
+    
+    :param DataSetList dsList: data sets
+    :param seq _valuesOfInterest: target precisions, there might be as
+                                  many graphs as there are elements in
+                                  this input
+    :returns: handles
 
+    """
     dictFunc = dsList.dictByFunc()
     res = []
 
@@ -272,7 +294,18 @@ def plotBest2009(func, target=1e-8):
     return res
 
 def main(dsList, _valuesOfInterest, outputdir, verbose=True):
-    """From a DataSetList, returns a convergence and ERT/dim figure vs dim."""
+    """From a DataSetList, returns a convergence and ERT/dim figure vs dim.
+    
+    Uses data of BBOB 2009 (:py:mod:`bbob_pproc.bestalg`).
+    
+    :param DataSetList dsList: data sets
+    :param seq _valuesOfInterest: target precisions, there might be as
+                                  many graphs as there are elements in
+                                  this input
+    :param string outputdir: output directory
+    :param bool verbose: controls verbosity
+    
+    """
 
     #plt.rc("axes", labelsize=20, titlesize=24)
     #plt.rc("xtick", labelsize=20)
