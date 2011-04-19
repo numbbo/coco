@@ -463,8 +463,7 @@ class DataSet:
     def detEvals(self, targets):
         """Determine the number of evaluations to reach target values.
 
-        :keyword list targets: target function values of interest
-
+        :keyword seq or float targets: target precisions
         :returns: list of arrays each corresponding to one value in
                   targets
 

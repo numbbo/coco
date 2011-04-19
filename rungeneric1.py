@@ -366,17 +366,15 @@ def main(argv=None):
                     continue
 
                 pprldistr.main(sliceDim, inset.rldValsOfInterest, True,
-                               outputdir, '%02dD_all' % dim, verbose)
+                               outputdir, 'all', verbose)
                 dictNoise = sliceDim.dictByNoise()
                 for noise, sliceNoise in dictNoise.iteritems():
                     pprldistr.main(sliceNoise, inset.rldValsOfInterest, True,
-                                   outputdir, '%02dD_%s' % (dim, noise),
-                                   verbose)
+                                   outputdir, '%s' % noise, verbose)
                 dictFG = sliceDim.dictByFuncGroup()
                 for fGroup, sliceFuncGroup in dictFG.items():
-                    pprldistr.main(sliceFuncGroup, inset.rldValsOfInterest, True,
-                                   outputdir, '%02dD_%s' % (dim, fGroup),
-                                   verbose)
+                    pprldistr.main(sliceFuncGroup, inset.rldValsOfInterest,
+                                   True, outputdir, '%s' % fGroup, verbose)
 
                 pprldistr.fmax = None #Resetting the max final value
                 pprldistr.evalfmax = None #Resetting the max #fevalsfactor

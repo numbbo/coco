@@ -50,8 +50,12 @@ except ImportError:
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from pdb import set_trace
 from bbob_pproc import bootstrap
-from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure
+from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 
+# TODO: the target function values and the styles of the line only make sense
+# together. Therefore we should either:
+# 1. keep the targets as input argument and make rldStyles depend on them
+# 2. remove the targets as input argument and put them here.
 rldStyles = ({'color': 'k', 'ls': '--'},
              {'color': 'c'},
              {'color': 'm', 'ls': '--'},
@@ -77,6 +81,7 @@ rldUnsuccStyles = ({'color': 'k', 'ls': '--'},
                    {'color': 'c', 'ls': '--'},
                    {'color': 'm'})  # should not be too short
 refcolor = 'wheat'
+nbperdecade = 1
 
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
@@ -105,28 +110,55 @@ def beautifyECDF():
     plt.grid(True)
     xmin, xmax = plt.xlim()
     c = plt.gca().get_children()
-    for i in c:
+    for i in c: # TODO: we only want to extend ECDF lines...
         try:
-            ydata = i.get_ydata()
-            ydata = np.hstack((ydata[0], ydata, ydata[-1]))
-            xdata = i.get_xdata()
-            xdata = np.hstack((xmin, xdata, xmax))
-            plt.setp(i, 'xdata', xdata, 'ydata', ydata)
+            if i.get_drawstyle() == 'steps' and not i.get_linestyle() in ('', 'None'):
+                xdata = i.get_xdata()
+                ydata = i.get_ydata()
+                if len(xdata) > 0:
+                    if xmin < min(xdata):
+                        xdata = np.hstack((xmin, xdata))
+                        ydata = np.hstack((ydata[0], ydata))
+                    if xmax > max(xdata):
+                        xdata = np.hstack((xdata, xmax))
+                        ydata = np.hstack((ydata, ydata[-1]))
+                    plt.setp(i, 'xdata', xdata, 'ydata', ydata)
+            elif (i.get_drawstyle() == 'steps' and i.get_marker() != '' and
+                  i.get_linestyle() in ('', 'None')):
+                xdata = i.get_xdata()
+                ydata = i.get_ydata()
+                if len(xdata) > 0:
+                    if xmin < min(xdata):
+                        minidx = np.ceil(np.log10(xmin) * nbperdecade)
+                        maxidx = np.floor(np.log10(xdata[0]) * nbperdecade)
+                        x = 10. ** (np.arange(minidx, maxidx + 1) / nbperdecade)
+                        xdata = np.hstack((x, xdata))
+                        ydata = np.hstack(([ydata[0]] * len(x), ydata))
+                    if xmax > max(xdata):
+                        minidx = np.ceil(np.log10(xdata[-1]) * nbperdecade)
+                        maxidx = np.floor(np.log10(xmax) * nbperdecade)
+                        x = 10. ** (np.arange(minidx, maxidx + 1) / nbperdecade)
+                        xdata = np.hstack((xdata, x))
+                        ydata = np.hstack((ydata, [ydata[-1]] * len(x)))
+                    plt.setp(i, 'xdata', xdata, 'ydata', ydata)
         except (AttributeError, IndexError):
             pass
 
-def beautifyRLD():
-    """Format and save the figure of the run length distribution."""
+def beautifyRLD(evalfmax=None):
+    """Format and save the figure of the run length distribution.
+    
+    After calling this function, changing the boundaries of the figure
+    will not update the ticks and tick labels.
+    
+    """
     a = plt.gca()
     a.set_xscale('log')
-    #plt.axvline(x=maxEvalsF, color='k')
     a.set_xlabel('log10 of FEvals / DIM')
     a.set_ylabel('proportion of trials')
-    xtic = a.get_xticks()
-    newxtic = []
-    for j in xtic:
-        newxtic.append('%d' % round(np.log10(j)))
-    a.set_xticklabels(newxtic)
+    logxticks()
+    if evalfmax:
+        plt.xlim(xmax=evalfmax ** 1.05)
+    plt.xlim(xmin=1.)
     beautifyECDF()
 
 def beautifyFVD(isStoringXMax=False, ylabel=True):
@@ -156,15 +188,11 @@ def beautifyFVD(isStoringXMax=False, ylabel=True):
     #axisHandle.invert_xaxis()
     a.set_xlabel('log10 of Df / Dftarget')
     if ylabel:
-        a.set_ylabel('proportion of successful trials')
-    xtic = a.get_xticks()
-    newxtic = []
-    for j in xtic:
-        newxtic.append('%d' % round(np.log10(j)))
-    a.set_xticklabels(newxtic)
+        a.set_ylabel('proportion of trials')
+    logxticks()
+    beautifyECDF()
     if not ylabel:
         a.set_yticklabels(())
-    beautifyECDF()
 
 def plotECDF(x, n=None, **plotArgs):
     """Plot an empirical cumulative distribution function.
@@ -186,15 +214,15 @@ def plotECDF(x, n=None, **plotArgs):
         x = sorted(x) # do not sort in place
         x = np.hstack((x, x[-1]))
         y = np.hstack((np.arange(0., nx) / n, float(nx)/n))
-        res = plotUnifLogXMarkers(x, y, 1, drawstyle='steps', logscale=True,
-                                  **plotArgs)
+        res = plotUnifLogXMarkers(x, y, nbperdecade=nbperdecade,
+                                  drawstyle='steps', **plotArgs)
     return res
 
-def plotERTDistr(dsList, fvalueToReach, **plotArgs):
+def plotERTDistr(dsList, target, **plotArgs):
     """Creates estimated run time distributions from a DataSetList.
 
     :keyword DataSet dsList: Input data sets
-    :keyword dict fvalueToReach: target function values
+    :keyword dict target: target precision
     :keyword plotArgs: keyword arguments to pass to plot command
 
     :return: resulting plot.
@@ -208,7 +236,7 @@ def plotERTDistr(dsList, fvalueToReach, **plotArgs):
     for i in dsList:
         #funcs.add(i.funcId)
         for j in i.evals:
-            if j[0] <= fvalueToReach[i.funcId]:
+            if j[0] <= target[i.funcId]:
                 runlengthsucc = j[1:][np.isfinite(j[1:])]
                 runlengthunsucc = i.maxevals[np.isnan(j[1:])]
                 tmp = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
@@ -221,13 +249,15 @@ def plotERTDistr(dsList, fvalueToReach, **plotArgs):
 
     return res
 
-def plotRLDistr(dsList, fvalueToReach, maxEvalsF, **plotArgs):
+def plotRLDistr(dsList, target, **plotArgs):
     """Creates run length distributions from a sequence dataSetList.
 
+    Labels of the line (for the legend) will be set automatically with
+    the following format: %+d: %d/%d % (log10()
+    
+
     :param DataSetList dsList: Input data sets
-    :param dict fvalueToReach: function value to reach.
-    :param float maxEvalsF: maximum number of function evaluations.
-                            Helps set the rightmost boundary
+    :param dict or float target: target precision
     :param plotArgs: additional arguments passed to the plot command
 
     :returns: handles of the resulting plot.
@@ -240,17 +270,14 @@ def plotRLDistr(dsList, fvalueToReach, maxEvalsF, **plotArgs):
     for i in dsList:
         funcs.add(i.funcId)
         try:
-            target = fvalueToReach[i.funcId]
+            target = target[i.funcId]
         except TypeError:
-            target = fvalueToReach
-        for j in i.evals:
-            if j[0] <= target:
-                #set_trace()
-                tmp = j[1:]
-                x.extend(tmp[np.isfinite(tmp)]/float(i.dim))
-                fsolved.add(i.funcId)
-                #TODO: what if j[np.isfinite(j)] is empty
-                break
+            target = target
+        tmp = i.detEvals((target, ))[0] / i.dim
+        tmp = tmp[np.isnan(tmp) == False] # keep only success
+        if len(tmp) > 0:
+            fsolved.add(i.funcId)
+        x.extend(tmp)
         nn += i.nbRuns()
     kwargs = plotArgs.copy()
     label = ''
@@ -260,16 +287,14 @@ def plotRLDistr(dsList, fvalueToReach, maxEvalsF, **plotArgs):
         pass
     label += '%d/%d' % (len(fsolved), len(funcs))
     kwargs['label'] = kwargs.setdefault('label', label)
-
     res = plotECDF(x, nn, **kwargs)
     return res
 
-def plotFVDistr(dsList, fvalueToReach, maxEvalsF, **plotArgs):
+def plotFVDistr(dsList, target, maxEvalsF, **plotArgs):
     """Creates ECDF of final function values plot from a DataSetList.
-
+    
     :param dsList: data sets
-    :param dict or float fvalueToReach: used for the lower limit of the
-                                        plot
+    :param dict or float target: used for the lower limit of the plot
     :param float maxEvalsF: indicates which vertical data to display.
     :param plotArgs: additional arguments passed to plot
 
@@ -283,11 +308,12 @@ def plotFVDistr(dsList, fvalueToReach, maxEvalsF, **plotArgs):
             if j[0] >= maxEvalsF * i.dim:
                 break
         try:
-            tmp = j[1:].copy() / fvalueToReach[i.funcId]
+            tmp = j[1:].copy() / target[i.funcId]
         except TypeError:
-            tmp = j[1:].copy() / fvalueToReach
-        tmp[tmp<=0.] = 1.
-        # TODO: HACK, is almost ok since the xmin in the figure is 1
+            tmp = j[1:].copy() / target
+        # Integrate the negative values of df / ftarget together
+        # this is to prevent problem when passing on a log scale
+        tmp[tmp<=0.] = min(tmp[tmp > 0.])
         x.extend(tmp)
         nn += i.nbRuns()
     res = plotECDF(x, nn, **plotArgs)
@@ -319,86 +345,58 @@ def comp(dsList0, dsList1, valuesOfInterest, isStoringXMax=False,
     #plt.rc("font", size=20)
     #plt.rc("legend", fontsize=20)
 
-    maxEvalsFactor = max(max(i.mMaxEvals()/i.dim for i in dsList0),
-                         max(i.mMaxEvals()/i.dim for i in dsList1))
+    dictdim0 = dsList0.dictByDim()
+    dictdim1 = dsList1.dictByDim()
+    for d in set(dictdim0.keys()) & set(dictdim1.keys()):
+        maxEvalsFactor = max(max(i.mMaxEvals()/d for i in dictdim0[d]),
+                             max(i.mMaxEvals()/d for i in dictdim1[d]))    
+        if isStoringXMax:
+            global evalfmax
+        else:
+            evalfmax = None
+        if not evalfmax:
+            evalfmax = maxEvalsFactor
 
-    if isStoringXMax:
-        global evalfmax
-    else:
-        evalfmax = None
-
-    if not evalfmax:
-        evalfmax = maxEvalsFactor
-
-    filename = os.path.join(outputdir,'pprldistr_%s' %(info))
-    fig = plt.figure()
-    legend = []
-    for j in range(len(valuesOfInterest)):
-        kwargs = rldStyles[j].copy()
-        kwargs['marker'] = '+'
-        tmp = plotRLDistr(dsList0, valuesOfInterest[j], evalfmax, **kwargs)
-
-        if not tmp is None:
-            plt.setp(tmp, 'label', None) # Hack for the legend
+        filename = os.path.join(outputdir,'pprldistr_%02dD_%s' % (d, info))
+        fig = plt.figure()
+        for j in range(len(valuesOfInterest)):
+            tmp = plotRLDistr(dictdim0[d], valuesOfInterest[j], marker='+',
+                              **rldStyles[j % len(rldStyles)])
+            plt.setp(tmp[-1], label=None) # Remove automatic legend
+            # Mods are added after to prevent them from appearing in the legend
             plt.setp(tmp, markersize=20.,
                      markeredgewidth=plt.getp(tmp[-1], 'linewidth'),
                      markeredgecolor=plt.getp(tmp[-1], 'color'),
                      markerfacecolor='none')
-
-        kwargs = rldStyles[j].copy()
-        kwargs['marker'] = 'o'
-        tmp = plotRLDistr(dsList1, valuesOfInterest[j], evalfmax, **kwargs)
-
-        if not tmp is None:
-            ## Hack for the legend.
-            plt.setp(tmp[-1], 'marker', '',
-                     'label', ('%+d' % (np.log10(valuesOfInterest[j][1]))))
+    
+            tmp = plotRLDistr(dictdim1[d], valuesOfInterest[j], marker='o',
+                              **rldStyles[j % len(rldStyles)])
+            # modify the automatic legend: remover marker and change text
+            plt.setp(tmp[-1], marker='', label=('%+d' % (np.log10(valuesOfInterest[j][1]))))
+            # Mods are added after to prevent them from appearing in the legend
             plt.setp(tmp, markersize=15.,
                      markeredgewidth=plt.getp(tmp[-1], 'linewidth'),
                      markeredgecolor=plt.getp(tmp[-1], 'color'),
                      markerfacecolor='none')
-
-    funcs = set(i.funcId for i in dsList0) | set(i.funcId for i in dsList1)
-    text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
-
-    if isBestAlgorithmFound:
-        d = set.union(set(i.dim for i in dsList0),
-                      set(i.dim for i in dsList1)).pop() # Get only one element...
-        for alg in dictbestalg:
-            x = []
-            nn = 0
-            try:
-                tmp = dictbestalg[alg]
-                for f in funcs:
-                    tmp[f][d] # simply test that they exists
-            except KeyError:
-                continue
-
-            for f in funcs:
-                tmp2 = tmp[f][d][0][1:]
-                # [0], because the maximum #evals is also recorded
-                # [1:] because the target function value is recorded
-                x.append(tmp2[np.isnan(tmp2) == False])
-                nn += len(tmp2)
-
-            if x:
-                x.append([(evalfmax*d) ** 1.05])
-                x = np.hstack(x)
-
-                plotECDF(x[np.isfinite(x)]/d, nn,
-                         color=refcolor, ls='-', zorder=-1)
-
-    plt.axvline(max(i.mMaxEvals()/i.dim for i in dsList0), ls='--', color='k')
-    plt.axvline(max(i.mMaxEvals()/i.dim for i in dsList1), color='k')
-    beautifyRLD()
-    plt.legend(loc='best')
-    plt.xlim(1.0, evalfmax ** 1.05)
-    plt.text(0.5, 0.98, text, horizontalalignment="center",
-             verticalalignment="top", transform=plt.gca().transAxes)
-             #bbox=dict(ec='k', fill=False), 
-    saveFigure(filename, figFormat=figformat, verbose=verbose)
-
-    plt.close(fig)
+    
+        funcs = set(i.funcId for i in dictdim0[d]) | set(i.funcId for i in dictdim1[d])
+        text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
+        plotBest2009(d, funcs)
+        #plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim0[d]), ls='--', color='k')
+        #plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim1[d]), color='k')
+        plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim0[d]),
+                    marker='+', markersize=20., color='k',
+                    markeredgewidth=plt.getp(tmp[-1], 'linewidth',))
+        plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim1[d]),
+                    marker='o', markersize=15., color='k', markerfacecolor='None',
+                    markeredgewidth=plt.getp(tmp[-1], 'linewidth'))
+        plt.legend(loc='best')
+        plt.text(0.5, 0.98, text, horizontalalignment="center",
+                 verticalalignment="top", transform=plt.gca().transAxes)
+                 #bbox=dict(ec='k', fill=False), 
+        beautifyRLD(evalfmax)
+        saveFigure(filename, figFormat=figformat, verbose=verbose)
+        plt.close(fig)
 
 def beautify():
     """Format the figure of the run length distribution.
@@ -412,31 +410,18 @@ def beautify():
     axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of trials')
     # Grid options
-    xtic = axisHandle.get_xticks()
-    newxtic = []
-    for j in xtic:
-        newxtic.append('%d' % round(np.log10(j)))
-    axisHandle.set_xticklabels(newxtic)
-
+    logxticks()
     beautifyECDF()
 
     plt.subplot(122)
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-
     xmin, fmax = plt.xlim()
     plt.xlim(1., fmax)
-
     axisHandle.set_xlabel('log10 of Df / Dftarget')
     beautifyECDF()
-
-    xtic = axisHandle.get_xticks()
-    newxtic = []
-    for j in xtic:
-        newxtic.append('%d' % round(np.log10(j)))
-    axisHandle.set_xticklabels(newxtic)
+    logxticks()
     axisHandle.set_yticklabels(())
-
     plt.gcf().set_size_inches(16.35, 6.175)
 #     try:
 #         set_trace()
@@ -445,7 +430,7 @@ def beautify():
 #         set_trace()
 #         plt.setp(plt.gcf(), 'figsize', (16.35, 6.))
 
-def plot(dsList, valuesOfInterest=(10., 1e-1, 1e-4, 1e-8), **kwargs):
+def plot(dsList, valuesOfInterest=(10., 1e-1, 1e-4, 1e-8), marker=''):
     """Plot ECDF of final function values and evaluations."""
 
     res = []
@@ -455,7 +440,7 @@ def plot(dsList, valuesOfInterest=(10., 1e-1, 1e-4, 1e-8), **kwargs):
 
     legend = []
     for j in range(len(valuesOfInterest)):
-        tmp = plotRLDistr(dsList, valuesOfInterest[j], evalfmax,
+        tmp = plotRLDistr(dsList, valuesOfInterest[j], marker=marker,
                           **rldStyles[j % len(rldStyles)])
     res.extend(tmp)
 
@@ -478,14 +463,45 @@ def plot(dsList, valuesOfInterest=(10., 1e-1, 1e-4, 1e-8), **kwargs):
     maxEvalsF = np.power(10, np.arange(0, tmp))
 
     for j in range(len(maxEvalsF)):
-        tmp = plotFVDistr(dsList, valuesOfInterest[-1], maxEvalsF[j],
+        tmp = plotFVDistr(dsList, valuesOfInterest[-1], maxEvalsF[j], marker=marker,
                           **rldUnsuccStyles[j % len(rldUnsuccStyles)])
     plt.text(0.98, 0.02, text, horizontalalignment="right",
              transform=plt.gca().transAxes)
 
+def plotBest2009(dim, funcs):
+    """Display BBOB 2009 data."""
+
+    if isBestAlgorithmFound:
+        for alg in dictbestalg:
+            x = []
+            nn = 0
+            try:
+                tmp = dictbestalg[alg]
+                for f in funcs:
+                    tmp[f][dim] # simply test that they exists
+            except KeyError:
+                continue
+
+            for f in funcs:
+                tmp2 = tmp[f][dim][0][1:]
+                # [0], because the maximum #evals is also recorded
+                # [1:] because the target function value is recorded
+                x.append(tmp2[np.isnan(tmp2) == False])
+                nn += len(tmp2)
+
+            if x:
+                x = np.hstack(x)
+                plotECDF(x[np.isfinite(x)] / float(dim), nn,
+                         color=refcolor, ls='-', zorder=-1)
+
+
 def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
          info='default', verbose=True):
     """Generate figures of empirical cumulative distribution functions.
+    
+    This method has a feature which allows to keep the same boundaries
+    for the x-axis. This makes sense when dealing with different
+    functions or subsets of functions for one given dimension.
 
     :param DataSetList dsList: list of DataSet instances to process.
     :param seq valuesOfInterest: target function values to be displayed
@@ -506,91 +522,50 @@ def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
     #plt.rc("font", size=20)
     #plt.rc("legend", fontsize=20)
 
-    maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in dsList)
-    #maxEvalsFactorCeil = np.power(10,
-                                     #np.ceil(np.log10(maxEvalsFactor)))
-
-    if isStoringXMax:
-        global evalfmax
-    else:
-        evalfmax = None
-
-    if not evalfmax:
-        evalfmax = maxEvalsFactor
-
-    filename = os.path.join(outputdir,'pprldistr_%s' %(info))
-    fig = plt.figure()
-    legend = []
-    for j in range(len(valuesOfInterest)):
-        tmp = plotRLDistr(dsList, valuesOfInterest[j], evalfmax,
-                          **rldStyles[j % len(rldStyles)])
-        #if not tmp is None:
-            #for attr in rldStyles[j % len(rldStyles)]:
-                #plt.setp(tmp, attr, rldStyles[j % len(rldStyles)][attr])
-
-    funcs = list(i.funcId for i in dsList)
-    text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
-
-    if isBestAlgorithmFound:
-        d = set(i.dim for i in dsList).pop() # Get only one element...
-        for alg in dictbestalg:
-            x = []
-            nn = 0
-            try:
-                tmp = dictbestalg[alg]
-                for f in funcs:
-                    tmp[f][d] # simply test that they exists
-            except KeyError:
-                continue
-
-            for f in funcs:
-                tmp2 = tmp[f][d][0][1:]
-                # [0], because the maximum #evals is also recorded
-                # [1:] because the target function value is recorded
-                x.append(tmp2[np.isnan(tmp2) == False])
-                nn += len(tmp2)
-
-            if x:
-                x.append([(evalfmax*d) ** 1.05])
-                x = np.hstack(x)
-
-                plotECDF(x[np.isfinite(x)]/float(d), nn,
-                         color=refcolor, ls='-', zorder=-1)
-
-    plt.axvline(x=maxEvalsFactor, color='k')
-    plt.legend(loc='best')
-    plt.xlim(1.0, evalfmax ** 1.05)
-    plt.text(0.5, 0.98, text, horizontalalignment="center",
-             verticalalignment="top", transform=plt.gca().transAxes)
-             #bbox=dict(ec='k', fill=False), 
-    beautifyRLD()
-    saveFigure(filename, figFormat=figformat, verbose=verbose)
-
-    plt.close(fig)
-
-    filename = os.path.join(outputdir,'ppfvdistr_%s' %(info))
-    fig = plt.figure()
-    for j in range(len(valuesOfInterest)):
-        tmp = plotFVDistr(dsList, valuesOfInterest[j], evalfmax,
-                          **rldStyles[j % len(rldStyles)])
-
-    tmp = np.floor(np.log10(evalfmax))
-    # coloring left to right:
-    #maxEvalsF = np.power(10, np.arange(tmp, 0, -1) - 1)
-    # coloring right to left:
-    maxEvalsF = np.power(10, np.arange(0, tmp))
-
-    #set_trace()
-    for j in range(len(maxEvalsF)):
-        tmp = plotFVDistr(dsList, valuesOfInterest[-1], maxEvalsF[j],
-                          **rldUnsuccStyles[j % len(rldUnsuccStyles)])
-
-    plt.text(0.98, 0.02, text, horizontalalignment="right",
-             transform=plt.gca().transAxes)
-             #bbox=dict(ec='k', fill=False), 
-    beautifyFVD(isStoringXMax=isStoringXMax, ylabel=False)
-    saveFigure(filename, figFormat=figformat, verbose=verbose)
-
-    plt.close(fig)
-
-    #plt.rcdefaults()
+    for d, dictdim in dsList.dictByDim().iteritems():
+        maxEvalsFactor = max(i.mMaxEvals() / d for i in dictdim)
+        if isStoringXMax:
+            global evalfmax
+        else:
+            evalfmax = None
+        if not evalfmax:
+            evalfmax = maxEvalsFactor
+    
+        filename = os.path.join(outputdir,'pprldistr_%02dD_%s' % (d, info))
+        fig = plt.figure()
+        for j in range(len(valuesOfInterest)):
+            tmp = plotRLDistr(dictdim, valuesOfInterest[j],
+                              **rldStyles[j % len(rldStyles)])
+    
+        funcs = list(i.funcId for i in dictdim)
+        text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
+        plotBest2009(d, funcs)
+        plt.axvline(x=maxEvalsFactor, color='k')
+        plt.legend(loc='best')
+        plt.text(0.5, 0.98, text, horizontalalignment="center",
+                 verticalalignment="top", transform=plt.gca().transAxes)
+                 #bbox=dict(ec='k', fill=False), 
+        beautifyRLD(evalfmax)
+        saveFigure(filename, figFormat=figformat, verbose=verbose)
+        plt.close(fig)
+    
+        filename = os.path.join(outputdir,'ppfvdistr_%02dD_%s' % (d, info))
+        fig = plt.figure()
+        for j in range(len(valuesOfInterest)):
+            tmp = plotFVDistr(dictdim, valuesOfInterest[j], evalfmax,
+                              **rldStyles[j % len(rldStyles)])
+        tmp = np.floor(np.log10(evalfmax))
+        # coloring left to right:
+        #maxEvalsF = np.power(10, np.arange(tmp, 0, -1) - 1)
+        # coloring right to left:
+        maxEvalsF = np.power(10, np.arange(0, tmp))
+        for j in range(len(maxEvalsF)):
+            tmp = plotFVDistr(dictdim, valuesOfInterest[-1], maxEvalsF[j],
+                              **rldUnsuccStyles[j % len(rldUnsuccStyles)])    
+        plt.text(0.98, 0.02, text, horizontalalignment="right",
+                 transform=plt.gca().transAxes)
+                 #bbox=dict(ec='k', fill=False), 
+        beautifyFVD(isStoringXMax=isStoringXMax, ylabel=False)
+        saveFigure(filename, figFormat=figformat, verbose=verbose)
+        plt.close(fig)
+        #plt.rcdefaults()

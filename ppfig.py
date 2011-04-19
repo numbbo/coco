@@ -6,7 +6,7 @@
 from operator import itemgetter
 from itertools import groupby
 import warnings
-import numpy
+import numpy as np
 from matplotlib import pyplot as plt
 from pdb import set_trace
 from bbob_pproc import bootstrap
@@ -33,7 +33,7 @@ def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
             except IOError:
                 warnings.warn('%s is not writeable.' % (filename + '.' + entry))
 
-def plotUnifLogXMarkers(x, y, nbperdecade, logscale=True, **kwargs):
+def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
     """Proxy plot function: markers are evenly spaced on the log x-scale
 
     This method generates plots with markers regularly spaced on the
@@ -44,71 +44,83 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=True, **kwargs):
     with the line style, the second for the markers and the last for the
     label.
 
-    """
+    This function only works with monotonous graph.
 
+    """
     res = plt.plot(x, y, **kwargs)
 
-    def downsample(xdata, ydata, logscale=True):
-        """Downsample arrays of data."""
+    def downsample(xdata, ydata):
+        """Downsample arrays of data.
+        
+        From xdata and ydata return x and y which have only nbperdecade
+        elements times the number of decades in xdata.
 
+        """
         # powers of ten 10**(i/nbperdecade)
-        minidx = numpy.ceil(numpy.log10(min(xdata)) * nbperdecade)
-        maxidx = numpy.floor(numpy.log10(max(xdata)) * nbperdecade)
-        alignmentdata = 10.**(numpy.arange(minidx, maxidx + 1)/nbperdecade)
-        xdataarray = numpy.array(xdata)
-
-        # Look in the original data
-        res = []
-        for i in alignmentdata:
-            diffarray = xdataarray - i
-            assert (diffarray >= 0.).any() and (diffarray <= 0.).any()
-            if (diffarray == 0.).any():
-                idx = (diffarray == 0.)
+        # get segments coordinates x1, x2, y1, y2
+        if 'steps' in plt.getp(res[0], 'drawstyle'): # other conditions?
+            xdata = np.hstack((10 ** (np.floor(np.log10(xdata[0]) * nbperdecade) / nbperdecade),
+                               xdata,
+                               10 ** (np.ceil(np.log10(xdata[-1]) * nbperdecade) / nbperdecade)))
+            ydata = np.hstack((ydata[0], ydata, ydata[-1]))
+        tmpdata = np.vstack((xdata, ydata)).T
+        it = groupby(tmpdata, lambda x: x[0])
+        seg = []
+        try:
+            k0, g0 = it.next()
+            g0 = np.vstack(g0)[:, 1]
+            while True:
+                if len(g0) > 1:
+                    seg.append(((k0, k0), (min(g0), max(g0))))
+                k, g = it.next()
+                g = np.vstack(g)[:, 1]
+                seg.append(((k0, k), (g0[-1], g[0])))
+                k0 = k
+                g0 = g
+        except StopIteration:
+            pass
+        np.seterr(all='raise')
+        downx = []
+        downy = []
+        for segx, segy in seg:
+            minidx = np.ceil(np.log10(min(segx[0], segx[1])) * nbperdecade)
+            maxidx = np.floor(np.log10(max(segx[0], segx[1])) * nbperdecade)
+            intermx = 10. ** (np.arange(minidx, maxidx + 1) / nbperdecade)
+            downx.extend(intermx)
+            if plt.getp(res[0], 'drawstyle') in ('steps', 'steps-pre'):
+                downy.extend(len(intermx) * [max(segy[0], segy[1])])
+            elif plt.getp(res[0], 'drawstyle') == 'steps-post':
+                downy.extend(len(intermx) * [min(segy[0], segy[1])])
+            elif plt.getp(res[0], 'drawstyle') == 'steps-mid':
                 if logscale:
-                    y = 10.**((numpy.log10(max(ydata[idx])) + numpy.log10(min(ydata[idx])))/2.)
+                    ymid = 10. ** ((np.log10(segy[0]) + np.log10(segy[1])) / 2.)
                 else:
-                    y = (max(ydata[idx]) + min(ydata[idx]))/2.
-            else:
-                # find the indices of the element that is the closest greater than i
-                idx1 = numpy.nonzero((diffarray == min(diffarray[diffarray >= 0.])))[0]
-                # find the indices of the element that is the closest smaller than i
-                idx2 = numpy.nonzero((diffarray == max(diffarray[diffarray <= 0.])))[0]
-                x1 = xdata[idx1][0]
-                x2 = xdata[idx2][0]
-                if abs(min(idx1)-max(idx2)) > abs(max(idx1)-min(idx2)):
-                    y1 = ydata[max(idx1)]
-                    y2 = ydata[min(idx2)]
-                else:
-                    y1 = ydata[min(idx1)]
-                    y2 = ydata[max(idx2)]
+                    ymid = (segy[0] + segy[1]) / 2.
+                downy.extend(len(intermx) * [ymid])
+            elif plt.getp(res[0], 'drawstyle') == 'default':
                 # log interpolation / semi-log
                 if logscale:
-                    y = 10.**(numpy.log10(y1) + (numpy.log10(i) - numpy.log10(x1)) * (numpy.log10(y2) - numpy.log10(y1))/(numpy.log10(x2) - numpy.log10(x1)))
+                    tmp = 10.**(np.log10(segy[0]) + (np.log10(intermx) - np.log10(segx[0])) * (np.log10(segy[1]) - np.log10(segy[0])) / (np.log10(segx[1]) - np.log10(segx[0])))
                 else:
-                    y = y1 + (numpy.log10(i) - numpy.log10(x1)) * (y2 - y1)/(numpy.log10(x2) - numpy.log10(x1))
-            res.append(y)
-
-        return alignmentdata, res
+                    tmp = segy[0] + (np.log10(intermx) - np.log10(segx[0])) * (segy[1] - segy[0]) / (np.log10(segx[1]) - np.log10(segx[0]))
+                downy.extend(tmp)
+        return downx, downy
 
     if 'marker' in kwargs and len(x) > 0:
-        x2, y2 = downsample(x, y, logscale=logscale)
+        x2, y2 = downsample(x, y)
         try:
-            res2 = plt.plot(x2, y2, **kwargs)
+            res2 = plt.plot(x2, y2)
         except ValueError:
             raise # TODO
-        for attr in ('linestyle', 'marker', 'markeredgewidth',
-                     'markerfacecolor', 'markeredgecolor',
-                     'markersize', 'color', 'linewidth', 'markeredgewidth'):
-            plt.setp(res2, attr, plt.getp(res[0], attr))
+        for i in res2:
+            i.update_from(res[0]) # copy all attributes of res
         plt.setp(res2, linestyle='', label='')
         res.extend(res2)
 
     if 'label' in kwargs:
         res3 = plt.plot([], [], **kwargs)
-        for attr in ('linestyle', 'marker', 'markeredgewidth',
-                     'markerfacecolor', 'markeredgecolor',
-                     'markersize', 'color', 'linewidth', 'markeredgewidth'):
-            plt.setp(res3, attr, plt.getp(res[0], attr))
+        for i in res3:
+            i.update_from(res[0]) # copy all attributes of res
         res.extend(res3)
 
     plt.setp(res[0], marker='', label='')
@@ -154,6 +166,22 @@ def groupByRange(data):
 
     return res
 
+def logxticks():
+    """Modify log-scale figure xticks from 10^i to i.
+    
+    This is to have xticks that are more visible.
+    Modifying the x-limits of the figure after calling this method will
+    not update the ticks.
+    Please make sure the xlabel is changed accordingly.
+    
+    """
+    _xticks = plt.xticks()
+    newxticks = []
+    for j in _xticks[0]:
+        newxticks.append('%d' % round(np.log10(j)))
+    plt.xticks(_xticks[0], newxticks)
+    # TODO: check the xlabel is changed accordingly?
+
 def beautify():
     """ Customize a figure by adding a legend, axis label, etc."""
     # TODO: what is this function for?
@@ -172,7 +200,7 @@ def beautify():
     tmp = axisHandle.get_yticks()
     tmp2 = []
     for i in tmp:
-        tmp2.append('%d' % round(numpy.log10(i)))
+        tmp2.append('%d' % round(np.log10(i)))
     axisHandle.set_yticklabels(tmp2)
     axisHandle.set_ylabel('log10 of ERT')
 
@@ -189,7 +217,7 @@ def generateData(dataSet, targetFuncValue):
 
     it = iter(reversed(dataSet.evals))
     i = it.next()
-    prev = numpy.array([numpy.nan] * len(i))
+    prev = np.array([np.nan] * len(i))
 
     while i[0] <= targetFuncValue:
         prev = i
@@ -199,22 +227,22 @@ def generateData(dataSet, targetFuncValue):
             break
 
     data = prev[1:].copy() # keep only the number of function evaluations.
-    succ = (numpy.isnan(data) == False)
+    succ = (np.isnan(data) == False)
     if succ.any():
         med = bootstrap.prctile(data[succ], 50)[0]
         #Line above was modified at rev 3050 to make sure that we consider only
         #successful trials in the median
     else:
-        med = numpy.nan
+        med = np.nan
 
-    data[numpy.isnan(data)] = dataSet.maxevals[numpy.isnan(data)]
+    data[np.isnan(data)] = dataSet.maxevals[np.isnan(data)]
 
     res = []
     res.extend(bootstrap.sp(data, issuccessful=succ, allowinf=False))
-    res.append(numpy.mean(data)) #mean(FE)
+    res.append(np.mean(data)) #mean(FE)
     res.append(med)
 
-    return numpy.array(res)
+    return np.array(res)
 
 def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
          isbyinstance=True, kwargs={}):
@@ -241,8 +269,8 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
                 tmp = StrippedUpDS()
                 idxs = list(k + 1 for k in idx)
                 idxs.insert(0, 0)
-                tmp.evals = i.evals[:, numpy.r_[idxs]].copy()
-                tmp.maxevals = i.maxevals[numpy.ix_(idx)].copy()
+                tmp.evals = i.evals[:, np.r_[idxs]].copy()
+                tmp.maxevals = i.maxevals[np.ix_(idx)].copy()
                 res.setdefault(j, [])
                 res.get(j).append(tmp)
         return res
@@ -260,14 +288,14 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
             for j in dsListByX:
                 tmp = generateData(j, valuesOfInterest[i])
                 if tmp[2] > 0: #Number of success is larger than 0
-                    succ.append(numpy.append(x, tmp))
+                    succ.append(np.append(x, tmp))
                     if tmp[2] < j.nbRuns():
                         displaynumber.append((x, tmp[0], tmp[2]))
                 else:
-                    unsucc.append(numpy.append(x, tmp))
+                    unsucc.append(np.append(x, tmp))
 
         if succ:
-            tmp = numpy.vstack(succ)
+            tmp = np.vstack(succ)
             #ERT
             res.extend(plt.plot(tmp[:, 0], tmp[:, 1], **kwargs))
             #median
@@ -278,12 +306,12 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
 
         # To have the legend displayed whatever happens with the data.
         tmp = plt.plot([], [], **kwargs)
-        plt.setp(tmp, label=' %+d' % (numpy.log10(valuesOfInterest[i])))
+        plt.setp(tmp, label=' %+d' % (np.log10(valuesOfInterest[i])))
         res.extend(tmp)
 
         #Only for the last target function value
         if unsucc:
-            tmp = numpy.vstack(unsucc) # tmp[:, 0] needs to be sorted!
+            tmp = np.vstack(unsucc) # tmp[:, 0] needs to be sorted!
             res.extend(plt.plot(tmp[:, 0], tmp[:, 1], **kwargs))
 
     if displaynumber: #displayed only for the smallest valuesOfInterest

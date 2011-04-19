@@ -336,9 +336,6 @@ def main(argv=None):
             dictDim0 = dsList0.dictByDim()
             dictDim1 = dsList1.dictByDim()
 
-            if isConv:
-                ppconverrorbars.main(dictAlg,outputdir,verbose)
-
             # ECDFs of ERT ratios
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
                 if dim in inset.rldDimsOfInterest:
@@ -381,7 +378,7 @@ def main(argv=None):
                     try:
                         pprldistr.comp(dictDim0[dim], dictDim1[dim],
                                        inset.rldValsOfInterest, True,
-                                       outputdir, '%02dD_all' % dim, verbose)
+                                       outputdir, 'all', verbose)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.'
                                       % (dim))
@@ -394,7 +391,7 @@ def main(argv=None):
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr.comp(dictFG0[fGroup], dictFG1[fGroup],
                                        inset.rldValsOfInterest, True, outputdir,
-                                       '%02dD_%s' % (dim, fGroup), verbose)
+                                       '%s' % fGroup, verbose)
 
                     # ECDFs per noise groups
                     dictFN0 = dictDim0[dim].dictByNoise()
@@ -402,9 +399,12 @@ def main(argv=None):
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr.comp(dictFN0[fGroup], dictFN1[fGroup],
                                        inset.rldValsOfInterest, True, outputdir,
-                                       '%02dD_%s' % (dim, fGroup), verbose)
+                                       '%s' % fGroup, verbose)
 
             print "ECDF dashed-solid graphs done."
+
+        if isConv:
+            ppconverrorbars.main(dictAlg,outputdir,verbose)
 
         if istable:
             dictNG0 = dsList0.dictByNoise()
@@ -462,4 +462,3 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main())
-
