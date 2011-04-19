@@ -34,7 +34,7 @@ if __name__ == "__main__":
 from bbob_pproc import pprldistr
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
-
+from bbob_pproc import ppconverrorbars
 import matplotlib.pyplot as plt
 
 __all__ = ['main']
@@ -42,7 +42,7 @@ __all__ = ['main']
 # Used by getopt:
 shortoptlist = "hvo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "fig-only",
-               "rld-only", "tab-only", "sca-only", "verbose", "settings="]
+               "rld-only", "tab-only", "sca-only", "verbose", "settings=", "conv"]
 
 #CLASS DEFINITIONS
 
@@ -113,6 +113,12 @@ def main(argv=None):
             comparison tables scatter plot figures only. Any combination
             of these options results in no output.
 
+        --conv 
+
+            if this option is chosen addtitionally convergence
+            plots for each function and algorithm are generated.
+            
+
     Exceptions raised:
 
     *Usage* -- Gives back a usage message.
@@ -166,6 +172,7 @@ def main(argv=None):
         verbose = False
         outputdir = 'ppdata2'
         inputsettings = 'color'
+        isConv= False
 
         #Process options
         for o, a in opts:
@@ -200,6 +207,8 @@ def main(argv=None):
                 isNoiseFree = True
             elif o == "--settings":
                 inputsettings = a
+            elif o == "--conv":
+                isConv = True
             else:
                 assert False, "unhandled option"
 
@@ -326,6 +335,9 @@ def main(argv=None):
                               'ECDF figures.')
             dictDim0 = dsList0.dictByDim()
             dictDim1 = dsList1.dictByDim()
+
+            if isConv:
+                ppconverrorbars.main(dictAlg,outputdir,verbose)
 
             # ECDFs of ERT ratios
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):

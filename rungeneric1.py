@@ -33,6 +33,7 @@ if __name__ == "__main__":
 
 from bbob_pproc import pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from bbob_pproc.pproc import DataSetList
+from bbob_pproc import ppconverrorbars
 
 import matplotlib.pyplot as plt
 
@@ -42,7 +43,7 @@ __all__ = ['main']
 shortoptlist = "hvpfo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
                "fig-only", "rld-only", "los-only", "crafting-effort=",
-               "pickle", "verbose", "final", "settings="]
+               "pickle", "verbose", "final", "settings=", "conv"]
 
 #CLASS DEFINITIONS
 
@@ -128,6 +129,12 @@ def main(argv=None):
             distribution figures, ERT loss ratio figures only. A
             combination of any two of these options results in no output
 
+        --conv 
+
+            if this option is chosen addtitionally convergence
+            plots for each function and algorithm are generated.
+            
+
     Exceptions raised:
 
     *Usage* -- Gives back a usage message.
@@ -196,6 +203,7 @@ def main(argv=None):
         isNoisy = False
         isNoiseFree = False
         inputsettings = 'color'
+        isConv = False
 
         #Process options
         for o, a in opts:
@@ -238,6 +246,8 @@ def main(argv=None):
                     raise Usage('Expect a valid float for flag crafting-effort.')
             elif o == "--settings":
                 inputsettings = a
+            elif o == "--conv":
+                isConv = True
             else:
                 assert False, "unhandled option"
 
@@ -289,6 +299,7 @@ def main(argv=None):
                                   'of function F%d.' %(i.funcId))
 
         dictAlg = dsList.dictByAlg()
+
         if len(dictAlg) > 1:
             warnings.warn('Data with multiple algId %s ' % (dictAlg) +
                           'will be processed together.')
@@ -307,6 +318,9 @@ def main(argv=None):
 
         if isPickled:
             dsList.pickle(verbose=verbose)
+
+        if isConv:
+            ppconverrorbars.main(dictAlg, outputdir, verbose)
 
         if isfigure:
             #ERT/dim vs dim.
