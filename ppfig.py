@@ -79,7 +79,6 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
                 g0 = g
         except StopIteration:
             pass
-        np.seterr(all='raise')
         downx = []
         downy = []
         for segx, segy in seg:
