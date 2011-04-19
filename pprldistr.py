@@ -430,43 +430,43 @@ def beautify():
 #         set_trace()
 #         plt.setp(plt.gcf(), 'figsize', (16.35, 6.))
 
-def plot(dsList, valuesOfInterest=(10., 1e-1, 1e-4, 1e-8), marker=''):
-    """Plot ECDF of final function values and evaluations."""
+def plot(dsList, targets=(10., 1e-1, 1e-4, 1e-8), **plotArgs):
+    """Plot ECDF of evaluations and final function values."""
 
+    assert (len(dsList.dictByDim()) == 1,
+            'Cannot display different dimensionalities together')
     res = []
+
     plt.subplot(121)
     maxEvalsFactor = max(i.mMaxEvals()/i.dim for i in dsList)
     evalfmax = maxEvalsFactor
-
-    legend = []
     for j in range(len(valuesOfInterest)):
-        tmp = plotRLDistr(dsList, valuesOfInterest[j], marker=marker,
+        tmp = plotRLDistr(dsList, valuesOfInterest[j],
                           **rldStyles[j % len(rldStyles)])
-    res.extend(tmp)
-
+        plt.setp(tmp, **plotArgs)
+        res.extend(tmp)
+    res.append(plt.axvline(x=maxEvalsFactor, color='k', **plotArgs))
     funcs = list(i.funcId for i in dsList)
     text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
-
-    plt.axvline(x=maxEvalsFactor, color='k')
-    plt.text(0.5, 0.98, text, horizontalalignment="center",
-             verticalalignment="top", transform=plt.gca().transAxes)
-    plt.xlim(1.0, maxEvalsFactor ** 1.05)
+    res.append(plt.text(0.5, 0.98, text, horizontalalignment="center",
+                        verticalalignment="top", transform=plt.gca().transAxes))
 
     plt.subplot(122)
     for j in range(len(valuesOfInterest)):
         tmp = plotFVDistr(dsList, valuesOfInterest[j], evalfmax,
                           **rldStyles[j % len(rldStyles)])
-    res.extend(tmp)
-
+        plt.setp(tmp, **plotArgs)
+        res.extend(tmp)
     tmp = np.floor(np.log10(evalfmax))
     # coloring right to left:
     maxEvalsF = np.power(10, np.arange(0, tmp))
-
     for j in range(len(maxEvalsF)):
         tmp = plotFVDistr(dsList, valuesOfInterest[-1], maxEvalsF[j], marker=marker,
                           **rldUnsuccStyles[j % len(rldUnsuccStyles)])
-    plt.text(0.98, 0.02, text, horizontalalignment="right",
-             transform=plt.gca().transAxes)
+        plt.setp(tmp, **plotArgs)
+        res.extend(tmp)
+    res.append(plt.text(0.98, 0.02, text, horizontalalignment="right",
+                        transform=plt.gca().transAxes))
 
 def plotBest2009(dim, funcs):
     """Display BBOB 2009 data."""
@@ -493,7 +493,6 @@ def plotBest2009(dim, funcs):
                 x = np.hstack(x)
                 plotECDF(x[np.isfinite(x)] / float(dim), nn,
                          color=refcolor, ls='-', zorder=-1)
-
 
 def main(dsList, valuesOfInterest, isStoringXMax=False, outputdir='',
          info='default', verbose=True):
