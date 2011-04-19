@@ -33,6 +33,7 @@ from bbob_pproc import dataoutput, pproc
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.compall import ppperfprof, pptables, ppfigs
 from bbob_pproc.compall import organizeRTDpictures
+from bbob_pproc import ppconverrorbars
 
 import matplotlib.pyplot as plt
 
@@ -41,7 +42,7 @@ __all__ = ['main']
 # Used by getopt:
 shortoptlist = "hvo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
-               "per-only", "fig-only", "verbose", "settings="]
+               "per-only", "fig-only", "verbose", "settings=", "conv"]
 #CLASS DEFINITIONS
 
 class Usage(Exception):
@@ -112,6 +113,12 @@ def main(argv=None):
             figures of ERT/dim vs dim only. A combination of any two or
             more of these options results in no output.
 
+       --conv 
+
+            if this option is chosen addtitionally convergence
+            plots for each function and algorithm are generated.
+            
+
     Exceptions raised:
 
     *Usage* -- Gives back a usage message.
@@ -170,6 +177,7 @@ def main(argv=None):
         isTab = True
         isFig = True
         inputsettings = "color"
+        isConv = False
 
         #Process options
         for o, a in opts:
@@ -196,6 +204,8 @@ def main(argv=None):
                 isTab = False
             elif o == "--settings":
                 inputsettings = a
+            elif o == "--conv":
+                isConv = True
             else:
                 assert False, "unhandled option"
 
@@ -250,6 +260,9 @@ def main(argv=None):
         plt.rc("font", **inset.rcfont)
         plt.rc("legend", **inset.rclegend)
 
+        #convergence plots
+        if isConv:
+            ppconverrorbars.main(dictAlg,outputdir,verbose)
         # Performance profiles
         if isPer:
             # ECDFs per noise groups
