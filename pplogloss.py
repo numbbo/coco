@@ -560,7 +560,8 @@ def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
         print "Wrote ERT loss ratio table in %s." % filename
     return res
 
-def generateFigure(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True):
+def generateFigure(dsList, CrE, isStoringXRange, outputdir='.', info='default',
+                   verbose=True):
     """Generates ERT loss ratio figures.
 
     dsList is a list of the DataSet instances for a given algorithm in a
@@ -580,67 +581,57 @@ def generateFigure(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True
         evalf = None
 
     # do not aggregate over dimensions
-    D = set(i.dim for i in dsList).pop() # should have only one element
-    maxevals = max(max(i.ert[numpy.isinf(i.ert)==False]) for i in dsList)
-    EVALS = [2.*D]
-    EVALS.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals))))*D)
+    for d, dsdim in dsList.dictByDim().iteritems():
+        maxevals = max(max(i.ert[numpy.isinf(i.ert)==False]) for i in dsdim)
+        EVALS = [2.*d]
+        EVALS.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals))))*d)
 
-    if not evalf:
-        evalf = (numpy.log10(EVALS[0]/D), numpy.log10(EVALS[-1]/D))
+        if not evalf:
+            evalf = (numpy.log10(EVALS[0]/d), numpy.log10(EVALS[-1]/d))
+    
+        data = generateData(dsdim, EVALS, CrE)
+        ydata = []
+        for i in range(len(EVALS)):
+            #Aggregate over functions.
+            ydata.append(numpy.log10(list(data[f][i] for f in data)))
+    
+        xdata = numpy.log10(numpy.array(EVALS)/d)
+        xticklabels = ['']
+        xticklabels.extend('%d' % i for i in xdata[1:])
+        plot(xdata, ydata)
+    
+        filename = os.path.join(outputdir, 'pplogloss_%02dD_%s' % (d, info))
+        plt.xticks(xdata, xticklabels)
+        #Is there an upper bound?
+    
+        if len(set(dsdim.dictByFunc().keys())) >= 20:
+            #TODO: hopefully this means we are not considering function groups.
+            plt.text(0.01, 0.98, 'CrE = %5g' % CrE, fontsize=20,
+                     horizontalalignment='left', verticalalignment='top',
+                     transform = plt.gca().transAxes,
+                     bbox=dict(facecolor='w'))
+    
+        plt.axhline(1., color='k', ls='-', zorder=-1)
+        plt.axvline(x=numpy.log10(max(i.mMaxEvals()/d for i in dsdim)), color='k')
+        funcs = set(i.funcId for i in dsdim)
+        if len(funcs) > 1:
+            text = 'f%d-%d' %(min(funcs), max(funcs))
+        else:
+            text = 'f%d' %(funcs.pop())
+        plt.text(0.5, 0.93, text, horizontalalignment="center",
+                 transform=plt.gca().transAxes)
+        beautify(filename, evalf, fileFormat=figformat, verbose=verbose)
+    
+        #plt.show()
+        plt.close()
+    
+        #plt.rcdefaults()
 
-    #set_trace()
-    #EVALS.extend(numpy.power(10., numpy.arange(1, 10))*D)
-    #set_trace()
-    #if D == 3:
-        #set_trace()
-    data = generateData(dsList, EVALS, CrE)
-    #set_trace()
-    ydata = []
-    for i in range(len(EVALS)):
-        #Aggregate over functions.
-        ydata.append(numpy.log10(list(data[f][i] for f in data)))
-
-    xdata = numpy.log10(numpy.array(EVALS)/D)
-    xticklabels = ['']
-    xticklabels.extend('%d' % i for i in xdata[1:])
-    plot(xdata, ydata)
-    #a = plt.gca()
-    #a.set_yscale('log')
-
-    filename = os.path.join(outputdir, 'pplogloss_%s' % suffix)
-    plt.xticks(xdata, xticklabels)
-    #Is there an upper bound?
-    #ymax = max(EVALS)
-    #plt.plot(numpy.log10((2, float(ymax)/D)), (D * 2., ymax), color='k',
-             #ls=':', zorder=-1)
-
-    if len(set(dsList.dictByFunc().keys())) >= 20:
-        #TODO: hopefully this means we are not considering function groups.
-        plt.text(0.01, 0.98, 'CrE = %5g' % CrE, fontsize=20,
-                 horizontalalignment='left', verticalalignment='top',
-                 transform = plt.gca().transAxes,
-                 bbox=dict(facecolor='w'))
-
-    plt.axhline(1., color='k', ls='-', zorder=-1)
-    plt.axvline(x=numpy.log10(max(i.mMaxEvals()/D for i in dsList)), color='k')
-    funcs = set(i.funcId for i in dsList)
-    if len(funcs) > 1:
-        text = 'f%d-%d' %(min(funcs), max(funcs))
-    else:
-        text = 'f%d' %(funcs.pop())
-    plt.text(0.5, 0.93, text, horizontalalignment="center",
-             transform=plt.gca().transAxes)
-    beautify(filename, evalf, fileFormat=figformat, verbose=verbose)
-
-    #plt.show()
-    plt.close()
-
-    #plt.rcdefaults()
-
-def main(dsList, CrE, isStoringXRange, outputdir, suffix, verbose=True):
+def main(dsList, CrE, isStoringXRange, outputdir='.', info='default',
+         verbose=True):
     """Generates ERT loss ratio boxplot figures.
     
     Calls method generateFigure.
-    """
 
-    generateFigure(dsList, CrE, isStoringXRange, outputdir, suffix, verbose)
+    """
+    generateFigure(dsList, CrE, isStoringXRange, outputdir, info, verbose)

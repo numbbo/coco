@@ -43,11 +43,6 @@ import os
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
-try:
-    from matplotlib.transforms import blended_transform_factory as blend
-except ImportError:
-    # compatibility matplotlib 0.8
-    from matplotlib.transforms import blend_xy_sep_transform as blend
 from pdb import set_trace
 from bbob_pproc import bootstrap
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks

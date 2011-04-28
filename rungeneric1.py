@@ -43,7 +43,7 @@ __all__ = ['main']
 shortoptlist = "hvpfo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
                "fig-only", "rld-only", "los-only", "crafting-effort=",
-               "pickle", "verbose", "final", "settings=", "conv"]
+               "pickle", "verbose", "settings=", "conv"]
 
 #CLASS DEFINITIONS
 
@@ -83,57 +83,34 @@ def main(argv=None):
     can begin with, in any order, facultative option flags listed below.
 
         -h, --help
-
-            display this message
-
+            displays this message.
         -v, --verbose
-
             verbose mode, prints out all operations.
-
         -p, --pickle
-
             generates pickle post processed data files.
-
-        -o, --output-dir OUTPUTDIR
-
-            change the default output directory (:file:`ppdata1`) to 
-            :file:`OUTPUTDIR`
-
+        -o OUTPUTDIR, --output-dir=OUTPUTDIR
+            changes the default output directory (:file:`ppdata1`) to
+            :file:`OUTPUTDIR`.
         --crafting-effort=VALUE
-
             sets the crafting effort to VALUE (float). Otherwise the
-            user will be prompted. This flag is useful when running
-            this script in batch.
-
-        -f, --final
-
-            lengthens the bootstrapping process used as dispersion
-            measure in the generation of the tables. This might at least
-            double the time of the whole post-processing.
-
+            user will be prompted. This flag is useful when running this
+            script in batch.
         --noise-free, --noisy
-
-            restrain the post-processing to part of the data set only.
-
-        --settings SETTING
-
-            change the style of the output figures and tables. At the
-            moment only the only differences are in the colors of the
-            output figures. SETTINGS can be either "grayscale", "color"
-            or "black-white". The default setting is "color".
-
+            processes only part of the data.
+        --settings=SETTINGS
+            changes the style of the output figures and tables. At the
+            moment the only differences are  in the colors of the output
+            figures. SETTINGS can be either "grayscale", "color" or
+            "black-white". The default setting is "color".
         --tab-only, --fig-only, --rld-only, --los-only
-
             these options can be used to output respectively the TeX
             tables, convergence and ERTs graphs figures, run length
             distribution figures, ERT loss ratio figures only. A
-            combination of any two of these options results in no output
-
-        --conv 
-
-            if this option is chosen addtitionally convergence
-            plots for each function and algorithm are generated.
-            
+            combination of any two of these options results in no
+            output.
+        --conv
+            if this option is chosen, additionally convergence plots
+            for each function and algorithm are generated.
 
     Exceptions raised:
 
@@ -162,7 +139,7 @@ def main(argv=None):
 
       This will print out this help message.
 
-    * From the python interactive shell (requires that the path to this
+    * From the python interpreter (requires that the path to this
       package is in python search path)::
 
         >> import bbob_pproc as bb
@@ -197,7 +174,6 @@ def main(argv=None):
         islogloss = True
         isPostProcessed = False
         isPickled = False
-        isDraft = True
         verbose = False
         outputdir = 'ppdata1'
         isNoisy = False
@@ -216,8 +192,6 @@ def main(argv=None):
                 isPickled = True
             elif o in ("-o", "--output-dir"):
                 outputdir = a
-            elif o in ("-f", "--final"):
-                isDraft = False
             elif o == "--noisy":
                 isNoisy = True
             elif o == "--noise-free":
@@ -344,12 +318,7 @@ def main(argv=None):
             for noise, sliceNoise in dictNoise.iteritems():
                 pptable.main(sliceNoise, inset.tabDimsOfInterest, outputdir,
                              noise, verbose)
-            print "TeX tables",
-            if isDraft:
-                print ("(draft) done. To get final version tables, please "
-                       "use the -f option")
-            else:
-                print "done."
+            print "TeX tables done.",
 
         if isrldistr:
             dictNoise = dsList.dictByNoise()
@@ -401,13 +370,13 @@ def main(argv=None):
                         sliceDim = dictDim[d]
                     except KeyError:
                         continue
-                    info = '%02dD_%s' % (d, ng)
+                    info = '%s' % ng
                     pplogloss.main(sliceDim, CrE, True, outputdir, info,
                                    verbose=verbose)
                     pplogloss.generateTable(sliceDim, CrE, outputdir, info,
                                             verbose=verbose)
                     for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
-                        info = '%02dD_%s' % (d, fGroup)
+                        info = '%s' % fGroup
                         pplogloss.main(sliceFuncGroup, CrE, True, outputdir, info,
                                        verbose=verbose)
                     pplogloss.evalfmax = None #Resetting the max #fevalsfactor

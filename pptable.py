@@ -1,12 +1,29 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Module for generating tables used by rungeneric1.py."""
+"""Module for generating tables used by rungeneric1.py.
 
+The generated tables give the ERT and in brackets the 10% to 90%
+interquantile range divided by two of 100 simulated runs divided by the
+best ERT measured during BBOB-2009 (given in the respective first row)
+for different target precisions for different functions. If no algorithm
+in BBOB-2009 reached the target precision, the absolute values are
+given.
+
+The median number of conducted function evaluations is given in
+*italics*, if no run reached 1e-7.
+#succ is the number of trials that reached the target precision 1e-8
+**Bold** entries are statistically significantly better (according to
+the rank-sum test) compared to the best algorithm in BBOB-2009, with
+p = 0.05 or p = 1e-k where k > 1 is the number following the
+\downarrow symbol, with Bonferroni correction by the number of
+functions.
+
+"""
 from __future__ import absolute_import
 
 import os
-import numpy
+import numpy as np
 import matplotlib.pyplot as plt
 from bbob_pproc import bestalg, bootstrap
 from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
@@ -15,27 +32,124 @@ from bbob_pproc.bootstrap import ranksums
 
 from pdb import set_trace
 
+targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
+finaltarget = 1e-8 # value for determining the success ratio
 targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 targetf = 1e-8 # value for determining the success ratio
 samplesize = 3000 # TODO: change samplesize
 
-# TODO: split into different methods if possible.
+
+# def tablespec(targets):
+# 
+#     i = 0
+#     tspec = {'col%d' % i: {'what': 'fname', 'header': r'$\Delta f$', 'format': None}}
+#     for t in targets:
+#         i =  i + 1
+#         tspec.update({'col%d' % i: {'what': 'ERT ratio for df=%e' % t,
+#                                     'header': r'\multicolumn{2}{@{}c@{}}{1e%+d}' % (int(np.log10(t)),
+#                                     'format': writeFEval}})
+#     i = i + 1
+#     tspec.update({'col%d' %  i: {'what': 'nb of success', 'header': r'\#succ',
+#                                  'format': '%d'}})
+    
+
+def _treat(ds):
+    # Rec array: http://docs.scipy.org/doc/numpy/user/basics.rec.html
+    bestentry = bestalg.bestalgentries2009[(ds.dim, ds.funcId)]
+    bestert = bestentry.detERT(targets)
+    bestevals, bestalgs = bestentry.detEvals(targets)
+    bestfinaldata = bestentry.detEvals([finaltarget])[0][0]
+    ert = ds.detERT(targets)
+    evals = ds.detEvals(targets)
+    finaldata = ds.detEvals([finaltarget])[0]
+
+    dtype = []
+    bestdtype = []
+    for i, t in enumerate(targets):
+        dtype.append((('ERT ratio (iq 10-90), df=%e' % t, 'df=%e' % t), '2f')) 
+        bestdtype.append((('best ERT df=%e' % t, 'df=%e' % t), 'f'))
+    dtype.append((('nb success final target=%e' % t, 'finaltarget=%e' % t), 'i8'))
+    dtype.append(('nbruns', 'i8'))
+    bestdtype.append((('nb success finaltarget=%e' %e, 'finaltarget=%e' % t), 'i8'))
+    bestdtype.append(('nbruns', 'i8'))
+    besttable = np.zeros(1, dtype=bestdtype)
+    wholetable = np.zeros(1, dtype=dtype)
+    table = wholetable[0]
+
+    bestdata = list()
+    bestdata.extend(bestert)
+    bestdata.append(np.sum(np.isnan(bestfinaldata) == False))
+    bestdata.append(len(bestfinaldata))
+    besttable[0] = tuple(bestdata)
+
+    data = list()
+    for i, e in enumerate(evals): # loop over targets
+        unsucc = np.isnan(e)
+        bt = bootstrap.drawSP(e[unsucc == False], ds.maxevals[unsucc],
+                               (10, 90), samplesize)[0]
+        data.append((ert[i] / bestert[i], (bt[-1] - bt[0]) / 2. / bestert[i]))
+    data.append(np.sum(np.isnan(finaldata) == False))
+    data.append(ds.nbRuns())
+    table = tuple(data) # fill with tuple not list nor array!
+
+    # TODO: do the significance test thing here.
+    return besttable, wholetable
+
+def _table(data):
+    res = []
+    
+    return res
+
+def main2(dsList, dimsOfInterest, outputdir='.', info='', verbose=True):
+    """Generate a table of ratio ERT/ERTbest vs target precision.
+    
+    1 table per dimension will be generated.
+
+    Rank-sum tests table on "Final Data Points" for only one algorithm.
+    that is, for example, using 1/#fevals(ftarget) if ftarget was
+    reached and -f_final otherwise as input for the rank-sum test, where
+    obviously the larger the better.
+
+    """
+    # TODO: remove dimsOfInterest, was added just for compatibility's sake
+    if info:
+        info = '_' + info
+        # insert a separator between the default file name and the additional
+        # information string.
+    
+    if not bestalg.bestalgentries2009:
+        bestalg.loadBBOB2009()
+    for d, dsdim in dsList.dictByDim().iteritems():
+        dictfun = dsdim.dictByFunc()
+        res = []
+        for f, dsfun in sorted(dsdim.dictByFunc().iteritems()):
+            assert len(dsfun) == 1, ('Expect one-element DataSetList for a '
+                                     'given dimension and function')
+            ds = dsfun[0]
+            data = _treat(ds)
+            res = _table(data)
+        res = []
+        outputfile = os.path.join(outputdir, 'pptable_%02dD%s.tex' % (d, info))
+        f = open(outputfile, 'w')
+        f.write(res)
+        f.close()
+        if verbose:
+            print "Table written in %s" % outputfile
+
 def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     """Generate a table of ratio ERT/ERTbest vs target precision.
     
-    1 table per function and dimension will be generated.
+    1 table per dimension will be generated.
 
     Rank-sum tests table on "Final Data Points" for only one algorithm.
-    that is, for example, using 1/#fevals(ftarget) if ftarget was reached and
-    -f_final otherwise as input for the rank-sum test, where obviously the
-    larger the better.
+    that is, for example, using 1/#fevals(ftarget) if ftarget was
+    reached and -f_final otherwise as input for the rank-sum test, where
+    obviously the larger the better.
 
     """
     #TODO: check that it works for any reference algorithm?
     #in the following the reference algorithm is the one given in
     #bestalg.bestalgentries which is the virtual best of BBOB
-    #TODO: the method is long, split it if possible
-
     dictDim = dsList.dictByDim()
 
     if info:
@@ -49,12 +163,11 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
     header = [r'$\Delta f$']
     for i in targetsOfInterest:
-        header.append(r'\multicolumn{2}{@{}c@{}}{1e%+d}' % (int(numpy.log10(i))))
+        header.append(r'\multicolumn{2}{@{}c@{}}{1e%+d}'
+                      % (int(np.log10(i))))
     header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}')
 
     for d in dimsOfInterest:
-        # the table variable will store all data (in the form of a list of
-        # list of strings) for a result table.
         table = [header]
         extraeol = [r'\hline']
         try:
@@ -79,7 +192,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
             # write the success ratio for the reference alg
             tmp = bestalgentry.detEvals([targetf])[0][0]
-            tmp2 = numpy.sum(numpy.isnan(tmp) == False) # count the nb of success
+            tmp2 = np.sum(np.isnan(tmp) == False) # count the nb of success
             curline.append('%d' % (tmp2))
             if tmp2 > 0:
                 curline.append('/%d' % len(tmp))
@@ -101,9 +214,9 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             dispersion = []
             data = []
             for i in evals:
-                succ = (numpy.isnan(i) == False)
+                succ = (np.isnan(i) == False)
                 tmp = i.copy()
-                tmp[succ==False] = entry.maxevals[numpy.isnan(i)]
+                tmp[succ==False] = entry.maxevals[np.isnan(i)]
                 #set_trace()
                 data.append(bootstrap.sp(tmp, issuccessful=succ)[0])
                 #if not any(succ):
@@ -122,30 +235,30 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
                 nbstars = 0
                 z, p = testresbestvs1[i]
-                if ert - bestalgdata[i] < 0. and not numpy.isinf(bestalgdata[i]):
+                if ert - bestalgdata[i] < 0. and not np.isinf(bestalgdata[i]):
                     evals = entry.detEvals([targetsOfInterest[i]])[0]
-                    evals[numpy.isnan(evals)] = entry.maxevals[numpy.isnan(evals)]
+                    evals[np.isnan(evals)] = entry.maxevals[np.isnan(evals)]
                     bestevals = bestalgentry.detEvals([targetsOfInterest[i]])
                     bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
-                    bestevals[numpy.isnan(bestevals)] = bestalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
-                    evals = numpy.array(sorted(evals))[0:min(len(evals), len(bestevals))]
-                    bestevals = numpy.array(sorted(bestevals))[0:min(len(evals), len(bestevals))]
+                    bestevals[np.isnan(bestevals)] = bestalgentry.maxevals[bestalgalg][np.isnan(bestevals)]
+                    evals = np.array(sorted(evals))[0:min(len(evals), len(bestevals))]
+                    bestevals = np.array(sorted(bestevals))[0:min(len(evals), len(bestevals))]
 
                 #The conditions are now that ERT < ERT_best and
                 # all(sorted(FEvals_best) > sorted(FEvals_current)).
                 if ((nbtests * p) < 0.05 and ert - bestalgdata[i] < 0.
                     and z < 0.
-                    and (numpy.isinf(bestalgdata[i])
+                    and (np.isinf(bestalgdata[i])
                          or all(evals < bestevals))):
-                    nbstars = -numpy.ceil(numpy.log10(nbtests * p))
+                    nbstars = -np.ceil(np.log10(nbtests * p))
 
-                if numpy.isinf(bestalgdata[i]): # if the best did not solve the problem
+                if np.isinf(bestalgdata[i]): # if the best did not solve the problem
                     isBold = False
                     if nbstars > 0:
                        isBold = True
 
                     tmp = writeFEvalsMaxPrec(float(ert), 2)
-                    if not numpy.isinf(ert):
+                    if not np.isinf(ert):
                         tmp = r'\textit{%s}' % (tmp)
                         if isBold:
                             tmp = r'\textbf{%s}' % tmp
@@ -155,23 +268,23 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 else:
                     # Formatting
                     tmp = float(ert)/bestalgdata[i]
-                    assert not numpy.isnan(tmp)
+                    assert not np.isnan(tmp)
                     tableentry = writeFEvalsMaxPrec(tmp, 2)
 
                     isBold = False
                     if nbstars > 0:
                        isBold = True
 
-                    if numpy.isinf(tmp) and i == len(data)-1:
+                    if np.isinf(tmp) and i == len(data)-1:
                         tableentry = (tableentry
-                                      + r'\textit{%s}' % writeFEvals2(numpy.median(entry.maxevals), 2))
+                                      + r'\textit{%s}' % writeFEvals2(np.median(entry.maxevals), 2))
                         if isBold:
                             tableentry = r'\textbf{%s}' % tableentry
                         elif 11 < 3 and significance0vs1 < 0:
                             tableentry = r'\textit{%s}' % tableentry
                         tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                       % (alignment, tableentry))
-                    elif tableentry.find('e') > -1 or (numpy.isinf(tmp) and i != len(data) - 1):
+                    elif tableentry.find('e') > -1 or (np.isinf(tmp) and i != len(data) - 1):
                         if isBold:
                             tableentry = r'\textbf{%s}' % tableentry
                         elif 11 < 3 and significance0vs1 < 0:
@@ -213,7 +326,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     #else:
                         #tableentry += s
 
-                if dispersion[i] and not numpy.isinf(bestalgdata[i]):
+                if dispersion[i] and not np.isinf(bestalgdata[i]):
                     tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
                     tableentry += (r'${\scriptscriptstyle(%s)}$' % tmp)
 
@@ -228,7 +341,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 curline.append(tableentry)
 
                 #curline.append(tableentry)
-                #if dispersion[i] is None or numpy.isinf(bestalgdata[i]):
+                #if dispersion[i] is None or np.isinf(bestalgdata[i]):
                     #curline.append('')
                 #else:
                     #tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
@@ -237,7 +350,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             tmp = entry.evals[entry.evals[:, 0] <= targetf, 1:]
             try:
                 tmp = tmp[0]
-                curline.append('%d' % numpy.sum(numpy.isnan(tmp) == False))
+                curline.append('%d' % np.sum(np.isnan(tmp) == False))
             except IndexError:
                 curline.append('%d' % 0)
             curline.append('/%d' % entry.nbRuns())

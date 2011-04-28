@@ -366,3 +366,5 @@ def tableLaTeXStar(table, width, spec, extraeol=()):
     res = '\n'.join(res)
     return res
 
+class DataTable(list):
+    pass
