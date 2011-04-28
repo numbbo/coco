@@ -51,7 +51,7 @@ from __future__ import absolute_import
 #from bbob_pproc import ppsingle, ppfigdim, dataoutput
 from bbob_pproc.pproc import DataSetList, DataSet
 
-__all__ = ['load', 'info', 'pickle', 'systeminfo', 'DataSetList', 'DataSet']
+#__all__ = ['load', 'info', 'pickle', 'systeminfo', 'DataSetList', 'DataSet']
 
 def load(filename):
     """Create a :py:class:`DataSetList` instance from a file or folder.

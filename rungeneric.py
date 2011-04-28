@@ -96,11 +96,11 @@ def main(argv=None):
     output folder. This routine will:
 
     * call sub-routine :py:func:`bbob_pproc.rungeneric1.main` for each
-    input arguments; each input argument will be used as output
-    sub-folder relative to the main output folder,
+      input arguments; each input argument will be used as output
+      sub-folder relative to the main output folder,
     * call either sub-routines :py:func:`bbob_pproc.rungeneric2.main`
-    (2 input arguments) or :py:func:`bbob_pproc.rungenericmany.main`
-    (more than 2) for the input arguments altogether.
+      (2 input arguments) or :py:func:`bbob_pproc.rungenericmany.main`
+      (more than 2) for the input arguments altogether.
 
     The output figures and tables are included in:
 
@@ -133,7 +133,7 @@ def main(argv=None):
 
         -h, --help
 
-            display this message
+            displays this message.
 
         -v, --verbose
 
@@ -141,8 +141,8 @@ def main(argv=None):
 
         -o, --output-dir=OUTPUTDIR
 
-            change the default output directory (:file:`ppdata`) to
-            :file:`OUTPUTDIR`
+            changes the default output directory (:file:`ppdata`) to
+            :file:`OUTPUTDIR`.
 
     Exceptions raised:
     
@@ -161,7 +161,7 @@ def main(argv=None):
 
       This will print out this help message.
 
-    * From the python interactive shell (requires that the path to this
+    * From the python interpreter (requires that the path to this
       package is in python search path)::
 
         >> import bbob_pproc as bb

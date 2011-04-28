@@ -389,6 +389,7 @@ def generate():
 
     This method is called from the python command line from a directory
     containing all necessary data folders::
+
       >>> from bbob_pproc import bestalg
       >>> bestalg.generate()
       Searching in ALPS ...

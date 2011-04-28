@@ -83,41 +83,27 @@ def main(argv=None):
     flags listed below.
 
         -h, --help
-
-            display this message
-
+            displays this message.
         -v, --verbose
-
             verbose mode, prints out operations.
-
-        -o, --output-dir OUTPUTDIR
-
-            change the default output directory (:file:`ppdata2`) to
+        -o OUTPUTDIR, --output-dir=OUTPUTDIR
+            changes the default output directory (:file:`ppdata2`) to
             :file:`OUTPUTDIR`
-
         --noise-free, --noisy
-
-            restrain the post-processing to part of the data set only.
-
-        --settings SETTING
-
-            change the style of the output figures and tables. At the
+            processes only part of the data.
+        --settings=SETTING
+            changes the style of the output figures and tables. At the
             moment only the only differences are in the colors of the
             output figures. SETTING can be either "grayscale", "color"
             or "black-white". The default setting is "color".
-
         --fig-only, --rld-only, --tab-only, --sca-only
-
             these options can be used to output respectively the ERT
             graphs figures, run length distribution figures or the
             comparison tables scatter plot figures only. Any combination
             of these options results in no output.
-
         --conv 
-
-            if this option is chosen addtitionally convergence
+            if this option is chosen, additionally convergence
             plots for each function and algorithm are generated.
-            
 
     Exceptions raised:
 
@@ -135,7 +121,7 @@ def main(argv=None):
       algorithm of concern (first). The results will be output in the
       default output folder. The ``-v`` option adds verbosity.
 
-    * From the python interactive shell (requires that the path to this
+    * From the python interpreter (requires that the path to this
       package is in python search path)::
 
         >> import bbob_pproc as bb

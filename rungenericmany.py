@@ -83,41 +83,27 @@ def main(argv=None):
     below.
 
         -h, --help
-
-            display this message
-
+            displays this message.
         -v, --verbose
-
             verbose mode, prints out operations, warnings.
-
-        -o, --output-dir DIR
-
-            change the default output directory (:file:`ppdatamany`) to
-            :file:`DIR`.
-
+        -o OUTPUTDIR, --output-dir=OUTPUTDIR
+            changes the default output directory (:file:`ppdatamany`) to
+            :file:`OUTPUTDIR`.
         --noise-free, --noisy
-
-            restrain the post-processing to part of the data set only.
-
-        --settings SETTING
-
-            change the style of the output figures and tables. At the
+            processes only part of the data.
+        --settings=SETTINGS
+            changes the style of the output figures and tables. At the
             moment only the only differences are in the colors of the
-            output figures. SETTING can be either "grayscale", "color"
+            output figures. SETTINGS can be either "grayscale", "color"
             or "black-white". The default setting is "color".
-
         --tab-only, --per-only, --fig-only
-
             these options can be used to output respectively the
             comparison TeX tables, the performance profiles or the
             figures of ERT/dim vs dim only. A combination of any two or
             more of these options results in no output.
-
-       --conv 
-
-            if this option is chosen addtitionally convergence
+        --conv
+            if this option is chosen, additionally convergence
             plots for each function and algorithm are generated.
-            
 
     Exceptions raised:
 
@@ -137,7 +123,7 @@ def main(argv=None):
 
       This will print out this help message.
 
-    * From the python interactive shell (requires that the path to this
+    * From the python interpreter (requires that the path to this
       package is in python search path)::
 
         >> import bbob_pproc as bb
