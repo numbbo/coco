@@ -451,114 +451,112 @@ def beautify(figureName, evalfrange, fileFormat, verbose):
             if verbose:
                 print 'Wrote figure in %s.' %(filename)
 
-def generateTable(dsList, CrE, outputdir, suffix, verbose=True):
+def generateTable(dsList, CrE, outputdir, info, verbose=True):
     """Generates ERT loss ratio tables.
 
     dsList is a list of the DataSet instance for a given algorithm in a
     given dimension.
 
     """
-    res = []
 
     #Set variables
     prcOfInterest = [0, 10, 25, 50, 75, 90]
-    D = set()
-    maxevals = []
-    funcs = []
-    mFE = []
-    for i in dsList:
-        D.add(i.dim)
-        maxevals.append(max(i.ert[numpy.isinf(i.ert)==False]))
-        funcs.append(i.funcId)
-        mFE.append(max(i.maxevals))
+    for d, dsdim in dsList.dictByDim().iteritems():
+        res = []
+        maxevals = []
+        funcs = []
+        mFE = []
 
-    maxevals = max(maxevals)
-    mFE = max(mFE)
-    D = D.pop() # should have only one element
-    EVALS = [2.*D]
-    EVALS.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals))))*D)
-    #Set variables: Done
+        for i in dsdim:
+            maxevals.append(max(i.ert[numpy.isinf(i.ert)==False]))
+            funcs.append(i.funcId)
+            mFE.append(max(i.maxevals))
 
-    data = generateData(dsList, EVALS, CrE)
-
-    tmp = "\\textbf{\\textit{f}\\raisebox{-0.35ex}{%d}--\\textit{f}\\raisebox{-0.35ex}{%d} in %d-D}, maxFE/D=%s" \
-        % (min(funcs), max(funcs), D, writeFEvals2(int(mFE/D), maxdigits=6))
-
-    res.append(r" & \multicolumn{" + str(len(prcOfInterest)) + "}{|c}{" + tmp + "}")
-
-    header = ["\\#FEs/D"]
-    for i in prcOfInterest:
-        if i == 0:
-            tmp = "best"
-        elif i == 50:
-            tmp = "\\textbf{med}"
-        else:
-            tmp = "%d\\%%" % i
-        header.append(tmp)
-
-    #set_trace()
-    res.append(" & ".join(header))
-    for i in range(len(EVALS)):
-        tmpdata = list(data[f][i] for f in data)
-        #set_trace()
-        tmpdata = bootstrap.prctile(tmpdata, prcOfInterest)
-        # format entries
-        #tmp = [writeFEvals(EVALS[i]/D, '.0')]
-        if EVALS[i]/D < 200:
-            tmp = [writeFEvals2(EVALS[i]/D, 3)]
-        else:
-            tmp = [writeFEvals2(EVALS[i]/D, 1)]
-        for j in tmpdata:
-            # tmp.append(writeFEvals(j, '.2'))
-            # tmp.append(writeFEvals2(j, 2))
-            if j == 0.:
-                tmp.append("~\\,0")
-            elif j < 1:
-                tmp.append("~\\,%1.2f" % j)
-            elif j < 10:
-                tmp.append("\\hspace*{1ex}%1.1f" % j)
-            elif j < 100:
-                tmp.append("%2.0f" % j)
+        maxevals = max(maxevals)
+        mFE = max(mFE)
+        EVALS = [2.*d]
+        EVALS.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals))))*d)
+        #Set variables: Done
+    
+        data = generateData(dsList, EVALS, CrE)
+    
+        tmp = "\\textbf{\\textit{f}\\raisebox{-0.35ex}{%d}--\\textit{f}\\raisebox{-0.35ex}{%d} in %d-D}, maxFE/D=%s" \
+            % (min(funcs), max(funcs), d, writeFEvals2(int(mFE/d), maxdigits=6))
+    
+        res.append(r" & \multicolumn{" + str(len(prcOfInterest)) + "}{|c}{" + tmp + "}")
+    
+        header = ["\\#FEs/D"]
+        for i in prcOfInterest:
+            if i == 0:
+                tmp = "best"
+            elif i == 50:
+                tmp = "\\textbf{med}"
             else:
-                ar = ("%1.1e" % j).split('e')
-                tmp.append(ar[0] + 'e' + str(int(ar[1])))
-            # print tmp[-1]
-        res.append(" & ".join(tmp))
-
-    # add last line: runlength distribution for which 1e-8 was not reached.
-    tmp = [r"$\text{RL}_{\text{US}}$/D"]
-    tmpdata = []
-    for i in dsList:
-        it = reversed(i.evals)
-        curline = None
-        nextline = it.next()
-        while nextline[0] <= f_thresh:
-            curline = nextline[1:]
+                tmp = "%d\\%%" % i
+            header.append(tmp)
+    
+        #set_trace()
+        res.append(" & ".join(header))
+        for i in range(len(EVALS)):
+            tmpdata = list(data[f][i] for f in data)
+            #set_trace()
+            tmpdata = bootstrap.prctile(tmpdata, prcOfInterest)
+            # format entries
+            #tmp = [writeFEvals(EVALS[i]/d, '.0')]
+            if EVALS[i]/d < 200:
+                tmp = [writeFEvals2(EVALS[i]/d, 3)]
+            else:
+                tmp = [writeFEvals2(EVALS[i]/d, 1)]
+            for j in tmpdata:
+                # tmp.append(writeFEvals(j, '.2'))
+                # tmp.append(writeFEvals2(j, 2))
+                if j == 0.:
+                    tmp.append("~\\,0")
+                elif j < 1:
+                    tmp.append("~\\,%1.2f" % j)
+                elif j < 10:
+                    tmp.append("\\hspace*{1ex}%1.1f" % j)
+                elif j < 100:
+                    tmp.append("%2.0f" % j)
+                else:
+                    ar = ("%1.1e" % j).split('e')
+                    tmp.append(ar[0] + 'e' + str(int(ar[1])))
+                # print tmp[-1]
+            res.append(" & ".join(tmp))
+    
+        # add last line: runlength distribution for which 1e-8 was not reached.
+        tmp = [r"$\text{RL}_{\text{US}}$/D"]
+        tmpdata = []
+        for i in dsList:
+            it = reversed(i.evals)
+            curline = None
             nextline = it.next()
-        if curline is None:
-            tmpdata.extend(i.maxevals)
-        else:
-            tmpdata.extend(i.maxevals[numpy.isnan(curline)])
-
-    #set_trace()
-    if tmpdata: # if it is not empty
-        tmpdata = bootstrap.prctile(tmpdata, prcOfInterest)
-        for j in tmpdata:
-           tmp.append(writeFEvals2(j/D, 1))
-        res.append(" & ".join(tmp))
-
-    res = (r"\\"+ "\n").join(res)
-    res = r"\begin{tabular}{c|" + len(prcOfInterest) * "l" +"}\n" + res
-    #res = r"\begin{tabular}{ccccc}" + "\n" + res
-    res = res + "\n" + r"\end{tabular}" + "\n"
-
-    filename = os.path.join(outputdir, 'pploglosstable_%s.tex' % (suffix))
-    f = open(filename, 'w')
-    f.write(res)
-    f.close()
-    if verbose:
-        print "Wrote ERT loss ratio table in %s." % filename
-    return res
+            while nextline[0] <= f_thresh:
+                curline = nextline[1:]
+                nextline = it.next()
+            if curline is None:
+                tmpdata.extend(i.maxevals)
+            else:
+                tmpdata.extend(i.maxevals[numpy.isnan(curline)])
+    
+        #set_trace()
+        if tmpdata: # if it is not empty
+            tmpdata = bootstrap.prctile(tmpdata, prcOfInterest)
+            for j in tmpdata:
+               tmp.append(writeFEvals2(j/d, 1))
+            res.append(" & ".join(tmp))
+    
+        res = (r"\\"+ "\n").join(res)
+        res = r"\begin{tabular}{c|" + len(prcOfInterest) * "l" +"}\n" + res
+        #res = r"\begin{tabular}{ccccc}" + "\n" + res
+        res = res + "\n" + r"\end{tabular}" + "\n"
+    
+        filename = os.path.join(outputdir, 'pploglosstable_%02dD_%s.tex' % (d, info))
+        f = open(filename, 'w')
+        f.write(res)
+        f.close()
+        if verbose:
+            print "Wrote ERT loss ratio table in %s." % filename
 
 def generateFigure(dsList, CrE, isStoringXRange, outputdir='.', info='default',
                    verbose=True):
