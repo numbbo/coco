@@ -93,8 +93,7 @@ def main(argv=None):
             :file:`OUTPUTDIR`.
         --crafting-effort=VALUE
             sets the crafting effort to VALUE (float). Otherwise the
-            user will be prompted. This flag is useful when running this
-            script in batch.
+            default value of 0. will be used.
         --noise-free, --noisy
             processes only part of the data.
         --settings=SETTINGS
@@ -167,7 +166,7 @@ def main(argv=None):
             usage()
             sys.exit()
 
-        inputCrE = None
+        inputCrE = 0.
         isfigure = True
         istab = True
         isrldistr = True
@@ -361,7 +360,7 @@ def main(argv=None):
                 CrE = inputCrE
                 while CrE is None:
                     try:
-                        CrE = float(input(txt))
+                        CrE = float(raw_input(txt))
                     except (SyntaxError, NameError, ValueError):
                         print "Float value required."
                 dictDim = sliceNoise.dictByDim()
