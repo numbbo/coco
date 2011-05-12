@@ -27,6 +27,7 @@ from matplotlib import mlab as mlab
 
 from bbob_pproc import bootstrap, bestalg
 from bbob_pproc.pptex import writeFEvals2
+from bbob_pproc.ppfig import saveFigure
 
 """
 ERT loss ratio of an algorithm A for comparison to BBOB-best2009. This works
@@ -417,7 +418,7 @@ def plot(xdata, ydata):
 
     return res
 
-def beautify(figureName, evalfrange, fileFormat, verbose):
+def beautify():
     """Format the figure."""
 
     a = plt.gca()
@@ -430,32 +431,19 @@ def beautify(figureName, evalfrange, fileFormat, verbose):
                                              int(numpy.log10(ymax)+1)))
     plt.yticks(ydata, yticklabels)
 
-    if evalfrange:
-        #set_trace()
-        plt.xlim(xmin=evalfrange[0]-0.5, xmax=evalfrange[1]+0.5)
-
     plt.xlabel('log10 of FEvals / dimension')
     plt.ylabel('log10 of ERT loss ratio')
     #a.yaxis.grid(True, which='minor')
     a.yaxis.grid(True, which='major')
 
-    if isinstance(fileFormat, basestring):
-        filename = '.'.join((figureName, fileFormat))
-        plt.savefig(filename, dpi=300, format=fileFormat)
-        if verbose:
-            print 'Wrote figure in %s.' %(filename)
-    else:
-        for entry in fileFormat:
-            filename = '.'.join((figureName, entry))
-            plt.savefig(filename, dpi=300, format=entry)
-            if verbose:
-                print 'Wrote figure in %s.' %(filename)
-
-def generateTable(dsList, CrE, outputdir, info, verbose=True):
+def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
     """Generates ERT loss ratio tables.
 
-    dsList is a list of the DataSet instance for a given algorithm in a
-    given dimension.
+    :param DataSetList dsList: input data set
+    :param float CrE: crafting effort (see COCO documentation)
+    :param string outputdir: output folder (must exist)
+    :param string info: string suffix for output file names
+    :param bool verbose: controls verbosity
 
     """
 
@@ -558,12 +546,20 @@ def generateTable(dsList, CrE, outputdir, info, verbose=True):
         if verbose:
             print "Wrote ERT loss ratio table in %s." % filename
 
-def generateFigure(dsList, CrE, isStoringXRange, outputdir='.', info='default',
-                   verbose=True):
+def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
+                   info='default', verbose=True):
     """Generates ERT loss ratio figures.
 
-    dsList is a list of the DataSet instances for a given algorithm in a
-    given dimension.
+    :param DataSetList dsList: input data set
+    :param float CrE: crafting effort (see COCO documentation)
+    :param bool isStoringXRange: if set to True, the first call to this
+                                 function sets the global
+                                 :py:data:`evalf` and all subsequent
+                                 calls will use this value as boundaries
+                                 in the generated figures.
+    :param string outputdir: output folder (must exist)
+    :param string info: string suffix for output file names
+    :param bool verbose: controls verbosity
 
     """
 
@@ -618,14 +614,18 @@ def generateFigure(dsList, CrE, isStoringXRange, outputdir='.', info='default',
             text = 'f%d' %(funcs.pop())
         plt.text(0.5, 0.93, text, horizontalalignment="center",
                  transform=plt.gca().transAxes)
-        beautify(filename, evalf, fileFormat=figformat, verbose=verbose)
+        beautify()
+        if evalf:
+            plt.xlim(xmin=evalf[0]-0.5, xmax=evalf[1]+0.5)
+
+        saveFigure(filename, figFormat=figformat, verbose=verbose)
     
         #plt.show()
         plt.close()
     
         #plt.rcdefaults()
 
-def main(dsList, CrE, isStoringXRange, outputdir='.', info='default',
+def main(dsList, CrE=0., isStoringXRange=True, outputdir='.', info='default',
          verbose=True):
     """Generates ERT loss ratio boxplot figures.
     
