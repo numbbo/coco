@@ -347,15 +347,10 @@ def split(dataFiles, dim=None):
 
     dataSets = []
     for fil in dataFiles:
-        try:
+        with open(fil, 'r') as f:
             # This doesnt work with windows.
             # content = numpy.loadtxt(fil, comments='%')
-
-            file = open(fil,'r')               # read in the file
-            lines = file.readlines()
-        except IOError:
-            print 'Could not find %s.' % fil
-            continue
+            lines = f.readlines()
 
         content = []
 
@@ -373,7 +368,7 @@ def split(dataFiles, dim=None):
             data = line.strip('\n').split()
             if dim and len(data) != dim + 5:
                 warnings.warn('Incomplete line %s in  ' % (line) +
-                              'data file %s: ' % (dataFiles))
+                              'data file %s: ' % (fil))
                 continue
             for id in xrange(len(data)):
                 if data[id] in ('Inf', 'inf'):

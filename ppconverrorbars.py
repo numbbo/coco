@@ -15,6 +15,7 @@ from __future__ import absolute_import
 import os
 import warnings
 import numpy
+from pdb import set_trace
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -53,7 +54,7 @@ def rearrange(blist, flist):
         final_f.append(erg_f)
     return final_b, final_f
 
-def main(dictAlg, outputdir, verbose=True):
+def main(dictAlg, outputdir='.', verbose=True):
     """Main routine for generating convergence plots
 
     """
@@ -80,10 +81,9 @@ def main(dictAlg, outputdir, verbose=True):
                 labeltext=str(j.dim)+"D"
                 plt.errorbar(bs[0], fs[0][0], yerr = [fs[0][1], fs[0][2]], label = labeltext)
             plt.legend(loc='3')
-            saveFigure(os.path.join(outputdir,figurename.replace(' ','')),  ('eps', 'pdf'), verbose=verbose)  
+            saveFigure(os.path.join(outputdir, figurename.replace(' ','')),  ('eps', 'pdf'), verbose=verbose)
             plt.close()
     print("Convergence plots done.")
         
 if __name__ == "__main__":
     sys.exit(main())
-

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 
 import sys
 import os
+import ast
 import re
 import pickle
 import warnings
@@ -112,6 +113,7 @@ class DataSet:
                           'it does not start with \%.')
             self.comment = ''
 
+        filepath = os.path.split(indexfile)[0]
         self.indexFiles = [indexfile]
         self.dataFiles = []
         self.itrials = []
@@ -139,7 +141,8 @@ class DataSet:
                     # For now we leave it in.
                     self.isFinalized.append(False)
                     warnings.warn('Caught an ill-finalized run in %s for %s'
-                                  % (indexfile, self.dataFiles[-1]))
+                                  % (indexfile,
+                                     os.path.join(filepath, self.dataFiles[-1])))
                     self.readmaxevals.append(0)
                     self.readfinalFminusFtarget.append(numpy.inf)
                 else:
@@ -155,7 +158,8 @@ class DataSet:
 
         # Treat successively the data in dat and tdat files:
         # put into variable dataFiles the files where to look for data
-        dataFiles = list(i.rsplit('.', 1)[0] + '.dat' for i in self.dataFiles)
+        dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
+                         for i in self.dataFiles)
         data = HMultiReader(split(dataFiles))
         if verbose:
             print ("Processing %s: %d/%d trials found."
@@ -170,7 +174,8 @@ class DataSet:
             self.maxevals = maxevals
             self.finalfunvals = finalfunvals
 
-        dataFiles = list(i.rsplit('.', 1)[0] + '.tdat' for i in self.dataFiles)
+        dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
+                         for i in self.dataFiles)
         data = VMultiReader(split(dataFiles))
         if verbose:
             print ("Processing %s: %d/%d trials found."
@@ -263,42 +268,19 @@ class DataSet:
 
     def __parseHeader(self, header):
         """Extract data from a header line in an index entry."""
+        
         # Split header into a list of key-value
-        headerList = header.split(', ')
-
-        # Loop over all elements in the list and extract the relevant data.
-        # We loop backward to make sure that we did not split inside quotes.
-        # It could happen when the key algId and the value is a string.
-        p = re.compile('[^,=]+ = .*')
-        headerList.reverse()
-        it = iter(headerList)
-        while True:
+        for attrname, attrvalue in parseinfo(header):
             try:
-                elem = it.next()
-                while not p.match(elem):
-                    elem = it.next() + elem
-
-                elemList = elem.split('=')
-                #A key name is not expected to contain the string '='
-                elemFirst = elemList[0].strip()
-                elemSecond = ''.join(elemList[1:]).strip().strip('\'')
-                #Here we strip quotes instead of using them to differentiate
-                #between data types.
-
-                try:
-                    setattr(self, self.__attributes[elemFirst][0],
-                            self.__attributes[elemFirst][1](elemSecond))
-                except KeyError:
-                    warnings.warn('%s is not an expected ' % (elemFirst) +
-                                  'attribute.')
-                    continue
-
-            except StopIteration:
-                break
-
+                setattr(self, self.__attributes[attrname][0], attrvalue)
+            except KeyError:
+                warnings.warn('%s is not an expected ' % (elemFirst) +
+                              'attribute.')
+                setattr(self, attrname, attrvalue)
+                # the attribute is set anyway, this might lead to some errors.
+                continue
         #TODO: check that no compulsory attributes is missing:
         #dim, funcId, algId, precision
-
         return
 
     def pickle(self, outputdir=None, verbose=True):
@@ -564,7 +546,6 @@ class DataSetList(list):
                 print 'Processing %s.' % indexFile
 
             # Read all data sets within one index file.
-            indexpath = os.path.split(indexFile)[0]
             nbLine = 1
             while True:
                 try:
@@ -579,18 +560,9 @@ class DataSetList(list):
                                       'it will be skipped.')
                         nbLine += 2
                         continue
-                    tmpline = f.next()
+                    data = f.next()
                     nbLine += 3
                     #TODO: check that something is not wrong with the 3 lines.
-
-                    # Add the path to the index file to the file names
-                    data = []
-                    for i in tmpline.split(', '):
-                        if i.endswith('dat'): #filenames
-                            data.append(os.path.join(indexpath, i))
-                        else: #other information
-                            data.append(i)
-                    data = ', '.join(data)
                     self.append(DataSet(header, comment, data, indexFile,
                                         verbose))
                 except StopIteration:
@@ -789,6 +761,68 @@ class DataSetList(list):
 
         # interested in algorithms, number of datasets, functions, dimensions
         # maxevals?, funvals?, success rate?
+
+
+def parseinfoold(s):
+    """Deprecated: Extract data from a header line in an index entry.
+
+    Older but verified version of :py:meth:`parseinfo`
+
+    The header line should be a string of comma-separated pairs of
+    key=value, for instance: key = value, key = 'value'
+
+    Keys should not use comma or quote characters.
+
+    """
+    # TODO should raise some kind of error...
+    # Split header into a list of key-value
+    list_kv = s.split(', ')
+
+    # Loop over all elements in the list and extract the relevant data.
+    # We loop backward to make sure that we did not split inside quotes.
+    # It could happen when the key algId and the value is a string.
+    p = re.compile('([^,=]+)=(.*)')
+    list_kv.reverse()
+    it = iter(list_kv)
+    res = []
+    while True:
+        try:
+            elem = it.next()
+            tmp = p.match(elem)
+            while not tmp:
+                elem = it.next() + elem
+                # add up elements of list_kv until we have a whole key = value
+
+            elem0, elem1 = tmp.groups()
+            elem0 = elem0.strip()
+            elem1 = elem1.strip()
+            if elem1.startswith('\'') and elem1.endswith('\''): # HACK
+                elem1 = ('\'' + re.sub('([\'])', r'\\\1', elem1[1:-1]) + '\'')
+            elem1 = ast.literal_eval(elem1)
+            res.append((elem0, elem1))
+        except StopIteration:
+            break
+
+    return res
+
+def parseinfo(s):
+    """Extract data from a header line in an index entry.
+
+    Use a 'smarter' regular expression than :py:meth:`parseinfoold`.
+    The header line should be a string of comma-separated pairs of
+    key=value, for instance: key = value, key = 'value'
+
+    Keys should not use comma or quote characters.
+
+    """
+    p = re.compile('\ *([^,=]+?)\ *=\ *(".+?"|\'.+?\'|[^,]+)\ *(?=,|$)')
+    res = []
+    for elem0, elem1 in p.findall(s):
+        if elem1.startswith('\'') and elem1.endswith('\''): # HACK
+            elem1 = ('\'' + re.sub(r'(?<!\\)(\')', r'\\\1', elem1[1:-1]) + '\'')
+        elem1 = ast.literal_eval(elem1)
+        res.append((elem0, elem1))
+    return res
 
 def processInputArgs(args, verbose=True):
     """Process command line arguments.
