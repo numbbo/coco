@@ -135,7 +135,7 @@ class DataSet:
                 if not ':' in elem:
                     # if elem does not have ':' it means the run was not
                     # finalized properly.
-                    self.itrials.append(int(elem))
+                    self.itrials.append(ast.literal_eval(elem))
                     # In this case, what should we do? Either we try to process
                     # the corresponding data anyway or we leave it out.
                     # For now we leave it in.
@@ -147,7 +147,7 @@ class DataSet:
                     self.readfinalFminusFtarget.append(numpy.inf)
                 else:
                     itrial, info = elem.split(':', 1)
-                    self.itrials.append(int(itrial))
+                    self.itrials.append(ast.literal_eval(itrial))
                     self.isFinalized.append(True)
                     readmaxevals, readfinalf = info.split('|', 1)
                     self.readmaxevals.append(int(readmaxevals))
@@ -251,8 +251,8 @@ class DataSet:
         return not self.__eq__(other)
 
     def __repr__(self):
-        return ('DataSet(%s on f%d %d-D)'
-                % (self.algId, self.funcId, self.dim))
+        return ('DataSet(%s on f%s %d-D)'
+                % (self.algId, str(self.funcId), self.dim))
 
     def info(self):
         """Return some text info to display onscreen."""
