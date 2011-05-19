@@ -101,6 +101,7 @@ class DataSet:
 
         """
         # Extract information from the header line.
+        self._extra_attr = []
         self.__parseHeader(header)
 
         # Read in second line of entry (comment line). The information
@@ -251,8 +252,12 @@ class DataSet:
         return not self.__eq__(other)
 
     def __repr__(self):
-        return ('DataSet(%s on f%s %d-D)'
-                % (self.algId, str(self.funcId), self.dim))
+        res = ('DataSet(%s on f%s %d-D'
+               % (self.algId, str(self.funcId), self.dim))
+        for i in getattr(self, '_extra_attr', ()):
+            res += ', %s = %s' % (i, getattr(self, i))
+        res += ')'
+        return res
 
     def info(self):
         """Return some text info to display onscreen."""
@@ -277,6 +282,7 @@ class DataSet:
                 warnings.warn('%s is not an expected ' % (elemFirst) +
                               'attribute.')
                 setattr(self, attrname, attrvalue)
+                self._extra_attr.append(attrname)
                 # the attribute is set anyway, this might lead to some errors.
                 continue
         #TODO: check that no compulsory attributes is missing:
