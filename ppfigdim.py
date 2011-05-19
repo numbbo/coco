@@ -319,7 +319,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     dictFunc = dsList.dictByFunc()
 
     for func in dictFunc:
-        plot(dictFunc[func], _valuesOfInterest)        
+        plot(dictFunc[func], _valuesOfInterest)
         beautify(axesLabel=False)
         if func in (1, 24, 101, 130):
             plt.legend(loc="best")
