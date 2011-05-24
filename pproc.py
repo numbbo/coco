@@ -216,9 +216,8 @@ class DataSet:
         for i in range(len(maxevals)):
             tmp.append(self.maxevals[i] == self.readmaxevals[i])
         if not all(tmp):
-            txt = ("There is a difference between the maxevals in the *.info "
-                   + "file and in the data files.")
-            warnings.warn(txt)
+            warnings.warn('There is a difference between the maxevals in the '
+                          '*.info file and in the data files.')
 
         # Compute ERT
         self.computeERTfromEvals()
@@ -339,6 +338,15 @@ class DataSet:
             dictinstance.setdefault(self.itrials[i], []).append(i)
 
         return dictinstance
+
+    def createDictInstanceCount(self):
+        """Returns a dictionary of the instances and their count.
+        
+        The keys are instance id and the values are the number of
+        repetitions of such instance.
+        
+        """
+        return dict((j, self.itrials.count(j)) for j in set(self.itrials))
 
     def splitByTrials(self, whichdata=None):
         """Splits the post-processed data arrays by trials.
@@ -583,7 +591,7 @@ class DataSetList(list):
         """Redefines the append method to check for unicity."""
 
         if not isinstance(o, DataSet):
-            raise Exception()
+            raise Exception('Expect DataSet instance.')
         isFound = False
         for i in self:
             if i == o:
