@@ -14,6 +14,7 @@
    from pylab import *
    import pickle
    import bbob_pproc as bb
+   import bbob_pproc.ppperfprof
     
    # Collect and unarchive data (3.4MB)
    alg1 = 'BIPOP-CMA-ES'
