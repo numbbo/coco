@@ -275,6 +275,14 @@ class BestAlgSet():
         return dictinstance
 
     def detERT(self, targets):
+        """Determine the expected running time to reach target values.
+
+        :keyword list targets: target function values of interest
+
+        :returns: list of expected running times corresponding to the
+                  targets.
+
+        """
         res = []
         for f in targets:
             idx = (self.target<=f)
@@ -283,8 +291,16 @@ class BestAlgSet():
             except IndexError:
                 res.append(np.inf)
         return res
+    # TODO: return the algorithm here as well.
 
     def detEvals(self, targets):
+        """Determine the number of evaluations to reach target values.
+
+        :keyword seq targets: target precisions
+        :returns: list of arrays each corresponding to one value in
+                  targets and the list of the corresponding algorithms
+
+        """
         res = []
         res2 = []
         for f in targets:
@@ -380,7 +396,7 @@ def loadBBOBever():
 def usage():
     print main.__doc__
 
-def generate():
+def generate(args=algs2009):
     """Generates best algorithm data set.
 
     It will create a folder bestAlg in the current working directory
@@ -402,7 +418,7 @@ def generate():
     """
 
     #args = set(algs2010 + algs2009)
-    args = algs2009
+    # args = algs2009
 
     outputdir = 'bestAlg'
 
