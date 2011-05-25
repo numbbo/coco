@@ -12,29 +12,27 @@
    import tarfile
    import glob
    from pylab import *
-   import bbob_pproc as bb
    import pickle
+   import bbob_pproc as bb
     
    # Collect and unarchive data (3.4MB)
-   dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
-   filename, headers = urllib.urlretrieve(dataurl)
-   archivefile = tarfile.open(filename)
-   archivefile.extractall()
-   dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/NEWUOA.tar.gz'
-   filename, headers = urllib.urlretrieve(dataurl)
-   archivefile = tarfile.open(filename)
-   archivefile.extractall()
-    
-   # Empirical cumulative distribution function figure
-   ds0 = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
-   ds1 = bb.load(glob.glob('BBOB2009pythondata/NEWUOA/ppdata_f0*_20.pickle'))
+   alg1 = 'BIPOP-CMA-ES'
+   alg2 = 'NEWUOA'
+   dsets = []
+   for alg in (alg1, alg2):
+        dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/' + alg + '.tar.gz'
+        filename, headers = urllib.urlretrieve(dataurl)
+        archivefile = tarfile.open(filename)
+        archivefile.extractall()  # write to disc
+        dsets.append(bb.load(glob.glob('BBOB2009pythondata/' + alg + '/ppdata_f0*_20.pickle')))
 
-   # TODO: this should be done with ds0 and ds1
-   bb.bestalg.generate(('BBOB2009pythondata/BIPOP-CMA-ES', 'BBOB2009pythondata/NEWUOA'))
+   # TODO: this should be done with dsets and/or within ppperfprof.plot? 
+   bb.bestalg.generate(('BBOB2009pythondata/' + alg1, 'BBOB2009pythondata/' + alg2))
    dsref = pickle.load(open('bestAlg/bestalg.pickle'))
 
+   # plot the profiles
    figure()
-   bb.ppperfprof.plot((ds0, ds1), dsref)
+   bb.ppperfprof.plot(dsets, dsref)
    bb.ppperfprof.beautify() # resize the window to view whole figure
 
 """
@@ -380,7 +378,7 @@ def plotsingle(dsList, dsref, targets=tg, rhleg=False, kwargs={}):
     """Generates a graph showing the performance profile of an algorithm.
 
     :param DataSetList dsList: data set for one algorithm
-    :param DataSetList dsref: reference data set
+    :param DataSetList dsref: reference data set for normalization
     :param seq targets: target function values
     :param bool rhleg: if True, right-hand side legend is added
     :param dict kwargs: additional parameters provided to plot function.
