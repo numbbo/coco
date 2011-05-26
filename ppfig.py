@@ -59,7 +59,7 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
         # powers of ten 10**(i/nbperdecade)
         # get segments coordinates x1, x2, y1, y2
         if 'steps' in plt.getp(res[0], 'drawstyle'): # other conditions?
-            xdata = np.hstack((10 ** (np.floor(np.log10(xdata[0]) * nbperdecade) / nbperdecade),
+            xdata = np.hstack((10 ** (np.ceil(np.log10(xdata[0]) * nbperdecade) / nbperdecade),
                                xdata,
                                10 ** (np.ceil(np.log10(xdata[-1]) * nbperdecade) / nbperdecade)))
             ydata = np.hstack((ydata[0], ydata, ydata[-1]))

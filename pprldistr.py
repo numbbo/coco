@@ -104,6 +104,7 @@ def beautifyECDF():
                ('0.0', '', '0.5', '', '1.0'))
     plt.grid(True)
     xmin, xmax = plt.xlim()
+    plt.xlim(xmin=xmin*0.90)
     c = plt.gca().get_children()
     for i in c: # TODO: we only want to extend ECDF lines...
         try:
@@ -111,9 +112,9 @@ def beautifyECDF():
                 xdata = i.get_xdata()
                 ydata = i.get_ydata()
                 if len(xdata) > 0:
-                    if xmin < min(xdata):
-                        xdata = np.hstack((xmin, xdata))
-                        ydata = np.hstack((ydata[0], ydata))
+                    #if xmin < min(xdata):
+                    #    xdata = np.hstack((xmin, xdata))
+                    #    ydata = np.hstack((ydata[0], ydata))
                     if xmax > max(xdata):
                         xdata = np.hstack((xdata, xmax))
                         ydata = np.hstack((ydata, ydata[-1]))
@@ -123,12 +124,12 @@ def beautifyECDF():
                 xdata = i.get_xdata()
                 ydata = i.get_ydata()
                 if len(xdata) > 0:
-                    if xmin < min(xdata):
-                        minidx = np.ceil(np.log10(xmin) * nbperdecade)
-                        maxidx = np.floor(np.log10(xdata[0]) * nbperdecade)
-                        x = 10. ** (np.arange(minidx, maxidx + 1) / nbperdecade)
-                        xdata = np.hstack((x, xdata))
-                        ydata = np.hstack(([ydata[0]] * len(x), ydata))
+                    #if xmin < min(xdata):
+                    #    minidx = np.ceil(np.log10(xmin) * nbperdecade)
+                    #    maxidx = np.floor(np.log10(xdata[0]) * nbperdecade)
+                    #    x = 10. ** (np.arange(minidx, maxidx + 1) / nbperdecade)
+                    #    xdata = np.hstack((x, xdata))
+                    #    ydata = np.hstack(([ydata[0]] * len(x), ydata))
                     if xmax > max(xdata):
                         minidx = np.ceil(np.log10(xdata[-1]) * nbperdecade)
                         maxidx = np.floor(np.log10(xmax) * nbperdecade)

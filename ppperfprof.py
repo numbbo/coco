@@ -15,20 +15,25 @@
    import pickle
    import bbob_pproc as bb
    import bbob_pproc.ppperfprof
+   import bbob_pproc.bestalg
 
    # Collect and unarchive data
-   alg1 = 'BIPOP-CMA-ES'
-   alg2 = 'NEWUOA'
    dsets = {}
-   for alg in (alg1, alg2):
-        dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/' + alg + '.tar.gz'
-        filename, headers = urllib.urlretrieve(dataurl)
-        archivefile = tarfile.open(filename)
-        archivefile.extractall()  # write to disc
-        dsets[alg] = bb.load(glob.glob('BBOB2009pythondata/' + alg + '/ppdata_f0*_20.pickle'))
-
+   for alg in bb.ppperfprof.best:  # ('BIPOP-CMA-ES', 'NEWUOA'):
+        for date in ('2010', '2009'):
+            try: 
+                dataurl = 'http://coco.lri.fr/BBOB'+date+'/pythondata/' + alg + '.tar.gz'
+                filename, headers = urllib.urlretrieve(dataurl)
+                archivefile = tarfile.open(filename)
+                archivefile.extractall()  # write to disc
+                dsets[alg] = bb.load(glob.glob('BBOB'+date+'pythondata/' + alg + '/ppdata_f0*_20.pickle'))
+            except:
+                pass
+   
    # plot the profiles
    figure()
+   bb.bestalg.loadBBOB2009() # loads virtual best algorithm from BBOB 2009
+   # bb.ppperfprof.plotmultiple(dsets.dictAlgByFuncGroup()['lcond'], dsref=bb.bestalg.bestalgentries2009)
    bb.ppperfprof.plotmultiple(dsets)
 
 """
@@ -50,9 +55,9 @@ __all__ = ['beautify', 'main', 'plot']
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
-best = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES',
-   'BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'GLOBAL', 'MCS (Neum)',
-   'DIRECT', 'DASA', 'POEMS', 'Cauchy EDA', 'Monte Carlo')
+best = ('AMALGAM', 'iAMALGAM', 'VNS', 'MA-LS-CHAIN', 'BIPOP-CMA-ES', 'IPOP-ACTCMA-ES', 'MOS', 'IPOP-SEP-CMA-ES',
+   'BFGS', 'NELDER', 'NELDERDOERR', 'NEWUOA', 'FULLNEWUOA', 'GLOBAL', 'MCS',
+   'DIRECT', 'DASA', 'POEMS', 'Cauchy-EDA', 'RANDOMSEARCH')
 
 best2 = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES', 'BFGS', 'NEWUOA', 'GLOBAL')
 
@@ -238,14 +243,14 @@ def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                              markeredgecolor=plt.getp(res[0], 'color'),
                              ls=plt.getp(res[0], 'ls'),
                              color=plt.getp(res[0], 'color'))
-                h.setp
+                #h.setp
                 h.extend(res)
                 res = h # so the last element in res still has the label.
                 # Only take sequences for x and y!
 
     return res
 
-def plotmultiple(dictAlg, dsref=None, targets=defaulttargets, rhleg=True):
+def plotmultiple(dictAlg, dsref=None, targets=defaulttargets, isbootstrap=False, rhleg=True):
     """Generate performance profile figure."""
 
     if not dsref:
@@ -258,14 +263,14 @@ def plotmultiple(dictAlg, dsref=None, targets=defaulttargets, rhleg=True):
         args['markeredgewidth'] = 1.5
         args['markerfacecolor'] = 'None'
         args['markeredgecolor'] = args['color']
-        lines.append(plot(dictAlg[k], dsref, targets, label=k,
+        lines.append(plot(dictAlg[k], dsref, targets, isbootstrap, label=k,
                           **args))
     #plt.xlim(xmin=1e-0, xmax=xlim*x_annote_factor)
     beautify()
     if rhleg:
         plotLegend(lines, plt.xlim()[1])
 
-def plot(dsList, dsref, targets=defaulttargets, **kwargs):
+def plot(dsList, dsref, targets=defaulttargets, isbootstrap=False, **kwargs):
     """Generates a graph showing the performance profile of an algorithm.
 
     We display the empirical cumulative distribution function ECDF of
@@ -285,9 +290,10 @@ def plot(dsList, dsref, targets=defaulttargets, **kwargs):
     res = []
     assert len(dsList.dictByDim()) == 1 # We never integrate over dimensions...
     data = []
-    maxevals = []
     for entry in dsList:
         for t in targets:
+            # TODO: alternative: min(dsref[(entry.dim, entry.funcId)].detEvals((t,))[0]) 
+            #       is the min from the alg with the best ERT 
             flg_ert = 1
             if flg_ert:
                 normalizer = dsref[(entry.dim, entry.funcId)].detERT((t,))[0]
@@ -295,17 +301,22 @@ def plot(dsList, dsref, targets=defaulttargets, **kwargs):
                 pass
             if np.isinf(normalizer):
                 continue
-            x = [np.inf] * perfprofsamplesize
-            runlengthunsucc = []
-            evals = entry.detEvals([t])[0]
-            runlengthsucc = evals[np.isnan(evals) == False]
-            runlengthunsucc = entry.maxevals[np.isnan(evals)]
-            if len(runlengthsucc) > 0:
-                x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
-                                     percentiles=[50],
-                                     samplesize=perfprofsamplesize)[1]
-            data.extend(i/normalizer for i in x)
-            maxevals.extend(runlengthunsucc)
+            if isbootstrap:
+                x = [np.inf] * perfprofsamplesize
+                runlengthunsucc = []
+                evals = entry.detEvals([t])[0]
+                runlengthsucc = evals[np.isnan(evals) == False]
+                runlengthunsucc = entry.maxevals[np.isnan(evals)]
+                if len(runlengthsucc) > 0:
+                    x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                                         percentiles=[50],
+                                         samplesize=perfprofsamplesize)[1]
+                data.extend(i/normalizer for i in x)
+            else:
+                x = entry.detERT([t])[0]
+                data.append(x/normalizer)
+            #if (np.array(tmp) < 1e-1).any():
+            #    set_trace()
 
     # Display data
     data = np.array(data)
@@ -314,10 +325,14 @@ def plot(dsList, dsref, targets=defaulttargets, **kwargs):
     data = data[np.isinf(data)==False] # Take away the infs
     # data = data[data <= maxval] # Take away rightmost data
     #data = np.exp(craftingeffort) * data  # correction by crafting effort CrE
+    #set_trace()
     if len(data) == 0: # data is empty.
         res.append(plt.axhline(0., **kwargs))
     else:
+        plt.plot((min(data), ), (0, ), **kwargs)
         res = plotECDF(np.array(data), n=n, **kwargs)
+        h = plt.plot((max(data), ), (float(len(data))/n, ), **kwargs)
+        plt.setp(h, 'marker', 'x')
         #plotdata(np.array(data), x_limit, maxevals,
         #                    CrE=0., kwargs=kwargs)
 #     if maxevals: # Should cover the case where maxevals is None or empty
@@ -452,7 +467,7 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
             #args['ls'] = '-'
             #args['zorder'] = -1
         lines.append(plotPerfProf(np.array(data), xlim, maxevals,
-                                  CrE=0., kwargs=args))
+                                  CrE=0., **args))
 
     if displaybest2009:
         args = {'ls': '-', 'linewidth': 1.5, 'marker': 'D', 'markersize': 7.,
@@ -460,7 +475,7 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
                 'markeredgecolor': refcolor, 'color': refcolor,
                 'label': 'best 2009', 'zorder': -1}
         lines.append(plotPerfProf(np.array(xbest2009), xlim, maxevalsbest2009,
-                                  CrE = 0., kwargs=args))
+                                  CrE = 0., **args))
 
     labels, handles = plotLegend(lines, xlim)
     if True: #isLateXLeg:

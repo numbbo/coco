@@ -146,9 +146,11 @@ class DataSet(pp.DataSet):
 
 #FUNCTION DEFINITIONS
 
-def build(dictAlg, sortedAlg):
+def build(dictAlg, sortedAlg=None):
     """Merge datasets."""
 
+    if not sortedAlg:
+        sortedAlg = dictAlg.keys()
     res = []
     for f, i in pp.dictAlgByFun(dictAlg).iteritems():
         for d, j in pp.dictAlgByDim(i).iteritems():
