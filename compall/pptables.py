@@ -247,7 +247,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
             # TODO: could len(entries) be 0 as well?
             if len(entries) > 1:
                 txt = ("There is more than a single entry associated with "
-                      + "folder %s on %d-D f%d." % (sortedAlgs[n], df[0], df[1]))
+                       "folder %s on %d-D f%d." % (sortedAlgs[n], df[0], df[1]))
                 raise Exception(txt)
 
             entry = entries[0]

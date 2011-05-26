@@ -5,7 +5,8 @@
 
    Synopsis:
       python path_to_folder/bbob_pproc/runcompall.py [OPTIONS] FOLDER_NAME...
-    Help:
+
+   Help:
       python path_to_folder/bbob_pproc/runcompall.py -h
 
 """

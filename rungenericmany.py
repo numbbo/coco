@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
 from bbob_pproc import dataoutput, pproc
 from bbob_pproc.pproc import DataSetList, processInputArgs
-from bbob_pproc.compall import ppperfprof, pptables, ppfigs
+from bbob_pproc.compall import pprldmany, pptables, ppfigs
 from bbob_pproc.compall import organizeRTDpictures
 from bbob_pproc import ppconverrorbars
 
@@ -42,7 +42,7 @@ __all__ = ['main']
 # Used by getopt:
 shortoptlist = "hvo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
-               "per-only", "fig-only", "verbose", "settings=", "conv"]
+               "rld-only", "fig-only", "verbose", "settings=", "conv"]
 #CLASS DEFINITIONS
 
 class Usage(Exception):
@@ -96,9 +96,9 @@ def main(argv=None):
             moment only the only differences are in the colors of the
             output figures. SETTINGS can be either "grayscale", "color"
             or "black-white". The default setting is "color".
-        --tab-only, --per-only, --fig-only
+        --tab-only, --rld-only, --fig-only
             these options can be used to output respectively the
-            comparison TeX tables, the performance profiles or the
+            comparison TeX tables, the run lengths distributions or the
             figures of ERT/dim vs dim only. A combination of any two or
             more of these options results in no output.
         --conv
@@ -182,7 +182,7 @@ def main(argv=None):
             elif o == "--tab-only":
                 isPer = False
                 isFig = False
-            elif o == "--per-only":
+            elif o == "--rld-only":
                 isTab = False
                 isFig = False
             elif o == "--fig-only":
@@ -256,21 +256,21 @@ def main(argv=None):
             for ng, tmpdictAlg in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
-                    ppperfprof.main(entries, inset.summarized_target_function_values,
-                                    order=sortedAlgs,
-                                    outputdir=outputdir,
-                                    info=('%02dD_%s' % (d, ng)),
-                                    verbose=verbose)
+                    pprldmany.main(entries, inset.summarized_target_function_values,
+                                   order=sortedAlgs,
+                                   outputdir=outputdir,
+                                   info=('%02dD_%s' % (d, ng)),
+                                   verbose=verbose)
             # ECDFs per function groups
             dictFG = pproc.dictAlgByFuncGroup(dictAlg)
             for fg, tmpdictAlg in dictFG.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
-                    ppperfprof.main(entries, inset.summarized_target_function_values,
-                                    order=sortedAlgs,
-                                    outputdir=outputdir,
-                                    info=('%02dD_%s' % (d, fg)),
-                                    verbose=verbose)
+                    pprldmany.main(entries, inset.summarized_target_function_values,
+                                   order=sortedAlgs,
+                                   outputdir=outputdir,
+                                   info=('%02dD_%s' % (d, fg)),
+                                   verbose=verbose)
             print "ECDFs of ERT figures done."
 
         if isTab:

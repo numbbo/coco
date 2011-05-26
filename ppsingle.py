@@ -45,8 +45,10 @@ def plot(dataset, **kwargs):
 def plot2(dataset, **kwargs):
     """Plot function values versus function evaluations.
 
-    + markers for final function values and run lengths and dashed lines
-    Lines for the max and min and median (or 10 and 90%?)
+    Plus (+) markers for final function values and run lengths and
+    dashed lines.
+    Lines for the max and min and median.
+
     Plot markers for all quartiles when:
     * the first run stops
     * the median run stops

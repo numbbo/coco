@@ -9,7 +9,7 @@ These variables are used for producing figures and tables used by COCO.
 
 import numpy
 from bbob_pproc.comp2 import ppscatter, ppfig2
-from bbob_pproc.compall import ppperfprof
+from bbob_pproc.compall import pprldmany
 
 
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
@@ -243,7 +243,7 @@ rcaxeslarger = {"labelsize": 24, "titlesize": 28.8}
 rcticklarger = {"labelsize": 24}
 rcfontlarger = {"size": 24}
 rclegendlarger = {"fontsize": 24}
-ppperfprof.fontsize = 20.0
+pprldmany.fontsize = 20.0
 ppscatter.markersize = 14.
 ppfig2.linewidth = 4.
 

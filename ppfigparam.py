@@ -155,6 +155,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
         xpltdata.append(p)
         if (np.isnan(data) == False).all():
             tmpdata = data.copy()
+            assert len(dictparam[p]) == 1
             tmpdata[np.isnan(data)] = dictparam[p][0].maxevals[np.isnan(data)]
             tmp = np.mean(tmpdata)
         else:

@@ -226,6 +226,7 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
             data = []
             #Collect data that have the same function and different dimension.
             for dim in dimensions:
+                assert len(dictFunc[func][dim]) == 1
                 tmp = generateData(dictFunc[func][dim][0],
                                    valuesOfInterest[i])
                 #data.append(numpy.append(dim, tmp))

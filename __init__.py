@@ -29,7 +29,7 @@ from bbob_pproc.cococommands import *
 from bbob_pproc.rungeneric import main as main
 
 __all__  = ['comp2', 'compall', 'main', 'ppfigdim', 'pplogloss', 'pprldistr',
-            'pproc', 'pptable', 'rungeneric', 'rungeneric1', 'rungeneric2',
-            'rungenericmany']
+            'pproc', 'ppsingle', 'pptable', 'rungeneric', 'rungeneric1',
+            'rungeneric2', 'rungenericmany']
 
 __version__ = '10.7'

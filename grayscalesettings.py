@@ -11,7 +11,7 @@ This module modifies module-defined variables so
 import numpy
 from bbob_pproc import ppfigdim, pprldistr, pplogloss
 from bbob_pproc.comp2 import ppscatter, ppfig2, pprldistr2
-from bbob_pproc.compall import ppperfprof, ppfigs
+from bbob_pproc.compall import pprldmany, ppfigs
 
 
 def convtograyscale(rgb):
@@ -342,24 +342,24 @@ pprldistr2.rldStyles = ({'color': '0.', 'ls': '--'},
 ppscatter.markersize = 14.
 ppscatter.colors = ('0.525', '0.295', '0.11', '0.', '0.3', '0.3075', '0.', '0.6675', '0.', '0.525', '0.3', '0.3075')
 
-ppperfprof.fontsize = 20.0
-ppperfprof.styles = [{'marker': 'o', 'linestyle': '-', 'color': '0.11'},
-                     {'marker': 'd', 'linestyle': '-', 'color': '0.295'},
-                     {'marker': 's', 'linestyle': '-', 'color': '0.3'},
-                     {'marker': 'v', 'linestyle': '-', 'color': '0.525'},
-                     {'marker': '*', 'linestyle': '-', 'color': '0.3075'},
-                     {'marker': 'h', 'linestyle': '-', 'color': '0.6675'},
-                     {'marker': '^', 'linestyle': '-', 'color': '0.'},
-                     {'marker': 'p', 'linestyle': '-', 'color': '0.11'},
-                     {'marker': 'H', 'linestyle': '-', 'color': '0.295'},
-                     {'marker': '<', 'linestyle': '-', 'color': '0.3'},
-                     {'marker': 'D', 'linestyle': '-', 'color': '0.525'},
-                     {'marker': '>', 'linestyle': '-', 'color': '0.3075'},
-                     {'marker': '1', 'linestyle': '-', 'color': '0.6675'},
-                     {'marker': '2', 'linestyle': '-', 'color': '0.'},
-                     {'marker': '3', 'linestyle': '-', 'color': '0.11'},
-                     {'marker': '4', 'linestyle': '-', 'color': '0.295'}]
-ppperfprof.refcolor = '0.88'
+pprldmany.fontsize = 20.0
+pprldmany.styles = [{'marker': 'o', 'linestyle': '-', 'color': '0.11'},
+                    {'marker': 'd', 'linestyle': '-', 'color': '0.295'},
+                    {'marker': 's', 'linestyle': '-', 'color': '0.3'},
+                    {'marker': 'v', 'linestyle': '-', 'color': '0.525'},
+                    {'marker': '*', 'linestyle': '-', 'color': '0.3075'},
+                    {'marker': 'h', 'linestyle': '-', 'color': '0.6675'},
+                    {'marker': '^', 'linestyle': '-', 'color': '0.'},
+                    {'marker': 'p', 'linestyle': '-', 'color': '0.11'},
+                    {'marker': 'H', 'linestyle': '-', 'color': '0.295'},
+                    {'marker': '<', 'linestyle': '-', 'color': '0.3'},
+                    {'marker': 'D', 'linestyle': '-', 'color': '0.525'},
+                    {'marker': '>', 'linestyle': '-', 'color': '0.3075'},
+                    {'marker': '1', 'linestyle': '-', 'color': '0.6675'},
+                    {'marker': '2', 'linestyle': '-', 'color': '0.'},
+                    {'marker': '3', 'linestyle': '-', 'color': '0.11'},
+                    {'marker': '4', 'linestyle': '-', 'color': '0.295'}]
+pprldmany.refcolor = '0.88'
 
 ppfigs.styles = [{'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': '0.11'},
                  {'marker': 'd', 'markersize': 30, 'linestyle': '-', 'color': '0.295'},
