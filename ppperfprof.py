@@ -14,7 +14,8 @@
    from pylab import *
    import pickle
    import bbob_pproc as bb
-    
+   import bbob_pproc.ppperfprof
+
    # Collect and unarchive data
    alg1 = 'BIPOP-CMA-ES'
    alg2 = 'NEWUOA'
@@ -244,11 +245,11 @@ def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., **kwargs):
 
     return res
 
-def plotmultiple(dictAlg, dsref=None, targets=defaulttargets, rhleg=False):
+def plotmultiple(dictAlg, dsref=None, targets=defaulttargets, rhleg=True):
     """Generate performance profile figure."""
 
     if not dsref:
-        dsref = bb.bestalg.generate(dictAlg)
+        dsref = bestalg.generate(dictAlg)
     lines = []
     for i, k in enumerate(dictAlg):
         args = styles[(i) % len(styles)]
@@ -308,7 +309,6 @@ def plot(dsList, dsref, targets=defaulttargets, **kwargs):
 
     # Display data
     data = np.array(data)
-    set_trace()
     data = data[np.isnan(data)==False] # Take away the nans
     n = len(data)
     data = data[np.isinf(data)==False] # Take away the infs
