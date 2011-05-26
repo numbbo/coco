@@ -201,6 +201,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             extraeol.append('')
 
             # generate all data for ranksum test
+            assert len(dictFunc[f]) == 1
             entry = dictFunc[f][0] # take the first element
             ertdata = entry.detERT(targetsOfInterest)
 

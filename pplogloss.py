@@ -127,7 +127,8 @@ def generateData(dsList, evals, CrE_A):
         bestalg.loadBBOB2009()
 
     for fun, tmpdsList in dsList.dictByFunc().iteritems():
-        entry = tmpdsList[0] # TODO: check for problems
+        assert len(tmpdsList) == 1
+        entry = tmpdsList[0]
 
         bestalgentry = bestalg.bestalgentries2009[(D, fun)]
 

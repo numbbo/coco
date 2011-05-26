@@ -267,6 +267,7 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
             dimmedian = []
             medianfes = []
             for dim in sorted(dictDim):
+                assert len(dictDim[dim]) == 1
                 entry = dictDim[dim][0]
                 data = generateData(entry, target)
                 if data[2] == 0: # No success

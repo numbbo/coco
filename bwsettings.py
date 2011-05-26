@@ -12,7 +12,7 @@ figures.
 import numpy
 from bbob_pproc import ppfigdim, pprldistr, pplogloss
 from bbob_pproc.comp2 import ppscatter, ppfig2, pprldistr2
-from bbob_pproc.compall import ppperfprof, ppfigs
+from bbob_pproc.compall import pprldmany, ppfigs
 
 
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
@@ -330,24 +330,24 @@ pprldistr2.rldStyles = ({'color': 'k', 'ls': '--'},
 ppscatter.markersize = 14.
 ppscatter.colors = ('k', 'k', 'k', 'k', 'k', 'k', 'k', 'k', 'k', 'k', 'k', 'k')
 
-ppperfprof.fontsize = 20.0
-ppperfprof.styles = [{'marker': 'o', 'linestyle': '-', 'color': 'k'},
-                     {'marker': 'd', 'linestyle': '-', 'color': 'k'},
-                     {'marker': 's', 'linestyle': '-', 'color': 'k'},
-                     {'marker': 'v', 'linestyle': '-', 'color': 'k'},
-                     {'marker': '*', 'linestyle': '-', 'color': 'k'},
-                     {'marker': 'h', 'linestyle': '-', 'color': 'k'},
-                     {'marker': '^', 'linestyle': '-', 'color': 'k'},
-                     {'marker': 'p', 'linestyle': '-', 'color': 'k'},
-                     {'marker': 'H', 'linestyle': '-', 'color': 'k'},
-                     {'marker': '<', 'linestyle': '-', 'color': 'k'},
-                     {'marker': 'D', 'linestyle': '-', 'color': 'k'},
-                     {'marker': '>', 'linestyle': '-', 'color': 'k'},
-                     {'marker': '1', 'linestyle': '-', 'color': 'k'},
-                     {'marker': '2', 'linestyle': '-', 'color': 'k'},
-                     {'marker': '3', 'linestyle': '-', 'color': 'k'},
-                     {'marker': '4', 'linestyle': '-', 'color': 'k'}]
-ppperfprof.refcolor = '0.9'
+pprldmany.fontsize = 20.0
+pprldmany.styles = [{'marker': 'o', 'linestyle': '-', 'color': 'k'},
+                    {'marker': 'd', 'linestyle': '-', 'color': 'k'},
+                    {'marker': 's', 'linestyle': '-', 'color': 'k'},
+                    {'marker': 'v', 'linestyle': '-', 'color': 'k'},
+                    {'marker': '*', 'linestyle': '-', 'color': 'k'},
+                    {'marker': 'h', 'linestyle': '-', 'color': 'k'},
+                    {'marker': '^', 'linestyle': '-', 'color': 'k'},
+                    {'marker': 'p', 'linestyle': '-', 'color': 'k'},
+                    {'marker': 'H', 'linestyle': '-', 'color': 'k'},
+                    {'marker': '<', 'linestyle': '-', 'color': 'k'},
+                    {'marker': 'D', 'linestyle': '-', 'color': 'k'},
+                    {'marker': '>', 'linestyle': '-', 'color': 'k'},
+                    {'marker': '1', 'linestyle': '-', 'color': 'k'},
+                    {'marker': '2', 'linestyle': '-', 'color': 'k'},
+                    {'marker': '3', 'linestyle': '-', 'color': 'k'},
+                    {'marker': '4', 'linestyle': '-', 'color': 'k'}]
+pprldmany.refcolor = '0.9'
 
 ppfigs.styles = [{'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'k'},
                  {'marker': 'd', 'markersize': 30, 'linestyle': '-', 'color': 'k'},

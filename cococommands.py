@@ -146,6 +146,7 @@ def systeminfo():
 #    compall (package)
 #        ppfigs ->
 #        ppperfprof ->
+#        pprldmany ->
 #        pptables ->
 #    pproc
 #    pprocold

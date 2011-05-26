@@ -240,12 +240,19 @@ class DataSet:
 
     def __eq__(self, other):
         """Compare indexEntry instances."""
-        return (self.__class__ is other.__class__ and
-                self.funcId == other.funcId and
-                self.dim == other.dim and
-                #self.precision == other.precision and
-                self.algId == other.algId and
-                self.comment == other.comment)
+        res = (self.__class__ is other.__class__ and
+               self.funcId == other.funcId and
+               self.dim == other.dim and
+               self.precision == other.precision and
+               self.algId == other.algId and
+               self.comment == other.comment)
+        if hasattr(self, '_extra_attr'): # Backward compatibility
+            for i in self._extra_attr:
+                res = (res and hasattr(other, i) and
+                       getattr(other, i) == getattr(self, i))
+                if not res:
+                    break
+        return res
 
     def __ne__(self,other):
         return not self.__eq__(other)
@@ -278,8 +285,7 @@ class DataSet:
             try:
                 setattr(self, self.__attributes[attrname][0], attrvalue)
             except KeyError:
-                warnings.warn('%s is not an expected ' % (elemFirst) +
-                              'attribute.')
+                warnings.warn('%s is not an expected attribute' % (attrname))
                 setattr(self, attrname, attrvalue)
                 self._extra_attr.append(attrname)
                 # the attribute is set anyway, this might lead to some errors.
@@ -550,7 +556,6 @@ class DataSetList(list):
                               'file(s), .pickle file(s) or a folder ' +
                               'containing .info file(s).')
 
-
     def processIndexFile(self, indexFile, verbose=True):
         """Reads in an index file information on the different runs."""
 
@@ -716,6 +721,19 @@ class DataSetList(list):
                 warnings.warn('Unknown function id.')
 
         return sorted
+
+    def dictByParam(self, param):
+        """Returns a dictionary of DataSetList by parameter values.
+
+        :returns: a dictionary with values of parameter param as keys and
+                  the corresponding slices of DataSetList as values.
+
+        """
+
+        d = {}
+        for i in self:
+            d.setdefault(getattr(i, param, None), DataSetList()).append(i)
+        return d
 
     def info(self, opt='all'):
         """Display some information onscreen.
