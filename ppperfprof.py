@@ -26,14 +26,9 @@
         archivefile.extractall()  # write to disc
         dsets[alg] = bb.load(glob.glob('BBOB2009pythondata/' + alg + '/ppdata_f0*_20.pickle'))
 
-   # TODO: this should be done with dsets and/or within ppperfprof.plot? 
-   bb.bestalg.generate(('BBOB2009pythondata/' + alg1, 'BBOB2009pythondata/' + alg2))
-   dsref = pickle.load(open('bestAlg/bestalg.pickle'))
-
    # plot the profiles
    figure()
-   bb.ppperfprof.plotmultiple(dsets, dsref)
-   bb.ppperfprof.beautify()  # resize the window to view whole figure
+   bb.ppperfprof.plotmultiple(dsets)
 
 """
 from __future__ import absolute_import
@@ -249,8 +244,11 @@ def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., **kwargs):
 
     return res
 
-def plotmultiple(dictAlg, dsref, targets=defaulttargets, rhleg=False):
+def plotmultiple(dictAlg, dsref=None, targets=defaulttargets, rhleg=False):
+    """Generate performance profile figure."""
 
+    if not dsref:
+        dsref = bb.bestalg.generate(dictAlg)
     lines = []
     for i, k in enumerate(dictAlg):
         args = styles[(i) % len(styles)]

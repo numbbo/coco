@@ -396,7 +396,19 @@ def loadBBOBever():
 def usage():
     print main.__doc__
 
-def generate(args=algs2009):
+def generate(dictalg):
+    """Generates dictionary of best algorithm data set.
+    """
+
+    #dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
+    res = {}
+    for f, i in dictAlgByFun(dictalg).iteritems():
+        for d, j in dictAlgByDim(i).iteritems():
+            tmp = BestAlgSet(j)
+            res[(d, f)] = tmp
+    return res
+
+def customgenerate():
     """Generates best algorithm data set.
 
     It will create a folder bestAlg in the current working directory
@@ -407,7 +419,7 @@ def generate(args=algs2009):
     containing all necessary data folders::
 
       >>> from bbob_pproc import bestalg
-      >>> bestalg.generate()
+      >>> bestalg.customgenerate()
       Searching in ALPS ...
       ...
       Found 324 file(s)!
@@ -418,7 +430,7 @@ def generate(args=algs2009):
     """
 
     #args = set(algs2010 + algs2009)
-    # args = algs2009
+    args = algs2009
 
     outputdir = 'bestAlg'
 
@@ -431,18 +443,8 @@ def generate(args=algs2009):
         if verbose:
             print 'Folder %s was created.' % (outputdir)
 
-    res = {}
-    for f, i in dictAlgByFun(dictAlg).iteritems():
-        for d, j in dictAlgByDim(i).iteritems():
-            tmp = BestAlgSet(j)
-#             picklefilename = os.path.join(outputdir,
-#                                           'bestalg_f%03d_%02d.pickle' % (f, d))
-#             fid = open(picklefilename, 'w')
-#             pickle.dump(tmp, fid, 2)
-#             fid.close()
-            res[(d, f)] = tmp
+    res = generate(dictAlg)
     picklefilename = os.path.join(outputdir, 'bestalg.pickle')
     fid = open(picklefilename, 'w')
     pickle.dump(res, fid, 2)
     fid.close()
-
