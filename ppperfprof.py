@@ -14,18 +14,17 @@
    from pylab import *
    import pickle
    import bbob_pproc as bb
-   import bbob_pproc.ppperfprof
     
-   # Collect and unarchive data (3.4MB)
+   # Collect and unarchive data
    alg1 = 'BIPOP-CMA-ES'
    alg2 = 'NEWUOA'
-   dsets = []
+   dsets = {}
    for alg in (alg1, alg2):
         dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/' + alg + '.tar.gz'
         filename, headers = urllib.urlretrieve(dataurl)
         archivefile = tarfile.open(filename)
         archivefile.extractall()  # write to disc
-        dsets.append(bb.load(glob.glob('BBOB2009pythondata/' + alg + '/ppdata_f0*_20.pickle')))
+        dsets[alg] = bb.load(glob.glob('BBOB2009pythondata/' + alg + '/ppdata_f0*_20.pickle'))
 
    # TODO: this should be done with dsets and/or within ppperfprof.plot? 
    bb.bestalg.generate(('BBOB2009pythondata/' + alg1, 'BBOB2009pythondata/' + alg2))
@@ -33,7 +32,7 @@
 
    # plot the profiles
    figure()
-   bb.ppperfprof.plot(dsets, dsref)
+   bb.ppperfprof.plotmultiple(dsets, dsref)
    bb.ppperfprof.beautify()  # resize the window to view whole figure
 
 """
@@ -42,12 +41,14 @@ from __future__ import absolute_import
 import os
 import warnings
 from pdb import set_trace
-import numpy
+import numpy as np
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap, bestalg
 from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
-from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers
+from bbob_pproc.pprldistr import plotECDF, beautifyECDF
+from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
 from bbob_pproc.pptex import writeLabels, numtotext
+from bbob_pproc.compall.pprldmany import plotLegend
 
 __all__ = ['beautify', 'main', 'plot']
 
@@ -185,7 +186,7 @@ headleg = (r'\raisebox{.037\textwidth}{\parbox[b]'
 footleg = (r'%do not remove the empty line below' + '\n\n' +
            r'\end{scriptsize}}}')
 
-tg = tuple(10**numpy.r_[-8:2:0.2])
+defaulttargets = tuple(10**np.r_[-8:2:0.2])
 
 def beautify():
     """Customize figure presentation."""
@@ -195,58 +196,22 @@ def beautify():
     a.set_xscale('log')
     #Tick label handling
 
-    plt.xlabel('log10 of (ERT / dimension)')
+    plt.xlabel('log10 of (ERT / ERTref)')
     plt.ylabel('Proportion of functions')
-    plt.grid(True)
+    logxticks()
+    beautifyECDF()
 
-    plt.ylim(-0.01, 1.01)
-    xticks, labels = plt.xticks()
-    tmp = []
-    for i in xticks:
-        tmp.append('%d' % round(numpy.log10(i)))
-    a.set_xticklabels(tmp)
-
-def get_plot_args(args):
-    """args is one dict element according to algorithmshortinfos
-    """
-
-    if not args.has_key('label') or args['label'] in show_algorithms:
-        args['linewidth'] = 2
-    elif len(show_algorithms) > 0:
-        args['color'] = refcolor
-        args['ls'] = '-'
-        args['zorder'] = -1
-    elif not (args.has_key('linewidth') or args.has_key('lw')):
-        args['linewidth'] = 1.3
-    return args
-
-def downsample(xdata, ydata):
-    """Downsample arrays of data, zero-th column elements are evenly spaced."""
-
-    # powers of ten 10**(i/nbperdecade)
-    minidx = numpy.ceil(numpy.log10(xdata[0]) * nbperdecade)
-    maxidx = numpy.floor(numpy.log10(xdata[-1]) * nbperdecade)
-    alignmentdata = 10.**(numpy.arange(minidx, maxidx)/nbperdecade)
-    # Look in the original data
-    res = []
-    for i in alignmentdata:
-        res.append(ydata[xdata <= i][-1])
-
-    return alignmentdata, res
-
-def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
-    """Draw a performance profile.
-    Difference with the above: trying something smart for the markers.
-    """
+def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., **kwargs):
+    """Draw a performance profile."""
 
     #Expect data to be a ndarray.
-    x = data[numpy.isnan(data)==False] # Take away the nans
+    x = data[np.isnan(data)==False] # Take away the nans
     nn = len(x)
 
-    x = x[numpy.isinf(x)==False] # Take away the infs
+    x = x[np.isinf(x)==False] # Take away the infs
     n = len(x)
 
-    x = numpy.exp(CrE) * x  # correction by crafting effort CrE
+    x = np.exp(CrE) * x  # correction by crafting effort CrE
 
     if n == 0:
         res = list()
@@ -256,198 +221,116 @@ def plotPerfProf(data, maxval=None, maxevals=None, CrE=0., kwargs={}):
         for i in x:
             dictx[i] = dictx.get(i, 0) + 1
 
-        x = numpy.array(sorted(dictx))
+        x = np.array(sorted(dictx))
         if maxval is None:
             maxval = max(x)
         x = x[x <= maxval]
-        y = numpy.cumsum(list(dictx[i] for i in x))
+        y = np.cumsum(list(dictx[i] for i in x))
 
-        x2 = numpy.hstack([numpy.repeat(x, 2), maxval])
-        y2 = numpy.hstack([0.0,
-                           numpy.repeat(y / float(nn), 2)])
+        x2 = np.hstack([np.repeat(x, 2), maxval])
+        y2 = np.hstack([0.0,
+                           np.repeat(y / float(nn), 2)])
 
         res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, **kwargs)
 
         if maxevals: # Should cover the case where maxevals is None or empty
-            x3 = numpy.median(maxevals)
-            if (x3 <= maxval and numpy.any(x2 <= x3)
+            x3 = np.median(maxevals)
+            if (x3 <= maxval and np.any(x2 <= x3)
                 and not plt.getp(res[-1], 'label').startswith('best')): # TODO: HACK for not considering the best 2009 line
                 y3 = y2[x2<=x3][-1]
                 h = plt.plot((x3,), (y3,), marker='x', markersize=30,
                              markeredgecolor=plt.getp(res[0], 'color'),
                              ls=plt.getp(res[0], 'ls'),
                              color=plt.getp(res[0], 'color'))
+                h.setp
                 h.extend(res)
                 res = h # so the last element in res still has the label.
                 # Only take sequences for x and y!
 
     return res
 
-def plotLegend(handles, maxval):
-    """Display right-side legend. Returns list of (ordered) labels and handles.
+def plotmultiple(dictAlg, dsref, targets=defaulttargets, rhleg=False):
 
-    The figure is stopped at maxval (upper x-bound), and the graphs in the
-    figure are prolonged with straight lines to the right to connect with
-    labels of the graphs (uniformly spread out vertically). The order of the
-    graphs at the upper x-bound line give the order of the labels, in case of
-    ties, the best is the graph for which the x-value of the first step (from
-    the right) is smallest.
-    """
-
-    reslabels = []
-    reshandles = []
-    ys = {}
-    lh = 0
-    for h in handles:
-        x2 = []
-        y2 = []
-        for i in h:
-            x2.append(plt.getp(i, "xdata"))
-            y2.append(plt.getp(i, "ydata"))
-
-        x2 = numpy.array(numpy.hstack(x2))
-        y2 = numpy.array(numpy.hstack(y2))
-        tmp = numpy.argsort(x2)
-        x2 = x2[tmp]
-        y2 = y2[tmp]
-
-        h = h[-1] # we expect the label to be in the last element of h
-        try:
-            tmp = (x2 <= maxval)
-            x2bis = x2[y2 < y2[tmp][-1]][-1]
-            ys.setdefault(y2[tmp][-1], {}).setdefault(x2bis, []).append(h)
-            lh += 1
-        except IndexError:
-            pass
-
-    if len(show_algorithms) > 0:
-        lh = min(lh, len(show_algorithms))
-    if lh <= 1:
-        lh = 2
-    i = 0 # loop over the elements of ys
-    for j in sorted(ys.keys()):
-        for k in reversed(sorted(ys[j].keys())):
-            #enforce best ever comes last in case of equality
-            tmp = []
-            for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best 2009':
-                    tmp.insert(0, h)
-                else:
-                    tmp.append(h)
-            tmp.reverse()
-            ys[j][k] = tmp
-
-            for h in ys[j][k]:
-                if (not plt.getp(h, 'label').startswith('_line') and
-                    (len(show_algorithms) == 0 or
-                     plt.getp(h, 'label') in show_algorithms)):
-                    y = 0.02 + i * 0.96/(lh-1)
-                    tmp = {}
-                    for attr in ('lw', 'ls', 'marker',
-                                 'markeredgewidth', 'markerfacecolor',
-                                 'markeredgecolor', 'markersize', 'zorder'):
-                        tmp[attr] = plt.getp(h, attr)
-                    legx = maxval * 10
-                    if 'marker' in attr:
-                        legx = maxval * 9
-                    reshandles.extend(plt.plot((maxval, legx), (j, y),
-                                      color=plt.getp(h, 'markeredgecolor'), **tmp))
-                    reshandles.append(plt.text(maxval*15, y,
-                                               plt.getp(h, 'label'),
-                                               horizontalalignment="left",
-                                               verticalalignment="center", size=fontsize))
-                    reslabels.append(plt.getp(h, 'label'))
-                    #set_trace()
-                    i += 1
-
-    #plt.axvline(x=maxval, color='k') # Not as efficient?
-    reshandles.append(plt.plot((maxval, maxval), (0., 1.), color='k'))
-    reslabels.reverse()
-    return reslabels, reshandles
-
-def plot(dictAlg, dsref, targets=tg, rhleg=False, kwargs={}):
-
-    xlim = x_limit # variable defined in header
     lines = []
-    for i in dictAlg:
-        lines.append(plotsingle(dictAlg[i], dsref, targets, rhleg, kwargs))
-    labels, handles = plotLegend(lines, xlim)
-    plt.xlim(xmin=1e-0, xmax=xlim*x_annote_factor)
+    for i, k in enumerate(dictAlg):
+        args = styles[(i) % len(styles)]
+        args['linewidth'] = 1.5
+        args['markersize'] = 15.
+        args['markeredgewidth'] = 1.5
+        args['markerfacecolor'] = 'None'
+        args['markeredgecolor'] = args['color']
+        lines.append(plot(dictAlg[k], dsref, targets, label=k,
+                          **args))
+    #plt.xlim(xmin=1e-0, xmax=xlim*x_annote_factor)
+    beautify()
+    if rhleg:
+        plotLegend(lines, plt.xlim()[1])
 
-
-def plotsingle(dsList, dsref, targets=tg, rhleg=False, kwargs={}):
+def plot(dsList, dsref, targets=defaulttargets, **kwargs):
     """Generates a graph showing the performance profile of an algorithm.
+
+    We display the empirical cumulative distribution function ECDF of
+    the bootstrapped distribution of the expected running time (ERT)
+    for an algorithm to reach the function value :py:data:`targets`
+    normalized by the ERT of the reference algorithm for these
+    targets.
 
     :param DataSetList dsList: data set for one algorithm
     :param DataSetList dsref: reference data set for normalization
     :param seq targets: target function values
-    :param bool rhleg: if True, right-hand side legend is added
     :param dict kwargs: additional parameters provided to plot function.
     
     :returns: handles
 
     """
-
-    # set_trace()
     res = []
+    assert len(dsList.dictByDim()) == 1 # We never integrate over dimensions...
+    data = []
+    maxevals = []
+    for entry in dsList:
+        for t in targets:
+            flg_ert = 1
+            if flg_ert:
+                normalizer = dsref[(entry.dim, entry.funcId)].detERT((t,))[0]
+            else:
+                pass
+            if np.isinf(normalizer):
+                continue
+            x = [np.inf] * perfprofsamplesize
+            runlengthunsucc = []
+            evals = entry.detEvals([t])[0]
+            runlengthsucc = evals[np.isnan(evals) == False]
+            runlengthunsucc = entry.maxevals[np.isnan(evals)]
+            if len(runlengthsucc) > 0:
+                x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                                     percentiles=[50],
+                                     samplesize=perfprofsamplesize)[1]
+            data.extend(i/normalizer for i in x)
+            maxevals.extend(runlengthunsucc)
 
-    dictDim = dsList.dictByDim()
-    for d, dsListperDim in dictDim.iteritems(): # We never integrate over dimensions...
-        dictFunc = dsListperDim.dictByFunc()
-
-        data = []
-        maxevals = []
-        dictMaxEvals = {} # list of (maxevals per function) per algorithm
-        bestERT = [] # best ert per function
-        funcsolved = [set()] * len(targets) # number of functions solved per target
-        xbest2009 = []
-        maxevalsbest2009 = []
-
-        for f, dsListperFunc in dictFunc.iteritems():
-
-            for j, t in enumerate(targets):
-                flg_ert = 1
-                if flg_ert:
-                    normalizer = dsref[(d, f)].detERT((t,))[0]
-                else:
-                    pass
-                if numpy.isinf(normalizer):
-                    continue
-
-                funcsolved[j].add(f) # TODO: weird
-
-                x = [numpy.inf] * perfprofsamplesize
-                runlengthunsucc = []
-                try:
-                    entry = dsListperFunc[0]
-                    evals = entry.detEvals([t])[0]
-                    runlengthsucc = evals[numpy.isnan(evals) == False] / entry.dim
-                    runlengthunsucc = entry.maxevals[numpy.isnan(evals)] / entry.dim
-                    if len(runlengthsucc) > 0:
-                        x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
-                                             percentiles=[50],
-                                             samplesize=perfprofsamplesize)[1]
-                except (KeyError, IndexError):
-                    #set_trace()
-                    txt = ('Data on function %d in %d-D ' % (f, d)
-                           + 'are missing.')
-                    warnings.warn(txt)
-                
-                numpy.seterr('raise')
-                data.extend(numpy.asarray(x)/normalizer)
-                maxevals.extend(runlengthunsucc)
-
-        # Display data
-        #args = styles[(i) % len(styles)]
-        #args['linewidth'] = 1.5
-        #args['markersize'] = 15.
-        #args['markeredgewidth'] = 1.5
-        #args['markerfacecolor'] = 'None'
-        #args['markeredgecolor'] = args['color']
-        #args['label'] = alg
-        res.extend(plotPerfProf(numpy.array(data), x_limit, maxevals,
-                                CrE=0., kwargs=kwargs))
-
+    # Display data
+    data = np.array(data)
+    set_trace()
+    data = data[np.isnan(data)==False] # Take away the nans
+    n = len(data)
+    data = data[np.isinf(data)==False] # Take away the infs
+    # data = data[data <= maxval] # Take away rightmost data
+    #data = np.exp(craftingeffort) * data  # correction by crafting effort CrE
+    if len(data) == 0: # data is empty.
+        res.append(plt.axhline(0., **kwargs))
+    else:
+        res = plotECDF(np.array(data), n=n, **kwargs)
+        #plotdata(np.array(data), x_limit, maxevals,
+        #                    CrE=0., kwargs=kwargs)
+#     if maxevals: # Should cover the case where maxevals is None or empty
+#         x3 = np.median(maxevals)
+#         if np.any(data > x3):
+#             y3 = float(np.sum(data <= x3)) / n
+#             h = plt.plot((x3,), (y3,), marker='x', markersize=30,
+#                          markeredgecolor=plt.getp(res[0], 'color'),
+#                          ls='', color=plt.getp(res[0], 'color'))
+#             h.extend(res)
+#             res = h # so the last element in res still has the label.
     return res
 
 def main(dictAlg, targets, order=None, outputdir='', info='default',
@@ -504,13 +387,13 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
 
             # Loop over all algs, not only those with data for f
             for alg in dictAlg:
-                x = [numpy.inf] * perfprofsamplesize
+                x = [np.inf] * perfprofsamplesize
                 runlengthunsucc = []
                 try:
                     entry = dictAlgperFunc[alg][0]
                     evals = entry.detEvals([t])[0]
-                    runlengthsucc = evals[numpy.isnan(evals) == False] / entry.dim
-                    runlengthunsucc = entry.maxevals[numpy.isnan(evals)] / entry.dim
+                    runlengthsucc = evals[np.isnan(evals) == False] / entry.dim
+                    runlengthunsucc = entry.maxevals[np.isnan(evals)] / entry.dim
                     if len(runlengthsucc) > 0:
                         x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
                                              percentiles=[50],
@@ -535,13 +418,13 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
                 if bestalgevals[1][j]:
                     evals = bestalgevals[0][j]
                     #set_trace()
-                    runlengthsucc = evals[numpy.isnan(evals) == False] / bestalgentry.dim
-                    runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][numpy.isnan(evals)] / bestalgentry.dim
+                    runlengthsucc = evals[np.isnan(evals) == False] / bestalgentry.dim
+                    runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][np.isnan(evals)] / bestalgentry.dim
                     x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
                                          percentiles=[50],
                                          samplesize=perfprofsamplesize)[1]
                 else:
-                    x = perfprofsamplesize * [numpy.inf]
+                    x = perfprofsamplesize * [np.inf]
                     runlengthunsucc = []
                 xbest2009.extend(x)
                 maxevalsbest2009.extend(runlengthunsucc)
@@ -570,7 +453,7 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
             #args['color'] = 'wheat'
             #args['ls'] = '-'
             #args['zorder'] = -1
-        lines.append(plotPerfProf(numpy.array(data), xlim, maxevals,
+        lines.append(plotPerfProf(np.array(data), xlim, maxevals,
                                   CrE=0., kwargs=args))
 
     if displaybest2009:
@@ -578,7 +461,7 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
                 'label': 'best 2009', 'zorder': -1}
-        lines.append(plotPerfProf(numpy.array(xbest2009), xlim, maxevalsbest2009,
+        lines.append(plotPerfProf(np.array(xbest2009), xlim, maxevalsbest2009,
                                   CrE = 0., kwargs=args))
 
     labels, handles = plotLegend(lines, xlim)
@@ -626,7 +509,7 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
     xticks, labels = plt.xticks()
     tmp = []
     for i in xticks:
-        tmp.append('%d' % round(numpy.log10(i)))
+        tmp.append('%d' % round(np.log10(i)))
     a.set_xticklabels(tmp)
     saveFigure(figureName, figFormat=figformat, verbose=verbose)
 

@@ -47,11 +47,10 @@ from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap, bestalg
+from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
 from bbob_pproc.pprldistr import plotECDF, beautifyECDF
-from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers
+from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
 from bbob_pproc.pptex import writeLabels, numtotext
-
-__all__ = ['beautify', 'main', 'plot']
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
@@ -187,7 +186,7 @@ headleg = (r'\raisebox{.037\textwidth}{\parbox[b]'
 footleg = (r'%do not remove the empty line below' + '\n\n' +
            r'\end{scriptsize}}}')
 
-tg = tuple(10**np.r_[-8:2:0.2])
+defaulttargets = tuple(10**np.r_[-8:2:0.2])
 
 def beautify():
     """Customize figure presentation."""
@@ -200,20 +199,23 @@ def beautify():
 
     plt.xlabel('log10 of (ERT / dimension)')
     plt.ylabel('Proportion of functions')
-    plt.grid(True)
-
-    plt.ylim(-0.01, 1.01)
-    xticks, labels = plt.xticks()
-    tmp = []
-    for i in xticks:
-        tmp.append('%d' % round(np.log10(i)))
-    a.set_xticklabels(tmp)
+    logxticks()
+    beautifyECDF()
 
 def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
-    """Draw a graph.
-
+    """Draw a normalized ECDF.
+    
+    :param seq data: data set
+    :param float maxval: right-most value to be displayed, will use the
+                         largest non-inf, non-nan value in data if not
+                         provided
+    :param seq maxevals: if provided, will plot the median of this
+                         sequence as a single cross marker
+    :param float CrE: Crafting effort the data will be multiplied by
+                      the exponential of this value.
+    :param kwargs: optional arguments provided to plot function.
+    
     """
-
     #Expect data to be a ndarray.
     x = data[np.isnan(data)==False] # Take away the nans
     nn = len(x)
@@ -260,19 +262,19 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     return res
 
 def plotLegend(handles, maxval):
-    """Display right-side legend. 
+    """Display right-side legend.
     
     :param float maxval: rightmost x boundary
     :returns: list of (ordered) labels and handles.
 
-    The figure is stopped at maxval (upper x-bound), and the graphs in the
-    figure are prolonged with straight lines to the right to connect with
-    labels of the graphs (uniformly spread out vertically). The order of the
-    graphs at the upper x-bound line give the order of the labels, in case of
-    ties, the best is the graph for which the x-value of the first step (from
-    the right) is smallest.
-    """
+    The figure is stopped at maxval (upper x-bound), and the graphs in
+    the figure are prolonged with straight lines to the right to connect
+    with labels of the graphs (uniformly spread out vertically). The
+    order of the graphs at the upper x-bound line give the order of the
+    labels, in case of ties, the best is the graph for which the x-value
+    of the first step (from the right) is smallest.
 
+    """
     reslabels = []
     reshandles = []
     ys = {}
@@ -345,60 +347,62 @@ def plotLegend(handles, maxval):
     plt.xlim(xmax=maxval*x_annote_factor)
     return reslabels, reshandles
 
-def plot(dsList, targets=tg, craftingeffort=0., kwargs={}):
-    """Generates a plot showing the performance of an algorithm.
+def plot(dsList, targets=defaulttargets, craftingeffort=0., **kwargs):
+    """Generates a graph of the run length distribution of an algorithm.
+
+    We display the empirical cumulative distribution function ECDF of
+    the bootstrapped distribution of the expected running time (ERT)
+    for an algorithm to reach the function value :py:data:`targets`.
 
     :param DataSetList dsList: data set for one algorithm
     :param seq targets: target function values
+    :param float crafting effort: the data will be multiplied by the
+                                  exponential of this value
     :param dict kwargs: additional parameters provided to plot function.
     
     :returns: handles
 
     """
-
     res = []
-    for dsListperDim in dsList.dictByDim().values(): # We never integrate over dimensions...
-        data = []
-        maxevals = []
-        for entry in dsListperDim:
-            for j, t in enumerate(targets):
-                x = [np.inf] * perfprofsamplesize
-                runlengthunsucc = []
-                evals = entry.detEvals([t])[0]
-                runlengthsucc = evals[np.isnan(evals) == False] / entry.dim
-                runlengthunsucc = entry.maxevals[np.isnan(evals)] / entry.dim
-                if len(runlengthsucc) > 0:
-                    x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
-                                         percentiles=[50],
-                                         samplesize=perfprofsamplesize)[1]
-                data.extend(x)
-                maxevals.extend(runlengthunsucc)
+    assert len(dsList.dictByDim()) == 1 # We never integrate over dimensions...
+    data = []
+    maxevals = []
+    for entry in dsList:
+        for t in targets:
+            x = [np.inf] * perfprofsamplesize
+            runlengthunsucc = []
+            evals = entry.detEvals([t])[0]
+            runlengthsucc = evals[np.isnan(evals) == False] / entry.dim
+            runlengthunsucc = entry.maxevals[np.isnan(evals)] / entry.dim
+            if len(runlengthsucc) > 0:
+                x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                                     percentiles=[50],
+                                     samplesize=perfprofsamplesize)[1]
+            data.extend(x)
+            maxevals.extend(runlengthunsucc)
 
-        # Display data
-        data = np.array(data)
-        data = data[np.isnan(data)==False] # Take away the nans
-        #data = data[np.isinf(data)==False] # Take away the infs
-        #n = len(data)
-        data = np.exp(craftingeffort) * data  # correction by crafting effort CrE
-        if n == 0:
-            res.append(plt.axhline(0., **kwargs))
-        else:
-            h = plotECDF(np.array(data), **kwargs)
-            #plotdata(np.array(data), x_limit, maxevals,
-            #                    CrE=0., kwargs=kwargs)
-            res.extend(h)
-        if maxevals: # Should cover the case where maxevals is None or empty
-            x3 = np.median(maxevals)
-            if (x3 <= maxval and np.any(data > x3)):
-                y3 = data[x2<=x3][-1]
-                h = plt.plot((x3,), (y3,), marker='x', markersize=30,
-                             markeredgecolor=plt.getp(res[0], 'color'),
-                             ls=plt.getp(res[0], 'ls'),
-                             color=plt.getp(res[0], 'color'))
-                h.extend(res)
-                res = h # so the last element in res still has the label.
-                # Only take sequences for x and y!
-
+    # Display data
+    data = np.array(data)
+    data = data[np.isnan(data)==False] # Take away the nans
+    n = len(data)
+    data = data[np.isinf(data)==False] # Take away the infs
+    # data = data[data <= maxval] # Take away rightmost data
+    data = np.exp(craftingeffort) * data  # correction by crafting effort CrE
+    if len(data) == 0: # data is empty.
+        res.append(plt.axhline(0., **kwargs))
+    else:
+        res = plotECDF(np.array(data), n=n, **kwargs)
+        #plotdata(np.array(data), x_limit, maxevals,
+        #                    CrE=0., kwargs=kwargs)
+    if maxevals: # Should cover the case where maxevals is None or empty
+        x3 = np.median(maxevals)
+        if np.any(data > x3):
+            y3 = float(np.sum(data <= x3)) / n
+            h = plt.plot((x3,), (y3,), marker='x', markersize=30,
+                         markeredgecolor=plt.getp(res[0], 'color'),
+                         ls='', color=plt.getp(res[0], 'color'))
+            h.extend(res)
+            res = h # so the last element in res still has the label.
     return res
 
 def main(dictAlg, targets, order=None, outputdir='', info='default',
@@ -416,7 +420,6 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
     :param list order: sorted list of keys to dictAlg for plotting order
 
     """
-    xlim = x_limit # variable defined in header
 
     tmp = dictAlgByDim(dictAlg)
     if len(tmp) != 1:
@@ -451,7 +454,7 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
             continue
 
         for j, t in enumerate(targets):
-            funcsolved[j].add(f) # TODO: weird
+            funcsolved[j].add(f)
 
             # Loop over all algs, not only those with data for f
             for alg in dictAlg:
@@ -521,7 +524,7 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
             #args['color'] = 'wheat'
             #args['ls'] = '-'
             #args['zorder'] = -1
-        lines.append(plotdata(np.array(data), xlim, maxevals,
+        lines.append(plotdata(np.array(data), x_limit, maxevals,
                                   CrE=0., kwargs=args))
 
     if displaybest2009:
@@ -529,10 +532,10 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
                 'label': 'best 2009', 'zorder': -1}
-        lines.append(plotdata(np.array(xbest2009), xlim, maxevalsbest2009,
+        lines.append(plotdata(np.array(xbest2009), x_limit, maxevalsbest2009,
                                   CrE = 0., kwargs=args))
 
-    labels, handles = plotLegend(lines, xlim)
+    labels, handles = plotLegend(lines, x_limit)
     if True: #isLateXLeg:
         fileName = os.path.join(outputdir,'pprldmany_%s.tex' % (info))
         try:
@@ -564,7 +567,7 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
             f.close()
 
     figureName = os.path.join(outputdir,'pprldmany_%s' % (info))
-    #beautify(figureName, funcsolved, xlim*x_annote_factor, False, fileFormat=figformat)
+    #beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
     beautify()
 
     text = 'f%s' % (consecutiveNumbers(sorted(dictFunc.keys())))
@@ -573,7 +576,7 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
 
     a = plt.gca()
 
-    plt.xlim(xmin=1e-0, xmax=xlim*x_annote_factor)
+    plt.xlim(xmin=1e-0, xmax=x_limit*x_annote_factor)
     xticks, labels = plt.xticks()
     tmp = []
     for i in xticks:
