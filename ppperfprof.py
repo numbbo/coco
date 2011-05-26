@@ -34,7 +34,7 @@
    # plot the profiles
    figure()
    bb.ppperfprof.plot(dsets, dsref)
-   bb.ppperfprof.beautify() # resize the window to view whole figure
+   bb.ppperfprof.beautify()  # resize the window to view whole figure
 
 """
 from __future__ import absolute_import
