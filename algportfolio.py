@@ -147,7 +147,17 @@ class DataSet(pp.DataSet):
 #FUNCTION DEFINITIONS
 
 def build(dictAlg, sortedAlg=None):
-    """Merge datasets."""
+    """Merge datasets in an algorithm portfolio.
+    
+    :param dict dictAlg: dictionary of data sets with algorithm name for
+                         keys
+    :param seq sortedAlgs: sequence for sorting the entries of
+                           :py:data:`dictAlg`, if not provided,
+                           dictAlg.keys() will be instead
+    :returns: an instance of :py:class:`DataSetList` with the porfolio
+              data sets
+    
+    """
     if not sortedAlg:
         sortedAlg = dictAlg.keys()
     tmpres = []
