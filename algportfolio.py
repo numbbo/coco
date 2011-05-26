@@ -88,8 +88,8 @@ class DataSet(pp.DataSet):
         for i in dslist:
             algId.append(i.algId)
             comment.append(i.comment)
-        self.algId = algId
-        self.comment = comment
+        self.algId = tuple(algId)
+        self.comment = tuple(comment)
 
         # Data handling
         nbruns = dslist[0].nbRuns() # all data sets have the same #runs
@@ -148,10 +148,9 @@ class DataSet(pp.DataSet):
 
 def build(dictAlg, sortedAlg=None):
     """Merge datasets."""
-
     if not sortedAlg:
         sortedAlg = dictAlg.keys()
-    res = []
+    tmpres = []
     for f, i in pp.dictAlgByFun(dictAlg).iteritems():
         for d, j in pp.dictAlgByDim(i).iteritems():
             tmp = []
@@ -163,11 +162,11 @@ def build(dictAlg, sortedAlg=None):
                 assert len(k) == 1 # one element list
                 tmp.append(k[0])
             try:
-                res.append(DataSet(tmp))
+                tmpres.append(DataSet(tmp))
             except Usage, err:
                 print >>sys.stderr, err.msg
-    tmp = pp.DataSetList()
-    tmp.extend(res)
+    res = pp.DataSetList()
+    res.extend(tmpres)
     return res
 
 def usage():
