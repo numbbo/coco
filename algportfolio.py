@@ -5,8 +5,43 @@
 
 The algorithm portfolio consists in running multiple algorithms in
 parallel.
-Current limitation: the portfolio data set must come from data sets that are
-identical (same number of repetitions on the same instances of the functions.
+Current limitation: the portfolio data set must come from data sets that
+are identical (same number of repetitions on the same instances of the
+functions.
+
+**Example:**
+
+.. plot::
+   :width: 75%
+
+    import urllib
+    import tarfile
+    import glob
+    from pylab import *
+    import pickle
+    import bbob_pproc as bb
+    import bbob_pproc.compall.pprldmany
+    import bbob_pproc.algportfolio
+
+    # Collect and unarchive data
+    dsets = {}
+    for alg in ('BIPOP-CMA-ES', 'NEWUOA'):
+        dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/' + alg + '.tar.gz'
+        filename, headers = urllib.urlretrieve(dataurl)
+        archivefile = tarfile.open(filename)
+        archivefile.extractall()  # write to disc
+        dsets[alg] = bb.load(glob.glob('BBOB2009pythondata/' + alg + '/ppdata_f0*_20.pickle'))
+
+    # Generate the algorithm portfolio
+    dspf = bb.algportfolio.build(dsets)
+    dsets['Portfolio'] = dspf # store the portfolio in dsets
+
+    # plot the run lengths distribution functions
+    figure()
+    for algname, ds in dsets.iteritems():
+        bb.compall.pprldmany.plot(ds, label=algname)
+    bb.compall.pprldmany.beautify()
+    legend(loc='best') # Display legend
 
 """
 
@@ -148,7 +183,7 @@ class DataSet(pp.DataSet):
 
 def build(dictAlg, sortedAlg=None):
     """Merge datasets in an algorithm portfolio.
-    
+
     :param dict dictAlg: dictionary of data sets with algorithm name for
                          keys
     :param seq sortedAlgs: sequence for sorting the entries of
@@ -156,7 +191,7 @@ def build(dictAlg, sortedAlg=None):
                            dictAlg.keys() will be instead
     :returns: an instance of :py:class:`DataSetList` with the porfolio
               data sets
-    
+
     """
     if not sortedAlg:
         sortedAlg = dictAlg.keys()
@@ -178,7 +213,3 @@ def build(dictAlg, sortedAlg=None):
     res = pp.DataSetList()
     res.extend(tmpres)
     return res
-
-def usage():
-    print main.__doc__
-
