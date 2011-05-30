@@ -405,7 +405,7 @@ def plot(dsList, targets=defaulttargets, craftingeffort=0., **kwargs):
             res = h # so the last element in res still has the label.
     return res
 
-def main(dictAlg, targets, order=None, outputdir='', info='default',
+def main(dictAlg, targets, order=None, outputdir='.', info='default',
          verbose=True):
     """Generates a figure showing the performance of algorithms.
 
@@ -414,10 +414,13 @@ def main(dictAlg, targets, order=None, outputdir='', info='default',
     distribution of ERT for algorithms on multiple functions for
     multiple targets altogether.
 
-    :param dict dictAlg: dictionary of dataSetList instances containing
-                         all data to be represented in the figure
+    :param dict dictAlg: dictionary of :py:class:`DataSetList` instances
+                         one instance is equivalent to one algorithm,
     :param list targets: target function values
     :param list order: sorted list of keys to dictAlg for plotting order
+    :param str outputdir: output directory
+    :param str info: output file name suffix
+    :param bool verbose: controls verbosity
 
     """
 

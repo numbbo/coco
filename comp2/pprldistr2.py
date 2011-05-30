@@ -137,120 +137,17 @@ def computeERT(fevals, maxevals):
     res = bootstrap.sp(data, issuccessful=success)
     return res[0]
 
-def plotLogAbs(indexEntries0, indexEntries1, fvalueToReach, isByInstance=True,
-               verbose=True):
-    """Creates one run length distribution from a sequence of indexEntries.
-
-    Keyword arguments:
-    indexEntries0 -- reference
-    indexEntries1
-    fvalueToReach
-    maxEvalsF
-    isByInstance -- loop over the function instances instead of the functions
-    verbose
-
-    Outputs:
-    res -- resulting plot.
-    fsolved -- number of different functions solved.
-    funcs -- number of different function considered.
-    """
-
-    x = []
-    nn = 0
-
-    funIndexEntries0 = indexEntries0.dictByFunc()
-    funIndexEntries1 = indexEntries1.dictByFunc()
-    for func in set(funIndexEntries0.keys()).union(funIndexEntries1.keys()):
-        try:
-            i0 = funIndexEntries0[func][0]
-            i1 = funIndexEntries1[func][0]
-        except KeyError:
-            continue
-
-        ERT = []
-        if not isByInstance:
-            for i, entry in enumerate((i0, i1)):
-                for j in entry.evals:
-                    if j[0] <= fvalueToReach[func]:
-                        break
-                ERT.append(computeERT(j, entry.maxevals))
-            if not all(numpy.isinf(ERT)):
-                if numpy.isnan(ERT[1]/ERT[0]):
-                    x.append(ERT[1]/ERT[0])
-                    nn += 1
-            #TODO check it is the same as ERT[1]
-        else:
-            for i, entry in enumerate((i0, i1)):
-                dictinstance = {}
-                for j in range(len(entry.itrials)):
-                    dictinstance.setdefault(entry.itrials[j], []).append(j)
-                ERT.append(dictinstance.copy())
-                for k in dictinstance:
-                    for j in entry.evals:
-                        if j[0] <= fvalueToReach[func]:
-                            break
-                    ERT[i][k] = computeERT(j[list(1+i for i in dictinstance[k])],
-                            entry.maxevals[list(i for i in dictinstance[k])])
-            s0 = set(ERT[0])
-            s1 = set(ERT[1])
-            #Could be done simpler
-            for j in s0 - s1:
-                x.append(0)
-                nn += 1
-            for j in s0 & s1:
-                if not numpy.isnan(ERT[1][j]/ERT[0][j]):
-                    x.append(ERT[1][j]/ERT[0][j])
-                    nn += 1
-            for j in s1 - s0:
-                x.append(numpy.inf)
-                nn += 1
-
-    if len(set(fvalueToReach.values())):
-        label = '%+d' % numpy.log10(fvalueToReach[func])
-        #all target function values are the same
-    n = len(x)
-    try:
-        x.sort()
-        xtmp = x[:]
-        #Catch negative values: zeros are not a problem...
-        #tmp = 0
-        tmp = len(list(i for i in x if i <= 0))
-        x = x[tmp:]
-        #Catch inf, those could be a problem with the log scale...
-        #tmp2 = 0
-        tmp2 = len(list(i for i in x if i > 0 and numpy.isinf(i)))
-        if tmp2 > 0:
-            x = x[:-tmp2]
-
-        xbound = max(abs(numpy.floor(numpy.log10(x[0]))),
-                     abs(numpy.ceil(numpy.log10(x[-1]))))
-        x2 = numpy.hstack([10.**(-xbound),
-                           numpy.repeat(x, 2),
-                           10.**xbound])
-        #maxEvalsF: used for the limit of the plot.
-        y2 = numpy.hstack([tmp/float(nn), tmp/float(nn),
-                           numpy.repeat(numpy.arange(tmp+1, n-tmp2) / float(nn), 2),
-                           (n-tmp2)/float(nn), (n-tmp2)/float(nn)])
-        res = plt.plot(x2, y2, label=label)
-    except (OverflowError, IndexError): #TODO Check this exception
-        # OverflowError would be because of ?
-        # IndexError because x is reduced to an empty list
-        res = plt.plot([], [], label=label)
-
-    return res
-
-def plotLogAbs2(dsList0, dsList1, fvalueToReach, verbose=True):
+def plotLogAbs(dsList0, dsList1, fvalueToReach, verbose=True):
     """Creates ECDF of run length ratios.
 
-    Keyword arguments:
-    dsList0 -- reference
-    dsList1
-    fvalueToReach -- List of target function values
-    verbose
+    :param DataSetList dsList0: reference
+    :param DataSetList dsList1: data set list of algorithm of interest
+    :param seq fvalueToReach: target function values
+    :param bool verbose: controls verbosity
 
-    Outputs:
+    :returns: handles
+
     """
-
     res = []
     dictFunc0 = dsList0.dictByFunc()
     dictFunc1 = dsList1.dictByFunc()
@@ -510,8 +407,8 @@ def main(dsList0, dsList1, valuesOfInterest=None,
 
     figureName = os.path.join(outputdir,'pplogabs_%s' %(info))
 
-    handles = plotLogAbs2(dsList0, dsList1,
-                          valuesOfInterest, verbose=verbose)
+    handles = plotLogAbs(dsList0, dsList1,
+                         valuesOfInterest, verbose=verbose)
 
     beautify2(handles)
 
