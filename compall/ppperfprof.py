@@ -27,8 +27,8 @@
                archivefile = tarfile.open(filename)
                archivefile.extractall()  # write to disc
                dsets[alg] = bb.load(glob.glob('BBOB'+date+'pythondata/' + alg + '/ppdata_f0*_20.pickle'))
-            except:
-                pass
+           except:
+               pass
 
    # plot the profiles
    figure()
