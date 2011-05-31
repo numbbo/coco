@@ -32,52 +32,7 @@ figformat = ('eps', 'pdf') # Controls the output when using the main method
 fmax = None
 evalfmax = None
 
-def beautify(figHandle, figureName, fileFormat=('pdf', 'eps'), isByInstance=True,
-             legend=False, verbose=True):
-    """Format the figure of the run length distribution and save into files."""
-    axisHandle = figHandle.gca()
-    axisHandle.set_xscale('log')
-    plt.ylim(-0.01, 1.01)
-    plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
-               ('', '', '', '', ''))
-    xlim = plt.xlim()
-    plt.xlim(min(0.1, 10.**(-max(numpy.abs(numpy.log10(xlim))))),
-             max(10., 10.**(max(numpy.abs(numpy.log10(xlim))))))
-    axisHandle.set_xlabel('log10 of ERT1/ERT0')
-    if isByInstance:
-        axisHandle.set_ylabel('proportion of instances')
-    else:
-        axisHandle.set_ylabel('proportion of functions')
-    # Grid options
-    axisHandle.grid(True)
-    xtic = axisHandle.get_xticks()
-    newxtic = []
-    for j in xtic:
-        newxtic.append('%d' % round(numpy.log10(j)))
-    axisHandle.set_xticklabels(newxtic)
-
-    #plt.text(0.5, 0.93, text, horizontalalignment="center",
-             #transform=axisHandle.transAxes)
-             #bbox=dict(ec='k', fill=False), 
-
-    if legend:
-        plt.legend(loc='best')
-
-    # Save figure
-    if isinstance(fileFormat, basestring):
-        plt.savefig(figureName + '.' + fileFormat, dpi = 300,
-                    format = fileFormat)
-        if verbose:
-            print 'Wrote figure in %s.' %(figureName + '.' + fileFormat)
-
-    else:
-        for entry in fileFormat:
-            plt.savefig(figureName + '.' + entry, dpi = 300,
-                        format = entry)
-            if verbose:
-                print 'Wrote figure in %s.' %(figureName + '.' + entry)
-
-def beautify2(handles):
+def beautify(handles):
     """Format the figure of the run length distribution."""
 
     axisHandle = plt.gca()
@@ -410,7 +365,7 @@ def main(dsList0, dsList1, valuesOfInterest=None,
     handles = plotLogAbs(dsList0, dsList1,
                          valuesOfInterest, verbose=verbose)
 
-    beautify2(handles)
+    beautify(handles)
 
     funcs = set(dsList0.dictByFunc().keys()) & set(dsList1.dictByFunc().keys())
     text = 'f%s' % consecutiveNumbers(sorted(funcs))

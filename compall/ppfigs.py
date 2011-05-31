@@ -164,15 +164,15 @@ def plotLegend(handles, maxval=None):
         plt.axvline(maxval, color='k')
 
 def beautify(legend=False, rightlegend=False):
-    """ Customize a figure by adding a legend, axis label, etc and save to a file.
-        Is identical to beautify except for the linear and quadratic scaling
-        lines which are quadratic and cubic
+    """Customize figure format.
 
-        Keyword arguments:
-        rightlegend -- if True, makes some space on the right for legend
+    adding a legend, axis label, etc
+
+    :param bool legend: if True, display a box legend
+    :param bool rightlegend: if True, makes some space on the right for
+                             legend
 
     """
-
     # Get axis handle and set scale for each axis
     axisHandle = plt.gca()
     axisHandle.set_xscale("log")
@@ -223,11 +223,12 @@ def beautify(legend=False, rightlegend=False):
 def generateData(dataSet, target):
     """Returns an array of results to be plotted.
 
-    Oth column is ert, 1st is the success rate, 2nd the number of successes,
-    3rd the mean of the number of function evaluations, and 4th the median
-    of number of function evaluations of successful runs or numpy.nan.
-    """
+    Oth column is ert, 1st is the success rate, 2nd the number of
+    successes, 3rd the mean of the number of function evaluations, and
+    4th the median of number of function evaluations of successful runs
+    or numpy.nan.
 
+    """
     res = []
 
     data = dataSet.detEvals([target])[0]

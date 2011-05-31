@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 
 """Rank-sum tests table on "Final Data Points".
-that is, for example, using 1/#fevals(ftarget) if ftarget was reached and
--f_final otherwise as input for the rank-sum test, where obviously the larger
-the better.
-One table per function and dimension."""
 
+That is, for example, using 1/#fevals(ftarget) if ftarget was reached
+and -f_final otherwise as input for the rank-sum test, where obviously
+the larger the better.
+
+One table per function and dimension.
+
+"""
 from __future__ import absolute_import
 
 import os
@@ -44,8 +47,7 @@ except IOError, (errno, strerror):
           'Titles in scaling figures will not be displayed.'
 
 def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
-    """One table per dimension, modified to fit in 1 page per table.
-    """
+    """One table per dimension, modified to fit in 1 page per table."""
 
     #TODO: method is long, split if possible
 

@@ -32,7 +32,6 @@ if __name__ == "__main__":
 from bbob_pproc import dataoutput, pproc
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.compall import pprldmany, pptables, ppfigs
-from bbob_pproc.compall import organizeRTDpictures
 from bbob_pproc import ppconverrorbars
 
 import matplotlib.pyplot as plt

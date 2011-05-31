@@ -285,7 +285,7 @@ class DataSet:
             try:
                 setattr(self, self.__attributes[attrname][0], attrvalue)
             except KeyError:
-                warnings.warn('%s is not an expected attribute' % (attrname))
+                warnings.warn('%s is an additional attribute.' % (attrname))
                 setattr(self, attrname, attrvalue)
                 self._extra_attr.append(attrname)
                 # the attribute is set anyway, this might lead to some errors.
