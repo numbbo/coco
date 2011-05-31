@@ -228,8 +228,8 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     x = np.exp(CrE) * x  # correction by crafting effort CrE
 
     if n == 0:
-        res = list()
-        res.append(plt.axhline(0., **kwargs))
+        #res = plt.plot((1., ), (0., ), **kwargs)
+        res = plotECDF(np.array((1., )), n=np.inf, **kwargs)
     else:
         dictx = {}
         for i in x:
@@ -295,13 +295,13 @@ def plotLegend(handles, maxval):
         y2 = y2[tmp]
 
         h = h[-1] # we expect the label to be in the last element of h
+        tmp = (x2 <= maxval)
         try:
-            tmp = (x2 <= maxval)
             x2bis = x2[y2 < y2[tmp][-1]][-1]
-            ys.setdefault(y2[tmp][-1], {}).setdefault(x2bis, []).append(h)
-            lh += 1
-        except IndexError:
-            pass
+        except IndexError: # there is no data with a y smaller than max(y)
+            x2bis = 0.
+        ys.setdefault(y2[tmp][-1], {}).setdefault(x2bis, []).append(h)
+        lh += 1
 
     if len(show_algorithms) > 0:
         lh = min(lh, len(show_algorithms))
@@ -391,11 +391,11 @@ def plot(dsList, targets=defaulttargets, craftingeffort=0., **kwargs):
     # data = data[data <= maxval] # Take away rightmost data
     data = np.exp(craftingeffort) * data  # correction by crafting effort CrE
     if len(data) == 0: # data is empty.
-        res.append(plt.axhline(0., **kwargs))
+        res = plotECDF(np.array((1., )), n=np.inf, **kwargs)
     else:
         res = plotECDF(np.array(data), n=n, **kwargs)
         #plotdata(np.array(data), x_limit, maxevals,
-        #                    CrE=0., kwargs=kwargs)
+        #                    CrE=0., **kwargs)
     if maxevals: # Should cover the case where maxevals is None or empty
         x3 = np.median(maxevals)
         if np.any(data > x3):
@@ -530,7 +530,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
             #args['ls'] = '-'
             #args['zorder'] = -1
         lines.append(plotdata(np.array(data), x_limit, maxevals,
-                                  CrE=0., kwargs=args))
+                                  CrE=0., **args))
 
     if displaybest2009:
         args = {'ls': '-', 'linewidth': 1.5, 'marker': 'D', 'markersize': 7.,
@@ -538,7 +538,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
                 'markeredgecolor': refcolor, 'color': refcolor,
                 'label': 'best 2009', 'zorder': -1}
         lines.append(plotdata(np.array(xbest2009), x_limit, maxevalsbest2009,
-                                  CrE = 0., kwargs=args))
+                                  CrE = 0., **args))
 
     labels, handles = plotLegend(lines, x_limit)
     if True: #isLateXLeg:

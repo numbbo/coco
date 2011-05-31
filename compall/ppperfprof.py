@@ -19,23 +19,21 @@
 
    # Collect and unarchive data
    dsets = {}
-   for alg in bb.compall.ppperfprof.best:  # ('BIPOP-CMA-ES', 'NEWUOA'):
-        for date in ('2010', '2009'):
-            try: 
-                dataurl = 'http://coco.lri.fr/BBOB'+date+'/pythondata/' + alg + '.tar.gz'
-                filename, headers = urllib.urlretrieve(dataurl)
-                archivefile = tarfile.open(filename)
-                archivefile.extractall()  # write to disc
-                dsets[alg] = bb.load(glob.glob('BBOB'+date+'pythondata/' + alg + '/ppdata_f0*_20.pickle'))
+   for alg in bb.compall.ppperfprof.best:
+       for date in ('2010', '2009'):
+           try:
+               dataurl = 'http://coco.lri.fr/BBOB'+date+'/pythondata/' + alg + '.tar.gz'
+               filename, headers = urllib.urlretrieve(dataurl)
+               archivefile = tarfile.open(filename)
+               archivefile.extractall()  # write to disc
+               dsets[alg] = bb.load(glob.glob('BBOB'+date+'pythondata/' + alg + '/ppdata_f0*_20.pickle'))
             except:
                 pass
-   
+
    # plot the profiles
    figure()
-   bb.bestalg.loadBBOB2009() # loads virtual best algorithm from BBOB 2009
-   # bb.compall.ppperfprof.plotmultiple(dsets.dictAlgByFuncGroup()['lcond'], dsref=bb.bestalg.bestalgentries2009)
-   bb.compall.ppperfprof.plotmultiple(dsets)
-
+   # bb.compall.ppperfprof.plotmultiple(dsets, dsref=bb.bestalg.bestalgentries2009)
+   
 """
 from __future__ import absolute_import
 
@@ -96,7 +94,7 @@ def beautify():
     logxticks()
     beautifyECDF()
 
-def plotmultiple(dictAlg, dsref=None, targets=defaulttargets,
+def plotmultiple(dictAlg, dsref=None, order=None, targets=defaulttargets,
                  isbootstrap=False, rhleg=True):
     """Generate performance profile figure.
     
@@ -111,8 +109,10 @@ def plotmultiple(dictAlg, dsref=None, targets=defaulttargets,
 
     if not dsref:
         dsref = bestalg.generate(dictAlg)
+    if not order:
+        order = dictAlg.keys()
     lines = []
-    for i, k in enumerate(dictAlg):
+    for i, k in enumerate(order):
         args = styles[(i) % len(styles)]
         args['linewidth'] = 1.5
         args['markersize'] = 15.
@@ -183,7 +183,7 @@ def plot(dsList, dsref, targets=defaulttargets, isbootstrap=False, **kwargs):
     #data = np.exp(craftingeffort) * data  # correction by crafting effort CrE
     #set_trace()
     if len(data) == 0: # data is empty.
-        res.append(plt.axhline(0., **kwargs))
+        res = plotECDF(np.array((1., )), n=np.inf, **kwargs)
     else:
         plt.plot((min(data), ), (0, ), **kwargs)
         res = plotECDF(np.array(data), n=n, **kwargs)
@@ -217,7 +217,6 @@ def main(dictAlg, dsref=None, order=None, targets=defaulttargets, outputdir='',
     :param list order: sorted list of keys to dictAlg for plotting order
 
     """
-
     for d, dictalgdim in dictAlg.dictAlgByDim().iteritems():
         plotmultiple(dictalgdim, dsref, targets)
         figureName = os.path.join(outputdir, 'ppperfprof_%02dD_%s' % (d, info))
