@@ -58,12 +58,21 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
         """
         # powers of ten 10**(i/nbperdecade)
         # get segments coordinates x1, x2, y1, y2
+        # Add data at the front and the back,
+        # otherwise the line of markers is prolonged at the y-position
+        # of the first and last marker which may not correspond to the
+        # 1st and last y-value
         if 'steps' in plt.getp(res[0], 'drawstyle'): # other conditions?
-            xdata = np.hstack((10 ** (np.ceil(np.log10(xdata[0]) * nbperdecade) / nbperdecade),
-                               xdata,
+            #xdata = np.hstack((10 ** (np.floor(np.log10(xdata[0]) * nbperdecade) / nbperdecade),
+            #                   xdata,
+            #                   10 ** (np.ceil(np.log10(xdata[-1]) * nbperdecade) / nbperdecade)))
+            #ydata = np.hstack((ydata[0], ydata, ydata[-1]))
+            # Add data only at the back
+            xdata = np.hstack((xdata,
                                10 ** (np.ceil(np.log10(xdata[-1]) * nbperdecade) / nbperdecade)))
-            ydata = np.hstack((ydata[0], ydata, ydata[-1]))
-        tmpdata = np.vstack((xdata, ydata)).T
+            ydata = np.hstack((ydata, ydata[-1]))
+
+        tmpdata = np.column_stack((xdata, ydata))
         it = groupby(tmpdata, lambda x: x[0])
         seg = []
         try:
@@ -103,7 +112,19 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
                 else:
                     tmp = segy[0] + (np.log10(intermx) - np.log10(segx[0])) * (segy[1] - segy[0]) / (np.log10(segx[1]) - np.log10(segx[0]))
                 downy.extend(tmp)
-        return downx, downy
+        resdownx = []
+        resdowny = []
+        tmpdata = np.column_stack((downx, downy))
+        it = groupby(tmpdata, lambda x: x[0])
+        try:
+            while True:
+                k, g = it.next()
+                g = np.vstack(g)[:, 1]
+                resdownx.append(k)
+                resdowny.append(10.**((np.log10(min(g)) + np.log10(max(g))) / 2.))
+        except StopIteration:
+            pass
+        return resdownx, resdowny
 
     if 'marker' in kwargs and len(x) > 0:
         x2, y2 = downsample(x, y)
