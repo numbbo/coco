@@ -54,6 +54,8 @@ from bbob_pproc.pptex import writeLabels, numtotext
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
+# TODO: update the list below which are not relevant anymore
+
 best = ('AMaLGaM IDEA', 'iAMaLGaM IDEA', 'VNS (Garcia)', 'MA-LS-Chain', 'BIPOP-CMA-ES', 'IPOP-SEP-CMA-ES',
    'BFGS', 'NELDER (Han)', 'NELDER (Doe)', 'NEWUOA', 'full NEWUOA', 'GLOBAL', 'MCS (Neum)',
    'DIRECT', 'DASA', 'POEMS', 'Cauchy EDA', 'Monte Carlo')

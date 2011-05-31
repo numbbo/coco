@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Routines for the generation of TeX tables.
-See Section Comparison Tables in
-http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
-"""
-
+"""Routines for the generation of TeX tables."""
 from __future__ import absolute_import
 
 import os
@@ -17,6 +13,11 @@ from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, writ
 from bbob_pproc.bootstrap import prctile
 from bbob_pproc.pproc import DataSetList, significancetest
 from bbob_pproc.pplogloss import detf
+
+"""
+See Section Comparison Tables in
+http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
+"""
 
 allmintarget = {}
 allmedtarget = {}
@@ -46,7 +47,9 @@ precscien = 1
 
 def cite(algName, isNoisefree, isNoisy):
     """Returns the citation key associated to the algorithm name.
+
     Hard coded while no other solution is found.
+
     """
     res = []
     # The names of the algorithms must correspond to the name of the folder
@@ -163,10 +166,11 @@ def cite(algName, isNoisefree, isNoisy):
     return res
 
 def sortColumns(table, maxRank=None):
-    """For each column in table, returns a list of the maxRank-ranked elements.
-    This list may have a length larger than maxRank in the case of ties.
-    """
+    """For each column, returns a list of the maxRank-ranked elements.
 
+    This list may have a length larger than maxRank in the case of ties.
+
+    """
     if maxRank is None:
         maxRank = numpy.shape(table)[0]
 

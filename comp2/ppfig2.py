@@ -74,7 +74,7 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in scaling figures will not be displayed.'
 
-def generateData(entry0, entry1, fthresh=None, downsampling=None):
+def _generateData(entry0, entry1, fthresh=None, downsampling=None):
 
     def alignData(i0, i1):
         """Returns two arrays of fevals aligned on function evaluations.
@@ -129,23 +129,8 @@ def generateData(entry0, entry1, fthresh=None, downsampling=None):
 
     return data0, data1
 
-def plotERTRatio(data, plotargs={}):
-    """Returns handles of line2D plots using input data.
-    Input data must be a sequence which first two arguments correspond to
-    data of algorithms 0 and 1. The elements of the sequence must be arrays
-    which first column is the target function values and the second the 
-    ERT.
-    """
-
-    res = []
-    idx = numpy.isfinite(data[0][:, 1]) * numpy.isfinite(data[1][:, 1])
-    ydata = data[1][idx, 1]/data[0][idx, 1]
-    h = plt.plot(data[0][idx, 0] , ydata, ls='--', **plotargs)
-    res.extend(h)
-
-    return h
-
 def beautify(xmin=None):
+    """Format the figure."""
     ax = plt.gca()
     yax = ax.get_yaxis()
     ax.set_xscale('log')
@@ -280,10 +265,7 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
                          transform=trans, clip_on=False)
 
 def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
-    """Returns ERT1/ERT0 comparison figure.
-
-    For black and white purpose (symbols, etc.)
-    """
+    """Returns ERT1/ERT0 comparison figure."""
 
     #plt.rc("axes", labelsize=20, titlesize=24)
     #plt.rc("xtick", labelsize=20)
@@ -320,7 +302,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
 
             nbtests += 1
             # generateData:
-            data = generateData(entry0, entry1, fthresh=fthresh)
+            data = _generateData(entry0, entry1, fthresh=fthresh)
             dataperdim[dim] = data
 
             if len(data[0]) == 0 and len(data[1]) == 0:
