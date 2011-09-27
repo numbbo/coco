@@ -210,12 +210,12 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
     # Sort data per dimension and function
     dictData = {}
     dsListperAlg = list(dictAlg[i] for i in sortedAlgs)
-    for entries in dsListperAlg:
+    for n, entries in enumerate(dsListperAlg):
         tmpdictdim = entries.dictByDim()
         for d in tmpdictdim:
             tmpdictfun = tmpdictdim[d].dictByFunc()
             for f in tmpdictfun:
-                dictData.setdefault((d, f), []).append(tmpdictfun[f])
+                dictData.setdefault((d, f), {})[n] = tmpdictfun[f]
 
     nbtests = len(dictData)
 
@@ -244,11 +244,11 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
         algtestres = []
         algentry = []
 
-        for n, entries in enumerate(dictData[df]):
+        for n in sorted(dictData[df].keys()):
+            entries = dictData[df][n]
             # the number of datasets for a given dimension and function (df)
             # should be strictly 1. TODO: find a way to warn
             # TODO: do this checking before... why wasn't it triggered by ppperprof?
-            # TODO: could len(entries) be 0 as well?
             if len(entries) > 1:
                 txt = ("There is more than a single entry associated with "
                        "folder %s on %d-D f%d." % (sortedAlgs[n], df[0], df[1]))
