@@ -34,6 +34,7 @@ if __name__ == "__main__":
 from bbob_pproc import pprldistr
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
+from bbob_pproc.compall import ppfigs
 from bbob_pproc import ppconverrorbars
 import matplotlib.pyplot as plt
 
@@ -153,6 +154,7 @@ def main(argv=None):
         isrldistr = True
         istable = True
         isscatter = True
+        isscaleup = True
         isNoisy = False
         isNoiseFree = False
         verbose = False
@@ -436,7 +438,17 @@ def main(argv=None):
             ppscatter.main(dsList0, dsList1, outputdir, verbose=verbose)
             print "Scatter plots done."
 
-        if isfigure or isrldistr or istable or isscatter:
+        if isscaleup:
+            plt.rc("axes", labelsize=20, titlesize=24)
+            plt.rc("xtick", labelsize=20)
+            plt.rc("ytick", labelsize=20)
+            plt.rc("font", size=20)
+            plt.rc("legend", fontsize=20)
+            ppfigs.main(dictAlg, sortedAlgs, 1e-8, outputdir, verbose)
+            plt.rcdefaults()
+            print "Scaling figures done."
+
+        if isfigure or isrldistr or istable or isscatter or isscaleup:
             print "Output data written to folder %s." % outputdir
 
         plt.rcdefaults()
