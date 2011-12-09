@@ -297,7 +297,7 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                 tmp = plt.plot(dimmaxevals, maxevals, **styles[i])
                 plt.setp(tmp[0], markersize=20, #label=alg,
                          markeredgecolor=plt.getp(tmp[0], 'color'),
-                         markerfacecolor='None')
+                         markerfacecolor='None', linestyle='None')
 
             handles.append(tmp)
             #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',
