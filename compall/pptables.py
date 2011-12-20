@@ -9,7 +9,7 @@ from pdb import set_trace
 import warnings
 import numpy
 from bbob_pproc import bestalg, bootstrap
-from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, writeLabels, tableLaTeX, numtotext
+from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, writeLabels, tableXLaTeX, numtotext
 from bbob_pproc.bootstrap import prctile
 from bbob_pproc.pproc import DataSetList, significancetest
 from bbob_pproc.pplogloss import detf
@@ -310,7 +310,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
 
         # Create the table
         table = []
-        spec = r'@{}c@{}|*{%d}{@{\,}r@{}l@{\,}}|@{}r@{}@{}l@{}' % (len(targets))
+        spec = r'@{}c@{}|*{%d}{@{\,}r@{}X@{\,}}|@{}r@{}@{}l@{}' % (len(targets))
         extraeol = []
 
         # Generate header lines
@@ -318,15 +318,15 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
             header = funInfos[df[1]]
         else:
             header = 'f%d' % df[1]
-        table.append([r'\multicolumn{%d}{@{\,}c@{\,}}{{\normalsize \textbf{%s}}}'
+        table.append([r'\multicolumn{%d}{@{\,}c@{\,}}{{\textbf{%s}}}'
                       % (2 * len(targets) + 2, header)])
         extraeol.append('')
 
         curline = [r'$\Delta$ftarget']
         for t in targets[0:-1]:
-            curline.append(r'\multicolumn{2}{@{\,}c@{\,}}{%s}'
+            curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
                            % writeFEvals2(t, precision=1, isscientific=True))
-        curline.append(r'\multicolumn{2}{@{\,}c@{}|}{%s}'
+        curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
                        % writeFEvals2(targets[-1], precision=1, isscientific=True))
         curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
         table.append(curline)
@@ -334,9 +334,9 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
 
         curline = [r'ERT$_{\text{best}}$']
         for i in refalgert[0:-1]:
-            curline.append(r'\multicolumn{2}{@{\,}c@{\,}}{%s}'
+            curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
                            % writeFEvalsMaxPrec(float(i), 2))
-        curline.append(r'\multicolumn{2}{@{\,}c@{\,}|}{%s}'
+        curline.append(r'\multicolumn{2}{@{\,}X@{\,}|}{%s}'
                        % writeFEvalsMaxPrec(float(refalgert[-1]), 2))
         curline.append('%d' % refalgnbsucc)
         if refalgnbsucc:
@@ -364,9 +364,9 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                                         isBoldArray[i], algtestres[i])):
                 ert, dispersion, isBold, testres = tmp
 
-                alignment = '@{\,}c@{\,}'
+                alignment = '@{\,}X@{\,}'
                 if j == len(algert[i]) - 1:
-                    alignment = '@{\,}c@{\,}|'
+                    alignment = '@{\,}X@{\,}|'
 
                 data = ert/refalgert[j]
 
@@ -447,7 +447,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
             extraeol.append('')
 
         # Write table
-        res = tableLaTeX(table, spec=spec, extraeol=extraeol)
+        res = tableXLaTeX(table, spec=spec, extraeol=extraeol)
         try:
             filename = os.path.join(outputdir, 'pptables_f%03d_%02dD.tex' % (df[1], df[0]))
             f = open(filename, 'w')
