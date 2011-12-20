@@ -358,10 +358,8 @@ def split(dataFiles, dim=None):
         for line in lines:
             # skip if comment
             if line.startswith('%'):
-                if not line.find('restart') > -1:
                     if content:
                         dataSets.append(numpy.vstack(content))
-                        print content
                         content = []
                 continue
 
