@@ -338,6 +338,35 @@ def tableLaTeX(table, spec, extraeol=()):
     res = '\n'.join(res)
     return res
 
+
+def tableXLaTeX(table, spec, extraeol=()):
+    """Generates a tabular from a sequence of sequence of strings.
+
+    :param seq table: sequence of sequence of strings
+    :param string spec: string for table specification, see
+                        http://en.wikibooks.org/wiki/LaTeX/Tables#The_tabular_environment 
+    :param seq extraeol: sequence of string the same length as the table
+                         (same number of lines) which are added at the
+                         end of each line.
+    :returns: sequence of strings of a LaTeX tabular.
+
+    """
+
+    if not extraeol:
+        extraeol = len(table) * ['']
+
+    # TODO: check that spec and extraeol have the right format? 
+
+    res = [r'\begin{tabularx}{\textwidth}{%s}' % spec]
+    for i, line in enumerate(table[:-1]):
+        curline = ' & '.join(line) + r'\\' + extraeol[i]
+        res.append(curline)
+    res.append(' & '.join(table[-1]) + extraeol[-1])
+
+    res.append(r'\end{tabularx}')
+    res = '\n'.join(res)
+    return res
+
 def tableLaTeXStar(table, width, spec, extraeol=()):
     """Generates a tabular\* from a sequence of sequence of strings
 

@@ -309,7 +309,7 @@ def plotFVDistr(dsList, target, maxEvalsF, **plotArgs):
             tmp = j[1:].copy() / target
         # Integrate the negative values of df / ftarget together
         # this is to prevent problem when passing on a log scale
-        tmp[tmp<=0.] = min(tmp[tmp > 0.])
+        tmp[tmp<=0.] = min(np.append(tmp[tmp>0],[target])>0)
         x.extend(tmp)
         nn += i.nbRuns()
     res = plotECDF(x, nn, **plotArgs)
