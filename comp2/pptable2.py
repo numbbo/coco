@@ -190,10 +190,10 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         # Formatting
                         tmp = float(j)/bestalgdata[i]
                         assert not numpy.isnan(tmp)
-                        #isscientific = False
-                        #if tmp >= 1000:
-                            #isscientific = True
-                        #tableentry = writeFEvals2(tmp, 2, isscientific=isscientific)
+                        isscientific = False
+                        if tmp >= 1000:
+                            isscientific = True
+                        tableentry = writeFEvals2(tmp, 2, isscientific=isscientific)
                         tableentry = writeFEvalsMaxPrec(tmp, 2)
 
                         isBold = False
