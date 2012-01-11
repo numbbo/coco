@@ -358,9 +358,9 @@ def split(dataFiles, dim=None):
         for line in lines:
             # skip if comment
             if line.startswith('%'):
-                    if content:
-                        dataSets.append(numpy.vstack(content))
-                        content = []
+                if content:
+                    dataSets.append(numpy.vstack(content))
+                    content = []
                 continue
 
             # else remove end-of-line sign
