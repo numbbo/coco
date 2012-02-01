@@ -298,7 +298,6 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         extraeol[-1] = ''
 
         outputfile = os.path.join(outputdir, 'pptable2_%02dD%s.tex' % (d, info))
-        outputfile_shortnames = os.path.join(outputdir, 'ppshortnames.tex' % (d, info))
         spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         res2 = r'\providecommand{\algzeroshort}{%s}' % writeLabels(alg0) + '\n'
         res2 += r'\providecommand{\algoneshort}{%s}' % writeLabels(alg1) + '\n'
