@@ -28,6 +28,7 @@ from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
     #from bbob_pproc.bootstrap import ranksums
     #pass
 
+dimensions = (2, 3, 5, 10, 20, 40)
 styles = [{'color': 'c', 'marker': '+', 'markeredgecolor': 'c',
            'markerfacecolor': 'None'},
           {'color': 'g', 'marker': 'v', 'markeredgecolor': 'g',
@@ -51,6 +52,8 @@ offset = 0.005
 incrstars = 1.5
 fthresh = 1e-8
 xmax = 1000
+functions_with_legend = (1, 24, 101, 130)
+dimensions_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
 
 figformat = ('eps', 'pdf') # Controls the output when using the main method
 
@@ -212,7 +215,7 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
         tmp2 = str(int(line[0][2]))
         txt = tmp + '/' + tmp2
 
-    dims = {2:0, 3:1, 5:2, 10:3, 20:4, 40:5}
+    dims = dimensions_index
     ax = plt.gca()
     assert line[0][2] > 0 or line[1][2] > 0
     signdata = line[1][0] - line[0][0]
@@ -293,7 +296,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
         dataperdim = {}
         fvalueswitch = {}
         nbtests = 0
-        for i, dim in enumerate((2, 3, 5, 10, 20, 40)):
+        for i, dim in enumerate(dimensions):
             try:
                 entry0 = dictDim0[dim][0]
                 entry1 = dictDim1[dim][0]
@@ -347,7 +350,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
         #trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
 
         # Plot everything else
-        for i, dim in enumerate((2, 3, 5, 10, 20, 40)):
+        for i, dim in enumerate(dimensions):
             try:
                 entry0 = dictDim0[dim][0]
                 entry1 = dictDim1[dim][0]
@@ -436,7 +439,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
         if isBenchmarkinfosFound:
             plt.title(funInfos[func])
 
-        if func in (1, 24, 101, 130):
+        if func in functions_with_legend:
             plt.legend(loc='best')
 
         # save

@@ -19,22 +19,22 @@ from bbob_pproc.pptex import convcolo, convmark, writeLabels
 #           {'color': 'y', 'marker': '^', 'markeredgecolor': 'y'},
 #           {'color': 'm'},
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
-styles = [{'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
-          {'marker': 'd', 'markersize': 30, 'linestyle': '-', 'color': 'g'},
+styles = [
+          {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
+          {'marker': 's', 'markersize': 24, 'linestyle': '-', 'color': 'r'}, # square
+          {'marker': 'v', 'markersize': 29, 'linestyle': '-', 'color': 'c'},
+          {'marker': '*', 'markersize': 28, 'linestyle': '-', 'color': 'm'},
+          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'},
+          {'marker': 'h', 'markersize': 26, 'linestyle': '-', 'color': 'y'},
+          {'marker': 'd', 'markersize': 25, 'linestyle': '-', 'color': 'g'},
+          {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
           {'marker': 's', 'markersize': 25, 'linestyle': '-', 'color': 'r'},
           {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'c'},
           {'marker': '*', 'markersize': 30, 'linestyle': '-', 'color': 'm'},
-          {'marker': 'h', 'markersize': 30, 'linestyle': '-', 'color': 'y'},
           {'marker': '^', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
-          {'marker': 'p', 'markersize': 30, 'linestyle': '-', 'color': 'b'},
-          {'marker': 'H', 'markersize': 30, 'linestyle': '-', 'color': 'g'},
-          {'marker': '<', 'markersize': 30, 'linestyle': '-', 'color': 'r'},
-          {'marker': 'D', 'markersize': 30, 'linestyle': '-', 'color': 'c'},
-          {'marker': '>', 'markersize': 30, 'linestyle': '-', 'color': 'm'},
-          {'marker': '1', 'markersize': 30, 'linestyle': '-', 'color': 'y'},
-          {'marker': '2', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
-          {'marker': '3', 'markersize': 30, 'linestyle': '-', 'color': 'b'},
-          {'marker': '4', 'markersize': 30, 'linestyle': '-', 'color': 'g'}]
+          {'marker': 'h', 'markersize': 30, 'linestyle': '-', 'color': 'y'},
+          {'marker': 'd', 'markersize': 30, 'linestyle': '-', 'color': 'g'}
+          ]
 refcolor = 'wheat'
 
 show_algorithms = []
