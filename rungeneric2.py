@@ -88,7 +88,7 @@ def main(argv=None):
         -v, --verbose
             verbose mode, prints out operations.
         -o OUTPUTDIR, --output-dir=OUTPUTDIR
-            changes the default output directory (:file:`ppdata2`) to
+            changes the default output directory (:file:`ppdata`) to
             :file:`OUTPUTDIR`
         --noise-free, --noisy
             processes only part of the data.
@@ -158,7 +158,7 @@ def main(argv=None):
         isNoisy = False
         isNoiseFree = False
         verbose = False
-        outputdir = 'ppdata2'
+        outputdir = 'ppdata'
         inputsettings = 'color'
         isConv= False
 
