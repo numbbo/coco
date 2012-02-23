@@ -19,11 +19,12 @@ from bbob_pproc.pptex import convcolo, convmark, writeLabels
 #           {'color': 'y', 'marker': '^', 'markeredgecolor': 'y'},
 #           {'color': 'm'},
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
+
 styles = [
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
-          {'marker': 's', 'markersize': 24, 'linestyle': '-', 'color': 'r'}, # square
-          {'marker': 'v', 'markersize': 29, 'linestyle': '-', 'color': 'c'},
-          {'marker': '*', 'markersize': 28, 'linestyle': '-', 'color': 'm'},
+          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, # square
+          {'marker': '*', 'markersize': 29, 'linestyle': '-', 'color': 'c'},
+          {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'},
           {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'},
           {'marker': 'h', 'markersize': 26, 'linestyle': '-', 'color': 'y'},
           {'marker': 'd', 'markersize': 25, 'linestyle': '-', 'color': 'g'},
@@ -35,6 +36,11 @@ styles = [
           {'marker': 'h', 'markersize': 30, 'linestyle': '-', 'color': 'y'},
           {'marker': 'd', 'markersize': 30, 'linestyle': '-', 'color': 'g'}
           ]
+for i in xrange(len(styles)):
+    styles[i].update({'linewidth': 4 - min([3, i/2.0]),  # thinner lines over thicker lines
+                      'markeredgewidth': 6 - min([2, i]), 
+                      'markerfacecolor': 'None'})
+
 refcolor = 'wheat'
 
 show_algorithms = []
@@ -182,11 +188,11 @@ def beautify(legend=False, rightlegend=False):
         set_trace()
 
     # Grid options
-    axisHandle.grid(True)
+    axisHandle.yaxis.grid(True)
 
     ymin, ymax = plt.ylim()
 
-    # quadratic and cubic "grid"
+    # quadratic "grid"
     plt.plot((2,200), (1, 1e2), 'k:', zorder=-1)
     # plt.plot((2,200), (1, 1e4), 'k:', zorder=-1)
     plt.plot((2,200), (1e3, 1e5), 'k:', zorder=-1)
@@ -297,6 +303,7 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                 tmp = plt.plot(dimmaxevals, maxevals, **styles[i])
                 plt.setp(tmp[0], markersize=20, #label=alg,
                          markeredgecolor=plt.getp(tmp[0], 'color'),
+                         markeredgewidth=1, 
                          markerfacecolor='None', linestyle='None')
 
             handles.append(tmp)

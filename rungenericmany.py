@@ -154,7 +154,7 @@ def main(argv=None):
             sys.exit()
 
         verbose = False
-        outputdir = 'ppdatamany'
+        outputdir = 'ppdata'
         isNoisy = False
         isNoiseFree = False
 

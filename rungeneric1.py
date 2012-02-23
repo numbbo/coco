@@ -89,7 +89,7 @@ def main(argv=None):
         -p, --pickle
             generates pickle post processed data files.
         -o OUTPUTDIR, --output-dir=OUTPUTDIR
-            changes the default output directory (:file:`ppdata1`) to
+            changes the default output directory (:file:`ppdata`) to
             :file:`OUTPUTDIR`.
         --crafting-effort=VALUE
             sets the crafting effort to VALUE (float). Otherwise the
@@ -174,7 +174,7 @@ def main(argv=None):
         isPostProcessed = False
         isPickled = False
         verbose = False
-        outputdir = 'ppdata1'
+        outputdir = 'ppdata'
         isNoisy = False
         isNoiseFree = False
         inputsettings = 'color'
