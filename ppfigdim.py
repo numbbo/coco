@@ -71,6 +71,7 @@ refcolor = 'wheat'
 
 # should correspond with the colors in pprldistr.
 dimsBBOB = (2, 3, 5, 10, 20, 40)
+functions_with_legend = (1, 24, 101, 130)
 
 #Get benchmark short infos.
 funInfos = {}
@@ -200,7 +201,8 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
     :param DataSetList dsList: data sets
     :param seq _valuesOfInterest: target precisions, there might be as
                                   many graphs as there are elements in
-                                  this input
+                                  this input. Can be different for each
+                                  function (a dictionary indexed by ifun). 
     :returns: handles
 
     """
@@ -322,7 +324,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest)
         beautify(axesLabel=False)
-        if func in (1, 24, 101, 130):
+        if func in functions_with_legend:
             plt.legend(loc="best")
         if isBenchmarkinfosFound:
             plt.gca().set_title(funInfos[func])
