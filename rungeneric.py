@@ -246,15 +246,22 @@ def main(argv=None):
             os.makedirs(outputdir)
             if verbose:
                 print 'Folder %s was created.' % (outputdir)
-
-        for alg in args:
+        
+        open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'w').close() 
+        for i, alg in enumerate(args):
             tmpoutputdir = os.path.join(outputdir, alg)
             rungeneric1.main(genopts1
                              + ["-o", tmpoutputdir, alg])
+            abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            f = open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a')
+            f.write('\\newcommand{\\algorithm' + abc[i] + '}{' + alg + '}\n')
         if len(args) == 2:
             rungeneric2.main(genopts2 + ["-o", outputdir] + args)
         elif len(args) > 2:
             rungenericmany.main(genoptsmany + ["-o", outputdir] + args)
+
+        open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a').close() 
+
     #TODO prevent loading the data every time...
 
     except Usage, err:

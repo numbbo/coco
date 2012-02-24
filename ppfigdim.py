@@ -136,8 +136,8 @@ def beautify(axesLabel=True):
 
     # ticks on axes
     #axisHandle.invert_xaxis()
-    dimticklist = (2, 3, 4, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
-    dimannlist = (2, 3, '', 5, 10, 20, 40)  # TODO: should become input arg at some point? 
+    dimticklist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
+    dimannlist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
     # TODO: All these should depend on one given input (xlim, ylim)
 
     axisHandle.set_xticks(dimticklist)

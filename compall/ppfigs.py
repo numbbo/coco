@@ -22,19 +22,19 @@ from bbob_pproc.pptex import convcolo, convmark, writeLabels
 
 styles = [
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
-          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, # square
+          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, 
           {'marker': '*', 'markersize': 29, 'linestyle': '-', 'color': 'c'},
-          {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'},
+          {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'}, # square
           {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'},
           {'marker': 'h', 'markersize': 26, 'linestyle': '-', 'color': 'y'},
           {'marker': 'd', 'markersize': 25, 'linestyle': '-', 'color': 'g'},
-          {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
-          {'marker': 's', 'markersize': 25, 'linestyle': '-', 'color': 'r'},
-          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'c'},
-          {'marker': '*', 'markersize': 30, 'linestyle': '-', 'color': 'm'},
-          {'marker': '^', 'markersize': 30, 'linestyle': '-', 'color': 'k'},
-          {'marker': 'h', 'markersize': 30, 'linestyle': '-', 'color': 'y'},
-          {'marker': 'd', 'markersize': 30, 'linestyle': '-', 'color': 'g'}
+          {'marker': 'o', 'markersize': 24, 'linestyle': '-', 'color': 'b'},
+          {'marker': 's', 'markersize': 18, 'linestyle': '-', 'color': 'r'},
+          {'marker': 'v', 'markersize': 23, 'linestyle': '-', 'color': 'c'},
+          {'marker': '*', 'markersize': 22, 'linestyle': '-', 'color': 'm'},
+          {'marker': '^', 'markersize': 21, 'linestyle': '-', 'color': 'k'},
+          {'marker': 'h', 'markersize': 20, 'linestyle': '-', 'color': 'y'},
+          {'marker': 'd', 'markersize': 20, 'linestyle': '-', 'color': 'g'}
           ]
 for i in xrange(len(styles)):
     styles[i].update({'linewidth': 4 - min([3, i/2.0]),  # thinner lines over thicker lines
@@ -45,6 +45,12 @@ refcolor = 'wheat'
 
 show_algorithms = []
 fontsize = 20.0
+figure_legend = """Expected running time (\ERT) divided by dimension for 
+                target function value \\bbobppfigsftarget\\ as $\\log_{10}$ value. Different symbols
+                correspond to different algorithms given in the legend of #1.
+                Light symbols give the maximum number of function evaluations from all trials 
+                divided by dimension. Horizontal lines give linear scaling,
+                the dotted slanted lines give quadratic scaling. """
 legend = False
 
 #Get benchmark short infos.
@@ -204,8 +210,8 @@ def beautify(legend=False, rightlegend=False):
 
     # ticks on axes
     #axisHandle.invert_xaxis()
-    dimticklist = (2, 3, 4, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
-    dimannlist = (2, 3, '', 5, 10, 20, 40)  # TODO: should become input arg at some point? 
+    dimticklist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
+    dimannlist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
     # TODO: All these should depend on (xlim, ylim)
 
     axisHandle.set_xticks(dimticklist)
@@ -246,7 +252,7 @@ def generateData(dataSet, target):
         res.append(bootstrap.prctile(data[succ], 50)[0])
     else:
         res.append(numpy.nan)
-
+    res[3] = numpy.max(dataSet.maxevals)
     return res
 
 def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
@@ -277,10 +283,10 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                 assert len(dictDim[dim]) == 1
                 entry = dictDim[dim][0]
                 data = generateData(entry, target)
-                if data[2] == 0: # No success
+                if 1 < 3 or data[2] == 0: # No success
                     dimmaxevals.append(dim)
                     maxevals.append(float(data[3])/dim)
-                else:
+                if data[2] > 0:
                     dimmedian.append(dim)
                     medianfes.append(data[4]/dim)
                     dimert.append(dim)
@@ -305,7 +311,7 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                          markeredgecolor=plt.getp(tmp[0], 'color'),
                          markeredgewidth=1, 
                          markerfacecolor='None', linestyle='None')
-
+                
             handles.append(tmp)
             #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',
             #               markersize=30, markeredgewidth=5,
@@ -347,29 +353,42 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
 
         beautify(legend=isLegend, rightlegend=legend)
 
+        plt.text(plt.xlim()[0], plt.ylim()[0], 'ftarget=%.0e' % target)
+
         saveFigure(filename, figFormat=figformat, verbose=verbose)
 
         plt.close()
 
     # generate legend tex file:
     try:
+        fc = open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a')
+        fc.write('\\newcommand{\\bbobppfigsftarget}{\\ensuremath{10^{%d}}}\n' 
+                % int(numpy.round(numpy.log10(target))))
+        fc.write('\\newcommand{\\bbobppfigslegend}[1]{')
+        fc.write(figure_legend)
         filename = os.path.join(outputdir,'ppfigs.tex')
         f = open(filename, 'w')
         f.write('% Do not modify this file: calls to post-processing software'
                 + ' will overwrite any modification.\n')
         f.write('Legend: ')
+        fc.write('Legend: ')
         
         symb = r'{%s%s}' % (convcolo(styles[0]['color']),
                             convmark(styles[0]['marker']))
+        abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         f.write('%s: %s' % (symb, writeLabels(sortedAlgs[0])))
+        fc.write('%s: %s' % (symb, '\\algorithm' + abc[0]))
         for i in range(1, len(sortedAlgs)):
             symb = r'{%s%s}' % (convcolo(styles[i]['color']),
                                 convmark(styles[i]['marker']))
             f.write(', %s: %s' % (symb, writeLabels(sortedAlgs[i])))
+            fc.write(', %s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
+        fc.write('}\n')
         if verbose:
             print 'Wrote legend in %s' % filename
     except IOError:
         raise
     else:
+        fc.close()
         f.close()
 

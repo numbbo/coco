@@ -21,6 +21,8 @@ import getopt
 from pdb import set_trace
 import numpy
 
+ftarget = 1e-8  # CAVE: changing this makes the figure captions invalid 
+
 # Add the path to bbob_pproc
 if __name__ == "__main__":
     # append path without trailing '/bbob_pproc', using os.sep fails in mingw32
@@ -306,7 +308,7 @@ def main(argv=None):
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
-            ppfig2.main(dsList0, dsList1, 1e-8, outputdir, verbose)
+            ppfig2.main(dsList0, dsList1, ftarget, outputdir, verbose)
             print "log ERT1/ERT0 vs target function values done."
 
         plt.rc("axes", **inset.rcaxes)
@@ -444,7 +446,7 @@ def main(argv=None):
             plt.rc("ytick", labelsize=20)
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
-            ppfigs.main(dictAlg, sortedAlgs, 1e-8, outputdir, verbose)
+            ppfigs.main(dictAlg, sortedAlgs, ftarget, outputdir, verbose)
             plt.rcdefaults()
             print "Scaling figures done."
 
