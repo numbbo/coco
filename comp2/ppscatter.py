@@ -41,6 +41,7 @@ except ImportError:
 from bbob_pproc import readalign
 from bbob_pproc.ppfig import saveFigure
 
+dimensions = (2, 3, 5, 10, 20, 40)
 colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 offset = 0. #0.02
@@ -121,7 +122,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
         dims = set(dictDim0.keys()) & set(dictDim1.keys())
         #set_trace()
 
-        for i, d in enumerate((2, 3, 5, 10, 20, 40)):
+        for i, d in enumerate(dimensions):
             try:
                 entry0 = dictDim0[d][0] # should be only one element
                 entry1 = dictDim1[d][0] # should be only one element
@@ -205,7 +206,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
 
         beautify()
 
-        for i, d in enumerate((2, 3, 5, 10, 20, 40)):
+        for i, d in enumerate(dimensions):
             try:
                 entry0 = dictDim0[d][0] # should be only one element
                 entry1 = dictDim1[d][0] # should be only one element
@@ -214,9 +215,11 @@ def main(dsList0, dsList1, outputdir, verbose=True):
 
             minbnd, maxbnd = plt.xlim()
             plt.plot((entry0.mMaxEvals(), entry0.mMaxEvals()),
-                     (minbnd, entry1.mMaxEvals()), ls='-', color=colors[i],
+                     # (minbnd, entry1.mMaxEvals()), ls='-', color=colors[i],
+                     (max([minbnd, entry1.mMaxEvals()/10.]), entry1.mMaxEvals()), ls='-', color=colors[i],
                      zorder=-1)
-            plt.plot((minbnd, entry0.mMaxEvals()),
+            plt.plot(# (minbnd, entry0.mMaxEvals()),
+                     (max([minbnd, entry0.mMaxEvals()/10.]), entry0.mMaxEvals()),
                      (entry1.mMaxEvals(), entry1.mMaxEvals()), ls='-',
                      color=colors[i], zorder=-1)
             plt.xlim(minbnd, maxbnd)

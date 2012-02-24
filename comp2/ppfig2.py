@@ -47,7 +47,7 @@ styles = [{'color': 'c', 'marker': '+', 'markeredgecolor': 'c',
           {'color': 'c'},
           {'color': 'r'},
           {'color': 'm'}]
-linewidth = 3
+linewidth = 3  # see also genericsettings
 offset = 0.005
 incrstars = 1.5
 fthresh = 1e-8

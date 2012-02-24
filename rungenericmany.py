@@ -22,6 +22,8 @@ from pdb import set_trace
 import warnings
 import numpy
 
+ftarget = 1e-8  # CAVE: changing this makes the figure captions invalid 
+
 # Add the path to bbob_pproc
 if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
@@ -288,7 +290,7 @@ def main(argv=None):
             plt.rc("ytick", labelsize=20)
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
-            ppfigs.main(dictAlg, sortedAlgs, 1e-8, outputdir, verbose)
+            ppfigs.main(dictAlg, sortedAlgs, ftarget, outputdir, verbose)
             plt.rcdefaults()
             print "Scaling figures done."
 

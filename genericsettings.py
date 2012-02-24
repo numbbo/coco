@@ -3,7 +3,8 @@
 
 """This module contains some variables settings for COCO.
 
-These variables are used for producing figures and tables used by COCO.
+These variables are used for producing figures and tables 
+in rungeneric1, -2, and -many.
 
 """
 
