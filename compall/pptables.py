@@ -297,14 +297,17 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
             maxRank = 1
         else:
             maxRank = 3
+            
+        nalgs = len(dictData[df])
+        maxRank = 1 + numpy.floor(0.14 * nalgs)  # number of algs to be displayed in bold
 
         isBoldArray = [] # Point out the best values
         algfinaldata = [] # Store median function values/median number of function evaluations
-        tmparray = sortColumns(algert, maxRank=3)
+        tmparray = sortColumns(algert, maxRank=maxRank)
         for i, line in enumerate(algert):
             tmp = []
             for j, e in enumerate(line):
-                tmp.append(i in tmparray[j] or algert[i][j] <= 3. * refalgert[j])
+                tmp.append(i in tmparray[j] or (nalgs > 7 and algert[i][j] <= 3. * refalgert[j]))
             isBoldArray.append(tmp)
             algfinaldata.append((algmedfinalfunvals[i], algmedmaxevals[i]))
 
@@ -354,8 +357,8 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
 
         header = r'\providecommand{\ntables}{7}'
         for i, alg in enumerate(algnames):
-        #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
-                   #data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
+            #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
+            #data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
             commandname = r'\alg%stables' % numtotext(i)
             header += r'\providecommand{%s}{\StrLeft{%s}{\ntables}}' % (commandname, writeLabels(alg))
             curline = [commandname + r'\hspace*{\fill}']
