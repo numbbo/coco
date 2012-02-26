@@ -11,13 +11,22 @@ import numpy
 from bbob_pproc import bestalg, bootstrap
 from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, writeLabels, tableXLaTeX, numtotext
 from bbob_pproc.bootstrap import prctile
-from bbob_pproc.pproc import DataSetList, significancetest
+from bbob_pproc.pproc import DataSetList, significancetest, prepend_to_file
 from bbob_pproc.pplogloss import detf
 
 """
 See Section Comparison Tables in
 http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
+
 """
+
+tables_many_legend = """Expected running time (ERT in number of function evaluations)
+                     divided by the best ERT measured during BBOB-2009 (given in the respective
+                     first row) for different $\\Df$ values for functions
+                     #1 for dimension #2. The inter-80\%tile range divided by two is given in braces. 
+                     The median number of conducted function evaluations is additionally given in 
+                     \\textit{italics}, if $\ERT(10^{-7}) = \\infty$.
+                     \\#succ is the number of trials that reached the final target $\\fopt + 10^{-8}$."""
 
 allmintarget = {}
 allmedtarget = {}
@@ -378,7 +387,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                     curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
                 else:
                     if numpy.isinf(refalgert[j]):
-                        curline.append(r'\multicolumn{2}{%s}{\textbf{%s}${\scriptscriptstyle (%s)}$}'
+                        curline.append(r'\multicolumn{2}{%s}{\textbf{%s}{\tiny (%s)}}'
                                        % (alignment,
                                           writeFEvalsMaxPrec(algert[i][j], 2),
                                           writeFEvalsMaxPrec(dispersion, 2)))
@@ -399,7 +408,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precscien, maxfloatrepr=tmpdisp)
                             else:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precfloat, maxfloatrepr=maxfloatrepr)
-                            tmp += r'${\scriptscriptstyle (%s)}$' % tmpdisp
+                            tmp += r'{\tiny (%s)}' % tmpdisp
                         curline.append(r'\multicolumn{2}{%s}{%s}' % (alignment, tmp))
                     else:
                         tmp2 = tmp.split('.', 1)
@@ -418,7 +427,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precscien, maxfloatrepr=tmpdisp)
                             else:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precfloat, maxfloatrepr=maxfloatrepr)
-                            tmp2[-1] += (r'${\scriptscriptstyle (%s)}$' % tmpdisp)
+                            tmp2[-1] += (r'{\tiny (%s)}' % tmpdisp)
 
                         z, p = testres
                         if data < 1. and not numpy.isinf(refalgert[j]):

@@ -160,7 +160,7 @@ def main(argv=None):
         try:
             opts, args = getopt.getopt(argv, shortoptlist, longoptlist)
         except getopt.error, msg:
-             raise Usage(msg)
+            raise Usage(msg)
 
         if not (args):
             usage()

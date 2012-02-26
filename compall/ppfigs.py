@@ -20,21 +20,28 @@ from bbob_pproc.pptex import convcolo, convmark, writeLabels
 #           {'color': 'm'},
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
 
+figure_legend = """Expected running time (\ERT\ in \# of $f$-evaluations) divided by dimension for 
+                target function value \\bbobppfigsftarget\ as $\\log_{10}$ values versus dimension. 
+                Different symbols
+                correspond to different algorithms given in the legend of #1.
+                Light symbols give the maximum number of function evaluations from the longest trial 
+                divided by dimension. Horizontal lines give linear scaling,
+                the slanted dotted lines give quadratic scaling. """
 styles = [
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
           {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, 
           {'marker': '*', 'markersize': 29, 'linestyle': '-', 'color': 'c'},
           {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'}, # square
           {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'},
-          {'marker': 'h', 'markersize': 26, 'linestyle': '-', 'color': 'y'},
-          {'marker': 'd', 'markersize': 25, 'linestyle': '-', 'color': 'g'},
-          {'marker': 'o', 'markersize': 24, 'linestyle': '-', 'color': 'b'},
-          {'marker': 's', 'markersize': 18, 'linestyle': '-', 'color': 'r'},
-          {'marker': 'v', 'markersize': 23, 'linestyle': '-', 'color': 'c'},
-          {'marker': '*', 'markersize': 22, 'linestyle': '-', 'color': 'm'},
-          {'marker': '^', 'markersize': 21, 'linestyle': '-', 'color': 'k'},
-          {'marker': 'h', 'markersize': 20, 'linestyle': '-', 'color': 'y'},
-          {'marker': 'd', 'markersize': 20, 'linestyle': '-', 'color': 'g'}
+          {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': 'y'},
+          {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': 'g'},
+          {'marker': 's', 'markersize': 24, 'linestyle': '-', 'color': 'b'},
+          {'marker': 'o', 'markersize': 18, 'linestyle': '-', 'color': 'r'},
+          {'marker': '*', 'markersize': 23, 'linestyle': '-', 'color': 'c'},
+          {'marker': 'v', 'markersize': 22, 'linestyle': '-', 'color': 'm'},
+          {'marker': 'd', 'markersize': 21, 'linestyle': '-', 'color': 'k'},
+          {'marker': '^', 'markersize': 20, 'linestyle': '-', 'color': 'y'},
+          {'marker': 'h', 'markersize': 20, 'linestyle': '-', 'color': 'g'}
           ]
 for i in xrange(len(styles)):
     styles[i].update({'linewidth': 4 - min([3, i/2.0]),  # thinner lines over thicker lines
@@ -45,12 +52,6 @@ refcolor = 'wheat'
 
 show_algorithms = []
 fontsize = 20.0
-figure_legend = """Expected running time (\ERT) divided by dimension for 
-                target function value \\bbobppfigsftarget\\ as $\\log_{10}$ value. Different symbols
-                correspond to different algorithms given in the legend of #1.
-                Light symbols give the maximum number of function evaluations from all trials 
-                divided by dimension. Horizontal lines give linear scaling,
-                the dotted slanted lines give quadratic scaling. """
 legend = False
 
 #Get benchmark short infos.
@@ -260,6 +261,8 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
     
     One function and one target per figure.
     
+    sortedAlgs is a list of string-identifies (folder names)
+    
     """
     dictFunc = pproc.dictAlgByFun(dictAlg)
 
@@ -301,7 +304,7 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                            #label=alg, )
             plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
             # For legend
-            tmp = plt.plot([], [], label=alg, **styles[i])
+            tmp = plt.plot([], [], label=alg.replace('..' + os.sep, '').strip(os.sep), **styles[i])
             plt.setp(tmp[0], markersize=12.,
                      markeredgecolor=plt.getp(tmp[0], 'color'))
 
@@ -366,7 +369,7 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                 % int(numpy.round(numpy.log10(target))))
         fc.write('\\newcommand{\\bbobppfigslegend}[1]{')
         fc.write(figure_legend)
-        filename = os.path.join(outputdir,'ppfigs.tex')
+        filename = os.path.join(outputdir,'ppfigs.tex')  # this is obsolete (check templates though)
         f = open(filename, 'w')
         f.write('% Do not modify this file: calls to post-processing software'
                 + ' will overwrite any modification.\n')

@@ -36,6 +36,8 @@ function evaluations.
    bb.pprldistr.plot(ds)
    bb.pprldistr.beautify() # resize the window to view whole figure
 
+   CAVE: the naming conventions in this modules mix up ERT (an estimate 
+   of the expected running length) and run length. 
 """
 from __future__ import absolute_import
 
@@ -47,6 +49,8 @@ from pdb import set_trace
 from bbob_pproc import bootstrap
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 
+# TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
+   
 # TODO: the target function values and the styles of the line only make sense
 # together. Therefore we should either:
 # 1. keep the targets as input argument and make rldStyles depend on them
@@ -76,7 +80,7 @@ rldUnsuccStyles = ({'color': 'k', 'ls': '--'},
                    {'color': 'c', 'ls': '--'},
                    {'color': 'm'})  # should not be too short
 refcolor = 'wheat'
-nbperdecade = 1
+nbperdecade = 1  # markers in x-axis decades in ecdfs
 
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
@@ -215,7 +219,7 @@ def plotECDF(x, n=None, **plotArgs):
     return res
 
 def plotERTDistr(dsList, target, **plotArgs):
-    """Creates estimated run time distributions from a DataSetList.
+    """Creates estimated run time distributions (it is not an ERT distribution) from a DataSetList.
 
     :keyword DataSet dsList: Input data sets
     :keyword dict target: target precision

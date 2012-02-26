@@ -32,7 +32,7 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import dataoutput, pproc
-from bbob_pproc.pproc import DataSetList, processInputArgs
+from bbob_pproc.pproc import DataSetList, processInputArgs, prepend_to_file
 from bbob_pproc.compall import pprldmany, pptables, ppfigs
 from bbob_pproc import ppconverrorbars
 
@@ -220,6 +220,17 @@ def main(argv=None):
             if verbose:
                 print 'Folder %s was created.' % (outputdir)
 
+        # prepend the algorithm name command to the tex-command file
+        abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        lines = []
+        for i, alg in enumerate(args):
+            lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
+                    alg.replace('..' + os.sep, '').strip(os.sep) + '}')
+        prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
+                     lines, 1000, 
+                     'bbob_proc_commands.tex truncated, consider removing the file before the text run'
+                     )
+
         dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
 
         if not dsList:
@@ -272,9 +283,12 @@ def main(argv=None):
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, fg)),
                                    verbose=verbose)
-            print "ECDFs of ERT figures done."
+            print "ECDFs of run lengths figures done."
 
         if isTab:
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
+                            ['\providecommand{\\bbobpptablesmanylegend}[2]{' + 
+                             pptables.tables_many_legend + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictng)

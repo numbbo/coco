@@ -114,15 +114,20 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                 ertdata[nb] = entry.detERT(targetsOfInterest)
                 entries.append(entry)
 
+            for _t in ertdata.values():
+                for _tt in _t:
+                    if _tt is None:
+                        raise ValueError
+
             testres0vs1 = significancetest(entries[0], entries[1], targetsOfInterest)
             testresbestvs1 = significancetest(bestalgentry, entries[1], targetsOfInterest)
             testresbestvs0 = significancetest(bestalgentry, entries[0], targetsOfInterest)
 
             for nb, entry in enumerate(entries):
                 if nb == 0:
-                    curline = [r'0:\:\algzeroshort\hspace*{\fill}']
+                    curline = [r'0:\:\algorithmAshort\hspace*{\fill}']
                 else:
-                    curline = [r'1:\:\algoneshort\hspace*{\fill}']
+                    curline = [r'1:\:\algorithmBshort\hspace*{\fill}']
 
                 #data = entry.detERT(targetsOfInterest)
                 dispersion = []
@@ -147,7 +152,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     assert not isinstance(data, numpy.ndarray)
                     data0 = data[:] # TODO: check if it is not an array
 
-                for i, j in enumerate(data):  # is j an appropriate identifier here?
+                for i, dati in enumerate(data):  
 
                     z, p = testres0vs1[i] #TODO: there is something with the sign that I don't get
                     # assign significance flag
@@ -164,7 +169,8 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         and z > 0 and not numpy.isinf(ertdata[istat0][i]) and 
                         z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0):  # z-value and ERT-ratio must agree
                         significance0vs1 = -int(numpy.ceil(numpy.log10(nbtests * p)))
-                    elif nbtests * p < 0.05 and z < 0 and z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0:
+                    # elif nbtests * p < 0.05 and z < 0 and z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0:
+                    elif nbtests * p < 0.05 and z < 0 and ertdata[istat1][i] < ertdata[istat0][i]:
                         significance0vs1 = int(numpy.ceil(numpy.log10(nbtests * p)))
 
                     alignment = 'c'
@@ -174,10 +180,10 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     if numpy.isinf(bestalgdata[i]): # if the 2009 best did not solve the problem
                         isBold = False
                         if significance0vs1 > 0:
-                           isBold = True
+                            isBold = True
 
-                        tmp = writeFEvalsMaxPrec(float(j), 2)
-                        if not numpy.isinf(j):
+                        tmp = writeFEvalsMaxPrec(float(dati), 2)
+                        if not numpy.isinf(dati):
                             tmp = r'\textit{%s}' % (tmp)
                             if isBold:
                                 tmp = r'\textbf{%s}' % tmp
@@ -188,7 +194,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                                       % (alignment, tmp))
                     else:
                         # Formatting
-                        tmp = float(j)/bestalgdata[i]
+                        tmp = float(dati)/bestalgdata[i]
                         assert not numpy.isnan(tmp)
                         isscientific = False
                         if tmp >= 1000:
@@ -202,11 +208,11 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         else:
                             z, p = testresbestvs1[i]
 
-                        if (significance0vs1 > 0
-                            or (ertdata[istat0][i] - ertdata[istat1][i] < 0
-                                and (nbtests * p) < 0.05 and j - bestalgdata[i] < 0.
+                        if (significance0vs1 > 0  # TODO: this might be a
+                            or (ertdata[istat0][i] < ertdata[istat1][i]
+                                and (nbtests * p) < 0.05 and dati < bestalgdata[i]
                                      and z < 0.)):
-                           isBold = True
+                            isBold = True
 
                         if numpy.isinf(tmp) and i == len(data)-1:
                             tableentry = (tableentry 
@@ -249,7 +255,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         z, p = testresbestvs1[i]
 
                     #The conditions are now that ERT < ERT_best
-                    if ((nbtests * p) < 0.05 and j - bestalgdata[i] < 0.
+                    if ((nbtests * p) < 0.05 and dati - bestalgdata[i] < 0.
                         and z < 0.):
                         nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                         #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
@@ -264,9 +270,9 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     if superscript or significance0vs1:
                         s = ''
                         if significance0vs1 > 0:
-                           s = '\star'
+                            s = '\star'
                         if significance0vs1 > 1:
-                           s += str(significance0vs1)
+                            s += str(significance0vs1)
                         s = r'$^{' + s + superscript + r'}$'
 
                         if tableentry.endswith('}'):
@@ -299,8 +305,12 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
         outputfile = os.path.join(outputdir, 'pptable2_%02dD%s.tex' % (d, info))
         spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
-        res = r'\providecommand{\algzeroshort}{%s}' % writeLabels(alg0) + '\n'
-        res += r'\providecommand{\algoneshort}{%s}' % writeLabels(alg1) + '\n'
+        res = r'\providecommand{\algorithmAshort}{%s}' % writeLabels(alg0) + '\n'
+        res += r'\providecommand{\algorithmBshort}{%s}' % writeLabels(alg1) + '\n'
+        f = open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a')
+        f.write(res)
+        f.close()
+        
         #res += tableLaTeXStar(table, width=r'0.45\textwidth', spec=spec,
                               #extraeol=extraeol)
         res += tableLaTeX(table, spec=spec, extraeol=extraeol)

@@ -62,11 +62,11 @@ from bbob_pproc.ppfig import saveFigure, groupByRange
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
           {'color': 'b'},
-          {'color': 'c', 'marker': 'v', 'markeredgecolor': 'c'},
+          {'color': 'c', 'marker': 'v', 'markeredgecolor': 'k'},
           {'color': 'g'},
-          {'color': 'y', 'marker': '^', 'markeredgecolor': 'y'},
+          {'color': 'y', 'marker': '^', 'markeredgecolor': 'k'},
           {'color': 'm'},
-          {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
+          {'color': 'r', 'marker': 's', 'markeredgecolor': 'k'}] # sort of rainbow style
 refcolor = 'wheat'
 
 # should correspond with the colors in pprldistr.
@@ -159,8 +159,6 @@ def generateData(dataSet, targetFuncValue):
                function evaluations, median of successful runs).
 
     """
-    res = []
-    data = []
 
     it = iter(reversed(dataSet.evals))
     i = it.next()
@@ -189,7 +187,8 @@ def generateData(dataSet, targetFuncValue):
     res.append(numpy.mean(data)) #mean(FE)
     res.append(med)
 
-    return numpy.array(res)
+    return numpy.array(res), numpy.max(data)  # changed 12/02/24
+
 
 def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
     """From a DataSetList, plot a figure of ERT/dim vs dim.
@@ -225,11 +224,12 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
             succ = []
             unsucc = []
             displaynumber = []
-            data = []
+            # data = []
+            maxevals = numpy.ones(len(dimensions))
             #Collect data that have the same function and different dimension.
-            for dim in dimensions:
+            for idim, dim in enumerate(dimensions):
                 assert len(dictFunc[func][dim]) == 1
-                tmp = generateData(dictFunc[func][dim][0],
+                tmp, maxevals[idim] = generateData(dictFunc[func][dim][0],
                                    valuesOfInterest[i])
                 #data.append(numpy.append(dim, tmp))
                 if tmp[2] > 0: #Number of success is larger than 0
@@ -253,11 +253,15 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
                                 **styles[i]))
 
         #Only for the last target function value
-        if unsucc:
+        if unsucc:  # obsolete
             tmp = numpy.vstack(unsucc) # tmp[:, 0] needs to be sorted!
-            res.extend(plt.plot(tmp[:, 0], tmp[:, 1]/tmp[:, 0],
+            # res.extend(plt.plot(tmp[:, 0], tmp[:, 1]/tmp[:, 0],
+            #            color=styles[len(valuesOfInterest)-1]['color'],
+            #            marker='x', markersize=20))
+        if 1 < 3:
+            res.extend(plt.plot(tmp[:, 0], maxevals/tmp[:, 0],
                        color=styles[len(valuesOfInterest)-1]['color'],
-                       marker='x', markersize=20))
+                       ls='', marker='x', markersize=20))
 
         #median
         if mediandata:
