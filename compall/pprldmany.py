@@ -46,7 +46,7 @@ import warnings
 from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
-from bbob_pproc import bootstrap, bestalg
+from bbob_pproc import bootstrap, bestalg, genericsettings
 from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun, strip_pathname
 from bbob_pproc.pprldistr import plotECDF, beautifyECDF
 from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
@@ -130,7 +130,7 @@ function_IDs = range(1,200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 1
 
 x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 x_annote_factor = 90 # make space for right-hand legend
-fontsize = 10.0 # default setting, is modified in genericsettings.py
+fontsize = 10.0 # default setting, is modified in config.py
 
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
@@ -138,22 +138,8 @@ dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 
 
 nbperdecade = 3
 
-styles = [{'marker': 'o', 'linestyle': '-', 'color': 'b'},
-          {'marker': 'd', 'linestyle': '-', 'color': 'g'},
-          {'marker': 's', 'linestyle': '-', 'color': 'r'},
-          {'marker': 'v', 'linestyle': '-', 'color': 'c'},
-          {'marker': '*', 'linestyle': '-', 'color': 'm'},
-          {'marker': 'h', 'linestyle': '-', 'color': 'y'},
-          {'marker': '^', 'linestyle': '-', 'color': 'k'},
-          {'marker': 'p', 'linestyle': '-', 'color': 'b'},
-          {'marker': 'H', 'linestyle': '-', 'color': 'g'},
-          {'marker': '<', 'linestyle': '-', 'color': 'r'},
-          {'marker': 'D', 'linestyle': '-', 'color': 'c'},
-          {'marker': '>', 'linestyle': '-', 'color': 'm'},
-          {'marker': '1', 'linestyle': '-', 'color': 'y'},
-          {'marker': '2', 'linestyle': '-', 'color': 'k'},
-          {'marker': '3', 'linestyle': '-', 'color': 'b'},
-          {'marker': '4', 'linestyle': '-', 'color': 'g'}]
+styles = [{i:d[i] for i in d} for d in genericsettings.line_styles]  # deep copy
+
 refcolor = 'wheat'
 #'-'     solid line style
 #'--'    dashed line style
