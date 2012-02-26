@@ -49,6 +49,30 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
     """
     res = plt.plot(x, y, **kwargs)
 
+    def marker_positions(xdata, ydata, nbperdecade, maxnb, ax):
+        """replacement for downsample with at most 12 points"""
+        if 11 < 3:
+            return downsample(xdata, ydata)
+        tfy = np.log10 if logscale else lambda x:x
+            
+        xrange = np.log10(max([max(xdata), ax[0], ax[1]]) + 0.5) - np.log10(min([min(xdata), ax[0], ax[1]]) + 0.5)  #np.log10(xdata[-1]) - np.log10(xdata[0])
+        yrange = tfy(max([max(ydata), ax[2], ax[3]]) + 0.5) - tfy(min([min(ydata), ax[2], ax[3]]) + 0.5)  # tfy(ydata[-1]) - tfy(ydata[0])
+        nbmarkers = np.min([maxnb, np.ceil(nbperdecade * (1e-99 + np.abs(np.log10(xdata[-1]) - np.log10(xdata[0]))))])
+        probs = np.abs(np.diff(np.log10(xdata)))/xrange + np.abs(np.diff(tfy(ydata)))/yrange
+        xpos = []
+        ypos= []
+        if sum(probs) > 0:
+            probs /= sum(probs)
+            cum = np.cumsum(probs)
+            for xact in np.arange(0, 1, 1./nbmarkers):
+                pos = xact + (1./nbmarkers) * (0.4 + 0.2 * np.random.rand())
+                idx = np.abs(cum - pos).argmin()  # index of closest value
+                xpos.append(xdata[idx])
+                ypos.append(ydata[idx])
+        xpos.append(xdata[-1])
+        ypos.append(ydata[-1])
+        return xpos, ypos
+    
     def downsample(xdata, ydata):
         """Downsample arrays of data.
         
@@ -107,10 +131,11 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
                 downy.extend(len(intermx) * [ymid])
             elif plt.getp(res[0], 'drawstyle') == 'default':
                 # log interpolation / semi-log
+                dlgx = np.log10(segx[1]) - np.log10(segx[0])
                 if logscale:
-                    tmp = 10.**(np.log10(segy[0]) + (np.log10(intermx) - np.log10(segx[0])) * (np.log10(segy[1]) - np.log10(segy[0])) / (np.log10(segx[1]) - np.log10(segx[0])))
+                    tmp = 10.**(np.log10(segy[0]) + (np.log10(intermx) - np.log10(segx[0])) * (np.log10(segy[1]) - np.log10(segy[0])) / dlgx)
                 else:
-                    tmp = segy[0] + (np.log10(intermx) - np.log10(segx[0])) * (segy[1] - segy[0]) / (np.log10(segx[1]) - np.log10(segx[0]))
+                    tmp = segy[0] + (np.log10(intermx) - np.log10(segx[0])) * (segy[1] - segy[0]) / dlgx
                 downy.extend(tmp)
         resdownx = []
         resdowny = []
@@ -127,7 +152,8 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
         return resdownx, resdowny
 
     if 'marker' in kwargs and len(x) > 0:
-        x2, y2 = downsample(x, y)
+        # x2, y2 = downsample(x, y)
+        x2, y2 = marker_positions(x, y, nbperdecade, 9, plt.axis())
         try:
             res2 = plt.plot(x2, y2)
         except ValueError:

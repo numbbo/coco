@@ -34,7 +34,7 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import pprldistr
-from bbob_pproc.pproc import DataSetList, processInputArgs
+from bbob_pproc.pproc import DataSetList, processInputArgs, prepend_to_file
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 from bbob_pproc.compall import ppfigs
 from bbob_pproc import ppconverrorbars
@@ -273,6 +273,17 @@ def main(argv=None):
                 os.mkdir(outputdir)
                 if verbose:
                     print 'Folder %s was created.' % (outputdir)
+            
+            # prepend the algorithm name command to the tex-command file
+            abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            lines = []
+            for i, alg in enumerate(args):
+                lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
+                        alg.replace('..' + os.sep, '').strip(os.sep) + '}')
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
+                         lines, 1000, 
+                         'bbob_proc_commands.tex truncated, consider removing the file before the text run'
+                         )
 
         # Check whether both input arguments list noisy and noise-free data
         dictFN0 = dsList0.dictByNoise()
@@ -459,6 +470,6 @@ def main(argv=None):
         print >>sys.stderr, err.msg
         print >>sys.stderr, "For help use -h or --help"
         return 2
-
+    
 if __name__ == "__main__":
     sys.exit(main())

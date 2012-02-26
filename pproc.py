@@ -525,33 +525,33 @@ class DataSetList(list):
         if isinstance(args, basestring):
             args = [args]
 
-        tmp = []
-        for i in args:
-            if os.path.isdir(i):
-                tmp.extend(findfiles.main(i, verbose))
+        fnames = []
+        for name in args:
+            if os.path.isdir(name):
+                fnames.extend(findfiles.main(name, verbose))
             else:
-                tmp.append(i)
+                fnames.append(name)
 
-        for i in tmp:
-            if i.endswith('.info'):
-                self.processIndexFile(i, verbose)
-            elif i.endswith('.pickle'):
+        for name in fnames: 
+            if name.endswith('.info'):
+                self.processIndexFile(name, verbose)
+            elif name.endswith('.pickle'):
                 try:
-                    f = open(i,'r')
+                    f = open(name,'r')
                     try:
                         entry = pickle.load(f)
                     except pickle.UnpicklingError:
-                        print '%s could not be unpickled.' %(i)
+                        print '%s could not be unpickled.' %(name)
                     f.close()
                     if verbose:
-                        print 'Unpickled %s.' % (i)
+                        print 'Unpickled %s.' % (name)
                     self.append(entry)
                     #set_trace()
                 except IOError, (errno, strerror):
                     print "I/O error(%s): %s" % (errno, strerror)
 
             else:
-                warnings.warn('File or folder ' + i + ' not found. ' +
+                warnings.warn('File or folder ' + name + ' not found. ' +
                               'Expecting as input argument either .info ' +
                               'file(s), .pickle file(s) or a folder ' +
                               'containing .info file(s).')
@@ -1220,3 +1220,16 @@ def significancetest(entry0, entry1, targets):
         res.append(tmpres)
 
     return res
+
+def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
+        # prepend the algorithm name command to the tex-command file
+        lines_to_append = []
+        for line in open(filename, 'r'):
+            lines_to_append.append(line)
+        f = open(filename, 'w')
+        for i, line in enumerate(lines + lines_to_append):
+            f.write(line + '\n')
+            if i > maxlines:
+                print warn_message
+                break
+    

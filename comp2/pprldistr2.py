@@ -145,12 +145,18 @@ def plotLogAbs(dsList0, dsList1, fvalueToReach, verbose=True):
             # Compute the pair-wise ratio
             tmp1 = numpy.reshape(evals1[func][i], (1, len(evals1[func][i])))
             tmp0 = numpy.reshape(evals0[func][i], (len(evals0[func][i]), 1))
-            x.append((tmp1/tmp0).flatten())
-            #TODO: check division, check numpy.inf...
+            try:
+                x.append((tmp1/tmp0).flatten())  # inf/inf results in nan
+            except FloatingPointError: 
+                if numpy.isfinite(tmp1).all() or numpy.isfinite(tmp1).all():
+                    raise
+                
+                #TODO: check division, check numpy.inf...
 
         label = '%+d: %d/%d' % (numpy.log10(target), succ1[i], succ0[i])
-        x = numpy.hstack(x)
-        x = x[numpy.isnan(x)==False] # Is it correct?
+        if len(x) > 0:  # prevent warning/error
+            x = numpy.hstack(x)
+            x = x[numpy.isnan(x)==False] # Is it correct?
         n = len(x)
 
         if n == 0:
@@ -298,7 +304,7 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
                         x.append(ERT[1][j]/ERT[0][j])
                         nn += 1
                 for j in s1 - s0:
-                    x.append(inf)
+                    x.append(numpy.inf)  # 12/02/25: was inf and therefore could never execute
                     nn += 1
 
         label = '1e%+d * DIM' % numpy.log10(curevals/indexEntries0[0].dim)

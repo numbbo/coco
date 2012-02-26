@@ -183,12 +183,11 @@ refcolor = 'wheat'
 #'d'     thin_diamond marker
 #'|'     vline marker
 #'_'     hline marker
-headleg = (r'\raisebox{.037\textwidth}{\parbox[b]'
-           + r'[.3\textwidth]{.0868\textwidth}{\begin{scriptsize}')
-footleg = (r'%do not remove the empty line below' + '\n\n' +
-           r'\end{scriptsize}}}')
 
 defaulttargets = tuple(10**np.r_[-8:2:0.2])
+
+def strip_name(alg):
+    return alg.replace('..' + os.sep, '').strip().strip(os.sep)
 
 def beautify():
     """Customize figure presentation."""
@@ -199,7 +198,7 @@ def beautify():
     #Tick label handling
     plt.xlim(xmin=1e-0)
 
-    plt.xlabel('log10 of (ERT / dimension)')
+    plt.xlabel('log10 of (# f-evals / dimension)')
     plt.ylabel('Proportion of functions')
     logxticks()
     beautifyECDF()
@@ -549,7 +548,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
             algtocommand = {}
             for i, alg in enumerate(order):
                 tmp = r'\alg%sperfprof' % numtotext(i)
-                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, writeLabels(alg)))
+                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, strip_name(alg).replace('_', r'\_')))
                 algtocommand[alg] = tmp
             commandnames = []
             if displaybest2009:
@@ -559,11 +558,12 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
 
             for l in labels:
                 commandnames.append(algtocommand[l])
-            f.write(headleg)
-            f.write(r'\mbox{%s}' % commandnames[0]) # TODO: check len(labels) > 0
+            # f.write(headleg)
+            f.write(r'\providecommand{\perfprofsidepanel}{\mbox{%s}' % commandnames[0]) # TODO: check len(labels) > 0
             for i in range(1, len(labels)):
                 f.write('\n' + r'\vfill \mbox{%s}' % commandnames[i])
-            f.write(footleg)
+            f.write('}\n')
+            # f.write(footleg)
             if verbose:
                 print 'Wrote right-hand legend in %s' % fileName
         except:

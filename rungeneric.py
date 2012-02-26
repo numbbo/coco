@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Process data to be included in a generic template.
+"""Process data to be included in a latex template. 
 
 Synopsis:
     ``python path_to_folder/bbob_pproc/rungeneric.py [OPTIONS] FOLDERS``
@@ -22,6 +22,7 @@ import tarfile
 from pdb import set_trace
 import warnings
 import numpy
+numpy.seterr(all='raise')
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -89,8 +90,7 @@ def usage():
 def main(argv=None):
     r"""Main routine for post-processing data from COCO.
 
-    The output figures and tables generated will all be contained in an
-    output folder. This routine will:
+    Depending on the number of data path input arguments, this routine will:
 
     * call sub-routine :py:func:`bbob_pproc.rungeneric1.main` for each
       input arguments; each input argument will be used as output
@@ -99,7 +99,8 @@ def main(argv=None):
       (2 input arguments) or :py:func:`bbob_pproc.rungenericmany.main`
       (more than 2) for the input arguments altogether.
 
-    The output figures and tables are included in:
+    The output figures and tables written by default to the output folder 
+    :file:`ppdata` and meant to be use in latex templates:
 
     * :file:`template1generic.tex`, :file:`template1ecj.tex`,
       :file:`noisytemplate1generic.tex`, :file:`noisytemplate1ecj.tex`
@@ -112,11 +113,10 @@ def main(argv=None):
       :file:`noisytemplate3generic.tex`, :file:`noisytemplate3ecj.tex` 
       for showing the comparison of **more than 2** algorithms.
 
-    These files needs to be copied in the current working directory and
-    edited so that the LaTeX commands ``\bbobdatapath`` and
-    ``\algfolder`` (for :file:`xxxtemplate1xxx.tex`) need to be set to
-    the output folder of the post-processing. Compiling the template
-    file with LaTeX should then produce a document.
+    These latex templates need to be copied in the current working directory 
+    and possibly edited so that the LaTeX commands ``\bbobdatapath`` and
+    ``\algfolder`` point to the correct output folders of the post-processing. 
+    Compiling the template file with LaTeX should then produce a document.
 
     Keyword arguments:
 
@@ -140,6 +140,11 @@ def main(argv=None):
 
             changes the default output directory (:file:`ppdata`) to
             :file:`OUTPUTDIR`.
+        
+        --omit-single
+        
+            omit calling :py:func:`bbob_pproc.rungeneric1.main`, if
+            more than one data path argument is provided. 
 
     Exceptions raised:
     
@@ -176,9 +181,9 @@ def main(argv=None):
 
     try:
         try:
-            opts, args = getopt.getopt(argv, shortoptlist, longoptlist)
+            opts, args = getopt.getopt(argv, shortoptlist, longoptlist + ['omit-single'])
         except getopt.error, msg:
-             raise Usage(msg)
+            raise Usage(msg)
 
         if not (args):
             usage()
@@ -232,6 +237,8 @@ def main(argv=None):
                 if o in ("-v","--verbose"):
                     verbose = True
                     isAssigned = True
+                if o in ('--omit-single', ):
+                    isAssigned = True
                 if not isAssigned:
                     assert False, "unhandled option"
 
@@ -248,13 +255,13 @@ def main(argv=None):
                 print 'Folder %s was created.' % (outputdir)
         
         open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'w').close() 
+ 
         for i, alg in enumerate(args):
-            tmpoutputdir = os.path.join(outputdir, alg)
-            rungeneric1.main(genopts1
-                             + ["-o", tmpoutputdir, alg])
-            abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-            f = open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a')
-            f.write('\\newcommand{\\algorithm' + abc[i] + '}{' + alg + '}\n')
+            # remove '../' from algorithm output folder
+            if len(args) == 1 or '--omit-single' not in dict(opts):
+                tmpoutputdir = os.path.join(outputdir, alg.replace('..' + os.sep, ''))
+                rungeneric1.main(genopts1
+                                + ["-o", tmpoutputdir, alg])
         if len(args) == 2:
             rungeneric2.main(genopts2 + ["-o", outputdir] + args)
         elif len(args) > 2:
