@@ -61,7 +61,8 @@ from bbob_pproc.ppfig import saveFigure, groupByRange
 
 scaling_figure_legend = ("Expected number of $f$-evaluations (\\ERT, {\Large$\\bullet$}) to reach $\\fopt+\\Df$, " +
     "median number of $f$-evaluations from successful trials ($+$) and maximum " + 
-    "number of $f$-evaluations in any trial ($\\times$), for $\\Df = 10^{\\{+1, 0, -1, -2, -3, -5, -8\\}}$ " + 
+    "number of $f$-evaluations in any trial ($\\times$), all " +
+    "divided by dimension, for $\\Df = 10^{\\{+1, 0, -1, -2, -3, -5, -8\\}}$ " + 
     "(the exponent is given in the legend of #1) " + 
     "versus dimension as $\\log_{10}$ values. " + 
 #    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
@@ -73,7 +74,7 @@ scaling_figure_legend = ("Expected number of $f$-evaluations (\\ERT, {\Large$\\b
 #    "function value.  " +
     " Numbers above \\ERT-symbols indicate the number of successful trials. " +
     " The light thick line with diamonds indicates the respective best result from BBOB-2009 for " + 
-    " $\\Df=10^{-8}$. Horizontal and slanted grid lines show linear and quadratic scaling, respectively. ") 
+    " $\\Df=10^{-8}$. Horizontal lines mean linear scaling, the slanted grid lines depict quadratic scaling. ") 
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
@@ -139,11 +140,11 @@ def beautify(axesLabel=True):
 
     # quadratic and cubic "grid"
     plt.plot((2,200), (1, 1e2), 'k:')    # TODO: this should be done before the real lines are plotted? 
-    plt.plot((2,200), (1, 1e4), 'k:')
+    # plt.plot((2,200), (1, 1e4), 'k:')
     plt.plot((2,200), (1e3, 1e5), 'k:')  
-    plt.plot((2,200), (1e3, 1e7), 'k:')
+    # plt.plot((2,200), (1e3, 1e7), 'k:')
     plt.plot((2,200), (1e6, 1e8), 'k:')  
-    plt.plot((2,200), (1e6, 1e10), 'k:')
+    # plt.plot((2,200), (1e6, 1e10), 'k:')
 
     # axes limites
     plt.xlim(1.8, 45)                # TODO should become input arg?
