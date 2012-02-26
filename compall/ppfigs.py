@@ -8,9 +8,9 @@ import sys
 import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
-from bbob_pproc import bootstrap, bestalg, pproc
+from bbob_pproc import bootstrap, bestalg, pproc, genericsettings
 from bbob_pproc.ppfig import saveFigure
-from bbob_pproc.pptex import color_to_latex, maker_to_latex, writeLabels
+from bbob_pproc.pptex import color_to_latex, marker_to_latex, writeLabels
 
 # styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
 #           {'color': 'b'},
@@ -27,22 +27,8 @@ scaling_figure_legend = """Expected running time (\ERT\ in \# of $f$-evaluations
                 Light symbols give the maximum number of function evaluations from the longest trial 
                 divided by dimension. Horizontal lines give linear scaling,
                 the slanted dotted lines give quadratic scaling. """
-styles = [
-          {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
-          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, 
-          {'marker': '*', 'markersize': 29, 'linestyle': '-', 'color': 'c'},
-          {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'}, # square
-          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'},
-          {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': 'y'},
-          {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': 'g'},
-          {'marker': 's', 'markersize': 24, 'linestyle': '-', 'color': 'b'},
-          {'marker': 'o', 'markersize': 18, 'linestyle': '-', 'color': 'r'},
-          {'marker': '*', 'markersize': 23, 'linestyle': '-', 'color': 'c'},
-          {'marker': 'v', 'markersize': 22, 'linestyle': '-', 'color': 'm'},
-          {'marker': 'd', 'markersize': 21, 'linestyle': '-', 'color': 'k'},
-          {'marker': '^', 'markersize': 20, 'linestyle': '-', 'color': 'y'},
-          {'marker': 'h', 'markersize': 20, 'linestyle': '-', 'color': 'g'}
-          ]
+
+styles = genericsettings.line_styles
 for i in xrange(len(styles)):
     styles[i].update({'linewidth': 4 - min([3, i/2.0]),  # thinner lines over thicker lines
                       'markeredgewidth': 6 - min([2, i]), 
@@ -367,7 +353,7 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
         alg_definitions = []
         for i in range(len(sortedAlgs)):
             symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
-                                maker_to_latex(styles[i]['marker']))
+                                marker_to_latex(styles[i]['marker']))
             alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
         filename = os.path.join(outputdir, 'bbob_pproc_commands.tex')
         pproc.prepend_to_file(filename, 
@@ -387,16 +373,32 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                 + ' will overwrite any modification.\n')
         f.write('Legend: ')
         
-        symb = r'{%s%s}' % (color_to_latex(styles[0]['color']),
-                            maker_to_latex(styles[0]['marker']))
-        f.write('%s: %s' % (symb, writeLabels(sortedAlgs[0])))
-        for i in range(1, len(sortedAlgs)):
+        for i in range(0, len(sortedAlgs)):
             symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
-                                maker_to_latex(styles[i]['marker']))
-            f.write(', %s: %s' % (symb, writeLabels(sortedAlgs[i])))
+                                marker_to_latex(styles[i]['marker']))
+            f.write((', ' if i > 0 else '') + '%s: %s' % (symb, writeLabels(sortedAlgs[i])))
         f.close()    
         if verbose:
             print '(obsolete) Wrote legend in %s' % filename
     except IOError:
         raise
+
+
+        handles.append(tmp)
+
+        if isBenchmarkinfosFound:
+            title = funInfos[f]
+            plt.gca().set_title(title)
+
+        beautify(rightlegend=legend)
+
+        if legend:
+            plotLegend(handles)
+        else:
+            if f in (1, 24, 101, 130):
+                plt.legend()
+
+        saveFigure(filename, figFormat=figformat, verbose=verbose)
+
+        plt.close()
 

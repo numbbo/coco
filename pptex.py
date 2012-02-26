@@ -73,7 +73,7 @@ def color_to_latex(color):
             raise err
     return res
 
-def maker_to_latex(marker):
+def marker_to_latex(marker):
     return latex_marker_map[marker]
 
 def numtotext(n):

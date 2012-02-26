@@ -6,15 +6,19 @@
 These variables are used for producing figures and tables 
 in rungeneric1, -2, and -many.
 
+For setting variables dynamically see config.py
+
 """
 
 import numpy
-from bbob_pproc.comp2 import ppscatter, ppfig2
-from bbob_pproc.compall import pprldmany
-
 
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
     #set_trace()
+
+dimensions_to_display = (2,3,5,10,20,40)  # this could be used to set the dimensions in respective modules
+# ppfigdim.dimsBBOB = dimensions_to_display
+# ppfig2.dimensions = dimensions_to_display
+
 
 instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
                        11:1, 12:1, 13:1, 14:1, 15:1}
@@ -29,6 +33,24 @@ summarized_target_function_values = tuple(10**numpy.r_[-8:2:0.2]) # 1e2 and 1e-8
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
+
+line_styles = [
+          {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
+          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, 
+          {'marker': '*', 'markersize': 30, 'linestyle': '-', 'color': 'c'},
+          {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'}, # square
+          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'},
+          {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': 'y'},
+          {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': 'g'},
+          {'marker': 'p', 'markersize': 24, 'linestyle': '-', 'color': 'b'},
+          {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': 'r'},
+          {'marker': '<', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
+          {'marker': 'D', 'markersize': 24, 'linestyle': '-', 'color': 'm'},
+          {'marker': '1', 'markersize': 24, 'linestyle': '-', 'color': 'k'},
+          {'marker': '2', 'markersize': 24, 'linestyle': '-', 'color': 'y'},
+          {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
+          {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'}
+          ]
 
 # function-dependent target function values: hard coded here before we come up
 # with something smarter. It is supposed the number of level of difficulties
@@ -244,9 +266,6 @@ rcaxeslarger = {"labelsize": 24, "titlesize": 28.8}
 rcticklarger = {"labelsize": 24}
 rcfontlarger = {"size": 24}
 rclegendlarger = {"fontsize": 24}
-pprldmany.fontsize = 20.0
-ppscatter.markersize = 14.
-ppfig2.linewidth = 4.
 
 rcaxes = {"labelsize": 20, "titlesize": 24}
 rctick = {"labelsize": 20}

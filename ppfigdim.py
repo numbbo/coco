@@ -59,22 +59,21 @@ from pdb import set_trace
 from bbob_pproc import bootstrap, bestalg
 from bbob_pproc.ppfig import saveFigure, groupByRange
 
-scaling_figure_legend = ("Expected Running Time (\\ERT, {\Large$\\bullet$}) to reach $\\fopt+\\Df$, " +
+scaling_figure_legend = ("Expected number of $f$-evaluations (\\ERT, {\Large$\\bullet$}) to reach $\\fopt+\\Df$, " +
     "median number of $f$-evaluations from successful trials ($+$) and maximum " + 
     "number of $f$-evaluations in any trial ($\\times$), all " +
     "divided by dimension, for $\\Df = 10^{\\{+1, 0, -1, -2, -3, -5, -8\\}}$ " + 
     "(the exponent is given in the legend of #1) " + 
-    "versus dimension as $\\log_{10}$ values. For each function " + 
-    "and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
-    "divided by the number of successful trials, where a trial is " +
-    "successful if $\\fopt+\\Df$ was surpassed. The " +
-    "$\\nbFEs(\\Df)$ are the total number (the sum) of $f$-evaluations while " +
-    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
-    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
-    "function value.  " +
-    " Numbers above ERT-symbols indicate the number of successful trials. " +
-    " The thick light " +
-    " line with diamonds shows the respective best results from BBOB-2009 for " + 
+    "versus dimension as $\\log_{10}$ values. " + 
+#    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
+#    "divided by the number of successful trials, where a trial is " +
+#    "successful if $\\fopt+\\Df$ was surpassed. The " +
+#    "$\\nbFEs(\\Df)$ are the total number (the sum) of $f$-evaluations while " +
+#    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
+#    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
+#    "function value.  " +
+    " Numbers above \\ERT-symbols indicate the number of successful trials. " +
+    " The light thick line with diamonds indicates the respective best result from BBOB-2009 for " + 
     " $\\Df=10^{-8}$. Horizontal and slanted grid lines show linear and quadratic scaling, respectively. ") 
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
