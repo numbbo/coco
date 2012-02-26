@@ -205,7 +205,7 @@ def main(argv=None):
 
         # from bbob_pproc import bbob2010 as inset # input settings
         if inputsettings == "color":
-            from bbob_pproc import genericsettings as inset # input settings
+            from bbob_pproc import config, genericsettings as inset # input settings
         elif inputsettings == "grayscale":
             from bbob_pproc import grayscalesettings as inset # input settings
         elif inputsettings == "black-white":
@@ -225,7 +225,9 @@ def main(argv=None):
         dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
 
         if 1 < 3 and len(sortedAlgs) != 2:
-            raise ValueError('rungeneric2.py needs exactly two algorithms to compare, found: ' + str(sortedAlgs))
+            raise ValueError('rungeneric2.py needs exactly two algorithms to compare, found: ' 
+                             + str(sortedAlgs)
+                             + '\n use rungeneric.py (or rungenericmany.py) to compare more algorithms. ')
  
         if not dsList:
             sys.exit()

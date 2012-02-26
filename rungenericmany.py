@@ -198,7 +198,7 @@ def main(argv=None):
 
         # from bbob_pproc import bbob2010 as inset # input settings
         if inputsettings == "color":
-            from bbob_pproc import genericsettings as inset # input settings
+            from bbob_pproc import config, genericsettings as inset # input settings
         elif inputsettings == "grayscale":
             from bbob_pproc import grayscalesettings as inset # input settings
         elif inputsettings == "black-white":

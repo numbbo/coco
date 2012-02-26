@@ -56,7 +56,7 @@ figure_legend = ("Expected running time (\\ERT\\ in $\log_{10}$ of number of fun
 colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 offset = 0. #0.02
-markersize = 10.
+markersize = 10.  # modified in config.py
 # offset provides a way to move away the box boundaries to display the outer markers fully 
 nbmarkers = 46
 _inc = 45./(nbmarkers-1)

@@ -51,7 +51,7 @@ styles = [{'color': 'c', 'marker': '+', 'markeredgecolor': 'c',
           {'color': 'c'},
           {'color': 'r'},
           {'color': 'm'}]
-linewidth = 3  # see also genericsettings
+linewidth = 3  # overwritten by config.py 
 offset = 0.005
 incrstars = 1.5
 fthresh = 1e-8
