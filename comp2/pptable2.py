@@ -24,7 +24,7 @@ from pdb import set_trace
 
 targetsOfInterest = (10., 1e-1, 1e-3, 1e-5, 1e-7) # Needs to be sorted
 targetf = 1e-8 # value for determining the success ratio
-samplesize = 3000 # TODO change samplesize
+samplesize = 1000 # TODO change samplesize
 
 #Get benchmark short infos: put this part in a function?
 funInfos = {}
