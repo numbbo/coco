@@ -503,7 +503,7 @@ class DataSetList(list):
     #Do not inherit from set because DataSet instances are mutable which means
     #they might change over time.
 
-    def __init__(self, args=[], verbose=True):
+    def __init__(self, args=[], verbose=False):
         """Instantiate self from a list of inputs.
 
         :keyword list args: strings being either info file names, folder
