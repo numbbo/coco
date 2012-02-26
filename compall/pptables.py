@@ -23,7 +23,7 @@ http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 tables_many_legend = """Expected running time (ERT in number of function evaluations)
                      divided by the best ERT measured during BBOB-2009 (given in the respective
                      first row) for different $\\Df$ values for functions
-                     #1 for dimension #2. The inter-80\%tile range divided by two is given in braces. 
+                     #1 in dimension #2. The inter-80\%tile range divided by two is given in braces. 
                      The median number of conducted function evaluations is additionally given in 
                      \\textit{italics}, if $\ERT(10^{-7}) = \\infty$.
                      \\#succ is the number of trials that reached the final target $\\fopt + 10^{-8}$."""
@@ -49,10 +49,11 @@ except IOError, (errno, strerror):
           'Titles in figures will not be displayed.'
 
 maxfloatrepr = 10000.
-samplesize = 3000
+samplesize = 1000
 targetf = 1e-8
 precfloat = 2
 precscien = 1
+precdispersion = 1  # significant digits for dispersion
 
 def cite(algName, isNoisefree, isNoisy):
     """Returns the citation key associated to the algorithm name.
@@ -323,6 +324,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
         # Create the table
         table = []
         spec = r'@{}c@{}|*{%d}{@{\,}r@{}X@{\,}}|@{}r@{}@{}l@{}' % (len(targets))
+        spec = r'@{}c@{}|*{%d}{@{}r@{}X@{}}|@{}r@{}@{}l@{}' % (len(targets))
         extraeol = []
 
         # Generate header lines
@@ -390,7 +392,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                         curline.append(r'\multicolumn{2}{%s}{\textbf{%s}{\tiny (%s)}}'
                                        % (alignment,
                                           writeFEvalsMaxPrec(algert[i][j], 2),
-                                          writeFEvalsMaxPrec(dispersion, 2)))
+                                          writeFEvalsMaxPrec(dispersion, precdispersion)))
                         continue
 
                     tmp = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
@@ -407,7 +409,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.01: # TODO: hack
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precscien, maxfloatrepr=tmpdisp)
                             else:
-                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precfloat, maxfloatrepr=maxfloatrepr)
+                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
                             tmp += r'{\tiny (%s)}' % tmpdisp
                         curline.append(r'\multicolumn{2}{%s}{%s}' % (alignment, tmp))
                     else:
@@ -426,7 +428,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precscien, maxfloatrepr=tmpdisp)
                             else:
-                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precfloat, maxfloatrepr=maxfloatrepr)
+                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
                             tmp2[-1] += (r'{\tiny (%s)}' % tmpdisp)
 
                         z, p = testres

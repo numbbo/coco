@@ -32,7 +32,7 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import pptable, pprldistr, ppfigdim, pplogloss, findfiles
-from bbob_pproc.pproc import DataSetList
+from bbob_pproc.pproc import DataSetList, prepend_to_file
 from bbob_pproc import ppconverrorbars
 
 import matplotlib.pyplot as plt
@@ -381,6 +381,13 @@ def main(argv=None):
                     pplogloss.evalfmax = None #Resetting the max #fevalsfactor
 
             print "ERT loss ratio figures and tables done."
+
+        prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
+                        ['\\providecommand{\\bbobppfigdimlegend}[1]{', ppfigdim.scaling_figure_legend, '}'])
+        prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
+                        ['\\providecommand{\\algfolder}{}'])  # does not overwrite value from rungeneric.py
+        prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
+                        ['\\providecommand{\\algname}{' + dsList[0].algId + '}'])
 
         if isfigure or istab or isrldistr or islogloss:
             print "Output data written to folder %s." % outputdir

@@ -13,7 +13,7 @@ horizontal line in the figure.
 Crosses (+) give the median number of function evaluations of successful
 trials divided by dimension for the smallest *reached* target function
 value.
-Numbers indicate the number of succesfull runs for the smallest
+Numbers indicate the number of successfull runs for the smallest
 *reached* target.
 If the smallest target function value (1e-8) is not reached for a given
 dimension, crosses (x) give the average number of overall conducted
@@ -59,27 +59,23 @@ from pdb import set_trace
 from bbob_pproc import bootstrap, bestalg
 from bbob_pproc.ppfig import saveFigure, groupByRange
 
-scaling_figure_legend = """Expected Running Time (\ERT,
-             {\Large$\bullet$}) to reach $\fopt+\Df$, median number of
-             $f$-evaluations from successful trials ($+$) and maximum
-             number of $f$-evaluations in any trial ($\times$), all
-             divided by dimension, for 
-            $\Df = 10^{\{+1, 0, -1, -2, -3, -5, -8\}}$ 
-             (the exponent is given in the legend of #1) 
-             versus dimension as $\\log_{10}$ values. For each function 
-             and dimension, $\ERT(\Df)$ equals to $\nbFEs(\Df)$
-             divided by the number of successful trials, where a trial is
-             successful if $\fopt+\Df$ was surpassed. The
-             $\nbFEs(\Df)$ are the total number (sum) of $f$-evaluations while
-             $\fopt+\Df$ was not surpassed in the trial, from all  
-             (successful and unsuccessful) trials, and \fopt\ is the optimal
-             function value. 
-             % Crosses ($\times$) indicate the total number of
-             % $f$-evaluations, $\nbFEs(-\infty)$, divided by the number of trials.
-             Numbers above ERT-symbols indicate the number of successful trials.
-             The thick light
-             line with diamonds shows the respective best results from BBOB-2009 for 
-             $\Df=10^{-8}$. Horizontal and slanted grid lines show linear and quadratic scaling, respectively.""" 
+scaling_figure_legend = ("Expected Running Time (\\ERT, {\Large$\\bullet$}) to reach $\\fopt+\\Df$, " +
+    "median number of $f$-evaluations from successful trials ($+$) and maximum " + 
+    "number of $f$-evaluations in any trial ($\\times$), all " +
+    "divided by dimension, for $\\Df = 10^{\\{+1, 0, -1, -2, -3, -5, -8\\}}$ " + 
+    "(the exponent is given in the legend of #1) " + 
+    "versus dimension as $\\log_{10}$ values. For each function " + 
+    "and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
+    "divided by the number of successful trials, where a trial is " +
+    "successful if $\\fopt+\\Df$ was surpassed. The " +
+    "$\\nbFEs(\\Df)$ are the total number (the sum) of $f$-evaluations while " +
+    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
+    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
+    "function value.  " +
+    " Numbers above ERT-symbols indicate the number of successful trials. " +
+    " The thick light " +
+    " line with diamonds shows the respective best results from BBOB-2009 for " + 
+    " $\\Df=10^{-8}$. Horizontal and slanted grid lines show linear and quadratic scaling, respectively. ") 
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
@@ -97,7 +93,6 @@ functions_with_legend = (1, 24, 101, 130)
 
 #Get benchmark short infos.
 funInfos = {}
-figformat = ('eps', 'pdf') # Controls the output when using the main method
 isBenchmarkinfosFound = True
 infofile = os.path.join(os.path.split(__file__)[0], 'benchmarkshortinfos.txt')
 
@@ -209,7 +204,7 @@ def generateData(dataSet, targetFuncValue):
     res.append(numpy.mean(data)) #mean(FE)
     res.append(med)
 
-    return numpy.array(res), numpy.max(data)  # changed 2012/02/24
+    return numpy.array(res)  
 
 
 def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
@@ -251,8 +246,9 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
             #Collect data that have the same function and different dimension.
             for idim, dim in enumerate(dimensions):
                 assert len(dictFunc[func][dim]) == 1
-                tmp, maxevals[idim] = generateData(dictFunc[func][dim][0],
+                tmp = generateData(dictFunc[func][dim][0],
                                    valuesOfInterest[i])
+                maxevals[idim] = max(dictFunc[func][dim][0].maxevals)
                 #data.append(numpy.append(dim, tmp))
                 if tmp[2] > 0: #Number of success is larger than 0
                     succ.append(numpy.append(dim, tmp))
@@ -356,5 +352,5 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             plt.gca().set_title(funInfos[func])
         plotBest2009(func)
         filename = os.path.join(outputdir,'ppfigdim_f%03d' % (func))
-        saveFigure(filename, figFormat=figformat, verbose=verbose)
+        saveFigure(filename, verbose=verbose)
         plt.close()

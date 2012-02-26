@@ -33,6 +33,7 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import rungeneric1, rungeneric2, rungenericmany
+from bbob_pproc.pproc import prepend_to_file
 
 __all__ = ['main']
 
@@ -254,7 +255,7 @@ def main(argv=None):
             if verbose:
                 print 'Folder %s was created.' % (outputdir)
         
-        open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'w').close() 
+        open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'w').close()
  
         for i, alg in enumerate(args):
             # remove '../' from algorithm output folder
@@ -262,6 +263,9 @@ def main(argv=None):
                 tmpoutputdir = os.path.join(outputdir, alg.replace('..' + os.sep, ''))
                 rungeneric1.main(genopts1
                                 + ["-o", tmpoutputdir, alg])
+                prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
+                                ['\\providecommand{\\algfolder}{' + alg.replace('..' + os.sep, '').rstrip(os.sep) + os.sep + '}'])
+
         if len(args) == 2:
             rungeneric2.main(genopts2 + ["-o", outputdir] + args)
         elif len(args) > 2:

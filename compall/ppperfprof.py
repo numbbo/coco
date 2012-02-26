@@ -51,8 +51,6 @@ from bbob_pproc.compall.pprldmany import plotLegend
 
 __all__ = ['beautify', 'main', 'plot']
 
-figformat = ('eps', 'pdf') # Controls the output when using the main method
-
 best = ('AMALGAM', 'iAMALGAM', 'VNS', 'MA-LS-CHAIN', 'BIPOP-CMA-ES', 'IPOP-ACTCMA-ES', 'MOS', 'IPOP-SEP-CMA-ES',
    'BFGS', 'NELDER', 'NELDERDOERR', 'NEWUOA', 'FULLNEWUOA', 'GLOBAL', 'MCS',
    'DIRECT', 'DASA', 'POEMS', 'Cauchy-EDA', 'RANDOMSEARCH')
@@ -220,5 +218,5 @@ def main(dictAlg, dsref=None, order=None, targets=defaulttargets, outputdir='',
     for d, dictalgdim in dictAlg.dictAlgByDim().iteritems():
         plotmultiple(dictalgdim, dsref, targets)
         figureName = os.path.join(outputdir, 'ppperfprof_%02dD_%s' % (d, info))
-        saveFigure(figureName, figFormat=figformat, verbose=verbose)
+        saveFigure(figureName, verbose=verbose)
         plt.close()

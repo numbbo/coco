@@ -27,7 +27,6 @@ rldStyles = ({'color': 'k', 'ls': '--'},
              {'color': 'm'},
              {'color': 'r'})
 
-figformat = ('eps', 'pdf') # Controls the output when using the main method
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
 evalfmax = None
@@ -378,7 +377,7 @@ def main(dsList0, dsList1, valuesOfInterest=None,
     plt.text(0.98, 0.02, text, horizontalalignment="right",
              transform=plt.gca().transAxes)
 
-    saveFigure(figureName, figFormat=figformat, verbose=verbose)
+    saveFigure(figureName, verbose=verbose)
     plt.close()
 
     #plt.rcdefaults()

@@ -14,7 +14,7 @@ from pdb import set_trace
 #GLOBAL VARIABLES DEFINITION
 alphabet = string.ascii_letters
 #conversion of matplotlib elements to LaTeX
-convmarker = {'o': r'$\circ$',
+latex_marker_map = {'o': r'$\circ$',
               'd': r'$\diamondsuit$',
               's': r'$\Box$',
               'v': r'$\triangledown$',
@@ -30,7 +30,7 @@ convmarker = {'o': r'$\circ$',
               '2': r'$\upY$', # need \usepackage{MnSymbol}
               '3': r'$\rightY$', # need \usepackage{MnSymbol}
               '4': r'$\leftY$'} # need \usepackage{MnSymbol}
-convcolor = {'g': 'green!45!black',
+latex_color_map = {'g': 'green!45!black',
              'r': 'red',
              'c': 'cyan',
              'm': 'magenta',
@@ -62,9 +62,9 @@ class WrongInputSizeError(Error):
 
 
 #TOP LEVEL METHODS
-def convcolo(color):
+def color_to_latex(color):
     try:
-        res = '\color{%s}' % convcolor[color]
+        res = '\color{%s}' % latex_color_map[color]
     except KeyError, err:
         try:
             float(color)
@@ -73,8 +73,8 @@ def convcolo(color):
             raise err
     return res
 
-def convmark(marker):
-    return convmarker[marker]
+def maker_to_latex(marker):
+    return latex_marker_map[marker]
 
 def numtotext(n):
     """Returns a text from a positive integer.

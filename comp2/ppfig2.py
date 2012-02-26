@@ -57,7 +57,6 @@ incrstars = 1.5
 fthresh = 1e-8
 xmax = 1000
 functions_with_legend = (1, 24, 101, 130)
-figformat = ('eps', 'pdf') # Controls the output when using the main method
 
 dimension_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
 
@@ -447,7 +446,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             plt.legend(loc='best')
 
         # save
-        saveFigure(filename, figFormat=figformat, verbose=verbose)
+        saveFigure(filename, verbose=verbose)
         plt.close()
         #set_trace()
 
