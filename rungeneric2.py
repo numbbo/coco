@@ -31,6 +31,7 @@ if __name__ == "__main__":
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
     import matplotlib
+    # matplotlib.use('pdf')
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import pprldistr
@@ -223,6 +224,9 @@ def main(argv=None):
 
         dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
 
+        if 1 < 3 and len(sortedAlgs) != 2:
+            raise ValueError('rungeneric2.py needs exactly two algorithms to compare, found: ' + str(sortedAlgs))
+ 
         if not dsList:
             sys.exit()
 
@@ -449,6 +453,11 @@ def main(argv=None):
 
         if isscatter:
             ppscatter.main(dsList0, dsList1, outputdir, verbose=verbose)
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
+                            ['\\providecommand{\\bbobppscatterlegend}[1]{', 
+                             ppscatter.figure_legend, 
+                             '}'
+                            ])
             print "Scatter plots done."
 
         if isscaleup:

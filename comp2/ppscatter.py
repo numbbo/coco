@@ -42,6 +42,17 @@ from bbob_pproc import readalign
 from bbob_pproc.ppfig import saveFigure
 
 dimensions = (2, 3, 5, 10, 20, 40)
+figure_legend = ("Expected running time (\\ERT\\ in $\log_{10}$ of number of function evaluations) " + 
+ " of \\algorithmB\ ($y$-axis) versus \\algorithmA\ ($x$-axis) for 46 target values $\Df \in [10^{-8}, 10]$ in each dimension on functions " +
+ " $f_{101}$--$f_{130}$. Markers on the upper or right edge indicate that the target " +
+ " value was never reached. Markers represent dimension: " + 
+ "2:{\\color{cyan}+}, " +
+  "3:{\\color{green!45!black}$\\triangledown$}, " +
+  "5:{\\color{blue}$\star$},  " +
+ "10:$\\circ$,  " +
+ "20:{\\color{red}$\\Box$},  " +
+ "40:{\\color{magenta}$\\Diamond$}. ")
+ 
 colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 offset = 0. #0.02
@@ -53,7 +64,6 @@ targets = numpy.power(10, numpy.arange(-40, 5 + _inc, _inc)/5.)
 
 #Get benchmark short infos.
 funInfos = {}
-figFormat = ('eps', 'pdf') # Controls the output when using the main method
 isBenchmarkinfosFound = True
 infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
 
@@ -236,7 +246,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                 pass
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
-        saveFigure(filename, figFormat=figFormat, verbose=verbose)
+        saveFigure(filename, verbose=verbose)
         plt.close()
 
     #plt.rcdefaults()

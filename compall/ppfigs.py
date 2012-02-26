@@ -10,7 +10,7 @@ import numpy
 from pdb import set_trace
 from bbob_pproc import bootstrap, bestalg, pproc
 from bbob_pproc.ppfig import saveFigure
-from bbob_pproc.pptex import convcolo, convmark, writeLabels
+from bbob_pproc.pptex import color_to_latex, maker_to_latex, writeLabels
 
 # styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
 #           {'color': 'b'},
@@ -20,7 +20,7 @@ from bbob_pproc.pptex import convcolo, convmark, writeLabels
 #           {'color': 'm'},
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
 
-figure_legend = """Expected running time (\ERT\ in \# of $f$-evaluations) divided by dimension for 
+scaling_figure_legend = """Expected running time (\ERT\ in \# of $f$-evaluations) divided by dimension for 
                 target function value \\bbobppfigsftarget\ as $\\log_{10}$ values versus dimension. 
                 Different symbols
                 correspond to different algorithms given in the legend of #1.
@@ -56,7 +56,6 @@ legend = False
 
 #Get benchmark short infos.
 funInfos = {}
-figformat = ('eps', 'pdf') # Controls the output when using the main method
 isBenchmarkinfosFound = True
 infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
 try:
@@ -358,40 +357,46 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
 
         plt.text(plt.xlim()[0], plt.ylim()[0], 'ftarget=%.0e' % target)
 
-        saveFigure(filename, figFormat=figformat, verbose=verbose)
+        saveFigure(filename, verbose=verbose)
 
         plt.close()
 
-    # generate legend tex file:
+    # generate commands in tex file:
     try:
-        fc = open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a')
-        fc.write('\\newcommand{\\bbobppfigsftarget}{\\ensuremath{10^{%d}}}\n' 
-                % int(numpy.round(numpy.log10(target))))
-        fc.write('\\newcommand{\\bbobppfigslegend}[1]{')
-        fc.write(figure_legend)
-        filename = os.path.join(outputdir,'ppfigs.tex')  # this is obsolete (check templates though)
+        abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        alg_definitions = []
+        for i in range(len(sortedAlgs)):
+            symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
+                                maker_to_latex(styles[i]['marker']))
+            alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
+        filename = os.path.join(outputdir, 'bbob_pproc_commands.tex')
+        pproc.prepend_to_file(filename, 
+                ['\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%d}}}' 
+                        % int(numpy.round(numpy.log10(target))),
+                '\\providecommand{\\bbobppfigslegend}[1]{',
+                scaling_figure_legend, 
+                'Legend: '] + alg_definitions + ['}']
+                )
+        if verbose:
+            print 'Wrote commands and legend to %s' % filename
+
+        # this is obsolete (however check templates)
+        filename = os.path.join(outputdir,'ppfigs.tex') 
         f = open(filename, 'w')
         f.write('% Do not modify this file: calls to post-processing software'
                 + ' will overwrite any modification.\n')
         f.write('Legend: ')
-        fc.write('Legend: ')
         
-        symb = r'{%s%s}' % (convcolo(styles[0]['color']),
-                            convmark(styles[0]['marker']))
-        abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        symb = r'{%s%s}' % (color_to_latex(styles[0]['color']),
+                            maker_to_latex(styles[0]['marker']))
         f.write('%s: %s' % (symb, writeLabels(sortedAlgs[0])))
-        fc.write('%s: %s' % (symb, '\\algorithm' + abc[0]))
         for i in range(1, len(sortedAlgs)):
-            symb = r'{%s%s}' % (convcolo(styles[i]['color']),
-                                convmark(styles[i]['marker']))
+            symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
+                                maker_to_latex(styles[i]['marker']))
             f.write(', %s: %s' % (symb, writeLabels(sortedAlgs[i])))
-            fc.write(', %s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
-        fc.write('}\n')
+        f.close()    
         if verbose:
-            print 'Wrote legend in %s' % filename
+            print '(obsolete) Wrote legend in %s' % filename
     except IOError:
         raise
-    else:
-        fc.close()
-        f.close()
 

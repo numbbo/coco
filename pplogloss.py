@@ -73,7 +73,6 @@ The ERT loss ratio for algorithm A is defined as:
 """
 
 evalf = None
-figformat = ('eps', 'pdf')
 f_thresh = 1.e-8
 whiskerscolor = 'b'
 boxescolor = 'b'
@@ -619,7 +618,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
         if evalf:
             plt.xlim(xmin=evalf[0]-0.5, xmax=evalf[1]+0.5)
 
-        saveFigure(filename, figFormat=figformat, verbose=verbose)
+        saveFigure(filename, verbose=verbose)
     
         #plt.show()
         plt.close()

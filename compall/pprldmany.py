@@ -47,12 +47,10 @@ from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap, bestalg
-from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
+from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun, strip_pathname
 from bbob_pproc.pprldistr import plotECDF, beautifyECDF
 from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
 from bbob_pproc.pptex import writeLabels, numtotext
-
-figformat = ('eps', 'pdf') # Controls the output when using the main method
 
 # TODO: update the list below which are not relevant anymore
 
@@ -185,9 +183,6 @@ refcolor = 'wheat'
 #'_'     hline marker
 
 defaulttargets = tuple(10**np.r_[-8:2:0.2])
-
-def strip_name(alg):
-    return alg.replace('..' + os.sep, '').strip().strip(os.sep)
 
 def beautify():
     """Customize figure presentation."""
@@ -548,7 +543,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
             algtocommand = {}
             for i, alg in enumerate(order):
                 tmp = r'\alg%sperfprof' % numtotext(i)
-                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, strip_name(alg).replace('_', r'\_')))
+                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, strip_pathname(alg).replace('_', r'\_')))
                 algtocommand[alg] = tmp
             commandnames = []
             if displaybest2009:
@@ -587,7 +582,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
     for i in xticks:
         tmp.append('%d' % round(np.log10(i)))
     a.set_xticklabels(tmp)
-    saveFigure(figureName, figFormat=figformat, verbose=verbose)
+    saveFigure(figureName, verbose=verbose)
 
     plt.close()
 

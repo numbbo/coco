@@ -43,7 +43,6 @@ dimsBBOB = (2, 3, 5, 10, 20, 40)
 
 #Get benchmark short infos.
 funInfos = {}
-figformat = ('eps', 'pdf') # Controls the output when using the main method
 isBenchmarkinfosFound = True
 infofile = os.path.join(os.path.split(__file__)[0], 'benchmarkshortinfos.txt')
 try:
@@ -260,5 +259,5 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
         if isBenchmarkinfosFound:
             a.set_title(funInfos[func])
 
-        saveFigure(filename, figFormat=figformat, verbose=verbose)
+        saveFigure(filename, verbose=verbose)
         plt.close()

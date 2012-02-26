@@ -1224,12 +1224,20 @@ def significancetest(entry0, entry1, targets):
 def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
         # prepend the algorithm name command to the tex-command file
         lines_to_append = []
-        for line in open(filename, 'r'):
-            lines_to_append.append(line)
+        try:
+            for line in open(filename, 'r'):
+                lines_to_append.append(line)
+        except IOError:
+            pass
         f = open(filename, 'w')
-        for i, line in enumerate(lines + lines_to_append):
+        for line in lines:
             f.write(line + '\n')
+        for i, line in enumerate(lines_to_append):
+            f.write(line)
             if i > maxlines:
                 print warn_message
                 break
+        f.close()
     
+def strip_pathname(alg):
+    return alg.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep)

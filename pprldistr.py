@@ -85,7 +85,6 @@ nbperdecade = 1  # markers in x-axis decades in ecdfs
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
 evalfmax = None
-figformat = ('eps', 'pdf') # Controls the output when using the main method
 
 filename = 'pprldistr2009_1e-8.pickle'
 filename = os.path.join(os.path.split(__file__)[0], filename)
@@ -395,7 +394,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
                  verticalalignment="top", transform=plt.gca().transAxes)
                  #bbox=dict(ec='k', fill=False), 
         beautifyRLD(evalfmax)
-        saveFigure(filename, figFormat=figformat, verbose=verbose)
+        saveFigure(filename, verbose=verbose)
         plt.close(fig)
 
 def beautify():
@@ -543,7 +542,7 @@ def main(dsList, targets, isStoringXMax=False, outputdir='',
                  verticalalignment="top", transform=plt.gca().transAxes)
                  #bbox=dict(ec='k', fill=False), 
         beautifyRLD(evalfmax)
-        saveFigure(filename, figFormat=figformat, verbose=verbose)
+        saveFigure(filename, verbose=verbose)
         plt.close(fig)
     
         filename = os.path.join(outputdir,'ppfvdistr_%02dD_%s' % (d, info))
@@ -563,6 +562,6 @@ def main(dsList, targets, isStoringXMax=False, outputdir='',
                  transform=plt.gca().transAxes)
                  #bbox=dict(ec='k', fill=False), 
         beautifyFVD(isStoringXMax=isStoringXMax, ylabel=False)
-        saveFigure(filename, figFormat=figformat, verbose=verbose)
+        saveFigure(filename, verbose=verbose)
         plt.close(fig)
         #plt.rcdefaults()

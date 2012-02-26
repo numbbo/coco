@@ -11,12 +11,18 @@ from matplotlib import pyplot as plt
 from pdb import set_trace
 from bbob_pproc import bootstrap
 
-def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
+fast_save_for_debugging = False # saves 30% 
+fig_formats = ('eps', 'pdf') if not fast_save_for_debugging else ('pdf', )
+
+if fast_save_for_debugging:
+    print "fast figure saving in ppfig.py"
+    
+def saveFigure(filename, figFormat=fig_formats, verbose=True):
     """Save figure into an image file."""
 
     if isinstance(figFormat, basestring):
         try:
-            plt.savefig(filename + '.' + figFormat, dpi = 300,
+            plt.savefig(filename + '.' + figFormat, dpi = 60 if fast_save_for_debugging else 300,
                         format=figFormat)
             if verbose:
                 print 'Wrote figure in %s.' % (filename + '.' + figFormat)
@@ -26,7 +32,7 @@ def saveFigure(filename, figFormat=('eps', 'pdf'), verbose=True):
         #if not isinstance(figFormat, basestring):
         for entry in figFormat:
             try:
-                plt.savefig(filename + '.' + entry, dpi = 300,
+                plt.savefig(filename + '.' + entry, dpi = 60 if fast_save_for_debugging else 300,
                             format=entry)
                 if verbose:
                     print 'Wrote figure in %s.' %(filename + '.' + entry)
