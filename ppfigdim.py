@@ -59,6 +59,28 @@ from pdb import set_trace
 from bbob_pproc import bootstrap, bestalg
 from bbob_pproc.ppfig import saveFigure, groupByRange
 
+scaling_figure_legend = """Expected Running Time (\ERT,
+             {\Large$\bullet$}) to reach $\fopt+\Df$, median number of
+             $f$-evaluations from successful trials ($+$) and maximum
+             number of $f$-evaluations in any trial ($\times$), all
+             divided by dimension, for 
+            $\Df = 10^{\{+1, 0, -1, -2, -3, -5, -8\}}$ 
+             (the exponent is given in the legend of #1) 
+             versus dimension as $\\log_{10}$ values. For each function 
+             and dimension, $\ERT(\Df)$ equals to $\nbFEs(\Df)$
+             divided by the number of successful trials, where a trial is
+             successful if $\fopt+\Df$ was surpassed. The
+             $\nbFEs(\Df)$ are the total number (sum) of $f$-evaluations while
+             $\fopt+\Df$ was not surpassed in the trial, from all  
+             (successful and unsuccessful) trials, and \fopt\ is the optimal
+             function value. 
+             % Crosses ($\times$) indicate the total number of
+             % $f$-evaluations, $\nbFEs(-\infty)$, divided by the number of trials.
+             Numbers above ERT-symbols indicate the number of successful trials.
+             The thick light
+             line with diamonds shows the respective best results from BBOB-2009 for 
+             $\Df=10^{-8}$. Horizontal and slanted grid lines show linear and quadratic scaling, respectively.""" 
+
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
           {'color': 'b'},
@@ -187,7 +209,7 @@ def generateData(dataSet, targetFuncValue):
     res.append(numpy.mean(data)) #mean(FE)
     res.append(med)
 
-    return numpy.array(res), numpy.max(data)  # changed 12/02/24
+    return numpy.array(res), numpy.max(data)  # changed 2012/02/24
 
 
 def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
