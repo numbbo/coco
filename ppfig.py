@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 from pdb import set_trace
 from bbob_pproc import bootstrap
 
-fast_save_for_debugging = False # saves 30% 
+fast_save_for_debugging = False # saves only 30% 
 fig_formats = ('eps', 'pdf') if not fast_save_for_debugging else ('pdf', )
 
 if fast_save_for_debugging:
