@@ -62,9 +62,9 @@ from bbob_pproc.ppfig import saveFigure, groupByRange
 scaling_figure_legend = ("Expected number of $f$-evaluations (\\ERT, {\Large$\\bullet$}) to reach $\\fopt+\\Df$, " +
     "median number of $f$-evaluations from successful trials ($+$) and maximum " + 
     "number of $f$-evaluations in any trial ($\\times$), all " +
-    "divided by dimension, for $\\Df = 10^{\\{+1, 0, -1, -2, -3, -5, -8\\}}$ " + 
-    "(the exponent is given in the legend of #1) " + 
-    "versus dimension as $\\log_{10}$ values. " + 
+    "divided by dimension and plotted as $\\log_{10}$ values" + 
+    "versus dimension. " + 
+    "Shown are $\\Df = 10^{\\{+1, 0, -1, -2, -3, -5, -8\\}}$ (the exponent is given in the legend of #1). " + 
 #    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
 #    "divided by the number of successful trials, where a trial is " +
 #    "successful if $\\fopt+\\Df$ was surpassed. The " +
@@ -139,12 +139,14 @@ def beautify(axesLabel=True):
     #plt.plot((2,200), (1e6,1e10), 'k:')
 
     # quadratic and cubic "grid"
-    plt.plot((2,200), (1, 1e2), 'k:')    # TODO: this should be done before the real lines are plotted? 
+    plt.plot((20,200), (1e0, 1e1), 'k:')  
+    plt.plot((2,200), (1e1, 1e3), 'k:')    # TODO: this should be done before the real lines are plotted? 
     # plt.plot((2,200), (1, 1e4), 'k:')
     plt.plot((2,200), (1e3, 1e5), 'k:')  
     # plt.plot((2,200), (1e3, 1e7), 'k:')
-    plt.plot((2,200), (1e6, 1e8), 'k:')  
+    plt.plot((2,200), (1e5, 1e7), 'k:')  
     # plt.plot((2,200), (1e6, 1e10), 'k:')
+    plt.plot((2,200), (1e7, 1e9), 'k:')  
 
     # axes limites
     plt.xlim(1.8, 45)                # TODO should become input arg?
