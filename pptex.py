@@ -286,9 +286,7 @@ def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=100000.):
         res = '1'
     elif entry < maxfloatrepr:
         # the full notation but with given maximum precision
-        corr = 0
-        if abs(entry) < 1:
-            corr = 1
+        corr = 1 if abs(entry) < 1 else 0
         tmp = '%.0f' % entry
         remainingsymbols = max(SIG - len(tmp) + corr, 0)
         res = (('%.' + str(remainingsymbols) + 'f') % entry)
