@@ -59,11 +59,11 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
         """replacement for downsample with at most 12 points"""
         if 11 < 3:
             return downsample(xdata, ydata)
-        tfy = np.log10 if logscale else lambda x:x
+        tfy = np.log10 if logscale else lambda x: x
             
         xrange = np.log10(max([max(xdata), ax[0], ax[1]]) + 0.5) - np.log10(min([min(xdata), ax[0], ax[1]]) + 0.5)  #np.log10(xdata[-1]) - np.log10(xdata[0])
         yrange = tfy(max([max(ydata), ax[2], ax[3]]) + 0.5) - tfy(min([min(ydata), ax[2], ax[3]]) + 0.5)  # tfy(ydata[-1]) - tfy(ydata[0])
-        nbmarkers = np.min([maxnb, np.ceil(nbperdecade * (1e-99 + np.abs(np.log10(xdata[-1]) - np.log10(xdata[0]))))])
+        nbmarkers = np.min([maxnb, nbperdecade + np.ceil(nbperdecade * (1e-99 + np.abs(np.log10(max(xdata)) - np.log10(min(xdata)))))])
         probs = np.abs(np.diff(np.log10(xdata)))/xrange + np.abs(np.diff(tfy(ydata)))/yrange
         xpos = []
         ypos= []
@@ -159,7 +159,7 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
 
     if 'marker' in kwargs and len(x) > 0:
         # x2, y2 = downsample(x, y)
-        x2, y2 = marker_positions(x, y, nbperdecade, 9, plt.axis())
+        x2, y2 = marker_positions(x, y, nbperdecade, 19, plt.axis())
         try:
             res2 = plt.plot(x2, y2)
         except ValueError:
