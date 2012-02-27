@@ -189,7 +189,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                                 tmp = r'\textbf{%s}' % tmp
 
                         if dispersion[i] and numpy.isfinite(dispersion[i]):
-                            tmp += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i], 2)
+                            tmp += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i], 1)
                         tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                       % (alignment, tmp))
                     else:
@@ -222,7 +222,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             elif 11 < 3 and significance0vs1 < 0:
                                 tableentry = r'\textit{%s}' % tableentry
                             if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
-                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
+                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
 
@@ -232,7 +232,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             elif 11 < 3 and significance0vs1 < 0:
                                 tableentry = r'\textit{%s}' % tableentry
                             if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
-                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
+                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
                         else:
@@ -245,7 +245,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             if len(tmp) == 1:
                                 tableentry += '&'
                             if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
-                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
+                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
 
                     superscript = ''
 

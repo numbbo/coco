@@ -1226,7 +1226,7 @@ def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     try:
         lines_to_append = list(open(filename, 'r'))
     except IOError:
-        pass
+        lines_to_append = []
     f = open(filename, 'w')
     for line in lines:
         f.write(line + '\n')
@@ -1239,6 +1239,7 @@ def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
         
 def truncate_latex_command_file(filename, keeplines=200):
     """try to truncate file but keep in good latex shape"""
+    open(filename, 'a').close()
     lines = list(open(filename, 'r'))
     f = open(filename, 'w')
     for i, line in enumerate(lines):
