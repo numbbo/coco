@@ -451,6 +451,11 @@ def main(argv=None):
                     pptable2.main(dictNG0[nGroup], dictNG1[nGroup],
                                   inset.tabDimsOfInterest, outputdir,
                                   '%s' % (nGroup), verbose)
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
+                            ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
+                             pptable2.figure_legend, 
+                             '}'
+                            ])
             print "Tables done."
 
         if isscatter:

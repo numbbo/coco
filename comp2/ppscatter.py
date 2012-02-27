@@ -44,9 +44,9 @@ from bbob_pproc.ppfig import saveFigure
 dimensions = (2, 3, 5, 10, 20, 40)
 figure_legend = ("Expected running time (\\ERT\\ in $\log_{10}$ of number of function evaluations) " + 
  " of \\algorithmB\ ($y$-axis) versus \\algorithmA\ ($x$-axis) for 46 target values $\Df \in [10^{-8}, 10]$ in each dimension on functions " +
- " $f_{101}$--$f_{130}$. Markers on the upper or right edge indicate that the target " +
+ " #1. Markers on the upper or right edge indicate that the target " +
  " value was never reached. Markers represent dimension: " + 
- "2:{\\color{cyan}+}, " +
+  "2:{\\color{cyan}+}, " +
   "3:{\\color{green!45!black}$\\triangledown$}, " +
   "5:{\\color{blue}$\star$},  " +
  "10:$\\circ$,  " +

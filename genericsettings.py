@@ -37,7 +37,7 @@ tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
 line_styles = [
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
           {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, 
-          {'marker': '*', 'markersize': 30, 'linestyle': '-', 'color': 'c'},
+          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'c'},
           {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'}, # square
           {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'},
           {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': 'y'},

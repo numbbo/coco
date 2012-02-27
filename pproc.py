@@ -1248,5 +1248,12 @@ def truncate_latex_command_file(filename, keeplines=200):
         f.write(line)
     f.close()
     
-def strip_pathname(alg):
-    return alg.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep)
+def strip_pathname(name):
+    """remove ../ and ./ and leading/trainling blanks and path separators"""
+    return name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep)
+
+def str_to_latex(name):
+    return name.replace('_', '\\_').replace(r'^', r'\^\,').replace('%', r'\%').replace(
+                    '\\', r'\textbackslash{}').replace(r'~', r'\ensuremath{\sim}').replace(r'#', r'\#')
+                    
+                    

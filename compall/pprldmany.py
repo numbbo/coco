@@ -47,7 +47,7 @@ from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
 from bbob_pproc import bootstrap, bestalg, genericsettings
-from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun, strip_pathname
+from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun, strip_pathname, str_to_latex
 from bbob_pproc.pprldistr import plotECDF, beautifyECDF
 from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
 from bbob_pproc.pptex import writeLabels, numtotext
@@ -529,7 +529,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
             algtocommand = {}
             for i, alg in enumerate(order):
                 tmp = r'\alg%sperfprof' % numtotext(i)
-                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, strip_pathname(alg).replace('_', r'\_')))
+                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, str_to_latex(strip_pathname(alg))))
                 algtocommand[alg] = tmp
             commandnames = []
             if displaybest2009:

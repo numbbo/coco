@@ -29,6 +29,15 @@ samplesize = 1000 # TODO change samplesize
 #Get benchmark short infos: put this part in a function?
 funInfos = {}
 isBenchmarkinfosFound = False
+
+figure_legend = (r"\ERT\ in number of function evaluations divided by the best \ERT\ measured during " +
+    r"BBOB-2009 given in the respective first row and the half inter-80\%ile in brackets for " +
+    r"different $\Df$ values. \#succ is the number of trials that reached the final target $\fopt + 10^{-8}$. " +
+    r"0:\:\algorithmAshort\ is \algorithmA\ and 1:\:\algorithmBshort\ is \algorithmB. " + 
+    r"Bold entries are statistically significantly better compared to the other algorithm, " + 
+    r"with $p=0.05$ or $p=10^{-k}$ where $k>1$ is the number following the $\star$ symbol, with Bonferroni " +
+    r"correction of #1. ")
+
 infofile = os.path.join(os.path.split(__file__)[0], '..',
                         'benchmarkshortinfos.txt')
 
