@@ -62,8 +62,7 @@ from bbob_pproc.ppfig import saveFigure, groupByRange
 scaling_figure_legend = ("Expected number of $f$-evaluations (\\ERT, {\Large$\\bullet$}) to reach $\\fopt+\\Df$, " +
     "median number of $f$-evaluations from successful trials ($+$) and maximum " + 
     "number of $f$-evaluations in any trial ($\\times$), all " +
-    "divided by dimension and plotted as $\\log_{10}$ values" + 
-    "versus dimension. " + 
+    "divided by dimension and plotted as $\\log_{10}$ values versus dimension. " + 
     "Shown are $\\Df = 10^{\\{+1, 0, -1, -2, -3, -5, -8\\}}$ (the exponent is given in the legend of #1). " + 
 #    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
 #    "divided by the number of successful trials, where a trial is " +

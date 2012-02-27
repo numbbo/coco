@@ -66,6 +66,10 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     alg0 = set(i[0] for i in dsList0.dictByAlg().keys()).pop()[0:3]
     alg1 = set(i[0] for i in dsList1.dictByAlg().keys()).pop()[0:3]
 
+    open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a'
+         ).write(r'\providecommand{\algorithmAshort}{%s}' % writeLabels(alg0) + '\n' +
+                 r'\providecommand{\algorithmBshort}{%s}' % writeLabels(alg1) + '\n')
+
     if info:
         info = '_' + info
 
@@ -316,9 +320,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         res = r'\providecommand{\algorithmAshort}{%s}' % writeLabels(alg0) + '\n'
         res += r'\providecommand{\algorithmBshort}{%s}' % writeLabels(alg1) + '\n'
-        f = open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a')
-        f.write(res)
-        f.close()
+        # open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a').write(res)
         
         #res += tableLaTeXStar(table, width=r'0.45\textwidth', spec=spec,
                               #extraeol=extraeol)
