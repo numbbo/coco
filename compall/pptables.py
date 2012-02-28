@@ -9,9 +9,9 @@ from pdb import set_trace
 import warnings
 import numpy
 from bbob_pproc import bestalg, bootstrap
-from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, writeLabels, tableXLaTeX, numtotext
+from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from bbob_pproc.bootstrap import prctile
-from bbob_pproc.pproc import DataSetList, significancetest, prepend_to_file
+from bbob_pproc.pproc import DataSetList, significancetest, prepend_to_file, str_to_latex, strip_pathname
 from bbob_pproc.pplogloss import detf
 
 """
@@ -371,7 +371,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
             #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
             #data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
             commandname = r'\alg%stables' % numtotext(i)
-            header += r'\providecommand{%s}{\StrLeft{%s}{\ntables}}' % (commandname, writeLabels(alg))
+            header += r'\providecommand{%s}{\StrLeft{%s}{\ntables}}' % (commandname, str_to_latex(strip_pathname(alg)))
             curline = [commandname + r'\hspace*{\fill}']
 
             for j, tmp in enumerate(zip(algert[i], algdisp[i],
