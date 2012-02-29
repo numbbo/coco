@@ -466,11 +466,10 @@ class DataSet:
         """Determine the number of evaluations to reach target values.
 
         :keyword seq or float targets: target precisions
-        :returns: list of arrays each corresponding to one value in
-                  targets
+        :returns: list of len(targets) values, each being an array of nbRuns FEs values
 
         """
-        tmp = {}
+        tmp = {}  # dict of eval-arrays (of size Ntrials), each entry for a given target
         # expect evals to be sorted by decreasing function values
         it = reversed(self.evals)
         prevline = numpy.array([-numpy.inf] + [numpy.nan] * self.nbRuns())
@@ -1122,6 +1121,12 @@ def significancetest(entry0, entry1, targets):
               ranksums method.
 
     """
+    # TODO: compute also whether data and sign of z value agree:
+    # given alg0 is better than alg1 according to z:
+    #   if both ert exist: check that ERT0 < ERT1, check also sp1? 
+    #   elif ERT1 exists: fail  
+    #   else: check that sum(fevals0) < sum(fevals1) and (just to be sure) 80%ile(fevals0) < 80%tile(fevals1)
+
     res = []
     evals = []
     bestalgs = []
@@ -1130,6 +1135,7 @@ def significancetest(entry0, entry1, targets):
     for entry in (entry0, entry1):
         tmp = entry.detEvals(targets)
         if not entry.__dict__.has_key('funvals'):
+            isBestAlg = True
             #for i, j in enumerate(tmp[0]):
                 #if numpy.isnan(j).all():
                     #tmp[0][i] = numpy.array([numpy.nan]*len(entry.bestfinalfunvals))
@@ -1137,7 +1143,6 @@ def significancetest(entry0, entry1, targets):
             #that of the associated function values
             evals.append(tmp[0])
             bestalgs.append(tmp[1])
-            isBestAlg = True
         else:
             evals.append(tmp)
             bestalgs.append(None)
@@ -1215,7 +1220,7 @@ def significancetest(entry0, entry1, targets):
         tmpres = bootstrap.ranksums(curdata[0], curdata[1])
         if isBestAlg:
             tmpres = list(tmpres)
-            tmpres[1] /= 2.
+            tmpres[1] /= 2.  # one-tailed p-value instead of two-tailed
 
         res.append(tmpres)
 
