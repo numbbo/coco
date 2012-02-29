@@ -177,10 +177,10 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         z = -z
                         istat0 = 1
                         istat1 = 0
-                    # TODO: I don't understand the thing with the sign of significance0vs1
-                    if (nbtests * p < 0.05
-                        and z > 0 and not numpy.isinf(ertdata[istat0][i]) and 
-                        z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0):  # z-value and ERT-ratio must agree
+                    # the sign of significance0vs1 indicates which entry is better
+                    if (nbtests * p < 0.05  # TODO: the conditions below should be part of significancetest()
+                          and z > 0 and not numpy.isinf(ertdata[istat0][i]) and  # final f-values are only comparable if maxevals are comparable
+                          z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0):  # z-value and ERT-ratio must agree
                         significance0vs1 = -int(numpy.ceil(numpy.log10(nbtests * p)))
                     # elif nbtests * p < 0.05 and z < 0 and z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0:
                     elif nbtests * p < 0.05 and z < 0 and ertdata[istat1][i] < ertdata[istat0][i]:
