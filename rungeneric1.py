@@ -17,10 +17,7 @@ Help:
 
 from __future__ import absolute_import
 
-import os
-import sys
-import warnings
-import getopt
+import os, sys, warnings, getopt, numpy as np
 from pdb import set_trace
 
 # Add the path to bbob_pproc
@@ -383,7 +380,10 @@ def main(argv=None):
             print "ERT loss ratio figures and tables done."
 
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
-                        ['\\providecommand{\\bbobppfigdimlegend}[1]{', ppfigdim.scaling_figure_legend, '}'])
+                        ['\\providecommand{\\bbobppfigdimlegend}[1]{', 
+                         ppfigdim.scaling_figure_legend.replace('values_of_interest', 
+                                                                ', '.join(['%.0f' % np.log10(v) for v in ppfigdim.values_of_interest])), 
+                         '}'])
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
                         ['\\providecommand{\\algfolder}{}'])  # is overwritten in rungeneric.py
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
