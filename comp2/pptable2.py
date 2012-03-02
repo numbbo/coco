@@ -12,7 +12,7 @@ One table per function and dimension.
 """
 from __future__ import absolute_import
 
-import os
+import os, warnings
 import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bestalg, bootstrap
@@ -123,6 +123,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                 try:
                     entry = dsList[f][0] # take the first element
                 except KeyError:
+                    warnings.warn('Warning: data missing for data set ' + str(nb) + ' and function ' + str(f))
                     continue # TODO: problem here!
                 ertdata[nb] = entry.detERT(targetsOfInterest)
                 entries.append(entry)
@@ -131,7 +132,10 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                 for _tt in _t:
                     if _tt is None:
                         raise ValueError
-
+                    
+            if len(entries) < 2: # funcion not available for *both* algorithms
+                continue  # TODO: check which one is missing and make sure that what is there is displayed properly in the following
+            
             testres0vs1 = significancetest(entries[0], entries[1], targetsOfInterest)
             testresbestvs1 = significancetest(bestalgentry, entries[1], targetsOfInterest)
             testresbestvs0 = significancetest(bestalgentry, entries[0], targetsOfInterest)
