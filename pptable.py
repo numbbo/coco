@@ -51,6 +51,23 @@ samplesize = 1000 # TODO: change samplesize
 #     tspec.update({'col%d' %  i: {'what': 'nb of success', 'header': r'\#succ',
 #                                  'format': '%d'}})
     
+    
+old_legend = r""" 
+ \newcommand{\tablecaption}[1]{Shown are, for functions #1 and for a
+ given target difference to the optimal function value \Df: the number
+ of successful trials (\textbf{$\#$}); the expected running time to
+ surpass $\fopt+\Df$ (\ERT, see Figure~\ref{fig:ERTgraphs}); the
+ \textbf{10\%}-tile and \textbf{90\%}-tile of the bootstrap
+ distribution of \ERT; the average number of function evaluations in
+ successful trials or, if none was successful, as last entry the median
+ number of function evaluations to reach the best function value
+ ($\text{RT}_\text{succ}$).  If $\fopt+\Df$ was never reached, figures in
+ \textit{italics} denote the best achieved \Df-value of the median
+ trial and the 10\% and 90\%-tile trial.  Furthermore, N denotes the
+ number of trials, and mFE denotes the maximum of number of function
+ evaluations executed in one trial. See Figure~\ref{fig:ERTgraphs} for
+ the names of functions. }
+"""
 
 def _treat(ds):
     # Rec array: http://docs.scipy.org/doc/numpy/user/basics.rec.html

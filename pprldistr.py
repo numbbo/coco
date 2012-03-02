@@ -36,8 +36,9 @@ function evaluations.
    bb.pprldistr.plot(ds)
    bb.pprldistr.beautify() # resize the window to view whole figure
 
-   CAVE: the naming conventions in this modules mix up ERT (an estimate 
-   of the expected running length) and run length. 
+CAVEAT: the naming conventions in this module mix up ERT (an estimate 
+of the expected running length) and run lengths. 
+
 """
 from __future__ import absolute_import
 

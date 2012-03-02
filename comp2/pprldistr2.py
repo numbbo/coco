@@ -14,12 +14,12 @@ from pdb import set_trace
 
 #__all__ = []
 
-rldStyles = ({'color': 'k', 'ls': '--'},
+rldStyles = ({'color': 'k', 'ls': '-'},
              {'color': 'c'},
-             {'color': 'm', 'ls': '--'},
+             {'color': 'm', 'ls': '-'},
              {'color': 'r'},
-             {'color': 'k'},
-             {'color': 'c'},
+             {'color': 'b'},
+             {'color': 'g'},
              {'color': 'm'},
              {'color': 'r'},
              {'color': 'k'},
@@ -187,6 +187,7 @@ def plotLogAbs(dsList0, dsList1, fvalueToReach, verbose=True):
             #res.extend(plt.plot(x2, y2, label=label, linewidth=3., **rldStyles[i]))
             plotArgs = rldStyles[i].copy()
             plotArgs['label'] = label
+            # print label
             plotArgs['linewidth'] = 3.
             #res.extend(plotUnifLogXMarkers(x2, y2, 3, plotArgs))
             res.append(plotUnifLogXMarkers(x2, y2, nbperdecade=3, logscale=False, **plotArgs)[0])
