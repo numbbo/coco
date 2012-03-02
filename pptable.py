@@ -327,7 +327,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                         #tableentry += s
 
                 if dispersion[i] and not np.isinf(bestalgdata[i]):
-                    tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
+                    tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
                     tableentry += (r'${\scriptscriptstyle(%s)}$' % tmp)
 
                 if superscript:

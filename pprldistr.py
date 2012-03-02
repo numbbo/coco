@@ -55,9 +55,9 @@ from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure
 # together. Therefore we should either:
 # 1. keep the targets as input argument and make rldStyles depend on them
 # 2. remove the targets as input argument and put them here.
-rldStyles = ({'color': 'k', 'ls': '--'},
+rldStyles = ({'color': 'k', 'ls': '-'},
              {'color': 'c'},
-             {'color': 'm', 'ls': '--'},
+             {'color': 'm', 'ls': '-'},
              {'color': 'r', 'linewidth': 3.},
              {'color': 'k'},
              {'color': 'c'},
@@ -67,17 +67,17 @@ rldStyles = ({'color': 'k', 'ls': '--'},
              {'color': 'c'},
              {'color': 'm'},
              {'color': 'r'})
-rldUnsuccStyles = ({'color': 'k', 'ls': '--'},
+rldUnsuccStyles = ({'color': 'k', 'ls': '-'},
                    {'color': 'c'},
-                   {'color': 'm', 'ls': '--'},
-                   {'color': 'k'},
-                   {'color': 'c', 'ls': '--'},
+                   {'color': 'm', 'ls': '-'},
+                   {'color': 'k', 'ls': '-'},
+                   {'color': 'c', 'ls': '-'},
                    {'color': 'm'},
-                   {'color': 'k', 'ls': '--'},
+                   {'color': 'k', 'ls': '-'},
                    {'color': 'c'},
-                   {'color': 'm', 'ls': '--'},
+                   {'color': 'm', 'ls': '-'},
                    {'color': 'k'},
-                   {'color': 'c', 'ls': '--'},
+                   {'color': 'c', 'ls': '-'},
                    {'color': 'm'})  # should not be too short
 refcolor = 'wheat'
 nbperdecade = 1  # markers in x-axis decades in ecdfs
@@ -450,7 +450,7 @@ def plot(dsList, targets=(10., 1e-1, 1e-4, 1e-8), **plotArgs):
                         verticalalignment="top", transform=plt.gca().transAxes))
 
     plt.subplot(122)
-    for j in range(len(targets)):
+    for j in [range(len(targets))[-1]]:
         tmpplotArgs = dict(plotArgs, **rldStyles[j % len(rldStyles)])
         tmp = plotFVDistr(dsList, targets[j], evalfmax, **tmpplotArgs)
         res.extend(tmp)
@@ -547,7 +547,7 @@ def main(dsList, targets, isStoringXMax=False, outputdir='',
     
         filename = os.path.join(outputdir,'ppfvdistr_%02dD_%s' % (d, info))
         fig = plt.figure()
-        for j in range(len(targets)):
+        for j in [range(len(targets))[-1]]:
             tmp = plotFVDistr(dictdim, targets[j], evalfmax,
                               **rldStyles[j % len(rldStyles)])
         tmp = np.floor(np.log10(evalfmax))

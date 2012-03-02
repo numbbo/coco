@@ -59,11 +59,13 @@ from pdb import set_trace
 from bbob_pproc import bootstrap, bestalg
 from bbob_pproc.ppfig import saveFigure, groupByRange
 
-scaling_figure_legend = ("Expected number of $f$-evaluations (\\ERT, {\Large$\\bullet$}) to reach $\\fopt+\\Df$, " +
-    "median number of $f$-evaluations from successful trials ($+$) and maximum " + 
-    "number of $f$-evaluations in any trial ($\\times$), all " +
-    "divided by dimension and plotted as $\\log_{10}$ values versus dimension. " + 
-    "Shown are $\\Df = 10^{\\{+1, 0, -1, -2, -3, -5, -8\\}}$ (the exponent is given in the legend of #1). " + 
+scaling_figure_legend = (
+    r"Expected number of $f$-evaluations (\ERT, with lines, see legend) to reach $\fopt+\Df$, " +
+    r"median number of $f$-evaluations to reach the most difficult target that was reached at least once ($+$) " + 
+    r"and maximum number of $f$-evaluations in any trial ({\color{red}$\times$}), all " +
+    r"divided by dimension and plotted as $\log_{10}$ values versus dimension. " + 
+    r"Shown are $\Df = 10^{\{values_of_interest\}}$. " +
+    # r"(the exponent is given in the legend of #1). " + 
 #    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
 #    "divided by the number of successful trials, where a trial is " +
 #    "successful if $\\fopt+\\Df$ was surpassed. The " +
@@ -71,9 +73,9 @@ scaling_figure_legend = ("Expected number of $f$-evaluations (\\ERT, {\Large$\\b
 #    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
 #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
 #    "function value.  " +
-    " Numbers above \\ERT-symbols indicate the number of successful trials. " +
-    " The light thick line with diamonds indicates the respective best result from BBOB-2009 for " + 
-    " $\\Df=10^{-8}$. Horizontal lines mean linear scaling, the slanted grid lines depict quadratic scaling. ") 
+    r" Numbers above \ERT-symbols indicate the number of successful trials. " +
+    r" The light thick line with diamonds indicates the respective best result from BBOB-2009 for " + 
+    r" $\Df=10^{-8}$. Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling. ") 
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
@@ -84,6 +86,8 @@ styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
           {'color': 'm'},
           {'color': 'r', 'marker': 's', 'markeredgecolor': 'k'}] # sort of rainbow style
 refcolor = 'wheat'
+
+values_of_interest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8) 
 
 # should correspond with the colors in pprldistr.
 dimsBBOB = (2, 3, 5, 10, 20, 40)
@@ -172,7 +176,7 @@ def beautify(axesLabel=True):
 def generateData(dataSet, targetFuncValue):
     """Computes an array of results to be plotted.
     
-    :returns: (ert, number of success, success rate, total number of
+    :returns: (ert, success rate, number of success, total number of
                function evaluations, median of successful runs).
 
     """
@@ -207,7 +211,7 @@ def generateData(dataSet, targetFuncValue):
     return numpy.array(res)  
 
 
-def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
+def plot(dsList, _valuesOfInterest=values_of_interest):
     """From a DataSetList, plot a figure of ERT/dim vs dim.
     
     There will be one set of graphs per function represented in the
@@ -259,7 +263,7 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
                 else:
                     unsucc.append(numpy.append(dim, tmp[-2]))
 
-            if succ:
+            if len(succ) > 0:
                 tmp = numpy.vstack(succ)
                 #ERT
                 res.extend(plt.plot(tmp[:, 0], tmp[:, 1]/tmp[:, 0],
