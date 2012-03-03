@@ -23,13 +23,13 @@ except ImportError:
 import numpy
 
 from bbob_pproc import bootstrap, readalign
-from bbob_pproc.bootstrap import ranksums
+from bbob_pproc.bootstrap import ranksumtest
 from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
 #try:
-    #supersede this module own ranksums method
-    #from scipy.stats import ranksums as ranksums
+    #supersede this module own ranksumtest method
+    #from scipy.stats import ranksumtest as ranksumtest
 #except ImportError:
-    #from bbob_pproc.bootstrap import ranksums
+    #from bbob_pproc.bootstrap import ranksumtest
     #pass
 
 dimensions = (2, 3, 5, 10, 20, 40)
@@ -243,8 +243,8 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     line0[numpy.isnan(line0)] = -entry0.finalfunvals[numpy.isnan(line0)]
     line1 = numpy.power(data1, -1.)
     line1[numpy.isnan(line1)] = -entry1.finalfunvals[numpy.isnan(line1)]
-    # one-tailed statistics: scipy.stats.mannwhitneyu, two-tailed statistics: scipy.stats.ranksums
-    z, p = ranksums(line0, line1)
+    # one-tailed statistics: scipy.stats.mannwhitneyu, two-tailed statistics: scipy.stats.ranksumtest
+    z, p = ranksumtest(line0, line1)
     # Set the correct line in data0 and data1
     nbstars = 0
     # sign of z-value and data must agree

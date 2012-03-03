@@ -26,7 +26,7 @@ scaling_figure_legend = """Expected running time (\ERT\ in \# of $f$-evaluations
                 correspond to different algorithms given in the legend of #1.
                 Light symbols give the maximum number of function evaluations from the longest trial 
                 divided by dimension. Horizontal lines give linear scaling,
-                the slanted dotted lines give quadratic scaling. """
+                slanted dotted lines give quadratic scaling. """
 
 styles = genericsettings.line_styles
 for i in xrange(len(styles)):
@@ -398,7 +398,7 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
             if f in (1, 24, 101, 130):
                 plt.legend()
 
-        saveFigure(filename, figFormat=figformat, verbose=verbose)
+        saveFigure(filename, figFormat=genericsettings.fig_formats, verbose=verbose)
 
         plt.close()
 

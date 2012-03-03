@@ -361,7 +361,7 @@ def main(argv=None):
                     dictFG1 = dictDim1[dim].dictByFuncGroup()
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
-                        pprldistr2.main(dictFG0[fGroup], dictFG1[fGroup],
+                        pprldistr2.main(dictFG1[fGroup], dictFG0[fGroup],
                                         inset.rldValsOfInterest,
                                         outputdir, '%02dD_%s' % (dim, fGroup),
                                         verbose)
@@ -371,11 +371,11 @@ def main(argv=None):
                     dictFN1 = dictDim1[dim].dictByNoise()
 
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
-                        pprldistr2.main(dictFN0[fGroup], dictFN1[fGroup],
+                        pprldistr2.main(dictFN1[fGroup], dictFN0[fGroup],
                                         inset.rldValsOfInterest, outputdir,
                                         '%02dD_%s' % (dim, fGroup),
                                         verbose)
-            print "ECDF absolute target graphs done."
+            print "ECDF runlength ratio graphs done."
 
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
                 pprldistr.fmax = None #Resetting the max final value
@@ -383,7 +383,7 @@ def main(argv=None):
                 # ECDFs of all functions altogether
                 if dim in inset.rldDimsOfInterest:
                     try:
-                        pprldistr.comp(dictDim0[dim], dictDim1[dim],
+                        pprldistr.comp(dictDim1[dim], dictDim0[dim],
                                        inset.rldValsOfInterest, True,
                                        outputdir, 'all', verbose)
                     except KeyError:
@@ -396,7 +396,7 @@ def main(argv=None):
                     dictFG1 = dictDim1[dim].dictByFuncGroup()
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
-                        pprldistr.comp(dictFG0[fGroup], dictFG1[fGroup],
+                        pprldistr.comp(dictFG1[fGroup], dictFG0[fGroup],
                                        inset.rldValsOfInterest, True, outputdir,
                                        '%s' % fGroup, verbose)
 
@@ -404,11 +404,11 @@ def main(argv=None):
                     dictFN0 = dictDim0[dim].dictByNoise()
                     dictFN1 = dictDim1[dim].dictByNoise()
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
-                        pprldistr.comp(dictFN0[fGroup], dictFN1[fGroup],
+                        pprldistr.comp(dictFN1[fGroup], dictFN0[fGroup],
                                        inset.rldValsOfInterest, True, outputdir,
                                        '%s' % fGroup, verbose)
 
-            print "ECDF dashed-solid graphs done."
+            print "ECDF runlength graphs done."
 
         if isConv:
             ppconverrorbars.main(dictAlg,outputdir,verbose)

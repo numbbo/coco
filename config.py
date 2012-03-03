@@ -24,8 +24,6 @@ pprldmany.fontsize = 20.0
 ppscatter.markersize = 14.
 ppfig2.linewidth = 4.
 
-ppfig.fast_save_for_debugging = False
-
 ppfigs.styles = ppfigs.styles
 
 ppfig2.styles = ppfig2.styles

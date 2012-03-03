@@ -12,7 +12,7 @@ import scipy
 import scipy.special
 zprob = scipy.special.ndtr
 
-def ranksums(x, y):
+def ranksumtest(x, y):
      """
      Wilcoxon rank sum test
 

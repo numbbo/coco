@@ -47,7 +47,7 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 from pdb import set_trace
-from bbob_pproc import bootstrap
+from bbob_pproc import bootstrap, genericsettings
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
@@ -323,8 +323,6 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
          outputdir='', info='default', verbose=True):
     """Generate figures of ECDF for 2 algorithms.
 
-    Dashed lines will correspond to ALG0 and solid lines to ALG1.
-
     :param DataSetList dsList0: list of DataSet instances for ALG0
     :param DataSetList dsList1: list of DataSet instances for ALG1
     :param seq targets: target function values to be displayed
@@ -360,7 +358,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
         filename = os.path.join(outputdir,'pprldistr_%02dD_%s' % (d, info))
         fig = plt.figure()
         for j in range(len(targets)):
-            tmp = plotRLDistr(dictdim0[d], targets[j], marker='+',
+            tmp = plotRLDistr(dictdim0[d], targets[j], marker=genericsettings.line_styles[1]['marker'],
                               **rldStyles[j % len(rldStyles)])
             plt.setp(tmp[-1], label=None) # Remove automatic legend
             # Mods are added after to prevent them from appearing in the legend
@@ -369,7 +367,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
                      markeredgecolor=plt.getp(tmp[-1], 'color'),
                      markerfacecolor='none')
     
-            tmp = plotRLDistr(dictdim1[d], targets[j], marker='o',
+            tmp = plotRLDistr(dictdim1[d], targets[j], marker=genericsettings.line_styles[0]['marker'],
                               **rldStyles[j % len(rldStyles)])
             # modify the automatic legend: remover marker and change text
             plt.setp(tmp[-1], marker='', label=('%+d' % (np.log10(targets[j][1]))))

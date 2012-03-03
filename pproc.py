@@ -23,7 +23,7 @@ import re
 import pickle
 import warnings
 from pdb import set_trace
-import numpy
+import numpy, numpy as np
 from bbob_pproc import findfiles, bootstrap
 from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
 from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
@@ -49,7 +49,9 @@ class DataSet:
       - *indexFiles* -- associated index files (list of strings)
       - *dataFiles* -- associated data files (list of strings)
       - *comment* -- comment for the setting (string)
-      - *targetFuncValue* -- target function value (float)
+      - *targetFuncValue* -- final target function value (float), might be missing
+      - *precision* -- final ftarget - fopt (float), data with 
+                       target[idat] < precision are optional and possibly nan.  
       - *algId* -- algorithm name (string)
       - *evals* -- data aligned by function values (array)
       - *funvals* -- data aligned by function evaluations (array)
@@ -427,14 +429,63 @@ class DataSet:
         return res
         # return list(res[i] for i in targets)
         # alternative output sorted by targets
+        
+    def detAverageEvals(self, targets):
+        """Determine the average number of f-evals for each target 
+        in ``targets`` list. If a target is not reached within trial
+        itrail, self.maxevals[itrial] contributes to the average. 
+        
+        Equals to sum(evals(target)) / ntrials. If ERT is finite 
+        this equals to ERT * psucc == (sum(evals) / ntrials / psucc) * psucc, 
+        where ERT, psucc, and evals are a function of target.  
+          
+        """
+        assert not any(np.isnan(self.evals[:][0]))  # target value cannot be nan
+        
+        dotiming = False
+        if dotiming:
+            import time
+            t0 = time.time()
+        res = {}  # sum of evals indexed by target value
+        nsucc = {}  # for debugging only
+        idata = self.evals.shape[0] - 1  # current data line index 
+        for target in sorted(targets):  # smallest most difficult target first
+            if self.evals[-1, 0] > target:  # last entry is worse than target
+                res[target] = sum(self.maxevals)
+                nsucc[target] = 0
+                continue
+            while idata > 0 and self.evals[idata - 1, 0] <= target:  # idata-1 line is good enough
+                idata -= 1  # move up
+            assert self.evals[idata, 0] <= target and (idata == 0 or self.evals[idata - 1, 0] > target)
+            idxnan = np.isnan(self.evals[idata, 1:])
+            nsucc[target] = self.nbRuns() - sum(idxnan)
+            res[target] = sum(self.evals[idata, 1:][~idxnan]) + sum(self.maxevals[idxnan])
+        
+        ret = [res[target] / self.nbRuns() for target in targets]
+        
+        if dotiming:
+            t1 = time.time()
+        erts = self.detERT(targets)
+        if dotiming:
+            t2 = time.time()
+        
+        assert all([(erts[i] == np.inf and nsucc[target] == 0) or bootstrap.equals_approximately(erts[i], res[target] / nsucc[target]) 
+                        for i, target in enumerate(targets)]) 
+        # assert all([erts[i] == np.inf or erts[i] == res[target] / nsucc[target] for i, target in enumerate(targets)]) 
+        
+        if dotiming:
+            print 'timing report: average %f vs ert %f' % (t1 - t0, t2 - t1)
+
+        return ret
 
     def detERT(self, targets):
         """Determine the expected running time to reach target values.
+        The value is numpy.inf, if the target was never reached. 
 
         :keyword list targets: target function values of interest
 
-        :returns: list of expected running times corresponding to the
-                  targets.
+        :returns: list of expected running times (# f-evals) for the
+                  respective targets.
 
         """
         res = {}
@@ -1110,7 +1161,11 @@ def significancetest(entry0, entry1, targets):
     For a given target function value, the performances of two
     algorithms are compared. The result of a significance test is
     computed on the number of function evaluations for reaching the
-    target and/or function values.
+    target or, if not available, the function values for the smallest
+    budget in an unsuccessful trial. 
+    
+    Known bugs: this is not a fair comparison, because the successful 
+    trials could be very long.  
 
     :keyword DataSet entry0: -- data set 0
     :keyword DataSet entry1: -- data set 1
@@ -1118,15 +1173,9 @@ def significancetest(entry0, entry1, targets):
 
     :returns: list of (z, p) for each target function values in
               input argument targets. z and p are values returned by the
-              ranksums method.
+              ranksumtest method.
 
     """
-    # TODO: compute also whether data and sign of z value agree:
-    # given alg0 is better than alg1 according to z:
-    #   if both ert exist: check that ERT0 < ERT1, check also sp1? 
-    #   elif ERT1 exists: fail  
-    #   else: check that sum(fevals0) < sum(fevals1) and (just to be sure) 80%ile(fevals0) < 80%tile(fevals1)
-
     res = []
     evals = []
     bestalgs = []
@@ -1217,7 +1266,7 @@ def significancetest(entry0, entry1, targets):
                 tmp[idx] = -fvalues[j][idx]
             curdata.append(tmp)
 
-        tmpres = bootstrap.ranksums(curdata[0], curdata[1])
+        tmpres = bootstrap.ranksumtest(curdata[0], curdata[1])
         if isBestAlg:
             tmpres = list(tmpres)
             tmpres[1] /= 2.  # one-tailed p-value instead of two-tailed

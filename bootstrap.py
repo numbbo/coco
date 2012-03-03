@@ -312,8 +312,8 @@ def randint(upper, n):
         raise Exception, 'numpy.random.rand returned 1'
     return res
 
-def ranksumtest(N1, N2):
-    """Custom rank-sum (Mann-Whitney-Wilcoxon) test
+def ranksum_statistic(N1, N2):
+    """Returns the U test statistic of the rank-sum (Mann-Whitney-Wilcoxon) test. 
 
     http://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U
     Small sample sizes (direct method).
@@ -341,7 +341,7 @@ def ranksumtest(N1, N2):
     return U
 
 ###############################################################################
-# Copyrights from Gary Strangman due to inclusion of his code for the ranksums
+# Copyrights from Gary Strangman due to inclusion of his code for the ranksumtest
 # method and related.
 # Found at: http://www.nmr.mgh.harvard.edu/Neural_Systems_Group/gary/python.html
 
@@ -408,13 +408,15 @@ def zprob(z):
     prob = numpy.where(numpy.greater(z,0),(x+1)*0.5,(1-x)*0.5)
     return prob
 
-def ranksums(x, y):
-    """Calculates the rank sums statistic on the provided scores and
-    returns the result.
-    This method returns a slight difference compared to scipy.stats.ranksums
+def ranksumtest(x, y):
+    """Calculates the rank sum statistics for the two input data sets 
+    ``x`` and ``y`` and returns z and p. 
+    
+    This method returns a slight difference compared to scipy.stats.ranksumtest
     in the two-tailed p-value. Should be test drived...
 
     Returns: z-statistic, two-tailed p-value
+    
     """
     x,y = map(numpy.asarray, (x, y))
     n1 = len(x)
@@ -466,6 +468,17 @@ def rankdata(a):
             dupcount = 0
     return newarray
 
+def confirm_significance():
+    # TODO: compute also whether data and sign of z value agree:
+    # given alg0 is better than alg1 according to z:
+    #   if both ert exist: check that ERT0 < ERT1, check also sp1? 
+    #   elif ERT1 exists: fail  
+    #   else: check that sum(fevals0) < sum(fevals1) and ((just to be sure) 80%ile(fevals0) < 80%tile(fevals1)
+    #                                                     or p(fevals0<fevals1) > 1/2 or stochastic dominance (that is too strong)) ?
+
+    
+    pass
+
 def fastsort(a):
     # fixme: the wording in the docstring is nonsense.
     """Sort an array and provide the argsort.
@@ -480,5 +493,12 @@ def fastsort(a):
     it = numpy.argsort(a)
     as_ = a[it]
     return as_, it
+
+def equals_approximately(a, b):
+    eps = 1e-14
+    if a < 0:
+        a, b = -1 * a, -1 * b
+    return a - eps < b < a + eps or (1 - eps) * a < b < (1 + eps) * a
+ 
 
 ###############################################################################
