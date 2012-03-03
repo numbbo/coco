@@ -272,18 +272,18 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
                 lines = (line0, line1)
                 #Set curDf
                 curDf = {}
-                for k in (set(i0.itrials) & set(i1.itrials)):
+                for k in (set(i0.instancenumbers) & set(i1.instancenumbers)):
                     curDf[k] = []
                     for i, entry in enumerate((i0, i1)):
-                        for j in range(len(entry.itrials)):
-                            if entry.itrials[j] == k:
+                        for j in range(len(entry.instancenumbers)):
+                            if entry.instancenumbers[j] == k:
                                 curDf[k].append(lines[i][1+j])
                     curDf[k] = min(curDf[k])
 
                 for i, entry in enumerate((i0, i1)):
                     dictinstance = {}
-                    for j in range(len(entry.itrials)):
-                        dictinstance.setdefault(entry.itrials[j], []).append(j)
+                    for j in range(len(entry.instancenumbers)):
+                        dictinstance.setdefault(entry.instancenumbers[j], []).append(j)
                     ERT.append(dictinstance.copy())
                     for k in dictinstance:
                         for j in entry.evals:

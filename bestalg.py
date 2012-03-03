@@ -269,8 +269,8 @@ class BestAlgSet():
         """
 
         dictinstance = {}
-        for i in range(len(self.itrials)):
-            dictinstance.setdefault(self.itrials[i], []).append(i)
+        for i in range(len(self.instancenumbers)):
+            dictinstance.setdefault(self.instancenumbers[i], []).append(i)
 
         return dictinstance
 

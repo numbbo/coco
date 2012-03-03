@@ -64,7 +64,7 @@ class DataSet:
       - *pickleFile* -- associated pickle file name (string)
       - *target* -- target function values attained (array)
       - *ert* -- ert for reaching the target values in target (array)
-      - *itrials* -- list of numbers corresponding to the instances of
+      - *instancenumbers* -- list of numbers corresponding to the instances of
                      the test function considered (list of int)
       - *isFinalized* -- list of bool for if runs were properly finalized
 
@@ -119,7 +119,7 @@ class DataSet:
         filepath = os.path.split(indexfile)[0]
         self.indexFiles = [indexfile]
         self.dataFiles = []
-        self.itrials = []
+        self.instancenumbers = []
         self.evals = []
         self.isFinalized = []
         self.readmaxevals = []
@@ -138,7 +138,7 @@ class DataSet:
                 if not ':' in elem:
                     # if elem does not have ':' it means the run was not
                     # finalized properly.
-                    self.itrials.append(ast.literal_eval(elem))
+                    self.instancenumbers.append(ast.literal_eval(elem))
                     # In this case, what should we do? Either we try to process
                     # the corresponding data anyway or we leave it out.
                     # For now we leave it in.
@@ -150,7 +150,7 @@ class DataSet:
                     self.readfinalFminusFtarget.append(numpy.inf)
                 else:
                     itrial, info = elem.split(':', 1)
-                    self.itrials.append(ast.literal_eval(itrial))
+                    self.instancenumbers.append(ast.literal_eval(itrial))
                     self.isFinalized.append(True)
                     readmaxevals, readfinalf = info.split('|', 1)
                     self.readmaxevals.append(int(readmaxevals))
@@ -166,7 +166,7 @@ class DataSet:
         data = HMultiReader(split(dataFiles))
         if verbose:
             print ("Processing %s: %d/%d trials found."
-                   % (dataFiles, len(data), len(self.itrials)))
+                   % (dataFiles, len(data), len(self.instancenumbers)))
         (adata, maxevals, finalfunvals) = alignData(data)
         self.evals = adata
         try:
@@ -182,7 +182,7 @@ class DataSet:
         data = VMultiReader(split(dataFiles))
         if verbose:
             print ("Processing %s: %d/%d trials found."
-                   % (dataFiles, len(data), len(self.itrials)))
+                   % (dataFiles, len(data), len(self.instancenumbers)))
         (adata, maxevals, finalfunvals) = alignData(data)
         self.funvals = adata
         try:
@@ -342,8 +342,8 @@ class DataSet:
 
         """
         dictinstance = {}
-        for i in range(len(self.itrials)):
-            dictinstance.setdefault(self.itrials[i], []).append(i)
+        for i in range(len(self.instancenumbers)):
+            dictinstance.setdefault(self.instancenumbers[i], []).append(i)
 
         return dictinstance
 
@@ -354,7 +354,7 @@ class DataSet:
         repetitions of such instance.
         
         """
-        return dict((j, self.itrials.count(j)) for j in set(self.itrials))
+        return dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))
 
     def splitByTrials(self, whichdata=None):
         """Splits the post-processed data arrays by trials.

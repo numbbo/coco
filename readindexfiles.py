@@ -81,7 +81,7 @@ class IndexEntry:
 
         # Split line in data file name(s) and run time information.
         self.dataFiles = []
-        self.itrials = []
+        self.instancenumbers = []
         self.evals = []
         self.finalFminusFtarget = []
         self.isFinalized = []
@@ -96,7 +96,7 @@ class IndexEntry:
                 self.dataFiles.append(elem)
             else:
                 elem = elem.split(':')
-                self.itrials.append(int(elem[0]))
+                self.instancenumbers.append(int(elem[0]))
                 if len(elem) < 2:
                     #Caught a ill-finalized run.
                     self.isFinalized.append(False)
@@ -121,7 +121,7 @@ class IndexEntry:
             data = info[0](split(dataFiles))
             if verbose:
                 print ("Processing %s: %d/%d trials found."
-                       % (dataFiles, len(data), len(self.itrials)))
+                       % (dataFiles, len(data), len(self.instancenumbers)))
             setattr(self, info[1], alignData(data))
         #set_trace()
 
@@ -225,8 +225,8 @@ class IndexEntry:
         hData and vData array.
         """
         dictinstance = {}
-        for i in range(len(self.itrials)):
-            dictinstance.setdefault(self.itrials[i], []).append(i)
+        for i in range(len(self.instancenumbers)):
+            dictinstance.setdefault(self.instancenumbers[i], []).append(i)
 
         return dictinstance
 

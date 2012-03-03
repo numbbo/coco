@@ -208,7 +208,7 @@ def main(argv=None):
                 elif extension == '.pickle':
                     with open(i) as f:
                         ds = pickle.load(f)
-                    if not is_correct_instances(ds.itrials):
+                    if not is_correct_instances(ds.instancenumbers):
                         msg = ('File %s: The instances listed do not respect '
                                'the specifications BBOB-2009 or BBOB-2010.' % i)
                         raise Usage(msg)
