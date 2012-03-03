@@ -262,7 +262,7 @@ def main(argv=None):
 
         if (verbose):
             for i in dsList:
-                if (dict((j, i.itrials.count(j)) for j in set(i.itrials)) !=
+                if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) !=
                     inset.instancesOfInterest):
                     warnings.warn('The data of %s do not list ' %(i) +
                                   'the correct instances ' +

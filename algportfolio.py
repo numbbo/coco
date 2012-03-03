@@ -139,7 +139,7 @@ class DataSet(pp.DataSet):
         else:
             for i in range(len(dslist)):
                 corresp[i] = range(nbruns)
-        self.itrials = trials.pop()
+        self.instancenumbers = trials.pop()
         maxevals = []
         finalfunvals = []
         evals = []
