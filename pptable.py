@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 from bbob_pproc import bestalg, bootstrap
 from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
 from bbob_pproc.pproc import significancetest
-from bbob_pproc.bootstrap import ranksums
+from bbob_pproc.bootstrap import ranksumtest
 
 from pdb import set_trace
 

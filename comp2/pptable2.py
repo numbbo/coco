@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 from bbob_pproc import bestalg, bootstrap
 from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec, writeLabels
 from bbob_pproc.pproc import significancetest
-from bbob_pproc.bootstrap import ranksums
+from bbob_pproc.bootstrap import ranksumtest
 
 from pdb import set_trace
 
@@ -30,13 +30,16 @@ samplesize = 1000 # TODO change samplesize
 funInfos = {}
 isBenchmarkinfosFound = False
 
-figure_legend = (r"\ERT\ in number of function evaluations divided by the best \ERT\ measured during " +
+figure_legend = (
+    r"\ERT\ in number of function evaluations divided by the best \ERT\ measured during " +
     r"BBOB-2009 given in the respective first row and the half inter-80\%ile in brackets for " +
-    r"different $\Df$ values. \#succ is the number of trials that reached the final target $\fopt + 10^{-8}$. " +
-    r"0:\:\algorithmAshort\ is \algorithmA\ and 1:\:\algorithmBshort\ is \algorithmB. " + 
+    r"different $\Df$ values. \#succ is the number of trials that reached the final " +
+    r"target $\fopt + 10^{-8}$. " +
+    r"1:\:\algorithmAshort\ is \algorithmA\ and 2:\:\algorithmBshort\ is \algorithmB. " + 
     r"Bold entries are statistically significantly better compared to the other algorithm, " + 
-    r"with $p=0.05$ or $p=10^{-k}$ where $k>1$ is the number following the $\star$ symbol, with Bonferroni " +
-    r"correction of #1. ")
+    r"with $p=0.05$ or $p=10^{-k}$ where $k\in\{2,3,4,\dots\}$ is the number " +
+    r"following the $\star$ symbol, with Bonferroni correction of #1. " +
+    r"A $\downarrow$ indicates the same tested against the best BBOB-2009. ")
 
 infofile = os.path.join(os.path.split(__file__)[0], '..',
                         'benchmarkshortinfos.txt')
@@ -114,18 +117,21 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             table.append(curline[:])
             extraeol.append('')
 
-            rankdata0 = []
+            rankdata0 = []  # never used
 
             # generate all data from ranksum test
             entries = []
             ertdata = {}
+            averageevalsdata = {}
             for nb, dsList in enumerate((dictFunc0, dictFunc1)):
                 try:
-                    entry = dsList[f][0] # take the first element
+                    entry = dsList[f][0] # take the first DataSet, there should be only one?
                 except KeyError:
-                    warnings.warn('Warning: data missing for data set ' + str(nb) + ' and function ' + str(f))
+                    warnings.warn('data missing for data set ' + str(nb) + ' and function ' + str(f))
+                    print('*** Warning: data missing for data set ' + str(nb) + ' and function ' + str(f) + '***')
                     continue # TODO: problem here!
                 ertdata[nb] = entry.detERT(targetsOfInterest)
+                averageevalsdata[nb] = entry.detAverageEvals(targetsOfInterest)  # must depend on target
                 entries.append(entry)
 
             for _t in ertdata.values():
@@ -142,9 +148,9 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
             for nb, entry in enumerate(entries):
                 if nb == 0:
-                    curline = [r'0:\:\algorithmAshort\hspace*{\fill}']
+                    curline = [r'1:\:\algorithmAshort\hspace*{\fill}']
                 else:
-                    curline = [r'1:\:\algorithmBshort\hspace*{\fill}']
+                    curline = [r'2:\:\algorithmBshort\hspace*{\fill}']
 
                 #data = entry.detERT(targetsOfInterest)
                 dispersion = []
@@ -181,23 +187,24 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         z = -z
                         istat0 = 1
                         istat1 = 0
-                    # the sign of significance0vs1 indicates which entry is better
-                    if (nbtests * p < 0.05  # TODO: the conditions below should be part of significancetest()
-                          and z > 0 and not numpy.isinf(ertdata[istat0][i]) and  # final f-values are only comparable if maxevals are comparable
-                          z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0):  # z-value and ERT-ratio must agree
-                        significance0vs1 = -int(numpy.ceil(numpy.log10(nbtests * p)))
-                    # elif nbtests * p < 0.05 and z < 0 and z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0:
-                    elif nbtests * p < 0.05 and z < 0 and ertdata[istat1][i] < ertdata[istat0][i]:
-                        significance0vs1 = int(numpy.ceil(numpy.log10(nbtests * p)))
+                    # the sign of significance0vs1 shall indicate which entry is better
+                    if nbtests * p < 0.05:
+                        if (z > 0 and ertdata[istat0][i] <= ertdata[istat1][i] and # TODO: the conditions below should be part of significancetest() ?
+                            (ertdata[istat0][i] is numpy.inf or  # comparable data: only f-values are compared for significance (they are compared for the same #evals)
+                             averageevalsdata[istat0][i] < averageevalsdata[istat1][i])):  # for incomparable data the effort of the better algorithm must be lower
+                            significance0vs1 = -int(numpy.ceil(numpy.log10(nbtests * p)))
+                        # elif nbtests * p < 0.05 and z < 0 and z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0:
+                        elif (z < 0 and ertdata[istat1][i] <= ertdata[istat0][i] and 
+                            (ertdata[istat1][i] is numpy.inf or  # see above
+                             averageevalsdata[istat1][i] < averageevalsdata[istat0][i])):  # see above
+                            significance0vs1 = int(numpy.ceil(numpy.log10(nbtests * p)))
 
+                    isBold = significance0vs1 > 0
                     alignment = 'c'
                     if i == len(data) - 1: # last element
                         alignment = 'c|'
 
                     if numpy.isinf(bestalgdata[i]): # if the 2009 best did not solve the problem
-                        isBold = False
-                        if significance0vs1 > 0:
-                            isBold = True
 
                         tmp = writeFEvalsMaxPrec(float(dati), 2)
                         if not numpy.isinf(dati):
@@ -218,18 +225,6 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             isscientific = True
                         tableentry = writeFEvals2(tmp, 2, isscientific=isscientific)
                         tableentry = writeFEvalsMaxPrec(tmp, 2)
-
-                        isBold = False
-                        if nb == 0:
-                            z, p = testresbestvs0[i]
-                        else:
-                            z, p = testresbestvs1[i]
-
-                        if (significance0vs1 > 0  # TODO: this might be a
-                            or (ertdata[istat0][i] < ertdata[istat1][i]
-                                and (nbtests * p) < 0.05 and dati < bestalgdata[i]
-                                     and z < 0.)):
-                            isBold = True
 
                         if numpy.isinf(tmp) and i == len(data)-1:
                             tableentry = (tableentry 

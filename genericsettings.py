@@ -33,6 +33,8 @@ summarized_target_function_values = tuple(10**numpy.r_[-8:2:0.2]) # 1e2 and 1e-8
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
+fast_save_for_debugging = False # saves only 30% 
+fig_formats = ('eps', 'pdf') if not fast_save_for_debugging else ('pdf', )
 
 line_styles = [
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},

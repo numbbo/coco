@@ -9,20 +9,17 @@ import warnings
 import numpy as np
 from matplotlib import pyplot as plt
 from pdb import set_trace
-from bbob_pproc import bootstrap
+from bbob_pproc import genericsettings, bootstrap
 
-fast_save_for_debugging = False # saves only 30% 
-fig_formats = ('eps', 'pdf') if not fast_save_for_debugging else ('pdf', )
-
-if fast_save_for_debugging:
+if genericsettings.fast_save_for_debugging:
     print "fast figure saving in ppfig.py"
     
-def saveFigure(filename, figFormat=fig_formats, verbose=True):
+def saveFigure(filename, figFormat=genericsettings.fig_formats, verbose=True):
     """Save figure into an image file."""
 
     if isinstance(figFormat, basestring):
         try:
-            plt.savefig(filename + '.' + figFormat, dpi = 60 if fast_save_for_debugging else 300,
+            plt.savefig(filename + '.' + figFormat, dpi = 60 if genericsettings.fast_save_for_debugging else 300,
                         format=figFormat)
             if verbose:
                 print 'Wrote figure in %s.' % (filename + '.' + figFormat)
@@ -32,7 +29,7 @@ def saveFigure(filename, figFormat=fig_formats, verbose=True):
         #if not isinstance(figFormat, basestring):
         for entry in figFormat:
             try:
-                plt.savefig(filename + '.' + entry, dpi = 60 if fast_save_for_debugging else 300,
+                plt.savefig(filename + '.' + entry, dpi = 60 if genericsettings.fast_save_for_debugging else 300,
                             format=entry)
                 if verbose:
                     print 'Wrote figure in %s.' %(filename + '.' + entry)
@@ -80,7 +77,7 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
         return xpos, ypos
     
     def downsample(xdata, ydata):
-        """Downsample arrays of data.
+        """Downsample arrays of data, superseeded by method marker_position
         
         From xdata and ydata return x and y which have only nbperdecade
         elements times the number of decades in xdata.

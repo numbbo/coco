@@ -44,7 +44,7 @@ def beautify(handles):
     plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
                ('', '', '', '', ''))
     plt.ylim(-0.01, 1.01)
-    axisHandle.set_xlabel('log10 of FEvals(A1)/FEvals(A0)')
+    axisHandle.set_xlabel('log10 of FEvals ratio')
     axisHandle.set_ylabel('proportion')
     axisHandle.grid(True)
     xticks = axisHandle.get_xticks()
@@ -187,7 +187,6 @@ def plotLogAbs(dsList0, dsList1, fvalueToReach, verbose=True):
             #res.extend(plt.plot(x2, y2, label=label, linewidth=3., **rldStyles[i]))
             plotArgs = rldStyles[i].copy()
             plotArgs['label'] = label
-            # print label
             plotArgs['linewidth'] = 3.
             #res.extend(plotUnifLogXMarkers(x2, y2, 3, plotArgs))
             res.append(plotUnifLogXMarkers(x2, y2, nbperdecade=3, logscale=False, **plotArgs)[0])
