@@ -4,7 +4,6 @@
 """Creates ERTs and convergence figures for multiple algorithms."""
 
 import os
-import sys
 import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
@@ -20,20 +19,23 @@ from bbob_pproc.pptex import color_to_latex, marker_to_latex, writeLabels
 #           {'color': 'm'},
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
 
-scaling_figure_legend = """Expected running time (\ERT\ in \# of $f$-evaluations) divided by dimension for 
-                target function value \\bbobppfigsftarget\ as $\\log_{10}$ values versus dimension. 
-                Different symbols
-                correspond to different algorithms given in the legend of #1.
-                Light symbols give the maximum number of function evaluations from the longest trial 
-                divided by dimension. Horizontal lines give linear scaling,
-                slanted dotted lines give quadratic scaling. """
+show_significance = False
+scaling_figure_legend = (r"Expected running time (\ERT\ in number of $f$-evaluations) divided by dimension " +
+                r"for target function value \bbobppfigsftarget\ as $\log_{10}$ values versus dimension. " +
+                r"Different symbols " +
+                r"correspond to different algorithms given in the legend of #1. " +
+                r"Light symbols give the maximum number of function evaluations from the longest trial " + 
+                r"divided by dimension. Horizontal lines give linear scaling, " +
+                r"slanted dotted lines give quadratic scaling. " +
+                (r"Black stars indicate statistically better result compared to all other algorithm " +
+                r"$p<0.01$ and Bonferroni correction with the number of dimensions.  ") if show_significance else ''
+                )
 
 styles = genericsettings.line_styles
 for i in xrange(len(styles)):
     styles[i].update({'linewidth': 4 - min([3, i/2.0]),  # thinner lines over thicker lines
                       'markeredgewidth': 6 - min([2, i]), 
                       'markerfacecolor': 'None'})
-
 refcolor = 'wheat'
 
 show_algorithms = []
@@ -41,10 +43,9 @@ fontsize = 20.0
 legend = False
 
 #Get benchmark short infos.
-funInfos = {}
-isBenchmarkinfosFound = True
 infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
 try:
+    funInfos = {}
     f = open(infofile,'r')
     for line in f:
         if len(line) == 0 or line.startswith('%') or line.isspace() :
@@ -54,7 +55,6 @@ try:
     f.close()
 except IOError, (errno, strerror):
     print "I/O error(%s): %s" % (errno, strerror)
-    isBenchmarkinfosFound = False
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
 
@@ -241,7 +241,7 @@ def generateData(dataSet, target):
     res[3] = numpy.max(dataSet.maxevals)
     return res
 
-def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
+def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
     """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
     
     One function and one target per figure.
@@ -327,10 +327,23 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
                        marker='d', markersize=25, markeredgecolor=refcolor, zorder=-1)
                        #label='best 2009', 
         handles.append(tmp)
+        
+        if show_significance: # plot significance-stars
+            xstar, ystar = [], []
+            dims = sorted(pproc.dictAlgByDim(dictFunc[f]))
+            for i, dim in enumerate(dims):
+                datasets = pproc.dictAlgByDim(dictFunc[f])[dim]
+                dsetlist =  [datasets[ialg][0] for ialg in sortedAlgs if datasets[ialg]]
+                arzp, arialg = bootstrap.significance_vs_all(dsetlist, [target])
+                if arzp[0][1] * len(dims) < 0.05:
+                    ert = dsetlist[arialg[0]].detERT([target])[0]
+                    if ert < numpy.inf: 
+                        xstar.append(dim)
+                        ystar.append(ert/dim)
 
-        if isBenchmarkinfosFound:
-            title = funInfos[f]
-            plt.gca().set_title(title)
+            plt.plot(xstar, ystar, 'k*', markerfacecolor=None, markeredgewidth=2, markersize=0.5*styles[0]['markersize'])
+        if funInfos:
+            plt.gca().set_title(funInfos[f])
 
         isLegend = False
         if legend:
@@ -386,9 +399,8 @@ def main(dictAlg, sortedAlgs, target, outputdir, verbose=True):
 
         handles.append(tmp)
 
-        if isBenchmarkinfosFound:
-            title = funInfos[f]
-            plt.gca().set_title(title)
+        if funInfos:
+            plt.gca().set_title(funInfos[f])
 
         beautify(rightlegend=legend)
 

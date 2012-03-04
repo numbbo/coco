@@ -10,8 +10,8 @@ import warnings
 import numpy
 from bbob_pproc import bestalg, bootstrap
 from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
-from bbob_pproc.bootstrap import prctile
-from bbob_pproc.pproc import DataSetList, significancetest, prepend_to_file, str_to_latex, strip_pathname
+from bbob_pproc.bootstrap import significancetest, significance_vs_all
+from bbob_pproc.pproc import DataSetList, prepend_to_file, str_to_latex, strip_pathname
 from bbob_pproc.pplogloss import detf
 
 """
@@ -21,22 +21,23 @@ http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 """
 
 tables_many_legend = """Expected running time (ERT in number of function evaluations)
-                     divided by the best ERT measured during BBOB-2009 (given in the respective
-                     first row) for different $\\Df$ values
-                     in #1. The inter-80\%tile range divided by two is given in braces. 
+                     divided by the respective best ERT measured during BBOB-2009 (given in 
+                     the respective first row) for different $\\Df$ values in #1. 
+                     The inter-80\%tile range divided by two is given in braces. 
                      The median number of conducted function evaluations is additionally given in 
                      \\textit{italics}, if $\ERT(10^{-7}) = \\infty$.
                      \\#succ is the number of trials that reached the final target $\\fopt + 10^{-8}$.
-                     Best results are printed in bold. """
+                     Best results are printed in bold. """  #  #1 is for example "dimension 5"
+
+with_table_heading = False  # in case the page is long enough
 
 allmintarget = {}
 allmedtarget = {}
 
-funInfos = {}
-isBenchmarkinfosFound = True
 infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
 try:
-    f = open(infofile,'r')
+    funInfos = {}
+    f = open(infofile, 'r')
     for line in f:
         if len(line) == 0 or line.startswith('%') or line.isspace() :
             continue
@@ -45,15 +46,16 @@ try:
     f.close()
 except IOError, (errno, strerror):
     print "I/O error(%s): %s" % (errno, strerror)
-    isBenchmarkinfosFound = False
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
 
+significance_vs_others_symbol = r"\star"
+significance_vs_ref_symbol = r"\downarrow"
 maxfloatrepr = 10000.
 samplesize = 1000
 targetf = 1e-8
 precfloat = 2
-precscien = 1
+precscien = 2
 precdispersion = 1  # significant digits for dispersion
 
 def cite(algName, isNoisefree, isNoisy):
@@ -176,7 +178,7 @@ def cite(algName, isNoisefree, isNoisy):
         res = ""
     return res
 
-def sortColumns(table, maxRank=None):
+def getTopIndicesOfColumns(table, maxRank=None):
     """For each column, returns a list of the maxRank-ranked elements.
 
     This list may have a length larger than maxRank in the case of ties.
@@ -213,7 +215,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
 
     """
 
-    # TODO: method is long, split if possible
+    # TODO: method is long, terrible to read, split if possible
 
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
@@ -245,7 +247,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
         # to an algorithm
         algnames = []
         #algdata = []
-        algert = []
+        algerts = []
         algevals = []
         algdisp = []
         algnbsucc = []
@@ -253,7 +255,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
         algmedmaxevals = []
         algmedfinalfunvals = []
         algtestres = []
-        algentry = []
+        algentries = []
 
         for n in sorted(dictData[df].keys()):
             entries = dictData[df][n]
@@ -266,7 +268,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                 raise Exception(txt)
 
             entry = entries[0]
-            algentry.append(entry)
+            algentries.append(entry)
 
             algnames.append(sortedAlgs[n])
 
@@ -286,7 +288,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                 else:
                     tmpdisp.append(numpy.nan)
                 tmpert.append(ert)
-            algert.append(tmpert)
+            algerts.append(tmpert)
             algevals.append(evals)
             #algdata.append(tmpdata)
             algdisp.append(tmpdisp)
@@ -304,24 +306,24 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
 
         # Process over all data
         # find best values...
-        if len(dictData[df]) <= 3:
-            maxRank = 1
-        else:
-            maxRank = 3
             
         nalgs = len(dictData[df])
         maxRank = 1 + numpy.floor(0.14 * nalgs)  # number of algs to be displayed in bold
 
         isBoldArray = [] # Point out the best values
         algfinaldata = [] # Store median function values/median number of function evaluations
-        tmparray = sortColumns(algert, maxRank=maxRank)
-        for i, line in enumerate(algert):
+        tmptop = getTopIndicesOfColumns(algerts, maxRank=maxRank)
+        for i, erts in enumerate(algerts):
             tmp = []
-            for j, e in enumerate(line):
-                tmp.append(i in tmparray[j] or (nalgs > 7 and algert[i][j] <= 3. * refalgert[j]))
+            for j, ert in enumerate(erts):  # algi targetj
+                tmp.append(i in tmptop[j] or (nalgs > 7 and algerts[i][j] <= 3. * refalgert[j]))
             isBoldArray.append(tmp)
             algfinaldata.append((algmedfinalfunvals[i], algmedmaxevals[i]))
 
+        # significance test of best given algorithm against all others
+        best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
+        significance_versus_others = significance_vs_all(algentries, targets, best_alg_idx)[0]
+                
         # Create the table
         table = []
         spec = r'@{}c@{}|*{%d}{@{\,}r@{}X@{\,}}|@{}r@{}@{}l@{}' % (len(targets))
@@ -329,13 +331,11 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
         extraeol = []
 
         # Generate header lines
-        if isBenchmarkinfosFound:
-            header = funInfos[df[1]]
-        else:
-            header = 'f%d' % df[1]
-        table.append([r'\multicolumn{%d}{@{\,}c@{\,}}{{\textbf{%s}}}'
-                      % (2 * len(targets) + 2, header)])
-        extraeol.append('')
+        if with_table_heading:
+            header = funInfos[df[1]] if funInfos else 'f%d' % df[1]
+            table.append([r'\multicolumn{%d}{@{\,}c@{\,}}{{\textbf{%s}}}'
+                          % (2 * len(targets) + 2, header)])
+            extraeol.append('')
 
         curline = [r'$\Delta f_\mathrm{opt}$']
         for t in targets[0:-1]:
@@ -347,7 +347,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
         table.append(curline)
         extraeol.append('')
 
-        curline = [r'ERT$_{\text{best}}$']
+        curline = [r'ERT$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
         for i in refalgert[0:-1]:
             curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
                            % writeFEvalsMaxPrec(float(i), 2))
@@ -373,32 +373,60 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
             #data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
             commandname = r'\alg%stables' % numtotext(i)
             header += r'\providecommand{%s}{\StrLeft{%s}{\ntables}}' % (commandname, str_to_latex(strip_pathname(alg)))
-            curline = [commandname + r'\hspace*{\fill}']
+            curline = [commandname + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
 
-            for j, tmp in enumerate(zip(algert[i], algdisp[i],
+            for j, tmp in enumerate(zip(algerts[i], algdisp[i],  # j is target index
                                         isBoldArray[i], algtestres[i])):
                 ert, dispersion, isBold, testres = tmp
 
                 alignment = '@{\,}X@{\,}'
-                if j == len(algert[i]) - 1:
+                if j == len(algerts[i]) - 1:
                     alignment = '@{\,}X@{\,}|'
 
                 data = ert/refalgert[j]
+                # write star for significance against all other algorithms
+                str_significance_subsup = ''
+                if len(best_alg_idx) > 0 and i == best_alg_idx[j] and nbtests * significance_versus_others[j][1] < 0.05:
+                    logp = -numpy.ceil(numpy.log10(nbtests * significance_versus_others[j][1]))
+                    str_significance_subsup =  r"^{%s%s}" % (significance_vs_others_symbol, str(int(logp)) if logp > 1 else '')
+
+                # moved out of the above else: this was a bug!?
+                z, p = testres
+                if (nbtests * p) < 0.05 and data < 1. and z < 0.: 
+                    if not numpy.isinf(refalgert[j]):
+                        tmpevals = algevals[i][j].copy()
+                        tmpevals[numpy.isnan(tmpevals)] = algentries[i].maxevals[numpy.isnan(tmpevals)]
+                        bestevals = refalgentry.detEvals([targets[j]])
+                        bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
+                        bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
+                        tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
+                        bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
+
+                    #The conditions are now that ERT < ERT_best and
+                    # all(sorted(FEvals_best) > sorted(FEvals_current)).
+                    if numpy.isinf(refalgert[j]) or all(tmpevals < bestevals):
+                        nbstars = -numpy.ceil(numpy.log10(nbtests * p))
+                        # tmp2[-1] += r'$^{%s}$' % superscript
+                        str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol, 
+                                                                 str(int(nbstars)) if nbstars > 1 else '')
+                if str_significance_subsup:
+                    str_significance_subsup = '$%s$' % str_significance_subsup
 
                 # format number in variable data
                 if numpy.isnan(data):
                     curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
                 else:
                     if numpy.isinf(refalgert[j]):
-                        curline.append(r'\multicolumn{2}{%s}{\textbf{%s}{\tiny (%s)}}'
+                        curline.append(r'\multicolumn{2}{%s}{\textbf{%s}\mbox{\tiny (%s)}%s}'
                                        % (alignment,
-                                          writeFEvalsMaxPrec(algert[i][j], 2),
-                                          writeFEvalsMaxPrec(dispersion, precdispersion)))
+                                          writeFEvalsMaxPrec(algerts[i][j], 2),
+                                          writeFEvalsMaxPrec(dispersion, precdispersion), 
+                                          str_significance_subsup))
                         continue
 
                     tmp = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
                     if data >= maxfloatrepr or data < 0.01: # either inf or scientific notation
-                        if numpy.isinf(data) and j == len(algert[i]) - 1:
+                        if numpy.isinf(data) and j == len(algerts[i]) - 1:
                             tmp += r'\,\textit{%s}' % writeFEvalsMaxPrec(algfinaldata[i][1], 0, maxfloatrepr=maxfloatrepr)
                         else:
                             tmp = writeFEvalsMaxPrec(data, precscien, maxfloatrepr=data)
@@ -407,12 +435,12 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
 
                         if not numpy.isnan(dispersion):
                             tmpdisp = dispersion/refalgert[j]
-                            if tmpdisp >= maxfloatrepr or tmpdisp < 0.01: # TODO: hack
-                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precscien, maxfloatrepr=tmpdisp)
+                            if tmpdisp >= maxfloatrepr or tmpdisp < 0.005: # TODO: hack
+                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                             else:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
-                            tmp += r'{\tiny (%s)}' % tmpdisp
-                        curline.append(r'\multicolumn{2}{%s}{%s}' % (alignment, tmp))
+                            tmp += r'\mbox{\tiny (%s)}' % tmpdisp
+                        curline.append(r'\multicolumn{2}{%s}{%s%s}' % (alignment, tmp, str_significance_subsup))
                     else:
                         tmp2 = tmp.split('.', 1)
                         if len(tmp2) < 2:
@@ -427,35 +455,13 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                         if not numpy.isnan(dispersion):
                             tmpdisp = dispersion/refalgert[j]
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
-                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precscien, maxfloatrepr=tmpdisp)
+                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                             else:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
-                            tmp2[-1] += (r'{\tiny (%s)}' % tmpdisp)
-
-                        z, p = testres
-                        if data < 1. and not numpy.isinf(refalgert[j]):
-                            tmpevals = algevals[i][j].copy()
-                            tmpevals[numpy.isnan(tmpevals)] = algentry[i].maxevals[numpy.isnan(tmpevals)]
-                            bestevals = refalgentry.detEvals([targets[j]])
-                            bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
-                            bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
-                            tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
-                            bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
-
-                        #The conditions are now that ERT < ERT_best and
-                        # all(sorted(FEvals_best) > sorted(FEvals_current)).
-                        if ((nbtests * p) < 0.05 and data < 1.
-                            and z < 0.
-                            and (numpy.isinf(refalgert[j])
-                                 or all(tmpevals < bestevals))):
-                            nbstars = -numpy.ceil(numpy.log10(nbtests * p))
-                            superscript = r'\downarrow' #* nbstars
-                            if nbstars > 1:
-                                superscript += str(int(nbstars))
-                            tmp2[-1] += r'$^{%s}$' % superscript
-
+                            tmp2[-1] += (r'\mbox{\tiny (%s)}' % (tmpdisp))
+                        tmp2[-1] += str_significance_subsup
                         curline.extend(tmp2)
-
+                                        
             curline.append('%d' % algnbsucc[i])
             curline.append('/%d' % algnbruns[i])
             table.append(curline)

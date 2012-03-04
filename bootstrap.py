@@ -415,10 +415,10 @@ def ranksumtest(x, y):
     This method returns a slight difference compared to scipy.stats.ranksumtest
     in the two-tailed p-value. Should be test drived...
 
-    Returns: z-statistic, two-tailed p-value
+    Returns: z-value for first data set ``x`` and two-tailed p-value
     
     """
-    x,y = map(numpy.asarray, (x, y))
+    x, y = map(numpy.asarray, (x, y))
     n1 = len(x)
     n2 = len(y)
     alldata = numpy.concatenate((x,y))
@@ -468,16 +468,179 @@ def rankdata(a):
             dupcount = 0
     return newarray
 
-def confirm_significance():
-    # TODO: compute also whether data and sign of z value agree:
-    # given alg0 is better than alg1 according to z:
-    #   if both ert exist: check that ERT0 < ERT1, check also sp1? 
-    #   elif ERT1 exists: fail  
-    #   else: check that sum(fevals0) < sum(fevals1) and ((just to be sure) 80%ile(fevals0) < 80%tile(fevals1)
-    #                                                     or p(fevals0<fevals1) > 1/2 or stochastic dominance (that is too strong)) ?
+def significancetest(entry0, entry1, targets):
+    """Compute the rank-sum test between two data sets.
 
+    For a given target function value, the performances of two
+    algorithms are compared. The result of a significance test is
+    computed on the number of function evaluations for reaching the
+    target or, if not available, the function values for the smallest
+    budget in an unsuccessful trial. 
     
-    pass
+    Known bugs: this is not a fair comparison, because the successful 
+    trials could be very long.  
+
+    :keyword DataSet entry0: -- data set 0
+    :keyword DataSet entry1: -- data set 1
+    :keyword list targets: -- list of target function values
+
+    :returns: list of (z, p) for each target function values in
+              input argument targets. z and p are values returned by the
+              ranksumtest method.
+
+    """
+
+    res = []
+    evals = []
+    bestalgs = []
+    isBestAlg = False
+    # one of the entry is an instance of BestAlgDataSet
+    for entry in (entry0, entry1):
+        tmp = entry.detEvals(targets)
+        if not entry.__dict__.has_key('funvals'):  # this looks like a terrible hack
+            isBestAlg = True
+            #for i, j in enumerate(tmp[0]):
+                #if numpy.isnan(j).all():
+                    #tmp[0][i] = numpy.array([numpy.nan]*len(entry.bestfinalfunvals))
+            #Make sure that the length of elements of tmp[0] is the same as
+            #that of the associated function values
+            evals.append(tmp[0])
+            bestalgs.append(tmp[1])
+        else:
+            evals.append(tmp)
+            bestalgs.append(None)
+            
+    if not isBestAlg:
+        erts = [None, None]
+        erts[0] = entry0.detERT(targets)
+        erts[1] = entry1.detERT(targets)
+        averageevals = [None, None]
+        averageevals[0] = entry0.detAverageEvals(targets)
+        averageevals[1] = entry1.detAverageEvals(targets)
+
+    for i in range(len(targets)):
+        # 1. Determine FE_umin,  the minimum evals in unsuccessful trials 
+        FE_umin = numpy.inf
+
+        # if there is at least one unsuccessful run
+        if (numpy.isnan(evals[0][i]).any() or numpy.isnan(evals[1][i]).any()):
+            fvalues = []
+            if isBestAlg:
+                for j, entry in enumerate((entry0, entry1)):
+                    # if best alg entry
+                    if isinstance(entry.finalfunvals, dict):
+                        alg = bestalgs[j][i]
+                        if alg is None:
+                            tmpfvalues = entry.bestfinalfunvals
+                        else:
+                            tmpfvalues = entry.finalfunvals[alg]
+                    else:
+                        unsucc = numpy.isnan(evals[j][i])
+                        if unsucc.any():
+                            FE_umin = min(entry.maxevals[unsucc])
+                        else:
+                            FE_umin = numpy.inf
+                        # Determine the function values for FE_umin
+                        tmpfvalues = numpy.array([numpy.inf] * entry.nbRuns())
+                        for curline in entry.funvals:
+                            # only works because the funvals are monotonous
+                            if curline[0] > FE_umin:
+                                break
+                            prevline = curline[1:]
+                        tmpfvalues = prevline.copy()
+                        #tmpfvalues = entry.finalfunvals
+                        #if (tmpfvalues != entry.finalfunvals).any():
+                            #set_trace()
+                    fvalues.append(tmpfvalues)
+            else:
+                # 1) find min_{both algorithms}(conducted FEvals in
+                # unsuccessful trials) =: FE_umin
+                FE_umin = numpy.inf
+                if numpy.isnan(evals[0][i]).any() or numpy.isnan(evals[1][i]).any():
+                    FE = []
+                    for j, entry in enumerate((entry0, entry1)):
+                        unsucc = numpy.isnan(evals[j][i])
+                        if unsucc.any():
+                            tmpfe = min(entry.maxevals[unsucc])
+                        else:
+                            tmpfe = numpy.inf
+                        FE.append(tmpfe)
+                    FE_umin = min(FE)
+
+                    # Determine the function values for FE_umin
+                    fvalues = []
+                    for j, entry in enumerate((entry0, entry1)):
+                        prevline = numpy.array([numpy.inf] * entry.nbRuns())
+                        for curline in entry.funvals:
+                            # only works because the funvals are monotonous
+                            if curline[0] > FE_umin:
+                                break
+                            prevline = curline[1:]
+                        fvalues.append(prevline)
+
+        # 2. 3. 4. Collect data for the significance test:
+        curdata = []  # current data 
+        for j, entry in enumerate((entry0, entry1)):
+            tmp = evals[j][i].copy()
+            idx = numpy.isnan(tmp) + (tmp > FE_umin)
+            tmp = numpy.power(tmp, -1.)
+            if idx.any():
+                tmp[idx] = -fvalues[j][idx]  # larger data is better
+            curdata.append(tmp)
+
+        z_and_p = ranksumtest(curdata[0], curdata[1])
+        if isBestAlg:
+            z_and_p = list(z_and_p)  # no idea what that is for
+            z_and_p[1] /= 2.  # one-tailed p-value instead of two-tailed
+        else:  # possibly correct 
+            ibetter = 0 if z_and_p[0] > 0 else 1  # larger data is better
+            iworse = 1 - ibetter
+            if not (erts[ibetter][i] <= erts[iworse][i] and  # inf are equal
+                (erts[ibetter][i] is numpy.inf or  # comparable data: only f-values are compared for significance (they are compared for the same #evals)
+                 averageevals[ibetter][i] < averageevals[iworse][i])):  # better algorithm must not have larger effort, should this take into account FE_umin?
+                z_and_p = (z_and_p[0], 1.0)                  
+
+        res.append(z_and_p)
+
+    return res
+
+def significance_vs_all(datasets, targets, best_alg_idx=None):
+    """:param datasets: is a list of DataSet from different algorithms, otherwise 
+    on the same function and dimension (which is not necessarily checked)
+    :param targets: is a list of target values, 
+    :param best_alg_idx:  for each target the best algorithm to be tested against the others 
+    
+    returns a list of ``(z, p)`` tuples, each is the result for the ranksumtest 
+    for the respective target value in targets and the index list of best algorithm. 
+    
+    """ 
+    if best_alg_idx is None:
+        erts = []
+        for ds in datasets:
+            erts.append(ds.detERT(targets))
+        best_alg_idx = numpy.array(erts).argsort(0)[0, :]  # indexed by target index
+        assert len(best_alg_idx) == len(targets)
+    elif 1 < 3:  # only for debugging
+        erts = []
+        for ds in datasets:
+            erts.append(ds.detERT(targets))
+        best_alg_idx2 = numpy.array(erts).argsort(0)[0, :]  # indexed by target index
+        assert all(best_alg_idx2 == best_alg_idx)
+        
+    # significance test of best given algorithm against all others
+    significance_versus_others = []  # indexed by target index
+    assert len(best_alg_idx) == len(targets)
+    if len(datasets) > 1:
+        for itarget, target in enumerate(targets):
+            z_and_p = (0, 0)
+            for jalg in xrange(len(datasets)):
+                if jalg == best_alg_idx[itarget]:
+                    continue
+                z_and_p2 = significancetest(datasets[jalg], datasets[best_alg_idx[itarget]], [target])[0]
+                if z_and_p2[1] > z_and_p[1]:  # look for strongest opponent, ie weakest p
+                    z_and_p = z_and_p2 
+            significance_versus_others.append(z_and_p)
+    return significance_versus_others, best_alg_idx
 
 def fastsort(a):
     # fixme: the wording in the docstring is nonsense.

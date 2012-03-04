@@ -28,7 +28,6 @@ from bbob_pproc import findfiles, bootstrap
 from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
 from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from bbob_pproc.ppfig import consecutiveNumbers
-from bbob_pproc.bootstrap import prctile
 
 dataSetTargets = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]
 
@@ -597,6 +596,7 @@ class DataSetList(list):
                         print 'Unpickled %s.' % (name)
                     if not hasattr(entry, 'instancenumbers'):
                         entry.instancenumbers = entry.itrials
+                    # if not hasattr(entry, 'detAverageEvals')
                     self.append(entry)
                     #set_trace()
                 except IOError, (errno, strerror):
@@ -830,7 +830,7 @@ class DataSetList(list):
                     for j in range(len(dataSetTargets)):
                         evals[j].extend(tmpevals[j])
                 for i, j in enumerate(dataSetTargets): # never aggregate over dim...
-                    tmp = prctile(evals[i], [0, 10, 50, 90, 100])
+                    tmp = bootstrap.prctile(evals[i], [0, 10, 50, 90, 100])
                     tmp2 = []
                     for k in tmp:
                         if not numpy.isfinite(k):
@@ -1159,125 +1159,6 @@ def dictAlgByFuncGroup(dictAlg):
 
 # TODO: these functions should go to different modules. E.g. tools.py and bootstrap.py renamed as stats.py
 
-def significancetest(entry0, entry1, targets):
-    """Compute the rank-sum test between two data sets.
-
-    For a given target function value, the performances of two
-    algorithms are compared. The result of a significance test is
-    computed on the number of function evaluations for reaching the
-    target or, if not available, the function values for the smallest
-    budget in an unsuccessful trial. 
-    
-    Known bugs: this is not a fair comparison, because the successful 
-    trials could be very long.  
-
-    :keyword DataSet entry0: -- data set 0
-    :keyword DataSet entry1: -- data set 1
-    :keyword list targets: -- list of target function values
-
-    :returns: list of (z, p) for each target function values in
-              input argument targets. z and p are values returned by the
-              ranksumtest method.
-
-    """
-    res = []
-    evals = []
-    bestalgs = []
-    isBestAlg = False
-    # one of the entry is an instance of BestAlgDataSet
-    for entry in (entry0, entry1):
-        tmp = entry.detEvals(targets)
-        if not entry.__dict__.has_key('funvals'):
-            isBestAlg = True
-            #for i, j in enumerate(tmp[0]):
-                #if numpy.isnan(j).all():
-                    #tmp[0][i] = numpy.array([numpy.nan]*len(entry.bestfinalfunvals))
-            #Make sure that the length of elements of tmp[0] is the same as
-            #that of the associated function values
-            evals.append(tmp[0])
-            bestalgs.append(tmp[1])
-        else:
-            evals.append(tmp)
-            bestalgs.append(None)
-
-    for i in range(len(targets)):
-        # 1. Determine FE_umin
-        FE_umin = numpy.inf
-
-        # if there is at least one unsuccessful run
-        if (numpy.isnan(evals[0][i]).any() or numpy.isnan(evals[1][i]).any()):
-            fvalues = []
-            if isBestAlg:
-                for j, entry in enumerate((entry0, entry1)):
-                    # if best alg entry
-                    if isinstance(entry.finalfunvals, dict):
-                        alg = bestalgs[j][i]
-                        if alg is None:
-                            tmpfvalues = entry.bestfinalfunvals
-                        else:
-                            tmpfvalues = entry.finalfunvals[alg]
-                    else:
-                        unsucc = numpy.isnan(evals[j][i])
-                        if unsucc.any():
-                            FE_umin = min(entry.maxevals[unsucc])
-                        else:
-                            FE_umin = numpy.inf
-                        # Determine the function values for FE_umin
-                        tmpfvalues = numpy.array([numpy.inf] * entry.nbRuns())
-                        for curline in entry.funvals:
-                            # only works because the funvals are monotonous
-                            if curline[0] > FE_umin:
-                                break
-                            prevline = curline[1:]
-                        tmpfvalues = prevline.copy()
-                        #tmpfvalues = entry.finalfunvals
-                        #if (tmpfvalues != entry.finalfunvals).any():
-                            #set_trace()
-                    fvalues.append(tmpfvalues)
-            else:
-                # 1) find min_{both algorithms}(conducted FEvals in
-                # unsuccessful trials) =: FE_umin
-                FE_umin = numpy.inf
-                if numpy.isnan(evals[0][i]).any() or numpy.isnan(evals[1][i]).any():
-                    FE = []
-                    for j, entry in enumerate((entry0, entry1)):
-                        unsucc = numpy.isnan(evals[j][i])
-                        if unsucc.any():
-                            tmpfe = min(entry.maxevals[unsucc])
-                        else:
-                            tmpfe = numpy.inf
-                        FE.append(tmpfe)
-                    FE_umin = min(FE)
-
-                    # Determine the function values for FE_umin
-                    fvalues = []
-                    for j, entry in enumerate((entry0, entry1)):
-                        prevline = numpy.array([numpy.inf] * entry.nbRuns())
-                        for curline in entry.funvals:
-                            # only works because the funvals are monotonous
-                            if curline[0] > FE_umin:
-                                break
-                            prevline = curline[1:]
-                        fvalues.append(prevline)
-
-        # 2. 3. 4. Collect data for the significance test:
-        curdata = []
-        for j, entry in enumerate((entry0, entry1)):
-            tmp = evals[j][i].copy()
-            idx = numpy.isnan(tmp) + (tmp > FE_umin)
-            tmp = numpy.power(tmp, -1.)
-            if idx.any():
-                tmp[idx] = -fvalues[j][idx]
-            curdata.append(tmp)
-
-        tmpres = bootstrap.ranksumtest(curdata[0], curdata[1])
-        if isBestAlg:
-            tmpres = list(tmpres)
-            tmpres[1] /= 2.  # one-tailed p-value instead of two-tailed
-
-        res.append(tmpres)
-
-    return res
 
 def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     """"prepend lines the tex-command filename """
