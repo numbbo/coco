@@ -258,7 +258,7 @@ def writeFEvalsMaxSymbols(fevals, maxsymbols, isscientific=False):
 
     return repr2
 
-def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=100000.):
+def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=1e5):
     """Return a string representation of a number.
 
     Two alternatives:
@@ -294,7 +294,7 @@ def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=100000.):
         # modified scientific notation:
         #smallest representation of the decimal part
         #drop + and starting zeros of the exponent part
-        res = (('%.' + str(SIG) + 'e') % entry)
+        res = (('%.' + str(max([0, SIG - 1])) + 'e') % entry)
         size1 = len(res)
         tmp = res.split('e', 1)
         tmp2 = tmp[-1].lstrip('+-0')
@@ -355,7 +355,7 @@ def tableXLaTeX(table, spec, extraeol=()):
 
     # TODO: check that spec and extraeol have the right format? 
 
-    res = [r'\begin{tabularx}{\textwidth}{%s}' % spec]
+    res = [r'\begin{tabularx}{1.07\textwidth}{%s}' % spec]
     for i, line in enumerate(table[:-1]):
         curline = ' & '.join(line) + r'\\' + extraeol[i]
         res.append(curline)

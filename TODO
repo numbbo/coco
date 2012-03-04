@@ -1,8 +1,11 @@
 bbob_pproc package random thoughts:
-02/2012: an oracle best algorithm must become a pproc.DataSet object, 
-  just as the portfolio in algportfolio.py is
+02/2012: the oracle best algorithm must inherit pproc.DataSet object, 
+  just as the portfolio in algportfolio.py does. Check out the portfolio code
+  for an implementation. 
 changing class pproc.DataSet to class pproc.DataSet(object) produces an error!
-__init__.py: what for?
+  This should be addressed before the oracle algorithm is implemented. 
+__init__.py: what for? Looks like a package documentation and is supposed to 
+  define all visible modules in the package. 
 run.py: main interface? is unfortunately rungeneric.py (and all over the documentation)
 post-processing raw data: how? make it clear(er) 
 Feature missing: output data that is human readable. A: use HDF5? 

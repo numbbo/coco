@@ -27,8 +27,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from bbob_pproc import bestalg, bootstrap
 from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
-from bbob_pproc.pproc import significancetest
-from bbob_pproc.bootstrap import ranksumtest
+from bbob_pproc.bootstrap import significancetest
 
 from pdb import set_trace
 
@@ -86,7 +85,7 @@ def _treat(ds):
         bestdtype.append((('best ERT df=%e' % t, 'df=%e' % t), 'f'))
     dtype.append((('nb success final target=%e' % t, 'finaltarget=%e' % t), 'i8'))
     dtype.append(('nbruns', 'i8'))
-    bestdtype.append((('nb success finaltarget=%e' %e, 'finaltarget=%e' % t), 'i8'))
+    bestdtype.append((('nb success finaltarget=%e' % t, 'finaltarget=%e' % t), 'i8'))
     bestdtype.append(('nbruns', 'i8'))
     besttable = np.zeros(1, dtype=bestdtype)
     wholetable = np.zeros(1, dtype=dtype)
@@ -297,14 +296,14 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                                       + r'\textit{%s}' % writeFEvals2(np.median(entry.maxevals), 2))
                         if isBold:
                             tableentry = r'\textbf{%s}' % tableentry
-                        elif 11 < 3 and significance0vs1 < 0:
+                        elif 11 < 3: # and significance0vs1 < 0:
                             tableentry = r'\textit{%s}' % tableentry
                         tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                       % (alignment, tableentry))
                     elif tableentry.find('e') > -1 or (np.isinf(tmp) and i != len(data) - 1):
                         if isBold:
                             tableentry = r'\textbf{%s}' % tableentry
-                        elif 11 < 3 and significance0vs1 < 0:
+                        elif 11 < 3: # and significance0vs1 < 0:
                             tableentry = r'\textit{%s}' % tableentry
                         tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                       % (alignment, tableentry))
@@ -312,7 +311,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                         tmp = tableentry.split('.', 1)
                         if isBold:
                             tmp = list(r'\textbf{%s}' % i for i in tmp)
-                        elif 11 < 3 and significance0vs1 < 0:
+                        elif 11 < 3: # and significance0vs1 < 0:
                             tmp = list(r'\textit{%s}' % i for i in tmp)
                         tableentry = ' & .'.join(tmp)
                         if len(tmp) == 1:

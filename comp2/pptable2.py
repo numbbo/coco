@@ -17,8 +17,7 @@ import numpy
 import matplotlib.pyplot as plt
 from bbob_pproc import bestalg, bootstrap
 from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec, writeLabels
-from bbob_pproc.pproc import significancetest
-from bbob_pproc.bootstrap import ranksumtest
+from bbob_pproc.bootstrap import significancetest
 
 from pdb import set_trace
 
@@ -35,7 +34,7 @@ figure_legend = (
     r"BBOB-2009 given in the respective first row and the half inter-80\%ile in brackets for " +
     r"different $\Df$ values. \#succ is the number of trials that reached the final " +
     r"target $\fopt + 10^{-8}$. " +
-    r"1:\:\algorithmAshort\ is \algorithmA\ and 2:\:\algorithmBshort\ is \algorithmB. " + 
+    r"1:\algorithmAshort\ is \algorithmA\ and 2:\algorithmBshort\ is \algorithmB. " + 
     r"Bold entries are statistically significantly better compared to the other algorithm, " + 
     r"with $p=0.05$ or $p=10^{-k}$ where $k\in\{2,3,4,\dots\}$ is the number " +
     r"following the $\star$ symbol, with Bonferroni correction of #1. " +
@@ -122,7 +121,6 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             # generate all data from ranksum test
             entries = []
             ertdata = {}
-            averageevalsdata = {}
             for nb, dsList in enumerate((dictFunc0, dictFunc1)):
                 try:
                     entry = dsList[f][0] # take the first DataSet, there should be only one?
@@ -131,7 +129,6 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     print('*** Warning: data missing for data set ' + str(nb) + ' and function ' + str(f) + '***')
                     continue # TODO: problem here!
                 ertdata[nb] = entry.detERT(targetsOfInterest)
-                averageevalsdata[nb] = entry.detAverageEvals(targetsOfInterest)  # must depend on target
                 entries.append(entry)
 
             for _t in ertdata.values():
@@ -144,7 +141,6 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             
             testres0vs1 = significancetest(entries[0], entries[1], targetsOfInterest)
             testresbestvs1 = significancetest(bestalgentry, entries[1], targetsOfInterest)
-            # 1/0 qqq
             testresbestvs0 = significancetest(bestalgentry, entries[0], targetsOfInterest)
 
             for nb, entry in enumerate(entries):
@@ -174,31 +170,17 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
                 if nb == 0:
                     assert not isinstance(data, numpy.ndarray)
-                    data0 = data[:] # TODO: check if it is not an array
+                    data0 = data[:] # TODO: check if it is not an array, it's never used anyway?
 
                 for i, dati in enumerate(data):  
 
-                    z, p = testres0vs1[i] #TODO: there is something with the sign that I don't get
-                    # assign significance flag
+                    z, p = testres0vs1[i] # TODO: there is something with the sign that I don't get
+                    # assign significance flag, which is the -log10(p)
                     significance0vs1 = 0
-                    if nb == 0:
-                        istat0 = 0
-                        istat1 = 1
-                    else:
-                        z = -z
-                        istat0 = 1
-                        istat1 = 0
-                    # the sign of significance0vs1 shall indicate which entry is better
-                    if nbtests * p < 0.05:
-                        if (z > 0 and ertdata[istat0][i] <= ertdata[istat1][i] and # TODO: the conditions below should be part of significancetest() ?
-                            (ertdata[istat0][i] is numpy.inf or  # comparable data: only f-values are compared for significance (they are compared for the same #evals)
-                             averageevalsdata[istat0][i] < averageevalsdata[istat1][i])):  # for incomparable data the effort of the better algorithm must be lower
-                            significance0vs1 = -int(numpy.ceil(numpy.log10(nbtests * p)))
-                        # elif nbtests * p < 0.05 and z < 0 and z * (ertdata[istat1][i] - ertdata[istat0][i]) > 0:
-                        elif (z < 0 and ertdata[istat1][i] <= ertdata[istat0][i] and 
-                            (ertdata[istat1][i] is numpy.inf or  # see above
-                             averageevalsdata[istat1][i] < averageevalsdata[istat0][i])):  # see above
-                            significance0vs1 = int(numpy.ceil(numpy.log10(nbtests * p)))
+                    if nb != 0:  
+                        z = -z  # the test is symmetric
+                    if nbtests * p < 0.05 and z > 0:  
+                        significance0vs1 = -int(numpy.ceil(numpy.log10(min([1.0, nbtests * p]))))  # this is the larger the more significant
 
                     isBold = significance0vs1 > 0
                     alignment = 'c'
@@ -232,7 +214,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                                           + r'\textit{%s}' % writeFEvals2(numpy.median(entry.maxevals), 2))
                             if isBold:
                                 tableentry = r'\textbf{%s}' % tableentry
-                            elif 11 < 3 and significance0vs1 < 0:
+                            elif 11 < 3 and significance0vs1 < 0:  # cave: negative significance has no meaning anymore
                                 tableentry = r'\textit{%s}' % tableentry
                             if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
                                 tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
