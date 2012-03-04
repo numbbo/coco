@@ -293,7 +293,7 @@ def main(argv=None):
 
         if isTab:
             prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
-                            ['\providecommand{\\bbobpptablesmanylegend}[2]{' + 
+                            ['\providecommand{\\bbobpptablesmanylegend}[1]{' + 
                              pptables.tables_many_legend + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.iteritems():
