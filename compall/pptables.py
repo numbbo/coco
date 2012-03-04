@@ -22,11 +22,12 @@ http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 
 tables_many_legend = """Expected running time (ERT in number of function evaluations)
                      divided by the best ERT measured during BBOB-2009 (given in the respective
-                     first row) for different $\\Df$ values for functions
-                     #1 in dimension #2. The inter-80\%tile range divided by two is given in braces. 
+                     first row) for different $\\Df$ values
+                     in #1. The inter-80\%tile range divided by two is given in braces. 
                      The median number of conducted function evaluations is additionally given in 
                      \\textit{italics}, if $\ERT(10^{-7}) = \\infty$.
-                     \\#succ is the number of trials that reached the final target $\\fopt + 10^{-8}$."""
+                     \\#succ is the number of trials that reached the final target $\\fopt + 10^{-8}$.
+                     Best results are printed in bold. """
 
 allmintarget = {}
 allmedtarget = {}
@@ -336,7 +337,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                       % (2 * len(targets) + 2, header)])
         extraeol.append('')
 
-        curline = [r'$\Delta$ftarget']
+        curline = [r'$\Delta f_\mathrm{opt}$']
         for t in targets[0:-1]:
             curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
                            % writeFEvals2(t, precision=1, isscientific=True))

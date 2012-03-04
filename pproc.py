@@ -595,6 +595,8 @@ class DataSetList(list):
                     f.close()
                     if verbose:
                         print 'Unpickled %s.' % (name)
+                    if not hasattr(entry, 'instancenumbers'):
+                        entry.instancenumbers = entry.itrials
                     self.append(entry)
                     #set_trace()
                 except IOError, (errno, strerror):
