@@ -83,7 +83,7 @@ class DataSet:
     # compatible?
 
     # Private attribute used for the parsing of info files.
-    __attributes = {'funcId': ('funcId', int), 'DIM': ('dim',int),
+    _attributes = {'funcId': ('funcId', int), 'DIM': ('dim',int),
                     'Precision': ('precision', float), 'Fopt': ('fopt', float),
                     'targetFuncValue': ('targetFuncValue', float),
                     'algId': ('algId', str)}
@@ -285,7 +285,7 @@ class DataSet:
         # Split header into a list of key-value
         for attrname, attrvalue in parseinfo(header):
             try:
-                setattr(self, self.__attributes[attrname][0], attrvalue)
+                setattr(self, self._attributes[attrname][0], attrvalue)
             except KeyError:
                 warnings.warn('%s is an additional attribute.' % (attrname))
                 setattr(self, attrname, attrvalue)
@@ -1157,6 +1157,8 @@ def dictAlgByFuncGroup(dictAlg):
 
     return res
 
+# TODO: these functions should go to different modules. E.g. tools.py and bootstrap.py renamed as stats.py
+
 def significancetest(entry0, entry1, targets):
     """Compute the rank-sum test between two data sets.
 
@@ -1294,7 +1296,7 @@ def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     f.close()
         
 def truncate_latex_command_file(filename, keeplines=200):
-    """try to truncate file but keep in good latex shape"""
+    """truncate file but keep in good latex shape"""
     open(filename, 'a').close()
     lines = list(open(filename, 'r'))
     f = open(filename, 'w')
@@ -1305,11 +1307,12 @@ def truncate_latex_command_file(filename, keeplines=200):
     f.close()
     
 def strip_pathname(name):
-    """remove ../ and ./ and leading/trainling blanks and path separators"""
+    """remove ../ and ./ and leading/trainling blanks and path separators from input string ``name``"""
     return name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep)
 
-def str_to_latex(name):
-    return name.replace('_', '\\_').replace(r'^', r'\^\,').replace('%', r'\%').replace(
+def str_to_latex(string):
+    """do replacements in ``string`` such that it most likely compiles with latex """
+    return string.replace('_', '\\_').replace(r'^', r'\^\,').replace('%', r'\%').replace(
                     '\\', r'\textbackslash{}').replace(r'~', r'\ensuremath{\sim}').replace(r'#', r'\#')
                     
                     
