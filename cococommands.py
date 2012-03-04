@@ -123,7 +123,7 @@ def systeminfo():
 #    bbob2010 (package)
 #    bbobies
 #    bestalg
-#    bootstrap
+#    toolsstats
 #    bwsettings
 #    changeAlgIdAndComment
 #    dataoutput

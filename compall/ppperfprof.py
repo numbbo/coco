@@ -42,7 +42,7 @@ import warnings
 from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
-from bbob_pproc import bootstrap, bestalg
+from bbob_pproc import toolsstats, bestalg
 from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
 from bbob_pproc.pprldistr import plotECDF, beautifyECDF
 from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
@@ -56,7 +56,7 @@ best = ('AMALGAM', 'iAMALGAM', 'VNS', 'MA-LS-CHAIN', 'BIPOP-CMA-ES', 'IPOP-ACTCM
    'DIRECT', 'DASA', 'POEMS', 'Cauchy-EDA', 'RANDOMSEARCH')
 
 # input parameter settings
-perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
+perfprofsamplesize = 100  # number of toolsstats samples drawn for each fct+target in the performance profile
 dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 nbperdecade = 3
 
@@ -93,14 +93,14 @@ def beautify():
     beautifyECDF()
 
 def plotmultiple(dictAlg, dsref=None, order=None, targets=defaulttargets,
-                 isbootstrap=False, rhleg=True):
+                 istoolsstats=False, rhleg=True):
     """Generate performance profile figure.
     
     :param dict dictAlg: dictionary of :py:class:`DataSetList` instances
                          one instance = one algorithm
     :param DataSetList dsref: reference data set
     :param seq targets: target function values
-    :param bool isbootstrap: if True, uses bootstrapped distribution
+    :param bool istoolsstats: if True, uses toolsstatsped distribution
     :param bool rhleg: if True, displays the right-hand legend
     
     """
@@ -117,18 +117,18 @@ def plotmultiple(dictAlg, dsref=None, order=None, targets=defaulttargets,
         args['markeredgewidth'] = 1.5
         args['markerfacecolor'] = 'None'
         args['markeredgecolor'] = args['color']
-        lines.append(plot(dictAlg[k], dsref, targets, isbootstrap, label=k,
+        lines.append(plot(dictAlg[k], dsref, targets, istoolsstats, label=k,
                           **args))
     #plt.xlim(xmin=1e-0, xmax=xlim*x_annote_factor)
     beautify()
     if rhleg:
         plotLegend(lines, plt.xlim()[1])
 
-def plot(dsList, dsref, targets=defaulttargets, isbootstrap=False, **kwargs):
+def plot(dsList, dsref, targets=defaulttargets, istoolsstats=False, **kwargs):
     """Generates a graph showing the performance profile of an algorithm.
 
     We display the empirical cumulative distribution function ECDF of
-    the bootstrapped distribution of the expected running time (ERT)
+    the toolsstatsped distribution of the expected running time (ERT)
     for an algorithm to reach the function value :py:data:`targets`
     normalized by the ERT of the reference algorithm for these
     targets.
@@ -155,14 +155,14 @@ def plot(dsList, dsref, targets=defaulttargets, isbootstrap=False, **kwargs):
                 pass
             if np.isinf(normalizer):
                 continue
-            if isbootstrap:
+            if istoolsstats:
                 x = [np.inf] * perfprofsamplesize
                 runlengthunsucc = []
                 evals = entry.detEvals([t])[0]
                 runlengthsucc = evals[np.isnan(evals) == False]
                 runlengthunsucc = entry.maxevals[np.isnan(evals)]
                 if len(runlengthsucc) > 0:
-                    x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                    x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                          percentiles=[50],
                                          samplesize=perfprofsamplesize)[1]
                 data.extend(i/normalizer for i in x)

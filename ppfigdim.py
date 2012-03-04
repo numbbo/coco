@@ -56,7 +56,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
-from bbob_pproc import bootstrap, bestalg
+from bbob_pproc import toolsstats, bestalg
 from bbob_pproc.ppfig import saveFigure, groupByRange
 
 scaling_figure_legend = (
@@ -195,7 +195,7 @@ def generateData(dataSet, targetFuncValue):
     data = prev[1:].copy() # keep only the number of function evaluations.
     succ = (numpy.isnan(data) == False)
     if succ.any():
-        med = bootstrap.prctile(data[succ], 50)[0]
+        med = toolsstats.prctile(data[succ], 50)[0]
         #Line above was modified at rev 3050 to make sure that we consider only
         #successful trials in the median
     else:
@@ -204,7 +204,7 @@ def generateData(dataSet, targetFuncValue):
     data[numpy.isnan(data)] = dataSet.maxevals[numpy.isnan(data)]
 
     res = []
-    res.extend(bootstrap.sp(data, issuccessful=succ, allowinf=False))
+    res.extend(toolsstats.sp(data, issuccessful=succ, allowinf=False))
     res.append(numpy.mean(data)) #mean(FE)
     res.append(med)
 

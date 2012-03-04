@@ -8,7 +8,7 @@ import sys
 import string
 import numpy
 
-from bbob_pproc import bootstrap
+from bbob_pproc import toolsstats
 from pdb import set_trace
 
 #GLOBAL VARIABLES DEFINITION
@@ -355,7 +355,7 @@ def tableXLaTeX(table, spec, extraeol=()):
 
     # TODO: check that spec and extraeol have the right format? 
 
-    res = [r'\begin{tabularx}{1.07\textwidth}{%s}' % spec]
+    res = [r'\begin{tabularx}{1.03\textwidth}{%s}' % spec]
     for i, line in enumerate(table[:-1]):
         curline = ' & '.join(line) + r'\\' + extraeol[i]
         res.append(curline)

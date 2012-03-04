@@ -18,7 +18,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 from pdb import set_trace
-from bbob_pproc import bootstrap, bestalg
+from bbob_pproc import toolsstats, bestalg
 from bbob_pproc.ppfig import saveFigure, groupByRange
 
 __all__ = ['beautify', 'plot', 'main']
@@ -127,7 +127,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
             assert len(dictparam[p]) == 1
             data[unsucc] = dictparam[p][0].maxevals
             # compute ERT
-            ert, srate, succ = bootstrap.sp(data, issuccessful=(unsucc == False))
+            ert, srate, succ = toolsstats.sp(data, issuccessful=(unsucc == False))
             ypltdata.append(ert)
         res.extend(plt.plot(xpltdata, ypltdata, markersize=20,
                    zorder=len(targets) - i, **styles[i]))
@@ -142,7 +142,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
             data = rawdata[p][i]
             data = data[np.isnan(data) == False]
             if len(data) > 0:
-                median = bootstrap.prctile(data, 50.)[0]
+                median = toolsstats.prctile(data, 50.)[0]
                 res.extend(plt.plot(p, median, styles[i]['color'], **medmarker))
                 break
 
@@ -170,7 +170,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
             assert len(dictparam[p]) == 1
             data[unsucc] = dictparam[p][0].maxevals
             # compute ERT
-            ert, srate, succ = bootstrap.sp(data, issuccessful=(unsucc == False))
+            ert, srate, succ = toolsstats.sp(data, issuccessful=(unsucc == False))
             if srate == 1.:
                 break
             elif succ > 0:

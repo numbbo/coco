@@ -8,10 +8,11 @@ import os
 from pdb import set_trace
 import warnings
 import numpy
-from bbob_pproc import bestalg, bootstrap
+from bbob_pproc import bestalg, toolsstats
 from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
-from bbob_pproc.bootstrap import significancetest, significance_vs_all
-from bbob_pproc.pproc import DataSetList, prepend_to_file, str_to_latex, strip_pathname
+from bbob_pproc.toolsstats import significancetest, significance_all_best_vs_other
+from bbob_pproc.pproc import DataSetList
+from bbob_pproc.toolsdivers import prepend_to_file, str_to_latex, strip_pathname
 from bbob_pproc.pplogloss import detf
 
 """
@@ -279,10 +280,10 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
             for i, e in enumerate(evals):
                 succ = (numpy.isnan(e) == False)
                 e[succ == False] = entry.maxevals[succ == False]
-                ert = bootstrap.sp(e, issuccessful=succ)[0]
+                ert = toolsstats.sp(e, issuccessful=succ)[0]
                 #tmpdata.append(ert/refalgert[i])
                 if succ.any():
-                    tmp = bootstrap.drawSP(e[succ], entry.maxevals[succ == False],
+                    tmp = toolsstats.drawSP(e[succ], entry.maxevals[succ == False],
                                            [10, 50, 90], samplesize=samplesize)[0]
                     tmpdisp.append((tmp[-1] - tmp[0])/2.)
                 else:
@@ -322,7 +323,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
 
         # significance test of best given algorithm against all others
         best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
-        significance_versus_others = significance_vs_all(algentries, targets, best_alg_idx)[0]
+        significance_versus_others = significance_all_best_vs_other(algentries, targets, best_alg_idx)[0]
                 
         # Create the table
         table = []
@@ -386,7 +387,8 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                 data = ert/refalgert[j]
                 # write star for significance against all other algorithms
                 str_significance_subsup = ''
-                if len(best_alg_idx) > 0 and i == best_alg_idx[j] and nbtests * significance_versus_others[j][1] < 0.05:
+                if (len(best_alg_idx) > 0 and len(significance_versus_others) > 0 and 
+                    i == best_alg_idx[j] and nbtests * significance_versus_others[j][1] < 0.05):
                     logp = -numpy.ceil(numpy.log10(nbtests * significance_versus_others[j][1]))
                     str_significance_subsup =  r"^{%s%s}" % (significance_vs_others_symbol, str(int(logp)) if logp > 1 else '')
 

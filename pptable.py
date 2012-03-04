@@ -25,9 +25,9 @@ from __future__ import absolute_import
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from bbob_pproc import bestalg, bootstrap
+from bbob_pproc import bestalg, toolsstats
 from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
-from bbob_pproc.bootstrap import significancetest
+from bbob_pproc.toolsstats import significancetest
 
 from pdb import set_trace
 
@@ -56,7 +56,7 @@ old_legend = r"""
  given target difference to the optimal function value \Df: the number
  of successful trials (\textbf{$\#$}); the expected running time to
  surpass $\fopt+\Df$ (\ERT, see Figure~\ref{fig:ERTgraphs}); the
- \textbf{10\%}-tile and \textbf{90\%}-tile of the bootstrap
+ \textbf{10\%}-tile and \textbf{90\%}-tile of the toolsstats
  distribution of \ERT; the average number of function evaluations in
  successful trials or, if none was successful, as last entry the median
  number of function evaluations to reach the best function value
@@ -100,7 +100,7 @@ def _treat(ds):
     data = list()
     for i, e in enumerate(evals): # loop over targets
         unsucc = np.isnan(e)
-        bt = bootstrap.drawSP(e[unsucc == False], ds.maxevals[unsucc],
+        bt = toolsstats.drawSP(e[unsucc == False], ds.maxevals[unsucc],
                                (10, 90), samplesize)[0]
         data.append((ert[i] / bestert[i], (bt[-1] - bt[0]) / 2. / bestert[i]))
     data.append(np.sum(np.isnan(finaldata) == False))
@@ -234,11 +234,11 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 tmp = i.copy()
                 tmp[succ==False] = entry.maxevals[np.isnan(i)]
                 #set_trace()
-                data.append(bootstrap.sp(tmp, issuccessful=succ)[0])
+                data.append(toolsstats.sp(tmp, issuccessful=succ)[0])
                 #if not any(succ):
                     #set_trace()
                 if any(succ):
-                    tmp2 = bootstrap.drawSP(tmp[succ], tmp[succ==False],
+                    tmp2 = toolsstats.drawSP(tmp[succ], tmp[succ==False],
                                             (10, 50, 90), samplesize)[0]
                     dispersion.append((tmp2[-1]-tmp2[0])/2.)
                 else:

@@ -35,7 +35,8 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import pprldistr
-from bbob_pproc.pproc import DataSetList, processInputArgs, prepend_to_file
+from bbob_pproc.pproc import DataSetList, processInputArgs
+from bbob_pproc.toolsdivers import prepend_to_file
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 from bbob_pproc.compall import ppfigs
 from bbob_pproc import ppconverrorbars

@@ -15,9 +15,9 @@ from __future__ import absolute_import
 import os, warnings
 import numpy
 import matplotlib.pyplot as plt
-from bbob_pproc import bestalg, bootstrap
+from bbob_pproc import bestalg, toolsstats
 from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec, writeLabels
-from bbob_pproc.bootstrap import significancetest
+from bbob_pproc.toolsstats import significancetest
 
 from pdb import set_trace
 
@@ -158,11 +158,11 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     tmp = i.copy()
                     tmp[succ==False] = entry.maxevals[numpy.isnan(i)]
                     #set_trace()
-                    data.append(bootstrap.sp(tmp, issuccessful=succ)[0])
+                    data.append(toolsstats.sp(tmp, issuccessful=succ)[0])
                     #if not any(succ):
                         #set_trace()
                     if any(succ):
-                        tmp2 = bootstrap.drawSP(tmp[succ], tmp[succ==False],
+                        tmp2 = toolsstats.drawSP(tmp[succ], tmp[succ==False],
                                                 (10, 50, 90), samplesize)[0]
                         dispersion.append((tmp2[-1]-tmp2[0])/2.)
                     else:

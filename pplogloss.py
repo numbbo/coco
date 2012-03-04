@@ -25,7 +25,7 @@ except ImportError:
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from matplotlib import mlab as mlab
 
-from bbob_pproc import bootstrap, bestalg
+from bbob_pproc import toolsstats, bestalg
 from bbob_pproc.pptex import writeFEvals2
 from bbob_pproc.ppfig import saveFigure
 
@@ -488,7 +488,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
         for i in range(len(EVALS)):
             tmpdata = list(data[f][i] for f in data)
             #set_trace()
-            tmpdata = bootstrap.prctile(tmpdata, prcOfInterest)
+            tmpdata = toolsstats.prctile(tmpdata, prcOfInterest)
             # format entries
             #tmp = [writeFEvals(EVALS[i]/d, '.0')]
             if EVALS[i]/d < 200:
@@ -529,7 +529,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
     
         #set_trace()
         if tmpdata: # if it is not empty
-            tmpdata = bootstrap.prctile(tmpdata, prcOfInterest)
+            tmpdata = toolsstats.prctile(tmpdata, prcOfInterest)
             for j in tmpdata:
                tmp.append(writeFEvals2(j/d, 1))
             res.append(" & ".join(tmp))

@@ -5,7 +5,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from bbob_pproc import bootstrap
+from bbob_pproc import toolsstats
 from pdb import set_trace
 
 lineprops = ('color', 'linestyle', 'linewidth', 'marker', 'markeredgecolor',
@@ -71,7 +71,7 @@ def plot2(dataset, **kwargs):
     # get data
     data = []
     for i in dataset.funvals[:, 1:]:
-        data.append(bootstrap.prctile(i, prctiles))
+        data.append(toolsstats.prctile(i, prctiles))
     data = np.asarray(data)
     xdata = dataset.funvals[:, 0]
     res = []

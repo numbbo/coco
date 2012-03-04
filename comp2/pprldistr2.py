@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import os
 import numpy
 import matplotlib.pyplot as plt
-from bbob_pproc import bootstrap
+from bbob_pproc import toolsstats
 from bbob_pproc.ppfig import saveFigure, consecutiveNumbers, plotUnifLogXMarkers
 from pdb import set_trace
 
@@ -88,7 +88,7 @@ def computeERT(fevals, maxevals):
     success = (numpy.isnan(data)==False)
     if any(numpy.isnan(data)):
         data[numpy.isnan(data)] = maxevals[numpy.isnan(data)]
-    res = bootstrap.sp(data, issuccessful=success)
+    res = toolsstats.sp(data, issuccessful=success)
     return res[0]
 
 def plotLogAbs(dsList0, dsList1, fvalueToReach, verbose=True):
