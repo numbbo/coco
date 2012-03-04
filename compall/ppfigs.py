@@ -7,7 +7,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
-from bbob_pproc import bootstrap, bestalg, pproc, genericsettings
+from bbob_pproc import toolsdivers, toolsstats, bestalg, pproc, genericsettings
 from bbob_pproc.ppfig import saveFigure
 from bbob_pproc.pptex import color_to_latex, marker_to_latex, writeLabels
 
@@ -19,7 +19,7 @@ from bbob_pproc.pptex import color_to_latex, marker_to_latex, writeLabels
 #           {'color': 'm'},
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
 
-show_significance = False
+show_significance = True
 scaling_figure_legend = (r"Expected running time (\ERT\ in number of $f$-evaluations) divided by dimension " +
                 r"for target function value \bbobppfigsftarget\ as $\log_{10}$ values versus dimension. " +
                 r"Different symbols " +
@@ -28,7 +28,7 @@ scaling_figure_legend = (r"Expected running time (\ERT\ in number of $f$-evaluat
                 r"divided by dimension. Horizontal lines give linear scaling, " +
                 r"slanted dotted lines give quadratic scaling. " +
                 (r"Black stars indicate statistically better result compared to all other algorithm " +
-                r"$p<0.01$ and Bonferroni correction with the number of dimensions.  ") if show_significance else ''
+                 r"$p<0.01$ and Bonferroni correction with the number of dimensions.  ") if show_significance else ''
                 )
 
 styles = genericsettings.line_styles
@@ -232,10 +232,10 @@ def generateData(dataSet, target):
     data = dataSet.detEvals([target])[0]
     succ = (numpy.isnan(data) == False)
     data[numpy.isnan(data)] = dataSet.maxevals[numpy.isnan(data)]
-    res.extend(bootstrap.sp(data, issuccessful=succ, allowinf=False))
+    res.extend(toolsstats.sp(data, issuccessful=succ, allowinf=False))
     res.append(numpy.mean(data))
     if res[2] > 0:
-        res.append(bootstrap.prctile(data[succ], 50)[0])
+        res.append(toolsstats.prctile(data[succ], 50)[0])
     else:
         res.append(numpy.nan)
     res[3] = numpy.max(dataSet.maxevals)
@@ -333,13 +333,15 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
             dims = sorted(pproc.dictAlgByDim(dictFunc[f]))
             for i, dim in enumerate(dims):
                 datasets = pproc.dictAlgByDim(dictFunc[f])[dim]
+                assert all([len(datasets[ialg]) == 1 for ialg in sortedAlgs if datasets[ialg]])
                 dsetlist =  [datasets[ialg][0] for ialg in sortedAlgs if datasets[ialg]]
-                arzp, arialg = bootstrap.significance_vs_all(dsetlist, [target])
-                if arzp[0][1] * len(dims) < 0.05:
-                    ert = dsetlist[arialg[0]].detERT([target])[0]
-                    if ert < numpy.inf: 
-                        xstar.append(dim)
-                        ystar.append(ert/dim)
+                if len(dsetlist) > 1:
+                    arzp, arialg = toolsstats.significance_all_best_vs_other(dsetlist, [target])
+                    if arzp[0][1] * len(dims) < 0.05:
+                        ert = dsetlist[arialg[0]].detERT([target])[0]
+                        if ert < numpy.inf: 
+                            xstar.append(dim)
+                            ystar.append(ert/dim)
 
             plt.plot(xstar, ystar, 'k*', markerfacecolor=None, markeredgewidth=2, markersize=0.5*styles[0]['markersize'])
         if funInfos:
@@ -369,7 +371,7 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
                                 marker_to_latex(styles[i]['marker']))
             alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
         filename = os.path.join(outputdir, 'bbob_pproc_commands.tex')
-        pproc.prepend_to_file(filename, 
+        toolsdivers.prepend_to_file(filename, 
                 ['\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%d}}}' 
                         % int(numpy.round(numpy.log10(target))),
                 '\\providecommand{\\bbobppfigslegend}[1]{',

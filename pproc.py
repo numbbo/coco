@@ -24,7 +24,7 @@ import pickle
 import warnings
 from pdb import set_trace
 import numpy, numpy as np
-from bbob_pproc import findfiles, bootstrap
+from bbob_pproc import findfiles, toolsstats
 from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
 from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from bbob_pproc.ppfig import consecutiveNumbers
@@ -233,7 +233,7 @@ class DataSet:
             succ = (numpy.isnan(data)==False)
             if any(numpy.isnan(data)):
                 data[numpy.isnan(data)] = self.maxevals[numpy.isnan(data)]
-            self.ert.append(bootstrap.sp(data, issuccessful=succ)[0])
+            self.ert.append(toolsstats.sp(data, issuccessful=succ)[0])
             self.target.append(i[0])
 
         self.ert = numpy.array(self.ert)
@@ -434,48 +434,46 @@ class DataSet:
         in ``targets`` list. If a target is not reached within trial
         itrail, self.maxevals[itrial] contributes to the average. 
         
-        Equals to sum(evals(target)) / ntrials. If ERT is finite 
+        Equals to sum(evals(target)) / nbruns. If ERT is finite 
         this equals to ERT * psucc == (sum(evals) / ntrials / psucc) * psucc, 
         where ERT, psucc, and evals are a function of target.  
           
         """
         assert not any(np.isnan(self.evals[:][0]))  # target value cannot be nan
-        
-        dotiming = False
-        if dotiming:
-            import time
-            t0 = time.time()
-        res = {}  # sum of evals indexed by target value
-        nsucc = {}  # for debugging only
-        idata = self.evals.shape[0] - 1  # current data line index 
-        for target in sorted(targets):  # smallest most difficult target first
-            if self.evals[-1, 0] > target:  # last entry is worse than target
-                res[target] = sum(self.maxevals)
-                nsucc[target] = 0
-                continue
-            while idata > 0 and self.evals[idata - 1, 0] <= target:  # idata-1 line is good enough
-                idata -= 1  # move up
-            assert self.evals[idata, 0] <= target and (idata == 0 or self.evals[idata - 1, 0] > target)
-            idxnan = np.isnan(self.evals[idata, 1:])
-            nsucc[target] = self.nbRuns() - sum(idxnan)
-            res[target] = sum(self.evals[idata, 1:][~idxnan]) + sum(self.maxevals[idxnan])
-        
-        ret = [res[target] / self.nbRuns() for target in targets]
-        
-        if dotiming:
-            t1 = time.time()
-        erts = self.detERT(targets)
-        if dotiming:
-            t2 = time.time()
-        
-        assert all([(erts[i] == np.inf and nsucc[target] == 0) or bootstrap.equals_approximately(erts[i], res[target] / nsucc[target]) 
-                        for i, target in enumerate(targets)]) 
-        # assert all([erts[i] == np.inf or erts[i] == res[target] / nsucc[target] for i, target in enumerate(targets)]) 
-        
-        if dotiming:
-            print 'timing report: average %f vs ert %f' % (t1 - t0, t2 - t1)
 
-        return ret
+        evalsums = []
+        for evalrow in self.detEvals(targets):
+            idxnan = np.isnan(evalrow)
+            evalsums.append(sum(evalrow[idxnan==False]) + sum(self.maxevals[idxnan]))
+        
+        averages = np.array(evalsums, copy=False) / self.nbRuns()
+            
+        assert all([(ert == np.inf and ps == 0) or -1e-9 < ert - averages[i] / ps < 1e-9
+                        for i, (ert, ps) in enumerate(zip(self.detERT(targets), self.detSuccessRates(targets)))]) 
+        
+        return averages
+    
+    def detSuccesses(self, targets):
+        """Determine for each target in targets the number of 
+        successful runs, keeping in return list the order in targets. 
+        
+            dset.SuccessRates(targets) == np.array(dset.detNbSuccesses(targets)) / dset.nbRuns()
+            
+        are the respective success rates. 
+        
+        """
+        succ = []
+        for evalrow in self.detEvals(targets, copy=False):
+            assert len(evalrow) == self.nbRuns()
+            succ.append(self.nbRuns() - sum(np.isnan(evalrow)))
+        return succ
+
+    def detSuccessRates(self, targets):
+        """return a np.array with the success rate for each target 
+        in targets, easiest target first
+        
+        """
+        return np.array(self.detSuccesses(targets)) / float(self.nbRuns())
 
     def detERT(self, targets):
         """Determine the expected running time to reach target values.
@@ -506,13 +504,38 @@ class DataSet:
                     line = it.next()
                 except StopIteration:
                     break
-            res[t] = prevline.copy() # is copy necessary?
+            res[t] = prevline.copy() # is copy necessary? Yes. 
 
         # Return a list of ERT corresponding to the input targets in
         # targets, sorted along targets
         return list(res[i][1] for i in targets)
 
-    def detEvals(self, targets):
+    def detEvals(self, targets, copy=True):
+        """returns len(targets) data rows self.evals[idata, 1:] each row with 
+        the closest but not larger target such that self.evals[idata, 0] <= target, 
+        and self.evals[idata-1, 0] > target or in the "limit" cases the
+        idata==0 line or the line np.array(self.nbRuns() * [np.nan]). 
+        
+        Makes by default a copy of the data, however this might change in future. 
+        
+        """
+        # about three times faster than previous implementation
+        evalsrows = {}  # data rows, easiest target first
+        idata = self.evals.shape[0] - 1  # current data line index 
+        for target in sorted(targets):  # smallest most difficult target first
+            if self.evals[-1, 0] > target:  # last entry is worse than target
+                evalsrows[target] = np.array(self.nbRuns() * [np.nan])
+                continue
+            while idata > 0 and self.evals[idata - 1, 0] <= target:  # idata-1 line is good enough
+                idata -= 1  # move up
+            assert self.evals[idata, 0] <= target and (idata == 0 or self.evals[idata - 1, 0] > target)
+            evalsrows[target] = self.evals[idata, 1:].copy() if copy else self.evals[idata, 1:]
+            
+        assert all([all((np.isnan(evalsrows[target]) + (evalsrows[target] == self._detEvals2(targets)[i]))) for i, target in enumerate(targets)])
+    
+        return [evalsrows[t] for t in targets]
+        
+    def _detEvals2(self, targets):
         """Determine the number of evaluations to reach target values.
 
         :keyword seq or float targets: target precisions
@@ -830,7 +853,7 @@ class DataSetList(list):
                     for j in range(len(dataSetTargets)):
                         evals[j].extend(tmpevals[j])
                 for i, j in enumerate(dataSetTargets): # never aggregate over dim...
-                    tmp = bootstrap.prctile(evals[i], [0, 10, 50, 90, 100])
+                    tmp = toolsstats.prctile(evals[i], [0, 10, 50, 90, 100])
                     tmp2 = []
                     for k in tmp:
                         if not numpy.isfinite(k):
@@ -1157,43 +1180,5 @@ def dictAlgByFuncGroup(dictAlg):
 
     return res
 
-# TODO: these functions should go to different modules. E.g. tools.py and bootstrap.py renamed as stats.py
+# TODO: these functions should go to different modules. E.g. tools.py and toolsstats.py renamed as stats.py
 
-
-def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
-    """"prepend lines the tex-command filename """
-    try:
-        lines_to_append = list(open(filename, 'r'))
-    except IOError:
-        lines_to_append = []
-    f = open(filename, 'w')
-    for line in lines:
-        f.write(line + '\n')
-    for i, line in enumerate(lines_to_append):
-        f.write(line)
-        if i > maxlines:
-            print warn_message
-            break
-    f.close()
-        
-def truncate_latex_command_file(filename, keeplines=200):
-    """truncate file but keep in good latex shape"""
-    open(filename, 'a').close()
-    lines = list(open(filename, 'r'))
-    f = open(filename, 'w')
-    for i, line in enumerate(lines):
-        if i > keeplines and line.startswith('\providecommand'):
-            break
-        f.write(line)
-    f.close()
-    
-def strip_pathname(name):
-    """remove ../ and ./ and leading/trainling blanks and path separators from input string ``name``"""
-    return name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep)
-
-def str_to_latex(string):
-    """do replacements in ``string`` such that it most likely compiles with latex """
-    return string.replace('_', '\\_').replace(r'^', r'\^\,').replace('%', r'\%').replace(
-                    '\\', r'\textbackslash{}').replace(r'~', r'\ensuremath{\sim}').replace(r'#', r'\#')
-                    
-                    

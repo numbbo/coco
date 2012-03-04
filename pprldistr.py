@@ -47,7 +47,7 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 from pdb import set_trace
-from bbob_pproc import bootstrap, genericsettings
+from bbob_pproc import toolsstats, genericsettings
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
@@ -239,7 +239,7 @@ def plotERTDistr(dsList, target, **plotArgs):
             if j[0] <= target[i.funcId]:
                 runlengthsucc = j[1:][np.isfinite(j[1:])]
                 runlengthunsucc = i.maxevals[np.isnan(j[1:])]
-                tmp = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                tmp = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                        percentiles=percentiles,
                                        samplesize=samplesize)
                 x.extend(tmp[1])

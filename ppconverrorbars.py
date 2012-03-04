@@ -31,7 +31,7 @@ if __name__ == "__main__":
 from bbob_pproc import pproc
 from bbob_pproc.pproc import DataSetList
 from bbob_pproc.ppfig import saveFigure
-from bbob_pproc.bootstrap import prctile
+from bbob_pproc.toolsstats import prctile
     
 import matplotlib.pyplot as plt
 

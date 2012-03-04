@@ -29,7 +29,8 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import pptable, pprldistr, ppfigdim, pplogloss, findfiles
-from bbob_pproc.pproc import DataSetList, prepend_to_file, strip_pathname, str_to_latex
+from bbob_pproc.pproc import DataSetList
+from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname, str_to_latex
 from bbob_pproc import ppconverrorbars
 
 import matplotlib.pyplot as plt

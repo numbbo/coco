@@ -9,7 +9,7 @@ import warnings
 import numpy as np
 from matplotlib import pyplot as plt
 from pdb import set_trace
-from bbob_pproc import genericsettings, bootstrap
+from bbob_pproc import genericsettings, toolsstats
 
 if genericsettings.fast_save_for_debugging:
     print "fast figure saving in ppfig.py"
@@ -278,7 +278,7 @@ def generateData(dataSet, targetFuncValue):
     data = prev[1:].copy() # keep only the number of function evaluations.
     succ = (np.isnan(data) == False)
     if succ.any():
-        med = bootstrap.prctile(data[succ], 50)[0]
+        med = toolsstats.prctile(data[succ], 50)[0]
         #Line above was modified at rev 3050 to make sure that we consider only
         #successful trials in the median
     else:
@@ -287,7 +287,7 @@ def generateData(dataSet, targetFuncValue):
     data[np.isnan(data)] = dataSet.maxevals[np.isnan(data)]
 
     res = []
-    res.extend(bootstrap.sp(data, issuccessful=succ, allowinf=False))
+    res.extend(toolsstats.sp(data, issuccessful=succ, allowinf=False))
     res.append(np.mean(data)) #mean(FE)
     res.append(med)
 

@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generates figure of the bootstrap distribution of ERT.
+"""Generates figure of the toolsstats distribution of ERT.
     
 The main method in this module generates figures of Empirical
-Cumulative Distribution Functions of the bootstrap distribution of
+Cumulative Distribution Functions of the toolsstats distribution of
 the Expected Running Time (ERT) divided by the dimension for many
 algorithms.
 
@@ -31,7 +31,7 @@ function evaluations of unsuccessful runs divided by dimension.
     archivefile = tarfile.open(filename)
     archivefile.extractall()
     
-    # Empirical cumulative distribution function of bootstrapped ERT figure
+    # Empirical cumulative distribution function of toolsstatsped ERT figure
     ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
     figure()
     bb.compall.pprldmany.plot(ds)
@@ -46,8 +46,9 @@ import warnings
 from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
-from bbob_pproc import bootstrap, bestalg, genericsettings
-from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun, strip_pathname, str_to_latex
+from bbob_pproc import toolsstats, bestalg, genericsettings
+from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun 
+from bbob_pproc.toolsdivers import strip_pathname, str_to_latex
 from bbob_pproc.pprldistr import plotECDF, beautifyECDF
 from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
 from bbob_pproc.pptex import writeLabels, numtotext
@@ -133,7 +134,7 @@ x_annote_factor = 90 # make space for right-hand legend
 fontsize = 10.0 # default setting, is modified in config.py
 
 save_zoom = False  # save zoom into left and right part of the figures
-perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
+perfprofsamplesize = 100  # number of toolsstats samples drawn for each fct+target in the performance profile
 dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 
 nbperdecade = 3
@@ -333,7 +334,7 @@ def plot(dsList, targets=defaulttargets, craftingeffort=0., **kwargs):
     """Generates a graph of the run length distribution of an algorithm.
 
     We display the empirical cumulative distribution function ECDF of
-    the bootstrapped distribution of the expected running time (ERT)
+    the toolsstatsped distribution of the expected running time (ERT)
     for an algorithm to reach the function value :py:data:`targets`.
 
     :param DataSetList dsList: data set for one algorithm
@@ -357,7 +358,7 @@ def plot(dsList, targets=defaulttargets, craftingeffort=0., **kwargs):
             runlengthsucc = evals[np.isnan(evals) == False] / entry.dim
             runlengthunsucc = entry.maxevals[np.isnan(evals)] / entry.dim
             if len(runlengthsucc) > 0:
-                x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                      percentiles=[50],
                                      samplesize=perfprofsamplesize)[1]
             data.extend(x)
@@ -392,7 +393,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
     """Generates a figure showing the performance of algorithms.
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
-    generates the cumulative distribution function of the bootstrap
+    generates the cumulative distribution function of the toolsstats
     distribution of ERT for algorithms on multiple functions for
     multiple targets altogether.
 
@@ -451,7 +452,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
                     runlengthsucc = evals[np.isnan(evals) == False] / entry.dim
                     runlengthunsucc = entry.maxevals[np.isnan(evals)] / entry.dim
                     if len(runlengthsucc) > 0:
-                        x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                        x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                              percentiles=[50],
                                              samplesize=perfprofsamplesize)[1]
                 except (KeyError, IndexError):
@@ -476,7 +477,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
                     #set_trace()
                     runlengthsucc = evals[np.isnan(evals) == False] / bestalgentry.dim
                     runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][np.isnan(evals)] / bestalgentry.dim
-                    x = bootstrap.drawSP(runlengthsucc, runlengthunsucc,
+                    x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                          percentiles=[50],
                                          samplesize=perfprofsamplesize)[1]
                 else:

@@ -22,14 +22,14 @@ except ImportError:
 
 import numpy
 
-from bbob_pproc import bootstrap, readalign
-from bbob_pproc.bootstrap import ranksumtest
+from bbob_pproc import toolsstats, readalign
+from bbob_pproc.toolsstats import ranksumtest
 from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
 #try:
     #supersede this module own ranksumtest method
     #from scipy.stats import ranksumtest as ranksumtest
 #except ImportError:
-    #from bbob_pproc.bootstrap import ranksumtest
+    #from bbob_pproc.toolsstats import ranksumtest
     #pass
 
 dimensions = (2, 3, 5, 10, 20, 40)
@@ -102,7 +102,7 @@ def _generateData(entry0, entry1, fthresh=None, downsampling=None):
             if any(numpy.isnan(data)):
                 data[numpy.isnan(data)] = maxevals[numpy.isnan(data)]
             tmp = [i[0]]
-            tmp.extend(bootstrap.sp(data, issuccessful=succ))
+            tmp.extend(toolsstats.sp(data, issuccessful=succ))
             res.append(tmp)
         return numpy.vstack(res)
 
@@ -204,12 +204,12 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     evals0 = data0.copy()
     succ = (numpy.isnan(evals0) == False)
     evals0[numpy.isnan(evals0)] = entry0.maxevals[numpy.isnan(evals0)]
-    line.append(bootstrap.sp(evals0, issuccessful=succ))
+    line.append(toolsstats.sp(evals0, issuccessful=succ))
     data1 = entry1.detEvals([minfvalue])[0]
     evals1 = data1.copy()
     succ = (numpy.isnan(evals1) == False)
     evals1[numpy.isnan(evals1)] = entry1.maxevals[numpy.isnan(evals1)]
-    line.append(bootstrap.sp(evals1, issuccessful=succ))
+    line.append(toolsstats.sp(evals1, issuccessful=succ))
 
     # What's the situation?
     txt = '%dD' % dim
