@@ -1,13 +1,16 @@
 bbob_pproc package random thoughts:
+02/2012: an oracle best algorithm must become a pproc.DataSet object, 
+  just as the portfolio in algportfolio.py is
+changing class pproc.DataSet to class pproc.DataSet(object) produces an error!
 __init__.py: what for?
-run.py: main interface?
-post-processing raw data: how? make it clear(er)
-Feature missing: output data that is human readable
+run.py: main interface? is unfortunately rungeneric.py (and all over the documentation)
+post-processing raw data: how? make it clear(er) 
+Feature missing: output data that is human readable. A: use HDF5? 
 documentation
 web: unify, clean up
-class DataSet: makes sense, what attributes and methods?
+class DataSet: makes sense, what attributes and methods? A: seems well documented. 
 class DataSetList: does it make sense? sort per problem
-dictAlg: what is this?
+dictAlg: what is this? Probably a dictionary of datasetlists with algorithm names as keys. 
 
 make it easier to work from the python command-line: operations such as loading and generating figures...
 

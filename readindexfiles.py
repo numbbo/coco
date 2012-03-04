@@ -55,7 +55,7 @@ class IndexEntry:
     """
 
     # Private attribute used for the parsing of info files.
-    __attributes = {'funcId': ('funcId', int), 'DIM': ('dim',int),
+    _attributes = {'funcId': ('funcId', int), 'DIM': ('dim',int),
                     'Precision': ('precision', float), 'Fopt': ('fopt', float),
                     'targetFuncValue': ('targetFuncValue', float),
                     'algId': ('algId', str)}
@@ -173,8 +173,8 @@ class IndexEntry:
                 #between data types.
 
                 try:
-                    setattr(self, self.__attributes[elemFirst][0],
-                            self.__attributes[elemFirst][1](elemSecond))
+                    setattr(self, self._attributes[elemFirst][0],
+                            self._attributes[elemFirst][1](elemSecond))
                 except KeyError:
                     warnings.warn('%s is not an expected ' % (elemFirst) +
                                   'attribute of IndexEntry.')
