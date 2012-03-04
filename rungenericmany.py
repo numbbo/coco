@@ -211,6 +211,12 @@ def main(argv=None):
         if (not verbose):
             warnings.simplefilter('ignore')
 
+    except Usage, err:
+        print >>sys.stderr, err.msg
+        print >>sys.stderr, "for help use -h or --help"
+        return 2
+
+    if 1 < 3:
         print ("BBOB Post-processing: will generate output " +
                "data in folder %s" % outputdir)
         print "  this might take several minutes."
@@ -309,11 +315,6 @@ def main(argv=None):
             print "Scaling figures done."
 
         plt.rcdefaults()
-
-    except Usage, err:
-        print >>sys.stderr, err.msg
-        print >>sys.stderr, "for help use -h or --help"
-        return 2
 
 if __name__ == "__main__":
     sys.exit(main())

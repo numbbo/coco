@@ -144,6 +144,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             
             testres0vs1 = significancetest(entries[0], entries[1], targetsOfInterest)
             testresbestvs1 = significancetest(bestalgentry, entries[1], targetsOfInterest)
+            # 1/0 qqq
             testresbestvs0 = significancetest(bestalgentry, entries[0], targetsOfInterest)
 
             for nb, entry in enumerate(entries):
