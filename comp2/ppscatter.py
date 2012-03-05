@@ -42,16 +42,16 @@ from bbob_pproc import readalign
 from bbob_pproc.ppfig import saveFigure
 
 dimensions = (2, 3, 5, 10, 20, 40)
-figure_legend = ("Expected running time (\\ERT\\ in $\log_{10}$ of number of function evaluations) " + 
- " of \\algorithmB\ ($y$-axis) versus \\algorithmA\ ($x$-axis) for 46 target values $\Df \in [10^{-8}, 10]$ in each dimension on functions " +
- " #1. Markers on the upper or right edge indicate that the target " +
- " value was never reached. Markers represent dimension: " + 
-  "2:{\\color{cyan}+}, " +
-  "3:{\\color{green!45!black}$\\triangledown$}, " +
-  "5:{\\color{blue}$\star$},  " +
- "10:$\\circ$,  " +
- "20:{\\color{red}$\\Box$},  " +
- "40:{\\color{magenta}$\\Diamond$}. ")
+figure_legend = (r"Expected running time (\ERT\ in $\log_{10}$ of number of function evaluations) " + 
+ r" of \algorithmA\ ($x$-axis) versus \algorithmB\ ($y$-axis) for 46 target values $\Df \in [10^{-8}, 10]$ in each dimension " +
+ r" on functions #1. Markers on the upper or right edge indicate that the target " +
+ r" value was never reached. Markers represent dimension: " + 
+ r" 2:{\color{cyan}+}, " +
+ r" 3:{\color{green!45!black}$\triangledown$}, " +
+ r" 5:{\color{blue}$\star$},  " +
+ r"10:$\circ$,  " +
+ r"20:{\color{red}$\Box$},  " +
+ r"40:{\color{magenta}$\Diamond$}. ")
  
 colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 markers = ('+', 'v', '*', 'o', 's', 'D', 'x')

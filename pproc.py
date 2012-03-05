@@ -24,11 +24,12 @@ import pickle
 import warnings
 from pdb import set_trace
 import numpy, numpy as np
-from bbob_pproc import findfiles, toolsstats
+from bbob_pproc import findfiles, toolsstats, toolsdivers
 from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
 from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from bbob_pproc.ppfig import consecutiveNumbers
 
+do_assertion = False  # expensive assertions
 dataSetTargets = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]
 
 # CLASS DEFINITIONS
@@ -448,8 +449,9 @@ class DataSet:
         
         averages = np.array(evalsums, copy=False) / self.nbRuns()
             
-        assert all([(ert == np.inf and ps == 0) or -1e-9 < ert - averages[i] / ps < 1e-9
-                        for i, (ert, ps) in enumerate(zip(self.detERT(targets), self.detSuccessRates(targets)))]) 
+        if do_assertion:
+            assert all([(ert == np.inf and ps == 0) or toolsdivers.equals_approximately(ert,  averages[i] / ps)
+                            for i, (ert, ps) in enumerate(zip(self.detERT(targets), self.detSuccessRates(targets)))]) 
         
         return averages
     
@@ -519,7 +521,6 @@ class DataSet:
         Makes by default a copy of the data, however this might change in future. 
         
         """
-        # about three times faster than previous implementation
         evalsrows = {}  # data rows, easiest target first
         idata = self.evals.shape[0] - 1  # current data line index 
         for target in sorted(targets):  # smallest most difficult target first
@@ -531,7 +532,8 @@ class DataSet:
             assert self.evals[idata, 0] <= target and (idata == 0 or self.evals[idata - 1, 0] > target)
             evalsrows[target] = self.evals[idata, 1:].copy() if copy else self.evals[idata, 1:]
             
-        assert all([all((np.isnan(evalsrows[target]) + (evalsrows[target] == self._detEvals2(targets)[i]))) for i, target in enumerate(targets)])
+        if do_assertion:
+            assert all([all((np.isnan(evalsrows[target]) + (evalsrows[target] == self._detEvals2(targets)[i]))) for i, target in enumerate(targets)])
     
         return [evalsrows[t] for t in targets]
         

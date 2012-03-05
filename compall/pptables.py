@@ -346,7 +346,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                        % writeFEvals2(targets[-1], precision=1, isscientific=True))
         curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
         table.append(curline)
-        extraeol.append('')
+        extraeol.append(r'\hline')
 
         curline = [r'ERT$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
         for i in refalgert[0:-1]:
@@ -359,7 +359,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
             curline.append('/%d' % refalgnbruns)
         #curline.append(curline[0])
         table.append(curline)
-        extraeol.append(r'\hline')
+        extraeol.append('')
 
         #for i, gna in enumerate(zip((1, 2, 3), ('bla', 'blo', 'bli'))):
             #print i, gna, gno

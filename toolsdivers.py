@@ -7,6 +7,12 @@
 
 import os
 
+def equals_approximately(a, b):
+    eps = 1e-12
+    if a < 0:
+        a, b = -1 * a, -1 * b
+    return a - eps < b < a + eps or (1 - eps) * a < b < (1 + eps) * a
+ 
 def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     """"prepend lines the tex-command filename """
     try:

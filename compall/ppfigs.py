@@ -27,8 +27,9 @@ scaling_figure_legend = (r"Expected running time (\ERT\ in number of $f$-evaluat
                 r"Light symbols give the maximum number of function evaluations from the longest trial " + 
                 r"divided by dimension. Horizontal lines give linear scaling, " +
                 r"slanted dotted lines give quadratic scaling. " +
-                (r"Black stars indicate statistically better result compared to all other algorithm " +
-                 r"$p<0.01$ and Bonferroni correction with the number of dimensions.  ") if show_significance else ''
+                (r"Black stars indicate statistically better result compared to all other algorithms " +
+                 r"with $p<0.01$ and Bonferroni correction number of dimensions (six).  ") 
+                         if show_significance else ''
                 )
 
 styles = genericsettings.line_styles
