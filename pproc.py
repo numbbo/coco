@@ -90,7 +90,7 @@ class DataSet:
         >>> ds = dslist[3]
         >>> ds
         DataSet(cmaes V3.30.beta on f2 10-D)
-        >>> for d in dir(ds): print d
+        >>> for d in dir(ds): print d  # dir(ds) shows attributes and methods of ds
            ....: 
         _DataSet__parseHeader
         __doc__
@@ -710,8 +710,11 @@ class DataSetList(list):
                     f.close()
                     if verbose:
                         print 'Unpickled %s.' % (name)
-                    if not hasattr(entry, 'instancenumbers'):
-                        entry.instancenumbers = entry.itrials
+                    try:
+                        entry.instancenumbers = entry.itrials  # has been renamed
+                        del entry.itrials
+                    except:
+                        pass
                     # if not hasattr(entry, 'detAverageEvals')
                     self.append(entry)
                     #set_trace()

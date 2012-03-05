@@ -414,6 +414,11 @@ class IndexEntries(list):
                     f.close()
                     if verbose:
                         print 'Unpickled %s.' % (i)
+                    try:
+                        entry.instancenumbers = entry.itrials
+                        del entry.itrials
+                    except:
+                        pass
                     self.append(entry)
                     #set_trace()
                 except IOError, (errno, strerror):
