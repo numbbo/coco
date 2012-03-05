@@ -89,7 +89,11 @@ class DataSet:
          DataSet(cmaes V3.30.beta on f2 10-D),
          DataSet(cmaes V3.30.beta on f2 20-D),
          DataSet(cmaes V3.30.beta on f2 40-D)]
-        >>> ds = dslist[3]
+        >>> type(dslist)
+        <class 'bbob_pproc.pproc.DataSetList'>
+        >>> len(dslist)
+        6
+        >>> ds = dslist[3]  # a single data set of type DataSet
         >>> ds
         DataSet(cmaes V3.30.beta on f2 10-D)
         >>> for d in dir(ds): print d  # dir(ds) shows attributes and methods of ds
@@ -135,34 +139,24 @@ class DataSet:
         readmaxevals
         splitByTrials
         target
-        >>> ds.evals[(0,10,30,-1),:]  # first 10th 30th and last row, each first element is ftarget
-        array([[  3.98107171e+07,   1.00000000e+00,   1.00000000e+00,
-                  1.00000000e+00,   1.00000000e+00,   1.00000000e+00,
-                  1.00000000e+00,   1.00000000e+00,   1.00000000e+00,
-                  1.00000000e+00,   1.00000000e+00,   1.00000000e+00,
-                  1.00000000e+00,   1.00000000e+00,   1.00000000e+00,
-                  1.00000000e+00],
-               [  3.98107171e+05,   3.70000000e+01,   9.80000000e+01,
-                  4.10000000e+01,   3.50000000e+01,   2.00000000e+01,
-                  8.40000000e+01,   9.70000000e+01,   4.70000000e+01,
-                  2.00000000e+01,   2.00000000e+00,   2.90000000e+01,
-                  7.20000000e+01,   1.76000000e+02,   1.40000000e+02,
-                  2.10000000e+01],
-               [  3.98107171e+01,   4.30500000e+03,   2.53200000e+03,
-                  3.25800000e+03,   3.58800000e+03,   3.04400000e+03,
-                  3.21000000e+03,   1.96000000e+03,   3.35600000e+03,
-                  2.81900000e+03,   3.11400000e+03,   2.20700000e+03,
-                  2.58700000e+03,   2.96200000e+03,   3.67000000e+03,
-                  3.46600000e+03],
-               [  1.58489319e-09,              nan,              nan,
-                             nan,              nan,              nan,
-                             nan,              nan,              nan,
-                             nan,              nan,              nan,
-                             nan,              nan,   6.12200000e+03,
-                             nan]])
-        >>> import numpy as np
-        >>> idx = range(0, 50, 10)
-        >>> np.array([idx, ds.target[idx], ds.ert[idx]]).T  # ERT expected runtime for some targets and all trials
+        >>> all(ds.evals[:, 0] == ds.target)  # first column of ds.evals is the "target" f-value
+        True
+        >>> ds.evals[0:-1:10,:][:, (0,5,6)]  # show row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
+        array([[  3.98107171e+07,   1.00000000e+00,   1.00000000e+00],
+               [  3.98107171e+05,   2.00000000e+01,   8.40000000e+01],
+               [  3.98107171e+03,   1.61600000e+03,   1.04500000e+03],
+               [  3.98107171e+01,   3.04400000e+03,   3.21000000e+03],
+               [  3.98107171e-01,   4.42400000e+03,   5.11800000e+03],
+               [  3.98107171e-03,   4.73200000e+03,   5.41300000e+03],
+               [  3.98107171e-05,   5.04000000e+03,   5.74800000e+03],
+               [  3.98107171e-07,   5.36200000e+03,   6.07000000e+03],
+               [  3.98107171e-09,   5.68200000e+03,              nan]])
+
+        >>> ds.evals[-1,:][:, (0,5,6)]  # show last row, same columns
+        array([  1.58489319e-09,              nan,              nan])
+        >>> import numpy as np  # not necessary in IPython
+        >>> idx = range(0, 50, 10) + [-1]
+        >>> np.array([idx, ds.target[idx], ds.ert[idx]]).T  # ERT expected runtime for some targets
         array([[  0.00000000e+00,   3.98107171e+07,   1.00000000e+00],
                [  1.00000000e+01,   3.98107171e+05,   6.12666667e+01],
                [  2.00000000e+01,   3.98107171e+03,   1.13626667e+03],
@@ -908,7 +902,7 @@ class DataSetList(list):
             d.setdefault(getattr(i, param, None), DataSetList()).append(i)
         return d
 
-    def info(self, opt='all'):
+    def info(self, opt=None):
         """Display some information onscreen.
 
         :keyword string opt: changes size of output, can be 'all'
@@ -926,6 +920,14 @@ class DataSetList(list):
             for i in range(1, len(algs)):
                 sys.stdout.write(', %s' % (algs[0][0]))
             sys.stdout.write('\n')
+
+            dictFun = self.dictByFunc()
+            functions = dictFun.keys()
+            functions.sort()
+            nbfuns = len(set(functions))
+            splural = 's' if nbfuns > 1 else ''
+            print '%d Function%s with ID%s %s' % (nbfuns, splural, splural, consecutiveNumbers(functions))
+
             dictDim = self.dictByDim()
             dimensions = dictDim.keys()
             dimensions.sort()
@@ -933,14 +935,14 @@ class DataSetList(list):
             for i in range(1, len(dimensions)):
                 sys.stdout.write(', %d' % (dimensions[i]))
             sys.stdout.write('\n')
-            dictFun = self.dictByFunc()
-            functions = dictFun.keys()
-            functions.sort()
-            print 'Function(s): %s' % (consecutiveNumbers(functions))
-            maxevals = 0
-            for i in self:
-                maxevals = max(i.mMaxEvals(), maxevals)
-            print 'Max evals: %d' % (maxevals)
+
+            maxevals = []
+            for i in xrange(len(dimensions)):
+                maxeval = []
+                for d in dictDim[dimensions[i]]:
+                    maxeval = int(max((d.mMaxEvals(), maxeval)))
+                maxevals.append(maxeval)
+            print 'Max evals: %s' % str(maxevals)
 
             if opt == 'all':
                 print 'Df      |     min       10      med       90      max'
