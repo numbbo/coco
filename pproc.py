@@ -76,6 +76,8 @@ class DataSet:
     either the numbers of function evaluations for :py:attr:`evals` or
     function values for :py:attr:`funvals`.
     
+    A short example::
+    
         >>> import sys
         >>> sys.path.append('path_to_bbob_proc')
         >>> import bbob_proc as bb
