@@ -154,6 +154,19 @@ class DataSet:
 
         >>> ds.evals[-1,:][:, (0,5,6)]  # show last row, same columns
         array([  1.58489319e-09,              nan,              nan])
+        >>> ds.info()  # prints similar data more nicely formated 
+        Algorithm: cmaes V3.30.beta
+        Function ID: 2
+        Dimension:10
+             Df  evals: best    10%     25%     50%     75%     90%     max
+          __________________________________________________________________
+          1.0e+03  |    1018    1027    1381    1698    1921    2093    2348
+          1.0e+01  |    2778    2942    3379    3645    4328    4576    4798
+          1.0e-01  |    4019    4429    4812    4966    5180    5275    5361
+          1.0e-03  |    4802    5150    5194    5287    5509    5546    5672
+          1.0e-05  |    5131    5421    5490    5626    5812    5862    5929
+          1.0e-08  |    5676    5886    5974    6112    6248    6307    6346
+
         >>> import numpy as np  # not necessary in IPython
         >>> idx = range(0, 50, 10) + [-1]
         >>> np.array([idx, ds.target[idx], ds.ert[idx]]).T  # ERT expected runtime for some targets
@@ -354,9 +367,23 @@ class DataSet:
         res += ')'
         return res
 
-    def info(self):
+    def info(self, targets = (1e3, 10, 0.1, 1e-3, 1e-5, 1e-8)):
         """Return some text info to display onscreen."""
-        pass
+        
+        if 1 < 3:  # code stump
+            sinfo = 'Algorithm: ' + str(self.algId)
+            sinfo += '\nFunction ID: ' + str(self.funcId)
+            sinfo += '\nDimension:' + str(self.dim)
+            sinfo += '\n     Df  evals: best    10%     25%     50%     75%     90%     max'
+            sinfo += '\n  __________________________________________________________________'
+            data = self.detEvals(targets)
+            for i, target in enumerate(targets):
+                line = '  %.1e  |' % target
+                for val in toolsstats.prctile(data[i], (0, 10, 25, 50, 75, 90, 100)): 
+                    line += '%8d' % val 
+                sinfo += '\n' + line
+            print sinfo
+            # return sinfo 
 
     def mMaxEvals(self):
         """Returns the maximum number of function evaluations."""
@@ -910,6 +937,7 @@ class DataSetList(list):
 
         """
         #TODO: do not integrate over dimension!!!
+        #      loop over all data sets!?
 
         if len(self) > 0:
             print '%d data set(s)' % (len(self))
