@@ -663,11 +663,5 @@ def fastsort(a):
     as_ = a[it]
     return as_, it
 
-def equals_approximately(a, b):
-    eps = 1e-14
-    if a < 0:
-        a, b = -1 * a, -1 * b
-    return a - eps < b < a + eps or (1 - eps) * a < b < (1 + eps) * a
- 
 
 ###############################################################################
