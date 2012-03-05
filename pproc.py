@@ -79,8 +79,8 @@ class DataSet:
         >>> import sys
         >>> sys.path.append('path_to_bbob_proc')
         >>> import bbob_proc as bb
-        >>> dslist = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info')[0]
-        >>> dslist
+        >>> dslist = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info')
+        >>> dslist  # nice display in particular in IPython
         [DataSet(cmaes V3.30.beta on f2 2-D),
          DataSet(cmaes V3.30.beta on f2 3-D),
          DataSet(cmaes V3.30.beta on f2 5-D),
@@ -90,6 +90,49 @@ class DataSet:
         >>> ds = dslist[3]
         >>> ds
         DataSet(cmaes V3.30.beta on f2 10-D)
+        >>> for d in dir(ds): print d
+           ....: 
+        _DataSet__parseHeader
+        __doc__
+        __eq__
+        __init__
+        __module__
+        __ne__
+        __repr__
+        _attributes
+        _detEvals2
+        _extra_attr
+        algId
+        comment
+        computeERTfromEvals
+        createDictInstance
+        createDictInstanceCount
+        dataFiles
+        detAverageEvals
+        detERT
+        detEvals
+        detSuccessRates
+        detSuccesses
+        dim
+        ert
+        evals
+        finalfunvals
+        funcId
+        funvals
+        generateRLData
+        indexFiles
+        info
+        instancenumbers
+        isFinalized
+        mMaxEvals
+        maxevals
+        nbRuns
+        pickle
+        precision
+        readfinalFminusFtarget
+        readmaxevals
+        splitByTrials
+        target
         >>> ds.evals[(0,10,30,-1),:]  # first 10th 30th and last row, each first element is ftarget
         array([[  3.98107171e+07,   1.00000000e+00,   1.00000000e+00,
                   1.00000000e+00,   1.00000000e+00,   1.00000000e+00,
