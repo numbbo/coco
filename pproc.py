@@ -75,7 +75,55 @@ class DataSet:
     data of a row is aligned, the :py:data:`N` subsequent columns are
     either the numbers of function evaluations for :py:attr:`evals` or
     function values for :py:attr:`funvals`.
-
+    
+        >>> import sys
+        >>> sys.path.append('path_to_bbob_proc')
+        >>> import bbob_proc as bb
+        >>> dslist = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info')[0]
+        >>> dslist
+        [DataSet(cmaes V3.30.beta on f2 2-D),
+         DataSet(cmaes V3.30.beta on f2 3-D),
+         DataSet(cmaes V3.30.beta on f2 5-D),
+         DataSet(cmaes V3.30.beta on f2 10-D),
+         DataSet(cmaes V3.30.beta on f2 20-D),
+         DataSet(cmaes V3.30.beta on f2 40-D)]
+        >>> ds = dslist[3]
+        >>> ds
+        DataSet(cmaes V3.30.beta on f2 10-D)
+        >>> ds.evals[(0,10,30,-1),:]  # first 10th 30th and last row, each first element is ftarget
+        array([[  3.98107171e+07,   1.00000000e+00,   1.00000000e+00,
+                  1.00000000e+00,   1.00000000e+00,   1.00000000e+00,
+                  1.00000000e+00,   1.00000000e+00,   1.00000000e+00,
+                  1.00000000e+00,   1.00000000e+00,   1.00000000e+00,
+                  1.00000000e+00,   1.00000000e+00,   1.00000000e+00,
+                  1.00000000e+00],
+               [  3.98107171e+05,   3.70000000e+01,   9.80000000e+01,
+                  4.10000000e+01,   3.50000000e+01,   2.00000000e+01,
+                  8.40000000e+01,   9.70000000e+01,   4.70000000e+01,
+                  2.00000000e+01,   2.00000000e+00,   2.90000000e+01,
+                  7.20000000e+01,   1.76000000e+02,   1.40000000e+02,
+                  2.10000000e+01],
+               [  3.98107171e+01,   4.30500000e+03,   2.53200000e+03,
+                  3.25800000e+03,   3.58800000e+03,   3.04400000e+03,
+                  3.21000000e+03,   1.96000000e+03,   3.35600000e+03,
+                  2.81900000e+03,   3.11400000e+03,   2.20700000e+03,
+                  2.58700000e+03,   2.96200000e+03,   3.67000000e+03,
+                  3.46600000e+03],
+               [  1.58489319e-09,              nan,              nan,
+                             nan,              nan,              nan,
+                             nan,              nan,              nan,
+                             nan,              nan,              nan,
+                             nan,              nan,   6.12200000e+03,
+                             nan]])
+        >>> import numpy as np
+        >>> idx = range(0, 50, 10)
+        >>> np.array([idx, ds.target[idx], ds.ert[idx]]).T  # ERT expected runtime for some targets and all trials
+        array([[  0.00000000e+00,   3.98107171e+07,   1.00000000e+00],
+               [  1.00000000e+01,   3.98107171e+05,   6.12666667e+01],
+               [  2.00000000e+01,   3.98107171e+03,   1.13626667e+03],
+               [  3.00000000e+01,   3.98107171e+01,   3.07186667e+03],
+               [  4.00000000e+01,   3.98107171e-01,   4.81333333e+03]])
+        
     """
 
     # TODO: unit element of the post-processing: one algorithm, one problem
