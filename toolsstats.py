@@ -612,7 +612,7 @@ def significancetest(entry0, entry1, targets):
 
 def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
     """:param datasets: is a list of DataSet from different algorithms, otherwise 
-    on the same function and dimension (which is not necessarily checked)
+            on the same function and dimension (which is not necessarily checked)
     :param targets: is a list of target values, 
     :param best_alg_idx:  for each target the best algorithm to be tested against the others 
     
