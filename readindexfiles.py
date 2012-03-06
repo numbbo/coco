@@ -52,6 +52,7 @@ class IndexEntry:
     of the aligned data, the N columns after those are the corresponding
     function values. Those 2 times N columns are sorted and go by pairs:
     column 1 and N+1 are related to the first trial, column 2 and N+2...
+    
     """
 
     # Private attribute used for the parsing of info files.

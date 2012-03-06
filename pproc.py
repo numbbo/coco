@@ -51,7 +51,7 @@ class DataSet:
       - *comment* -- comment for the setting (string)
       - *targetFuncValue* -- final target function value (float), might be missing
       - *precision* -- final ftarget - fopt (float), data with 
-                       target[idat] < precision are optional and possibly nan.  
+                       target[idat] < precision are optional and not relevant.  
       - *algId* -- algorithm name (string)
       - *evals* -- data aligned by function values (array)
       - *funvals* -- data aligned by function evaluations (array)
@@ -141,7 +141,7 @@ class DataSet:
         target
         >>> all(ds.evals[:, 0] == ds.target)  # first column of ds.evals is the "target" f-value
         True
-        >>> ds.evals[0:-1:10,:][:, (0,5,6)]  # show row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
+        >>> ds.evals[0::10,:][:, (0,5,6)]  # show row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
         array([[  3.98107171e+07,   1.00000000e+00,   1.00000000e+00],
                [  3.98107171e+05,   2.00000000e+01,   8.40000000e+01],
                [  3.98107171e+03,   1.61600000e+03,   1.04500000e+03],
@@ -367,23 +367,39 @@ class DataSet:
         res += ')'
         return res
 
-    def info(self, targets = (1e3, 10, 0.1, 1e-3, 1e-5, 1e-8)):
-        """Return some text info to display onscreen."""
-        
-        if 1 < 3:  # code stump
-            sinfo = 'Algorithm: ' + str(self.algId)
-            sinfo += '\nFunction ID: ' + str(self.funcId)
-            sinfo += '\nDimension:' + str(self.dim)
-            sinfo += '\n     Df  evals: best    10%     25%     50%     75%     90%     max'
-            sinfo += '\n  __________________________________________________________________'
-            data = self.detEvals(targets)
-            for i, target in enumerate(targets):
-                line = '  %.1e  |' % target
-                for val in toolsstats.prctile(data[i], (0, 10, 25, 50, 75, 90, 100)): 
-                    line += '%8d' % val 
-                sinfo += '\n' + line
-            print sinfo
-            # return sinfo 
+    def info(self, targets=None):
+        """print text info to stdout"""
+        if targets is None:
+            targets = [1e3, 10, 0.1, 1e-3, 1e-5, 1e-8]
+            if self.target[-1] < targets[-1]:
+                targets += [self.target[-1]]  
+        if targets[-1] < self.target[-1]:
+            targets[-1] = self.target[-1]
+        targets = sorted(set(targets), reverse=True)  # remove dupicates and sort
+
+        sinfo = 'Algorithm: ' + str(self.algId)
+        sinfo += '\nFunction ID: ' + str(self.funcId)
+        sinfo += '\nDimension DIM = ' + str(self.dim)
+        sinfo += '\nNumber of trials: ' + str(self.nbRuns())
+        sinfo += '\nFinal target Df: ' + str(self.precision)
+        sinfo += '\nmin / max number of evals: '  + str(int(min(self.evals[0]))) + ' / '  + str(int(max(self.maxevals)))
+        sinfo += '\n    evals/DIM: best    15%     50%     85%     max  |  ERT/DIM  nsucc'
+        sinfo += '\n  ---Df---|-----------------------------------------|----------------'
+        evals = self.detEvals(targets, copy=False)
+        nsucc = self.detSuccesses(targets)
+        ert = self.detERT(targets)
+        for i, target in enumerate(targets):
+            line = '  %.1e |' % target
+            for val in toolsstats.prctile(evals[i], (0, 15, 50, 85, 100)): 
+                line += ' %7d' % (val / self.dim) if not np.isnan(val) else '     .  ' 
+            line += ' |' + ('%9.1f' % (ert[i] / self.dim) if np.isfinite(ert[i]) else '    inf  ') 
+            # line += '  %4.2f' % (nsucc[i] / float(Nruns)) if nsucc[i] < Nruns else '  1.0 '
+            line += '  %2d' % nsucc[i]
+            sinfo += '\n' + line
+            if target < self.target[-1]:
+                break
+        print sinfo
+        # return sinfo 
 
     def mMaxEvals(self):
         """Returns the maximum number of function evaluations."""
@@ -750,6 +766,31 @@ class DataSetList(list):
                               'file(s), .pickle file(s) or a folder ' +
                               'containing .info file(s).')
 
+    def clean_data(self):
+        """removes data where target is smaller than precision==final Df and 
+        can be used for further cleaning up of read in data (in future)
+        
+        """
+        raise NotImplementedError()  # what is coming is not yet tested
+        # remove rows in evals where evals[-1,0] < precision
+        i = len(self.target)
+        while i > 1 and self.target[i-2] < self.precision:
+            i -= 1
+        if i < len(self.target):
+            self.target = self.target[:i]
+            self.evals = self.evals[:i, :]
+            
+        assert self.target[-1] == self.evals[-1,0] 
+        assert self.evals.shape[0] == 1 or self.evals[-2, 0] > self.precision
+        if self.target[-1] < self.precision:
+            warning.warn('')
+            print '*** warning: final precision was not recorded'
+
+        # compute maxevals as min(evals[presicion], maxevals) if not isnan(evals[precision])
+        raise NotImplementedError()
+        # self.computeERTfromEvals()
+        raise NotImplementedError()
+             
     def processIndexFile(self, indexFile, verbose=True):
         """Reads in an index file information on the different runs."""
 
