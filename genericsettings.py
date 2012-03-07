@@ -36,7 +36,7 @@ tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
 fast_save_for_debugging = False # saves only 30% 
 fig_formats = ('eps', 'pdf') if not fast_save_for_debugging else ('pdf', )
 
-line_styles = [
+line_styles = [  # used by ppfigs and pprlmany  
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
           {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, 
           {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'c'},

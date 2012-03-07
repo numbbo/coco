@@ -79,11 +79,11 @@ scaling_figure_legend = (
 
 colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
 styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
-          {'color': 'b'},
+          {'color': 'b', 'marker': '.'},
           {'color': 'c', 'marker': 'v', 'markeredgecolor': 'k'},
-          {'color': 'g'},
+          {'color': 'g', 'marker': '.'},
           {'color': 'y', 'marker': '^', 'markeredgecolor': 'k'},
-          {'color': 'm'},
+          {'color': 'm', 'marker': '.'},
           {'color': 'r', 'marker': 's', 'markeredgecolor': 'k'}] # sort of rainbow style
 refcolor = 'wheat'
 
