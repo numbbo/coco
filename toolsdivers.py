@@ -46,7 +46,6 @@ def strip_pathname(name):
 
 def str_to_latex(string):
     """do replacements in ``string`` such that it most likely compiles with latex """
-    return string.replace('_', '\\_').replace(r'^', r'\^\,').replace('%', r'\%').replace(
-                    '\\', r'\textbackslash{}').replace(r'~', r'\ensuremath{\sim}').replace(r'#', r'\#')
+    return string.replace('\\', r'\textbackslash{}').replace('_', '\\_').replace(r'^', r'\^\,').replace(r'%', r'\%').replace(r'~', r'\ensuremath{\sim}').replace(r'#', r'\#')
                     
                     
