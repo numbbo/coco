@@ -56,7 +56,7 @@ best = ('AMALGAM', 'iAMALGAM', 'VNS', 'MA-LS-CHAIN', 'BIPOP-CMA-ES', 'IPOP-ACTCM
    'DIRECT', 'DASA', 'POEMS', 'Cauchy-EDA', 'RANDOMSEARCH')
 
 # input parameter settings
-perfprofsamplesize = 100  # number of toolsstats samples drawn for each fct+target in the performance profile
+perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
 dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 nbperdecade = 3
 
@@ -100,7 +100,7 @@ def plotmultiple(dictAlg, dsref=None, order=None, targets=defaulttargets,
                          one instance = one algorithm
     :param DataSetList dsref: reference data set
     :param seq targets: target function values
-    :param bool istoolsstats: if True, uses toolsstatsped distribution
+    :param bool istoolsstats: if True, uses bootstrapped distribution
     :param bool rhleg: if True, displays the right-hand legend
     
     """
@@ -128,7 +128,7 @@ def plot(dsList, dsref, targets=defaulttargets, istoolsstats=False, **kwargs):
     """Generates a graph showing the performance profile of an algorithm.
 
     We display the empirical cumulative distribution function ECDF of
-    the toolsstatsped distribution of the expected running time (ERT)
+    the bootstrapped distribution of the expected running time (ERT)
     for an algorithm to reach the function value :py:data:`targets`
     normalized by the ERT of the reference algorithm for these
     targets.
