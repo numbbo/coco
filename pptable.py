@@ -3,8 +3,8 @@
 
 """Module for generating tables used by rungeneric1.py.
 
-The generated tables give the ERT and in brackets the 10% to 90%
-interquantile range divided by two of 100 simulated runs divided by the
+The generated tables give the ERT and in brackets the 10th to 90th
+percentile range divided by two of 100 simulated runs divided by the
 best ERT measured during BBOB-2009 (given in the respective first row)
 for different target precisions for different functions. If no algorithm
 in BBOB-2009 reached the target precision, the absolute values are

@@ -24,7 +24,7 @@ http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 tables_many_legend = """Expected running time (ERT in number of function evaluations)
                      divided by the respective best ERT measured during BBOB-2009 (given in 
                      the respective first row) for different $\\Df$ values in #1. 
-                     The inter-80\%tile range divided by two is given in braces. 
+                     The central 80\% range divided by two is given in braces. 
                      The median number of conducted function evaluations is additionally given in 
                      \\textit{italics}, if $\ERT(10^{-7}) = \\infty$.
                      \\#succ is the number of trials that reached the final target $\\fopt + 10^{-8}$.
