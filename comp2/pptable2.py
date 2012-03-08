@@ -31,7 +31,7 @@ isBenchmarkinfosFound = False
 
 figure_legend = (
     r"\ERT\ in number of function evaluations divided by the best \ERT\ measured during " +
-    r"BBOB-2009 given in the respective first row and the half inter-80\%ile in brackets for " +
+    r"BBOB-2009 given in the respective first row with the central 80\% range divided by two in brackets for " +
     r"different $\Df$ values. \#succ is the number of trials that reached the final " +
     r"target $\fopt + 10^{-8}$. " +
     r"1:\algorithmAshort\ is \algorithmA\ and 2:\algorithmBshort\ is \algorithmB. " + 
