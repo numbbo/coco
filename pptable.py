@@ -56,7 +56,7 @@ old_legend = r"""
  given target difference to the optimal function value \Df: the number
  of successful trials (\textbf{$\#$}); the expected running time to
  surpass $\fopt+\Df$ (\ERT, see Figure~\ref{fig:ERTgraphs}); the
- \textbf{10\%}-tile and \textbf{90\%}-tile of the toolsstats
+ \textbf{10\%}-tile and \textbf{90\%}-tile of the bootstrap
  distribution of \ERT; the average number of function evaluations in
  successful trials or, if none was successful, as last entry the median
  number of function evaluations to reach the best function value

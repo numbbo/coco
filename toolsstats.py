@@ -118,7 +118,7 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
 
 
 def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
-    """Returns the percentiles of the toolsstats distribution of
+    """Returns the percentiles of the bootstrapped distribution of
     'simulated' running lengths of successful runs.
 
     Input:
@@ -133,7 +133,7 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
        A single successful running length is computed by adding
        uniformly randomly chosen running lengths until the first time a
        successful one is chosen. In case of no successful run the sum of
-       unsuccessful runs is toolsstatsped. 
+       unsuccessful runs is bootstrapped. 
 
     """
     # TODO: for efficiency reasons a special treatment in the case, 
@@ -155,7 +155,7 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
         arrStats.sort()  # could be avoided
         return (prctile(runlengths_succ, percentiles, issorted=False),
             arrStats)
-    if 11 < 3 and Nunsucc == 0:  # not tested yet: toolsstats, but more efficient
+    if 11 < 3 and Nunsucc == 0:  # not tested yet: bootstraps, but more efficient
         arrStats = [runlengths_succ[numpy.random.randint(Nsucc)] 
                       for i in xrange(int(samplesize))]
         arrStats.sort()  # could be avoided
@@ -191,12 +191,12 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
             arrStats)
 
 def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
-    """Generates the empirical toolsstats distribution from a sample.
+    """Generates the empirical bootstrap distribution from a sample.
 
     Input:
       - *data* -- a sequence of data values
       - *percentiles* -- a single scalar value or a sequence of
-        percentiles to be computed from the toolsstatsped distribution.
+        percentiles to be computed from the bootstrapped distribution.
       - *func* -- function that computes the statistics as
         func(data,*args) or func(data,*args)[0], by default toolsstats.sp1
       - *args* -- arguments to func, the zero-th element of args is
@@ -204,12 +204,12 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
         of the associated data value. This specialization of the draw
         procedure is due to the interface of the performance computation
         methods sp1 and sp.
-      - *samplesize* -- number of toolsstatss drawn, default is 1e3,
+      - *samplesize* -- number of bootstraps drawn, default is 1e3,
         for more reliable values choose rather 1e4. 
         performance is linear in samplesize, 0.2s for samplesize=1000.
 
     Return:
-        (prctiles, all_samplesize_toolsstatsped_values_sorted)
+        (prctiles, all_samplesize_bootstrapped_values_sorted)
 
     Example:
         >> import toolsstats
@@ -218,7 +218,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
         >> print res[0]
 
     .. note::
-       NaN-values are also toolsstatsped, but disregarded for the 
+       NaN-values are also bootstrapped, but disregarded for the 
        calculation of percentiles which can lead to somewhat
        unexpected results.
 
@@ -230,7 +230,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     # there is a third argument to func which is the array of success
     if len(args) > 1:
         succ = numpy.array(args[1])
-    # should NaNs also be toolsstatsped?
+    # should NaNs also be boostrapped?
     argsv = args
     if 1 < 3:
         for i in xrange(int(samplesize)):
@@ -254,7 +254,6 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     return (prctile(arrStats, percentiles, issorted=True),
             arrStats)
 
-# utils not really part of toolsstats module though:
 def prctile(x, arrprctiles, issorted=False):
     """Computes percentile based on data with linear interpolation
 
@@ -490,7 +489,7 @@ def significancetest(entry0, entry1, targets):
 
     """
 
-    toolsstats = False  # future extension
+    bootstraps = False  # future extension
     res = []
     evals = []
     bestalgs = []
@@ -518,11 +517,11 @@ def significancetest(entry0, entry1, targets):
         averageevals = [None, None]
         averageevals[0] = entry0.detAverageEvals(targets)
         averageevals[1] = entry1.detAverageEvals(targets)
-        if toolsstats: 
+        if bootstraps: 
             psucc0 = 1 - sum(numpy.isnan(entry0.getEvals(targets)), axis=-1) / entry0.nbRuns()
             psucc1 = None
             if psucc0 == 1 and psucc1 == 1:
-                toolsstats = False
+                bootstraps = False
 
     for i in range(len(targets)):
         # 1. Determine FE_umin,  the minimum evals in unsuccessful trials 
