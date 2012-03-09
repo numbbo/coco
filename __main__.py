@@ -10,6 +10,7 @@ if __name__ == "__main__":
 
     import os
     data_path = os.path.join(' ..', '..', 'final-submissions', '2009', 'data')
+    
     os.system('python bbob_pproc/rungeneric.py ' + 
                 os.path.join(data_path, 'BFGS'))
     os.system('python bbob_pproc/rungeneric.py --omit-single ' +
