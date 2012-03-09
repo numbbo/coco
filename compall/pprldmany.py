@@ -139,7 +139,7 @@ dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 
 
 nbperdecade = 3
 
-styles = [{i:d[i] for i in d} for d in genericsettings.line_styles]  # deep copy
+styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
 
 refcolor = 'wheat'
 #'-'     solid line style
