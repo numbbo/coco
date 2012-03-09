@@ -6,7 +6,7 @@ this test can and should become much more sophisticated
 """
 
 if __name__ == "__main__": 
-    print '*** testing module bbob_pproc ***
+    print '*** testing module bbob_pproc ***'
 
     import os
     data_path = os.path.join(' ..', '..', 'final-submissions', '2009', 'data')
@@ -20,4 +20,4 @@ if __name__ == "__main__":
                 os.path.join(data_path, 'PSO ') +
                 os.path.join(data_path, 'ALPS '))
 
-    print '*** done testing module bbob_pproc ***
+    print '*** done testing module bbob_pproc ***'
