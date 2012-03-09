@@ -6,10 +6,18 @@ this test can and should become much more sophisticated
 """
 
 if __name__ == "__main__": 
+    print '*** testing module bbob_pproc ***
+
     import os
-    data_path = '../../final-submissions/2009/data/'
+    data_path = os.path.join(' ..', '..', 'final-submissions', '2009', 'data')
     os.system('python bbob_pproc/rungeneric.py ' + 
-                data_path + 'BFGS')
-    os.system('python bbob_pproc/rungeneric.py --omit-single' +
-                data_path + 'DE-PSO' +
-                data_path + 'VNS')
+                os.path.join(data_path, 'BFGS'))
+    os.system('python bbob_pproc/rungeneric.py --omit-single ' +
+                os.path.join(data_path, 'DE-PSO ') +
+                os.path.join(data_path, 'VNS '))
+    os.system('python bbob_pproc/rungeneric.py --omit-single ' +
+                os.path.join(data_path, 'BIPOP-CMA-ES ') +
+                os.path.join(data_path, 'PSO ') +
+                os.path.join(data_path, 'ALPS '))
+
+    print '*** done testing module bbob_pproc ***
