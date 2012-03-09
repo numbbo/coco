@@ -5,10 +5,11 @@ this test can and should become much more sophisticated
 
 """
 
-
 if __name__ == "__main__": 
     import os
-    os.system('python bbob_pproc/rungeneric.py test_bbob_pproc_input_data/DIRECT')
+    data_path = '../../final-submissions/2009/data/'
+    os.system('python bbob_pproc/rungeneric.py ' + 
+                data_path + 'BFGS')
     os.system('python bbob_pproc/rungeneric.py --omit-single' +
-                    ' test_bbob_pproc_input_data/DIRECT ' + 
-                    ' test_bbob_pproc_input_data/Cauchy-EDA') 
+                data_path + 'DE-PSO' +
+                data_path + 'VNS')
