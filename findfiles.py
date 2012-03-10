@@ -24,6 +24,8 @@ def main(directory='.', verbose=True):
     The data files have :file:`info` and :file:`pickle` extensions.
 
     """
+    
+    # TODO: if directory is a zipped file, unzip first
 
     filelist = list()
 
