@@ -1103,10 +1103,10 @@ def parseinfo(s):
 def processInputArgs(args, verbose=True):
     """Process command line arguments.
 
-    Returns an instance of :py:class:`DataSetList`, a list of algorithms
-    from a list of strings representing file and folder names. This
-    command will operate folder-wise: one folder will correspond to an
-    algorithm.
+    Returns several instances of :py:class:`DataSetList`, and a list of 
+    algorithms from a list of strings representing file and folder names,
+    see below for details. This command operates folder-wise: one folder 
+    corresponds to one algorithm.
 
     It is recommended that if a folder listed in args contain both
     :file:`info` files and the associated :file:`pickle` files, they be
@@ -1123,7 +1123,7 @@ def processInputArgs(args, verbose=True):
         is a dictionary which associates algorithms to an instance
         of DataSetList,
       sortedAlgs
-        is the sorted list of keys of dictAlg, the sorting is
+        is a list of keys of dictAlg with the ordering as
         given by the input argument args.
 
     """
@@ -1132,6 +1132,7 @@ def processInputArgs(args, verbose=True):
     dictAlg = {}
     for i in args:
         if os.path.isfile(i):
+            # TODO: a zipped tar file should be unzipped here, see findfiles.py 
             txt = ('The post-processing cannot operate on the single file'
                    + ' %s.' % i)
             warnings.warn(txt)
