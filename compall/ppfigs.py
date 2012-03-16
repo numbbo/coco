@@ -370,7 +370,7 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
         for i in range(len(sortedAlgs)):
             symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
                                 marker_to_latex(styles[i]['marker']))
-            alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
+            alg_definitions.append((', ' if i > 0 else '') + '%s:%s' % (symb, '\\algorithm' + abc[i % len(abc)]))
         filename = os.path.join(outputdir, 'bbob_pproc_commands.tex')
         toolsdivers.prepend_to_file(filename, 
                 ['\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%d}}}' 
@@ -392,7 +392,7 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
         for i in range(0, len(sortedAlgs)):
             symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
                                 marker_to_latex(styles[i]['marker']))
-            f.write((', ' if i > 0 else '') + '%s: %s' % (symb, writeLabels(sortedAlgs[i])))
+            f.write((', ' if i > 0 else '') + '%s:%s' % (symb, writeLabels(sortedAlgs[i])))
         f.close()    
         if verbose:
             print '(obsolete) Wrote legend in %s' % filename
