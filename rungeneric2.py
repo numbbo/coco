@@ -20,6 +20,7 @@ import warnings
 import getopt
 from pdb import set_trace
 import numpy
+from bbob_pproc.toolsdivers import strip_pathname, str_to_latex
 
 ftarget = 1e-8  # CAVE: changing this makes the figure captions invalid 
 
@@ -286,7 +287,7 @@ def main(argv=None):
             lines = []
             for i, alg in enumerate(args):
                 lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
-                        alg.replace('..' + os.sep, '').strip(os.sep) + '}')
+                        str_to_latex(strip_pathname(alg)) + '}')
             prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
                          lines, 1000, 
                          'bbob_proc_commands.tex truncated, consider removing the file before the text run'
