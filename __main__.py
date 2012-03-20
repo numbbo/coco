@@ -15,10 +15,15 @@ def join_path(a, *p):
     return path
     
 if __name__ == "__main__": 
-    """tests executed when ``python bbob_pproc`` is called.  
+    """these tests are executed when ``python bbob_pproc`` is called.  
+
+    with ``wine`` as second argument ``C:\\Python26\\python.exe`` 
+    instead of ``python`` is called
+    
     """
     python = 'python '  # how to call python 
-    # python = 'C:\\Python26\\python.exe ' # works for wine
+    if len(sys.argv) > 1 and sys.argv[1] == 'wine':
+        python = 'C:\\Python26\\python.exe ' # works for wine
     
     data_path = join_path(' ..', '..', 'final-submissions', '2009', 'data')
 

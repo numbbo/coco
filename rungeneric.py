@@ -264,7 +264,7 @@ def main(argv=None):
                 rungeneric1.main(genopts1
                                 + ["-o", tmpoutputdir, alg])
                 prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
-                                ['\\providecommand{\\algfolder}{' + alg.replace('..' + os.sep, '').rstrip(os.sep) + os.sep + '}'])
+                                ['\\providecommand{\\algfolder}{' + alg.replace('..' + os.sep, '').rstrip(os.sep).replace(os.sep, '/') + '/}'])
 
         if len(args) == 2:
             rungeneric2.main(genopts2 + ["-o", outputdir] + args)
