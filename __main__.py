@@ -31,7 +31,7 @@ if __name__ == "__main__":
     
     print '*** testing module bbob_pproc ***'
 
-    os.system(python + command + 
+    os.system(python + command + '--conv' + 
                 join_path(data_path, 'BFGS'))
     os.system(python + command + ' --omit-single ' +
                 join_path(data_path, 'DE-PSO ') +
