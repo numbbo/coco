@@ -35,6 +35,7 @@ from bbob_pproc.toolsstats import prctile
     
 import matplotlib.pyplot as plt
 
+warned = False  # print just one warning and set to True
 
 #FUNCTION DEFINITIONS
 
@@ -59,11 +60,12 @@ def main(dictAlg, outputdir='.', verbose=True):
     """Main routine for generating convergence plots
 
     """
+    global warned  # bind variable warned into this scope
     dictFun = pproc.dictAlgByFun(dictAlg)
     for l in dictFun:
         for i in dictFun[l]:
             plt.figure()
-            if (type(i)=='List'):
+            if type(i) in (list, tuple):
                 figurename="ppconv_plot_" + i[0] + "_f"+ str(l)
             else:
                 figurename="ppconv_plot_" + dictFun[l][i].algId + "_f"+ str(l)
@@ -80,7 +82,12 @@ def main(dictAlg, outputdir='.', verbose=True):
                 dimList_f.append(j.funvals[:,1:])
                 bs, fs= rearrange(dimList_b,dimList_f)
                 labeltext=str(j.dim)+"D"
-                plt.errorbar(bs[0], fs[0][0], yerr = [fs[0][1], fs[0][2]], label = labeltext)
+                try:
+                    plt.errorbar(bs[0], fs[0][0], yerr = [fs[0][1], fs[0][2]], label = labeltext)
+                except FloatingPointError:  # that's a bit of a hack
+                    if not warned:
+                        print('Warning: floating point error when plotting errorbars, ignored')
+                    warned = True
             plt.legend(loc='3')
             saveFigure(os.path.join(outputdir, figurename.replace(' ','')),  ('eps', 'pdf'), verbose=verbose)
             plt.close()
