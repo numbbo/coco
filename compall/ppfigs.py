@@ -290,7 +290,8 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
                            #label=alg, )
             plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
             # For legend
-            tmp = plt.plot([], [], label=alg.replace('..' + os.sep, '').strip(os.sep), **styles[i])
+            # tmp = plt.plot([], [], label=alg.replace('..' + os.sep, '').strip(os.sep), **styles[i])
+            tmp = plt.plot([], [], label=alg.split(os.sep)[-1], **styles[i])
             plt.setp(tmp[0], markersize=12.,
                      markeredgecolor=plt.getp(tmp[0], 'color'))
 
@@ -365,7 +366,7 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
 
     # generate commands in tex file:
     try:
-        abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
         alg_definitions = []
         for i in range(len(sortedAlgs)):
             symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),

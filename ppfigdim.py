@@ -59,7 +59,7 @@ from pdb import set_trace
 from bbob_pproc import toolsstats, bestalg
 from bbob_pproc.ppfig import saveFigure, groupByRange
 
-scaling_figure_legend = (
+scaling_figure_legend = str(
     r"Expected number of $f$-evaluations (\ERT, with lines, see legend) to reach $\fopt+\Df$, " +
     r"median number of $f$-evaluations to reach the most difficult target that was reached at least once ($+$) " + 
     r"and maximum number of $f$-evaluations in any trial ({\color{red}$\times$}), all " +
