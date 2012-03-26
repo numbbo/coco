@@ -20,7 +20,6 @@ import warnings
 import getopt
 from pdb import set_trace
 import numpy
-from toolsdivers import strip_pathname, str_to_latex
 
 ftarget = 1e-8  # CAVE: changing this makes the figure captions invalid 
 
@@ -37,7 +36,7 @@ if __name__ == "__main__":
 
 from bbob_pproc import pprldistr
 from bbob_pproc.pproc import DataSetList, processInputArgs
-from bbob_pproc.toolsdivers import prepend_to_file
+from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname, str_to_latex
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 from bbob_pproc.compall import ppfigs
 from bbob_pproc import ppconverrorbars
