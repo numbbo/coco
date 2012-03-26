@@ -21,7 +21,7 @@ import tarfile
 from pdb import set_trace
 import warnings
 import numpy
-from bbob_pproc.toolsdivers import strip_pathname, str_to_latex
+from toolsdivers import strip_pathname, str_to_latex
 
 ftarget = 1e-8  # CAVE: changing this makes the figure captions invalid 
 
