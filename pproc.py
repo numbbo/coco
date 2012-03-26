@@ -783,7 +783,7 @@ class DataSetList(list):
         assert self.target[-1] == self.evals[-1,0] 
         assert self.evals.shape[0] == 1 or self.evals[-2, 0] > self.precision
         if self.target[-1] < self.precision:
-            warning.warn('')
+            warnings.warn('')
             print '*** warning: final precision was not recorded'
 
         # compute maxevals as min(evals[presicion], maxevals) if not isnan(evals[precision])
