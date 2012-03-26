@@ -352,7 +352,7 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
         isLegend = False
         if legend:
             plotLegend(handles)
-        else:
+        elif 1 < 3:
             if f in (1, 24, 101, 130) and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
                 isLegend = True
 
