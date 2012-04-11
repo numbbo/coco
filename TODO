@@ -1,4 +1,6 @@
 bbob_pproc package random thoughts:
+04/2012: 3 names in one report: the problem is legend in compall/ppfigs.py, 
+  which takes invariably the folder name, see Petrs Mail from March 26
 04/2012: maxfevals should occur in Figure 1 also when comparing algorithms (compall/ppfigs.py)
 03/2012: The datasets in the svn for noisy and noiseless data should be separated
 03/2012: processInputArgs and findfiles should accept zipped folders

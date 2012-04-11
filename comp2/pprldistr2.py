@@ -374,6 +374,9 @@ def main(dsList0, dsList1, valuesOfInterest=None,
 
     funcs = set(dsList0.dictByFunc().keys()) & set(dsList1.dictByFunc().keys())
     text = 'f%s' % consecutiveNumbers(sorted(funcs))
+    if len(dsList0.dictByDim().keys()) == len(dsList1.dictByDim().keys()) == 1: 
+        text += ',%d-D' % dsList0.dictByDim().keys()[0]
+
     plt.text(0.98, 0.02, text, horizontalalignment="right",
              transform=plt.gca().transAxes)
 

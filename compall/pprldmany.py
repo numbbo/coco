@@ -406,7 +406,6 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
     :param bool verbose: controls verbosity
 
     """
-
     tmp = dictAlgByDim(dictAlg)
     if len(tmp) != 1:
         raise Exception('We never integrate over dimension.')
@@ -485,7 +484,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
                     runlengthunsucc = []
                 xbest2009.extend(x)
                 maxevalsbest2009.extend(runlengthunsucc)
-
+        
     if order is None:
         order = dictData.keys()
 
@@ -558,6 +557,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
     beautify()
 
     text = 'f%s' % (consecutiveNumbers(sorted(dictFunc.keys())))
+    text += ',%d-D' % d
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes)
 
