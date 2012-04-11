@@ -534,12 +534,16 @@ def main(dsList, targets, isStoringXMax=False, outputdir='',
     
         funcs = list(i.funcId for i in dictdim)
         text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
+        text += ',%d-D' % d
+
         plotBest2009(d, funcs)
         plt.axvline(x=maxEvalsFactor, color='k')
         plt.legend(loc='best')
         plt.text(0.5, 0.98, text, horizontalalignment="center",
-                 verticalalignment="top", transform=plt.gca().transAxes)
-                 #bbox=dict(ec='k', fill=False), 
+                 verticalalignment="top", 
+                 transform=plt.gca().transAxes 
+                 # bbox=dict(ec='k', fill=False)
+                 ) 
         beautifyRLD(evalfmax)
         saveFigure(filename, verbose=verbose)
         plt.close(fig)
