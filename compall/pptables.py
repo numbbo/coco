@@ -205,7 +205,8 @@ def getTopIndicesOfColumns(table, maxRank=None):
 
     return ranked
 
-def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
+# TODO: function_headings argument need to be tested, default should be changed
+def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True, function_targets_line=True):  # [1, 13, 101]
     """Generate one table per func with results of multiple algorithms."""
     """Difference with the first version:
 
@@ -338,14 +339,15 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True):
                           % (2 * len(targets) + 2, header)])
             extraeol.append('')
 
-        curline = [r'$\Delta f_\mathrm{opt}$']
-        for t in targets[0:-1]:
-            curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
-                           % writeFEvals2(t, precision=1, isscientific=True))
-        curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
-                       % writeFEvals2(targets[-1], precision=1, isscientific=True))
-        curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
-        table.append(curline)
+        if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
+            curline = [r'$\Delta f_\mathrm{opt}$']
+            for t in targets[0:-1]:
+                curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
+                               % writeFEvals2(t, precision=1, isscientific=True))
+            curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
+                           % writeFEvals2(targets[-1], precision=1, isscientific=True))
+            curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
+            table.append(curline)
         extraeol.append(r'\hline')
 
         curline = [r'ERT$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
