@@ -1,6 +1,12 @@
 bbob_pproc package random thoughts:
-04/2012: 3 names in one report: the problem is legend in compall/ppfigs.py, 
-  which takes invariably the folder name, see Petrs Mail from March 26
+04/2012: the tables in many algorithm papers should not have a targets line for each function. 
+   To accomplish this, the argument function_targets_line in compall/pptables.main needs to 
+   be put in action (and tested).  
+04/2012: compall/pptables.py contains reference pointers which are the likely reason for
+  mis-referring the (1+1)-CMA-ES from 2010 to the paper of 2009. 
+04/2012: problem: 3 different names for one algorithm in one report: 
+  specifically, a problem is the legend in compall/ppfigs.py, 
+  which takes invariably the folder name as algorithm name, see Petrs Mail from March 26
 04/2012: maxfevals should occur in Figure 1 also when comparing algorithms (compall/ppfigs.py)
 03/2012: The datasets in the svn for noisy and noiseless data should be separated
 03/2012: processInputArgs and findfiles should accept zipped folders
@@ -10,9 +16,10 @@ bbob_pproc package random thoughts:
         zip.extractall(path=extractiondir)  # cave security extracting ../../../../something
 02/2012: the oracle best algorithm must inherit pproc.DataSet object, 
   just as the portfolio in algportfolio.py does. Check out the portfolio code
-  for an implementation. 
-changing class pproc.DataSet to class pproc.DataSet(object) produces an error!
+  for an implementation. See also next item!
+02/2012: changing class pproc.DataSet to class pproc.DataSet(object) produces an error!
   This should be addressed before the oracle algorithm is implemented. 
+
 __init__.py: what for? Looks like a package documentation and is supposed to 
   define all visible modules in the package. 
 run.py: main interface? is unfortunately rungeneric.py (and all over the documentation)
