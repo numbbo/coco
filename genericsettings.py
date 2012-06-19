@@ -56,11 +56,11 @@ line_styles = [  # used by ppfigs and pprlmany
 if 11 < 3:  # in case using my own linestyles
     line_styles = [  # used by ppfigs and pprlmany, to be modified  
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
-          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, 
-          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'c'},
-          {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'}, # square
-          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'},
-          {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': 'y'},
+          {'marker': 'o', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, 
+          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'b'},
+          {'marker': '*', 'markersize': 20, 'linestyle': '-', 'color': 'r'}, 
+          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'b'},
+          {'marker': '^', 'markersize': 26, 'linestyle': '-', 'color': 'r'},
           {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': 'g'},
           {'marker': 'p', 'markersize': 24, 'linestyle': '-', 'color': 'b'},
           {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': 'r'},
@@ -71,6 +71,7 @@ if 11 < 3:  # in case using my own linestyles
           {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
           {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'}
           ]
+
 # function-dependent target function values: hard coded here before we come up
 # with something smarter. It is supposed the number of level of difficulties
 # are the same, it is just the target function value that differs.
