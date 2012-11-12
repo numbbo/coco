@@ -33,14 +33,14 @@ do_assertion = False  # expensive assertions
 dataSetTargets = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]  # only to display info of DataSetList
 
 def cocofy(filename):
-     """Replaces bbob_pproc references in pickles files with coco_pproc
+    """Replaces bbob_pproc references in pickles files with coco_pproc
         This could become neccessary for future backwards compatibility,
         however rather should become a class method. """
     import fileinput
     for line in fileinput.input(filename, inplace=1):
 #       if "bbob" in line:
         sys.stdout.write(line.replace("bbob_pproc","coco_pproc"))
-     fileinput.close
+    fileinput.close
 
 # CLASS DEFINITIONS
 class DataSet:
