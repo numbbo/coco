@@ -23,6 +23,7 @@ dimensions_to_display = (2,3,5,10,20,40)  # this could be used to set the dimens
 instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
                        11:1, 12:1, 13:1, 14:1, 15:1}
 
+single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default arg in pprldistr.plot method
 single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each, seems not in use
 summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # all in one figure
 summarized_target_function_values = (100, 10, 1e0, 1e-1, 1e-2, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8) 
@@ -273,4 +274,10 @@ rcaxes = {"labelsize": 20, "titlesize": 24}
 rctick = {"labelsize": 20}
 rcfont = {"size": 20}
 rclegend = {"fontsize": 20}
+
+class TestbedSettings(object):
+    """this might become the future way to have settings related to testbeds
+    
+    """
+    pass
 
