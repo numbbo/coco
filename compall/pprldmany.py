@@ -131,7 +131,6 @@ function_IDs = range(1,200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 1
 
 x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 x_annote_factor = 90 # make space for right-hand legend
-fontsize = 10.0 # default setting, is modified in config.py
 
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
@@ -228,15 +227,15 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                            np.repeat(y / float(nn), 2)])
 
         # to be tested: 
-        # res = plotUnifLogXMarkers(x2, y2, int(nbperdecade * 4 / np.log10(maxval)), logscale=False, **kwargs)
-        res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, **kwargs)
+        res = plotUnifLogXMarkers(x2, y2, int(nbperdecade * 4 / np.log10(maxval)), logscale=False, **kwargs)
+        # res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, **kwargs)
 
         if maxevals: # Should cover the case where maxevals is None or empty
             x3 = np.median(maxevals)
             if (x3 <= maxval and np.any(x2 <= x3)
                 and not plt.getp(res[-1], 'label').startswith('best')): # TODO: HACK for not considering the best 2009 line
                 y3 = y2[x2<=x3][-1]
-                h = plt.plot((x3,), (y3,), marker='x', markersize=30,
+                h = plt.plot((x3,), (y3,), marker='x', markersize=24,
                              markeredgecolor=plt.getp(res[0], 'color'),
                              ls=plt.getp(res[0], 'ls'),
                              color=plt.getp(res[0], 'color'))
@@ -258,6 +257,8 @@ def plotLegend(handles, maxval):
     order of the graphs at the upper x-bound line give the order of the
     labels, in case of ties, the best is the graph for which the x-value
     of the first step (from the right) is smallest.
+    
+    The annotation string is stripped from preceeding pathnames. 
 
     """
     reslabels = []
@@ -290,6 +291,8 @@ def plotLegend(handles, maxval):
         lh = min(lh, len(show_algorithms))
     if lh <= 1:
         lh = 2
+    fontsize = genericsettings.fontsize[0] + np.min((1, np.exp(9-lh))) * (
+        genericsettings.fontsize[-1] - genericsettings.fontsize[0])
     i = 0 # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
@@ -319,7 +322,7 @@ def plotLegend(handles, maxval):
                     reshandles.extend(plt.plot((maxval, legx), (j, y),
                                       color=plt.getp(h, 'markeredgecolor'), **tmp))
                     reshandles.append(plt.text(maxval*15, y,
-                                               plt.getp(h, 'label'),
+                                               plt.getp(h, 'label').split(os.sep)[-1],
                                                horizontalalignment="left",
                                                verticalalignment="center", size=fontsize))
                     reslabels.append(plt.getp(h, 'label'))
@@ -383,7 +386,7 @@ def plot(dsList, targets=defaulttargets, craftingeffort=0., **kwargs):
         x3 = np.median(maxevals)
         if np.any(data > x3):
             y3 = float(np.sum(data <= x3)) / n
-            h = plt.plot((x3,), (y3,), marker='x', markersize=30,
+            h = plt.plot((x3,), (y3,), marker='x', markersize=24,
                          markeredgecolor=plt.getp(res[0], 'color'),
                          ls='', color=plt.getp(res[0], 'color'))
             h.extend(res)
@@ -501,7 +504,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
 
         args = styles[(i) % len(styles)]
         args['linewidth'] = 1.5
-        args['markersize'] = 15.
+        args['markersize'] = 12.
         args['markeredgewidth'] = 1.5
         args['markerfacecolor'] = 'None'
         args['markeredgecolor'] = args['color']
