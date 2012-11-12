@@ -20,7 +20,7 @@ import ppfig, ppfigdim
 from bbob_pproc.comp2 import ppfig2, ppscatter
 from bbob_pproc.compall import ppfigs, pprldmany
 
-pprldmany.fontsize = 20.0  # should be 12.0 ?
+pprldmany.fontsize = 20.0  # should depend on the number of data lines down to 10.0 ?
 ppscatter.markersize = 14.
 ppfig2.linewidth = 4.
 
