@@ -227,6 +227,8 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
         y2 = np.hstack([0.0,
                            np.repeat(y / float(nn), 2)])
 
+        # to be tested: 
+        # res = plotUnifLogXMarkers(x2, y2, int(nbperdecade * 4 / np.log10(maxval)), logscale=False, **kwargs)
         res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, **kwargs)
 
         if maxevals: # Should cover the case where maxevals is None or empty
