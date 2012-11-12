@@ -113,8 +113,9 @@ class DataSet(pp.DataSet):
         elif trials[1:] != trials[:-1]:
             # this check will be superfluous if we find that all instances
             # are equivalent.
-            raise Usage('%s: Expect the data to have the same instances.'
-                        % (dslist))
+            # raise Usage('%s: Expect the data to have the same instances.'
+            #             % (dslist))
+            warnings.warn('portfolio will be generated from algorithm with different instances')
 
         self.dim = d.pop()
         self.funcId = f.pop()
