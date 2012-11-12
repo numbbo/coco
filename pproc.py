@@ -30,7 +30,17 @@ from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArra
 from bbob_pproc.ppfig import consecutiveNumbers
 
 do_assertion = False  # expensive assertions
-dataSetTargets = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]
+dataSetTargets = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]  # only to display info of DataSetList
+
+def cocofy(filename):
+     """Replaces bbob_pproc references in pickles files with coco_pproc
+        This could become neccessary for future backwards compatibility,
+        however rather should become a class method. """
+    import fileinput
+    for line in fileinput.input(filename, inplace=1):
+#       if "bbob" in line:
+        sys.stdout.write(line.replace("bbob_pproc","coco_pproc"))
+     fileinput.close
 
 # CLASS DEFINITIONS
 class DataSet:
@@ -741,6 +751,7 @@ class DataSetList(list):
                 self.processIndexFile(name, verbose)
             elif name.endswith('.pickle'):
                 try:
+                    # cocofy(name)
                     f = open(name,'r')
                     try:
                         entry = pickle.load(f)
@@ -831,6 +842,7 @@ class DataSetList(list):
         """Redefines the append method to check for unicity."""
 
         if not isinstance(o, DataSet):
+            warnings.warn('appending a non-DataSet to the DataSetList')
             raise Exception('Expect DataSet instance.')
         isFound = False
         for i in self:
@@ -931,10 +943,11 @@ class DataSetList(list):
         """Returns a dictionary of instances of this class by function groups.
 
         The output dictionary has function group names as keys and the
-        corresponding slices as values.
+        corresponding slices as values. Current groups are based on the
+        GECCO-BBOB 2009-2013 function testbeds. 
 
         """
-        sorted = {}
+        sorted = {} 
         for i in self:
             if i.funcId in range(1, 6):
                 sorted.setdefault('separ', DataSetList()).append(i)

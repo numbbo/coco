@@ -35,6 +35,7 @@ from bbob_pproc.pproc import dictAlgByFun, dictAlgByDim
 
 bestalgentries2009 = {}
 bestalgentries2010 = {}
+bestalgentries2012 = {}
 bestalgentriesever = {}
 
 algs2009 = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
@@ -44,15 +45,24 @@ algs2009 = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
 "ONEFIFTH", "POEMS", "PSO", "PSO_Bounds", "RANDOMSEARCH", "Rosenbrock",
 "SNOBFIT", "VNS")
 
+# Warning: NEWUOA is there twice: NEWUOA noiseless is a 2009 entry, NEWUOA
+# noisy is a 2010 entry
 algs2010 = ("1komma2", "1komma2mir", "1komma2mirser", "1komma2ser", "1komma4",
 "1komma4mir", "1komma4mirser", "1komma4ser", "1plus1", "1plus2mirser", "ABC",
 "AVGNEWUOA", "CMAEGS", "DE-F-AUC", "DEuniform", "IPOP-ACTCMA-ES",
 "IPOP-CMA-ES", "MOS", "NBC-CMA", "NEWUOA", "PM-AdapSS-DE", "RCGA", "SPSA",
 "oPOEMS", "pPOEMS")
-# Warning: NEWUOA is there twice: NEWUOA noiseless is a 2009 entry, NEWUOA
-# noisy is a 2010 entry
+
+algs2012 = ("ACOR", "BIPOPaCMA", "BIPOPsaACM", "aCMA", "CMAES", "aCMAa", "aCMAm", "aCMAma", "aCMAmah", "aCMAmh", "DBRCGA", "DE", "DEAE", "DEb", "DEctpb", "IPOPsaACM", "JADE", "JADEb", "JADEctpb", "NBIPOPaCMA", "NIPOPaCMA", "DE-AUTO", "DE-BFGS", "DE-ROLL", "DE-SIMPLEX", "MVDE", "PSO-BFGS", "xNES", "xNESas", "SNES")
+
+
+# TODO: this should be reimplemented: 
+#  o a best algorithm should derive from the DataSet class
+#  o a best algorithm and an algorithm portfolio are almost the same, 
+#    they should derive from a CombinedAlgorithmDataSet? 
 
 #CLASS DEFINITIONS
+
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -61,8 +71,7 @@ class Usage(Exception):
 class BestAlgSet():
     """Unit element of best algorithm data set.
 
-    Here unit element means for a given problem (in the context of BBOB
-    workshop it is one function and one dimension).
+    Here unit element means for one function and one dimension.
     This class is derived from :py:class:`DataSet` but it does not
     inherit from it.
 
@@ -336,6 +345,10 @@ def loadBBOB2009():
 
     print "Loading best algorithm data from BBOB-2009...",  
     bestalgfilepath = os.path.split(__file__)[0]
+    #    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle')
+    #    cocofy(picklefilename)
+    #    fid = open(picklefilename, 'r')
+
     picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
     fid = gzip.open(picklefilename, 'r')
     bestalgentries2009 = pickle.load(fid)
@@ -362,8 +375,35 @@ def loadBBOB2010():
     print "Loading best algorithm data from BBOB-2010...",  
     bestalgfilepath = os.path.split(__file__)[0]
     picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2010.pickle.gz')
+    #    cocofy(picklefilename)
     fid = gzip.open(picklefilename, 'r')
     bestalgentries2010 = pickle.load(fid)
+    fid.close()
+    print " done."
+
+def loadBBOB2012():
+    """Assigns :py:data:`bestalgentries2012`.
+
+    This function is needed to set the global variable
+    :py:data:`bestalgentries2012`. It unpickles file 
+    :file:`bestalgentries2012.pickle.gz`
+
+    :py:data:`bestalgentries2012` is a dictionary accessed by providing
+    a tuple :py:data:`(dimension, function)`. This returns an instance
+    of :py:class:`BestAlgSet`.
+    The data is that of algorithms submitted to BBOB 20&0, the list of
+    which can be found in variable :py:data:`algs2012`.
+
+    """
+    global bestalgentries2012
+    # global statement necessary to change the variable bestalg.bestalgentries2012
+
+    print "Loading best algorithm data from BBOB-2012...",  
+    bestalgfilepath = os.path.split(__file__)[0]
+    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2012.pickle.gz')
+    #    cocofy(picklefilename)
+    fid = gzip.open(picklefilename, 'r')
+    bestalgentries2012 = pickle.load(fid)
     fid.close()
     print " done."
 
@@ -388,6 +428,7 @@ def loadBBOBever():
     print "Loading best algorithm data from BBOB...",  
     bestalgfilepath = os.path.split(__file__)[0]
     picklefilename = os.path.join(bestalgfilepath, 'bestalgentriesever.pickle.gz')
+    #    cocofy(picklefilename)
     fid = gzip.open(picklefilename, 'r')
     bestalgentriesever = pickle.load(fid)
     fid.close()
@@ -430,9 +471,9 @@ def customgenerate():
     """
 
     #args = set(algs2010 + algs2009)
-    args = algs2009
+    args = algs2009  # algs2012
 
-    outputdir = 'bestAlg'
+    outputdir = 'bestCustomAlg'
 
     verbose = True
 

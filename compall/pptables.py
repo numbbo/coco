@@ -328,8 +328,8 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True, function_tar
                 
         # Create the table
         table = []
-        spec = r'@{}c@{}|*{%d}{@{\,}r@{}X@{\,}}|@{}r@{}@{}l@{}' % (len(targets))
-        spec = r'@{}c@{}|*{%d}{@{}r@{}X@{}}|@{}r@{}@{}l@{}' % (len(targets))
+        spec = r'@{}c@{}|*{%d}{@{\,}r@{}X@{\,}}|@{}r@{}@{}l@{}' % (len(targets)) # in case StrLeft not working: replaced c@{} with l@{ }
+        spec = r'@{}c@{}|*{%d}{@{}r@{}X@{}}|@{}r@{}@{}l@{}' % (len(targets)) # in case StrLeft not working: replaced c@{} with l@{ }
         extraeol = []
 
         # Generate header lines
@@ -349,6 +349,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True, function_tar
             curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
             table.append(curline)
         extraeol.append(r'\hline')
+#        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
 
         curline = [r'ERT$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
         for i in refalgert[0:-1]:
@@ -375,6 +376,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True, function_tar
             #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
             #data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
             commandname = r'\alg%stables' % numtotext(i)
+#            header += r'\providecommand{%s}{{%s}{}}' % (commandname, str_to_latex(strip_pathname(alg)))
             header += r'\providecommand{%s}{\StrLeft{%s}{\ntables}}' % (commandname, str_to_latex(strip_pathname(alg)))
             curline = [commandname + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
 
