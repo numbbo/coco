@@ -21,6 +21,7 @@ import tarfile
 from pdb import set_trace
 import warnings
 import numpy
+from bbob_pproc import genericsettings
 
 ftarget = 1e-8  # CAVE: changing this makes the figure captions invalid 
 
