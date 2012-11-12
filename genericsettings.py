@@ -19,7 +19,7 @@ dimensions_to_display = (2,3,5,10,20,40)  # this could be used to set the dimens
 # ppfigdim.dimsBBOB = dimensions_to_display
 # ppfig2.dimensions = dimensions_to_display
 
-
+# TODO: this is obsolete? 
 instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
                        11:1, 12:1, 13:1, 14:1, 15:1}
 
@@ -280,4 +280,3 @@ class TestbedSettings(object):
     
     """
     pass
-

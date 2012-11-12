@@ -246,7 +246,7 @@ def main(argv=None):
         if (not verbose):
             warnings.simplefilter('ignore')
 
-        print ("BBOB Post-processing: will generate output " +
+        print ("Post-processing: will generate output " +
                "data in folder %s" % outputdir)
         print "  this might take several minutes."
 

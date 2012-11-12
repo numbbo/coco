@@ -206,6 +206,7 @@ def main(argv=None):
                 if extension == '.info':
                     checkinfofile(i, verbose)
                 elif extension == '.pickle':
+                    # cocofy(i)
                     with open(i) as f:
                         ds = pickle.load(f)
                     if not is_correct_instances(ds.instancenumbers):

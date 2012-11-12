@@ -233,11 +233,19 @@ def main(argv=None):
             txt = ('Settings: %s is not an appropriate ' % inputsettings
                    + 'argument for input flag "--settings".')
             raise Usage(txt)
+        if 11 < 3:
+            from coco_pproc import config as insetc # input settings
+            # import testbedsettings as testbedsettings # input settings
+            try:
+                fp, pathname, description = imp.find_module("testbedsettings")
+                testbedsettings=imp.load_module("testbedsettings", fp, pathname, description)
+            finally:
+                fp.close()
 
         if (not verbose):
             warnings.simplefilter('ignore')
 
-        print ("BBOB Post-processing: will generate post-processing " +
+        print ("Post-processing: will generate post-processing " +
                "data in folder %s" % outputdir)
         print "  this might take several minutes."
 

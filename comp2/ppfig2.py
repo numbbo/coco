@@ -63,7 +63,7 @@ dimension_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
 #Get benchmark short infos.
 funInfos = {}
 isBenchmarkinfosFound = True
-infofile = os.path.join(os.path.split(__file__)[0], '..',
+infofile = os.path.join(os.path.split(__file__)[0], '..', # '..', 
                         'benchmarkshortinfos.txt')
 
 try:

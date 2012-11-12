@@ -40,7 +40,7 @@ for i in xrange(len(styles)):
 refcolor = 'wheat'
 
 show_algorithms = []
-fontsize = 20.0
+fontsize = 10.0
 legend = False
 
 #Get benchmark short infos.

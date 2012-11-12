@@ -106,6 +106,8 @@ def main(argv=None):
         --conv
             if this option is chosen, additionally convergence
             plots for each function and algorithm are generated.
+        --perf-only
+            generate only performance plots
 
     Exceptions raised:
 
@@ -190,6 +192,9 @@ def main(argv=None):
             elif o == "--fig-only":
                 isPer = False
                 isTab = False
+            elif o == "--perf-only":
+                isTab = False
+                isFig = False
             elif o == "--settings":
                 inputsettings = a
             elif o == "--conv":
@@ -218,7 +223,7 @@ def main(argv=None):
         return 2
 
     if 1 < 3:
-        print ("BBOB Post-processing: will generate output " +
+        print ("Post-processing: will generate output " +
                "data in folder %s" % outputdir)
         print "  this might take several minutes."
 
@@ -228,13 +233,13 @@ def main(argv=None):
                 print 'Folder %s was created.' % (outputdir)
 
         # prepend the algorithm name command to the tex-command file
-        abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
         lines = []
         for i, alg in enumerate(args):
             lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
                     str_to_latex(strip_pathname(alg)) + '}')
         prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
-                     lines, 1000, 
+                     lines, 5000, 
                      'bbob_proc_commands.tex truncated, consider removing the file before the text run'
                      )
 
@@ -250,7 +255,7 @@ def main(argv=None):
                 dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
 
         for i in dsList:
-            if not i.dim in (2, 3, 5, 10, 20):
+            if i.dim not in genericsettings.dimensions_to_display:
                 continue
 
             if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) <

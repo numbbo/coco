@@ -22,6 +22,7 @@ from pdb import set_trace
 import numpy
 
 ftarget = 1e-8  # CAVE: changing this makes the figure captions invalid 
+# genericsettings.summarized_target_function_values[0] might be another option
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -219,7 +220,7 @@ def main(argv=None):
         if (not verbose):
             warnings.simplefilter('ignore')
 
-        print ("BBOB Post-processing: will generate comparison " +
+        print ("Post-processing will generate comparison " +
                "data in folder %s" % outputdir)
         print "  this might take several minutes."
 
@@ -240,7 +241,7 @@ def main(argv=None):
                 dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
 
         for i in dsList:
-            if not i.dim in (2, 3, 5, 10, 20):
+            if i.dim not in genericsettings.dimensions_to_display:
                 continue
 
             if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) <
@@ -449,9 +450,19 @@ def main(argv=None):
                         pptable2.main(g[0], g[1], inset.tabDimsOfInterest,
                                       outputdir, '%s%d' % (nGroup, i), verbose)
                 else:
-                    pptable2.main(dictNG0[nGroup], dictNG1[nGroup],
-                                  inset.tabDimsOfInterest, outputdir,
-                                  '%s' % (nGroup), verbose)
+                    if 11 < 3:  # future handling: 
+                        dictFunc0 = dsList0.dictByFunc()
+                        dictFunc1 = dsList1.dictByFunc()
+                        funcs = list(set(dictFunc0.keys()) & set(dictFunc1.keys()))
+                        funcs.sort()
+                        nbgroups = int(numpy.ceil(len(funcs)/testbedsettings.numberOfFunctions))
+                        pptable2.main(dsList0, dsList1,
+                                      testbedsettings.tabDimsOfInterest, outputdir,
+                                      '%s' % (testbedsettings.testbedshortname), verbose)
+                    else:
+                        pptable2.main(dictNG0[nGroup], dictNG1[nGroup],
+                                      inset.tabDimsOfInterest, outputdir,
+                                      '%s' % (nGroup), verbose)
             prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
                             ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
                              pptable2.figure_legend, 

@@ -91,6 +91,7 @@ filename = 'pprldistr2009_1e-8.pickle'
 filename = os.path.join(os.path.split(__file__)[0], filename)
 isBestAlgorithmFound = True
 try:
+    # cocofy(filename)
     f = open(filename,'r')
     dictbestalg = pickle.load(f)
 except IOError, (errno, strerror):
@@ -428,7 +429,7 @@ def beautify():
 #         set_trace()
 #         plt.setp(plt.gcf(), 'figsize', (16.35, 6.))
 
-def plot(dsList, targets=(10., 1e-1, 1e-4, 1e-8), **plotArgs):
+def plot(dsList, targets=genericsettings.single_target_pprldistr_values, **plotArgs):
     """Plot ECDF of evaluations and final function values."""
 
     assert len(dsList.dictByDim()) == 1, ('Cannot display different '

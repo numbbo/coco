@@ -329,6 +329,7 @@ def tableLaTeX(table, spec, extraeol=()):
     res = [r'\begin{tabular}{%s}' % spec]
     for i, line in enumerate(table[:-1]):
         curline = ' & '.join(line) + r'\\' + extraeol[i]
+#        curline = ' & '.join(line) + r'\\\hline' + extraeol[i]
         res.append(curline)
     res.append(' & '.join(table[-1]) + extraeol[-1])
 
@@ -354,11 +355,17 @@ def tableXLaTeX(table, spec, extraeol=()):
         extraeol = len(table) * ['']
 
     # TODO: check that spec and extraeol have the right format? 
-
-    res = [r'\begin{tabularx}{1.03\textwidth}{%s}' % spec]
-    for i, line in enumerate(table[:-1]):
-        curline = ' & '.join(line) + r'\\' + extraeol[i]
-        res.append(curline)
+    if 1 < 3:
+        res = [r'\begin{tabularx}{1.03\textwidth}{%s}' % spec]
+        for i, line in enumerate(table[:-1]):
+            curline = ' & '.join(line) + r'\\' + extraeol[i]
+            res.append(curline)
+    else: # format with hline, when is it needed, for non-paper tables?
+        res = [r'\begin{tabularx}{1.3\textwidth}{%s}' % spec]
+        for i, line in enumerate(table[:-1]):
+            curline = ' & '.join(line) + r'\\\hline' + extraeol[i]
+            res.append(curline)
+    
     res.append(' & '.join(table[-1]) + extraeol[-1])
 
     res.append(r'\end{tabularx}')

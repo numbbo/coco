@@ -58,6 +58,7 @@ import numpy
 from pdb import set_trace
 from bbob_pproc import toolsstats, bestalg
 from bbob_pproc.ppfig import saveFigure, groupByRange
+# import genericsettings
 
 scaling_figure_legend = str(
     r"Expected number of $f$-evaluations (\ERT, with lines, see legend) to reach $\fopt+\Df$, " +

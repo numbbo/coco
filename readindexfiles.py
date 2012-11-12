@@ -407,6 +407,7 @@ class IndexEntries(list):
                     self.processIndexFile(j, verbose)
             elif i.endswith('.pickle'):
                 try:
+                    # cocofy(i)
                     f = open(i,'r')
                     try:
                         entry = pickle.load(f)
