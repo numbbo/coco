@@ -234,7 +234,8 @@ def main(argv=None):
                    + 'argument for input flag "--settings".')
             raise Usage(txt)
         if 11 < 3:
-            from coco_pproc import config as insetc # input settings
+            from bbob_pproc import config as insetc # input settings
+            import imp
             # import testbedsettings as testbedsettings # input settings
             try:
                 fp, pathname, description = imp.find_module("testbedsettings")

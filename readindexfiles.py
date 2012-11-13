@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 
-"""Defines class IndexEntry, unit element in the post-processing and the list
+"""This module is obsolete and not in use anymore. It should/will be removed soon. 
+
+Defines class IndexEntry, unit element in the post-processing and the list
 of instances of IndexEntry: IndexEntries.
 
 """

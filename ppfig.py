@@ -65,10 +65,11 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
         xpos = []
         ypos= []
         if sum(probs) > 0:
+            xoff = np.random.rand() / nbmarkers
             probs /= sum(probs)
             cum = np.cumsum(probs)
             for xact in np.arange(0, 1, 1./nbmarkers):
-                pos = xact + (1./nbmarkers) * (0.4 + 0.2 * np.random.rand())
+                pos = xoff + xact + (1./nbmarkers) * (0.3 + 0.4 * np.random.rand())
                 idx = np.abs(cum - pos).argmin()  # index of closest value
                 xpos.append(xdata[idx])
                 ypos.append(ydata[idx])

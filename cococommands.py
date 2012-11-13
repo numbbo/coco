@@ -154,7 +154,7 @@ def systeminfo():
 #    pptex
 #    ranksumtest
 #    readalign
-#    readindexfiles
+#    readindexfiles  # obsolete
 #    run
 #    run2
 #    runcomp2
