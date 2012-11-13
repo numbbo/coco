@@ -14,6 +14,9 @@ for comparisons.
 
 """
 
+# TODO: dictAlg should become the class DictALg that is a dictionary of DataSetLists with
+# usecase DictAlg(algdict).by_dim() etc  
+
 from __future__ import absolute_import
 
 import sys
@@ -1176,16 +1179,23 @@ def processInputArgs(args, verbose=True):
 
     return dsList, sortedAlgs, dictAlg
 
-def dictAlgByDim(dictAlg):
-    """Returns a dictionary with problem dimension as key.
+class DictAlg(dict):
+    def by_dim(self):
+        return dictAlgByDim(self)
 
-    This method is meant to be used with an input argument which is a
-    dictionary with algorithm names as keys and which has list of
-    :py:class:`DataSet` instances as values.
+def dictAlgByDim(dictAlg):
+    """Returns a dictionary with problem dimension as key from
+    a dictionary of DataSet lists. 
+
+    The input argument is a dictionary with algorithm names as 
+    keys and a list of :py:class:`DataSet` instances as values.
     The resulting dictionary will have dimension as key and as values
     dictionaries with algorithm names as keys.
 
     """
+    # should become: 
+    # return DictAlg(dictAlg).by_dim()
+    
     res = {}
 
     # get the set of problem dimensions
