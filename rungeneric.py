@@ -244,7 +244,8 @@ def main(argv=None):
                     assert False, "unhandled option"
 
         if (not verbose):
-            warnings.simplefilter('ignore')
+            warnings.filterwarnings('module', '.*', UserWarning, '.*')
+            warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear 
 
         print ("Post-processing: will generate output " +
                "data in folder %s" % outputdir)

@@ -35,6 +35,7 @@ if __name__ == "__main__":
     # matplotlib.use('pdf')
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
+from bbob_pproc import genericsettings
 from bbob_pproc import pprldistr
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname, str_to_latex
@@ -218,7 +219,8 @@ def main(argv=None):
             raise Usage(txt)
 
         if (not verbose):
-            warnings.simplefilter('ignore')
+            warnings.simplefilter('module')
+            warnings.simplefilter('ignore')            
 
         print ("Post-processing will generate comparison " +
                "data in folder %s" % outputdir)
@@ -455,10 +457,10 @@ def main(argv=None):
                         dictFunc1 = dsList1.dictByFunc()
                         funcs = list(set(dictFunc0.keys()) & set(dictFunc1.keys()))
                         funcs.sort()
-                        nbgroups = int(numpy.ceil(len(funcs)/testbedsettings.numberOfFunctions))
-                        pptable2.main(dsList0, dsList1,
-                                      testbedsettings.tabDimsOfInterest, outputdir,
-                                      '%s' % (testbedsettings.testbedshortname), verbose)
+#                        nbgroups = int(numpy.ceil(len(funcs)/testbedsettings.numberOfFunctions))
+#                        pptable2.main(dsList0, dsList1,
+#                                      testbedsettings.tabDimsOfInterest, outputdir,
+#                                      '%s' % (testbedsettings.testbedshortname), verbose)
                     else:
                         pptable2.main(dictNG0[nGroup], dictNG1[nGroup],
                                       inset.tabDimsOfInterest, outputdir,

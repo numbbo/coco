@@ -204,6 +204,7 @@ def main(argv=None):
                 assert False, "unhandled option"
 
         # from bbob_pproc import bbob2010 as inset # input settings
+        # TODO: conditional imports are NOT the way to go here
         if inputsettings == "color":
             from bbob_pproc import config, genericsettings as inset # input settings
         elif inputsettings == "grayscale":
@@ -216,7 +217,8 @@ def main(argv=None):
             raise Usage(txt)
 
         if (not verbose):
-            warnings.simplefilter('ignore')
+            warnings.filterwarnings('module', '.*', Warning, '.*')  # same warning just once
+            warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear 
 
     except Usage, err:
         print >>sys.stderr, err.msg
@@ -281,7 +283,8 @@ def main(argv=None):
             for ng, tmpdictAlg in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
-                    pprldmany.main(entries, inset.summarized_target_function_values,
+                    # pprldmany.main(entries, inset.summarized_target_function_values,
+                    pprldmany.main(entries, inset.current_testbed.ftarget_lg_ranges,
                                    order=sortedAlgs,
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, ng)),
@@ -291,7 +294,7 @@ def main(argv=None):
             for fg, tmpdictAlg in dictFG.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
-                    pprldmany.main(entries, inset.summarized_target_function_values,
+                    pprldmany.main(entries, inset.current_testbed.ftarget_lg_ranges,
                                    order=sortedAlgs,
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, fg)),

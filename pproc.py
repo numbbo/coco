@@ -1147,13 +1147,7 @@ def processInputArgs(args, verbose=True):
     sortedAlgs = list()
     dictAlg = {}
     for i in args:
-        if os.path.isfile(i):
-            # TODO: a zipped tar file should be unzipped here, see findfiles.py 
-            txt = ('The post-processing cannot operate on the single file'
-                   + ' %s.' % i)
-            warnings.warn(txt)
-            continue
-        elif os.path.isdir(i):
+        if findfiles.is_valid_filename(i):
             filelist = findfiles.main(i, verbose)
             #Do here any sorting or filtering necessary.
             #filelist = list(i for i in filelist if i.count('ppdata_f005'))
@@ -1166,13 +1160,19 @@ def processInputArgs(args, verbose=True):
             #alg = os.path.split(i.rstrip(os.sep))[1]  # trailing slash or backslash
             #if alg == '':
             #    alg = os.path.split(os.path.split(i)[0])[1]
-            alg = i
+            alg = i.rstrip(os.path.sep)
             print '  using:', alg
 
             # Prevent duplicates
             if all(i != alg for i in sortedAlgs):
                 sortedAlgs.append(alg)
                 dictAlg[alg] = tmpDsList
+        elif os.path.isfile(i):
+            # TODO: a zipped tar file should be unzipped here, see findfiles.py 
+            txt = ('The post-processing cannot operate on the single file'
+                   + ' %s.' % i)
+            warnings.warn(txt)
+            continue
         else:
             txt = 'Input folder %s could not be found.' % i
             raise Exception(txt)

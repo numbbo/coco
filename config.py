@@ -17,6 +17,7 @@ modules, but does not modify other modules settings.
 
 import numpy as np
 import ppfig, ppfigdim
+from bbob_pproc import genericsettings
 from bbob_pproc.comp2 import ppfig2, ppscatter
 from bbob_pproc.compall import ppfigs, pprldmany
 

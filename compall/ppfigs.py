@@ -271,7 +271,7 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
             for dim in sorted(dictDim):
                 assert len(dictDim[dim]) == 1
                 entry = dictDim[dim][0]
-                data = generateData(entry, target)
+                data = generateData(entry, target) # TODO: here we might want a different target for each function
                 if 1 < 3 or data[2] == 0: # No success
                     dimmaxevals.append(dim)
                     maxevals.append(float(data[3])/dim)
@@ -286,8 +286,7 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
                         nbsucc.append('%d' % data[2])
 
             # Draw lines
-            tmp = plt.plot(dimert, ert, **styles[i])
-                           #label=alg, )
+            tmp = plt.plot(dimert, ert, **styles[i]) #label=alg, )
             plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
             # For legend
             # tmp = plt.plot([], [], label=alg.replace('..' + os.sep, '').strip(os.sep), **styles[i])

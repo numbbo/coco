@@ -58,10 +58,10 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
             return downsample(xdata, ydata)
         tfy = np.log10 if logscale else lambda x: x
             
-        xrange = np.log10(max([max(xdata), ax[0], ax[1]]) + 0.5) - np.log10(min([min(xdata), ax[0], ax[1]]) + 0.5)  #np.log10(xdata[-1]) - np.log10(xdata[0])
-        yrange = tfy(max([max(ydata), ax[2], ax[3]]) + 0.5) - tfy(min([min(ydata), ax[2], ax[3]]) + 0.5)  # tfy(ydata[-1]) - tfy(ydata[0])
+        xdatarange = np.log10(max([max(xdata), ax[0], ax[1]]) + 0.5) - np.log10(min([min(xdata), ax[0], ax[1]]) + 0.5)  #np.log10(xdata[-1]) - np.log10(xdata[0])
+        ydatarange = tfy(max([max(ydata), ax[2], ax[3]]) + 0.5) - tfy(min([min(ydata), ax[2], ax[3]]) + 0.5)  # tfy(ydata[-1]) - tfy(ydata[0])
         nbmarkers = np.min([maxnb, nbperdecade + np.ceil(nbperdecade * (1e-99 + np.abs(np.log10(max(xdata)) - np.log10(min(xdata)))))])
-        probs = np.abs(np.diff(np.log10(xdata)))/xrange + np.abs(np.diff(tfy(ydata)))/yrange
+        probs = np.abs(np.diff(np.log10(xdata)))/xdatarange + np.abs(np.diff(tfy(ydata)))/ydatarange
         xpos = []
         ypos= []
         if sum(probs) > 0:
@@ -211,7 +211,7 @@ def groupByRange(data):
 
     """
     res = []
-    for k, g in groupby(enumerate(data), lambda (i,x):i-x):
+    for _k, g in groupby(enumerate(data), lambda (i,x):i-x):
         res.append(list(i for i in map(itemgetter(1), g)))
 
     return res
@@ -244,7 +244,7 @@ def beautify():
     # Grid options
     axisHandle.grid(True)
 
-    ymin, ymax = plt.ylim()
+    _ymin, ymax = plt.ylim()
     plt.ylim(ymin=10**-0.2, ymax=ymax) # Set back the default maximum.
 
     tmp = axisHandle.get_yticks()
