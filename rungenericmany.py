@@ -21,7 +21,6 @@ import tarfile
 from pdb import set_trace
 import warnings
 import numpy
-from bbob_pproc import genericsettings
 
 ftarget = 1e-8  # CAVE: changing this makes the figure captions invalid 
 
@@ -32,6 +31,7 @@ if __name__ == "__main__":
     import matplotlib
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
+from bbob_pproc import genericsettings
 from bbob_pproc import dataoutput, pproc
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname, str_to_latex
