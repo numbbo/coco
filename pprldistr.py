@@ -104,9 +104,8 @@ else:
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""
-    plt.ylim(-0.01, 1.01)
-    plt.yticks(np.array((0., 0.25, 0.5, 0.75, 1.0)),
-               ('0.0', '', '0.5', '', '1.0'))
+    plt.ylim(-0.0, 1.0)  # was plt.ylim(-0.01, 1.01)
+    plt.yticks(np.arange(0., 1.001, 0.2)) #, ('0.0', '', '0.5', '', '1.0'))
     plt.grid(True)
     xmin, xmax = plt.xlim()
     plt.xlim(xmin=xmin*0.90)

@@ -244,7 +244,8 @@ def main(argv=None):
                 fp.close()
 
         if (not verbose):
-            warnings.simplefilter('ignore')
+            warnings.simplefilter('module')
+            # warnings.simplefilter('ignore')            
 
         print ("Post-processing: will generate post-processing " +
                "data in folder %s" % outputdir)

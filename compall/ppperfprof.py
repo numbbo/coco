@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""For generating performance profiles.
+"""For generating performance profiles. This module is not in use (anymore or not yet?). 
 
 **Example**
 

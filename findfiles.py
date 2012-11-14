@@ -18,6 +18,10 @@ import warnings
 #import tarfile
 
 # Initialization
+
+def is_valid_filename(filename): # rename as valid_data_repository_name
+    return os.path.isdir(filename) or filename.find('.tar') > -1
+
 def main(directory='.', verbose=True):
     """Lists data files recursively in a given directory.
 
@@ -35,12 +39,20 @@ def main(directory='.', verbose=True):
             #~ if elem.endswith('.info'):
                 #~ (root,elem) = os.path.split(elem)
                 #~ filelist = IndexFile(root,elem,archive)
-    #~ if directory.find('.tar') != -1:
-        #~ archive = tarfile.TarFile(directory)
-        #~ for elem in archivefile.namelist():
-            #~ if elem.endswith('.info'):
-                #~ (root,elem) = os.path.split(elem)
-                #~ filelist = IndexFile(root,elem,archive)
+    if not os.path.isdir(directory) and is_valid_filename(directory):
+        import tarfile
+        dirname = directory[:directory.find('.tar')] + '-extracted'
+        if directory.endswith('.gz'):
+            tarfile.TarFile.gzopen(directory).extractall(dirname)
+        else:
+            tarfile.TarFile.open(directory).extractall(dirname)
+        directory = dirname
+        print '    archive extracted to folder', directory, '...'
+        # archive = tarfile.TarFile(directory)
+        # for elem in archivefile.namelist():
+        #    ~ if elem.endswith('.info'):
+        #        ~ (root,elem) = os.path.split(elem)
+        #        ~ filelist = IndexFile(root,elem,archive)
     #~ else:
 
     # Search through the directory directory and all its subfolders.

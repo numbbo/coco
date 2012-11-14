@@ -34,7 +34,7 @@ function evaluations of unsuccessful runs divided by dimension.
     # Empirical cumulative distribution function of bootstrapped ERT figure
     ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
     figure()
-    bb.compall.pprldmany.plot(ds)
+    bb.compall.pprldmany.plot(ds) # must rather call main instead of plot?
     bb.compall.pprldmany.beautify()
 
 """
@@ -106,12 +106,12 @@ funisep = [1,2,5]
 displaybest2009 = True
 
 # input parameter settings
-#show_algorithms = eseda + ('BFGS',) # ()==all
+show_algorithms = eseda + ('BFGS',) # ()==all
 #show_algorithms = ('IPOP-SEP-CMA-ES', 'IPOP-CMA-ES', 'BIPOP-CMA-ES',)
 #show_algorithms = ('IPOP-SEP-CMA-ES', 'IPOP-CMA-ES', 'BIPOP-CMA-ES',
 #'avg NEWUOA', 'NEWUOA', 'full NEWUOA', 'BFGS', 'MCS (Neum)', 'GLOBAL', 'NELDER (Han)',
 #'NELDER (Doe)', 'Monte Carlo') # ()==all
-show_algorithms = ()
+show_algorithms = ()  # could be one of the list above
 function_IDs = ()
 function_IDs = range(1,200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
 #function_IDs = range(101,199)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122, 
@@ -129,14 +129,15 @@ function_IDs = range(1,200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 1
 #function_IDs = range(103,130+1, 3)  # cauchy noise
 # function_IDs = range(15,25) # multimodal nonseparable
 
-x_limit = 1e7   # noisy: 1e8, otherwise: 1e7. maximal run length shown
+x_limit = 3e2   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 x_annote_factor = 90 # make space for right-hand legend
 
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
 dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 
-nbperdecade = 3
+nbperdecade = 1
+median_max_evals_marker_format = ['x', 24, 3]
 
 styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
 
@@ -169,7 +170,11 @@ refcolor = 'wheat'
 #'_'     hline marker
 
 defaulttargets = tuple(10**np.r_[-8:2:0.2])
+# defaulttargets = tuple(10**np.r_[-1:2:0.2])
 
+def plt_plot(*args, **kwargs):
+    return plt.plot(*args, clip_on=False, **kwargs)
+    
 def beautify():
     """Customize figure presentation."""
 
@@ -185,9 +190,9 @@ def beautify():
     beautifyECDF()
 
 def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
-    """Draw a normalized ECDF.
+    """Draw a normalized ECDF. What means normalized?
     
-    :param seq data: data set
+    :param seq data: data set, a 1-D ndarray of runlengths
     :param float maxval: right-most value to be displayed, will use the
                          largest non-inf, non-nan value in data if not
                          provided
@@ -211,11 +216,11 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
         #res = plt.plot((1., ), (0., ), **kwargs)
         res = plotECDF(np.array((1., )), n=np.inf, **kwargs)
     else:
-        dictx = {}
-        for i in x:
-            dictx[i] = dictx.get(i, 0) + 1
+        dictx = {} # will contain number of appearances of each entry
+        for i in x: 
+            dictx[i] = dictx.get(i, 0) + 1  
 
-        x = np.array(sorted(dictx))
+        x = np.array(sorted(dictx))  # x is not a multiset anymore
         
         if maxval is None:
             maxval = max(x)
@@ -227,15 +232,21 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                            np.repeat(y / float(nn), 2)])
 
         # to be tested: 
-        res = plotUnifLogXMarkers(x2, y2, int(nbperdecade * 4 / np.log10(maxval)), logscale=False, **kwargs)
+        res = plotUnifLogXMarkers(x2, y2, nbperdecade * 4 / np.log10(maxval), 
+                                  logscale=False, clip_on=False, **kwargs)
         # res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, **kwargs)
 
         if maxevals: # Should cover the case where maxevals is None or empty
             x3 = np.median(maxevals)
-            if (x3 <= maxval and np.any(x2 <= x3)
-                and not plt.getp(res[-1], 'label').startswith('best')): # TODO: HACK for not considering the best 2009 line
+            if (x3 <= maxval and 
+                # np.any(x2 <= x3) and   # maxval < median(maxevals)
+                not plt.getp(res[-1], 'label').startswith('best')): # TODO: HACK for not considering the best 2009 line
                 y3 = y2[x2<=x3][-1]
-                h = plt.plot((x3,), (y3,), marker='x', markersize=24,
+                h = plt.plot((x3,), (y3,), 
+                             marker=median_max_evals_marker_format[0],
+                             markersize=median_max_evals_marker_format[1],
+                             markeredgewidth=median_max_evals_marker_format[2],
+                             # marker='x', markersize=24, markeredgewidth=3, 
                              markeredgecolor=plt.getp(res[0], 'color'),
                              ls=plt.getp(res[0], 'ls'),
                              color=plt.getp(res[0], 'color'))
@@ -319,7 +330,7 @@ def plotLegend(handles, maxval):
                     legx = maxval * 10
                     if 'marker' in attr:
                         legx = maxval * 9
-                    reshandles.extend(plt.plot((maxval, legx), (j, y),
+                    reshandles.extend(plt_plot((maxval, legx), (j, y),
                                       color=plt.getp(h, 'markeredgecolor'), **tmp))
                     reshandles.append(plt.text(maxval*15, y,
                                                plt.getp(h, 'label').split(os.sep)[-1],
@@ -330,7 +341,7 @@ def plotLegend(handles, maxval):
                     i += 1
 
     #plt.axvline(x=maxval, color='k') # Not as efficient?
-    reshandles.append(plt.plot((maxval, maxval), (0., 1.), color='k'))
+    reshandles.append(plt_plot((maxval, maxval), (0., 1.), color='k'))
     reslabels.reverse()
     plt.xlim(xmax=maxval*x_annote_factor)
     return reslabels, reshandles
@@ -386,7 +397,7 @@ def plot(dsList, targets=defaulttargets, craftingeffort=0., **kwargs):
         x3 = np.median(maxevals)
         if np.any(data > x3):
             y3 = float(np.sum(data <= x3)) / n
-            h = plt.plot((x3,), (y3,), marker='x', markersize=24,
+            h = plt_plot((x3,), (y3,), marker='x', markersize=24, markeredgewidth=3,
                          markeredgecolor=plt.getp(res[0], 'color'),
                          ls='', color=plt.getp(res[0], 'color'))
             h.extend(res)
@@ -414,28 +425,41 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
     tmp = dictAlgByDim(dictAlg)
     if len(tmp) != 1:
         raise Exception('We never integrate over dimension.')
-    d = tmp.keys()[0]
+    dim = tmp.keys()[0]
+
+    algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
 
     dictFunc = dictAlgByFun(dictAlg)
+    targets_per_fct = targets
+    try:
+        for key in dictFunc:
+            if key not in targets_per_fct.keys():
+                raise ValueError
+    except AttributeError:
+        targets_per_fct = {}
+        for key in dictFunc:
+            targets_per_fct[key] = targets
 
     # Collect data
     # Crafting effort correction: should we consider any?
-    #CrEperAlg = {}
-    #for alg in dictAlg:
-        #CrE = 0.
-        #if dictAlg[alg][0].algId == 'GLOBAL':
-            #tmp = dictAlg[alg].dictByNoise()
-            #assert len(tmp.keys()) == 1
-            #if tmp.keys()[0] == 'noiselessall':
-                #CrE = 0.5117
-            #elif tmp.keys()[0] == 'nzall':
-                #CrE = 0.6572
-        #CrEperAlg[alg] = CrE
+    CrEperAlg = {}
+    for alg in algorithms_with_data:
+        CrE = 0.
+        if 1 < 3 and dictAlg[alg][0].algId == 'GLOBAL':
+            tmp = dictAlg[alg].dictByNoise()
+            assert len(tmp.keys()) == 1
+            if tmp.keys()[0] == 'noiselessall':
+                CrE = 0.5117
+            elif tmp.keys()[0] == 'nzall':
+                CrE = 0.6572
+        CrEperAlg[alg] = CrE
+        if CrE != 0.0: 
+            print 'Crafting effort for', alg, 'is', CrE
 
     dictData = {} # list of (ert per function) per algorithm
     dictMaxEvals = {} # list of (maxevals per function) per algorithm
     bestERT = [] # best ert per function
-    funcsolved = [set()] * len(targets) # number of functions solved per target
+    # funcsolved = [set()] * len(targets) # number of functions solved per target
     xbest2009 = []
     maxevalsbest2009 = []
 
@@ -443,11 +467,11 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
         if function_IDs and f not in function_IDs:
             continue
 
-        for j, t in enumerate(targets):
-            funcsolved[j].add(f)
+        for j, t in enumerate(targets_per_fct[f]):
+            # funcsolved[j].add(f)
 
-            # Loop over all algs, not only those with data for f
-            for alg in dictAlg:
+            # Loop over all algs, not only those with data for f (they should be removed)
+            for alg in algorithms_with_data:
                 x = [np.inf] * perfprofsamplesize
                 runlengthunsucc = []
                 try:
@@ -461,10 +485,10 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
                                              samplesize=perfprofsamplesize)[1]
                 except (KeyError, IndexError):
                     #set_trace()
-                    txt = ('Data for algorithm %s on function %d in %d-D '
-                           % (alg, f, d)
-                           + 'are missing.')
-                    warnings.warn(txt)
+                    warntxt = ('Data for algorithm %s on function %d in %d-D '
+                           % (alg, f, dim)
+                           + 'are missing.\n')
+                    warnings.warn(warntxt)
 
                 dictData.setdefault(alg, []).extend(x)
                 dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
@@ -473,9 +497,9 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
             #set_trace()
             if not bestalg.bestalgentries2009:
                 bestalg.loadBBOB2009()
-            bestalgentry = bestalg.bestalgentries2009[(d, f)]
-            bestalgevals = bestalgentry.detEvals(targets)
-            for j in range(len(targets)):
+            bestalgentry = bestalg.bestalgentries2009[(dim, f)]
+            bestalgevals = bestalgentry.detEvals(targets_per_fct[f])
+            for j in range(len(targets_per_fct[f])):
                 if bestalgevals[1][j]:
                     evals = bestalgevals[0][j]
                     #set_trace()
@@ -489,12 +513,20 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
                     runlengthunsucc = []
                 xbest2009.extend(x)
                 maxevalsbest2009.extend(runlengthunsucc)
-        
+                
     if order is None:
         order = dictData.keys()
 
     # Display data
     lines = []
+    if displaybest2009:
+        args = {'ls': '-', 'linewidth': 6, 'marker': 'D', 'markersize': 11.,
+                'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
+                'markeredgecolor': refcolor, 'color': refcolor,
+                'label': 'best 2009', 'zorder': -1}
+        lines.append(plotdata(np.array(xbest2009), x_limit, maxevalsbest2009,
+                                  CrE = 0., **args))
+
     for i, alg in enumerate(order):
         try:
             data = dictData[alg]
@@ -515,15 +547,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
             #args['ls'] = '-'
             #args['zorder'] = -1
         lines.append(plotdata(np.array(data), x_limit, maxevals,
-                                  CrE=0., **args))
-
-    if displaybest2009:
-        args = {'ls': '-', 'linewidth': 1.5, 'marker': 'D', 'markersize': 7.,
-                'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
-                'markeredgecolor': refcolor, 'color': refcolor,
-                'label': 'best 2009', 'zorder': -1}
-        lines.append(plotdata(np.array(xbest2009), x_limit, maxevalsbest2009,
-                                  CrE = 0., **args))
+                                  CrE=CrEperAlg[alg], **args))
 
     labels, handles = plotLegend(lines, x_limit)
     if True: #isLateXLeg:
@@ -562,7 +586,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
     beautify()
 
     text = 'f%s' % (consecutiveNumbers(sorted(dictFunc.keys())))
-    text += ',%d-D' % d
+    text += ',%d-D' % dim
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes)
 
