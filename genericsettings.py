@@ -364,5 +364,11 @@ class BBOBTestbedSettings(TestbedSettings):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
         self.ftarget_lg_ranges = individual_low_budget_ftarget_lg_ranges
-        
-current_testbed = BBOBTestbedSettings()
+class BBOBNoisefreeTestbedSettings(BBOBTestbedSettings):
+    def ftarget_lg_ranges(self, budget=1e9):
+        if budget < 1e3:
+            return individual_low_budget_ftarget_lg_ranges[:24]
+        else:
+            return {i : summarized_target_function_values for i in xrange(1, 25)}
+
+current_testbed = BBOBNoisefreeTestbedSettings()

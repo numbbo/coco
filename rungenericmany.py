@@ -284,7 +284,7 @@ def main(argv=None):
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
                     # pprldmany.main(entries, inset.summarized_target_function_values,
-                    pprldmany.main(entries, inset.current_testbed.ftarget_lg_ranges,
+                    pprldmany.main(entries, genericsettings.current_testbed.ftarget_lg_ranges,
                                    order=sortedAlgs,
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, ng)),
@@ -294,7 +294,7 @@ def main(argv=None):
             for fg, tmpdictAlg in dictFG.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
-                    pprldmany.main(entries, inset.current_testbed.ftarget_lg_ranges,
+                    pprldmany.main(entries, genericsettings.current_testbed.ftarget_lg_ranges,
                                    order=sortedAlgs,
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, fg)),

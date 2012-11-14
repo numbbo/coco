@@ -20,7 +20,7 @@ except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
 
-import numpy
+import numpy as np 
 
 from bbob_pproc import toolsstats, readalign
 from bbob_pproc.toolsstats import ranksumtest
@@ -89,8 +89,8 @@ def _generateData(entry0, entry1, fthresh=None, downsampling=None):
         res = readalign.alignArrayData(readalign.HArrayMultiReader([i0.evals,
                                                                     i1.evals]))
         idx = 1 + i0.nbRuns()
-        data0 = res[:, numpy.r_[0, 1:idx]]
-        data1 = res[:, numpy.r_[0, idx:idx+i1.nbRuns()]]
+        data0 = res[:, np.r_[0, 1:idx]]
+        data1 = res[:, np.r_[0, idx:idx+i1.nbRuns()]]
         return data0, data1
 
     def computeERT(hdata, maxevals):
@@ -98,13 +98,13 @@ def _generateData(entry0, entry1, fthresh=None, downsampling=None):
         for i in hdata:
             data = i.copy()
             data = data[1:]
-            succ = (numpy.isnan(data)==False)
-            if any(numpy.isnan(data)):
-                data[numpy.isnan(data)] = maxevals[numpy.isnan(data)]
+            succ = (np.isnan(data)==False)
+            if any(np.isnan(data)):
+                data[np.isnan(data)] = maxevals[np.isnan(data)]
             tmp = [i[0]]
             tmp.extend(toolsstats.sp(data, issuccessful=succ))
             res.append(tmp)
-        return numpy.vstack(res)
+        return np.vstack(res)
 
     tmpdata0, tmpdata1 = alignData(entry0, entry1)
     tmpdata0 = tmpdata0[::downsampling] #downsampling
@@ -115,14 +115,14 @@ def _generateData(entry0, entry1, fthresh=None, downsampling=None):
     if fthresh and (tmpdata0[:, 0] < fthresh).any():
         if not (tmpdata0[:, 0] == fthresh).any():
             tmp0 = entry0.detEvals([fthresh])[0]
-            tmp0 = numpy.reshape(numpy.insert(tmp0, 0, fthresh), (1, -1))
+            tmp0 = np.reshape(np.insert(tmp0, 0, fthresh), (1, -1))
             tmp0 = computeERT(tmp0, entry0.maxevals)
-            data0 = numpy.concatenate((data0, tmp0))
+            data0 = np.concatenate((data0, tmp0))
 
             tmp1 = entry1.detEvals([fthresh])[0]
-            tmp1 = numpy.reshape(numpy.insert(tmp1, 0, fthresh), (1, -1))
+            tmp1 = np.reshape(np.insert(tmp1, 0, fthresh), (1, -1))
             tmp1 = computeERT(tmp1, entry1.maxevals)
-            data1 = numpy.concatenate((data1, tmp1))
+            data1 = np.concatenate((data1, tmp1))
 
         data0 = data0[data0[:, 0] >= fthresh]
         data1 = data1[data1[:, 0] >= fthresh]
@@ -163,18 +163,18 @@ def beautify(xmin=None):
     xticks = ax.get_xticks()
     tmp = []
     for i in xticks:
-        tmp.append('%d' % round(numpy.log10(i)))
+        tmp.append('%d' % round(np.log10(i)))
     ax.set_xticklabels(tmp)
 
     yticks = ax.get_yticks()
     tmp = []
     for i in yticks:
-        tmp.append('%d' % round(numpy.log10(i)))
+        tmp.append('%d' % round(np.log10(i)))
     ax.set_yticklabels(tmp)
 
     # Reverse yticks below 1
     tmp = ax.get_yticks(minor=True)
-    tmp[tmp<1] = sorted(1/(tmp[tmp<1]*numpy.power(10, -2*numpy.floor(numpy.log10(tmp[tmp<1]))-1)))
+    tmp[tmp<1] = sorted(1/(tmp[tmp<1]*np.power(10, -2*np.floor(np.log10(tmp[tmp<1]))-1)))
     tmp = tmp[tmp<plt.ylim()[1]]
     tmp = tmp[tmp>plt.ylim()[0]]
     ax.set_yticks(tmp, minor=True)
@@ -202,13 +202,13 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     line = []
     data0 = entry0.detEvals([minfvalue])[0]
     evals0 = data0.copy()
-    succ = (numpy.isnan(evals0) == False)
-    evals0[numpy.isnan(evals0)] = entry0.maxevals[numpy.isnan(evals0)]
+    succ = (np.isnan(evals0) == False)
+    evals0[np.isnan(evals0)] = entry0.maxevals[np.isnan(evals0)]
     line.append(toolsstats.sp(evals0, issuccessful=succ))
     data1 = entry1.detEvals([minfvalue])[0]
     evals1 = data1.copy()
-    succ = (numpy.isnan(evals1) == False)
-    evals1[numpy.isnan(evals1)] = entry1.maxevals[numpy.isnan(evals1)]
+    succ = (np.isnan(evals1) == False)
+    evals1[np.isnan(evals1)] = entry1.maxevals[np.isnan(evals1)]
     line.append(toolsstats.sp(evals1, issuccessful=succ))
 
     # What's the situation?
@@ -239,21 +239,21 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
              verticalalignment=va, transform=trans)
 
     #ranksum test
-    line0 = numpy.power(data0, -1.)
-    line0[numpy.isnan(line0)] = -entry0.finalfunvals[numpy.isnan(line0)]
-    line1 = numpy.power(data1, -1.)
-    line1[numpy.isnan(line1)] = -entry1.finalfunvals[numpy.isnan(line1)]
+    line0 = np.power(data0, -1.)
+    line0[np.isnan(line0)] = -entry0.finalfunvals[np.isnan(line0)]
+    line1 = np.power(data1, -1.)
+    line1[np.isnan(line1)] = -entry1.finalfunvals[np.isnan(line1)]
     # one-tailed statistics: scipy.stats.mannwhitneyu, two-tailed statistics: scipy.stats.ranksumtest
     z, p = ranksumtest(line0, line1)
     # Set the correct line in data0 and data1
     nbstars = 0
     # sign of z-value and data must agree
     if ((nbtests * p) < 0.05 and (z * signdata) > 0):
-        nbstars = -numpy.ceil(numpy.log10(nbtests * p))
+        nbstars = np.min([5, -np.ceil(np.log10(nbtests * p + 1e-99))])
     if nbstars > 0:
-        xstars = annotcoord[0] * numpy.power(incrstars, numpy.arange(1., 1. + nbstars))
+        xstars = annotcoord[0] * np.power(incrstars, np.arange(1., 1. + nbstars))
         # the additional slicing [0:int(nbstars)] is due to
-        # numpy.arange(1., 1. - 0.1 * nbstars, -0.1) not having the right number
+        # np.arange(1., 1. - 0.1 * nbstars, -0.1) not having the right number
         # of elements due to numerical error
         ystars = [annotcoord[1]] * nbstars
 
@@ -321,7 +321,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
                     tmp[tmp == 0] = min(min(tmp[tmp > 0]), minfvalue)**2
 
             # plot
-            idx = numpy.isfinite(data[0][:, 1]) * numpy.isfinite(data[1][:, 1])
+            idx = np.isfinite(data[0][:, 1]) * np.isfinite(data[1][:, 1])
             ydata = data[1][idx, 1]/data[0][idx, 1]
             kwargs = styles[i].copy()
             kwargs['label'] = '%2d-D' % dim
@@ -331,11 +331,11 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
 
             # This is only one possibility:
             #idx = (data[0][:, 3] >= 5) * (data[1][:, 3] >= 5)
-            idx = ((data[0][:, 1] <= 3 * numpy.median(entry0.maxevals))
-                   * (data[1][:, 1] <= 3 * numpy.median(entry1.maxevals)))
+            idx = ((data[0][:, 1] <= 3 * np.median(entry0.maxevals))
+                   * (data[1][:, 1] <= 3 * np.median(entry1.maxevals)))
 
             if not idx.any():
-                fvalueswitch[dim] = numpy.inf
+                fvalueswitch[dim] = np.inf
                 # Hack: fvalueswitch is the smallest value of f where the line
                 # was still solid.
                 continue
@@ -367,8 +367,8 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             # annotation
             annotate(entry0, entry1, dim, minfvalue, nbtests=nbtests)
 
-            tmp0 = numpy.isfinite(data[0][:, 1])
-            tmp1 = numpy.isfinite(data[1][:, 1])
+            tmp0 = np.isfinite(data[0][:, 1])
+            tmp1 = np.isfinite(data[1][:, 1])
             idx = tmp0 * tmp1
 
             if not idx.any():
@@ -383,7 +383,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             algstoppedlast = 0
             algstoppedfirst = 1
 
-            if numpy.sum(tmp0) < numpy.sum(tmp1):
+            if np.sum(tmp0) < np.sum(tmp1):
                 algstoppedlast = 1
                 algstoppedfirst = 0
 
@@ -397,12 +397,12 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             # plot probability of success line
             dataofinterest = data[algstoppedlast]
 
-            tmp = numpy.nonzero(idx)[0][-1] # Why [0]?
+            tmp = np.nonzero(idx)[0][-1] # Why [0]?
             # add the last line for which both algorithm still have a success
             idx = (data[algstoppedfirst][:, 2] == 0.) * (dataofinterest[:, 2] > 0.)
             idx[tmp] = True
 
-            if numpy.sum(idx) <= 1:#len(idx) == 0 or not idx.any():
+            if np.sum(idx) <= 1:#len(idx) == 0 or not idx.any():
                 continue
 
             ymin, ymax = plt.ylim()
@@ -413,8 +413,8 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
                 #orientation = 1
 
             #ydata = orientation * dataofinterest[idx, 2] / 2 + 0.5
-            ydata = numpy.power(10, numpy.log10(ybnd) * (dataofinterest[idx, 2]
-                                                         -offset*(5-i)*numpy.log10(ymax/ymin)/numpy.abs(numpy.log10(ybnd))))
+            ydata = np.power(10, np.log10(ybnd) * (dataofinterest[idx, 2]
+                                                         -offset*(5-i)*np.log10(ymax/ymin)/np.abs(np.log10(ybnd))))
 
             ls = '-'
             if dataofinterest[idx, 0][0] < fvalueswitch[dim]:
