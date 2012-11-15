@@ -10,9 +10,7 @@ For setting variables dynamically see config.py
 
 """
 
-import numpy
-def lgrg(start, stop, nb=50):
-    return 10**numpy.arange(start, stop, (stop-start+1e-11)/(nb-1))
+import numpy as np
 
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
     #set_trace()
@@ -29,9 +27,9 @@ single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default arg 
 single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each, seems not in use
 summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # all in one figure
 summarized_target_function_values = (100, 10, 1e0, 1e-1, 1e-2, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8) 
-summarized_target_function_values = tuple(10**numpy.r_[-8:2:0.2]) # 1e2 and 1e-8
+summarized_target_function_values = tuple(10**np.r_[-8:2:0.2]) # 1e2 and 1e-8
 # summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-8  
-summarized_target_function_values = lgrg(-1, 3) # easy easy 
+summarized_target_function_values = [-1, 3] # easy easy 
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure
 individual_low_budget_ftarget_lg_ranges = {  # should become the low_budget ranges of the BBOB testbed, later expressed as function of the budget
      1: [3.0, -8.0],
@@ -357,18 +355,29 @@ class TestbedSettings(object):
     """this might become the future way to have settings related to testbeds
     
     """
-    pass
+    def ecdf_target_values(self, lg_range=[-8, 2], number=50):
+        """returns a list of ``number`` log-equally space values between 
+        ``10**lg_range[0]`` and ``10**lg_range[-1]``. The second target
+        value is only achieved approximately. """
+        return list(10**np.arange(lg_range[0], lg_range[-1], (lg_range[-1] - lg_range[0]) / (49 + 1e-11)))
 
-class BBOBTestbedSettings(TestbedSettings):
+class GECCOBBOBTestbedSettings(TestbedSettings):
     def __init__(self):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
-        self.ftarget_lg_ranges = individual_low_budget_ftarget_lg_ranges
-class BBOBNoisefreeTestbedSettings(BBOBTestbedSettings):
-    def ftarget_lg_ranges(self, budget=1e9):
-        if budget < 1e3:
-            return individual_low_budget_ftarget_lg_ranges[:24]
+        self.ftarget_low_budget_lg_ranges = individual_low_budget_ftarget_lg_ranges
+    def ecdf_target_values(self, budget=1e9, function_ID=None): 
+        if budget < 1e3:  # here function ID is needed
+            return TestbedSettings.ecdf_target_values(self, self.ftarget_low_budget_lg_ranges[function_ID])
         else:
-            return {i : summarized_target_function_values for i in xrange(1, 25)}
+            return TestbedSettings.ecdf_target_values(self, [-8, 2])
+    
+class GECCOBBOBNoisefreeTestbedSettings(GECCOBBOBTestbedSettings):
+    pass
 
-current_testbed = BBOBNoisefreeTestbedSettings()
+# TODO: this needs to be set somewhere, e.g. in rungeneric*
+# or even better by investigating in the data attribute
+current_testbed = GECCOBBOBNoisefreeTestbedSettings() 
+
+
+

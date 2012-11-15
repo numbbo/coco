@@ -900,7 +900,7 @@ class DataSetList(list):
         corresponding slices as values.
 
         """
-        d = {}
+        d = DictAlg()
         for i in self:
             d.setdefault((i.algId, i.comment), DataSetList()).append(i)
         return d
@@ -1180,8 +1180,11 @@ def processInputArgs(args, verbose=True):
     return dsList, sortedAlgs, dictAlg
 
 class DictAlg(dict):
+    def __init__(self, d={}):
+        dict.__init__(self, d)  # was: super.__init(d)
+        
     def by_dim(self):
-        return dictAlgByDim(self)
+        return dictAlgByDim(self) # TODO: put here actual implementation
 
 def dictAlgByDim(dictAlg):
     """Returns a dictionary with problem dimension as key from

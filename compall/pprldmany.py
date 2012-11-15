@@ -129,6 +129,7 @@ function_IDs = range(1,200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 1
 #function_IDs = range(103,130+1, 3)  # cauchy noise
 # function_IDs = range(15,25) # multimodal nonseparable
 
+budget = 1e2  # TODO: needs to become accessible
 x_limit = 3e2   # noisy: 1e8, otherwise: 1e7. maximal run length shown
 x_annote_factor = 90 # make space for right-hand legend
 
@@ -404,7 +405,7 @@ def plot(dsList, targets=defaulttargets, craftingeffort=0., **kwargs):
             res = h # so the last element in res still has the label.
     return res
 
-def main(dictAlg, targets, order=None, outputdir='.', info='default',
+def main(dictAlg, order=None, outputdir='.', info='default',
          verbose=True):
     """Generates a figure showing the performance of algorithms.
 
@@ -430,15 +431,6 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
 
     dictFunc = dictAlgByFun(dictAlg)
-    targets_per_fct = targets
-    try:
-        for key in dictFunc:
-            if key not in targets_per_fct.keys():
-                raise ValueError
-    except AttributeError:
-        targets_per_fct = {}
-        for key in dictFunc:
-            targets_per_fct[key] = targets
 
     # Collect data
     # Crafting effort correction: should we consider any?
@@ -467,7 +459,7 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
         if function_IDs and f not in function_IDs:
             continue
 
-        for j, t in enumerate(targets_per_fct[f]):
+        for j, t in enumerate(genericsettings.current_testbed.ecdf_target_values(1e2, f)):
             # funcsolved[j].add(f)
 
             # Loop over all algs, not only those with data for f (they should be removed)
@@ -498,8 +490,8 @@ def main(dictAlg, targets, order=None, outputdir='.', info='default',
             if not bestalg.bestalgentries2009:
                 bestalg.loadBBOB2009()
             bestalgentry = bestalg.bestalgentries2009[(dim, f)]
-            bestalgevals = bestalgentry.detEvals(targets_per_fct[f])
-            for j in range(len(targets_per_fct[f])):
+            bestalgevals = bestalgentry.detEvals(genericsettings.current_testbed.ecdf_target_values(budget, f))
+            for j in range(len(bestalgentry.detEvals(genericsettings.current_testbed.ecdf_target_values(budget, f)))):
                 if bestalgevals[1][j]:
                     evals = bestalgevals[0][j]
                     #set_trace()

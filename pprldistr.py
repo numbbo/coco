@@ -390,8 +390,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
                     markeredgewidth=plt.getp(tmp[-1], 'linewidth'))
         plt.legend(loc='best')
         plt.text(0.5, 0.98, text, horizontalalignment="center",
-                 verticalalignment="top", transform=plt.gca().transAxes)
-                 #bbox=dict(ec='k', fill=False), 
+                 verticalalignment="top", transform=plt.gca().transAxes) #bbox=dict(ec='k', fill=False), 
         beautifyRLD(evalfmax)
         saveFigure(filename, verbose=verbose)
         plt.close(fig)
