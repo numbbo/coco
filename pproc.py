@@ -23,7 +23,7 @@ import sys
 import os
 import ast
 import re
-import pickle
+import pickle, gzip  # gzip is for future functionality: we probably never want to pickle without gzip anymore
 import warnings
 from pdb import set_trace
 import numpy, numpy as np
@@ -33,11 +33,11 @@ from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArra
 from bbob_pproc.ppfig import consecutiveNumbers
 
 do_assertion = False  # expensive assertions
-dataSetTargets = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]  # only to display info of DataSetList
+targets_displayed_for_info = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]  # only to display info in DataSetList.info
 
 def cocofy(filename):
     """Replaces bbob_pproc references in pickles files with coco_pproc
-        This could become neccessary for future backwards compatibility,
+        This could become necessary for future backwards compatibility,
         however rather should become a class method. """
     import fileinput
     for line in fileinput.input(filename, inplace=1):
@@ -1032,12 +1032,12 @@ class DataSetList(list):
             if opt == 'all':
                 print 'Df      |     min       10      med       90      max'
                 print '--------|--------------------------------------------'
-                evals = list([] for i in dataSetTargets)
+                evals = list([] for i in targets_displayed_for_info)
                 for i in self:
-                    tmpevals = i.detEvals(dataSetTargets)
-                    for j in range(len(dataSetTargets)):
+                    tmpevals = i.detEvals(targets_displayed_for_info)
+                    for j in range(len(targets_displayed_for_info)):
                         evals[j].extend(tmpevals[j])
-                for i, j in enumerate(dataSetTargets): # never aggregate over dim...
+                for i, j in enumerate(targets_displayed_for_info): # never aggregate over dim...
                     tmp = toolsstats.prctile(evals[i], [0, 10, 50, 90, 100])
                     tmp2 = []
                     for k in tmp:
