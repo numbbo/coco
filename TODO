@@ -1,15 +1,16 @@
 bbob_pproc package random thoughts:
+04/2012: maxfevals should occur in Figure 1 also when comparing algorithms (compall/ppfigs.py)
 04/2012: the tables in many algorithm papers should not have a targets line for each function. 
    To accomplish this, the argument function_targets_line in compall/pptables.main needs to 
    be put in action (and tested).  
 04/2012: compall/pptables.py contains reference pointers which are the likely reason for
   mis-referring the (1+1)-CMA-ES from 2010 to the paper of 2009. 
-04/2012: problem: 3 different names for one algorithm in one report: 
+04/2012: (might be solved or solved in future, when new meta-data are introduced) 
+  problem: 3 different names for one algorithm in one report: 
   specifically, a problem is the legend in compall/ppfigs.py, 
   which takes invariably the folder name as algorithm name, see Petrs Mail from March 26
-04/2012: maxfevals should occur in Figure 1 also when comparing algorithms (compall/ppfigs.py)
 03/2012: The datasets in the svn for noisy and noiseless data should be separated
-03/2012: processInputArgs and findfiles should accept zipped folders
+03/2012: processInputArgs and findfiles should accept zipped and gzipped folders
     import zipfile
     def extract(zipfilepath, extractiondir):
         zip = zipfile.ZipFile(zipfilepath)
