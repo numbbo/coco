@@ -435,7 +435,7 @@ def loadBBOBever():
     print " done."
 
 def usage():
-    print main.__doc__
+    print __doc__  # same as: sys.modules[__name__].__doc__, was: main.__doc__
 
 def generate(dictalg):
     """Generates dictionary of best algorithm data set.
