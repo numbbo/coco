@@ -196,10 +196,12 @@ class DataSet:
     # compatible?
 
     # Private attribute used for the parsing of info files.
-    _attributes = {'funcId': ('funcId', int), 'DIM': ('dim',int),
-                    'Precision': ('precision', float), 'Fopt': ('fopt', float),
-                    'targetFuncValue': ('targetFuncValue', float),
-                    'algId': ('algId', str)}
+    _attributes = {'funcId': ('funcId', int), 
+                   'DIM': ('dim',int),
+                   'Precision': ('precision', float), 
+                   'Fopt': ('fopt', float),
+                   'targetFuncValue': ('targetFuncValue', float),
+                   'algId': ('algId', str)}
 
     def __init__(self, header, comment, data, indexfile, verbose=True):
         """Instantiate a DataSet.
@@ -315,8 +317,7 @@ class DataSet:
             #data = info[0](split(dataFiles))
             ## split is a method from readalign, info[0] is a method of readalign
             #if verbose:
-                #print ("Processing %s: %d/%d trials found."
-                       #% (dataFiles, len(data), len(self.itrials)))
+                #print ("Processing %s: %d/%d trials found." #% (dataFiles, len(data), len(self.itrials)))
             #(adata, maxevals, finalfunvals) = alignData(data)
             #setattr(self, info[1], adata)
             #try:
@@ -353,6 +354,24 @@ class DataSet:
         self.ert = numpy.array(self.ert)
         self.target = numpy.array(self.target)
 
+    def relabel(self, reference_data, lg_flabel=lambda Nref : 1 - (1+8)*np.log10(Nref)/2):
+        """an idea not likely to be implemented in future, because class TargetValues
+        serves this purpose. 
+        :Input arguments:
+        
+            `reference_evals`: reference mapping between ftarget values and 
+                evaluations Nref of a reference algorithm, where ``evals[:,0]`` 
+                are the ftarget values. ``lg_flabel`` maps Nref to the artificial
+                f-value used in the data set.  
+                
+        ``reference_evals[:,1] <= 10**lg_label(ftarget)`` 
+        
+        This might in future relabel the evals as a function of targets 
+        data based on a reference algorithm. 
+        
+        """
+        raise NotImplementedError
+    
     def __eq__(self, other):
         """Compare indexEntry instances."""
         res = (self.__class__ is other.__class__ and
@@ -439,7 +458,7 @@ class DataSet:
         #dim, funcId, algId, precision
         return
 
-    def pickle(self, outputdir=None, verbose=True):
+    def pickle(self, outputdir=None, verbose=True, gzipped=False):
         """Save this instance to a pickle file.
 
         Saves this instance to a pickle file. If not specified
@@ -448,8 +467,12 @@ class DataSet:
         instance.
 
         This method will overwrite existing files.
+        
+        TODO: implement gzipped option, cave: how/where are these files loaded?
 
         """
+        if gzipped:
+            raise NotImplementedError
         # the associated pickle file does not exist
         if not getattr(self, 'pickleFile', False):
             if outputdir is None:
@@ -1178,7 +1201,7 @@ def processInputArgs(args, verbose=True):
             raise Exception(txt)
 
     return dsList, sortedAlgs, dictAlg
-
+    
 class DictAlg(dict):
     def __init__(self, d={}):
         dict.__init__(self, d)  # was: super.__init(d)

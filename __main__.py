@@ -31,14 +31,14 @@ if __name__ == "__main__":
     
     print '*** testing module bbob_pproc ***'
 
+    os.system(python + command + ' --omit-single ' +
+                join_path(data_path, 'BIPOP-CMA-ES ') +
+                join_path(data_path, 'PSO ') +
+                join_path(data_path, 'ALPS '))
     os.system(python + command + '--conv' + 
                 join_path(data_path, 'BFGS'))
     os.system(python + command + ' --omit-single ' +
                 join_path(data_path, 'DE-PSO ') +
                 join_path(data_path, 'VNS '))
-    os.system(python + command + ' --omit-single ' +
-                join_path(data_path, 'BIPOP-CMA-ES ') +
-                join_path(data_path, 'PSO ') +
-                join_path(data_path, 'ALPS '))
 
     print '*** done testing module bbob_pproc ***'

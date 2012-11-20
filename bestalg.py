@@ -29,9 +29,7 @@ from pdb import set_trace
 import warnings
 import numpy as np
 
-from bbob_pproc import readalign
-from bbob_pproc.pproc import DataSetList, processInputArgs
-from bbob_pproc.pproc import dictAlgByFun, dictAlgByDim
+from bbob_pproc import readalign, pproc
 
 bestalgentries2009 = {}
 bestalgentries2010 = {}
@@ -89,6 +87,8 @@ class BestAlgSet():
     numbers of function evaluations for evals or function values for
     funvals.
 
+    Known bug: algorithms where the ERT is NaN or Inf are not taken into account!? 
+    
     """
 
     def __init__(self, dictAlg):
@@ -153,7 +153,7 @@ class BestAlgSet():
             currentbestalg = ''
             for j, tmpert in enumerate(curerts):
                 if np.isnan(tmpert):
-                    continue
+                    continue # TODO: don't disregard these entries
                 if tmpert == currentbestert:
                     # TODO: what do we do in case of ties?
                     # look at function values corresponding to the ERT?
@@ -174,10 +174,10 @@ class BestAlgSet():
             it = dictiter.setdefault(alg, iter(dictAlg[alg].evals))
             curLine = dictcurLine.setdefault(alg, np.array([np.inf, 0]))
             while curLine[0] > funval:
-               try:
-                   curLine = it.next()
-               except StopIteration:
-                   break
+                try:
+                    curLine = it.next()
+                except StopIteration:
+                    break
             dictcurLine[alg] = curLine.copy()
             tmp = curLine.copy()
             tmp[0] = funval
@@ -443,8 +443,8 @@ def generate(dictalg):
 
     #dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
     res = {}
-    for f, i in dictAlgByFun(dictalg).iteritems():
-        for d, j in dictAlgByDim(i).iteritems():
+    for f, i in pproc.dictAlgByFun(dictalg).iteritems():
+        for d, j in pproc.dictAlgByDim(i).iteritems():
             tmp = BestAlgSet(j)
             res[(d, f)] = tmp
     return res
@@ -477,7 +477,7 @@ def customgenerate():
 
     verbose = True
 
-    dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
+    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
 
     if not os.path.exists(outputdir):
         os.mkdir(outputdir)
