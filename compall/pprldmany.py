@@ -47,11 +47,19 @@ from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
 from bbob_pproc import toolsstats, bestalg, genericsettings
-from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun 
-from bbob_pproc.toolsdivers import strip_pathname, str_to_latex
+from bbob_pproc import pproc as pp # import dictAlgByDim, dictAlgByFun 
+from bbob_pproc import toolsdivers  # strip_pathname, str_to_latex
 from bbob_pproc.pprldistr import plotECDF, beautifyECDF
 from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
 from bbob_pproc.pptex import writeLabels, numtotext
+from bbob_pproc import toolsdivers
+
+displaybest2009 = True
+if 1 < 3: target_values = toolsdivers.TargetValues().set_targets(10**np.arange(2, -8, -0.2))
+else: target_values = toolsdivers.TargetValues('bestGECCO2009').set_targets(10**np.arange(2, -8, -0.2))
+defaulttargets = tuple(10**np.r_[-8:2:0.2])  # is that still necessary?
+# defaulttargets = tuple(10**np.r_[-1:2:0.2])
+
 
 # TODO: update the list below which are not relevant anymore
 
@@ -103,7 +111,6 @@ funilipschitz = [1] + [5,6] + range(8,13) + [14] # + [13]  #13=sharp ridge, 7=st
 fmulti = [3, 4] + range(15,25) # 3 = paired Rastrigin
 funisep = [1,2,5]
 
-displaybest2009 = True
 
 # input parameter settings
 show_algorithms = eseda + ('BFGS',) # ()==all
@@ -170,8 +177,6 @@ refcolor = 'wheat'
 #'|'     vline marker
 #'_'     hline marker
 
-defaulttargets = tuple(10**np.r_[-8:2:0.2])
-# defaulttargets = tuple(10**np.r_[-1:2:0.2])
 
 def plt_plot(*args, **kwargs):
     return plt.plot(*args, clip_on=False, **kwargs)
@@ -423,14 +428,16 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     :param bool verbose: controls verbosity
 
     """
-    tmp = dictAlgByDim(dictAlg)
+    # tmp = dictAlg.by_dim()  # gives an exception
+    tmp = pp.dictAlgByDim(dictAlg)
+
     if len(tmp) != 1:
         raise Exception('We never integrate over dimension.')
     dim = tmp.keys()[0]
 
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
 
-    dictFunc = dictAlgByFun(dictAlg)
+    dictFunc = pp.dictAlgByFun(dictAlg)
 
     # Collect data
     # Crafting effort correction: should we consider any?
@@ -458,11 +465,11 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     for f, dictAlgperFunc in dictFunc.iteritems():
         if function_IDs and f not in function_IDs:
             continue
-
-        for j, t in enumerate(genericsettings.current_testbed.ecdf_target_values(1e2, f)):
+        # print target_values((f, dim))
+        for j, t in enumerate(target_values((f, dim))):
+        # for j, t in enumerate(genericsettings.current_testbed.ecdf_target_values(1e2, f)):
             # funcsolved[j].add(f)
 
-            # Loop over all algs, not only those with data for f (they should be removed)
             for alg in algorithms_with_data:
                 x = [np.inf] * perfprofsamplesize
                 runlengthunsucc = []
@@ -490,8 +497,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             if not bestalg.bestalgentries2009:
                 bestalg.loadBBOB2009()
             bestalgentry = bestalg.bestalgentries2009[(dim, f)]
-            bestalgevals = bestalgentry.detEvals(genericsettings.current_testbed.ecdf_target_values(budget, f))
-            for j in range(len(bestalgentry.detEvals(genericsettings.current_testbed.ecdf_target_values(budget, f)))):
+            bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
+            # print bestalgevals
+            for j in range(len(bestalgevals[0])):
                 if bestalgevals[1][j]:
                     evals = bestalgevals[0][j]
                     #set_trace()
@@ -550,7 +558,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             algtocommand = {}
             for i, alg in enumerate(order):
                 tmp = r'\alg%sperfprof' % numtotext(i)
-                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, str_to_latex(strip_pathname(alg))))
+                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, toolsdivers.str_to_latex(toolsdivers.strip_pathname(alg))))
                 algtocommand[alg] = tmp
             commandnames = []
             if displaybest2009:
@@ -596,3 +604,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     # TODO: should return status or sthg
 
+if __name__ == "__main__":
+    # should become a test case
+    import sys
+    import bbob_pproc
+    sys.path.append('.')
+    

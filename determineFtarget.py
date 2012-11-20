@@ -23,6 +23,8 @@ from bbob_pproc import pproc
 
 ### Class Definitions ###
 
+
+## old stuff ##
 class FunTarget:
     """ Determines the best and median function value from the data of all 
         algorithms for ERT between 2*Dim*10**(i-1) and 2*Dim*10**i for i = 0,1,2,... 
@@ -100,13 +102,14 @@ class TargetList(dict):
     """
     def __init__(self, dsList):
         super(TargetList, self).__init__()
-        process(self, dsList)
+        self.process(dsList)
 
     def process(self, dsList):
         dictDim = dsList.dictByDim()
         for d, dentries in dictDim.iteritems():
             dictFunc = dentries.dictByFunc()
             for f, fentries in dictFunc.iteritems():
+                pass
                 
                 # We need the function, dimension, the function value, the
                 # best algorithm, best ERT (for this target function value)
@@ -119,9 +122,9 @@ class TargetList(dict):
         pass
 
 
-class FixedBudgetFunTarget(NewFunTarget):
+# class FixedBudgetFunTarget(NewFunTarget):
 
-class Fix
+# class Fix:
 
 ### Function definitons ###
 

@@ -11,6 +11,7 @@ For setting variables dynamically see config.py
 """
 
 import numpy as np
+import toolsdivers
 
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
     #set_trace()
@@ -31,6 +32,7 @@ summarized_target_function_values = tuple(10**np.r_[-8:2:0.2]) # 1e2 and 1e-8
 # summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-8  
 summarized_target_function_values = [-1, 3] # easy easy 
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure
+# not (yet) in use: pprldmany_target_values = toolsdivers.TargetValues().set_targets(10**np.arange(-8, 2, 0.2))
 individual_low_budget_ftarget_lg_ranges = {  # should become the low_budget ranges of the BBOB testbed, later expressed as function of the budget
      1: [3.0, -8.0],
      2: [7.0, -8.0],
