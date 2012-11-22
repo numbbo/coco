@@ -44,7 +44,7 @@ from __future__ import absolute_import
 
 import os
 import numpy as np
-import pickle
+import pickle, gzip
 import matplotlib.pyplot as plt
 from pdb import set_trace
 from bbob_pproc import toolsstats, genericsettings
@@ -87,12 +87,12 @@ nbperdecade = 1  # markers in x-axis decades in ecdfs
 fmax = None
 evalfmax = None
 
-filename = 'pprldistr2009_1e-8.pickle'
+filename = 'pprldistr2009_1e-8.pickle.gz'
 filename = os.path.join(os.path.split(__file__)[0], filename)
 isBestAlgorithmFound = True
 try:
     # cocofy(filename)
-    f = open(filename,'r')
+    f = gzip.open(filename,'r')
     dictbestalg = pickle.load(f)
 except IOError, (errno, strerror):
     print "I/O error(%s): %s" % (errno, strerror)

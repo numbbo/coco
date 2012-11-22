@@ -49,17 +49,14 @@ import matplotlib.pyplot as plt
 from bbob_pproc import toolsstats, bestalg, genericsettings
 from bbob_pproc import pproc as pp # import dictAlgByDim, dictAlgByFun 
 from bbob_pproc import toolsdivers  # strip_pathname, str_to_latex
-from bbob_pproc.pprldistr import plotECDF, beautifyECDF
-from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
-from bbob_pproc.pptex import writeLabels, numtotext
-from bbob_pproc import toolsdivers
+from bbob_pproc import pprldistr # plotECDF, beautifyECDF
+from bbob_pproc import ppfig  # consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
+from bbob_pproc import pptex  # numtotex
 
 displaybest2009 = True
-if 1 < 3: target_values = toolsdivers.TargetValues().set_targets(10**np.arange(2, -8, -0.2))
-else: target_values = toolsdivers.TargetValues('bestGECCO2009').set_targets(10**np.arange(2, -8, -0.2))
-defaulttargets = tuple(10**np.r_[-8:2:0.2])  # is that still necessary?
-# defaulttargets = tuple(10**np.r_[-1:2:0.2])
+target_values = pp.TargetValues().set_targets(10**np.arange(2, -8, -0.2))  # changed in config.py
 
+defaulttargets = tuple(10**np.r_[-8:2:0.2])  # is that still necessary?
 
 # TODO: update the list below which are not relevant anymore
 
@@ -192,8 +189,8 @@ def beautify():
 
     plt.xlabel('log10 of (# f-evals / dimension)')
     plt.ylabel('Proportion of functions')
-    logxticks()
-    beautifyECDF()
+    ppfig.logxticks()
+    pprldistr.beautifyECDF()
 
 def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     """Draw a normalized ECDF. What means normalized?
@@ -220,7 +217,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
 
     if n == 0:
         #res = plt.plot((1., ), (0., ), **kwargs)
-        res = plotECDF(np.array((1., )), n=np.inf, **kwargs)
+        res = pprldistr.plotECDF(np.array((1., )), n=np.inf, **kwargs)
     else:
         dictx = {} # will contain number of appearances of each entry
         for i in x: 
@@ -238,7 +235,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                            np.repeat(y / float(nn), 2)])
 
         # to be tested: 
-        res = plotUnifLogXMarkers(x2, y2, nbperdecade * 4 / np.log10(maxval), 
+        res = ppfig.plotUnifLogXMarkers(x2, y2, nbperdecade * 4 / np.log10(maxval), 
                                   logscale=False, clip_on=False, **kwargs)
         # res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, **kwargs)
 
@@ -394,9 +391,9 @@ def plot(dsList, targets=defaulttargets, craftingeffort=0., **kwargs):
     # data = data[data <= maxval] # Take away rightmost data
     data = np.exp(craftingeffort) * data  # correction by crafting effort CrE
     if len(data) == 0: # data is empty.
-        res = plotECDF(np.array((1., )), n=np.inf, **kwargs)
+        res = pprldistr.plotECDF(np.array((1., )), n=np.inf, **kwargs)
     else:
-        res = plotECDF(np.array(data), n=n, **kwargs)
+        res = pprldistr.plotECDF(np.array(data), n=n, **kwargs)
         #plotdata(np.array(data), x_limit, maxevals,
         #                    CrE=0., **kwargs)
     if maxevals: # Should cover the case where maxevals is None or empty
@@ -428,8 +425,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     :param bool verbose: controls verbosity
 
     """
-    # tmp = dictAlg.by_dim()  # gives an exception
     tmp = pp.dictAlgByDim(dictAlg)
+    # tmp = pp.DictAlg(dictAlg).by_dim()
 
     if len(tmp) != 1:
         raise Exception('We never integrate over dimension.')
@@ -557,7 +554,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             f.write(r'\providecommand{\nperfprof}{7}')
             algtocommand = {}
             for i, alg in enumerate(order):
-                tmp = r'\alg%sperfprof' % numtotext(i)
+                tmp = r'\alg%sperfprof' % pptex.numtotext(i)
                 f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, toolsdivers.str_to_latex(toolsdivers.strip_pathname(alg))))
                 algtocommand[alg] = tmp
             commandnames = []
@@ -585,7 +582,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     #beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
     beautify()
 
-    text = 'f%s' % (consecutiveNumbers(sorted(dictFunc.keys())))
+    text = 'f%s' % (ppfig.consecutiveNumbers(sorted(dictFunc.keys())))
     text += ',%d-D' % dim
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes)
@@ -598,7 +595,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     for i in xticks:
         tmp.append('%d' % round(np.log10(i)))
     a.set_xticklabels(tmp)
-    saveFigure(figureName, verbose=verbose)
+    ppfig.saveFigure(figureName, verbose=verbose)
 
     plt.close()
 

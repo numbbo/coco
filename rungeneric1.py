@@ -225,6 +225,7 @@ def main(argv=None):
         # from bbob_pproc import bbob2010 as inset # input settings
         if inputsettings == "color":
             from bbob_pproc import config, genericsettings as inset # input settings
+            config.config()
         elif inputsettings == "grayscale":
             from bbob_pproc import grayscalesettings as inset # input settings
         elif inputsettings == "black-white":
@@ -234,7 +235,8 @@ def main(argv=None):
                    + 'argument for input flag "--settings".')
             raise Usage(txt)
         if 11 < 3:
-            from bbob_pproc import config as insetc # input settings
+            from bbob_pproc import config  # input settings
+            config.config()
             import imp
             # import testbedsettings as testbedsettings # input settings
             try:

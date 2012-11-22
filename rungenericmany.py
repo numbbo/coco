@@ -207,6 +207,7 @@ def main(argv=None):
         # TODO: conditional imports are NOT the way to go here
         if inputsettings == "color":
             from bbob_pproc import config, genericsettings as inset # input settings
+            config.config()
         elif inputsettings == "grayscale":
             from bbob_pproc import grayscalesettings as inset # input settings
         elif inputsettings == "black-white":
@@ -284,6 +285,8 @@ def main(argv=None):
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
                     # pprldmany.main(entries, inset.summarized_target_function_values,
+                    # from . import config
+                    # config.config()
                     pprldmany.main(entries, # pass expensive flag here? 
                                    order=sortedAlgs,
                                    outputdir=outputdir,

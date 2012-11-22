@@ -49,7 +49,8 @@ Examples:
 from __future__ import absolute_import
 
 #from bbob_pproc import ppsingle, ppfigdim, dataoutput
-from bbob_pproc.pproc import DataSetList, DataSet
+# from bbob_pproc.pproc import DataSetList, DataSet
+from bbob_pproc import pproc
 
 #__all__ = ['load', 'info', 'pickle', 'systeminfo', 'DataSetList', 'DataSet']
 
@@ -62,7 +63,7 @@ def load(filename):
     files.
 
     """
-    return DataSetList(filename)
+    return pproc.DataSetList(filename)
 
 # info on the DataSetList: algId, function, dim
 

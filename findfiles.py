@@ -61,7 +61,7 @@ def main(directory='.', verbose=True):
             print 'Searching in %s ...' % root
 
         for elem in files:
-            if elem.endswith('.info') or elem.endswith('.pickle'):
+            if elem.endswith('.info') or elem.endswith('.pickle') or elem.endswith('.pickle.gz'):
                 filelist.append(os.path.join(root, elem))
 
     if verbose:
