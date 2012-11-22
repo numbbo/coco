@@ -27,7 +27,7 @@ import pickle, gzip  # gzip is for future functionality: we probably never want 
 import warnings
 from pdb import set_trace
 import numpy, numpy as np
-from bbob_pproc import findfiles, toolsstats, toolsdivers
+from bbob_pproc import genericsettings, findfiles, toolsstats, toolsdivers
 from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
 from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from bbob_pproc.ppfig import consecutiveNumbers
@@ -46,6 +46,125 @@ def cocofy(filename):
     fileinput.close
 
 # CLASS DEFINITIONS
+
+class TargetValues(object):
+    """should this go in a different module?
+    Working modes:
+    
+        targets = TargetValues(reference_data).set_targets(ERT_values)
+        targets((1, 10)) # returns the list of f-values for F1 in 10-D
+    
+    or
+    
+        targets = TargetValues().set_targets([10, 1, 1e-1, 1e-3, 1e-5, 1e-8])
+        targets((1, 10))  # returns the above targets ignoring the input argument
+        
+        TODO: see compall/determineFtarget2.FunTarget
+    
+    """
+    def __init__(self, reference_data_set=None):
+        """Two modes of working: without `reference_data_set`, 
+        a target function value list is returned on calling
+        the instance. Otherwise target values will be computed 
+        based on the reference data in the given function 
+        and dimension. 
+        
+        """
+        self.ref_data = reference_data_set
+    
+    def __call__(self, fun_dim=None, force_different_targets=False):
+        """Get the target values for the respective function and dimension  
+        and the reference ERT values set via ``set_targets``. `fun_dim` is 
+        a tuple ``(fun_nb, dimension)`` like ``(1, 20)`` for the 20-D sphere. 
+        
+        Details: with ``force_different_targets is True`` the method relies 
+        on the fixed target value "difference" of ``10**0.2``. 
+        
+        """
+        if self.ref_data is None:
+            return self.input_targets  # in this case ftarget values
+        elif fun_dim is None:
+            raise ValueError('function and dimension must be given via input argument ``fun_dim``')
+        elif self.ref_data == 'bestGECCO2009':
+            from bbob_pproc import bestalg
+            bestalg.loadBBOB2009() # this is an absurd interface
+            self.ref_data = bestalg.bestalgentries2009
+        else:  # self.ref_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
+            dsl = DataSetList(sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0] + 
+                              'bbob_pproc/data/' + self.ref_data)  
+            dsd = {}
+            for ds in dsl:
+                ds.clean_data()
+                dsd[(ds.funcId, ds.dim)] = ds
+            self.ref_data = dsd
+            
+        if force_different_targets and len(self.run_lengths) > 15:
+                warnings.warn('more than 15 run_length targets are in use while enforcing different target values, which might not lead to the desired result')
+
+        delta_f_factor = 10**0.2
+        smallest_target = 1e-8  # true for all experimental setups at least until 2013
+            
+        fun_dim = tuple(fun_dim)
+        dim_fun = tuple([i for i in reversed(fun_dim)])
+        ds = self.ref_data[dim_fun]
+        try:
+            end = np.nonzero(ds.target >= smallest_target)[0][-1] + 1 
+            # same as end = np.where(ds.target >= smallest_target)[0][-1] + 1 
+        except IndexError:
+            end = len(ds.target)
+        for begin in xrange(len(ds.target)-1):
+            if ds.ert[begin+1] > 1:
+                break
+        try: 
+            # make sure the necessary attributs do exist
+            assert ds.ert[begin] == 1  # we might have to compute these the first time
+            # check whether there are gaps between the targets 
+            assert all(toolsdivers.equals_approximately(delta_f_factor, ds.target[i] / ds.target[i+1]) for i in xrange(begin, end-1))
+            # if this fails, we need to insert the missing target values 
+        except AssertionError:
+            # print ds.ert[begin]
+            # print [ds.target[i] / ds.target[i+1] for i in xrange(begin, end-1)]
+            # print ds.target[begin:end]  # , ds.target[begin], ds.target[end]
+            # print ds.ert[begin:end]
+            print fun_dim  
+            # raise NotImplementedError('not all targets are recorded')  # might not be necessary 
+        assert len(ds.ert) == len(ds.target)
+        
+        targets = []
+        for rl in reversed(self.run_lengths):
+            indices = np.nonzero(ds.ert[begin:end] <= np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
+            assert len(indices)
+            targets.append(ds.target[indices[-1]])
+            if force_different_targets and len(targets) > 1 and not targets[-1] < targets[-2]:
+                targets[-1] = targets[-2] / delta_f_factor
+        return targets
+    
+    get_targets = __call__  # an alias
+
+    def set_targets(self, values, times_dimension=True):
+        """target values are either run_lengths of the reference algorithm
+        (in case the reference algorithm was given at class instantiation) 
+        or target values. 
+        
+        """
+        
+        if self.ref_data is None:
+            self.input_targets = sorted(values, reverse=True)
+        else:
+            self.run_lengths = sorted(values)
+            self.times_dimension = times_dimension
+        return self
+                
+    def _generate_erts(self, ds, target_values):
+        """compute for all target values, starting with 1e-8, the ert value
+        and store it in the reference_data_set attribute
+        
+        """
+        raise NotImplementedError
+              
+    def labels(self):
+        pass
+    
 class DataSet:
     """Unit element for the COCO post-processing.
 
@@ -335,9 +454,33 @@ class DataSet:
             warnings.warn('There is a difference between the maxevals in the '
                           '*.info file and in the data files.')
 
+        self.clean_data()
         # Compute ERT
         self.computeERTfromEvals()
 
+    def clean_data(self):
+        """target, evals, and ert are truncated to values not smaller than precision
+        
+        TODO: should maxfunevals also be adjusted? 
+        
+        """
+        if 1 < 3 or genericsettings.GECCOBBOBTestbed in genericsettings.current_testbed.__class__.__bases__:
+            i = len(self.target)
+            while i > 1 and self.target[i-1] < self.precision:
+                i -= 1
+            if i < len(self.target):
+                self.target = self.target[:i]
+                self.evals = self.evals[:i, :]
+                try:
+                    self.ert = self.ert[:i]
+                except AttributeError:
+                    pass
+            assert self.target[-1] == self.evals[-1,0] 
+            assert self.evals.shape[0] == 1 or self.evals[-2, 0] > self.precision
+            if self.target[-1] < self.precision:
+                warnings.warn('final precision was not recorded')
+                print '*** warning: final precision was not recorded'
+            
     def computeERTfromEvals(self):
         """Sets the attributes ert and target from the attribute evals."""
         self.ert = []
@@ -775,10 +918,13 @@ class DataSetList(list):
         for name in fnames: 
             if name.endswith('.info'):
                 self.processIndexFile(name, verbose)
-            elif name.endswith('.pickle'):
+            elif name.endswith('.pickle') or name.endswith('.pickle.gz'):
                 try:
                     # cocofy(name)
-                    f = open(name,'r')
+                    if name.endswith('.gz'):
+                        f = gzip.open(name)
+                    else:
+                        f = open(name,'r')
                     try:
                         entry = pickle.load(f)
                     except pickle.UnpicklingError:
@@ -804,7 +950,7 @@ class DataSetList(list):
                               'containing .info file(s).')
 
     def clean_data(self):
-        """removes data where target is smaller than precision==final Df and 
+        """removes data where target is smaller than precision==final Df==1e-8 and 
         can be used for further cleaning up of read in data (in future)
         
         """
@@ -1256,11 +1402,11 @@ def dictAlgByDim(dictAlg):
 
     return res
 
-def dictAlgByDim2(dictAlg):
+def dictAlgByDim2(dictAlg, remove_empty=False):
     """Returns a dictionary with problem dimension as key.
 
     The difference with :py:func:`dictAlgByDim` is that there is an
-    entry for each algorithms even if the resulting
+    entry for each algorithm even if the resulting
     :py:class:`DataSetList` is empty.
 
     This function is meant to be used with an input argument which is a
@@ -1275,6 +1421,15 @@ def dictAlgByDim2(dictAlg):
     for alg, dsList in dictAlg.iteritems():
         for i in dsList:
             res.setdefault(i.dim, {}).setdefault(alg, DataSetList()).append(i)
+
+    if remove_empty:
+        raise NotImplementedError
+        for dim, ds_dict in res.iteritems():
+            for alg, ds_dict2 in ds_dict.iteritems():
+                if not len(ds_dict2):
+                    pass
+            if not len(ds_dict):
+                pass
 
     return res
 
