@@ -89,7 +89,7 @@ class TargetValues(object):
             from bbob_pproc import bestalg
             bestalg.loadBBOB2009() # this is an absurd interface
             self.ref_data = bestalg.bestalgentries2009
-        else:  # self.ref_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
+        elif type(self.ref_data) is str:  # self.ref_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
             dsl = DataSetList(sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0] + 
                               'bbob_pproc/data/' + self.ref_data)  
             dsd = {}
@@ -116,7 +116,7 @@ class TargetValues(object):
             if ds.ert[begin+1] > 1:
                 break
         try: 
-            # make sure the necessary attributs do exist
+            # make sure the necessary attributes do exist
             assert ds.ert[begin] == 1  # we might have to compute these the first time
             # check whether there are gaps between the targets 
             assert all(toolsdivers.equals_approximately(delta_f_factor, ds.target[i] / ds.target[i+1]) for i in xrange(begin, end-1))
@@ -459,9 +459,10 @@ class DataSet:
         self.computeERTfromEvals()
 
     def clean_data(self):
-        """target, evals, and ert are truncated to values not smaller than precision
+        """attributes `target`, `evals`, and `ert` are truncated to target values not smaller 
+        than defined in attribute `precision` (typically ``1e-8``). 
         
-        TODO: should maxfunevals also be adjusted? 
+        TODO: should attribute `maxevals` be recomputed? 
         
         """
         if 1 < 3 or genericsettings.GECCOBBOBTestbed in genericsettings.current_testbed.__class__.__bases__:
@@ -497,24 +498,6 @@ class DataSet:
         self.ert = numpy.array(self.ert)
         self.target = numpy.array(self.target)
 
-    def relabel(self, reference_data, lg_flabel=lambda Nref : 1 - (1+8)*np.log10(Nref)/2):
-        """an idea not likely to be implemented in future, because class TargetValues
-        serves this purpose. 
-        :Input arguments:
-        
-            `reference_evals`: reference mapping between ftarget values and 
-                evaluations Nref of a reference algorithm, where ``evals[:,0]`` 
-                are the ftarget values. ``lg_flabel`` maps Nref to the artificial
-                f-value used in the data set.  
-                
-        ``reference_evals[:,1] <= 10**lg_label(ftarget)`` 
-        
-        This might in future relabel the evals as a function of targets 
-        data based on a reference algorithm. 
-        
-        """
-        raise NotImplementedError
-    
     def __eq__(self, other):
         """Compare indexEntry instances."""
         res = (self.__class__ is other.__class__ and
@@ -577,7 +560,15 @@ class DataSet:
         # return sinfo 
 
     def mMaxEvals(self):
-        """Returns the maximum number of function evaluations."""
+        """Returns the maximum number of function evaluations over all runs (trials), 
+        obsolete and replaced by attribute `maxeval`
+        
+        """
+        return max(self.maxevals)
+    
+    @property  # cave: setters work only with new style classes
+    def max_eval(self):
+        """maximum number of function evaluations over all runs (trials)""" 
         return max(self.maxevals)
 
     def nbRuns(self):
@@ -948,31 +939,6 @@ class DataSetList(list):
                               'Expecting as input argument either .info ' +
                               'file(s), .pickle file(s) or a folder ' +
                               'containing .info file(s).')
-
-    def clean_data(self):
-        """removes data where target is smaller than precision==final Df==1e-8 and 
-        can be used for further cleaning up of read in data (in future)
-        
-        """
-        raise NotImplementedError()  # what is coming is not yet tested
-        # remove rows in evals where evals[-1,0] < precision
-        i = len(self.target)
-        while i > 1 and self.target[i-2] < self.precision:
-            i -= 1
-        if i < len(self.target):
-            self.target = self.target[:i]
-            self.evals = self.evals[:i, :]
-            
-        assert self.target[-1] == self.evals[-1,0] 
-        assert self.evals.shape[0] == 1 or self.evals[-2, 0] > self.precision
-        if self.target[-1] < self.precision:
-            warnings.warn('')
-            print '*** warning: final precision was not recorded'
-
-        # compute maxevals as min(evals[presicion], maxevals) if not isnan(evals[precision])
-        raise NotImplementedError()
-        # self.computeERTfromEvals()
-        raise NotImplementedError()
              
     def processIndexFile(self, indexFile, verbose=True):
         """Reads in an index file information on the different runs."""

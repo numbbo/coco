@@ -33,61 +33,6 @@ summarized_target_function_values = [-1, 3] # easy easy
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure
 # not (yet) in use: pprldmany_target_values = pproc.TargetValues().set_targets(10**np.arange(-8, 2, 0.2))
 
-individual_low_budget_ftarget_lg_ranges = {  # should become the low_budget ranges of the BBOB testbed, later expressed as function of the budget
-     1: [3.0, -8.0],
-     2: [7.0, -8.0],
-     3: [4.0, 0.0],
-     4: [4.0, 0.0],
-     5: [3.0, -8.0],
-     6: [6.0, -2.0],
-     7: [4.0, -1.0],
-     8: [6.0, -4.0],
-     9: [3.0, -5.0],
-     10: [8.0, 0.0],
-     11: [7.0, -1.0],
-     12: [9.0, -1.0],
-     13: [4.0, -2.0],
-     14: [2.0, -6.0],
-     15: [4.0, 0.0],
-     16: [2.0, 0.0],
-     17: [2.0, -1.0],
-     18: [3.0, -1.0],
-     19: [2.0, -1.0],
-     20: [5.0, 0.0],
-     21: [2.0, 0.0],
-     22: [2.0, 0.0],
-     23: [2.0, 0.0],
-     24: [3.0, 0.0],
-     101: [3.0, -8.0],
-     102: [3.0, -8.0],
-     103: [3.0, -8.0],
-     104: [6.0, 0.0],
-     105: [6.0, 0.0],
-     106: [6.0, 0.0],
-     107: [3.0, 0.0],
-     108: [3.0, 0.0],
-     109: [3.0, -3.0],
-     110: [6.0, 0.0],
-     111: [6.0, 0.0],
-     112: [6.0, 0.0],
-     113: [4.0, 0.0],
-     114: [4.0, 0.0],
-     115: [4.0, 0.0],
-     116: [6.0, 0.0],
-     117: [6.0, 0.0],
-     118: [6.0, 0.0],
-     119: [3.0, 0.0],
-     120: [3.0, 0.0],
-     121: [3.0, -2.0],
-     122: [2.0, 0.0],
-     123: [2.0, 0.0],
-     124: [2.0, -1.0],
-     125: [2.0, -2.0],
-     126: [2.0, -2.0],
-     127: [2.0, -2.0],
-     128: [2.0, 0.0],
-     129: [2.0, 0.0],
-     130: [2.0, 0.0]}
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
@@ -363,13 +308,13 @@ class GECCOBBOBTestbed(Testbed):
     def __init__(self):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
-        self.ftarget_low_budget_lg_ranges = individual_low_budget_ftarget_lg_ranges
+        pass
     
 class GECCOBBOBNoisefreeTestbed(GECCOBBOBTestbed):
     pass
 
 # TODO: this needs to be set somewhere, e.g. in rungeneric*
-# or even better by investigating in the data attribute
+# or even better by investigating in the data attributes
 current_testbed = GECCOBBOBNoisefreeTestbed() 
 
 
