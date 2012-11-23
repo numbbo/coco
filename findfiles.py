@@ -56,7 +56,7 @@ def main(directory='.', verbose=True):
     #~ else:
 
     # Search through the directory directory and all its subfolders.
-    for root, dirs, files in os.walk(directory):
+    for root, _dirs, files in os.walk(directory):
         if verbose:
             print 'Searching in %s ...' % root
 

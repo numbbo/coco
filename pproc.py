@@ -112,27 +112,24 @@ class TargetValues(object):
             # same as end = np.where(ds.target >= smallest_target)[0][-1] + 1 
         except IndexError:
             end = len(ds.target)
-        for begin in xrange(len(ds.target)-1):
-            if ds.ert[begin+1] > 1:
-                break
         try: 
             # make sure the necessary attributes do exist
-            assert ds.ert[begin] == 1  # we might have to compute these the first time
+            assert ds.ert[0] == 1  # we might have to compute these the first time
             # check whether there are gaps between the targets 
-            assert all(toolsdivers.equals_approximately(delta_f_factor, ds.target[i] / ds.target[i+1]) for i in xrange(begin, end-1))
+            assert all(toolsdivers.equals_approximately(delta_f_factor, ds.target[i] / ds.target[i+1]) for i in xrange(end-1))
             # if this fails, we need to insert the missing target values 
         except AssertionError:
             # print ds.ert[begin]
             # print [ds.target[i] / ds.target[i+1] for i in xrange(begin, end-1)]
             # print ds.target[begin:end]  # , ds.target[begin], ds.target[end]
             # print ds.ert[begin:end]
-            print fun_dim  
+            print fun_dim, ds.ert[0], 'not all targets are recorded in TargetValues.__call__ (this could be a bug)' 
             # raise NotImplementedError('not all targets are recorded')  # might not be necessary 
         assert len(ds.ert) == len(ds.target)
         
         targets = []
         for rl in reversed(self.run_lengths):
-            indices = np.nonzero(ds.ert[begin:end] <= np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
+            indices = np.nonzero(ds.ert[:end] <= np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
             assert len(indices)
             targets.append(ds.target[indices[-1]])
             if force_different_targets and len(targets) > 1 and not targets[-1] < targets[-2]:
