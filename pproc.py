@@ -90,8 +90,9 @@ class TargetValues(object):
             bestalg.loadBBOB2009() # this is an absurd interface
             self.ref_data = bestalg.bestalgentries2009
         elif type(self.ref_data) is str:  # self.ref_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
-            dsl = DataSetList(sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0] + 
-                              'bbob_pproc/data/' + self.ref_data)  
+            dsl = DataSetList(os.path.join(
+                                           sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0], 
+                                           'bbob_pproc', 'data', self.ref_data))  
             dsd = {}
             for ds in dsl:
                 ds.clean_data()
@@ -113,18 +114,15 @@ class TargetValues(object):
         except IndexError:
             end = len(ds.target)
         try: 
-            # make sure the necessary attributes do exist
             assert ds.ert[0] == 1  # we might have to compute these the first time
+        except AssertionError:
+            print fun_dim, ds.ert[0], 'ert[0] != 1 in TargetValues.__call__' 
+        try: 
             # check whether there are gaps between the targets 
             assert all(toolsdivers.equals_approximately(delta_f_factor, ds.target[i] / ds.target[i+1]) for i in xrange(end-1))
             # if this fails, we need to insert the missing target values 
         except AssertionError:
-            # print ds.ert[begin]
-            # print [ds.target[i] / ds.target[i+1] for i in xrange(begin, end-1)]
-            # print ds.target[begin:end]  # , ds.target[begin], ds.target[end]
-            # print ds.ert[begin:end]
             print fun_dim, ds.ert[0], 'not all targets are recorded in TargetValues.__call__ (this could be a bug)' 
-            # raise NotImplementedError('not all targets are recorded')  # might not be necessary 
         assert len(ds.ert) == len(ds.target)
         
         targets = []
