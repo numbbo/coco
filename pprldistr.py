@@ -47,8 +47,10 @@ import numpy as np
 import pickle, gzip
 import matplotlib.pyplot as plt
 from pdb import set_trace
-from bbob_pproc import toolsstats, genericsettings
+from bbob_pproc import toolsstats, genericsettings, pproc
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
+
+single_target_values = pproc.TargetValues().set_targets((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
 
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
    
@@ -290,6 +292,48 @@ def plotRLDistr(dsList, target, **plotArgs):
     res = plotECDF(x, nn, **kwargs)
     return res
 
+def plotRLDistr2(dsList, target, **plotArgs):
+    """TODO: to be revised/rewritten such that runlength based targets work. 
+    Creates run length distributions from a sequence dataSetList.
+
+    Labels of the line (for the legend) will be set automatically with
+    the following format: %+d: %d/%d % (log10()
+    
+
+    :param DataSetList dsList: Input data sets
+    :param dict or float target: target precision
+    :param plotArgs: additional arguments passed to the plot command
+
+    :returns: handles of the resulting plot.
+
+    """
+    x = []
+    nn = 0
+    fsolved = set()
+    funcs = set()
+    for i in dsList:
+        funcs.add(i.funcId)
+        try:
+            target = target[i.funcId]
+        except TypeError:
+            target = target
+        tmp = i.detEvals((target, ))[0] / i.dim
+        tmp = tmp[np.isnan(tmp) == False] # keep only success
+        if len(tmp) > 0:
+            fsolved.add(i.funcId)
+        x.extend(tmp)
+        nn += i.nbRuns()
+    kwargs = plotArgs.copy()
+    label = ''
+    try:
+        label += '%+d:' % (np.log10(target))
+    except NameError:
+        pass
+    label += '%d/%d' % (len(fsolved), len(funcs))
+    kwargs['label'] = kwargs.setdefault('label', label)
+    res = plotECDF(x, nn, **kwargs)
+    return res
+
 def plotFVDistr(dsList, target, maxEvalsF, **plotArgs):
     """Creates ECDF of final function values plot from a DataSetList.
     
@@ -427,9 +471,9 @@ def beautify():
 #         set_trace()
 #         plt.setp(plt.gcf(), 'figsize', (16.35, 6.))
 
-def plot(dsList, targets=genericsettings.single_target_pprldistr_values, **plotArgs):
+def plot(dsList, targets=single_target_values, **plotArgs):
     """Plot ECDF of evaluations and final function values."""
-
+    targets = targets()  # TODO: this needs to be rectified
     assert len(dsList.dictByDim()) == 1, ('Cannot display different '
                                           'dimensionalities together')
     res = []
@@ -561,8 +605,7 @@ def main(dsList, targets, isStoringXMax=False, outputdir='',
             tmp = plotFVDistr(dictdim, targets[-1], maxEvalsF[j],
                               **rldUnsuccStyles[j % len(rldUnsuccStyles)])    
         plt.text(0.98, 0.02, text, horizontalalignment="right",
-                 transform=plt.gca().transAxes)
-                 #bbox=dict(ec='k', fill=False), 
+                 transform=plt.gca().transAxes)  # bbox=dict(ec='k', fill=False), 
         beautifyFVD(isStoringXMax=isStoringXMax, ylabel=False)
         saveFigure(filename, verbose=verbose)
         plt.close(fig)

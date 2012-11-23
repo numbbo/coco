@@ -6,7 +6,8 @@
 These variables are used for producing figures and tables 
 in rungeneric1, -2, and -many.
 
-For setting variables dynamically see config.py
+For setting variables dynamically see config.py, where some 
+of the variables here and some 
 
 """
 
@@ -14,29 +15,27 @@ import numpy as np
 
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
     #set_trace()
+evaluation_setting = 1e2  # artificial way to control the "new" displays
 
 dimensions_to_display = (2,3,5,10,20,40)  # this could be used to set the dimensions in respective modules
-# ppfigdim.dimsBBOB = dimensions_to_display
-# ppfig2.dimensions = dimensions_to_display
+# should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
-# TODO: this is obsolete? 
 instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
-                       11:1, 12:1, 13:1, 14:1, 15:1}
-
-single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default arg in pprldistr.plot method
-single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each, seems not in use
-summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # all in one figure
-summarized_target_function_values = (100, 10, 1e0, 1e-1, 1e-2, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8) 
-summarized_target_function_values = tuple(10**np.r_[-8:2:0.2]) # 1e2 and 1e-8
+                       11:1, 12:1, 13:1, 14:1, 15:1}  # only for consistency checking
+# single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default in pprldistr.plot method
+# single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each, seems not in use
+# summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # all in one figure
+# summarized_target_function_values = (100, 10, 1e0, 1e-1, 1e-2, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8) 
+# summarized_target_function_values = tuple(10**np.r_[-8:2:0.2]) # 1e2 and 1e-8
 # summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-8  
-summarized_target_function_values = [-1, 3] # easy easy 
+# summarized_target_function_values = [-1, 3] # easy easy 
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure
 # not (yet) in use: pprldmany_target_values = pproc.TargetValues().set_targets(10**np.arange(-8, 2, 0.2))
 
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
-fast_save_for_debugging = True  # False # saves only 30% 
+fast_save_for_debugging = True  # lower resolution, no eps, saves 30% time 
 fig_formats = ('eps', 'pdf') if not fast_save_for_debugging else ('pdf', )
 
 line_styles = [  # used by ppfigs and pprlmany  

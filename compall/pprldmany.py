@@ -133,8 +133,7 @@ function_IDs = range(1,200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 1
 #function_IDs = range(103,130+1, 3)  # cauchy noise
 # function_IDs = range(15,25) # multimodal nonseparable
 
-budget = 1e2  # TODO: needs to become accessible
-x_limit = 3e2   # noisy: 1e8, otherwise: 1e7. maximal run length shown
+x_limit = 3e2 if genericsettings.evaluation_setting == 1e2 else 1e7  # noisy: 1e8, otherwise: 1e7. maximal run length shown
 x_annote_factor = 90 # make space for right-hand legend
 
 save_zoom = False  # save zoom into left and right part of the figures
