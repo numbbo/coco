@@ -52,32 +52,45 @@ class TargetValues(object):
     Working modes:
     
         targets = TargetValues(reference_data).set_targets(ERT_values)
-        targets((1, 10)) # returns the list of f-values for F1 in 10-D
-    
-    or
+        targets((1, 10)) 
+        
+    returns a list of target f-values for F1 in 10-D, based on the 
+    ``ERT_values`` and ``reference_data``. 
     
         targets = TargetValues().set_targets([10, 1, 1e-1, 1e-3, 1e-5, 1e-8])
-        targets((1, 10))  # returns the above targets ignoring the input argument
+        targets((1, 10))  
+        
+    returns the above targets ignoring the input argument. 
         
         TODO: see compall/determineFtarget2.FunTarget
     
     """
-    def __init__(self, reference_data_set=None):
+    def __init__(self, reference_data_set=None, force_different_targets=False):
         """Two modes of working: without `reference_data_set`, 
         a target function value list is returned on calling
         the instance. Otherwise target values will be computed 
         based on the reference data in the given function 
         and dimension. 
         
+        :param reference_data_set: 
+            can be a string like ``"bestGECCO2009"`` or a 
+            ``DataSetList`` (not thoroughly tested).  
+        :param force_different_targets:
+            given the target values are computed from the 
+            ``reference_data_set``, enforces that all target
+            values are different. In case the same target is
+            picked twice, the next difficult target is chosen. 
+
         """
         self.ref_data = reference_data_set
+        self.force_different_targets = force_different_targets
     
-    def __call__(self, fun_dim=None, force_different_targets=False):
+    def __call__(self, fun_dim=None):
         """Get the target values for the respective function and dimension  
         and the reference ERT values set via ``set_targets``. `fun_dim` is 
         a tuple ``(fun_nb, dimension)`` like ``(1, 20)`` for the 20-D sphere. 
         
-        Details: with ``force_different_targets is True`` the method relies 
+        Details: with ``self.force_different_targets is True`` the method relies 
         on the fixed target value "difference" of ``10**0.2``. 
         
         """
@@ -99,7 +112,7 @@ class TargetValues(object):
                 dsd[(ds.funcId, ds.dim)] = ds
             self.ref_data = dsd
             
-        if force_different_targets and len(self.run_lengths) > 15:
+        if self.force_different_targets and len(self.run_lengths) > 15:
                 warnings.warn('more than 15 run_length targets are in use while enforcing different target values, which might not lead to the desired result')
 
         delta_f_factor = 10**0.2
@@ -130,7 +143,7 @@ class TargetValues(object):
             indices = np.nonzero(ds.ert[:end] <= np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
             assert len(indices)
             targets.append(ds.target[indices[-1]])
-            if force_different_targets and len(targets) > 1 and not targets[-1] < targets[-2]:
+            if self.force_different_targets and len(targets) > 1 and not targets[-1] < targets[-2]:
                 targets[-1] = targets[-2] / delta_f_factor
         return targets
     
