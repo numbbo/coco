@@ -27,7 +27,9 @@ def config():
     """
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets 
     if genericsettings.evaluation_setting == 1e2:
-        pprldmany.target_values = pproc.TargetValues('bestGECCO2009').set_targets(10**np.arange(-0.3, 1.8, 0.2))
+        pprldmany.target_values = pproc.TargetValues('bestGECCO2009').set_targets(
+                                                                # 10**np.arange(-0.3, 1.8, 0.2))
+                                                                10**np.arange(-0.8, 4.9, 0.1))
         # TODO: this does not work, because targets are aggregated over functions in pprldistr
         pprldistr.single_target_values = pproc.TargetValues('bestGECCO2009').set_targets([1, 3, 10, 30])
         print 'taking bestGECCO2009 based target values'
