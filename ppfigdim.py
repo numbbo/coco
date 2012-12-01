@@ -322,7 +322,7 @@ def plotBest2009(func, target=lambda x: [1e-8]):
                    zorder=-2)
     return res
 
-def main(dsList, _valuesOfInterest=values_of_interest, outputdir, verbose=True):
+def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     """From a DataSetList, returns a convergence and ERT/dim figure vs dim.
     
     Uses data of BBOB 2009 (:py:mod:`bbob_pproc.bestalg`).
