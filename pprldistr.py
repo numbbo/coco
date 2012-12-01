@@ -50,7 +50,7 @@ from pdb import set_trace
 from bbob_pproc import toolsstats, genericsettings, pproc
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 
-single_target_values = pproc.TargetValues().set_targets((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
+single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
 
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
    

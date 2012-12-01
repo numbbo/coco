@@ -25,20 +25,21 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == 'wine':
         python = 'C:\\Python26\\python.exe ' # works for wine
     
-    data_path = join_path(' ..', '..', 'final-submissions', '2009', 'data')
+    data_path = join_path(' ..', '..', 'data-archive', 'data')
 
     command = join_path(' bbob_pproc', 'rungeneric.py ')
     
     print '*** testing module bbob_pproc ***'
 
-    os.system(python + command + ' --omit-single ' +
-                join_path(data_path, 'BIPOP-CMA-ES ') +
-                join_path(data_path, 'PSO ') +
-                join_path(data_path, 'ALPS '))
     os.system(python + command + '--conv' + 
-                join_path(data_path, 'BFGS'))
+                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'BFGS'))
     os.system(python + command + ' --omit-single ' +
-                join_path(data_path, 'DE-PSO ') +
-                join_path(data_path, 'VNS '))
+                join_path(data_path, 'gecco-bbob-1-24', '2010', 'data', 'IPOP-CMA-ES ') +
+                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'MCS ') +
+                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'NEWUOA ') +
+                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'BFGS '))
+    os.system(python + command + ' --omit-single ' +
+                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'DE-PSO ') +
+                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'VNS '))
 
     print '*** done testing module bbob_pproc ***'

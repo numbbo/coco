@@ -312,7 +312,7 @@ def main(argv=None):
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
-            ppfigdim.main(dsList, inset.figValsOfInterest, outputdir, verbose)
+            ppfigdim.main(dsList, ppfigdim.values_of_interest, outputdir, verbose)
             print "Scaling figures done."
             plt.rcdefaults()
 
@@ -395,7 +395,7 @@ def main(argv=None):
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{', 
                          ppfigdim.scaling_figure_legend.replace('values_of_interest', 
-                                                                ', '.join(['%.0f' % np.log10(v) for v in ppfigdim.values_of_interest])), 
+                                        ', '.join(ppfigdim.values_of_interest.labels())), 
                          '}'])
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
                         ['\\providecommand{\\algfolder}{}'])  # is overwritten in rungeneric.py

@@ -54,7 +54,8 @@ from bbob_pproc import ppfig  # consecutiveNumbers, saveFigure, plotUnifLogXMark
 from bbob_pproc import pptex  # numtotex
 
 displaybest2009 = True
-target_values = pp.TargetValues().set_targets(10**np.arange(2, -8, -0.2))  # changed in config.py
+target_values = pp.TargetValues(10**np.arange(2, -8, -0.2))  # changed in config.py
+target_values = None  # need to be set elsewhere, namely via config.py
 
 defaulttargets = tuple(10**np.r_[-8:2:0.2])  # is that still necessary?
 
@@ -348,12 +349,13 @@ def plotLegend(handles, maxval):
     plt.xlim(xmax=maxval*x_annote_factor)
     return reslabels, reshandles
 
-def plot(dsList, targets=defaulttargets, craftingeffort=0., **kwargs):
+def plot(dsList, targets=target_values, craftingeffort=0., **kwargs):
     """Generates a graph of the run length distribution of an algorithm.
 
     We display the empirical cumulative distribution function ECDF of
-    the bootstrapped distribution of the expected running time (ERT)
-    for an algorithm to reach the function value :py:data:`targets`.
+    the bootstrapped distribution of the runlength for an algorithm
+    (in number of function evaluations) to reach the target functions 
+    value :py:data:`targets`.
 
     :param DataSetList dsList: data set for one algorithm
     :param seq targets: target function values
@@ -369,7 +371,7 @@ def plot(dsList, targets=defaulttargets, craftingeffort=0., **kwargs):
     data = []
     maxevals = []
     for entry in dsList:
-        for t in targets:
+        for t in targets((entry.funcID, entry.dim)):
             x = [np.inf] * perfprofsamplesize
             runlengthunsucc = []
             evals = entry.detEvals([t])[0]

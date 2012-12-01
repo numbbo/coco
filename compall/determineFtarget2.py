@@ -5,6 +5,8 @@ import os, sys, getopt
 import numpy
 from pdb import set_trace
 
+# this file/module is seemingly unused
+
 # parameters for manipulating the target list, should partly rather become a pre-processing function for the RL-plots
 log10_interval_for_run_length = (0, 20)  # (0, 2) for light case, (2, 20) for heavy case
 log10_step_width_for_run_length = 1    # 0.1 for a movie, 0.5 default
@@ -121,9 +123,9 @@ class FunTarget:
             alltargetValues = []
             for alg in dataset:
                 for row in reversed(alg.evals):
-                  if min(row[1:][numpy.isfinite(row[1:])]) <= dim * 10**i:
-                      alltargetValues.append(row[0])
-                      break
+                    if min(row[1:][numpy.isfinite(row[1:])]) <= dim * 10**i:
+                        alltargetValues.append(row[0])
+                        break
 
             # determine min and median for all algorithms
             if use_single_runs_as_reference:
@@ -425,7 +427,7 @@ def main(argv=None):
         opts, args = getopt.getopt(argv, "hvd:f:",["help", "dimensions=","functions=","noisy","noisefree","verbose"])
 
     except getopt.error, msg:
-        raise Usage(msg)
+        raise ValueError(msg)
 
     if not (args):
         usage()
