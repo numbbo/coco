@@ -48,81 +48,102 @@ def cocofy(filename):
 # CLASS DEFINITIONS
 
 class TargetValues(object):
-    """should this go in a different module?
-    Working modes:
+    """store and retrieve a list of target function values::
+    
+        targets = TargetValues([10**(i/5.0) for i in xrange(2, -8, -1)])
+        plot(targets(what_ever_or_nothing))
+        
+    The argument for calling the class instance is needed to be consistent
+    with the derived ``class RunlengthBasedTargetValues``.  
+    
+    """
+    def __init__(self, target_values):
+        self.target_values = sorted(target_values, reverse=True)
+    def __call__(self, fun_dim_but_not_use=None):
+        return self.target_values
+    def label(self, i):
+        return str(np.log10(self.target_values[i]))
+    def labels(self):
+        i = 0
+        res = []
+        try:
+            while True:
+                res.append(self.label(i))
+                i += 1
+        except IndexError:
+            pass
+        return res
+    
+class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarative but not effective
+    """class instance calls return f-target values based on 
+    reference runlengths::
     
         targets = TargetValues(reference_data).set_targets(ERT_values)
         targets((1, 10)) 
         
     returns a list of target f-values for F1 in 10-D, based on the 
     ``ERT_values`` and ``reference_data``. 
-    
-        targets = TargetValues().set_targets([10, 1, 1e-1, 1e-3, 1e-5, 1e-8])
-        targets((1, 10))  
-        
-    returns the above targets ignoring the input argument. 
         
         TODO: see compall/determineFtarget2.FunTarget
     
     """
-    def __init__(self, reference_data_set=None, force_different_targets=False):
-        """Two modes of working: without `reference_data_set`, 
-        a target function value list is returned on calling
-        the instance. Otherwise target values will be computed 
-        based on the reference data in the given function 
-        and dimension. 
+    def __init__(self, reference_data, run_lengths, 
+                 smallest_target=1e-8, times_dimension=True, force_different_targets_factor=10**0.00):
+        """calling the class instance returns run-length based
+        target values based on the reference data, individually
+        computed for a given ``(funcId, dimension)``. 
         
-        :param reference_data_set: 
+        
+        :param reference_data: 
             can be a string like ``"bestGECCO2009"`` or a 
             ``DataSetList`` (not thoroughly tested).  
-        :param force_different_targets:
+        :param run_lengths:
+        :param smallest_target:
+        :param times_dimension:
+        :param force_different_targets_factor:
             given the target values are computed from the 
             ``reference_data_set``, enforces that all target
-            values are different. In case the same target is
-            picked twice, the next difficult target is chosen. 
+            values are different by at last ``forced_different_targets_factor``
+            if ``forced_different_targets_factor``. 
 
         """
-        self.ref_data = reference_data_set
-        self.force_different_targets = force_different_targets
-    
+        known_names = ['bestGECCO2009']
+        self.run_lengths = sorted(run_lengths)
+        self.smallest_target = smallest_target
+        self.times_dimension = times_dimension
+        self.force_different_targets_factor = force_different_targets_factor
+        
+        if reference_data in known_names:
+            if reference_data == 'bestGECCO2009':
+                from bbob_pproc import bestalg
+                bestalg.loadBBOB2009() # this is an absurd interface
+                self.reference_data = bestalg.bestalgentries2009
+                # TODO: remove targets smaller than 1e-8
+        elif type(reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
+            dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0], 
+                                           'bbob_pproc', 'data', self.reference_data))  
+            dsd = {}
+            for ds in dsl:
+                ds.clean_data()
+                dsd[(ds.funcId, ds.dim)] = ds
+            self.reference_data = dsd
+        else:
+            self.reference_data = reference_data
+   
     def __call__(self, fun_dim=None):
         """Get the target values for the respective function and dimension  
         and the reference ERT values set via ``set_targets``. `fun_dim` is 
         a tuple ``(fun_nb, dimension)`` like ``(1, 20)`` for the 20-D sphere. 
         
-        Details: with ``self.force_different_targets is True`` the method relies 
-        on the fixed target value "difference" of ``10**0.2``. 
-        
-        """
-        if self.ref_data is None:
-            return self.input_targets  # in this case ftarget values
-        elif fun_dim is None:
-            raise ValueError('function and dimension must be given via input argument ``fun_dim``')
-        elif self.ref_data == 'bestGECCO2009':
-            from bbob_pproc import bestalg
-            bestalg.loadBBOB2009() # this is an absurd interface
-            self.ref_data = bestalg.bestalgentries2009
-        elif type(self.ref_data) is str:  # self.ref_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
-            dsl = DataSetList(os.path.join(
-                                           sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0], 
-                                           'bbob_pproc', 'data', self.ref_data))  
-            dsd = {}
-            for ds in dsl:
-                ds.clean_data()
-                dsd[(ds.funcId, ds.dim)] = ds
-            self.ref_data = dsd
-            
-        if self.force_different_targets and len(self.run_lengths) > 15:
-                warnings.warn('more than 15 run_length targets are in use while enforcing different target values, which might not lead to the desired result')
+        """            
+        if self.force_different_targets_factor**len(self.run_lengths) > 1e3:
+                warnings.warn('enforced different target values might spread more than three orders of magnitude')
 
-        delta_f_factor = 10**0.2
-        smallest_target = 1e-8  # true for all experimental setups at least until 2013
-            
         fun_dim = tuple(fun_dim)
         dim_fun = tuple([i for i in reversed(fun_dim)])
-        ds = self.ref_data[dim_fun]
+        ds = self.reference_data[dim_fun]
         try:
-            end = np.nonzero(ds.target >= smallest_target)[0][-1] + 1 
+            end = np.nonzero(ds.target >= self.smallest_target)[0][-1] + 1 
             # same as end = np.where(ds.target >= smallest_target)[0][-1] + 1 
         except IndexError:
             end = len(ds.target)
@@ -132,37 +153,41 @@ class TargetValues(object):
             print fun_dim, ds.ert[0], 'ert[0] != 1 in TargetValues.__call__' 
         try: 
             # check whether there are gaps between the targets 
+            delta_f_factor = 10**0.2
             assert all(toolsdivers.equals_approximately(delta_f_factor, ds.target[i] / ds.target[i+1]) for i in xrange(end-1))
             # if this fails, we need to insert the missing target values 
         except AssertionError:
-            print fun_dim, ds.ert[0], 'not all targets are recorded in TargetValues.__call__ (this could be a bug)' 
-        assert len(ds.ert) == len(ds.target)
-        
-        targets = []
-        for rl in reversed(self.run_lengths):
+            pass
+            # print fun_dim, ds.ert[0], 'not all targets are recorded in TargetValues.__call__ (this could be a bug)' 
+
+        targets = [] 
+        for rl in self.run_lengths:
             indices = np.nonzero(ds.ert[:end] <= np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
             assert len(indices)
             targets.append(ds.target[indices[-1]])
-            if self.force_different_targets and len(targets) > 1 and not targets[-1] < targets[-2]:
-                targets[-1] = targets[-2] / delta_f_factor
+            if self.force_different_targets_factor and len(targets) > 1 and not targets[-1] < targets[-2]:
+                targets[-1] = targets[-2] / self.force_different_targets_factor
+
+        try:
+            if self.printed:
+                pass
+        except:
+            if tuple(fun_dim) == (20,10):
+                self.printed = True
+                for i in xrange(len(ds.ert)):
+                    print(np.round((np.log10(ds.target[i]+1e-99), ds.ert[i]), 3)) 
+                for i in xrange(len(targets)): 
+                    print((self.run_lengths[i], np.log10(targets[i])))
+        assert len(ds.ert) == len(ds.target)
+        
         return targets
     
     get_targets = __call__  # an alias
+    
+    def label(self, i):
+        return str(np.log10(self.run_lengths[i]))
 
-    def set_targets(self, values, times_dimension=True):
-        """target values are either run_lengths of the reference algorithm
-        (in case the reference algorithm was given at class instantiation) 
-        or target values. 
-        
-        """
-        
-        if self.ref_data is None:
-            self.input_targets = sorted(values, reverse=True)
-        else:
-            self.run_lengths = sorted(values)
-            self.times_dimension = times_dimension
-        return self
-                
+
     def _generate_erts(self, ds, target_values):
         """compute for all target values, starting with 1e-8, the ert value
         and store it in the reference_data_set attribute
@@ -170,10 +195,7 @@ class TargetValues(object):
         """
         raise NotImplementedError
               
-    def labels(self):
-        pass
-    
-class DataSet:
+class DataSet():
     """Unit element for the COCO post-processing.
 
     An instance of this class is created from one unit element of
@@ -611,6 +633,7 @@ class DataSet:
         This method will overwrite existing files.
         
         TODO: implement gzipped option, cave: how/where are these files loaded?
+        TODO (later): set gzipped option default to True
 
         """
         if gzipped:
@@ -886,7 +909,7 @@ class DataSetList(list):
     #they might change over time.
 
     def __init__(self, args=[], verbose=False):
-        """Instantiate self from a list of inputs.
+        """Instantiate self from a list of folder- or filenames.
 
         :keyword list args: strings being either info file names, folder
                             containing info files or pickled data files.

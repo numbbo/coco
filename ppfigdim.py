@@ -56,7 +56,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
-from bbob_pproc import toolsstats, bestalg
+from bbob_pproc import toolsstats, bestalg, pproc
 from bbob_pproc.ppfig import saveFigure, groupByRange
 # import genericsettings
 
@@ -78,17 +78,18 @@ scaling_figure_legend = str(
     r" The light thick line with diamonds indicates the respective best result from BBOB-2009 for " + 
     r" $\Df=10^{-8}$. Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling. ") 
 
-colors = ('k', 'b', 'c', 'g', 'y', 'm', 'r', 'k', 'k', 'c', 'r', 'm')  # sort of rainbow style
-styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
-          {'color': 'b', 'marker': '.'},
-          {'color': 'c', 'marker': 'v', 'markeredgecolor': 'k'},
-          {'color': 'g', 'marker': '.'},
-          {'color': 'y', 'marker': '^', 'markeredgecolor': 'k'},
-          {'color': 'm', 'marker': '.'},
-          {'color': 'r', 'marker': 's', 'markeredgecolor': 'k'}] # sort of rainbow style
-refcolor = 'wheat'
+values_of_interest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # to rename!?
 
-values_of_interest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8) 
+styles = [ # sort of rainbow style, most difficult (red) first
+          {'color': 'r', 'marker': 'o', 'markeredgecolor': 'k'}, 
+          {'color': 'm', 'marker': '.'},
+          {'color': 'y', 'marker': '^', 'markeredgecolor': 'k'},
+          {'color': 'g', 'marker': '.'},
+          {'color': 'c', 'marker': 'v', 'markeredgecolor': 'k'},
+          {'color': 'b', 'marker': '.'},
+          {'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'}, 
+        ] 
+refcolor = 'wheat'
 
 # should correspond with the colors in pprldistr.
 dimsBBOB = (2, 3, 5, 10, 20, 40)
@@ -212,7 +213,7 @@ def generateData(dataSet, targetFuncValue):
     return numpy.array(res)  
 
 
-def plot(dsList, _valuesOfInterest=values_of_interest):
+def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
     """From a DataSetList, plot a figure of ERT/dim vs dim.
     
     There will be one set of graphs per function represented in the
@@ -220,13 +221,16 @@ def plot(dsList, _valuesOfInterest=values_of_interest):
     will be represented separately.
     
     :param DataSetList dsList: data sets
-    :param seq _valuesOfInterest: target precisions, there might be as
-                                  many graphs as there are elements in
-                                  this input. Can be different for each
-                                  function (a dictionary indexed by ifun). 
+    :param seq valuesOfInterest: 
+        target precisions via class TargetValues, there might 
+        be as many graphs as there are elements in
+        this input. Can be different for each
+        function (a dictionary indexed by ifun). 
+    
     :returns: handles
 
     """
+    styles = list(reversed(styles[:len(valuesOfInterest((1,2)))]))
     dictFunc = dsList.dictByFunc()
     res = []
 
@@ -236,13 +240,8 @@ def plot(dsList, _valuesOfInterest=values_of_interest):
 
         #legend = []
         line = []
-        try:
-            valuesOfInterest = list(j[func] for j in _valuesOfInterest)
-        except TypeError:
-            valuesOfInterest = list(_valuesOfInterest)
-        valuesOfInterest.sort(reverse=True)
         mediandata = {}
-        for i in range(len(valuesOfInterest)):
+        for i in range(len(valuesOfInterest((1,2)))):
             succ = []
             unsucc = []
             displaynumber = []
@@ -252,7 +251,7 @@ def plot(dsList, _valuesOfInterest=values_of_interest):
             for idim, dim in enumerate(dimensions):
                 assert len(dictFunc[func][dim]) == 1
                 tmp = generateData(dictFunc[func][dim][0],
-                                   valuesOfInterest[i])
+                                   valuesOfInterest((func, dim))[i])
                 maxevals[idim] = max(dictFunc[func][dim][0].maxevals)
                 #data.append(numpy.append(dim, tmp))
                 if tmp[2] > 0: #Number of success is larger than 0
@@ -272,7 +271,7 @@ def plot(dsList, _valuesOfInterest=values_of_interest):
 
             # To have the legend displayed whatever happens with the data.
             res.extend(plt.plot([], [], markersize=10,
-                                label=' %+d' % (numpy.log10(valuesOfInterest[i])),
+                                label=valuesOfInterest.label(i),
                                 **styles[i]))
 
         #Only for the last target function value
@@ -283,7 +282,7 @@ def plot(dsList, _valuesOfInterest=values_of_interest):
             #            marker='x', markersize=20))
         if 1 < 3:
             res.extend(plt.plot(tmp[:, 0], maxevals/tmp[:, 0],
-                       color=styles[len(valuesOfInterest)-1]['color'],
+                       color=styles[len(valuesOfInterest((1,2)))-1]['color'],
                        ls='', marker='x', markersize=20))
 
         #median
@@ -306,24 +305,24 @@ def plot(dsList, _valuesOfInterest=values_of_interest):
 
     return res
 
-def plotBest2009(func, target=1e-8):
+def plotBest2009(func, target=lambda x: [1e-8]):
     """Add graph of the BBOB-2009 virtual best algorithm."""
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
     bestalgdata = []
     for d in dimsBBOB:
         entry = bestalg.bestalgentries2009[(d, func)]
-        tmp = entry.detERT([target])[0]
+        tmp = entry.detERT([target((func, d))[-1]])[0]
         if not numpy.isinf(tmp):
             bestalgdata.append(tmp / d)
         else:
             bestalgdata.append(None)
     res = plt.plot(dimsBBOB, bestalgdata, color=refcolor, linewidth=10,
-                   marker='d', markersize=25, markeredgecolor=refcolor,
+                   marker='d', markersize=25, markeredgecolor='k',
                    zorder=-2)
     return res
 
-def main(dsList, _valuesOfInterest, outputdir, verbose=True):
+def main(dsList, _valuesOfInterest=values_of_interest, outputdir, verbose=True):
     """From a DataSetList, returns a convergence and ERT/dim figure vs dim.
     
     Uses data of BBOB 2009 (:py:mod:`bbob_pproc.bestalg`).
@@ -355,7 +354,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             plt.legend(loc="best")
         if isBenchmarkinfosFound:
             plt.gca().set_title(funInfos[func])
-        plotBest2009(func)
+        plotBest2009(func, _valuesOfInterest)
         filename = os.path.join(outputdir,'ppfigdim_f%03d' % (func))
         saveFigure(filename, verbose=verbose)
         plt.close()

@@ -27,19 +27,20 @@ def config():
     """
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets 
     if genericsettings.evaluation_setting == 1e2:
-        pprldmany.target_values = pproc.TargetValues('bestGECCO2009').set_targets(
-                                                                # 10**np.arange(-0.3, 1.8, 0.2))
-                                                                10**np.arange(-0.8, 4.9, 0.1))
+        pprldmany.target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', 
+                                                                10**np.arange(-0.3, 2.701, 0.1))
         # TODO: this does not work, because targets are aggregated over functions in pprldistr
-        pprldistr.single_target_values = pproc.TargetValues('bestGECCO2009').set_targets([1, 3, 10, 30])
+        pprldistr.single_target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', [1, 3, 10, 30])
         print 'taking bestGECCO2009 based target values'
+        ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues('bestGECCO2009', 
+                                                                       [10**i for i in [2, 1.5, 1, 0.5, 0, -0.3]])
     else:
-        pprldmany.target_values = pproc.TargetValues().set_targets(10**np.arange(2, -8, -0.2))
-        pprldistr.single_target_values = pproc.TargetValues().set_targets((10., 1e-1, 1e-4, 1e-8))
+        pprldmany.target_values = pproc.TargetValues(10**np.arange(2, -8, -0.2))
+        pprldistr.single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))
         # pprlmany.x_limit = ...should depend on noisy/noiseless
     if 11 < 3:  # for testing purpose
         # TODO: this case needs to be tested yet: the current problem is that no noisy data are in this folder
-        pprldmany.target_values = pproc.TargetValues('RANDOMSEARCH').set_targets(10**np.arange(1, 4, 0.2))
+        pprldmany.target_values = pproc.RunlengthBasedTargetValues('RANDOMSEARCH').set_runlengths(10**np.arange(1, 4, 0.2))
  
 
     pprldmany.fontsize = 20.0  # should depend on the number of data lines down to 10.0 ?

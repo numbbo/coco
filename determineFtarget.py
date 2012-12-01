@@ -7,6 +7,8 @@ import sys
 from pdb import set_trace
 import getopt
 
+# this file/module is seemingly unused
+
 ''' TODO:
 '''
 # add path to bbob_pproc  
@@ -341,7 +343,7 @@ def main(argv=None):
         opts, args = getopt.getopt(argv, "hvd:f:",["help", "dimensions=","functions=","noisy","noisefree","verbose"])
 
     except getopt.error, msg:
-        raise Usage(msg)
+        raise ValueError(msg)
 
     if not (args):
         usage()
