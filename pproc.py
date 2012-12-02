@@ -88,11 +88,10 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
     
     """
     def __init__(self, reference_data, run_lengths, 
-                 smallest_target=1e-8, times_dimension=True, force_different_targets_factor=10**0.00):
+                 smallest_target=1e-8, times_dimension=True, force_different_targets_factor=10**0.04):
         """calling the class instance returns run-length based
         target values based on the reference data, individually
         computed for a given ``(funcId, dimension)``. 
-        
         
         :param reference_data: 
             can be a string like ``"bestGECCO2009"`` or a 
@@ -104,7 +103,9 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
             given the target values are computed from the 
             ``reference_data_set``, enforces that all target
             values are different by at last ``forced_different_targets_factor``
-            if ``forced_different_targets_factor``. 
+            if ``forced_different_targets_factor``. Default ``10**0.04`` means 
+            that within the typical precision of ``10**0.2`` at most five 
+            consecutive targets can be identical.  
 
         """
         known_names = ['bestGECCO2009']
