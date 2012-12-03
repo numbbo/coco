@@ -59,6 +59,8 @@ class TargetValues(object):
     """
     def __init__(self, target_values):
         self.target_values = sorted(target_values, reverse=True)
+    def __len__(self):
+        return len(self.target_values)
     def __call__(self, fun_dim_but_not_use=None):
         return self.target_values
     def label(self, i):
@@ -130,6 +132,9 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
             self.reference_data = dsd
         else:
             self.reference_data = reference_data
+
+    def __len__(self):
+        return len(self.run_lengths)
    
     def __call__(self, fun_dim=None):
         """Get the target values for the respective function and dimension  
@@ -175,8 +180,8 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         except:
             if tuple(fun_dim) == (20,10):
                 self.printed = True
-                for i in xrange(len(ds.ert)):
-                    print(np.round((np.log10(ds.target[i]+1e-99), ds.ert[i]), 3)) 
+                # for i in xrange(len(ds.ert)):
+                #     print(np.round((np.log10(ds.target[i]+1e-99), ds.ert[i]), 3)) 
                 for i in xrange(len(targets)): 
                     print((self.run_lengths[i], np.log10(targets[i])))
         assert len(ds.ert) == len(ds.target)

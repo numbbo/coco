@@ -230,7 +230,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
     :returns: handles
 
     """
-    styles = list(reversed(styles[:len(valuesOfInterest((1,2)))]))
+    styles = list(reversed(styles[:len(valuesOfInterest)]))
     dictFunc = dsList.dictByFunc()
     res = []
 
@@ -241,7 +241,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
         #legend = []
         line = []
         mediandata = {}
-        for i in range(len(valuesOfInterest((1,2)))):
+        for i in range(len(valuesOfInterest)):
             succ = []
             unsucc = []
             displaynumber = []
@@ -282,7 +282,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
             #            marker='x', markersize=20))
         if 1 < 3:
             res.extend(plt.plot(tmp[:, 0], maxevals/tmp[:, 0],
-                       color=styles[len(valuesOfInterest((1,2)))-1]['color'],
+                       color=styles[len(valuesOfInterest)-1]['color'],
                        ls='', marker='x', markersize=20))
 
         #median
