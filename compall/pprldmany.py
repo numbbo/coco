@@ -55,9 +55,18 @@ from bbob_pproc import pptex  # numtotex
 
 displaybest2009 = True
 target_values = pp.TargetValues(10**np.arange(2, -8, -0.2))  # changed in config.py
-target_values = None  # need to be set elsewhere, namely via config.py
+x_limit = 5e2 if genericsettings.evaluation_setting == 1e2 else 1e7  # noisy: 1e8, otherwise: 1e7. maximal run length shown
+annotation_line_end_relative = 1.11  # lines between graph and annotation
+annotation_space_end_relative = 1.24  # figure space end relative to x_limit
+save_zoom = False  # save zoom into left and right part of the figures
+perfprofsamplesize = 100 if not genericsettings.in_a_hurry else 10  # number of bootstrap samples drawn for each fct+target in the performance profile
+dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
+nbperdecade = 1
+median_max_evals_marker_format = ['x', 24, 3]
 
-defaulttargets = tuple(10**np.r_[-8:2:0.2])  # is that still necessary?
+styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
+
+refcolor = 'wheat'
 
 # TODO: update the list below which are not relevant anymore
 
@@ -134,19 +143,6 @@ function_IDs = range(1,200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 1
 #function_IDs = range(103,130+1, 3)  # cauchy noise
 # function_IDs = range(15,25) # multimodal nonseparable
 
-x_limit = 3e2 if genericsettings.evaluation_setting == 1e2 else 1e7  # noisy: 1e8, otherwise: 1e7. maximal run length shown
-x_annote_factor = 90 # make space for right-hand legend
-
-save_zoom = False  # save zoom into left and right part of the figures
-perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
-dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
-
-nbperdecade = 1
-median_max_evals_marker_format = ['x', 24, 3]
-
-styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
-
-refcolor = 'wheat'
 #'-'     solid line style
 #'--'    dashed line style
 #'-.'    dash-dot line style
@@ -330,12 +326,12 @@ def plotLegend(handles, maxval):
                                  'markeredgewidth', 'markerfacecolor',
                                  'markeredgecolor', 'markersize', 'zorder'):
                         tmp[attr] = plt.getp(h, attr)
-                    legx = maxval * 10
+                    legx = maxval**annotation_line_end_relative
                     if 'marker' in attr:
-                        legx = maxval * 9
+                        legx = maxval**annotation_line_end_relative
                     reshandles.extend(plt_plot((maxval, legx), (j, y),
                                       color=plt.getp(h, 'markeredgecolor'), **tmp))
-                    reshandles.append(plt.text(maxval*15, y,
+                    reshandles.append(plt.text(maxval**(0.02 + annotation_line_end_relative), y,
                                                plt.getp(h, 'label').split(os.sep)[-1],
                                                horizontalalignment="left",
                                                verticalalignment="center", size=fontsize))
@@ -346,7 +342,7 @@ def plotLegend(handles, maxval):
     #plt.axvline(x=maxval, color='k') # Not as efficient?
     reshandles.append(plt_plot((maxval, maxval), (0., 1.), color='k'))
     reslabels.reverse()
-    plt.xlim(xmax=maxval*x_annote_factor)
+    plt.xlim(xmax=maxval**annotation_space_end_relative)
     return reslabels, reshandles
 
 def plot(dsList, targets=target_values, craftingeffort=0., **kwargs):
@@ -590,7 +586,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     a = plt.gca()
 
-    plt.xlim(xmin=1e-0, xmax=x_limit*x_annote_factor)
+    plt.xlim(xmin=1e-0, xmax=x_limit**annotation_space_end_relative)
     xticks, labels = plt.xticks()
     tmp = []
     for i in xticks:

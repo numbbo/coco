@@ -35,8 +35,8 @@ instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
-fast_save_for_debugging = True  # lower resolution, no eps, saves 30% time 
-fig_formats = ('eps', 'pdf') if not fast_save_for_debugging else ('pdf', )
+in_a_hurry = True # lower resolution, no eps, saves 30% time
+fig_formats = ('eps', 'pdf') if not in_a_hurry else ('pdf', )
 
 line_styles = [  # used by ppfigs and pprlmany  
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
@@ -285,7 +285,7 @@ rldValsOfInterest = ({1: 10, 2: 10, 3: 10, 4: 10, 5: 10, 6: 10, 7: 10, 8: 10,
 #tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7)
 tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7)
 
-minmax_algorithm_fontsize = [10, 20]  # depending on the number of algorithms
+minmax_algorithm_fontsize = [10, 15]  # depending on the number of algorithms
 
 rcaxeslarger = {"labelsize": 24, "titlesize": 28.8}
 rcticklarger = {"labelsize": 24}
