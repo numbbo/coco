@@ -140,9 +140,10 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                                            'bbob_pproc', 'data', self.reference_data))  
             dsd = {}
             for ds in dsl:
-                ds.clean_data()
+                # ds.clean_data()
                 dsd[(ds.funcId, ds.dim)] = ds
             self.reference_data = dsd
+            self._short_info = 'reference budgets from ' + reference_data
         else:
             self.reference_data = reference_data
 
