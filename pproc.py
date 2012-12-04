@@ -66,15 +66,13 @@ class TargetValues(object):
     def label(self, i):
         return str(np.log10(self.target_values[i]))
     def labels(self):
-        i = 0
-        res = []
+        i, res = 0, []
         try:
             while True:
                 res.append(self.label(i))
                 i += 1
         except IndexError:
-            pass
-        return res
+            return res
     
 class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarative but not effective
     """class instance calls return f-target values based on 

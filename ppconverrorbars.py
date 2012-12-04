@@ -28,7 +28,7 @@ if __name__ == "__main__":
     import matplotlib
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
-from bbob_pproc import pproc
+from bbob_pproc import genericsettings, pproc
 from bbob_pproc.pproc import DataSetList
 from bbob_pproc.ppfig import saveFigure
 from bbob_pproc.toolsstats import prctile
@@ -88,8 +88,8 @@ def main(dictAlg, outputdir='.', verbose=True):
                     if not warned:
                         print('Warning: floating point error when plotting errorbars, ignored')
                     warned = True
-            plt.legend(loc='3')
-            saveFigure(os.path.join(outputdir, figurename.replace(' ','')),  ('eps', 'pdf'), verbose=verbose)
+            plt.legend(loc=3)
+            saveFigure(os.path.join(outputdir, figurename.replace(' ','')),  genericsettings.fig_formats, verbose=verbose)
             plt.close()
     print("Convergence plots done.")
         
