@@ -134,7 +134,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                 bestalg.loadBBOB2009() # this is an absurd interface
                 self.reference_data = bestalg.bestalgentries2009
                 # TODO: remove targets smaller than 1e-8
-            self._short_info = 'reference budget from ' + reference_data
+            self._short_info = 'reference budgets from ' + reference_data
         elif type(reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
             dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0], 
                                            'bbob_pproc', 'data', self.reference_data))  

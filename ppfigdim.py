@@ -301,7 +301,8 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                 plt.text(j[0], j[1] * 1.85 / j[0], "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
                          verticalalignment="bottom")
-        plt.text(2, plt.ylim()[0], valuesOfInterest.short_info, axes=a, fontsize=10)
+        # if later the ylim[0] becomes >> 1, this might be a problem
+        plt.text(dimensions[0], 1, valuesOfInterest.short_info, axes=a, fontsize=10)
     return res
 
 def plotBest2009(func, target=lambda x: [1e-8]):
