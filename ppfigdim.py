@@ -250,8 +250,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
             #Collect data that have the same function and different dimension.
             for idim, dim in enumerate(dimensions):
                 assert len(dictFunc[func][dim]) == 1
-                tmp = generateData(dictFunc[func][dim][0],
-                                   valuesOfInterest((func, dim))[i])
+                tmp = generateData(dictFunc[func][dim][0], valuesOfInterest((func, dim))[i])
                 maxevals[idim] = max(dictFunc[func][dim][0].maxevals)
                 #data.append(numpy.append(dim, tmp))
                 if tmp[2] > 0: #Number of success is larger than 0
@@ -302,7 +301,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                 plt.text(j[0], j[1] * 1.85 / j[0], "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
                          verticalalignment="bottom")
-
+        plt.text(2, plt.ylim()[0], valuesOfInterest.short_info, axes=a, fontsize=10)
     return res
 
 def plotBest2009(func, target=lambda x: [1e-8]):

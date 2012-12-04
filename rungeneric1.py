@@ -255,6 +255,7 @@ def main(argv=None):
 
         filelist = list()
         for i in args:
+            i = i.strip()
             if os.path.isdir(i):
                 filelist.extend(findfiles.main(i, verbose))
             elif os.path.isfile(i):
@@ -262,7 +263,6 @@ def main(argv=None):
             else:
                 txt = 'Input file or folder %s could not be found.' % i
                 raise Usage(txt)
-
         dsList = DataSetList(filelist, verbose)
 
         if not dsList:

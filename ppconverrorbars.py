@@ -80,10 +80,13 @@ def main(dictAlg, outputdir='.', verbose=True):
                 dimList_f = []
                 dimList_b.append(j.funvals[:,0])
                 dimList_f.append(j.funvals[:,1:])
-                bs, fs= rearrange(dimList_b,dimList_f)
+                bs, fs= rearrange(dimList_b, dimList_f)
                 labeltext=str(j.dim)+"D"
                 try:
-                    plt.errorbar(bs[0], fs[0][0], yerr = [fs[0][1], fs[0][2]], label = labeltext)
+                    if 11 < 3:
+                        plt.errorbar(bs[0], fs[0][0], yerr = [fs[0][1], fs[0][2]], label = labeltext)
+                    else:
+                        plt.errorbar(bs[0], fs[0][0], label = labeltext)
                 except FloatingPointError:  # that's a bit of a hack
                     if not warned:
                         print('Warning: floating point error when plotting errorbars, ignored')

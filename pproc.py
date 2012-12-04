@@ -57,6 +57,7 @@ class TargetValues(object):
     with the derived ``class RunlengthBasedTargetValues``.  
     
     """
+    short_info = ""
     def __init__(self, target_values):
         self.target_values = sorted(target_values, reverse=True)
     def __len__(self):
@@ -84,9 +85,21 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
     returns a list of target f-values for F1 in 10-D, based on the 
     ``ERT_values`` and ``reference_data``. 
         
+    Details
+    -------
+    The computation starts from the smallest budget and the resulting f-target 
+    must always be at least a factor of ``force_different_targets_factor`` smaller 
+    than the previous one. If the ``smallest_target`` is superseded, the log values
+    are linearly rescaled such that the easiest found target remains the same and 
+    the smallest target becomes ``smallest_target``. 
+    
         TODO: see compall/determineFtarget2.FunTarget
     
     """
+    @property
+    def short_info(self):
+        return self._short_info
+    
     def __init__(self, reference_data, run_lengths, 
                  smallest_target=1e-8, times_dimension=True, force_different_targets_factor=10**0.04):
         """calling the class instance returns run-length based
@@ -109,6 +122,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
 
         """
         known_names = ['bestGECCO2009']
+        self._short_info = "budget-based"
         self.run_lengths = sorted(run_lengths)
         self.smallest_target = smallest_target
         self.times_dimension = times_dimension
@@ -120,6 +134,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                 bestalg.loadBBOB2009() # this is an absurd interface
                 self.reference_data = bestalg.bestalgentries2009
                 # TODO: remove targets smaller than 1e-8
+            self._short_info = 'reference budget from ' + reference_data
         elif type(reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
             dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0], 
                                            'bbob_pproc', 'data', self.reference_data))  
@@ -171,7 +186,16 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
             targets.append(ds.target[indices[-1]])
             if self.force_different_targets_factor and len(targets) > 1 and not targets[-1] < targets[-2]:
                 targets[-1] = targets[-2] / self.force_different_targets_factor
-
+        
+        targets = np.array(targets, copy=False)
+        if targets[-1] < self.smallest_target:
+            b = float(targets[0])
+            targets = np.exp(np.log(b / self.smallest_target) * np.log(targets) / np.log(b / targets[-1]))
+            targets *= (1 + 1e-12) * self.smallest_target / targets[-1]
+            assert b <= targets[0] * (1 + 1e-10)
+            assert b >= targets[0] / (1 + 1e-10)
+        assert targets[-1] >= self.smallest_target
+            
         try:
             if self.printed:
                 pass
@@ -1329,6 +1353,7 @@ def processInputArgs(args, verbose=True):
     sortedAlgs = list()
     dictAlg = {}
     for i in args:
+        i = i.strip()
         if findfiles.is_valid_filename(i):
             filelist = findfiles.main(i, verbose)
             #Do here any sorting or filtering necessary.
