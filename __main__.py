@@ -32,7 +32,7 @@ if __name__ == "__main__":
     print '*** testing module bbob_pproc ***'
     t0 = time.time()
     print time.asctime()
-    os.system(python + command + ' --omit-single ' +
+    os.system(python + command + # ' --omit-single ' +
                 join_path(data_path, 'gecco-bbob-1-24', '2010', 'data', 'IPOP-CMA-ES ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'MCS ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'NEWUOA ') +

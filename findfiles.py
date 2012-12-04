@@ -20,7 +20,7 @@ import warnings
 # Initialization
 
 def is_valid_filename(filename): # rename as valid_data_repository_name
-    return os.path.isdir(filename) or filename.find('.tar') > -1
+    return os.path.isdir(filename.strip()) or filename.find('.tar') > -1
 
 def main(directory='.', verbose=True):
     """Lists data files recursively in a given directory, tar files
@@ -33,7 +33,8 @@ def main(directory='.', verbose=True):
     # TODO: if directory is a zipped file, unzip first
 
     filelist = list()
-
+    directory = directory.strip()
+    
     #~ if directory.endswith('.zip'):
         #~ archive = zipfile.ZipFile(directory)
         #~ for elem in archive.namelist():
