@@ -55,7 +55,7 @@ from bbob_pproc import pptex  # numtotex
 
 displaybest2009 = True
 target_values = pp.TargetValues(10**np.arange(2, -8, -0.2))  # changed in config.py
-x_limit = 5e2 if genericsettings.evaluation_setting == 1e2 else 1e7  # noisy: 1e8, otherwise: 1e7. maximal run length shown
+x_limit = 1e2 if genericsettings.evaluation_setting == 1e2 else 1e7  # noisy: 1e8, otherwise: 1e7. maximal run length shown
 annotation_line_end_relative = 1.11  # lines between graph and annotation
 annotation_space_end_relative = 1.24  # figure space end relative to x_limit
 save_zoom = False  # save zoom into left and right part of the figures
@@ -220,18 +220,20 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
             dictx[i] = dictx.get(i, 0) + 1  
 
         x = np.array(sorted(dictx))  # x is not a multiset anymore
-        
+        y = np.cumsum(list(dictx[i] for i in x)) # cumsum of size of y-steps (nb of appearences)
+        idx = sum(x <= x_limit**annotation_space_end_relative) - 1 
+        y_last, x_last = y[idx] / float(nn), x[idx] 
         if maxval is None:
             maxval = max(x)
-        x = x[x <= maxval]
-        y = np.cumsum(list(dictx[i] for i in x))
-
+        end = np.sum(x <= maxval)
+        x = x[:end]
+        y = y[:end]
+        
+        plt_plot(x_last, y_last, **kwargs)
         x2 = np.hstack([np.repeat(x, 2), maxval])
-        y2 = np.hstack([0.0,
-                           np.repeat(y / float(nn), 2)])
+        y2 = np.hstack([0.0, np.repeat(y / float(nn), 2)])
 
-        # to be tested: 
-        res = ppfig.plotUnifLogXMarkers(x2, y2, nbperdecade * 4 / np.log10(maxval), 
+        res = ppfig.plotUnifLogXMarkers(x2, y2, nbperdecade * 3 / np.log10(maxval), 
                                   logscale=False, clip_on=False, **kwargs)
         # res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, **kwargs)
 
@@ -329,6 +331,7 @@ def plotLegend(handles, maxval):
                     legx = maxval**annotation_line_end_relative
                     if 'marker' in attr:
                         legx = maxval**annotation_line_end_relative
+                    # reshandles.extend(plt_plot((maxval, legx), (j, y),
                     reshandles.extend(plt_plot((maxval, legx), (j, y),
                                       color=plt.getp(h, 'markeredgecolor'), **tmp))
                     reshandles.append(plt.text(maxval**(0.02 + annotation_line_end_relative), y,

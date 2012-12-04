@@ -7,7 +7,7 @@ This test can and should become much more sophisticated.
 
 """
 
-import os, sys
+import os, sys, time
 # import bbob_pproc as pp
 
 def join_path(a, *p):
@@ -30,17 +30,22 @@ if __name__ == "__main__":
     command = join_path(' bbob_pproc', 'rungeneric.py ')
     
     print '*** testing module bbob_pproc ***'
-
+    t0 = time.time()
+    print time.asctime()
     os.system(python + command + ' --omit-single ' +
                 join_path(data_path, 'gecco-bbob-1-24', '2010', 'data', 'IPOP-CMA-ES ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'MCS ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'NEWUOA ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'RANDOMSEARCH ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'BFGS '))
+    print '  subtest finished in ', time.time() - t0, ' seconds'
+    t0 = time.time()
     os.system(python + command + '--conv' + 
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'BFGS'))
+    print '  subtest finished in ', time.time() - t0, ' seconds'
+    t0 = time.time()
     os.system(python + command + ' --omit-single ' +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'DE-PSO ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'VNS '))
-
+    print '  subtest finished in ', time.time() - t0, ' seconds'
     print '*** done testing module bbob_pproc ***'
