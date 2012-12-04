@@ -36,6 +36,7 @@ if __name__ == "__main__":
                 join_path(data_path, 'gecco-bbob-1-24', '2010', 'data', 'IPOP-CMA-ES ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'MCS ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'NEWUOA ') +
+                # join_path(data_path, 'gecco-bbob-1-24', '2012', 'data', 'loshchilov_NIPOPaCMA_noise-free-pickle ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'RANDOMSEARCH ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'BFGS '))
     print '  subtest finished in ', time.time() - t0, ' seconds'

@@ -23,7 +23,8 @@ def is_valid_filename(filename): # rename as valid_data_repository_name
     return os.path.isdir(filename) or filename.find('.tar') > -1
 
 def main(directory='.', verbose=True):
-    """Lists data files recursively in a given directory.
+    """Lists data files recursively in a given directory, tar files
+    are extracted. 
 
     The data files have :file:`info` and :file:`pickle` extensions.
 
