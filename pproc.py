@@ -500,19 +500,23 @@ class DataSet():
         
         """
         if 1 < 3 or genericsettings.GECCOBBOBTestbed in genericsettings.current_testbed.__class__.__bases__:
-            i = len(self.target)
-            while i > 1 and self.target[i-1] < self.precision:
+            Ndata = np.size(self.evals, 0)
+            i = Ndata
+            while i > 1 and self.evals[i-1,0] < self.precision:
                 i -= 1
-            if i < len(self.target):
-                self.target = self.target[:i]
+            if i < Ndata:
                 self.evals = self.evals[:i, :]
+                try:
+                    self.target = self.target[:i]
+                    assert self.target[-1] == self.evals[-1,0] 
+                except AttributeError:
+                    pass
                 try:
                     self.ert = self.ert[:i]
                 except AttributeError:
                     pass
-            assert self.target[-1] == self.evals[-1,0] 
             assert self.evals.shape[0] == 1 or self.evals[-2, 0] > self.precision
-            if self.target[-1] < self.precision:
+            if self.evals[-1,0] < self.precision:
                 warnings.warn('final precision was not recorded')
                 print '*** warning: final precision was not recorded'
             
@@ -636,23 +640,23 @@ class DataSet():
 
         This method will overwrite existing files.
         
-        TODO: implement gzipped option, cave: how/where are these files loaded?
+        TODO: stress-test gzipped option, cave: how/where are these files loaded, do all modules understand pickle.gz files?
         TODO (later): set gzipped option default to True
 
         """
-        if gzipped:
-            raise NotImplementedError
         # the associated pickle file does not exist
+        if outputdir is not None and getattr(self, 'pickleFile', False):
+            NotImplementedError('outputdir and pickleFile attribute are in conflict')
         if not getattr(self, 'pickleFile', False):
             if outputdir is None:
                 outputdir = os.path.split(self.indexFiles[0])[0] + '-pickle'
-                if not os.path.isdir(outputdir):
-                    try:
-                        os.mkdir(outputdir)
-                    except OSError:
-                        print ('Could not create output directory % for pickle files'
-                               % outputdir)
-                        raise
+            if not os.path.isdir(outputdir):
+                try:
+                    os.mkdir(outputdir)
+                except OSError:
+                    print ('Could not create output directory % for pickle files'
+                           % outputdir)
+                    raise
 
             self.pickleFile = os.path.join(outputdir,
                                            'ppdata_f%03d_%02d.pickle'
@@ -660,7 +664,12 @@ class DataSet():
 
         if getattr(self, 'modsFromPickleVersion', True):
             try:
-                f = open(self.pickleFile, 'w') # TODO: what if file already exist?
+                if gzipped:
+                    if self.pickleFile.find('.gz') < 0:
+                        self.pickleFile += '.gz'
+                    f = gzip.open(self.pickleFile, 'w')
+                else:        
+                    f = open(self.pickleFile, 'w') # TODO: what if file already exist?
                 pickle.dump(self, f)
                 f.close()
                 if verbose:
@@ -669,7 +678,7 @@ class DataSet():
                 print "I/O error(%s): %s" % (errno, strerror)
             except pickle.PicklingError:
                 print "Could not pickle %s" %(self)
-
+                
     def createDictInstance(self):
         """Returns a dictionary of the instances.
 
@@ -936,7 +945,7 @@ class DataSetList(list):
 
         fnames = []
         for name in args:
-            if os.path.isdir(name):
+            if findfiles.is_valid_filename(name):
                 fnames.extend(findfiles.main(name, verbose))
             else:
                 fnames.append(name)
@@ -970,10 +979,13 @@ class DataSetList(list):
                     print "I/O error(%s): %s" % (errno, strerror)
 
             else:
-                warnings.warn('File or folder ' + name + ' not found. ' +
+                s = ('File or folder ' + name + ' not found. ' +
                               'Expecting as input argument either .info ' +
                               'file(s), .pickle file(s) or a folder ' +
                               'containing .info file(s).')
+                warnings.warn(s)
+                print s
+                
              
     def processIndexFile(self, indexFile, verbose=True):
         """Reads in an index file information on the different runs."""
@@ -1058,10 +1070,10 @@ class DataSetList(list):
         for i in o:
             self.append(i)
 
-    def pickle(self, outputdir=None, verbose=True):
+    def pickle(self, *args, **kwargs):
         """Loop over self to pickle each elements."""
         for i in self:
-            i.pickle(outputdir, verbose)
+            i.pickle(*args, **kwargs)
 
     def dictByAlg(self):
         """Returns a dictionary of instances of this class by algorithm.
