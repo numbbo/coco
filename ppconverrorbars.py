@@ -63,19 +63,19 @@ def main(dictAlg, outputdir='.', verbose=True):
     global warned  # bind variable warned into this scope
     dictFun = pproc.dictAlgByFun(dictAlg)
     for l in dictFun:
-        for i in dictFun[l]:
+        for i in dictFun[l]: # please, what is i???
             plt.figure()
             if type(i) in (list, tuple):
                 figurename="ppconv_plot_" + i[0] + "_f"+ str(l)
             else:
                 figurename="ppconv_plot_" + dictFun[l][i].algId + "_f"+ str(l)
-            plt.xlabel('number of function evaluations')
+            plt.xlabel('number of function evaluations / dimension')
             plt.ylabel('Median of fitness')
             plt.grid()
             ax = plt.gca()
             ax.set_yscale("log")
             ax.set_xscale("log")
-            for j in dictFun[l][i]:
+            for j in dictFun[l][i]: # please, what is j??? a dataset
                 dimList_b = []
                 dimList_f = []
                 dimList_b.append(j.funvals[:,0])
@@ -84,9 +84,9 @@ def main(dictAlg, outputdir='.', verbose=True):
                 labeltext=str(j.dim)+"D"
                 try:
                     if 11 < 3:
-                        plt.errorbar(bs[0], fs[0][0], yerr = [fs[0][1], fs[0][2]], label = labeltext)
+                        plt.errorbar(bs[0] / j.dim, fs[0][0], yerr = [fs[0][1], fs[0][2]], label = labeltext)
                     else:
-                        plt.errorbar(bs[0], fs[0][0], label = labeltext)
+                        plt.errorbar(bs[0] / j.dim, fs[0][0], label = labeltext)
                 except FloatingPointError:  # that's a bit of a hack
                     if not warned:
                         print('Warning: floating point error when plotting errorbars, ignored')

@@ -30,10 +30,10 @@ def config():
         pprldmany.target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', 
                                                                 10**np.arange(-0.3, 2.701, 0.1))
         # TODO: this does not work, because targets are aggregated over functions in pprldistr
-        pprldistr.single_target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', [1, 3, 10, 30])
+        pprldistr.single_target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', [0.5, 2, 10, 50])
         print 'taking bestGECCO2009 based target values'
-        ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues('bestGECCO2009', 
-                                                                       [10**i for i in [2, 1.5, 1, 0.5, 0, -0.3]])
+        ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues('bestGECCO2009',
+                                                                       [10**i for i in [1.7, 1, 0.3, -0.3]])
     else:
         pprldmany.target_values = pproc.TargetValues(10**np.arange(2, -8, -0.2))
         pprldistr.single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))
