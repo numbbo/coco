@@ -16,8 +16,7 @@ import numpy as np
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
     #set_trace()
 evaluation_setting = 1e2  # artificial way to control the "new" displays
-
-dimensions_to_display = (2,3,5,10,20,40)  # this could be used to set the dimensions in respective modules
+dimensions_to_display = (2, 3, 5, 10, 20)  # this could be used to set the dimensions in respective modules
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
 instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,

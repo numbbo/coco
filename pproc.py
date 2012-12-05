@@ -57,9 +57,9 @@ class TargetValues(object):
     with the derived ``class RunlengthBasedTargetValues``.  
     
     """
-    short_info = ""
     def __init__(self, target_values):
         self.target_values = sorted(target_values, reverse=True)
+        self.short_info = ""
     def __len__(self):
         return len(self.target_values)
     def __call__(self, fun_dim_but_not_use=None):

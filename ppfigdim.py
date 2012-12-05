@@ -58,7 +58,20 @@ import numpy
 from pdb import set_trace
 from bbob_pproc import toolsstats, bestalg, pproc
 from bbob_pproc.ppfig import saveFigure, groupByRange
-# import genericsettings
+import genericsettings
+
+values_of_interest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # to rename!?
+
+styles = [ # sort of rainbow style, most difficult (red) first
+          {'color': 'r', 'marker': 'o', 'markeredgecolor': 'k'}, 
+          {'color': 'm', 'marker': '.'},
+          {'color': 'y', 'marker': '^', 'markeredgecolor': 'k'},
+          {'color': 'g', 'marker': '.'},
+          {'color': 'c', 'marker': 'v', 'markeredgecolor': 'k'},
+          {'color': 'b', 'marker': '.'},
+          {'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'}, 
+        ] 
+refcolor = 'wheat'
 
 scaling_figure_legend = str(
     r"Expected number of $f$-evaluations (\ERT, with lines, see legend) to reach $\fopt+\Df$, " +
@@ -78,21 +91,8 @@ scaling_figure_legend = str(
     r" The light thick line with diamonds indicates the respective best result from BBOB-2009 for " + 
     r" $\Df=10^{-8}$. Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling. ") 
 
-values_of_interest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # to rename!?
-
-styles = [ # sort of rainbow style, most difficult (red) first
-          {'color': 'r', 'marker': 'o', 'markeredgecolor': 'k'}, 
-          {'color': 'm', 'marker': '.'},
-          {'color': 'y', 'marker': '^', 'markeredgecolor': 'k'},
-          {'color': 'g', 'marker': '.'},
-          {'color': 'c', 'marker': 'v', 'markeredgecolor': 'k'},
-          {'color': 'b', 'marker': '.'},
-          {'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'}, 
-        ] 
-refcolor = 'wheat'
-
 # should correspond with the colors in pprldistr.
-dimsBBOB = (2, 3, 5, 10, 20, 40)
+dimensions = genericsettings.dimensions_to_display
 functions_with_legend = (1, 24, 101, 130)
 
 #Get benchmark short infos.
@@ -143,24 +143,30 @@ def beautify(axesLabel=True):
     #plt.plot((2,200), (1e6,1e8), 'k:')  
     #plt.plot((2,200), (1e6,1e10), 'k:')
 
-    # quadratic and cubic "grid"
+    # quadratic "grid"
     plt.plot((20,200), (1e0, 1e1), 'k:')  
-    plt.plot((2,200), (1e1, 1e3), 'k:')    # TODO: this should be done before the real lines are plotted? 
-    # plt.plot((2,200), (1, 1e4), 'k:')
-    plt.plot((2,200), (1e3, 1e5), 'k:')  
-    # plt.plot((2,200), (1e3, 1e7), 'k:')
-    plt.plot((2,200), (1e5, 1e7), 'k:')  
-    # plt.plot((2,200), (1e6, 1e10), 'k:')
-    plt.plot((2,200), (1e7, 1e9), 'k:')  
+    plt.plot((0.2,200), (1e0, 1e3), 'k:')    # TODO: this should be done before the real lines are plotted? 
+    plt.plot((0.2,200), (1e2, 1e5), 'k:')  
+    plt.plot((0.2,200), (1e4, 1e7), 'k:')  
+    plt.plot((0.2,200), (1e6, 1e9), 'k:')  
 
     # axes limites
-    plt.xlim(1.8, 45)                # TODO should become input arg?
-    plt.ylim(ymin=10**-0.2, ymax=ymax) # Set back the default maximum.
+    plt.xlim(0.9 * dimensions[0], 1.125 * dimensions[-1]) 
+    plt.ylim(ymin=10**-0.2, ymax=int(ymax+1)) # Set back the default maximum.
+    if genericsettings.evaluation_setting == 1e2:
+        plt.ylim(0.5, 5e2) 
+        if 11 < 3:
+            title = plt.gca().get_title() # works not not as expected
+            if title.startswith('1 ') or title.startswith('5 '):
+                plt.ylim(0.5, 1e2)
+            if title.startswith('19 ') or title.startswith('20 '):
+                plt.ylim(0.5, 1e4)
+            
 
     # ticks on axes
     #axisHandle.invert_xaxis()
-    dimticklist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
-    dimannlist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
+    dimticklist = dimensions 
+    dimannlist = dimensions 
     # TODO: All these should depend on one given input (xlim, ylim)
 
     axisHandle.set_xticks(dimticklist)
@@ -241,13 +247,14 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
         #legend = []
         line = []
         mediandata = {}
+        displaynumber = {}
         for i in range(len(valuesOfInterest)):
             succ = []
             unsucc = []
-            displaynumber = []
             # data = []
             maxevals = numpy.ones(len(dimensions))
-            #Collect data that have the same function and different dimension.
+            maxevals_succ = numpy.ones(len(dimensions)) 
+            # Collect data that have the same function and different dimension.
             for idim, dim in enumerate(dimensions):
                 assert len(dictFunc[func][dim]) == 1
                 tmp = generateData(dictFunc[func][dim][0], valuesOfInterest((func, dim))[i])
@@ -256,7 +263,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                 if tmp[2] > 0: #Number of success is larger than 0
                     succ.append(numpy.append(dim, tmp))
                     if tmp[2] < dictFunc[func][dim][0].nbRuns():
-                        displaynumber.append((dim, tmp[0], tmp[2]))
+                        displaynumber[dim] = ((dim, tmp[0], tmp[2]))
                     mediandata[dim] = (i, tmp[-1])
                     unsucc.append(numpy.append(dim, numpy.nan))
                 else:
@@ -266,25 +273,26 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                 tmp = numpy.vstack(succ)
                 #ERT
                 res.extend(plt.plot(tmp[:, 0], tmp[:, 1]/tmp[:, 0],
-                           markersize=20, **styles[i]))
+                           markersize=20, clip_on=True, **styles[i]))
 
             # To have the legend displayed whatever happens with the data.
             res.extend(plt.plot([], [], markersize=10,
                                 label=valuesOfInterest.label(i),
                                 **styles[i]))
 
-        #Only for the last target function value
+        # Only for the last target function value
         if unsucc:  # obsolete
             tmp = numpy.vstack(unsucc) # tmp[:, 0] needs to be sorted!
             # res.extend(plt.plot(tmp[:, 0], tmp[:, 1]/tmp[:, 0],
             #            color=styles[len(valuesOfInterest)-1]['color'],
             #            marker='x', markersize=20))
         if 1 < 3:
+            ylim = plt.ylim()
             res.extend(plt.plot(tmp[:, 0], maxevals/tmp[:, 0],
                        color=styles[len(valuesOfInterest)-1]['color'],
                        ls='', marker='x', markersize=20))
-
-        #median
+            plt.ylim(ylim)
+        # median
         if mediandata:
             for i, tm in mediandata.iteritems():
                 plt.plot((i, ), (tm[1]/i, ), color=styles[tm[0]]['color'],
@@ -295,12 +303,12 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
         # the displaynumber is emptied for each new target precision
         # therefore the displaynumber displayed below correspond to the
         # last target (must be the hardest)
-        if displaynumber: #displayed only for the smallest valuesOfInterest
-            for j in displaynumber:
-                # the 1.85 factor is a shift up for the digits 
-                plt.text(j[0], j[1] * 1.85 / j[0], "%.0f" % j[2], axes=a,
+        if displaynumber: # displayed only for the smallest valuesOfInterest
+            for _k, j in displaynumber.iteritems():
+                # the 1.5 factor is a shift up for the digits 
+                plt.text(j[0], 1.5 * j[1] / j[0], "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
-                         verticalalignment="bottom")
+                         verticalalignment="bottom", fontsize=plt.rcParams['font.size'] * 0.85)
         # if later the ylim[0] becomes >> 1, this might be a problem
         plt.text(dimensions[0], 1, valuesOfInterest.short_info, axes=a, fontsize=10)
     return res
@@ -310,14 +318,14 @@ def plotBest2009(func, target=lambda x: [1e-8]):
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
     bestalgdata = []
-    for d in dimsBBOB:
+    for d in dimensions:
         entry = bestalg.bestalgentries2009[(d, func)]
         tmp = entry.detERT([target((func, d))[-1]])[0]
         if not numpy.isinf(tmp):
             bestalgdata.append(tmp / d)
         else:
             bestalgdata.append(None)
-    res = plt.plot(dimsBBOB, bestalgdata, color=refcolor, linewidth=10,
+    res = plt.plot(dimensions, bestalgdata, color=refcolor, linewidth=10,
                    marker='d', markersize=25, markeredgecolor='k',
                    zorder=-2)
     return res
