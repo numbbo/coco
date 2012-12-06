@@ -3,10 +3,10 @@
 
 """Bootstrapping and statistics routines."""
 
-import numpy
+import numpy as np
 from pdb import set_trace
 
-def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
+def sp1(data, maxvalue=np.Inf, issuccessful=None):
     """sp1(data, maxvalue=Inf, issuccessful=None) computes a
     mean value over successful entries in data divided by
     success rate, the so-called SP1
@@ -22,7 +22,7 @@ def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
 
     Returns: (SP1, success_rate, nb_of_successful_entries), where
       SP1 is the mean over successful entries in data divided
-      by the success rate. SP1 equals numpy.Inf when the success
+      by the success rate. SP1 equals np.Inf when the success
       rate is zero.
     """
 
@@ -38,12 +38,12 @@ def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
     # remove NaNs
     if issuccessful is not None:
         issuccessful = [issuccessful[i] for i in xrange(len(issuccessful))
-                        if not numpy.isnan(data[i])]
-    dat = [d for d in data if not numpy.isnan(d)]
+                        if not np.isnan(data[i])]
+    dat = [d for d in data if not np.isnan(d)]
     N = len(dat)
 
     if N == 0:
-        return(numpy.nan, numpy.nan, numpy.nan)
+        return(np.nan, np.nan, np.nan)
 
     # remove unsuccessful data
     if issuccessful is not None:
@@ -54,11 +54,11 @@ def sp1(data, maxvalue=numpy.Inf, issuccessful=None):
 
     # return
     if succ == 0:
-        return (numpy.Inf, 0., 0)
+        return (np.Inf, 0., 0)
     else:
-        return (numpy.mean(dat) / succ, succ, len(dat))
+        return (np.mean(dat) / succ, succ, len(dat))
 
-def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
+def sp(data, maxvalue=np.Inf, issuccessful=None, allowinf=True):
     """sp(data, issuccessful=None) computes the sum of the function evaluations
     over all runs divided by the number of success, the so-called SP.
 
@@ -77,7 +77,7 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
       of successful entries in data divided by the number of success.
     """
 
-    #TODO allowinf is obsolete
+    # TODO allowinf is obsolete
 
     # check input args
     if not getattr(data, '__iter__', False):  # is not iterable
@@ -91,12 +91,12 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
     # remove NaNs
     if issuccessful is not None:
         issuccessful = [issuccessful[i] for i in xrange(len(issuccessful))
-                        if not numpy.isnan(data[i])]
-    dat = [d for d in data if not numpy.isnan(d)]
+                        if not np.isnan(data[i])]
+    dat = [d for d in data if not np.isnan(d)]
     N = len(dat)
 
     if N == 0:
-        return(numpy.nan, numpy.nan, numpy.nan)
+        return(np.nan, np.nan, np.nan)
 
     # remove unsuccessful data
     if issuccessful is not None:
@@ -108,15 +108,29 @@ def sp(data, maxvalue=numpy.Inf, issuccessful=None, allowinf=True):
     # return
     if succ == 0:
         if not allowinf:
-            res = numpy.sum(dat) # here it is divided by min(1, succ)
+            res = np.sum(dat)  # here it is divided by min(1, succ)
         else:
-            res = numpy.inf
+            res = np.inf
     else:
-        res = numpy.sum(dat) / float(len(succdat))
+        res = np.sum(dat) / float(len(succdat))
 
     return (res, succ, len(succdat))
 
-
+def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=1e3):
+    """returns ``(percentiles, all_sampled_values_sorted)`` of simulated 
+    runlengths to reach ``ftarget`` based on a ``DataSet`` object, specifically:: 
+     
+        evals = data_set.detEvals([ftarget])[0]
+        return drawSP(evals[~np.isnan(evals)], data_set.maxevals[np.isnan(evals)], percentiles, samplesize)
+    
+    The expected value of ``all_sampled_values_sorted`` is the expected 
+    runtime ERT, ``data_set.detERT([ftarget])[0]``. 
+    
+    """
+    evals = data_set.detEvals([ftarget])[0] 
+    nanidx = np.isnan(evals)
+    return drawSP(evals[~nanidx], data_set.maxevals[nanidx], percentiles, samplesize)
+    
 def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
     """Returns the percentiles of the bootstrapped distribution of
     'simulated' running lengths of successful runs.
@@ -143,20 +157,23 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
     Nunsucc = len(runlengths_unsucc)
     
     if Nsucc == 0:
-        # return (numpy.Inf*numpy.array(percentiles), )
-        #TODO: the following line does not work because of the use of function sum which interface is different than that of sp or sp1
-        return (draw(runlengths_unsucc, percentiles, samplesize=samplesize, func=sum), sorted(runlengths_unsucc))
-
-    #if Nunsucc == 0: # Special case: all success, how can we improve efficiency?
+        raise NotImplementedError('this code has been removed as it was not clear whether it makes sense')
+        # return (np.Inf*np.array(percentiles), )
+        # TODO: the following line does not work because of the use of function sum which interface is different than that of sp or sp1
+        return (draw(runlengths_unsucc, percentiles, samplesize=samplesize, 
+                     func=sum
+                     # func=lambda x: [sum(x)]
+                     ), sorted(runlengths_unsucc))
+    # if Nunsucc == 0: # Special case: all success, how can we improve efficiency?
     #    return 
     if 11 < 3 and Nunsucc == 0:  # not tested yet: draw each once without replacement and repeat  
-        idx = numpy.random.shuffle(range(Nsucc))
+        idx = np.random.shuffle(range(Nsucc))
         arrStats = [runlengths_succ[idx[i % Nsucc]] for i in xrange(int(samplesize))]
         arrStats.sort()  # could be avoided
         return (prctile(runlengths_succ, percentiles, issorted=False),
             arrStats)
     if 11 < 3 and Nunsucc == 0:  # not tested yet: bootstraps, but more efficient
-        arrStats = [runlengths_succ[numpy.random.randint(Nsucc)] 
+        arrStats = [runlengths_succ[np.random.randint(Nsucc)] 
                       for i in xrange(int(samplesize))]
         arrStats.sort()  # could be avoided
         return (prctile(arrStats, percentiles, issorted=True), arrStats)
@@ -165,25 +182,25 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
     # The samplesize depends on the number of unsuccessful runs?
 
     arrStats = []
-    sdata = numpy.array(runlengths_succ)  # more efficient indexing
-    udata = numpy.array(runlengths_unsucc)  # more efficient indexing
+    sdata = np.array(runlengths_succ)  # more efficient indexing
+    udata = np.array(runlengths_unsucc)  # more efficient indexing
     Nu = len(udata)
     Ns = len(sdata)
-    #data = numpy.r_[udata, sdata]
+    # data = np.r_[udata, sdata]
     N = Ns + Nu
 
     for i in xrange(int(samplesize)):
         # relying that idx<len(data)
         sumdata = 0
-        idx = numpy.random.randint(N)
-        #set_trace()
+        idx = np.random.randint(N)
+        # set_trace()
         while idx < Nu:
             sumdata += udata[idx]
-            idx = numpy.random.randint(N)
+            idx = np.random.randint(N)
 
-        sumdata += sdata[idx-Nu]
+        sumdata += sdata[idx - Nu]
 
-        arrStats.append(sumdata) # We know we have one success here.
+        arrStats.append(sumdata)  # We know we have one success here.
 
     arrStats.sort()
 
@@ -213,7 +230,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
 
     Example:
         >> import toolsstats
-        >> data = numpy.random.randn(22)
+        >> data = np.random.randn(22)
         >> res = toolsstats.draw(data, (10,50,90), samplesize=1e4)
         >> print res[0]
 
@@ -225,29 +242,29 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     """
     arrStats = []
     N = len(data)
-    adata = numpy.array(data)  # more efficient indexing
+    adata = np.array(data)  # more efficient indexing
     succ = None
     # there is a third argument to func which is the array of success
     if len(args) > 1:
-        succ = numpy.array(args[1])
+        succ = np.array(args[1])
     # should NaNs also be boostrapped?
     argsv = args
     if 1 < 3:
         for i in xrange(int(samplesize)):
             # relying that idx<len(data)
-            idx = numpy.random.randint(N, size=N)
+            idx = np.random.randint(N, size=N)
 
-            #This part is specialized to conform with sp1 and sp.
+            # This part is specialized to conform with sp1 and sp.
             if len(args) > 1:
-                argsv[1] = succ[numpy.r_[idx]]
+                argsv[1] = succ[np.r_[idx]]
 
-            arrStats.append(func(adata[numpy.r_[idx]], *(argsv))[0])
+            arrStats.append(func(adata[np.r_[idx]], *(argsv))[0])
 
             # arrStats = [data[i] for i in idx]  # efficient up to 50 data
     else:  # not more efficient
-        arrIdx = numpy.random.randint(N, size=N*samplesize)
+        arrIdx = np.random.randint(N, size=N * samplesize)
         arrIdx.resize(samplesize, N)
-        arrStats = [func(adata[numpy.r_[idx]], *args) for idx in arrIdx]
+        arrStats = [func(adata[np.r_[idx]], *args) for idx in arrIdx]
 
     arrStats.sort()
 
@@ -268,7 +285,7 @@ def prctile(x, arrprctiles, issorted=False):
         prctiles
 
     .. note::
-        treats numpy.Inf and -numpy.Inf and numpy.NaN, the latter are
+        treats np.Inf and -np.Inf and np.NaN, the latter are
         simply disregarded
 
     """
@@ -277,38 +294,38 @@ def prctile(x, arrprctiles, issorted=False):
         # makes a tuple even if the arrprctiles is not iterable
     # remove NaNs, sort
 
-    x = [d for d in x if not numpy.isnan(d) and d is not None]
+    x = [d for d in x if not np.isnan(d) and d is not None]
     if not issorted:
         x.sort()
 
     N = float(len(x))
     if N == 0:
-        return [numpy.NaN for a in arrprctiles]
+        return [np.NaN for a in arrprctiles]
 
     res = []
     for p in arrprctiles:
-        i = -0.5 + (p/100.) * N
-        ilow = int(numpy.floor(i))
-        ihigh = int(numpy.ceil(i))
+        i = -0.5 + (p / 100.) * N
+        ilow = int(np.floor(i))
+        ihigh = int(np.ceil(i))
         if i <= 0:
             res += [x[0]]
-        elif i >= N-1:
+        elif i >= N - 1:
             res += [x[-1]]
         elif ilow == ihigh:
             res += [x[ilow]]
-        #numpy.bool__.any() works as well as numpy.array.any()...
-        elif numpy.isinf(x[ihigh]).any() and ihigh - i <= 0.5:
+        # np.bool__.any() works as well as np.array.any()...
+        elif np.isinf(x[ihigh]).any() and ihigh - i <= 0.5:
             res += [x[ihigh]]
-        elif numpy.isinf(x[ilow]).any() and i - ilow < 0.5:
+        elif np.isinf(x[ilow]).any() and i - ilow < 0.5:
             res += [x[ilow]]
         else:
-            res += [(ihigh-i) * x[ilow] + (i-ilow) * x[ihigh]]
+            res += [(ihigh - i) * x[ilow] + (i - ilow) * x[ihigh]]
     return res
 
 def randint(upper, n):
-    res = numpy.floor(upper*numpy.random.rand(n))
-    if any(res>=upper):
-        raise Exception, 'numpy.random.rand returned 1'
+    res = np.floor(upper * np.random.rand(n))
+    if any(res >= upper):
+        raise Exception, 'np.random.rand returned 1'
     return res
 
 def ranksum_statistic(N1, N2):
@@ -321,12 +338,12 @@ def ranksum_statistic(N1, N2):
     # Possible optimization by setting sample 1 to be the one with the smallest
     # rank.
 
-    #TODO: deal with more general type of sorting.
+    # TODO: deal with more general type of sorting.
     s1 = sorted(N1)
     s2 = sorted(N2)
     U = 0.
     for i in s1:
-        Ui = 0. # increment of U
+        Ui = 0.  # increment of U
         for j in s2:
             if j < i:
                 Ui += 1.
@@ -334,8 +351,8 @@ def ranksum_statistic(N1, N2):
                 Ui += .5
             else:
                 break
-        #if Ui == 0.:
-            #break
+        # if Ui == 0.:
+            # break
         U += Ui
     return U
 
@@ -382,29 +399,29 @@ def zprob(z):
     """
     def yfunc(y):
         x = (((((((((((((-0.000045255659 * y
-                         +0.000152529290) * y -0.000019538132) * y
-                       -0.000676904986) * y +0.001390604284) * y
-                     -0.000794620820) * y -0.002034254874) * y
-                   +0.006549791214) * y -0.010557625006) * y
-                 +0.011630447319) * y -0.009279453341) * y
-               +0.005353579108) * y -0.002141268741) * y
-             +0.000535310849) * y +0.999936657524
+                         + 0.000152529290) * y - 0.000019538132) * y
+                       - 0.000676904986) * y + 0.001390604284) * y
+                     - 0.000794620820) * y - 0.002034254874) * y
+                   + 0.006549791214) * y - 0.010557625006) * y
+                 + 0.011630447319) * y - 0.009279453341) * y
+               + 0.005353579108) * y - 0.002141268741) * y
+             + 0.000535310849) * y + 0.999936657524
         return x
 
     def wfunc(w):
         x = ((((((((0.000124818987 * w
-                    -0.001075204047) * w +0.005198775019) * w
-                  -0.019198292004) * w +0.059054035642) * w
-                -0.151968751364) * w +0.319152932694) * w
-              -0.531923007300) * w +0.797884560593) * numpy.sqrt(w) * 2.0
+                    - 0.001075204047) * w + 0.005198775019) * w
+                  - 0.019198292004) * w + 0.059054035642) * w
+                - 0.151968751364) * w + 0.319152932694) * w
+              - 0.531923007300) * w + 0.797884560593) * np.sqrt(w) * 2.0
         return x
 
-    Z_MAX = 6.0    # maximum meaningful z-value
-    x = numpy.zeros(z.shape, numpy.float_) # initialize
-    y = 0.5 * numpy.fabs(z)
-    x = numpy.where(numpy.less(y,1.0),wfunc(y*y),yfunc(y-2.0)) # get x's
-    x = numpy.where(numpy.greater(y,Z_MAX*0.5),1.0,x)          # kill those with big Z
-    prob = numpy.where(numpy.greater(z,0),(x+1)*0.5,(1-x)*0.5)
+    Z_MAX = 6.0  # maximum meaningful z-value
+    x = np.zeros(z.shape, np.float_)  # initialize
+    y = 0.5 * np.fabs(z)
+    x = np.where(np.less(y, 1.0), wfunc(y * y), yfunc(y - 2.0))  # get x's
+    x = np.where(np.greater(y, Z_MAX * 0.5), 1.0, x)  # kill those with big Z
+    prob = np.where(np.greater(z, 0), (x + 1) * 0.5, (1 - x) * 0.5)
     return prob
 
 def ranksumtest(x, y):
@@ -417,18 +434,18 @@ def ranksumtest(x, y):
     Returns: z-value for first data set ``x`` and two-tailed p-value
     
     """
-    x, y = map(numpy.asarray, (x, y))
+    x, y = map(np.asarray, (x, y))
     n1 = len(x)
     n2 = len(y)
-    alldata = numpy.concatenate((x,y))
+    alldata = np.concatenate((x, y))
     ranked = rankdata(alldata)
     x = ranked[:n1]
     y = ranked[n1:]
-    s = numpy.sum(x,axis=0)
-    assert s + numpy.sum(y,axis=0) == numpy.sum(range(n1+n2+1))
-    expected = n1*(n1+n2+1) / 2.0
-    z = (s - expected) / numpy.sqrt(n1*n2*(n1+n2+1)/12.0)
-    prob = 2*(1.0 -zprob(abs(z)))
+    s = np.sum(x, axis=0)
+    assert s + np.sum(y, axis=0) == np.sum(range(n1 + n2 + 1))
+    expected = n1 * (n1 + n2 + 1) / 2.0
+    z = (s - expected) / np.sqrt(n1 * n2 * (n1 + n2 + 1) / 12.0)
+    prob = 2 * (1.0 - zprob(abs(z)))
     return z, prob
 
 def rankdata(a):
@@ -450,18 +467,18 @@ def rankdata(a):
       An array of length equal to the size of a, containing rank scores.
 
     """
-    a = numpy.ravel(a)
+    a = np.ravel(a)
     n = len(a)
     svec, ivec = fastsort(a)
     sumranks = 0
     dupcount = 0
-    newarray = numpy.zeros(n, float)
+    newarray = np.zeros(n, float)
     for i in xrange(n):
         sumranks += i
         dupcount += 1
-        if i==n-1 or svec[i] != svec[i+1]:
+        if i == n - 1 or svec[i] != svec[i + 1]:
             averank = sumranks / float(dupcount) + 1
-            for j in xrange(i-dupcount+1,i+1):
+            for j in xrange(i - dupcount + 1, i + 1):
                 newarray[ivec[j]] = averank
             sumranks = 0
             dupcount = 0
@@ -499,11 +516,11 @@ def significancetest(entry0, entry1, targets):
         tmp = entry.detEvals(targets)
         if not entry.__dict__.has_key('funvals'):  # this looks like a terrible hack
             isBestAlg = True
-            #for i, j in enumerate(tmp[0]):
-                #if numpy.isnan(j).all():
-                    #tmp[0][i] = numpy.array([numpy.nan]*len(entry.bestfinalfunvals))
-            #Make sure that the length of elements of tmp[0] is the same as
-            #that of the associated function values
+            # for i, j in enumerate(tmp[0]):
+                # if np.isnan(j).all():
+                    # tmp[0][i] = np.array([np.nan]*len(entry.bestfinalfunvals))
+            # Make sure that the length of elements of tmp[0] is the same as
+            # that of the associated function values
             evals.append(tmp[0])
             bestalgs.append(tmp[1])
         else:
@@ -518,17 +535,17 @@ def significancetest(entry0, entry1, targets):
         averageevals[0] = entry0.detAverageEvals(targets)
         averageevals[1] = entry1.detAverageEvals(targets)
         if bootstraps: 
-            psucc0 = 1 - sum(numpy.isnan(entry0.getEvals(targets)), axis=-1) / entry0.nbRuns()
+            psucc0 = 1 - sum(np.isnan(entry0.getEvals(targets)), axis= -1) / entry0.nbRuns()
             psucc1 = None
             if psucc0 == 1 and psucc1 == 1:
                 bootstraps = False
 
     for i in range(len(targets)):
         # 1. Determine FE_umin,  the minimum evals in unsuccessful trials 
-        FE_umin = numpy.inf
+        FE_umin = np.inf
 
         # if there is at least one unsuccessful run
-        if (numpy.isnan(evals[0][i]).any() or numpy.isnan(evals[1][i]).any()):
+        if (np.isnan(evals[0][i]).any() or np.isnan(evals[1][i]).any()):
             fvalues = []
             if isBestAlg:
                 for j, entry in enumerate((entry0, entry1)):
@@ -540,42 +557,42 @@ def significancetest(entry0, entry1, targets):
                         else:
                             tmpfvalues = entry.finalfunvals[alg]
                     else:
-                        unsucc = numpy.isnan(evals[j][i])
+                        unsucc = np.isnan(evals[j][i])
                         if unsucc.any():
                             FE_umin = min(entry.maxevals[unsucc])
                         else:
-                            FE_umin = numpy.inf
+                            FE_umin = np.inf
                         # Determine the function values for FE_umin
-                        tmpfvalues = numpy.array([numpy.inf] * entry.nbRuns())
+                        tmpfvalues = np.array([np.inf] * entry.nbRuns())
                         for curline in entry.funvals:
                             # only works because the funvals are monotonous
                             if curline[0] > FE_umin:
                                 break
                             prevline = curline[1:]
                         tmpfvalues = prevline.copy()
-                        #tmpfvalues = entry.finalfunvals
-                        #if (tmpfvalues != entry.finalfunvals).any():
-                            #set_trace()
+                        # tmpfvalues = entry.finalfunvals
+                        # if (tmpfvalues != entry.finalfunvals).any():
+                            # set_trace()
                     fvalues.append(tmpfvalues)
             else:
                 # 1) find min_{both algorithms}(conducted FEvals in
                 # unsuccessful trials) =: FE_umin
-                FE_umin = numpy.inf
-                if numpy.isnan(evals[0][i]).any() or numpy.isnan(evals[1][i]).any():
+                FE_umin = np.inf
+                if np.isnan(evals[0][i]).any() or np.isnan(evals[1][i]).any():
                     FE = []
                     for j, entry in enumerate((entry0, entry1)):
-                        unsucc = numpy.isnan(evals[j][i])
+                        unsucc = np.isnan(evals[j][i])
                         if unsucc.any():
                             tmpfe = min(entry.maxevals[unsucc])
                         else:
-                            tmpfe = numpy.inf
+                            tmpfe = np.inf
                         FE.append(tmpfe)
                     FE_umin = min(FE)
 
                     # Determine the function values for FE_umin
                     fvalues = []
                     for j, entry in enumerate((entry0, entry1)):
-                        prevline = numpy.array([numpy.inf] * entry.nbRuns())
+                        prevline = np.array([np.inf] * entry.nbRuns())
                         for curline in entry.funvals:
                             # only works because the funvals are monotonous
                             if curline[0] > FE_umin:
@@ -587,8 +604,8 @@ def significancetest(entry0, entry1, targets):
         curdata = []  # current data 
         for j, entry in enumerate((entry0, entry1)):
             tmp = evals[j][i].copy()
-            idx = numpy.isnan(tmp) + (tmp > FE_umin)
-            tmp = numpy.power(tmp, -1.)
+            idx = np.isnan(tmp) + (tmp > FE_umin)
+            tmp = np.power(tmp, -1.)
             if idx.any():
                 tmp[idx] = -fvalues[j][idx]  # larger data is better
             curdata.append(tmp)
@@ -601,7 +618,7 @@ def significancetest(entry0, entry1, targets):
             ibetter = 0 if z_and_p[0] > 0 else 1  # larger data is better
             iworse = 1 - ibetter
             if not (erts[ibetter][i] <= erts[iworse][i] and  # inf are equal
-                (erts[ibetter][i] is numpy.inf or  # comparable data: only f-values are compared for significance (they are compared for the same #evals)
+                (erts[ibetter][i] is np.inf or  # comparable data: only f-values are compared for significance (they are compared for the same #evals)
                  averageevals[ibetter][i] < averageevals[iworse][i])):  # better algorithm must not have larger effort, should this take into account FE_umin?
                 z_and_p = (z_and_p[0], 1.0)                  
 
@@ -622,13 +639,13 @@ def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
         erts = []
         for ds in datasets:
             erts.append(ds.detERT(targets))
-        best_alg_idx = numpy.array(erts).argsort(0)[0, :]  # indexed by target index
+        best_alg_idx = np.array(erts).argsort(0)[0, :]  # indexed by target index
         assert len(best_alg_idx) == len(targets)
     elif 1 < 3:  # only for debugging
         erts = []
         for ds in datasets:
             erts.append(ds.detERT(targets))
-        best_alg_idx2 = numpy.array(erts).argsort(0)[0, :]  # indexed by target index
+        best_alg_idx2 = np.array(erts).argsort(0)[0, :]  # indexed by target index
         assert all(best_alg_idx2 == best_alg_idx)
         
     # significance test of best given algorithm against all others
@@ -657,7 +674,7 @@ def fastsort(a):
       (sorted array, indices into the original array)
 
     """
-    it = numpy.argsort(a)
+    it = np.argsort(a)
     as_ = a[it]
     return as_, it
 
