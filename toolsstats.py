@@ -118,16 +118,22 @@ def sp(data, maxvalue=np.Inf, issuccessful=None, allowinf=True):
 
 def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=1e3):
     """returns ``(percentiles, all_sampled_values_sorted)`` of simulated 
-    runlengths to reach ``ftarget`` based on a ``DataSet`` object, specifically:: 
+    runlengths to reach ``ftarget`` based on a ``DataSet`` class instance, 
+    specifically:: 
      
-        evals = data_set.detEvals([ftarget])[0]
-        return drawSP(evals[~np.isnan(evals)], data_set.maxevals[np.isnan(evals)], percentiles, samplesize)
+        evals = data_set.detEvals([ftarget])[0] # likely to be 15 "data points"
+        idx_nan = np.isnan(evals)  # nan == did not reach ftarget
+        return drawSP(evals[~idx_nan], data_set.maxevals[idx_nan], percentiles, samplesize)
     
     The expected value of ``all_sampled_values_sorted`` is the expected 
-    runtime ERT, ``data_set.detERT([ftarget])[0]``. 
+    runtime ERT, as obtained by ``data_set.detERT([ftarget])[0]``. 
     
     """
-    evals = data_set.detEvals([ftarget])[0] 
+    try:
+        evals = data_set.detEvals([ftarget])[0]
+    except AttributeError:
+        print 'drawSP_from_dataset expects a DataSet instance as first input, was: ' + str(type(data_set))
+        raise 
     nanidx = np.isnan(evals)
     return drawSP(evals[~nanidx], data_set.maxevals[nanidx], percentiles, samplesize)
     
