@@ -655,19 +655,16 @@ class DataSet():
         #dim, funcId, algId, precision
         return
 
-    def pickle(self, outputdir=None, verbose=True, gzipped=False):
+    def pickle(self, outputdir=None, verbose=True, gzipped=True):
         """Save this instance to a pickle file.
 
-        Saves this instance to a pickle file. If not specified
-        by argument outputdir, the location of the pickle is given by
-        the location of the first index file associated to this
+        Saves this instance to a (by default gzipped) pickle file. If not 
+        specified by argument outputdir, the location of the pickle is 
+        given by the location of the first index file associated to this
         instance.
 
         This method will overwrite existing files.
         
-        TODO: stress-test gzipped option, cave: how/where are these files loaded, do all modules understand pickle.gz files?
-        TODO (later): set gzipped option default to True
-
         """
         # the associated pickle file does not exist
         if outputdir is not None and getattr(self, 'pickleFile', False):
