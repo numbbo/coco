@@ -34,6 +34,7 @@ def config():
         print 'taking bestGECCO2009 based target values'
         ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues('bestGECCO2009',
                                                                        [10**i for i in [1.7, 1, 0.3, -0.3]])
+        ppfigdim.scaling_figure_legend = ppfigdim.scaling_figure_legend_rlbased
     else:
         pprldmany.target_values = pproc.TargetValues(10**np.arange(2, -8, -0.2))
         pprldistr.single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))

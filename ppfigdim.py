@@ -73,7 +73,7 @@ styles = [  # sort of rainbow style, most difficult (red) first
         ] 
 refcolor = 'wheat'
 
-scaling_figure_legend = str(
+scaling_figure_legend_fixed = str(
     r"Expected number of $f$-evaluations (\ERT, with lines, see legend) to reach $\fopt+\Df$, " + 
     r"median number of $f$-evaluations to reach the most difficult target that was reached at least once ($+$) " + 
     r"and maximum number of $f$-evaluations in any trial ({\color{red}$\times$}), all " + 
@@ -90,6 +90,26 @@ scaling_figure_legend = str(
     r" Numbers above \ERT-symbols indicate the number of successful trials. " + 
     r" The light thick line with diamonds indicates the respective best result from BBOB-2009 for " + 
     r" $\Df=10^{-8}$. Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling. ") 
+
+scaling_figure_legend_rlbased = str(
+    r"Expected number of $f$-evaluations (\ERT, with lines, see legend) to reach $\fopt+\Df$, " + 
+    r"median number of $f$-evaluations to reach the most difficult target that was reached at least once ($+$) " + 
+    r"and maximum number of $f$-evaluations in any trial ({\color{red}$\times$}), all " + 
+    r"divided by dimension and plotted as $\log_{10}$ values versus dimension. " + 
+    r"Shown are $\Df = 10^{\{values_of_interest\}}$. " + 
+    # r"(the exponent is given in the legend of #1). " + 
+#    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
+#    "divided by the number of successful trials, where a trial is " +
+#    "successful if $\\fopt+\\Df$ was surpassed. The " +
+#    "$\\nbFEs(\\Df)$ are the total number (the sum) of $f$-evaluations while " +
+#    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
+#    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
+#    "function value.  " +
+    r" Numbers above \ERT-symbols indicate the number of successful trials. " + 
+    r" The light thick line with diamonds indicates the respective best result from BBOB-2009 for " + 
+    r" $\Df=10^{-8}$. Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling. ") 
+
+scaling_figure_legend = scaling_figure_legend_fixed 
 
 # should correspond with the colors in pprldistr.
 dimensions = genericsettings.dimensions_to_display
