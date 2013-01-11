@@ -71,6 +71,7 @@ styles = [  # sort of rainbow style, most difficult (red) first
           {'color': 'b', 'marker': '.', 'linewidth': 4},
           {'color': 'k', 'marker': 'o', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
         ] 
+
 refcolor = 'wheat'
 
 scaling_figure_legend_fixed = str(
@@ -314,13 +315,13 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                             for s in styles[i]:
                                 styles2[s] = styles[i][s]
                             styles2['linewidth'] = 1
-                            styles2['markeredgewidth'] = 0 
+                            styles2['markeredgecolor'] = styles2['color'] 
                             x = [dim / r, r * dim]
                             y = np.array(y) / dim
                             plt.plot([x[0], x[1], x[1], x[0], x[0]],
                                      [y[0], y[0], y[2], y[2], y[0]],
                                      **styles2)
-                            styles2['linewidth'] = 2
+                            styles2['linewidth'] = 2  # median
                             plt.plot([x[0], x[1]], [y[1], y[1]],
                                      markersize=0, **styles2)
 
