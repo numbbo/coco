@@ -64,11 +64,11 @@ values_of_interest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  
 
 styles = [  # sort of rainbow style, most difficult (red) first
           {'color': 'r', 'marker': 'o', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
-          {'color': 'm', 'marker': '.', 'linewidth': 2},
+          {'color': 'm', 'marker': '.', 'linewidth': 4},
           {'color': 'y', 'marker': '^', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
-          {'color': 'g', 'marker': '.', 'linewidth': 2},
+          {'color': 'g', 'marker': '.', 'linewidth': 4},
           {'color': 'c', 'marker': 'v', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
-          {'color': 'b', 'marker': '.', 'linewidth': 2},
+          {'color': 'b', 'marker': '.', 'linewidth': 4},
           {'color': 'k', 'marker': 'o', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
         ] 
 refcolor = 'wheat'
@@ -310,20 +310,19 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                                                                [25, 50, 75], 1e2)[0]
                             rec_width = 1.1
                             r = rec_width ** ((1. + i / 3.) / 4)  # more difficult targets get a wider box
-                            lw = styles[i].get('linewidth')
-                            styles[i]['linewidth'] = 1
+                            styles2 = {}
+                            for s in styles[i]:
+                                styles2[s] = styles[i][s]
+                            styles2['linewidth'] = 1
+                            styles2['markeredgewidth'] = 0 
                             x = [dim / r, r * dim]
                             y = np.array(y) / dim
                             plt.plot([x[0], x[1], x[1], x[0], x[0]],
                                      [y[0], y[0], y[2], y[2], y[0]],
-                                     **styles[i])
-                            styles[i]['linewidth'] = 2
+                                     **styles2)
+                            styles2['linewidth'] = 2
                             plt.plot([x[0], x[1]], [y[1], y[1]],
-                                     markersize=0, **styles[i])
-                            if lw is None:
-                                del styles[i]['linewidth']
-                            else: 
-                                styles[i]['linewidth'] = lw
+                                     markersize=0, **styles2)
 
             # To have the legend displayed whatever happens with the data.
             res.extend(plt.plot([], [], markersize=10,
