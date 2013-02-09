@@ -261,7 +261,7 @@ def main(argv=None):
         for i, alg in enumerate(args):
             # remove '../' from algorithm output folder
             if len(args) == 1 or '--omit-single' not in dict(opts):
-                tmpoutputdir = os.path.join(outputdir, alg.replace('..' + os.sep, ''))
+                tmpoutputdir = os.path.join(outputdir, alg.replace('..' + os.sep, '').lstrip(os.sep))
                 rungeneric1.main(genopts1
                                 + ["-o", tmpoutputdir, alg])
                 prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
