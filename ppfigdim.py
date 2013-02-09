@@ -13,7 +13,7 @@ horizontal line in the figure.
 Crosses (+) give the median number of function evaluations of successful
 trials divided by dimension for the smallest *reached* target function
 value.
-Numbers indicate the number of successfull runs for the smallest
+Numbers indicate the number of successful runs for the smallest
 *reached* target.
 If the smallest target function value (1e-8) is not reached for a given
 dimension, crosses (x) give the average number of overall conducted
@@ -88,16 +88,16 @@ scaling_figure_legend_fixed = str(
 #    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
 #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
 #    "function value.  " +
-    r" Numbers above \ERT-symbols indicate the number of successful trials. " + 
-    r" The light thick line with diamonds indicates the respective best result from BBOB-2009 for " + 
-    r" $\Df=10^{-8}$. Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling. ") 
+    r" Numbers above \ERT-symbols indicate the number of trials reaching the respective target. " + 
+    r" The light thick line with diamonds indicates the respective best result from BBOB-2009 for $\Df=10^{-8}$. " + 
+    r" Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling. ") 
 
 scaling_figure_legend_rlbased = str(
     r"Expected number of $f$-evaluations (\ERT, with lines, see legend) to reach $\fopt+\Df$, " + 
     r"median number of $f$-evaluations to reach the most difficult target that was reached at least once ($+$) " + 
     r"and maximum number of $f$-evaluations in any trial ({\color{red}$\times$}), all " + 
     r"divided by dimension and plotted as $\log_{10}$ values versus dimension. " + 
-    r"Shown are $\Df = 10^{\{values_of_interest\}}$. " + 
+    r"Shown are $\Df$-values achieved by the best 2009 algorithm in $10^{\{values_of_interest\}}\DIM$ evaluations. " + 
     # r"(the exponent is given in the legend of #1). " + 
 #    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
 #    "divided by the number of successful trials, where a trial is " +
@@ -106,9 +106,8 @@ scaling_figure_legend_rlbased = str(
 #    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
 #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
 #    "function value.  " +
-    r" Numbers above \ERT-symbols indicate the number of successful trials. " + 
-    r" The light thick line with diamonds indicates the respective best result from BBOB-2009 for " + 
-    r" $\Df=10^{-8}$. Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling. ") 
+    r" Numbers above \ERT-symbols indicate the number of trials reaching the respective target. " + 
+    r" Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling. ") 
 
 scaling_figure_legend = scaling_figure_legend_fixed 
 
@@ -152,8 +151,11 @@ def beautify(axesLabel=True):
     axisHandle.set_yscale("log")
 
     # Grid options
-    axisHandle.grid(True, which='major')
+    axisHandle.xaxis.grid(False, which='major')
+    axisHandle.yaxis.grid(True, which='major')
+    # axisHandle.grid(True, which='major')
     axisHandle.grid(False, which='minor')
+    # axisHandle.xaxis.grid(True, linewidth=0, which='major')
     ymin, ymax = plt.ylim()
 
     # quadratic "grid"
@@ -163,8 +165,8 @@ def beautify(axesLabel=True):
     if genericsettings.evaluation_setting == 1e2:
         for y in xrange(0, 11):
             plt.plot((1, 200), 2 * [3 * 10 ** y], 'k:', linewidth=0.2)
-    for x in dimensions:
-        plt.plot(2 * [x], [0.1, 1e11], 'k:', linewidth=0.5)
+    # for x in dimensions:
+    #     plt.plot(2 * [x], [0.1, 1e11], 'k:', linewidth=0.5)
     # ticks on axes
     # axisHandle.invert_xaxis()
     dimticklist = dimensions 
@@ -366,6 +368,8 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
 
 def plotBest2009(func, target=lambda x: [1e-8]):
     """Add graph of the BBOB-2009 virtual best algorithm."""
+    if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
+        return None
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
     bestalgdata = []
