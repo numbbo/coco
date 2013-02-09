@@ -74,12 +74,12 @@ styles = [  # sort of rainbow style, most difficult (red) first
 
 refcolor = 'wheat'
 
-scaling_figure_legend_fixed = str(
-    r"Expected number of $f$-evaluations (\ERT, with lines, see legend) to reach $\fopt+\Df$, " + 
-    r"median number of $f$-evaluations to reach the most difficult target that was reached at least once ($+$) " + 
+legend_part_one = str(
+    r"Expected number of $f$-evaluations (\ERT, with lines, see legend) " + 
+    r"and the interquartile range (box) with median to reach $\fopt+\Df$; " + 
+    r"median number of $f$-evaluations to reach the most difficult target that was reached at least once (+) " + 
     r"and maximum number of $f$-evaluations in any trial ({\color{red}$\times$}), all " + 
-    r"divided by dimension and plotted as $\log_{10}$ values versus dimension. " + 
-    r"Shown are $\Df = 10^{\{values_of_interest\}}$. " + 
+    r"divided by dimension and plotted as $\log_{10}$ values versus dimension. " )
     # r"(the exponent is given in the legend of #1). " + 
 #    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
 #    "divided by the number of successful trials, where a trial is " +
@@ -88,26 +88,18 @@ scaling_figure_legend_fixed = str(
 #    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
 #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
 #    "function value.  " +
+scaling_figure_legend_fixed = legend_part_one + str(
+    r"Shown are $\Df = 10^{\{values_of_interest\}}$. " + 
     r" Numbers above \ERT-symbols indicate the number of trials reaching the respective target. " + 
     r" The light thick line with diamonds indicates the respective best result from BBOB-2009 for $\Df=10^{-8}$. " + 
     r" Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling. ") 
 
-scaling_figure_legend_rlbased = str(
-    r"Expected number of $f$-evaluations (\ERT, with lines, see legend) to reach $\fopt+\Df$, " + 
-    r"median number of $f$-evaluations to reach the most difficult target that was reached at least once ($+$) " + 
-    r"and maximum number of $f$-evaluations in any trial ({\color{red}$\times$}), all " + 
-    r"divided by dimension and plotted as $\log_{10}$ values versus dimension. " + 
-    r"Shown are $\Df$-values achieved by the best 2009 algorithm in $10^{\{values_of_interest\}}\DIM$ evaluations. " + 
-    # r"(the exponent is given in the legend of #1). " + 
-#    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
-#    "divided by the number of successful trials, where a trial is " +
-#    "successful if $\\fopt+\\Df$ was surpassed. The " +
-#    "$\\nbFEs(\\Df)$ are the total number (the sum) of $f$-evaluations while " +
-#    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
-#    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
-#    "function value.  " +
+scaling_figure_legend_rlbased = legend_part_one + str(
+    r"Shown is the \ERT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm " + 
+    r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
     r" Numbers above \ERT-symbols indicate the number of trials reaching the respective target. " + 
-    r" Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling. ") 
+    r" Slanted grid lines indicate a scaling of ${\cal O}(\DIM)$ compared to ${\cal O}(1)$ " + 
+    r" when using the respective 2009 best algorithm. ") 
 
 scaling_figure_legend = scaling_figure_legend_fixed 
 
@@ -158,13 +150,14 @@ def beautify(axesLabel=True):
     # axisHandle.xaxis.grid(True, linewidth=0, which='major')
     ymin, ymax = plt.ylim()
 
+    if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
+        for (i, y) in enumerate(reversed(values_of_interest.run_lengths)):
+            plt.plot((1, 200), 2 * [y], styles[i]['color'] + '-', linewidth=0.2)
+    # else:
     # quadratic "grid"
-    for i in xrange(-2, 7, 1 if genericsettings.evaluation_setting == 1e2 or ymax <= 1e3 else 2):
+    for i in xrange(-2, 7, 1 if ymax <= 1e3 else 2):
         plt.plot((0.2, 200), (10**i, 10**(i + 3)), 'k:', linewidth=0.5)  # TODO: this should be done before the real lines are plotted? 
- 
-    if genericsettings.evaluation_setting == 1e2:
-        for y in xrange(0, 11):
-            plt.plot((1, 200), 2 * [3 * 10 ** y], 'k:', linewidth=0.2)
+
     # for x in dimensions:
     #     plt.plot(2 * [x], [0.1, 1e11], 'k:', linewidth=0.5)
     # ticks on axes
@@ -327,7 +320,8 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                             plt.plot([x[0], x[1]], [y[1], y[1]],
                                      markersize=0, **styles2)
 
-            # To have the legend displayed whatever happens with the data.
+        # To have the legend displayed whatever happens with the data.
+        for i in reversed(range(len(valuesOfInterest))):
             res.extend(plt.plot([], [], markersize=10,
                                 label=valuesOfInterest.label(i),
                                 **styles[i]))
