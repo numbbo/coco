@@ -76,8 +76,8 @@ refcolor = 'wheat'
 
 legend_part_one = str(
     r"Expected number of $f$-evaluations (\ERT, with lines, see legend) " + 
-    r"and the interquartile range (box) with median to reach $\fopt+\Df$; " + 
-    r"median number of $f$-evaluations to reach the most difficult target that was reached at least once (+) " + 
+    r"and the interquartile range with median (box) to reach $\fopt+\Df$; " + 
+    r"median number of $f$-evaluations to reach the most difficult target that was reached not always but at least once (+) " + 
     r"and maximum number of $f$-evaluations in any trial ({\color{red}$\times$}), all " + 
     r"divided by dimension and plotted as $\log_{10}$ values versus dimension. " )
     # r"(the exponent is given in the legend of #1). " + 
@@ -95,8 +95,10 @@ scaling_figure_legend_fixed = legend_part_one + str(
     r" Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling. ") 
 
 scaling_figure_legend_rlbased = legend_part_one + str(
-    r"Shown is the \ERT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm " + 
-    r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
+    # r"Shown is the \ERT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm " + 
+    # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
+    r"Shown is the \ERT\ for the largest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm " + 
+    r"was above $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
     r" Numbers above \ERT-symbols indicate the number of trials reaching the respective target. " + 
     r" Slanted grid lines indicate a scaling of ${\cal O}(\DIM)$ compared to ${\cal O}(1)$ " + 
     r" when using the respective 2009 best algorithm. ") 
@@ -144,7 +146,6 @@ def beautify(axesLabel=True):
 
     # Grid options
     axisHandle.xaxis.grid(False, which='major')
-    axisHandle.yaxis.grid(True, which='major')
     # axisHandle.grid(True, which='major')
     axisHandle.grid(False, which='minor')
     # axisHandle.xaxis.grid(True, linewidth=0, which='major')
@@ -153,7 +154,9 @@ def beautify(axesLabel=True):
     if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
         for (i, y) in enumerate(reversed(values_of_interest.run_lengths)):
             plt.plot((1, 200), 2 * [y], styles[i]['color'] + '-', linewidth=0.2)
-    # else:
+            plt.plot((1, 200), 2 * [y], 'k:', linewidth=0.2)
+    else:
+        axisHandle.yaxis.grid(True, which='major')
     # quadratic "grid"
     for i in xrange(-2, 7, 1 if ymax <= 1e3 else 2):
         plt.plot((0.2, 200), (10**i, 10**(i + 3)), 'k:', linewidth=0.5)  # TODO: this should be done before the real lines are plotted? 

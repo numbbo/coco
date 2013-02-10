@@ -133,7 +133,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                 from bbob_pproc import bestalg
                 bestalg.loadBBOB2009() # this is an absurd interface
                 self.reference_data = bestalg.bestalgentries2009
-                # TODO: remove targets smaller than 1e-8
+                # TODO: remove targets smaller than 1e-8 
             self._short_info = 'reference budgets from ' + reference_data
         elif type(reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
             dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0], 
@@ -160,13 +160,16 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                 warnings.warn('enforced different target values might spread more than three orders of magnitude')
 
         fun_dim = tuple(fun_dim)
-        dim_fun = tuple([i for i in reversed(fun_dim)])
+        dim_fun = tuple(reversed(fun_dim))
         ds = self.reference_data[dim_fun]
         try:
             end = np.nonzero(ds.target >= self.smallest_target)[0][-1] + 1 
             # same as end = np.where(ds.target >= smallest_target)[0][-1] + 1 
         except IndexError:
             end = len(ds.target)
+        if not toolsdivers.equals_approximately(ds.target[end-2] / ds.target[end-1], 10**0.2, 1e-8):
+            print 'last two targets before index', end
+            print ds.target[end-2:end]
         try: 
             assert ds.ert[0] == 1  # we might have to compute these the first time
         except AssertionError:
@@ -177,26 +180,37 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
             assert all(toolsdivers.equals_approximately(delta_f_factor, ds.target[i] / ds.target[i+1]) for i in xrange(end-1))
             # if this fails, we need to insert the missing target values 
         except AssertionError:
-            pass
-            # print fun_dim, ds.ert[0], 'not all targets are recorded in TargetValues.__call__ (this could be a bug)' 
+            if 11 < 3:
+                print fun_dim, ds.ert[0], 'not all targets are recorded in TargetValues.__call__ (this could be a bug)' 
+                print ds.target
+                1/0
 
         targets = [] 
         for rl in self.run_lengths:
-            indices = np.nonzero(ds.ert[:end] <= np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
-            assert len(indices)
-            targets.append(ds.target[indices[-1]])
-            if self.force_different_targets_factor and len(targets) > 1 and not targets[-1] < targets[-2]:
+            if 1 < 3: # largest target not achieved by reference ERT
+                indices = np.nonzero(ds.ert[:end] > rl * (fun_dim[1] if self.times_dimension else 1))[0]
+                if len(indices):
+                    targets.append(ds.target[indices[0]])
+                else:
+                    targets.append(ds.target[end-1])  # last target
+            else: # smallest target achieved by reference ERT
+                indices = np.nonzero(ds.ert[:end] <= np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
+                assert len(indices)
+                targets.append(ds.target[indices[-1]])
+            
+            if self.force_different_targets_factor and targets[-1] > self.smallest_target and len(targets) > 1 and not targets[-1] < targets[-2]:
                 targets[-1] = targets[-2] / self.force_different_targets_factor
         
         targets = np.array(targets, copy=False)
+        
         if targets[-1] < self.smallest_target:
+            print 'runlength based targets', fun_dim, ': correction for small smallest target applied (should never happen)'
             b = float(targets[0])
-            targets = np.exp(np.log(b / self.smallest_target) * np.log(targets) / np.log(b / targets[-1]))
+            targets = np.exp(np.log(targets) * np.log(b / self.smallest_target) / np.log(b / targets[-1]))
             targets *= (1 + 1e-12) * self.smallest_target / targets[-1]
             assert b <= targets[0] * (1 + 1e-10)
             assert b >= targets[0] / (1 + 1e-10)
         assert targets[-1] >= self.smallest_target
-            
         try:
             if self.printed:
                 pass
