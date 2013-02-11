@@ -100,7 +100,7 @@ scaling_figure_legend_rlbased = legend_part_one + str(
     r"Shown is the \ERT\ for the largest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm " + 
     r"was above $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
     r" Numbers above \ERT-symbols indicate the number of trials reaching the respective target. " + 
-    r" Slanted grid lines indicate a scaling of ${\cal O}(\DIM)$ compared to ${\cal O}(1)$ " + 
+    r" Slanted grid lines indicate a scaling with ${\cal O}(\DIM)$ compared to ${\cal O}(1)$ " + 
     r" when using the respective 2009 best algorithm. ") 
 
 scaling_figure_legend = scaling_figure_legend_fixed 
@@ -152,6 +152,7 @@ def beautify(axesLabel=True):
     ymin, ymax = plt.ylim()
 
     if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
+        axisHandle.yaxis.grid(False, which='major')
         for (i, y) in enumerate(reversed(values_of_interest.run_lengths)):
             plt.plot((1, 200), 2 * [y], styles[i]['color'] + '-', linewidth=0.2)
             plt.plot((1, 200), 2 * [y], 'k:', linewidth=0.2)
@@ -190,7 +191,7 @@ def beautify(axesLabel=True):
     # axes limites
     plt.xlim(0.9 * dimensions[0], 1.125 * dimensions[-1]) 
     plt.ylim(ymin=10**-0.2, ymax=int(ymax + 1))  # Set back the default maximum.
-    if genericsettings.evaluation_setting == 1e2:
+    if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
         plt.ylim(0.2, 5e2) 
         if 11 < 3:
             title = plt.gca().get_title()  # works not not as expected
