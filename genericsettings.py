@@ -15,7 +15,7 @@ import numpy as np
 
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
     #set_trace()
-test = True  # set to False for comitting 
+test = True  # set to False for committing 
 evaluation_setting = 1e2  # artificial way to control the "new" displays by setting to 1e2, to be improved
 dimensions_to_display = (2, 3, 5, 10, 20)  # this could be used to set the dimensions in respective modules
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
@@ -74,6 +74,21 @@ if 11 < 3:  # in case using my own linestyles
           {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
           {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'}
           ]
+    
+#tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7)
+tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7)
+
+minmax_algorithm_fontsize = [10, 15]  # depending on the number of algorithms
+
+rcaxeslarger = {"labelsize": 24, "titlesize": 28.8}
+rcticklarger = {"labelsize": 24}
+rcfontlarger = {"size": 24}
+rclegendlarger = {"fontsize": 24}
+
+rcaxes = {"labelsize": 20, "titlesize": 24}
+rctick = {"labelsize": 20}
+rcfont = {"size": 20}
+rclegend = {"fontsize": 20}
     
 # function-dependent target function values: hard coded here before we come up
 # with something smarter. It is supposed the number of level of difficulties
@@ -282,25 +297,8 @@ rldValsOfInterest = ({1: 10, 2: 10, 3: 10, 4: 10, 5: 10, 6: 10, 7: 10, 8: 10,
                        130: 1e-08})
 ##Put backward to have the legend in the same order as the lines.
 
-#tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7)
-tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7)
-
-minmax_algorithm_fontsize = [10, 15]  # depending on the number of algorithms
-
-rcaxeslarger = {"labelsize": 24, "titlesize": 28.8}
-rcticklarger = {"labelsize": 24}
-rcfontlarger = {"size": 24}
-rclegendlarger = {"fontsize": 24}
-
-rcaxes = {"labelsize": 20, "titlesize": 24}
-rctick = {"labelsize": 20}
-rcfont = {"size": 20}
-rclegend = {"fontsize": 20}
-
 class Testbed(object):
-    """this might become the future way to have settings related to testbeds
-    
-    """
+    """this might become the future way to have settings related to testbeds"""
     pass
 
 class GECCOBBOBTestbed(Testbed):
