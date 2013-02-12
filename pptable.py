@@ -177,7 +177,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         bestalg.loadBBOB2009()
     if(genericsettings.evaluation_setting==1e2):
         header = [r'\#FEs/D']
-        for i in targetsOfInterest.labels():
+        for i in targetsOfInterest.loglabels():
             header.append(r'\multicolumn{2}{@{}c@{}}{%s}'
                        % i)   
                       #% writeFEvals2(int(round(10**float(i))),3)) 
