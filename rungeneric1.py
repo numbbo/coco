@@ -396,6 +396,10 @@ def main(argv=None):
             print "ERT loss ratio figures and tables done."
 
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
+                        ['\\providecommand{\\bbobpprldistrlegend}{', 
+                         pprldistr.legend, 
+                         '}'])
+        prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{', 
                          ppfigdim.scaling_figure_legend.replace('values_of_interest', 
                                         ', '.join(ppfigdim.values_of_interest.loglabels())), 

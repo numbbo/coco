@@ -76,6 +76,7 @@ legend_fixed = r"""
 legend_rlbased = r"""
     """
 legend = legend_fixed  # by default
+
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
    
 # TODO: the target function values and the styles of the line only make sense
