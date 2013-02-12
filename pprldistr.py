@@ -52,8 +52,7 @@ from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure
 
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
 
-legend_part_one = r""" """
-legend_fixed = r"""
+caption_part_one = r"""
      Empirical cumulative distribution functions (ECDFs), plotting the fraction of 
      trials with an outcome not larger than the respective value on the $x$-axis.  
     %
@@ -70,12 +69,14 @@ legend_fixed = r"""
     %
      Legends indicate the number of functions that were solved in at
      least one trial.  
-     and \Df\ and \textsf{Df} denote the difference to the optimal function value.
+     and \Df\ and \textsf{Df} denote the difference to the optimal function value. 
+     """
+caption_fixed = caption_part_one + r"""
      Light brown lines in the background show ECDFs for $\Df=10^{-8}$ of all algorithms benchmarked during BBOB-2009.
     """ 
-legend_rlbased = r"""
+caption_rlbased = r"""
     """
-legend = legend_fixed  # by default
+caption = caption_fixed  # by default
 
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
    

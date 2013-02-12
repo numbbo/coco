@@ -397,7 +397,7 @@ def main(argv=None):
 
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
                         ['\\providecommand{\\bbobpprldistrlegend}{', 
-                         pprldistr.legend, 
+                         pprldistr.caption, 
                          '}'])
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{', 
