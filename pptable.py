@@ -25,7 +25,7 @@ from __future__ import absolute_import
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from bbob_pproc import bestalg, toolsstats
+from bbob_pproc import bestalg, toolsstats, pproc, genericsettings
 from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
 from bbob_pproc.toolsstats import significancetest
 
@@ -34,9 +34,9 @@ from pdb import set_trace
 targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 finaltarget = 1e-8 # value for determining the success ratio
 targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
+targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
 targetf = 1e-8 # value for determining the success ratio
 samplesize = 1000 # TODO: change samplesize
-
 # def tablespec(targets):
 # 
 #     i = 0
@@ -90,7 +90,7 @@ def _treat(ds):
     besttable = np.zeros(1, dtype=bestdtype)
     wholetable = np.zeros(1, dtype=dtype)
     table = wholetable[0]
-
+    
     bestdata = list()
     bestdata.extend(bestert)
     bestdata.append(np.sum(np.isnan(bestfinaldata) == False))
@@ -175,10 +175,16 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     dims = set(dictDim.keys())
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
-
-    header = [r'$\Delta f$']
-    for i in targetsOfInterest:
-        header.append(r'\multicolumn{2}{@{}c@{}}{1e%+d}'
+    if(genericsettings.evaluation_setting==1e2):
+        header = [r'\#FEs/D']
+        for i in targetsOfInterest.labels():
+            header.append(r'\multicolumn{2}{@{}c@{}}{%s}'
+                       % i)   
+                      #% writeFEvals2(int(round(10**float(i))),3)) 
+    else:
+        header = [r'$\Delta f$']
+        for i in targetsOfInterest.target_values:
+            header.append(r'\multicolumn{2}{@{}c@{}}{1e%+d}'
                       % (int(np.log10(i))))
     header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}')
 
@@ -195,8 +201,8 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         for f in sorted(funcs):
             bestalgentry = bestalg.bestalgentries2009[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
-            bestalgdata = bestalgentry.detERT(targetsOfInterest)
-            bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)
+            bestalgdata = bestalgentry.detERT(targetsOfInterest((f,d)))
+            bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest((f,d)))
 
             # write #fevals of the reference alg
             for i in bestalgdata[:-1]:
@@ -218,15 +224,15 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             # generate all data for ranksum test
             assert len(dictFunc[f]) == 1
             entry = dictFunc[f][0] # take the first element
-            ertdata = entry.detERT(targetsOfInterest)
+            ertdata = entry.detERT(targetsOfInterest((f,d)))
 
-            testresbestvs1 = significancetest(bestalgentry, entry, targetsOfInterest)
+            testresbestvs1 = significancetest(bestalgentry, entry, targetsOfInterest((f,d)))
 
             #for nb, entry in enumerate(entries):
             #curline = [r'\algshort\hspace*{\fill}']
             curline = ['']
             #data = entry.detERT(targetsOfInterest)
-            evals = entry.detEvals(targetsOfInterest)
+            evals = entry.detEvals(targetsOfInterest((f,d)))
             dispersion = []
             data = []
             for i in evals:
@@ -376,7 +382,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         extraeol[-1] = ''
 
         outputfile = os.path.join(outputdir, 'pptable_%02dD%s.tex' % (d, info))
-        spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
+        spec = r'@{}c@{}|' + '*{%d}{@{ }r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         #res = r'\providecommand{\algshort}{%s}' % alg1 + '\n'
         #res += tableLaTeXStar(table, width=r'0.45\textwidth', spec=spec,
                               #extraeol=extraeol)
