@@ -61,7 +61,6 @@ legend_fixed = r"""
      to fall below $\fopt+\Df$ with $\Df=10^{k}$, where $k$ is the first value in the legend. 
      %
      Right subplots: ECDF of the 
-     % best achieved \Df\ divided by $10^k$ (upper left lines in continuation of the left subplot), and 
      best achieved \Df\
      divided by $10^{-8}$ for running times of $D, 10\,D,
      100\,D,\dots$ function evaluations (from right
@@ -69,19 +68,14 @@ legend_fixed = r"""
     %
      The thick red line represents the most difficult target value $\fopt+10^{-8}$. 
     %
-     %Top row: all functions; second row: separable
-     %functions; third row: misc.\ moderate functions; fourth row:
-     %ill-conditioned functions; fifth row: multi-modal functions with
-     %adequate structure; last row: multi-modal functions with weak structure.
      Legends indicate the number of functions that were solved in at
      least one trial.  
-     %FEvals denotes number of function evaluations, $D$ and \textsf{DIM} denote search space dimension, 
      and \Df\ and \textsf{Df} denote the difference to the optimal function value.
      Light brown lines in the background show ECDFs for $\Df=10^{-8}$ of all algorithms benchmarked during BBOB-2009.
     """ 
 legend_rlbased = r"""
     """
-
+legend = legend_fixed  # by default
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
    
 # TODO: the target function values and the styles of the line only make sense
