@@ -224,8 +224,7 @@ def main(argv=None):
 
         # from bbob_pproc import bbob2010 as inset # input settings
         if inputsettings == "color":
-            from bbob_pproc import config, genericsettings as inset # input settings
-            config.config()
+            from bbob_pproc import genericsettings as inset # input settings
         elif inputsettings == "grayscale":
             from bbob_pproc import grayscalesettings as inset # input settings
         elif inputsettings == "black-white":
@@ -234,6 +233,8 @@ def main(argv=None):
             txt = ('Settings: %s is not an appropriate ' % inputsettings
                    + 'argument for input flag "--settings".')
             raise Usage(txt)
+        from bbob_pproc import config
+        config.config()
         if 11 < 3:
             from bbob_pproc import config  # input settings
             config.config()
@@ -264,6 +265,8 @@ def main(argv=None):
                 txt = 'Input file or folder %s could not be found.' % i
                 raise Usage(txt)
         dsList = DataSetList(filelist, verbose)
+        
+        ### TODO: check maxevals and choose, in case case "expensive setting" depending on the result
 
         if not dsList:
             raise Usage("Nothing to do: post-processing stopped.")
