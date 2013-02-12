@@ -52,6 +52,36 @@ from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure
 
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
 
+legend_part_one = r""" """
+legend_fixed = r"""
+     Empirical cumulative distribution functions (ECDFs), plotting the fraction of 
+     trials with an outcome not larger than the respective value on the $x$-axis.  
+    %
+     Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$, 
+     to fall below $\fopt+\Df$ with $\Df=10^{k}$, where $k$ is the first value in the legend. 
+     %
+     Right subplots: ECDF of the 
+     % best achieved \Df\ divided by $10^k$ (upper left lines in continuation of the left subplot), and 
+     best achieved \Df\
+     divided by $10^{-8}$ for running times of $D, 10\,D,
+     100\,D,\dots$ function evaluations (from right
+     to left cycling black-cyan-magenta).
+    %
+     The thick red line represents the most difficult target value $\fopt+10^{-8}$. 
+    %
+     %Top row: all functions; second row: separable
+     %functions; third row: misc.\ moderate functions; fourth row:
+     %ill-conditioned functions; fifth row: multi-modal functions with
+     %adequate structure; last row: multi-modal functions with weak structure.
+     Legends indicate the number of functions that were solved in at
+     least one trial.  
+     %FEvals denotes number of function evaluations, $D$ and \textsf{DIM} denote search space dimension, 
+     and \Df\ and \textsf{Df} denote the difference to the optimal function value.
+     Light brown lines in the background show ECDFs for $\Df=10^{-8}$ of all algorithms benchmarked during BBOB-2009.
+    """ 
+legend_rlbased = r"""
+    """
+
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
    
 # TODO: the target function values and the styles of the line only make sense

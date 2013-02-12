@@ -395,7 +395,7 @@ def main(argv=None):
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{', 
                          ppfigdim.scaling_figure_legend.replace('values_of_interest', 
-                                        ', '.join(ppfigdim.values_of_interest.labels())), 
+                                        ', '.join(ppfigdim.values_of_interest.loglabels())), 
                          '}'])
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
                         ['\\providecommand{\\algfolder}{}'])  # is overwritten in rungeneric.py
