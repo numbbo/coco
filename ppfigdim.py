@@ -327,7 +327,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
         # To have the legend displayed whatever happens with the data.
         for i in reversed(range(len(valuesOfInterest))):
             res.extend(plt.plot([], [], markersize=10,
-                                label=valuesOfInterest.label(i),
+                                label=valuesOfInterest.loglabel(i),
                                 **styles[i]))
 
         # Only for the last target function value

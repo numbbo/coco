@@ -64,13 +64,13 @@ class TargetValues(object):
         return len(self.target_values)
     def __call__(self, fun_dim_but_not_use=None):
         return self.target_values
-    def label(self, i):
+    def loglabel(self, i):
         return str(np.log10(self.target_values[i]))
-    def labels(self):
+    def loglabels(self):
         i, res = 0, []
         try:
             while True:
-                res.append(self.label(i))
+                res.append(self.loglabel(i))
                 i += 1
         except IndexError:
             return res
@@ -227,7 +227,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
     
     get_targets = __call__  # an alias
     
-    def label(self, i):
+    def loglabel(self, i):
         return str(np.log10(self.run_lengths[i]))
 
 
