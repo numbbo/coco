@@ -298,7 +298,11 @@ def plotRLDistr(dsList, target, **plotArgs):
     for i in dsList:
         funcs.add(i.funcId)
         try:
-            target = target[i.funcId]
+            target = target[i.funcId]  # TODO: this can only work for a single function, generally looks like a bug
+            if not genericsettings.test:
+                print 'target:', target
+                print 'function:', i.funcId
+                raise Exception('please check this, it looks like a bug')
         except TypeError:
             target = target
         tmp = i.detEvals((target, ))[0] / i.dim
@@ -339,10 +343,8 @@ def plotRLDistr2(dsList, targets, **plotArgs):
     funcs = set()
     for i in dsList:
         funcs.add(i.funcId)
-        try:
-            target = target[i.funcId]
-        except TypeError:
-            target = target
+        target = targets((i.funcId, i.dim))
+        1/0 continue here
         tmp = i.detEvals((target, ))[0] / i.dim
         tmp = tmp[np.isnan(tmp) == False] # keep only success
         if len(tmp) > 0:

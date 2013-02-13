@@ -65,8 +65,10 @@ class TargetValues(object):
     def __call__(self, fun_dim_but_not_use=None):
         return self.target_values
     def loglabel(self, i):
+        """return ``log10`` of the ``i``-th target value as ``str``, to be overwritten by a derived class"""
         return str(np.log10(self.target_values[i]))
     def loglabels(self):
+        """``log10`` of the target values as a list of ``str``"""
         i, res = 0, []
         try:
             while True:
