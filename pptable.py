@@ -31,10 +31,9 @@ from bbob_pproc.toolsstats import significancetest
 
 from pdb import set_trace
 
-targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
+targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table, used in _treat, however not finished and outdated
 finaltarget = 1e-8 # value for determining the success ratio
-targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
-targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
+targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # remove 1e-2 ? 
 targetf = 1e-8 # value for determining the success ratio
 samplesize = 1000 # TODO: change samplesize
 # def tablespec(targets):
@@ -277,7 +276,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 if np.isinf(bestalgdata[i]): # if the best did not solve the problem
                     isBold = False
                     if nbstars > 0:
-                       isBold = True
+                        isBold = True
 
                     tmp = writeFEvalsMaxPrec(float(ert), 2)
                     if not np.isinf(ert):
@@ -295,7 +294,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
                     isBold = False
                     if nbstars > 0:
-                       isBold = True
+                        isBold = True
 
                     if np.isinf(tmp) and i == len(data)-1:
                         tableentry = (tableentry
