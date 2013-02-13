@@ -346,15 +346,15 @@ def main(argv=None):
                 except KeyError:
                     continue
 
-                pprldistr.main(sliceDim, inset.rldValsOfInterest, True,
+                pprldistr.main(sliceDim, True,
                                outputdir, 'all', verbose)
                 dictNoise = sliceDim.dictByNoise()
                 for noise, sliceNoise in dictNoise.iteritems():
-                    pprldistr.main(sliceNoise, inset.rldValsOfInterest, True,
+                    pprldistr.main(sliceNoise, True,
                                    outputdir, '%s' % noise, verbose)
                 dictFG = sliceDim.dictByFuncGroup()
                 for fGroup, sliceFuncGroup in dictFG.items():
-                    pprldistr.main(sliceFuncGroup, inset.rldValsOfInterest,
+                    pprldistr.main(sliceFuncGroup,
                                    True, outputdir, '%s' % fGroup, verbose)
 
                 pprldistr.fmax = None #Resetting the max final value

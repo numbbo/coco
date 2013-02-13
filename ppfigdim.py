@@ -74,7 +74,7 @@ styles = [  # sort of rainbow style, most difficult (red) first
 
 refcolor = 'wheat'
 
-caption_part_one = r"""
+caption_part_one = r"""%
     Expected number of $f$-evaluations (\ERT, with lines, see legend 
     and the interquartile range with median (box) to reach $\fopt+\Df$; 
     median number of $f$-evaluations to reach the most difficult target that was 

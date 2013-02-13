@@ -66,7 +66,7 @@ class TargetValues(object):
         return self.target_values
     def loglabel(self, i):
         """return ``log10`` of the ``i``-th target value as ``str``, to be overwritten by a derived class"""
-        return str(np.log10(self.target_values[i]))
+        return str(np.round(np.log10(self.target_values[i]), 2))
     def loglabels(self):
         """``log10`` of the target values as a list of ``str``"""
         i, res = 0, []
@@ -230,7 +230,10 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
     get_targets = __call__  # an alias
     
     def loglabel(self, i):
-        return str(np.log10(self.run_lengths[i]))
+        return str(np.round(np.log10(self.run_lengths[i]), 2))
+    def label(self, i):
+        val = self.run_lengths[i]
+        return str(int(val) if val > 4 else round(val, 1))
 
 
     def _generate_erts(self, ds, target_values):
