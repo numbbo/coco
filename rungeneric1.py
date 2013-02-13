@@ -410,7 +410,7 @@ def main(argv=None):
                         ['\\providecommand{\\algname}{' + 
                          (str_to_latex(strip_pathname(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
         if isfigure or istab or isrldistr or islogloss:
-            print "Output data written to folder %s." % outputdir
+            print "Output data written to folder %s" % outputdir
 
         plt.rcdefaults()
 

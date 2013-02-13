@@ -318,7 +318,7 @@ def plotRLDistr(dsList, target, **plotArgs):
     res = plotECDF(x, nn, **kwargs)
     return res
 
-def plotRLDistr2(dsList, target, **plotArgs):
+def plotRLDistr2(dsList, targets, **plotArgs):
     """TODO: to be revised/rewritten such that runlength based targets work. 
     Creates run length distributions from a sequence dataSetList.
 
@@ -327,7 +327,7 @@ def plotRLDistr2(dsList, target, **plotArgs):
     
 
     :param DataSetList dsList: Input data sets
-    :param dict or float target: target precision
+    :param dict or float targets: ``pproc.TargetValues`` class
     :param plotArgs: additional arguments passed to the plot command
 
     :returns: handles of the resulting plot.
@@ -519,7 +519,6 @@ def plot(dsList, targets=single_target_values, **plotArgs):
 
     plt.subplot(122)
     for j in [range(len(targets))[-1]]:
-        
         tmpplotArgs = dict(plotArgs, **rldStyles[j % len(rldStyles)])
         tmp = plotFVDistr(dsList, targets[j], evalfmax, **tmpplotArgs)
         res.extend(tmp)
