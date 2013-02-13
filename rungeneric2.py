@@ -493,7 +493,7 @@ def main(argv=None):
             print "Scaling figures done."
 
         if isfigure or isrldistr or istable or isscatter or isscaleup:
-            print "Output data written to folder %s." % outputdir
+            print "Output data written to folder %s" % outputdir
 
         plt.rcdefaults()
 
