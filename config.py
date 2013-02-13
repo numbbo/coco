@@ -26,7 +26,7 @@ def config():
     modules via modified parameter settings. 
     """
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets 
-    if genericsettings.evaluation_setting == 1e3: 
+    if genericsettings.evaluation_setting == 1e2: 
         print 'taking bestGECCO2009 based target values'
         pprldmany.target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', 
                                                                 10**np.arange(-0.3, 2.701, 0.1))
