@@ -397,11 +397,11 @@ def main(argv=None):
 
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
                         ['\\providecommand{\\bbobpprldistrlegend}{', 
-                         pprldistr.caption, 
+                         pprldistr.caption_single, 
                          '}'])
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
-                        ['\\providecommand{\\bbobppfigdimlegend}[1]{', 
-                         ppfigdim.scaling_figure_legend.replace('values_of_interest', 
+                        ['\\providecommand{\\bbobppfigdimlegend}[1]{',
+                         ppfigdim.scaling_figure_caption.replace('values_of_interest', 
                                         ', '.join(ppfigdim.values_of_interest.loglabels())), 
                          '}'])
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 

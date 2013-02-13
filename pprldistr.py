@@ -71,12 +71,12 @@ caption_part_one = r"""
      least one trial.  
      and \Df\ and \textsf{Df} denote the difference to the optimal function value. 
      """
-caption_fixed = caption_part_one + r"""
+caption_single_fixed = caption_part_one + r"""
      Light brown lines in the background show ECDFs for $\Df=10^{-8}$ of all algorithms benchmarked during BBOB-2009.
     """ 
-caption_rlbased = r"""
+caption_single_rlbased = r"""
     """
-caption = caption_fixed  # by default
+caption_single = caption_single_fixed  # by default
 
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
    
@@ -391,7 +391,7 @@ def plotFVDistr(dsList, target, maxEvalsF, **plotArgs):
 
 def comp(dsList0, dsList1, targets, isStoringXMax=False,
          outputdir='', info='default', verbose=True):
-    """Generate figures of ECDF for 2 algorithms.
+    """Generate figures of ECDF that compare 2 algorithms.
 
     :param DataSetList dsList0: list of DataSet instances for ALG0
     :param DataSetList dsList1: list of DataSet instances for ALG1
@@ -519,6 +519,7 @@ def plot(dsList, targets=single_target_values, **plotArgs):
 
     plt.subplot(122)
     for j in [range(len(targets))[-1]]:
+        
         tmpplotArgs = dict(plotArgs, **rldStyles[j % len(rldStyles)])
         tmp = plotFVDistr(dsList, targets[j], evalfmax, **tmpplotArgs)
         res.extend(tmp)

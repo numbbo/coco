@@ -74,7 +74,7 @@ styles = [  # sort of rainbow style, most difficult (red) first
 
 refcolor = 'wheat'
 
-legend_part_one = r"""
+caption_part_one = r"""
     Expected number of $f$-evaluations (\ERT, with lines, see legend 
     and the interquartile range with median (box) to reach $\fopt+\Df$; 
     median number of $f$-evaluations to reach the most difficult target that was 
@@ -90,13 +90,13 @@ legend_part_one = r"""
 #    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
 #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
 #    "function value.  " +
-scaling_figure_legend_fixed = legend_part_one + r"""
+scaling_figure_caption_fixed = caption_part_one + r"""
     Shown are $\Df = 10^{\{values_of_interest\}}$.  
     Numbers above \ERT-symbols indicate the number of trials reaching the respective target. 
     The light thick line with diamonds indicates the respective best result from BBOB-2009 for $\Df=10^{-8}$. 
     Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling.  
     """
-scaling_figure_legend_rlbased = legend_part_one + r"""
+scaling_figure_caption_rlbased = caption_part_one + r"""
     Shown is the \ERT\ for the largest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm  
     was above $10^{\{values_of_interest\}}\times\DIM$ evaluations. 
     Numbers above \ERT-symbols indicate the number of trials reaching the respective target.  
@@ -106,7 +106,7 @@ scaling_figure_legend_rlbased = legend_part_one + r"""
     # r"Shown is the \ERT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm " + 
     # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
 
-scaling_figure_legend = scaling_figure_legend_fixed 
+scaling_figure_caption = scaling_figure_caption_fixed 
 
 # should correspond with the colors in pprldistr.
 dimensions = genericsettings.dimensions_to_display
