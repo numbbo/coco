@@ -342,7 +342,7 @@ def plotRLDistr(dsList, target, label, **plotArgs):
     nn = 0
     fsolved = set()
     funcs = set()
-    for i in dsList:
+    for i in dsList: # i is a DataSet
         funcs.add(i.funcId)
         tmp = i.detEvals((target((i.funcId, i.dim)), ))[0] / i.dim
         tmp = tmp[np.isnan(tmp) == False] # keep only success

@@ -233,7 +233,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         return str(np.round(np.log10(self.run_lengths[i]), 2))
     def label(self, i):
         val = self.run_lengths[i]
-        return str(int(val) if val > 4 else round(val, 1))
+        return str(round(val) if round(val) > 10 else round(val, 1))
 
 
     def _generate_erts(self, ds, target_values):
