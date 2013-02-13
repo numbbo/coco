@@ -52,34 +52,43 @@ from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure
 
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
 
-caption_part_one = r"""
+caption_part_one = r"""%
      Empirical cumulative distribution functions (ECDFs), plotting the fraction of 
-     trials with an outcome not larger than the respective value on the $x$-axis.  
-    %
+     trials with an outcome not larger than the respective value on the $x$-axis."""
+caption_left_fixed_targets = r"""%
      Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$, 
      to fall below $\fopt+\Df$ with $\Df=10^{k}$, where $k$ is the first value in the legend. 
-     %
+     The thick red line represents the most difficult target value $\fopt+10^{-8}$. """
+caption_left_rlbased_targets = r"""%
+     Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$, 
+     to fall below $\fopt+\Df$ where \Df\ is the largest $\Df$-value $\ge10^{-8}$ 
+     for which the best \ERT\ observed in the GECCO-BBOB-2009  
+     was yet above $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
+caption_right = """%
      Right subplots: ECDF of the 
      best achieved \Df\
      divided by $10^{-8}$ for running times of $D, 10\,D,
      100\,D,\dots$ function evaluations (from right
-     to left cycling black-cyan-magenta).
-    %
-     The thick red line represents the most difficult target value $\fopt+10^{-8}$. 
-    %
-     Legends indicate the number of functions that were solved in at
-     least one trial.  
-     and \Df\ and \textsf{Df} denote the difference to the optimal function value. 
-     """
-caption_single_fixed = caption_part_one + r"""
-     Light brown lines in the background show ECDFs for $\Df=10^{-8}$ of all algorithms benchmarked during BBOB-2009.
-    """ 
-caption_single_rlbased = r"""
-    """
+     to left cycling black-cyan-magenta). """
+caption_wrap_up = r"""%
+     Legends indicate for each target the number of functions that were solved in at
+     least one trial.
+     \Df\ and \textsf{Df} denote the difference to the optimal function value. """
+caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_right + r"""
+     Light brown lines in the background show ECDFs for $\Df=10^{-8}$ of all algorithms benchmarked during BBOB-2009.""" 
+caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_right
 caption_single = caption_single_fixed  # by default
 
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
    
+refcolor = 'wheat'
+nbperdecade = 1  # markers in x-axis decades in ecdfs
+
+# Used as a global to store the largest xmax and align the FV ECD figures.
+fmax = None
+evalfmax = None  # is manipulated/stored in this module
+runlen_xlimits_logmin = 0  # not in use, should become -0.5 in runlength case
+
 # TODO: the target function values and the styles of the line only make sense
 # together. Therefore we should either:
 # 1. keep the targets as input argument and make rldStyles depend on them
@@ -108,24 +117,18 @@ rldUnsuccStyles = ({'color': 'k', 'ls': '-'},
                    {'color': 'k'},
                    {'color': 'c', 'ls': '-'},
                    {'color': 'm'})  # should not be too short
-refcolor = 'wheat'
-nbperdecade = 1  # markers in x-axis decades in ecdfs
 
-# Used as a global to store the largest xmax and align the FV ECD figures.
-fmax = None
-evalfmax = None
-
-filename = 'pprldistr2009_1e-8.pickle.gz'
-filename = os.path.join(os.path.split(__file__)[0], filename)
-isBestAlgorithmFound = True
+previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'
+previous_data_filename = os.path.join(os.path.split(__file__)[0], previous_data_filename)
+previous_algorithm_data_found = True
 try:
-    # cocofy(filename)
-    f = gzip.open(filename,'r')
-    dictbestalg = pickle.load(f)
+    # cocofy(previous_data_filename)
+    f = gzip.open(previous_data_filename,'r')
+    dictprevalg = pickle.load(f)
 except IOError, (errno, strerror):
     print "I/O error(%s): %s" % (errno, strerror)
-    isBestAlgorithmFound = False
-    print 'Could not find file: ', filename
+    previous_algorithm_data_found = False
+    print 'Could not find file: ', previous_data_filename
 else:
     f.close()
 
@@ -186,7 +189,7 @@ def beautifyRLD(evalfmax=None):
     logxticks()
     if evalfmax:
         plt.xlim(xmax=evalfmax ** 1.05)
-    plt.xlim(xmin=1.)
+    plt.xlim(xmin=10**runlen_xlimits_logmin)
     beautifyECDF()
 
 def beautifyFVD(isStoringXMax=False, ylabel=True):
@@ -243,11 +246,11 @@ def plotECDF(x, n=None, **plotArgs):
         x = np.hstack((x, x[-1]))
         y = np.hstack((np.arange(0., nx) / n, float(nx)/n))
         res = plotUnifLogXMarkers(x, y, nbperdecade=nbperdecade,
-                                  drawstyle='steps', **plotArgs)
+                                 drawstyle='steps', **plotArgs)
     return res
 
 def plotERTDistr(dsList, target, **plotArgs):
-    """Creates estimated run time distributions (it is not an ERT distribution) from a DataSetList.
+    """Creates simulated run time distributions (it is not an ERT distribution) from a DataSetList.
 
     :keyword DataSet dsList: Input data sets
     :keyword dict target: target precision
@@ -255,6 +258,8 @@ def plotERTDistr(dsList, target, **plotArgs):
 
     :return: resulting plot.
 
+    Details: calls ``plotECDF``. 
+    
     """
     x = []
     nn = 0
@@ -323,20 +328,22 @@ def plotRLDistr_old(dsList, target, **plotArgs):
     return res
 
 def plotRLDistr(dsList, target, label, **plotArgs):
-    """TODO: to be revised/rewritten such that runlength based targets work. 
-    Creates run length distributions from a sequence dataSetList.
+    """Creates run length distributions from a sequence dataSetList.
 
-    Labels of the line (for the legend) will be set automatically with
-    the following format: %+d: %d/%d % (log10()
+    Labels of the line (for the legend) will be appended with the number
+    of functions at least solved once. 
     
 
     :param DataSetList dsList: Input data sets
-    :param TargetValues[j] target: j-th element of the return value of the ``pproc.TargetValues.__call__`` method to be used as ``target((fun, dim))``
-    :param index: 
+    :param target: a method that delivers target values like ``target((fun, dim))``
+    :param str label: target value label to be displayed in the legend
     :param plotArgs: additional arguments passed to the plot command
 
     :returns: handles of the resulting plot.
 
+    Details: ``target`` can be defined as ``lambda`` returning the j-th element of 
+    the return value of the ``pproc.TargetValues.__call__`` method
+    
     """
     x = []
     nn = 0
@@ -447,7 +454,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
     
         funcs = set(i.funcId for i in dictdim0[d]) | set(i.funcId for i in dictdim1[d])
         text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
-        plotBest2009(d, funcs)
+        plot_previous_algorithms(d, funcs)
         #plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim0[d]), ls='--', color='k')
         #plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim1[d]), color='k')
         plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim0[d]),
@@ -531,15 +538,15 @@ def plot(dsList, targets=single_target_values, **plotArgs):
                         transform=plt.gca().transAxes))
     return res
 
-def plotBest2009(dim, funcs):
-    """Display BBOB 2009 data."""
+def plot_previous_algorithms(dim, funcs):
+    """Display BBOB 2009 data, by default from ``pprldistr.previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'``"""
 
-    if isBestAlgorithmFound:
-        for alg in dictbestalg:
+    if previous_algorithm_data_found:
+        for alg in dictprevalg:
             x = []
             nn = 0
             try:
-                tmp = dictbestalg[alg]
+                tmp = dictprevalg[alg]
                 for f in funcs:
                     tmp[f][dim] # simply test that they exists
             except KeyError:
@@ -603,9 +610,12 @@ def main(dsList, isStoringXMax=False, outputdir='',
         funcs = list(i.funcId for i in dictdim)
         text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
         text += ',%d-D' % d
-
-        plotBest2009(d, funcs)
-        plt.axvline(x=maxEvalsFactor, color='k')
+        try:
+            if targets.target_values[-1] == 1e-8:
+                plot_previous_algorithms(d, funcs)
+        except:
+            pass
+        plt.axvline(x=maxEvalsFactor, color='k') # vertical line at maxevals
         plt.legend(loc='best')
         plt.text(0.5, 0.98, text, horizontalalignment="center",
                  verticalalignment="top", 

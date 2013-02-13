@@ -47,7 +47,7 @@ from BBOB-2009 for df = 1e-8.
     figure()
     bb.ppfigdim.plot(ds)
     bb.ppfigdim.beautify()
-    bb.ppfigdim.plotBest2009(2) # plot BBOB 2009 best algorithm on fun 2
+    bb.ppfigdim.plot_previous_algorithms(2) # plot BBOB 2009 best algorithm on fun 2
 
 """
 
@@ -367,7 +367,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
         # if later the ylim[0] becomes >> 1, this might be a problem
     return res
 
-def plotBest2009(func, target=lambda x: [1e-8]):
+def plot_previous_algorithms(func, target=lambda x: [1e-8]):
     """Add graph of the BBOB-2009 virtual best algorithm."""
     if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
         return None
@@ -419,7 +419,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             plt.legend(loc="best")
         if isBenchmarkinfosFound:
             plt.gca().set_title(funInfos[func])
-        plotBest2009(func, _valuesOfInterest)
+        plot_previous_algorithms(func, _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         saveFigure(filename, verbose=verbose)
         plt.close()

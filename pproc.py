@@ -225,16 +225,16 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                     print((self.run_lengths[i], np.log10(targets[i])))
         assert len(ds.ert) == len(ds.target)
         
-        return targets
-    
+        return targets    
+
     get_targets = __call__  # an alias
     
-    def loglabel(self, i):
-        return str(np.round(np.log10(self.run_lengths[i]), 2))
+    def loglabel(self, i, decimals=1):
+        """``decimals`` is used for ``round``"""
+        return str(np.round(np.log10(self.run_lengths[i]), decimals))
     def label(self, i):
         val = self.run_lengths[i]
-        return str(round(val) if round(val) > 10 else round(val, 1))
-
+        return str(int(round(val)) if round(val) >= 10 else round(val, 1))
 
     def _generate_erts(self, ds, target_values):
         """compute for all target values, starting with 1e-8, the ert value
