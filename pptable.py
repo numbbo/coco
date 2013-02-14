@@ -202,13 +202,23 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             curline = [r'${\bf f_{%d}}$' % f]
             bestalgdata = bestalgentry.detERT(targetsOfInterest((f,d)))
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest((f,d)))
+            if(genericsettings.evaluation_setting==1e2):
+                #write ftarget:fevals
+                for i in xrange(len(bestalgdata[:-1])):
+                    
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{%1.e:%s }'
+                                   % (targetsOfInterest((f,d))[i],writeFEvalsMaxPrec(bestalgdata[i], 2)))
+                curline.append(r'\multicolumn{2}{@{}c@{}|}{1e%+d:%s }'
+                               % (targetsOfInterest((f,d))[-1],writeFEvalsMaxPrec(bestalgdata[-1], 2)))            
+            else:            
+                # write #fevals of the reference alg
+                for i in bestalgdata[:-1]:
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{%s}'
+                                   % writeFEvalsMaxPrec(i, 2))
+                curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
+                               % writeFEvalsMaxPrec(bestalgdata[-1], 2))
+    
 
-            # write #fevals of the reference alg
-            for i in bestalgdata[:-1]:
-                curline.append(r'\multicolumn{2}{@{}c@{}}{%s}'
-                               % writeFEvalsMaxPrec(i, 2))
-            curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
-                           % writeFEvalsMaxPrec(bestalgdata[-1], 2))
 
             # write the success ratio for the reference alg
             tmp = bestalgentry.detEvals([targetf])[0][0]
