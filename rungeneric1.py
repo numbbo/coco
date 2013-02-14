@@ -282,7 +282,7 @@ def main(argv=None):
             max_fun_evals_divdim = np.max((max_fun_evals_divdim, float(np.max(ds.maxevals)) / ds.dim))
             
         if genericsettings.evaluation_setting == 1e3:  # automatic choice of evaluation setup, looks still like a hack
-            genericsettings.runlength_based_targets = max_fun_evals_divdim > 1e3
+            genericsettings.runlength_based_targets = max_fun_evals_divdim < 1e3
             config.config()
         
         if (verbose):
