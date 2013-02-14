@@ -28,7 +28,7 @@ if __name__ == "__main__":
     import matplotlib
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
-from bbob_pproc import pptable, pprldistr, ppfigdim, pplogloss, findfiles
+from bbob_pproc import genericsettings, pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from bbob_pproc.pproc import DataSetList
 from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname, str_to_latex
 from bbob_pproc import ppconverrorbars
@@ -233,6 +233,7 @@ def main(argv=None):
             txt = ('Settings: %s is not an appropriate ' % inputsettings
                    + 'argument for input flag "--settings".')
             raise Usage(txt)
+        
         from bbob_pproc import config
         config.config()
         if 11 < 3:
@@ -276,6 +277,12 @@ def main(argv=None):
         if isNoiseFree and not isNoisy:
             dsList = dsList.dictByNoise().get('noiselessall', DataSetList())
 
+        if genericsettings.evaluation_setting == 1e3:
+            raise NotImplementedError()
+            # TODO: find maxevals in dsList for each dimension
+            # set genericsettings.evaluation_setting depending on the result
+            config.config()
+        
         if (verbose):
             for i in dsList:
                 if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) !=
