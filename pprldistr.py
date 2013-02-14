@@ -105,7 +105,7 @@ rldStyles = ({'color': 'k', 'ls': '-'},
              {'color': 'k'},
              {'color': 'c'},
              {'color': 'm'},
-             {'color': 'r'})
+             {'color': 'r', 'linewidth': 3.})
 rldUnsuccStyles = ({'color': 'k', 'ls': '-'},
                    {'color': 'c'},
                    {'color': 'm', 'ls': '-'},
@@ -644,16 +644,28 @@ def main(dsList, isStoringXMax=False, outputdir='',
     
         filename = os.path.join(outputdir,'ppfvdistr_%02dD_%s' % (d, info))
         fig = plt.figure()
-        tmp = plotFVDistr(dictdim, 1e-8, evalfmax,
-                          **rldStyles[(len(targets) - 1) % len(rldStyles)])
-        tmp = np.floor(np.log10(evalfmax))
-        # coloring left to right:
-        #maxEvalsF = np.power(10, np.arange(tmp, 0, -1) - 1)
-        # coloring right to left:
-        maxEvalsF = np.power(10, np.arange(0, tmp))
-        for j in range(len(maxEvalsF)):
-            plotFVDistr(dictdim, 1e-8, maxEvalsF[j],
-                        **rldUnsuccStyles[j % len(rldUnsuccStyles)])    
+        if 11 < 3: # previous version, to be removed
+            tmp = plotFVDistr(dictdim, 1e-8, evalfmax,
+                              **rldStyles[(len(targets) - 1) % len(rldStyles)])
+            tmp = np.floor(np.log10(evalfmax))
+            # coloring left to right:
+            #maxEvalsF = np.power(10, np.arange(tmp, 0, -1) - 1)
+            # coloring right to left:
+            maxEvalsF = np.power(10, np.arange(0, tmp))
+            for j in range(len(maxEvalsF)):
+                tmp = plotFVDistr(dictdim, 1e-8, maxEvalsF[j],
+                            **rldUnsuccStyles[j % len(rldUnsuccStyles)])
+        else:
+            plotFVDistr(dictdim, 1e-8, np.inf, **rldStyles[-1])
+            tmp = np.floor(np.log10(evalfmax))
+            # coloring left to right:
+            #maxEvalsF = np.power(10, np.arange(tmp, 0, -1) - 1)
+            # coloring right to left:
+            maxEvalsF = np.power(10, np.arange(0, tmp))
+            for j in range(len(maxEvalsF)):
+                tmp = plotFVDistr(dictdim, 1e-8, maxEvalsF[j],
+                            **rldUnsuccStyles[j % len(rldUnsuccStyles)])
+                
         plt.text(0.98, 0.02, text, horizontalalignment="right",
                  transform=plt.gca().transAxes)  # bbox=dict(ec='k', fill=False), 
         beautifyFVD(isStoringXMax=isStoringXMax, ylabel=False)
