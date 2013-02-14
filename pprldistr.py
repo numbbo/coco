@@ -54,19 +54,19 @@ single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))  # possibly c
 
 caption_part_one = r"""%
      Empirical cumulative distribution functions (ECDFs), plotting the fraction of 
-     trials with an outcome not larger than the respective value on the $x$-axis."""
+     trials with an outcome not larger than the respective value on the $x$-axis. """
 caption_left_fixed_targets = r"""%
-     Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$, 
+     Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$, 
      to fall below $\fopt+\Df$ with $\Df=10^{k}$, where $k$ is the first value in the legend. 
      The thick red line represents the most difficult target value $\fopt+10^{-8}$. """
 caption_left_rlbased_targets = r"""%
      Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$, 
      to fall below $\fopt+\Df$ where \Df\ is the largest $\Df$-value $\ge10^{-8}$ 
-     for which the best \ERT\ observed in the GECCO-BBOB-2009  
+     for which the best \ERT\ seen in the GECCO-BBOB-2009  
      was yet above $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
 caption_right = """%
      Right subplots: ECDF of the 
-     best achieved \Df\
+     best achieved $\Df$ 
      divided by $10^{-8}$ for running times of $D, 10\,D,
      100\,D,\dots$ function evaluations (from right
      to left cycling black-cyan-magenta). """
@@ -92,7 +92,7 @@ evalfmax = runlen_xlimits_max  # is manipulated/stored in this module
 
 # TODO: the target function values and the styles of the line only make sense
 # together. Therefore we should either:
-# 1. keep the targets as input argument and make rldStyles depend on them
+# 1. keep the targets as input argument and make rldStyles depend on them or
 # 2. remove the targets as input argument and put them here.
 rldStyles = ({'color': 'k', 'ls': '-'},
              {'color': 'c'},
@@ -251,7 +251,8 @@ def plotECDF(x, n=None, **plotArgs):
     return res
 
 def plotERTDistr(dsList, target, **plotArgs):
-    """Creates simulated run time distributions (it is not an ERT distribution) from a DataSetList.
+    """This method is obsolete, should be removed? The replacement for simulated runlengths is in pprldmany? 
+    Creates simulated run time distributions (it is not an ERT distribution) from a DataSetList.
 
     :keyword DataSet dsList: Input data sets
     :keyword dict target: target precision
@@ -328,7 +329,7 @@ def plotRLDistr_old(dsList, target, **plotArgs):
     res = plotECDF(x, nn, **kwargs)
     return res
 
-def plotRLDistr(dsList, target, label, **plotArgs):
+def plotRLDistr(dsList, target, label, max_fun_evals=np.inf, **plotArgs):
     """Creates run length distributions from a sequence dataSetList.
 
     Labels of the line (for the legend) will be appended with the number
@@ -342,34 +343,37 @@ def plotRLDistr(dsList, target, label, **plotArgs):
 
     :returns: handles of the resulting plot.
 
-    Details: ``target`` can be defined as ``lambda`` returning the j-th element of 
-    the return value of the ``pproc.TargetValues.__call__`` method
+    Details: ``target`` is a function taking a (function_number, dimension) pair 
+    as input and returning a ``float``. It can be defined as 
+    ``lambda fun_dim: targets(fun_dim)[j]`` returning the j-th element of 
+    ``targets(fun_dim)``, where ``targets`` is an instance of 
+    ``class pproc.TargetValues`` (see the ``pproc.TargetValues.__call__`` method).  
     
     """
     x = []
     nn = 0
     fsolved = set()
     funcs = set()
-    for i in dsList: # i is a DataSet
-        funcs.add(i.funcId)
-        tmp = i.detEvals((target((i.funcId, i.dim)), ))[0] / i.dim
+    for ds in dsList: # ds is a DataSet
+        funcs.add(ds.funcId)
+        tmp = ds.detEvals((target((ds.funcId, ds.dim)), ))[0] / ds.dim
         tmp = tmp[np.isnan(tmp) == False] # keep only success
-        if len(tmp) > 0:
-            fsolved.add(i.funcId)
+        if len(tmp) > 0 and sum(tmp <= max_fun_evals):
+            fsolved.add(ds.funcId)
         x.extend(tmp)
-        nn += i.nbRuns()
+        nn += ds.nbRuns()
     kwargs = plotArgs.copy()
     label += ': %d/%d' % (len(fsolved), len(funcs))
     kwargs['label'] = kwargs.setdefault('label', label)
     res = plotECDF(x, nn, **kwargs)
     return res
 
-def plotFVDistr(dsList, target, maxEvalsF, **plotArgs):
+def plotFVDistr(dsList, target, maxEvalsF=np.inf, **plotArgs):
     """Creates ECDF of final function values plot from a DataSetList.
     
     :param dsList: data sets
     :param dict or float target: used for the lower limit of the plot
-    :param float maxEvalsF: indicates which vertical data to display.
+    :param float maxEvalsF: maximum evaluations that "count"
     :param plotArgs: additional arguments passed to plot
 
     :returns: handle
@@ -387,6 +391,7 @@ def plotFVDistr(dsList, target, maxEvalsF, **plotArgs):
             tmp = j[1:].copy() / target
         # Integrate the negative values of df / ftarget together
         # this is to prevent problem when passing on a log scale
+        # TODO: there should not be negative values, should there? 
         tmp[tmp<=0.] = min(np.append(tmp[tmp>0],[target])>0)
         x.extend(tmp)
         nn += i.nbRuns()
@@ -506,7 +511,8 @@ def beautify():
 #         plt.setp(plt.gcf(), 'figsize', (16.35, 6.))
 
 def plot(dsList, targets=single_target_values, **plotArgs):
-    """Plot ECDF of evaluations and final function values."""
+    """Obsolete and replaced by main? 
+    Plot ECDF of evaluations and final function values."""
     targets = targets()  # TODO: this needs to be rectified
     assert len(dsList.dictByDim()) == 1, ('Cannot display different '
                                           'dimensionalities together')
@@ -572,8 +578,13 @@ def main(dsList, isStoringXMax=False, outputdir='',
     """Generate figures of empirical cumulative distribution functions.
     
     This method has a feature which allows to keep the same boundaries
-    for the x-axis. This makes sense when dealing with different
-    functions or subsets of functions for one given dimension.
+    for the x-axis, if ``isStoringXMax==True``. This makes sense when 
+    dealing with different functions or subsets of functions for one 
+    given dimension.
+    
+    CAVE: this is bug-prone, as some data depend on the maximum 
+    evaluations and the appearence therefore depends on the 
+    calling order. 
 
     :param DataSetList dsList: list of DataSet instances to process.
     :param bool isStoringXMax: if set to True, the first call
@@ -601,7 +612,9 @@ def main(dsList, isStoringXMax=False, outputdir='',
             evalfmax = None
         if not evalfmax:
             evalfmax = maxEvalsFactor
-    
+        if runlen_xlimits_max is not None:
+            evalfmax = runlen_xlimits_max
+
         filename = os.path.join(outputdir,'pprldistr_%02dD_%s' % (d, info))
         fig = plt.figure()
         for j in range(len(targets)):
@@ -639,8 +652,8 @@ def main(dsList, isStoringXMax=False, outputdir='',
         # coloring right to left:
         maxEvalsF = np.power(10, np.arange(0, tmp))
         for j in range(len(maxEvalsF)):
-            tmp = plotFVDistr(dictdim, 1e-8, maxEvalsF[j],
-                              **rldUnsuccStyles[j % len(rldUnsuccStyles)])    
+            plotFVDistr(dictdim, 1e-8, maxEvalsF[j],
+                        **rldUnsuccStyles[j % len(rldUnsuccStyles)])    
         plt.text(0.98, 0.02, text, horizontalalignment="right",
                  transform=plt.gca().transAxes)  # bbox=dict(ec='k', fill=False), 
         beautifyFVD(isStoringXMax=isStoringXMax, ylabel=False)

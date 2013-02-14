@@ -33,7 +33,7 @@ def config():
         pprldistr.single_target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', [0.5, 2, 10, 50])
         pprldistr.caption_single = pprldistr.caption_single_rlbased
         pprldistr.runlen_xlimits_max = 3e2  # seems to be overwritten
-        pprldistr.runlen_xlimits_min = -0.5
+        pprldistr.runlen_xlimits_min = 10**-0.5
         ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues('bestGECCO2009',
                                                                        [10**i for i in [2.0, 1.5, 1.0, 0.5, 0.1, -0.3]],
                                                                        # [10**i for i in [1.7, 1, 0.3, -0.3]]
