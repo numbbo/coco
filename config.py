@@ -41,6 +41,7 @@ def config():
         ppfigdim.scaling_figure_caption = ppfigdim.scaling_figure_caption_rlbased
         pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues('bestGECCO2009',
                                                   [10**i for i in [1.7, 1, 0.3, -0.3]])
+        pptable.table_caption=pptable.table_caption_rlbased
     else:
         pprldmany.target_values = pproc.TargetValues(10**np.arange(2, -8, -0.2))
         pprldistr.single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))

@@ -68,6 +68,27 @@ old_legend = r"""
  the names of functions. }
 """
 
+table_caption=r"""Expected running time (ERT in number of function evaluations)
+divided by the best ERT measured during BBOB-2009 (given in the
+first row of each cell) for different $\Df$ values for functions
+$f_1$--$f_{24}$.
+The median number of conducted function evaluations is additionally given in 
+\textit{italics}, if $\ERT(10^{-7}) =\infty$. The interquartile range divided by two is shown in braces. 
+%
+\#succ is the number of trials that reached the final target $\fopt + 10^{-8}$."
+"""
+
+table_caption_rlbased=r"""AAAAAAExpected running time (ERT in number of function evaluations)
+divided by the best ERT measured during BBOB-2009 (given in the
+first row of each cell) for different $\Df$ values for functions
+$f_1$--$f_{24}$.
+The median number of conducted function evaluations is additionally given in 
+\textit{italics}, if $\ERT(10^{-7}) =\infty$. The interquartile range divided by two is shown in braces. 
+%
+\#succ is the number of trials that reached the final target $\fopt + 10^{-8}$."
+"""
+
+
 def _treat(ds):
     # Rec array: http://docs.scipy.org/doc/numpy/user/basics.rec.html
     bestentry = bestalg.bestalgentries2009[(ds.dim, ds.funcId)]
