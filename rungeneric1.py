@@ -412,7 +412,7 @@ def main(argv=None):
                                         ', '.join(ppfigdim.values_of_interest.loglabels())), 
                          '}'])
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
-                        ['\\providecommand{\\tablecaption}[1]{',
+                        ['\\providecommand{\\bbobpptablecaption}[1]{',
                          pptable.table_caption,
                          '}'])
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
