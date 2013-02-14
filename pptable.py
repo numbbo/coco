@@ -176,7 +176,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
     if(genericsettings.evaluation_setting==1e2):
-        header = [r'\#FEs/D']
+        header = [r'\#FEs']
         for i in targetsOfInterest.loglabels():
             header.append(r'\multicolumn{2}{@{}c@{}}{%s}'
                       % writeFEvals2(round(10**float(i),2),2)) 
