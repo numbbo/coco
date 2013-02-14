@@ -17,6 +17,8 @@ Examples:
 * Start by importing :py:mod:`bbob_pproc`::
 
     >>> import bbob_pproc as bb # load bbob_pproc
+    >>> import os
+    >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
 
 * Load a data set, assign to variable :py:data:`ds`::
 

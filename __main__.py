@@ -61,6 +61,7 @@ if __name__ == "__main__":
     instead of ``python`` is called
     
     """
+
     python = 'python '  # how to call python 
     if len(sys.argv) > 1 and sys.argv[1] == 'wine':
         python = 'C:\\Python26\\python.exe ' # works for wine
@@ -92,8 +93,10 @@ if __name__ == "__main__":
     print '  subtest finished in ', time.time() - t0, ' seconds'
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()
+
     if 1 < 3:
         doctest.testmod(report=True)  # this is quite cool!
+              
     else:
         stdout = sys.stdout
         fn = '_bbob_pproc_doctest_.txt'
@@ -107,3 +110,19 @@ if __name__ == "__main__":
     print 'doctest finished in ', time.time() - t0, ' seconds'
     # print('    more info in file _bbob_pproc_doctest_.txt)')
     print '*** done testing module bbob_pproc ***'
+    
+    
+"""     
+        sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+        import bbob_pproc as bb
+        print dir(bb)
+        #bb=imp.load_module("bbob_pproc",*imp.find_module("bbob_pproc"))
+        #pproc=imp.load_module("pproc",*imp.find_module("pproc"))
+        #print pproc
+        #doctest.testmod(bb.pproc,verbose=True)
+        for s in dir(bb):
+            if(inspect.ismodule(eval("bb."+s)) and s[:2]!="__"):
+                print "bb."+s
+                doctest.testmod(eval("bb."+s),verbose=False)                    
+        print bb.__all__     
+"""     

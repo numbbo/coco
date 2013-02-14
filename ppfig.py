@@ -180,7 +180,9 @@ def consecutiveNumbers(data):
     """Groups a sequence of integers into ranges of consecutive numbers.
 
     Example::
-
+      >>> import sys
+      >>> import os
+      >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
       >>> import bbob_pproc as bb
       >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9])
       '0-2, 4, 5, 7-9'
