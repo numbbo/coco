@@ -206,9 +206,9 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 #write ftarget:fevals
                 for i in xrange(len(bestalgdata[:-1])):
                     
-                    curline.append(r'\multicolumn{2}{@{}c@{}}{%1.e:%s \quad}'
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%1.e}:%s \quad}'
                                    % (targetsOfInterest((f,d))[i],writeFEvalsMaxPrec(bestalgdata[i], 2)))
-                curline.append(r'\multicolumn{2}{@{}c@{}|}{%1.e:%s }'
+                curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%1.e}:%s }'
                                % (targetsOfInterest((f,d))[-1],writeFEvalsMaxPrec(bestalgdata[-1], 2)))            
             else:            
                 # write #fevals of the reference alg
@@ -256,7 +256,6 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     tmp2 = toolsstats.drawSP(tmp[succ], tmp[succ==False],
                                             (10, 50, 90), samplesize)[0]
                     dispersion.append((tmp2[-1]-tmp2[0])/2.)
-                    print "****",tmp2
                 else:
                     dispersion.append(None)
 
