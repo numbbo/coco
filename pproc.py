@@ -67,6 +67,10 @@ class TargetValues(object):
     def loglabel(self, i):
         """return ``log10`` of the ``i``-th target value as ``str``, to be overwritten by a derived class"""
         return str(np.round(np.log10(self.target_values[i]), 2))
+    def label(self, i):
+        """return the ``i``-th target value as ``str``, to be overwritten by a derived class"""
+        return str(int(np.round(i)) if round(i) >= 10 else round(i, 1))
+    
     def loglabels(self):
         """``log10`` of the target values as a list of ``str``"""
         i, res = 0, []
@@ -76,7 +80,18 @@ class TargetValues(object):
                 i += 1
         except IndexError:
             return res
-    
+
+    def labels(self):
+        """``log10`` of the target values as a list of ``str``"""
+        i, res = 0, []
+        try:
+            while True:
+                res.append(self.label(i))
+                i += 1
+        except IndexError:
+            return res
+
+
 class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarative but not effective
     """class instance calls return f-target values based on 
     reference runlengths::
@@ -232,9 +247,10 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
     def loglabel(self, i, decimals=1):
         """``decimals`` is used for ``round``"""
         return str(np.round(np.log10(self.run_lengths[i]), decimals))
+    
     def label(self, i):
         val = self.run_lengths[i]
-        return str(int(round(val)) if round(val) >= 10 else round(val, 1))
+        return str(int(np.round(val)) if round(val) >= 10 else round(val, 1))
 
     def _generate_erts(self, ds, target_values):
         """compute for all target values, starting with 1e-8, the ert value

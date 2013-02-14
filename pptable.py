@@ -177,9 +177,9 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         bestalg.loadBBOB2009()
     if(genericsettings.evaluation_setting==1e2):
         header = [r'\#FEs']
-        for i in targetsOfInterest.loglabels():
+        for i in targetsOfInterest.labels():
             header.append(r'\multicolumn{2}{@{}c@{}}{%s}'
-                      % writeFEvals2(round(10**float(i),2),2)) 
+                      % i) #writeFEvals2(round(10**float(i)*500,2),2)) 
     else:
         header = [r'$\Delta f$']
         for i in targetsOfInterest.target_values:
@@ -381,7 +381,10 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         extraeol[-1] = ''
 
         outputfile = os.path.join(outputdir, 'pptable_%02dD%s.tex' % (d, info))
-        spec = r'@{}c@{}|' + '*{%d}{@{ }r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
+        if(genericsettings.evaluation_setting==1e2):
+            spec = r'@{}c@{}|' + '*{%d}{@{ }r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
+        else:
+            spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         #res = r'\providecommand{\algshort}{%s}' % alg1 + '\n'
         #res += tableLaTeXStar(table, width=r'0.45\textwidth', spec=spec,
                               #extraeol=extraeol)
