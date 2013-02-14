@@ -206,14 +206,14 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 #write ftarget:fevals
                 for i in xrange(len(bestalgdata[:-1])):
                     
-                    curline.append(r'\multicolumn{2}{@{}c@{}}{%1.e:%s }'
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{%1.e:%s \quad}'
                                    % (targetsOfInterest((f,d))[i],writeFEvalsMaxPrec(bestalgdata[i], 2)))
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{1e%+d:%s }'
                                % (targetsOfInterest((f,d))[-1],writeFEvalsMaxPrec(bestalgdata[-1], 2)))            
             else:            
                 # write #fevals of the reference alg
                 for i in bestalgdata[:-1]:
-                    curline.append(r'\multicolumn{2}{@{}c@{}}{%s}'
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
                                    % writeFEvalsMaxPrec(i, 2))
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
                                % writeFEvalsMaxPrec(bestalgdata[-1], 2))
