@@ -84,10 +84,11 @@ caption_single = caption_single_fixed  # by default
 refcolor = 'wheat'
 nbperdecade = 1  # markers in x-axis decades in ecdfs
 
+runlen_xlimits_max = None
+runlen_xlimits_min = 1  # not in use, should become -0.5 in runlength case
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
-evalfmax = None  # is manipulated/stored in this module
-runlen_xlimits_logmin = 0  # not in use, should become -0.5 in runlength case
+evalfmax = runlen_xlimits_max  # is manipulated/stored in this module
 
 # TODO: the target function values and the styles of the line only make sense
 # together. Therefore we should either:
@@ -189,7 +190,7 @@ def beautifyRLD(evalfmax=None):
     logxticks()
     if evalfmax:
         plt.xlim(xmax=evalfmax ** 1.05)
-    plt.xlim(xmin=10**runlen_xlimits_logmin)
+    plt.xlim(xmin=runlen_xlimits_min)
     beautifyECDF()
 
 def beautifyFVD(isStoringXMax=False, ylabel=True):
@@ -427,6 +428,8 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
             evalfmax = None
         if not evalfmax:
             evalfmax = maxEvalsFactor
+        if runlen_xlimits_max is not None:
+            evalfmax = runlen_xlimits_max
 
         filename = os.path.join(outputdir,'pprldistr_%02dD_%s' % (d, info))
         fig = plt.figure()
