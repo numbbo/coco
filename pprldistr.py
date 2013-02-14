@@ -51,9 +51,10 @@ from bbob_pproc import toolsstats, genericsettings, pproc
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
+funval_factor = 10
 
 caption_part_one = r"""%
-     Empirical cumulative distribution functions (ECDFs), plotting the fraction of 
+     Empirical cumulative distribution functions (ECDF), plotting the fraction of 
      trials with an outcome not larger than the respective value on the $x$-axis. """
 caption_left_fixed_targets = r"""%
      Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$, 
@@ -67,9 +68,9 @@ caption_left_rlbased_targets = r"""%
 caption_right = """%
      Right subplots: ECDF of the 
      best achieved $\Df$ 
-     divided by $10^{-8}$ for running times of $D, 10\,D,
-     100\,D,\dots$ function evaluations (from right
-     to left cycling black-cyan-magenta). """
+     % divided by $10^{-8}$ 
+     for running times of $D, """ + str(funval_factor) + "\,D," + str(funval_factor) + "^2 D,\dots$" + """function evaluations 
+     (from right to left cycling black-cyan-magenta) and final $\Df$-value (red). """
 caption_wrap_up = r"""%
      Legends indicate for each target the number of functions that were solved in at
      least one trial.
@@ -136,11 +137,11 @@ else:
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""
-    plt.ylim(-0.0, 1.0)  # was plt.ylim(-0.01, 1.01)
+    plt.ylim(-0.0, 1.01)  # was plt.ylim(-0.01, 1.01)
     plt.yticks(np.arange(0., 1.001, 0.2)) #, ('0.0', '', '0.5', '', '1.0'))
     plt.grid(True)
     xmin, xmax = plt.xlim()
-    plt.xlim(xmin=xmin*0.90)
+    # plt.xlim(xmin=xmin*0.90)  # why this?
     c = plt.gca().get_children()
     for i in c: # TODO: we only want to extend ECDF lines...
         try:
@@ -215,10 +216,10 @@ def beautifyFVD(isStoringXMax=False, ylabel=True):
 
     if not fmax:
         xmin, fmax = plt.xlim()
-    plt.xlim(1., fmax)
+    plt.xlim(1.001e-8, fmax) # 1e-8 was 1.
 
     #axisHandle.invert_xaxis()
-    a.set_xlabel('log10 of Df / Dftarget')
+    a.set_xlabel('log10 of Df')  # / Dftarget
     if ylabel:
         a.set_ylabel('proportion of trials')
     logxticks()
@@ -386,13 +387,15 @@ def plotFVDistr(dsList, target, maxEvalsF=np.inf, **plotArgs):
             if j[0] >= maxEvalsF * i.dim:
                 break
         try:
-            tmp = j[1:].copy() / target[i.funcId]
+            # tmp = j[1:].copy() / target[i.funcId]
+            tmp = j[1:].copy()
         except TypeError:
-            tmp = j[1:].copy() / target
+            # tmp = j[1:].copy() / target
+            tmp = j[1:].copy()
         # Integrate the negative values of df / ftarget together
         # this is to prevent problem when passing on a log scale
         # TODO: there should not be negative values, should there? 
-        tmp[tmp<=0.] = min(np.append(tmp[tmp>0],[target])>0)
+        tmp[tmp<=0.] = min(np.append(tmp[tmp>0],[target]) > 0)  # TODO: how does > 0 work here?
         x.extend(tmp)
         nn += i.nbRuns()
     res = plotECDF(x, nn, **plotArgs)
@@ -481,7 +484,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
 def beautify():
     """Format the figure of the run length distribution.
     
-    Used in conjunction with plot method.
+    Used in conjunction with plot method (obsolete/outdated, see functions ``beautifyFVD`` and ``beautifyRLD``).
 
     """
     plt.subplot(121)
@@ -657,13 +660,9 @@ def main(dsList, isStoringXMax=False, outputdir='',
                             **rldUnsuccStyles[j % len(rldUnsuccStyles)])
         else:
             plotFVDistr(dictdim, 1e-8, np.inf, **rldStyles[-1])
-            tmp = np.floor(np.log10(evalfmax))
-            # coloring left to right:
-            #maxEvalsF = np.power(10, np.arange(tmp, 0, -1) - 1)
-            # coloring right to left:
-            maxEvalsF = np.power(10, np.arange(0, tmp))
-            for j in range(len(maxEvalsF)):
-                tmp = plotFVDistr(dictdim, 1e-8, maxEvalsF[j],
+            # coloring right to left
+            for j, max_evals in enumerate(10**np.arange(0, np.floor(np.log10(maxEvalsFactor)), np.log10(funval_factor))):
+                tmp = plotFVDistr(dictdim, 1e-8, max_evals,
                             **rldUnsuccStyles[j % len(rldUnsuccStyles)])
                 
         plt.text(0.98, 0.02, text, horizontalalignment="right",
