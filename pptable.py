@@ -75,7 +75,7 @@ $f_1$--$f_{24}$.
 The median number of conducted function evaluations is additionally given in 
 \textit{italics}, if $\ERT(10^{-7}) =\infty$. The interquartile range divided by two is shown in braces. 
 %
-\#succ is the number of trials that reached the final target $\fopt + 10^{-8}$."
+\#succ is the number of trials that reached the final target $\fopt + 10^{-8}$.
 """
 
 table_caption_rlbased=r"""AAAAAAExpected running time (ERT in number of function evaluations)
@@ -85,7 +85,7 @@ $f_1$--$f_{24}$.
 The median number of conducted function evaluations is additionally given in 
 \textit{italics}, if $\ERT(10^{-7}) =\infty$. The interquartile range divided by two is shown in braces. 
 %
-\#succ is the number of trials that reached the final target $\fopt + 10^{-8}$."
+\#succ is the number of trials that reached the final target $\fopt + 10^{-8}$.
 """
 
 
