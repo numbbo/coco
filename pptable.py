@@ -31,9 +31,10 @@ from bbob_pproc.toolsstats import significancetest
 
 from pdb import set_trace
 
-targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table, used in _treat, however not finished and outdated
+targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 finaltarget = 1e-8 # value for determining the success ratio
-targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # remove 1e-2 ? 
+targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
+targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
 targetf = 1e-8 # value for determining the success ratio
 samplesize = 1000 # TODO: change samplesize
 # def tablespec(targets):
@@ -178,8 +179,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         header = [r'\#FEs/D']
         for i in targetsOfInterest.loglabels():
             header.append(r'\multicolumn{2}{@{}c@{}}{%s}'
-                       % i)   
-                      #% writeFEvals2(int(round(10**float(i))),3)) 
+                      % writeFEvals2(round(10**float(i),2),2)) 
     else:
         header = [r'$\Delta f$']
         for i in targetsOfInterest.target_values:
@@ -257,9 +257,9 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 nbstars = 0
                 z, p = testresbestvs1[i]
                 if ert - bestalgdata[i] < 0. and not np.isinf(bestalgdata[i]):
-                    evals = entry.detEvals([targetsOfInterest[i]])[0]
+                    evals = entry.detEvals([targetsOfInterest((f,d))[i]])[0] 
                     evals[np.isnan(evals)] = entry.maxevals[np.isnan(evals)]
-                    bestevals = bestalgentry.detEvals([targetsOfInterest[i]])
+                    bestevals = bestalgentry.detEvals([targetsOfInterest((f,d))[i]])
                     bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
                     bestevals[np.isnan(bestevals)] = bestalgentry.maxevals[bestalgalg][np.isnan(bestevals)]
                     evals = np.array(sorted(evals))[0:min(len(evals), len(bestevals))]
@@ -276,7 +276,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 if np.isinf(bestalgdata[i]): # if the best did not solve the problem
                     isBold = False
                     if nbstars > 0:
-                        isBold = True
+                       isBold = True
 
                     tmp = writeFEvalsMaxPrec(float(ert), 2)
                     if not np.isinf(ert):
@@ -294,7 +294,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
                     isBold = False
                     if nbstars > 0:
-                        isBold = True
+                       isBold = True
 
                     if np.isinf(tmp) and i == len(data)-1:
                         tableentry = (tableentry
