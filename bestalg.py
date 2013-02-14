@@ -460,6 +460,9 @@ def customgenerate():
     containing all necessary data folders::
 
       >>> from bbob_pproc import bestalg
+      >>> import os
+      >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+      >>> os.chdir("bbob_pproc/data")
       >>> bestalg.customgenerate()
       Searching in ALPS ...
       ...

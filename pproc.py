@@ -289,8 +289,9 @@ class DataSet():
     A short example::
     
         >>> import sys
-        >>> sys.path.append('path_to_bbob_proc')
-        >>> import bbob_proc as bb
+        >>> import os
+        >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+        >>> import bbob_pproc as bb
         >>> dslist = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info')
         >>> dslist  # nice display in particular in IPython
         [DataSet(cmaes V3.30.beta on f2 2-D),
@@ -307,7 +308,6 @@ class DataSet():
         >>> ds
         DataSet(cmaes V3.30.beta on f2 10-D)
         >>> for d in dir(ds): print d  # dir(ds) shows attributes and methods of ds
-           ....: 
         _DataSet__parseHeader
         __doc__
         __eq__
