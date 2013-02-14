@@ -16,7 +16,7 @@ modules, but does not modify other modules settings.
 """
 
 import numpy as np
-import ppfig, ppfigdim
+import ppfig, ppfigdim, pptable
 from bbob_pproc import genericsettings, pproc, pprldistr
 from bbob_pproc.comp2 import ppfig2, ppscatter
 from bbob_pproc.compall import ppfigs, pprldmany
@@ -39,6 +39,8 @@ def config():
                                                                        # [10**i for i in [1.7, 1, 0.3, -0.3]]
                                                                        force_different_targets_factor=1)
         ppfigdim.scaling_figure_caption = ppfigdim.scaling_figure_caption_rlbased
+        pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues('bestGECCO2009',
+                                                  [10**i for i in [1.7, 1, 0.3, -0.3]])
     else:
         pprldmany.target_values = pproc.TargetValues(10**np.arange(2, -8, -0.2))
         pprldistr.single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))
