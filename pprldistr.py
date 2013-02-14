@@ -51,7 +51,9 @@ from bbob_pproc import toolsstats, genericsettings, pproc
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
-funval_factor = 10
+single_runlength_factors = 2**np.arange(-1, 30) # TODO: should depend on the value of evaluation_setting
+
+funval_factor = 10  # TODO: config comes too late to set the correct caption
 
 caption_part_one = r"""%
      Empirical cumulative distribution functions (ECDF), plotting the fraction of 
@@ -69,7 +71,8 @@ caption_right = """%
      Right subplots: ECDF of the 
      best achieved $\Df$ 
      % divided by $10^{-8}$ 
-     for running times of $D, """ + str(funval_factor) + "\,D," + str(funval_factor) + "^2 D,\dots$" + """function evaluations 
+     for running times of #1
+     function evaluations 
      (from right to left cycling black-cyan-magenta) and final $\Df$-value (red). """
 caption_wrap_up = r"""%
      Legends indicate for each target the number of functions that were solved in at
@@ -78,7 +81,6 @@ caption_wrap_up = r"""%
 caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_right + r"""
      Light brown lines in the background show ECDFs for $\Df=10^{-8}$ of all algorithms benchmarked during BBOB-2009.""" 
 caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_right
-caption_single = caption_single_fixed  # by default
 
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
    
@@ -134,6 +136,10 @@ except IOError, (errno, strerror):
 else:
     f.close()
 
+def caption_single(max_evals):
+    caption = caption_single_rlbased if genericsettings.runlength_based_targets else caption_single_fixed 
+    caption.replace(r'#1', 'TODO D') 
+    return caption
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""
@@ -660,6 +666,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
                             **rldUnsuccStyles[j % len(rldUnsuccStyles)])
         else:
             plotFVDistr(dictdim, 1e-8, np.inf, **rldStyles[-1])
+            # funval_factor = 
             # coloring right to left
             for j, max_evals in enumerate(10**np.arange(0, np.floor(np.log10(maxEvalsFactor)), np.log10(funval_factor))):
                 tmp = plotFVDistr(dictdim, 1e-8, max_evals,

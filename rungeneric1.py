@@ -277,10 +277,12 @@ def main(argv=None):
         if isNoiseFree and not isNoisy:
             dsList = dsList.dictByNoise().get('noiselessall', DataSetList())
 
-        if genericsettings.evaluation_setting == 1e3:
-            raise NotImplementedError()
-            # TODO: find maxevals in dsList for each dimension
-            # set genericsettings.evaluation_setting depending on the result
+        max_fun_evals_divdim = 0
+        for ds in dsList:
+            max_fun_evals_divdim = np.max((max_fun_evals_divdim, float(np.max(ds.maxevals)) / ds.dim))
+            
+        if genericsettings.evaluation_setting == 1e3:  # automatic choice of evaluation setup, looks still like a hack
+            genericsettings.runlength_based_targets = max_fun_evals_divdim > 1e3
             config.config()
         
         if (verbose):
@@ -403,8 +405,8 @@ def main(argv=None):
             print "ERT loss ratio figures and tables done."
 
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
-                        ['\\providecommand{\\bbobpprldistrlegend}{', 
-                         pprldistr.caption_single, 
+                        ['\\providecommand{\\bbobpprldistrlegend}[1]{', 
+                         pprldistr.caption_single(max_fun_evals_divdim), # depends on the config setting, should depend on maxfevals
                          '}'])
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{',
