@@ -267,8 +267,6 @@ def main(argv=None):
                 raise Usage(txt)
         dsList = DataSetList(filelist, verbose)
         
-        ### TODO: check maxevals and choose, in case case "expensive setting" depending on the result
-
         if not dsList:
             raise Usage("Nothing to do: post-processing stopped.")
 
@@ -277,12 +275,18 @@ def main(argv=None):
         if isNoiseFree and not isNoisy:
             dsList = dsList.dictByNoise().get('noiselessall', DataSetList())
 
-        max_fun_evals_divdim = 0
+        # compute and store maxfuneval values
+        dict_max_fun_evals = {}
         for ds in dsList:
-            max_fun_evals_divdim = np.max((max_fun_evals_divdim, float(np.max(ds.maxevals)) / ds.dim))
-            
+            dict_max_fun_evals[ds.dim] = np.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
+        genericsettings.dict_max_fun_evals = dict_max_fun_evals
         if genericsettings.evaluation_setting == 1e3:  # automatic choice of evaluation setup, looks still like a hack
-            genericsettings.runlength_based_targets = max_fun_evals_divdim < 1e3
+            genericsettings.runlength_based_targets = np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < 1e3
+            if genericsettings.runlength_based_targets:
+                genericsettings.evaluation_setting = 1e2
+            else:
+                genericsettings.evaluation_setting = 1e7  # TODO: looks very arbitrary 
+            print genericsettings.evaluation_setting
             config.config()
         
         if (verbose):
@@ -406,7 +410,7 @@ def main(argv=None):
 
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
                         ['\\providecommand{\\bbobpprldistrlegend}[1]{', 
-                         pprldistr.caption_single(max_fun_evals_divdim), # depends on the config setting, should depend on maxfevals
+                         pprldistr.caption_single(np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()])), # depends on the config setting, should depend on maxfevals
                          '}'])
         prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{',
