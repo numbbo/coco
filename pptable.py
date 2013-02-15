@@ -198,7 +198,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
-        header = [r'\#FEs']
+        header = [r'\#FEs/D']
         for i in targetsOfInterest.labels():
             header.append(r'\multicolumn{2}{@{}c@{}}{%s}'
                       % i) #writeFEvals2(round(10**float(i)*500,2),2)) 
