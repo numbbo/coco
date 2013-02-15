@@ -65,13 +65,12 @@ caption_left_rlbased_targets = r"""%
      to fall below $\fopt+\Df$ where \Df\ is the largest $\Df$-value $\ge10^{-8}$ 
      for which the best \ERT\ seen in the GECCO-BBOB-2009  
      was yet above $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
-caption_right = """%
+caption_right = r"""%
      Right subplots: ECDF of the 
      best achieved $\Df$ 
-     % divided by $10^{-8}$ 
      for running times of #1
      function evaluations 
-     (from right to left cycling black-cyan-magenta) and final $\Df$-value (red). """
+     (from right to left magenta-black-$2\times$cyan-$2\times$magenta and further cycling black-cyan-magenta) and final $\Df$-value (red). """
 caption_wrap_up = r"""%
      Legends indicate for each target the number of functions that were solved in at
      least one trial.
@@ -137,7 +136,7 @@ else:
 
 def caption_single(max_evals_div_dim):
     caption = caption_single_rlbased if genericsettings.runlength_based_targets else caption_single_fixed 
-    return caption.replace(r'#1', 'TODO$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$') 
+    return caption.replace(r'#1', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:7]]) + 'D,\dots$') 
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""
@@ -220,7 +219,7 @@ def beautifyFVD(isStoringXMax=False, ylabel=True):
 
     if not fmax:
         xmin, fmax = plt.xlim()
-    plt.xlim(1.001e-8, fmax) # 1e-8 was 1.
+    plt.xlim(1.01e-8, fmax) # 1e-8 was 1.
 
     #axisHandle.invert_xaxis()
     a.set_xlabel('log10 of Df')  # / Dftarget
@@ -399,7 +398,10 @@ def plotFVDistr(dsList, target, maxEvalsF=np.inf, **plotArgs):
         # Integrate the negative values of df / ftarget together
         # this is to prevent problem when passing on a log scale
         # TODO: there should not be negative values, should there? 
-        tmp[tmp<=0.] = min(np.append(tmp[tmp>0],[target]) > 0)  # TODO: how does > 0 work here?
+        #print tmp
+        #raw_input('press return')
+        tmp[tmp<=0.] = min(np.append(tmp[tmp > 0],[target]))
+        #print tmp
         x.extend(tmp)
         nn += i.nbRuns()
     res = plotECDF(x, nn, **plotArgs)
@@ -651,7 +653,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
     
         filename = os.path.join(outputdir,'ppfvdistr_%02dD_%s' % (d, info))
         fig = plt.figure()
-        if 11 < 3: # previous version, to be removed
+        if 1 < 3: # previous version, to be removed
             tmp = plotFVDistr(dictdim, 1e-8, evalfmax,
                               **rldStyles[(len(targets) - 1) % len(rldStyles)])
             tmp = np.floor(np.log10(evalfmax))
