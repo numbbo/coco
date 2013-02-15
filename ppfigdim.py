@@ -81,7 +81,7 @@ caption_part_one = r"""%
     median number of $f$-evaluations to reach the most difficult target that was 
     reached not always but at least once (+)  
     and maximum number of $f$-evaluations in any trial ({\color{red}$\times$}), all 
-    divided by dimension and plotted as $\log_{10}$ values versus dimension. 
+    divided by dimension and plotted as $\log_{10}$ values versus dimension. %
     """
     # r"(the exponent is given in the legend of #1). " + 
 #    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
@@ -91,15 +91,15 @@ caption_part_one = r"""%
 #    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
 #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
 #    "function value.  " +
-scaling_figure_caption_fixed = caption_part_one + r"""
+scaling_figure_caption_fixed = caption_part_one + r"""%
     Shown are $\Df = 10^{\{values_of_interest\}}$.  
     Numbers above \ERT-symbols indicate the number of trials reaching the respective target. 
     The light thick line with diamonds indicates the respective best result from BBOB-2009 for $\Df=10^{-8}$. 
     Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling.  
     """
-scaling_figure_caption_rlbased = caption_part_one + r"""
+scaling_figure_caption_rlbased = caption_part_one + r"""%
     Shown is the \ERT\ for the largest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm  
-    was above $10^{\{values_of_interest\}}\times\DIM$ evaluations. 
+    was above $\{values_of_interest\}\times\DIM$ evaluations. 
     Numbers above \ERT-symbols indicate the number of trials reaching the respective target.  
     Slanted grid lines indicate a scaling with ${\cal O}(\DIM)$ compared to ${\cal O}(1)$  
     when using the respective 2009 best algorithm. 
@@ -108,6 +108,14 @@ scaling_figure_caption_rlbased = caption_part_one + r"""
     # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
 
 scaling_figure_caption = scaling_figure_caption_fixed 
+
+def scaling_figure_caption():
+    if genericsettings.runlength_based_targets:
+        return scaling_figure_caption_rlbased.replace('values_of_interest', 
+                                        ', '.join(values_of_interest.labels()))
+    else:
+        return scaling_figure_caption_fixed.replace('values_of_interest', 
+                                        ', '.join(values_of_interest.loglabels()))
 
 # should correspond with the colors in pprldistr.
 dimensions = genericsettings.dimensions_to_display
@@ -332,7 +340,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
         # To have the legend displayed whatever happens with the data.
         for i in reversed(range(len(valuesOfInterest))):
             res.extend(plt.plot([], [], markersize=10,
-                                label=valuesOfInterest.loglabel(i),
+                                label=valuesOfInterest.label(i),
                                 **styles[i]))
 
         # Only for the last target function value
