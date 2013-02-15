@@ -178,7 +178,7 @@ def main(argv=None):
         isNoiseFree = False
         inputsettings = 'color'
         isConv = False
-        isLRbased = None
+        isRLbased = None
 
         #Process options
         for o, a in opts:
