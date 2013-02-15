@@ -64,20 +64,20 @@ class TargetValues(object):
         return len(self.target_values)
     def __call__(self, fun_dim_but_not_use=None):
         return self.target_values
-    def loglabel(self, i):
+    def loglabel(self, i, decimals=0):
         """return ``log10`` of the ``i``-th target value as ``str``, to be overwritten by a derived class"""
-        return str(np.round(np.log10(self.target_values[i]), 2))
+        return str(int(np.round(np.log10(self.target_values[i]), decimals)))
     def label(self, i):
         """return the ``i``-th target value as ``str``, to be overwritten by a derived class"""
         return str(int(np.round(self.target_values[i])) if round(self.target_values[i]) >= 10 else 
                    round(self.target_values[i], 1))
     
-    def loglabels(self):
+    def loglabels(self, decimals=0):
         """``log10`` of the target values as a list of ``str``"""
         i, res = 0, []
         try:
             while True:
-                res.append(self.loglabel(i))
+                res.append(self.loglabel(i, decimals))
                 i += 1
         except IndexError:
             return res
