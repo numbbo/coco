@@ -108,7 +108,12 @@ def main(argv=None):
         --conv
             if this option is chosen, additionally convergence plots
             for each function and algorithm are generated.
-        --expensive TODO
+        --expensive
+            switch for runlength-based targets for comparatively small
+            budgets and with fixed display limits.
+        --runlength-based
+            switch for runlength-based targets but not necessarily
+            small budgets. 
 
     Exceptions raised:
 
@@ -178,7 +183,8 @@ def main(argv=None):
         isNoiseFree = False
         inputsettings = 'color'
         isConv = False
-        isRLbased = None
+        isRLbased = None  # allows automatic choice
+        isExpensive = False
 
         #Process options
         for o, a in opts:
@@ -221,7 +227,9 @@ def main(argv=None):
                 inputsettings = a
             elif o == "--conv":
                 isConv = True
-            elif o == "--expensive" or o == "--runlength-based":
+            elif o == "--expensive":
+                isExpensive = True 
+            elif o == "--runlength-based":
                 isRLbased = True
             elif o == "--absolute-targets":
                 isRLbased = False
@@ -284,10 +292,20 @@ def main(argv=None):
         for ds in dsList:
             dict_max_fun_evals[ds.dim] = np.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
         genericsettings.dict_max_fun_evals = dict_max_fun_evals
-        if isRLbased is None and genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
-            genericsettings.runlength_based_targets = np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < 1e3
-            if genericsettings.runlength_based_targets:
-                print '  runlength based targets in use'
+        if isRLbased is not None:
+            genericsettings.runlength_based_targets = isRLbased
+        if isExpensive:
+            genericsettings.evaluation_setting = 3e2
+            genericsettings.runlength_based_targets = True
+        if genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
+            if np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < 1e3: 
+                genericsettings.runlength_based_targets = True
+                genericsettings.evaluation_setting = 3e2
+            else:
+                genericsettings.runlength_based_targets = False
+                
+        if genericsettings.runlength_based_targets:
+            print '  runlength based targets in use'
 
         from bbob_pproc import config
         config.config()

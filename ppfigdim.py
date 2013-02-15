@@ -204,7 +204,7 @@ def beautify(axesLabel=True):
     # axes limites
     plt.xlim(0.9 * dimensions[0], 1.125 * dimensions[-1]) 
     plt.ylim(ymin=10**-0.2, ymax=int(ymax + 1))  # Set back the default maximum.
-    if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
+    if xlim_max is not None:
         plt.ylim(0.2, xlim_max)  # set in config 
         if 11 < 3:
             title = plt.gca().get_title()  # works not not as expected
