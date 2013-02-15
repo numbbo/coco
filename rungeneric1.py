@@ -412,8 +412,7 @@ def main(argv=None):
                          '}'])
         prepend_to_file(latex_commands_file, 
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{',
-                         ppfigdim.scaling_figure_caption.replace('values_of_interest', 
-                                        ', '.join(ppfigdim.values_of_interest.loglabels())), 
+                         ppfigdim.scaling_figure_caption(), 
                          '}'])
         prepend_to_file(latex_commands_file, 
                         ['\\providecommand{\\bbobpptablecaption}[1]{',

@@ -69,8 +69,10 @@ class TargetValues(object):
         return str(int(np.round(np.log10(self.target_values[i]), decimals)))
     def label(self, i):
         """return the ``i``-th target value as ``str``, to be overwritten by a derived class"""
-        return str(int(np.round(self.target_values[i])) if round(self.target_values[i]) >= 10 else 
-                   round(self.target_values[i], 1))
+        if round(self.target_values[i]) >= 10 or round(10*self.target_values[i]) / 10. == self.target_values[i]:
+            return str(int(np.round(self.target_values[i]))) 
+        else: 
+            str(round(self.target_values[i], 1)) 
     
     def loglabels(self, decimals=0):
         """``log10`` of the target values as a list of ``str``"""

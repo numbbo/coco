@@ -17,7 +17,7 @@ import numpy as np
     #set_trace()
 test = True  # debug/test flag, set to False for committing the final version
 evaluation_setting = [1e2, 1e6]  # only used in config, yet to be improved?
-runlength_based_targets = 'auto' # might be overwritten, 'auto' means automatic choice, otherwise True or False
+runlength_based_targets = True  #'auto' # might be overwritten, 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
