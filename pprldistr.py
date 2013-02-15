@@ -51,7 +51,7 @@ from bbob_pproc import toolsstats, genericsettings, pproc
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
-single_runlength_factors = np.array([0.5, 1, 2, 4, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10]) # TODO: should depend on the value of evaluation_setting
+single_runlength_factors = [0.5, 1, 2, 4, 10] + [10**i for i in range(2, 12)]
 
 funval_factor = 10  # TODO: config comes too late to set the correct caption
 
@@ -109,11 +109,12 @@ rldStyles = ({'color': 'k', 'ls': '-'},
              {'color': 'c'},
              {'color': 'm'},
              {'color': 'r', 'linewidth': 3.})
-rldUnsuccStyles = ({'color': 'k', 'ls': '-'},
-                   {'color': 'c'},
+rldUnsuccStyles = (
                    {'color': 'm', 'ls': '-'},
                    {'color': 'k', 'ls': '-'},
-                   {'color': 'c', 'ls': '-'},
+                   {'color': 'c'},
+                   {'color': 'c'},
+                   {'color': 'm', 'ls': '-'},
                    {'color': 'm'},
                    {'color': 'k', 'ls': '-'},
                    {'color': 'c'},
@@ -138,7 +139,7 @@ else:
 
 def caption_single(max_evals_div_dim):
     caption = caption_single_rlbased if genericsettings.runlength_based_targets else caption_single_fixed 
-    return caption.replace(r'#1', 'TODO' + str(list(single_runlength_factors)) + '$D$') 
+    return caption.replace(r'#1', 'TODO$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$') 
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""

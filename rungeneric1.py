@@ -284,7 +284,8 @@ def main(argv=None):
                 genericsettings.evaluation_setting = 1e2
             else:
                 genericsettings.evaluation_setting = 1e7  # TODO: looks very arbitrary 
-            print genericsettings.evaluation_setting
+            if genericsettings.test:
+                print 'evaluation_setting:', genericsettings.evaluation_setting
 
         from bbob_pproc import config
         config.config()
