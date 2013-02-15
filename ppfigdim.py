@@ -157,8 +157,9 @@ def beautify(axesLabel=True):
     if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
         axisHandle.yaxis.grid(False, which='major')
         for (i, y) in enumerate(reversed(values_of_interest.run_lengths)):
-            plt.plot((1, 200), 2 * [y], styles[i]['color'] + '-', linewidth=0.2)
             plt.plot((1, 200), 2 * [y], 'k:', linewidth=0.2)
+            if i / 2. == i // 2:
+                plt.plot((1, 200), 2 * [y], styles[i]['color'] + '-', linewidth=0.2)
     else:
         axisHandle.yaxis.grid(True, which='major')
     # quadratic "grid"

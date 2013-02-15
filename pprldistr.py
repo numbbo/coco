@@ -667,8 +667,10 @@ def main(dsList, isStoringXMax=False, outputdir='',
             plotFVDistr(dictdim, 1e-8, np.inf, **rldStyles[-1])
             # funval_factor = 
             # coloring right to left
-            for j, max_evals in enumerate(single_runlength_factors):
-                tmp = plotFVDistr(dictdim, 1e-8, max_evals,
+            for j, max_eval_factor in enumerate(single_runlength_factors):
+                if max_eval_factor > maxEvalsFactor:
+                    break
+                tmp = plotFVDistr(dictdim, 1e-8, max_eval_factor,
                             **rldUnsuccStyles[j % len(rldUnsuccStyles)])
                 
         plt.text(0.98, 0.02, text, horizontalalignment="right",
