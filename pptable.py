@@ -25,7 +25,7 @@ from __future__ import absolute_import
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from bbob_pproc import bestalg, toolsstats, pproc, genericsettings
+from bbob_pproc import bestalg, toolsstats, pproc
 from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
 from bbob_pproc.toolsstats import significancetest
 
@@ -197,7 +197,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     dims = set(dictDim.keys())
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
-    if(genericsettings.evaluation_setting==1e2):
+    if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
         header = [r'\#FEs']
         for i in targetsOfInterest.labels():
             header.append(r'\multicolumn{2}{@{}c@{}}{%s}'
@@ -224,7 +224,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             curline = [r'${\bf f_{%d}}$' % f]
             bestalgdata = bestalgentry.detERT(targetsOfInterest((f,d)))
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest((f,d)))
-            if(genericsettings.evaluation_setting==1e2):
+            if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 #write ftarget:fevals
                 for i in xrange(len(bestalgdata[:-1])):
                     
@@ -415,7 +415,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         extraeol[-1] = ''
 
         outputfile = os.path.join(outputdir, 'pptable_%02dD%s.tex' % (d, info))
-        if(genericsettings.evaluation_setting==1e2):
+        if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
             spec = r'@{}c@{}|' + '*{%d}{@{ }r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         else:
             spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
