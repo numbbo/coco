@@ -227,12 +227,13 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 #write ftarget:fevals
                 for i in xrange(len(bestalgdata[:-1])):
-                    
-                    curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{1e%+d}:%s \quad}'
-                                   % (int(np.log10(targetsOfInterest((f,d))[i])),
+                    temp=targetsOfInterest((f,d))[i]
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%.1fe%+d}:%s \quad}'
+                                   % (temp/10**int(np.log10(temp)),int(np.log10(temp)),
                                       writeFEvalsMaxPrec(bestalgdata[i], 2)))
-                curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{1e%+d}:%s }'
-                               % (int(np.log10(targetsOfInterest((f,d))[-1])),
+                temp=targetsOfInterest((f,d))[-1]
+                curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%.1fe%+d}:%s }'
+                               % (temp/10**int(np.log10(temp)),int(np.log10(temp)),
                                                writeFEvalsMaxPrec(bestalgdata[-1], 2)))            
             else:            
                 # write #fevals of the reference alg
