@@ -234,8 +234,6 @@ def main(argv=None):
                    + 'argument for input flag "--settings".')
             raise Usage(txt)
         
-        from bbob_pproc import config
-        config.config()
         if 11 < 3:
             from bbob_pproc import config  # input settings
             config.config()
@@ -287,7 +285,9 @@ def main(argv=None):
             else:
                 genericsettings.evaluation_setting = 1e7  # TODO: looks very arbitrary 
             print genericsettings.evaluation_setting
-            config.config()
+
+        from bbob_pproc import config
+        config.config()
         
         if (verbose):
             for i in dsList:
