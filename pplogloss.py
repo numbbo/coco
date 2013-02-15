@@ -463,7 +463,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
         maxevals = max(maxevals)
         mFE = max(mFE)
         EVALS = [2.*d]
-        EVALS.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals))))*d)
+        EVALS.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals*1./d))))*d)
         #Set variables: Done
     
         data = generateData(dsList, EVALS, CrE)
@@ -578,7 +578,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
     for d, dsdim in dsList.dictByDim().iteritems():
         maxevals = max(max(i.ert[numpy.isinf(i.ert)==False]) for i in dsdim)
         EVALS = [2.*d]
-        EVALS.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals))))*d)
+        EVALS.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals*1./d))))*d)
 
         if not evalf:
             evalf = (numpy.log10(EVALS[0]/d), numpy.log10(EVALS[-1]/d))
