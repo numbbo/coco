@@ -72,7 +72,7 @@ table_caption_one = r"""%
     Expected running time (ERT in number of function 
     evaluations) divided by the reference best ERT measured during BBOB-2009. The ERT 
     and in braces as dispersion measure the half difference between 90 and 
-    10%-tile of simulated running times appear in the second row of each cell,  
+    10\%-tile of simulated running times appear in the second row of each cell,  
     the best ERT in the
     """
 table_caption_two1 = r"""%
@@ -86,6 +86,11 @@ table_caption_two2 = r"""%
 table_caption_rest = r"""%
     The median number of conducted function evaluations is additionally given in 
     \textit{italics}, if the target in the last column was never reached. 
+    **Bold** entries are statistically significantly better (according to
+    the rank-sum test) compared to the best algorithm in BBOB-2009, with
+    $p = 0.05$ or $p = 10^{-k}$ where $k > 1$ is the number following the
+    $\downarrow$ symbol, with Bonferroni correction by the number of
+    functions.
     """
 table_caption = table_caption_one + table_caption_two1 + table_caption_rest
 table_caption_rlbased = table_caption_one + table_caption_two2 + table_caption_rest
