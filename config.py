@@ -30,6 +30,7 @@ def config():
         print 'taking bestGECCO2009 based target values'
         pprldmany.target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', 
                                                                 10**np.arange(-0.3, 2.701, 0.1))
+        pprldmany.x_limit = 3 * genericsettings.evaluation_setting[0]
         pprldistr.single_target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', [0.5, 2, 10, 50])
         pprldistr.runlen_xlimits_max = 3 * genericsettings.evaluation_setting[0]
         pprldistr.runlen_xlimits_min = 10**-0.5
