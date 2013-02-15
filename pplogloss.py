@@ -465,7 +465,6 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
         EVALS = [2.*d]
         EVALS.extend(numpy.power(10., numpy.arange(1, numpy.log10(1e-9 + maxevals*1./d)))*d)
         #Set variables: Done
-    
         data = generateData(dsList, EVALS, CrE)
     
         tmp = "\\textbf{\\textit{f}\\raisebox{-0.35ex}{%d}--\\textit{f}\\raisebox{-0.35ex}{%d} in %d-D}, maxFE/D=%s" \
