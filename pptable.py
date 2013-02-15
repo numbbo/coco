@@ -188,7 +188,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     #in the following the reference algorithm is the one given in
     #bestalg.bestalgentries which is the virtual best of BBOB
     dictDim = dsList.dictByDim()
-
+    targetf=1e-8
     if info:
         info = '_' + info
         # insert a separator between the default file name and the additional
@@ -201,7 +201,8 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         header = [r'\#FEs/D']
         for i in targetsOfInterest.labels():
             header.append(r'\multicolumn{2}{@{}c@{}}{%s}'
-                      % i) #writeFEvals2(round(10**float(i)*500,2),2)) 
+                      % i) 
+
     else:
         header = [r'$\Delta f$']
         for i in targetsOfInterest.target_values:
@@ -236,7 +237,10 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 if temp[-2]=="0":
                     temp=temp[:-2]+temp[-1]
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
-                               % (temp,writeFEvalsMaxPrec(bestalgdata[-1], 2)))            
+                               % (temp,writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
+                #success
+                targetf=targetsOfInterest((f,d))[-1]
+                           
             else:            
                 # write #fevals of the reference alg
                 for i in bestalgdata[:-1]:
@@ -248,6 +252,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
 
             # write the success ratio for the reference alg
+            #targetf=1e-8
             tmp = bestalgentry.detEvals([targetf])[0][0]
             tmp2 = np.sum(np.isnan(tmp) == False) # count the nb of success
             curline.append('%d' % (tmp2))
