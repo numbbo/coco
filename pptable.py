@@ -252,7 +252,6 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
 
             # write the success ratio for the reference alg
-            #targetf=1e-8
             tmp = bestalgentry.detEvals([targetf])[0][0]
             tmp2 = np.sum(np.isnan(tmp) == False) # count the nb of success
             curline.append('%d' % (tmp2))
