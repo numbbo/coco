@@ -138,7 +138,7 @@ else:
 
 def caption_single(max_evals_div_dim):
     caption = caption_single_rlbased if genericsettings.runlength_based_targets else caption_single_fixed 
-    return caption.replace(r'#1', 'TODO D') 
+    return caption.replace(r'#1', 'TODO' + str(list(single_runlength_factors)) + '$D$') 
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""
