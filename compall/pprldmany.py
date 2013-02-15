@@ -55,7 +55,7 @@ from bbob_pproc import pptex  # numtotex
 
 displaybest2009 = True
 target_values = pp.TargetValues(10**np.arange(2, -8, -0.2))  # changed in config.py
-x_limit = 3e2 if genericsettings.evaluation_setting == 1e2 else 1e7  # noisy: 1e8, otherwise: 1e7. maximal run length shown
+x_limit = 3 * genericsettings.evaluation_setting[0] if genericsettings.runlength_based_targets else genericsettings.evaluation_setting[1]  # noisy: 1e8, otherwise: 1e7. maximal run length shown
 annotation_line_end_relative = 1.11  # lines between graph and annotation
 annotation_space_end_relative = 1.24  # figure space end relative to x_limit
 save_zoom = False  # save zoom into left and right part of the figures

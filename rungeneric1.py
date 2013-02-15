@@ -278,14 +278,10 @@ def main(argv=None):
         for ds in dsList:
             dict_max_fun_evals[ds.dim] = np.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
         genericsettings.dict_max_fun_evals = dict_max_fun_evals
-        if genericsettings.evaluation_setting == 1e3:  # automatic choice of evaluation setup, looks still like a hack
+        if genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
             genericsettings.runlength_based_targets = np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < 1e3
             if genericsettings.runlength_based_targets:
-                genericsettings.evaluation_setting = 1e2
-            else:
-                genericsettings.evaluation_setting = 1e7  # TODO: looks very arbitrary 
-            if genericsettings.test:
-                print 'evaluation_setting:', genericsettings.evaluation_setting
+                print '  runlength based targets in use'
 
         from bbob_pproc import config
         config.config()
