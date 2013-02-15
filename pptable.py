@@ -86,9 +86,9 @@ table_caption_two2 = r"""%
 table_caption_rest = r"""%
     The median number of conducted function evaluations is additionally given in 
     \textit{italics}, if the target in the last column was never reached. 
-    **Bold** entries are statistically significantly better (according to
+    \textbf{Bold} entries are statistically significantly better (according to
     the rank-sum test) compared to the best algorithm in BBOB-2009, with
-    $p = 0.05$ or $p = 10^{-k}$ where $k > 1$ is the number following the
+    $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
     $\downarrow$ symbol, with Bonferroni correction by the number of
     functions.
     """
