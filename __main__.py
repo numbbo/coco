@@ -91,6 +91,10 @@ if __name__ == "__main__":
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'DE-PSO ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'VNS '))
     print '  subtest finished in ', time.time() - t0, ' seconds'
+    t0 = time.time()
+    os.system(python + command + ' --expensive ' +
+                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'VNS '))
+    print '  subtest finished in ', time.time() - t0, ' seconds'
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()
 
