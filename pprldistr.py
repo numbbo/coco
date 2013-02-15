@@ -51,7 +51,7 @@ from bbob_pproc import toolsstats, genericsettings, pproc
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
-single_runlength_factors = 2**np.arange(-1, 30) # TODO: should depend on the value of evaluation_setting
+single_runlength_factors = np.array([0.5, 1, 2, 4, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10]) # TODO: should depend on the value of evaluation_setting
 
 funval_factor = 10  # TODO: config comes too late to set the correct caption
 
@@ -136,10 +136,9 @@ except IOError, (errno, strerror):
 else:
     f.close()
 
-def caption_single(max_evals):
+def caption_single(max_evals_div_dim):
     caption = caption_single_rlbased if genericsettings.runlength_based_targets else caption_single_fixed 
-    caption.replace(r'#1', 'TODO D') 
-    return caption
+    return caption.replace(r'#1', 'TODO D') 
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""
@@ -668,7 +667,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
             plotFVDistr(dictdim, 1e-8, np.inf, **rldStyles[-1])
             # funval_factor = 
             # coloring right to left
-            for j, max_evals in enumerate(10**np.arange(0, np.floor(np.log10(maxEvalsFactor)), np.log10(funval_factor))):
+            for j, max_evals in enumerate(single_runlength_factors):
                 tmp = plotFVDistr(dictdim, 1e-8, max_evals,
                             **rldUnsuccStyles[j % len(rldUnsuccStyles)])
                 
