@@ -16,8 +16,9 @@ import numpy as np
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
     #set_trace()
 test = True  # debug/test flag, set to False for committing the final version
+in_a_hurry = True # lower resolution, no eps, saves 30% time
 evaluation_setting = [1e2, 1e6]  # only used in config, yet to be improved?
-runlength_based_targets = True  #'auto' # might be overwritten, 'auto' means automatic choice, otherwise True or False
+runlength_based_targets = 'auto' # might be overwritten, 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
@@ -36,7 +37,6 @@ instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
-in_a_hurry = True # lower resolution, no eps, saves 30% time
 fig_formats = ('eps', 'pdf') if not in_a_hurry else ('pdf', )
 
 line_styles = [  # used by ppfigs and pprlmany  
