@@ -53,8 +53,6 @@ from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
 single_runlength_factors = [0.5, 1, 2, 4, 10] + [10**i for i in range(2, 12)]
 
-funval_factor = 10  # TODO: config comes too late to set the correct caption
-
 caption_part_one = r"""%
      Empirical cumulative distribution functions (ECDF), plotting the fraction of 
      trials with an outcome not larger than the respective value on the $x$-axis. """
@@ -666,7 +664,6 @@ def main(dsList, isStoringXMax=False, outputdir='',
                             **rldUnsuccStyles[j % len(rldUnsuccStyles)])
         else:
             plotFVDistr(dictdim, 1e-8, np.inf, **rldStyles[-1])
-            # funval_factor = 
             # coloring right to left
             for j, max_eval_factor in enumerate(single_runlength_factors):
                 if max_eval_factor > maxEvalsFactor:

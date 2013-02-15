@@ -16,8 +16,8 @@ import numpy as np
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
     #set_trace()
 test = True  # debug/test flag, set to False for committing the final version
-evaluation_setting = 1e7  # artificial way to control the "new" displays by setting to 1e2, 1e3==automatic, to be improved
-runlength_based_targets = True # might be overwritten, evaluation_setting == 1e3 means automatic choice
+evaluation_setting = [1e2, 1e6]  # 1e3==automatic, only used in rungeneric1 (as flag) and config (as value), yet to be improved?
+runlength_based_targets = 'auto' # might be overwritten, 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 

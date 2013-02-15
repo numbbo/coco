@@ -31,14 +31,14 @@ def config():
         pprldmany.target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', 
                                                                 10**np.arange(-0.3, 2.701, 0.1))
         pprldistr.single_target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', [0.5, 2, 10, 50])
-        pprldistr.runlen_xlimits_max = 3 * genericsettings.evaluation_setting  # seems to be overwritten
+        pprldistr.runlen_xlimits_max = 3 * genericsettings.evaluation_setting[0]
         pprldistr.runlen_xlimits_min = 10**-0.5
         ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues('bestGECCO2009',
                                                                        [10**i for i in [2.0, 1.5, 1.0, 0.5, 0.1, -0.3]],
                                                                        # [10**i for i in [1.7, 1, 0.3, -0.3]]
                                                                        force_different_targets_factor=1)
         ppfigdim.scaling_figure_caption = ppfigdim.scaling_figure_caption_rlbased
-        ppfigdim.xlim_max = 5 * genericsettings.evaluation_setting
+        ppfigdim.xlim_max = 5 * genericsettings.evaluation_setting[0]
         pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues('bestGECCO2009',
                                                   [10**i for i in [1.7, 1, 0.3, -0.3]])
         pptable.table_caption=pptable.table_caption_rlbased
