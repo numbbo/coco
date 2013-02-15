@@ -78,9 +78,10 @@ The median number of conducted function evaluations is additionally given in
 \#succ is the number of trials that reached the final target $\fopt + 10^{-8}$.
 """
 
-table_caption_rlbased=r"""AAAAAAExpected running time (ERT in number of function evaluations)
-divided by the best ERT measured during BBOB-2009 (given in the
-first row of each cell) for different $\Df$ values for functions
+table_caption_rlbased=r"""Expected running time (ERT in number of function evaluations) to reach the run 
+length based target values (left side of ":" in the first row of each cell) obtained using
+the best ERT measured during BBOB-2009 (right side of ":"
+in first row of each cell) divided by the corresponding ERT for different run lengths for functions
 $f_1$--$f_{24}$.
 The median number of conducted function evaluations is additionally given in 
 \textit{italics}, if $\ERT(10^{-7}) =\infty$. The interquartile range divided by two is shown in braces. 
