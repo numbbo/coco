@@ -41,7 +41,8 @@ __all__ = ['main']
 shortoptlist = "hvpfo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
                "fig-only", "rld-only", "los-only", "crafting-effort=",
-               "pickle", "verbose", "settings=", "conv"]
+               "pickle", "verbose", "settings=", "conv", "expensive", 
+               "runlength-based"]
 
 #CLASS DEFINITIONS
 

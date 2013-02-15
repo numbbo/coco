@@ -17,7 +17,7 @@ import numpy as np
     #set_trace()
 test = True  # debug/test flag, set to False for committing the final version
 in_a_hurry = True # lower resolution, no eps, saves 30% time
-evaluation_setting = None  # only used in config, yet to be improved?
+evaluation_setting = None  # 3e2 is the expensive setting only used in config, yet to be improved?
 runlength_based_targets = True #'auto' # might be overwritten, 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
