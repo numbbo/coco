@@ -463,7 +463,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
         maxevals = max(maxevals)
         mFE = max(mFE)
         EVALS = [2.*d]
-        EVALS.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals*1./d))))*d)
+        EVALS.extend(numpy.power(10., numpy.arange(1, numpy.log10(1e-9 + maxevals*1./d)))*d)
         #Set variables: Done
     
         data = generateData(dsList, EVALS, CrE)
