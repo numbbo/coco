@@ -68,26 +68,26 @@ old_legend = r"""
  the names of functions. }
 """
 
-table_caption=r"""Expected running time (ERT in number of function evaluations)
-divided by the best ERT measured during BBOB-2009 (given in the
-first row of each cell) for different $\Df$ values for functions
-$f_1$--$f_{24}$.
-The median number of conducted function evaluations is additionally given in 
-\textit{italics}, if $\ERT(10^{-7}) =\infty$. The interquartile range divided by two is shown in braces. 
-%
-\#succ is the number of trials that reached the final target $\fopt + 10^{-8}$.
-"""
-
-table_caption_rlbased=r"""Expected running time (ERT in number of function evaluations) to reach the run 
-length based target values (left side of ":" in the first row of each cell) obtained using
-the best ERT measured during BBOB-2009 (right side of ":"
-in first row of each cell) divided by the corresponding ERT for different run lengths for functions
-$f_1$--$f_{24}$.
-The median number of conducted function evaluations is additionally given in 
-\textit{italics}, if $\ERT(10^{-7}) =\infty$. The interquartile range divided by two is shown in braces. 
-%
-\#succ is the number of trials that reached the final target $\fopt + 10^{-8}$.
-"""
+table_caption_one = r"""%
+    Expected running time (ERT in number of function 
+    evaluations) divided by the best ERT measured during BBOB-2009. The ERT 
+    and in braces the half difference between 90 and 10%-tile of simulated 
+    running times are given in the second row of each cell,  
+    """
+table_caption_two1 = r"""%
+    the best ERT in the first. The different target \Df-values are given in the top row. 
+    \#succ is the number of trials that reached the (final) target $\fopt + 10^{-8}$.
+    """
+table_caption_two2 = r"""%
+    the best ERT in the first, preceded by the different target \Df-values in \textit{italics}. 
+    \#succ is the number of trials that reached the target value of the last column.
+    """
+table_caption_rest = r"""%
+    The median number of conducted function evaluations is additionally given in 
+    \textit{italics}, if the target in the last column was never reached. 
+    """
+table_caption = table_caption_one + table_caption_two1 + table_caption_rest
+table_caption_rlbased = table_caption_one + table_caption_two2 + table_caption_rest
 
 
 def _treat(ds):
