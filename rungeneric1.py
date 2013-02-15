@@ -405,22 +405,23 @@ def main(argv=None):
 
             print "ERT loss ratio figures and tables done."
 
-        prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
+        latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
+        prepend_to_file(latex_commands_file, 
                         ['\\providecommand{\\bbobpprldistrlegend}[1]{', 
                          pprldistr.caption_single(np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()])), # depends on the config setting, should depend on maxfevals
                          '}'])
-        prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
+        prepend_to_file(latex_commands_file, 
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{',
                          ppfigdim.scaling_figure_caption.replace('values_of_interest', 
                                         ', '.join(ppfigdim.values_of_interest.loglabels())), 
                          '}'])
-        prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
+        prepend_to_file(latex_commands_file, 
                         ['\\providecommand{\\bbobpptablecaption}[1]{',
                          pptable.table_caption,
                          '}'])
-        prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
+        prepend_to_file(latex_commands_file, 
                         ['\\providecommand{\\algfolder}{}'])  # is overwritten in rungeneric.py
-        prepend_to_file(os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex'), 
+        prepend_to_file(latex_commands_file, 
                         ['\\providecommand{\\algname}{' + 
                          (str_to_latex(strip_pathname(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
         if isfigure or istab or isrldistr or islogloss:

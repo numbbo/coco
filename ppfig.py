@@ -218,8 +218,8 @@ def groupByRange(data):
 
     return res
 
-def logxticks():
-    """Modify log-scale figure xticks from 10^i to i.
+def logxticks(limits=[-np.inf, np.inf]):
+    """Modify log-scale figure xticks from 10^i to i for values with the ``limits``.
     
     This is to have xticks that are more visible.
     Modifying the x-limits of the figure after calling this method will
@@ -228,9 +228,13 @@ def logxticks():
     
     """
     _xticks = plt.xticks()
+    _xticks
     newxticks = []
     for j in _xticks[0]:
-        newxticks.append('%d' % round(np.log10(j)))
+        if j > limits[0] and j < limits[1]: # tick annotations only within the limits
+            newxticks.append('%d' % round(np.log10(j)))
+        else:
+            newxticks.append('')
     plt.xticks(_xticks[0], newxticks)
     # TODO: check the xlabel is changed accordingly?
 
