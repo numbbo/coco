@@ -51,7 +51,7 @@ from bbob_pproc import toolsstats, genericsettings, pproc
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
-single_runlength_factors = [0.5, 1, 2, 4, 10] + [10 ** i for i in range(2, 12)]
+single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)]
 
 caption_part_one = r"""%
      Empirical cumulative distribution functions (ECDF), plotting the fraction of 
@@ -70,7 +70,7 @@ caption_right = r"""%
      best achieved $\Df$ 
      for running times of #1
      function evaluations 
-     (from right to left magenta-black-$2\times$cyan-$2\times$magenta and further cycling black-cyan-magenta) and final $\Df$-value (red). """
+     (from right to left cycling magenta-black-cyan-magenta\dots) and final $\Df$-value (red). """
 caption_wrap_up = r"""%
      Legends indicate for each target the number of functions that were solved in at
      least one trial.
@@ -110,15 +110,16 @@ rldUnsuccStyles = (
                    {'color': 'm', 'ls': '-'},
                    {'color': 'k', 'ls': '-'},
                    {'color': 'c'},
-                   {'color': 'c'},
                    {'color': 'm', 'ls': '-'},
-                   {'color': 'm'},
                    {'color': 'k', 'ls': '-'},
                    {'color': 'c'},
                    {'color': 'm', 'ls': '-'},
                    {'color': 'k'},
                    {'color': 'c', 'ls': '-'},
-                   {'color': 'm'})  # should not be too short
+                   {'color': 'm'},
+                   {'color': 'k'},
+                   {'color': 'c', 'ls': '-'}
+                   )  # should not be too short
 
 previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'
 previous_data_filename = os.path.join(os.path.split(__file__)[0], previous_data_filename)
@@ -136,7 +137,7 @@ else:
 
 def caption_single(max_evals_div_dim):
     caption = caption_single_rlbased if genericsettings.runlength_based_targets else caption_single_fixed 
-    return caption.replace(r'#1', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:7]]) + 'D,\dots$') 
+    return caption.replace(r'#1', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$') 
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""

@@ -108,6 +108,7 @@ def main(argv=None):
         --conv
             if this option is chosen, additionally convergence plots
             for each function and algorithm are generated.
+        --expensive TODO
 
     Exceptions raised:
 
@@ -177,6 +178,7 @@ def main(argv=None):
         isNoiseFree = False
         inputsettings = 'color'
         isConv = False
+        isLRbased = None
 
         #Process options
         for o, a in opts:
@@ -219,6 +221,10 @@ def main(argv=None):
                 inputsettings = a
             elif o == "--conv":
                 isConv = True
+            elif o == "--expensive" or o == "--runlength-based":
+                isRLbased = True
+            elif o == "--absolute-targets":
+                isRLbased = False
             else:
                 assert False, "unhandled option"
 
@@ -278,7 +284,7 @@ def main(argv=None):
         for ds in dsList:
             dict_max_fun_evals[ds.dim] = np.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
         genericsettings.dict_max_fun_evals = dict_max_fun_evals
-        if genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
+        if isRLbased is None and genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
             genericsettings.runlength_based_targets = np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < 1e3
             if genericsettings.runlength_based_targets:
                 print '  runlength based targets in use'
