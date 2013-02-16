@@ -140,7 +140,6 @@ except IOError, (errno, strerror):
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
 
-
 def beautify(axesLabel=True):
     """Customize figure presentation.
     
@@ -313,7 +312,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                 # ERT
                 res.extend(plt.plot(tmp[:, 0], tmp[:, 1] / tmp[:, 0],
                            markersize=20, clip_on=True, **styles[i]))
-                if genericsettings.test:
+                if genericsettings.scaling_figures_with_boxes:
                     for dim in dimensions: 
                         # very unelegant way
                         if np.isfinite(dictFunc[func][dim][0].detERT([valuesOfInterest((func, dim))[i]])[0]):
@@ -433,3 +432,8 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         saveFigure(filename, verbose=verbose)
         plt.close()
+
+import genericsettings
+if genericsettings.test:
+    from bbob_pproc.toolsdivers import print_done 
+    print_done('ppfigdim import done')

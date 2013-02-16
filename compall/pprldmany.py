@@ -55,7 +55,8 @@ from bbob_pproc import pptex  # numtotex
 
 displaybest2009 = True
 target_values = pp.TargetValues(10**np.arange(2, -8, -0.2))  # changed in config.py
-x_limit = 1e7 # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
+x_limit = None  # not sure whether this is necessary/useful
+x_limit_default = 1e7 # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
 annotation_line_end_relative = 1.11  # lines between graph and annotation
 annotation_space_end_relative = 1.24  # figure space end relative to x_limit
 save_zoom = False  # save zoom into left and right part of the figures
@@ -202,6 +203,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     :param kwargs: optional arguments provided to plot function.
     
     """
+
     #Expect data to be a ndarray.
     x = data[np.isnan(data)==False] # Take away the nans
     nn = len(x)
@@ -215,7 +217,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
         #res = plt.plot((1., ), (0., ), **kwargs)
         res = pprldistr.plotECDF(np.array((1., )), n=np.inf, **kwargs)
     else:
-        dictx = {} # will contain number of appearances of each entry
+        dictx = {} # number of appearances of each value in x
         for i in x: 
             dictx[i] = dictx.get(i, 0) + 1  
 
@@ -229,8 +231,8 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
         x = x[:end]
         y = y[:end]
         
-        plt_plot(x_last, y_last, **kwargs)
-        x2 = np.hstack([np.repeat(x, 2), maxval])
+        plt_plot(x_last, y_last, **kwargs) # not clear what this does
+        x2 = np.hstack([np.repeat(x, 2), maxval]) # repeat x-values for each step in the cdf
         y2 = np.hstack([0.0, np.repeat(y / float(nn), 2)])
 
         res = ppfig.plotUnifLogXMarkers(x2, y2, nbperdecade * 3 / np.log10(maxval), 
@@ -425,6 +427,10 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     :param bool verbose: controls verbosity
 
     """
+    global x_limit  # late assignment of default, because it can be set to None in config 
+    if 'x_limit' not in globals() or x_limit is None:
+        x_limit = x_limit_default
+
     tmp = pp.dictAlgByDim(dictAlg)
     # tmp = pp.DictAlg(dictAlg).by_dim()
 

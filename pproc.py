@@ -32,7 +32,7 @@ from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
 from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from bbob_pproc.ppfig import consecutiveNumbers
 
-do_assertion = False  # expensive assertions
+do_assertion = genericsettings.force_assertions # expensive assertions
 targets_displayed_for_info = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]  # only to display info in DataSetList.info
 
 def cocofy(filename):

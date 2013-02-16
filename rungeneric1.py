@@ -41,8 +41,8 @@ __all__ = ['main']
 shortoptlist = "hvpfo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
                "fig-only", "rld-only", "los-only", "crafting-effort=",
-               "pickle", "verbose", "settings=", "conv", "expensive",
-               "runlength-based"]
+               "pickle", "verbose", "settings=", "conv", "expensive", 
+               "not-expensive", "runlength-based"]
 
 # CLASS DEFINITIONS
 
@@ -110,11 +110,15 @@ def main(argv=None):
             if this option is chosen, additionally convergence plots
             for each function and algorithm are generated.
         --expensive
-            switch for runlength-based targets for comparatively small
-            budgets and with fixed display limits.
+            runlength-based f-target values and fixed display limits,
+            useful with comparatively small budgets. By default the
+            setting is based on the budget used in the data.
+        --not-expensive
+            expensive setting off. 
         --runlength-based
-            switch for runlength-based targets but not necessarily
-            small budgets. 
+            runlength-based f-target values, such that the
+            "level of difficulty" is similar for all functions. 
+        --
 
     Exceptions raised:
 
@@ -160,15 +164,21 @@ def main(argv=None):
         # The zero-th input argument which is the name of the calling script is
         # disregarded.
 
-    try:
+    if 1 < 3:
+        opts, args = getopt.getopt(argv, shortoptlist, longoptlist)
+        if 11 < 3:
+            try:
+                opts, args = getopt.getopt(argv, shortoptlist, longoptlist)
+            except getopt.error, msg:
+                raise Usage(msg)
 
-        try:
-            opts, args = getopt.getopt(argv, shortoptlist, longoptlist)
-        except getopt.error, msg:
-            raise Usage(msg)
-
-        if not (args):
-            usage()
+        if not (args) and not '--help' in argv and not 'h' in argv:
+            print 'not enough input arguments given'
+            print 'cave: the following options also need an argument:'
+            print [o for o in longoptlist if o[-1] == '=']
+            print 'options given:'
+            print opts
+            print 'try --help for help'
             sys.exit()
 
         inputCrE = 0.
@@ -185,7 +195,7 @@ def main(argv=None):
         inputsettings = 'color'
         isConv = False
         isRLbased = None  # allows automatic choice
-        isExpensive = False
+        isExpensive = None 
 
         # Process options
         for o, a in opts:
@@ -231,7 +241,9 @@ def main(argv=None):
             elif o == "--runlength-based":
                 isRLbased = True
             elif o == "--expensive":
-                isExpensive = True  # comprises and overwrites runlength-based
+                isExpensive = True  # comprises runlength-based
+            elif o == "--expensive":
+                isExpensive = False  
             else:
                 assert False, "unhandled option"
 
@@ -296,6 +308,8 @@ def main(argv=None):
         if isExpensive:
             genericsettings.maxevals_fix_display = 3e2
             genericsettings.runlength_based_targets = True
+        elif isExpensive is False:
+            genericsettings.runlength_based_targets = False            
         if genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
             if np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < 1e3: 
                 genericsettings.runlength_based_targets = True
@@ -456,12 +470,13 @@ def main(argv=None):
 
         plt.rcdefaults()
 
-    except Usage, err:
-        print >> sys.stderr, err.msg
-        print >> sys.stderr, "for help use -h or --help"
-        return 2
+#    except Usage, err:
+#        print >> sys.stderr, err.msg
+#        print >> sys.stderr, "for help use -h or --help"
+#        return 2
 
 
 if __name__ == "__main__":
+    main()
     sys.exit(main())
 

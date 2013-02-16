@@ -108,7 +108,7 @@ def plotLogAbs(dsList0, dsList1, fvalueToReach, verbose=True):
     evals0 = {}
     evals1 = {}
 
-    targets = list(i[1] for i in fvalueToReach)
+    targets = fvalueToReach  # yet to come: TargetValues class needs to be considered
 
     succ0 = [0] * len(targets)
     succ1 = [0] * len(targets)
