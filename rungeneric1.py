@@ -242,7 +242,7 @@ def main(argv=None):
                 isRLbased = True
             elif o == "--expensive":
                 isExpensive = True  # comprises runlength-based
-            elif o == "--expensive":
+            elif o == "--not-expensive":
                 isExpensive = False  
             else:
                 assert False, "unhandled option"
