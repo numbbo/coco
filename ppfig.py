@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 """Generic routines for figure generation."""
-
 from operator import itemgetter
 from itertools import groupby
 import warnings

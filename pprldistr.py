@@ -123,17 +123,21 @@ rldUnsuccStyles = (
 
 previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'
 previous_data_filename = os.path.join(os.path.split(__file__)[0], previous_data_filename)
-previous_algorithm_data_found = True
-try:
-    # cocofy(previous_data_filename)
-    f = gzip.open(previous_data_filename, 'r')
-    dictprevalg = pickle.load(f)
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    previous_algorithm_data_found = False
-    print 'Could not find file: ', previous_data_filename
-else:
-    f.close()
+previous_data_dict = None
+def load_previous_data(filename=previous_data_filename, force=False):
+    if previous_data_dict and not force:
+        return previous_data_dict
+    try:
+        # cocofy(previous_data_filename)
+        f = gzip.open(previous_data_filename, 'r')
+        return pickle.load(f)
+    except IOError, (errno, strerror):
+        print "I/O error(%s): %s" % (errno, strerror)
+        previous_algorithm_data_found = False
+        print 'Could not find file: ', previous_data_filename
+    else:
+        f.close()
+    return None
 
 def caption_single(max_evals_div_dim):
     caption = caption_single_rlbased if genericsettings.runlength_based_targets else caption_single_fixed 
@@ -558,12 +562,15 @@ def plot(dsList, targets=single_target_values, **plotArgs):
 def plot_previous_algorithms(dim, funcs):
     """Display BBOB 2009 data, by default from ``pprldistr.previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'``"""
 
-    if previous_algorithm_data_found:
-        for alg in dictprevalg:
+    if previous_data_dict is None:
+        global previous_data_dict
+        previous_data_dict = load_previous_data() # this takes about 6 seconds
+    if previous_data_dict is not None:
+        for alg in previous_data_dict:
             x = []
             nn = 0
             try:
-                tmp = dictprevalg[alg]
+                tmp = previous_data_dict[alg]
                 for f in funcs:
                     tmp[f][dim]  # simply test that they exists
             except KeyError:
@@ -678,3 +685,4 @@ def main(dsList, isStoringXMax=False, outputdir='',
         saveFigure(filename, verbose=verbose)
         plt.close(fig)
         # plt.rcdefaults()
+

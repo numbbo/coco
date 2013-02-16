@@ -10,34 +10,43 @@ For setting variables dynamically see config.py, where some
 of the variables here and some 
 
 """
-
 import numpy as np
 
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
-    #set_trace()
-test = True  # debug/test flag, set to False for committing the final version
+#set_trace()
+test = False  # debug/test flag, set to False for committing the final version
+force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = True # lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved?
-runlength_based_targets = True #'auto' # might be overwritten, 'auto' means automatic choice, otherwise True or False
+runlength_based_targets = 'auto' # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
+scaling_figures_with_boxes = True 
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
-
-# single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default in pprldistr.plot method
-# single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each, seems not in use
-# summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # all in one figure
-# summarized_target_function_values = (100, 10, 1e0, 1e-1, 1e-2, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8) 
-# summarized_target_function_values = tuple(10**np.r_[-8:2:0.2]) # 1e2 and 1e-8
-# summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-8  
-# summarized_target_function_values = [-1, 3] # easy easy 
-# summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure
-# not (yet) in use: pprldmany_target_values = pproc.TargetValues().set_targets(10**np.arange(-8, 2, 0.2))
-
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
 target_runlengths_in_table = [0.5, 2, 10, 50]  # used in config
 tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7) # used as input for pptables.main in rungenericmany 
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
+rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
+
+tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
+#tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
+
+rldDimsOfInterest = (5, 20)
+figValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # this is a bad name that should improve, which fig, what vals???
+# figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8) #in/outcomment if desired
+##Put backward to have the legend in the same order as the lines.
+
+# single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default in pprldistr.plot method, on graph for each
+# single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each, seems not in use
+# summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # currently not in use, all in one figure (graph?)
+# summarized_target_function_values = (100, 10, 1, 1e-1, 1e-2, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8) 
+# summarized_target_function_values = tuple(10**np.r_[-8:2:0.2]) # 1e2 and 1e-8
+# summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-1 
+# summarized_target_function_values = [-1, 3] # easy easy 
+# summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure (means what?)
+# not (yet) in use: pprldmany_target_values = pproc.TargetValues().set_targets(10**np.arange(-8, 2, 0.2)) (might not work because of cyclic import
 
 fig_formats = ('eps', 'pdf') if not in_a_hurry else ('pdf', )
 
@@ -92,15 +101,6 @@ rctick = {"labelsize": 20}
 rcfont = {"size": 20}
 rclegend = {"fontsize": 20}
     
-# function-dependent target function values
-tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
-#tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
-
-rldDimsOfInterest = (5, 20)
-figValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # this is a bad name that should improve, which fig, what vals???
-# figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8) #in/outcomment if desired
-##Put backward to have the legend in the same order as the lines.
-
 class Testbed(object):
     """this might become the future way to have settings related to testbeds"""
     pass
@@ -117,6 +117,3 @@ class GECCOBBOBNoisefreeTestbed(GECCOBBOBTestbed):
 # TODO: this needs to be set somewhere, e.g. in rungeneric*
 # or even better by investigating in the data attributes
 current_testbed = GECCOBBOBNoisefreeTestbed() 
-
-
-

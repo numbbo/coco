@@ -404,7 +404,9 @@ def main(argv=None):
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr.comp(dictFG1[fGroup], dictFG0[fGroup],
-                                       inset.rldValsOfInterest, True, outputdir,
+                                       inset.rldValsOfInterest if isinstance(inset.rldValsOfInterest, TargetValues) 
+                                                    else TargetValues(inset.rldValsOfInterest), 
+                                       True, outputdir,
                                        '%s' % fGroup, verbose)
 
                     # ECDFs per noise groups
@@ -412,7 +414,9 @@ def main(argv=None):
                     dictFN1 = dictDim1[dim].dictByNoise()
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr.comp(dictFN1[fGroup], dictFN0[fGroup],
-                                       inset.rldValsOfInterest, True, outputdir,
+                                       inset.rldValsOfInterest if isinstance(inset.rldValsOfInterest, TargetValues) 
+                                                    else TargetValues(inset.rldValsOfInterest), 
+                                       True, outputdir,
                                        '%s' % fGroup, verbose)
 
             print "ECDF runlength graphs done."

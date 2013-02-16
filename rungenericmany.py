@@ -209,7 +209,13 @@ def main(argv=None):
             from bbob_pproc import config, genericsettings as inset # input settings
             config.config()
         elif inputsettings == "grayscale":
+            # this settings strategy (by proving different settings files) is problematic, 
+            # because it means copy-paste of the settings
+            # file and future changes have a great chance to make the pasted files incompatible
+            # as has most likely happened with grayscalesettings:
             from bbob_pproc import grayscalesettings as inset # input settings
+            # better would be just adjust the previous settings, as config is doing it, 
+            # so a config_grayscalesettings.py module seems the better approach to go 
         elif inputsettings == "black-white":
             from bbob_pproc import bwsettings as inset # input settings
         else:
