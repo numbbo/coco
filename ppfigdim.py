@@ -315,7 +315,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                 if genericsettings.scaling_figures_with_boxes:
                     for dim in dimensions: 
                         # to find finite simulated runlengths we need to have at least one successful run
-                        if dictFunc[func][dim][0].detSuccess([valuesOfInterest((func, dim))[i]])[0]:
+                        if dictFunc[func][dim][0].detSuccesses([valuesOfInterest((func, dim))[i]])[0]:
                             # make a box-plot
                             y = toolsstats.drawSP_from_dataset(dictFunc[func][dim][0],
                                                                valuesOfInterest((func, dim))[i],
