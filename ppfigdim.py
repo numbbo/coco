@@ -314,8 +314,8 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                            markersize=20, clip_on=True, **styles[i]))
                 if genericsettings.scaling_figures_with_boxes:
                     for dim in dimensions: 
-                        # very unelegant way
-                        if np.isfinite(dictFunc[func][dim][0].detERT([valuesOfInterest((func, dim))[i]])[0]):
+                        # to find finite simulated runlengths we need to have at least one successful run
+                        if dictFunc[func][dim][0].detSuccess([valuesOfInterest((func, dim))[i]])[0]:
                             # make a box-plot
                             y = toolsstats.drawSP_from_dataset(dictFunc[func][dim][0],
                                                                valuesOfInterest((func, dim))[i],
