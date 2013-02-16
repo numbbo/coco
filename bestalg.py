@@ -29,7 +29,8 @@ from pdb import set_trace
 import warnings
 import numpy as np
 
-from bbob_pproc import readalign, pproc
+from bbob_pproc import genericsettings, readalign, pproc
+from bbob_pproc.toolsdivers import print_done
 
 bestalgentries2009 = {}
 bestalgentries2010 = {}
@@ -326,7 +327,7 @@ class BestAlgSet():
 
 #FUNCTION DEFINITIONS
 
-def loadBBOB2009():
+def loadBBOB2009(force=False):
     """Assigns :py:data:`bestalgentries2009`.
 
     This function is needed to set the global variable
@@ -343,7 +344,12 @@ def loadBBOB2009():
     global bestalgentries2009
     # global statement necessary to change the variable bestalg.bestalgentries2009
 
-    print "Loading best algorithm data from BBOB-2009...",  
+    if not force and bestalgentries2009:
+        return 
+    
+    print "Loading best algorithm data from BBOB-2009...",
+    sys.stdout.flush()
+ 
     bestalgfilepath = os.path.split(__file__)[0]
     #    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle')
     #    cocofy(picklefilename)
@@ -353,7 +359,7 @@ def loadBBOB2009():
     fid = gzip.open(picklefilename, 'r')
     bestalgentries2009 = pickle.load(fid)
     fid.close()
-    print " done."
+    print_done()
 
 def loadBBOB2010():
     """Assigns :py:data:`bestalgentries2010`.

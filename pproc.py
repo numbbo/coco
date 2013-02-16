@@ -231,16 +231,6 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
             assert b <= targets[0] * (1 + 1e-10)
             assert b >= targets[0] / (1 + 1e-10)
         assert targets[-1] >= self.smallest_target
-        try:
-            if self.printed:
-                pass
-        except:
-            if tuple(fun_dim) == (20,10):
-                self.printed = True
-                # for i in xrange(len(ds.ert)):
-                #     print(np.round((np.log10(ds.target[i]+1e-99), ds.ert[i]), 3)) 
-                for i in xrange(len(targets)): 
-                    print((self.run_lengths[i], np.log10(targets[i])))
         assert len(ds.ert) == len(ds.target)
         
         return targets    
