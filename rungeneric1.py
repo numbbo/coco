@@ -26,11 +26,11 @@ if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     sys.path.append(os.path.join(filepath, os.path.pardir))
     import matplotlib
-    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
+    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
 from bbob_pproc import genericsettings, pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from bbob_pproc.pproc import DataSetList
-from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname, str_to_latex
+from bbob_pproc.toolsdivers import print_done, prepend_to_file, strip_pathname, str_to_latex
 from bbob_pproc import ppconverrorbars
 
 import matplotlib.pyplot as plt
@@ -41,17 +41,17 @@ __all__ = ['main']
 shortoptlist = "hvpfo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
                "fig-only", "rld-only", "los-only", "crafting-effort=",
-               "pickle", "verbose", "settings=", "conv", "expensive", 
+               "pickle", "verbose", "settings=", "conv", "expensive",
                "runlength-based"]
 
-#CLASS DEFINITIONS
+# CLASS DEFINITIONS
 
 class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
 
-#FUNCTION DEFINITIONS
+# FUNCTION DEFINITIONS
 
 def usage():
     print main.__doc__
@@ -187,9 +187,9 @@ def main(argv=None):
         isRLbased = None  # allows automatic choice
         isExpensive = False
 
-        #Process options
+        # Process options
         for o, a in opts:
-            if o in ("-v","--verbose"):
+            if o in ("-v", "--verbose"):
                 verbose = True
             elif o in ("-h", "--help"):
                 usage()
@@ -202,7 +202,7 @@ def main(argv=None):
                 isNoisy = True
             elif o == "--noise-free":
                 isNoiseFree = True
-            #The next 4 are for testing purpose
+            # The next 4 are for testing purpose
             elif o == "--tab-only":
                 isfigure = False
                 isrldistr = False
@@ -228,22 +228,20 @@ def main(argv=None):
                 inputsettings = a
             elif o == "--conv":
                 isConv = True
-            elif o == "--expensive":
-                isExpensive = True 
             elif o == "--runlength-based":
                 isRLbased = True
-            elif o == "--absolute-targets":
-                isRLbased = False
+            elif o == "--expensive":
+                isExpensive = True  # comprises and overwrites runlength-based
             else:
                 assert False, "unhandled option"
 
         # from bbob_pproc import bbob2010 as inset # input settings
         if inputsettings == "color":
-            from bbob_pproc import genericsettings as inset # input settings
+            from bbob_pproc import genericsettings as inset  # input settings
         elif inputsettings == "grayscale":
-            from bbob_pproc import grayscalesettings as inset # input settings
+            from bbob_pproc import grayscalesettings as inset  # input settings
         elif inputsettings == "black-white":
-            from bbob_pproc import bwsettings as inset # input settings
+            from bbob_pproc import bwsettings as inset  # input settings
         else:
             txt = ('Settings: %s is not an appropriate ' % inputsettings
                    + 'argument for input flag "--settings".')
@@ -256,7 +254,7 @@ def main(argv=None):
             # import testbedsettings as testbedsettings # input settings
             try:
                 fp, pathname, description = imp.find_module("testbedsettings")
-                testbedsettings=imp.load_module("testbedsettings", fp, pathname, description)
+                testbedsettings = imp.load_module("testbedsettings", fp, pathname, description)
             finally:
                 fp.close()
 
@@ -264,7 +262,7 @@ def main(argv=None):
             warnings.simplefilter('module')
             # warnings.simplefilter('ignore')            
 
-        print ("Post-processing: will generate post-processing " +
+        print ("Post-processing (1): will generate output " + 
                "data in folder %s" % outputdir)
         print "  this might take several minutes."
 
@@ -296,39 +294,36 @@ def main(argv=None):
         if isRLbased is not None:
             genericsettings.runlength_based_targets = isRLbased
         if isExpensive:
-            genericsettings.evaluation_setting = 3e2
+            genericsettings.maxevals_fix_display = 3e2
             genericsettings.runlength_based_targets = True
         if genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
             if np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < 1e3: 
                 genericsettings.runlength_based_targets = True
-                genericsettings.evaluation_setting = 3e2
+                genericsettings.maxevals_fix_display = 3e2
             else:
                 genericsettings.runlength_based_targets = False
                 
-        if genericsettings.runlength_based_targets:
-            print '  runlength based targets in use'
-
         from bbob_pproc import config
         config.config()
         
         if (verbose):
             for i in dsList:
-                if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) !=
+                if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) != 
                     inset.instancesOfInterest):
-                    warnings.warn('The data of %s do not list ' %(i) +
-                                  'the correct instances ' +
-                                  'of function F%d.' %(i.funcId))
+                    warnings.warn('The data of %s do not list ' % (i) + 
+                                  'the correct instances ' + 
+                                  'of function F%d.' % (i.funcId))
 
         dictAlg = dsList.dictByAlg()
 
         if len(dictAlg) > 1:
-            warnings.warn('Data with multiple algId %s ' % (dictAlg) +
+            warnings.warn('Data with multiple algId %s ' % (dictAlg) + 
                           'will be processed together.')
-            #TODO: in this case, all is well as long as for a given problem
-            #(given dimension and function) there is a single instance of
-            #DataSet associated. If there are more than one, the first one only
-            #will be considered... which is probably not what one would expect.
-            #TODO: put some errors where this case would be a problem.
+            # TODO: in this case, all is well as long as for a given problem
+            # (given dimension and function) there is a single instance of
+            # DataSet associated. If there are more than one, the first one only
+            # will be considered... which is probably not what one would expect.
+            # TODO: put some errors where this case would be a problem.
             # raise Usage?
 
         if isfigure or istab or isrldistr or islogloss:
@@ -344,15 +339,17 @@ def main(argv=None):
             ppconverrorbars.main(dictAlg, outputdir, verbose)
 
         if isfigure:
-            #ERT/dim vs dim.
+            print "Scaling figures...",
+            sys.stdout.flush()
+            # ERT/dim vs dim.
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
             ppfigdim.main(dsList, ppfigdim.values_of_interest, outputdir, verbose)
-            print "Scaling figures done."
             plt.rcdefaults()
+            print_done()
 
         plt.rc("axes", **inset.rcaxes)
         plt.rc("xtick", **inset.rctick)
@@ -361,13 +358,17 @@ def main(argv=None):
         plt.rc("legend", **inset.rclegend)
 
         if istab:
+            print "TeX tables...",
+            sys.stdout.flush()
             dictNoise = dsList.dictByNoise()
             for noise, sliceNoise in dictNoise.iteritems():
                 pptable.main(sliceNoise, inset.tabDimsOfInterest, outputdir,
                              noise, verbose)
-            print "TeX tables done.",
+            print_done()
 
         if isrldistr:
+            print "ECDF graphs...",
+            sys.stdout.flush()
             dictNoise = dsList.dictByNoise()
             if len(dictNoise) > 1:
                 warnings.warn('Data for functions from both the noisy and '
@@ -392,12 +393,14 @@ def main(argv=None):
                     pprldistr.main(sliceFuncGroup,
                                    True, outputdir, '%s' % fGroup, verbose)
 
-                pprldistr.fmax = None #Resetting the max final value
-                pprldistr.evalfmax = None #Resetting the max #fevalsfactor
+                pprldistr.fmax = None  # Resetting the max final value
+                pprldistr.evalfmax = None  # Resetting the max #fevalsfactor
 
-            print "ECDF graphs done."
+            print_done()
 
         if islogloss:
+            print "ERT loss ratio figures and tables...",
+            sys.stdout.flush()
             for ng, sliceNoise in dsList.dictByNoise().iteritems():
                 if ng == 'noiselessall':
                     testbed = 'noiseless'
@@ -426,26 +429,26 @@ def main(argv=None):
                         info = '%s' % fGroup
                         pplogloss.main(sliceFuncGroup, CrE, True, outputdir, info,
                                        verbose=verbose)
-                    pplogloss.evalfmax = None #Resetting the max #fevalsfactor
+                    pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
 
-            print "ERT loss ratio figures and tables done."
+            print_done()
 
         latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
-        prepend_to_file(latex_commands_file, 
-                        ['\\providecommand{\\bbobpprldistrlegend}[1]{', 
-                         pprldistr.caption_single(np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()])), # depends on the config setting, should depend on maxfevals
+        prepend_to_file(latex_commands_file,
+                        ['\\providecommand{\\bbobpprldistrlegend}[1]{',
+                         pprldistr.caption_single(np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()])),  # depends on the config setting, should depend on maxfevals
                          '}'])
-        prepend_to_file(latex_commands_file, 
+        prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{',
-                         ppfigdim.scaling_figure_caption(), 
+                         ppfigdim.scaling_figure_caption(),
                          '}'])
-        prepend_to_file(latex_commands_file, 
+        prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobpptablecaption}[1]{',
                          pptable.table_caption,
                          '}'])
-        prepend_to_file(latex_commands_file, 
+        prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\algfolder}{}'])  # is overwritten in rungeneric.py
-        prepend_to_file(latex_commands_file, 
+        prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\algname}{' + 
                          (str_to_latex(strip_pathname(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
         if isfigure or istab or isrldistr or islogloss:
@@ -454,8 +457,8 @@ def main(argv=None):
         plt.rcdefaults()
 
     except Usage, err:
-        print >>sys.stderr, err.msg
-        print >>sys.stderr, "for help use -h or --help"
+        print >> sys.stderr, err.msg
+        print >> sys.stderr, "for help use -h or --help"
         return 2
 
 

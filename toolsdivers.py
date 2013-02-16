@@ -6,9 +6,12 @@
 """
 from __future__ import absolute_import
 
-import os, sys
+import os, sys, time
 import numpy as np
 import warnings
+
+def print_done():
+    print '  done (' + time.asctime() + ').'
 
 def equals_approximately(a, b, eps=1e-12):
     if a < 0:

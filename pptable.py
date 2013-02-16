@@ -70,8 +70,8 @@ old_legend = r"""
 
 table_caption_one = r"""%
     Expected running time (ERT in number of function 
-    evaluations) divided by the reference best ERT measured during BBOB-2009. The ERT 
-    and in braces as dispersion measure the half difference between 90 and 
+    evaluations) divided by the best ERT measured during BBOB-2009. The ERT 
+    and in braces, as dispersion measure, the half difference between 90 and 
     10\%-tile of simulated running times appear in the second row of each cell,  
     the best ERT in the
     """

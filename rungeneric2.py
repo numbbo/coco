@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
 from bbob_pproc import genericsettings
 from bbob_pproc import pprldistr
-from bbob_pproc.pproc import DataSetList, processInputArgs
+from bbob_pproc.pproc import DataSetList, processInputArgs, TargetValues
 from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname, str_to_latex
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 from bbob_pproc.compall import ppfigs
@@ -389,7 +389,9 @@ def main(argv=None):
                 if dim in inset.rldDimsOfInterest:
                     try:
                         pprldistr.comp(dictDim1[dim], dictDim0[dim],
-                                       inset.rldValsOfInterest, True,
+                                       inset.rldValsOfInterest if isinstance(inset.rldValsOfInterest, TargetValues) 
+                                                    else TargetValues(inset.rldValsOfInterest), 
+                                       True,
                                        outputdir, 'all', verbose)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.'
