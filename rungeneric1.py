@@ -316,10 +316,10 @@ def main(argv=None):
                 genericsettings.maxevals_fix_display = 3e2
             else:
                 genericsettings.runlength_based_targets = False
-                
+
         from bbob_pproc import config
         config.config()
-        
+
         if (verbose):
             for i in dsList:
                 if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) != 

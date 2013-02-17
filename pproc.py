@@ -72,7 +72,7 @@ class TargetValues(object):
         if round(self.target_values[i]) >= 10 or round(10*self.target_values[i]) / 10. == self.target_values[i]:
             return str(int(np.round(self.target_values[i]))) 
         else: 
-            str(round(self.target_values[i], 1)) 
+            return str(round(self.target_values[i], 1)) 
     
     def loglabels(self, decimals=0):
         """``log10`` of the target values as a list of ``str``"""
@@ -85,7 +85,7 @@ class TargetValues(object):
             return res
 
     def labels(self):
-        """``log10`` of the target values as a list of ``str``"""
+        """target values as a list of ``str``"""
         i, res = 0, []
         try:
             while True:
@@ -93,7 +93,6 @@ class TargetValues(object):
                 i += 1
         except IndexError:
             return res
-
 
 class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarative but not effective
     """class instance calls return f-target values based on 

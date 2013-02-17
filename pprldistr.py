@@ -70,7 +70,7 @@ caption_right = r"""%
      best achieved $\Df$ 
      for running times of #1
      function evaluations 
-     (from right to left cycling magenta-black-cyan-magenta\dots) and final $\Df$-value (red). """
+     (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red). """
 caption_wrap_up = r"""%
      Legends indicate for each target the number of functions that were solved in at
      least one trial.
@@ -107,6 +107,7 @@ rldStyles = ({'color': 'k', 'ls': '-'},
              {'color': 'm'},
              {'color': 'r', 'linewidth': 3.})
 rldUnsuccStyles = (
+                   {'color': 'c', 'ls': '-'},
                    {'color': 'm', 'ls': '-'},
                    {'color': 'k', 'ls': '-'},
                    {'color': 'c'},
@@ -118,7 +119,6 @@ rldUnsuccStyles = (
                    {'color': 'c', 'ls': '-'},
                    {'color': 'm'},
                    {'color': 'k'},
-                   {'color': 'c', 'ls': '-'}
                    )  # should not be too short
 
 previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'
@@ -562,8 +562,8 @@ def plot(dsList, targets=single_target_values, **plotArgs):
 def plot_previous_algorithms(dim, funcs):
     """Display BBOB 2009 data, by default from ``pprldistr.previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'``"""
 
+    global previous_data_dict
     if previous_data_dict is None:
-        global previous_data_dict
         previous_data_dict = load_previous_data() # this takes about 6 seconds
     if previous_data_dict is not None:
         for alg in previous_data_dict:

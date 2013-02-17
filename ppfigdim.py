@@ -56,9 +56,8 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 from pdb import set_trace
-from bbob_pproc import toolsstats, bestalg, pproc
+from bbob_pproc import genericsettings, toolsstats, bestalg, pproc
 from bbob_pproc.ppfig import saveFigure, groupByRange
-import genericsettings
 
 values_of_interest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # to rename!?
 xlim_max = None
@@ -76,13 +75,15 @@ styles = [  # sort of rainbow style, most difficult (red) first
 refcolor = 'wheat'
 
 caption_part_one = r"""%
-    Expected number of $f$-evaluations (\ERT, with lines, see legend 
-    and the interquartile range with median (box) to reach $\fopt+\Df$; 
-    median number of $f$-evaluations to reach the most difficult target that was 
-    reached not always but at least once (+)  
-    and maximum number of $f$-evaluations in any trial ({\color{red}$\times$}), all 
+    Expected number of $f$-evaluations (\ERT, lines) to reach $\fopt+\Df$ (see legend); 
+    median number of $f$-evaluations (+) to reach the most difficult target that was 
+    reached not always but at least once;
+    maximum number of $f$-evaluations in any trial ({\color{red}$\times$}); 
+    REPLACE_THIS
+    all values are  
     divided by dimension and plotted as $\log_{10}$ values versus dimension. %
-    """
+    """.replace('REPLACE_THIS', r"interquartile range with median (boxes) of simulated runlengths to reach $\fopt+\Df$;" 
+                if genericsettings.scaling_figures_with_boxes else '')
     # r"(the exponent is given in the legend of #1). " + 
 #    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
 #    "divided by the number of successful trials, where a trial is " +
@@ -106,8 +107,6 @@ scaling_figure_caption_rlbased = caption_part_one + r"""%
     """
     # r"Shown is the \ERT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm " + 
     # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
-
-scaling_figure_caption = scaling_figure_caption_fixed 
 
 def scaling_figure_caption():
     if genericsettings.runlength_based_targets:
@@ -341,7 +340,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
             res.extend(plt.plot([], [], markersize=10,
                                 label=valuesOfInterest.label(i),
                                 **styles[i]))
-
+        1/0
         # Only for the last target function value
         if unsucc:  # obsolete
             tmp = np.vstack(unsucc)  # tmp[:, 0] needs to be sorted!
@@ -433,7 +432,3 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         saveFigure(filename, verbose=verbose)
         plt.close()
 
-import genericsettings
-if genericsettings.test:
-    from bbob_pproc.toolsdivers import print_done 
-    print_done('ppfigdim import done')
