@@ -340,7 +340,6 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
             res.extend(plt.plot([], [], markersize=10,
                                 label=valuesOfInterest.label(i),
                                 **styles[i]))
-        1/0
         # Only for the last target function value
         if unsucc:  # obsolete
             tmp = np.vstack(unsucc)  # tmp[:, 0] needs to be sorted!
