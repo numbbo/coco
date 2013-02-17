@@ -60,7 +60,7 @@ x_limit_default = 1e7 # better: 10 * genericsettings.evaluation_setting[1], nois
 annotation_line_end_relative = 1.11  # lines between graph and annotation
 annotation_space_end_relative = 1.24  # figure space end relative to x_limit
 save_zoom = False  # save zoom into left and right part of the figures
-perfprofsamplesize = 100 if not genericsettings.in_a_hurry else 10  # number of bootstrap samples drawn for each fct+target in the performance profile
+perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size_rld  # number of bootstrap samples drawn for each fct+target in the performance profile
 dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 nbperdecade = 1
 median_max_evals_marker_format = ['x', 24, 3]

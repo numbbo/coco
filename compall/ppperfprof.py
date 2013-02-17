@@ -42,7 +42,7 @@ import warnings
 from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
-from bbob_pproc import toolsstats, bestalg
+from bbob_pproc import genericsettings, toolsstats, bestalg
 from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
 from bbob_pproc.pprldistr import plotECDF, beautifyECDF
 from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
@@ -56,7 +56,7 @@ best = ('AMALGAM', 'iAMALGAM', 'VNS', 'MA-LS-CHAIN', 'BIPOP-CMA-ES', 'IPOP-ACTCM
    'DIRECT', 'DASA', 'POEMS', 'Cauchy-EDA', 'RANDOMSEARCH')
 
 # input parameter settings
-perfprofsamplesize = 100  # number of bootstrap samples drawn for each fct+target in the performance profile
+perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size_rld  # number of bootstrap samples drawn for each fct+target in the performance profile
 dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 nbperdecade = 3
 

@@ -25,7 +25,7 @@ from __future__ import absolute_import
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from bbob_pproc import bestalg, toolsstats, pproc
+from bbob_pproc import genericsettings, bestalg, toolsstats, pproc
 from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
 from bbob_pproc.toolsstats import significancetest
 
@@ -36,7 +36,7 @@ finaltarget = 1e-8 # value for determining the success ratio
 targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
 targetf = 1e-8 # value for determining the success ratio
-samplesize = 1000 # TODO: change samplesize
+samplesize = genericsettings.simulated_runlength_bootstrap_sample_size # TODO: change samplesize
 # def tablespec(targets):
 # 
 #     i = 0

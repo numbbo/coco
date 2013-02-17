@@ -10,9 +10,6 @@ from matplotlib import pyplot as plt
 from pdb import set_trace
 from bbob_pproc import genericsettings, toolsstats
 
-if genericsettings.in_a_hurry:
-    print "fast figure saving in ppfig.py"
-    
 def saveFigure(filename, figFormat=genericsettings.fig_formats, verbose=True):
     """Save figure into an image file."""
 
