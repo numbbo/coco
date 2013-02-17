@@ -15,7 +15,7 @@ from __future__ import absolute_import
 import os, warnings
 import numpy
 import matplotlib.pyplot as plt
-from bbob_pproc import bestalg, toolsstats
+from bbob_pproc import genericsettings, bestalg, toolsstats
 from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec, writeLabels
 from bbob_pproc.toolsstats import significancetest
 
@@ -23,7 +23,7 @@ from pdb import set_trace
 
 targetsOfInterest = (10., 1e-1, 1e-3, 1e-5, 1e-7) # Needs to be sorted
 targetf = 1e-8 # value for determining the success ratio
-samplesize = 1000 # TODO change samplesize
+samplesize = genericsettings.simulated_runlength_bootstrap_sample_size 
 
 #Get benchmark short infos: put this part in a function?
 funInfos = {}

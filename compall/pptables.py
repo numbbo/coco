@@ -8,7 +8,7 @@ import os
 from pdb import set_trace
 import warnings
 import numpy
-from bbob_pproc import bestalg, toolsstats
+from bbob_pproc import genericsettings, bestalg, toolsstats
 from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from bbob_pproc.toolsstats import significancetest, significance_all_best_vs_other
 from bbob_pproc.pproc import DataSetList
@@ -53,7 +53,7 @@ except IOError, (errno, strerror):
 significance_vs_others_symbol = r"\star"
 significance_vs_ref_symbol = r"\downarrow"
 maxfloatrepr = 10000.
-samplesize = 1000
+samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 targetf = 1e-8
 precfloat = 2
 precscien = 2

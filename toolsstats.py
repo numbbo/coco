@@ -4,6 +4,7 @@
 """Bootstrapping and statistics routines."""
 
 import numpy as np
+from bbob_pproc import genericsettings
 from pdb import set_trace
 
 def sp1(data, maxvalue=np.Inf, issuccessful=None):
@@ -116,7 +117,7 @@ def sp(data, maxvalue=np.Inf, issuccessful=None, allowinf=True):
 
     return (res, succ, len(succdat))
 
-def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=1e3):
+def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=genericsettings.simulated_runlength_bootstrap_sample_size):
     """returns ``(percentiles, all_sampled_values_sorted)`` of simulated 
     runlengths to reach ``ftarget`` based on a ``DataSet`` class instance, 
     specifically:: 
@@ -137,7 +138,7 @@ def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=1e3):
     nanidx = np.isnan(evals)
     return drawSP(evals[~nanidx], data_set.maxevals[nanidx], percentiles, samplesize)
     
-def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=1e3):
+def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=10 + 990 / (1 + 10 * genericsettings.in_a_hurry)):
     """Returns the percentiles of the bootstrapped distribution of
     'simulated' running lengths of successful runs.
 

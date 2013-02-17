@@ -16,7 +16,7 @@ import numpy as np
 #set_trace()
 test = False  # debug/test flag, set to False for committing the final version
 force_assertions = False  # another debug flag for time-consuming assertions
-in_a_hurry = True # lower resolution, no eps, saves 30% time
+in_a_hurry = 000 # [0, 100] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
@@ -37,6 +37,9 @@ rldDimsOfInterest = (5, 20)
 figValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # this is a bad name that should improve, which fig, what vals???
 # figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8) #in/outcomment if desired
 ##Put backward to have the legend in the same order as the lines.
+
+simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max((0, in_a_hurry)))
+simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a_hurry)))
 
 # single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default in pprldistr.plot method, on graph for each
 # single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each, seems not in use
@@ -117,3 +120,7 @@ class GECCOBBOBNoisefreeTestbed(GECCOBBOBTestbed):
 # TODO: this needs to be set somewhere, e.g. in rungeneric*
 # or even better by investigating in the data attributes
 current_testbed = GECCOBBOBNoisefreeTestbed() 
+
+if in_a_hurry:
+    print 'in_a_hurry like', in_a_hurry, '(should finally be set to zero)'
+    

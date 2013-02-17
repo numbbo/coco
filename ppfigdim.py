@@ -316,9 +316,11 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                         # to find finite simulated runlengths we need to have at least one successful run
                         if dictFunc[func][dim][0].detSuccesses([valuesOfInterest((func, dim))[i]])[0]:
                             # make a box-plot
-                            y = toolsstats.drawSP_from_dataset(dictFunc[func][dim][0],
-                                                               valuesOfInterest((func, dim))[i],
-                                                               [25, 50, 75], 1e2)[0]
+                            y = toolsstats.drawSP_from_dataset(
+                                                dictFunc[func][dim][0],
+                                                valuesOfInterest((func, dim))[i],
+                                                [25, 50, 75], 
+                                                genericsettings.simulated_runlength_bootstrap_sample_size)[0]
                             rec_width = 1.1
                             r = rec_width ** ((1. + i / 3.) / 4)  # more difficult targets get a wider box
                             styles2 = {}
@@ -338,7 +340,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
         # To have the legend displayed whatever happens with the data.
         for i in reversed(range(len(valuesOfInterest))):
             res.extend(plt.plot([], [], markersize=10,
-                                label=valuesOfInterest.label(i),
+                                label=valuesOfInterest.label(i) if isinstance(valuesOfInterest, pproc.RunlengthBasedTargetValues) else valuesOfInterest.loglabel(i),
                                 **styles[i]))
         # Only for the last target function value
         if unsucc:  # obsolete
