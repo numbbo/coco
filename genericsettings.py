@@ -18,7 +18,7 @@ test = False  # debug/test flag, set to False for committing the final version
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = True # lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved?
-runlength_based_targets = 'auto' # 'auto' means automatic choice, otherwise True or False
+runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
 scaling_figures_with_boxes = True 
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
