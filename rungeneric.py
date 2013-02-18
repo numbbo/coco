@@ -32,7 +32,7 @@ if __name__ == "__main__":
     import matplotlib
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
-from bbob_pproc import rungeneric1, rungeneric2, rungenericmany
+from bbob_pproc import genericsettings, rungeneric1, rungeneric2, rungenericmany
 from bbob_pproc.toolsdivers import prepend_to_file, truncate_latex_command_file
 
 __all__ = ['main']
@@ -282,4 +282,7 @@ def main(argv=None):
         return 2
 
 if __name__ == "__main__":
-    sys.exit(main())
+    res = main()
+    if genericsettings.test: 
+        print res
+    sys.exit(res)
