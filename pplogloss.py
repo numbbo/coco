@@ -70,6 +70,11 @@ The ERT loss ratio for algorithm A is defined as:
       Therefore, given a budget of 20*D function evaluations, the best
       algorithm could have further improved the function value using the
       remaining 15*D ($75\%=1-1/4$) function evaluations.
+      
+Details: if ERT_A = ERT_A(f_A(EVALS)) always, the x-axis of plots between 
+different algorithms becomes incomparable. Also could ERT_A < ERT_best, 
+even though ERT_best reaches a better f-value for the given EVALS. 
+
 """
 
 evalf = None
