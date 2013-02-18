@@ -478,6 +478,8 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    main()
-    sys.exit(main())
+    res = main()
+    if genericsettings.test: 
+        print res
+    sys.exit(res)
 

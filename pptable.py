@@ -286,16 +286,17 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 tmp = i.copy()
                 tmp[succ==False] = entry.maxevals[np.isnan(i)]
                 #set_trace()
+                # TODO: what is the difference between data and ertdata? 
                 data.append(toolsstats.sp(tmp, issuccessful=succ)[0])
                 #if not any(succ):
                     #set_trace()
                 if any(succ):
                     tmp2 = toolsstats.drawSP(tmp[succ], tmp[succ==False],
                                             (10, 50, 90), samplesize)[0]
-                    dispersion.append((tmp2[-1]-tmp2[0])/2.)
-                else:
+                    dispersion.append((tmp2[-1] - tmp2[0]) / 2.)
+                else: 
                     dispersion.append(None)
-
+            assert data == ertdata
             for i, ert in enumerate(data):
                 alignment = 'c'
                 if i == len(data) - 1: # last element
@@ -312,19 +313,18 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     evals = np.array(sorted(evals))[0:min(len(evals), len(bestevals))]
                     bestevals = np.array(sorted(bestevals))[0:min(len(evals), len(bestevals))]
 
-                #The conditions are now that ERT < ERT_best and
+                #The conditions for significance are now that ERT < ERT_best and
                 # all(sorted(FEvals_best) > sorted(FEvals_current)).
                 if ((nbtests * p) < 0.05 and ert - bestalgdata[i] < 0.
                     and z < 0.
                     and (np.isinf(bestalgdata[i])
                          or all(evals < bestevals))):
                     nbstars = -np.ceil(np.log10(nbtests * p))
+                isBold = False
+                if nbstars > 0:
+                    isBold = True
 
                 if np.isinf(bestalgdata[i]): # if the best did not solve the problem
-                    isBold = False
-                    if nbstars > 0:
-                       isBold = True
-
                     tmp = writeFEvalsMaxPrec(float(ert), 2)
                     if not np.isinf(ert):
                         tmp = r'\textit{%s}' % (tmp)
@@ -335,13 +335,9 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                                   % (alignment, tmp))
                 else:
                     # Formatting
-                    tmp = float(ert)/bestalgdata[i]
+                    tmp = float(ert) / bestalgdata[i]
                     assert not np.isnan(tmp)
                     tableentry = writeFEvalsMaxPrec(tmp, 2)
-
-                    isBold = False
-                    if nbstars > 0:
-                       isBold = True
 
                     if np.isinf(tmp) and i == len(data)-1:
                         tableentry = (tableentry
@@ -394,8 +390,11 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     #else:
                         #tableentry += s
 
-                if dispersion[i] and not np.isinf(bestalgdata[i]):
-                    tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
+                if dispersion[i]:
+                    if not np.isinf(bestalgdata[i]):
+                        tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
+                    else:
+                        tmp = writeFEvalsMaxPrec(dispersion[i], 1)
                     tableentry += (r'${\scriptscriptstyle(%s)}$' % tmp)
 
                 if superscript:

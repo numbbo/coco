@@ -106,19 +106,20 @@ caption_left_rlbased_targets = r"""%
      to fall below $\fopt+\Df$ where \Df\ is the largest $\Df$-value $\ge10^{-8}$ 
      for which the best \ERT\ seen in the GECCO-BBOB-2009  
      was yet above $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
+caption_wrap_up = r"""%
+     Legends indicate for each target the number of functions that were solved in at
+     least one trial within the displayed budget.
+     """
 caption_right = r"""%
      Right subplots: ECDF of the 
      best achieved $\Df$ 
      for running times of #1
      function evaluations 
-     (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red). """
-caption_wrap_up = r"""%
-     Legends indicate for each target the number of functions that were solved in at
-     least one trial.
-     \Df\ and \textsf{Df} denote the difference to the optimal function value. """
-caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_right + r"""
+     (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red), 
+     where \Df\ and \textsf{Df} denote the difference to the optimal function value. """
+caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_wrap_up + caption_right + r"""
      Light brown lines in the background show ECDFs for $\Df=10^{-8}$ of all algorithms benchmarked during BBOB-2009.""" 
-caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_right
+caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_wrap_up + caption_right
 
 
 previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'
@@ -377,12 +378,12 @@ def plotRLDistr(dsList, target, label, max_fun_evals=np.inf, **plotArgs):
     res = plotECDF(x, nn, **kwargs)
     return res
 
-def plotFVDistr(dsList, target, maxEvalsF=np.inf, **plotArgs):
+def plotFVDistr(dsList, budget, min_f=1e-8, **plotArgs):
     """Creates ECDF of final function values plot from a DataSetList.
     
     :param dsList: data sets
-    :param dict or float target: used for the lower limit of the plot
-    :param float maxEvalsF: maximum evaluations that "count"
+    :param min_f: used for the left limit of the plot
+    :param float budget: maximum evaluations / dimension that "count"
     :param plotArgs: additional arguments passed to plot
 
     :returns: handle
@@ -390,22 +391,20 @@ def plotFVDistr(dsList, target, maxEvalsF=np.inf, **plotArgs):
     """
     x = []
     nn = 0
-    for i in dsList:
-        for j in i.funvals:
-            if j[0] >= maxEvalsF * i.dim:
+    for ds in dsList:
+        for i, fvals in enumerate(ds.funvals):
+            if fvals[0] > budget * ds.dim:
+                assert i > 0, 'first entry ' + str(fvals[0]) + 'was smaller than maximal budget ' + str(budget * ds.dim)
+                fvals = ds.funvals[i-1]
                 break
-        try:
-            # tmp = j[1:].copy() / target[i.funcId]
-            tmp = j[1:].copy()
-        except TypeError:
-            # tmp = j[1:].copy() / target
-            tmp = j[1:].copy()
-        # Integrate the negative values of df / ftarget together
-        # this is to prevent problem when passing on a log scale
-        # TODO: there should not be negative values, should there? 
-        tmp[tmp <= 0] = min(np.append(tmp[tmp > 0], [target]))  # works also when tmp[tmp > 0] is empty
-        x.extend(tmp)
-        nn += i.nbRuns()
+        # vals = fvals[1:].copy() / target[i.funcId]
+        vals = fvals[1:].copy()
+        # replace negative values to prevent problem with log of vals
+        vals[vals <= 0] = min(np.append(vals[vals > 0], [min_f]))  # works also when vals[vals > 0] is empty
+        if genericsettings.runlength_based_targets:
+            NotImplementedError('related function vals with respective budget (e.g. ERT(val)) see pplogloss.generateData()')
+        x.extend(vals)
+        nn += ds.nbRuns()
     res = plotECDF(x, nn, **plotArgs)
     return res
 
@@ -546,14 +545,14 @@ def plot(dsList, targets=single_target_values, **plotArgs):
     plt.subplot(122)
     for j in [range(len(targets))[-1]]:
         tmpplotArgs = dict(plotArgs, **rldStyles[j % len(rldStyles)])
-        tmp = plotFVDistr(dsList, targets[j], evalfmax, **tmpplotArgs)
+        tmp = plotFVDistr(dsList, evalfmax, targets[j], **tmpplotArgs)
         res.extend(tmp)
     tmp = np.floor(np.log10(evalfmax))
     # coloring right to left:
     maxEvalsF = np.power(10, np.arange(0, tmp))
     for j in range(len(maxEvalsF)):
         tmpplotArgs = dict(plotArgs, **rldUnsuccStyles[j % len(rldUnsuccStyles)])
-        tmp = plotFVDistr(dsList, targets[-1], maxEvalsF[j], **tmpplotArgs)
+        tmp = plotFVDistr(dsList, maxEvalsF[j], targets[-1], **tmpplotArgs)
         res.extend(tmp)
     res.append(plt.text(0.98, 0.02, text, horizontalalignment="right",
                         transform=plt.gca().transAxes))
@@ -630,14 +629,15 @@ def main(dsList, isStoringXMax=False, outputdir='',
         if runlen_xlimits_max is not None:
             evalfmax = runlen_xlimits_max
 
+        # first figure: Run Length Distribution
         filename = os.path.join(outputdir, 'pprldistr_%02dD_%s' % (d, info))
         fig = plt.figure()
-        # maxevals for solved functions: take min(maxEvalsFactor, evalfmax), one is the black vertical line, the other should be the display border
         for j in range(len(targets)):
-            tmp = plotRLDistr(dictdim, # TODO: maxfunevals needs to be passed to compute number of solved functions
-                              lambda fun_dim: targets(fun_dim)[j],
-                              targets.label(j) if isinstance(targets, pproc.RunlengthBasedTargetValues) else targets.loglabel(j),
-                              **rldStyles[j % len(rldStyles)])
+            plotRLDistr(dictdim, 
+                        lambda fun_dim: targets(fun_dim)[j],
+                        targets.label(j) if isinstance(targets, pproc.RunlengthBasedTargetValues) else targets.loglabel(j),
+                        evalfmax,  # can be larger maxEvalsFactor with no effect
+                        **rldStyles[j % len(rldStyles)])
     
         funcs = list(i.funcId for i in dictdim)
         text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
@@ -658,28 +658,16 @@ def main(dsList, isStoringXMax=False, outputdir='',
         saveFigure(filename, verbose=verbose)
         plt.close(fig)
         
-        # second figure
+        # second figure: Function Value Distribution
         filename = os.path.join(outputdir, 'ppfvdistr_%02dD_%s' % (d, info))
         fig = plt.figure()
-        if 11 < 3:  # previous version, to be removed
-            tmp = plotFVDistr(dictdim, 1e-8, evalfmax,
-                              **rldStyles[(len(targets) - 1) % len(rldStyles)])
-            tmp = np.floor(np.log10(evalfmax))
-            # coloring left to right:
-            # maxEvalsF = np.power(10, np.arange(tmp, 0, -1) - 1)
-            # coloring right to left:
-            maxEvalsF = np.power(10, np.arange(0, tmp))
-            for j in range(len(maxEvalsF)):
-                tmp = plotFVDistr(dictdim, 1e-8, maxEvalsF[j],
-                            **rldUnsuccStyles[j % len(rldUnsuccStyles)])
-        else:
-            plotFVDistr(dictdim, 1e-8, np.inf, **rldStyles[-1])
-            # coloring right to left
-            for j, max_eval_factor in enumerate(single_runlength_factors):
-                if max_eval_factor > maxEvalsFactor:
-                    break
-                tmp = plotFVDistr(dictdim, 1e-8, max_eval_factor,
-                            **rldUnsuccStyles[j % len(rldUnsuccStyles)])
+        plotFVDistr(dictdim, np.inf, 1e-8, **rldStyles[-1])
+        # coloring right to left
+        for j, max_eval_factor in enumerate(single_runlength_factors):
+            if max_eval_factor > maxEvalsFactor:
+                break
+            plotFVDistr(dictdim, max_eval_factor, 1e-8, 
+                        **rldUnsuccStyles[j % len(rldUnsuccStyles)])
                 
         plt.text(0.98, 0.02, text, horizontalalignment="right",
                  transform=plt.gca().transAxes)  # bbox=dict(ec='k', fill=False), 
