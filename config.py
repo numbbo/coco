@@ -30,16 +30,14 @@ def config():
         print 'Using bestGECCO2009 based target values: now for each function the target ' + \
               'values differ, but the "level of difficulty" is "the same". '
         # pprldmany: 
-        pprldmany.target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', 
-                                                                10**np.arange(-0.3, 2.701, 0.1), force_different_targets_factor=1)
+        pprldmany.target_values = pproc.RunlengthBasedTargetValues(10**np.arange(-0.3, 2.701, 0.1), force_different_targets_factor=1)
         pprldmany.x_limit = genericsettings.maxevals_fix_display  # always fixed
         # pprldistr:
-        pprldistr.single_target_values = pproc.RunlengthBasedTargetValues('bestGECCO2009', [0.5, 2, 10, 50], force_different_targets_factor=1)
+        pprldistr.single_target_values = pproc.RunlengthBasedTargetValues([0.5, 2, 10, 50], force_different_targets_factor=1)
         pprldistr.runlen_xlimits_max = genericsettings.maxevals_fix_display # can be None
         pprldistr.runlen_xlimits_min = 10**-0.5  # can be None 
         # ppfigdim:
-        ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues('bestGECCO2009',
-                                                                       [0.5, 1.2, 3, 10, 100],
+        ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 100],
                                                                        # [10**i for i in [2.0, 1.5, 1.0, 0.5, 0.1, -0.3]],
                                                                        # [10**i for i in [1.7, 1, 0.3, -0.3]]
                                                                        force_different_targets_factor=1)
@@ -48,14 +46,13 @@ def config():
             ppfigdim.xlim_max *= 5/3.
         # pptable:
         pptable.table_caption=pptable.table_caption_rlbased
-        pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues('bestGECCO2009',
-                                                  genericsettings.target_runlengths_in_table)
+        pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table)
     else:
         pass # here the default values of the modules apply
         # pprlmany.x_limit = ...should depend on noisy/noiseless
     if 11 < 3:  # for testing purpose
         # TODO: this case needs to be tested yet: the current problem is that no noisy data are in this folder
-        pprldmany.target_values = pproc.RunlengthBasedTargetValues('RANDOMSEARCH').set_runlengths(10**np.arange(1, 4, 0.2))
+        pprldmany.target_values = pproc.RunlengthBasedTargetValues(10**np.arange(1, 4, 0.2), 'RANDOMSEARCH')
  
 
     pprldmany.fontsize = 20.0  # should depend on the number of data lines down to 10.0 ?

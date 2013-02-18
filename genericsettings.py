@@ -16,7 +16,7 @@ import numpy as np
 #set_trace()
 test = False  # debug/test flag, set to False for committing the final version
 force_assertions = False  # another debug flag for time-consuming assertions
-in_a_hurry = 000 # [0, 100] lower resolution, no eps, saves 30% time
+in_a_hurry = 1 # [0, 100] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules

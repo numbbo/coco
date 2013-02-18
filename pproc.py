@@ -119,7 +119,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
     def short_info(self):
         return self._short_info
     
-    def __init__(self, reference_data, run_lengths, 
+    def __init__(self, run_lengths, reference_data="bestGECCO2009", 
                  smallest_target=1e-8, times_dimension=True, force_different_targets_factor=10**0.04):
         """calling the class instance returns run-length based
         target values based on the reference data, individually
@@ -177,7 +177,8 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         """            
         if self.force_different_targets_factor**len(self.run_lengths) > 1e3:
                 warnings.warn('enforced different target values might spread more than three orders of magnitude')
-
+        if fun_dim is None:
+            raise ValueError('call to RunlengthbasedTargetValues class instance needs the parameter ``fun_dim``, none given')
         fun_dim = tuple(fun_dim)
         dim_fun = tuple(reversed(fun_dim))
         ds = self.reference_data[dim_fun]
@@ -186,7 +187,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
             # same as end = np.where(ds.target >= smallest_target)[0][-1] + 1 
         except IndexError:
             end = len(ds.target)
-        if not toolsdivers.equals_approximately(ds.target[end-2] / ds.target[end-1], 10**0.2, 1e-8):
+        if 11 < 3 and not toolsdivers.equals_approximately(ds.target[end-2] / ds.target[end-1], 10**0.2, 1e-8):
             print 'last two targets before index', end
             print ds.target[end-2:end]
         try: 
