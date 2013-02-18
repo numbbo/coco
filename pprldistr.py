@@ -52,40 +52,13 @@ from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure
 
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)]
-
-caption_part_one = r"""%
-     Empirical cumulative distribution functions (ECDF), plotting the fraction of 
-     trials with an outcome not larger than the respective value on the $x$-axis. """
-caption_left_fixed_targets = r"""%
-     Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$, 
-     to fall below $\fopt+\Df$ with $\Df=10^{k}$, where $k$ is the first value in the legend. 
-     The thick red line represents the most difficult target value $\fopt+10^{-8}$. """
-caption_left_rlbased_targets = r"""%
-     Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$, 
-     to fall below $\fopt+\Df$ where \Df\ is the largest $\Df$-value $\ge10^{-8}$ 
-     for which the best \ERT\ seen in the GECCO-BBOB-2009  
-     was yet above $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
-caption_right = r"""%
-     Right subplots: ECDF of the 
-     best achieved $\Df$ 
-     for running times of #1
-     function evaluations 
-     (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red). """
-caption_wrap_up = r"""%
-     Legends indicate for each target the number of functions that were solved in at
-     least one trial.
-     \Df\ and \textsf{Df} denote the difference to the optimal function value. """
-caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_right + r"""
-     Light brown lines in the background show ECDFs for $\Df=10^{-8}$ of all algorithms benchmarked during BBOB-2009.""" 
-caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_right
-
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised. 
    
 refcolor = 'wheat'
 nbperdecade = 1  # markers in x-axis decades in ecdfs
 
-runlen_xlimits_max = None
-runlen_xlimits_min = 1  # not in use, should become -0.5 in runlength case
+runlen_xlimits_max = None  # is possibly manipulated in config
+runlen_xlimits_min = 1  # set to 10**-0.5 in runlength case in config
 # Used as a global to store the largest xmax and align the FV ECD figures.
 fmax = None
 evalfmax = runlen_xlimits_max  # is manipulated/stored in this module
@@ -120,6 +93,33 @@ rldUnsuccStyles = (
                    {'color': 'm'},
                    {'color': 'k'},
                    )  # should not be too short
+
+caption_part_one = r"""%
+     Empirical cumulative distribution functions (ECDF), plotting the fraction of 
+     trials with an outcome not larger than the respective value on the $x$-axis. """
+caption_left_fixed_targets = r"""%
+     Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$, 
+     to fall below $\fopt+\Df$ with $\Df=10^{k}$, where $k$ is the first value in the legend. 
+     The thick red line represents the most difficult target value $\fopt+10^{-8}$. """
+caption_left_rlbased_targets = r"""%
+     Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$, 
+     to fall below $\fopt+\Df$ where \Df\ is the largest $\Df$-value $\ge10^{-8}$ 
+     for which the best \ERT\ seen in the GECCO-BBOB-2009  
+     was yet above $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
+caption_right = r"""%
+     Right subplots: ECDF of the 
+     best achieved $\Df$ 
+     for running times of #1
+     function evaluations 
+     (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red). """
+caption_wrap_up = r"""%
+     Legends indicate for each target the number of functions that were solved in at
+     least one trial.
+     \Df\ and \textsf{Df} denote the difference to the optimal function value. """
+caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_right + r"""
+     Light brown lines in the background show ECDFs for $\Df=10^{-8}$ of all algorithms benchmarked during BBOB-2009.""" 
+caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_right
+
 
 previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'
 previous_data_filename = os.path.join(os.path.split(__file__)[0], previous_data_filename)
@@ -618,7 +618,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
     # plt.rc("ytick", labelsize=20)
     # plt.rc("font", size=20)
     # plt.rc("legend", fontsize=20)
-    targets = single_target_values
+    targets = single_target_values # convenience abbreviation
     for d, dictdim in dsList.dictByDim().iteritems():
         maxEvalsFactor = max(i.mMaxEvals() / d for i in dictdim)
         if isStoringXMax:
@@ -632,8 +632,9 @@ def main(dsList, isStoringXMax=False, outputdir='',
 
         filename = os.path.join(outputdir, 'pprldistr_%02dD_%s' % (d, info))
         fig = plt.figure()
+        # maxevals for solved functions: take min(maxEvalsFactor, evalfmax), one is the black vertical line, the other should be the display border
         for j in range(len(targets)):
-            tmp = plotRLDistr(dictdim,
+            tmp = plotRLDistr(dictdim, # TODO: maxfunevals needs to be passed to compute number of solved functions
                               lambda fun_dim: targets(fun_dim)[j],
                               targets.label(j) if isinstance(targets, pproc.RunlengthBasedTargetValues) else targets.loglabel(j),
                               **rldStyles[j % len(rldStyles)])
@@ -642,7 +643,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
         text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
         text += ',%d-D' % d
         try:
-            if targets.target_values[-1] == 1e-8:
+            if targets.target_values[-1] == 1e-8:  # this is a hack
                 plot_previous_algorithms(d, funcs)
         except:
             pass
@@ -656,7 +657,8 @@ def main(dsList, isStoringXMax=False, outputdir='',
         beautifyRLD(evalfmax)
         saveFigure(filename, verbose=verbose)
         plt.close(fig)
-    
+        
+        # second figure
         filename = os.path.join(outputdir, 'ppfvdistr_%02dD_%s' % (d, info))
         fig = plt.figure()
         if 11 < 3:  # previous version, to be removed

@@ -287,6 +287,7 @@ def main(argv=None):
                 filelist.append(i)
             else:
                 txt = 'Input file or folder %s could not be found.' % i
+                print txt
                 raise Usage(txt)
         dsList = DataSetList(filelist, verbose)
         
