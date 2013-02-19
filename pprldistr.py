@@ -186,7 +186,7 @@ def beautifyECDF():
         except (AttributeError, IndexError):
             pass
 
-def beautifyRLD(evalfmax=None):
+def beautifyRLD(xlimit_max=None):
     """Format and save the figure of the run length distribution.
     
     After calling this function, changing the boundaries of the figure
@@ -198,8 +198,8 @@ def beautifyRLD(evalfmax=None):
     a.set_xlabel('log10 of FEvals / DIM')
     a.set_ylabel('proportion of trials')
     logxticks()
-    if evalfmax:
-        plt.xlim(xmax=evalfmax ** 1.05)
+    if xlimit_max:
+        plt.xlim(xmax=xlimit_max ** 1.0) # was 1.05
     plt.xlim(xmin=runlen_xlimits_min)
     plt.text(plt.xlim()[0], plt.ylim()[0], single_target_values.short_info, fontsize=14)
     beautifyECDF()
@@ -442,7 +442,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
         else:
             evalfmax = None
         if not evalfmax:
-            evalfmax = maxEvalsFactor
+            evalfmax = maxEvalsFactor**1.05
         if runlen_xlimits_max is not None:
             evalfmax = runlen_xlimits_max
 

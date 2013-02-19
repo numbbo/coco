@@ -82,7 +82,7 @@ caption_part_one = r"""%
     REPLACE_THIS
     all values are  
     divided by dimension and plotted as $\log_{10}$ values versus dimension. %
-    """.replace('REPLACE_THIS', r"interquartile range with median (boxes) of simulated runlengths to reach $\fopt+\Df$;" 
+    """.replace('REPLACE_THIS', r"interquartile range with median (notched boxes) of simulated runlengths to reach $\fopt+\Df$;" 
                 if genericsettings.scaling_figures_with_boxes else '')
     # r"(the exponent is given in the legend of #1). " + 
 #    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
@@ -203,7 +203,7 @@ def beautify(axesLabel=True):
     plt.xlim(0.9 * dimensions[0], 1.125 * dimensions[-1]) 
     plt.ylim(ymin=10**-0.2, ymax=int(ymax + 1))  # Set back the default maximum.
     if xlim_max is not None:
-        plt.ylim(0.2, xlim_max)  # set in config 
+        plt.ylim(0.3, xlim_max)  # set in config 
         if 11 < 3:
             title = plt.gca().get_title()  # works not not as expected
             if title.startswith('1 ') or title.startswith('5 '):
@@ -322,6 +322,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                                                 [25, 50, 75], 
                                                 genericsettings.simulated_runlength_bootstrap_sample_size)[0]
                             rec_width = 1.1
+                            rec_taille_fac = 0.3
                             r = rec_width ** ((1. + i / 3.) / 4)  # more difficult targets get a wider box
                             styles2 = {}
                             for s in styles[i]:
@@ -329,10 +330,20 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                             styles2['linewidth'] = 1
                             styles2['markeredgecolor'] = styles2['color'] 
                             x = [dim / r, r * dim]
+                            xm = [dim / (r**rec_taille_fac), dim * (r**rec_taille_fac)]
                             y = np.array(y) / dim
-                            plt.plot([x[0], x[1], x[1], x[0], x[0]],
-                                     [y[0], y[0], y[2], y[2], y[0]],
-                                     **styles2)
+                            if 1 < 3:
+                                plt.plot([x[0], xm[0], x[0], x[1], xm[1], x[1], x[0]],
+                                         [y[0], y[1],  y[2], y[2], y[1],  y[0], y[0]],
+                                         markersize=0, **styles2)
+                                styles2['linewidth'] = 0
+                                plt.plot([x[0], x[1], x[1], x[0], x[0]],
+                                         [y[0], y[0], y[2], y[2], y[0]],
+                                         **styles2)
+                            else:  # to be removed
+                                plt.plot([x[0], x[1], x[1], x[0], x[0]],
+                                         [y[0], y[0], y[2], y[2], y[0]],
+                                         **styles2)
                             styles2['linewidth'] = 2  # median
                             plt.plot([x[0], x[1]], [y[1], y[1]],
                                      markersize=0, **styles2)

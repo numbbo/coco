@@ -345,8 +345,9 @@ def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
             med_x = [box_x_min, box_x_max]
         # calculate 'notch' plot
         else:
-            notch_max = med + 1.57*iq/numpy.sqrt(row)
-            notch_min = med - 1.57*iq/numpy.sqrt(row)
+            raise NotImplementedError
+            notch_max = med #+ 1.57*iq/numpy.sqrt(row)
+            notch_min = med #- 1.57*iq/numpy.sqrt(row)
             if notch_max > q3:
                 notch_max = q3
             if notch_min < q1:

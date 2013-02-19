@@ -25,9 +25,10 @@ scaling_figures_with_boxes = True
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
-target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 100]  # used in config
+target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_table = [0.5, 2, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
+xlimit_expensive = 1e3  # used in 
 tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7) # used as input for pptables.main in rungenericmany 
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
 rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)

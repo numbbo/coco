@@ -170,10 +170,16 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         return len(self.run_lengths)
    
     def __call__(self, fun_dim=None):
-        """Get the target values for the respective function and dimension  
-        and the reference ERT values set via ``set_targets``. `fun_dim` is 
+        """Get all target values for the respective function and dimension  
+        and reference ERT values (passed during initializatio). `fun_dim` is 
         a tuple ``(fun_nb, dimension)`` like ``(1, 20)`` for the 20-D sphere. 
         
+        Details: f_target = arg min_f { ERT_best(f) > max(1, target_budget * dimension**times_dimension_flag) }, 
+        where f are the DataSet target attribute. 
+        
+        Shown is the ERT for targets that, within the given budget, the best 2009
+algorithm just failed to achieve.
+
         """            
         if self.force_different_targets_factor**len(self.run_lengths) > 1e3:
                 warnings.warn('enforced different target values might spread more than three orders of magnitude')
@@ -187,28 +193,29 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
             # same as end = np.where(ds.target >= smallest_target)[0][-1] + 1 
         except IndexError:
             end = len(ds.target)
-        if 11 < 3 and not toolsdivers.equals_approximately(ds.target[end-2] / ds.target[end-1], 10**0.2, 1e-8):
-            print 'last two targets before index', end
-            print ds.target[end-2:end]
-        try: 
-            assert ds.ert[0] == 1  # we might have to compute these the first time
-        except AssertionError:
-            print fun_dim, ds.ert[0], 'ert[0] != 1 in TargetValues.__call__' 
-        try: 
-            # check whether there are gaps between the targets 
-            delta_f_factor = 10**0.2
-            assert all(toolsdivers.equals_approximately(delta_f_factor, ds.target[i] / ds.target[i+1]) for i in xrange(end-1))
-            # if this fails, we need to insert the missing target values 
-        except AssertionError:
-            if 11 < 3:
-                print fun_dim, ds.ert[0], 'not all targets are recorded in TargetValues.__call__ (this could be a bug)' 
-                print ds.target
-                1/0
 
+        if genericsettings.test:
+            if 11 < 3 and not toolsdivers.equals_approximately(ds.target[end-2] / ds.target[end-1], 10**0.2, 1e-8):
+                print 'last two targets before index', end
+                print ds.target[end-2:end]
+            try: 
+                assert ds.ert[0] == 1  # we might have to compute these the first time
+            except AssertionError:
+                print fun_dim, ds.ert[0], 'ert[0] != 1 in TargetValues.__call__' 
+            try: 
+                # check whether there are gaps between the targets 
+                assert all(toolsdivers.equals_approximately(10**0.2, ds.target[i] / ds.target[i+1]) for i in xrange(end-1))
+                # if this fails, we need to insert the missing target values 
+            except AssertionError:
+                if 11 < 3:
+                    print fun_dim, ds.ert[0], 'not all targets are recorded in TargetValues.__call__ (this could be a bug)' 
+                    print ds.target
+                    1/0
+        # here the actual computation starts
         targets = [] 
         for rl in self.run_lengths:
             if 1 < 3: # largest target not achieved by reference ERT
-                indices = np.nonzero(ds.ert[:end] > rl * (fun_dim[1] if self.times_dimension else 1))[0]
+                indices = np.nonzero(ds.ert[:end] > np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
                 if len(indices):
                     targets.append(ds.target[indices[0]])
                 else:
@@ -223,6 +230,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         
         targets = np.array(targets, copy=False)
         
+        # a few more sanity checks
         if targets[-1] < self.smallest_target:
             print 'runlength based targets', fun_dim, ': correction for small smallest target applied (should never happen)'
             b = float(targets[0])

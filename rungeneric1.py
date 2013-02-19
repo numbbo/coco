@@ -307,14 +307,14 @@ def main(argv=None):
         if isRLbased is not None:
             genericsettings.runlength_based_targets = isRLbased
         if isExpensive:
-            genericsettings.maxevals_fix_display = 3e2
+            genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive 
             genericsettings.runlength_based_targets = True
         elif isExpensive is False:
             genericsettings.runlength_based_targets = False            
         if genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
             if np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < 1e3: 
                 genericsettings.runlength_based_targets = True
-                genericsettings.maxevals_fix_display = 3e2
+                genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive
             else:
                 genericsettings.runlength_based_targets = False
 
