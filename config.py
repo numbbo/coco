@@ -33,11 +33,12 @@ def config():
         pprldmany.target_values = pproc.RunlengthBasedTargetValues(10**np.arange(-0.3, 2.701, 0.1), force_different_targets_factor=1)
         pprldmany.x_limit = genericsettings.maxevals_fix_display  # always fixed
         # pprldistr:
-        pprldistr.single_target_values = pproc.RunlengthBasedTargetValues([0.5, 2, 10, 50], force_different_targets_factor=1)
+        pprldistr.single_target_values = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_single_rldistr, 
+                                                                          force_different_targets_factor=1)
         pprldistr.runlen_xlimits_max = genericsettings.maxevals_fix_display # can be None
         pprldistr.runlen_xlimits_min = 10**-0.5  # can be None 
         # ppfigdim:
-        ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 100],
+        ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_scaling_figs,
                                                                        # [10**i for i in [2.0, 1.5, 1.0, 0.5, 0.1, -0.3]],
                                                                        # [10**i for i in [1.7, 1, 0.3, -0.3]]
                                                                        force_different_targets_factor=1)
