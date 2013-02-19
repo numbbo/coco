@@ -35,16 +35,14 @@ def config():
         # pprldistr:
         pprldistr.single_target_values = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_single_rldistr, 
                                                                           force_different_targets_factor=1)
-        pprldistr.runlen_xlimits_max = genericsettings.maxevals_fix_display # can be None
-        pprldistr.runlen_xlimits_min = 10**-0.5  # can be None 
+        pprldistr.runlen_xlimits_max = genericsettings.maxevals_fix_display / 2 if genericsettings.maxevals_fix_display else None # can be None
+        pprldistr.runlen_xlimits_min = 10**-0.3  # can be None 
         # ppfigdim:
         ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_scaling_figs,
                                                                        # [10**i for i in [2.0, 1.5, 1.0, 0.5, 0.1, -0.3]],
                                                                        # [10**i for i in [1.7, 1, 0.3, -0.3]]
                                                                        force_different_targets_factor=1)
         ppfigdim.xlim_max = genericsettings.maxevals_fix_display
-        if ppfigdim.xlim_max:
-            ppfigdim.xlim_max *= 5/3.
         # pptable:
         pptable.table_caption=pptable.table_caption_rlbased
         pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table)
