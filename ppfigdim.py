@@ -169,7 +169,7 @@ def beautify(axesLabel=True):
                 plt.plot((1, 200), 2 * [y], styles[i]['color'] + '-', linewidth=0.2)
     else:
         axisHandle.yaxis.grid(True, which='major')
-    # quadratic "grid"
+    # quadratic slanted "grid"
     for i in xrange(-2, 7, 1 if ymax <= 1e3 else 2):
         plt.plot((0.2, 200), (10**i, 10**(i + 3)), 'k:', linewidth=0.5)  # TODO: this should be done before the real lines are plotted? 
 
