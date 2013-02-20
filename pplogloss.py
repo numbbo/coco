@@ -85,8 +85,7 @@ ERT loss ratio: expected running time, ERT (measured in number
       $\exp(CrE)==YYY$. Line: geometric mean over all functions. Box-Whisker
       error bars: 25-75\%-percentile range with median (box),
       10-90\%-percentile range (line), and minimum and maximum ERT loss ratio
-      (points). Alternative Box-Whisker sentence: Points: ERT loss ratio for
-      each function
+      (points). 
 
 Table: 
 \ERT\ loss ratio (see also Figure~\ref{fig:ERTgraphs}) vs.\ a given budget
@@ -108,10 +107,12 @@ evaluations in unsuccessful runs divided by dimension. Shown are the smallest,
 better). The ERT Loss ratio equals to one for the respective best algorithm from
 BBOB-2009. Typical median values are between ten and hundred.
       
-      
-\ERT\ loss ratio (see also Figure~\ref{fig:ERTlogloss}): expected running time, ERT (measured in number of function evaluations)
+Table:      
+\ERT\ loss ratio (see also Figure~\ref{fig:ERTlogloss}): expected running time,
+ERT (measured in number of function evaluations), divided by the best ERT 
+seen in GECCO-BBOB-2009 for the respective function and target value. 
 
-
+Figure:
 \ERT\ loss ratio (see also Figure~\ref{tab:ERTloss}): 
 
 """
@@ -642,7 +643,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
         plt.xticks(xdata, xticklabels)
         #Is there an upper bound?
     
-        if len(set(dsdim.dictByFunc().keys())) >= 20:
+        if CrE > 0 and len(set(dsdim.dictByFunc().keys())) >= 20:
             #TODO: hopefully this means we are not considering function groups.
             plt.text(0.01, 0.98, 'CrE = %5g' % CrE, fontsize=20,
                      horizontalalignment='left', verticalalignment='top',
