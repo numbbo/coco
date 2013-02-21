@@ -201,7 +201,7 @@ def beautify(axesLabel=True):
         # axisHandle.set_yticklabels(ticklabels)
     # axes limites
     plt.xlim(0.9 * dimensions[0], 1.125 * dimensions[-1]) 
-    plt.ylim(ymin=10**-0.2, ymax=int(ymax + 1))  # Set back the default maximum.
+    plt.ylim(ymin=np.min((ymin, 10**-0.2)), ymax=int(ymax + 1))  # Set back the default maximum.
     if xlim_max is not None:
         plt.ylim(0.3, xlim_max)  # set in config 
         if 11 < 3:
@@ -283,7 +283,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
         line = []
         mediandata = {}
         displaynumber = {}
-        for i in range(len(valuesOfInterest)):
+        for i_target in range(len(valuesOfInterest)):
             succ = []
             unsucc = []
             # data = []
@@ -294,14 +294,14 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                 assert len(dictFunc[func][dim]) == 1
                 # (ert, success rate, number of success, total number of
                 #        function evaluations, median of successful runs)
-                tmp = generateData(dictFunc[func][dim][0], valuesOfInterest((func, dim))[i])
+                tmp = generateData(dictFunc[func][dim][0], valuesOfInterest((func, dim))[i_target])
                 maxevals[idim] = max(dictFunc[func][dim][0].maxevals)
                 # data.append(np.append(dim, tmp))
                 if tmp[2] > 0:  # Number of success is larger than 0
                     succ.append(np.append(dim, tmp))
                     if tmp[2] < dictFunc[func][dim][0].nbRuns():
                         displaynumber[dim] = ((dim, tmp[0], tmp[2]))
-                    mediandata[dim] = (i, tmp[-1])
+                    mediandata[dim] = (i_target, tmp[-1])
                     unsucc.append(np.append(dim, np.nan))
                 else:
                     unsucc.append(np.append(dim, tmp[-2]))  # total number of fevals
@@ -309,24 +309,22 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
             if len(succ) > 0:
                 tmp = np.vstack(succ)
                 # ERT
-                res.extend(plt.plot(tmp[:, 0], tmp[:, 1] / tmp[:, 0],
-                           markersize=20, clip_on=True, **styles[i]))
                 if genericsettings.scaling_figures_with_boxes:
                     for dim in dimensions: 
                         # to find finite simulated runlengths we need to have at least one successful run
-                        if dictFunc[func][dim][0].detSuccesses([valuesOfInterest((func, dim))[i]])[0]:
+                        if dictFunc[func][dim][0].detSuccesses([valuesOfInterest((func, dim))[i_target]])[0]:
                             # make a box-plot
                             y = toolsstats.drawSP_from_dataset(
                                                 dictFunc[func][dim][0],
-                                                valuesOfInterest((func, dim))[i],
+                                                valuesOfInterest((func, dim))[i_target],
                                                 [25, 50, 75], 
                                                 genericsettings.simulated_runlength_bootstrap_sample_size)[0]
                             rec_width = 1.1
                             rec_taille_fac = 0.3
-                            r = rec_width ** ((1. + i / 3.) / 4)  # more difficult targets get a wider box
+                            r = rec_width ** ((1. + i_target / 3.) / 4)  # more difficult targets get a wider box
                             styles2 = {}
-                            for s in styles[i]:
-                                styles2[s] = styles[i][s]
+                            for s in styles[i_target]:
+                                styles2[s] = styles[i_target][s]
                             styles2['linewidth'] = 1
                             styles2['markeredgecolor'] = styles2['color'] 
                             x = [dim / r, r * dim]
@@ -342,6 +340,24 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                             styles2['linewidth'] = 2  # median
                             plt.plot([x[0], x[1]], [y[1], y[1]],
                                      markersize=0, **styles2)
+                # plot lines, we have to be smart to connect only adjacent dimensions
+                for i, n in enumerate(tmp[:, 0]):
+                    j = list(dimensions).index(n)
+                    if i == len(tmp[:, 0]) - 1 or j == len(dimensions) - 1: 
+                        break
+                    if dimensions[j+1] == tmp[i+1, 0]:
+                        res.extend(plt.plot(tmp[i:i+2, 0], tmp[i:i+2, 1] / tmp[i:i+2, 0],
+                                            markersize=0, clip_on=True, **styles[i_target]))
+                # plot only marker
+                lw = styles[i_target].get('linewidth', None) 
+                styles[i_target]['linewidth'] = 0
+                res.extend(plt.plot(tmp[:, 0], tmp[:, 1] / tmp[:, 0],
+                           markersize=20, clip_on=False, **styles[i_target]))
+                # restore linewidth
+                if lw:
+                    styles[i_target]['linewidth'] = lw
+                else:
+                    del styles[i_target]['linewidth']
 
         # To have the legend displayed whatever happens with the data.
         for i in reversed(range(len(valuesOfInterest))):
@@ -427,7 +443,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     dictFunc = dsList.dictByFunc()
 
     for func in dictFunc:
-        plot(dictFunc[func], _valuesOfInterest)
+        plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)
         plt.text(plt.xlim()[0], plt.ylim()[0], _valuesOfInterest.short_info, fontsize=14)
         if func in functions_with_legend:

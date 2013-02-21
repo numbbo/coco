@@ -43,6 +43,17 @@ def config():
                                                                        # [10**i for i in [1.7, 1, 0.3, -0.3]]
                                                                        force_different_targets_factor=1)
         ppfigdim.xlim_max = genericsettings.maxevals_fix_display
+        if ppfigdim.xlim_max:
+            ppfigdim.styles = [  # sort of rainbow style, most difficult (red) first
+                      {'color': 'y', 'marker': '^', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
+                      {'color': 'g', 'marker': '.', 'linewidth': 4},
+                      {'color': 'r', 'marker': 'o', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
+                      {'color': 'm', 'marker': '.', 'linewidth': 4},
+                      {'color': 'c', 'marker': 'v', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
+                      {'color': 'b', 'marker': '.', 'linewidth': 4},
+                      {'color': 'k', 'marker': 'o', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
+                    ] 
+            
         # pptable:
         pptable.table_caption=pptable.table_caption_rlbased
         pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table)

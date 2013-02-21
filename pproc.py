@@ -119,7 +119,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
     def short_info(self):
         return self._short_info
     
-    def __init__(self, run_lengths, reference_data="bestGECCO2009", 
+    def __init__(self, run_lengths, reference_data='bestGECCOever', #  
                  smallest_target=1e-8, times_dimension=True, force_different_targets_factor=10**0.04):
         """calling the class instance returns run-length based
         target values based on the reference data, individually
@@ -140,7 +140,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
             consecutive targets can be identical.  
 
         """
-        known_names = ['bestGECCO2009']
+        known_names = ['bestGECCO2009', 'bestGECCOever']
         self._short_info = "budget-based"
         self.run_lengths = sorted(run_lengths)
         self.smallest_target = smallest_target
@@ -153,6 +153,12 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                 bestalg.loadBBOB2009() # this is an absurd interface
                 self.reference_data = bestalg.bestalgentries2009
                 # TODO: remove targets smaller than 1e-8 
+            elif reference_data == 'bestGECCOever':
+                from bbob_pproc import bestalg
+                bestalg.loadBBOBever() # this is an absurd interface
+                self.reference_data = bestalg.bestalgentriesever
+            else:
+                ValueError('reference algorithm name')
             self._short_info = 'reference budgets from ' + reference_data
         elif type(reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
             dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0], 
