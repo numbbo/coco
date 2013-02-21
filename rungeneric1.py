@@ -450,6 +450,12 @@ def main(argv=None):
 
         latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
         prepend_to_file(latex_commands_file,
+                        ['\\providecommand{\\bbobloglosstablecaption}[1]{', 
+                         pplogloss.table_caption, '}'])
+        prepend_to_file(latex_commands_file,
+                        ['\\providecommand{\\bbobloglossfigurecaption}[1]{', 
+                         pplogloss.figure_caption, '}'])
+        prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobpprldistrlegend}[1]{',
                          pprldistr.caption_single(np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()])),  # depends on the config setting, should depend on maxfevals
                          '}'])

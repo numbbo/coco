@@ -76,7 +76,8 @@ different algorithms becomes incomparable. Also could ERT_A < ERT_best,
 even though ERT_best reaches a better f-value for the given EVALS. 
 
 """
-table_caption = r"""
+
+"""OLD STUFF:
 ERT loss ratio: expected running time, ERT (measured in number
       of function evaluations), divided by the best ERT seen in BBOB-best2009 for
       the respectively same function and target function value, plotted versus
@@ -86,7 +87,6 @@ ERT loss ratio: expected running time, ERT (measured in number
       error bars: 25-75\%-percentile range with median (box),
       10-90\%-percentile range (line), and minimum and maximum ERT loss ratio
       (points). 
-
 Table: 
 \ERT\ loss ratio (see also Figure~\ref{fig:ERTgraphs}) vs.\ a given budget
 $\FEvals$. Each cross ({\color{blue}$+$}) represents a single function. The
@@ -106,16 +106,40 @@ evaluations in unsuccessful runs divided by dimension. Shown are the smallest,
 10\%-ile, 25\%-ile, 50\%-ile, 75\%-ile and 90\%-ile value (smaller values are
 better). The ERT Loss ratio equals to one for the respective best algorithm from
 BBOB-2009. Typical median values are between ten and hundred.
-      
-Table:      
-\ERT\ loss ratio (see also Figure~\ref{fig:ERTlogloss}): expected running time,
-ERT (measured in number of function evaluations), divided by the best ERT 
-seen in GECCO-BBOB-2009 for the respective function and target value. 
 
-Figure:
-\ERT\ loss ratio (see also Figure~\ref{tab:ERTloss}): 
+\ERT\ loss ratio. The ERT of the considered algorithm, the budget, is shown in the first column. 
+For the loss ratio the budget is divided by the ERT for the respective best result from BBOB-2009 (see also Figure~\ref{fig:ERTlogloss}). The last row $\text{RL}_{\text{US}}/\text{D}$ gives the number of function evaluations in 
+unsuccessful runs divided by dimension. Shown are the smallest, 10\%-ile, 25\%-ile, 
+50\%-ile, 75\%-ile and 90\%-ile value (smaller values are better).
+The ERT Loss ratio equals to one for the respective best algorithm from BBOB-2009.
+Typical median values are between ten and hundred. 
 
+such that $\ERT(\ftarget)\le\FEvals$ for the 
+    Shown is \FEvals\ divided by the respective best $\ERT(\ftarget)$ from BBOB-2009 
+    %
+    for functions $f_1$--$f_{24}$ in 5-D and 20-D. 
+    %
+    % Each \ERT\ is multiplied by $\exp(\CrE)$ correcting for the parameter crafting effort. 
 """
+
+table_caption = r"""% \bbobloglosstablecaption{}
+    \ERT\ loss ratio versus the budget, both in number of $f$-evaluations 
+    divided by dimension. The target value \ftarget\ for a given budget \FEvals\  
+    is the best $f$-value reached within the budget by the 
+    given algorithm. Shown is the \ERT\ of the given algorithm 
+    divided by best \ERT\ seen in GECCO-BBOB-2009 for the respective target value. 
+    If the best algorithm reached a better $f$-value within the 
+    budget, then the budget divided by the best \ERT\ is shown. 
+    Line: geometric mean. Box-Whisker error bar:
+    25-75\%-ile with median (box), 10-90\%-ile
+    (caps), and minimum and maximum \ERT\ loss ratio (points). The vertical line
+    gives the maximal number of function evaluations in a single trial in this function subset.
+    See also Figure~\ref{fig:ERTlogloss} for result on function subgroups.     
+    """
+figure_caption = r"""%
+    \ERT\ loss ratio (see Figure~\ref{tab:ERTloss} for details).  
+    Each cross ({\color{blue}$+$}) represents a single function.
+    """  # \bbobloglossfigurecaption{}
 
 evalf = None
 f_thresh = 1.e-8
