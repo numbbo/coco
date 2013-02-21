@@ -123,22 +123,21 @@ such that $\ERT(\ftarget)\le\FEvals$ for the
 """
 
 table_caption = r"""% \bbobloglosstablecaption{}
-    \ERT\ loss ratio versus the budget, both in number of $f$-evaluations 
-    divided by dimension. The target value \ftarget\ for a given budget \FEvals\  
-    is the best $f$-value reached within the budget by the 
-    given algorithm. Shown is the \ERT\ of the given algorithm 
-    divided by best \ERT\ seen in GECCO-BBOB-2009 for the respective target value. 
-    If the best algorithm reached a better $f$-value within the 
-    budget, then the budget divided by the best \ERT\ is shown. 
-    Line: geometric mean. Box-Whisker error bar:
-    25-75\%-ile with median (box), 10-90\%-ile
-    (caps), and minimum and maximum \ERT\ loss ratio (points). The vertical line
-    gives the maximal number of function evaluations in a single trial in this function subset.
-    See also Figure~\ref{fig:ERTlogloss} for result on function subgroups.     
+    \ERT\ loss ratio versus the budget (both in number of $f$-evaluations
+    divided by dimension). The target value \ftarget\ for a given budget
+    \FEvals\ is the best target $f$-value reached within the budget by the given
+    algorithm. Shown is the \ERT\ of the given algorithm divided by best \ERT\
+    seen in GECCO-BBOB-2009 for target \ftarget, or, if the best algorithm
+    reached a better target within the budget, the budget divided by the best
+    \ERT. Line: geometric mean. Box-Whisker error bar: 25-75\%-ile with median
+    (box), 10-90\%-ile (caps), and minimum and maximum \ERT\ loss ratio
+    (points). The vertical line gives the maximal number of function evaluations
+    in a single trial in this function subset. See also
+    Figure~\ref{fig:ERTlogloss} for results on each function subgroup.
     """
 figure_caption = r"""%
-    \ERT\ loss ratio (see Figure~\ref{tab:ERTloss} for details).  
-    Each cross ({\color{blue}$+$}) represents a single function.
+    \ERT\ loss ratios (see Figure~\ref{tab:ERTloss} for details).  
+    Each cross ({\color{blue}$+$}) represents a single function, the line is the geometric mean.
     """  # \bbobloglossfigurecaption{}
 
 evalf = None
