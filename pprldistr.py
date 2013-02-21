@@ -199,7 +199,7 @@ def beautifyRLD(xlimit_max=None):
     a.set_ylabel('proportion of trials')
     logxticks()
     if xlimit_max:
-        plt.xlim(xmax=xlimit_max ** 1.0) # was 1.05
+        plt.xlim(xmax=xlimit_max ** 1.0)  # was 1.05
     plt.xlim(xmin=runlen_xlimits_min)
     plt.text(plt.xlim()[0], plt.ylim()[0], single_target_values.short_info, fontsize=14)
     beautifyECDF()
@@ -275,7 +275,7 @@ def plotERTDistr(dsList, target, **plotArgs):
     """
     x = []
     nn = 0
-    samplesize = genericsettings.simulated_runlength_bootstrap_sample_size # samplesize should be at least 1000
+    samplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # samplesize should be at least 1000
     percentiles = 0.5  # could be anything...
 
     for i in dsList:
@@ -339,7 +339,7 @@ def plotRLDistr_old(dsList, target, **plotArgs):
     res = plotECDF(x, nn, **kwargs)
     return res
 
-def plotRLDistr(dsList, target, label, max_fun_evals=np.inf, **plotArgs):
+def plotRLDistr(dsList, target, label='', max_fun_evals=np.inf, **plotArgs):
     """Creates run length distributions from a sequence dataSetList.
 
     Labels of the line (for the legend) will be appended with the number
@@ -395,7 +395,7 @@ def plotFVDistr(dsList, budget, min_f=1e-8, **plotArgs):
         for i, fvals in enumerate(ds.funvals):
             if fvals[0] > budget * ds.dim:
                 assert i > 0, 'first entry ' + str(fvals[0]) + 'was smaller than maximal budget ' + str(budget * ds.dim)
-                fvals = ds.funvals[i-1]
+                fvals = ds.funvals[i - 1]
                 break
         # vals = fvals[1:].copy() / target[i.funcId]
         vals = fvals[1:].copy()
@@ -442,7 +442,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
         else:
             evalfmax = None
         if not evalfmax:
-            evalfmax = maxEvalsFactor**1.05
+            evalfmax = maxEvalsFactor ** 1.05
         if runlen_xlimits_max is not None:
             evalfmax = runlen_xlimits_max
 
@@ -563,7 +563,7 @@ def plot_previous_algorithms(dim, funcs):
 
     global previous_data_dict
     if previous_data_dict is None:
-        previous_data_dict = load_previous_data() # this takes about 6 seconds
+        previous_data_dict = load_previous_data()  # this takes about 6 seconds
     if previous_data_dict is not None:
         for alg in previous_data_dict:
             x = []
@@ -617,7 +617,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
     # plt.rc("ytick", labelsize=20)
     # plt.rc("font", size=20)
     # plt.rc("legend", fontsize=20)
-    targets = single_target_values # convenience abbreviation
+    targets = single_target_values  # convenience abbreviation
     for d, dictdim in dsList.dictByDim().iteritems():
         maxEvalsFactor = max(i.mMaxEvals() / d for i in dictdim)
         if isStoringXMax:
@@ -633,11 +633,11 @@ def main(dsList, isStoringXMax=False, outputdir='',
         filename = os.path.join(outputdir, 'pprldistr_%02dD_%s' % (d, info))
         fig = plt.figure()
         for j in range(len(targets)):
-            plotRLDistr(dictdim, 
+            plotRLDistr(dictdim,
                         lambda fun_dim: targets(fun_dim)[j],
                         targets.label(j) if isinstance(targets, pproc.RunlengthBasedTargetValues) else targets.loglabel(j),
                         evalfmax,  # can be larger maxEvalsFactor with no effect
-                        **rldStyles[j % len(rldStyles)])
+                        ** rldStyles[j % len(rldStyles)])
     
         funcs = list(i.funcId for i in dictdim)
         text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
@@ -666,7 +666,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
         for j, max_eval_factor in enumerate(single_runlength_factors):
             if max_eval_factor > maxEvalsFactor:
                 break
-            plotFVDistr(dictdim, max_eval_factor, 1e-8, 
+            plotFVDistr(dictdim, max_eval_factor, 1e-8,
                         **rldUnsuccStyles[j % len(rldUnsuccStyles)])
                 
         plt.text(0.98, 0.02, text, horizontalalignment="right",

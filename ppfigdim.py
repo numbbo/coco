@@ -332,18 +332,13 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                             x = [dim / r, r * dim]
                             xm = [dim / (r**rec_taille_fac), dim * (r**rec_taille_fac)]
                             y = np.array(y) / dim
-                            if 1 < 3:
-                                plt.plot([x[0], xm[0], x[0], x[1], xm[1], x[1], x[0]],
-                                         [y[0], y[1],  y[2], y[2], y[1],  y[0], y[0]],
-                                         markersize=0, **styles2)
-                                styles2['linewidth'] = 0
-                                plt.plot([x[0], x[1], x[1], x[0], x[0]],
-                                         [y[0], y[0], y[2], y[2], y[0]],
-                                         **styles2)
-                            else:  # to be removed
-                                plt.plot([x[0], x[1], x[1], x[0], x[0]],
-                                         [y[0], y[0], y[2], y[2], y[0]],
-                                         **styles2)
+                            plt.plot([x[0], xm[0], x[0], x[1], xm[1], x[1], x[0]],
+                                     [y[0], y[1],  y[2], y[2], y[1],  y[0], y[0]],
+                                     markersize=0, **styles2)
+                            styles2['linewidth'] = 0
+                            plt.plot([x[0], x[1], x[1], x[0], x[0]],
+                                     [y[0], y[0], y[2], y[2], y[0]],
+                                     **styles2)
                             styles2['linewidth'] = 2  # median
                             plt.plot([x[0], x[1]], [y[1], y[1]],
                                      markersize=0, **styles2)
