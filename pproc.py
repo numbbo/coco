@@ -140,6 +140,8 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
             consecutive targets can be identical.  
 
         """
+        if force_different_targets_factor < 1:
+            force_different_targets_factor **= -1 
         known_names = ['bestGECCO2009', 'bestGECCOever']
         self._short_info = "budget-based"
         self.run_lengths = sorted(run_lengths)
