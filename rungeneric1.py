@@ -118,7 +118,6 @@ def main(argv=None):
         --runlength-based
             runlength-based f-target values, such that the
             "level of difficulty" is similar for all functions. 
-        --
 
     Exceptions raised:
 
