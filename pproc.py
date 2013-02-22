@@ -119,7 +119,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
     def short_info(self):
         return self._short_info
     
-    def __init__(self, run_lengths, reference_data='bestGECCOever', #  
+    def __init__(self, run_lengths, reference_data='bestGECCO2009', #  
                  smallest_target=1e-8, times_dimension=True, force_different_targets_factor=10**0.04):
         """calling the class instance returns run-length based
         target values based on the reference data, individually

@@ -72,15 +72,15 @@ table_caption_one = r"""%
     Expected running time (ERT in number of function 
     evaluations) divided by the best ERT measured during BBOB-2009. The ERT 
     and in braces, as dispersion measure, the half difference between 90 and 
-    10\%-tile of simulated running times appear in the second row of each cell,  
-    the best ERT in the
+    10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
+    the best ERT
     """
 table_caption_two1 = r"""%
-     first. The different target \Df-values are shown in the top row. 
+    in the first. The different target \Df-values are shown in the top row. 
     \#succ is the number of trials that reached the (final) target $\fopt + 10^{-8}$.
     """
 table_caption_two2 = r"""%
-    first, preceded by the different target \Df-values in \textit{italics}. 
+    (preceded by the target \Df-value in \textit{italics}) in the first. 
     \#succ is the number of trials that reached the target value of the last column.
     """
 table_caption_rest = r"""%
