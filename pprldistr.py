@@ -525,7 +525,7 @@ def beautify():
 def plot(dsList, targets=single_target_values, **plotArgs):
     """Obsolete and replaced by main? 
     Plot ECDF of evaluations and final function values."""
-    targets = targets()  # TODO: this needs to be rectified
+    # targets = targets()  # TODO: this needs to be rectified
     assert len(dsList.dictByDim()) == 1, ('Cannot display different '
                                           'dimensionalities together')
     res = []
@@ -535,7 +535,7 @@ def plot(dsList, targets=single_target_values, **plotArgs):
     evalfmax = maxEvalsFactor
     for j in range(len(targets)):
         tmpplotArgs = dict(plotArgs, **rldStyles[j % len(rldStyles)])
-        tmp = plotRLDistr(dsList, targets[j], **tmpplotArgs)
+        tmp = plotRLDistr(dsList, lambda fun_dim: targets(fun_dim)[j], **tmpplotArgs)
         res.extend(tmp)
     res.append(plt.axvline(x=maxEvalsFactor, color='k', **plotArgs))
     funcs = list(i.funcId for i in dsList)
@@ -546,14 +546,14 @@ def plot(dsList, targets=single_target_values, **plotArgs):
     plt.subplot(122)
     for j in [range(len(targets))[-1]]:
         tmpplotArgs = dict(plotArgs, **rldStyles[j % len(rldStyles)])
-        tmp = plotFVDistr(dsList, evalfmax, targets[j], **tmpplotArgs)
+        tmp = plotFVDistr(dsList, evalfmax, lambda fun_dim: targets(fun_dim)[j], **tmpplotArgs)
         res.extend(tmp)
     tmp = np.floor(np.log10(evalfmax))
     # coloring right to left:
     maxEvalsF = np.power(10, np.arange(0, tmp))
     for j in range(len(maxEvalsF)):
         tmpplotArgs = dict(plotArgs, **rldUnsuccStyles[j % len(rldUnsuccStyles)])
-        tmp = plotFVDistr(dsList, maxEvalsF[j], targets[-1], **tmpplotArgs)
+        tmp = plotFVDistr(dsList, maxEvalsF[j], lambda fun_dim: targets(fun_dim)[-1], **tmpplotArgs)
         res.extend(tmp)
     res.append(plt.text(0.98, 0.02, text, horizontalalignment="right",
                         transform=plt.gca().transAxes))
