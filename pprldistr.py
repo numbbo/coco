@@ -103,9 +103,10 @@ caption_left_fixed_targets = r"""%
      The thick red line represents the most difficult target value $\fopt+10^{-8}$. """
 caption_left_rlbased_targets = r"""%
      Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$, 
-     to fall below $\fopt+\Df$ where \Df\ is the largest $\Df$-value $\ge10^{-8}$ 
-     for which the best \ERT\ seen in the GECCO-BBOB-2009  
-     was yet above $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
+     to fall below $\fopt+\Df$ where \Df\ is the 
+     target just not reached by the GECCO-BBOB-2009 best algorithm within a budget of
+     % largest $\Df$-value $\ge10^{-8}$ for which the best \ERT\ seen in the GECCO-BBOB-2009 was yet above 
+     $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
 caption_wrap_up = r"""%
      Legends indicate for each target the number of functions that were solved in at
      least one trial within the displayed budget.

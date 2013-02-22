@@ -127,7 +127,7 @@ table_caption = r"""% \bbobloglosstablecaption{}
     divided by dimension). The target value \ftarget\ for a given budget
     \FEvals\ is the best target $f$-value reached within the budget by the given
     algorithm. Shown is the \ERT\ of the given algorithm divided by best \ERT\
-    seen in GECCO-BBOB-2009 for target \ftarget, or, if the best algorithm
+    seen in GECCO-BBOB-2009 for the target \ftarget, or, if the best algorithm
     reached a better target within the budget, the budget divided by the best
     \ERT. Line: geometric mean. Box-Whisker error bar: 25-75\%-ile with median
     (box), 10-90\%-ile (caps), and minimum and maximum \ERT\ loss ratio
