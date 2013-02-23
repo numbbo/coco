@@ -146,6 +146,11 @@ def main(argv=None):
         
             omit calling :py:func:`bbob_pproc.rungeneric1.main`, if
             more than one data path argument is provided. 
+            
+        --in-a-hurry
+        
+            takes values between 0 (default) and 1000, fast processing that 
+            does not write eps files and uses a small number of bootstrap samples
 
     Exceptions raised:
     
@@ -182,7 +187,7 @@ def main(argv=None):
 
     try:
         try:
-            opts, args = getopt.getopt(argv, shortoptlist, longoptlist + ['omit-single'])
+            opts, args = getopt.getopt(argv, shortoptlist, longoptlist + ['omit-single', 'in-a-hurry='])
         except getopt.error, msg:
             raise Usage(msg)
 
@@ -216,6 +221,8 @@ def main(argv=None):
                 sys.exit()
             elif o in ("-o", "--output-dir"):
                 outputdir = a
+            elif o in ('in-a-hurry', ):
+                genericsettings.in_a_hurry = a
             else:
                 isAssigned = False
                 if o in longoptlist1 or o in shortoptlist1:
@@ -238,7 +245,7 @@ def main(argv=None):
                 if o in ("-v","--verbose"):
                     verbose = True
                     isAssigned = True
-                if o in ('--omit-single', ):
+                if o in ('--omit-single', '--in-a-hurry'):
                     isAssigned = True
                 if not isAssigned:
                     assert False, "unhandled option"
