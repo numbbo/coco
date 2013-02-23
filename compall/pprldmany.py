@@ -367,6 +367,10 @@ def plot(dsList, targets=target_values, craftingeffort=0., **kwargs):
     :returns: handles
 
     """
+    if not isinstance(targets, pp.TargetValues):
+        if np.min(targets) >= 1:
+            ValueError('smallest target f-value is not smaller than one, use ``pproc.TargetValues(targets)`` to prevent this error')
+        targets = pp.TargetValues(targets)
     res = []
     assert len(dsList.dictByDim()) == 1 # We never integrate over dimensions...
     data = []

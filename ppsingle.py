@@ -29,6 +29,7 @@ def beautify():
     for i in tmp:
         tmp2.append('%d' % round(np.log10(i)))
     a.set_xticklabels(tmp2)
+    return a
     # TODO: label size and line width...
 
 def plot(dataset, **kwargs):

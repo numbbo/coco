@@ -495,7 +495,7 @@ def beautify():
     Used in conjunction with plot method (obsolete/outdated, see functions ``beautifyFVD`` and ``beautifyRLD``).
 
     """
-    raise NotImplementedError('this implementation is obsolete')
+    # raise NotImplementedError('this implementation is obsolete')
     plt.subplot(121)
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
@@ -526,6 +526,7 @@ def plot(dsList, targets=single_target_values, **plotArgs):
     """Obsolete and replaced by main? 
     Plot ECDF of evaluations and final function values."""
     # targets = targets()  # TODO: this needs to be rectified
+    # targets = targets.target_values
     assert len(dsList.dictByDim()) == 1, ('Cannot display different '
                                           'dimensionalities together')
     res = []

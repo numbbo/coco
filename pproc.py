@@ -195,6 +195,8 @@ algorithm just failed to achieve.
             raise ValueError('call to RunlengthbasedTargetValues class instance needs the parameter ``fun_dim``, none given')
         fun_dim = tuple(fun_dim)
         dim_fun = tuple(reversed(fun_dim))
+        if fun_dim[0] > 100 and self.run_lengths[-1] * fun_dim[1]**self.times_dimension < 1e3:
+            ValueError("short running times don't work on noisy functions")
         ds = self.reference_data[dim_fun]
         try:
             end = np.nonzero(ds.target >= self.smallest_target)[0][-1] + 1 
@@ -1301,7 +1303,6 @@ class DataSetList(list):
 
         # interested in algorithms, number of datasets, functions, dimensions
         # maxevals?, funvals?, success rate?
-
 
 def parseinfoold(s):
     """Deprecated: Extract data from a header line in an index entry.
