@@ -978,7 +978,7 @@ class DataSet():
     def plot(self):
         for evals in self.evals[:, 1:].transpose(): # loop over the rows of the transposed array
             idx = self.evals[:, 0] > 0
-            plt.semilogy(self.evals[idx, 0], evals[idx])
+            plt.semilogx(self.evals[idx, 0], evals[idx])
         
 class DataSetList(list):
     """List of instances of :py:class:`DataSet`.
