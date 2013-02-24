@@ -27,6 +27,7 @@ import pickle, gzip  # gzip is for future functionality: we probably never want 
 import warnings
 from pdb import set_trace
 import numpy, numpy as np
+import matplotlib as plt
 from bbob_pproc import genericsettings, findfiles, toolsstats, toolsdivers
 from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
 from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
@@ -977,6 +978,10 @@ class DataSet():
 
         return list(tmp[i][1:] for i in targets)
 
+    def plot(self):
+        for evals in self.evals[:, 1:].transpose(): # loop over the rows of the transposed array
+            plt.plot(self.evals[:, 0], evals)
+        
 class DataSetList(list):
     """List of instances of :py:class:`DataSet`.
 
