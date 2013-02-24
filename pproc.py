@@ -978,9 +978,11 @@ class DataSet():
     def plot(self):
         for evals in self.evals[:, 1:].transpose(): # loop over the rows of the transposed array
             idx = self.evals[:, 0] > 0
-            ax = plt.semilogx(self.evals[idx, 0], evals[idx])
+            # plt.semilogx(self.evals[idx, 0], evals[idx])
+            plt.loglog(self.evals[idx, 0], evals[idx])
             plt.gca().invert_xaxis()
-        
+        return plt.gca()
+    
 class DataSetList(list):
     """List of instances of :py:class:`DataSet`.
 
