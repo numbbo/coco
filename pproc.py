@@ -105,15 +105,13 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
     returns a list of target f-values for F1 in 10-D, based on the 
     ``ERT_values`` and ``reference_data``. 
         
-    Details
-    -------
-    The computation starts from the smallest budget and the resulting f-target 
+    Details: The computation starts from the smallest budget and the resulting f-target 
     must always be at least a factor of ``force_different_targets_factor`` smaller 
     than the previous one. If the ``smallest_target`` is superseded, the log values
     are linearly rescaled such that the easiest found target remains the same and 
     the smallest target becomes ``smallest_target``. 
     
-        TODO: see compall/determineFtarget2.FunTarget
+    TODO: see compall/determineFtarget2.FunTarget
     
     """
     @property
@@ -186,8 +184,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         Details: f_target = arg min_f { ERT_best(f) > max(1, target_budget * dimension**times_dimension_flag) }, 
         where f are the DataSet target attribute. 
         
-        Shown is the ERT for targets that, within the given budget, the best 2009
-algorithm just failed to achieve.
+        Shown is the ERT for targets that, within the given budget, the best 2009 algorithm just failed to achieve.
 
         """            
         if self.force_different_targets_factor**len(self.run_lengths) > 1e3:
