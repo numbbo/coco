@@ -376,7 +376,7 @@ def plot(dsList, targets=target_values, craftingeffort=0., **kwargs):
     data = []
     maxevals = []
     for entry in dsList:
-        for t in targets((entry.funcID, entry.dim)):
+        for t in targets((entry.funcId, entry.dim)):
             x = [np.inf] * perfprofsamplesize
             runlengthunsucc = []
             evals = entry.detEvals([t])[0]
