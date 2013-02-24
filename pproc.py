@@ -981,6 +981,8 @@ class DataSet():
             # plt.semilogx(self.evals[idx, 0], evals[idx])
             plt.loglog(self.evals[idx, 0], evals[idx])
             plt.gca().invert_xaxis()
+            plt.xlabel('target $\Delta f$ value')
+            plt.ylabel('number of function evaluations')
         return plt.gca()
     
 class DataSetList(list):
