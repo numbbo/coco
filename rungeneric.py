@@ -101,7 +101,7 @@ def main(argv=None):
       (more than 2) for the input arguments altogether.
 
     The output figures and tables written by default to the output folder 
-    :file:`ppdata` and meant to be use in latex templates:
+    :file:`ppdata` are used in latex templates:
 
     * :file:`template1generic.tex`, :file:`template1ecj.tex`,
       :file:`noisytemplate1generic.tex`, :file:`noisytemplate1ecj.tex`

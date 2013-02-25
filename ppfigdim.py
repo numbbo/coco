@@ -75,8 +75,8 @@ styles = [  # sort of rainbow style, most difficult (red) first
 refcolor = 'wheat'
 
 caption_part_one = r"""%
-    Expected number of $f$-evaluations (\ERT, lines) to reach $\fopt+\Df$ (see
-    legend); median number of $f$-evaluations (+) to reach the most difficult
+    Expected number of $f$-evaluations (\ERT, lines) to reach $\fopt+\Df$;
+    median number of $f$-evaluations (+) to reach the most difficult
     target that was reached not always but at least once; maximum number of
     $f$-evaluations in any trial ({\color{red}$\times$}); """ + (r"""interquartile 
     range with median (notched boxes) of simulated runlengths
@@ -106,7 +106,7 @@ scaling_figure_caption_rlbased = caption_part_one + r"""%
     targets just not reached by
 %    the largest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of 
     the GECCO-BBOB-2009 best algorithm  
-    within the given budget.
+    within the given budget $k\DIM$, where $k$ is shown in the legend.
 %    was above $\{values_of_interest\}\times\DIM$ evaluations. 
     Numbers above \ERT-symbols indicate the number of trials reaching the respective target.  
     Slanted grid lines indicate a scaling with ${\cal O}(\DIM)$ compared to ${\cal O}(1)$  
@@ -359,7 +359,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                 lw = styles[i_target].get('linewidth', None) 
                 styles[i_target]['linewidth'] = 0
                 res.extend(plt.plot(tmp[:, 0], tmp[:, 1] / tmp[:, 0],
-                           markersize=20, clip_on=False, **styles[i_target]))
+                           markersize=20, clip_on=True, **styles[i_target]))
                 # restore linewidth
                 if lw:
                     styles[i_target]['linewidth'] = lw
