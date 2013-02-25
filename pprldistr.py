@@ -96,7 +96,8 @@ rldUnsuccStyles = (
 
 caption_part_one = r"""%
      Empirical cumulative distribution functions (ECDF), plotting the fraction of 
-     trials with an outcome not larger than the respective value on the $x$-axis. """
+     trials with an outcome not larger than the respective value on the $x$-axis. 
+     #1"""
 caption_left_fixed_targets = r"""%
      Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$, 
      to fall below $\fopt+\Df$ with $\Df=10^{k}$, where $k$ is the first value in the legend. 
@@ -114,7 +115,7 @@ caption_wrap_up = r"""%
 caption_right = r"""%
      Right subplots: ECDF of the 
      best achieved $\Df$ 
-     for running times of #1
+     for running times of TO_BE_REPLACED
      function evaluations 
      (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red), 
      where \Df\ and \textsf{Df} denote the difference to the optimal function value. """
@@ -143,7 +144,7 @@ def load_previous_data(filename=previous_data_filename, force=False):
 
 def caption_single(max_evals_div_dim):
     caption = caption_single_rlbased if genericsettings.runlength_based_targets else caption_single_fixed 
-    return caption.replace(r'#1', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$') 
+    return caption.replace(r'TO_BE_REPLACED', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$') 
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""
