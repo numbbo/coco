@@ -61,6 +61,7 @@ from bbob_pproc.ppfig import saveFigure, groupByRange
 
 values_of_interest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # to rename!?
 xlim_max = None
+ynormalize_by_dimension = True  # not at all tested yet
 
 styles = [  # sort of rainbow style, most difficult (red) first
           {'color': 'r', 'marker': 'o', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
@@ -81,7 +82,7 @@ caption_part_one = r"""%
     $f$-evaluations in any trial ({\color{red}$\times$}); """ + (r"""interquartile 
     range with median (notched boxes) of simulated runlengths
     to reach $\fopt+\Df$;""" if genericsettings.scaling_figures_with_boxes 
-    else "") + """ all values are divided by dimension and plotted as 
+    else "") + """ all values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """plotted as 
     $\log_{10}$ values versus dimension. %
     """
     
@@ -170,10 +171,11 @@ def beautify(axesLabel=True):
 
     if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
         axisHandle.yaxis.grid(False, which='major')
+        expon = values_of_interest.times_dimension - ynormalize_by_dimension
         for (i, y) in enumerate(reversed(values_of_interest.run_lengths)):
-            plt.plot((1, 200), 2 * [y], 'k:', linewidth=0.2)
+            plt.plot((1, 200), [y, y], 'k:', linewidth=0.2)
             if i / 2. == i // 2:
-                plt.plot((1, 200), 2 * [y], styles[i]['color'] + '-', linewidth=0.2)
+                plt.plot((1, 200), [y, y * 200**expon], styles[i]['color'] + '-', linewidth=0.2)
     else:
         axisHandle.yaxis.grid(True, which='major')
     # quadratic slanted "grid"
@@ -221,7 +223,11 @@ def beautify(axesLabel=True):
 
     if axesLabel:
         plt.xlabel('Dimension')
-        plt.ylabel('Run Lengths / Dimension')
+        if ynormalize_by_dimension:
+            plt.ylabel('Run Lengths / Dimension')
+        else:
+            plt.ylabel('Run Lengths')
+            
 
 def generateData(dataSet, targetFuncValue):
     """Computes an array of results to be plotted.
@@ -326,8 +332,8 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                                                 valuesOfInterest((func, dim))[i_target],
                                                 [25, 50, 75], 
                                                 genericsettings.simulated_runlength_bootstrap_sample_size)[0]
-                            rec_width = 1.1
-                            rec_taille_fac = 0.3
+                            rec_width = 1.1 # box ("rectangle") width
+                            rec_taille_fac = 0.3  # notch width parameter
                             r = rec_width ** ((1. + i_target / 3.) / 4)  # more difficult targets get a wider box
                             styles2 = {}
                             for s in styles[i_target]:
@@ -353,12 +359,12 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                     if i == len(tmp[:, 0]) - 1 or j == len(dimensions) - 1: 
                         break
                     if dimensions[j+1] == tmp[i+1, 0]:
-                        res.extend(plt.plot(tmp[i:i+2, 0], tmp[i:i+2, 1] / tmp[i:i+2, 0],
+                        res.extend(plt.plot(tmp[i:i+2, 0], tmp[i:i+2, 1] / tmp[i:i+2, 0]**ynormalize_by_dimension,
                                             markersize=0, clip_on=True, **styles[i_target]))
                 # plot only marker
                 lw = styles[i_target].get('linewidth', None) 
                 styles[i_target]['linewidth'] = 0
-                res.extend(plt.plot(tmp[:, 0], tmp[:, 1] / tmp[:, 0],
+                res.extend(plt.plot(tmp[:, 0], tmp[:, 1] / tmp[:, 0]**ynormalize_by_dimension,
                            markersize=20, clip_on=True, **styles[i_target]))
                 # restore linewidth
                 if lw:
@@ -377,9 +383,9 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
             # res.extend(plt.plot(tmp[:, 0], tmp[:, 1]/tmp[:, 0],
             #            color=styles[len(valuesOfInterest)-1]['color'],
             #            marker='x', markersize=20))
-        if 1 < 3: 
+        if 1 < 3: # maxevals
             ylim = plt.ylim()
-            res.extend(plt.plot(tmp[:, 0], maxevals / tmp[:, 0],
+            res.extend(plt.plot(tmp[:, 0], maxevals / tmp[:, 0]**ynormalize_by_dimension,
                        color=styles[len(valuesOfInterest) - 1]['color'],
                        ls='', marker='x', markersize=20))
             plt.ylim(ylim)
@@ -388,7 +394,8 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
             # for i, tm in mediandata.iteritems():
             for i in displaynumber:  # display median where success prob is smaller than one
                 tm = mediandata[i]
-                plt.plot((i,), (tm[1] / i,), color=styles[tm[0]]['color'],
+                plt.plot((i,), (tm[1] / i**ynormalize_by_dimension,), 
+                         color=styles[tm[0]]['color'],
                          linestyle='', marker='+', markersize=30,
                          markeredgewidth=5, zorder= -1)
 
@@ -399,7 +406,8 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
         if displaynumber:  # displayed only for the smallest valuesOfInterest
             for _k, j in displaynumber.iteritems():
                 # the 1.5 factor is a shift up for the digits 
-                plt.text(j[0], 1.5 * j[1] / j[0], "%.0f" % j[2], axes=a,
+                plt.text(j[0], 1.5 * j[1] / j[0]**ynormalize_by_dimension, 
+                         "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
                          verticalalignment="bottom", fontsize=plt.rcParams['font.size'] * 0.85)
         # if later the ylim[0] becomes >> 1, this might be a problem
