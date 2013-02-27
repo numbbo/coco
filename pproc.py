@@ -568,11 +568,12 @@ class DataSet():
         TODO: should attribute `maxevals` be recomputed? 
         
         """
-        if 11 < 3 or genericsettings.GECCOBBOBTestbed in genericsettings.current_testbed.__class__.__bases__:
+        if genericsettings.GECCOBBOBTestbed in genericsettings.current_testbed.__class__.__bases__:
             Ndata = np.size(self.evals, 0)
             i = Ndata
-            while i > 1 and self.evals[i-1,0] < self.precision:
+            while i > 1 and self.evals[i-1,0] <= self.precision:
                 i -= 1
+            i += 1
             if i < Ndata:
                 self.evals = self.evals[:i, :]
                 try:
@@ -586,8 +587,9 @@ class DataSet():
                     pass
             assert self.evals.shape[0] == 1 or self.evals[-2, 0] > self.precision
             if self.evals[-1,0] < self.precision:
-                warnings.warn('final precision was not recorded')
-                print '*** warning: final precision was not recorded'
+                self.evals[-1, 0] = self.precision
+                warnings.warn('exact final precision was not recorded, next lower value set to final precision')
+                # print '*** warning: final precision was not recorded'
             
     def computeERTfromEvals(self):
         """Sets the attributes ert and target from the attribute evals."""
