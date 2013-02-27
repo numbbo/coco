@@ -185,7 +185,7 @@ def beautify():
     plt.xlim(xmin=1e-0)
 
     plt.xlabel('log10 of (# f-evals / dimension)')
-    plt.ylabel('Proportion of functions')
+    plt.ylabel('Proportion of function+target pairs')
     ppfig.logxticks()
     pprldistr.beautifyECDF()
 

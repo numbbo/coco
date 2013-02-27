@@ -23,7 +23,7 @@ from bbob_pproc.compall import ppfigs, pprldmany
 
 def config():
     """called from a high level, e.g. rungeneric, to configure the lower level 
-    modules via modified parameter settings. 
+    modules via modifying parameter settings. 
     """
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets 
     if genericsettings.runlength_based_targets:
