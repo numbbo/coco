@@ -325,8 +325,9 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
                 dimbestalg2.append(d)
 
         tmp = plt.plot(dimbestalg2, bestalgdata, color=refcolor, linewidth=10,
-                       marker='d', markersize=25, markeredgecolor=refcolor, zorder=-1)
+                       marker='d', markersize=25, markeredgecolor=refcolor, zorder=-1
                        #label='best 2009', 
+                       )
         handles.append(tmp)
         
         if show_significance: # plot significance-stars

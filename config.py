@@ -26,13 +26,14 @@ def config():
     modules via modifying parameter settings. 
     """
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets 
-    if genericsettings.runlength_based_targets:
+    if genericsettings.runlength_based_targets in (True, 1):
         print 'Using bestGECCO2009 based target values: now for each function the target ' + \
               'values differ, but the "level of difficulty" is "the same". '
         # pprldmany: 
-        pprldmany.target_values = pproc.RunlengthBasedTargetValues(10**np.arange(-0.3, 2.701, 0.1), 
-                                                                   force_different_targets_factor=1)
-        pprldmany.x_limit = genericsettings.maxevals_fix_display  # always fixed
+        if 11 < 3:  # not yet functional, captions need to be adjusted and the bug reported by Ilya sorted out
+            pprldmany.target_values = pproc.RunlengthBasedTargetValues(10**np.arange(-0.3, 2.701, 0.1), 
+                                                                       force_different_targets_factor=1)
+            pprldmany.x_limit = genericsettings.maxevals_fix_display  # always fixed
         # pprldistr:
         pprldistr.single_target_values = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_single_rldistr, 
                                                                           force_different_targets_factor=10**-0.2)

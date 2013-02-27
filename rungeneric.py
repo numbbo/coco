@@ -187,7 +187,7 @@ def main(argv=None):
 
     try:
         try:
-            opts, args = getopt.getopt(argv, shortoptlist, longoptlist + ['omit-single', 'in-a-hurry='])
+            opts, args = getopt.getopt(argv, shortoptlist, longoptlist + ['omit-single', 'in-a-hurry=', 'input-path='])
         except getopt.error, msg:
             raise Usage(msg)
 
@@ -197,6 +197,7 @@ def main(argv=None):
 
         verbose = False
         outputdir = 'ppdata'
+        inputdir = '.'
 
         #Process options
         shortoptlist1 = list("-" + i.rstrip(":")
@@ -221,8 +222,10 @@ def main(argv=None):
                 sys.exit()
             elif o in ("-o", "--output-dir"):
                 outputdir = a
-            elif o in ('in-a-hurry', ):
+            elif o in ("--in-a-hurry", ):
                 genericsettings.in_a_hurry = a
+            elif o in ("--input-path", ):
+                inputdir = a
             else:
                 isAssigned = False
                 if o in longoptlist1 or o in shortoptlist1:
@@ -264,6 +267,9 @@ def main(argv=None):
                 print 'Folder %s was created.' % (outputdir)
         
         truncate_latex_command_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'))
+
+        for i in range(len(args)):  # prepend common path inputdir to all names
+            args[i] = os.path.join(inputdir, args[i])
 
         for i, alg in enumerate(args):
             # remove '../' from algorithm output folder
