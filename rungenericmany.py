@@ -34,7 +34,7 @@ if __name__ == "__main__":
 from bbob_pproc import genericsettings
 from bbob_pproc import dataoutput, pproc
 from bbob_pproc.pproc import DataSetList, processInputArgs
-from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname, str_to_latex
+from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname2, str_to_latex
 from bbob_pproc.compall import pprldmany, pptables, ppfigs
 from bbob_pproc import ppconverrorbars
 
@@ -247,7 +247,7 @@ def main(argv=None):
         lines = []
         for i, alg in enumerate(args):
             lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
-                    str_to_latex(strip_pathname(alg)) + '}')
+                    str_to_latex(strip_pathname2(alg)) + '}')
         prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
                      lines, 5000, 
                      'bbob_proc_commands.tex truncated, consider removing the file before the text run'
@@ -319,7 +319,7 @@ def main(argv=None):
                 dictDim = pproc.dictAlgByDim(tmpdictng)
                 for d, tmpdictdim in dictDim.iteritems():
                     pptables.main(tmpdictdim, sortedAlgs,
-                                  inset.tableconstant_target_function_values,
+                                  inset.tableconstant_target_function_values,  # TODO: here use non-constant values?
                                   outputdir, verbose)
             print "Comparison tables done."
 

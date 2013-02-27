@@ -49,6 +49,11 @@ def strip_pathname(name):
     """remove ../ and ./ and leading/trainling blanks and path separators from input string ``name``"""
     return name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep)
 
+def strip_pathname2(name):
+    """remove ../ and ./ and leading/trainling blanks and path separators from input string ``name``
+    and keep only the last two parts of the path"""
+    return os.sep.join(name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep).split(os.sep)[-2:])
+
 def str_to_latex(string):
     """do replacements in ``string`` such that it most likely compiles with latex """
     return string.replace('\\', r'\textbackslash{}').replace('_', '\\_').replace(r'^', r'\^\,').replace(r'%', r'\%').replace(r'~', r'\ensuremath{\sim}').replace(r'#', r'\#')

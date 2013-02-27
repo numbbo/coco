@@ -565,7 +565,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             algtocommand = {}
             for i, alg in enumerate(order):
                 tmp = r'\alg%sperfprof' % pptex.numtotext(i)
-                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, toolsdivers.str_to_latex(toolsdivers.strip_pathname(alg))))
+                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, toolsdivers.str_to_latex(toolsdivers.strip_pathname2(alg))))
                 algtocommand[alg] = tmp
             commandnames = []
             if displaybest2009:
