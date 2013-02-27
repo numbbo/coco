@@ -587,7 +587,7 @@ class DataSet():
                     pass
             assert self.evals.shape[0] == 1 or self.evals[-2, 0] > self.precision
             if self.evals[-1,0] < self.precision:
-                self.evals[-1, 0] = self.precision
+                # self.evals[-1, 0] = self.precision
                 warnings.warn('exact final precision was not recorded, next lower value set to final precision')
                 # print '*** warning: final precision was not recorded'
             
