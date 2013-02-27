@@ -33,10 +33,15 @@ scaling_figure_legend = (r"Expected running time (\ERT\ in number of $f$-evaluat
                 )
 
 styles = genericsettings.line_styles
-for i in xrange(len(styles)):
-    styles[i].update({'linewidth': 4 - min([3, i/2.0]),  # thinner lines over thicker lines
-                      'markeredgewidth': 6 - min([2, i]), 
-                      'markerfacecolor': 'None'})
+def fix_styles(number, styles=styles):
+    """a short hack to fix length of styles"""
+    m = len(styles) 
+    while len(styles) < number:
+        styles.append(styles[len(styles) % m])
+    for i in xrange(len(styles)):
+        styles[i].update({'linewidth': 4 - min([3, i/2.0]),  # thinner lines over thicker lines
+                          'markeredgewidth': 6 - min([2, i]), 
+                          'markerfacecolor': 'None'})
 refcolor = 'wheat'
 
 show_algorithms = []
@@ -255,6 +260,7 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
     for f in dictFunc:
         filename = os.path.join(outputdir,'ppfigs_f%03d' % (f))
         handles = []
+        fix_styles(len(sortedAlgs))  # 
         for i, alg in enumerate(sortedAlgs):
             dictDim = dictFunc[f][alg].dictByDim()
 

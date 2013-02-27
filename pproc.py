@@ -568,7 +568,7 @@ class DataSet():
         TODO: should attribute `maxevals` be recomputed? 
         
         """
-        if 1 < 3 or genericsettings.GECCOBBOBTestbed in genericsettings.current_testbed.__class__.__bases__:
+        if 11 < 3 or genericsettings.GECCOBBOBTestbed in genericsettings.current_testbed.__class__.__bases__:
             Ndata = np.size(self.evals, 0)
             i = Ndata
             while i > 1 and self.evals[i-1,0] < self.precision:
