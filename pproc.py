@@ -36,6 +36,39 @@ from bbob_pproc.ppfig import consecutiveNumbers
 do_assertion = genericsettings.force_assertions # expensive assertions
 targets_displayed_for_info = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]  # only to display info in DataSetList.info
 
+def _DataSet_complement_data(self, step=10**0.2, final_target=1e-8):
+    """insert a line for each target value, resolve: old data sets don't have this method, 
+    therefore it must be global in the module"""
+    try:
+        if self._is_complemeted_data:
+            return
+    except AttributeError:
+        pass
+    assert step > 1
+    
+    # check that step splits 10 into uniform intervals on the log scale
+    if np.min(np.abs(np.log10(step) * np.array(range(20)) - 1)) > 1e-13:
+        raise NotImplementedError('')
+
+    i = 0
+    newdat = []
+    self.evals = np.array(self.evals, copy=False)
+    for i in xrange(len(self.evals.T) - 1):
+        newdat.append(self.evals[i])
+        if newdat[i][0] <= final_target:
+            break
+        target = self.evals[i][0] / step
+        while target > self.evals[i+1][0] and target / self.evals[i+1][0] - 1 > 1e-9:
+            newdat.append(self.evals[i+1])
+            newdat[-1][0] = target
+            target /= step
+    if newdat[-1][0] > final_target:
+        newdat.append(self.evals[-1])
+    
+    1/0  # check newdat and self.evals
+    self.evals = np.array(newdat, copy=False)
+    self._is_complemented_data = True
+
 def cocofy(filename):
     """Replaces bbob_pproc references in pickles files with coco_pproc
         This could become necessary for future backwards compatibility,
@@ -146,7 +179,9 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         self.run_lengths = sorted(run_lengths)
         self.smallest_target = smallest_target
         self.times_dimension = times_dimension
+        # force_different_targets and target_discretization could talk to each other? 
         self.force_different_targets_factor = force_different_targets_factor
+        self.target_discretization_factor = 10**0.2  # in accordance with default recordings
         
         if reference_data in known_names:
             if reference_data == 'bestGECCO2009':
@@ -166,7 +201,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                                            'bbob_pproc', 'data', self.reference_data))  
             dsd = {}
             for ds in dsl:
-                # ds.clean_data()
+                # ds._clean_data()
                 dsd[(ds.funcId, ds.dim)] = ds
             self.reference_data = dsd
             self._short_info = 'reference budgets from ' + reference_data
@@ -182,7 +217,8 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         a tuple ``(fun_nb, dimension)`` like ``(1, 20)`` for the 20-D sphere. 
         
         Details: f_target = arg min_f { ERT_best(f) > max(1, target_budget * dimension**times_dimension_flag) }, 
-        where f are the DataSet target attribute. 
+        where f are the values of the ``DataSet`` ``target`` attribute. The next difficult target is chosen
+        not smaller as target / 10**0.2. 
         
         Shown is the ERT for targets that, within the given budget, the best 2009 algorithm just failed to achieve.
 
@@ -196,6 +232,12 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         if fun_dim[0] > 100 and self.run_lengths[-1] * fun_dim[1]**self.times_dimension < 1e3:
             ValueError("short running times don't work on noisy functions")
         ds = self.reference_data[dim_fun]
+        if 11 < 3:
+            try:
+                ds._complement_data()
+            except AttributeError: # loaded classes might not have this method
+                # need a hack here
+                _DataSet_complement_data(ds, self.target_discretization_factor)
         try:
             end = np.nonzero(ds.target >= self.smallest_target)[0][-1] + 1 
             # same as end = np.where(ds.target >= smallest_target)[0][-1] + 1 
@@ -219,6 +261,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                     print fun_dim, ds.ert[0], 'not all targets are recorded in TargetValues.__call__ (this could be a bug)' 
                     print ds.target
                     1/0
+        
         # here the actual computation starts
         targets = [] 
         for rl in self.run_lengths:
@@ -557,11 +600,12 @@ class DataSet():
             warnings.warn('There is a difference between the maxevals in the '
                           '*.info file and in the data files.')
 
-        self.clean_data()
+        self._clean_data()
         # Compute ERT
         self.computeERTfromEvals()
+        assert all(self.evals[0][1:] == 1)
 
-    def clean_data(self):
+    def _clean_data(self):
         """attributes `target`, `evals`, and `ert` are truncated to target values not 
         much smaller than defined in attribute `precision` (typically ``1e-8``). 
         
@@ -593,6 +637,10 @@ class DataSet():
                 assert self.evals[-1, 0] < self.precision 
             assert self.evals[-1, 0] > 0
             self.maxevals = self._detMaxEvals()
+
+    def _complement_data(self, step=10**0.2, final_target=1e-8):
+        """insert a line for each target value"""
+        _DataSet_complement_data(self, step, final_target)
             
     def computeERTfromEvals(self):
         """Sets the attributes ert and target from the attribute evals."""
