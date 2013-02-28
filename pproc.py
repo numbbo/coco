@@ -562,10 +562,10 @@ class DataSet():
         self.computeERTfromEvals()
 
     def clean_data(self):
-        """attributes `target`, `evals`, and `ert` are truncated to target values not smaller 
-        than defined in attribute `precision` (typically ``1e-8``). 
+        """attributes `target`, `evals`, and `ert` are truncated to target values not 
+        much smaller than defined in attribute `precision` (typically ``1e-8``). 
         
-        TODO: should attribute `maxevals` be recomputed? 
+        TODO: should attribute `maxevals` be recomputed? Yes. 
         
         """
         if genericsettings.GECCOBBOBTestbed in genericsettings.current_testbed.__class__.__bases__:
@@ -586,10 +586,13 @@ class DataSet():
                 except AttributeError:
                     pass
             assert self.evals.shape[0] == 1 or self.evals[-2, 0] > self.precision
-            if self.evals[-1,0] < self.precision:
-                # self.evals[-1, 0] = self.precision
-                warnings.warn('exact final precision was not recorded, next lower value set to final precision')
+            if self.evals[-1, 0] < self.precision: 
+                self.evals[-1, 0] = np.max(self.precision / 1.001, self.evals[-1, 0]) 
+                warnings.warn('exact final precision was not recorded, next lower value set close to final precision')
                 # print '*** warning: final precision was not recorded'
+                assert self.evals[-1, 0] < self.precision 
+            assert self.evals[-1, 0] > 0
+            self.maxevals = self._detMaxEvals()
             
     def computeERTfromEvals(self):
         """Sets the attributes ert and target from the attribute evals."""
@@ -675,6 +678,18 @@ class DataSet():
         """
         return max(self.maxevals)
     
+    def _detMaxEvals(self):
+        """computes for each data column in ``self.evals`` the maximal evaluation 
+        number found (``NaN`` are disregarded). The result should always equal
+        to ``self.maxevals``. 
+        
+        """
+        res = np.nanmax(self.evals, 0)[1:]
+        assert sum(res < np.inf) == len(res)
+        assert len(res) == self.nbRuns()
+        return res 
+        
+    
     @property  # cave: setters work only with new style classes
     def max_eval(self):
         """maximum number of function evaluations over all runs (trials)""" 
@@ -682,7 +697,7 @@ class DataSet():
 
     def nbRuns(self):
         """Returns the number of runs."""
-        return numpy.shape(self.evals)[1]-1
+        return numpy.shape(self.evals)[1] - 1 
 
     def __parseHeader(self, header):
         """Extract data from a header line in an index entry."""
