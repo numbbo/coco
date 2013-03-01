@@ -152,7 +152,9 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         return self._short_info
     
     def __init__(self, run_lengths, reference_data='bestGECCO2009', #  
-                 smallest_target=1e-8, times_dimension=True, force_different_targets_factor=10**0.04):
+                 smallest_target=1e-8, times_dimension=True, 
+                 force_different_targets_factor=10**0.04, 
+                 step_to_next_difficult_target=10**0.2):
         """calling the class instance returns run-length based
         target values based on the reference data, individually
         computed for a given ``(funcId, dimension)``. 
@@ -178,6 +180,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         self._short_info = "budget-based"
         self.run_lengths = sorted(run_lengths)
         self.smallest_target = smallest_target
+        self.step_to_next_difficult_target = step_to_next_difficult_target
         self.times_dimension = times_dimension
         # force_different_targets and target_discretization could talk to each other? 
         self.force_different_targets_factor = force_different_targets_factor
@@ -265,21 +268,25 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         # here the actual computation starts
         targets = [] 
         for rl in self.run_lengths:
-            if 1 < 3: # largest target not achieved by reference ERT
+            if 1 < 3: # choose largest target not achieved by reference ERT
                 indices = np.nonzero(ds.ert[:end] > np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
-                if len(indices):
-                    targets.append(ds.target[indices[0]])
+                if len(indices):  # larger ert exists
+                    targets.append(np.max((ds.target[indices[0]],  # first missed target 
+                                           (1 + 1e-9) * ds.target[indices[0] - 1] / self.step_to_next_difficult_target))) # achieved target / 10*0.2
                 else:
+                    # TODO: check whether this is the final target! If not choose a smaller than the last achieved one. 
                     targets.append(ds.target[end-1])  # last target
-            else: # smallest target achieved by reference ERT
+                    if targets[-1] > (1 + 1e-9) * self.smallest_target:
+                        targets[-1] = (1 + 1e-9) * targets[-1] / self.step_to_next_difficult_target
+            else: # choose smallest target achieved by reference ERT
                 indices = np.nonzero(ds.ert[:end] <= np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
                 assert len(indices)
                 targets.append(ds.target[indices[-1]])
             
-            if self.force_different_targets_factor and targets[-1] > self.smallest_target and len(targets) > 1 and not targets[-1] < targets[-2]:
+            if targets[-1] >= targets[-2] and self.force_different_targets_factor > 1 and targets[-1] > self.smallest_target and len(targets) > 1:
                 targets[-1] = targets[-2] / self.force_different_targets_factor
-        
         targets = np.array(targets, copy=False)
+        targets[targets < self.smallest_target] = self.smallest_target
         
         # a few more sanity checks
         if targets[-1] < self.smallest_target:
@@ -726,13 +733,17 @@ class DataSet():
         """
         return max(self.maxevals)
     
-    def _detMaxEvals(self):
-        """computes for each data column in ``self.evals`` the maximal evaluation 
-        number found (``NaN`` are disregarded). The result should always equal
-        to ``self.maxevals``. 
+    def _detMaxEvals(self, final_target=None):
+        """computes for each data column that reached the final_target the maximal evaluation 
+        number found (``NaN`` are disregarded). 
         
         """
-        res = np.nanmax(self.evals, 0)[1:]
+        if final_target is None:
+            final_target = self.precision
+        res = np.array(self.maxevals, copy=True)
+        final_evals = self.detEvals([final_target])[0]
+        idx = np.isfinite(final_evals)
+        res[idx] = final_evals[idx] 
         assert sum(res < np.inf) == len(res)
         assert len(res) == self.nbRuns()
         return res 
