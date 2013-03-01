@@ -297,6 +297,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
             assert b <= targets[0] * (1 + 1e-10)
             assert b >= targets[0] / (1 + 1e-10)
         assert targets[-1] >= self.smallest_target
+        assert len(targets) == 1 or all(np.diff(targets) <= 0)
         assert len(ds.ert) == len(ds.target)
         
         return targets    
