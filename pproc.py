@@ -283,7 +283,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                 assert len(indices)
                 targets.append(ds.target[indices[-1]])
             
-            if targets[-1] >= targets[-2] and self.force_different_targets_factor > 1 and targets[-1] > self.smallest_target and len(targets) > 1:
+            if len(targets) > 1 and targets[-1] >= targets[-2] and self.force_different_targets_factor > 1 and targets[-1] > self.smallest_target:
                 targets[-1] = targets[-2] / self.force_different_targets_factor
         targets = np.array(targets, copy=False)
         targets[targets < self.smallest_target] = self.smallest_target
