@@ -630,7 +630,7 @@ class DataSet():
                 self.evals = self.evals[:i, :]
                 try:
                     self.target = self.target[:i]
-                    assert self.target[-1] == self.evals[-1,0] 
+                    assert self.target[-1] == self.evals[-1, 0] 
                 except AttributeError:
                     pass
                 try:
@@ -639,7 +639,7 @@ class DataSet():
                     pass
             assert self.evals.shape[0] == 1 or self.evals[-2, 0] > self.precision
             if self.evals[-1, 0] < self.precision: 
-                self.evals[-1, 0] = np.max(self.precision / 1.001, self.evals[-1, 0]) 
+                self.evals[-1, 0] = np.max((self.precision / 1.001, self.evals[-1, 0])) 
                 warnings.warn('exact final precision was not recorded, next lower value set close to final precision')
                 # print '*** warning: final precision was not recorded'
                 assert self.evals[-1, 0] < self.precision 
