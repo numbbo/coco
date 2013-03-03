@@ -147,6 +147,11 @@ def main(argv=None):
             omit calling :py:func:`bbob_pproc.rungeneric1.main`, if
             more than one data path argument is provided. 
             
+        --input-path=INPUTPATH
+        
+            all folder/file arguments are prepended with the given value
+            which must be a valid path. 
+            
         --in-a-hurry
         
             takes values between 0 (default) and 1000, fast processing that 

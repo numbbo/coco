@@ -262,7 +262,7 @@ def plotECDF(x, n=None, **plotArgs):
                                  drawstyle='steps', **plotArgs)
     return res
 
-def plotERTDistr(dsList, target, **plotArgs):
+def _plotERTDistr(dsList, target, **plotArgs):
     """This method is obsolete, should be removed? The replacement for simulated runlengths is in pprldmany? 
     Creates simulated run time distributions (it is not an ERT distribution) from a DataSetList.
 
@@ -296,7 +296,7 @@ def plotERTDistr(dsList, target, **plotArgs):
 
     return res
 
-def plotRLDistr_old(dsList, target, **plotArgs):
+def _plotRLDistr_old(dsList, target, **plotArgs):
     """Creates run length distributions from a sequence dataSetList.
 
     Labels of the line (for the legend) will be set automatically with
@@ -347,13 +347,16 @@ def plotRLDistr(dsList, target, label='', max_fun_evals=np.inf, **plotArgs):
     Labels of the line (for the legend) will be appended with the number
     of functions at least solved once. 
     
-
     :param DataSetList dsList: Input data sets
-    :param target: a method that delivers target values like ``target((fun, dim))``
+    :param target: a method that delivers single target values like ``target((fun, dim))``
     :param str label: target value label to be displayed in the legend
     :param plotArgs: additional arguments passed to the plot command
 
     :returns: handles of the resulting plot.
+
+    Example::
+    
+        plotRLDistr(dsl, lambda f: 1e-6)
 
     Details: ``target`` is a function taking a (function_number, dimension) pair 
     as input and returning a ``float``. It can be defined as 
@@ -523,7 +526,7 @@ def beautify():
 #         set_trace()
 #         plt.setp(plt.gcf(), 'figsize', (16.35, 6.))
 
-def plot(dsList, targets=single_target_values, **plotArgs):
+def _plot(dsList, targets=single_target_values, **plotArgs):
     """Obsolete and replaced by main? 
     Plot ECDF of evaluations and final function values."""
     # targets = targets()  # TODO: this needs to be rectified

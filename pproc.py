@@ -35,6 +35,8 @@ from bbob_pproc.ppfig import consecutiveNumbers
 
 do_assertion = genericsettings.force_assertions # expensive assertions
 targets_displayed_for_info = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]  # only to display info in DataSetList.info
+maximal_evaluations_only_to_last_target = False  # was true in release 13.03, leads naturally to better results
+
 
 def _DataSet_complement_data(self, step=10**0.2, final_target=1e-8):
     """insert a line for each target value, resolve: old data sets don't have this method, 
@@ -44,30 +46,31 @@ def _DataSet_complement_data(self, step=10**0.2, final_target=1e-8):
             return
     except AttributeError:
         pass
+    if step < 1:
+        step = 1. / step
     assert step > 1
     
     # check that step splits 10 into uniform intervals on the log scale
-    if np.min(np.abs(np.log10(step) * np.array(range(20)) - 1)) > 1e-13:
-        raise NotImplementedError('')
+    if np.abs(0.2 / np.log10(step) - np.round(0.2 / np.log10(step))) > 1e-11:
+        print np.log10(step) 
+        raise NotImplementedError('0.2 / log10(step) must be an integer to be compatible with previous data')
 
     i = 0
     newdat = []
     self.evals = np.array(self.evals, copy=False)
-    for i in xrange(len(self.evals.T) - 1):
+    for i in xrange(len(self.evals) - 1):
         newdat.append(self.evals[i])
-        if newdat[i][0] <= final_target:
-            break
         target = self.evals[i][0] / step
-        while target > self.evals[i+1][0] and target / self.evals[i+1][0] - 1 > 1e-9:
+        while target >= final_target and target > self.evals[i+1][0] and target / self.evals[i+1][0] - 1 > 1e-9:
             newdat.append(self.evals[i+1])
             newdat[-1][0] = target
             target /= step
-    if newdat[-1][0] > final_target:
-        newdat.append(self.evals[-1])
+    newdat.append(self.evals[-1])
     
-    1/0  # check newdat and self.evals
-    self.evals = np.array(newdat, copy=False)
-    self._is_complemented_data = True
+    # raise NotImplementedError('needs yet to be re-checked, tested, approved')  # check newdat and self.evals
+    self.evals = np.array(newdat)  # for portfolios, self.evals is not an array
+    assert np.max(np.abs(self.evals[:-1, 0] / self.evals[1:, 0] - 10**step)) < 1e-11
+    self._is_complemented_data = True # TODO: will remain true forever, this needs to be set to False again somewhere? 
 
 def cocofy(filename):
     """Replaces bbob_pproc references in pickles files with coco_pproc
@@ -235,9 +238,9 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         if fun_dim[0] > 100 and self.run_lengths[-1] * fun_dim[1]**self.times_dimension < 1e3:
             ValueError("short running times don't work on noisy functions")
         ds = self.reference_data[dim_fun]
-        if 11 < 3:
+        if 11 < 3:   
             try:
-                ds._complement_data()
+                ds._complement_data() # is not fully implemented and not here not necessary
             except AttributeError: # loaded classes might not have this method
                 # need a hack here
                 _DataSet_complement_data(ds, self.target_discretization_factor)
@@ -339,8 +342,8 @@ class DataSet():
       - *precision* -- final ftarget - fopt (float), data with 
                        target[idat] < precision are optional and not relevant.  
       - *algId* -- algorithm name (string)
-      - *evals* -- data aligned by function values (array)
-      - *funvals* -- data aligned by function evaluations (array)
+      - *evals* -- data aligned by function values (2xarray, list of data rows [f_val, eval_run1, eval_run2,...]), cave: in a portfolio data rows can have different lengths
+      - *funvals* -- data aligned by function evaluations (2xarray)
       - *maxevals* -- maximum number of function evaluations (array)
       - *finalfunvals* -- final function values (array)
       - *readmaxevals* -- maximum number of function evaluations read
@@ -470,7 +473,7 @@ class DataSet():
 
     # Private attribute used for the parsing of info files.
     _attributes = {'funcId': ('funcId', int), 
-                   'DIM': ('dim',int),
+                   'DIM': ('dim', int),
                    'Precision': ('precision', float), 
                    'Fopt': ('fopt', float),
                    'targetFuncValue': ('targetFuncValue', float),
@@ -608,42 +611,42 @@ class DataSet():
             warnings.warn('There is a difference between the maxevals in the '
                           '*.info file and in the data files.')
 
-        self._clean_data()
+        self._cut_data()
         # Compute ERT
         self.computeERTfromEvals()
         assert all(self.evals[0][1:] == 1)
 
-    def _clean_data(self):
+    def _cut_data(self):
         """attributes `target`, `evals`, and `ert` are truncated to target values not 
         much smaller than defined in attribute `precision` (typically ``1e-8``). 
-        
-        TODO: should attribute `maxevals` be recomputed? Yes. 
+        Attribute `maxevals` is recomputed for columns that reach the final target
+        precision. 
         
         """
-        if genericsettings.GECCOBBOBTestbed in genericsettings.current_testbed.__class__.__bases__:
+        if isinstance(genericsettings.current_testbed, genericsettings.GECCOBBOBTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
-            while i > 1 and self.evals[i-1,0] <= self.precision:
+            while i > 1 and self.evals[i-1][0] <= self.precision:
                 i -= 1
             i += 1
             if i < Ndata:
-                self.evals = self.evals[:i, :]
+                self.evals = self.evals[:i, :]  # assumes that evals is an array
                 try:
                     self.target = self.target[:i]
-                    assert self.target[-1] == self.evals[-1, 0] 
+                    assert self.target[-1] == self.evals[-1][0] 
                 except AttributeError:
                     pass
                 try:
                     self.ert = self.ert[:i]
                 except AttributeError:
                     pass
-            assert self.evals.shape[0] == 1 or self.evals[-2, 0] > self.precision
-            if self.evals[-1, 0] < self.precision: 
-                self.evals[-1, 0] = np.max((self.precision / 1.001, self.evals[-1, 0])) 
+            assert self.evals.shape[0] == 1 or self.evals[-2][0] > self.precision
+            if self.evals[-1][0] < self.precision: 
+                self.evals[-1][0] = np.max((self.precision / 1.001, self.evals[-1, 0])) 
                 warnings.warn('exact final precision was not recorded, next lower value set close to final precision')
                 # print '*** warning: final precision was not recorded'
-                assert self.evals[-1, 0] < self.precision 
-            assert self.evals[-1, 0] > 0
+                assert self.evals[-1][0] < self.precision # shall not have changed
+            assert self.evals[-1][0] > 0
             self.maxevals = self._detMaxEvals()
 
     def _complement_data(self, step=10**0.2, final_target=1e-8):
@@ -735,13 +738,13 @@ class DataSet():
         return max(self.maxevals)
     
     def _detMaxEvals(self, final_target=None):
-        """computes for each data column that reached the final_target the maximal evaluation 
-        number found (``NaN`` are disregarded). 
+        """computes for each data column the (maximal) evaluation 
+        until final_target was reached, or ``self.maxevals`` otherwise. 
         
         """
         if final_target is None:
             final_target = self.precision
-        res = np.array(self.maxevals, copy=True)
+        res = np.array(self.maxevals, copy=True) if not maximal_evaluations_only_to_last_target else np.nanmax(self.evals, 0)
         final_evals = self.detEvals([final_target])[0]
         idx = np.isfinite(final_evals)
         res[idx] = final_evals[idx] 
@@ -1098,13 +1101,15 @@ class DataSetList(list):
 
         fnames = []
         for name in args:
-            if findfiles.is_valid_filename(name):
+            if isinstance(name, basestring) and findfiles.is_valid_filename(name):
                 fnames.extend(findfiles.main(name, verbose))
             else:
                 fnames.append(name)
 
         for name in fnames: 
-            if name.endswith('.info'):
+            if isinstance(name, DataSet):
+                self.append(name)
+            elif name.endswith('.info'):
                 self.processIndexFile(name, verbose)
             elif name.endswith('.pickle') or name.endswith('.pickle.gz'):
                 try:
@@ -1138,7 +1143,6 @@ class DataSetList(list):
                               'containing .info file(s).')
                 warnings.warn(s)
                 print s
-                
              
     def processIndexFile(self, indexFile, verbose=True):
         """Reads in an index file information on the different runs."""
@@ -1264,6 +1268,21 @@ class DataSetList(list):
             d.setdefault(i.funcId, DataSetList()).append(i)
         return d
 
+    def dictByDimFunc(self):
+        """Returns a dictionary of instances of this class 
+        by dimensions and for each dimension by function.
+
+        Returns a dictionary with dimension as keys and the
+        corresponding slices as values.
+        
+            ds = dsl.dictByDimFunc[40][2]  # DataSet dimension 40 on F2
+
+        """
+        dsld = self.dictByDim()
+        for k in dsld:
+            dsld[k] = dsld[k].dictByFunc()
+        return dsld
+        
     def dictByNoise(self):
         """Returns a dictionary splitting noisy and non-noisy entries."""
         sorted = {}

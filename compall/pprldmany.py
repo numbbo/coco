@@ -372,7 +372,7 @@ def plot(dsList, targets=target_values, craftingeffort=0., **kwargs):
             ValueError('smallest target f-value is not smaller than one, use ``pproc.TargetValues(targets)`` to prevent this error')
         targets = pp.TargetValues(targets)
     res = []
-    assert len(dsList.dictByDim()) == 1 # We never integrate over dimensions...
+    assert len(pp.DataSetList(dsList).dictByDim()) == 1 # We never integrate over dimensions...
     data = []
     maxevals = []
     for entry in dsList:
