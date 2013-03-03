@@ -643,7 +643,7 @@ class DataSet():
             assert self.evals.shape[0] == 1 or self.evals[-2][0] > self.precision
             if self.evals[-1][0] < self.precision: 
                 self.evals[-1][0] = np.max((self.precision / 1.001, self.evals[-1, 0])) 
-                warnings.warn('exact final precision was not recorded, next lower value set close to final precision')
+                # warnings.warn('exact final precision was not recorded, next lower value set close to final precision')
                 # print '*** warning: final precision was not recorded'
                 assert self.evals[-1][0] < self.precision # shall not have changed
             assert self.evals[-1][0] > 0
