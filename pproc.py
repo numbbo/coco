@@ -511,7 +511,8 @@ class DataSet():
         self.indexFiles = [indexfile]
         self.dataFiles = []
         self.instancenumbers = []
-        self.evals = []
+        self.evals = []  # to be removed if evals becomes a property, see below
+        self._evals = []  # not in use
         self.isFinalized = []
         self.readmaxevals = []
         self.readfinalFminusFtarget = []
@@ -616,8 +617,26 @@ class DataSet():
         self.computeERTfromEvals()
         assert all(self.evals[0][1:] == 1)
         if not self.consistency_check(): # prints also warnings itself
-            warnings.warn("Inconsistent data found for F%s in %d-D (see also above)" % self.funcId, self.dim) 
+            warnings.warn("Inconsistent data found for F" + self.funcId + " in %d-D (see also above)" % self.dim) 
 
+    @property
+    def evals_(self):
+        """Shall become ``evals`` attribute in future.
+        
+        ``evals`` are the central data. Each line ``evals[i]`` has a 
+        (target) function value in ``evals[i][0]`` and the function evaluation
+        for which this target was reached the first time in trials 1,...
+        in ``evals[i][1:]``. 
+        
+        """
+        return self._evals
+    @evals_.setter
+    def evals_(self, value):
+        self._evals = value
+    @evals_.deleter
+    def evals_(self):
+        del self._evals
+        
     def _cut_data(self):
         """attributes `target`, `evals`, and `ert` are truncated to target values not 
         much smaller than defined in attribute `precision` (typically ``1e-8``). 
