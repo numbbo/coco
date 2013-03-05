@@ -19,7 +19,7 @@ import warnings
 
 # Initialization
 
-def is_recognized_repository_filetype(filename): # rename as valid_data_repository_name
+def is_recognized_repository_filetype(filename): 
     return os.path.isdir(filename.strip()) or filename.find('.tar') > -1
 
 def main(directory='.', verbose=True):

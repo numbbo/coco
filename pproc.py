@@ -615,7 +615,7 @@ class DataSet():
         # Compute ERT
         self.computeERTfromEvals()
         assert all(self.evals[0][1:] == 1)
-        if not self.consistency_check(): # print also warnings itself
+        if not self.consistency_check(): # prints also warnings itself
             warnings.warn("Inconsistent data found for F%d in %d-D (see also above)" % self.funcId, self.dim) 
 
     def _cut_data(self):
@@ -1115,7 +1115,6 @@ class DataSetList(list):
                 fnames.extend(findfiles.main(name, verbose))
             else:
                 fnames.append(name)
-        # DEBUGGING: here fnames looks fine
         for name in fnames: 
             if isinstance(name, DataSet):
                 self.append(name)
