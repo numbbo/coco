@@ -526,9 +526,9 @@ def beautify():
 #         set_trace()
 #         plt.setp(plt.gcf(), 'figsize', (16.35, 6.))
 
-def _plot(dsList, targets=single_target_values, **plotArgs):
-    """Obsolete and replaced by main? 
-    Plot ECDF of evaluations and final function values."""
+def plot(dsList, targets=single_target_values, **plotArgs):
+    """Plot ECDF of evaluations and final function values
+    in a single figure for demonstration purposes."""
     # targets = targets()  # TODO: this needs to be rectified
     # targets = targets.target_values
     assert len(dsList.dictByDim()) == 1, ('Cannot display different '
