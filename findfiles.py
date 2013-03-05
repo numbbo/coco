@@ -19,7 +19,7 @@ import warnings
 
 # Initialization
 
-def is_valid_filename(filename): # rename as valid_data_repository_name
+def is_recognized_repository_filetype(filename): # rename as valid_data_repository_name
     return os.path.isdir(filename.strip()) or filename.find('.tar') > -1
 
 def main(directory='.', verbose=True):
@@ -28,10 +28,10 @@ def main(directory='.', verbose=True):
 
     The data files have :file:`info` and :file:`pickle` extensions.
 
+    TODO: not only recognize .tar and .tar.gz but .zip...
+    
     """
     
-    # TODO: if directory is a zipped file, unzip first
-
     filelist = list()
     directory = directory.strip()
     
@@ -41,7 +41,7 @@ def main(directory='.', verbose=True):
             #~ if elem.endswith('.info'):
                 #~ (root,elem) = os.path.split(elem)
                 #~ filelist = IndexFile(root,elem,archive)
-    if not os.path.isdir(directory) and is_valid_filename(directory):
+    if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
         import tarfile
         dirname = directory[:directory.find('.tar')] + '-extracted'
         if directory.endswith('.gz'):
