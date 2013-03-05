@@ -531,6 +531,7 @@ def plot(dsList, targets=single_target_values, **plotArgs):
     in a single figure for demonstration purposes."""
     # targets = targets()  # TODO: this needs to be rectified
     # targets = targets.target_values
+    dsList = pproc.DataSetList(dsList)
     assert len(dsList.dictByDim()) == 1, ('Cannot display different '
                                           'dimensionalities together')
     res = []

@@ -616,7 +616,7 @@ class DataSet():
         self.computeERTfromEvals()
         assert all(self.evals[0][1:] == 1)
         if not self.consistency_check(): # prints also warnings itself
-            warnings.warn("Inconsistent data found for F%d in %d-D (see also above)" % self.funcId, self.dim) 
+            warnings.warn("Inconsistent data found for F%s in %d-D (see also above)" % self.funcId, self.dim) 
 
     def _cut_data(self):
         """attributes `target`, `evals`, and `ert` are truncated to target values not 
@@ -1088,7 +1088,8 @@ class DataSetList(list):
     #they might change over time.
 
     def __init__(self, args=[], verbose=False):
-        """Instantiate self from a list of folder- or filenames.
+        """Instantiate self from a list of folder- or filenames or 
+        ``DataSet`` instances.
 
         :keyword list args: strings being either info file names, folder
                             containing info files or pickled data files.
