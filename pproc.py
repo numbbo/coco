@@ -615,6 +615,8 @@ class DataSet():
         # Compute ERT
         self.computeERTfromEvals()
         assert all(self.evals[0][1:] == 1)
+        if not self.consistency_check(): # print also warnings itself
+            warnings.warn("Inconsistent data found for F%d in %d-D (see also above)" % self.funcId, self.dim) 
 
     def _cut_data(self):
         """attributes `target`, `evals`, and `ert` are truncated to target values not 
@@ -652,6 +654,14 @@ class DataSet():
     def _complement_data(self, step=10**0.2, final_target=1e-8):
         """insert a line for each target value"""
         _DataSet_complement_data(self, step, final_target)
+
+    def consistency_check(self):
+        """yet a stump"""
+        is_consistent = True
+        if len(set(self.instancenumbers)) < len(self.instancenumbers):
+            is_consistent = False
+            warnings.warn('  double instances in ' + str(self.instancenumbers))
+        return is_consistent
             
     def computeERTfromEvals(self):
         """Sets the attributes ert and target from the attribute evals."""
@@ -1101,11 +1111,11 @@ class DataSetList(list):
 
         fnames = []
         for name in args:
-            if isinstance(name, basestring) and findfiles.is_valid_filename(name):
+            if isinstance(name, basestring) and findfiles.is_recognized_repository_filetype(name):
                 fnames.extend(findfiles.main(name, verbose))
             else:
                 fnames.append(name)
-
+        # DEBUGGING: here fnames looks fine
         for name in fnames: 
             if isinstance(name, DataSet):
                 self.append(name)
@@ -1190,10 +1200,17 @@ class DataSetList(list):
         for i in self:
             if i == o:
                 isFound = True
-                tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
+                if i.instancenumbers == o.instancenumbers:
+                    warnings.warn("same DataSet found twice, second one from " + str(o.indexFiles) + " is disregarded")
+                    break
+                if set(i.instancenumbers).intersection(o.instancenumbers):
+                    warnings.warn('instances ' + str(set(i.instancenumbers).intersection(o.instancenumbers))
+                                  + (' found several times. Read data for F%d in %d-D' % i.funcId, i.dim) 
+                                  + 'are likely to be inconsistent. ')
+                # tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
                 #Check if there are new data considered.
-                if tmp:
-                    i.dataFiles.extend(tmp)
+                if 1 < 3:
+                    i.dataFiles.extend(o.dataFiles)
                     i.indexFiles.extend(o.indexFiles)
                     i.funvals = alignArrayData(VArrayMultiReader([i.funvals, o.funvals]))
                     i.finalfunvals = numpy.r_[i.finalfunvals, o.finalfunvals]
@@ -1501,7 +1518,7 @@ def processInputArgs(args, verbose=True):
     dictAlg = {}
     for i in args:
         i = i.strip()
-        if findfiles.is_valid_filename(i):
+        if findfiles.is_recognized_repository_filetype(i):
             filelist = findfiles.main(i, verbose)
             #Do here any sorting or filtering necessary.
             #filelist = list(i for i in filelist if i.count('ppdata_f005'))

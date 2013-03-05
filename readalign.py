@@ -204,7 +204,7 @@ class HMultiReader(MultiReader):
         for i in self:
             i.next()
         fvalues = self.currentValues()
-        self.idxCurrentF = numpy.ceil(numpy.log10(max(fvalues)) * nbPtsF)
+        self.idxCurrentF = numpy.ceil(numpy.log10(max(fvalues) if max(fvalues) > 0 else 1e-19) * nbPtsF)
         # Returns the smallest 10^i/nbPtsF value larger than max(Fvalues)
         return numpy.power(10, self.idxCurrentF / nbPtsF)
 
