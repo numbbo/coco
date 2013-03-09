@@ -60,7 +60,7 @@ markersize = 10.  # modified in config.py
 # offset provides a way to move away the box boundaries to display the outer markers fully 
 nbmarkers = 46
 _inc = 45./(nbmarkers-1)
-targets = numpy.power(10, numpy.arange(-40, 5 + _inc, _inc)/5.)
+targets = numpy.power(10, numpy.arange(-40, 5 + _inc, _inc) / 5.)
 
 #Get benchmark short infos.
 funInfos = {}
