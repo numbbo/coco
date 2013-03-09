@@ -54,7 +54,7 @@ from bbob_pproc import ppfig  # consecutiveNumbers, saveFigure, plotUnifLogXMark
 from bbob_pproc import pptex  # numtotex
 
 displaybest2009 = True
-target_values = pp.TargetValues(10**np.arange(2, -8, -0.2))  # changed in config.py
+target_values = pp.TargetValues(10**np.arange(2, -8, -0.2)) # possibly changed in config
 x_limit = None  # not sure whether this is necessary/useful
 x_limit_default = 1e7 # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
 annotation_line_end_relative = 1.11  # lines between graph and annotation
@@ -350,7 +350,7 @@ def plotLegend(handles, maxval):
     plt.xlim(xmax=maxval**annotation_space_end_relative)
     return reslabels, reshandles
 
-def plot(dsList, targets=target_values, craftingeffort=0., **kwargs):
+def plot(dsList, targets=None, craftingeffort=0., **kwargs):
     """Generates a graph of the run length distribution of an algorithm.
 
     We display the empirical cumulative distribution function ECDF of
@@ -367,6 +367,8 @@ def plot(dsList, targets=target_values, craftingeffort=0., **kwargs):
     :returns: handles
 
     """
+    if targets is None:
+        targets = target_values  # set above or in config.py
     if not isinstance(targets, pp.TargetValues):
         if np.min(targets) >= 1:
             ValueError('smallest target f-value is not smaller than one, use ``pproc.TargetValues(targets)`` to prevent this error')
