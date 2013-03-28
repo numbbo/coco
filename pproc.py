@@ -606,9 +606,9 @@ class DataSet():
                 #self.finalfunvals = finalfunvals
         #CHECKING PROCEDURE
         tmp = []
-        for i in range(len(maxevals)):
+        for i in range(min((len(self.maxevals), len(self.readmaxevals)))):
             tmp.append(self.maxevals[i] == self.readmaxevals[i])
-        if not all(tmp):
+        if not all(tmp) or len(self.maxevals) != len(self.readmaxevals):
             warnings.warn('There is a difference between the maxevals in the '
                           '*.info file and in the data files.')
 
