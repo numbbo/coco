@@ -110,6 +110,8 @@ scaling_figure_caption_rlbased = caption_part_one + r"""%
     within the given budget $k\DIM$, where $k$ is shown in the legend.
 %    was above $\{values_of_interest\}\times\DIM$ evaluations. 
     Numbers above \ERT-symbols indicate the number of trials reaching the respective target.  
+    The light thick line with diamonds indicates the respective best result from BBOB-2009 for 
+    the most difficult target. 
     Slanted grid lines indicate a scaling with ${\cal O}(\DIM)$ compared to ${\cal O}(1)$  
     when using the respective 2009 best algorithm. 
     """
