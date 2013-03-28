@@ -125,7 +125,9 @@ caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + capti
 
 
 previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'
+previous_RLBdata_filename="pprldistr2009_hardestRLB.pickle.gz"
 previous_data_filename = os.path.join(os.path.split(__file__)[0], previous_data_filename)
+previous_RLBdata_filename =os.path.join(os.path.split(__file__)[0], previous_RLBdata_filename)
 previous_data_dict = None
 previous_RLBdata_dict = None
 def load_previous_data(filename=previous_data_filename, force=False):
@@ -143,6 +145,20 @@ def load_previous_data(filename=previous_data_filename, force=False):
         f.close()
     return None
 
+def load_previous_RLBdata(filename=previous_RLBdata_filename):
+    if previous_RLBdata_dict :
+        return previous_RLBdata_dict
+    try:
+        f = gzip.open(previous_RLBdata_filename, 'r')
+        return pickle.load(f)
+    except IOError, (errno, strerror):
+        print "I/O error(%s): %s" % (errno, strerror)
+        print 'Could not find file: ', previous_RLBdata_filename
+    else:
+        f.close()
+    return None
+    
+    
 def caption_single(max_evals_div_dim):
     caption = caption_single_rlbased if genericsettings.runlength_based_targets else caption_single_fixed 
     return caption.replace(r'TO_BE_REPLACED', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$') 
@@ -595,15 +611,14 @@ def plot_previous_algorithms(dim, funcs):
                 plotECDF(x[np.isfinite(x)] / float(dim), nn,
                          color=refcolor, ls='-', zorder= -1)
 
-RLBprevious_data="bbob_pproc/pprldistr2009_hardestRLB.pickle"
+
 
 def plotRLB_previous_algorithms(dim, funcs):
     """Display BBOB 2009 data, by default from ``pprldistr.previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'``"""
 
     global previous_RLBdata_dict
     if previous_RLBdata_dict is None:
-        with open(RLBprevious_data,"r") as ffile:
-            previous_RLBdata_dict = pickle.load(ffile)
+        previous_RLBdata_dict = load_previous_RLBdata()
     if previous_RLBdata_dict is not None:
         for alg in previous_RLBdata_dict:
             x = []
