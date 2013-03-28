@@ -11,6 +11,7 @@ of the variables here and some
 
 """
 import numpy as np
+np.seterr(under='ignore')  # ignore underflow
 
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
 #set_trace()

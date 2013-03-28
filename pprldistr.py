@@ -118,9 +118,11 @@ caption_right = r"""%
      for running times of TO_BE_REPLACED
      function evaluations 
      (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red), 
-     where \Df\ and \textsf{Df} denote the difference to the optimal function value. """
-caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_wrap_up + caption_right + r"""
-     Light brown lines in the background show ECDFs for $\Df=10^{-8}$ of all algorithms benchmarked during BBOB-2009.""" 
+     where \Df\ and \textsf{Df} denote the difference to the optimal function value. 
+     Light brown lines in the background show ECDFs for the most difficult target of all 
+     algorithms benchmarked during BBOB-2009.
+     """
+caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_wrap_up + caption_right 
 caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_wrap_up + caption_right
 
 
@@ -146,7 +148,7 @@ def load_previous_data(filename=previous_data_filename, force=False):
     return None
 
 def load_previous_RLBdata(filename=previous_RLBdata_filename):
-    if previous_RLBdata_dict :
+    if previous_RLBdata_dict:
         return previous_RLBdata_dict
     try:
         f = gzip.open(previous_RLBdata_filename, 'r')
