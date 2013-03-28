@@ -415,7 +415,7 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
 
 def plot_previous_algorithms(func, target=lambda x: [1e-8]):
     """Add graph of the BBOB-2009 virtual best algorithm."""
-    if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
+    if 11 < 3 and isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
         return None
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
