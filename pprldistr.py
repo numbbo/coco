@@ -127,6 +127,7 @@ caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + capti
 previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'
 previous_data_filename = os.path.join(os.path.split(__file__)[0], previous_data_filename)
 previous_data_dict = None
+previous_RLBdata_dict = None
 def load_previous_data(filename=previous_data_filename, force=False):
     if previous_data_dict and not force:
         return previous_data_dict
@@ -594,6 +595,40 @@ def plot_previous_algorithms(dim, funcs):
                 plotECDF(x[np.isfinite(x)] / float(dim), nn,
                          color=refcolor, ls='-', zorder= -1)
 
+RLBprevious_data="bbob_pproc/pprldistr2009_hardestRLB.pickle"
+
+def plotRLB_previous_algorithms(dim, funcs):
+    """Display BBOB 2009 data, by default from ``pprldistr.previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'``"""
+
+    global previous_RLBdata_dict
+    if previous_RLBdata_dict is None:
+        with open(RLBprevious_data,"r") as ffile:
+            previous_RLBdata_dict = pickle.load(ffile)
+    if previous_RLBdata_dict is not None:
+        for alg in previous_RLBdata_dict:
+            x = []
+            nn = 0
+            try:
+                tmp = previous_RLBdata_dict[alg]
+                for f in funcs:
+                    tmp[f][dim]  # simply test that they exists
+            except KeyError:
+                continue
+
+            for f in funcs:
+                tmp2 = np.array(tmp[f][dim][0][1:][0])
+                # [0], because the maximum #evals is also recorded
+                # [1:] because the target function value is recorded
+                x.append(tmp2[np.isnan(tmp2) == False])
+                nn += len(tmp2)
+                                
+            if x:
+                x = np.hstack(x)
+                plotECDF(x[np.isfinite(x)] / float(dim), nn,
+                         color=refcolor, ls='-', zorder= -1)
+
+
+
 def main(dsList, isStoringXMax=False, outputdir='',
          info='default', verbose=True):
     """Generate figures of empirical cumulative distribution functions.
@@ -649,11 +684,19 @@ def main(dsList, isStoringXMax=False, outputdir='',
         funcs = list(i.funcId for i in dictdim)
         text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
         text += ',%d-D' % d
-        try:
-            if targets.target_values[-1] == 1e-8:  # this is a hack
+        if(1):
+     #   try:
+            
+            if not isinstance(targets, pproc.RunlengthBasedTargetValues):
+            #if targets.target_values[-1] == 1e-8:  # this is a hack
                 plot_previous_algorithms(d, funcs)
-        except:
-            pass
+
+            else:
+                plotRLB_previous_algorithms(d, funcs)
+                
+    #    except:
+     #       pass
+            
         plt.axvline(x=maxEvalsFactor, color='k')  # vertical line at maxevals
         plt.legend(loc='best')
         plt.text(0.5, 0.98, text, horizontalalignment="center",
