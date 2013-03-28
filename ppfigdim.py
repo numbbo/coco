@@ -212,7 +212,11 @@ def beautify(axesLabel=True):
     plt.xlim(0.9 * dimensions[0], 1.125 * dimensions[-1]) 
     plt.ylim(ymin=np.min((ymin, 10**-0.2)), ymax=int(ymax + 1))  # Set back the default maximum.
     if xlim_max is not None:
-        plt.ylim(0.3, xlim_max)  # set in config 
+        if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
+            plt.ylim(0.3, xlim_max)  # set in config 
+        else:
+            pass  # TODO: xlim_max seems to be not None even when not desired
+            # plt.ylim(1, xlim_max)
         if 11 < 3:
             title = plt.gca().get_title()  # works not not as expected
             if title.startswith('1 ') or title.startswith('5 '):
