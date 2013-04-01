@@ -186,7 +186,7 @@ def build(dictAlg, sortedAlg=None):
     """Merge datasets in an algorithm portfolio.
 
     :param dict dictAlg: dictionary of data sets with algorithm name for
-                         keys
+                         keys, see ``pproc.DataSetList.dictByAlg``
     :param seq sortedAlgs: sequence for sorting the entries of
                            :py:data:`dictAlg`, if not provided,
                            dictAlg.keys() will be instead
