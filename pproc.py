@@ -1172,7 +1172,8 @@ class DataSetList(list):
                               'containing .info file(s).')
                 warnings.warn(s)
                 print s
-             
+            self.sort()
+            
     def processIndexFile(self, indexFile, verbose=True):
         """Reads in an index file information on the different runs."""
 
@@ -1441,6 +1442,19 @@ class DataSetList(list):
         else:
             print self
 
+    def sort(self, key1='dim', key2='funcId'):
+        def cmp_fun(a, b):
+            if getattr(a, key1) == getattr(b, key1):
+                if getattr(a, key2) == getattr(b, key2):
+                    return 0
+                return 1 if getattr(a, key2) > getattr(b, key2) else -1                
+            else:
+                return 1 if getattr(a, key1) > getattr(b, key1) else -1
+        sorted_self = list(sorted(self, cmp=cmp_fun))
+        for i, ds in enumerate(sorted_self):
+            self[i] = ds
+        return self
+    
         # interested in algorithms, number of datasets, functions, dimensions
         # maxevals?, funvals?, success rate?
 
