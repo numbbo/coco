@@ -1225,7 +1225,7 @@ class DataSetList(list):
                     break
                 if set(i.instancenumbers).intersection(o.instancenumbers):
                     warnings.warn('instances ' + str(set(i.instancenumbers).intersection(o.instancenumbers))
-                                  + (' found several times. Read data for F%d in %d-D' % i.funcId, i.dim) 
+                                  + ' found several times. Read data for F%(argone)d in %(argtwo)d-D ' % {'argone':i.funcId, 'argtwo':i.dim}
                                   + 'are likely to be inconsistent. ')
                 # tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
                 #Check if there are new data considered.
