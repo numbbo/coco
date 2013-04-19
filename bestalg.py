@@ -202,7 +202,7 @@ class BestAlgSet():
         self.dim = d
         self.funcId = f
         self.algs = resalgs
-        self.algId = 'Virtual Best Algorithm of BBOB'
+        self.algId = 'Virtual Best Algorithm'
         self.comment = 'Combination of ' + ', '.join(sortedAlgs)
         self.ert = np.array(reserts)
         self.target = res[:, 0]
