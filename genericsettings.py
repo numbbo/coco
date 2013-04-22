@@ -10,6 +10,7 @@ For setting variables dynamically see config.py, where some
 of the variables here and some 
 
 """
+import os
 import numpy as np
 np.seterr(under='ignore')  # ignore underflow
 
@@ -18,7 +19,7 @@ np.seterr(under='ignore')  # ignore underflow
 test = False  # debug/test flag, set to False for committing the final version
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 0 # [0, 1000] lower resolution, no eps, saves 30% time
-maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved?
+maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
 scaling_figures_with_boxes = True 
@@ -53,7 +54,7 @@ simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a
 # summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-1 
 # summarized_target_function_values = [-1, 3] # easy easy 
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure (means what?)
-# not (yet) in use: pprldmany_target_values = pproc.TargetValues().set_targets(10**np.arange(-8, 2, 0.2)) (might not work because of cyclic import
+# not (yet) in use: pprldmany_target_values = pproc.TargetValues(10**np.arange(-8, 2, 0.2))  # might not work because of cyclic import
 
 fig_formats = ('eps', 'pdf') if not in_a_hurry else ('pdf', )
 
@@ -109,17 +110,39 @@ rcfont = {"size": 20}
 rclegend = {"fontsize": 20}
     
 class Testbed(object):
-    """this might become the future way to have settings related to testbeds"""
-    pass
+    """this might become the future way to have settings related to testbeds
+    TODO: should go somewhere else than genericsettings.py 
+    TODO: how do we pass information from the benchmark to the post-processing?
+    
+    """
+    def info(self, fun_number=None):
+        """info on the testbed if ``fun_number is None`` or one-line info 
+        for function with number ``fun_number``.
+        
+        """
+        if fun_number is None:
+            return self.__doc__
+        
+        for line in open(os.path.join(os.path.abspath(os.path.split(__file__)[0]), 
+                                      self.info_filename)).readlines():
+            if line.split():  # ie if not empty
+                try:  # empty lines are ignored
+                    fun = int(line.split()[0])
+                    if fun == fun_number:
+                        return 'F'+str(fun) + ' ' + ' '.join(line.split()[1:])
+                except ValueError:
+                    continue  # ignore annotations
 
 class GECCOBBOBTestbed(Testbed):
+    """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012. 
+    """
     def __init__(self):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
-        pass
+        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'  # 'benchmarkshortinfos.txt'
     
 class GECCOBBOBNoisefreeTestbed(GECCOBBOBTestbed):
-    pass
+    __doc__ = GECCOBBOBTestbed.__doc__
 
 # TODO: this needs to be set somewhere, e.g. in rungeneric*
 # or even better by investigating in the data attributes
