@@ -82,8 +82,8 @@ caption_part_one = r"""%
     $f$-evaluations in any trial ({\color{red}$\times$}); """ + (r"""interquartile 
     range with median (notched boxes) of simulated runlengths
     to reach $\fopt+\Df$;""" if genericsettings.scaling_figures_with_boxes 
-    else "") + """ all values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """plotted as 
-    $\log_{10}$ values versus dimension. %
+    else "") + """ all values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """
+    plotted as $\log_{10}$ values versus dimension. %
     """
     
 #""" .replace('REPLACE_THIS', r"interquartile range with median (notched boxes) of simulated runlengths to reach $\fopt+\Df$;" 
@@ -106,7 +106,7 @@ scaling_figure_caption_rlbased = caption_part_one + r"""%
     Shown is the \ERT\ for 
     targets just not reached by
 %    the largest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of 
-    the GECCO-BBOB-2009 best algorithm  
+    the artificial GECCO-BBOB-2009 best algorithm  
     within the given budget $k\DIM$, where $k$ is shown in the legend.
 %    was above $\{values_of_interest\}\times\DIM$ evaluations. 
     Numbers above \ERT-symbols indicate the number of trials reaching the respective target.  
@@ -118,14 +118,6 @@ scaling_figure_caption_rlbased = caption_part_one + r"""%
     # r"Shown is the \ERT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm " + 
     # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
 
-def scaling_figure_caption():
-    if genericsettings.runlength_based_targets:
-        return scaling_figure_caption_rlbased.replace('values_of_interest', 
-                                        ', '.join(values_of_interest.labels()))
-    else:
-        return scaling_figure_caption_fixed.replace('values_of_interest', 
-                                        ', '.join(values_of_interest.loglabels()))
-
 # should correspond with the colors in pprldistr.
 dimensions = genericsettings.dimensions_to_display
 functions_with_legend = (1, 24, 101, 130)
@@ -135,19 +127,29 @@ funInfos = {}
 isBenchmarkinfosFound = True
 infofile = os.path.join(os.path.split(__file__)[0], 'benchmarkshortinfos.txt')
 
-try:
-    f = open(infofile, 'r')
-    for line in f:
-        if len(line) == 0 or line.startswith('%') or line.isspace() :
-            continue
-        funcId, funcInfo = line[0:-1].split(None, 1)
-        funInfos[int(funcId)] = funcId + ' ' + funcInfo
-    f.close()
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    isBenchmarkinfosFound = False
-    print 'Could not find file', infofile, \
-          'Titles in figures will not be displayed.'
+def scaling_figure_caption():
+    if genericsettings.runlength_based_targets:
+        return scaling_figure_caption_rlbased.replace('values_of_interest', 
+                                        ', '.join(values_of_interest.labels()))
+    else:
+        return scaling_figure_caption_fixed.replace('values_of_interest', 
+                                        ', '.join(values_of_interest.loglabels()))
+
+def read_fun_infos():
+    try:
+        f = open(infofile, 'r')
+        for line in f:
+            if len(line) == 0 or line.startswith('%') or line.isspace() :
+                continue
+            funcId, funcInfo = line[0:-1].split(None, 1)
+            funInfos[int(funcId)] = funcId + ' ' + funcInfo
+        f.close()
+        return funInfos
+    except IOError, (errno, strerror):
+        print "I/O error(%s): %s" % (errno, strerror)
+        isBenchmarkinfosFound = False
+        print 'Could not find file', infofile, \
+              'Titles in figures will not be displayed.'
 
 def beautify(axesLabel=True):
     """Customize figure presentation.
@@ -290,7 +292,9 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
     :returns: handles
 
     """
+    valuesOfInterest = pproc.TargetValues.cast(valuesOfInterest)
     styles = list(reversed(styles[:len(valuesOfInterest)]))
+    dsList = pproc.DataSetList(dsList)
     dictFunc = dsList.dictByFunc()
     res = []
 
@@ -419,10 +423,10 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
         # if later the ylim[0] becomes >> 1, this might be a problem
     return res
 
-def plot_previous_algorithms(func, target=lambda x: [1e-8]):
-    """Add graph of the BBOB-2009 virtual best algorithm."""
-    if 11 < 3 and isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
-        return None
+def plot_previous_algorithms(func, target=values_of_interest):  # lambda x: [1e-8]):
+    """Add graph of the BBOB-2009 virtual best algorithm using the
+    last, most difficult target in ``target``."""
+    target = pproc.TargetValues.cast(target)
 
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
@@ -445,9 +449,10 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     Uses data of BBOB 2009 (:py:mod:`bbob_pproc.bestalg`).
     
     :param DataSetList dsList: data sets
-    :param seq _valuesOfInterest: target precisions, there might be as
-                                  many graphs as there are elements in
-                                  this input
+    :param seq _valuesOfInterest: target precisions, either as list or as
+                                  ``pproc.TargetValues`` class instance. 
+                                  There will be as many graphs as there are 
+                                  elements in this input. 
     :param string outputdir: output directory
     :param bool verbose: controls verbosity
     
@@ -459,6 +464,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     # plt.rc("font", size=20)
     # plt.rc("legend", fontsize=20)
 
+    _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
 
@@ -477,3 +483,4 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         saveFigure(filename, verbose=verbose)
         plt.close()
 
+funInfos = read_fun_infos()
