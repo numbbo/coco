@@ -22,7 +22,7 @@ from pdb import set_trace
 import warnings
 import numpy
 
-ftarget = 1e-8  # CAVE: changing this makes the figure captions invalid 
+ftarget = 1e-8
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
