@@ -298,26 +298,15 @@ def main(argv=None):
         if isNoiseFree and not isNoisy:
             dsList = dsList.dictByNoise().get('noiselessall', DataSetList())
 
-        # compute and store maxfuneval values
+        # compute maxfuneval values
         dict_max_fun_evals = {}
         for ds in dsList:
             dict_max_fun_evals[ds.dim] = np.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
-        genericsettings.dict_max_fun_evals = dict_max_fun_evals
         if isRLbased is not None:
             genericsettings.runlength_based_targets = isRLbased
-        if isExpensive:
-            genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive 
-            genericsettings.runlength_based_targets = True
-        elif isExpensive is False:
-            genericsettings.runlength_based_targets = False            
-        if genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
-            if np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < 1e3: 
-                genericsettings.runlength_based_targets = True
-                genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive
-            else:
-                genericsettings.runlength_based_targets = False
 
         from bbob_pproc import config
+        config.target_values(isExpensive, dict_max_fun_evals)
         config.config()
 
         if (verbose):
