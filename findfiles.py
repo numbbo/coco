@@ -20,7 +20,7 @@ import warnings
 # Initialization
 
 def is_recognized_repository_filetype(filename): 
-    return os.path.isdir(filename.strip()) or filename.find('.tar') > -1
+    return os.path.isdir(filename.strip()) or filename.find('.tar') > 0 or filename.find('.tgz') > 0
 
 def main(directory='.', verbose=True):
     """Lists data files recursively in a given directory, tar files
@@ -28,7 +28,7 @@ def main(directory='.', verbose=True):
 
     The data files have :file:`info` and :file:`pickle` extensions.
 
-    TODO: not only recognize .tar and .tar.gz but .zip...
+    TODO: not only recognize .tar and .tar.gz and .tgz but .zip...
     
     """
     
@@ -43,8 +43,8 @@ def main(directory='.', verbose=True):
                 #~ filelist = IndexFile(root,elem,archive)
     if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
         import tarfile
-        dirname = directory[:directory.find('.tar')] + '-extracted'
-        if directory.endswith('.gz'):
+        dirname = directory[:directory.find('.t')] + '-extracted'
+        if directory.endswith('.gz') or directory.endswith('.tgz'):
             tarfile.TarFile.gzopen(directory).extractall(dirname)
         else:
             tarfile.TarFile.open(directory).extractall(dirname)
