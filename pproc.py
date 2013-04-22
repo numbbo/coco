@@ -97,7 +97,7 @@ class TargetValues(object):
     requires an actual argument ``targets(fun_dim)``. 
     
     Details: The optional argument for calling the class instance is needed to 
-    be consistent with the derived ``class RunlengthBasedTargetValues``.  
+    be consistent with the derived ``class RunlengthBasedTargetValues``. 
     
     """
     def __init__(self, target_values):
@@ -153,7 +153,7 @@ class TargetValues(object):
             return res
 
     def label_name(self):
-        return 'f'
+        return 'Df'
 
 class RunlengthBasedTargetValues(TargetValues):
     """a class instance call returns f-target values based on 
