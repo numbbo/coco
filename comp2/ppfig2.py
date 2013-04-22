@@ -22,7 +22,7 @@ except ImportError:
 
 import numpy as np 
 
-from bbob_pproc import toolsstats, readalign
+from bbob_pproc import toolsstats, readalign, pproc
 from bbob_pproc.toolsstats import ranksumtest
 from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
 #try:
@@ -278,6 +278,8 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
     #plt.rc("ytick", labelsize=20)
     #plt.rc("font", size=20)
     #plt.rc("legend", fontsize=20)
+    
+    # minfvalue = pproc.TargetValues.cast(minfvalue)
 
     dictFun0 = dsList0.dictByFunc()
     dictFun1 = dsList1.dictByFunc()
