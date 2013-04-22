@@ -21,6 +21,29 @@ from bbob_pproc import genericsettings, pproc, pprldistr
 from bbob_pproc.comp2 import ppfig2, ppscatter
 from bbob_pproc.compall import ppfigs, pprldmany
 
+def target_values(is_expensive, dict_max_fun_evals={}, runlength_limit=1e3):
+    """manage target values setting in "expensive" optimization scenario, 
+    when ``is_expensive not in (True, False), the setting is based on 
+    the comparison of entries in ``dict_max_fun_evals`` with ``runlength_limit``
+    
+    """
+    # if len(dict_max_fun_evals):
+    #     genericsettings.dict_max_fun_evals = dict_max_fun_evals
+    is_runlength_based = True if is_expensive else None 
+    if is_expensive:
+        genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive 
+    if is_runlength_based:
+        genericsettings.runlength_based_targets = True
+    elif is_runlength_based is False:
+        genericsettings.runlength_based_targets = False            
+    elif genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
+        if len(dict_max_fun_evals) and np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < runlength_limit: 
+            genericsettings.runlength_based_targets = True
+            genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive
+        else:
+            genericsettings.runlength_based_targets = False
+
+    
 def config():
     """called from a high level, e.g. rungeneric, to configure the lower level 
     modules via modifying parameter settings. 
@@ -60,6 +83,8 @@ def config():
         pptable.table_caption=pptable.table_caption_rlbased
         pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
                                                                      force_different_targets_factor=10**-0.2)
+        ppscatter.markersize = 16
+
     else:
         pass # here the default values of the modules apply
         # pprlmany.x_limit = ...should depend on noisy/noiseless
@@ -70,13 +95,12 @@ def config():
 
     pprldmany.fontsize = 20.0  # should depend on the number of data lines down to 10.0 ?
     
-    ppscatter.markersize = 14.
+    ppscatter.markersize = 14
     
-    ppfig2.linewidth = 4.
-    
+    ppfig2.linewidth = 4
+    ppfig2.styles = ppfig2.styles   
     ppfigs.styles = ppfigs.styles
-    ppfig2.styles = ppfig2.styles
-
+ 
 def main():
     config()
 
