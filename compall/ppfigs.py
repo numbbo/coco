@@ -19,14 +19,22 @@ from bbob_pproc.pptex import color_to_latex, marker_to_latex, writeLabels
 #           {'color': 'm'},
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
 
-show_significance = True
-scaling_figure_legend = (r"Expected running time (\ERT\ in number of $f$-evaluations) divided by dimension " +
-                r"for target function value \bbobppfigsftarget\ as $\log_{10}$ values versus dimension. " +
+ftarget_default = 1e-8
+show_significance = 0.01  # for zero nothing is shown
+scaling_figure_caption_start_fixed = (r"""Expected running time (\ERT\ in number of $f$-evaluations 
+                as $\log_{10}$ value), divided by dimension for target function value $BBOBPPFIGSFTARGET$ 
+                versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. """
+                )
+scaling_figure_caption_start_rlbased = (r"""Expected running time (\ERT\ in number of $f$-evaluations 
+                as $\log_{10}$ value) divided by dimension versus dimension. The target function value 
+                is chosen such that the REFERENCE_ALGORITHM artificial algorithm just failed to achieve 
+                an \ERT\ of $BBOBPPFIGSFTARGET\times\DIM$. """
+                )
+scaling_figure_caption_end = (
                 r"Different symbols " +
                 r"correspond to different algorithms given in the legend of #1. " +
                 r"Light symbols give the maximum number of function evaluations from the longest trial " + 
-                r"divided by dimension. Horizontal lines give linear scaling, " +
-                r"slanted dotted lines give quadratic scaling. " +
+                r"divided by dimension. " +
                 (r"Black stars indicate statistically better result compared to all other algorithms " +
                  r"with $p<0.01$ and Bonferroni correction number of dimensions (six).  ") 
                          if show_significance else ''
@@ -63,6 +71,19 @@ except IOError, (errno, strerror):
     print "I/O error(%s): %s" % (errno, strerror)
     print 'Could not find file', infofile, \
           'Titles in figures will not be displayed.'
+          
+def scaling_figure_caption(target):
+    # need to be used in rungenericmany.py!?
+    assert len(target) == 1
+    if isinstance(target, pproc.RunlengthBasedTargetValues):
+        s = scaling_figure_caption_start_rlbased.replace('BBOBPPFIGSFTARGET', 
+                                                         toolsdivers.number_to_latex(target.label(0)))
+        s = s.replace('REFERENCE_ALGORITHM', target.reference_algorithm)
+    else:
+        s = scaling_figure_caption_start_fixed.replace('BBOBPPFIGSFTARGET', 
+                                                       toolsdivers.number_to_latex(target.label(0)))
+    s += scaling_figure_caption_end
+    return s
 
 def plotLegend(handles, maxval=None):
     """Display right-side legend.
@@ -70,7 +91,6 @@ def plotLegend(handles, maxval=None):
     Sorted from smaller to larger y-coordinate values.
     
     """
-
     ys = {}
     lh = 0 # Number of labels to display on the right
     if not maxval:
@@ -247,22 +267,35 @@ def generateData(dataSet, target):
     res[3] = numpy.max(dataSet.maxevals)
     return res
 
-def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
+def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', verbose=True):
     """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
     
     One function and one target per figure.
     
-    sortedAlgs is a list of string-identifies (folder names)
+    ``target`` can be a scalar, a list with one element or a 
+    ``pproc.TargetValues`` instance with one target.
+    
+    ``sortedAlgs`` is a list of string-identifies (folder names)
     
     """
+    # target becomes a TargetValues "list" with one element
+    target = pproc.TargetValues.cast([target] if numpy.isscalar(target) else target)
+    latex_commands_filename = os.path.join(outputdir, 'bbob_pproc_commands.tex')
+    assert isinstance(target, pproc.TargetValues) 
+    if len(target) != 1:
+        raise ValueError('only a single target can be managed in ppfigs, ' + str(len(target)) + ' targets were given')
+    
     dictFunc = pproc.dictAlgByFun(dictAlg)
-
+    if sortedAlgs is None:
+        sortedAlgs = sorted(dictAlg.keys())
+    if not os.path.isdir(outputdir):
+        os.mkdir(outputdir)
     for f in dictFunc:
         filename = os.path.join(outputdir,'ppfigs_f%03d' % (f))
         handles = []
         fix_styles(len(sortedAlgs))  # 
         for i, alg in enumerate(sortedAlgs):
-            dictDim = dictFunc[f][alg].dictByDim()
+            dictDim = dictFunc[f][alg].dictByDim()  # this does not look like the most obvious solution
 
             #Collect data
             dimert = []
@@ -277,7 +310,7 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
             for dim in sorted(dictDim):
                 assert len(dictDim[dim]) == 1
                 entry = dictDim[dim][0]
-                data = generateData(entry, target) # TODO: here we might want a different target for each function
+                data = generateData(entry, target((f, dim))[0]) # TODO: here we might want a different target for each function
                 if 1 < 3 or data[2] == 0: # No success
                     dimmaxevals.append(dim)
                     maxevals.append(float(data[3])/dim)
@@ -325,7 +358,7 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
         dimbestalg2 = []
         for d in dimbestalg:
             entry = bestalg.bestalgentries2009[(d, f)]
-            tmp = entry.detERT([target])[0]
+            tmp = entry.detERT(target((f, d)))[0]
             if numpy.isfinite(tmp):
                 bestalgdata.append(float(tmp)/d)
                 dimbestalg2.append(d)
@@ -344,9 +377,9 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
                 assert all([len(datasets[ialg]) == 1 for ialg in sortedAlgs if datasets[ialg]])
                 dsetlist =  [datasets[ialg][0] for ialg in sortedAlgs if datasets[ialg]]
                 if len(dsetlist) > 1:
-                    arzp, arialg = toolsstats.significance_all_best_vs_other(dsetlist, [target])
-                    if arzp[0][1] * len(dims) < 0.05:
-                        ert = dsetlist[arialg[0]].detERT([target])[0]
+                    arzp, arialg = toolsstats.significance_all_best_vs_other(dsetlist, target((f, dim)))
+                    if arzp[0][1] * len(dims) < show_significance:
+                        ert = dsetlist[arialg[0]].detERT(target((f, dim)))[0]
                         if ert < numpy.inf: 
                             xstar.append(dim)
                             ystar.append(ert/dim)
@@ -364,7 +397,7 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
 
         beautify(legend=isLegend, rightlegend=legend)
 
-        plt.text(plt.xlim()[0], plt.ylim()[0], 'ftarget=%.0e' % target)
+        plt.text(plt.xlim()[0], plt.ylim()[0], 'target ' + target.label_name() + ': ' + target.label(0))  # TODO: check
 
         saveFigure(filename, verbose=verbose)
 
@@ -378,12 +411,11 @@ def main(dictAlg, sortedAlgs, target=1e-8, outputdir='ppdata', verbose=True):
             symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
                                 marker_to_latex(styles[i]['marker']))
             alg_definitions.append((', ' if i > 0 else '') + '%s:%s' % (symb, '\\algorithm' + abc[i % len(abc)]))
-        filename = os.path.join(outputdir, 'bbob_pproc_commands.tex')
-        toolsdivers.prepend_to_file(filename, 
-                ['\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%d}}}' 
-                        % int(numpy.round(numpy.log10(target))),
+        toolsdivers.prepend_to_file(latex_commands_filename, 
+                [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
+                 #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
                 '\\providecommand{\\bbobppfigslegend}[1]{',
-                scaling_figure_legend, 
+                scaling_figure_caption(target), 
                 'Legend: '] + alg_definitions + ['}']
                 )
         if verbose:
