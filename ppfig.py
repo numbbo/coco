@@ -51,7 +51,7 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
     def marker_positions(xdata, ydata, nbperdecade, maxnb, ax):
         """replacement for downsample with at most 12 points"""
         if 11 < 3:
-            return downsample(xdata, ydata)
+            return old_downsample(xdata, ydata)
         tfy = np.log10 if logscale else lambda x: x
             
         xdatarange = np.log10(max([max(xdata), ax[0], ax[1]]) + 0.5) - np.log10(min([min(xdata), ax[0], ax[1]]) + 0.5)  #np.log10(xdata[-1]) - np.log10(xdata[0])
@@ -73,7 +73,7 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
         ypos.append(ydata[-1])
         return xpos, ypos
     
-    def downsample(xdata, ydata):
+    def old_downsample(xdata, ydata):
         """Downsample arrays of data, superseeded by method marker_position
         
         From xdata and ydata return x and y which have only nbperdecade
@@ -298,7 +298,7 @@ def generateData(dataSet, targetFuncValue):
 
 def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
          isbyinstance=True, kwargs={}):
-    """From a DataSetList, plot a graph."""
+    """From a DataSetList, plot a graph. Not in use and superseeded by ppfigdim.main!?"""
 
     #set_trace()
     res = []
@@ -366,7 +366,7 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
             tmp = np.vstack(unsucc) # tmp[:, 0] needs to be sorted!
             res.extend(plt.plot(tmp[:, 0], tmp[:, 1], **kwargs))
 
-    if displaynumber: #displayed only for the smallest valuesOfInterest
+    if displaynumber: # displayed only for the smallest valuesOfInterest
         for j in displaynumber:
             t = plt.text(j[0], j[1]*1.85, "%.0f" % j[2],
                          horizontalalignment="center",
