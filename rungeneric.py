@@ -33,7 +33,7 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import genericsettings, rungeneric1, rungeneric2, rungenericmany
-from bbob_pproc.toolsdivers import prepend_to_file, truncate_latex_command_file
+from bbob_pproc.toolsdivers import prepend_to_file, truncate_latex_command_file, print_done
 
 __all__ = ['main']
 
@@ -291,6 +291,8 @@ def main(argv=None):
             rungenericmany.main(genoptsmany + ["-o", outputdir] + args)
 
         open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a').close() 
+        
+        print_done()
 
     #TODO prevent loading the data every time...
 
