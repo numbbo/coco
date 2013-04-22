@@ -456,6 +456,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
     # plt.rc("font", size=20)
     # plt.rc("legend", fontsize=20)
 
+    targets = pproc.TargetValues.cast(targets)
     dictdim0 = dsList0.dictByDim()
     dictdim1 = dsList1.dictByDim()
     for d in set(dictdim0.keys()) & set(dictdim1.keys()):
