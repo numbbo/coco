@@ -57,6 +57,7 @@ displaybest2009 = True
 target_values = pp.TargetValues(10**np.arange(2, -8, -0.2)) # possibly changed in config
 x_limit = None  # not sure whether this is necessary/useful
 x_limit_default = 1e7 # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
+divide_by_dimension = True
 annotation_line_end_relative = 1.11  # lines between graph and annotation
 annotation_space_end_relative = 1.24  # figure space end relative to x_limit
 save_zoom = False  # save zoom into left and right part of the figures
@@ -68,6 +69,7 @@ median_max_evals_marker_format = ['x', 24, 3]
 styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
 
 refcolor = 'wheat'
+"""color of reference (best) algorithm"""
 
 # TODO: update the list below which are not relevant anymore
 
@@ -184,7 +186,11 @@ def beautify():
     #Tick label handling
     plt.xlim(xmin=1e-0)
 
-    plt.xlabel('log10 of (# f-evals / dimension)')
+    global divide_by_dimension
+    if divide_by_dimension:
+        plt.xlabel('log10 of (# f-evals / dimension)')
+    else:
+        plt.xlabel('log10 of # f-evals')
     plt.ylabel('Proportion of function+target pairs')
     ppfig.logxticks()
     pprldistr.beautifyECDF()
@@ -231,7 +237,11 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
         x = x[:end]
         y = y[:end]
         
-        plt_plot(x_last, y_last, **kwargs) # not clear what this does
+        try:  # plot the very last point outside of the "normal" plotting area
+            c = kwargs['color']
+            plt_plot([x_last] * 2, [y_last] * 2, '.', color=c, markeredgecolor=c) 
+        except:
+            pass
         x2 = np.hstack([np.repeat(x, 2), maxval]) # repeat x-values for each step in the cdf
         y2 = np.hstack([0.0, np.repeat(y / float(nn), 2)])
 
@@ -243,7 +253,8 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
             x3 = np.median(maxevals)
             if (x3 <= maxval and 
                 # np.any(x2 <= x3) and   # maxval < median(maxevals)
-                not plt.getp(res[-1], 'label').startswith('best')): # TODO: HACK for not considering the best 2009 line
+                not plt.getp(res[-1], 'label').startswith('best')
+                ): # TODO: HACK for not considering the best 2009 line
                 y3 = y2[x2<=x3][-1]
                 h = plt.plot((x3,), (y3,), 
                              marker=median_max_evals_marker_format[0],
@@ -379,11 +390,12 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
     maxevals = []
     for entry in dsList:
         for t in targets((entry.funcId, entry.dim)):
+            divisor = entry.dim if divide_by_dimension else 1
             x = [np.inf] * perfprofsamplesize
             runlengthunsucc = []
             evals = entry.detEvals([t])[0]
-            runlengthsucc = evals[np.isnan(evals) == False] / entry.dim
-            runlengthunsucc = entry.maxevals[np.isnan(evals)] / entry.dim
+            runlengthsucc = evals[np.isnan(evals) == False] / divisor
+            runlengthunsucc = entry.maxevals[np.isnan(evals)] / divisor
             if len(runlengthsucc) > 0:
                 x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                      percentiles=[50],
@@ -434,6 +446,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     """
     global x_limit  # late assignment of default, because it can be set to None in config 
+    global divide_by_dimension  # not fully implemented/tested yet
     if 'x_limit' not in globals() or x_limit is None:
         x_limit = x_limit_default
 
@@ -443,6 +456,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     if len(tmp) != 1:
         raise Exception('We never integrate over dimension.')
     dim = tmp.keys()[0]
+    divisor = dim if divide_by_dimension else 1
 
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
 
@@ -485,8 +499,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 try:
                     entry = dictAlgperFunc[alg][0] # one element per fun and per dim.
                     evals = entry.detEvals([t])[0]
-                    runlengthsucc = evals[np.isnan(evals) == False] / entry.dim
-                    runlengthunsucc = entry.maxevals[np.isnan(evals)] / entry.dim
+                    assert entry.dim == dim
+                    runlengthsucc = evals[np.isnan(evals) == False] / divisor
+                    runlengthunsucc = entry.maxevals[np.isnan(evals)] / divisor
                     if len(runlengthsucc) > 0:
                         x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                              percentiles=[50],
@@ -512,8 +527,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 if bestalgevals[1][j]:
                     evals = bestalgevals[0][j]
                     #set_trace()
-                    runlengthsucc = evals[np.isnan(evals) == False] / bestalgentry.dim
-                    runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][np.isnan(evals)] / bestalgentry.dim
+                    assert dim == bestalgentry.dim
+                    runlengthsucc = evals[np.isnan(evals) == False] / divisor
+                    runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][np.isnan(evals)] / divisor
                     x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                          percentiles=[50],
                                          samplesize=perfprofsamplesize)[1]
@@ -595,7 +611,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     beautify()
 
     text = 'f%s' % (ppfig.consecutiveNumbers(sorted(dictFunc.keys())))
-    text += ',%d-D' % dim
+    text += ',%d-D' % dim  # TODO: this is strange when different dimensions are plotted
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes)
 
