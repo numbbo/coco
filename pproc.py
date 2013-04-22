@@ -87,39 +87,50 @@ def cocofy(filename):
 class TargetValues(object):
     """store and retrieve a list of target function values::
     
-        targets = TargetValues([10**(i/5.0) for i in xrange(2, -8, -1)])
-        plot(targets(what_ever_or_nothing))
-        
-    The argument for calling the class instance is needed to be consistent
-    with the derived ``class RunlengthBasedTargetValues``.  
+        >>> import bbob_pproc.pproc as pp
+        >>> targets = [10**(i/5.0) for i in xrange(2, -8, -1)]
+        >>> targets_as_class = pp.TargetValues(targets)
+        >>> assert all(targets_as_class() == targets)
+    
+    In itself this class is useless, as it does not more than a simple list
+    could do, but it serves as interface for derived classes, where ``targets()``
+    requires an actual argument ``targets(fun_dim)``. 
+    
+    Details: The optional argument for calling the class instance is needed to 
+    be consistent with the derived ``class RunlengthBasedTargetValues``.  
     
     """
     def __init__(self, target_values):
         self.target_values = sorted(target_values, reverse=True)
         self.short_info = ""
+
+    @staticmethod
+    def cast(target_values_or_class_instance, *args, **kwargs):
+        """idempotent cast to ``TargetValues`` class type, specifically
+        ``return TargetValues(target_values_or_class_instance) 
+            if not isinstance(target_values_or_class_instance, TargetValues) 
+            else target_values_or_class_instance`` 
+            
+        """
+        if isinstance(target_values_or_class_instance, TargetValues):
+            return target_values_or_class_instance
+        else:
+            return TargetValues(target_values_or_class_instance, *args, **kwargs)
+
     def __len__(self):
         return len(self.target_values)
+
     def __call__(self, fun_dim_but_not_use=None):
         return self.target_values
-    def loglabel(self, i, decimals=0):
-        """return ``log10`` of the ``i``-th target value as ``str``, to be overwritten by a derived class"""
-        return str(int(np.round(np.log10(self.target_values[i]), decimals)))
+
     def label(self, i):
         """return the ``i``-th target value as ``str``, to be overwritten by a derived class"""
-        if round(self.target_values[i]) >= 10 or round(10*self.target_values[i]) / 10. == self.target_values[i]:
-            return str(int(np.round(self.target_values[i]))) 
-        else: 
-            return str(round(self.target_values[i], 1)) 
-    
-    def loglabels(self, decimals=0):
-        """``log10`` of the target values as a list of ``str``"""
-        i, res = 0, []
-        try:
-            while True:
-                res.append(self.loglabel(i, decimals))
-                i += 1
-        except IndexError:
-            return res
+        return toolsdivers.num2str(self.target_values[i], significant_digits=2)
+
+    def loglabel(self, i, decimals=0):
+        """return ``log10`` of the ``i``-th target value as ``str``, to be overwritten by a derived class"""
+        # return str(int(np.round(np.log10(self.target_values[i]), decimals)))
+        return toolsdivers.num2str(np.log10(self.target_values[i]), significant_digits=decimals+1)
 
     def labels(self):
         """target values as a list of ``str``"""
@@ -130,16 +141,30 @@ class TargetValues(object):
                 i += 1
         except IndexError:
             return res
+ 
+    def loglabels(self, decimals=0):
+        """``log10`` of the target values as a list of ``str``"""
+        i, res = 0, []
+        try:
+            while True:
+                res.append(self.loglabel(i, decimals))
+                i += 1
+        except IndexError:
+            return res
 
-class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarative but not effective
-    """class instance calls return f-target values based on 
+    def label_name(self):
+        return 'f'
+
+class RunlengthBasedTargetValues(TargetValues):
+    """a class instance call returns f-target values based on 
     reference runlengths::
     
-        targets = TargetValues(reference_data).set_targets(ERT_values)
-        targets((1, 10)) 
+        >>> import bbob_pproc as bb
+        >>> targets = bb.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension=True 
+        >>> targets(fun_dim=(1, 20))
         
-    returns a list of target f-values for F1 in 10-D, based on the 
-    ``ERT_values`` and ``reference_data``. 
+    returns a list of target f-values for F1 in 20-D, based on the 
+    ERT values ``[0.5,...,50]``. 
         
     Details: The computation starts from the smallest budget and the resulting f-target 
     must always be at least a factor of ``force_different_targets_factor`` smaller 
@@ -150,10 +175,18 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
     TODO: see compall/determineFtarget2.FunTarget
     
     """
+    @staticmethod
+    def cast(run_lengths_or_class_instance, *args, **kwargs):
+        """idempotent cast to ``RunlengthBasedTargetValues`` class type"""
+        if isinstance(run_lengths_or_class_instance, RunlengthBasedTargetValues):
+            return run_lengths_or_class_instance
+        else:
+            return RunlengthBasedTargetValues(run_lengths_or_class_instance, *args, **kwargs)
+        
     @property
     def short_info(self):
-        return self._short_info
-    
+        return self._short_info    
+        
     def __init__(self, run_lengths, reference_data='bestGECCO2009', #  
                  smallest_target=1e-8, times_dimension=True, 
                  force_different_targets_factor=10**0.04, 
@@ -162,10 +195,10 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         target values based on the reference data, individually
         computed for a given ``(funcId, dimension)``. 
         
+        :param run_lengths: sequence of values. 
         :param reference_data: 
             can be a string like ``"bestGECCO2009"`` or a 
-            ``DataSetList`` (not thoroughly tested).  
-        :param run_lengths:
+            ``DataSetList`` (not thoroughly tested). 
         :param smallest_target:
         :param times_dimension:
         :param force_different_targets_factor:
@@ -177,32 +210,40 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
             consecutive targets can be identical.  
 
         """
+        self.reference_data = reference_data
         if force_different_targets_factor < 1:
             force_different_targets_factor **= -1 
-        known_names = ['bestGECCO2009', 'bestGECCOever']
+        self.known_names = ['bestGECCO2009', 'bestGECCOever']
         self._short_info = "budget-based"
         self.run_lengths = sorted(run_lengths)
         self.smallest_target = smallest_target
-        self.step_to_next_difficult_target = step_to_next_difficult_target
+        self.step_to_next_difficult_target = step_to_next_difficult_target**np.sign(np.log(step_to_next_difficult_target))
         self.times_dimension = times_dimension
         # force_different_targets and target_discretization could talk to each other? 
         self.force_different_targets_factor = force_different_targets_factor
         self.target_discretization_factor = 10**0.2  # in accordance with default recordings
-        
-        if reference_data in known_names:
-            if reference_data == 'bestGECCO2009':
+        self.reference_algorithm = ''
+        self.initialized = False
+    def initialize(self):
+        """lazy initialization to prevent slow import"""
+        if self.initialized:
+            return self
+        if self.reference_data in self.known_names:
+            self.reference_algorithm = self.reference_data
+            self._short_info = 'reference budgets from ' + self.reference_data
+            if self.reference_data == 'bestGECCO2009':
                 from bbob_pproc import bestalg
                 bestalg.loadBBOB2009() # this is an absurd interface
                 self.reference_data = bestalg.bestalgentries2009
                 # TODO: remove targets smaller than 1e-8 
-            elif reference_data == 'bestGECCOever':
+            elif self.reference_data == 'bestGECCOever':
                 from bbob_pproc import bestalg
                 bestalg.loadBBOBever() # this is an absurd interface
                 self.reference_data = bestalg.bestalgentriesever
             else:
                 ValueError('reference algorithm name')
-            self._short_info = 'reference budgets from ' + reference_data
-        elif type(reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
+        elif type(self.reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
+            self._short_info = 'reference budgets from ' + self.reference_data
             dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0], 
                                            'bbob_pproc', 'data', self.reference_data))  
             dsd = {}
@@ -210,13 +251,13 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                 # ds._clean_data()
                 dsd[(ds.funcId, ds.dim)] = ds
             self.reference_data = dsd
-            self._short_info = 'reference budgets from ' + reference_data
         else:
-            self.reference_data = reference_data
-
+            # assert len(byalg) == 1
+            self.reference_algorithm = self.reference_data[self.reference_data.keys()[0]].algId
+        self.initialized = True
+        return self
     def __len__(self):
-        return len(self.run_lengths)
-   
+        return len(self.run_lengths)  
     def __call__(self, fun_dim=None):
         """Get all target values for the respective function and dimension  
         and reference ERT values (passed during initializatio). `fun_dim` is 
@@ -229,6 +270,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         Shown is the ERT for targets that, within the given budget, the best 2009 algorithm just failed to achieve.
 
         """            
+        self.initialize()
         if self.force_different_targets_factor**len(self.run_lengths) > 1e3:
                 warnings.warn('enforced different target values might spread more than three orders of magnitude')
         if fun_dim is None:
@@ -244,6 +286,7 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
             except AttributeError: # loaded classes might not have this method
                 # need a hack here
                 _DataSet_complement_data(ds, self.target_discretization_factor)
+        # end is the first index in ds.target with a values smaller than smallest_target
         try:
             end = np.nonzero(ds.target >= self.smallest_target)[0][-1] + 1 
             # same as end = np.where(ds.target >= smallest_target)[0][-1] + 1 
@@ -263,15 +306,16 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                 assert all(toolsdivers.equals_approximately(10**0.2, ds.target[i] / ds.target[i+1]) for i in xrange(end-1))
                 # if this fails, we need to insert the missing target values 
             except AssertionError:
-                if 11 < 3:
+                if 1 < 3:
                     print fun_dim, ds.ert[0], 'not all targets are recorded in TargetValues.__call__ (this could be a bug)' 
                     print ds.target
-                    1/0
+                    # 1/0
         
         # here the actual computation starts
-        targets = [] 
-        for rl in self.run_lengths:
-            if 1 < 3: # choose largest target not achieved by reference ERT
+        targets = []
+        if genericsettings.test: 
+            for rl in self.run_lengths:
+                # choose largest target not achieved by reference ERT
                 indices = np.nonzero(ds.ert[:end] > np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
                 if len(indices):  # larger ert exists
                     targets.append(np.max((ds.target[indices[0]],  # first missed target 
@@ -281,12 +325,38 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
                     targets.append(ds.target[end-1])  # last target
                     if targets[-1] > (1 + 1e-9) * self.smallest_target:
                         targets[-1] = (1 + 1e-9) * targets[-1] / self.step_to_next_difficult_target
-            else: # choose smallest target achieved by reference ERT
-                indices = np.nonzero(ds.ert[:end] <= np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
-                assert len(indices)
-                targets.append(ds.target[indices[-1]])
+                
+                if len(targets) > 1 and targets[-1] >= targets[-2] and self.force_different_targets_factor > 1 and targets[-1] > self.smallest_target:
+                    targets[-1] = targets[-2] / self.force_different_targets_factor
+            targets = np.array(targets, copy=False)
+            targets[targets < self.smallest_target] = self.smallest_target
             
-            if len(targets) > 1 and targets[-1] >= targets[-2] and self.force_different_targets_factor > 1 and targets[-1] > self.smallest_target:
+            # a few more sanity checks
+            if targets[-1] < self.smallest_target:
+                print 'runlength based targets', fun_dim, ': correction for small smallest target applied (should never happen)'
+                b = float(targets[0])
+                targets = np.exp(np.log(targets) * np.log(b / self.smallest_target) / np.log(b / targets[-1]))
+                targets *= (1 + 1e-12) * self.smallest_target / targets[-1]
+                assert b <= targets[0] * (1 + 1e-10)
+                assert b >= targets[0] / (1 + 1e-10)
+            assert targets[-1] >= self.smallest_target
+            assert len(targets) == 1 or all(np.diff(targets) <= 0)
+            assert len(ds.ert) == len(ds.target)
+        
+        # here the actual computation starts
+        old_targets = targets
+        targets = [] 
+        for rl in self.run_lengths:
+            # choose best target achieved by reference ERT times step_to_next_difficult_target
+            indices = np.nonzero(ds.ert[:end] <= np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
+            if not len(indices):
+                warnings.warn('  too easy runlength ' + str(rl) + ' for (f,dim)=' + str(fun_dim))
+                targets.append(ds.target[0])
+            else:
+                targets.append((1 + 1e-9) * ds.target[indices[-1]] / self.step_to_next_difficult_target)
+            
+            if (len(targets) > 1 and targets[-1] >= targets[-2] and 
+                self.force_different_targets_factor > 1):
                 targets[-1] = targets[-2] / self.force_different_targets_factor
         targets = np.array(targets, copy=False)
         targets[targets < self.smallest_target] = self.smallest_target
@@ -302,18 +372,27 @@ class RunlengthBasedTargetValues(TargetValues):  # inheritance is only declarati
         assert targets[-1] >= self.smallest_target
         assert len(targets) == 1 or all(np.diff(targets) <= 0)
         assert len(ds.ert) == len(ds.target)
+
+        if genericsettings.test and not all(targets == old_targets): # or (fun_dim[0] == 19 and len(targets) > 1):
+            print fun_dim
+            print targets / old_targets - 1
+            print targets
         
         return targets    
 
     get_targets = __call__  # an alias
     
+    def label(self, i):
+        """return i-th target value as string"""
+        return toolsdivers.num2str(self.run_lengths[i], significant_digits=2)
+
     def loglabel(self, i, decimals=1):
         """``decimals`` is used for ``round``"""
-        return str(np.round(np.log10(self.run_lengths[i]), decimals))
+        return toolsdivers.num2str(np.log10(self.run_lengths[i]), significant_digits=decimals+1)
+        # return str(np.round(np.log10(self.run_lengths[i]), decimals))
     
-    def label(self, i):
-        val = self.run_lengths[i]
-        return str(int(np.round(val)) if round(val) >= 10 else round(val, 1))
+    def label_name(self):
+        return 'RL' + ('/dim' if self.times_dimension else '')
 
     def _generate_erts(self, ds, target_values):
         """compute for all target values, starting with 1e-8, the ert value
@@ -512,6 +591,10 @@ class DataSet():
         self.dataFiles = []
         self.instancenumbers = []
         self.evals = []  # to be removed if evals becomes a property, see below
+        """``evals`` are the central data. Each line ``evals[i]`` has a 
+        (target) function value in ``evals[i][0]`` and the function evaluation
+        for which this target was reached the first time in trials 1,...
+        in ``evals[i][1:]``.""" 
         self._evals = []  # not in use
         self.isFinalized = []
         self.readmaxevals = []
@@ -522,7 +605,10 @@ class DataSet():
         for elem in parts:
             if elem.endswith('dat'):
                 #Windows data to Linux processing
-                filename = elem.replace('\\', os.sep)
+                filename = elem
+                # while elem.find('\\ ') >= 0:
+                #     filename = filename.replace('\\ ', '\\')
+                filename = filename.replace('\\', os.sep)
                 #Linux data to Windows processing
                 filename = filename.replace('/', os.sep)
                 self.dataFiles.append(filename)
@@ -1175,7 +1261,7 @@ class DataSetList(list):
             self.sort()
             
     def processIndexFile(self, indexFile, verbose=True):
-        """Reads in an index file information on the different runs."""
+        """Reads in an index (.info?) file information on the different runs."""
 
         try:
             f = open(indexFile)
@@ -1225,7 +1311,8 @@ class DataSetList(list):
                     break
                 if set(i.instancenumbers).intersection(o.instancenumbers):
                     warnings.warn('instances ' + str(set(i.instancenumbers).intersection(o.instancenumbers))
-                                  + ' found several times. Read data for F%(argone)d in %(argtwo)d-D ' % {'argone':i.funcId, 'argtwo':i.dim}
+                                  + (' found several times. Read data for F%d in %d-D' % (i.funcId, i.dim)) 
+                                  # + ' found several times. Read data for F%(argone)d in %(argtwo)d-D ' % {'argone':i.funcId, 'argtwo':i.dim}
                                   + 'are likely to be inconsistent. ')
                 # tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
                 #Check if there are new data considered.
