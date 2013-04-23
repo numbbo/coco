@@ -101,6 +101,9 @@ class TargetValues(object):
     
     """
     def __init__(self, target_values):
+        if 11 < 3 and isinstance(target_values, TargetValues):  # type cast passing behavior
+            self.__dict__ = target_values.__dict__
+            return
         self.target_values = sorted(target_values, reverse=True)
         self.short_info = ""
 
