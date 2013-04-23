@@ -20,8 +20,12 @@ import warnings
 import getopt
 from pdb import set_trace
 import numpy
+import numpy as np
 
-ftarget = 1e-8  # CAVE: changing this makes the figure captions invalid 
+ftarget = 1e-8  # used for ppfigs.main 
+ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
+target_runlength = 10 # used for ppfigs.main
+
 # genericsettings.summarized_target_function_values[0] might be another option
 
 # Add the path to bbob_pproc
@@ -35,9 +39,9 @@ if __name__ == "__main__":
     # matplotlib.use('pdf')
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
-from bbob_pproc import genericsettings
+from bbob_pproc import genericsettings, config
 from bbob_pproc import pprldistr
-from bbob_pproc.pproc import DataSetList, processInputArgs, TargetValues
+from bbob_pproc.pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
 from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname, str_to_latex
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 from bbob_pproc.compall import ppfigs
@@ -145,6 +149,7 @@ def main(argv=None):
         # The zero-th input argument which is the name of the calling script is
         # disregarded.
 
+    global ftarget
     try:
 
         try:
@@ -167,6 +172,8 @@ def main(argv=None):
         outputdir = 'ppdata'
         inputsettings = 'color'
         isConv= False
+        isRLbased = None  # allows automatic choice
+        isExpensive = None 
 
         #Process options
         for o, a in opts:
@@ -203,16 +210,22 @@ def main(argv=None):
                 inputsettings = a
             elif o == "--conv":
                 isConv = True
+            elif o == "--runlength-based":
+                isRLbased = True
+            elif o == "--expensive":
+                isExpensive = True  # comprises runlength-based
+            elif o == "--not-expensive":
+                isExpensive = False  
             else:
                 assert False, "unhandled option"
 
         # from bbob_pproc import bbob2010 as inset # input settings
         if inputsettings == "color":
-            from bbob_pproc import config, genericsettings as inset # input settings
+            from bbob_pproc import genericsettings as inset # input settings
             config.config()
-        elif inputsettings == "grayscale":
+        elif inputsettings == "grayscale": # probably very much obsolete
             from bbob_pproc import grayscalesettings as inset # input settings
-        elif inputsettings == "black-white":
+        elif inputsettings == "black-white": # probably very much obsolete
             from bbob_pproc import bwsettings as inset # input settings
         else:
             txt = ('Settings: %s is not an appropriate ' % inputsettings
@@ -278,6 +291,20 @@ def main(argv=None):
         for i in dsList1:
             i.algId = alg1name
 
+        # compute maxfuneval values
+        dict_max_fun_evals1 = {}
+        dict_max_fun_evals2 = {}
+        for ds in dsList0:
+            dict_max_fun_evals1[ds.dim] = np.max((dict_max_fun_evals1.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
+        for ds in dsList1:
+            dict_max_fun_evals2[ds.dim] = np.max((dict_max_fun_evals2.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
+        if isRLbased is not None:
+            genericsettings.runlength_based_targets = isRLbased
+        config.target_values(isExpensive, {1: min([max([val/dim for val, dim in dict_max_fun_evals1.iteritems()]), 
+                                                   max([val/dim for val, dim in dict_max_fun_evals2.iteritems()])]
+                                                  )})
+        config.config()
+        
         ######################### Post-processing #############################
         if isfigure or isrldistr or istable or isscatter:
             if not os.path.exists(outputdir):
@@ -330,7 +357,7 @@ def main(argv=None):
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
-            ppfig2.main(dsList0, dsList1, ftarget, outputdir, verbose)
+            ppfig2.main(dsList0, dsList1, ppfig2_ftarget, outputdir, verbose)
             print "log ERT1/ERT0 vs target function values done."
 
         plt.rc("axes", **inset.rcaxes)
@@ -389,8 +416,7 @@ def main(argv=None):
                 if dim in inset.rldDimsOfInterest:
                     try:
                         pprldistr.comp(dictDim1[dim], dictDim0[dim],
-                                       inset.rldValsOfInterest if isinstance(inset.rldValsOfInterest, TargetValues) 
-                                                    else TargetValues(inset.rldValsOfInterest), 
+                                       inset.rldValsOfInterest, # TODO: let rldVals... possibly be RL-based targets
                                        True,
                                        outputdir, 'all', verbose)
                     except KeyError:
@@ -404,8 +430,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr.comp(dictFG1[fGroup], dictFG0[fGroup],
-                                       inset.rldValsOfInterest if isinstance(inset.rldValsOfInterest, TargetValues) 
-                                                    else TargetValues(inset.rldValsOfInterest), 
+                                       inset.rldValsOfInterest, 
                                        True, outputdir,
                                        '%s' % fGroup, verbose)
 
@@ -414,8 +439,7 @@ def main(argv=None):
                     dictFN1 = dictDim1[dim].dictByNoise()
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr.comp(dictFN1[fGroup], dictFN0[fGroup],
-                                       inset.rldValsOfInterest if isinstance(inset.rldValsOfInterest, TargetValues) 
-                                                    else TargetValues(inset.rldValsOfInterest), 
+                                       inset.rldValsOfInterest, 
                                        True, outputdir,
                                        '%s' % fGroup, verbose)
 
@@ -480,10 +504,12 @@ def main(argv=None):
             print "Tables done."
 
         if isscatter:
-            ppscatter.main(dsList0, dsList1, outputdir, verbose=verbose)
+            if genericsettings.runlength_based_targets:
+                ppscatter.targets = ppscatter.runlength_based_targets
+            ppscatter.main(dsList1, dsList0, outputdir, verbose=verbose)
             prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
                             ['\\providecommand{\\bbobppscatterlegend}[1]{', 
-                             ppscatter.figure_legend, 
+                             ppscatter.figure_caption(), 
                              '}'
                             ])
             print "Scatter plots done."
@@ -494,6 +520,8 @@ def main(argv=None):
             plt.rc("ytick", labelsize=20)
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
+            if genericsettings.runlength_based_targets:
+                ftarget = RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
             ppfigs.main(dictAlg, sortedAlgs, ftarget, outputdir, verbose)
             plt.rcdefaults()
             print "Scaling figures done."
