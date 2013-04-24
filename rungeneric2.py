@@ -300,8 +300,8 @@ def main(argv=None):
             dict_max_fun_evals2[ds.dim] = np.max((dict_max_fun_evals2.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
         if isRLbased is not None:
             genericsettings.runlength_based_targets = isRLbased
-        config.target_values(isExpensive, {1: min([max([val/dim for val, dim in dict_max_fun_evals1.iteritems()]), 
-                                                   max([val/dim for val, dim in dict_max_fun_evals2.iteritems()])]
+        config.target_values(isExpensive, {1: min([max([val/dim for dim, val in dict_max_fun_evals1.iteritems()]), 
+                                                   max([val/dim for dim, val in dict_max_fun_evals2.iteritems()])]
                                                   )})
         config.config()
         
