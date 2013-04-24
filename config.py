@@ -36,7 +36,7 @@ def target_values(is_expensive, dict_max_fun_evals={}, runlength_limit=1e3):
         genericsettings.runlength_based_targets = True
     elif is_runlength_based is False:
         genericsettings.runlength_based_targets = False            
-    elif genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
+    else: # if genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
         if len(dict_max_fun_evals) and np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < runlength_limit: 
             genericsettings.runlength_based_targets = True
             genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive

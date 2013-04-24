@@ -23,6 +23,7 @@ import warnings
 import numpy
 
 ftarget = 1e-8
+target_runlength = 10 # used for ppfigs.main
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -169,6 +170,8 @@ def main(argv=None):
         isFig = True
         inputsettings = "color"
         isConv = False
+        isRLbased = None  # allows automatic choice
+        isExpensive = None 
 
         #Process options
         for o, a in opts:
@@ -200,6 +203,12 @@ def main(argv=None):
                 inputsettings = a
             elif o == "--conv":
                 isConv = True
+            elif o == "--runlength-based":
+                isRLbased = True
+            elif o == "--expensive":
+                isExpensive = True  # comprises runlength-based
+            elif o == "--not-expensive":
+                isExpensive = False  
             else:
                 assert False, "unhandled option"
 
@@ -226,6 +235,10 @@ def main(argv=None):
         if (not verbose):
             warnings.filterwarnings('module', '.*', Warning, '.*')  # same warning just once
             warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear 
+
+        if isRLbased is not None:
+            genericsettings.runlength_based_targets = isRLbased
+        config.target_values(isExpensive)
 
     except Usage, err:
         print >>sys.stderr, err.msg
@@ -323,12 +336,15 @@ def main(argv=None):
                                   outputdir, verbose)
             print "Comparison tables done."
 
+        global ftarget  # not nice
         if isFig:
             plt.rc("axes", labelsize=20, titlesize=24)
             plt.rc("xtick", labelsize=20)
             plt.rc("ytick", labelsize=20)
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
+            if genericsettings.runlength_based_targets:
+                ftarget = pproc.RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
             ppfigs.main(dictAlg, sortedAlgs, ftarget, outputdir, verbose)
             plt.rcdefaults()
             print "Scaling figures done."

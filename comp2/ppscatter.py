@@ -63,7 +63,7 @@ caption_start_fixed = r"""Expected running time (\ERT\ in $\log_{10}$ of number 
     of \algorithmB\ ($x$-axis) versus \algorithmA\ ($y$-axis) for $NBTARGETS$ target values 
     $\Df \in [NBLOW, NBUP]$ in each dimension on functions #1. """
 caption_start_rlbased = r"""Expected running time (\ERT\ in $\log_{10}$ of number of function evaluations) 
-    of \algorithmA\ ($x$-axis) versus \algorithmB\ ($y$-axis) for $NBTARGETS$ runlength-based target 
+    of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $NBTARGETS$ runlength-based target 
     function values for budgets between $NBLOW$ and $NBUP$ evaluations. 
     Each runlength-based target $f$-value is chosen such that the \ERT{}s of the 
     REFERENCE_ALGORITHM artificial algorithm for the given and a slightly easier 
