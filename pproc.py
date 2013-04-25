@@ -377,6 +377,7 @@ class RunlengthBasedTargetValues(TargetValues):
         assert len(ds.ert) == len(ds.target)
 
         if genericsettings.test and not all(targets == old_targets): # or (fun_dim[0] == 19 and len(targets) > 1):
+            print 'WARNING: target values are different compared to previous version'
             print fun_dim
             print targets / old_targets - 1
             print targets

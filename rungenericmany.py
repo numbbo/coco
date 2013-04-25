@@ -46,7 +46,8 @@ __all__ = ['main']
 # Used by getopt:
 shortoptlist = "hvo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
-               "rld-only", "fig-only", "verbose", "settings=", "conv"]
+               "rld-only", "fig-only", "verbose", "settings=", "conv", 
+               "runlength-based", "expensive", "not-expensive"]
 #CLASS DEFINITIONS
 
 class Usage(Exception):
