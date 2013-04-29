@@ -107,7 +107,7 @@ scaling_figure_caption_rlbased = caption_part_one + r"""%
     targets just not reached by
 %    the largest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of 
     the artificial GECCO-BBOB-2009 best algorithm  
-    within the given budget $k\DIM$, where $k$ is shown in the legend.
+    within the given budget $k\times\DIM$, where $k$ is shown in the legend.
 %    was above $\{values_of_interest\}\times\DIM$ evaluations. 
     Numbers above \ERT-symbols indicate the number of trials reaching the respective target.  
     The light thick line with diamonds indicates the respective best result from BBOB-2009 for 
