@@ -1642,6 +1642,8 @@ def processInputArgs(args, verbose=True):
     dictAlg = {}
     for i in args:
         i = i.strip()
+        if i == '': # might cure an lf+cr problem when using cywin under Windows
+            continue
         if findfiles.is_recognized_repository_filetype(i):
             filelist = findfiles.main(i, verbose)
             #Do here any sorting or filtering necessary.
@@ -1664,12 +1666,11 @@ def processInputArgs(args, verbose=True):
                 dictAlg[alg] = tmpDsList
         elif os.path.isfile(i):
             # TODO: a zipped tar file should be unzipped here, see findfiles.py 
-            txt = ('The post-processing cannot operate on the single file'
-                   + ' %s.' % i)
+            txt = 'The post-processing cannot operate on the single file ' + str(i)
             warnings.warn(txt)
             continue
         else:
-            txt = 'Input folder %s could not be found.' % i
+            txt = "Input folder '" + str(i) + "' could not be found."
             raise Exception(txt)
 
     return dsList, sortedAlgs, dictAlg
