@@ -63,13 +63,10 @@ def beautify(handles):
             ydata = i.get_ydata()
         if len(xdata) == 0 or len(ydata) == 0:
             continue
+        if not hasattr(xdata, 'dtype') or xdata.dtype != float:
+            xdata = numpy.array(xdata, dtype=float) 
         xdata = numpy.insert(xdata, 0, xmin)
-        try:
-            xdata = numpy.insert(xdata, len(xdata), xmax)
-        except OverflowError:
-            xdata = xdata + 0.0
-            # TODO: Hack for float conversion, compatibility with 0.8
-            xdata = numpy.insert(xdata, len(xdata), xmax)
+        xdata = numpy.insert(xdata, len(xdata), xmax)
         ydata = numpy.insert(ydata, 0, ydata[0])
         ydata = numpy.insert(ydata, len(ydata), ydata[-1])
         i.set_data(xdata, ydata)
