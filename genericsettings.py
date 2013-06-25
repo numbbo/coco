@@ -12,11 +12,13 @@ of the variables here and some
 """
 import os
 import numpy as np
+test = False  # debug/test flag, set to False for committing the final version
+if 1 < 3 and test:
+    np.seterr(all='raise')
 np.seterr(under='ignore')  # ignore underflow
 
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
 #set_trace()
-test = False  # debug/test flag, set to False for committing the final version
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 0 # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
