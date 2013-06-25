@@ -22,7 +22,7 @@ import tarfile
 from pdb import set_trace
 import warnings
 import numpy
-numpy.seterr(all='raise')
+# numpy.seterr(all='raise')
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
