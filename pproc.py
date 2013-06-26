@@ -912,17 +912,18 @@ class DataSet():
         # the associated pickle file does not exist
         if outputdir is not None and getattr(self, 'pickleFile', False):
             NotImplementedError('outputdir and pickleFile attribute are in conflict')
-        if not getattr(self, 'pickleFile', False):
-            if outputdir is None:
-                outputdir = os.path.split(self.indexFiles[0])[0] + '-pickle'
-            if not os.path.isdir(outputdir):
-                try:
-                    os.mkdir(outputdir)
-                except OSError:
-                    print ('Could not create output directory % for pickle files'
-                           % outputdir)
-                    raise
 
+        if outputdir is None:
+            outputdir = os.path.split(self.indexFiles[0])[0] + '-pickle'
+        if not os.path.isdir(outputdir):
+            try:
+                os.mkdir(outputdir)
+            except OSError:
+                print ('Could not create output directory % for pickle files'
+                       % outputdir)
+                raise
+
+        if not getattr(self, 'pickleFile', False):
             self.pickleFile = os.path.join(outputdir,
                                            'ppdata_f%03d_%02d.pickle'
                                             %(self.funcId, self.dim))
