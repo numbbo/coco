@@ -43,7 +43,7 @@ def main(directory='.', verbose=True):
                 #~ filelist = IndexFile(root,elem,archive)
     if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
         import tarfile
-        dirname = '_' + directory[:directory.find('.t')] + '-extracted'
+        dirname = '_' + directory[:directory.find('.t')] + '_extracted'
         if directory.endswith('.gz') or directory.endswith('.tgz'):
             tarfile.TarFile.gzopen(directory).extractall(dirname)
         else:
