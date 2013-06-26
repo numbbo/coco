@@ -18,6 +18,7 @@ algorithms but with the same name). This script allows to change these
 within a specified output folder.
 
 written: db 28/01/2010
+         db 26/06/2013 corrected documentation
 
 """
 
@@ -60,12 +61,12 @@ def main(argv=None):
     * Changing algorithm name and comments for given output folder from the
        command line::
 
-        $ python bbob_pproc/changeAlgoName.py outfolder "CMA-ES" "CMA_with_lambda_100"
+        $ python bbob_pproc/changeAlgIdAndComment.py outfolder "CMA-ES" "CMA_with_lambda_100"
 
     * Changing algorithm name and comments for given output folder
        interactively::
 
-        $ python bbob_pproc/changeAlgoName.py outputfolder
+        $ python bbob_pproc/changeAlgIdAndComment.py outputfolder
 
     """
 
