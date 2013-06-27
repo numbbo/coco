@@ -77,7 +77,22 @@ line_styles = [  # used by ppfigs and pprlmany
           {'marker': '1', 'markersize': 24, 'linestyle': '-', 'color': 'k'},
           {'marker': '2', 'markersize': 24, 'linestyle': '-', 'color': 'y'},
           {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
-          {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'}
+          {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
+          {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'r'},
+          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'b'}, 
+          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'm'},
+          {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'c'}, # square
+          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'y'},
+          {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': 'k'},
+          {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
+          {'marker': 'p', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
+          {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
+          {'marker': '<', 'markersize': 24, 'linestyle': '-', 'color': 'r'},
+          {'marker': 'D', 'markersize': 24, 'linestyle': '-', 'color': 'k'},
+          {'marker': '1', 'markersize': 24, 'linestyle': '-', 'color': 'm'},
+          {'marker': '2', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
+          {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'y'},
+          {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'r'}
           ]
 
 if 11 < 3:  # in case using my own linestyles
