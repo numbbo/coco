@@ -299,6 +299,7 @@ def main(argv=None):
             ppconverrorbars.main(dictAlg,outputdir,verbose)
         # Performance profiles
         if isPer:
+            config.config()
             # ECDFs per noise groups
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictAlg in dictNoi.iteritems():

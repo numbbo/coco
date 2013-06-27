@@ -228,7 +228,7 @@ def main(argv=None):
             elif o in ("-o", "--output-dir"):
                 outputdir = a
             elif o in ("--in-a-hurry", ):
-                genericsettings.in_a_hurry = a
+                genericsettings.in_a_hurry = int(a)
             elif o in ("--input-path", ):
                 inputdir = a
             else:
