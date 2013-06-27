@@ -362,7 +362,8 @@ def plotLegend(handles, maxval):
     return reslabels, reshandles
 
 def plot(dsList, targets=None, craftingeffort=0., **kwargs):
-    """Generates a graph of the run length distribution of an algorithm.
+    """This function is obsolete?
+    Generates a graph of the run length distribution of an algorithm.
 
     We display the empirical cumulative distribution function ECDF of
     the bootstrapped distribution of the runlength for an algorithm
@@ -484,7 +485,6 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     # funcsolved = [set()] * len(targets) # number of functions solved per target
     xbest2009 = []
     maxevalsbest2009 = []
-
     for f, dictAlgperFunc in dictFunc.iteritems():
         if function_IDs and f not in function_IDs:
             continue
