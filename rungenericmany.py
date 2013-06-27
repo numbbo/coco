@@ -323,7 +323,7 @@ def main(argv=None):
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, fg)),
                                    verbose=verbose)
-            if 1 < 3: # not 
+            if 1 < 3: # copy-paste from above, now for each function instead of function groups
                 # ECDFs for each function
                 dictFG = pproc.dictAlgByFun(dictAlg)
                 for fg, tmpdictAlg in dictFG.iteritems():
