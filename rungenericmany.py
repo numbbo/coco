@@ -323,6 +323,17 @@ def main(argv=None):
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, fg)),
                                    verbose=verbose)
+            if 1 < 3: # not 
+                # ECDFs for each function
+                dictFG = pproc.dictAlgByFun(dictAlg)
+                for fg, tmpdictAlg in dictFG.iteritems():
+                    dictDim = pproc.dictAlgByDim(tmpdictAlg)
+                    for d, entries in dictDim.iteritems():
+                        pprldmany.main(entries,
+                                       order=sortedAlgs,
+                                       outputdir=outputdir,
+                                       info=('%02dD_F%02d' % (d, fg)),
+                                       verbose=verbose)
             print "ECDFs of run lengths figures done."
 
         if isTab:

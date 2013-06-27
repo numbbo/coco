@@ -623,6 +623,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     for i in xticks:
         tmp.append('%d' % round(np.log10(i)))
     a.set_xticklabels(tmp)
+    # print 'in_a_hurry ==', genericsettings.in_a_hurry
     ppfig.saveFigure(figureName, verbose=verbose)
 
     plt.close()
