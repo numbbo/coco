@@ -255,7 +255,10 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                 # np.any(x2 <= x3) and   # maxval < median(maxevals)
                 not plt.getp(res[-1], 'label').startswith('best')
                 ): # TODO: HACK for not considering the best 2009 line
-                y3 = y2[x2<=x3][-1]
+                try:
+                    y3 = y2[x2<=x3][-1]  # find right y-value for x3==median(maxevals)
+                except IndexError:  # can only happen because of CrE?
+                    y3 = y2[0]
                 h = plt.plot((x3,), (y3,), 
                              marker=median_max_evals_marker_format[0],
                              markersize=median_max_evals_marker_format[1],
