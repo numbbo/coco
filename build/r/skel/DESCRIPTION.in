@@ -1,0 +1,11 @@
+Package: numbbo
+Title: NumBBO benchmarking framework
+Description: Benchmarking framework for black-box optimization algorithms.
+Author: Anne Auger, Bernd Bischl, Dimo Brockhoff, 
+  Nikolaus Hansen, Olaf Mersmann, Petr Posik, Mike Preuss, 
+  Rodolphe le Riche, Guenter Rudolph, 
+  Marc Schoenauer, Heike Trautmann
+Maintainer: Olaf Mersmann <olafm@p-value.net>
+License: BSD
+LazyData: yes
+Version: __NUMBBO_VERSION__
