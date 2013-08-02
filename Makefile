@@ -67,7 +67,7 @@ clean:
 	echo "  RM    build/r/pkg"
 	rm -fR build/r/pkg
 	rm -f build/r/roxygen.log
-	rm -f build/r/r-build.log
+	rm -f r-build.log
 
 release: c_release python_release r_release
 
@@ -109,7 +109,7 @@ build/python/%: build/python/%.in
 release/python/numbbo-${PYTHON_VERSION}.tar.gz: ${PYTHON_TARGETS}
 	echo "  PY    $@"
 	cd build/python \
-	${PYTHON2} setup.py sdist --dist-dir=../../release/python
+	${PYTHON2} setup.py sdist --dist-dir=${CURDIR}/release/python
 
 python_release: release/python/numbbo-${PYTHON_VERSION}.tar.gz
 
@@ -131,7 +131,7 @@ release/r/numbbo_${R_VERSION}.tar.gz: ${R_TARGETS}
 	echo "  ROXY  build/r/pkg"
 	cd build/r ; ${RSCRIPT} ./tools/roxygenize > roxygen.log 2>&1
 	echo "  R     $@"
-	cd build/r ; ${R} CMD build pkg > r-build.log 2>&1
-	mv build/r/numbbo_${R_VERSION}.tar.gz release/r/
+	cd release/r/ ; \
+	${R} CMD build ${CURDIR}/build/r/pkg > ${CURDIR}/r-build.log 2>&1
 
 r_release: release/r/numbbo_${R_VERSION}.tar.gz
