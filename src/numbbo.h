@@ -149,6 +149,11 @@ numbbo_problem_t *numbbo_get_problem(const char *problem_suit,
  *
  * ${options} is a string that can be used to pass options to an
  * observer. The format is observer dependent.
+ *
+ * NOTE: There is a special observer names "no_observer" which simply
+ * returns the original problem. This is largely to simplify the
+ * interface design for interpreted languages. A short hand for this
+ * observer is the empty string ("").
  */
 numbbo_problem_t *numbbo_observe_problem(const char *observer_name,
                                          numbbo_problem_t *problem,
