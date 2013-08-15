@@ -57,7 +57,9 @@ def strip_pathname2(name):
 
 def str_to_latex(string):
     """do replacements in ``string`` such that it most likely compiles with latex """
-    return string.replace('\\', r'\textbackslash{}').replace('_', '\\_').replace(r'^', r'\^\,').replace(r'%', r'\%').replace(r'~', r'\ensuremath{\sim}').replace(r'#', r'\#')
+    #return string.replace('\\', r'\textbackslash{}').replace('_', '\\_').replace(r'^', r'\^\,').replace(r'%', r'\%').replace(r'~', r'\ensuremath{\sim}').replace(r'#', r'\#')
+    return string.replace('\\', r'\textbackslash{}').replace('_', ' ').replace(r'^', r'\^\,').replace(r'%', r'\%').replace(r'~', r'\ensuremath{\sim}').replace(r'#', r'\#')
+
 
 def number_of_digits(val, precision=1e-13):
     """returns the number of non-zero digits of a number, e.g. two for 1200 or three for 2.03.
