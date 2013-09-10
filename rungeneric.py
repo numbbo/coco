@@ -103,15 +103,12 @@ def main(argv=None):
     The output figures and tables written by default to the output folder 
     :file:`ppdata` are used in latex templates:
 
-    * :file:`template1generic.tex`, :file:`template1ecj.tex`,
-      :file:`noisytemplate1generic.tex`, :file:`noisytemplate1ecj.tex`
-      for **single** algorithm results on the noise-free and noisy
+    * :file:`template1generic.tex`, :file:`noisytemplate1generic.tex`
+      for results with a **single** algorithm on the noise-free and noisy
       testbeds respectively
-    * :file:`template2generic.tex`, :file:`template2ecj.tex`,
-      :file:`noisytemplate2generic.tex`, :file:`noisytemplate2ecj.tex`
+    * :file:`template2generic.tex`, :file:`noisytemplate2generic.tex`, 
       for showing the comparison of **2** algorithms
-    * :file:`template3generic.tex`, :file:`template3ecj.tex`,
-      :file:`noisytemplate3generic.tex`, :file:`noisytemplate3ecj.tex` 
+    * :file:`template3generic.tex`, :file:`noisytemplate3generic.tex` 
       for showing the comparison of **more than 2** algorithms.
 
     These latex templates need to be copied in the current working directory 
