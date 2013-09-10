@@ -146,9 +146,9 @@ def main(argv=None):
             
         --rld-single-fcts
         
-            produce also figures with a runlength distribution on all
-            single functions, these figures are not (yet) used in the 
-            LaTeX templates. 
+            generate also runlength distribution figures for each
+            single function. Works only if more than two algorithms are given. 
+            These figures are not (yet) used in the LaTeX templates. 
             
         --input-path=INPUTPATH
         
