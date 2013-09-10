@@ -173,6 +173,7 @@ def main(argv=None):
         isConv = False
         isRLbased = None  # allows automatic choice
         isExpensive = None 
+        isRldOnSingleFcts = False
 
         #Process options
         for o, a in opts:
@@ -191,6 +192,8 @@ def main(argv=None):
             elif o == "--tab-only":
                 isPer = False
                 isFig = False
+            elif o == "--rld-single-fcts":
+                isRldOnSingleFcts = True
             elif o == "--rld-only":
                 isTab = False
                 isFig = False
@@ -323,7 +326,7 @@ def main(argv=None):
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, fg)),
                                    verbose=verbose)
-            if 1 < 3: # copy-paste from above, here for each function instead of function groups
+            if isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
                 dictFG = pproc.dictAlgByFun(dictAlg)
                 for fg, tmpdictAlg in dictFG.iteritems():
