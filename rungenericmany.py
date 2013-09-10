@@ -112,6 +112,10 @@ def main(argv=None):
             plots for each function and algorithm are generated.
         --perf-only
             generate only performance plots
+        --rld-single-fcts
+            generate also runlength distribution figures for each
+            single function. Works only if more than two algorithms are given. 
+            These figures are not (yet) used in the LaTeX templates. 
 
     Exceptions raised:
 
