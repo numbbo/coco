@@ -216,7 +216,8 @@ class RunlengthBasedTargetValues(TargetValues):
         self.reference_data = reference_data
         if force_different_targets_factor < 1:
             force_different_targets_factor **= -1 
-        self.known_names = ['bestGECCO2009', 'bestGECCOever']
+        # TODO: known_names collects only bestalg stuff, while also algorithm data can be used (see def initialize below) 
+        self.known_names = ['bestGECCO2009', 'bestGECCOever'] # TODO: best-ever is not a time-invariant thing and therefore ambiguous
         self._short_info = "budget-based"
         self.run_lengths = sorted(run_lengths)
         self.smallest_target = smallest_target
@@ -231,7 +232,7 @@ class RunlengthBasedTargetValues(TargetValues):
         """lazy initialization to prevent slow import"""
         if self.initialized:
             return self
-        if self.reference_data in self.known_names:
+        if self.reference_data in self.known_names: # bestalg data are loaded
             self.reference_algorithm = self.reference_data
             self._short_info = 'reference budgets from ' + self.reference_data
             if self.reference_data == 'bestGECCO2009':
