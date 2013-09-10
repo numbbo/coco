@@ -144,6 +144,12 @@ def main(argv=None):
             omit calling :py:func:`bbob_pproc.rungeneric1.main`, if
             more than one data path argument is provided. 
             
+        --rld-single-fcts
+        
+            produce also figures with a runlength distribution on all
+            single functions, these figures are not (yet) used in the 
+            LaTeX templates. 
+            
         --input-path=INPUTPATH
         
             all folder/file arguments are prepended with the given value
