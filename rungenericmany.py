@@ -114,8 +114,7 @@ def main(argv=None):
             generate only performance plots
         --rld-single-fcts
             generate also runlength distribution figures for each
-            single function. Works only if more than two algorithms are given. 
-            These figures are not (yet) used in the LaTeX templates. 
+            single function. 
 
     Exceptions raised:
 
