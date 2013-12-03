@@ -59,11 +59,12 @@ clean:
 	echo "  RM    ${TARGETS}"
 	rm -f ${TARGETS}
 	echo "  RM    build/python/dist"
-	rm -f python_build.log
+	rm -fR build/python/dist
 	echo "  RM    build/python/numbbo.egg-info"
 	rm -fR build/python/numbbo.egg-info
 	echo "  RM    build/python/MANIFEST"
 	rm -f build/python/MANIFEST
+	rm -f python-build.log
 	echo "  RM    build/r/pkg"
 	rm -fR build/r/pkg
 	rm -f build/r/roxygen.log
@@ -108,8 +109,8 @@ build/python/%: build/python/%.in
 
 release/python/numbbo-${PYTHON_VERSION}.tar.gz: ${PYTHON_TARGETS}
 	echo "  PY    $@"
-	cd build/python \
-	${PYTHON2} setup.py sdist --dist-dir=${CURDIR}/release/python
+	cd build/python; \
+	${PYTHON2} setup.py sdist --dist-dir=${CURDIR}/release/python > python-build.log
 
 python_release: release/python/numbbo-${PYTHON_VERSION}.tar.gz
 
