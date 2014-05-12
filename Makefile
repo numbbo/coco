@@ -58,6 +58,8 @@ all: ${TARGETS}
 clean:
 	echo "  RM    ${TARGETS}"
 	rm -f ${TARGETS}
+	echo "  RM    build/c/demo.o build/c/numbbo.o build/c/demo"
+	rm -fR build/c/demo.o build/c/numbbo.o build/c/demo
 	echo "  RM    build/python/dist"
 	rm -fR build/python/dist
 	echo "  RM    build/python/numbbo.egg-info"
