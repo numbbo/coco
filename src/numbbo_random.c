@@ -64,18 +64,19 @@ double numbbo_uniform_random(numbbo_random_state_t *state) {
 }
 
 double numbbo_normal_random(numbbo_random_state_t *state) {
-    double normal = 0.0;
+    double normal;
 #ifdef NUMBBO_NORMAL_POLAR
     const double u1 = numbbo_uniform_random(state);
     const double u2 = numbbo_uniform_random(state);
     normal = sqrt(-2*log(u1)) * cos(2 * numbbo_pi * u2);
 #else
     int i;
+    normal = 0.0;
     for (i = 0; i < 12; ++i) {
         normal += numbbo_uniform_random(state);
     }
-#endif
     normal -= 6.0;
+#endif
     return normal;
 }
 
