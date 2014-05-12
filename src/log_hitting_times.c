@@ -64,7 +64,7 @@ static void lht_free_problem(numbbo_problem_t *self) {
     }
     numbbo_free_memory(obj->state);
     if (obj->inner_problem != NULL) {
-        numbbo_free_memory(obj->inner_problem);
+        numbbo_free_problem(obj->inner_problem);
         obj->inner_problem = NULL;
     }
     if (problem->problem_id != NULL)
