@@ -112,7 +112,8 @@ build/python/%: build/python/%.in
 release/python/numbbo-${PYTHON_VERSION}.tar.gz: ${PYTHON_TARGETS}
 	echo "  PY    $@"
 	cd build/python; \
-	${PYTHON2} setup.py sdist --dist-dir=${CURDIR}/release/python > python-build.log
+	${PYTHON2} setup.py sdist --dist-dir=${CURDIR}/release/python > \
+	  ../../python-build.log
 
 python_release: release/python/numbbo-${PYTHON_VERSION}.tar.gz
 
