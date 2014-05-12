@@ -41,7 +41,6 @@ void numbbo_free_problem(numbbo_problem_t *self) {
             numbbo_free_memory(self->problem_name);
         if (self->problem_id != NULL)
             numbbo_free_memory(self->problem_id);
-        numbbo_free_memory(self->best_value);
         self->lower_bounds = NULL;
         self->upper_bounds = NULL;
         self->best_parameter = NULL;
