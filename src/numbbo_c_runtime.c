@@ -2,7 +2,7 @@
  * Generic NUMBBO runtime implementation. 
  *
  * Other language interfaces might want to replace this so that memory
- * allocation and error handling goes through the respective language
+ * allocation and error handling go through the respective language
  * runtime.
  */
 #include <stdio.h>
