@@ -19,7 +19,7 @@ import numpy as np
 import ppfig, ppfigdim, pptable
 from bbob_pproc import genericsettings, pproc, pprldistr
 from bbob_pproc.comp2 import ppfig2, ppscatter
-from bbob_pproc.compall import ppfigs, pprldmany
+from bbob_pproc.compall import ppfigs, pprldmany, pptables
 
 def target_values(is_expensive, dict_max_fun_evals={}, runlength_limit=1e3):
     """manage target values setting in "expensive" optimization scenario, 
@@ -84,6 +84,12 @@ def config():
         pptable.table_caption=pptable.table_caption_rlbased
         pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
                                                                      force_different_targets_factor=10**-0.2)
+        
+        # pptables (for rungenericmany):
+        #pptables.table_caption=pptable.table_caption_rlbased
+        pptables.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
+                                                                     force_different_targets_factor=10**-0.2)
+
         ppscatter.markersize = 16
 
     else:
