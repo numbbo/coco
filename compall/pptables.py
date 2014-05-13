@@ -14,6 +14,7 @@ from bbob_pproc.toolsstats import significancetest, significance_all_best_vs_oth
 from bbob_pproc.pproc import DataSetList
 from bbob_pproc.toolsdivers import prepend_to_file, str_to_latex, strip_pathname
 from bbob_pproc.pplogloss import detf
+import bbob_pproc.pproc as pproc
 
 """
 See Section Comparison Tables in
@@ -29,6 +30,11 @@ tables_many_legend = """Expected running time (ERT in number of function evaluat
                      \\textit{italics}, if $\ERT(10^{-7}) = \\infty$.
                      \\#succ is the number of trials that reached the final target $\\fopt + 10^{-8}$.
                      Best results are printed in bold. """  #  #1 is for example "dimension 5"
+
+tables_many_expensive_legend = """ tbd """  #  #1 is for example "dimension 5"
+
+targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
+targetsOfInterests = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7)
 
 with_table_heading = False  # in case the page is long enough
 
@@ -206,7 +212,7 @@ def getTopIndicesOfColumns(table, maxRank=None):
     return ranked
 
 # TODO: function_headings argument need to be tested, default should be changed according to templates
-def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True, function_targets_line=True):  # [1, 13, 101]
+def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line=True):  # [1, 13, 101]
     """Generate one table per func with results of multiple algorithms."""
     """Difference with the first version:
 
@@ -236,7 +242,11 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True, function_tar
 
     for df in dictData:
         # Generate one table per df
-
+        # first update targets for each dimension-function pair if needed:
+        if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+            targets = targetsOfInterest((df[1], df[0]))            
+            targetf = targets[-1]
+        
         # best 2009
         refalgentry = bestalg.bestalgentries2009[df]
         refalgert = refalgentry.detERT(targets)
@@ -280,11 +290,12 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True, function_tar
             tmpert = []
             for i, e in enumerate(evals):
                 succ = (numpy.isnan(e) == False)
-                e[succ == False] = entry.maxevals[succ == False]
-                ert = toolsstats.sp(e, issuccessful=succ)[0]
+                ec = e.copy() # note: here was the previous bug (changes made in e also appeared in evals !)
+                ec[succ == False] = entry.maxevals[succ == False]
+                ert = toolsstats.sp(ec, issuccessful=succ)[0]
                 #tmpdata.append(ert/refalgert[i])
                 if succ.any():
-                    tmp = toolsstats.drawSP(e[succ], entry.maxevals[succ == False],
+                    tmp = toolsstats.drawSP(ec[succ], entry.maxevals[succ == False],
                                            [10, 50, 90], samplesize=samplesize)[0]
                     tmpdisp.append((tmp[-1] - tmp[0])/2.)
                 else:
@@ -340,28 +351,53 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True, function_tar
             extraeol.append('')
 
         if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
-            curline = [r'$\Delta f_\mathrm{opt}$']
-            for t in targets[0:-1]:
-                curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
-                               % writeFEvals2(t, precision=1, isscientific=True))
-            curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
-                           % writeFEvals2(targets[-1], precision=1, isscientific=True))
+            if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+                curline = [r'\#FEs/D']
+                for i in targetsOfInterest.labels():
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{%s}'
+                                % i) 
+                                
+            else:
+                curline = [r'$\Delta f_\mathrm{opt}$']
+                for t in targets:
+                    curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
+                                % writeFEvals2(t, precision=1, isscientific=True))
+                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
+                            % writeFEvals2(targets[-1], precision=1, isscientific=True))
             curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
             table.append(curline)
         extraeol.append(r'\hline')
 #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
 
         curline = [r'ERT$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
-        for i in refalgert[0:-1]:
-            curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
-                           % writeFEvalsMaxPrec(float(i), 2))
-        curline.append(r'\multicolumn{2}{@{\,}X@{\,}|}{%s}'
-                       % writeFEvalsMaxPrec(float(refalgert[-1]), 2))
-        curline.append('%d' % refalgnbsucc)
-        if refalgnbsucc:
-            curline.append('/%d' % refalgnbruns)
-        #curline.append(curline[0])
-        table.append(curline)
+        if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+            # write ftarget:fevals
+            for i in xrange(len(refalgert[:-1])):
+                temp="%.1e" %targetsOfInterest((df[1], df[0]))[i]
+                if temp[-2]=="0":
+                    temp=temp[:-2]+temp[-1]
+                curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
+                                   % (temp,writeFEvalsMaxPrec(refalgert[i], 2)))
+            temp="%.1e" %targetsOfInterest((df[1], df[0]))[-1]
+            if temp[-2]=="0":
+                temp=temp[:-2]+temp[-1]
+            curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
+                               % (temp,writeFEvalsMaxPrec(refalgert[-1], 2))) 
+        else:            
+            # write #fevals of the reference alg
+            for i in refalgert[:-1]:
+                curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
+                                   % writeFEvalsMaxPrec(i, 2))
+            curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
+                               % writeFEvalsMaxPrec(refalgert[-1], 2))
+    
+        # write the success ratio for the reference alg
+        tmp2 = numpy.sum(numpy.isnan(refalgevals) == False) # count the nb of success
+        curline.append('%d' % (tmp2))
+        if tmp2 > 0:
+            curline.append('/%d' % len(refalgevals))
+
+        table.append(curline[:])
         extraeol.append('')
 
         #for i, gna in enumerate(zip((1, 2, 3), ('bla', 'blo', 'bli'))):
@@ -383,7 +419,6 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True, function_tar
             for j, tmp in enumerate(zip(algerts[i], algdisp[i],  # j is target index
                                         isBoldArray[i], algtestres[i])):
                 ert, dispersion, isBold, testres = tmp
-
                 alignment = '@{\,}X@{\,}'
                 if j == len(algerts[i]) - 1:
                     alignment = '@{\,}X@{\,}|'
@@ -402,7 +437,7 @@ def main(dictAlg, sortedAlgs, targets, outputdir='.', verbose=True, function_tar
                     if not numpy.isinf(refalgert[j]):
                         tmpevals = algevals[i][j].copy()
                         tmpevals[numpy.isnan(tmpevals)] = algentries[i].maxevals[numpy.isnan(tmpevals)]
-                        bestevals = refalgentry.detEvals([targets[j]])
+                        bestevals = refalgentry.detEvals(targets)
                         bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
                         bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
                         tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]

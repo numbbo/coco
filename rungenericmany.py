@@ -115,6 +115,13 @@ def main(argv=None):
         --rld-single-fcts
             generate also runlength distribution figures for each
             single function. 
+        --expensive
+            runlength-based f-target values and fixed display limits,
+            useful with comparatively small budgets. By default the
+            setting is based on the budget used in the data.
+        --not-expensive
+            expensive setting off. 
+        -
 
     Exceptions raised:
 
@@ -247,7 +254,7 @@ def main(argv=None):
         if isRLbased is not None:
             genericsettings.runlength_based_targets = isRLbased
         config.target_values(isExpensive)
-
+        
     except Usage, err:
         print >>sys.stderr, err.msg
         print >>sys.stderr, "for help use -h or --help"
@@ -284,6 +291,21 @@ def main(argv=None):
                 dictAlg[i] = dictAlg[i].dictByNoise().get('nzall', DataSetList())
             if isNoiseFree and not isNoisy:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
+
+
+
+        # compute maxfuneval values
+        dict_max_fun_evals = {}
+        for ds in dsList:
+            dict_max_fun_evals[ds.dim] = numpy.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(numpy.max(ds.maxevals))))
+        if isRLbased is not None:
+            genericsettings.runlength_based_targets = isRLbased
+            
+        # set target values
+        from bbob_pproc import config
+        config.target_values(isExpensive, dict_max_fun_evals)
+        config.config()
+
 
         for i in dsList:
             if i.dim not in genericsettings.dimensions_to_display:
@@ -350,16 +372,19 @@ def main(argv=None):
             print "ECDFs of run lengths figures done."
 
         if isTab:
-            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
+            if isExpensive:
+                prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
+                            ['\providecommand{\\bbobpptablesmanylegend}[1]{' + 
+                             pptables.tables_many_expensive_legend + '}'])
+            else:
+                prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
                             ['\providecommand{\\bbobpptablesmanylegend}[1]{' + 
                              pptables.tables_many_legend + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
                 for d, tmpdictdim in dictDim.iteritems():
-                    pptables.main(tmpdictdim, sortedAlgs,
-                                  inset.tableconstant_target_function_values,  # TODO: here use non-constant values?
-                                  outputdir, verbose)
+                    pptables.main(tmpdictdim, sortedAlgs, outputdir, verbose)
             print "Comparison tables done."
 
         global ftarget  # not nice
