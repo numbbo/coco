@@ -22,16 +22,32 @@ http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 
 """
 
-tables_many_legend = """Expected running time (ERT in number of function evaluations)
-                     divided by the respective best ERT measured during BBOB-2009 (given in 
-                     the respective first row) for different $\\Df$ values in #1. 
-                     The central 80\% range divided by two is given in braces. 
-                     The median number of conducted function evaluations is additionally given in 
-                     \\textit{italics}, if $\ERT(10^{-7}) = \\infty$.
-                     \\#succ is the number of trials that reached the final target $\\fopt + 10^{-8}$.
-                     Best results are printed in bold. """  #  #1 is for example "dimension 5"
-
-tables_many_expensive_legend = """ tbd """  #  #1 is for example "dimension 5"
+table_caption_one = r"""%
+    Expected running time (ERT in number of function 
+    evaluations) divided by the respective best ERT measured during BBOB-2009.
+    The ERT and in braces, as dispersion measure, the half difference between 90 and 
+    10\%-tile of bootstrapped run lengths appear for each algorithm and 
+    run-length based target,  
+    the corresponding best ERT
+    """
+table_caption_two1 = r"""%
+    in the first row. The different target \Df-values are shown in the top row. 
+    \#succ is the number of trials that reached the (final) target $\fopt + 10^{-8}$.
+    """
+table_caption_two2 = r"""%
+    (preceded by the target \Df-value in \textit{italics}) in the first row. 
+    \#succ is the number of trials that reached the target value of the last column.
+    """
+table_caption_rest = r"""%
+    The median number of conducted function evaluations is additionally given in 
+    \textit{italics}, if the target in the last column was never reached. 
+    Entries, succeeded by a star, are statistically significantly better (according to
+    the rank-sum test) when compared to all other algorithms of the table, with
+    $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
+    than 1, with Bonferroni correction by the number of instances.
+    """
+tables_many_legend = table_caption_one + table_caption_two1 + table_caption_rest
+tables_many_expensive_legend = table_caption_one + table_caption_two2 + table_caption_rest
 
 targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 targetsOfInterests = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7)
