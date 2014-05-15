@@ -8,13 +8,13 @@ import os
 from pdb import set_trace
 import warnings
 import numpy
-from bbob_pproc import genericsettings, bestalg, toolsstats
+from bbob_pproc import genericsettings, bestalg, toolsstats, pproc
 from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from bbob_pproc.toolsstats import significancetest, significance_all_best_vs_other
 from bbob_pproc.pproc import DataSetList
 from bbob_pproc.toolsdivers import prepend_to_file, str_to_latex, strip_pathname
 from bbob_pproc.pplogloss import detf
-import bbob_pproc.pproc as pproc
+#import bbob_pproc.pproc as pproc
 
 """
 See Section Comparison Tables in
@@ -49,8 +49,7 @@ table_caption_rest = r"""%
 tables_many_legend = table_caption_one + table_caption_two1 + table_caption_rest
 tables_many_expensive_legend = table_caption_one + table_caption_two2 + table_caption_rest
 
-targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
-targetsOfInterests = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7)
+targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
 
 with_table_heading = False  # in case the page is long enough
 
@@ -259,9 +258,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
     for df in dictData:
         # Generate one table per df
         # first update targets for each dimension-function pair if needed:
-        if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
-            targets = targetsOfInterest((df[1], df[0]))            
-            targetf = targets[-1]
+        targets = targetsOfInterest((df[1], df[0]))            
+        targetf = targets[-1]
         
         # best 2009
         refalgentry = bestalg.bestalgentries2009[df]
