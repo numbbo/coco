@@ -123,13 +123,17 @@ such that $\ERT(\ftarget)\le\FEvals$ for the
 """
 
 table_caption = r"""% \bbobloglosstablecaption{}
-    \ERT\ loss ratio versus the budget (both in number of $f$-evaluations
-    divided by dimension). The target value \ftarget\ for a given budget
-    \FEvals\ is the best target $f$-value reached within the budget by the given
-    algorithm. Shown is the \ERT\ of the given algorithm divided by best \ERT\
-    seen in GECCO-BBOB-2009 for the target \ftarget, or, if the best algorithm
-    reached a better target within the budget, the budget divided by the best
-    \ERT. Line: geometric mean. Box-Whisker error bar: 25-75\%-ile with median
+    \ERT\ loss ratio versus the budget in number of $f$-evaluations
+    divided by dimension.
+    For each given budget \FEvals, the target value \ftarget\ is computed
+    as the best target $f$-value reached within the
+    budget by the given algorithm.
+    Shown is then the \ERT\ to reach \ftarget\ for the given algorithm
+    or the budget, if the GECCO-BBOB-2009 best algorithm
+    reached a better target within the budget,
+    divided by the best \ERT\
+    seen in GECCO-BBOB-2009 to reach \ftarget.
+    Line: geometric mean. Box-Whisker error bar: 25-75\%-ile with median
     (box), 10-90\%-ile (caps), and minimum and maximum \ERT\ loss ratio
     (points). The vertical line gives the maximal number of function evaluations
     in a single trial in this function subset. See also
@@ -137,7 +141,8 @@ table_caption = r"""% \bbobloglosstablecaption{}
     """
 figure_caption = r"""%
     \ERT\ loss ratios (see Figure~\ref{tab:ERTloss} for details).  
-    Each cross ({\color{blue}$+$}) represents a single function, the line is the geometric mean.
+    Each cross ({\color{blue}$+$}) represents a single function, the line
+    is the geometric mean.
     """  # \bbobloglossfigurecaption{}
 
 evalf = None
