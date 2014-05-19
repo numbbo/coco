@@ -10,8 +10,8 @@ Before this module is imported somewhere, modules use their default settings.
 
 This file could be dynamically modified and reloaded. 
 
-See also genericsettings.py which stores settings that are used by other 
-modules, but does not modify other modules settings. 
+See also genericsettings.py which is a central place to define settings
+used by other modules, but does not modify settings of other modules.
 
 """
 
