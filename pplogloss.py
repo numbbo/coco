@@ -16,7 +16,7 @@ import warnings
 import cPickle as pickle
 import gzip
 from pdb import set_trace
-import numpy
+import numpy as np
 from matplotlib import pyplot as plt
 try:
     from matplotlib.transforms import blended_transform_factory as blend
@@ -156,7 +156,7 @@ def detERT(entry, funvals):
         try:
             res.append(entry.ert[idx][0])
         except IndexError:
-            res.append(numpy.inf)
+            res.append(np.inf)
     return res
 
 def detf(entry, evals):
@@ -178,10 +178,10 @@ def detf(entry, evals):
         #set_trace()
         #if len(entry.target[tmp]) == 0:
             #set_trace()
-        idx = numpy.argmin(entry.target[tmp])
+        idx = np.argmin(entry.target[tmp])
         res.append(max(entry.target[idx], f_thresh))
         #res2.append(entry.ert[dix])
-        #TODO numpy.min(empty)
+        #TODO np.min(empty)
     return res
 
 def generateData(dsList, evals, CrE_A):
@@ -226,13 +226,13 @@ def generateData(dsList, evals, CrE_A):
         # For test purpose:
         #if fun % 10 == 0:
         #    ERT_A[-2] = 1.
-        #    ERT_best[-2] = numpy.inf
-        ERT_A = numpy.array(ERT_A)
-        ERT_best = numpy.array(ERT_best)
-        loss_A = numpy.exp(CrE_A) * ERT_A / ERT_best
-        assert (numpy.isnan(loss_A) == False).all()
+        #    ERT_best[-2] = np.inf
+        ERT_A = np.array(ERT_A)
+        ERT_best = np.array(ERT_best)
+        loss_A = np.exp(CrE_A) * ERT_A / ERT_best
+        assert (np.isnan(loss_A) == False).all()
         #set_trace()
-        #if numpy.isnan(loss_A).any() or numpy.isinf(loss_A).any() or (loss_A == 0.).any():
+        #if np.isnan(loss_A).any() or np.isinf(loss_A).any() or (loss_A == 0.).any():
         #    txt = 'Problem with entry %s' % str(entry)
         #    warnings.warn(txt)
         #    #set_trace()
@@ -313,25 +313,25 @@ def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
         distance = max(positions) - min(positions)
         widths = min(0.15*max(distance,1.0), 0.5)
     if isinstance(widths, float) or isinstance(widths, int):
-        widths = numpy.ones((col,), float) * widths
+        widths = np.ones((col,), float) * widths
 
     # loop through columns, adding each to plot
     for i,pos in enumerate(positions):
-        d = numpy.ravel(x[i])
+        d = np.ravel(x[i])
         row = len(d)
         # get median and quartiles
         wisk_lo, q1, med, q3, wisk_hi = mlab.prctile(d,[10,25,50,75,90])
         # get high extreme
         #iq = q3 - q1
         #hi_val = q3 + whis*iq
-        #wisk_hi = numpy.compress( d <= hi_val , d )
+        #wisk_hi = np.compress( d <= hi_val , d )
         #if len(wisk_hi) == 0:
             #wisk_hi = q3
         #else:
             #wisk_hi = max(wisk_hi)
         ## get low extreme
         #lo_val = q1 - whis*iq
-        #wisk_lo = numpy.compress( d >= lo_val, d )
+        #wisk_lo = np.compress( d >= lo_val, d )
         #if len(wisk_lo) == 0:
             #wisk_lo = q1
         #else:
@@ -342,16 +342,16 @@ def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
         flier_hi_x = []
         flier_lo_x = []
         if len(sym) != 0:
-            flier_hi = numpy.compress( d > wisk_hi, d )
-            flier_lo = numpy.compress( d < wisk_lo, d )
-            flier_hi_x = numpy.ones(flier_hi.shape[0]) * pos
-            flier_lo_x = numpy.ones(flier_lo.shape[0]) * pos
+            flier_hi = np.compress( d > wisk_hi, d )
+            flier_lo = np.compress( d < wisk_lo, d )
+            flier_hi_x = np.ones(flier_hi.shape[0]) * pos
+            flier_lo_x = np.ones(flier_lo.shape[0]) * pos
 
         # get x locations for fliers, whisker, whisker cap and box sides
         box_x_min = pos - widths[i] * 0.5
         box_x_max = pos + widths[i] * 0.5
 
-        wisk_x = numpy.ones(2) * pos
+        wisk_x = np.ones(2) * pos
 
         cap_x_min = pos - widths[i] * 0.25
         cap_x_max = pos + widths[i] * 0.25
@@ -370,8 +370,8 @@ def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
         # calculate 'notch' plot
         else:
             raise NotImplementedError
-            notch_max = med #+ 1.57*iq/numpy.sqrt(row)
-            notch_min = med #- 1.57*iq/numpy.sqrt(row)
+            notch_max = med #+ 1.57*iq/np.sqrt(row)
+            notch_min = med #- 1.57*iq/np.sqrt(row)
             if notch_max > q3:
                 notch_max = q3
             if notch_min < q1:
@@ -413,16 +413,16 @@ def plot(xdata, ydata):
     """
     res = []
 
-    tmp = list(10**numpy.mean(i[numpy.isfinite(i)]) for i in ydata)
+    tmp = list(10**np.mean(i[np.isfinite(i)]) for i in ydata)
     res.extend(plt.plot(xdata, tmp, ls='-', color='k', lw=3, #marker='+',
                         markersize=20, markeredgewidth=3))
 
     if max(len(i) for i in ydata) < 20: # TODO: subgroups of function, hopefully.
         for i, y in enumerate(ydata):
             # plot all single data points
-            if (numpy.isfinite(y)==False).any():
-                assert not (numpy.isinf(y) * y > 0.).any()
-                assert not numpy.isnan(y).any()
+            if (np.isfinite(y)==False).any():
+                assert not (np.isinf(y) * y > 0.).any()
+                assert not np.isnan(y).any()
 
                 ax = plt.gca()
                 trans = blend(ax.transData, ax.transAxes)
@@ -430,34 +430,34 @@ def plot(xdata, ydata):
                                     marker='+', color=flierscolor,
                                     ls='', markersize=20, markeredgewidth=3,
                                     transform=trans, clip_on=False))
-                res.append(plt.text(xdata[i], 0.02, '%d' % len(y[numpy.isinf(y)]),
+                res.append(plt.text(xdata[i], 0.02, '%d' % len(y[np.isinf(y)]),
                                     transform=trans, horizontalalignment='left',
                                     verticalalignment='bottom'))
-                y = y[numpy.isfinite(y)]
+                y = y[np.isfinite(y)]
                 if len(y) == 0:
                     continue
 
-            res.extend(plt.plot([xdata[i]]*len(y), 10**numpy.array(y),
+            res.extend(plt.plot([xdata[i]]*len(y), 10**np.array(y),
                                 marker='+', color=flierscolor,
                                 ls='', markersize=20, markeredgewidth=3))
 
             # plot dashed vertical line between min and max 
-            plt.plot([xdata[i]]*2, 10**numpy.array([min(y), max(y)]),
+            plt.plot([xdata[i]]*2, 10**np.array([min(y), max(y)]),
                                 color='k',  # marker='+', 
                                 ls='--', linewidth=2) #, markersize=20, markeredgewidth=3)
             # plot min and max with different symbol
-            #plt.plot([xdata[i]], 10**min(numpy.array(y)),
+            #plt.plot([xdata[i]], 10**min(np.array(y)),
             #                    marker='+', color='k',
             #                    ls='', markersize=20, markeredgewidth=3)
-            #plt.plot([xdata[i]], 10**max(numpy.array(y)),
+            #plt.plot([xdata[i]], 10**max(np.array(y)),
             #                    marker='+', color='k',
             #                    ls='', markersize=20, markeredgewidth=3)
     else:
         for i, y in enumerate(ydata):
             # plot all single data points
-            if (numpy.isfinite(y)==False).any():
-                assert not (numpy.isinf(y) * y > 0.).any()
-                assert not numpy.isnan(y).any()
+            if (np.isfinite(y)==False).any():
+                assert not (np.isinf(y) * y > 0.).any()
+                assert not np.isnan(y).any()
 
                 ax = plt.gca()
                 trans = blend(ax.transData, ax.transAxes)
@@ -465,12 +465,12 @@ def plot(xdata, ydata):
                                     marker='.', color='k',
                                     ls='', markersize=20, markeredgewidth=3,
                                     transform=trans, clip_on=False))
-                res.append(plt.text(xdata[i], 0.02, '%d' % len(y[numpy.isinf(y)]),
+                res.append(plt.text(xdata[i], 0.02, '%d' % len(y[np.isinf(y)]),
                                     transform=trans, horizontalalignment='left',
                                     verticalalignment='bottom'))
-                y = y[numpy.isfinite(y)]
+                y = y[np.isfinite(y)]
 
-        dictboxwhisker = boxplot(list(10**numpy.array(i) for i in ydata),
+        dictboxwhisker = boxplot(list(10**np.array(i) for i in ydata),
                                  sym='', notch=0, widths=None,
                                  positions=xdata)
         #'medians', 'fliers', 'whiskers', 'boxes', 'caps'
@@ -495,9 +495,9 @@ def beautify():
     ymin = 1e-2
     ymax = 1e4
     plt.ylim(ymin=ymin, ymax=ymax)
-    ydata = numpy.power(10., numpy.arange(numpy.log10(ymin), numpy.log10(ymax)+1))
-    yticklabels = list(str(i) for i in range(int(numpy.log10(ymin)),
-                                             int(numpy.log10(ymax)+1)))
+    ydata = np.power(10., np.arange(np.log10(ymin), np.log10(ymax)+1))
+    yticklabels = list(str(i) for i in range(int(np.log10(ymin)),
+                                             int(np.log10(ymax)+1)))
     plt.yticks(ydata, yticklabels)
 
     plt.xlabel('log10 of FEvals / dimension')
@@ -525,15 +525,14 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
         mFE = []
 
         for i in dsdim:
-            maxevals.append(max(i.ert[numpy.isinf(i.ert)==False]))
+            maxevals.append(max(i.ert[np.isinf(i.ert)==False]))
             funcs.append(i.funcId)
             mFE.append(max(i.maxevals))
 
         maxevals = max(maxevals)
         mFE = max(mFE)
         EVALS = [2.*d]
-#        EVALS.extend(numpy.power(10., numpy.arange(1, numpy.log10(1e-9 + maxevals*1./d)))*d)
-        EVALS.extend(numpy.power(10., numpy.arange(1, numpy.ceil(numpy.log10(maxevals*1./d))))*d)
+        EVALS.extend(10.**(np.arange(1, np.log10(1e-9 + maxevals * 1./d))) * d)
         #Set variables: Done
         data = generateData(dsList, EVALS, CrE)
     
@@ -594,7 +593,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
             if curline is None:
                 tmpdata.extend(i.maxevals)
             else:
-                tmpdata.extend(i.maxevals[numpy.isnan(curline)])
+                tmpdata.extend(i.maxevals[np.isnan(curline)])
     
         #set_trace()
         if tmpdata: # if it is not empty
@@ -645,20 +644,19 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
 
     # do not aggregate over dimensions
     for d, dsdim in dsList.dictByDim().iteritems():
-        maxevals = max(max(i.ert[numpy.isinf(i.ert)==False]) for i in dsdim)
+        maxevals = max(max(i.ert[np.isinf(i.ert)==False]) for i in dsdim)
         EVALS = [2.*d]
-#        EVALS.extend(numpy.power(10., numpy.arange(1, numpy.floor(numpy.log10(maxevals*1./d))))*d)
-        EVALS.extend(numpy.power(10., numpy.arange(1, numpy.ceil(numpy.log10(maxevals*1./d))))*d)
+        EVALS.extend(10.**(np.arange(1, np.ceil(1e-9 + np.log10(maxevals * 1./d))))*d)
         if not evalf:
-            evalf = (numpy.log10(EVALS[0]/d), numpy.log10(EVALS[-1]/d))
+            evalf = (np.log10(EVALS[0]/d), np.log10(EVALS[-1]/d))
     
         data = generateData(dsdim, EVALS, CrE)
         ydata = []
         for i in range(len(EVALS)):
             #Aggregate over functions.
-            ydata.append(numpy.log10(list(data[f][i] for f in data)))
+            ydata.append(np.log10(list(data[f][i] for f in data)))
     
-        xdata = numpy.log10(numpy.array(EVALS)/d)
+        xdata = np.log10(np.array(EVALS)/d)
         xticklabels = ['']
         xticklabels.extend('%d' % i for i in xdata[1:])
         plot(xdata, ydata)
@@ -675,7 +673,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
                      bbox=dict(facecolor='w'))
     
         plt.axhline(1., color='k', ls='-', zorder=-1)
-        plt.axvline(x=numpy.log10(max(i.mMaxEvals()/d for i in dsdim)), color='k')
+        plt.axvline(x=np.log10(max(i.mMaxEvals()/d for i in dsdim)), color='k')
         funcs = set(i.funcId for i in dsdim)
         if len(funcs) > 1:
             text = 'f%d-%d' %(min(funcs), max(funcs))
