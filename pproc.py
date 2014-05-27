@@ -39,8 +39,12 @@ maximal_evaluations_only_to_last_target = False  # was true in release 13.03, le
 
 
 def _DataSet_complement_data(self, step=10**0.2, final_target=1e-8):
-    """insert a line for each target value, resolve: old data sets don't have this method, 
-    therefore it must be global in the module"""
+    """insert a line for each target value.
+
+    To be resolved: old data sets don't have this method,
+    therefore it must be global in the module
+
+    """
     try:
         if self._is_complemeted_data:
             return
@@ -567,7 +571,7 @@ class DataSet():
         """Instantiate a DataSet.
 
         The first three input argument corresponds to three consecutive
-        lines of an index file (info extension).
+        lines of an index file (.info extension).
 
         :keyword string header: information of the experiment
         :keyword string comment: more information on the experiment
@@ -1185,7 +1189,8 @@ class DataSet():
             plt.xlabel('target $\Delta f$ value')
             plt.ylabel('number of function evaluations')
         return plt.gca()
-    
+
+
 class DataSetList(list):
     """List of instances of :py:class:`DataSet`.
 
@@ -1256,7 +1261,6 @@ class DataSetList(list):
                     #set_trace()
                 except IOError, (errno, strerror):
                     print "I/O error(%s): %s" % (errno, strerror)
-
             else:
                 s = ('File or folder ' + name + ' not found. ' +
                               'Expecting as input argument either .info ' +
