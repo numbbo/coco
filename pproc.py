@@ -29,6 +29,7 @@ from pdb import set_trace
 import numpy, numpy as np
 import matplotlib.pyplot as plt
 from bbob_pproc import genericsettings, findfiles, toolsstats, toolsdivers
+from bbob_pproc import genericsettings as gs
 from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
 from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from bbob_pproc.ppfig import consecutiveNumbers
@@ -196,7 +197,8 @@ class RunlengthBasedTargetValues(TargetValues):
         
     def __init__(self, run_lengths, reference_data='bestGECCO2009', #  
                  smallest_target=1e-8, times_dimension=True, 
-                 force_different_targets_factor=10**0.04, 
+                 force_different_targets_factor=10**0.04,
+                 unique_target_values=False,
                  step_to_next_difficult_target=10**0.2):
         """calling the class instance returns run-length based
         target values based on the reference data, individually
@@ -214,7 +216,11 @@ class RunlengthBasedTargetValues(TargetValues):
             values are different by at last ``forced_different_targets_factor``
             if ``forced_different_targets_factor``. Default ``10**0.04`` means 
             that within the typical precision of ``10**0.2`` at most five 
-            consecutive targets can be identical.  
+            consecutive targets can be identical.
+        :param step_to_next_difficult_target:
+            the next more difficult target (just) not reached within the
+            target run length is chosen, where ``step_to_next_difficult_target``
+            defines "how much more difficult".
 
         """
         self.reference_data = reference_data
@@ -227,6 +233,7 @@ class RunlengthBasedTargetValues(TargetValues):
         self.smallest_target = smallest_target
         self.step_to_next_difficult_target = step_to_next_difficult_target**np.sign(np.log(step_to_next_difficult_target))
         self.times_dimension = times_dimension
+        self.unique_target_values = unique_target_values
         # force_different_targets and target_discretization could talk to each other? 
         self.force_different_targets_factor = force_different_targets_factor
         self.target_discretization_factor = 10**0.2  # in accordance with default recordings
@@ -386,7 +393,11 @@ class RunlengthBasedTargetValues(TargetValues):
             print fun_dim
             print targets / old_targets - 1
             print targets
-        
+
+        if self.unique_target_values:
+            len_ = len(targets)
+            targets = np.array(list(reversed(sorted(set(targets)))))
+            # print(' '.join((str(len(targets)), 'of', str(len_), 'targets kept')))
         return targets    
 
     get_targets = __call__  # an alias
@@ -1133,7 +1144,8 @@ class DataSet():
         and self.evals[idata-1, 0] > target or in the "limit" cases the
         idata==0 line or the line np.array(self.nbRuns() * [np.nan]). 
         
-        Makes by default a copy of the data, however this might change in future. 
+        Makes by default a copy of the data, however this might change in
+        future.
         
         """
         evalsrows = {}  # data rows, easiest target first
@@ -1203,12 +1215,13 @@ class DataSetList(list):
     #Do not inherit from set because DataSet instances are mutable which means
     #they might change over time.
 
-    def __init__(self, args=[], verbose=False):
+    def __init__(self, args=[], verbose=False, check_data_type=True):
         """Instantiate self from a list of folder- or filenames or 
         ``DataSet`` instances.
 
         :keyword list args: strings being either info file names, folder
-                            containing info files or pickled data files.
+                            containing info files or pickled data files,
+                            or a list of DataSets.
         :keyword bool verbose: controls verbosity.
 
         Exceptions:
@@ -1217,7 +1230,6 @@ class DataSetList(list):
 
         """
 
-        # TODO: initialize a DataSetList from a sequence of DataSet
 
         if not args:
             super(DataSetList, self).__init__()
@@ -1225,6 +1237,15 @@ class DataSetList(list):
 
         if isinstance(args, basestring):
             args = [args]
+
+        if len(args) and (isinstance(args[0], DataSet) or
+                not check_data_type and hasattr(args[0], 'algId')):
+            # TODO: loaded instances are not DataSets but
+            # ``or hasattr(args[0], 'algId')`` fails in self.append
+            # initialize a DataSetList from a sequence of DataSet
+            for ds in args:
+                self.append(ds, check_data_type)
+            return
 
         fnames = []
         for name in args:
@@ -1306,10 +1327,10 @@ class DataSetList(list):
         except IOError:
             print 'Could not open %s.' % indexFile
 
-    def append(self, o):
+    def append(self, o, check_data_type=False):
         """Redefines the append method to check for unicity."""
 
-        if not isinstance(o, DataSet):
+        if check_data_type and not isinstance(o, DataSet):
             warnings.warn('appending a non-DataSet to the DataSetList')
             raise Exception('Expect DataSet instance.')
         isFound = False
@@ -1362,7 +1383,7 @@ class DataSetList(list):
             self.append(i)
 
     def pickle(self, *args, **kwargs):
-        """Loop over self to pickle each elements."""
+        """Loop over self to pickle each element."""
         for i in self:
             i.pickle(*args, **kwargs)
 
@@ -1555,6 +1576,223 @@ class DataSetList(list):
         # interested in algorithms, number of datasets, functions, dimensions
         # maxevals?, funvals?, success rate?
 
+
+    def run_length_distributions(self, dimension, target_values,
+                                 fun_list=None,
+                                 reference_data_set_list=None,
+                                 reference_scoring_function=lambda x: toolsstats.prctile(x, [5])[0],
+                                 data_per_target=15,
+                                 flatten_output_dict=True):
+        """return a dictionary with an entry for each algorithm (or
+        the dictionary value for only one algorithm if
+        ``flatten_output_dict is True``) and
+        the left envelope rld-array. For each algorithm:
+        a sorted rld-array of evaluations to reach the targets on all
+        functions in ``func_list`` or all available functions, the
+        list of solved functions, the list of processed functions. If
+        the sorted rld-array is normalized by the reference score (after
+        sorting), the last entry is the original rld.
+
+        TODO: change interface to return always rld_original and optional
+        the scores to compare with. Example::
+
+            rld = dsl.run_length_distributions(...)
+            semilogy([x if np.isfinite(x) else np.inf
+                      for x in rld[0][0] / rld[0][-1]])
+
+        If ``reference_data_set_list is not None`` evaluations
+        are normalized by the reference data, however
+        the data remain to be sorted without normalization.
+        TODO:
+
+        """
+        dsl_dict = self.dictByDim()[dimension].dictByAlg()
+        # selected dimension and go by algorithm
+        rld_dict = {}  # result for each algorithm
+        reference_scores = {}  # for each funcId a list of len(target_values)
+        left_envelope = np.inf
+        for alg in dsl_dict:
+            rld_data = []  # 15 evaluation-counts per function and target
+            ref_scores = []  # to compute rld_data / ref_scores element-wise
+            funcs_processed = []
+            funcs_solved = []
+            for ds in dsl_dict[alg]:  # ds is a DataSet, i.e. typically 15 trials
+                if fun_list and ds.funcId not in fun_list:
+                    continue
+                assert dimension == ds.dim
+                funcs_processed.append(ds.funcId)
+                evals = ds.detEvals(target_values((ds.funcId, ds.dim)))
+                if data_per_target is not None:
+                    evals = [toolsstats.fix_data_number(d, data_per_target)
+                                for d in evals]
+                    # make sure to get 15 numbers for each target
+                if reference_data_set_list is not None:
+                    if ds.funcId not in reference_scores:
+                        reference_scores[ds.funcId] \
+                            = reference_data_set_list.det_best_data_lines(
+                                target_values((ds.funcId, ds.dim)),
+                                ds.funcId, ds.dim,
+                                reference_scoring_function)[1]
+                        # value checking, could also be done later
+                        for i, val in enumerate(reference_scores[ds.funcId]):
+                            if not np.isfinite(val) and any(np.isfinite(evals[i])):
+                                raise ValueError('reference_value is not finite')
+                                # a possible solution would be to set ``val = 1``
+                    ref_scores.append(np.hstack([data_per_target * [val]
+                                                 for val in reference_scores[ds.funcId]]))
+                    # 'needs to be checked', qqq
+                evals = np.hstack(evals)  # "stack" len(targets) * 15 values
+                if any(np.isfinite(evals)):
+                    funcs_solved.append(ds.funcId)
+                rld_data.append(evals)
+
+            funcs_processed.sort()
+            funcs_solved.sort()
+            assert np.__version__ >= '1.4.0'
+            # if this fails, replacing nan with inf might work for sorting
+            rld_data = np.hstack(rld_data)
+            if reference_data_set_list is not None:
+                ref_scores = np.hstack(ref_scores)
+                idx = rld_data.argsort()
+                rld_original = rld_data[idx]
+                rld_data = rld_original / ref_scores[idx]
+            else:
+                rld_data.sort()  # returns None
+            # nan are at the end now (since numpy 1.4.0)
+
+            # check consistency
+            if len(funcs_processed) > len(set(funcs_processed)):
+                warnings.warn("function processed twice "
+                              + str(funcs_processed))
+                raise ValueError("function processed twice")
+            if fun_list is not None and set(funcs_processed) != set(fun_list):
+                warnings.warn("not all functions found for " + str(alg)
+                    + " and computations disregarded " + str(ds.algId))
+                continue
+
+            left_envelope = np.fmin(left_envelope, rld_data)
+            # fails if number of computed data are different
+            rld_dict[alg] = [rld_data,
+                             sorted(funcs_solved),
+                             funcs_processed]
+            if reference_data_set_list is not None:
+                rld_dict[alg].append(rld_original)
+
+        for k, v in rld_dict.items():
+            assert v[2] == funcs_processed
+
+        if flatten_output_dict and len(rld_dict) == 1:
+            return rld_dict.values()[0], left_envelope
+        return rld_dict, left_envelope
+
+    def get_all_data_lines(self, target_value, fct, dim):
+        """return a list of all data lines in ``self`` for each
+        algorithm and a list of the respective
+        computed ERTs.
+
+        Example
+        -------
+        Get all run lengths of all trials on f1 in 20-D to reach
+        target 1e-7::
+
+            data = dsl.get_all_data_lines(1e-7, 1, 20)[0]
+            flat_data = np.hstack(data)
+            plot(np.arange(1, 1+len(flat_data)) / len(flat_data),
+                 sort(flat_data))  # sorted fails on nan
+
+        """
+        # TODO: make sure to get the same amount of data for each
+        # algorithm / target!?
+        assert np.isscalar(target_value)
+
+        lines = []
+        scores = []
+        for ds in self:
+            if ds.funcId != fct or ds.dim != dim:
+                continue
+            lines.append(ds.detEvals([target_value])[0])
+            scores.append(ds.detERT([target_value])[0])
+
+        return lines, scores
+
+    def det_best_data_lines(self, target_values, fct, dim,
+                           scoring_function=None):
+        """return a list of the respective best data lines over all data
+        sets in ``self`` for each ``target in target_values`` and an
+        array of the computed scores (ERT ``if scoring_function is None``).
+
+        If ``scoring_function is None``, the best is determined with method
+        ``detERT``. Using ``scoring_function=lambda x:
+        toolsstat.prctile(x, [5], ignore_nan=False)`` is another useful
+        alternative.
+
+        """
+        try:
+            target_values = target_values((fct, dim))
+        except TypeError:
+            target_values = target_values
+        best_scores = np.array(len(target_values) * [np.inf])
+        best_lines = len(target_values) * [None]
+        for ds in self:
+            if ds.funcId != fct or ds.dim != dim:
+                continue
+            current_lines = ds.detEvals(target_values)
+            if scoring_function is None:
+                current_scores = ds.detERT(target_values).flatten()
+            else:
+                current_scores = np.array([scoring_function(d)
+                                           for d in current_lines], copy=False)
+            assert len(current_lines) == len(current_scores) \
+                     == len(best_scores) == len(best_lines)
+            for i in np.where(toolsdivers.less(current_scores, best_scores))[0]:
+                best_lines[i] = current_lines[i]
+                best_scores[i] = current_scores[i]
+
+        if any(line is None for line in best_lines):
+            warnings.warn('best data lines not determined, (f, dim)='
+                          + str((fct, dim)))
+        return best_lines, best_scores
+
+    def get_sorted_algorithms(self, dimension, target_values,
+                              fun_list=None,
+                              reference_dataset_list=None,
+                              smallest_evaluation_to_use=3):
+        """return list of the algorithms from ``self``, sorted by
+        minimum loss factor in the ECDF.
+
+        Best means to be within `loss` of the best algorithm at
+        at least one point of the ECDF from the functions `fun_list`,
+        i.e. minimal distance to the left envelope in the semilogx plot.
+
+        ``target_values`` gives for each function-dimension pair a list of
+        target values.
+
+        TODO: data generation via run_length_distributions and sorting
+        should probably be separated.
+
+        """
+        rld, left_envelope = self.run_length_distributions(
+            dimension, target_values, fun_list,
+            reference_data_set_list=reference_dataset_list)
+        best_algorithms = []
+        idx = left_envelope >= smallest_evaluation_to_use
+        for alg in rld:
+            try:
+                if reference_dataset_list:
+                    best_algorithms.append([alg, toolsstats.prctile(rld[alg][0][idx], [5])[0],
+                                            rld[alg], left_envelope,
+                                            toolsstats.prctile(rld[alg][0], [2, 5, 15, 25, 50], ignore_nan=False)])
+                else:
+                    best_algorithms.append([alg, np.nanmin(rld[alg][0][idx] / left_envelope[idx]),
+                                            rld[alg], left_envelope,
+                                            toolsstats.prctile(rld[alg][0] / left_envelope, [2, 5, 15, 25, 50], ignore_nan=False)])
+            except ValueError:
+                warnings.warn(str(alg) + ' could not be processed for get_sorted_algorithms ')
+
+        best_algorithms.sort(key=lambda x: x[1])
+        return best_algorithms
+
+
 def parseinfoold(s):
     """Deprecated: Extract data from a header line in an index entry.
 
@@ -1616,6 +1854,29 @@ def parseinfo(s):
         res.append((elem0, elem1))
     return res
 
+
+def set_unique_algId(ds_list, ds_list_reference, taken_ids=None):
+    """on return, elements in ``ds_list`` do not have an ``algId``
+    attribute value from ``taken_ids`` or from
+    ``ds_list_reference`` ``if taken_ids is None``.
+
+    In case, ``BFGS`` becomes ``BFGS 2`` etc.
+
+    """
+    if taken_ids is None:
+        taken_ids = []
+        for ds in ds_list_reference:
+            taken_ids.append(ds.algId)
+    taken_ids = set(taken_ids)
+
+    for ds in ds_list:
+        if ds.algId in taken_ids:
+            algId = ds.algId
+            i = 2
+            while algId + ' ' + str(i) in taken_ids:
+                i += 1
+            ds.algId = algId + ' ' + str(i)
+
 def processInputArgs(args, verbose=True):
     """Process command line arguments.
 
@@ -1634,7 +1895,8 @@ def processInputArgs(args, verbose=True):
     :returns (dsList, sortedAlgs, dictAlg):
       dsList
         is a list containing all DataSet instances, this is to
-        prevent the regrouping done in instances of DataSetList
+        prevent the regrouping done in instances of DataSetList.
+        Caveat: algorithms with the same name are overwritten!?
       dictAlg
         is a dictionary which associates algorithms to an instance
         of DataSetList,
@@ -1659,6 +1921,8 @@ def processInputArgs(args, verbose=True):
             #No problem should arise if the info and pickle files have
             #redundant information. Only, the process could be more efficient
             #if pickle files were in a whole other location.
+
+            set_unique_algId(tmpDsList, dsList)
             dsList.extend(tmpDsList)
             #alg = os.path.split(i.rstrip(os.sep))[1]  # trailing slash or backslash
             #if alg == '':
@@ -1865,7 +2129,7 @@ def dictAlgByFuncGroup(dictAlg):
     for alg, dsList in dictAlg.iteritems():
         tmp = dsList.dictByFuncGroup()
         tmpdictAlg[alg] = tmp
-        fg |= set(tmp.keys())
+        fg |= set(tmp.keys())  # | is bitwise OR
 
     for g in fg:
         for alg in dictAlg:

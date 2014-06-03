@@ -11,6 +11,7 @@ of the variables here and some
 
 """
 import os
+import warnings
 import numpy as np
 test = False  # debug/test flag, set to False for committing the final version
 if 1 < 3 and test:
@@ -157,6 +158,17 @@ class GECCOBBOBTestbed(Testbed):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'  # 'benchmarkshortinfos.txt'
+        self.short_names = {}
+        try:
+            info_list = open(os.path.join(os.path.dirname(__file__), 'benchmarkshortinfos.txt'), 'r').read().split('\n')
+            info_dict = {}
+            for info in info_list:
+                key_val = info.split(' ', 1)
+                if len(key_val) > 1:
+                    info_dict[int(key_val[0])] = key_val[1]
+            self.short_names = info_dict
+        except:
+            warnings.warn('benchmark infos not found')
     
 class GECCOBBOBNoisefreeTestbed(GECCOBBOBTestbed):
     __doc__ = GECCOBBOBTestbed.__doc__

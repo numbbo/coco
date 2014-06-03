@@ -578,7 +578,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                                   CrE=CrEperAlg[alg], **args))
 
     labels, handles = plotLegend(lines, x_limit)
-    if True: #isLateXLeg:
+    if True:  # isLateXLeg:
         fileName = os.path.join(outputdir,'pprldmany_%s.tex' % (info))
         try:
             f = open(fileName, 'w')
@@ -617,7 +617,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     text += ',%d-D' % dim  # TODO: this is strange when different dimensions are plotted
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes)
-
+    if len(dictFunc) == 1:
+        plt.title(' '.join((str(dictFunc.keys()[0]),
+                  genericsettings.current_testbed.short_names[dictFunc.keys()[0]])))
     a = plt.gca()
 
     plt.xlim(xmin=1e-0, xmax=x_limit**annotation_space_end_relative)
