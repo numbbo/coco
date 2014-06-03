@@ -360,7 +360,8 @@ def _plotRLDistr_old(dsList, target, **plotArgs):
     res = plotECDF(x, nn, **kwargs)
     return res
 
-def plotRLDistr(dsList, target, label='', max_fun_evals=np.inf, **plotArgs):
+def plotRLDistr(dsList, target, label='', max_fun_evals=np.inf,
+                **plotArgs):
     """Creates run length distributions from a sequence dataSetList.
 
     Labels of the line (for the legend) will be appended with the number
@@ -381,7 +382,11 @@ def plotRLDistr(dsList, target, label='', max_fun_evals=np.inf, **plotArgs):
     as input and returning a ``float``. It can be defined as 
     ``lambda fun_dim: targets(fun_dim)[j]`` returning the j-th element of 
     ``targets(fun_dim)``, where ``targets`` is an instance of 
-    ``class pproc.TargetValues`` (see the ``pproc.TargetValues.__call__`` method).  
+    ``class pproc.TargetValues`` (see the ``pproc.TargetValues.__call__`` method).
+
+    TODO: data generation and plotting should be in separate methods
+    TODO: different number of runs/data biases the results, shouldn't
+          the number of data made the same, in case?
     
     """
     x = []

@@ -54,8 +54,10 @@ def config():
               'values differ, but the "level of difficulty" is "the same". '
         # pprldmany: 
         if 1 < 3:  # not yet functional, captions need to be adjusted and the bug reported by Ilya sorted out
-            pprldmany.target_values = pproc.RunlengthBasedTargetValues(np.logspace(np.log10(0.5), np.log10(50), 31), 
-                                                                       force_different_targets_factor=1)
+            pprldmany.target_values = pproc.RunlengthBasedTargetValues(np.logspace(np.log10(0.5), np.log10(50), 31),
+                                                                       smallest_target=1e-8 * 10**0.000,
+                                                                       force_different_targets_factor=1,
+                                                                       unique_target_values=True)
             # pprldmany.caption = ... captions are still hard coded in LaTeX
             pprldmany.x_limit = genericsettings.maxevals_fix_display  # always fixed
         # pprldistr:

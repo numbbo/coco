@@ -7,6 +7,49 @@ import numpy as np
 from bbob_pproc import genericsettings
 from pdb import set_trace
 
+
+def fix_data_number(data, ndata=15,
+                       last_elements_randomized=True, warn=False):
+    """return copy of data vector modified to length ``ndata``
+    or ``data`` itself.
+
+    Assures ``len(data) == ndata``.
+
+    :param data: is a (row)-vector
+
+    >>> from bbob_pproc.toolsstats import fix_data_number
+    >>> data = [1,2,4]
+    >>> assert len(fix_data_number(data, 1)) == 1
+    >>> assert len(fix_data_number(data, 3)) == 3
+    >>> assert len(fix_data_number(data, 4)) == 4
+    >>> assert len(fix_data_number(data, 14)) == 14
+    >>> assert fix_data_number(data, 14)[2] == data[2]
+
+    """
+    if len(data) == ndata:
+        return data
+    len_ = len(data)
+    if warn:
+        warnings.warn(str([len_, ndata]) +
+                      ' actual and desired number of data disagree')
+    if len_ > ndata:
+        if last_elements_randomized:
+            return np.random.permutation(data)[:ndata]
+        else:
+            return data[:ndata]
+    if ndata >= 2 * len_:
+        data = np.hstack((ndata // len_) * [data])
+    if len(data) < ndata:
+        # append some permuted original data
+        if last_elements_randomized:
+            few_data = np.random.permutation(data[:len_])[:ndata-len(data)]
+        else:
+            few_data = data[:ndata-len(data)]
+        data = np.hstack([data, few_data])
+    assert len(data) == ndata
+    return data
+
+
 def sp1(data, maxvalue=np.Inf, issuccessful=None):
     """sp1(data, maxvalue=Inf, issuccessful=None) computes a
     mean value over successful entries in data divided by
@@ -278,7 +321,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     return (prctile(arrStats, percentiles, issorted=True),
             arrStats)
 
-def prctile(x, arrprctiles, issorted=False):
+def prctile(x, arrprctiles, issorted=False, ignore_nan=True):
     """Computes percentile based on data with linear interpolation
 
     :keyword sequence data: (list, array) of data values
@@ -301,7 +344,7 @@ def prctile(x, arrprctiles, issorted=False):
         # makes a tuple even if the arrprctiles is not iterable
     # remove NaNs, sort
 
-    x = [d for d in x if not np.isnan(d) and d is not None]
+    x = [d for d in x if d is not None and (not np.isnan(d) or not ignore_nan)]
     if not issorted:
         x.sort()
 
@@ -684,6 +727,18 @@ def fastsort(a):
     it = np.argsort(a)
     as_ = a[it]
     return as_, it
+
+def sliding_window_data(data, width=2, operator=np.median):
+    """width is an absolute number, the resulting data has
+    the same length as the original data
+
+    """
+    down = width // 2
+    up = width // 2 + (width % 2)
+    d = np.array(data, copy=False)
+    d = [operator(d[max((i - down, 0)) : min((i + up, len(d)))])
+            for i in xrange(len(d))]
+    return np.array(d, copy=False) if isinstance(data, np.ndarray) else d
 
 
 ###############################################################################
