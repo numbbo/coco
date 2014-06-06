@@ -152,11 +152,12 @@ class Testbed(object):
                     continue  # ignore annotations
 
 class GECCOBBOBTestbed(Testbed):
-    """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012. 
+    """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013. 
     """
     def __init__(self):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
+        # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'  # 'benchmarkshortinfos.txt'
         self.short_names = {}
         try:
