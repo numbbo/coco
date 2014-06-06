@@ -43,6 +43,7 @@ of the expected running length) and run lengths.
 from __future__ import absolute_import
 
 import os
+import warnings  # I don't know what I am doing here
 import numpy as np
 import pickle, gzip
 import matplotlib.pyplot as plt
@@ -360,6 +361,29 @@ def _plotRLDistr_old(dsList, target, **plotArgs):
     res = plotECDF(x, nn, **kwargs)
     return res
 
+def erld_data(dsList, target, max_fun_evals=np.inf):
+    """return ``[sorted_runlengths_divided_by_dimension, nb_of_all_runs, functions_ids_found, functions_ids_solved]``
+    
+    `max_fun_evals` is only used to compute `function_ids_solved`, 
+    that is elements in `sorted_runlengths...` can be larger. 
+    
+    copy-paste from `plotRLDistr` and not used. 
+    """
+    runlength_data = []
+    nruns = 0
+    fsolved = set()
+    funcs = set()
+    for ds in dsList:  # ds is a DataSet
+        funcs.add(ds.funcId)
+        evals = ds.detEvals((target((ds.funcId, ds.dim)),))[0] / ds.dim
+        evals = evals[np.isnan(evals) == False]  # keep only success
+        if len(evals) > 0 and sum(evals <= max_fun_evals):
+            fsolved.add(ds.funcId)
+        runlength_data.extend(evals)
+        nruns += ds.nbRuns()
+    return sorted(runlength_data), nruns, funcs, fsolved
+    
+
 def plotRLDistr(dsList, target, label='', max_fun_evals=np.inf,
                 **plotArgs):
     """Creates run length distributions from a sequence dataSetList.
@@ -370,6 +394,7 @@ def plotRLDistr(dsList, target, label='', max_fun_evals=np.inf,
     :param DataSetList dsList: Input data sets
     :param target: a method that delivers single target values like ``target((fun, dim))``
     :param str label: target value label to be displayed in the legend
+    :param max_fun_evals: only used to determine success on a single function
     :param plotArgs: additional arguments passed to the plot command
 
     :returns: handles of the resulting plot.
@@ -727,6 +752,13 @@ def main(dsList, isStoringXMax=False, outputdir='',
                  transform=plt.gca().transAxes 
                  # bbox=dict(ec='k', fill=False)
                  ) 
+        try:  # was never tested, so let's make it safe
+            if len(funcs) == 1:
+                plt.title(genericsettings.current_testbed.info(funcs[0])[:27])
+        except:
+            warnings.warn('could not print title')
+            
+
         beautifyRLD(evalfmax)
         saveFigure(filename, verbose=verbose)
         plt.close(fig)
