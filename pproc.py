@@ -1738,7 +1738,7 @@ class DataSetList(list):
                 continue
             current_lines = ds.detEvals(target_values)
             if scoring_function is None:
-                current_scores = ds.detERT(target_values).flatten()
+                current_scores = ds.detERT(target_values)
             else:
                 current_scores = np.array([scoring_function(d)
                                            for d in current_lines], copy=False)
