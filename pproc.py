@@ -1270,7 +1270,7 @@ class DataSetList(list):
                     except pickle.UnpicklingError:
                         print '%s could not be unpickled.' %(name)
                     f.close()
-                    if verbose:
+                    if verbose > 1:
                         print 'Unpickled %s.' % (name)
                     try:
                         entry.instancenumbers = entry.itrials  # has been renamed
