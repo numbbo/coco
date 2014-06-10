@@ -67,7 +67,7 @@ def main(directory='.', verbose=True):
                 filelist.append(os.path.join(root, elem))
 
     if verbose:
-        print 'Found %d file(s)!' % (len(filelist))
+        print 'Found %d file(s).' % (len(filelist))
     if not filelist:
         warnings.warn('Could not find any file of interest in %s!' % root)
     return filelist
