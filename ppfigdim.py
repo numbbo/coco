@@ -278,26 +278,43 @@ def plot_a_bar(x, y,
                plot_cmd=plt.loglog,
                rec_width=0.1, # box ("rectangle") width, log scale 
                rec_taille_fac=0.3,  # notch width parameter
-               styles={'color': 'b'}, 
+               styles={'color': 'b'},
+               linewidth=1,
                fill_color=None, # None means no fill
                fill_transparency=0.7  # 1 should be invisible
                ):
-    """x is the x-position, 
+    """plot/draw a notched error bar, x is the x-position,
     y[0,1,2] are lower, median and upper percentile respectively. 
     
     hold(True) to see everything.
+
+    TODO: with linewidth=0, inf is not visible
     
     """
-    r = np.exp(rec_width) # ** ((1. + i_target / 3.) / 4)  # more difficult targets get a wider box
+    if not np.isfinite(y[2]):
+        y[2] = y[1] + 100 * (y[1] - y[0])
+        if plot_cmd in (plt.loglog, plt.semilogy):
+            y[2] = (1 + y[1]) * (1 + y[1] / y[0])**10
+    if not np.isfinite(y[0]):
+        y[0] = y[1] - 100 * (y[2] - y[1])
+        if plot_cmd in (plt.loglog, plt.semilogy):
+            y[0] = y[1] / (1 + y[2] / y[1])**10
     styles2 = {}
     for s in styles:
         styles2[s] = styles[s]
-    styles2['linewidth'] = 1
+    styles2['linewidth'] = linewidth
     styles2['markeredgecolor'] = styles2['color']
-    dim = 1 # to remove error 
+    dim = 1  # to remove error
     x0 = x
-    x = [x0 * dim / r, x0 * r * dim] # assumes log-scale of x-axis
-    xm = [x0 * dim / (r**rec_taille_fac), x0 * dim * (r**rec_taille_fac)]
+    if plot_cmd in (plt.loglog, plt.semilogx):
+        r = np.exp(rec_width) # ** ((1. + i_target / 3.) / 4)  # more difficult targets get a wider box
+        x = [x0 * dim / r, x0 * r * dim] # assumes log-scale of x-axis
+        xm = [x0 * dim / (r**rec_taille_fac), x0 * dim * (r**rec_taille_fac)]
+    else:
+        r = rec_width
+        x = [x0 * dim - r, x0 * dim + r]
+        xm = [x0 * dim - (r * rec_taille_fac), x0 * dim + (r * rec_taille_fac)]
+
     y = np.array(y) / dim
     if fill_color is not None:
         plt.fill_between([x[0], xm[0], x[0], x[1], xm[1], x[1], x[0]],
