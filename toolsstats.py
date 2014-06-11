@@ -3,6 +3,7 @@
 
 """Bootstrapping and statistics routines."""
 
+import warnings
 import numpy as np
 from bbob_pproc import genericsettings
 from pdb import set_trace
@@ -728,17 +729,47 @@ def fastsort(a):
     as_ = a[it]
     return as_, it
 
-def sliding_window_data(data, width=2, operator=np.median):
+def sliding_window_data(data, width=2, operator=np.median,
+                        number_of_stats=0, only_finite_data=True):
     """width is an absolute number, the resulting data has
-    the same length as the original data
+    the same length as the original data and the window width
+    is between width/2 at the border and width in the middle.
 
     """
+    if width < 2:
+        return (data, [])
+    if width >= len(data):
+        warnings.warn('sliding window width %d should be smaller than ' +
+            'the number of data %d' % int(width), len(data))
     down = width // 2
     up = width // 2 + (width % 2)
     d = np.array(data, copy=False)
-    d = [operator(d[max((i - down, 0)) : min((i + up, len(d)))])
-            for i in xrange(len(d))]
-    return np.array(d, copy=False) if isinstance(data, np.ndarray) else d
+    smoothened_data = []
+    stats = []
+    stats_mod = len(d) // number_of_stats
+    i_last_stats = 0
+    next = 0.1 + 1.8 * np.random.rand()
+    for i in xrange(len(d)):
+        current_data = d[max((i - down, 0)) : min((i + up, len(d)))]
+        if only_finite_data:
+            if np.isfinite(d[i]):
+                idx = np.isfinite(current_data)
+                smoothened_data.append(operator(current_data[idx]))
+            else:
+                smoothened_data.append(d[i])
+        else:
+            smoothened_data.append(operator(current_data))
+        if i_last_stats > next * stats_mod:
+            stats.append([i, prctile(
+                current_data[np.isfinite(current_data)]
+                    if only_finite_data else current_data,
+                [2, 10, 25, 50, 75, 90, 98])])
+            i_last_stats = 0
+            next = 0.1 + 1.8 * np.random.rand()
+        i_last_stats += 1
+
+    return (np.array(smoothened_data, copy=False)
+        if isinstance(data, np.ndarray) else smoothened_data, stats)
 
 
 ###############################################################################
