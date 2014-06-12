@@ -854,8 +854,9 @@ class DataSet():
         ert = self.detERT(targets)
         for i, target in enumerate(targets):
             line = '  %.1e |' % target
-            for val in toolsstats.prctile(evals[i], (0, 15, 50, 85, 100)): 
-                line += ' %7d' % (val / self.dim) if not np.isnan(val) else '     .  ' 
+            for val in toolsstats.prctile(evals[i], (0, 15, 50, 85, 100)):
+                val = float(val)
+                line += ' %7d' % int(np.round(val / self.dim)) if not np.isnan(val) else '     .  '
             line += ' |' + ('%9.1f' % (ert[i] / self.dim) if np.isfinite(ert[i]) else '    inf  ') 
             # line += '  %4.2f' % (nsucc[i] / float(Nruns)) if nsucc[i] < Nruns else '  1.0 '
             line += '  %2d' % nsucc[i]
@@ -1247,6 +1248,9 @@ class DataSetList(list):
                 self.append(ds, check_data_type)
             return
 
+        if hasattr(args[0], 'algId'):
+            print('try calling DataSetList() with option ' +
+                  '``check_data_type=False``')
         fnames = []
         for name in args:
             if isinstance(name, basestring) and findfiles.is_recognized_repository_filetype(name):
@@ -1623,23 +1627,31 @@ class DataSetList(list):
                 funcs_processed.append(ds.funcId)
                 evals = ds.detEvals(target_values((ds.funcId, ds.dim)))
                 if data_per_target is not None:
-                    evals = [toolsstats.fix_data_number(d, data_per_target)
+                    evals = [np.sort(toolsstats.fix_data_number(d, data_per_target))
                                 for d in evals]
                     # make sure to get 15 numbers for each target
                 if reference_data_set_list is not None:
                     if ds.funcId not in reference_scores:
-                        reference_scores[ds.funcId] \
-                            = reference_data_set_list.det_best_data_lines(
+                        if reference_scoring_function is None:
+                            reference_scores[ds.funcId] = \
+                                reference_data_set_list.det_best_data(
                                 target_values((ds.funcId, ds.dim)),
-                                ds.funcId, ds.dim,
-                                reference_scoring_function)[1]
-                        # value checking, could also be done later
-                        for i, val in enumerate(reference_scores[ds.funcId]):
-                            if not np.isfinite(val) and any(np.isfinite(evals[i])):
-                                raise ValueError('reference_value is not finite')
-                                # a possible solution would be to set ``val = 1``
-                    ref_scores.append(np.hstack([data_per_target * [val]
-                                                 for val in reference_scores[ds.funcId]]))
+                                ds.funcId, ds.dim, number=data_per_target)
+                        else:
+                            reference_scores[ds.funcId] = \
+                                reference_data_set_list.det_best_data_lines(
+                                target_values((ds.funcId, ds.dim)),
+                                ds.funcId, ds.dim, reference_scoring_function)[1]
+                            # value checking, could also be done later
+                            for i, val in enumerate(reference_scores[ds.funcId]):
+                                if not np.isfinite(val) and any(np.isfinite(evals[i])):
+                                    raise ValueError('reference_value is not finite')
+                                    # a possible solution would be to set ``val = 1``
+                            reference_scores[ds.funcId] = \
+                                np.array([data_per_target * [val]
+                                    for val in reference_scores[ds.funcId]],
+                                         copy=False)
+                    ref_scores.append(np.hstack(reference_scores[ds.funcId]))
                     # 'needs to be checked', qqq
                 evals = np.hstack(evals)  # "stack" len(targets) * 15 values
                 if any(np.isfinite(evals)):
@@ -1653,7 +1665,7 @@ class DataSetList(list):
             rld_data = np.hstack(rld_data)
             if reference_data_set_list is not None:
                 ref_scores = np.hstack(ref_scores)
-                idx = rld_data.argsort()
+                idx = np.argsort(rld_data)
                 rld_original = rld_data[idx]
                 rld_data = rld_original / ref_scores[idx]
             else:
@@ -1676,10 +1688,12 @@ class DataSetList(list):
                              sorted(funcs_solved),
                              funcs_processed]
             if reference_data_set_list is not None:
-                rld_dict[alg].append(rld_original)
+                rld_dict[alg].append(ref_scores)
 
         for k, v in rld_dict.items():
-            assert v[2] == funcs_processed
+            if v[2] != funcs_processed:
+                print('TODO: HERE AN ASSERTION FAILED')
+            # assert v[2] == funcs_processed  # the must all agree to the last
 
         if flatten_output_dict and len(rld_dict) == 1:
             return rld_dict.values()[0], left_envelope
@@ -1715,11 +1729,59 @@ class DataSetList(list):
 
         return lines, scores
 
+    def det_best_data(self, target_values, fct, dim,
+                           number=15):
+        """return a list of the ``number`` smallest evaluations over all
+        data sets in ``self`` for each ``target in target_values``.
+
+        Detail: currently, the minimal observed evaluation is computed
+        instance-wise and the ``number`` "easiest" instances are returned.
+        Also the smallest ``number`` evaluations regardless of instance
+        are computed, but not returned.
+
+        """
+        try:
+            target_values = target_values((fct, dim))
+        except TypeError:
+            target_values = target_values
+        best_lines = len(target_values) * [[]]  # caveat: this is (can be?) the same instance of []
+        best_dicts = [{} for i in xrange(len(target_values))]
+        for ds in self:
+            if ds.funcId != fct or ds.dim != dim:
+                continue
+            current_lines = ds.detEvals(target_values)
+            assert len(current_lines) == len(best_lines) == len(target_values)
+            for i in xrange(len(current_lines)):
+                for j, instance in enumerate(ds.instancenumbers):
+                    previous_val = best_dicts[i].setdefault(instance, np.inf)
+                    best_dicts[i][instance] = min((previous_val, current_lines[i][j]))
+                best_lines[i] = np.sort(np.hstack(
+                    [best_lines[i], current_lines[i]]))
+                best_lines[i] = best_lines[i][:min((number,
+                                                    len(best_lines[i])))]
+        # construct another best line instance-wise
+        best_instances_lines = []
+        for i in xrange(len(best_dicts)):
+            vals = best_dicts[i].values()
+            best_instances_lines.append(
+                np.sort(vals)[:np.min((number, len(vals)))])
+
+        if any(line is None for line in best_lines):
+            warnings.warn('best data lines not determined, (f, dim)='
+                          + str((fct, dim)))
+        # print(best_lines[-1])
+        # print(best_instances_lines[-1])
+        # print(best_instances_lines[-1])
+        assert len(best_lines) == len(best_instances_lines) == len(target_values)
+        assert best_lines[-1][0] == best_instances_lines[-1][0]
+        return best_instances_lines
+        # return best_lines
+
     def det_best_data_lines(self, target_values, fct, dim,
                            scoring_function=None):
         """return a list of the respective best data lines over all data
         sets in ``self`` for each ``target in target_values`` and an
-        array of the computed scores (ERT ``if scoring_function is None``).
+        array of the computed scores (ERT ``if scoring_function == 'ERT'``).
 
         If ``scoring_function is None``, the best is determined with method
         ``detERT``. Using ``scoring_function=lambda x:
@@ -1737,14 +1799,16 @@ class DataSetList(list):
             if ds.funcId != fct or ds.dim != dim:
                 continue
             current_lines = ds.detEvals(target_values)
-            if scoring_function is None:
+            if scoring_function is None or scoring_function == 'ERT':
                 current_scores = ds.detERT(target_values)
             else:
                 current_scores = np.array([scoring_function(d)
                                            for d in current_lines], copy=False)
+            assert len(current_lines) == len(best_lines)
             assert len(current_lines) == len(current_scores) \
-                     == len(best_scores) == len(best_lines)
-            for i in np.where(toolsdivers.less(current_scores, best_scores))[0]:
+                 == len(best_scores) == len(best_lines)
+            for i in np.where(toolsdivers.less(current_scores,
+                                               best_scores))[0]:
                 best_lines[i] = current_lines[i]
                 best_scores[i] = current_scores[i]
 
@@ -1892,17 +1956,17 @@ def processInputArgs(args, verbose=True):
     :keyword list args: string arguments for folder names
     :keyword bool verbose: controlling verbosity
 
-    :returns (dsList, sortedAlgs, dictAlg):
-      dsList
-        is a list containing all DataSet instances, this is to
+    :returns (all_datasets, pathnames, datasetlists_by_alg):
+      all_datasets
+        a list containing all DataSet instances, this is to
         prevent the regrouping done in instances of DataSetList.
         Caveat: algorithms with the same name are overwritten!?
-      dictAlg
-        is a dictionary which associates algorithms to an instance
-        of DataSetList,
-      sortedAlgs
-        is a list of keys of dictAlg with the ordering as
-        given by the input argument args.
+      pathnames
+        a list of keys of datasetlists_per_alg with the ordering as
+        given by the input argument args
+      datasetlists_by_alg
+        a dictionary which associates each algorithm via its input path
+        name to a DataSetList
 
     """
     dsList = list()
@@ -1917,6 +1981,8 @@ def processInputArgs(args, verbose=True):
             #Do here any sorting or filtering necessary.
             #filelist = list(i for i in filelist if i.count('ppdata_f005'))
             tmpDsList = DataSetList(filelist, verbose)
+            for ds in tmpDsList:
+                ds._data_folder = i
             #Nota: findfiles will find all info AND pickle files in folder i.
             #No problem should arise if the info and pickle files have
             #redundant information. Only, the process could be more efficient
