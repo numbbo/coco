@@ -11,7 +11,7 @@
 static numbbo_problem_t *numbbo_allocate_problem(const size_t number_of_parameters,
                                                  const size_t number_of_objectives,
                                                  const size_t number_of_constraints) {
-    numbbo_problem_t *problem; /* needs to be first in the definition */
+    numbbo_problem_t *problem;  /* needs to be first in the definition */
     problem = (numbbo_problem_t *)numbbo_allocate_memory(sizeof(numbbo_problem_t));
     /* Initialize fields to sane/safe defaults */
     problem->evaluate_function = NULL;
