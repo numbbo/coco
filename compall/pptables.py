@@ -236,6 +236,10 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
     * significance test against best algorithm
     * table width...
 
+    Takes ``targetsOfInterest`` from this file as "input argument" to compute
+    the desired target values. ``targetsOfInterest`` might be configured via 
+    config.
+    
     """
 
     # TODO: method is long, terrible to read, split if possible
