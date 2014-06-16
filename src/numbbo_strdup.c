@@ -11,8 +11,7 @@ static char *numbbo_strdup(const char *string) {
     if (string == NULL)
         return NULL;
     size_t len = strlen(string);
-    char *duplicate = numbbo_allocate_memory(len + 1);
+    char *duplicate = (char *)numbbo_allocate_memory(len + 1);
     memcpy(duplicate, string, len + 1);
     return duplicate;
 }
-
