@@ -9,26 +9,37 @@
 #if defined(_WIN32) || defined(_WIN64)
   #include <windows.h>
   static const char *numbbo_path_separator = "\\";
+  #define NUMBBO_PATH_MAX PATH_MAX
   #define HAVE_GFA
 #elif defined(_POSIX_VERSION) || defined(__gnu_linux__)
   #include <sys/stat.h>
   #include <sys/types.h>
   static const char *numbbo_path_separator = "/";
   #define HAVE_STAT
+
+  #if defined(__linux__)
+    #include <linux/limits.h>
+  #elif defined(__FreeBSD__)
+    #include <limits.h>
+  #endif
+  #if !defined(PATH_MAX)
+    #error PATH_MAX undefined
+  #endif
+  #define NUMBBO_PATH_MAX PATH_MAX
 #else
   #error Unknown platform
 #endif
 
-void numbbo_join_path(char *path, size_t max_path, ...) {
+void numbbo_join_path(char *path, size_t path_max_length, ...) {
     const size_t path_separator_length = strlen(numbbo_path_separator);
     va_list args;
     char *path_component;
     size_t path_length = strlen(path);
 
-    va_start(args, max_path);
+    va_start(args, path_max_length);
     while (NULL != (path_component = va_arg(args, char *))) {
         size_t component_length = strlen(path_component);
-        if (path_length + path_separator_length + component_length >= max_path) {
+        if (path_length + path_separator_length + component_length >= path_max_length) {
             numbbo_error("numbbo_file_path() failed because the ${path} is to short.");
             return; /* never reached */
         }
@@ -61,30 +72,32 @@ void numbbo_create_path(const char *path) {
 #if defined(HAVE_GFD)
 #error Unimplemented
 #elif defined(HAVE_STAT)
-    char *tmp, *p = NULL;
+    assert(strcmp(numbbo_path_separator, "/") == 0);
+    char *tmp = NULL;
+    char buf[4096];
     size_t len = strlen(path);
-    int res;
     tmp = numbbo_strdup(path);
     /* Remove possible trailing slash */
     if (tmp[len - 1] == '/')
         tmp[len - 1] = 0;
-    for (p = tmp + 1; *p; p++) {
+    for (char *p = tmp + 1; *p; p++) {
         if (*p == '/') {
             *p = 0;
             if (!numbbo_path_exists(tmp)) {
-                res = mkdir(tmp, S_IRWXU);
-                if (res != 0) {
-                    char buf[4096];
-                    snprintf(buf, sizeof(buf), "mkdir(\"%s\") failed.", tmp);
-                    numbbo_error(buf);
-                    return; /* never reached */
-                }
+                if (0 != mkdir(tmp, S_IRWXU))
+                    goto error;
             }
             *p = '/';
         }
     }
-    mkdir(tmp, S_IRWXU);    
+    if (0 != mkdir(tmp, S_IRWXU))
+        goto error;
     numbbo_free_memory(tmp);
+    return;
+error:
+    snprintf(buf, sizeof(buf), "mkdir(\"%s\") failed.", tmp);
+    numbbo_error(buf);
+    return; /* never reached */    
 #else
 #error Ooops
 #endif
