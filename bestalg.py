@@ -455,7 +455,7 @@ def generate(dictalg):
             res[(d, f)] = tmp
     return res
 
-def customgenerate():
+def customgenerate(args = algs2009):
     """Generates best algorithm data set.
 
     It will create a folder bestAlg in the current working directory
@@ -479,13 +479,9 @@ def customgenerate():
 
     """
 
-    #args = set(algs2010 + algs2009)
-    args = algs2009  # algs2012
-
     outputdir = 'bestCustomAlg'
 
     verbose = True
-
     dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
 
     if not os.path.exists(outputdir):
@@ -496,5 +492,69 @@ def customgenerate():
     res = generate(dictAlg)
     picklefilename = os.path.join(outputdir, 'bestalg.pickle')
     fid = open(picklefilename, 'w')
-    pickle.dump(res, fid, 2)
+    pickle.dump(res, fid)
     fid.close()
+
+    print 'done with writing pickle...'
+
+def getAllContributingAlgorithmsToBest(algnamelist):
+    """Computes first the artificial best algorithm from given algorithm list
+       algnamelist, constructed by extracting for each target/function pair
+       the algorithm with best ERT among the given ones. Returns then the list
+       of algorithms that are contributing to the definition of the best
+       algorithm, separated by dimension, and sorted by importance (i.e. with
+       respect to the number of target/function pairs where each algorithm is
+       best).
+    
+       This method should be called from the python command line from a directory
+       containing all necessary data folders::
+
+       >>> from bbob_pproc import bestalg
+       >>> import os
+       >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+       >>> os.chdir("bbob_pproc/data")
+       >>> bestalg.getAllContributingAlgorithmsToBest(('IPOP-CMA-ES', 'RANDOMSEARCH'))
+       Searching in IPOP-CMA-ES ...
+       ...
+       Found 144 file(s)!
+       ...
+       
+    """
+    
+    print "Generating best algorithm data from given algorithm list...\n",  
+    customgenerate(algnamelist)
+    
+    bestalgfilepath = 'bestCustomAlg'
+    picklefilename = os.path.join(bestalgfilepath, 'bestalg.pickle')
+    fid = open(picklefilename, 'r')
+    bestalgentries = pickle.load(fid)
+    fid.close()
+    print 'loading of best algorithm data done.'
+    
+    countsperalgorithm = {}
+    for (d, f) in bestalgentries:
+        print 'dimension:', d, ', function:', f
+        print f
+        setofalgs = set(bestalgentries[d,f].algs)
+        for a in setofalgs:
+            # use setdefault to initialize with zero if a entry not existant:
+            countsperalgorithm.setdefault((d, a), 0) 
+            countsperalgorithm[(d,a)] += bestalgentries[d,f].algs.count(a)
+            
+    selectedalgsperdimension = {}
+    for (d,a) in sorted(countsperalgorithm):
+        if not selectedalgsperdimension.has_key(d):
+            selectedalgsperdimension[d] = []
+        selectedalgsperdimension[d].append((countsperalgorithm[(d,a)], a))
+    
+    for d in sorted(selectedalgsperdimension):
+        print d, 'D:'
+        print '----'
+        for (count, alg) in sorted(selectedalgsperdimension[d], reverse=True):
+            print count, alg
+        print '\n'
+    
+    
+    print " done."
+    
+    
