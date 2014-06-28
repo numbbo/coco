@@ -54,7 +54,6 @@ algs2010 = ("1komma2", "1komma2mir", "1komma2mirser", "1komma2ser", "1komma4",
 
 algs2012 = ("ACOR", "BIPOPaCMA", "BIPOPsaACM", "aCMA", "CMAES", "aCMAa", "aCMAm", "aCMAma", "aCMAmah", "aCMAmh", "DBRCGA", "DE", "DEAE", "DEb", "DEctpb", "IPOPsaACM", "JADE", "JADEb", "JADEctpb", "NBIPOPaCMA", "NIPOPaCMA", "DE-AUTO", "DE-BFGS", "DE-ROLL", "DE-SIMPLEX", "MVDE", "PSO-BFGS", "xNES", "xNESas", "SNES")
 
-
 # TODO: this should be reimplemented: 
 #  o a best algorithm should derive from the DataSet class
 #  o a best algorithm and an algorithm portfolio are almost the same, 
@@ -497,14 +496,15 @@ def customgenerate(args = algs2009):
 
     print 'done with writing pickle...'
 
-def getAllContributingAlgorithmsToBest(algnamelist):
+def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8):
     """Computes first the artificial best algorithm from given algorithm list
        algnamelist, constructed by extracting for each target/function pair
        the algorithm with best ERT among the given ones. Returns then the list
        of algorithms that are contributing to the definition of the best
        algorithm, separated by dimension, and sorted by importance (i.e. with
        respect to the number of target/function pairs where each algorithm is
-       best).
+       best). Only target/function pairs are taken into account where the target
+       is not smaller than target_lb.
     
        This method should be called from the python command line from a directory
        containing all necessary data folders::
@@ -536,10 +536,17 @@ def getAllContributingAlgorithmsToBest(algnamelist):
         print 'dimension:', d, ', function:', f
         print f
         setofalgs = set(bestalgentries[d,f].algs)
+        # pre-processing data to only look at targets >= target_lb:
+        correctedbestalgentries = []
+        for i in range(0,len(bestalgentries[d,f].target)):
+            if (bestalgentries[d,f].target[i] >= target_lb):
+                correctedbestalgentries.append(bestalgentries[d,f].algs[i])
+        print len(correctedbestalgentries)
+        # now count how often algorithm a is best for the extracted targets
         for a in setofalgs:
             # use setdefault to initialize with zero if a entry not existant:
             countsperalgorithm.setdefault((d, a), 0) 
-            countsperalgorithm[(d,a)] += bestalgentries[d,f].algs.count(a)
+            countsperalgorithm[(d,a)] += correctedbestalgentries.count(a)
             
     selectedalgsperdimension = {}
     for (d,a) in sorted(countsperalgorithm):
