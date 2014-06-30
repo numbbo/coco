@@ -496,7 +496,8 @@ def customgenerate(args = algs2009):
 
     print 'done with writing pickle...'
 
-def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8):
+def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8, 
+                                       target_ub=1e2):
     """Computes first the artificial best algorithm from given algorithm list
        algnamelist, constructed by extracting for each target/function pair
        the algorithm with best ERT among the given ones. Returns then the list
@@ -504,7 +505,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8):
        algorithm, separated by dimension, and sorted by importance (i.e. with
        respect to the number of target/function pairs where each algorithm is
        best). Only target/function pairs are taken into account where the target
-       is not smaller than target_lb.
+       is in between target_lb and target_ub.
     
        This method should be called from the python command line from a directory
        containing all necessary data folders::
@@ -539,7 +540,9 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8):
         # pre-processing data to only look at targets >= target_lb:
         correctedbestalgentries = []
         for i in range(0,len(bestalgentries[d,f].target)):
-            if (bestalgentries[d,f].target[i] >= target_lb):
+            if ((bestalgentries[d,f].target[i] >= target_lb) and
+                (bestalgentries[d,f].target[i] <= target_ub)):
+                
                 correctedbestalgentries.append(bestalgentries[d,f].algs[i])
         print len(correctedbestalgentries)
         # now count how often algorithm a is best for the extracted targets
@@ -556,7 +559,6 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8):
     
     for d in sorted(selectedalgsperdimension):
         print d, 'D:'
-        print '----'
         for (count, alg) in sorted(selectedalgsperdimension[d], reverse=True):
             print count, alg
         print '\n'
@@ -565,3 +567,90 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8):
     print " done."
     
     
+    
+    
+def extractBestAlgorithms(args = algs2009, f_factor=1.1,
+                          target_lb=1e-8, target_ub=1e2):
+    """Returns (and prints) per dimension a list of algorithms within
+    algorithm list args that contains an algorithm if for any
+        dimension/target/function pair this algorithm:
+        - is the best algorithm wrt ERT
+        - its own ERT lies within a factor t_factor of the best ERT
+        - there is no algorithm within a factor of f_factor of the best ERT
+          and the current algorithm is the second best.
+
+    """
+
+    print 'Loading algorithm data from given algorithm list...\n'  
+
+    verbose = True
+    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
+
+    print 'This may take a while (depending on the number of algorithms)'
+
+    selectedAlgsPerProblem = {}
+    for f, i in pproc.dictAlgByFun(dictAlg).iteritems():
+        for d, j in pproc.dictAlgByDim(i).iteritems():
+            selectedAlgsPerProblemDF = []
+            best = BestAlgSet(j)
+            
+            for i in range(0, len(best.target)):
+                t = best.target[i]
+                if ((t < target_ub) and (t > target_lb)):
+                    # add best for this target:    
+                    selectedAlgsPerProblemDF.append(best.algs[i])
+                
+                    # add second best or all algorithms that have an ERT
+                    # within a factor of f_factor of the best:
+                    secondbest_ERT = np.infty
+                    secondbest_str = ''
+                    secondbest_included = False        
+                    for astring in j:
+                        currdictalg = dictAlg[astring].dictByDim()
+                        if currdictalg.has_key(d):
+                            curralgdata = currdictalg[d][f-1]                        
+                            currERT = curralgdata.detERT([t])[0]
+                            if (astring != best.algs[i]):
+                                if (currERT < secondbest_ERT):
+                                    secondbest_ERT = currERT
+                                    secondbest_str = astring
+                                if (currERT <= best.detERT([t])[0] * f_factor):
+                                    selectedAlgsPerProblemDF.append(astring)
+                                    secondbest_included = True
+                    if len(best.algs[i]) == 0:
+                        print '-->: ', best.algs[i]
+                    if not secondbest_included:
+                        selectedAlgsPerProblemDF.append(secondbest_str)
+                        
+            selectedAlgsPerProblem[(d, f)] = selectedAlgsPerProblemDF
+        print 'pre-processing of function', f, 'done.'                    
+                                  
+    print 'loading of best algorithm(s) data done.'
+    
+    countsperalgorithm = {}
+    for (d, f) in selectedAlgsPerProblem:
+        print 'dimension:', d, ', function:', f
+        setofalgs = set(selectedAlgsPerProblem[d,f])
+        
+        # now count how often algorithm a is best for the extracted targets
+        for a in setofalgs:
+            # use setdefault to initialize with zero if a entry not existant:
+            countsperalgorithm.setdefault((d, a), 0) 
+            countsperalgorithm[(d,a)] += selectedAlgsPerProblem[d,f].count(a)
+            
+    selectedalgsperdimension = {}
+    for (d,a) in sorted(countsperalgorithm):
+        if not selectedalgsperdimension.has_key(d):
+            selectedalgsperdimension[d] = []
+        selectedalgsperdimension[d].append((countsperalgorithm[(d,a)], a))
+    
+    for d in sorted(selectedalgsperdimension):
+        print d, 'D:'
+        for (count, alg) in sorted(selectedalgsperdimension[d], reverse=True):
+            print count, alg
+        print '\n'
+    
+    
+    print " done."
+    
+    return selectedalgsperdimension
