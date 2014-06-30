@@ -16,13 +16,18 @@ static void f_rosenbrock_evaluate(numbbo_problem_t *self, double *x, double *y) 
     double tmp;
     assert(self->number_of_objectives == 1);
     y[0] = 0.0;
+    double *tmpx = (double *)malloc(self->number_of_parameters * sizeof(double));
+    for (i = 0; i < self->number_of_parameters; ++i) {
+        tmpx[0] = x[i] - self->best_parameter[i];//z_i
+    }
+
     for (i = 0; i < self->number_of_parameters - 1; ++i) {
-        tmp = (x[i] * x[i] - x[i+1]);/* TODO: shift x using Xopt */
+        tmp = (tmpx[i] * tmpx[i] - tmpx[i+1]);/* TODO: shift x using Xopt */
         y[0] += tmp * tmp;
     }
     y[0] *= 1e2;
     for (i = 0; i < self->number_of_parameters - 1; ++i) {
-        tmp = (x[i] - 1.);
+        tmp = (tmpx[i] - 1.);
         y[0] += tmp * tmp;
     }
     y[0]+=0;

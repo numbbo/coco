@@ -8,16 +8,19 @@
 static void f_sphere_evaluate(numbbo_problem_t *self, double *x, double *y) {
     /*
      TODO: boundary handling
-     TODO: use Xopt
-     TODO: shift x using Xopt
      TODO: replace "y[0] += 0" with "y[0] += fopt" of the instance
      */
     size_t i;
     assert(self->number_of_objectives == 1);
     y[0] = 0.0;
+    double *tmpx = (double *)malloc(self->number_of_parameters * sizeof(double));
     for (i = 0; i < self->number_of_parameters; ++i) {
-        y[0] += x[i] * x[i];
+        tmpx[0] = x[i] - self->best_parameter[i];//z_i
     }
+    for (i = 0; i < self->number_of_parameters; ++i) {
+        y[0] += tmpx[i] * tmpx[i];
+    }
+    free(tmpx);
 }
 
 static numbbo_problem_t *sphere_problem(const size_t number_of_parameters) {
