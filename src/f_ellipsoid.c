@@ -7,15 +7,23 @@
 #include "numbbo_problem.c"
 
 static void f_ellipsoid_evaluate(numbbo_problem_t *self, double *x, double *y) {
+    /*
+     TODO: boundary handling
+     TODO: replace "y[0] += 0" with "y[0] += fopt" of the instance
+     */
     size_t i;
     static const double condition = 1.0e6;    
     assert(self->number_of_objectives == 1);
     y[0] = 0.0;
-    
+    double *tmpx = (double *)malloc(self->number_of_parameters * sizeof(double));
+    for (i = 0; i < self->number_of_parameters; ++i) {
+        tmpx[0] = x[i] - self->best_parameter[i];//z_i
+    }
     for (i = 0; i < self->number_of_parameters; ++i) {
         const double c1 = (double)(i) / (double)(self->number_of_parameters - 1);
-        y[0] += pow(condition, c1) * x[i] * x[i];
+        y[0] += pow(condition, c1) * tmpx[i] * tmpx[i];
     }
+    free(tmpx);
 }
 
 static numbbo_problem_t *ellipsoid_problem(const size_t number_of_parameters) {
