@@ -596,7 +596,7 @@ def extractBestAlgorithms(args = algs2009, f_factor=1.1,
             
             for i in range(0, len(best.target)):
                 t = best.target[i]
-                if ((t < target_ub) and (t > target_lb)):
+                if ((t <= target_ub) and (t >= target_lb)):
                     # add best for this target:    
                     selectedAlgsPerProblemDF.append(best.algs[i])
                 
@@ -617,12 +617,12 @@ def extractBestAlgorithms(args = algs2009, f_factor=1.1,
                                 if (currERT <= best.detERT([t])[0] * f_factor):
                                     selectedAlgsPerProblemDF.append(astring)
                                     secondbest_included = True
-                    if len(best.algs[i]) == 0:
-                        print '-->: ', best.algs[i]
-                    if not secondbest_included:
+                    if not (secondbest_included) and (secondbest_str != ''):
                         selectedAlgsPerProblemDF.append(secondbest_str)
-                        
-            selectedAlgsPerProblem[(d, f)] = selectedAlgsPerProblemDF
+            
+            if len(selectedAlgsPerProblemDF) > 0:
+                selectedAlgsPerProblem[(d, f)] = selectedAlgsPerProblemDF
+        
         print 'pre-processing of function', f, 'done.'                    
                                   
     print 'loading of best algorithm(s) data done.'
