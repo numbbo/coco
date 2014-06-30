@@ -43,6 +43,6 @@ static numbbo_problem_t *differentPowers_problem(const size_t number_of_paramete
         problem->best_parameter[i] = 0.0;
     }
     /* Calculate best parameter value */
-    f_sharpRidge_evaluate(problem, problem->best_parameter, problem->best_value);
+    f_differentPowers_evaluate(problem, problem->best_parameter, problem->best_value);
     return problem;
 }
