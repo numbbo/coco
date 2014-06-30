@@ -44,9 +44,8 @@ static void f_linearSlope_evaluate(numbbo_problem_t *self, double *x, double *y)
             y[0] += pow(sqrt( alpha ), ( ( double ) i )/( ( double )( self->number_of_parameters - 1))) * tmpx[i];
         /*}*/
     }
-
     y[0] += 0 ;
-    
+    free(tmpx);
 }
 
 static numbbo_problem_t *linearSlope_problem(const size_t number_of_parameters) {
