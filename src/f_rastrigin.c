@@ -7,15 +7,23 @@
 #include "numbbo_problem.c"
 
 static void f_rastrigin_evaluate(numbbo_problem_t *self, double *x, double *y) {
+    /*
+     TODO: boundary handling
+     TODO: replace "y[0] += 0" with "y[0] += fopt" of the instance
+     */
     size_t i;
     double sum1 = 0.0, sum2 = 0.0;
     assert(self->number_of_objectives == 1);
-    
+    double *tmpx = (double *)malloc(self->number_of_parameters * sizeof(double));
     for (i = 0; i < self->number_of_parameters; ++i) {
-        sum1 += cos(2 * numbbo_pi * x[i]);
-        sum2 += x[i] * x[i];
+        tmpx[0] = x[i] - self->best_parameter[i];//z_i
+    }
+    for (i = 0; i < self->number_of_parameters; ++i) {
+        sum1 += cos(2 * numbbo_pi * tmpx[i]);
+        sum2 += tmpx[i] * tmpx[i];
     }
     y[0] = 10.0 * (self->number_of_parameters - sum1) + sum2;
+    free(tmpx);
 }
 
 static numbbo_problem_t *rastrigin_problem(const size_t number_of_parameters) {
