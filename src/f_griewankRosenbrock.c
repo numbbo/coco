@@ -20,7 +20,7 @@ static void f_griewankRosenbrock_evaluate(numbbo_problem_t *self, double *x, dou
     	zi = fmax(1., sqrt((double)self->number_of_parameters)/8.) * x[i] + 0.5;
     	zii = fmax(1., sqrt((double)self->number_of_parameters)/8.) * x[i+1] + 0.5;
     	tmp = 100 * (zi * zi - zii) * (zi * zi - zii) + (zi - 1) * (zi - 1);
-    	y[0] += tmp/(4*1.0e3) - cos(tmp);
+    	y[0] += tmp/(4000.) - cos(tmp);
 
     }
     y[0] = 10./((double)self->number_of_parameters - 1) * y[0] + 10 + f_opt;
