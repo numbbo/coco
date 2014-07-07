@@ -17,7 +17,7 @@ static void f_ellipsoid_evaluate(numbbo_problem_t *self, double *x, double *y) {
     y[0] = 0.0;
     double *tmpx = (double *)malloc(self->number_of_parameters * sizeof(double));
     for (i = 0; i < self->number_of_parameters; ++i) {
-        tmpx[0] = x[i] - self->best_parameter[i];//z_i
+        tmpx[i] = x[i] - self->best_parameter[i];//z_i
     }
     for (i = 0; i < self->number_of_parameters; ++i) {
         const double c1 = (double)(i) / (double)(self->number_of_parameters - 1);
