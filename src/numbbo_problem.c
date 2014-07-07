@@ -84,7 +84,7 @@ static void _tfp_free_problem(numbbo_problem_t *self) {
 static numbbo_transformed_problem_t *
 numbbo_allocate_transformed_problem(numbbo_problem_t *inner_problem) {
     numbbo_transformed_problem_t *obj =
-        numbbo_allocate_memory(sizeof(numbbo_transformed_problem_t));
+        (numbbo_transformed_problem_t *)numbbo_allocate_memory(sizeof(numbbo_transformed_problem_t));
     numbbo_problem_t *problem = (numbbo_problem_t *)obj;
 
     problem->evaluate_function = _tfp_evaluate_function;

@@ -81,7 +81,7 @@ numbbo_problem_t *log_hitting_times(numbbo_problem_t *inner_problem,
     numbbo_transformed_problem_t *obj = 
         numbbo_allocate_transformed_problem(inner_problem);
     numbbo_problem_t *problem = (numbbo_problem_t *)obj;
-    log_hitting_time_t *state = numbbo_allocate_memory(sizeof(log_hitting_time_t));
+    log_hitting_time_t *state = (log_hitting_time_t *)numbbo_allocate_memory(sizeof(*state));
 
     problem->evaluate_function = lht_evaluate_function;
     problem->free_problem = lht_free_problem;

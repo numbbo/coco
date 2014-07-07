@@ -7,45 +7,21 @@
 #include "numbbo_problem.c"
 
 static void f_linearSlope_evaluate(numbbo_problem_t *self, double *x, double *y) {
-    /*  TODO: considers optimum in [-5]*dim, update for using any Xopt
-        TODO: boundary handling
-        TODO: shift x using Xopt 
-        TODO: replace "y[0] += 0" with "y[0] += fopt" of the instance
-     */
     size_t i;
     double *tmpx = (double *)malloc(self->number_of_parameters * sizeof(double));
     static double alpha = 100.;/* */
     assert(self->number_of_objectives == 1 );
     y[0] = 0.0;
-    /* move "too" good coordinates back into domain
-     original code:
-     for (i = 0; i < DIM; i++) {
-     if ((Xopt[i] == 5.) && (x[i] > 5))
-     tmx[i] = 5.;
-     else if ((Xopt[i] == -5.) && (x[i] < -5))
-     tmx[i] = -5.;
-     else
-     tmx[i] = x[i];
-     }
-     */
-
     for (i = 0; i < self->number_of_parameters; ++i) {
-        //printf("%f",x[i]);
         if (x[i] < -5)
-            tmpx[i] = 0;// put fopt at 0
+            x[i] = 0;// put fopt at 0
         else
-            tmpx[i] = x[i] +5;
+            x[i] = x[i] + 5.0;
     }
     /* COMPUTATION core*/
     for ( i = 0; i < self->number_of_parameters; ++i ){
-        /*if (Xopt[i] > 0) {
-            y[0] -= pow(sqrt(alpha), ((double)i)/((double)(self->number_of_parameters-1))) * tmpx[i];
-        } else {*/
-            y[0] += pow(sqrt( alpha ), ( ( double ) i )/( ( double )( self->number_of_parameters - 1))) * tmpx[i];
-        /*}*/
+        y[0] += pow(sqrt( alpha ), ( ( double ) i )/( ( double )( self->number_of_parameters - 1))) * x[i];
     }
-    y[0] += 0 ;
-    free(tmpx);
 }
 
 static numbbo_problem_t *linearSlope_problem(const size_t number_of_parameters) {
@@ -55,7 +31,7 @@ static numbbo_problem_t *linearSlope_problem(const size_t number_of_parameters) 
     /* Construct a meaningful problem id */
     problem_id_length = snprintf(NULL, 0,
                                  "%s_%02i", "linearSlope", (int)number_of_parameters);
-    problem->problem_id = numbbo_allocate_memory(problem_id_length + 1);
+    problem->problem_id = (char *)numbbo_allocate_memory(problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1,
              "%s_%02d", "linearSlope", (int)number_of_parameters);
     
