@@ -5,7 +5,7 @@ PYTHON2 ?= python2.7
 #.SILENT:
 
 package: numbbo/wrapper.pyx numbbo/numbbo.c numbbo/numbbo.h
-	${PYTHON2} setup.py sdist1
+	${PYTHON2} setup.py sdist
 	${PYTHON2} setup.py bdist
 
 clean:
