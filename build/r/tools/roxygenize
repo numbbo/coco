@@ -3,4 +3,4 @@
 library("methods")
 library("roxygen2")
 
-roxygenize("skel", "pkg")
+roxygenize("pkg")

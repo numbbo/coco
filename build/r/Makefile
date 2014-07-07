@@ -40,6 +40,7 @@ package: pkg
 
 pkg: clean
 	echo "Roxygenizing package ..."
+	cp -R skel pkg
 	${RSCRIPT} ./tools/roxygenize > roxygen.log 2>&1
 
 test: install

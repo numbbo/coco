@@ -8,5 +8,5 @@ my_optimizer <- function(f, lower, upper) {
   }
 }
 
-numbbo_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer)
+numbbo_benchmark("toy_suit", "toy_observer", my_optimizer)
 

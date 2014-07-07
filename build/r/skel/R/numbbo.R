@@ -22,10 +22,10 @@ numbbo_get_generator <- function(benchmark) {
   function(function_id, result_directory) {
     problem <- .Call(do_get_problem,
                      as.character(benchmark),
-                     as.integer(function_id),
-                     as.character(result_directory))
+                     as.integer(function_id))
     if (is.null(problem))
       return(NULL)
+    print(problem)
     res <- function(x) {
       .Call(do_evaluate_function, problem, as.numeric(x))
     }
