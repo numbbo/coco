@@ -45,6 +45,7 @@ void numbbo_free_problem(numbbo_problem_t *self) {
         self->upper_bounds = NULL;
         self->best_parameter = NULL;
         self->best_value = NULL;
+        numbbo_free_memory(self);
     }
 }
 
