@@ -66,6 +66,10 @@ static void _tfp_free_problem(numbbo_problem_t *self) {
     obj->inner_problem = NULL;
     if (obj->state != NULL)
         free(obj->state);
+    /* Let the generic free problem code deal with the rest of the
+     * fields. For this we clear the free_problem function pointer and
+     * recall the generic function.
+     */
     problem->free_problem = NULL;
     numbbo_free_problem(problem);
 }
