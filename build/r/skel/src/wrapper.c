@@ -60,17 +60,13 @@ SEXP do_evaluate_function(SEXP s_problem, SEXP s_x) {
 }
 
 SEXP do_get_problem(SEXP s_benchmark_name, 
-                    SEXP s_function_index,
-                    SEXP s_path) {
-    numbbo_function_generator_t problem_generator;
+                    SEXP s_function_index) {
     numbbo_problem_t *problem;
 
     const char *benchmark_name = CHAR(STRING_ELT(s_benchmark_name, 0));
     UNPACK_INT(s_function_index, function_index);
-    const char *path = CHAR(STRING_ELT(s_path, 0));
 
-    problem_generator = numbbo_get_function_generator(benchmark_name);
-    problem = problem_generator(function_index, path);
+    problem = numbbo_get_problem(benchmark_name, function_index);
     if (problem == NULL) {
         return R_NilValue;
     } else {

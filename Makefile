@@ -58,8 +58,8 @@ all: ${TARGETS}
 clean:
 	echo "  RM    ${TARGETS}"
 	rm -f ${TARGETS}
-	echo "  RM    build/c/demo.o build/c/numbbo.o build/c/demo"
-	rm -fR build/c/demo.o build/c/numbbo.o build/c/demo
+	echo "  RM    build/c/demo.o build/c/numbbo.o build/c/demo build/c/tests/t1"
+	rm -fR build/c/demo.o build/c/numbbo.o build/c/demo build/c/tests/t1
 	echo "  RM    build/python/dist"
 	rm -fR build/python/dist
 	echo "  RM    build/python/numbbo.egg-info"
@@ -132,6 +132,8 @@ build/r/%: build/r/%.in
 	${M4} -D__NUMBBO_VERSION__=${R_VERSION} $+ > $@
 
 release/r/numbbo_${R_VERSION}.tar.gz: ${R_TARGETS}
+	echo "  CP    build/r/pkg"
+	cp -R build/r/skel build/r/pkg
 	echo "  ROXY  build/r/pkg"
 	cd build/r ; ${RSCRIPT} ./tools/roxygenize > roxygen.log 2>&1
 	echo "  R     $@"
