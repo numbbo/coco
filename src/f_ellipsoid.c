@@ -29,7 +29,7 @@ static void f_ellipsoid_evaluate(numbbo_problem_t *self, double *x, double *y) {
 static numbbo_problem_t *ellipsoid_problem(const size_t number_of_parameters) {
     size_t i, problem_id_length;
     numbbo_problem_t *problem = numbbo_allocate_problem(number_of_parameters, 1, 0);
-    problem->problem_name = "ellipsoid function";
+    problem->problem_name = numbbo_strdup("ellipsoid function");
     problem_id_length = snprintf(NULL, 0, 
                                  "%s_%02i", "ellipsoid", (int)number_of_parameters);
     problem->problem_id = numbbo_allocate_memory(problem_id_length + 1);
