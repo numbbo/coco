@@ -7,26 +7,16 @@
 #include "numbbo_problem.c"
 
 static void f_skewRastriginBueche_evaluate(numbbo_problem_t *self, double *x, double *y) {
-    /*
-     TODO: boundary handling
-     TODO: replace "y[0] += 0" with "y[0] += fopt" of the instance
-     */
-    
     size_t i;
     double tmp = 0., tmp2 = 0.;
     assert( self->number_of_objectives == 1 );
     y[0] = 0.0;
-    double *tmpx = (double *)malloc(self->number_of_parameters * sizeof(double));
-    for (i = 0; i < self->number_of_parameters; ++i) {
-        tmpx[0] = x[i] - self->best_parameter[i];//z_i
-    }
     for (i = 0; i < self->number_of_parameters; ++i ) {
-        tmp += cos( 2 * numbbo_pi * tmpx[i] );
-        tmp2 += tmpx[i] * tmpx[i];
+        tmp += cos( 2 * numbbo_pi * x[i] );
+        tmp2 += x[i] * x[i];
     }
-    y[0] = 10 * (self->number_of_parameters - tmp) + tmp2 + 0;/*TODO: introduce the penalization term f_pen=sum( (max(0,|x|-5.)**2 ) */
-    y[0] += 0;/* 0-> fopt*/
-    free(tmpx);
+    y[0] = 10 * (self->number_of_parameters - tmp) + tmp2 + 0;
+/*TODO: introduce the penalization term f_pen=sum( (max(0,|x|-5.)**2 ) */
 }
 
 static numbbo_problem_t *skewRastriginBueche_problem(const size_t number_of_parameters) {
@@ -36,7 +26,7 @@ static numbbo_problem_t *skewRastriginBueche_problem(const size_t number_of_para
     /* Construct a meaningful problem id */
     problem_id_length = snprintf(NULL, 0,
                                  "%s_%02i", "skewRastriginBueche", (int)number_of_parameters);
-    problem->problem_id = numbbo_allocate_memory(problem_id_length + 1);
+    problem->problem_id = (char *)numbbo_allocate_memory(problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1,
              "%s_%02d", "skewRastriginBueche", (int)number_of_parameters);
     
