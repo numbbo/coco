@@ -3,9 +3,9 @@
 
 #include "numbbo.h"
 
-#include "numbbo_utilities.c"
+//#include "numbbo_utilities.c"
 #include "numbbo_problem.c"
-#include "numbbo_strdup.c"
+//#include "numbbo_strdup.c"
 
 typedef struct {
     char *path;
