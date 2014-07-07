@@ -75,12 +75,13 @@ void numbbo_create_path(const char *path) {
     assert(strcmp(numbbo_path_separator, "/") == 0);
     char *tmp = NULL;
     char buf[4096];
+    char *p;
     size_t len = strlen(path);
     tmp = numbbo_strdup(path);
     /* Remove possible trailing slash */
     if (tmp[len - 1] == '/')
         tmp[len - 1] = 0;
-    for (char *p = tmp + 1; *p; p++) {
+    for (p = tmp + 1; *p; p++) {
         if (*p == '/') {
             *p = 0;
             if (!numbbo_path_exists(tmp)) {
