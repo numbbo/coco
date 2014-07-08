@@ -7,9 +7,8 @@
 #include "numbbo_problem.c"
 
 static void f_linearSlope_evaluate(numbbo_problem_t *self, double *x, double *y) {
+    const static double alpha = 100.0;
     size_t i;
-    double *tmpx = (double *)malloc(self->number_of_parameters * sizeof(double));
-    static double alpha = 100.;/* */
     assert(self->number_of_objectives == 1 );
     y[0] = 0.0;
     for (i = 0; i < self->number_of_parameters; ++i) {
@@ -20,7 +19,7 @@ static void f_linearSlope_evaluate(numbbo_problem_t *self, double *x, double *y)
     }
     /* COMPUTATION core*/
     for ( i = 0; i < self->number_of_parameters; ++i ){
-        y[0] += pow(sqrt( alpha ), ( ( double ) i )/( ( double )( self->number_of_parameters - 1))) * x[i];
+        y[0] += pow(sqrt(alpha), ( ( double ) i )/( ( double )( self->number_of_parameters - 1))) * x[i];
     }
 }
 
