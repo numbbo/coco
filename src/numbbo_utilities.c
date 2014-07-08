@@ -19,9 +19,12 @@
 
   #if defined(__linux__)
     #include <linux/limits.h>
+  #elif defined(__APPLE)
+    #include <sys/syslimits.h>
   #elif defined(__FreeBSD__)
     #include <limits.h>
   #endif
+
   #if !defined(PATH_MAX)
     #error PATH_MAX undefined
   #endif
