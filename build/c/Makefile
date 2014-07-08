@@ -1,7 +1,8 @@
 CFLAGS ?= -Wall -std=c99 -pedantic -Os -g
 CXXFLAGS ?= -Wall -pedantic -Os -g
 LDFLAGS ?= -lm
-TARGETS = demo cppdemo test_fun_consistancy
+TARGETS = demo cppdemo 
+#test_fun_consistancy
 
 .PHONEY: clean all
 .SILENT:
