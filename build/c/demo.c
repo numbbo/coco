@@ -6,13 +6,13 @@
 void my_optimizer(numbbo_problem_t *problem) {
     static const int budget = 100000;
     numbbo_random_state_t *rng = numbbo_new_random(0xdeadbeef);
-    /* Skip any problems with more than 20 parameters */
-    if (problem->number_of_parameters > 20) 
+    /* Skip any problems with more than 20 variables */
+    if (numbbo_get_number_of_variables(problem) > 20) 
         return;
-    double *x = (double *)malloc(problem->number_of_parameters * sizeof(double));
+    double *x = (double *)malloc(numbbo_get_number_of_variables(problem) * sizeof(double));
     double y;
     for (int i = 0; i < budget; ++i) {
-        for (int j = 0; j < problem->number_of_parameters; ++j) {
+        for (int j = 0; j < numbbo_get_number_of_variables(problem); ++j) {
             const double range = problem->upper_bounds[j] - problem->lower_bounds[j];
             x[j] = problem->lower_bounds[j] + numbbo_uniform_random(rng) * range;
         }
