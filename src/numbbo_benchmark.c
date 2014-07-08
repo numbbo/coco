@@ -6,10 +6,14 @@
 #include "toy_suit.c"
 #include "toy_observer.c"
 
+#include "bbob2009_suit.c"
+
 numbbo_problem_t *numbbo_get_problem(const char *problem_suit,
                                      const int function_index) {
     if (0 == strcmp(problem_suit, "toy_suit")) {
         return toy_suit(function_index);
+    } else if (0 == strcmp(problem_suit, "bbob2009")) {
+        return bbob2009_suit(function_index);
     } else {
         numbbo_error("Unknown problem suit.");
         return NULL; /* Never reached */        
