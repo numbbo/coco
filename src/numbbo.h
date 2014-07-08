@@ -135,7 +135,7 @@ const char *numbbo_get_problem_id(numbbo_problem_t *self);
  *
  * Return the number of variables of the NUMBBO problem ${self}.
  */
-const int numbbo_get_number_of_variables(numbbo_problem_t *self);
+const size_t numbbo_get_number_of_variables(numbbo_problem_t *self);
 
 /**
  * numbbo_get_problem(problem_suit, function_index):
