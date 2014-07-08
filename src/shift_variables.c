@@ -17,7 +17,7 @@ static void _sv_evaluate_function(numbbo_problem_t *self, double *x, double *y) 
     shift_variables_state_t *state = (shift_variables_state_t *)problem->state;
 
     for (int i = 0; i < self->number_of_parameters; ++i) {
-        state->shifted_x[i] = x[i] + state->offset[i];
+        state->shifted_x[i] = x[i] - state->offset[i];
     }
     numbbo_evaluate_function(problem->inner_problem, state->shifted_x, y);
 }

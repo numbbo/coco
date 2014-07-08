@@ -55,7 +55,7 @@ static void bbob2009_unif(double* r, int N, int inseed) {
 }
 
 /**
- * reshape(B, vector, m, n):
+ * bbob2009_reshape(B, vector, m, n):
  *
  * Convert from packed matrix storage to an array of array of double
  * representation.
@@ -136,6 +136,46 @@ static void bbob2009_compute_xopt(double *xopt, int seed, int DIM) {
 }
 
 /**
+ * bbob2009_compute_fopt(function_id, instance_id):
+ *
+ * Randomly choose the objective offset for function ${function_id}
+ * and instance ${instance_id}.
+ */
+double bbob2009_compute_fopt(int function_id, int instance_id) {
+    int rseed, rrseed;
+    if (function_id == 4)
+        rseed = 3;
+    else if (function_id == 18)
+        rseed = 17;
+    else if (function_id == 101 || function_id == 102 || function_id == 103 || 
+             function_id == 107 ||  function_id == 108 || function_id == 109)
+        rseed = 1;
+    else if (function_id == 104 || function_id == 105 || function_id == 106 ||
+             function_id == 110 || function_id == 111 || function_id == 112)
+        rseed = 8;
+    else if (function_id == 113 || function_id == 114 || function_id == 115)
+        rseed = 7;
+    else if (function_id == 116 || function_id == 117 || function_id == 118)
+        rseed = 10;
+    else if (function_id == 119 || function_id == 120 || function_id == 121)
+        rseed = 14;
+    else if (function_id == 122 || function_id == 123 || function_id == 124)
+        rseed = 17;
+    else if (function_id == 125 || function_id == 126 || function_id == 127)
+        rseed = 19;
+    else if (function_id == 128 || function_id == 129 || function_id == 130)
+        rseed = 21;
+    else
+        rseed = function_id;
+
+    rrseed = rseed + 10000 * instance_id;
+    double gval, gval2;
+    bbob2009_gauss(&gval, 1, rrseed);
+    bbob2009_gauss(&gval2, 1, rrseed + 1);
+    return fmin(1000., fmax(-1000., (round(100.*100.*gval/gval2)/100.)));
+}
+
+/**
  * bbob2009_decode_function_index(function_index, function_id, instance_id, dimension):
  * 
  * Decode the new function_index into the old convention of function,
@@ -181,14 +221,14 @@ void bbob2009_decode_function_index(const int function_index,
     static const int number_of_dimensions = 6;
     const int high_instance_id = function_index / 
         (number_of_consecutive_instances * number_of_functions * number_of_dimensions);
-    int rest = function_index / 
+    int rest = function_index %
         (number_of_consecutive_instances * number_of_functions * number_of_dimensions);
     *dimension = dims[rest / (number_of_consecutive_instances * number_of_functions)];
     rest = rest % (number_of_consecutive_instances * number_of_functions);
     *function_id = rest / number_of_consecutive_instances + 1;
     rest = rest % number_of_consecutive_instances;
     const int low_instance_id = rest + 1;
-    *instance_id = low_instance_id + high_instance_id;
+    *instance_id = low_instance_id + 5 * high_instance_id;
 }
 
 /**
@@ -203,31 +243,31 @@ numbbo_problem_t *bbob2009_suit(const int function_index) {
     numbbo_problem_t *problem = NULL;
     bbob2009_decode_function_index(function_index, &function_id, &instance_id, 
                                    &dimension);
+    int rseed = function_id + 10000 * instance_id;
     
     /* Break if we are past our 15 instances. */
     if (instance_id > 15) return NULL;
 
-    if (function_id == 0) {
+    if (function_id == 1) {
+        double offset[40];
         problem = sphere_problem(dimension);
-    } else if (function_id == 1) {
-        problem = ellipsoid_problem(dimension);
+        bbob2009_compute_xopt(offset, rseed, dimension);
+        problem = shift_variables(problem, offset, false);
+        problem = shift_objective(problem, 
+                                  bbob2009_compute_fopt(function_id, instance_id));
     } else if (function_id == 2) {
-        problem = rastrigin_problem(dimension);
+        problem = ellipsoid_problem(dimension);
     } else if (function_id == 3) {
-        problem = skewRastriginBueche_problem(dimension);
+        problem = rastrigin_problem(dimension);
     } else if (function_id == 4) {
-        problem = linearSlope_problem(dimension);
+        problem = skewRastriginBueche_problem(dimension);
     } else if (function_id == 5) {
+        problem = linearSlope_problem(dimension);
+    } else if (function_id == 6) {
         problem = rosenbrock_problem(dimension);
     } else {
         return NULL;
     }
 
-    /* FIXME: Apply instance specific transformations! */
-    if (instance_id == 1) {
-        problem = shift_objective(problem, 1.0);
-    } else if (instance_id == 2) {
-        problem = shift_objective(problem, 2.0);
-    }
     return problem;
 }
