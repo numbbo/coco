@@ -53,7 +53,9 @@ __all__ = ['main']
 # Used by getopt:
 shortoptlist = "hvo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "fig-only",
-               "rld-only", "tab-only", "sca-only", "verbose", "settings=", "conv"]
+               "rld-only", "tab-only", "sca-only", "verbose",
+               "settings=", "conv",
+               "runlength-based", "expensive", "not-expensive"]
 
 #CLASS DEFINITIONS
 

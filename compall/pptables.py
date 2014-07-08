@@ -24,7 +24,8 @@ http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 
 table_caption_one = r"""%
     Expected running time (ERT in number of function 
-    evaluations) divided by the respective best ERT measured during BBOB-2009.
+    evaluations) divided by the respective best ERT measured during BBOB-2009 in
+    #1.
     The ERT and in braces, as dispersion measure, the half difference between 90 and 
     10\%-tile of bootstrapped run lengths appear for each algorithm and 
     run-length based target,  
@@ -380,8 +381,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                 for t in targets:
                     curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
                                 % writeFEvals2(t, precision=1, isscientific=True))
-                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
-                            % writeFEvals2(targets[-1], precision=1, isscientific=True))
+#                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
+#                            % writeFEvals2(targets[-1], precision=1, isscientific=True))
             curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
             table.append(curline)
         extraeol.append(r'\hline')

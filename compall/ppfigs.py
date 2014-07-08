@@ -40,6 +40,29 @@ scaling_figure_caption_end = (
                          if show_significance else ''
                 )
 
+ecdfs_figure_caption_standard = (
+                r"Bootstrapped empirical cumulative distribution of the number " +
+                r"of objective function evaluations divided by dimension " +
+                r"(FEvals/DIM) for 50 targets in $10^{[-8..2]}$ for all "+
+                r"functions and subgroups in #1-D. The ``best 2009'' line "+
+                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
+                r"for each single target."
+                )
+
+ecdfs_figure_caption_rlbased = (
+                r"Bootstrapped empirical cumulative distribution of the number " +
+                r"of objective function evaluations divided by dimension " +
+                r"(FEvals/DIM) for all functions and subgroups in #1-D." +
+                r" The targets are chosen from $10^{[-8..2]}$ " +
+                r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
+                r"not reached them within a given budget of $k$ $\times$ DIM, " +
+                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. " +
+                r"The ``best 2009'' line " +
+                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
+                r"for each selected target."
+                )
+
+
 styles = genericsettings.line_styles
 def fix_styles(number, styles=styles):
     """a short hack to fix length of styles"""
@@ -84,6 +107,16 @@ def scaling_figure_caption(target):
                                                        toolsdivers.number_to_latex(target.label(0)))
     s += scaling_figure_caption_end
     return s
+
+def ecdfs_figure_caption(target):
+    assert len(target) == 1
+    if isinstance(target, pproc.RunlengthBasedTargetValues):
+        s = ecdfs_figure_caption_rlbased.replace('REFERENCE_ALGORITHM', 
+                                                         target.reference_algorithm)
+    else:
+        s = ecdfs_figure_caption_standard
+    return s
+
 
 def plotLegend(handles, maxval=None):
     """Display right-side legend.
@@ -418,6 +451,12 @@ def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', v
                 scaling_figure_caption(target), 
                 'Legend: '] + alg_definitions + ['}']
                 )
+        toolsdivers.prepend_to_file(latex_commands_filename, 
+                ['\\providecommand{\\bbobECDFslegend}[1]{',
+                ecdfs_figure_caption(target), '}']
+                )
+
+
         if verbose:
             print 'Wrote commands and legend to %s' % filename
 
