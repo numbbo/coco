@@ -61,7 +61,7 @@ const char *numbbo_get_id(numbbo_problem_t *self) {
     return self->problem_id;
 }
 
-const int numbbo_get_number_of_parameters(numbbo_problem_t *self) {
+const int numbbo_get_number_of_variables(numbbo_problem_t *self) {
     assert(self != NULL);
     assert(self->problem_id != NULL);
     return self->number_of_parameters;
