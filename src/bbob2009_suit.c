@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "numbbo_generics.c"
 
 #include "f_sphere.c"
@@ -9,6 +11,129 @@
 
 #include "shift_objective.c"
 #include "shift_variables.c"
+
+/** 
+ * bbob2009_unif(r, N, inseed):
+ *
+ * Generate N uniform random numbers using ${inseed} as the seed and
+ * store them in ${r}.
+ */
+static void bbob2009_unif(double* r, int N, int inseed) {
+    /* generates N uniform numbers with starting seed*/
+    int aktseed;
+    int tmp;
+    int rgrand[32];
+    int aktrand;
+    int i;
+
+    if (inseed < 0) inseed = -inseed;
+    if (inseed < 1) inseed = 1;
+    aktseed = inseed;
+    for (i = 39; i >= 0; i--) {
+        tmp = (int)floor((double)aktseed/(double)127773);
+        aktseed = 16807  * (aktseed - tmp * 127773) - 2836 * tmp;
+        if (aktseed < 0)
+            aktseed = aktseed + 2147483647;
+        if (i < 32)
+           rgrand[i] = aktseed;
+    }
+    aktrand = rgrand[0];
+    for (i = 0; i < N; i++) {
+        tmp = (int)floor((double)aktseed/(double)127773);
+        aktseed = 16807 * (aktseed - tmp * 127773) - 2836 * tmp;
+        if (aktseed < 0)
+            aktseed = aktseed + 2147483647;
+        tmp = (int)floor((double)aktrand / (double)67108865);
+        aktrand = rgrand[tmp];
+        rgrand[tmp] = aktseed;
+        r[i] = (double)aktrand/2.147483647e9;
+        if (r[i] == 0.) {
+            r[i] = 1e-99;
+        }
+    }
+    return;
+}
+
+/**
+ * reshape(B, vector, m, n):
+ *
+ * Convert from packed matrix storage to an array of array of double
+ * representation.
+ */
+static double** bbob2009_reshape(double** B, double* vector, int m, int n) {
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            B[i][j] = vector[j * m + i];
+        }
+    }
+    return B;
+}
+
+/**
+ * bbob2009_gauss(g, N, seed)
+ *
+ * Generate ${N} Gaussian random numbers using the seed ${seed} and
+ * store them in ${g}.
+ */
+static void bbob2009_gauss(double *g, int N, int seed) {
+    assert(2*N < 3000);
+    double uniftmp[3000];
+    bbob2009_unif(uniftmp, 2*N, seed);
+
+    for (int i = 0; i < N; i++) {
+        g[i] = sqrt(-2*log(uniftmp[i])) * cos(2*numbbo_pi*uniftmp[N+i]);
+        if (g[i] == 0.)
+            g[i] = 1e-99;
+    }
+    return;
+}
+
+/**
+ * bbob2009_compute_rotation(B, seed, DIM):
+ *
+ * Compute a ${DIM}x${DIM} rotation matrix based on ${seed} and store
+ * it in ${B}.
+ */
+static void bbob2009_compute_rotation(double **B, int seed, int DIM) {
+    /* To ensure temporary data fits into gvec */
+    assert(DIM * DIM < 2000);
+    double prod;
+    double gvect[2000];
+    int i, j, k; /*Loop over pairs of column vectors*/
+
+    bbob2009_gauss(gvect, DIM * DIM, seed);
+    bbob2009_reshape(B, gvect, DIM, DIM);
+    /*1st coordinate is row, 2nd is column.*/
+
+    for (i = 0; i < DIM; i++) {
+        for (j = 0; j < i; j++) {
+            prod = 0;
+            for (k = 0; k < DIM; k++)
+                prod += B[k][i] * B[k][j];
+            for (k = 0; k < DIM; k++) 
+                B[k][i] -= prod * B[k][j];
+        }
+        prod = 0;
+        for (k = 0; k < DIM; k++)
+            prod += B[k][i] * B[k][i];
+        for (k = 0; k < DIM; k++) 
+            B[k][i] /= sqrt(prod);
+    }
+}
+
+/**
+ * bbob2009_compute_xopt(xopt, seed, DIM):
+ *
+ * Randomly compute the location of the global optimum. 
+ */ 
+static void bbob2009_compute_xopt(double *xopt, int seed, int DIM) {
+    bbob2009_unif(xopt, DIM, seed);
+    for (int i = 0; i < DIM; i++) {
+        xopt[i] = 8 * floor(1e4 * xopt[i])/1e4 - 4;
+        if (xopt[i] == 0.0)
+            xopt[i] = -1e-5;
+    }
+}
 
 /**
  * bbob2009_decode_function_index(function_index, function_id, instance_id, dimension):
