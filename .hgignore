@@ -12,3 +12,6 @@ build/python/setup.py
 build/r/skel/DESCRIPTION 
 build/r/skel/src/numbbo.c 
 build/r/skel/src/numbbo.h
+release/.*
+.*\#.*
+.*\.orig
