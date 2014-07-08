@@ -17,7 +17,7 @@
  * NULL.
  */
 numbbo_problem_t *toy_suit(const int function_index) {
-    static const int dims[] = {2}/*, 3, 5, 10, 20}*/;
+    static const int dims[] = {2};//, 3, 5, 10, 20};
     const int fid = function_index % 1;
     const int did = function_index / 1;
     numbbo_problem_t *problem;
@@ -25,7 +25,7 @@ numbbo_problem_t *toy_suit(const int function_index) {
         return NULL;
 
     if (fid == 0) {
-        /*problem = sphere_problem(dims[did]);*/
+     //   problem = sphere_problem(dims[did]);
         problem = rosenbrock_problem(dims[did]);
     } else if (fid == 1) {
         problem = ellipsoid_problem(dims[did]);

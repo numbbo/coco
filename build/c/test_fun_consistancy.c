@@ -9,6 +9,8 @@ void my_optimizer(numbbo_problem_t *problem) {
     numbbo_random_state_t *rng = numbbo_new_random(0xdeadbeef);
     double *x = (double *)malloc(problem->number_of_parameters * sizeof(double));
     double y;
+    FILE *fd = fopen("const_check_newC.txt", "w");
+    fputs("x[0] x[1] f(x)\n",fd);
     for (int i = 1; i < budget; ++i) {
         bbob2009_unif(x, problem->number_of_parameters, i);
         for (int j = 0; j < problem->number_of_parameters; ++j) {
@@ -16,17 +18,14 @@ void my_optimizer(numbbo_problem_t *problem) {
              x[j] = problem->lower_bounds[j] + numbbo_uniform_random(rng) * range;*/
             x[j] = 20. * x[j] - 10.;
         }
-        /*
-         FILE *fd;
-         fd = open(filename);
-         if ( i % 100==0 ){
-         printf("%d: [ %f,", i, x[0]);
-         printf(" %f ]\n",x[1]);
-         }*/
         numbbo_evaluate_function(problem, x, &y);
+        if ( i % 1==0 ){
+            fprintf(fd,"%.5f %.5f : %.5f\n",x[0],x[1],y);
+        }
     }
     numbbo_free_random(rng);
     free(x);
+    fclose(fd);
     printf("%s\n",problem->problem_name);
     printf("%s\n",problem->problem_id);
 }
