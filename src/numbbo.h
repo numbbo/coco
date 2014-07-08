@@ -15,6 +15,8 @@ static const double numbbo_pi = 3.14159265358979323846;
 
 struct numbbo_problem;
 
+typedef void (*numbbo_initial_solution_function_t) (struct numbbo_problem *self, 
+                                                    double *y);
 typedef void (*numbbo_evaluate_function_t) (struct numbbo_problem *self, 
                                             double *x, 
                                             double *y);
@@ -52,6 +54,7 @@ typedef void (*numbbo_free_function_t) (struct numbbo_problem *self);
  *   to generate valid directory names under which to store results.
  */
 typedef struct numbbo_problem {
+    numbbo_initial_solution_function_t initial_solution;
     numbbo_evaluate_function_t evaluate_function;
     numbbo_evaluate_function_t evaluate_constraint;
     numbbo_recommendation_function_t recommend_solutions;
