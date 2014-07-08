@@ -16,7 +16,6 @@ static void f_skewRastriginBueche_evaluate(numbbo_problem_t *self, double *x, do
         tmp2 += x[i] * x[i];
     }
     y[0] = 10 * (self->number_of_parameters - tmp) + tmp2 + 0;
-/*TODO: introduce the penalization term f_pen=sum( (max(0,|x|-5.)**2 ) */
 }
 
 static numbbo_problem_t *skewRastriginBueche_problem(const size_t number_of_parameters) {
