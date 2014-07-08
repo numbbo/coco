@@ -15,7 +15,7 @@ static const double numbbo_pi = 3.14159265358979323846;
 
 struct numbbo_problem;
 
-typedef void (*numbbo_initial_solution_function_t) (struct numbbo_problem *self, 
+typedef void (*numbbo_initial_solution_function_t) (const struct numbbo_problem *self, 
                                                     double *y);
 typedef void (*numbbo_evaluate_function_t) (struct numbbo_problem *self, 
                                             double *x, 
