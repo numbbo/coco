@@ -9,7 +9,7 @@ extern "C" {
 #include <stdint.h>
 
 /**
- * Our very own pi constant.
+ * Our very own pi constant. Simplifies the case, when the value of pi changes.
  */
 static const double numbbo_pi = 3.14159265358979323846;
 
