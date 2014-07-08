@@ -107,7 +107,7 @@ void numbbo_recommend_solutions(numbbo_problem_t *self,
 void numbbo_free_problem(numbbo_problem_t *self);
 
 /**
- * numbbo_get_problem_name(self:
+ * numbbo_get_problem_name(self):
  *
  * Return the name of the NUMBBO problem ${self}.
  *
