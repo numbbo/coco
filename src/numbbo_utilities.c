@@ -19,7 +19,7 @@
 
   #if defined(__linux__)
     #include <linux/limits.h>
-  #elif defined(__APPLE)
+  #elif defined(__APPLE__)
     #include <sys/syslimits.h>
   #elif defined(__FreeBSD__)
     #include <limits.h>
