@@ -7,7 +7,13 @@
 #include "f_skewRastriginBueche.c"
 #include "f_linearSlope.c"
 
-/* Decode the new function_index into the old convention of function,
+#include "shift_objective.c"
+#include "shift_variables.c"
+
+/**
+ * bbob2009_decode_function_index(function_index, function_id, instance_id, dimension):
+ * 
+ * Decode the new function_index into the old convention of function,
  * instance and dimension. We have 24 functions in 6 different
  * dimensions so a total of 144 functions and any number of
  * instances. A natural thing would be to order them so that the
@@ -57,7 +63,7 @@ void bbob2009_decode_function_index(const int function_index,
     *function_id = rest / number_of_consecutive_instances + 1;
     rest = rest % number_of_consecutive_instances;
     const int low_instance_id = rest + 1;
-    instance_id = low_instance_id + high_instance_id;
+    *instance_id = low_instance_id + high_instance_id;
 }
 
 /**
@@ -68,10 +74,11 @@ void bbob2009_decode_function_index(const int function_index,
  * NULL.
  */
 numbbo_problem_t *bbob2009_suit(const int function_index) {
-    int instance_id;
-    int function_id;
-    bbob2009_decode_function_index(function_index, function_id, instance_id, dimension);
-
+    int instance_id, function_id, dimension;
+    numbbo_problem_t *problem = NULL;
+    bbob2009_decode_function_index(function_index, &function_id, &instance_id, 
+                                   &dimension);
+    
     /* Break if we are past our 15 instances. */
     if (instance_id > 15) return NULL;
 
