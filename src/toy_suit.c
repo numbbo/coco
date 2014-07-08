@@ -17,16 +17,16 @@
  * NULL.
  */
 numbbo_problem_t *toy_suit(const int function_index) {
-    static const int dims[] = {2};//, 3, 5, 10, 20};
-    const int fid = function_index % 1;
-    const int did = function_index / 1;
+    static const int dims[] = {2, 3, 5, 10, 20};
+    const int fid = function_index % 6;
+    const int did = function_index / 6;
     numbbo_problem_t *problem;
     if (did >= 1)
         return NULL;
 
     if (fid == 0) {
-     //   problem = sphere_problem(dims[did]);
-        problem = rosenbrock_problem(dims[did]);
+        problem = sphere_problem(dims[did]);
+     //   problem = rosenbrock_problem(dims[did]);
     } else if (fid == 1) {
         problem = ellipsoid_problem(dims[did]);
     } else if (fid == 2) {
