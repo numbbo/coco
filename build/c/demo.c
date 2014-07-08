@@ -6,6 +6,9 @@
 void my_optimizer(numbbo_problem_t *problem) {
     static const int budget = 100000;
     numbbo_random_state_t *rng = numbbo_new_random(0xdeadbeef);
+    /* Skip any problems with more than 20 parameters */
+    if (problem->number_of_parameters > 20) 
+        return;
     double *x = (double *)malloc(problem->number_of_parameters * sizeof(double));
     double y;
     for (int i = 0; i < budget; ++i) {
@@ -20,5 +23,6 @@ void my_optimizer(numbbo_problem_t *problem) {
 }
 
 int main(int argc, char **argv) {
-    numbbo_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer);
+    numbbo_benchmark("toy_suit", "toy_observer", 
+                     "random_search", my_optimizer);
 }
