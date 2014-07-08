@@ -151,12 +151,12 @@ numbbo_problem_t *numbbo_get_problem(const char *problem_suit,
 
 /** tentative getters for region of interest 
 */
-const double * numbbo_get_lowest_values_of_interest(const numbbo_problem_t *self);
-const double * numbbo_get_highest_values_of_interest(const numbbo_problem_t *self);
+const double * numbbo_get_smallest_values_of_interest(const numbbo_problem_t *self);
+const double * numbbo_get_largest_values_of_interest(const numbbo_problem_t *self);
 
 /** tentative getter for initial variable vector 
 */
-const double * numbbo_get_initial_solution(const numbbo_problem_t *self);
+void numbbo_get_initial_solution(const numbbo_problem_t *self, double *initial_solution);
 
 
 /**
