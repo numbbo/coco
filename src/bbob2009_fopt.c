@@ -118,7 +118,7 @@ static double bbob2009_computeFopt(int function_id, int trial_id) {
 }
 
 static void bbob2009_computeXopt(double *Xopt, 
-                                 int seed, int number_of_dimenseions) {
+                                 int seed, int number_of_dimensions) {
     int i;
     double *tmpvect;
     unif(Xopt, number_of_dimensions, seed);
