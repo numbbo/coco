@@ -156,8 +156,8 @@ const double * numbbo_get_largest_values_of_interest(const numbbo_problem_t *sel
 
 /** tentative getter for initial variable vector 
 */
-void numbbo_get_initial_solution(const numbbo_problem_t *self, double *initial_solution);
-
+void numbbo_get_initial_solution(const numbbo_problem_t *self, 
+                                 double *initial_solution);
 
 /**
  * numbbo_observe_problem(observer_name, problem, options):;
