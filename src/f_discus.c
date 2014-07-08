@@ -5,7 +5,7 @@
 
 #include "numbbo_problem.c"
 
-static void f_discus_evaluate(numbbo_problem_t *self, double *x, double *y) {
+static void f_discus_evaluate(numbbo_problem_t *self, double *x, double *y) { 
     size_t i;
     static const double condition = 1.0e6;
     assert(self->number_of_objectives == 1);
