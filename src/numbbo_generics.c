@@ -79,9 +79,8 @@ const double * numbbo_get_highest_values_of_interest(const numbbo_problem_t *sel
     return self->upper_bounds;
 }
 
-const double * numbbo_get_initial_solution(const numbbo_problem_t *self) {
+void numbbo_get_initial_solution(const numbbo_problem_t *self, double *initial_solution) {
     assert(self != NULL);
     assert(self->problem_id != NULL);
-    assert(NULL);  /* to be implemented */
-    return NULL;
+    self->initial_solution(self, initial_solution);
 }
