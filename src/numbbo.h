@@ -58,7 +58,7 @@ typedef struct numbbo_problem {
     numbbo_free_function_t free_problem;
     size_t number_of_parameters;
     size_t number_of_objectives;
-    size_t number_of_constraints;    
+    size_t number_of_constraints;
     double *lower_bounds;
     double *upper_bounds;
     double *best_value;
@@ -145,6 +145,16 @@ const size_t numbbo_get_number_of_variables(const numbbo_problem_t *self);
  */
 numbbo_problem_t *numbbo_get_problem(const char *problem_suit,
                                      const int function_index);
+
+/** tentative getters for region of interest 
+*/
+const double * numbbo_get_lowest_values_of_interest(const numbbo_problem_t *self);
+const double * numbbo_get_highest_values_of_interest(const numbbo_problem_t *self);
+
+/** tentative getter for initial variable vector 
+*/
+const double * numbbo_get_initial_solution(const numbbo_problem_t *self);
+
 
 /**
  * numbbo_observe_problem(observer_name, problem, options):;
