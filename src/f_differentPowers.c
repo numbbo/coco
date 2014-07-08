@@ -7,12 +7,6 @@
 #include "numbbo_problem.c"
 
 static void f_differentPowers_evaluate(numbbo_problem_t *self, double *x, double *y) {
-    /*
-     TODO: boundary handling
-     TODO: use Xopt
-     TODO: shift x using Xopt
-     TODO: replace "y[0] += 0" with "y[0] += fopt" of the instance
-     */
     size_t i;
     assert(self->number_of_objectives == 1);
     y[0] = 0.0;
