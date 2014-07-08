@@ -1,0 +1,36 @@
+import setuptools
+from distutils.core import setup
+from distutils.extension import Extension
+from Cython.Distutils import build_ext
+
+ext_modules = [
+    Extension("numbbo", ["numbbo/numbbo.c", "numbbo/wrapper.pyx"])
+]
+
+setup( 
+    name = 'numbbo', 
+    version = '__NUMBBO_VERSION__', 
+    url = 'https://gforge.inria.fr/projects/numbbo/',
+    license = 'BSD', 
+    maintainer = 'Olaf Mersmann', 
+    maintainer_email = 'olafm@p-value.net',
+       
+    # author = ['Anne Auger', 'Bernd Bischl', 'Dimo Brockhoff', 
+    #           'Nikolaus Hansen', 'Olaf Mersmann', 'Petr Posik', 
+    #           'Mike Preuss',  'Rodolphe le Riche', 'Guenter Rudolph',
+    #           'Marc Schoenauer', 'Heike Trautmann'],       
+    description = 'Benchmarking framework for all types of black-box optimization algorithms.',
+    long_description = '...',
+    ext_modules = ext_modules,
+    install_requires = ['numpy>=1.7', 'Cython>=0.19'],
+    classifiers = [
+        'Development Status :: 4 - Beta',
+        'Environment :: ??',
+        'Intended Audience :: ??',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Topic :: ??'
+    ],
+    cmdclass = {'build_ext': build_ext},
+)
