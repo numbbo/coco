@@ -23,7 +23,8 @@ void numbbo_warning(const char *message) {
 }
 
 void *numbbo_allocate_memory(size_t size) {
-    void *data = (void *)Calloc(size, char);
+    void *data;
+    data = (void *)Calloc(size, char);
     /* This should never happen, but better safe than sorry. */
     if (data == NULL)
         numbbo_error("numbbo_calloc() failed.");
