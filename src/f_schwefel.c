@@ -77,8 +77,8 @@ static numbbo_problem_t *schwefel_problem(const size_t number_of_variables) {
     numbbo_random_state_t *state = numbbo_new_random(seed);
 
     for (i = 0; i < number_of_variables; ++i) {
-        problem->lower_bounds[i] = -5.0;
-        problem->upper_bounds[i] = 5.0;
+        problem->smallest_values_of_interest[i] = -5.0;
+        problem->largest_values_of_interest[i] = 5.0;
         problem->best_parameter[i] = 0.5 * 4.2096874633;
         if (numbbo_uniform_random(state) < 0.5){
         	problem->best_parameter[i] *= -1;
