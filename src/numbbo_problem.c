@@ -12,10 +12,10 @@
 static void _default_initial_solution(const numbbo_problem_t *problem, 
                                       double *initial_solution) {
     assert(problem != NULL);
-    assert(problem->lower_bounds != NULL);
-    assert(problem->upper_bounds != NULL);
+    assert(problem->smallest_values_of_interest != NULL);
+    assert(problem->largest_values_of_interest != NULL);
     for (size_t i = 0; i < problem->number_of_variables; ++i) 
-        initial_solution[i] = 0.5 * (problem->lower_bounds[i] + problem->upper_bounds[i]);
+        initial_solution[i] = 0.5 * (problem->smallest_values_of_interest[i] + problem->largest_values_of_interest[i]);
 }
 
 /**
@@ -38,8 +38,8 @@ static numbbo_problem_t *numbbo_allocate_problem(const size_t number_of_variable
     problem->number_of_variables = number_of_variables;
     problem->number_of_objectives = number_of_objectives;
     problem->number_of_constraints = number_of_constraints;
-    problem->lower_bounds = numbbo_allocate_vector(number_of_variables);
-    problem->upper_bounds = numbbo_allocate_vector(number_of_variables);
+    problem->smallest_values_of_interest = numbbo_allocate_vector(number_of_variables);
+    problem->largest_values_of_interest = numbbo_allocate_vector(number_of_variables);
     problem->best_parameter = numbbo_allocate_vector(number_of_variables);
     problem->best_value = numbbo_allocate_vector(number_of_objectives);
     problem->problem_name = NULL;
@@ -112,11 +112,11 @@ numbbo_allocate_transformed_problem(numbbo_problem_t *inner_problem) {
     problem->number_of_variables = inner_problem->number_of_variables;
     problem->number_of_objectives = inner_problem->number_of_objectives;
     problem->number_of_constraints = inner_problem->number_of_constraints;
-    problem->lower_bounds = 
-        numbbo_duplicate_vector(inner_problem->lower_bounds,
+    problem->smallest_values_of_interest = 
+        numbbo_duplicate_vector(inner_problem->smallest_values_of_interest,
                                 inner_problem->number_of_variables);
-    problem->upper_bounds = 
-        numbbo_duplicate_vector(inner_problem->upper_bounds,
+    problem->largest_values_of_interest = 
+        numbbo_duplicate_vector(inner_problem->largest_values_of_interest,
                                 inner_problem->number_of_variables);
     problem->best_value = 
         numbbo_duplicate_vector(inner_problem->best_value,

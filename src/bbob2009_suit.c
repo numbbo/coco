@@ -12,8 +12,32 @@
 #include "shift_objective.c"
 #include "shift_variables.c"
 
-/** 
- * bbob2009_unif(r, N, inseed):
+/**
+ * bbob2009_allocate_matrix(n, m):
+ *
+ * Allocate a ${n} by ${m} matrix structured as an array of pointers
+ * to double arrays.
+ */
+static double** bbob2009_allocate_matrix(const size_t n, const size_t m) {
+    double **matrix = NULL;
+    matrix = (double **)numbbo_allocate_memory(sizeof(double *) * n);
+    for (size_t i = 0; i < n; ++i) {
+        matrix[i] = numbbo_allocate_vector(m);
+    }
+    return matrix;
+}
+
+static void bbob2009_free_matrix(double **matrix, const size_t n, const size_t m) {
+    for (size_t i = 0; i < n; ++i) {
+        numbbo_free_memory(matrix[i]);
+        matrix[i] = NULL;
+    }
+    numbbo_free_memory(matrix);
+}
+
+
+/**
+* bbob2009_unif(r, N, inseed):
  *
  * Generate N uniform random numbers using ${inseed} as the seed and
  * store them in ${r}.
@@ -264,7 +288,24 @@ numbbo_problem_t *bbob2009_suit(const int function_index) {
     } else if (function_id == 5) {
         problem = linearSlope_problem(dimension);
     } else if (function_id == 6) {
+        double offset[40];
+        double **rot1, **rot2;
+        rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+
+        rot2 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot2, rseed, dimension);
+
         problem = rosenbrock_problem(dimension);
+        /* IMPORTANT: Penalize before any transformations of the variables! */
+        #if 0
+        problem = penalize_uninteresting_values(problem);
+        #endif
+        bbob2009_compute_xopt(offset, rseed, dimension);
+        problem = shift_variables(problem, offset, false);
+
+        problem = shift_objective(problem, 
+                                  bbob2009_compute_fopt(function_id, instance_id));
     } else {
         return NULL;
     }
