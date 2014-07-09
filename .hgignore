@@ -2,8 +2,7 @@ build/c/VERSION
 build/c/numbbo.c 
 build/c/numbbo.h 
 build/c/.*.o
-build/c/demo
-build/c/test1
+build/c/demo$
 build/c/random_search/
 build/python/README 
 build/python/numbbo/numbbo.c 
