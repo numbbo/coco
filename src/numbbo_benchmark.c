@@ -5,6 +5,7 @@
 
 #include "toy_suit.c"
 #include "toy_observer.c"
+#include "logger_observer.c"
 
 #include "bbob2009_suit.c"
 
@@ -25,7 +26,9 @@ numbbo_problem_t *numbbo_observe_problem(const char *observer,
                                          const char *options) {
     if (0 == strcmp(observer, "toy_observer")) {
         return toy_observer(problem, options);
-    } else if (0 == strcmp(observer, "") 
+    }else if (0 == strcmp(observer, "logger_observer")) {
+        return logger_observer(problem, options);
+    }else if (0 == strcmp(observer, "")
                || 0 == strcmp(observer, "no_observer")) {
         return problem;
     } else {

@@ -4,7 +4,7 @@
 #include "numbbo.h"
 
 void my_optimizer(numbbo_problem_t *problem) {
-    static const int budget = 100000;
+    static const int budget = 10000;
     numbbo_random_state_t *rng = numbbo_new_random(0xdeadbeef);
     const double *lower, *upper;
     lower = numbbo_get_smallest_values_of_interest(problem);
@@ -27,6 +27,6 @@ void my_optimizer(numbbo_problem_t *problem) {
 }
 
 int main(int argc, char **argv) {
-    numbbo_benchmark("toy_suit", "toy_observer", 
+    numbbo_benchmark("toy_suit", "logger_observer",//"toy_observer",
                      "random_search", my_optimizer);
 }
