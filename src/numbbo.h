@@ -241,14 +241,15 @@ double numbbo_normal_random(numbbo_random_state_t *state);
 void numbbo_error(const char *message);
 void numbbo_warning(const char *message);
 
-
 /* Memory managment routines. 
  *
  * Their implementation may never fail. They either return a valid
  * pointer or terminate the program.
  */
 void *numbbo_allocate_memory(size_t size);
+double *numbbo_allocate_vector(size_t size);
 void numbbo_free_memory(void *data);
+
 
 #ifdef __cplusplus
 }
