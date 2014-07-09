@@ -79,13 +79,6 @@ const double * numbbo_get_largest_values_of_interest(const numbbo_problem_t *sel
     return self->largest_values_of_interest;
 }
 
-/**
- * numbbo_get_initial_solution(problem, initial_solution)
- *
- * By default, the center of the ${problem}s region of interest is 
- * stored in the vector pointed to by ${initial_solution}.
- *
- */
 void numbbo_get_initial_solution(const numbbo_problem_t *self, 
                                  double *initial_solution) {
     assert(self != NULL);
