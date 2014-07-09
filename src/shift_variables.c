@@ -16,7 +16,7 @@ static void _sv_evaluate_function(numbbo_problem_t *self, double *x, double *y) 
     assert(problem->state != NULL);
     shift_variables_state_t *state = (shift_variables_state_t *)problem->state;
 
-    for (int i = 0; i < self->number_of_parameters; ++i) {
+    for (int i = 0; i < self->number_of_variables; ++i) {
         state->shifted_x[i] = x[i] - state->offset[i];
     }
     numbbo_evaluate_function(problem->inner_problem, state->shifted_x, y);
@@ -41,14 +41,14 @@ numbbo_problem_t *shift_variables(numbbo_problem_t *inner_problem,
     assert(inner_problem != NULL);
     assert(offset != NULL);
 
-    size_t number_of_parameters = inner_problem->number_of_parameters;
+    size_t number_of_variables = inner_problem->number_of_variables;
     numbbo_transformed_problem_t *obj =
         numbbo_allocate_transformed_problem(inner_problem);
     numbbo_problem_t *problem = (numbbo_problem_t *)obj;
 
     shift_variables_state_t *state = numbbo_allocate_memory(sizeof(*state));
-    state->offset = numbbo_duplicate_vector(offset, number_of_parameters);
-    state->shifted_x = numbbo_allocate_vector(number_of_parameters);
+    state->offset = numbbo_duplicate_vector(offset, number_of_variables);
+    state->shifted_x = numbbo_allocate_vector(number_of_variables);
     state->old_free_problem = problem->free_problem;
 
     obj->state = state;

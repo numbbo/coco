@@ -16,32 +16,34 @@ static void f_griewankRosenbrock_evaluate(numbbo_problem_t *self, double *x, dou
     y[0] = 0.0;
     double zi, zii, tmp = 0;
 
-    for (i = 0; i < self->number_of_parameters - 1; ++i) {
-    	zi = fmax(1., sqrt((double)self->number_of_parameters)/8.) * x[i] + 0.5;
-    	zii = fmax(1., sqrt((double)self->number_of_parameters)/8.) * x[i+1] + 0.5;
+    for (i = 0; i < self->number_of_variables - 1; ++i) {
+    	zi = fmax(1., sqrt((double)self->number_of_variables)/8.) * x[i] + 0.5;
+    	zii = fmax(1., sqrt((double)self->number_of_variables)/8.) * x[i+1] + 0.5;
     	tmp = 100 * (zi * zi - zii) * (zi * zi - zii) + (zi - 1) * (zi - 1);
     	y[0] += tmp/4000. - cos(tmp);
 
     }
-    y[0] = 10./((double)self->number_of_parameters - 1) * y[0] + 10 + f_opt;
+    y[0] = 10./((double)self->number_of_variables - 1) * y[0] + 10 + f_opt;
 }
 
-static numbbo_problem_t *griewankRosenbrock_problem(const size_t number_of_parameters) {
+static numbbo_problem_t *griewankRosenbrock_problem(const size_t number_of_variables) {
     size_t i, problem_id_length;
-    numbbo_problem_t *problem = numbbo_allocate_problem(number_of_parameters, 1, 0);
+    numbbo_problem_t *problem = numbbo_allocate_problem(number_of_variables,
+                                                        1, 0);
     problem->problem_name = numbbo_strdup("griewank rosenbrock function");
     /* Construct a meaningful problem id */
     problem_id_length = snprintf(NULL, 0,
-                                 "%s_%02i", "griewank rosenbrock", (int)number_of_parameters);
+                                 "%s_%02i", "griewank rosenbrock",
+                                 (int)number_of_variables);
     problem->problem_id = numbbo_allocate_memory(problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1,
-             "%s_%02d", "griewank rosenbrock", (int)number_of_parameters);
+             "%s_%02d", "griewank rosenbrock", (int)number_of_variables);
 
-    problem->number_of_parameters = number_of_parameters;
+    problem->number_of_variables = number_of_variables;
     problem->number_of_objectives = 1;
     problem->number_of_constraints = 0;
     problem->evaluate_function = f_griewankRosenbrock_evaluate;
-    for (i = 0; i < number_of_parameters; ++i) {
+    for (i = 0; i < number_of_variables; ++i) {
         problem->lower_bounds[i] = -5.0;
         problem->upper_bounds[i] = 5.0;
         problem->best_parameter[i] = 1.0; /* z^opt = 1*/
