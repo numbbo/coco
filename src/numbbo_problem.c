@@ -3,22 +3,6 @@
 #include "numbbo_utilities.c"
 
 /**
- * _default_initial_solution(problem, initial_solution)
- *
- * Default implementation for the initial_solution method. The center
- * of ${problem}s region of interest is stored in the
- * vector pointed to by ${initial_solution}.
- */
-static void _default_initial_solution(const numbbo_problem_t *problem, 
-                                      double *initial_solution) {
-    assert(problem != NULL);
-    assert(problem->lower_bounds != NULL);
-    assert(problem->upper_bounds != NULL);
-    for (size_t i = 0; i < problem->number_of_variables; ++i) 
-        initial_solution[i] = 0.5 * (problem->lower_bounds[i] + problem->upper_bounds[i]);
-}
-
-/**
  * numbbo_allocate_problem(number_of_variables):
  *
  * Allocate and pre-populate a new numbbo_problem_t for a problem with
@@ -30,7 +14,7 @@ static numbbo_problem_t *numbbo_allocate_problem(const size_t number_of_variable
     numbbo_problem_t *problem;
     problem = (numbbo_problem_t *)numbbo_allocate_memory(sizeof(numbbo_problem_t));
     /* Initialize fields to sane/safe defaults */
-    problem->initial_solution = _default_initial_solution;
+    problem->initial_solution = NULL;
     problem->evaluate_function = NULL;
     problem->evaluate_constraint = NULL;
     problem->recommend_solutions = NULL;

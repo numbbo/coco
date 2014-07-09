@@ -23,7 +23,6 @@ typedef void (*numbbo_evaluate_function_t) (struct numbbo_problem *self,
 typedef void (*numbbo_recommendation_function_t) (struct numbbo_problem *self,
                                                   double *x,
                                                   size_t number_of_solutions);
-
 typedef void (*numbbo_free_function_t) (struct numbbo_problem *self);
 
 /**
