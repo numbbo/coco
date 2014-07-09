@@ -6,14 +6,20 @@ using namespace std;
 
 void my_optimizer(numbbo_problem_t *problem) {
     static const int budget = 100000;
-    const size_t number_of_variables = numbbo_get_number_of_variables(problem);
     numbbo_random_state_t *rng = numbbo_new_random(0xdeadbeef);
-    double *x = (double *)malloc(number_of_variables * sizeof(double));
+    const double *lower, *upper;
+    lower = numbbo_get_smallest_values_of_interest(problem);
+    upper = numbbo_get_largest_values_of_interest(problem);
+
+    /* Skip any problems with more than 20 variables */
+    if (numbbo_get_number_of_variables(problem) > 20) 
+        return;
+    double *x = (double *)malloc(numbbo_get_number_of_variables(problem) * sizeof(double));
     double y;
     for (int i = 0; i < budget; ++i) {
-        for (unsigned int j = 0; j < number_of_variables; ++j) {
-            const double range = problem->upper_bounds[j] - problem->lower_bounds[j];
-            x[j] = problem->lower_bounds[j] + numbbo_uniform_random(rng) * range;
+        for (int j = 0; j < numbbo_get_number_of_variables(problem); ++j) {
+            const double range = upper[j] - lower[j];
+            x[j] = lower[j] + numbbo_uniform_random(rng) * range;
         }
         numbbo_evaluate_function(problem, x, &y);
     }
