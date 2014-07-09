@@ -29,10 +29,10 @@ void numbbo_free_problem(numbbo_problem_t *self) {
         self->free_problem(self);
     } else {
         /* Best guess at freeing all relevant structures */
-        if (self->lower_bounds != NULL)
-            numbbo_free_memory(self->lower_bounds);
-        if (self->upper_bounds != NULL)
-            numbbo_free_memory(self->upper_bounds);       
+        if (self->smallest_values_of_interest != NULL)
+            numbbo_free_memory(self->smallest_values_of_interest);
+        if (self->largest_values_of_interest != NULL)
+            numbbo_free_memory(self->largest_values_of_interest);       
         if (self->best_parameter != NULL)
             numbbo_free_memory(self->best_parameter);
         if (self->best_value != NULL)
@@ -41,8 +41,8 @@ void numbbo_free_problem(numbbo_problem_t *self) {
             numbbo_free_memory(self->problem_name);
         if (self->problem_id != NULL)
             numbbo_free_memory(self->problem_id);
-        self->lower_bounds = NULL;
-        self->upper_bounds = NULL;
+        self->smallest_values_of_interest = NULL;
+        self->largest_values_of_interest = NULL;
         self->best_parameter = NULL;
         self->best_value = NULL;
         numbbo_free_memory(self);
@@ -70,13 +70,13 @@ const size_t numbbo_get_number_of_variables(const numbbo_problem_t *self) {
 const double * numbbo_get_smallest_values_of_interest(const numbbo_problem_t *self) {
     assert(self != NULL);
     assert(self->problem_id != NULL);
-    return self->lower_bounds;
+    return self->smallest_values_of_interest;
 }
 
 const double * numbbo_get_largest_values_of_interest(const numbbo_problem_t *self) {
     assert(self != NULL);
     assert(self->problem_id != NULL);
-    return self->upper_bounds;
+    return self->largest_values_of_interest;
 }
 
 /**
@@ -92,9 +92,9 @@ void numbbo_get_initial_solution(const numbbo_problem_t *self,
     if(self->initial_solution != NULL) {
         self->initial_solution(self, initial_solution);
     } else {
-        assert(self->lower_bounds != NULL);
-        assert(self->upper_bounds != NULL);
+        assert(self->smallest_values_of_interest != NULL);
+        assert(self->largest_values_of_interest != NULL);
         for (size_t i = 0; i < self->number_of_variables; ++i)
-            initial_solution[i] = 0.5 * (self->lower_bounds[i] + self->upper_bounds[i]);
+            initial_solution[i] = 0.5 * (self->smallest_values_of_interest[i] + self->largest_values_of_interest[i]);
     }
 }

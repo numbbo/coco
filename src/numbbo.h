@@ -61,8 +61,8 @@ typedef struct numbbo_problem {
     size_t number_of_variables;
     size_t number_of_objectives;
     size_t number_of_constraints;
-    double *lower_bounds;
-    double *upper_bounds;
+    double *smallest_values_of_interest;
+    double *largest_values_of_interest;
     double *best_value;
     double *best_parameter;
     char *problem_name;
