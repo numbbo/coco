@@ -25,7 +25,7 @@ R_VERSION = ${MAJOR}.${MINOR}-${REVISION}
 C_TARGETS = \
 	build/c/numbbo.c \
 	build/c/numbbo.h \
-	build/c/VERSION
+	build/c/VERSION 
 
 PYTHON_TARGETS = \
 	build/python/setup.py \
@@ -77,6 +77,7 @@ clean:
 release: c_release python_release r_release
 
 r_release: ${R_TARGETS}
+
 ########################################################################
 ## C framework
 build/c/numbbo.c: ${NUMBBO_C} src/numbbo_c_runtime.c
@@ -90,6 +91,13 @@ build/c/numbbo.h: ${NUMBBO_H}
 build/c/VERSION:
 	echo "  MK    $@"
 	echo "${C_VERSION}" > $@
+
+## OME: This target is _not_ built by default, only rerun if you
+## change the generate-bbob-test.R script. We do not assume that
+## everyone working on the C code has a working R installed.
+build/c/test_bbob2009.h:
+	echo "  MK    $@"
+	${RSCRIPT} tools/generate-bbob-tests.R > $@
 
 release/c/numbbo-${C_VERSION}.tar.gz: ${C_TARGETS}
 	echo "  TAR   $@"
