@@ -42,8 +42,9 @@ typedef void (*numbbo_free_function_t) (struct numbbo_problem *self);
  *
  * number_of_constraints - Number of constraints.
  *
- * lower_bounds, upper_bounds - Vector of length
- *   'number_of_variables'. Lower/Upper bounds of parameter space.
+ * smallest_values_of_interest, largest_values_of_interest - Vectors
+ *   of length 'number_of_variables'. Lower/Upper bounds of the 
+ *   region of interest.
  *
  * problem_name - Descriptive name for the test problem. May be NULL
  *   to indicate that no name is known.
