@@ -67,13 +67,13 @@ const size_t numbbo_get_number_of_variables(const numbbo_problem_t *self) {
     return self->number_of_parameters;
 }
 
-const double * numbbo_get_lowest_values_of_interest(const numbbo_problem_t *self) {
+const double * numbbo_get_smallest_values_of_interest(const numbbo_problem_t *self) {
     assert(self != NULL);
     assert(self->problem_id != NULL);
     return self->lower_bounds;
 }
 
-const double * numbbo_get_highest_values_of_interest(const numbbo_problem_t *self) {
+const double * numbbo_get_largest_values_of_interest(const numbbo_problem_t *self) {
     assert(self != NULL);
     assert(self->problem_id != NULL);
     return self->upper_bounds;
