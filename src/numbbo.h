@@ -36,7 +36,7 @@ typedef void (*numbbo_free_function_t) (struct numbbo_problem *self);
  *
  * Fields:
  *
- * number_of_parameters - Number of parameters expected by the
+ * number_of_variables - Number of parameters expected by the
  *   function and contraints.
  *
  * number_of_objectives - Number of objectives.
@@ -44,7 +44,7 @@ typedef void (*numbbo_free_function_t) (struct numbbo_problem *self);
  * number_of_constraints - Number of constraints.
  *
  * lower_bounds, upper_bounds - Vector of length
- *   'number_of_parameters'. Lower/Upper bounds of parameter space.
+ *   'number_of_variables'. Lower/Upper bounds of parameter space.
  *
  * problem_name - Descriptive name for the test problem. May be NULL
  *   to indicate that no name is known.
@@ -59,7 +59,7 @@ typedef struct numbbo_problem {
     numbbo_evaluate_function_t evaluate_constraint;
     numbbo_recommendation_function_t recommend_solutions;
     numbbo_free_function_t free_problem;
-    size_t number_of_parameters;
+    size_t number_of_variables;
     size_t number_of_objectives;
     size_t number_of_constraints;
     double *lower_bounds;

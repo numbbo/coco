@@ -13,7 +13,7 @@ static void f_weierstrass_evaluate(numbbo_problem_t *self, double *x, double *y)
     /* Computing f_pen */
     double f_pen = 0, diff, f_opt = 0; /* f_opt may need to be changed*/
     static const double condition = 1.0e2;
-    for (i = 0; i < self->number_of_parameters; ++i){
+    for (i = 0; i < self->number_of_variables; ++i){
     	diff = fabs(x[i]) - 5;
     	if (diff > 0){
     		f_pen += diff * diff;
@@ -28,31 +28,33 @@ static void f_weierstrass_evaluate(numbbo_problem_t *self, double *x, double *y)
         }
 
     y[0] = 0.0;
-    for (i = 0; i < self->number_of_parameters; ++i) {
+    for (i = 0; i < self->number_of_variables; ++i) {
     	for (k = 0; k < 12; k++){
     		y[0] += pow(2., ((double)-k)) * cos(2 * M_PI * pow(3., ((double)k)) * (x[i] + 0.5));
     	}
 
     }
-    y[0] = 10 * pow((1./((double)self->number_of_parameters)) * y[0] - f_0, 3.) + 10./((double)self->number_of_parameters) * f_pen + f_opt;
+    y[0] = 10 * pow((1./((double)self->number_of_variables)) * y[0] - f_0, 3.) + 10./((double)self->number_of_variables) * f_pen + f_opt;
 }
 
-static numbbo_problem_t *weierstrass_problem(const size_t number_of_parameters) {
+static numbbo_problem_t *weierstrass_problem(const size_t number_of_variables) {
     size_t i, problem_id_length;
-    numbbo_problem_t *problem = numbbo_allocate_problem(number_of_parameters, 1, 0);
+    numbbo_problem_t *problem = numbbo_allocate_problem(number_of_variables,
+                                                        1, 0);
     problem->problem_name = numbbo_strdup("weierstrass function");
     /* Construct a meaningful problem id */
     problem_id_length = snprintf(NULL, 0,
-                                 "%s_%02i", "weierstrass", (int)number_of_parameters);
+                                 "%s_%02i", "weierstrass",
+                                 (int)number_of_variables);
     problem->problem_id = numbbo_allocate_memory(problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1,
-             "%s_%02d", "weierstrass", (int)number_of_parameters);
+             "%s_%02d", "weierstrass", (int)number_of_variables);
 
-    problem->number_of_parameters = number_of_parameters;
+    problem->number_of_variables = number_of_variables;
     problem->number_of_objectives = 1;
     problem->number_of_constraints = 0;
     problem->evaluate_function = f_weierstrass_evaluate;
-    for (i = 0; i < number_of_parameters; ++i) {
+    for (i = 0; i < number_of_variables; ++i) {
         problem->lower_bounds[i] = -5.0;
         problem->upper_bounds[i] = 5.0;
         problem->best_parameter[i] = 0.0;
