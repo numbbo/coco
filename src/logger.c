@@ -41,6 +41,7 @@ static void logger_evaluate_function(numbbo_problem_t *self, double *x, double *
         for (size_t i=0; i < self->number_of_variables; i++) {
             fprintf(state->logfile, " %+5.4e",x[i]);
         }
+        
         fprintf(state->logfile, "\n");
 //        fprintf(fout, " %+10.9e %+10.9e %+10.9e %+10.9e", F-Fopt, bestF-Fopt, Fnoisy, bestFnoisy);
 //        fprintf(state->logfile, "%e %e %li\n",state->next_target,y[0],state->number_of_evaluations);
