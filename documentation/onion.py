@@ -6,7 +6,7 @@
 ## numbbo_transformed_problem_t structure of the C code for
 ## illustation purposes. The idea behind the C code is the same but we
 ## need much more boilerplate code to get there. 
-class sphere_function:
+class sphere_function(object):
     def __init__(self):
         self.lower_bounds = -5
         self.upper_bounds = 5
