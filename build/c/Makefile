@@ -1,15 +1,31 @@
 CFLAGS ?= -Wall -std=c99 -pedantic -Os -g
 CXXFLAGS ?= -Wall -pedantic -Os -g
 LDFLAGS ?= -lm
-TARGETS = demo cppdemo 
-#test_fun_consistancy
+TARGETS = demo cppdemo test_bbob2009
 
 .PHONEY: clean all
 .SILENT:
 
+########################################################################
+## Toplevel targets
 all: ${TARGETS}
 
+clean:
+	echo "RM    ${TARGETS} *.o"
+	rm -fR ${TARGETS} *.o
+
+########################################################################
+## Programs
+
 demo: demo.o numbbo.o
+	echo "LD    $@"
+	${CC} ${LDFLAGS} -o $@ $+
+
+cppdemo: cppdemo.o numbbo.o
+	echo "LD    $@"
+	${CXX} ${LDFLAGS} -o $@ $+
+
+test_bbob2009: test_bbob2009.o numbbo.o
 	echo "LD    $@"
 	${CC} ${LDFLAGS} -o $@ $+
 
@@ -17,11 +33,15 @@ test_fun_consistancy: test_fun_consistancy.o numbbo.o
 	echo "LD    $@"
 	${CC} ${LDFLAGS} -o $@ $+
 
+########################################################################
+## Additional dependencies
 
-cppdemo: cppdemo.o numbbo.o
-	echo "LD    $@"
-	${CXX} ${LDFLAGS} -o $@ $+
+demo.o: numbbo.h
 
+test_bbob2009.o: numbbo.h test_bbob2009.h
+
+########################################################################
+## Generic rules
 %.o: %.c
 	echo "CC    $@"
 	${CC} ${CFLAGS} -o $@ -c $<
@@ -29,7 +49,3 @@ cppdemo: cppdemo.o numbbo.o
 %.o: %.cpp
 	echo "CXX   $@"
 	${CXX} ${CXXFLAGS} -o $@ -c $<
-
-clean:
-	echo "RM    ${TARGETS} *.o"
-	rm -fR ${TARGETS} *.o
