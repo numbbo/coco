@@ -2,8 +2,22 @@
 
 #include "numbbo_utilities.c"
 
+/**
+ * _default_initial_solution(problem, initial_solution)
+ *
+ * Default implementation for the initial_solution method. The center
+ * of ${problem}s region of interest is stored in the
+ * vector pointed to by ${initial_solution}.
+ */
 static void _default_initial_solution(const numbbo_problem_t *problem, 
-                                      double *initial_solution);
+                                      double *initial_solution) {
+    assert(problem != NULL);
+    assert(problem->lower_bounds != NULL);
+    assert(problem->upper_bounds != NULL);
+    for (size_t i = 0; i < problem->number_of_variables; ++i) 
+        initial_solution[i] = 0.5 * (problem->lower_bounds[i] + problem->upper_bounds[i]);
+}
+
 /**
  * numbbo_allocate_problem(number_of_variables):
  *
@@ -115,14 +129,4 @@ numbbo_allocate_transformed_problem(numbbo_problem_t *inner_problem) {
     obj->inner_problem = inner_problem;
     obj->state = NULL;
     return obj;
-}
-
-static void _default_initial_solution(const numbbo_problem_t *problem, 
-                                      double *initial_solution) {
-    size_t i;
-    assert(problem != NULL);
-    assert(problem->lower_bounds != NULL);
-    assert(problem->upper_bounds != NULL);
-    for (i = 0; i < problem->number_of_variables; ++i) 
-        initial_solution[i] = 0.5 * (problem->lower_bounds[i] + problem->upper_bounds[i]);
 }
