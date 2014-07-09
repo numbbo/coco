@@ -39,8 +39,8 @@ static numbbo_problem_t *rosenbrock_problem(const size_t number_of_variables) {
     problem->number_of_constraints = 0;
     problem->evaluate_function = f_rosenbrock_evaluate;
     for (i = 0; i < number_of_variables; ++i) {
-        problem->lower_bounds[i] = -5.0;
-        problem->upper_bounds[i] = 5.0;
+        problem->smallest_values_of_interest[i] = -5.0;
+        problem->largest_values_of_interest[i] = 5.0;
         problem->best_parameter[i] = 0.0;
     }
     /* Calculate best parameter value */
