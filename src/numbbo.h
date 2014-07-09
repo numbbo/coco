@@ -159,7 +159,10 @@ const double * numbbo_get_largest_values_of_interest(const numbbo_problem_t *sel
  * Write initial variable values for the problem ${self} into 
  * ${initial_solution}.
  *
- * See also numbbo_get_*_values_of_interest().
+ * By default, the center of the ${problem}s region of interest
+ * is the initial solution.
+ *
+ * See also numbbo_get_*_values_of_interest()
  * 
  */
 void numbbo_get_initial_solution(const numbbo_problem_t *self, 
