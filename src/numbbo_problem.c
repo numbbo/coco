@@ -2,15 +2,29 @@
 
 #include "numbbo_utilities.c"
 
-static void _default_initial_solution(const numbbo_problem_t *problem, 
-                                      double *initial_solution);
 /**
- * numbbo_allocate_problem(number_of_parameters):
+ * _default_initial_solution(problem, initial_solution)
+ *
+ * Default implementation for the initial_solution method. The center
+ * of ${problem}s region of interest is stored in the
+ * vector pointed to by ${initial_solution}.
+ */
+static void _default_initial_solution(const numbbo_problem_t *problem, 
+                                      double *initial_solution) {
+    assert(problem != NULL);
+    assert(problem->lower_bounds != NULL);
+    assert(problem->upper_bounds != NULL);
+    for (size_t i = 0; i < problem->number_of_variables; ++i) 
+        initial_solution[i] = 0.5 * (problem->lower_bounds[i] + problem->upper_bounds[i]);
+}
+
+/**
+ * numbbo_allocate_problem(number_of_variables):
  *
  * Allocate and pre-populate a new numbbo_problem_t for a problem with
- * ${number_of_parameters}.
+ * ${number_of_variables}.
  */
-static numbbo_problem_t *numbbo_allocate_problem(const size_t number_of_parameters,
+static numbbo_problem_t *numbbo_allocate_problem(const size_t number_of_variables,
                                                  const size_t number_of_objectives,
                                                  const size_t number_of_constraints) {
     numbbo_problem_t *problem;
@@ -21,12 +35,12 @@ static numbbo_problem_t *numbbo_allocate_problem(const size_t number_of_paramete
     problem->evaluate_constraint = NULL;
     problem->recommend_solutions = NULL;
     problem->free_problem = NULL;
-    problem->number_of_parameters = number_of_parameters;
+    problem->number_of_variables = number_of_variables;
     problem->number_of_objectives = number_of_objectives;
     problem->number_of_constraints = number_of_constraints;
-    problem->lower_bounds = numbbo_allocate_vector(number_of_parameters);
-    problem->upper_bounds = numbbo_allocate_vector(number_of_parameters);
-    problem->best_parameter = numbbo_allocate_vector(number_of_parameters);
+    problem->lower_bounds = numbbo_allocate_vector(number_of_variables);
+    problem->upper_bounds = numbbo_allocate_vector(number_of_variables);
+    problem->best_parameter = numbbo_allocate_vector(number_of_variables);
     problem->best_value = numbbo_allocate_vector(number_of_objectives);
     problem->problem_name = NULL;
     problem->problem_id = NULL;
@@ -95,15 +109,15 @@ numbbo_allocate_transformed_problem(numbbo_problem_t *inner_problem) {
     problem->evaluate_constraint = _tfp_evaluate_constraint;
     problem->recommend_solutions = _tfp_recommend_solutions;
     problem->free_problem = _tfp_free_problem;
-    problem->number_of_parameters = inner_problem->number_of_parameters;
+    problem->number_of_variables = inner_problem->number_of_variables;
     problem->number_of_objectives = inner_problem->number_of_objectives;
     problem->number_of_constraints = inner_problem->number_of_constraints;
     problem->lower_bounds = 
         numbbo_duplicate_vector(inner_problem->lower_bounds,
-                                inner_problem->number_of_parameters);
+                                inner_problem->number_of_variables);
     problem->upper_bounds = 
         numbbo_duplicate_vector(inner_problem->upper_bounds,
-                                inner_problem->number_of_parameters);
+                                inner_problem->number_of_variables);
     problem->best_value = 
         numbbo_duplicate_vector(inner_problem->best_value,
                                 inner_problem->number_of_objectives);
@@ -115,14 +129,4 @@ numbbo_allocate_transformed_problem(numbbo_problem_t *inner_problem) {
     obj->inner_problem = inner_problem;
     obj->state = NULL;
     return obj;
-}
-
-static void _default_initial_solution(const numbbo_problem_t *problem, 
-                                      double *initial_solution) {
-    size_t i;
-    assert(problem != NULL);
-    assert(problem->lower_bounds != NULL);
-    assert(problem->upper_bounds != NULL);
-    for (i = 0; i < problem->number_of_parameters; ++i) 
-        initial_solution[i] = 0.5 * (problem->lower_bounds[i] + problem->upper_bounds[i]);
 }
