@@ -212,7 +212,7 @@ double bbob2009_compute_fopt(int function_id, int instance_id) {
  * function in one dimension, then vary the function, then the
  * dimension.
  *
- *This gives us:
+ * This gives us:
  *
  * function_index | function_id | instance_id | dimension
  * ---------------+-------------+-------------+-----------
