@@ -1,7 +1,7 @@
 CFLAGS ?= -Wall -std=c99 -pedantic -Os -g
 CXXFLAGS ?= -Wall -pedantic -Os -g
 LDFLAGS ?= -lm
-TARGETS = demo cppdemo test_bbob2009
+TARGETS = demo demo-cpp test_bbob2009
 
 .PHONEY: clean all
 .SILENT:
@@ -21,7 +21,11 @@ demo: demo.o numbbo.o
 	echo "LD    $@"
 	${CC} ${LDFLAGS} -o $@ $+
 
-cppdemo: cppdemo.o numbbo.o
+demo-cpp.o: demo.cpp
+	echo "CXX   $@"
+	${CXX} ${CXXFLAGS} -o $@ -c $<
+
+demo-cpp: demo-cpp.o numbbo.o
 	echo "LD    $@"
 	${CXX} ${LDFLAGS} -o $@ $+
 
