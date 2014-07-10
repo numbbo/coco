@@ -12,18 +12,6 @@ static void f_schaffers_evaluate(numbbo_problem_t *self, double *x, double *y) {
     size_t i, k;
     assert(self->number_of_objectives == 1);
 
-    /* TODO: this penalty computation is a "transformation"/wrapper/"outer onion", 
-     it is to be removed here
-     Computing f_pen */
-    double f_pen = 0, diff;
-    static const double condition = 1.0e2;
-    for (i = 0; i < self->number_of_variables; ++i){
-    	diff = fabs(x[i]) - 5; /* TODO: this 5 should be/derive from smallest and largest value of interest */
-    	if (diff > 0){
-    		f_pen += diff * diff;
-    	}
-    }
-
     /* Computation core */
     y[0] = 0.0;
     double tmp;
@@ -32,7 +20,7 @@ static void f_schaffers_evaluate(numbbo_problem_t *self, double *x, double *y) {
     	y[0] += pow(tmp, 0.25) * (1 + pow(sin(50. * pow(tmp, 0.1)), 2.));
 
     }
-    y[0] = pow((1./((double)(self->number_of_variables - 1))) * y[0], 2.) + 10 * f_pen;
+    y[0] = pow((1./((double)(self->number_of_variables - 1))) * y[0], 2.);
 }
 
 static numbbo_problem_t *schaffers_problem(const size_t number_of_variables) {
