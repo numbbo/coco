@@ -81,7 +81,7 @@ const char *numbbo_get_problem_id(numbbo_problem_t *self);
 /**
  * Return the number of variables of a NUMBBO problem.
  */
-const size_t numbbo_get_number_of_variables(const numbbo_problem_t *self);
+size_t numbbo_get_number_of_variables(const numbbo_problem_t *self);
 
 /**
  * Get the ${function_index}-th problem of the ${problem_suit} test
