@@ -12,12 +12,10 @@ static void f_griewankRosenbrock_evaluate(numbbo_problem_t *self, double *x, dou
 
     /* Computation core */
     y[0] = 0.0;
-    double zi, zii, tmp = 0;
+    double tmp = 0;
 
     for (i = 0; i < self->number_of_variables - 1; ++i) {
-    	zi = fmax(1., sqrt((double)self->number_of_variables)/8.) * x[i] + 0.5;
-    	zii = fmax(1., sqrt((double)self->number_of_variables)/8.) * x[i+1] + 0.5;
-    	tmp = 100 * (zi * zi - zii) * (zi * zi - zii) + (zi - 1) * (zi - 1);
+    	tmp = 100 * (x[i] * x[i] - x[i + 1]) * (x[i] * x[i] - x[i + 1]) + (x[i] - 1) * (x[i] - 1);
     	y[0] += tmp/4000. - cos(tmp);
 
     }
