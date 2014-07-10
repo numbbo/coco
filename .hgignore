@@ -4,6 +4,7 @@ build/c/numbbo.h
 build/c/.*.o
 build/c/demo$
 build/c/random_search/
+build/doxygen
 build/python/README 
 build/python/numbbo/numbbo.c 
 build/python/numbbo/numbbo.h 
@@ -14,3 +15,4 @@ build/r/skel/src/numbbo.h
 release/.*
 .*\#.*
 .*\.orig
+autodoc/

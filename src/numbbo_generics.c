@@ -1,6 +1,7 @@
 #include <assert.h>
 
 #include "numbbo.h"
+#include "numbbo_internal.h"
 
 void numbbo_evaluate_function(numbbo_problem_t *self, double *x, double *y) {
     /* implements a safer version of self->evaluate(self, x, y) */

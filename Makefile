@@ -38,7 +38,10 @@ R_TARGETS = \
 	build/r/skel/src/numbbo.h \
 	build/r/skel/DESCRIPTION
 
-TARGETS = ${C_TARGETS} ${PYTHON_TARGETS} ${R_TARGETS}
+DOXYGEN_TARGETS = \
+	build/doxygen/xml/index.xml
+
+TARGETS = ${C_TARGETS} ${PYTHON_TARGETS} ${R_TARGETS} ${DOXYGEN_TARGETS}
 
 
 ## Order matters, do not change! Not all files need to be listed
@@ -73,10 +76,20 @@ clean:
 	rm -fR build/r/pkg
 	rm -f build/r/roxygen.log
 	rm -f r-build.log
+	echo "  RM    build/doxygen/*"
+	rm -fR build/doxygen
 
 release: c_release python_release r_release
 
 r_release: ${R_TARGETS}
+
+########################################################################
+## Doxygen documentation
+build/doxygen:
+	mkdir -p $@
+
+build/doxygen/xml/index.xml: src/numbbo.h build/doxygen
+	doxygen doxygen.ini
 
 ########################################################################
 ## C framework
@@ -85,8 +98,8 @@ build/c/numbbo.c: ${NUMBBO_C} src/numbbo_c_runtime.c
 	${AMALGAMATE} $+ > $@
 
 build/c/numbbo.h: ${NUMBBO_H}
-	echo "  AM    $@"
-	${AMALGAMATE} $+ > $@
+	echo "  CP    $@"
+	cp $+ $@
 
 build/c/VERSION:
 	echo "  MK    $@"
@@ -112,8 +125,8 @@ build/python/numbbo/numbbo.c: ${NUMBBO_C} src/numbbo_c_runtime.c
 	${AMALGAMATE} $+ > $@
 
 build/python/numbbo/numbbo.h: ${NUMBBO_H}
-	echo "  AM    $@"
-	${AMALGAMATE} $+ > $@
+	echo "  CP    $@"
+	cp $+ $@
 
 build/python/%: build/python/%.in
 	echo "  M4    $@"
@@ -134,8 +147,8 @@ build/r/skel/src/numbbo.c: ${NUMBBO_C} src/numbbo_r_runtime.c
 	${AMALGAMATE} $+ > $@
 
 build/r/skel/src/numbbo.h: ${NUMBBO_H}
-	echo "  AM    $@"
-	${AMALGAMATE} $+ > $@
+	echo "  CP    $@"
+	cp $+ $@
 
 build/r/%: build/r/%.in
 	echo "  M4    $@"
