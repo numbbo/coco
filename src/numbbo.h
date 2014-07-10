@@ -97,19 +97,14 @@ const double * numbbo_get_smallest_values_of_interest(const numbbo_problem_t *se
 const double * numbbo_get_largest_values_of_interest(const numbbo_problem_t *self);
 
 /**
- * Write initial variable values for the problem ${self} into
- * ${initial_solution}.
+ * Return an initial solution, i.e. a feasible variable setting, to the
+ * problem.
  *
-<<<<<<< local
- * @ref numbbo_get_smallest_values_of_interest
- * @ref numbbo_get_largest_values_of_interest
-=======
- * By default, the center of the ${problem}s region of interest
+ * By default, the center of the problems region of interest
  * is the initial solution.
  *
- * See also numbbo_get_*_values_of_interest()
- * 
->>>>>>> other
+ * @ref numbbo_get_smallest_values_of_interest
+ * @ref numbbo_get_largest_values_of_interest
  */
 void numbbo_get_initial_solution(const numbbo_problem_t *self, 
                                  double *initial_solution);
