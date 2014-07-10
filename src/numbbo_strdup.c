@@ -1,4 +1,8 @@
+#include <stdlib.h>
+#include <stddef.h>
 #include <string.h>
+
+#include "numbbo.h"
 
 /**
  * numbbo_strdup(string):

@@ -1,5 +1,5 @@
 #include "numbbo.h"
-
+#include "numbbo_utilities.c"
 #include "log_hitting_times.c"
 
 numbbo_problem_t *toy_observer(numbbo_problem_t *problem, const char *options) {
