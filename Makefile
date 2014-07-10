@@ -98,8 +98,8 @@ build/c/numbbo.c: ${NUMBBO_C} src/numbbo_c_runtime.c
 	${AMALGAMATE} $+ > $@
 
 build/c/numbbo.h: ${NUMBBO_H}
-	echo "  AM    $@"
-	${AMALGAMATE} $+ > $@
+	echo "  CP    $@"
+	cp $+ $@
 
 build/c/VERSION:
 	echo "  MK    $@"
@@ -125,8 +125,8 @@ build/python/numbbo/numbbo.c: ${NUMBBO_C} src/numbbo_c_runtime.c
 	${AMALGAMATE} $+ > $@
 
 build/python/numbbo/numbbo.h: ${NUMBBO_H}
-	echo "  AM    $@"
-	${AMALGAMATE} $+ > $@
+	echo "  CP    $@"
+	cp $+ $@
 
 build/python/%: build/python/%.in
 	echo "  M4    $@"
@@ -147,8 +147,8 @@ build/r/skel/src/numbbo.c: ${NUMBBO_C} src/numbbo_r_runtime.c
 	${AMALGAMATE} $+ > $@
 
 build/r/skel/src/numbbo.h: ${NUMBBO_H}
-	echo "  AM    $@"
-	${AMALGAMATE} $+ > $@
+	echo "  CP    $@"
+	cp $+ $@
 
 build/r/%: build/r/%.in
 	echo "  M4    $@"

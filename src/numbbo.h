@@ -1,3 +1,10 @@
+/*
+ * Public NumBBO interface
+ *
+ * All public functions, constants and variables are defined in this
+ * file. It is the authorative reference, if any function deviates
+ * from the documented behaviour it is considered a bug.
+ */
 #ifndef __NUMBBO_H__
 #define __NUMBBO_H__
 
@@ -14,7 +21,6 @@ extern "C" {
 static const double numbbo_pi = 3.14159265358979323846;
 
 struct numbbo_problem;
-
 typedef struct numbbo_problem numbbo_problem_t;
 
 typedef void (*numbbo_optimizer_t)(numbbo_problem_t *problem);
