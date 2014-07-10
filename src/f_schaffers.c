@@ -18,7 +18,7 @@ static void f_schaffers_evaluate(numbbo_problem_t *self, double *x, double *y) {
     double f_pen = 0, diff;
     static const double condition = 1.0e2;
     for (i = 0; i < self->number_of_variables; ++i){
-    	diff = fabs(x[i]) - 5;
+    	diff = fabs(x[i]) - 5; /* TODO: this 5 should be/derive from smallest and largest value of interest */
     	if (diff > 0){
     		f_pen += diff * diff;
     	}
