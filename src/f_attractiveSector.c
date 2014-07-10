@@ -14,7 +14,6 @@
 
 static void f_attractiveSector_evaluate(numbbo_problem_t *self, double *x, double *y) {
     size_t i;
-    double f_opt = 0;
     double condition;
     static const double exp = 0.9;
     assert(self->number_of_objectives == 1);
@@ -28,7 +27,7 @@ static void f_attractiveSector_evaluate(numbbo_problem_t *self, double *x, doubl
     	}
         y[0] += condition * condition * x[i] * x[i];
     }
-    y[0] = pow(y[0], exp) + f_opt;
+    y[0] = pow(y[0], exp);
 }
 
 static numbbo_problem_t *attractiveSector_problem(const size_t number_of_variables) {
