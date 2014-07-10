@@ -6,7 +6,7 @@
 #include "numbbo.h"
 #include "test_bbob2009.h"
 
-static const bool about_equal(const double a, const double b) {
+static bool about_equal(const double a, const double b) {
     /* Shortcut to avoid the case where a - b is tiny and both a and b
      * are close to or equal to 0. 
      *
