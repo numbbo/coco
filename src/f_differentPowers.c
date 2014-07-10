@@ -10,7 +10,7 @@ static void f_differentPowers_evaluate(numbbo_problem_t *self, double *x, double
     size_t i;
     assert(self->number_of_objectives == 1);
     y[0] = 0.0;
-    for (i = 1; i < self->number_of_variables; ++i) {
+    for (i = 0; i < self->number_of_variables; ++i) {
         y[0] += pow(fabs(x[i]),
                     2 + 4 * (((double)(i - 1))/(self->number_of_variables - 1)));
     }
