@@ -11,8 +11,6 @@ static void f_griewankRosenbrock_evaluate(numbbo_problem_t *self, double *x, dou
     assert(self->number_of_objectives == 1);
 
     /* Computation core */
-
-    double f_opt = 0; /* f_opt may need to be changed*/
     y[0] = 0.0;
     double zi, zii, tmp = 0;
 
@@ -23,7 +21,7 @@ static void f_griewankRosenbrock_evaluate(numbbo_problem_t *self, double *x, dou
     	y[0] += tmp/4000. - cos(tmp);
 
     }
-    y[0] = 10./((double)self->number_of_variables - 1) * y[0] + 10 + f_opt;
+    y[0] = 10./((double)self->number_of_variables - 1) * y[0] + 10;
 }
 
 static numbbo_problem_t *griewankRosenbrock_problem(const size_t number_of_variables) {
