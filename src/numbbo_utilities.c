@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "numbbo.h"
+#include "numbbo_internal.h"
 #include "numbbo_strdup.c"
 
 /* Figure out if we are on a sane platform or on the dominant platform. */
