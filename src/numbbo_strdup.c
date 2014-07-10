@@ -7,7 +7,7 @@
  * it. The caller is responsible for free()ing the memory allocated
  * using numbbo_free_memory().
  */
-static char *numbbo_strdup(const char *string) {    
+char *numbbo_strdup(const char *string) {    
     if (string == NULL)
         return NULL;
     size_t len = strlen(string);
