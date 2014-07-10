@@ -12,7 +12,7 @@
   static const char *numbbo_path_separator = "\\";
   #define NUMBBO_PATH_MAX PATH_MAX
   #define HAVE_GFA
-#elif defined(_POSIX_VERSION) || defined(__gnu_linux__) || defined(__APPLE__)
+#elif defined(__gnu_linux__) || defined(__APPLE__) || defined(__FreeBSD__)
   #include <sys/stat.h>
   #include <sys/types.h>
   static const char *numbbo_path_separator = "/";
