@@ -38,7 +38,10 @@ R_TARGETS = \
 	build/r/skel/src/numbbo.h \
 	build/r/skel/DESCRIPTION
 
-TARGETS = ${C_TARGETS} ${PYTHON_TARGETS} ${R_TARGETS}
+DOXYGEN_TARGETS = \
+	build/doxygen/xml/index.xml
+
+TARGETS = ${C_TARGETS} ${PYTHON_TARGETS} ${R_TARGETS} ${DOXYGEN_TARGETS}
 
 
 ## Order matters, do not change! Not all files need to be listed
@@ -73,10 +76,20 @@ clean:
 	rm -fR build/r/pkg
 	rm -f build/r/roxygen.log
 	rm -f r-build.log
+	echo "  RM    build/doxygen/*"
+	rm -fR build/doxygen
 
 release: c_release python_release r_release
 
 r_release: ${R_TARGETS}
+
+########################################################################
+## Doxygen documentation
+build/doxygen:
+	mkdir -p $@
+
+build/doxygen/xml/index.xml: src/numbbo.h build/doxygen
+	doxygen doxygen.ini
 
 ########################################################################
 ## C framework
