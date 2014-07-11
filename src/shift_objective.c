@@ -24,7 +24,8 @@ numbbo_problem_t *shift_objective(numbbo_problem_t *inner_problem,
     numbbo_transformed_problem_t *obj =
         numbbo_allocate_transformed_problem(inner_problem);
     numbbo_problem_t *problem = (numbbo_problem_t *)obj;
-    shift_objective_state_t *state = numbbo_allocate_memory(sizeof(*state));
+    shift_objective_state_t *state = 
+        (shift_objective_state_t *)numbbo_allocate_memory(sizeof(*state));
     state->offset = offset;
     obj->state = state;
     problem->evaluate_function = _so_evaluate_function;

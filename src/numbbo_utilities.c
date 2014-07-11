@@ -10,13 +10,13 @@
 #if defined(_WIN32) || defined(_WIN64)
   #include <windows.h>
   static const char *numbbo_path_separator = "\\";
-  #define NUMBBO_PATH_MAX PATH_MAX
-  #define HAVE_GFA
+  #define NUMBBO_PATH_MAX MAX_PATH
+  #define HAVE_GFA 1
 #elif defined(__gnu_linux__) || defined(__APPLE__) || defined(__FreeBSD__)
   #include <sys/stat.h>
   #include <sys/types.h>
   static const char *numbbo_path_separator = "/";
-  #define HAVE_STAT
+  #define HAVE_STAT 1
 
   #if defined(__linux__)
     #include <linux/limits.h>
@@ -73,8 +73,8 @@ void numbbo_create_path(const char *path) {
     /* Nothing to do if the path exists. */
     if (numbbo_path_exists(path))
         return;
-#if defined(HAVE_GFD)
-#error Unimplemented
+#if defined(HAVE_GFA)
+    /* FIXME: Unimplemented for now. */
 #elif defined(HAVE_STAT)
     assert(strcmp(numbbo_path_separator, "/") == 0);
     char *tmp = NULL;
