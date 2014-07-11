@@ -41,7 +41,7 @@ numbbo_random_state_t *numbbo_new_random(uint32_t seed) {
     size_t i; 
     /* Expand seed to fill initial state array. */
     for (i = 0; i < LONG_LAG; ++i) {
-        state->x[i] = ((double)seed) / (double)((1UL << 32) - 1);
+        state->x[i] = ((double)seed) / (double)((1ULL << 32) - 1);
         /* Advance seed based on simple RNG from TAOCP */
         seed = 1812433253UL * (seed ^ (seed >> 30)) + (i+1);
     }

@@ -1,3 +1,4 @@
+
 #include <stdbool.h>
 #include <assert.h>
 
@@ -46,7 +47,8 @@ numbbo_problem_t *shift_variables(numbbo_problem_t *inner_problem,
         numbbo_allocate_transformed_problem(inner_problem);
     numbbo_problem_t *problem = (numbbo_problem_t *)obj;
 
-    shift_variables_state_t *state = numbbo_allocate_memory(sizeof(*state));
+    shift_variables_state_t *state = 
+        (shift_variables_state_t *)numbbo_allocate_memory(sizeof(*state));
     state->offset = numbbo_duplicate_vector(offset, number_of_variables);
     state->shifted_x = numbbo_allocate_vector(number_of_variables);
     state->old_free_problem = problem->free_problem;
