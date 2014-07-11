@@ -13,7 +13,7 @@ static void f_ellipsoid_evaluate(numbbo_problem_t *self, double *x, double *y) {
     assert(self->number_of_variables > 0);
     y[0] = x[i] * x[i];
     for (i = 1; i < self->number_of_variables; ++i) {
-        const double exponent = i * 1.0 / (self->number_of_variables - 1)
+        const double exponent = i * 1.0 / (self->number_of_variables - 1);
         y[0] += pow(condition, exponent) * x[i] * x[i];
     }
 }
