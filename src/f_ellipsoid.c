@@ -7,13 +7,15 @@
 #include "numbbo_problem.c"
 
 static void f_ellipsoid_evaluate(numbbo_problem_t *self, double *x, double *y) {
-    size_t i;
+    size_t i = 0;
     static const double condition = 1.0e6;    
     assert(self->number_of_objectives == 1);
-    assert(self->number_of_variables);
+    assert(self->number_of_variables > 0);
     y[0] = x[i] * x[i];
     for (i = 1; i < self->number_of_variables; ++i) {
-            y[0] += pow(condition, (double)(i) / (double)(self->number_of_variables - 1)) * x[i] * x[i];
+        const double exponent = i * 1.0 / (self->number_of_variables - 1)
+        y[0] += pow(condition, exponent) * x[i] * x[i];
+    }
 }
 
 static numbbo_problem_t *ellipsoid_problem(const size_t number_of_variables) {
