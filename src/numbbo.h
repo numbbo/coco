@@ -61,7 +61,7 @@ void numbbo_free_problem(numbbo_problem_t *self);
  * the returned pointer becomes invalid. When in doubt, strdup() the
  * returned value.
  *
- * @ref numbbo_strdup
+ * @see numbbo_strdup()
  */
 const char *numbbo_get_problem_name(numbbo_problem_t *self);
 
@@ -74,7 +74,7 @@ const char *numbbo_get_problem_name(numbbo_problem_t *self);
  * the returned pointer becomes invalid. When in doubt, strdup() the
  * returned value.
  *
- * @ref numbbo_strdup
+ * @see numbbo_strdup
  */
 const char *numbbo_get_problem_id(numbbo_problem_t *self);
 
@@ -103,8 +103,7 @@ const double * numbbo_get_largest_values_of_interest(const numbbo_problem_t *sel
  * By default, the center of the problems region of interest
  * is the initial solution.
  *
- * @ref numbbo_get_smallest_values_of_interest
- * @ref numbbo_get_largest_values_of_interest
+ * @see numbbo_get_smallest_values_of_interest() and numbbo_get_largest_values_of_interest()
  */
 void numbbo_get_initial_solution(const numbbo_problem_t *self, 
                                  double *initial_solution);
@@ -190,7 +189,7 @@ void numbbo_free_memory(void *data);
  * it. The caller is responsible for releasing the allocated memory
  * using numbbo_free_memory().
  *
- * @ref numbbo_free_memory
+ * @see numbbo_free_memory()
  */
 char *numbbo_strdup(const char *string);
 
