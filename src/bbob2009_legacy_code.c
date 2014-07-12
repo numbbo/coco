@@ -7,6 +7,8 @@
  * generation etc.
  */
 
+#include <math.h>
+
 /**
  * bbob2009_allocate_matrix(n, m):
  *
