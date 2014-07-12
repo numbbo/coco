@@ -18,7 +18,7 @@ static bool about_equal(const double a, const double b) {
     
     const double larger = fabs(a) > fabs(b) ? a : b;
     const double relative_error = fabs((a - b) / larger);
-    return relative_error < 0.0001;
+    return relative_error < 0.0000001;
 }
 
 int main(int argc, char **argv) {    
