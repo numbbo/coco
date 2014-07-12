@@ -28,10 +28,12 @@ static void lht_evaluate_function(numbbo_problem_t *self, double *x, double *y) 
     if (state->logfile == NULL) {
         state->logfile = fopen(state->path, "w");
         if (state->logfile == NULL) {
-            char buf[4096];
-            snprintf(buf, sizeof(buf), 
-                     "lht_evaluate_function() failed to open log file '%s'.",
-                     state->path);
+            const char *error_format = 
+                "lht_evaluate_function() failed to open log file '%s'.";
+            size_t buffer_size = 
+                snprintf(NULL, 0, error_format, state->path);
+            char buf[buffer_size];
+            snprintf(buff, buffer_size, error_format, state->path);
             numbbo_error(buf);
         }
         fputs("target_value function_value number_of_evaluations\n",

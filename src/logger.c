@@ -7,12 +7,9 @@
 #include "logger.h"
 #include "numbbo.h"
 
-//#include "numbbo_utilities.c"
+#include "numbbo_utilities.c"
 #include "numbbo_problem.c"
-//#include "numbbo_strdup.c"
-
-
-
+#include "numbbo_strdup.c"
 
 static void logger_evaluate_function(numbbo_problem_t *self, double *x, double *y) {
     numbbo_transformed_problem_t *obj = (numbbo_transformed_problem_t *)self;
@@ -25,10 +22,12 @@ static void logger_evaluate_function(numbbo_problem_t *self, double *x, double *
     if (state->logfile == NULL) {
         state->logfile = fopen(state->path, "w");
         if (state->logfile == NULL) {
-            char buf[4096];
-            snprintf(buf, sizeof(buf), 
-                     "logger_evaluate_function() failed to open log file '%s'.",
-                     state->path);
+            const char *error_format = 
+                "logger_evaluate_function() failed to open log file '%s'.";
+            size_t buffer_size = 
+                snprintf(NULL, 0, error_format, state->path);
+            char buf[buffer_size];
+            snprintf(buff, buffer_size, error_format, state->path);
             numbbo_error(buf);
         }
         fprintf(state->logfile,"%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n", *(self->best_value));
@@ -107,10 +106,7 @@ numbbo_problem_t *logger(numbbo_problem_t *inner_problem, const char *path) {//T
     return problem;
 }
 
-
 void update_next_target(logger_t * state){
     state->next_target=pow(10, (double)state->idx_fval_trigger/(double)nbpts_fval);
     return;
 }
-
-
