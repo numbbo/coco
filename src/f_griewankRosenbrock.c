@@ -7,19 +7,17 @@
 #include "numbbo_problem.c"
 
 static void f_griewankRosenbrock_evaluate(numbbo_problem_t *self, double *x, double *y) {
-    size_t i, k;
+    size_t i;
+    double tmp = 0;
     assert(self->number_of_objectives == 1);
 
     /* Computation core */
     y[0] = 0.0;
-    double tmp = 0;
-
     for (i = 0; i < self->number_of_variables - 1; ++i) {
     	tmp = 100 * (x[i] * x[i] - x[i + 1]) * (x[i] * x[i] - x[i + 1]) + (x[i] - 1) * (x[i] - 1);
     	y[0] += tmp/4000. - cos(tmp);
-
     }
-    y[0] = 10./((double)self->number_of_variables - 1) * y[0] + 10;
+    y[0] = 10./(self->number_of_variables - 1) * y[0] + 10;
 }
 
 static numbbo_problem_t *griewankRosenbrock_problem(const size_t number_of_variables) {

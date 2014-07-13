@@ -32,10 +32,10 @@ static numbbo_problem_t *numbbo_allocate_problem(const size_t number_of_variable
 }
 
 /**
- * Generic wrapper for a transformed numbbo_problem_t. 
+ * Generic wrapper for a transformed (or "outer") numbbo_problem_t.
  */
 typedef struct numbbo_transformed_problem {
-    /* must be defined first to make inheritance / overload happen */
+    /* problem_t must be defined first to make inheritance / overload happen */
     numbbo_problem_t problem;
     numbbo_problem_t *inner_problem;
     void *state;

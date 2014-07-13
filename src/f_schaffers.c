@@ -9,18 +9,17 @@
 /* Schaffers F7 function, transformations not implemented for the moment  */
 
 static void f_schaffers_evaluate(numbbo_problem_t *self, double *x, double *y) {
-    size_t i, k;
+    size_t i;
     assert(self->number_of_objectives == 1);
 
     /* Computation core */
     y[0] = 0.0;
-    double tmp;
     for (i = 0; i < self->number_of_variables - 1; ++i) {
-    	tmp = x[i] * x[i] + x[i + 1] * x[i + 1];
+    	const double tmp = x[i] * x[i] + x[i + 1] * x[i + 1];
     	y[0] += pow(tmp, 0.25) * (1 + pow(sin(50. * pow(tmp, 0.1)), 2.));
 
     }
-    y[0] = pow((1./((double)(self->number_of_variables - 1))) * y[0], 2.);
+    y[0] = pow((1./(self->number_of_variables - 1)) * y[0], 2.);
 }
 
 static numbbo_problem_t *schaffers_problem(const size_t number_of_variables) {
