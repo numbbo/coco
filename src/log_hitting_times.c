@@ -33,7 +33,7 @@ static void lht_evaluate_function(numbbo_problem_t *self, double *x, double *y) 
             size_t buffer_size = 
                 snprintf(NULL, 0, error_format, state->path);
             char buf[buffer_size];
-            snprintf(buff, buffer_size, error_format, state->path);
+            snprintf(buf, buffer_size, error_format, state->path);
             numbbo_error(buf);
         }
         fputs("target_value function_value number_of_evaluations\n",

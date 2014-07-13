@@ -27,7 +27,7 @@ static void logger_evaluate_function(numbbo_problem_t *self, double *x, double *
             size_t buffer_size = 
                 snprintf(NULL, 0, error_format, state->path);
             char buf[buffer_size];
-            snprintf(buff, buffer_size, error_format, state->path);
+            snprintf(buf, buffer_size, error_format, state->path);
             numbbo_error(buf);
         }
         fprintf(state->logfile,"%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n", *(self->best_value));
