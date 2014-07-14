@@ -60,13 +60,14 @@ void bbob2009_decode_function_index(const int function_index,
     static const int number_of_dimensions = 6;
     const int high_instance_id = function_index / 
         (number_of_consecutive_instances * number_of_functions * number_of_dimensions);
+    int low_instance_id;
     int rest = function_index %
         (number_of_consecutive_instances * number_of_functions * number_of_dimensions);
     *dimension = dims[rest / (number_of_consecutive_instances * number_of_functions)];
     rest = rest % (number_of_consecutive_instances * number_of_functions);
     *function_id = rest / number_of_consecutive_instances + 1;
     rest = rest % number_of_consecutive_instances;
-    const int low_instance_id = rest + 1;
+    low_instance_id = rest + 1;
     *instance_id = low_instance_id + 5 * high_instance_id;
 }
 
