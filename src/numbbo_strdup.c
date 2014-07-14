@@ -12,10 +12,12 @@
  * using numbbo_free_memory().
  */
 char *numbbo_strdup(const char *string) {    
+    size_t len;
+    char *duplicate;
     if (string == NULL)
         return NULL;
-    size_t len = strlen(string);
-    char *duplicate = (char *)numbbo_allocate_memory(len + 1);
+    len = strlen(string);
+    duplicate = (char *)numbbo_allocate_memory(len + 1);
     memcpy(duplicate, string, len + 1);
     return duplicate;
 }

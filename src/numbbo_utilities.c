@@ -109,7 +109,8 @@ error:
 }
 
 double *numbbo_allocate_vector(const size_t number_of_elements) {
-    return (double *)numbbo_allocate_memory(number_of_elements * sizeof(double));
+    const size_t block_size = number_of_elements * sizeof(double);
+    return (double *)numbbo_allocate_memory(block_size);
 }
 
 double *numbbo_duplicate_vector(const double *src,
