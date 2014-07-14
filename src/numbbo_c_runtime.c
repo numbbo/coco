@@ -20,11 +20,12 @@ void numbbo_warning(const char *message) {
 }
 
 void *numbbo_allocate_memory(const size_t size) {
+    void *data;
     if (size == 0)  {
         numbbo_error("numbbo_allocate_memory() called with 0 size.");
         return NULL; /* never reached */
     }
-    void *data = malloc(size);
+    data = malloc(size);
     if (data == NULL)
         numbbo_error("numbbo_allocate_memory() failed.");
     return data;

@@ -70,17 +70,23 @@ int numbbo_path_exists(const char *path) {
 }
 
 void numbbo_create_path(const char *path) {
+#if defined(HAVE_GFA)
+    /* FIXME: Unimplemented for now. */
     /* Nothing to do if the path exists. */
     if (numbbo_path_exists(path))
         return;
-#if defined(HAVE_GFA)
-    /* FIXME: Unimplemented for now. */
+
 #elif defined(HAVE_STAT)
-    assert(strcmp(numbbo_path_separator, "/") == 0);
     char *tmp = NULL;
     char buf[4096];
     char *p;
     size_t len = strlen(path);
+    assert(strcmp(numbbo_path_separator, "/") == 0);
+
+    /* Nothing to do if the path exists. */
+    if (numbbo_path_exists(path))
+        return;
+
     tmp = numbbo_strdup(path);
     /* Remove possible trailing slash */
     if (tmp[len - 1] == '/')

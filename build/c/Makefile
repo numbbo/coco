@@ -1,4 +1,4 @@
-CFLAGS ?= -Wall -std=c99 -pedantic -Os -g
+CFLAGS ?= -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wdeclaration-after-statement -std=c89 -pedantic -Os -g
 CXXFLAGS ?= -Wall -pedantic -Os -g
 LDFLAGS ?= -lm
 TARGETS = demo demo-cpp test_bbob2009

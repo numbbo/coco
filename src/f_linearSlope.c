@@ -7,7 +7,7 @@
 #include "numbbo_problem.c"
 
 static void f_linearSlope_evaluate(numbbo_problem_t *self, double *x, double *y) {
-    const static double alpha = 100.0;
+    static const double alpha = 100.0;
     double fadd = 0;
     double *tmpx = (double*) numbbo_allocate_vector(self->number_of_variables);
     size_t i;
