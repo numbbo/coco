@@ -22,7 +22,7 @@ void numbbo_warning(const char *message) {
     warning(message);
 }
 
-void *numbbo_allocate_memory(size_t size) {
+void *numbbo_allocate_memory(const size_t size) {
     void *data;
     data = (void *)Calloc(size, char);
     /* This should never happen, but better safe than sorry. */

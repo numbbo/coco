@@ -3,10 +3,9 @@
 #include "log_hitting_times.c"
 
 numbbo_problem_t *toy_observer(numbbo_problem_t *problem, const char *options) {
-    /* Calculate target levels for first hitting times */
     size_t i;
     static const size_t number_of_targets = 20;
-    double targets[number_of_targets];
+    double targets[20];
 
     /* Calculate target levels: */
     for (i = number_of_targets; i > 0; --i) {

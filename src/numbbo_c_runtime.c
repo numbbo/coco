@@ -19,7 +19,7 @@ void numbbo_warning(const char *message) {
     fprintf(stderr, "WARNING: %s\n", message);
 }
 
-void *numbbo_allocate_memory(size_t size) {
+void *numbbo_allocate_memory(const size_t size) {
     if (size == 0)  {
         numbbo_error("numbbo_allocate_memory() called with 0 size.");
         return NULL; /* never reached */
