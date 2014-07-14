@@ -8,11 +8,11 @@
 #include <assert.h>
 #include <math.h>
 
-#include "numbbo.h"
+#include "coco.h"
 
-#include "numbbo_problem.c"
+#include "coco_problem.c"
 
-static void f_stepEllipsoidal_evaluate(numbbo_problem_t *self, double *x, double *y) {
+static void f_stepEllipsoidal_evaluate(coco_problem_t *self, double *x, double *y) {
     size_t i;
     assert(self->number_of_objectives == 1);
 
@@ -35,16 +35,16 @@ static void f_stepEllipsoidal_evaluate(numbbo_problem_t *self, double *x, double
     y[0] += f_pen + f_opt;
 }
 
-static numbbo_problem_t *stepEllipsoidal_problem(const size_t number_of_variables) {
+static coco_problem_t *stepEllipsoidal_problem(const size_t number_of_variables) {
     size_t i, problem_id_length;
-    numbbo_problem_t *problem = numbbo_allocate_problem(number_of_variables,
+    coco_problem_t *problem = coco_allocate_problem(number_of_variables,
                                                         1, 0);
-    problem->problem_name = numbbo_strdup("step ellipsoidal function");
+    problem->problem_name = coco_strdup("step ellipsoidal function");
     /* Construct a meaningful problem id */
     problem_id_length = snprintf(NULL, 0,
                                  "%s_%02i", "step ellipsoidal",
                                  (int)number_of_variables);
-    problem->problem_id = numbbo_allocate_memory(problem_id_length + 1);
+    problem->problem_id = coco_allocate_memory(problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1,
              "%s_%02d", "step ellipsoidal", (int)number_of_variables);
 

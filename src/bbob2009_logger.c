@@ -4,11 +4,11 @@
 #include <float.h>
 #include <math.h>
 
-#include "numbbo.h"
+#include "coco.h"
 
-#include "numbbo_utilities.c"
-#include "numbbo_problem.c"
-#include "numbbo_strdup.c"
+#include "coco_utilities.c"
+#include "coco_problem.c"
+#include "coco_strdup.c"
 
 static const size_t nbpts_nbevals = 20;
 static const size_t nbpts_fval = 5;
@@ -34,12 +34,12 @@ static void bbob2009_logger_prepare(bbob2009_logger_t *self){
     
 }
 
-static void bbob2009_logger_evaluate_function(numbbo_problem_t *self, 
+static void bbob2009_logger_evaluate_function(coco_problem_t *self, 
                                               double *x, double *y) {
-    numbbo_transformed_problem_t *obj = (numbbo_transformed_problem_t *)self;
+    coco_transformed_problem_t *obj = (coco_transformed_problem_t *)self;
     bbob2009_logger_t *state = (bbob2009_logger_t *)obj->state;
     assert(obj->state != NULL);
-    numbbo_evaluate_function(obj->inner_problem, x, y);
+    coco_evaluate_function(obj->inner_problem, x, y);
     state->number_of_evaluations++;
 
     /* Open logfile if it is not alread open */
@@ -51,10 +51,10 @@ static void bbob2009_logger_evaluate_function(numbbo_problem_t *self,
                 "bbob2009_logger_evaluate_function() failed to open log file '%s'.";
             size_t buffer_size = 
                 snprintf(NULL, 0, error_format, state->path);
-            buf = (char *)numbbo_allocate_memory(buffer_size);
+            buf = (char *)coco_allocate_memory(buffer_size);
             snprintf(buf, buffer_size, error_format, state->path);
-            numbbo_error(buf);
-            numbbo_free_memory(buf); /* Never reached */
+            coco_error(buf);
+            coco_free_memory(buf); /* Never reached */
         }
         fprintf(state->logfile,"%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n", *(self->best_value));
     }
@@ -85,37 +85,37 @@ static void bbob2009_logger_evaluate_function(numbbo_problem_t *self,
     fflush(state->logfile);
 }
 
-static void bbob2009_logger_free_problem(numbbo_problem_t *self) {
-    numbbo_transformed_problem_t *obj = (numbbo_transformed_problem_t *)self;
-    numbbo_problem_t *problem = (numbbo_problem_t *)obj;
+static void bbob2009_logger_free_problem(coco_problem_t *self) {
+    coco_transformed_problem_t *obj = (coco_transformed_problem_t *)self;
+    coco_problem_t *problem = (coco_problem_t *)obj;
     assert(obj->state != NULL);
     bbob2009_logger_t *state = (bbob2009_logger_t *)obj->state;
     
-    numbbo_free_memory(state->path);
+    coco_free_memory(state->path);
     if (state->logfile != NULL) {
         fclose(state->logfile);
         state->logfile = NULL;
     }
-    numbbo_free_memory(obj->state);
+    coco_free_memory(obj->state);
     if (obj->inner_problem != NULL) {
-        numbbo_free_problem(obj->inner_problem);
+        coco_free_problem(obj->inner_problem);
         obj->inner_problem = NULL;
     }
     if (problem->problem_id != NULL)
-        numbbo_free_memory(problem->problem_id);
+        coco_free_memory(problem->problem_id);
     if (problem->problem_name != NULL)
-        numbbo_free_memory(problem->problem_name);
-    numbbo_free_memory(obj);
+        coco_free_memory(problem->problem_name);
+    coco_free_memory(obj);
 }
 
-numbbo_problem_t *bbob2009_logger(numbbo_problem_t *inner_problem, const char *path) {
-    numbbo_transformed_problem_t *obj = numbbo_allocate_transformed_problem(inner_problem);
-    numbbo_problem_t *problem = (numbbo_problem_t *)obj;
-    bbob2009_logger_t *state = (bbob2009_logger_t *)numbbo_allocate_memory(sizeof(*state));
+coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path) {
+    coco_transformed_problem_t *obj = coco_allocate_transformed_problem(inner_problem);
+    coco_problem_t *problem = (coco_problem_t *)obj;
+    bbob2009_logger_t *state = (bbob2009_logger_t *)coco_allocate_memory(sizeof(*state));
 
     problem->evaluate_function = bbob2009_logger_evaluate_function;
     problem->free_problem = bbob2009_logger_free_problem;
-    state->path = numbbo_strdup(path);
+    state->path = coco_strdup(path);
     state->logfile = NULL; /* Open lazily in logger_evaluate_function(). */
     
     state->idx_fval_trigger= INT_MAX;

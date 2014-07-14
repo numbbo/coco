@@ -2,14 +2,14 @@
 #include <math.h>
 #include <assert.h>
 
-#include "numbbo.h"
+#include "coco.h"
 
-#include "numbbo_problem.c"
+#include "coco_problem.c"
 
-static void f_linearSlope_evaluate(numbbo_problem_t *self, double *x, double *y) {
+static void f_linearSlope_evaluate(coco_problem_t *self, double *x, double *y) {
     static const double alpha = 100.0;
     double fadd = 0;
-    double *tmpx = (double*) numbbo_allocate_vector(self->number_of_variables);
+    double *tmpx = (double*) coco_allocate_vector(self->number_of_variables);
     size_t i;
     assert(self->number_of_objectives == 1);
     y[0] = 0.0;
@@ -48,19 +48,19 @@ static void f_linearSlope_evaluate(numbbo_problem_t *self, double *x, double *y)
         
     }
     y[0]+=fadd;
-    numbbo_free_memory(tmpx);
+    coco_free_memory(tmpx);
 }
 
-static numbbo_problem_t *linearSlope_problem(const size_t number_of_variables) {
+static coco_problem_t *linearSlope_problem(const size_t number_of_variables) {
     size_t i, problem_id_length;
-    numbbo_problem_t *problem = numbbo_allocate_problem(number_of_variables,
+    coco_problem_t *problem = coco_allocate_problem(number_of_variables,
                                                         1,
                                                         0);
-    problem->problem_name = numbbo_strdup("linear slope function");
+    problem->problem_name = coco_strdup("linear slope function");
     /* Construct a meaningful problem id */
     problem_id_length = snprintf(NULL, 0, "%s_%02i", "linearSlope",
                                  (int)number_of_variables);
-    problem->problem_id = (char *) numbbo_allocate_memory(
+    problem->problem_id = (char *) coco_allocate_memory(
         problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d",
              "linearSlope", (int)number_of_variables);

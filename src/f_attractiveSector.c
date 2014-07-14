@@ -8,11 +8,11 @@
 #include <assert.h>
 #include <math.h>
 
-#include "numbbo.h"
+#include "coco.h"
 
-#include "numbbo_problem.c"
+#include "coco_problem.c"
 
-static void f_attractiveSector_evaluate(numbbo_problem_t *self, double *x, double *y) {
+static void f_attractiveSector_evaluate(coco_problem_t *self, double *x, double *y) {
     size_t i;
     double condition;
     static const double exp = 0.9;
@@ -30,16 +30,16 @@ static void f_attractiveSector_evaluate(numbbo_problem_t *self, double *x, doubl
     y[0] = pow(y[0], exp);
 }
 
-static numbbo_problem_t *attractiveSector_problem(const size_t number_of_variables) {
+static coco_problem_t *attractiveSector_problem(const size_t number_of_variables) {
     size_t i, problem_id_length;
-    numbbo_problem_t *problem = numbbo_allocate_problem(number_of_variables,
+    coco_problem_t *problem = coco_allocate_problem(number_of_variables,
                                                         1, 0);
-    problem->problem_name = numbbo_strdup("attractive sector function");
+    problem->problem_name = coco_strdup("attractive sector function");
     /* Construct a meaningful problem id */
     problem_id_length = snprintf(NULL, 0,
                                  "%s_%02i", "attractive sector",
                                  (int)number_of_variables);
-    problem->problem_id = numbbo_allocate_memory(problem_id_length + 1);
+    problem->problem_id = coco_allocate_memory(problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1,
              "%s_%02d", "attractive sector", (int)number_of_variables);
 

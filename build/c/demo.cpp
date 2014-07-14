@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "numbbo.h"
+#include "coco.h"
 
 using namespace std;
 

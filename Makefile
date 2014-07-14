@@ -23,19 +23,19 @@ PYTHON_VERSION = ${MAJOR}.${MINOR}.${REVISION}
 R_VERSION = ${MAJOR}.${MINOR}-${REVISION}
 
 C_TARGETS = \
-	build/c/numbbo.c \
-	build/c/numbbo.h \
+	build/c/coco.c \
+	build/c/coco.h \
 	build/c/VERSION 
 
 PYTHON_TARGETS = \
 	build/python/setup.py \
 	build/python/README \
-	build/python/numbbo/numbbo.c \
-	build/python/numbbo/numbbo.h 
+	build/python/coco/coco.c \
+	build/python/coco/coco.h 
 
 R_TARGETS = \
-	build/r/skel/src/numbbo.c \
-	build/r/skel/src/numbbo.h \
+	build/r/skel/src/coco.c \
+	build/r/skel/src/coco.h \
 	build/r/skel/DESCRIPTION
 
 DOXYGEN_TARGETS = \
@@ -46,12 +46,12 @@ TARGETS = ${C_TARGETS} ${PYTHON_TARGETS} ${R_TARGETS} ${DOXYGEN_TARGETS}
 
 ## Order matters, do not change! Not all files need to be listed
 ## because most are included by others during the amalgamation.
-NUMBBO_C = \
-	src/numbbo_benchmark.c \
-	src/numbbo_random.c \
-	src/numbbo_generics.c
+COCO_C = \
+	src/coco_benchmark.c \
+	src/coco_random.c \
+	src/coco_generics.c
 
-NUMBBO_H = src/numbbo.h
+COCO_H = src/coco.h
 
 .PHONEY: clean all release r_release c_release python_release
 .SILENT:
@@ -63,12 +63,12 @@ clean:
 	rm -f ${TARGETS}
 	echo "  RM    build/c/demo.o build/c/demo"
 	echo "  RM    build/c/cppdemo.o build/c/cppdemo"
-	echo "  RM    build/c/numbbo.o"
-	rm -fR build/c/demo.o build/c/demo build/c/cppdemo.o build/c/cppdemo build/c/numbbo.o
+	echo "  RM    build/c/coco.o"
+	rm -fR build/c/demo.o build/c/demo build/c/cppdemo.o build/c/cppdemo build/c/coco.o
 	echo "  RM    build/python/dist"
 	rm -fR build/python/dist
-	echo "  RM    build/python/numbbo.egg-info"
-	rm -fR build/python/numbbo.egg-info
+	echo "  RM    build/python/coco.egg-info"
+	rm -fR build/python/coco.egg-info
 	echo "  RM    build/python/MANIFEST"
 	rm -f build/python/MANIFEST
 	rm -f python-build.log
@@ -88,16 +88,16 @@ r_release: ${R_TARGETS}
 build/doxygen:
 	mkdir -p $@
 
-build/doxygen/xml/index.xml: src/numbbo.h build/doxygen
+build/doxygen/xml/index.xml: src/coco.h build/doxygen
 	doxygen doxygen.ini
 
 ########################################################################
 ## C framework
-build/c/numbbo.c: ${NUMBBO_C} src/numbbo_c_runtime.c
+build/c/coco.c: ${COCO_C} src/coco_c_runtime.c
 	echo "  AM    $@"
 	${AMALGAMATE} $+ > $@
 
-build/c/numbbo.h: ${NUMBBO_H}
+build/c/coco.h: ${COCO_H}
 	echo "  CP    $@"
 	cp $+ $@
 
@@ -112,49 +112,49 @@ build/c/test_bbob2009.h:
 	echo "  MK    $@"
 	${RSCRIPT} tools/generate-bbob-tests.R > $@
 
-release/c/numbbo-${C_VERSION}.tar.gz: ${C_TARGETS}
+release/c/coco-${C_VERSION}.tar.gz: ${C_TARGETS}
 	echo "  TAR   $@"
-	${GTAR} ${GTAR_CREATE_FLAGS} -czf $@ --transform='s,build/c,numbbo,' $+
+	${GTAR} ${GTAR_CREATE_FLAGS} -czf $@ --transform='s,build/c,coco,' $+
 
-c_release: release/c/numbbo-${C_VERSION}.tar.gz
+c_release: release/c/coco-${C_VERSION}.tar.gz
 
 ########################################################################
 ## Python framework
-build/python/numbbo/numbbo.c: ${NUMBBO_C} src/numbbo_c_runtime.c
+build/python/coco/coco.c: ${COCO_C} src/coco_c_runtime.c
 	echo "  AM    $@"
 	${AMALGAMATE} $+ > $@
 
-build/python/numbbo/numbbo.h: ${NUMBBO_H}
+build/python/coco/coco.h: ${COCO_H}
 	echo "  CP    $@"
 	cp $+ $@
 
 build/python/%: build/python/%.in
 	echo "  M4    $@"
-	${M4} -D__NUMBBO_VERSION__=${PYTHON_VERSION} $+ > $@
+	${M4} -D__COCO_VERSION__=${PYTHON_VERSION} $+ > $@
 
-release/python/numbbo-${PYTHON_VERSION}.tar.gz: ${PYTHON_TARGETS}
+release/python/coco-${PYTHON_VERSION}.tar.gz: ${PYTHON_TARGETS}
 	echo "  PY    $@"
 	cd build/python; \
 	${PYTHON2} setup.py sdist --dist-dir=${CURDIR}/release/python > \
 	  ../../python-build.log
 
-python_release: release/python/numbbo-${PYTHON_VERSION}.tar.gz
+python_release: release/python/coco-${PYTHON_VERSION}.tar.gz
 
 ########################################################################
 ## R framework
-build/r/skel/src/numbbo.c: ${NUMBBO_C} src/numbbo_r_runtime.c
+build/r/skel/src/coco.c: ${COCO_C} src/coco_r_runtime.c
 	echo "  AM    $@"
 	${AMALGAMATE} $+ > $@
 
-build/r/skel/src/numbbo.h: ${NUMBBO_H}
+build/r/skel/src/coco.h: ${COCO_H}
 	echo "  CP    $@"
 	cp $+ $@
 
 build/r/%: build/r/%.in
 	echo "  M4    $@"
-	${M4} -D__NUMBBO_VERSION__=${R_VERSION} $+ > $@
+	${M4} -D__COCO_VERSION__=${R_VERSION} $+ > $@
 
-release/r/numbbo_${R_VERSION}.tar.gz: ${R_TARGETS}
+release/r/coco_${R_VERSION}.tar.gz: ${R_TARGETS}
 	echo "  CP    build/r/pkg"
 	cp -R build/r/skel build/r/pkg
 	echo "  ROXY  build/r/pkg"
@@ -163,4 +163,4 @@ release/r/numbbo_${R_VERSION}.tar.gz: ${R_TARGETS}
 	cd release/r/ ; \
 	${R} CMD build ${CURDIR}/build/r/pkg > ${CURDIR}/r-build.log 2>&1
 
-r_release: release/r/numbbo_${R_VERSION}.tar.gz
+r_release: release/r/coco_${R_VERSION}.tar.gz

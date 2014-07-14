@@ -2,32 +2,32 @@
 #include <math.h>
 #include <assert.h>
 
-#include "numbbo.h"
+#include "coco.h"
 
-#include "numbbo_problem.c"
+#include "coco_problem.c"
 
-static void f_skewRastriginBueche_evaluate(numbbo_problem_t *self, double *x, double *y) {
+static void f_skewRastriginBueche_evaluate(coco_problem_t *self, double *x, double *y) {
     size_t i;
     double tmp = 0., tmp2 = 0.;
     assert( self->number_of_objectives == 1 );
     y[0] = 0.0;
     for (i = 0; i < self->number_of_variables; ++i ) {
-        tmp += cos( 2 * numbbo_pi * x[i] );
+        tmp += cos( 2 * coco_pi * x[i] );
         tmp2 += x[i] * x[i];
     }
     y[0] = 10 * (self->number_of_variables - tmp) + tmp2 + 0;
 }
 
-static numbbo_problem_t *skewRastriginBueche_problem(const size_t number_of_variables) {
+static coco_problem_t *skewRastriginBueche_problem(const size_t number_of_variables) {
     size_t i, problem_id_length;
-    numbbo_problem_t *problem = numbbo_allocate_problem(number_of_variables,
+    coco_problem_t *problem = coco_allocate_problem(number_of_variables,
                                                         1, 0);
-    problem->problem_name = numbbo_strdup("skew Rastrigin-Bueche function");
+    problem->problem_name = coco_strdup("skew Rastrigin-Bueche function");
     /* Construct a meaningful problem id */
     problem_id_length = snprintf(NULL, 0,
                                  "%s_%02i", "skewRastriginBueche",
                                  (int)number_of_variables);
-    problem->problem_id = (char *)numbbo_allocate_memory(problem_id_length + 1);
+    problem->problem_id = (char *)coco_allocate_memory(problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1,
              "%s_%02d", "skewRastriginBueche", (int)number_of_variables);
     
