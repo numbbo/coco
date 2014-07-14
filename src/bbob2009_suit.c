@@ -79,11 +79,11 @@ void bbob2009_decode_function_index(const int function_index,
  * NULL.
  */
 coco_problem_t *bbob2009_suit(const int function_index) {
-    int instance_id, function_id, dimension;
+    int instance_id, function_id, dimension, rseed;
     coco_problem_t *problem = NULL;
     bbob2009_decode_function_index(function_index, &function_id, &instance_id, 
                                    &dimension);
-    int rseed = function_id + 10000 * instance_id;
+    rseed = function_id + 10000 * instance_id;
     
     /* Break if we are past our 15 instances. */
     if (instance_id > 15) return NULL;
