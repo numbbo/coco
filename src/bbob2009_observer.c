@@ -14,7 +14,7 @@ coco_problem_t *bbob2009_observer(coco_problem_t *problem, const char *options) 
     }
     coco_create_path(base_path);
     coco_join_path(filename, sizeof(filename), 
-                     base_path, "bbobexp.dat", NULL);
+                     base_path, "bbobexp", NULL);/* TODO: pass the correct path as in the old code*/
     problem = bbob2009_logger(problem, filename);
     return problem;
 }

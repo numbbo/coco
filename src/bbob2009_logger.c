@@ -51,6 +51,8 @@ static void bbob2009_logger_prepare_files(bbob2009_logger_t *state, double best_
         }
     }
     fprintf(state->fdata_file,"%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n", best_value);
+    
+    
     return;
 }
 
