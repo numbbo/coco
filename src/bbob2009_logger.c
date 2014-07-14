@@ -38,19 +38,36 @@ static void bbob2009_logger_prepare_files(bbob2009_logger_t *state, double best_
         Creates/opens the data files
         best_value if printed in the header
      */
+    static char * tmp;
+    tmp = coco_strdup(state->path);
     if(state->fdata_file==NULL){
-        state->fdata_file = fopen(state->path, "w");
+        state->fdata_file = fopen(strcat(tmp,".dat"), "w");
         if (state->fdata_file == NULL) {
             char *buf;
             const char *error_format = "bbob2009_logger_prepare() failed to open log file '%s'.";
-            size_t buffer_size = snprintf(NULL, 0, error_format, state->path);
+            size_t buffer_size = snprintf(NULL, 0, error_format, state->fdata_file);
             buf = (char *)coco_allocate_memory(buffer_size);
-            snprintf(buf, buffer_size, error_format, state->path);
+            snprintf(buf, buffer_size, error_format, state->fdata_file);
             coco_error(buf);
             coco_free_memory(buf); /* Never reached */
         }
     }
     fprintf(state->fdata_file,"%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n", best_value);
+    tmp = coco_strdup(state->path);
+    
+    if(state->tdata_file==NULL){
+        state->tdata_file = fopen(strcat(tmp,".tdat"), "w");
+        if (state->tdata_file == NULL) {
+            char *buf;
+            const char *error_format = "bbob2009_logger_prepare() failed to open log file '%s'.";
+            size_t buffer_size = snprintf(NULL, 0, error_format, state->tdata_file);
+            buf = (char *)coco_allocate_memory(buffer_size);
+            snprintf(buf, buffer_size, error_format, state->tdata_file);
+            coco_error(buf);
+            coco_free_memory(buf); /* Never reached */
+        }
+    }
+    fprintf(state->tdata_file,"%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n", best_value);
     
     
     return;
