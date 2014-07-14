@@ -1,7 +1,7 @@
 CFLAGS ?= -Wall -Wextra -std=c89 -pedantic -Os -g
 CXXFLAGS ?= -Wall -pedantic -Os -g
 LDFLAGS ?= -lm
-TARGETS = demo demo-cpp test_bbob2009
+TARGETS = demo demo-cpp #test_bbob2009
 
 .PHONEY: clean all
 .SILENT:
