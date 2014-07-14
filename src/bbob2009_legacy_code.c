@@ -25,11 +25,13 @@ static double** bbob2009_allocate_matrix(const size_t n, const size_t m) {
     return matrix;
 }
 
-static void bbob2009_free_matrix(double **matrix, const size_t n, const size_t m) {
+static void bbob2009_free_matrix(double **matrix, const size_t n) {
     size_t i;
     for (i = 0; i < n; ++i) {
-        numbbo_free_memory(matrix[i]);
-        matrix[i] = NULL;
+        if (matrix[i] != NULL) {
+            numbbo_free_memory(matrix[i]);
+            matrix[i] = NULL;
+        }
     }
     numbbo_free_memory(matrix);
 }
@@ -121,10 +123,11 @@ static void bbob2009_gauss(double *g, int N, int seed) {
  */
 static void bbob2009_compute_rotation(double **B, int seed, int DIM) {
     /* To ensure temporary data fits into gvec */
-    assert(DIM * DIM < 2000);
     double prod;
     double gvect[2000];
     int i, j, k; /*Loop over pairs of column vectors*/
+
+    assert(DIM * DIM < 2000);
 
     bbob2009_gauss(gvect, DIM * DIM, seed);
     bbob2009_reshape(B, gvect, DIM, DIM);
@@ -169,6 +172,8 @@ static void bbob2009_compute_xopt(double *xopt, int seed, int DIM) {
  */
 double bbob2009_compute_fopt(int function_id, int instance_id) {
     int rseed, rrseed;
+    double gval, gval2;
+
     if (function_id == 4)
         rseed = 3;
     else if (function_id == 18)
@@ -195,7 +200,6 @@ double bbob2009_compute_fopt(int function_id, int instance_id) {
         rseed = function_id;
 
     rrseed = rseed + 10000 * instance_id;
-    double gval, gval2;
     bbob2009_gauss(&gval, 1, rrseed);
     bbob2009_gauss(&gval2, 1, rrseed + 1);
     return fmin(1000., fmax(-1000., (round(100.*100.*gval/gval2)/100.)));

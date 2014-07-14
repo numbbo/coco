@@ -56,11 +56,17 @@ static void lht_evaluate_function(numbbo_problem_t *self, double *x, double *y) 
 }
 
 static void lht_free_problem(numbbo_problem_t *self) {
-    numbbo_transformed_problem_t *obj = (numbbo_transformed_problem_t *)self;
-    numbbo_problem_t *problem = (numbbo_problem_t *)obj;
+    numbbo_transformed_problem_t *obj; 
+    numbbo_problem_t *problem;
+    log_hitting_time_t *state;
+
+    assert(self != NULL);   
+    obj = (numbbo_transformed_problem_t *)self;    
+    problem = (numbbo_problem_t *)obj;
+
     assert(obj->state != NULL);
-    log_hitting_time_t *state = (log_hitting_time_t *)obj->state;
-    
+    state = (log_hitting_time_t *)obj->state;
+
     numbbo_free_memory(state->path);
     if (state->logfile != NULL) {
         fclose(state->logfile);
