@@ -44,7 +44,7 @@ static void bbob2009_logger_evaluate_function(numbbo_problem_t *self,
         if (state->logfile == NULL) {
             char *buf;
             const char *error_format = 
-                "logger_evaluate_function() failed to open log file '%s'.";
+                "bbob2009_logger_evaluate_function() failed to open log file '%s'.";
             size_t buffer_size = 
                 snprintf(NULL, 0, error_format, state->path);
             buf = (char *)numbbo_allocate_memory(buffer_size);
@@ -65,6 +65,7 @@ static void bbob2009_logger_evaluate_function(numbbo_problem_t *self,
         
         fprintf(state->logfile, "\n");
         if (state->idx_fval_trigger==INT_MAX)
+            /* "jump" directly to the next closest target (to the actual fvalue) from the initial target*/
             state->idx_fval_trigger=ceil(log10(y[0]))*nbpts_fval;
         else
             state->idx_fval_trigger--;
