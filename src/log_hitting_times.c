@@ -3,9 +3,9 @@
 
 #include "numbbo.h"
 
-//#include "numbbo_utilities.c"
+#include "numbbo_utilities.c"
 #include "numbbo_problem.c"
-//#include "numbbo_strdup.c"
+#include "numbbo_strdup.c"
 
 typedef struct {
     char *path;
@@ -28,13 +28,15 @@ static void lht_evaluate_function(numbbo_problem_t *self, double *x, double *y) 
     if (state->logfile == NULL) {
         state->logfile = fopen(state->path, "w");
         if (state->logfile == NULL) {
+            char *buf;
             const char *error_format = 
                 "lht_evaluate_function() failed to open log file '%s'.";
             size_t buffer_size = 
                 snprintf(NULL, 0, error_format, state->path);
-            char buf[buffer_size];
+            buf = (char *)numbbo_allocate_memory(buffer_size);
             snprintf(buf, buffer_size, error_format, state->path);
             numbbo_error(buf);
+            numbbo_free_memory(buf); /* Never reached */
         }
         fputs("target_value function_value number_of_evaluations\n",
               state->logfile);                    

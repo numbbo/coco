@@ -17,15 +17,17 @@
  */
 static double** bbob2009_allocate_matrix(const size_t n, const size_t m) {
     double **matrix = NULL;
+    size_t i;
     matrix = (double **)numbbo_allocate_memory(sizeof(double *) * n);
-    for (size_t i = 0; i < n; ++i) {
+    for (i = 0; i < n; ++i) {
         matrix[i] = numbbo_allocate_vector(m);
     }
     return matrix;
 }
 
 static void bbob2009_free_matrix(double **matrix, const size_t n, const size_t m) {
-    for (size_t i = 0; i < n; ++i) {
+    size_t i;
+    for (i = 0; i < n; ++i) {
         numbbo_free_memory(matrix[i]);
         matrix[i] = NULL;
     }
@@ -82,8 +84,9 @@ static void bbob2009_unif(double* r, int N, int inseed) {
  * representation.
  */
 static double** bbob2009_reshape(double** B, double* vector, int m, int n) {
-    for (int i = 0; i < m; i++) {
-        for (int j = 0; j < n; j++) {
+    int i, j;
+    for (i = 0; i < m; i++) {
+        for (j = 0; j < n; j++) {
             B[i][j] = vector[j * m + i];
         }
     }
@@ -97,11 +100,12 @@ static double** bbob2009_reshape(double** B, double* vector, int m, int n) {
  * store them in ${g}.
  */
 static void bbob2009_gauss(double *g, int N, int seed) {
-    assert(2*N < 3000);
+    int i;
     double uniftmp[3000];
+    assert(2*N < 3000);
     bbob2009_unif(uniftmp, 2*N, seed);
 
-    for (int i = 0; i < N; i++) {
+    for (i = 0; i < N; i++) {
         g[i] = sqrt(-2*log(uniftmp[i])) * cos(2*numbbo_pi*uniftmp[N+i]);
         if (g[i] == 0.)
             g[i] = 1e-99;
@@ -148,8 +152,9 @@ static void bbob2009_compute_rotation(double **B, int seed, int DIM) {
  * Randomly compute the location of the global optimum. 
  */ 
 static void bbob2009_compute_xopt(double *xopt, int seed, int DIM) {
+    int i;
     bbob2009_unif(xopt, DIM, seed);
-    for (int i = 0; i < DIM; i++) {
+    for (i = 0; i < DIM; i++) {
         xopt[i] = 8 * floor(1e4 * xopt[i])/1e4 - 4;
         if (xopt[i] == 0.0)
             xopt[i] = -1e-5;

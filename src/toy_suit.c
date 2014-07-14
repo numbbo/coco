@@ -26,7 +26,6 @@ numbbo_problem_t *toy_suit(const int function_index) {
 
     if (fid == 0) {
         problem = sphere_problem(dims[did]);
-     //   problem = rosenbrock_problem(dims[did]);
     } else if (fid == 1) {
         problem = ellipsoid_problem(dims[did]);
     } else if (fid == 2) {
