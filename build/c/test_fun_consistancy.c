@@ -4,9 +4,9 @@
 #include "numbbo.h"
 #include "../../src/bbob2009_fopt.c"
 
-void my_optimizer(numbbo_problem_t *problem) {
+void my_optimizer(coco_problem_t *problem) {
     static const int budget = 102;/* 100000;*/
-    numbbo_random_state_t *rng = numbbo_new_random(0xdeadbeef);
+    coco_random_state_t *rng = coco_new_random(0xdeadbeef);
     double *x = (double *)malloc(problem->number_of_parameters * sizeof(double));
     double y;
     FILE *fd = fopen("const_check_newC.txt", "w");
@@ -15,15 +15,15 @@ void my_optimizer(numbbo_problem_t *problem) {
         bbob2009_unif(x, problem->number_of_parameters, i);
         for (int j = 0; j < problem->number_of_parameters; ++j) {
             /*const double range = problem->upper_bounds[j] - problem->lower_bounds[j];
-             x[j] = problem->lower_bounds[j] + numbbo_uniform_random(rng) * range;*/
+             x[j] = problem->lower_bounds[j] + coco_uniform_random(rng) * range;*/
             x[j] = 20. * x[j] - 10.;
         }
-        numbbo_evaluate_function(problem, x, &y);
+        coco_evaluate_function(problem, x, &y);
         if ( i % 1==0 ){
             fprintf(fd,"%.5f %.5f : %.5f\n",x[0],x[1],y);
         }
     }
-    numbbo_free_random(rng);
+    coco_free_random(rng);
     free(x);
     fclose(fd);
     printf("%s\n",problem->problem_name);
@@ -31,7 +31,7 @@ void my_optimizer(numbbo_problem_t *problem) {
 }
 
 int main(int argc, char **argv) {
-    numbbo_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer);
+    coco_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer);
 }
 /*
  params.funcId = ifun;

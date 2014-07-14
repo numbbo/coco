@@ -1,6 +1,6 @@
 #include <assert.h>
 
-#include "numbbo_generics.c"
+#include "coco_generics.c"
 
 #include "bbob2009_legacy_code.c"
 
@@ -77,9 +77,9 @@ void bbob2009_decode_function_index(const int function_index,
  * benchmark suit. If the function index is out of bounds, return *
  * NULL.
  */
-numbbo_problem_t *bbob2009_suit(const int function_index) {
+coco_problem_t *bbob2009_suit(const int function_index) {
     int instance_id, function_id, dimension;
-    numbbo_problem_t *problem = NULL;
+    coco_problem_t *problem = NULL;
     bbob2009_decode_function_index(function_index, &function_id, &instance_id, 
                                    &dimension);
     int rseed = function_id + 10000 * instance_id;

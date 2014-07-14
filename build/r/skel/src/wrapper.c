@@ -20,15 +20,15 @@
     double *D = REAL(S);                        \
     const R_len_t N = length(S);                   
 
-static void numbbo_problem_finalizer(SEXP s_problem) {
-    numbbo_problem_t *problem;
+static void coco_problem_finalizer(SEXP s_problem) {
+    coco_problem_t *problem;
     problem = R_ExternalPtrAddr(s_problem);
-    numbbo_free_problem(problem);
+    coco_free_problem(problem);
 }
 
 SEXP do_lower_bounds(SEXP s_problem) {
     R_len_t i;
-    numbbo_problem_t *problem;
+    coco_problem_t *problem;
     problem = R_ExternalPtrAddr(s_problem);
     SEXP s_lower_bounds = allocVector(REALSXP, problem->number_of_parameters);
     double *lower_bounds = REAL(s_lower_bounds);
@@ -40,7 +40,7 @@ SEXP do_lower_bounds(SEXP s_problem) {
 
 SEXP do_upper_bounds(SEXP s_problem) {
     R_len_t i;
-    numbbo_problem_t *problem;
+    coco_problem_t *problem;
     problem = R_ExternalPtrAddr(s_problem);
     SEXP s_upper_bounds = allocVector(REALSXP, problem->number_of_parameters);
     double *upper_bounds = REAL(s_upper_bounds);
@@ -52,27 +52,27 @@ SEXP do_upper_bounds(SEXP s_problem) {
 
 SEXP do_evaluate_function(SEXP s_problem, SEXP s_x) {
     R_len_t i;
-    numbbo_problem_t *problem;
+    coco_problem_t *problem;
     problem = R_ExternalPtrAddr(s_problem);
     SEXP s_y = allocVector(REALSXP, problem->number_of_objectives);
-    numbbo_evaluate_function(problem, REAL(s_x), REAL(s_y));
+    coco_evaluate_function(problem, REAL(s_x), REAL(s_y));
     return s_y;
 }
 
 SEXP do_get_problem(SEXP s_benchmark_name, 
                     SEXP s_function_index) {
-    numbbo_problem_t *problem;
+    coco_problem_t *problem;
 
     const char *benchmark_name = CHAR(STRING_ELT(s_benchmark_name, 0));
     UNPACK_INT(s_function_index, function_index);
 
-    problem = numbbo_get_problem(benchmark_name, function_index);
+    problem = coco_get_problem(benchmark_name, function_index);
     if (problem == NULL) {
         return R_NilValue;
     } else {
         SEXP s_ret = R_MakeExternalPtr((void *)problem, 
                                        R_NilValue, R_NilValue);
-        R_RegisterCFinalizer(s_ret, numbbo_problem_finalizer);
+        R_RegisterCFinalizer(s_ret, coco_problem_finalizer);
         return s_ret;
     }
 }

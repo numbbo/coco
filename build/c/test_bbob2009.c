@@ -28,11 +28,11 @@ int main(int argc, char **argv) {
     
     for (int i = 0; i < number_of_testcases; ++i) {
         double y;
-        numbbo_problem_t *problem = numbbo_get_problem("bbob2009", 
+        coco_problem_t *problem = coco_get_problem("bbob2009", 
                                                        testcases[i].function_index);
         double *x = testvectors[testcases[i].testvector_index].x;
-        numbbo_evaluate_function(problem, x, &y);
-        numbbo_free_problem(problem);
+        coco_evaluate_function(problem, x, &y);
+        coco_free_problem(problem);
         if (!about_equal(testcases[i].y, y)) {
             ++number_of_failures;
             if (!header_shown) {

@@ -1,4 +1,4 @@
-CFLAGS ?= -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wdeclaration-after-statement -std=c89 -pedantic -Os -g
+CFLAGS ?= -Wall -Wextra -std=c89 -pedantic -Os -g
 CXXFLAGS ?= -Wall -pedantic -Os -g
 LDFLAGS ?= -lm
 TARGETS = demo demo-cpp test_bbob2009
@@ -17,7 +17,7 @@ clean:
 ########################################################################
 ## Programs
 
-demo: demo.o numbbo.o
+demo: demo.o coco.o
 	echo "LD    $@"
 	${CC} ${LDFLAGS} -o $@ $+
 
@@ -25,24 +25,24 @@ demo-cpp.o: demo.cpp
 	echo "CXX   $@"
 	${CXX} ${CXXFLAGS} -o $@ -c $<
 
-demo-cpp: demo-cpp.o numbbo.o
+demo-cpp: demo-cpp.o coco.o
 	echo "LD    $@"
 	${CXX} ${LDFLAGS} -o $@ $+
 
-test_bbob2009: test_bbob2009.o numbbo.o
+test_bbob2009: test_bbob2009.o coco.o
 	echo "LD    $@"
 	${CC} ${LDFLAGS} -o $@ $+
 
-test_fun_consistancy: test_fun_consistancy.o numbbo.o
+test_fun_consistancy: test_fun_consistancy.o coco.o
 	echo "LD    $@"
 	${CC} ${LDFLAGS} -o $@ $+
 
 ########################################################################
 ## Additional dependencies
 
-demo.o: numbbo.h
+demo.o: coco.h
 
-test_bbob2009.o: numbbo.h test_bbob2009.h
+test_bbob2009.o: coco.h test_bbob2009.h
 
 ########################################################################
 ## Generic rules

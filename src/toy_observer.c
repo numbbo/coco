@@ -1,8 +1,8 @@
-#include "numbbo.h"
-#include "numbbo_utilities.c"
+#include "coco.h"
+#include "coco_utilities.c"
 #include "log_hitting_times.c"
 
-numbbo_problem_t *toy_observer(numbbo_problem_t *problem, const char *options) {
+coco_problem_t *toy_observer(coco_problem_t *problem, const char *options) {
     size_t i;
     static const size_t number_of_targets = 20;
     double targets[20];
@@ -14,14 +14,14 @@ numbbo_problem_t *toy_observer(numbbo_problem_t *problem, const char *options) {
         targets[i - 1] = pow(10.0, (number_of_targets - i) - 9.0);
     }
 
-    numbbo_join_path(base_path, sizeof(base_path),
-                     options, "toy_so", numbbo_get_id(problem), NULL);
-    if (numbbo_path_exists(base_path)) {
-        numbbo_error("Result directory exists.");
+    coco_join_path(base_path, sizeof(base_path),
+                     options, "toy_so", coco_get_id(problem), NULL);
+    if (coco_path_exists(base_path)) {
+        coco_error("Result directory exists.");
         return NULL; /* never reached */
     }
-    numbbo_create_path(base_path);
-    numbbo_join_path(filename, sizeof(filename), 
+    coco_create_path(base_path);
+    coco_join_path(filename, sizeof(filename), 
                      base_path, "first_hitting_times.txt", NULL);
     problem = log_hitting_times(problem, targets, number_of_targets, filename);
     return problem;

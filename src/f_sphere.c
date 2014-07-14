@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "numbbo.h"
+#include "coco.h"
 
-#include "numbbo_problem.c"
+#include "coco_problem.c"
 
-static void f_sphere_evaluate(numbbo_problem_t *self, double *x, double *y) {
+static void f_sphere_evaluate(coco_problem_t *self, double *x, double *y) {
     size_t i;
     assert(self->number_of_objectives == 1);
     y[0] = 0.0;
@@ -14,16 +14,16 @@ static void f_sphere_evaluate(numbbo_problem_t *self, double *x, double *y) {
     }
 }
 
-static numbbo_problem_t *sphere_problem(const size_t number_of_variables) {
+static coco_problem_t *sphere_problem(const size_t number_of_variables) {
     size_t i, problem_id_length;
-    numbbo_problem_t *problem = numbbo_allocate_problem(number_of_variables,
+    coco_problem_t *problem = coco_allocate_problem(number_of_variables,
                                                         1, 0);
-    problem->problem_name = numbbo_strdup("sphere function");
+    problem->problem_name = coco_strdup("sphere function");
     /* Construct a meaningful problem id */
     problem_id_length = snprintf(NULL, 0, 
                                  "%s_%02i", "sphere",
                                  (int)number_of_variables);
-    problem->problem_id = (char *)numbbo_allocate_memory(problem_id_length + 1);
+    problem->problem_id = (char *)coco_allocate_memory(problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1, 
              "%s_%02d", "sphere", (int)number_of_variables);
 

@@ -18,9 +18,9 @@
 static double** bbob2009_allocate_matrix(const size_t n, const size_t m) {
     double **matrix = NULL;
     size_t i;
-    matrix = (double **)numbbo_allocate_memory(sizeof(double *) * n);
+    matrix = (double **)coco_allocate_memory(sizeof(double *) * n);
     for (i = 0; i < n; ++i) {
-        matrix[i] = numbbo_allocate_vector(m);
+        matrix[i] = coco_allocate_vector(m);
     }
     return matrix;
 }
@@ -29,11 +29,11 @@ static void bbob2009_free_matrix(double **matrix, const size_t n) {
     size_t i;
     for (i = 0; i < n; ++i) {
         if (matrix[i] != NULL) {
-            numbbo_free_memory(matrix[i]);
+            coco_free_memory(matrix[i]);
             matrix[i] = NULL;
         }
     }
-    numbbo_free_memory(matrix);
+    coco_free_memory(matrix);
 }
 
 
@@ -108,7 +108,7 @@ static void bbob2009_gauss(double *g, int N, int seed) {
     bbob2009_unif(uniftmp, 2*N, seed);
 
     for (i = 0; i < N; i++) {
-        g[i] = sqrt(-2*log(uniftmp[i])) * cos(2*numbbo_pi*uniftmp[N+i]);
+        g[i] = sqrt(-2*log(uniftmp[i])) * cos(2*coco_pi*uniftmp[N+i]);
         if (g[i] == 0.)
             g[i] = 1e-99;
     }
