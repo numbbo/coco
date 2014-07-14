@@ -86,9 +86,10 @@ void numbbo_get_initial_solution(const numbbo_problem_t *self,
     if(self->initial_solution != NULL) {
         self->initial_solution(self, initial_solution);
     } else {
+        size_t i;
         assert(self->smallest_values_of_interest != NULL);
         assert(self->largest_values_of_interest != NULL);
-        for (size_t i = 0; i < self->number_of_variables; ++i)
+        for (i = 0; i < self->number_of_variables; ++i)
             initial_solution[i] = 0.5 * (self->smallest_values_of_interest[i] + self->largest_values_of_interest[i]);
     }
 }

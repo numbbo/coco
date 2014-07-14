@@ -12,12 +12,13 @@ typedef struct {
 } shift_variables_state_t;
 
 static void _sv_evaluate_function(numbbo_problem_t *self, double *x, double *y) {
+    int i;
     numbbo_transformed_problem_t *problem = (numbbo_transformed_problem_t *)self;
     assert(problem->inner_problem != NULL);
     assert(problem->state != NULL);
     shift_variables_state_t *state = (shift_variables_state_t *)problem->state;
 
-    for (int i = 0; i < self->number_of_variables; ++i) {
+    for (i = 0; i < self->number_of_variables; ++i) {
         state->shifted_x[i] = x[i] - state->offset[i];
     }
     numbbo_evaluate_function(problem->inner_problem, state->shifted_x, y);
