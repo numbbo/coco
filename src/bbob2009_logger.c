@@ -58,6 +58,7 @@ static void bbob2009_logger_evaluate_function(numbbo_problem_t *self,
     /* Add a line for each hitting level we have reached. */
     if (y[0] <= state->next_target ){
         size_t i;
+        fprintf(state->logfile, "%ld", state->number_of_evaluations);/*for some reason, it's %.0f in the old code */
         fprintf(state->logfile, " %+10.9e %+10.9e %+10.9e %+10.9e", y[0], y[0], y[0], y[0]);
         for (i=0; i < self->number_of_variables; i++) {
             fprintf(state->logfile, " %+5.4e",x[i]);

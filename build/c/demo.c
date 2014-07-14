@@ -29,6 +29,11 @@ void my_optimizer(numbbo_problem_t *problem) {
 }
 
 int main(int argc, char **argv) {
-    numbbo_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer);
+    numbbo_benchmark("toy_suit", "bbob2009_observer", "random_search", my_optimizer);
     return 0;
 }
+
+/*
+    numbbo_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer);
+    numbbo_benchmark("toy_suit", "bbob2009_observer", "random_search", my_optimizer);
+*/
