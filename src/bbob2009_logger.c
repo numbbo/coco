@@ -30,6 +30,10 @@ static void bbob2009_logger_update_next_target(bbob2009_logger_t * state){
     return;
 }
 
+static void bbob2009_logger_prepare(bbob2009_logger_t *self){
+    
+}
+
 static void bbob2009_logger_evaluate_function(numbbo_problem_t *self, 
                                               double *x, double *y) {
     numbbo_transformed_problem_t *obj = (numbbo_transformed_problem_t *)self;
@@ -118,5 +122,11 @@ numbbo_problem_t *bbob2009_logger(numbbo_problem_t *inner_problem, const char *p
     state->next_target=DBL_MAX;
     state->number_of_evaluations = 0;
     obj->state = state;
+    printf("%s\n", problem->problem_name);
+    printf("%d\n", problem->number_of_variables);
+    
     return problem;
 }
+
+
+
