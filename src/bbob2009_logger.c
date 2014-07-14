@@ -111,7 +111,6 @@ numbbo_problem_t *bbob2009_logger(numbbo_problem_t *inner_problem, const char *p
 
     problem->evaluate_function = bbob2009_logger_evaluate_function;
     problem->free_problem = bbob2009_logger_free_problem;
-
     state->path = numbbo_strdup(path);
     state->logfile = NULL; /* Open lazily in logger_evaluate_function(). */
     
