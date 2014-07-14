@@ -136,8 +136,11 @@ static void bbob2009_logger_evaluate_function(coco_problem_t *self, double *x,
 static void bbob2009_logger_free_problem(coco_problem_t *self) {
 	coco_transformed_problem_t *obj = (coco_transformed_problem_t *) self;
 	coco_problem_t *problem = (coco_problem_t *) obj;
+	bbob2009_logger_t *state;
+    assert(self != NULL);
 	assert(obj->state != NULL);
-	bbob2009_logger_t *state = (bbob2009_logger_t *) obj->state;
+    
+	state = (bbob2009_logger_t *) obj->state;
 
 	coco_free_memory(state->path);
 	if (state->logfile != NULL) {
