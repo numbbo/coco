@@ -28,6 +28,7 @@ void my_optimizer(coco_problem_t *problem) {
     coco_free_memory(x);
 }
 
+
 int main(int argc, char **argv) {
     coco_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer);
     return 0;
