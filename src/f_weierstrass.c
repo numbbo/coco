@@ -12,7 +12,7 @@ static void f_weierstrass_evaluate(coco_problem_t *self, double *x, double *y) {
     /* Computation core */
     /* Computing f_0 */
     double f_0 = 0;
-    for (i = 0; i < 12; i++){
+    for (i = 0; i < 12; ++i){
         	f_0 += pow(2., ((double)-i)) * cos(2 * M_PI * pow(3., ((double)i)) * 0.5);
         }
 
