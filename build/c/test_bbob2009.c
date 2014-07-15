@@ -3,7 +3,7 @@
 #include <float.h>
 #include <math.h>
 
-#include "numbbo.h"
+#include "coco.h"
 #include "test_bbob2009.h"
 
 static bool about_equal(const double a, const double b) {
