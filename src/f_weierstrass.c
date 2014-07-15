@@ -9,18 +9,7 @@
 static void f_weierstrass_evaluate(coco_problem_t *self, double *x, double *y) {
     size_t i, k; /* check what size_t exactly is and whether it can be cast to double */
     assert(self->number_of_objectives == 1);
-
-    /* Computing f_pen */
-    double f_pen = 0, diff, f_opt = 0; /* f_opt may need to be changed*/
-    static const double condition = 1.0e2;
-    for (i = 0; i < self->number_of_variables; ++i){
-    	diff = fabs(x[i]) - 5;
-    	if (diff > 0){
-    		f_pen += diff * diff;
-    	}
-    }
     /* Computation core */
-
     /* Computing f_0 */
     double f_0 = 0;
     for (i = 0; i < 12; i++){
@@ -29,12 +18,12 @@ static void f_weierstrass_evaluate(coco_problem_t *self, double *x, double *y) {
 
     y[0] = 0.0;
     for (i = 0; i < self->number_of_variables; ++i) {
-    	for (k = 0; k < 12; k++){
+    	for (k = 0; k < 12; ++k){
     		y[0] += pow(2., ((double)-k)) * cos(2 * M_PI * pow(3., ((double)k)) * (x[i] + 0.5));
     	}
 
     }
-    y[0] = 10 * pow((1./((double)self->number_of_variables)) * y[0] - f_0, 3.) + 10./((double)self->number_of_variables) * f_pen + f_opt;
+    y[0] = 10 * pow((1./((double)self->number_of_variables)) * y[0] - f_0, 3.);
 }
 
 static coco_problem_t *weierstrass_problem(const size_t number_of_variables) {
