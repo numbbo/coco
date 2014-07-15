@@ -1,4 +1,4 @@
-Package: numbbo
+Package: coco
 Title: NumBBO benchmarking framework
 Description: Benchmarking framework for black-box optimization algorithms.
 Author: Anne Auger, Bernd Bischl, Dimo Brockhoff, 
@@ -8,4 +8,4 @@ Author: Anne Auger, Bernd Bischl, Dimo Brockhoff,
 Maintainer: Olaf Mersmann <olafm@p-value.net>
 License: BSD
 LazyData: yes
-Version: __NUMBBO_VERSION__
+Version: __COCO_VERSION__
