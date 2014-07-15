@@ -28,7 +28,7 @@ static coco_problem_t *bentCigar_problem(const size_t number_of_variables) {
                                  (int)number_of_variables);
     problem->problem_id = coco_allocate_memory(problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1, 
-             "%s_%02d", "sphere", (int)number_of_variables);
+             "%s_%02d", "bent cigar", (int)number_of_variables);
 
     problem->number_of_variables = number_of_variables;
     problem->number_of_objectives = 1;
