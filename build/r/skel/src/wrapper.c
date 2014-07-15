@@ -1,7 +1,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
-#include "numbbo.h"
+#include "coco.h"
 
 #define CHECK_ARG_IS_INT_VECTOR(A)                           \
     if (!isInteger(A) || !isVector(A))                       \
@@ -30,10 +30,11 @@ SEXP do_lower_bounds(SEXP s_problem) {
     R_len_t i;
     coco_problem_t *problem;
     problem = R_ExternalPtrAddr(s_problem);
-    SEXP s_lower_bounds = allocVector(REALSXP, problem->number_of_parameters);
+    SEXP s_lower_bounds = allocVector(REALSXP, 
+                                      coco_get_number_of_variables(problem));
     double *lower_bounds = REAL(s_lower_bounds);
     for (i = 0; i < LENGTH(s_lower_bounds); ++i) {
-        lower_bounds[i] = problem->lower_bounds[i];
+        lower_bounds[i] = coco_get_smallest_values_of_interest(problem)[i];
     }
     return s_lower_bounds;
 }
@@ -42,10 +43,11 @@ SEXP do_upper_bounds(SEXP s_problem) {
     R_len_t i;
     coco_problem_t *problem;
     problem = R_ExternalPtrAddr(s_problem);
-    SEXP s_upper_bounds = allocVector(REALSXP, problem->number_of_parameters);
+    SEXP s_upper_bounds = allocVector(REALSXP, 
+                                      coco_get_number_of_variables(problem));
     double *upper_bounds = REAL(s_upper_bounds);
     for (i = 0; i < LENGTH(s_upper_bounds); ++i) {
-        upper_bounds[i] = problem->upper_bounds[i];
+        upper_bounds[i] = coco_get_largest_values_of_interest(problem)[i];
     }
     return s_upper_bounds;
 }
@@ -54,7 +56,8 @@ SEXP do_evaluate_function(SEXP s_problem, SEXP s_x) {
     R_len_t i;
     coco_problem_t *problem;
     problem = R_ExternalPtrAddr(s_problem);
-    SEXP s_y = allocVector(REALSXP, problem->number_of_objectives);
+    SEXP s_y = allocVector(REALSXP, 
+                           coco_get_number_of_objectives(problem));
     coco_evaluate_function(problem, REAL(s_x), REAL(s_y));
     return s_y;
 }

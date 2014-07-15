@@ -1,7 +1,7 @@
-#' @useDynLib numbbo do_get_problem
-#' @useDynLib numbbo do_evaluate_function
-#' @useDynLib numbbo do_lower_bounds
-#' @useDynLib numbbo do_upper_bounds
+#' @useDynLib coco do_get_problem
+#' @useDynLib coco do_evaluate_function
+#' @useDynLib coco do_lower_bounds
+#' @useDynLib coco do_upper_bounds
 {}
 
 #' @export
@@ -17,7 +17,7 @@ upper_bounds <- function(f) {
 }
 
 #' @export
-numbbo_get_generator <- function(benchmark) {
+coco_get_generator <- function(benchmark) {
   force(benchmark)
   function(function_id, result_directory) {
     problem <- .Call(do_get_problem,
@@ -35,16 +35,16 @@ numbbo_get_generator <- function(benchmark) {
 }
 
 #' @export
-numbbo_benchmark <- function(benchmark,
-                             result_directory,
-                             optimize) {
-  generator <- numbbo_get_generator(benchmark)
-  i <- 0
+coco_benchmark <- function(benchmark,
+                           result_directory,
+                           optimize) {
+  generator <- coco_get_generator(benchmark)
+  function_id <- 0
   repeat {
-    f <- generator(i, as.character(result_directory))
+    f <- generator(function_id, as.character(result_directory))
     if (is.null(f))
       break
     optimize(f, lower_bounds(f), upper_bounds(f))
-    i <- i + 1
+    function_id <- function_id + 1
   }
 }
