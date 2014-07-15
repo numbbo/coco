@@ -30,6 +30,6 @@ void my_optimizer(coco_problem_t *problem) {
 
 
 int main(int argc, char **argv) {
-    coco_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer);
+    coco_benchmark("toy_suit", "bbob2009_observer", "random_search", my_optimizer);
     return 0;
 }
