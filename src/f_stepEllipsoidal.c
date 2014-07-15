@@ -15,16 +15,7 @@
 static void f_stepEllipsoidal_evaluate(coco_problem_t *self, double *x, double *y) {
     size_t i;
     assert(self->number_of_objectives == 1);
-
-    /* Computing f_pen */
-    double f_pen = 0, diff = 0, f_opt = 0;
     static const double condition = 1.0e2;
-    for (i = 0; i < self->number_of_variables; ++i){
-    	diff = fabs(x[i]) - 5;
-    	if (diff > 0){
-    		f_pen += diff * diff;
-    	}
-    }
     /* Computation core */
     y[0] = 0.0;
     for (i = 0; i < self->number_of_variables; ++i) {
@@ -32,7 +23,6 @@ static void f_stepEllipsoidal_evaluate(coco_problem_t *self, double *x, double *
                     ((double)(i - 1))/((double)(self->number_of_variables - 1))) * x[i] * x[i];
     }
     y[0] = 0.1 * fmax(fabs(x[1]) * 1.0e-4, y[0]);
-    y[0] += f_pen + f_opt;
 }
 
 static coco_problem_t *stepEllipsoidal_problem(const size_t number_of_variables) {
