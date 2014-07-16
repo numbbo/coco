@@ -1,12 +1,11 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <float.h>
 #include <math.h>
 
 #include "coco.h"
 #include "test_bbob2009.h"
 
-static bool about_equal(const double a, const double b) {
+static int about_equal(const double a, const double b) {
     /* Shortcut to avoid the case where a - b is tiny and both a and b
      * are close to or equal to 0. 
      *
@@ -14,32 +13,33 @@ static bool about_equal(const double a, const double b) {
      * in fact the two numbers are both for all practical purposes 0.
      */
     const double absolute_error = fabs(a - b);
-    if (absolute_error < 2 * DBL_MIN) return true;
-    
     const double larger = fabs(a) > fabs(b) ? a : b;
     const double relative_error = fabs((a - b) / larger);
+
+    if (absolute_error < 2 * DBL_MIN) return 1;
     return relative_error < 0.0000001;
 }
 
-int main(int argc, char **argv) {    
-    bool header_shown = false;
+int main() {
+    int header_shown = 0;
     int number_of_failures = 0;
     const size_t number_of_testcases = sizeof(testcases) / sizeof(testcases[0]);
-    
-    for (int i = 0; i < number_of_testcases; ++i) {
-        double y;
-        coco_problem_t *problem = coco_get_problem("bbob2009", 
-                                                       testcases[i].function_index);
-        double *x = testvectors[testcases[i].testvector_index].x;
+    size_t i;
+
+    for (i = 0; i < number_of_testcases; ++i) {
+        double *x, y;
+        coco_problem_t *problem;
+        problem = coco_get_problem("bbob2009", testcases[i].function_index);
+        x = testvectors[testcases[i].testvector_index].x;
         coco_evaluate_function(problem, x, &y);
         coco_free_problem(problem);
         if (!about_equal(testcases[i].y, y)) {
             ++number_of_failures;
             if (!header_shown) {
                 fprintf(stdout, "Function Testcase Status Message\n");
-                header_shown = true;
+                header_shown = 1;
             }
-            fprintf(stdout, "%8i %8i FAILED expected=%.8lf observed=%.8lf\n",
+            fprintf(stdout, "%8i %8i FAILED expected=%.8f observed=%.8f\n",
                     testcases[i].function_index, 
                     testcases[i].testvector_index,
                     testcases[i].y, y);
