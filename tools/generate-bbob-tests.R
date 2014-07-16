@@ -30,7 +30,7 @@ generate_bbob_testcase <- function(function_id, instance_id, dimension,
   for (i in 1:nrow(testvectors)) {
     par <- testvectors[i,1:dimension]
     value <- f(par)
-    catf("  {%i, %i, %a},\n", function_index, i - 1, value)
+    catf("  {%i, %i, %.17f},\n", function_index, i - 1, value)
   }
 }
 
@@ -50,7 +50,7 @@ typedef struct {
 testvector_t testvectors[] = {
 ")
 for (i in 1:nrow(testvectors)) {
-  catf("  {{%s}},\n", paste(sprintf("%a", testvectors[i,]), collapse=","))
+  catf("  {{%s}},\n", paste(sprintf("%.17f", testvectors[i,]), collapse=","))
 }
 cat("};
 
