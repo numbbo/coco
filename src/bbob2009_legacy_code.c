@@ -9,6 +9,18 @@
 
 #include <math.h>
 
+static double bbob2009_fmin(double a, double b) {
+    return (a < b) ? a : b;
+}
+
+static double bbob2009_fmax(double a, double b) {
+    return (a > b) ? a : b;
+}
+
+static double bbob2009_round(double x) {
+    return floor(x + 0.5);
+}
+
 /**
  * bbob2009_allocate_matrix(n, m):
  *
@@ -202,5 +214,7 @@ double bbob2009_compute_fopt(int function_id, int instance_id) {
     rrseed = rseed + 10000 * instance_id;
     bbob2009_gauss(&gval, 1, rrseed);
     bbob2009_gauss(&gval2, 1, rrseed + 1);
-    return fmin(1000., fmax(-1000., (round(100.*100.*gval/gval2)/100.)));
+    return bbob2009_fmin(1000., 
+                         bbob2009_fmax(-1000., 
+                                       bbob2009_round(100.*100.*gval/gval2)/100.));
 }
