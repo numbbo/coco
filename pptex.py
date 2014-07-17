@@ -30,13 +30,33 @@ latex_marker_map = {'o': r'$\circ$',
               '2': r'$\upY$', # need \usepackage{MnSymbol}
               '3': r'$\rightY$', # need \usepackage{MnSymbol}
               '4': r'$\leftY$'} # need \usepackage{MnSymbol}
-latex_color_map = {'g': 'green!45!black',
+latex_color_map_old = {'g': 'green!45!black',
              'r': 'red',
              'c': 'cyan',
              'm': 'magenta',
              'y': 'yellow',
              'k': 'black',
              'b': 'blue'}
+latex_color_map = {'#000080': 'NavyBlue',
+             'r': 'red',
+             '#ffd700': 'Goldenrod',
+             '#d02090': 'VioletRed',
+             'k': 'Black',
+             '#6495ed': 'CornflowerBlue',
+             '#ff4500': 'OrangeRed',
+             '#ffff00': 'Yellow',
+             '#ff00ff': 'Magenta',
+             '#bebebe': 'Gray',
+             '#87ceeb': 'SkyBlue',
+             '#ffa500': 'Orange',
+             '#ffc0cb': 'Lavender',
+             '#4169e1': 'RoyalBlue',
+             '#228b22': 'ForestGreen',
+             '#32cd32': 'LimeGreen',
+             '#9acd32': 'YellowGreen',
+             '#adff2f': 'GreenYellow'}
+
+
 
 #CLASS DEFINITION
 class Error(Exception):
