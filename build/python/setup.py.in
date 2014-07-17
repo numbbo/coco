@@ -4,13 +4,13 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 ext_modules = [
-    Extension("numbbo", ["numbbo/numbbo.c", "numbbo/wrapper.pyx"])
+    Extension("coco", ["coco/coco.c", "coco/wrapper.pyx"])
 ]
 
 setup( 
     name = 'numbbo', 
-    version = '__NUMBBO_VERSION__', 
-    url = 'https://gforge.inria.fr/projects/numbbo/',
+    version = '$COCO_VERSION', 
+    url = 'https://code.google.com/p/numbbo/',
     license = 'BSD', 
     maintainer = 'Olaf Mersmann', 
     maintainer_email = 'olafm@p-value.net',
