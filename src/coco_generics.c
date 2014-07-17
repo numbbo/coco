@@ -50,13 +50,13 @@ void coco_free_problem(coco_problem_t *self) {
     }
 }
 
-const char *coco_get_name(coco_problem_t *self) {
+const char *coco_get_problem_name(coco_problem_t *self) {
     assert(self != NULL);
     assert(self->problem_name != NULL);
     return self->problem_name;
 }
 
-const char *coco_get_id(coco_problem_t *self) {
+const char *coco_get_problem_id(coco_problem_t *self) {
     assert(self != NULL);
     assert(self->problem_id != NULL);
     return self->problem_id;

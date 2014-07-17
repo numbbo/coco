@@ -210,7 +210,7 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path)
 	problem->free_problem = bbob2009_logger_free_problem;
 	state->path = coco_strdup(path);
 	state->logfile = NULL; /* Open lazily in logger_evaluate_function(). */
-	problem_id = coco_get_id(problem);
+	problem_id = coco_get_problem_id(problem);
 	bbob2009_logger_prepare_files(state, *(problem->best_value), problem_id);
 
 	state->idx_fval_trigger = INT_MAX;
