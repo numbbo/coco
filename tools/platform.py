@@ -3,6 +3,7 @@
 
 ## Lots of utility functions to abstract away platform differences.
 
+import sys
 import os
 from shutil import copyfile
 from subprocess import CalledProcessError, check_output, call, STDOUT
