@@ -63,7 +63,7 @@ fig_formats = ('eps', 'pdf') if not in_a_hurry else ('pdf', )
 
 instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 31:1, 32:1, 33:1, 34:1, 35:1,
                        36:1, 37:1, 38:1, 39:1, 40:1}  # only for consistency checking
-line_styles = [  # used by ppfigs and pprlmany  
+line_styles_old = [  # used by ppfigs and pprlmany  
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
           {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, 
           {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'c'},
@@ -95,6 +95,42 @@ line_styles = [  # used by ppfigs and pprlmany
           {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'y'},
           {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'r'}
           ]
+
+line_styles = [  # used by ppfigs and pprlmany  
+          {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': '#000080'}, # 'NavyBlue'
+          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, # 'Red'
+          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': '#ffd700'}, # 'Goldenrod'
+          {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': '#d02090'}, # square, 'VioletRed'
+          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'}, # 'Black'
+          {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': '#6495ed'}, # 'CornflowerBlue'
+          {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': '#ffa500'}, # 'Orange'
+          {'marker': 'p', 'markersize': 24, 'linestyle': '-', 'color': '#ff00ff'}, # 'Magenta'
+          {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': '#bebebe'}, # 'Gray'
+          {'marker': '<', 'markersize': 24, 'linestyle': '-', 'color': '#87ceeb'}, # 'SkyBlue'
+          {'marker': 'D', 'markersize': 24, 'linestyle': '-', 'color': '#ffc0cb'}, # 'Lavender'
+          {'marker': '1', 'markersize': 24, 'linestyle': '-', 'color': '#228b22'}, # 'ForestGreen'
+          {'marker': '2', 'markersize': 24, 'linestyle': '-', 'color': '#32cd32'}, # 'LimeGreen'
+          {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': '#9acd32'}, # 'YellowGreen'
+          {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': '#adff2f'}, # 'GreenYellow'
+          {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': '#ffff00'}, # 'Yellow'
+          {'marker': 'v', 'markersize': 30, 'linestyle': '--', 'color': '#000080'}, # 'NavyBlue'
+          {'marker': '*', 'markersize': 31, 'linestyle': '--', 'color': 'r'}, # 'Red'
+          {'marker': 's', 'markersize': 20, 'linestyle': '--', 'color': '#ffd700'}, # 'Goldenrod'
+          {'marker': 'd', 'markersize': 27, 'linestyle': '--', 'color': '#d02090'}, # square, 'VioletRed'
+          {'marker': '^', 'markersize': 26, 'linestyle': '--', 'color': '#6495ed'}, # 'CornflowerBlue'
+          {'marker': '<', 'markersize': 25, 'linestyle': '--', 'color': '#ffa500'}, # 'Orange'
+          {'marker': 'h', 'markersize': 24, 'linestyle': '--', 'color': '#ff00ff'}, # 'Magenta'
+          {'marker': 'p', 'markersize': 24, 'linestyle': '--', 'color': '#bebebe'}, # 'Gray'
+          {'marker': 'H', 'markersize': 24, 'linestyle': '--', 'color': '#87ceeb'}, # 'SkyBlue'
+          {'marker': '1', 'markersize': 24, 'linestyle': '--', 'color': '#ffc0cb'}, # 'Lavender'
+          {'marker': '2', 'markersize': 24, 'linestyle': '--', 'color': '#228b22'}, # 'ForestGreen'
+          {'marker': '4', 'markersize': 24, 'linestyle': '--', 'color': '#32cd32'}, # 'LimeGreen'
+          {'marker': '3', 'markersize': 24, 'linestyle': '--', 'color': '#9acd32'}, # 'YellowGreen'
+          {'marker': 'D', 'markersize': 24, 'linestyle': '--', 'color': '#adff2f'}, # 'GreenYellow'
+          ]
+
+
+
 
 if 11 < 3:  # in case using my own linestyles
     line_styles = [  # used by ppfigs and pprlmany, to be modified  
