@@ -34,7 +34,7 @@ def hg_revision():
     return hg(['id', '-i'])
 
 def run(directory, args):
-    print "RUN\t%s in %s" % (args[0], directory)
+    print "RUN\t%s in %s" % (" ".join(args), directory)
     oldwd = os.getcwd()
     try:
         os.chdir(directory)

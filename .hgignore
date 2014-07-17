@@ -22,4 +22,3 @@ release/.*
 .*\.orig
 autodoc/
 tools/.*.pyc
-
