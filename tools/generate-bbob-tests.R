@@ -20,7 +20,7 @@ catf <- function(fmt, ...) cat(sprintf(fmt, ...))
 generate_testvectors <- function(n) {
   m <- runif(40*n, min=-5, max=5)
   dim(m) <- c(n, 40)
-  round(m, 2)
+  m
 }
 
 generate_bbob_testcase <- function(function_id, instance_id, dimension,
@@ -30,32 +30,17 @@ generate_bbob_testcase <- function(function_id, instance_id, dimension,
   for (i in 1:nrow(testvectors)) {
     par <- testvectors[i,1:dimension]
     value <- f(par)
-    catf("  {%i, %i, %.17f},\n", function_index, i - 1, value)
+    catf("%i %i %.17f\n", function_index, i - 1, value)
   }
 }
 
 testvectors <- generate_testvectors(1000)
 
-catf("
-typedef struct {
-  double x[40];
-} testvector_t;
-
-typedef struct {
-  int function_index;
-  int testvector_index;
-  double y;
-} testcase_t;
-
-testvector_t testvectors[] = {
-")
+catf("bbob2009\n%i\n", nrow(testvectors))
 for (i in 1:nrow(testvectors)) {
-  catf("  {{%s}},\n", paste(sprintf("%.17f", testvectors[i,]), collapse=","))
+  catf("%s\n", paste(sprintf("%.17f", testvectors[i,]), collapse=" "))
 }
-cat("};
 
-testcase_t testcases[] = {
-")
 res <- NULL
 for (high_instance_id in 0:2) {
   for (dimension in c(2, 3, 5, 10, 20, 40)) {
@@ -67,5 +52,3 @@ for (high_instance_id in 0:2) {
     }
   }
 }
-cat("};
-")

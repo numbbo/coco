@@ -16,21 +16,23 @@ LDFLAGS += -lm
 
 ########################################################################
 ## Toplevel targets
-all: demo test_bbob2009
+all: demo test_suit
 
 clean:
-	rm -f coco.o test_bbob2009.o test_bbob2009 demo.o demo
+	rm -f coco.o test_suit.o test_suit demo.o demo
 
 ########################################################################
 ## Programs
 demo: demo.o coco.o
 	${CC} ${LDFLAGS} -o demo coco.o demo.o 
 
-test_bbob2009: test_bbob2009.o coco.o
-	${CC} ${LDFLAGS} -o test_bbob2009 test_bbob2009.o coco.o
+test_suit: test_suit.o coco.o
+	${CC} ${LDFLAGS} -o test_suit test_suit.o coco.o
+
+test_bbob2009_new: test_bbob2009_new.o coco.o
+	${CC} ${LDFLAGS} -o test_bbob2009_new test_bbob2009_new.o coco.o
 
 ########################################################################
 ## Additional dependencies
 demo.o: coco.h
-
-test_bbob2009.o: coco.h test_bbob2009.h
+test_suit.o: coco.h
