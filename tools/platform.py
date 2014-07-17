@@ -46,6 +46,21 @@ def run(directory, args):
     finally:
         os.chdir(oldwd)
 
+def python27(directory, args):
+    print "PYTHON\t%s in %s" % (" ".join(args), directory)
+    oldwd = os.getcwd()
+    full_command = ['python2.7']
+    full_command.extend(args)
+    try:
+        os.chdir(directory)
+        output = check_output(full_command, stderr=STDOUT)
+    except CalledProcessError as e:
+        print "ERROR:"
+        print e.output
+        sys.exit(-1)
+    finally:
+        os.chdir(oldwd)
+
 def copy_file(source, destination):
     print "COPY\t%s -> %s" % (source, destination)
     copyfile(source, destination)

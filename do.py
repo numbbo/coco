@@ -11,7 +11,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.abspath('tools'))
 
 from amalgamate import amalgamate
-from platform import make, run
+from platform import make, run, python27
 from platform import copy_file, expand_file, write_file
 from platform import hg_version, hg_revision
 
@@ -41,9 +41,13 @@ def build_python():
                 {'COCO_VERSION': hg_version()})
     expand_file('build/python/setup.py.in', 'build/python/setup.py',
                 {'COCO_VERSION': hg_version()})
+    python27('build/python', ['setup.py', 'build'])
+    python27('build/python', ['setup.py', 'bdist'])
+    python27('build/python', ['setup.py', 'sdist'])
 
 def test_python():
     build_python()
+    python27('build/python', ['setup.py', 'check', '--metadata', '--strict'])
     pass
 
 ################################################################################
