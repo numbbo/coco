@@ -9,10 +9,12 @@
 #include "f_rastrigin.c"
 #include "f_rosenbrock.c"
 #include "f_skewRastriginBueche.c"
-#include "f_linearSlope.c"
+#include "f_linear_slope.c"
 
 #include "shift_objective.c"
 #include "shift_variables.c"
+#include "affine_transform_variables.c"
+#include "tosz_transform_objective.c"
 
 /**
  * bbob2009_decode_function_index(function_index, function_id, instance_id, dimension):
@@ -102,31 +104,13 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     } else if (function_id == 4) {
         problem = skewRastriginBueche_problem(dimension);
     } else if (function_id == 5) {
-        problem = linearSlope_problem(dimension);
-    } else if (function_id == 6) {
-        double offset[40];
-        double **rot1, **rot2;
-        rot1 = bbob2009_allocate_matrix(dimension, dimension);
-        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
-
-        rot2 = bbob2009_allocate_matrix(dimension, dimension);
-        bbob2009_compute_rotation(rot2, rseed, dimension);
-
-        problem = rosenbrock_problem(dimension);
-        /* IMPORTANT: Penalize before any transformations of the variables! */
-        #if 0
-        problem = penalize_uninteresting_values(problem);
-        #endif
-        bbob2009_compute_xopt(offset, rseed, dimension);
-        problem = shift_variables(problem, offset, false);
-
-        problem = shift_objective(problem, 
-                                  bbob2009_compute_fopt(function_id, instance_id));
-        bbob2009_free_matrix(rot1, dimension);
-        bbob2009_free_matrix(rot2, dimension);
+        double xopt[40], fopt;
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        problem = linear_slope_problem(dimension, xopt);
+        problem = shift_objective(problem, fopt);
     } else {
         return NULL;
     }
-
     return problem;
 }
