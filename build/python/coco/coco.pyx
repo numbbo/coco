@@ -22,7 +22,7 @@ cdef extern from "coco.h":
     
     size_t coco_get_number_of_variables(coco_problem_t *problem)
     size_t coco_get_number_of_objectives(coco_problem_t *problem)
-    const char * coco_get_problem_id(coco_problem_t *problem)
+    const char *coco_get_problem_id(coco_problem_t *problem)
     const double *coco_get_smallest_values_of_interest(coco_problem_t *problem)
     const double *coco_get_largest_values_of_interest(coco_problem_t *problem)
 
