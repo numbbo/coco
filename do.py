@@ -84,9 +84,14 @@ Usage: do.py <command>
 
 Available commands:
 
-  build_c - Build C framework
-  test_c  - Run minimal test of C components
-  build   - Build C, Python and R modules
+  build        - Build C, Python and R modules
+  test         - Test C, Python and R modules
+  build-c      - Build C framework
+  build-python - Build Python modules
+  build-r      - Build R package
+  test-c       - Run minimal test of C components
+  test-python  - Run minimal test of Python module
+  test-r  - Run minimal test of R package
 """
 
 def main(args):
@@ -95,11 +100,11 @@ def main(args):
         sys.exit(0)
     cmd = args[0]
     if cmd == 'build_c': build_c()
-    elif cmd == 'test_c': test_c()
-    elif cmd == 'build_python': build_python()
-    elif cmd == 'test_python': test_python()
-    elif cmd == 'build_r': build_r()
-    elif cmd == 'test_r': test_r()
+    elif cmd == 'test-c': test_c()
+    elif cmd == 'build-python': build_python()
+    elif cmd == 'test-python': test_python()
+    elif cmd == 'build-r': build_r()
+    elif cmd == 'test-r': test_r()
     elif cmd == 'build': build()
     elif cmd == 'test': test()
     else: help()
