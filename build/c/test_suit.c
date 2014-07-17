@@ -25,7 +25,7 @@ static int about_equal(const double a, const double b) {
 
 int main(int argc, char **argv) {
     int header_shown = 0, number_of_failures = 0;
-    size_t number_of_testvectors = 0, number_of_testcases = 0, i, j;
+    int number_of_testvectors = 0, number_of_testcases = 0, i, j;
     testvector_t *testvectors;
     int function_id, testvector_id, ret;
     double expected_value, *x, y;
@@ -38,9 +38,29 @@ int main(int argc, char **argv) {
         return 1;
     }
     testfile = fopen(argv[1], "r");
-    fscanf(testfile, "%s", &suit_name);
-    fscanf(testfile, "%i", &number_of_testvectors);
+    if (testfile == NULL) {
+        fprintf(stderr, "Failed to open testcases file %s.\n", argv[1]);
+        return 2;
+    }
+
+    ret = fscanf(testfile, "%s", suit_name);
+    if (ret != 1) {
+        fprintf(stderr, "Failed to read suit name from testcases file.\n");
+        return 3;
+    }
+    
+    ret = fscanf(testfile, "%i", &number_of_testvectors);
+    if (ret != 1) {
+        fprintf(stderr, "Failed to read number of test vectors from testcases file.\n");
+        return 3;
+    }
+
     testvectors = malloc(number_of_testvectors * sizeof(*testvectors));
+    if (NULL == testvectors) {
+        fprintf(stderr, "Failed to allocate memory for testvectors.\n");
+        return 4;
+    }
+
     for (i = 0; i < number_of_testvectors; ++i) {
         for (j = 0; j < 40; ++j) {
             ret = fscanf(testfile, "%lf", &testvectors[i].x[j]);
@@ -72,7 +92,7 @@ int main(int argc, char **argv) {
         }
     }
     fclose(testfile);
-    fprintf(stderr, "%lu of %i tests passed (failure rate %.2f%%)\n",
+    fprintf(stderr, "%i of %i tests passed (failure rate %.2f%%)\n",
             number_of_testcases - number_of_failures, (int)number_of_testcases,
             (100.0 * number_of_failures) / number_of_testcases);
     return 0;

@@ -40,7 +40,7 @@ def run(directory, args):
         os.chdir(directory)
         output = check_output(args, stderr=STDOUT)
     except CalledProcessError as e:
-        print "ERROR:"
+        print "ERROR: return value=%i" % e.returncode
         print e.output
         sys.exit(-1)
     finally:
@@ -55,7 +55,7 @@ def python27(directory, args):
         os.chdir(directory)
         output = check_output(full_command, stderr=STDOUT)
     except CalledProcessError as e:
-        print "ERROR:"
+        print "ERROR: return value=%i" % e.returncode
         print e.output
         sys.exit(-1)
     finally:
@@ -78,7 +78,7 @@ def make(directory, target):
         os.chdir(directory)
         output = check_output(['make', target], stderr=STDOUT)
     except CalledProcessError as e:
-        print "ERROR:"
+        print "ERROR: return value=%i" % e.returncode
         print e.output
         sys.exit(-1)
     finally:
