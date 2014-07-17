@@ -108,13 +108,15 @@ int main(int argc, char **argv) {
         }
     }
     fclose(testfile);
-    /* Free any remaining problem so that we do not leak memory. */
-    if (NULL != problem)
-        coco_free_problem(problem);
-
     /* Output summary statistics */
     fprintf(stderr, "%i of %i tests passed (failure rate %.2f%%)\n",
             number_of_testcases - number_of_failures, (int)number_of_testcases,
             (100.0 * number_of_failures) / number_of_testcases);
+
+    /* Free any remaining allocated memory so that we pass valgrind checks. */
+    if (NULL != problem)
+        coco_free_problem(problem);
+    free(testvectors);
+
     return number_of_failures == 0 ? 0 : 1;
 }
