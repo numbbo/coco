@@ -1,4 +1,5 @@
 build/c/VERSION
+build/c/REVISION
 build/c/numbbo.c 
 build/c/numbbo.h 
 build/c/.*.o
@@ -6,13 +7,16 @@ build/c/demo$
 build/c/random_search/
 build/doxygen
 build/python/README 
-build/python/numbbo/numbbo.c 
-build/python/numbbo/numbbo.h 
+build/python/coco/numbbo.c 
+build/python/coco/numbbo.h 
+build/python/coco/wrapper.c 
 build/python/setup.py 
 build/r/skel/DESCRIPTION 
-build/r/skel/src/numbbo.c 
-build/r/skel/src/numbbo.h
+build/r/skel/src/coco.c 
+build/r/skel/src/coco.h
 release/.*
 .*\#.*
 .*\.orig
 autodoc/
+tools/.*.pyc
+
