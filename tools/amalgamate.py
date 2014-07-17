@@ -29,18 +29,17 @@ class Amalgator:
         line_number = 1
         self.destination_fd.write("#line %i \"%s\"\n" % (line_number, filename))
         for line in fd.readlines():
-            clean = line
             ## Is this an include statement?
-            matches = re.match("#include \"(.*)\"", clean)
+            matches = re.match("#include \"(.*)\"", line)
             if matches:
                 include_file = path.join(path.dirname(filename), matches.group(1))
                 ## Has this file not been included previously?
                 if not include_file in self.included_files:
                     self.process_file(include_file)
-                    self.destination_fd.write("#line %i \"%s\"\n" % 
-                                              (line_number + 1, filename))
+                self.destination_fd.write("#line %i \"%s\"\n" % 
+                                          (line_number + 1, filename))
             else:
-                self.destination_fd.write(clean)
+                self.destination_fd.write(line)
             line_number = line_number + 1
         fd.close()
 
