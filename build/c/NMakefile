@@ -1,5 +1,5 @@
 ##
-## Minimal nmake file to build the numbbo test suit and demo program.
+## Minimal nmake file to build the coco test suit and demo program.
 ##
 ## NOTE: Since Microsoft has not shipped a compliant C99 compiler, we
 ## force the compiler to treat the source code as C++. We strive to
@@ -7,7 +7,8 @@
 ## compliant compiler such as GCC or the Intel C compiler.
 ##
 LD = link.exe
-CFLAGS = /nologo /Z7 /TP /Ox /D_CRT_SECURE_NO_WARNINGS /Dsnprintf=_snprintf
+#CFLAGS = /nologo /Z7 /TP /Ox /D_CRT_SECURE_NO_WARNINGS /Dsnprintf=_snprintf
+CFLAGS = /nologo /Z7 /Ox /D_CRT_SECURE_NO_WARNINGS /Dsnprintf=_snprintf
 LDFLAGS = /nologo
 TARGETS = demo.exe test_bbob2009.exe
 
@@ -21,15 +22,15 @@ clean:
 ########################################################################
 ## Programs
 
-demo.exe: demo.obj numbbo.obj
+demo.exe: demo.obj coco.obj
 	$(LD) $(LDFLAGS) -out:$@ $**
 
-test_bbob2009.exe: test_bbob2009.obj numbbo.obj
+test_bbob2009.exe: test_bbob2009.obj coco.obj
 	$(LD) $(LDFLAGS) -out:$@ $**
 
 ########################################################################
 ## Additional dependencies
 
-demo.o: numbbo.h
+demo.o: coco.h
 
-test_bbob2009.o: numbbo.h test_bbob2009.h
+test_bbob2009.o: coco.h test_bbob2009.h

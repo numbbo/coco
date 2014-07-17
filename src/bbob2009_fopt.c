@@ -12,7 +12,7 @@
  * them in ${r}.
  *
  * NOTE: This generator is included for historical reasons. For new
- * benchmarks / test functions, please use numbbo_random functions.
+ * benchmarks / test functions, please use coco_random functions.
  */
 static void bbob2009_unif(double* r, int N, int inseed) {
     /* generates N uniform numbers with starting seed */
@@ -57,7 +57,7 @@ static void bbob2009_unif(double* r, int N, int inseed) {
  * store them in ${g}.
  *
  * NOTE: For new benchmarks or test functions, please use
- * numbbo_normal_random().
+ * coco_normal_random().
  */
 static void bbob2009_gauss(double * g, int N, int seed) {
     double *u;

@@ -2,37 +2,36 @@
 #include <assert.h>
 #include <math.h>
 
-#include "numbbo.h"
+#include "coco.h"
 
-#include "numbbo_problem.c"
+#include "coco_problem.c"
 
 /* Schaffers F7 function, transformations not implemented for the moment  */
 
-static void f_schaffers_evaluate(numbbo_problem_t *self, double *x, double *y) {
-    size_t i, k;
+static void f_schaffers_evaluate(coco_problem_t *self, double *x, double *y) {
+    size_t i;
     assert(self->number_of_objectives == 1);
 
     /* Computation core */
     y[0] = 0.0;
-    double tmp;
     for (i = 0; i < self->number_of_variables - 1; ++i) {
-    	tmp = x[i] * x[i] + x[i + 1] * x[i + 1];
+    	const double tmp = x[i] * x[i] + x[i + 1] * x[i + 1];
     	y[0] += pow(tmp, 0.25) * (1 + pow(sin(50. * pow(tmp, 0.1)), 2.));
 
     }
-    y[0] = pow((1./((double)(self->number_of_variables - 1))) * y[0], 2.);
+    y[0] = pow((1./(self->number_of_variables - 1)) * y[0], 2.);
 }
 
-static numbbo_problem_t *schaffers_problem(const size_t number_of_variables) {
+static coco_problem_t *schaffers_problem(const size_t number_of_variables) {
     size_t i, problem_id_length;
-    numbbo_problem_t *problem = numbbo_allocate_problem(number_of_variables,
+    coco_problem_t *problem = coco_allocate_problem(number_of_variables,
                                                         1, 0);
-    problem->problem_name = numbbo_strdup("schaffers function");
+    problem->problem_name = coco_strdup("schaffers function");
     /* Construct a meaningful problem id */
     problem_id_length = snprintf(NULL, 0,
                                  "%s_%02i", "schaffers",
                                  (int)number_of_variables);
-    problem->problem_id = numbbo_allocate_memory(problem_id_length + 1);
+    problem->problem_id = coco_allocate_memory(problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1,
              "%s_%02d", "schaffers", (int)number_of_variables);
 

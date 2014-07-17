@@ -18,11 +18,11 @@ extern "C" {
 /**
  * Our very own pi constant. Simplifies the case, when the value of pi changes.
  */
-static const double numbbo_pi = 3.14159265358979323846;
+static const double coco_pi = 3.14159265358979323846;
 
-struct numbbo_problem;
-typedef struct numbbo_problem numbbo_problem_t;
-typedef void (*numbbo_optimizer_t)(numbbo_problem_t *problem);
+struct coco_problem;
+typedef struct coco_problem coco_problem_t;
+typedef void (*coco_optimizer_t)(coco_problem_t *problem);
 
 /**
  * Evaluate the NUMBB problem represented by ${self} with the
@@ -31,7 +31,7 @@ typedef void (*numbbo_optimizer_t)(numbbo_problem_t *problem);
  * @note Both x and y must point to correctly sized allocated memory
  * regions.
  */
-void numbbo_evaluate_function(numbbo_problem_t *self, double *x, double *y);
+void coco_evaluate_function(coco_problem_t *self, double *x, double *y);
 
 /**
  * Evaluate the constraints of the NUMBB problem represented by
@@ -40,19 +40,19 @@ void numbbo_evaluate_function(numbbo_problem_t *self, double *x, double *y);
  *
  * Note: ${x} and ${y} are expected to be of the correct sizes.
  */
-void numbbo_evaluate_constraint(numbbo_problem_t *self, double *x, double *y);
+void coco_evaluate_constraint(coco_problem_t *self, double *x, double *y);
 
 /**
  * Recommend ${number_of_solutions} parameter settings (stored in
  * ${x}) as the current best guess solutions to the problem ${self}.
  */
-void numbbo_recommend_solutions(numbbo_problem_t *self, 
+void coco_recommend_solutions(coco_problem_t *self, 
                                 double *x, size_t number_of_solutions);
 
 /**
  * Free the NUMBBO problem represented by ${self}.
  */
-void numbbo_free_problem(numbbo_problem_t *self);
+void coco_free_problem(coco_problem_t *self);
 
 /**
  * Return the name of a NUMBBO problem.
@@ -61,9 +61,9 @@ void numbbo_free_problem(numbbo_problem_t *self);
  * the returned pointer becomes invalid. When in doubt, strdup() the
  * returned value.
  *
- * @ref numbbo_strdup
+ * @see coco_strdup()
  */
-const char *numbbo_get_problem_name(numbbo_problem_t *self);
+const char *coco_get_problem_name(coco_problem_t *self);
 
 /**
  * Return the ID of the NUMBBO problem ${self}. The ID is guaranteed to
@@ -74,27 +74,32 @@ const char *numbbo_get_problem_name(numbbo_problem_t *self);
  * the returned pointer becomes invalid. When in doubt, strdup() the
  * returned value.
  *
- * @ref numbbo_strdup
+ * @see coco_strdup
  */
-const char *numbbo_get_problem_id(numbbo_problem_t *self);
+const char *coco_get_problem_id(coco_problem_t *self);
 
 /**
- * Return the number of variables of a NUMBBO problem.
+ * Return the number of variables of a COCO problem.
  */
-size_t numbbo_get_number_of_variables(const numbbo_problem_t *self);
+size_t coco_get_number_of_variables(const coco_problem_t *self);
+
+/**
+ * Return the number of objectives of a COCO problem.
+ */
+size_t coco_get_number_of_objectives(const coco_problem_t *self);
 
 /**
  * Get the ${function_index}-th problem of the ${problem_suit} test
  * suit. 
  */
-numbbo_problem_t *numbbo_get_problem(const char *problem_suit,
+coco_problem_t *coco_get_problem(const char *problem_suit,
                                      const int function_index);
 
 /**
  * tentative getters for region of interest 
  */
-const double * numbbo_get_smallest_values_of_interest(const numbbo_problem_t *self);
-const double * numbbo_get_largest_values_of_interest(const numbbo_problem_t *self);
+const double * coco_get_smallest_values_of_interest(const coco_problem_t *self);
+const double * coco_get_largest_values_of_interest(const coco_problem_t *self);
 
 /**
  * Return an initial solution, i.e. a feasible variable setting, to the
@@ -103,15 +108,14 @@ const double * numbbo_get_largest_values_of_interest(const numbbo_problem_t *sel
  * By default, the center of the problems region of interest
  * is the initial solution.
  *
- * @ref numbbo_get_smallest_values_of_interest
- * @ref numbbo_get_largest_values_of_interest
+ * @see coco_get_smallest_values_of_interest() and coco_get_largest_values_of_interest()
  */
-void numbbo_get_initial_solution(const numbbo_problem_t *self, 
+void coco_get_initial_solution(const coco_problem_t *self, 
                                  double *initial_solution);
 
 /**
  * Add the observer named ${observer_name} to ${problem}. An
- * observer is a wrapper around a numbbo_problem_t. This allows the
+ * observer is a wrapper around a coco_problem_t. This allows the
  * observer to see all interactions between the algorithm and the
  * optimization problem.
  *
@@ -123,37 +127,37 @@ void numbbo_get_initial_solution(const numbbo_problem_t *self,
  * interface design for interpreted languages. A short hand for this
  * observer is the empty string ("").
  */
-numbbo_problem_t *numbbo_observe_problem(const char *observer_name,
-                                         numbbo_problem_t *problem,
+coco_problem_t *coco_observe_problem(const char *observer_name,
+                                         coco_problem_t *problem,
                                          const char *options);
     
-void numbbo_benchmark(const char *problem_suit,
+void coco_benchmark(const char *problem_suit,
                       const char *observer,
                       const char *options,
-                      numbbo_optimizer_t optimizer);
+                      coco_optimizer_t optimizer);
 
 /**************************************************************************
  * Random number generator
  */
 
-struct numbbo_random_state;
-typedef struct numbbo_random_state numbbo_random_state_t;
+struct coco_random_state;
+typedef struct coco_random_state coco_random_state_t;
 
 /**
  * Create a new random number stream using ${seed} and return its state.
  */
-numbbo_random_state_t *numbbo_new_random(uint32_t seed);
+coco_random_state_t *coco_new_random(uint32_t seed);
 
 /**
  * Free all memory associated with the RNG state.
  */
-void numbbo_free_random(numbbo_random_state_t *state);
+void coco_free_random(coco_random_state_t *state);
 
 /**
  * Return one uniform [0, 1) random value from the random number
  * generator associated with ${state}.
  */
-double numbbo_uniform_random(numbbo_random_state_t *state);
+double coco_uniform_random(coco_random_state_t *state);
 
 /**
  * Generate an approximately normal random number.
@@ -163,36 +167,36 @@ double numbbo_uniform_random(numbbo_random_state_t *state);
  * 6, variance 1 and is approximately normal. Subtract 6 and you get
  * an approximately N(0, 1) random number.
  */
-double numbbo_normal_random(numbbo_random_state_t *state);
+double coco_normal_random(coco_random_state_t *state);
 
 /**
  * Function to signal a fatal error conditions.
  */
-void numbbo_error(const char *message);
+void coco_error(const char *message);
 
 /**
  * Function to warn about eror conditions.
  */
-void numbbo_warning(const char *message);
+void coco_warning(const char *message);
 
 /* Memory managment routines. 
  *
  * Their implementation may never fail. They either return a valid
  * pointer or terminate the program.
  */
-void *numbbo_allocate_memory(size_t size);
-double *numbbo_allocate_vector(size_t size);
-void numbbo_free_memory(void *data);
+void *coco_allocate_memory(const size_t size);
+double *coco_allocate_vector(const size_t size);
+void coco_free_memory(void *data);
 
 
 /**
  * Create a duplicate of a string and return a pointer to
  * it. The caller is responsible for releasing the allocated memory
- * using numbbo_free_memory().
+ * using coco_free_memory().
  *
- * @ref numbbo_free_memory
+ * @see coco_free_memory()
  */
-char *numbbo_strdup(const char *string);
+char *coco_strdup(const char *string);
 
 #ifdef __cplusplus
 }

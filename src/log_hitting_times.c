@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "numbbo.h"
+#include "coco.h"
 
-//#include "numbbo_utilities.c"
-#include "numbbo_problem.c"
-//#include "numbbo_strdup.c"
+#include "coco_utilities.c"
+#include "coco_problem.c"
+#include "coco_strdup.c"
 
 typedef struct {
     char *path;
@@ -16,23 +16,27 @@ typedef struct {
     long number_of_evaluations;
 } log_hitting_time_t;
 
-static void lht_evaluate_function(numbbo_problem_t *self, double *x, double *y) {
-    numbbo_transformed_problem_t *obj = (numbbo_transformed_problem_t *)self;
+static void lht_evaluate_function(coco_problem_t *self, double *x, double *y) {
+    coco_transformed_problem_t *obj = (coco_transformed_problem_t *)self;
     log_hitting_time_t *state = (log_hitting_time_t *)obj->state;
     assert(obj->state != NULL);
     
-    numbbo_evaluate_function(obj->inner_problem, x, y);
+    coco_evaluate_function(obj->inner_problem, x, y);
     state->number_of_evaluations++;
 
     /* Open logfile if it is not alread open */
     if (state->logfile == NULL) {
         state->logfile = fopen(state->path, "w");
         if (state->logfile == NULL) {
-            char buf[4096];
-            snprintf(buf, sizeof(buf), 
-                     "lht_evaluate_function() failed to open log file '%s'.",
-                     state->path);
-            numbbo_error(buf);
+            char *buf;
+            const char *error_format = 
+                "lht_evaluate_function() failed to open log file '%s'.";
+            size_t buffer_size = 
+                snprintf(NULL, 0, error_format, state->path);
+            buf = (char *)coco_allocate_memory(buffer_size);
+            snprintf(buf, buffer_size, error_format, state->path);
+            coco_error(buf);
+            coco_free_memory(buf); /* Never reached */
         }
         fputs("target_value function_value number_of_evaluations\n",
               state->logfile);                    
@@ -51,45 +55,51 @@ static void lht_evaluate_function(numbbo_problem_t *self, double *x, double *y) 
     fflush(state->logfile);
 }
 
-static void lht_free_problem(numbbo_problem_t *self) {
-    numbbo_transformed_problem_t *obj = (numbbo_transformed_problem_t *)self;
-    numbbo_problem_t *problem = (numbbo_problem_t *)obj;
+static void lht_free_problem(coco_problem_t *self) {
+    coco_transformed_problem_t *obj; 
+    coco_problem_t *problem;
+    log_hitting_time_t *state;
+
+    assert(self != NULL);   
+    obj = (coco_transformed_problem_t *)self;    
+    problem = (coco_problem_t *)obj;
+
     assert(obj->state != NULL);
-    log_hitting_time_t *state = (log_hitting_time_t *)obj->state;
-    
-    numbbo_free_memory(state->path);
+    state = (log_hitting_time_t *)obj->state;
+
+    coco_free_memory(state->path);
     if (state->logfile != NULL) {
         fclose(state->logfile);
         state->logfile = NULL;
     }
-    numbbo_free_memory(obj->state);
+    coco_free_memory(obj->state);
     if (obj->inner_problem != NULL) {
-        numbbo_free_problem(obj->inner_problem);
+        coco_free_problem(obj->inner_problem);
         obj->inner_problem = NULL;
     }
     if (problem->problem_id != NULL)
-        numbbo_free_memory(problem->problem_id);
+        coco_free_memory(problem->problem_id);
     if (problem->problem_name != NULL)
-        numbbo_free_memory(problem->problem_name);
-    numbbo_free_memory(obj);
+        coco_free_memory(problem->problem_name);
+    coco_free_memory(obj);
 }
 
-numbbo_problem_t *log_hitting_times(numbbo_problem_t *inner_problem,
+coco_problem_t *log_hitting_times(coco_problem_t *inner_problem,
                                     const double *target_values,
                                     const size_t number_of_target_values,
                                     const char *path) {
-    numbbo_transformed_problem_t *obj = 
-        numbbo_allocate_transformed_problem(inner_problem);
-    numbbo_problem_t *problem = (numbbo_problem_t *)obj;
-    log_hitting_time_t *state = (log_hitting_time_t *)numbbo_allocate_memory(sizeof(*state));
+    coco_transformed_problem_t *obj = 
+        coco_allocate_transformed_problem(inner_problem);
+    coco_problem_t *problem = (coco_problem_t *)obj;
+    log_hitting_time_t *state = (log_hitting_time_t *)coco_allocate_memory(sizeof(*state));
 
     problem->evaluate_function = lht_evaluate_function;
     problem->free_problem = lht_free_problem;
 
     state->number_of_evaluations = 0;
-    state->path = numbbo_strdup(path);
+    state->path = coco_strdup(path);
     state->logfile = NULL; /* Open lazily in lht_evaluate_function(). */
-    state->target_values = numbbo_duplicate_vector(target_values, 
+    state->target_values = coco_duplicate_vector(target_values, 
                                                    number_of_target_values);
     state->number_of_target_values = number_of_target_values;
     state->next_target_value = 0;

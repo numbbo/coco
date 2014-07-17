@@ -1,4 +1,4 @@
-#include "numbbo_generics.c"
+#include "coco_generics.c"
 
 #include "log_hitting_times.c"
 
@@ -16,17 +16,16 @@
  * benchmark suit. If the function index is out of bounds, return
  * NULL.
  */
-numbbo_problem_t *toy_suit(const int function_index) {
+coco_problem_t *toy_suit(const int function_index) {
     static const int dims[] = {2, 3, 5, 10, 20};
     const int fid = function_index % 6;
     const int did = function_index / 6;
-    numbbo_problem_t *problem;
+    coco_problem_t *problem;
     if (did >= 1)
         return NULL;
 
     if (fid == 0) {
         problem = sphere_problem(dims[did]);
-     //   problem = rosenbrock_problem(dims[did]);
     } else if (fid == 1) {
         problem = ellipsoid_problem(dims[did]);
     } else if (fid == 2) {

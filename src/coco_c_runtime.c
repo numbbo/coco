@@ -8,28 +8,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "numbbo.h"
+#include "coco.h"
 
-void numbbo_error(const char *message) {
+void coco_error(const char *message) {
     fprintf(stderr, "FATAL ERROR: %s\n", message);
     exit(EXIT_FAILURE);    
 }
 
-void numbbo_warning(const char *message) {
+void coco_warning(const char *message) {
     fprintf(stderr, "WARNING: %s\n", message);
 }
 
-void *numbbo_allocate_memory(size_t size) {
+void *coco_allocate_memory(const size_t size) {
+    void *data;
     if (size == 0)  {
-        numbbo_error("numbbo_allocate_memory() called with 0 size.");
+        coco_error("coco_allocate_memory() called with 0 size.");
         return NULL; /* never reached */
     }
-    void *data = malloc(size);
+    data = malloc(size);
     if (data == NULL)
-        numbbo_error("numbbo_allocate_memory() failed.");
+        coco_error("coco_allocate_memory() failed.");
     return data;
 }
  
-void numbbo_free_memory(void *data) {
+void coco_free_memory(void *data) {
     free(data);
 }

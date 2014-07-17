@@ -1,28 +1,42 @@
+import os
 import setuptools
 from distutils.core import setup
 from distutils.extension import Extension
-from Cython.Distutils import build_ext
+import numpy as np
 
-ext_modules = [
-    Extension("numbbo", ["numbbo/numbbo.c", "numbbo/wrapper.pyx"])
+## Use Cython if wrapper.c is missing.
+USE_CYTHON = not os.path.isfile('coco/wrapper.c')
+## Or we force its use on the command line.
+if not USE_CYTHON and os.getenv('USE_CYTHON', 'false') == 'true':
+    USE_CYTHON = True
+
+cython_ext = '.pyx' if USE_CYTHON else '.c'
+
+extensions = [
+    Extension('coco', 
+              sources=['coco/coco_core.c', 'coco/coco' + cython_ext],
+              include_dirs=[np.get_include()])
 ]
 
+if USE_CYTHON:
+    from Cython.Build import cythonize
+    extensions = cythonize(extensions)
+
 setup( 
-    name = 'numbbo', 
-    version = '__NUMBBO_VERSION__', 
-    url = 'https://gforge.inria.fr/projects/numbbo/',
+    name = 'coco', 
+    version = '$COCO_VERSION', 
+    url = 'https://code.google.com/p/numbbo/',
     license = 'BSD', 
     maintainer = 'Olaf Mersmann', 
-    maintainer_email = 'olafm@p-value.net',
-       
+    maintainer_email = 'olafm@p-value.net',       
     # author = ['Anne Auger', 'Bernd Bischl', 'Dimo Brockhoff', 
-    #           'Nikolaus Hansen', 'Olaf Mersmann', 'Petr Posik', 
-    #           'Mike Preuss',  'Rodolphe le Riche', 'Guenter Rudolph',
-    #           'Marc Schoenauer', 'Heike Trautmann'],       
+    #            'Nikolaus Hansen', 'Olaf Mersmann', 'Petr Posik', 
+    #            'Mike Preuss',  'Rodolphe le Riche', 'Guenter Rudolph',
+    #            'Marc Schoenauer', 'Heike Trautmann'],       
     description = 'Benchmarking framework for all types of black-box optimization algorithms.',
     long_description = '...',
-    ext_modules = ext_modules,
-    install_requires = ['numpy>=1.7', 'Cython>=0.19'],
+    ext_modules = extensions,
+    install_requires = ['numpy>=1.7'],
     classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: ??',
@@ -31,6 +45,5 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: ??'
-    ],
-    cmdclass = {'build_ext': build_ext},
+    ]
 )

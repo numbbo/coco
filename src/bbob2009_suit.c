@@ -1,6 +1,6 @@
 #include <assert.h>
 
-#include "numbbo_generics.c"
+#include "coco_generics.c"
 
 #include "bbob2009_legacy_code.c"
 
@@ -60,13 +60,14 @@ void bbob2009_decode_function_index(const int function_index,
     static const int number_of_dimensions = 6;
     const int high_instance_id = function_index / 
         (number_of_consecutive_instances * number_of_functions * number_of_dimensions);
+    int low_instance_id;
     int rest = function_index %
         (number_of_consecutive_instances * number_of_functions * number_of_dimensions);
     *dimension = dims[rest / (number_of_consecutive_instances * number_of_functions)];
     rest = rest % (number_of_consecutive_instances * number_of_functions);
     *function_id = rest / number_of_consecutive_instances + 1;
     rest = rest % number_of_consecutive_instances;
-    const int low_instance_id = rest + 1;
+    low_instance_id = rest + 1;
     *instance_id = low_instance_id + 5 * high_instance_id;
 }
 
@@ -77,12 +78,12 @@ void bbob2009_decode_function_index(const int function_index,
  * benchmark suit. If the function index is out of bounds, return *
  * NULL.
  */
-numbbo_problem_t *bbob2009_suit(const int function_index) {
-    int instance_id, function_id, dimension;
-    numbbo_problem_t *problem = NULL;
+coco_problem_t *bbob2009_suit(const int function_index) {
+    int instance_id, function_id, dimension, rseed;
+    coco_problem_t *problem = NULL;
     bbob2009_decode_function_index(function_index, &function_id, &instance_id, 
                                    &dimension);
-    int rseed = function_id + 10000 * instance_id;
+    rseed = function_id + 10000 * instance_id;
     
     /* Break if we are past our 15 instances. */
     if (instance_id > 15) return NULL;
@@ -121,6 +122,8 @@ numbbo_problem_t *bbob2009_suit(const int function_index) {
 
         problem = shift_objective(problem, 
                                   bbob2009_compute_fopt(function_id, instance_id));
+        bbob2009_free_matrix(rot1, dimension);
+        bbob2009_free_matrix(rot2, dimension);
     } else {
         return NULL;
     }

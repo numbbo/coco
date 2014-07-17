@@ -8,22 +8,22 @@
 #ifndef __NUMBBO_INTERNAL__ 
 #define __NUMBBO_INTERNAL__
 
-typedef void (*numbbo_initial_solution_function_t) (const struct numbbo_problem *self,
+typedef void (*coco_initial_solution_function_t) (const struct coco_problem *self,
                                                     double *y);
-typedef void (*numbbo_evaluate_function_t) (struct numbbo_problem *self,
+typedef void (*coco_evaluate_function_t) (struct coco_problem *self,
                                             double *x, double *y);
-typedef void (*numbbo_recommendation_function_t) (struct numbbo_problem *self,
+typedef void (*coco_recommendation_function_t) (struct coco_problem *self,
                                                   double *x,
                                                   size_t number_of_solutions);
 
-typedef void (*numbbo_free_function_t) (struct numbbo_problem *self);
+typedef void (*coco_free_function_t) (struct coco_problem *self);
 
 /**
  * Description of a NUMBBO problem (instance)
  *
  * evaluate and free are opaque pointers which should not be called
- * directly. Instead they are used by the numbbo_* functions in
- * numbbo_generics.c. This indirection gives us the flexibility to add
+ * directly. Instead they are used by the coco_* functions in
+ * coco_generics.c. This indirection gives us the flexibility to add
  * generic checks or more sophisticated dispatch methods later on.
  *
  * Fields:
@@ -46,12 +46,12 @@ typedef void (*numbbo_free_function_t) (struct numbbo_problem *self);
  *   that, when not NULL, must be unique. It can for example be used
  *   to generate valid directory names under which to store results.
  */
-struct numbbo_problem {
-    numbbo_initial_solution_function_t initial_solution;
-    numbbo_evaluate_function_t evaluate_function;
-    numbbo_evaluate_function_t evaluate_constraint;
-    numbbo_recommendation_function_t recommend_solutions;
-    numbbo_free_function_t free_problem;
+struct coco_problem {
+    coco_initial_solution_function_t initial_solution;
+    coco_evaluate_function_t evaluate_function;
+    coco_evaluate_function_t evaluate_constraint;
+    coco_recommendation_function_t recommend_solutions;
+    coco_free_function_t free_problem;
     size_t number_of_variables;
     size_t number_of_objectives;
     size_t number_of_constraints;
