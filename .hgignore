@@ -6,9 +6,12 @@ build/c/.*.o
 build/c/demo$
 build/c/random_search/
 build/doxygen
+build/python/build/
+build/python/dist/
+build/python/coco.egg
 build/python/README 
-build/python/coco/numbbo.c 
-build/python/coco/numbbo.h 
+build/python/coco/coco.c 
+build/python/coco/coco.h 
 build/python/coco/wrapper.c 
 build/python/setup.py 
 build/r/skel/DESCRIPTION 
