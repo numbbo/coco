@@ -89,6 +89,7 @@ int main(int argc, char **argv) {
             }
             fprintf(stdout, "%8i %8i FAILED expected=%.8f observed=%.8f\n",
                     function_id, testvector_id, expected_value, y);
+            fflush(stdout);
         }
     }
     fclose(testfile);
