@@ -19,7 +19,7 @@ LDFLAGS += -lm
 all: demo test_bbob2009
 
 clean:
-	${RM} -f coco.o test_bbob2009.o test_bbob2009 demo.o demo
+	rm -f coco.o test_bbob2009.o test_bbob2009 demo.o demo
 
 ########################################################################
 ## Programs
