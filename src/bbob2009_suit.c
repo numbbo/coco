@@ -122,6 +122,8 @@ coco_problem_t *bbob2009_suit(const int function_index) {
 
         problem = shift_objective(problem, 
                                   bbob2009_compute_fopt(function_id, instance_id));
+        bbob2009_free_matrix(rot1, dimension);
+        bbob2009_free_matrix(rot2, dimension);
     } else {
         return NULL;
     }
