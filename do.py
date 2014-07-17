@@ -35,15 +35,16 @@ def test_c():
 ################################################################################
 ## Python
 def build_python():
-    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/python/coco/coco.c')
+    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/python/coco/coco_core.c')
     copy_file('src/coco.h', 'build/python/coco/coco.h')
     expand_file('build/python/README.in', 'build/python/README',
                 {'COCO_VERSION': hg_version()})
     expand_file('build/python/setup.py.in', 'build/python/setup.py',
                 {'COCO_VERSION': hg_version()})
-    python27('build/python', ['setup.py', 'build'])
-    python27('build/python', ['setup.py', 'bdist'])
+    ## Fore distutils to use Cython
+    os.environ['USE_CYTHON'] = 'true'
     python27('build/python', ['setup.py', 'sdist'])
+    os.environ.pop('USE_CYTHON')
 
 def test_python():
     build_python()
