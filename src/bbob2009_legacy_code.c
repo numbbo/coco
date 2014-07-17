@@ -115,8 +115,8 @@ static double** bbob2009_reshape(double** B, double* vector, int m, int n) {
  */
 static void bbob2009_gauss(double *g, int N, int seed) {
     int i;
-    double uniftmp[3000];
-    assert(2*N < 3000);
+    double uniftmp[6000];
+    assert(2 * N < 6000);
     bbob2009_unif(uniftmp, 2*N, seed);
 
     for (i = 0; i < N; i++) {
