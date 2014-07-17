@@ -24,12 +24,12 @@ static int about_equal(const double a, const double b) {
 }
 
 int main(int argc, char **argv) {
-    int header_shown = 0, number_of_failures = 0;
+    int header_shown = 0, number_of_failures = 0, shown_failures = 0;
     int number_of_testvectors = 0, number_of_testcases = 0, i, j;
     testvector_t *testvectors;
-    int function_id, testvector_id, ret;
+    int previous_function_id = -1, function_id, testvector_id, ret;
     double expected_value, *x, y;
-    coco_problem_t *problem;
+    coco_problem_t *problem = NULL;
     char suit_name[128];
     FILE *testfile;
     
@@ -77,24 +77,44 @@ int main(int argc, char **argv) {
         if (ret != 3) 
             break;
         ++number_of_testcases;
-        problem = coco_get_problem(suit_name, function_id);
+        /* We cache the problem object to save time. Instantiating
+         * some functions is expensive because we have to generate
+         * large rotation matrices.
+         */
+        if (previous_function_id != function_id) {
+            if (NULL != problem)
+                coco_free_problem(problem);
+            problem = coco_get_problem(suit_name, function_id);
+            previous_function_id = function_id;
+        }
         x = testvectors[testvector_id].x;
         coco_evaluate_function(problem, x, &y);
-        coco_free_problem(problem);
         if (!about_equal(expected_value, y)) {
             ++number_of_failures;
             if (!header_shown) {
                 fprintf(stdout, "Function Testcase Status Message\n");
                 header_shown = 1;
             }
-            fprintf(stdout, "%8i %8i FAILED expected=%.8f observed=%.8f\n",
-                    function_id, testvector_id, expected_value, y);
-            fflush(stdout);
+            if (shown_failures < 100) {
+                fprintf(stdout, "%8i %8i FAILED expected=%.8f observed=%.8f\n",
+                        function_id, testvector_id, expected_value, y);
+                fflush(stdout);  
+                ++shown_failures;          
+            } else if (shown_failures == 100) {
+                fprintf(stdout, "... further failed tests suppressed ...\n");
+                fflush(stdout);            
+                ++shown_failures;
+            }
         }
     }
     fclose(testfile);
+    /* Free any remaining problem so that we do not leak memory. */
+    if (NULL != problem)
+        coco_free_problem(problem);
+
+    /* Output summary statistics */
     fprintf(stderr, "%i of %i tests passed (failure rate %.2f%%)\n",
             number_of_testcases - number_of_failures, (int)number_of_testcases,
             (100.0 * number_of_failures) / number_of_testcases);
-    return 0;
+    return number_of_failures == 0 ? 0 : 1;
 }
