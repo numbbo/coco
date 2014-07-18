@@ -28,52 +28,104 @@ static coco_problem_t *coco_allocate_problem(const size_t number_of_variables,
     problem->best_value = coco_allocate_vector(number_of_objectives);
     problem->problem_name = NULL;
     problem->problem_id = NULL;
+    problem->data = NULL;
     return problem;
 }
 
+static coco_problem_t *coco_duplicate_problem(coco_problem_t *other) {
+    size_t i;
+    coco_problem_t *problem;
+    problem = coco_allocate_problem(other->number_of_variables,
+                                    other->number_of_objectives,
+                                    other->number_of_constraints);
+
+    problem->evaluate_function = other->evaluate_function;
+    problem->evaluate_constraint = other->evaluate_constraint;
+    problem->recommend_solutions = other->recommend_solutions;
+    problem->free_problem = NULL;
+
+    for (i = 0; i < problem->number_of_variables; ++i) {
+        problem->smallest_values_of_interest[i] = other->smallest_values_of_interest[i];
+        problem->largest_values_of_interest[i] = other->largest_values_of_interest[i];
+        problem->best_parameter[i] = other->best_parameter[i];
+    }
+
+    for (i = 0; i < problem->number_of_objectives; ++i) {
+        problem->best_value[i] = other->best_value[i];
+    }
+
+    problem->problem_name = coco_strdup(other->problem_name);
+    problem->problem_id = coco_strdup(other->problem_id);
+    return problem;
+}
+
+typedef void (*coco_transform_free_data_t) (void *data);
+
 /**
- * Generic wrapper for a transformed (or "outer") coco_problem_t.
+ * Generic data member of a transformed (or "outer") coco_problem_t.
  */
-typedef struct coco_transformed_problem {
-    /* problem_t must be defined first to make inheritance / overload happen */
-    coco_problem_t problem;
+typedef struct {
     coco_problem_t *inner_problem;
-    void *state;
-} coco_transformed_problem_t;
+    void *data;
+    coco_transform_free_data_t free_data;
+} coco_transform_data_t;
 
 static void _tfp_evaluate_function(coco_problem_t *self, double *x, double *y) {
-    coco_transformed_problem_t *problem = (coco_transformed_problem_t *)self;
-    assert(problem->inner_problem != NULL);
-    coco_evaluate_function(problem->inner_problem, x, y);
+    coco_transform_data_t *data;
+    assert(self != NULL);
+    assert(self->data != NULL);
+    data = self->data;
+    assert(data->inner_problem != NULL);
+
+    coco_evaluate_function(data->inner_problem, x, y);
 }
 
 static void _tfp_evaluate_constraint(coco_problem_t *self, double *x, double *y) {
-    coco_transformed_problem_t *problem = (coco_transformed_problem_t *)self;
-    assert(problem->inner_problem != NULL);
-    coco_evaluate_constraint(problem->inner_problem, x, y);
+    coco_transform_data_t *data;
+    assert(self != NULL);
+    assert(self->data != NULL);
+    data = self->data;
+    assert(data->inner_problem != NULL);
+
+    coco_evaluate_constraint(data->inner_problem, x, y);
 }
 
 static void _tfp_recommend_solutions(coco_problem_t *self,
                                      double *x, size_t number_of_solutions) {
-    coco_transformed_problem_t *problem = (coco_transformed_problem_t *)self;
-    assert(problem->inner_problem != NULL);
-    coco_recommend_solutions(problem->inner_problem, x, number_of_solutions);
+    coco_transform_data_t *data;
+    assert(self != NULL);
+    assert(self->data != NULL);
+    data = self->data;
+    assert(data->inner_problem != NULL);
+
+    coco_recommend_solutions(data->inner_problem, x, number_of_solutions);
 }
 
 static void _tfp_free_problem(coco_problem_t *self) {
-    coco_transformed_problem_t *obj = (coco_transformed_problem_t *)self;
-    coco_problem_t *problem = (coco_problem_t *)obj;
-    if (obj->inner_problem != NULL)
-        coco_free_problem(obj->inner_problem);
-    obj->inner_problem = NULL;
-    if (obj->state != NULL)
-        coco_free_memory(obj->state);
+    coco_transform_data_t *data;
+    assert(self != NULL);
+    assert(self->data != NULL);
+    data = self->data;
+    assert(data->inner_problem != NULL);
+
+    if (data->inner_problem != NULL) {
+        coco_free_problem(data->inner_problem);
+        data->inner_problem = NULL;
+    }
+    if (data->data != NULL) {
+        if (data->free_data != NULL) {
+            data->free_data(data->data);
+            data->free_data = NULL;
+        }
+        coco_free_memory(data->data);
+        data->data = NULL;
+    }
     /* Let the generic free problem code deal with the rest of the
      * fields. For this we clear the free_problem function pointer and
      * recall the generic function.
      */
-    problem->free_problem = NULL;
-    coco_free_problem(problem);
+    self->free_problem = NULL;
+    coco_free_problem(self);
 }
 
 /**
@@ -83,34 +135,39 @@ static void _tfp_free_problem(coco_problem_t *self) {
  * default all methods will dispatch to the ${inner_problem} method.
  *
  */
-static coco_transformed_problem_t *
-coco_allocate_transformed_problem(coco_problem_t *inner_problem) {
-    coco_transformed_problem_t *obj =
-        (coco_transformed_problem_t *)coco_allocate_memory(sizeof(coco_transformed_problem_t));
-    coco_problem_t *problem = (coco_problem_t *)obj;
+static coco_problem_t *
+coco_allocate_transformed_problem(coco_problem_t *inner_problem,
+                                  void *userdata,
+                                  coco_transform_free_data_t free_data) {
+    coco_transform_data_t *data;
+    coco_problem_t *self;
 
-    problem->evaluate_function = _tfp_evaluate_function;
-    problem->evaluate_constraint = _tfp_evaluate_constraint;
-    problem->recommend_solutions = _tfp_recommend_solutions;
-    problem->free_problem = _tfp_free_problem;
-    problem->number_of_variables = inner_problem->number_of_variables;
-    problem->number_of_objectives = inner_problem->number_of_objectives;
-    problem->number_of_constraints = inner_problem->number_of_constraints;
-    problem->smallest_values_of_interest = 
-        coco_duplicate_vector(inner_problem->smallest_values_of_interest,
-                                inner_problem->number_of_variables);
-    problem->largest_values_of_interest = 
-        coco_duplicate_vector(inner_problem->largest_values_of_interest,
-                                inner_problem->number_of_variables);
-    problem->best_value = 
-        coco_duplicate_vector(inner_problem->best_value,
-                                inner_problem->number_of_objectives);
-    problem->best_parameter = 
-        coco_duplicate_vector(inner_problem->best_parameter,
-                                inner_problem->number_of_objectives);
-    problem->problem_name = coco_strdup(inner_problem->problem_id);
-    problem->problem_id = coco_strdup(inner_problem->problem_id);
-    obj->inner_problem = inner_problem;
-    obj->state = NULL;
-    return obj;
+    data = coco_allocate_memory(sizeof(*data));
+    data->inner_problem = inner_problem;
+    data->data = userdata;
+    data->free_data = free_data;
+
+    self = coco_duplicate_problem(inner_problem);
+    self->evaluate_function = _tfp_evaluate_constraint;
+    self->evaluate_constraint = _tfp_evaluate_constraint;
+    self->recommend_solutions = _tfp_recommend_solutions;
+    self->free_problem = _tfp_free_problem;
+    self->data = data;
+    return self;
+}
+
+static void *coco_get_transform_data(coco_problem_t *self) {
+    coco_transform_data_t *data;
+    assert(self != NULL);
+    assert(self->data != NULL);
+    
+    return ((coco_transform_data_t *)self->data)->data;
+}
+
+static coco_problem_t *coco_get_transform_inner_problem(coco_problem_t *self) {
+    coco_transform_data_t *data;
+    assert(self != NULL);
+    assert(self->data != NULL);
+    
+    return ((coco_transform_data_t *)self->data)->inner_problem;
 }
