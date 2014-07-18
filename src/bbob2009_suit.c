@@ -12,8 +12,11 @@
 #include "f_linear_slope.c"
 
 #include "shift_objective.c"
-#include "shift_variables.c"
+
+#include "asymmetric_variable_transform.c"
+#include "condition_variables.c"
 #include "oscillate_variables.c"
+#include "shift_variables.c"
 
 /**
  * bbob2009_decode_function_index(function_index, function_id, instance_id, dimension):
@@ -107,7 +110,16 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         problem = shift_variables(problem, xopt, 0);
         problem = shift_objective(problem, fopt);
     } else if (function_id == 3) {
+        double xopt[40], fopt;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+
         problem = rastrigin_problem(dimension);
+        problem = condition_variables(problem, 10.0);
+        problem = asymmetric_variable_transform(problem, 0.2);
+        problem = oscillate_variables(problem);
+        problem = shift_variables(problem, xopt, 0);
+        problem = shift_objective(problem, fopt);
     } else if (function_id == 4) {
         problem = skewRastriginBueche_problem(dimension);
     } else if (function_id == 5) {
