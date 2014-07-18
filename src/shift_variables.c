@@ -1,5 +1,3 @@
-
-#include <stdbool.h>
 #include <assert.h>
 
 #include "coco.h"
@@ -35,7 +33,7 @@ static void _sv_free_data(void *thing) {
  */
 coco_problem_t *shift_variables(coco_problem_t *inner_problem,
                                 const double *offset,
-                                const bool shift_bounds) {
+                                const int shift_bounds) {
     _sv_data_t *data;
     coco_problem_t *self;
     if (shift_bounds)
