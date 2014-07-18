@@ -11,7 +11,7 @@ static void _linear_slope_evaluate(coco_problem_t *self, double *x, double *y) {
     assert(self->number_of_objectives == 1);
     y[0] = 0.0;
     for (i = 0; i < self->number_of_variables; ++i) {
-        double base, exponent, si, zi;
+        double base, exponent, si;
 
         base = sqrt(alpha);
         exponent = i * 1.0 / (self->number_of_variables - 1);
