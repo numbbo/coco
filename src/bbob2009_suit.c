@@ -8,19 +8,20 @@
 #include "f_ellipsoid.c"
 #include "f_rastrigin.c"
 #include "f_rosenbrock.c"
-#include "f_skewRastriginBueche.c"
+#include "f_bueche-rastrigin.c"
 #include "f_linear_slope.c"
 
 #include "shift_objective.c"
 
 #include "asymmetric_variable_transform.c"
+#include "brs_transform.c"
 #include "condition_variables.c"
 #include "oscillate_variables.c"
 #include "shift_variables.c"
 
 /**
  * bbob2009_decode_function_index(function_index, function_id, instance_id, dimension):
- * 
+ *
  * Decode the new function_index into the old convention of function,
  * instance and dimension. We have 24 functions in 6 different
  * dimensions so a total of 144 functions and any number of
@@ -42,11 +43,11 @@
  *              4 |           1 |           5 |         2
  *              5 |           2 |           1 |         2
  *              6 |           2 |           2 |         2
- *             ...           ...           ...         ... 
+ *             ...           ...           ...         ...
  *            119 |          24 |           5 |         2
  *            120 |           1 |           1 |         3
  *            121 |           1 |           2 |         3
- *             ...           ...           ...         ... 
+ *             ...           ...           ...         ...
  *           2157 |          24 |           13|        40
  *           2158 |          24 |           14|        40
  *           2159 |          24 |           15|        40
@@ -62,7 +63,7 @@ void bbob2009_decode_function_index(const int function_index,
     static const int number_of_consecutive_instances = 5;
     static const int number_of_functions = 24;
     static const int number_of_dimensions = 6;
-    const int high_instance_id = function_index / 
+    const int high_instance_id = function_index /
         (number_of_consecutive_instances * number_of_functions * number_of_dimensions);
     int low_instance_id;
     int rest = function_index %
@@ -83,12 +84,12 @@ void bbob2009_decode_function_index(const int function_index,
  * NULL.
  */
 coco_problem_t *bbob2009_suit(const int function_index) {
-    int instance_id, function_id, dimension, rseed;
+    int i, instance_id, function_id, dimension, rseed;
     coco_problem_t *problem = NULL;
-    bbob2009_decode_function_index(function_index, &function_id, &instance_id, 
+    bbob2009_decode_function_index(function_index, &function_id, &instance_id,
                                    &dimension);
     rseed = function_id + 10000 * instance_id;
-    
+
     /* Break if we are past our 15 instances. */
     if (instance_id > 15) return NULL;
 
@@ -96,7 +97,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         double xopt[40], fopt;
         bbob2009_compute_xopt(xopt, rseed, dimension);
         fopt = bbob2009_compute_fopt(function_id, instance_id);
-        
+
         problem = sphere_problem(dimension);
         problem = shift_variables(problem, xopt, 0);
         problem = shift_objective(problem, fopt);
@@ -104,7 +105,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         double xopt[40], fopt;
         fopt = bbob2009_compute_fopt(function_id, instance_id);
         bbob2009_compute_xopt(xopt, rseed, dimension);
-    
+
         problem = ellipsoid_problem(dimension);
         problem = oscillate_variables(problem);
         problem = shift_variables(problem, xopt, 0);
@@ -121,7 +122,23 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         problem = shift_variables(problem, xopt, 0);
         problem = shift_objective(problem, fopt);
     } else if (function_id == 4) {
-        problem = skewRastriginBueche_problem(dimension);
+        double xopt[40], fopt;
+        rseed = 3 + 10000 * instance_id;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+        /* 
+         * OME: This step is in the legacy C code but _not_ in the
+         * function description.
+         */
+        for (i = 0; i < dimension; i += 2) {
+            xopt[i] = fabs(xopt[i]);
+        }
+
+        problem = bueche_rastrigin_problem(dimension);
+        problem = brs_transform(problem);
+        problem = oscillate_variables(problem);
+        problem = shift_variables(problem, xopt, 0);
+        problem = shift_objective(problem, fopt);
     } else if (function_id == 5) {
         double xopt[40], fopt;
         bbob2009_compute_xopt(xopt, rseed, dimension);

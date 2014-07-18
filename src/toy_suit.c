@@ -6,7 +6,7 @@
 #include "f_ellipsoid.c"
 #include "f_rastrigin.c"
 #include "f_rosenbrock.c"
-#include "f_skewRastriginBueche.c"
+#include "f_bueche-rastrigin.c"
 #include "f_linear_slope.c"
 
 /**
@@ -31,7 +31,7 @@ coco_problem_t *toy_suit(const int function_index) {
     } else if (fid == 2) {
         problem = rastrigin_problem(dims[did]);
     } else if (fid == 3) {
-        problem = skewRastriginBueche_problem(dims[did]);
+        problem = bueche_rastrigin_problem(dims[did]);
     } else if (fid == 4) {
         double xopt[20] = {5.0};
         problem = linear_slope_problem(dims[did], xopt);
