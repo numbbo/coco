@@ -1,3 +1,8 @@
+/*
+ * Implementation of the BBOB T_osz transformation for variables.
+ */
+
+#include <math.h>
 #include <assert.h>
 
 #include "coco.h"
