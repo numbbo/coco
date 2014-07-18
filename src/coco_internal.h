@@ -45,6 +45,9 @@ typedef void (*coco_free_function_t) (struct coco_problem *self);
  * problem_id - Short name consisting of _only_ [a-z0-9], '-' and '_'
  *   that, when not NULL, must be unique. It can for example be used
  *   to generate valid directory names under which to store results.
+ *
+ * data - Void pointer that can be used to store problem specific data
+ *   needed by any of the methods.
  */
 struct coco_problem {
     coco_initial_solution_function_t initial_solution;
@@ -61,6 +64,7 @@ struct coco_problem {
     double *best_parameter;
     char *problem_name;
     char *problem_id;
+    void *data;
 };
 
 #endif

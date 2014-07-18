@@ -13,8 +13,6 @@
 
 #include "shift_objective.c"
 #include "shift_variables.c"
-#include "affine_transform_variables.c"
-#include "tosz_transform_objective.c"
 
 /**
  * bbob2009_decode_function_index(function_index, function_id, instance_id, dimension):
