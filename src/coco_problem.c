@@ -157,7 +157,6 @@ coco_allocate_transformed_problem(coco_problem_t *inner_problem,
 }
 
 static void *coco_get_transform_data(coco_problem_t *self) {
-    coco_transform_data_t *data;
     assert(self != NULL);
     assert(self->data != NULL);
     
@@ -165,7 +164,6 @@ static void *coco_get_transform_data(coco_problem_t *self) {
 }
 
 static coco_problem_t *coco_get_transform_inner_problem(coco_problem_t *self) {
-    coco_transform_data_t *data;
     assert(self != NULL);
     assert(self->data != NULL);
     
