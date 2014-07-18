@@ -34,7 +34,20 @@ int main(int argc, char **argv) {
     FILE *testfile;
     
     if (argc != 2) {
-        fprintf(stderr, "Usage:\n  %s <testcasefile>\n", argv[0]);
+        fprintf(stderr, 
+                "COCO function test suit runner\n"
+                "\n"
+                "Usage:\n"
+                "  %s <testcasefile>\n"
+                "\n"
+                "This program tests the numerical accuracy of the functions in a\n"
+                "particular COCO test suit. Its sole argument is the name of a\n"
+                "text file that contains the test cases. The COCO distribution contains\n"
+                "(at least) the following test cases:\n"
+                "\n"
+                "  bbob2009_testcases.txt - Covers the 24 noise-free BBOB 2009\n"
+                "    functions in 2D, 3D, 5D, 10D, 20D and 40D.\n",
+                argv[0]);
         return 1;
     }
     testfile = fopen(argv[1], "r");
