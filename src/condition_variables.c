@@ -14,7 +14,6 @@ typedef struct {
 
 static void _cv_evaluate_function(coco_problem_t *self, double *x, double *y) {
     size_t i;
-    double exponent;
     _cv_data_t *data;
     coco_problem_t *inner_problem;
 
