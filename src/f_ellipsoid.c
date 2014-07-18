@@ -6,22 +6,23 @@
 
 #include "coco_problem.c"
 
-static void f_ellipsoid_evaluate(coco_problem_t *self, double *x, double *y) {
+static void _ellipsoid_evaluate(coco_problem_t *self, double *x, double *y) {
     size_t i = 0;
     static const double condition = 1.0e6;    
     assert(self->number_of_objectives == 1);
     assert(self->number_of_variables > 0);
-    y[0] = x[i] * x[i];
+    y[0] = x[i] * x[i]; 
     for (i = 1; i < self->number_of_variables; ++i) {
-        const double exponent = i * 1.0 / (self->number_of_variables - 1);
+        const double exponent = i / (self->number_of_variables - 1.0);
         y[0] += pow(condition, exponent) * x[i] * x[i];
     }
 }
 
 static coco_problem_t *ellipsoid_problem(const size_t number_of_variables) {
     size_t i, problem_id_length;
-    coco_problem_t *problem = coco_allocate_problem(number_of_variables,
-                                                        1, 0);
+    coco_problem_t *problem;
+
+    problem = coco_allocate_problem(number_of_variables, 1, 0);
     problem->problem_name = coco_strdup("ellipsoid function");
     problem_id_length = snprintf(NULL, 0, 
                                  "%s_%02i", "ellipsoid",
@@ -32,14 +33,14 @@ static coco_problem_t *ellipsoid_problem(const size_t number_of_variables) {
     problem->number_of_variables = number_of_variables;
     problem->number_of_objectives = 1;
     problem->number_of_constraints = 0;
-    problem->evaluate_function = f_ellipsoid_evaluate;
+    problem->evaluate_function = _ellipsoid_evaluate;
     for (i = 0; i < number_of_variables; ++i) {
         problem->smallest_values_of_interest[i] = -5.0;
         problem->largest_values_of_interest[i] = 5.0;
         problem->best_parameter[i] = 0.0;
     }
     /* Calculate best parameter value */
-    f_ellipsoid_evaluate(problem, problem->best_parameter, problem->best_value);
+    _ellipsoid_evaluate(problem, problem->best_parameter, problem->best_value);
 
     return problem;
 }

@@ -13,6 +13,7 @@
 
 #include "shift_objective.c"
 #include "shift_variables.c"
+#include "oscillate_variables.c"
 
 /**
  * bbob2009_decode_function_index(function_index, function_id, instance_id, dimension):
@@ -89,14 +90,22 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     if (instance_id > 15) return NULL;
 
     if (function_id == 1) {
-        double offset[40];
+        double xopt[40], fopt;
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        
         problem = sphere_problem(dimension);
-        bbob2009_compute_xopt(offset, rseed, dimension);
-        problem = shift_variables(problem, offset, false);
-        problem = shift_objective(problem, 
-                                  bbob2009_compute_fopt(function_id, instance_id));
+        problem = shift_variables(problem, xopt, 0);
+        problem = shift_objective(problem, fopt);
     } else if (function_id == 2) {
+        double xopt[40], fopt;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+    
         problem = ellipsoid_problem(dimension);
+        problem = oscillate_variables(problem);
+        problem = shift_variables(problem, xopt, 0);
+        problem = shift_objective(problem, fopt);
     } else if (function_id == 3) {
         problem = rastrigin_problem(dimension);
     } else if (function_id == 4) {
