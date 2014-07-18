@@ -97,7 +97,7 @@ def main(args):
         help()
         sys.exit(0)
     cmd = args[0]
-    if cmd == 'build_c': build_c()
+    if cmd == 'build-c': build_c()
     elif cmd == 'test-c': test_c()
     elif cmd == 'build-python': build_python()
     elif cmd == 'test-python': test_python()
