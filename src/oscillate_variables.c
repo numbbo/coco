@@ -5,7 +5,6 @@
 
 typedef struct {
     double *oscillated_x;
-    coco_free_function_t old_free_problem;
 } _ov_data_t;
 
 static void _ov_evaluate_function(coco_problem_t *self, double *x, double *y) {
