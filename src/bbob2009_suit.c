@@ -198,6 +198,29 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         problem = rosenbrock_problem(dimension);
         problem = affine_transform_variables(problem, M, b, dimension);
         problem = shift_objective(problem, fopt);
+    } else if (function_id == 10) {
+        int row, column;
+        double M[40*40], b[40], xopt[40], fopt, *current_row;
+        double **rot1;
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+
+        rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+        for (row = 0; row < dimension; ++row) {
+            current_row = M + row * dimension;
+            for (column = 0; column < dimension; ++column) {
+                current_row[column] = rot1[row][column];
+            }
+            b[row] = 0.0;
+        }
+        bbob2009_free_matrix(rot1, dimension);
+                
+        problem = ellipsoid_problem(dimension);
+        problem = oscillate_variables(problem);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = shift_variables(problem, xopt, 0);
+        problem = shift_objective(problem, fopt);
     } else {
         return NULL;
     }
