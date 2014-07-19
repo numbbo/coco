@@ -12,6 +12,7 @@
 #include "f_linear_slope.c"
 #include "f_rastrigin.c"
 #include "f_rosenbrock.c"
+#include "f_sharp_ridge.c"
 #include "f_sphere.c"
 
 #include "shift_objective.c"
@@ -268,6 +269,34 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         problem = shift_objective(problem, fopt);
         problem = affine_transform_variables(problem, M, b, dimension);
         problem = asymmetric_variable_transform(problem, 0.5);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = shift_variables(problem, xopt, 0);
+    } else if (function_id == 13) {
+        int i, j, k;
+        double M[40*40], b[40], xopt[40], fopt, *current_row;
+        double **rot1, **rot2;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+
+        rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        rot2 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+        bbob2009_compute_rotation(rot2, rseed, dimension);
+        for (i = 0; i < dimension; ++i) {
+            b[i] = 0.0;
+            current_row = M + i * dimension;
+            for (j = 0; j < dimension; ++j) {
+                current_row[j] = 0.0;
+                for (k = 0; k < dimension; ++k) {
+                    double exponent = k * 1.0 / (dimension - 1.0);
+                    current_row[j] += rot1[i][k] * pow(sqrt(10), exponent) * rot2[k][j];
+                }
+            }
+        }
+        bbob2009_free_matrix(rot1, dimension);
+        bbob2009_free_matrix(rot2, dimension);
+        problem = sharp_ridge_problem(dimension);
+        problem = shift_objective(problem, fopt);
         problem = affine_transform_variables(problem, M, b, dimension);
         problem = shift_variables(problem, xopt, 0);
     } else {
