@@ -14,6 +14,7 @@
 
 #include "shift_objective.c"
 
+#include "affine_transform_variables.c"
 #include "asymmetric_variable_transform.c"
 #include "brs_transform.c"
 #include "condition_variables.c"
@@ -128,7 +129,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         rseed = 3 + 10000 * instance_id;
         fopt = bbob2009_compute_fopt(function_id, instance_id);
         bbob2009_compute_xopt(xopt, rseed, dimension);
-        /* 
+        /*
          * OME: This step is in the legacy C code but _not_ in the
          * function description.
          */
@@ -155,8 +156,8 @@ coco_problem_t *bbob2009_suit(const int function_index) {
             xopt[i] *= 0.75;
         }
         fopt = bbob2009_compute_fopt(function_id, instance_id);
-        /* C89 version of 
-         *   fmax(1.0, sqrt(dimension) / 8.0); 
+        /* C89 version of
+         *   fmax(1.0, sqrt(dimension) / 8.0);
          * follows
          */
         factor = sqrt(dimension) / 8.0;
@@ -167,7 +168,36 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         problem = shift_variables(problem, minus_one, 0);
         problem = scale_variables(problem, factor);
         problem = shift_variables(problem, xopt, 0);
-        problem = shift_objective(problem, fopt);        
+        problem = shift_objective(problem, fopt);
+    } else if (function_id == 9) {
+        int row, column;
+        double M[40*40], b[40], fopt, factor, *current_row;
+        double **rot1;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed, dimension);
+        /* C89 version of
+         *   fmax(1.0, sqrt(dimension) / 8.0);
+         * follows
+         */
+        factor = sqrt(dimension) / 8.0;
+        if (factor < 1.0)
+            factor = 1.0;
+        /* Compute affine transformation */
+        for (row = 0; row < dimension; ++row) {
+            current_row = M + row * dimension;
+            for (column = 0; column < dimension; ++column) {
+                current_row[column] = rot1[row][column];
+                if (row == column)
+                    current_row[column] *= factor;
+            }
+            b[row] = 0.5;
+        }
+        bbob2009_free_matrix(rot1, dimension);
+
+        problem = rosenbrock_problem(dimension);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = shift_objective(problem, fopt);
     } else {
         return NULL;
     }
