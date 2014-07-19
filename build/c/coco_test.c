@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
                 header_shown = 1;
             }
             if (shown_failures < 100) {
-                fprintf(stdout, "%8i %8i FAILED expected=%.8f observed=%.8f\n",
+                fprintf(stdout, "%8i %8i FAILED expected=%.8e observed=%.8e\n",
                         function_id, testvector_id, expected_value, y);
                 fflush(stdout);  
                 ++shown_failures;          
