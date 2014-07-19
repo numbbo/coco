@@ -20,7 +20,7 @@ static int about_equal(const double a, const double b) {
     const double relative_error = fabs((a - b) / larger);
 
     if (absolute_error < 2 * DBL_MIN) return 1;
-    return relative_error < 0.0000001;
+    return relative_error < 1e-6;
 }
 
 int main(int argc, char **argv) {

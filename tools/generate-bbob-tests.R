@@ -31,7 +31,7 @@ generate_bbob_testcase <- function(function_id, instance_id, dimension,
   for (i in 1:nrow(testvectors)) {
     par <- testvectors[i,1:dimension]
     value <- f(par)
-    catf("%i %i %.17f\n", function_index, i - 1, value)
+    catf("%i %i %.6e\n", function_index, i - 1, value)
   }
 }
 
@@ -39,7 +39,7 @@ testvectors <- generate_testvectors(1000)
 
 catf("bbob2009\n%i\n", nrow(testvectors))
 for (i in 1:nrow(testvectors)) {
-  catf("%s\n", paste(sprintf("%.17f", testvectors[i,]), collapse=" "))
+  catf("%s\n", paste(sprintf("%.14e", testvectors[i,]), collapse=" "))
 }
 
 set.seed(42)
@@ -47,7 +47,7 @@ set.seed(42)
 res <- NULL
 for (high_instance_id in 0:2) {
   for (dimension in c(2, 3, 5, 10, 20, 40)) {
-    for (function_id in c(1, 2, 3, 4, 5)) {
+    for (function_id in c(1, 2, 3, 4, 5, 8)) {
       for (low_instance_id in 1:5) {
         instance_id <- low_instance_id + 5 * high_instance_id
         generate_bbob_testcase(function_id, instance_id, dimension, testvectors)
