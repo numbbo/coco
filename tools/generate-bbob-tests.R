@@ -35,7 +35,7 @@ generate_bbob_testcase <- function(function_id, instance_id, dimension,
   }
 }
 
-testvectors <- generate_testvectors(1000)
+testvectors <- generate_testvectors(100)
 
 catf("bbob2009\n%i\n", nrow(testvectors))
 for (i in 1:nrow(testvectors)) {
@@ -47,7 +47,7 @@ set.seed(42)
 res <- NULL
 for (high_instance_id in 0:2) {
   for (dimension in c(2, 3, 5, 10, 20, 40)) {
-    for (function_id in c(1, 2, 3, 4, 5, 8, 9)) {
+    for (function_id in c(1, 2, 3, 4, 5, 8, 9, 10, 11, 12)) {
       for (low_instance_id in 1:5) {
         instance_id <- low_instance_id + 5 * high_instance_id
         generate_bbob_testcase(function_id, instance_id, dimension, testvectors)
