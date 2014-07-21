@@ -1,22 +1,34 @@
 #include <assert.h>
+#include <math.h>
 
 #include "coco_generics.c"
 
 #include "bbob2009_legacy_code.c"
 
-#include "f_sphere.c"
+#include "f_bent_cigar.c"
+#include "f_bueche-rastrigin.c"
+#include "f_different_powers.c"
+#include "f_discus.c"
 #include "f_ellipsoid.c"
+#include "f_linear_slope.c"
 #include "f_rastrigin.c"
 #include "f_rosenbrock.c"
-#include "f_skewRastriginBueche.c"
-#include "f_linearSlope.c"
+#include "f_sharp_ridge.c"
+#include "f_sphere.c"
 
 #include "shift_objective.c"
+
+#include "affine_transform_variables.c"
+#include "asymmetric_variable_transform.c"
+#include "brs_transform.c"
+#include "condition_variables.c"
+#include "oscillate_variables.c"
+#include "scale_variables.c"
 #include "shift_variables.c"
 
 /**
  * bbob2009_decode_function_index(function_index, function_id, instance_id, dimension):
- * 
+ *
  * Decode the new function_index into the old convention of function,
  * instance and dimension. We have 24 functions in 6 different
  * dimensions so a total of 144 functions and any number of
@@ -38,11 +50,11 @@
  *              4 |           1 |           5 |         2
  *              5 |           2 |           1 |         2
  *              6 |           2 |           2 |         2
- *             ...           ...           ...         ... 
+ *             ...           ...           ...         ...
  *            119 |          24 |           5 |         2
  *            120 |           1 |           1 |         3
  *            121 |           1 |           2 |         3
- *             ...           ...           ...         ... 
+ *             ...           ...           ...         ...
  *           2157 |          24 |           13|        40
  *           2158 |          24 |           14|        40
  *           2159 |          24 |           15|        40
@@ -58,7 +70,7 @@ void bbob2009_decode_function_index(const int function_index,
     static const int number_of_consecutive_instances = 5;
     static const int number_of_functions = 24;
     static const int number_of_dimensions = 6;
-    const int high_instance_id = function_index / 
+    const int high_instance_id = function_index /
         (number_of_consecutive_instances * number_of_functions * number_of_dimensions);
     int low_instance_id;
     int rest = function_index %
@@ -71,6 +83,21 @@ void bbob2009_decode_function_index(const int function_index,
     *instance_id = low_instance_id + 5 * high_instance_id;
 }
 
+static void bbob2009_copy_rotation_matrix(double **rot, 
+                                          double *M, double *b, 
+                                          const int dimension) {
+    int row, column;
+    double *current_row;
+
+    for (row = 0; row < dimension; ++row) {
+        current_row = M + row * dimension;
+        for (column = 0; column < dimension; ++column) {
+            current_row[column] = rot[row][column];
+        }
+        b[row] = 0.0;
+    }
+}
+
 /**
  * bbob2009_suit(function_index):
  *
@@ -79,54 +106,246 @@ void bbob2009_decode_function_index(const int function_index,
  * NULL.
  */
 coco_problem_t *bbob2009_suit(const int function_index) {
-    int instance_id, function_id, dimension, rseed;
+    int i, instance_id, function_id, dimension, rseed;
     coco_problem_t *problem = NULL;
-    bbob2009_decode_function_index(function_index, &function_id, &instance_id, 
+    bbob2009_decode_function_index(function_index, &function_id, &instance_id,
                                    &dimension);
     rseed = function_id + 10000 * instance_id;
-    
+
     /* Break if we are past our 15 instances. */
     if (instance_id > 15) return NULL;
 
     if (function_id == 1) {
-        double offset[40];
-        problem = sphere_problem(dimension);
-        bbob2009_compute_xopt(offset, rseed, dimension);
-        problem = shift_variables(problem, offset, false);
-        problem = shift_objective(problem, 
-                                  bbob2009_compute_fopt(function_id, instance_id));
-    } else if (function_id == 2) {
-        problem = ellipsoid_problem(dimension);
-    } else if (function_id == 3) {
-        problem = rastrigin_problem(dimension);
-    } else if (function_id == 4) {
-        problem = skewRastriginBueche_problem(dimension);
-    } else if (function_id == 5) {
-        problem = linearSlope_problem(dimension);
-    } else if (function_id == 6) {
-        double offset[40];
-        double **rot1, **rot2;
-        rot1 = bbob2009_allocate_matrix(dimension, dimension);
-        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+        double xopt[40], fopt;
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
 
-        rot2 = bbob2009_allocate_matrix(dimension, dimension);
-        bbob2009_compute_rotation(rot2, rseed, dimension);
+        problem = sphere_problem(dimension);
+        problem = shift_variables(problem, xopt, 0);
+        problem = shift_objective(problem, fopt);
+    } else if (function_id == 2) {
+        double xopt[40], fopt;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+
+        problem = ellipsoid_problem(dimension);
+        problem = oscillate_variables(problem);
+        problem = shift_variables(problem, xopt, 0);
+        problem = shift_objective(problem, fopt);
+    } else if (function_id == 3) {
+        double xopt[40], fopt;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+
+        problem = rastrigin_problem(dimension);
+        problem = condition_variables(problem, 10.0);
+        problem = asymmetric_variable_transform(problem, 0.2);
+        problem = oscillate_variables(problem);
+        problem = shift_variables(problem, xopt, 0);
+        problem = shift_objective(problem, fopt);
+    } else if (function_id == 4) {
+        double xopt[40], fopt;
+        rseed = 3 + 10000 * instance_id;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+        /*
+         * OME: This step is in the legacy C code but _not_ in the
+         * function description.
+         */
+        for (i = 0; i < dimension; i += 2) {
+            xopt[i] = fabs(xopt[i]);
+        }
+
+        problem = bueche_rastrigin_problem(dimension);
+        problem = brs_transform(problem);
+        problem = oscillate_variables(problem);
+        problem = shift_variables(problem, xopt, 0);
+        problem = shift_objective(problem, fopt);
+    } else if (function_id == 5) {
+        double xopt[40], fopt;
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        problem = linear_slope_problem(dimension, xopt);
+        problem = shift_objective(problem, fopt);
+    } else if (function_id == 8) {
+        double xopt[40], minus_one[40], fopt, factor;
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+        for (i = 0; i < dimension; ++i) {
+            minus_one[i] = -1.0;
+            xopt[i] *= 0.75;
+        }
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        /* C89 version of
+         *   fmax(1.0, sqrt(dimension) / 8.0);
+         * follows
+         */
+        factor = sqrt(dimension) / 8.0;
+        if (factor < 1.0)
+            factor = 1.0;
 
         problem = rosenbrock_problem(dimension);
-        /* IMPORTANT: Penalize before any transformations of the variables! */
-        #if 0
-        problem = penalize_uninteresting_values(problem);
-        #endif
-        bbob2009_compute_xopt(offset, rseed, dimension);
-        problem = shift_variables(problem, offset, false);
+        problem = shift_variables(problem, minus_one, 0);
+        problem = scale_variables(problem, factor);
+        problem = shift_variables(problem, xopt, 0);
+        problem = shift_objective(problem, fopt);
+    } else if (function_id == 9) {
+        int row, column;
+        double M[40*40], b[40], fopt, factor, *current_row;
+        double **rot1;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed, dimension);
+        /* C89 version of
+         *   fmax(1.0, sqrt(dimension) / 8.0);
+         * follows
+         */
+        factor = sqrt(dimension) / 8.0;
+        if (factor < 1.0)
+            factor = 1.0;
+        /* Compute affine transformation */
+        for (row = 0; row < dimension; ++row) {
+            current_row = M + row * dimension;
+            for (column = 0; column < dimension; ++column) {
+                current_row[column] = rot1[row][column];
+                if (row == column)
+                    current_row[column] *= factor;
+            }
+            b[row] = 0.5;
+        }
+        bbob2009_free_matrix(rot1, dimension);
 
-        problem = shift_objective(problem, 
-                                  bbob2009_compute_fopt(function_id, instance_id));
+        problem = rosenbrock_problem(dimension);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = shift_objective(problem, fopt);
+    } else if (function_id == 10) {
+        double M[40*40], b[40], xopt[40], fopt;
+        double **rot1;
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+
+        rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+        bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
+        bbob2009_free_matrix(rot1, dimension);
+                
+        problem = ellipsoid_problem(dimension);
+        problem = oscillate_variables(problem);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = shift_variables(problem, xopt, 0);
+        problem = shift_objective(problem, fopt);
+    } else if (function_id == 11) {
+        double M[40*40], b[40], xopt[40], fopt;
+        double **rot1;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+
+        rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+        bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
+        bbob2009_free_matrix(rot1, dimension);
+
+        problem = discus_problem(dimension);
+        problem = oscillate_variables(problem);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = shift_variables(problem, xopt, 0);
+        problem = shift_objective(problem, fopt);
+    } else if (function_id == 12) {
+        double M[40*40], b[40], xopt[40], fopt;
+        double **rot1;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed + 1000000, dimension);
+
+        rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+        bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
+        bbob2009_free_matrix(rot1, dimension);
+        
+        problem = bent_cigar_problem(dimension);
+        problem = shift_objective(problem, fopt);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = asymmetric_variable_transform(problem, 0.5);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = shift_variables(problem, xopt, 0);
+    } else if (function_id == 13) {
+        int i, j, k;
+        double M[40*40], b[40], xopt[40], fopt, *current_row;
+        double **rot1, **rot2;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+
+        rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        rot2 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+        bbob2009_compute_rotation(rot2, rseed, dimension);
+        for (i = 0; i < dimension; ++i) {
+            b[i] = 0.0;
+            current_row = M + i * dimension;
+            for (j = 0; j < dimension; ++j) {
+                current_row[j] = 0.0;
+                for (k = 0; k < dimension; ++k) {
+                    double exponent = k * 1.0 / (dimension - 1.0);
+                    current_row[j] += rot1[i][k] * pow(sqrt(10), exponent) * rot2[k][j];
+                }
+            }
+        }
         bbob2009_free_matrix(rot1, dimension);
         bbob2009_free_matrix(rot2, dimension);
-    } else {
+        problem = sharp_ridge_problem(dimension);
+        problem = shift_objective(problem, fopt);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = shift_variables(problem, xopt, 0);
+    } else if (function_id == 14) {
+        double M[40*40], b[40], xopt[40], fopt;
+        double **rot1;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+
+        rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+        bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
+        bbob2009_free_matrix(rot1, dimension);
+
+        problem = different_powers_problem(dimension);
+        problem = shift_objective(problem, fopt);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = shift_variables(problem, xopt, 0);
+    } else if (function_id == 15) {
+        int i, j, k;
+        double M[40*40], b[40], xopt[40], fopt, *current_row;
+        double **rot1, **rot2;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+
+        rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        rot2 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+        bbob2009_compute_rotation(rot2, rseed, dimension);
+        for (i = 0; i < dimension; ++i) {
+            b[i] = 0.0;
+            current_row = M + i * dimension;
+            for (j = 0; j < dimension; ++j) {
+                current_row[j] = 0.0;
+                for (k = 0; k < dimension; ++k) {
+                    double exponent = k * 1.0 / (dimension - 1.0);
+                    current_row[j] += rot1[i][k] * pow(sqrt(10), exponent) * rot2[k][j];
+                }
+            }
+        }
+
+
+        problem = rastrigin_problem(dimension);
+        problem = shift_objective(problem, fopt);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = asymmetric_variable_transform(problem, 0.2);
+        problem = oscillate_variables(problem);
+        bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = shift_variables(problem, xopt, 0);
+
+        bbob2009_free_matrix(rot1, dimension);
+        bbob2009_free_matrix(rot2, dimension);        
+    } else {        
         return NULL;
     }
-
     return problem;
 }

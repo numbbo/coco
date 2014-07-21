@@ -42,10 +42,13 @@ void coco_free_problem(coco_problem_t *self) {
             coco_free_memory(self->problem_name);
         if (self->problem_id != NULL)
             coco_free_memory(self->problem_id);
+        if (self->data != NULL)
+            coco_free_memory(self->data);
         self->smallest_values_of_interest = NULL;
         self->largest_values_of_interest = NULL;
         self->best_parameter = NULL;
         self->best_value = NULL;
+        self->data = NULL;
         coco_free_memory(self);
     }
 }
