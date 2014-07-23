@@ -4,6 +4,8 @@
 import sys
 import re
 import os
+import shutil
+import tempfile
 
 ## Change to the root directory of repository and add our tools/
 ## subdirectory to system wide search path for modules.
@@ -23,6 +25,7 @@ core_files = ['src/coco_benchmark.c', 'src/coco_random.c',
 def build_c():
     amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/c/coco.c')
     copy_file('src/coco.h', 'build/c/coco.h')
+    copy_file('src/bbob2009_testcases.txt', 'build/c/bbob2009_testcases.txt')
     write_file(hg_revision(), "build/c/REVISION")
     write_file(hg_version(), "build/c/VERSION")
 
@@ -35,21 +38,39 @@ def test_c():
 ################################################################################
 ## Python
 def build_python():
-    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/python/coco/coco_core.c')
-    copy_file('src/coco.h', 'build/python/coco/coco.h')
+    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/python/cython/coco.c')
+    copy_file('src/coco.h', 'build/python/cython/coco.h')
+    copy_file('src/bbob2009_testcases.txt', 'build/python/bbob2009_testcases.txt')
     expand_file('build/python/README.in', 'build/python/README',
                 {'COCO_VERSION': hg_version()})
     expand_file('build/python/setup.py.in', 'build/python/setup.py',
                 {'COCO_VERSION': hg_version()})
-    ## Fore distutils to use Cython
+    ## Force distutils to use Cython
     os.environ['USE_CYTHON'] = 'true'
     python27('build/python', ['setup.py', 'sdist'])
     os.environ.pop('USE_CYTHON')
 
 def test_python():
-    build_python()
+    build_python()    
     python27('build/python', ['setup.py', 'check', '--metadata', '--strict'])
-    pass
+    ## Now install into a temporary location, run test and cleanup
+    python_temp_home = tempfile.mkdtemp(prefix="coco")
+    python_temp_lib = os.path.join(python_temp_home, "lib", "python")
+    try:
+        ## We setup a custom "homedir" here into which we install our
+        ## coco extension and then use that temporary installation for
+        ## the tests. Otherwise we would run the risk of contaminating
+        ## the Python installation of the build/test machine.
+        os.makedirs(python_temp_lib)
+        os.environ['PYTHONPATH'] = python_temp_lib
+        os.environ['USE_CYTHON'] = 'true'
+        python27('build/python', ['setup.py', 'install', '--home', python_temp_home])
+        python27('build/python', ['coco_test.py', 'bbob2009_testcases.txt'])
+        os.environ.pop('USE_CYTHON')
+        os.environ.pop('PYTHONPATH')
+    finally:
+        shutil.rmtree(python_temp_home)
+        pass
 
 ################################################################################
 ## R
