@@ -10,32 +10,38 @@ USE_CYTHON = not os.path.isfile('coco/wrapper.c')
 if not USE_CYTHON and os.getenv('USE_CYTHON', 'false') == 'true':
     USE_CYTHON = True
 
-cython_ext = '.pyx' if USE_CYTHON else '.c'
-
-extensions = [
-    Extension('coco', 
-              sources=['coco/coco_core.c', 'coco/coco' + cython_ext],
-              include_dirs=[np.get_include()])
-]
+cmdclass = {}
+extensions = []
 
 if USE_CYTHON:
-    from Cython.Build import cythonize
-    extensions = cythonize(extensions)
-
-setup( 
-    name = 'coco', 
-    version = '$COCO_VERSION', 
+    print "NOTE: Using Cython to build interface."
+    from Cython.Distutils import build_ext
+    extensions.append(Extension('coco._interface',
+                                sources=['cython/interface.pyx', 'cython/coco.c'],
+                                include_dirs=[np.get_include()]))
+    cmdclass.update({'build_ext': build_ext})
+else:
+    print "NOTE: Using precompiled C file to build interface."
+    extensions.append(Extension('coco._interface',
+                                sources=['cython/interface.c', 'cython/coco.c'],
+                                include_dirs=[np.get_include()]))
+setup(
+    name = 'coco',
+    version = '$COCO_VERSION',
+    packages = ['coco'],
+    package_dir = {'coco': 'python'},
+    cmdclass=cmdclass,
+    ext_modules = extensions,
     url = 'https://code.google.com/p/numbbo/',
-    license = 'BSD', 
-    maintainer = 'Olaf Mersmann', 
-    maintainer_email = 'olafm@p-value.net',       
-    # author = ['Anne Auger', 'Bernd Bischl', 'Dimo Brockhoff', 
-    #            'Nikolaus Hansen', 'Olaf Mersmann', 'Petr Posik', 
+    license = 'BSD',
+    maintainer = 'Olaf Mersmann',
+    maintainer_email = 'olafm@p-value.net',
+    # author = ['Anne Auger', 'Bernd Bischl', 'Dimo Brockhoff',
+    #            'Nikolaus Hansen', 'Olaf Mersmann', 'Petr Posik',
     #            'Mike Preuss',  'Rodolphe le Riche', 'Guenter Rudolph',
-    #            'Marc Schoenauer', 'Heike Trautmann'],       
+    #            'Marc Schoenauer', 'Heike Trautmann'],
     description = 'Benchmarking framework for all types of black-box optimization algorithms.',
     long_description = '...',
-    ext_modules = extensions,
     install_requires = ['numpy>=1.7'],
     classifiers = [
         'Development Status :: 4 - Beta',

@@ -15,7 +15,7 @@ def hg(args):
     full_command = ['hg']
     full_command.extend(args)
     try:
-        output = check_output(full_command).rstrip()
+        output = check_output(full_command, env=os.environ).rstrip()
     except CalledProcessError as e:
         print 'Failed to execute hg.'
         sys.exit(-1)
@@ -38,7 +38,7 @@ def run(directory, args):
     oldwd = os.getcwd()
     try:
         os.chdir(directory)
-        output = check_output(args, stderr=STDOUT)
+        output = check_output(args, stderr=STDOUT, env=os.environ)
     except CalledProcessError as e:
         print "ERROR: return value=%i" % e.returncode
         print e.output
@@ -46,14 +46,14 @@ def run(directory, args):
     finally:
         os.chdir(oldwd)
 
-def python27(directory, args):
+def python27(directory, args, env=None):
     print "PYTHON\t%s in %s" % (" ".join(args), directory)
     oldwd = os.getcwd()
     full_command = ['python2.7']
     full_command.extend(args)
     try:
         os.chdir(directory)
-        output = check_output(full_command, stderr=STDOUT)
+        output = check_output(full_command, stderr=STDOUT, env=os.environ)
     except CalledProcessError as e:
         print "ERROR: return value=%i" % e.returncode
         print e.output
@@ -76,7 +76,7 @@ def make(directory, target):
     oldwd = os.getcwd()
     try:
         os.chdir(directory)
-        output = check_output(['make', target], stderr=STDOUT)
+        output = check_output(['make', target], stderr=STDOUT, env=os.environ)
     except CalledProcessError as e:
         print "ERROR: return value=%i" % e.returncode
         print e.output
