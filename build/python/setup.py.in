@@ -1,3 +1,7 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import setuptools
 from distutils.core import setup
@@ -14,20 +18,20 @@ cmdclass = {}
 extensions = []
 
 if USE_CYTHON:
-    print "NOTE: Using Cython to build interface."
+    print("NOTE: Using Cython to build interface.")
     from Cython.Distutils import build_ext
     extensions.append(Extension('coco._interface',
                                 sources=['cython/interface.pyx', 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
     cmdclass.update({'build_ext': build_ext})
 else:
-    print "NOTE: Using precompiled C file to build interface."
+    print("NOTE: Using precompiled C file to build interface.")
     extensions.append(Extension('coco._interface',
                                 sources=['cython/interface.c', 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
 setup(
     name = 'coco',
-    version = '$COCO_VERSION',
+    version = "$COCO_VERSION",
     packages = ['coco'],
     package_dir = {'coco': 'python'},
     cmdclass=cmdclass,

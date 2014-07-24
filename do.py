@@ -1,5 +1,8 @@
 #!/usr/bin/env python2.7
 ## -*- mode: python -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import sys
 import re
@@ -97,7 +100,7 @@ def test():
     test_r()
     
 def help():
-    print """COCO framework bootstrap tool.
+    print("""COCO framework bootstrap tool.
 
 Usage: do.py <command>
 
@@ -111,7 +114,7 @@ Available commands:
   test-c       - Run minimal test of C components
   test-python  - Run minimal test of Python module
   test-r  - Run minimal test of R package
-"""
+""")
 
 def main(args):
     if len(args) != 1: 
