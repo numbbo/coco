@@ -54,7 +54,8 @@ def python27(directory, args, env=None):
     print("PYTHON\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
     full_command = ['python2.7']
-    full_command = ['python']
+    ## OME: Need Python 2.7 for NumPy.
+    # full_command = ['python']
     full_command.extend(args)
     try:
         os.chdir(directory)
