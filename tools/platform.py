@@ -3,6 +3,10 @@
 
 ## Lots of utility functions to abstract away platform differences.
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import os
 from shutil import copyfile
@@ -17,7 +21,7 @@ def hg(args):
     try:
         output = check_output(full_command, env=os.environ).rstrip()
     except CalledProcessError as e:
-        print 'Failed to execute hg.'
+        print('Failed to execute hg.')
         sys.exit(-1)
     return output
 
@@ -34,58 +38,60 @@ def hg_revision():
     return hg(['id', '-i'])
 
 def run(directory, args):
-    print "RUN\t%s in %s" % (" ".join(args), directory)
+    print("RUN\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
     try:
         os.chdir(directory)
         output = check_output(args, stderr=STDOUT, env=os.environ)
     except CalledProcessError as e:
-        print "ERROR: return value=%i" % e.returncode
-        print e.output
+        print("ERROR in platform.run: return value=%i" % e.returncode)
+        print(e.output)
         sys.exit(-1)
     finally:
         os.chdir(oldwd)
 
 def python27(directory, args, env=None):
-    print "PYTHON\t%s in %s" % (" ".join(args), directory)
+    print("PYTHON\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
     full_command = ['python2.7']
+    full_command = ['python']
     full_command.extend(args)
     try:
         os.chdir(directory)
         output = check_output(full_command, stderr=STDOUT, env=os.environ)
     except CalledProcessError as e:
-        print "ERROR: return value=%i" % e.returncode
-        print e.output
+        print("ERROR in platform.python27: return value=%i" % e.returncode)
+        print(e.output)
+        raise
         sys.exit(-1)
     finally:
         os.chdir(oldwd)
 
 def copy_file(source, destination):
-    print "COPY\t%s -> %s" % (source, destination)
+    print("COPY\t%s -> %s" % (source, destination))
     copyfile(source, destination)
 
 def write_file(string, destination):
-    print "WRITE\t%s" % destination
+    print("WRITE\t%s" % destination)
     with open(destination, "w") as fd:
-        fd.write(string)
+        fd.write(string.decode())  # decode bytes type to string
 
 def make(directory, target):
     """Run make to build a target"""
-    print "MAKE\t%s in %s" % (target, directory)
+    print("MAKE\t%s in %s" % (target, directory))
     oldwd = os.getcwd()
     try:
         os.chdir(directory)
         output = check_output(['make', target], stderr=STDOUT, env=os.environ)
     except CalledProcessError as e:
-        print "ERROR: return value=%i" % e.returncode
-        print e.output
+        print("ERROR: return value=%i" % e.returncode)
+        print(e.output)
         sys.exit(-1)
     finally:
         os.chdir(oldwd)
 
 def expand_file(source, destination, dictionary):
-    print "EXPAND\t%s to %s" % (source, destination)
+    print("EXPAND\t%s to %s" % (source, destination))
     from string import Template
     with open(source, "r") as fd:
         content = Template(fd.read())        

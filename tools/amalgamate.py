@@ -1,5 +1,10 @@
 #!/usr/bin/env python2.7
 ## -*- mode: python -*-
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import re
 from os import path
@@ -44,7 +49,7 @@ class Amalgator:
         fd.close()
 
 def amalgamate(source_files, destination_file):        
-    print "AML\t%s -> %s" % (str(source_files), destination_file)
+    print("AML\t%s -> %s" % (str(source_files), destination_file))
     amalgator = Amalgator(destination_file)
     for filename in source_files:
         amalgator.process_file(filename)
