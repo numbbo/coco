@@ -50,10 +50,10 @@ def run(directory, args):
     finally:
         os.chdir(oldwd)
 
-def python27(directory, args, env=None):
-    print("PYTHON\t%s in %s" % (" ".join(args), directory))
+def python2(directory, args, env=None):
+    print("PY2\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
-    full_command = ['python2.7']
+    full_command = ['python2']
     ## OME: Need Python 2.7 for NumPy.
     # full_command = ['python']
     full_command.extend(args)
@@ -61,7 +61,25 @@ def python27(directory, args, env=None):
         os.chdir(directory)
         output = check_output(full_command, stderr=STDOUT, env=os.environ)
     except CalledProcessError as e:
-        print("ERROR in platform.python27: return value=%i" % e.returncode)
+        print("ERROR in platform.python2: return value=%i" % e.returncode)
+        print(e.output)
+        raise
+        sys.exit(-1)
+    finally:
+        os.chdir(oldwd)
+
+def python3(directory, args, env=None):
+    print("PY3\t%s in %s" % (" ".join(args), directory))
+    oldwd = os.getcwd()
+    full_command = ['python3']
+    ## OME: Need Python 2.7 for NumPy.
+    # full_command = ['python']
+    full_command.extend(args)
+    try:
+        os.chdir(directory)
+        output = check_output(full_command, stderr=STDOUT, env=os.environ)
+    except CalledProcessError as e:
+        print("ERROR in platform.python3: return value=%i" % e.returncode)
         print(e.output)
         raise
         sys.exit(-1)

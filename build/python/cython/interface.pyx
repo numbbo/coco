@@ -1,6 +1,7 @@
 # -*- mode: cython -*-
 import numpy as np
 cimport numpy as np
+from cpython.version cimport PY_MAJOR_VERSION
 
 # Must initialize numpy or risk segfaults
 np.import_array()
@@ -26,16 +27,24 @@ cdef extern from "coco.h":
     const double *coco_get_smallest_values_of_interest(coco_problem_t *problem)
     const double *coco_get_largest_values_of_interest(coco_problem_t *problem)
 
+cdef bytes _bstring(s):
+    if type(s) is bytes:
+        return <bytes>s
+    elif isinstance(s, unicode):
+        return s.encode('ascii')
+    else:
+        raise TypeError(...)
+
 cdef class Problem:
     cdef coco_problem_t* problem
     cdef np.ndarray y
     cdef public np.ndarray lower_bounds
     cdef public np.ndarray upper_bounds
     
-    def __cinit__(self, char *problem_suit, int function_index):
+    def __cinit__(self, problem_suit, int function_index):        
         cdef np.npy_intp shape[1]
-
-        self.problem = coco_get_problem(problem_suit, function_index)
+        _problem_suit = _bstring(problem_suit)
+        self.problem = coco_get_problem(_problem_suit, function_index)
         if self.problem is NULL:
             raise Exception("No such function")
         self.y = np.zeros(coco_get_number_of_objectives(self.problem))
