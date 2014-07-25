@@ -1,4 +1,3 @@
-#!/usr/bin/env python2.7
 ## -*- mode: python -*-
 
 ## Lots of utility functions to abstract away platform differences.
@@ -13,7 +12,7 @@ from shutil import copyfile
 from subprocess import CalledProcessError, check_output, call, STDOUT
 
 def hg(args):
-    """Run a Mercurial command and return its output. 
+    """Run a Mercurial command and return its output.
 
     All errors are deemed fatal and the system will quit."""
     full_command = ['hg']
@@ -50,36 +49,23 @@ def run(directory, args):
     finally:
         os.chdir(oldwd)
 
-def python2(directory, args, env=None):
-    print("PY2\t%s in %s" % (" ".join(args), directory))
+def python(directory, args, env=None):
+    print("PYTHON\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
-    full_command = ['python2']
-    ## OME: Need Python 2.7 for NumPy.
-    # full_command = ['python']
+    if os.environ.get('PYTHON') is not None:
+        ## Use the Python interpreter specified in the PYTHON
+        ## environment variable.
+        full_command = [os.environ['PYTHON']]
+    else:
+        ## No interpreter specified. Use the Python interpreter that
+        ## is used to execute this script.
+        full_command = [sys.executable]
     full_command.extend(args)
     try:
         os.chdir(directory)
         output = check_output(full_command, stderr=STDOUT, env=os.environ)
     except CalledProcessError as e:
-        print("ERROR in platform.python2: return value=%i" % e.returncode)
-        print(e.output)
-        raise
-        sys.exit(-1)
-    finally:
-        os.chdir(oldwd)
-
-def python3(directory, args, env=None):
-    print("PY3\t%s in %s" % (" ".join(args), directory))
-    oldwd = os.getcwd()
-    full_command = ['python3']
-    ## OME: Need Python 2.7 for NumPy.
-    # full_command = ['python']
-    full_command.extend(args)
-    try:
-        os.chdir(directory)
-        output = check_output(full_command, stderr=STDOUT, env=os.environ)
-    except CalledProcessError as e:
-        print("ERROR in platform.python3: return value=%i" % e.returncode)
+        print("ERROR: return value=%i" % e.returncode)
         print(e.output)
         raise
         sys.exit(-1)
@@ -113,7 +99,6 @@ def expand_file(source, destination, dictionary):
     print("EXPAND\t%s to %s" % (source, destination))
     from string import Template
     with open(source, "r") as fd:
-        content = Template(fd.read())        
+        content = Template(fd.read())
         with open(destination, "w") as outfd:
             outfd.write(content.safe_substitute(dictionary))
-
