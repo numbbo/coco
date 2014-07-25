@@ -16,9 +16,9 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.abspath('tools'))
 
 from amalgamate import amalgamate
-from platform import make, run, python2, python3
-from platform import copy_file, expand_file, write_file
-from platform import hg_version, hg_revision
+from cocoutils import make, run, python2, python3
+from cocoutils import copy_file, expand_file, write_file
+from cocoutils import hg_version, hg_revision
 
 core_files = ['src/coco_benchmark.c', 'src/coco_random.c',
               'src/coco_generics.c', 'src/coco_c_runtime.c']
