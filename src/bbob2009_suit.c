@@ -167,6 +167,32 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         fopt = bbob2009_compute_fopt(function_id, instance_id);
         problem = linear_slope_problem(dimension, xopt);
         problem = shift_objective(problem, fopt);
+    } else if (function_id == 7) {
+    	double xopt[40], fopt;
+    	double M[40*40], b[40], xopt[40], fopt, *current_row;
+    	double **rot;
+    	int i, j, k;
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+		rot = bbob2009_allocate_matrix(dimension, dimension);
+		bbob2009_compute_rotation(rot, rseed + 1000000, dimension);
+		for (i = 0; i < dimension; ++i) {
+			b[i] = 0.0;
+			current_row = M + i * dimension;
+			double exponent = k * 1.0 / (dimension - 1.0);
+			for (j = 0; j < dimension; ++j) {
+				current_row[j] = pow(sqrt(10), exponent) * rot[i][j];
+			}
+		}
+		bbob2009_free_matrix(rot, dimension);
+
+
+
+        problem = stepEllipsoidal_problem(dimension, xopt);
+
+
+
+
     } else if (function_id == 8) {
         double xopt[40], minus_one[40], fopt, factor;
         bbob2009_compute_xopt(xopt, rseed, dimension);
