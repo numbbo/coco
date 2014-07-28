@@ -101,7 +101,8 @@ def copy_file(source, destination):
     copyfile(source, destination)
 
 def copy_tree(source_directory, destination_directory):
-    rmtree(destination_directory)
+    if os.path.isdir(destination_directory):
+        rmtree(destination_directory)
     print("COPY\t%s -> %s" % (source_directory, destination_directory))
     copytree(source_directory, destination_directory)
     
