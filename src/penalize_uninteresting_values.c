@@ -8,7 +8,7 @@ static void _puv_evaluate_function(coco_problem_t *self, double *x, double *y) {
     coco_transformed_problem_t *problem = (coco_transformed_problem_t *)self;
     assert(problem->inner_problem != NULL);
     assert(problem->state != NULL);
-    
+
     coco_evaluate_function(problem->inner_problem, x, y);
     double penalty = 0.0;
     const double *lower_bounds = problem->smallest_values_of_interest;

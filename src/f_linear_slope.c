@@ -35,7 +35,7 @@ static coco_problem_t *linear_slope_problem(const size_t number_of_variables,
     problem->problem_id = (char *) coco_allocate_memory(problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d",
              "linear_slope", (int)number_of_variables);
-    
+
     problem->evaluate_function = _linear_slope_evaluate;
     for (i = 0; i < number_of_variables; ++i) {
         problem->smallest_values_of_interest[i] = -5.0;

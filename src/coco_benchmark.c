@@ -17,7 +17,7 @@ coco_problem_t *coco_get_problem(const char *problem_suit,
         return bbob2009_suit(function_index);
     } else {
         coco_error("Unknown problem suit.");
-        return NULL; /* Never reached */        
+        return NULL; /* Never reached */
     }
 }
 
@@ -33,7 +33,7 @@ coco_problem_t *coco_observe_problem(const char *observer,
         return problem;
     } else {
         coco_error("Unknown observer.");
-        return NULL; /* Never reached */        
+        return NULL; /* Never reached */
     }
 }
 

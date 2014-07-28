@@ -22,11 +22,11 @@ static coco_problem_t *different_powers_problem(const size_t number_of_variables
                                                         1, 0);
     problem->problem_name = coco_strdup("different powers function");
     /* Construct a meaningful problem id */
-    problem_id_length = snprintf(NULL, 0, 
+    problem_id_length = snprintf(NULL, 0,
                                  "%s_%02i", "different powers",
                                  (int)number_of_variables);
     problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-    snprintf(problem->problem_id, problem_id_length + 1, 
+    snprintf(problem->problem_id, problem_id_length + 1,
              "%s_%02d", "different powers", (int)number_of_variables);
 
     problem->number_of_variables = number_of_variables;

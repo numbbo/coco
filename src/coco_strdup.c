@@ -11,7 +11,7 @@
  * it. The caller is responsible for free()ing the memory allocated
  * using coco_free_memory().
  */
-char *coco_strdup(const char *string) {    
+char *coco_strdup(const char *string) {
     size_t len;
     char *duplicate;
     if (string == NULL)

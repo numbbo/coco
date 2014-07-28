@@ -168,6 +168,6 @@ static coco_problem_t *coco_get_transform_inner_problem(coco_problem_t *self) {
     assert(self != NULL);
     assert(self->data != NULL);
     assert(((coco_transform_data_t *)self->data)->inner_problem != NULL);
-    
+
     return ((coco_transform_data_t *)self->data)->inner_problem;
 }

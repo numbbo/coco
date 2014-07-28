@@ -31,7 +31,7 @@ static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, double *x, doubl
     double penalty = 0.0, x1;
     _bbob_step_ellipsoid_t *data;
 
-    assert(self->number_of_objectives == 1);   
+    assert(self->number_of_objectives == 1);
     data = self->data;
     for (i = 0; i < self->number_of_variables; ++i) {
         double tmp;
@@ -46,7 +46,7 @@ static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, double *x, doubl
         c1 = sqrt(pow(condition/10., i / (self->number_of_variables - 1.0)));
         for (j = 0; j < self->number_of_variables; ++j) {
             data->x[i] += c1 * data->rot2[i][j] * (x[j] - data->xopt[j]);
-        }        
+        }
     }
     x1 = data->x[0];
 
@@ -93,9 +93,9 @@ static coco_problem_t *bbob_step_ellipsoid_problem(const size_t number_of_variab
     size_t i, problem_id_length, rseed;
     coco_problem_t *problem;
     _bbob_step_ellipsoid_t *data;
-    
+
     rseed = 7 + 10000 * instance_id;
-    
+
     data = coco_allocate_memory(sizeof(*data));
     /* Allocate temporary storage and space for the rotation matrices */
     data->x = coco_allocate_vector(number_of_variables);
@@ -103,7 +103,7 @@ static coco_problem_t *bbob_step_ellipsoid_problem(const size_t number_of_variab
     data->xopt = coco_allocate_vector(number_of_variables);
     data->rot1 = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
     data->rot2 = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
-    
+
     data->fopt = bbob2009_compute_fopt(7, instance_id);
     bbob2009_compute_xopt(data->xopt, rseed, number_of_variables);
     bbob2009_compute_rotation(data->rot1, rseed + 1000000, number_of_variables);
@@ -134,4 +134,3 @@ static coco_problem_t *bbob_step_ellipsoid_problem(const size_t number_of_variab
     problem->evaluate_function(problem, problem->best_parameter, problem->best_value);
     return problem;
 }
-

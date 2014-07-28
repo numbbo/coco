@@ -84,8 +84,8 @@ void bbob2009_decode_function_index(const int function_index,
     *instance_id = low_instance_id + 5 * high_instance_id;
 }
 
-static void bbob2009_copy_rotation_matrix(double **rot, 
-                                          double *M, double *b, 
+static void bbob2009_copy_rotation_matrix(double **rot,
+                                          double *M, double *b,
                                           const int dimension) {
     int row, column;
     double *current_row;
@@ -230,7 +230,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
         bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
         bbob2009_free_matrix(rot1, dimension);
-                
+
         problem = ellipsoid_problem(dimension);
         problem = oscillate_variables(problem);
         problem = affine_transform_variables(problem, M, b, dimension);
@@ -262,7 +262,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
         bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
         bbob2009_free_matrix(rot1, dimension);
-        
+
         problem = bent_cigar_problem(dimension);
         problem = shift_objective(problem, fopt);
         problem = affine_transform_variables(problem, M, b, dimension);
@@ -346,8 +346,8 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         problem = shift_variables(problem, xopt, 0);
 
         bbob2009_free_matrix(rot1, dimension);
-        bbob2009_free_matrix(rot2, dimension);        
-    } else {        
+        bbob2009_free_matrix(rot2, dimension);
+    } else {
         return NULL;
     }
     return problem;

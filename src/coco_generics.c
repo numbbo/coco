@@ -17,7 +17,7 @@ void coco_evaluate_constraint(coco_problem_t *self, double *x, double *y) {
     self->evaluate_constraint(self, x, y);
 }
 
-void coco_recommend_solutions(coco_problem_t *self, 
+void coco_recommend_solutions(coco_problem_t *self,
                                 double *x, size_t number_of_solutions) {
     assert(self != NULL);
     assert(self->recommend_solutions != NULL);
@@ -33,7 +33,7 @@ void coco_free_problem(coco_problem_t *self) {
         if (self->smallest_values_of_interest != NULL)
             coco_free_memory(self->smallest_values_of_interest);
         if (self->largest_values_of_interest != NULL)
-            coco_free_memory(self->largest_values_of_interest);       
+            coco_free_memory(self->largest_values_of_interest);
         if (self->best_parameter != NULL)
             coco_free_memory(self->best_parameter);
         if (self->best_value != NULL)
@@ -89,7 +89,7 @@ const double * coco_get_largest_values_of_interest(const coco_problem_t *self) {
     return self->largest_values_of_interest;
 }
 
-void coco_get_initial_solution(const coco_problem_t *self, 
+void coco_get_initial_solution(const coco_problem_t *self,
                                  double *initial_solution) {
     assert(self != NULL);
     if(self->initial_solution != NULL) {

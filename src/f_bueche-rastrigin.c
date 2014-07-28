@@ -29,7 +29,7 @@ static coco_problem_t *bueche_rastrigin_problem(const size_t number_of_variables
     problem->problem_id = (char *)coco_allocate_memory(problem_id_length + 1);
     snprintf(problem->problem_id, problem_id_length + 1,
              "%s_%02d", "skewRastriginBueche", (int)number_of_variables);
-    
+
     problem->number_of_variables = number_of_variables;
     problem->number_of_objectives = 1;
     problem->number_of_constraints = 0;

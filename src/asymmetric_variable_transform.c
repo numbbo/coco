@@ -20,10 +20,10 @@ static void _avt_evaluate_function(coco_problem_t *self, double *x, double *y) {
 
     data = coco_get_transform_data(self);
     inner_problem = coco_get_transform_inner_problem(self);
-    
+
     for (i = 0; i < self->number_of_variables; ++i) {
         if (x[i] > 0.0) {
-            exponent = 1.0 + (data->beta * i) / 
+            exponent = 1.0 + (data->beta * i) /
                 (self->number_of_variables - 1.0) * sqrt(x[i]);
             data->x[i] = pow(x[i], exponent);
         } else {

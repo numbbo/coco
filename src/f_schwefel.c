@@ -10,7 +10,7 @@ static void f_schwefel_evaluate(coco_problem_t *self, double *x, double *y) {
     size_t i;
     assert(self->number_of_objectives == 1);
     y[0] = 0.0;
-    
+
     /* Computation core */
     for (i = 0; i < self->number_of_variables; ++i){
     	y[0] += x[i] * sin(sqrt(fabs(x[i])));

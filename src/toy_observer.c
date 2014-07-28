@@ -21,7 +21,7 @@ coco_problem_t *toy_observer(coco_problem_t *problem, const char *options) {
         return NULL; /* never reached */
     }
     coco_create_path(base_path);
-    coco_join_path(filename, sizeof(filename), 
+    coco_join_path(filename, sizeof(filename),
                      base_path, "first_hitting_times.txt", NULL);
     problem = log_hitting_times(problem, targets, number_of_targets, filename);
     return problem;

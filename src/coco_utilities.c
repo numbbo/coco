@@ -48,9 +48,9 @@ void coco_join_path(char *path, size_t path_max_length, ...) {
             return; /* never reached */
         }
         /* Both should be safe because of the above check. */
-        if (strlen(path) > 0) 
+        if (strlen(path) > 0)
             strcat(path, coco_path_separator);
-        strcat(path, path_component);        
+        strcat(path, path_component);
     }
     va_end(args);
 }
@@ -58,7 +58,7 @@ void coco_join_path(char *path, size_t path_max_length, ...) {
 int coco_path_exists(const char *path) {
 #if defined(HAVE_GFA)
     DWORD dwAttrib = GetFileAttributes(path);
-    return (dwAttrib != INVALID_FILE_ATTRIBUTES && 
+    return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
             (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 #elif defined(HAVE_STAT)
     struct stat buf;
@@ -108,7 +108,7 @@ void coco_create_path(const char *path) {
 error:
     snprintf(buf, sizeof(buf), "mkdir(\"%s\") failed.", tmp);
     coco_error(buf);
-    return; /* never reached */    
+    return; /* never reached */
 #else
 #error Ooops
 #endif

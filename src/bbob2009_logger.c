@@ -46,8 +46,8 @@ static void _bbob2009_logger_error_io(FILE *path) {
     coco_free_memory(buf);
 }
 
-static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data, 
-                                           double best_value, 
+static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
+                                           double best_value,
                                            const char * problem_id) {
     /*
       Creates/opens the data files
@@ -67,7 +67,7 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
     strcat(folder_name,problem_id);
     coco_join_path(folder_path, sizeof(folder_path), data->path, folder_name, NULL);
     coco_create_path(folder_path);
-    
+
     /*file name for the index file*/
     strcpy(index_name,"bbobexp_");
     strcat(index_name,problem_id);
@@ -81,7 +81,7 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
             _bbob2009_logger_error_io(data->index_file);
         }
     }
-    
+
     /*file name for the .dat file*/
     strcpy(file_name,"bbobexp_");
     strcat(file_name,problem_id);
@@ -98,13 +98,13 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
     fprintf(data->fdata_file,
             "%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n",
             best_value);
-    
+
     /*file name for the .tdat file*/
     strcpy(file_name_t,"bbobexp_");
     strcat(file_name_t,problem_id);
     strcat(file_name_t,".tdat");
     coco_join_path(file_path_t, sizeof(file_name), folder_path, file_name_t, NULL);
-    
+
     if (data->tdata_file == NULL) {
         data->tdata_file = fopen(file_path_t, "a+");
         if (data->tdata_file == NULL) {
@@ -116,13 +116,13 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
             best_value);
 }
 
-static void _bbob2009_logger_evaluate_function(coco_problem_t *self, 
+static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
                                                double *x, double *y) {
     _bbob2009_logger_t *data;
     data = coco_get_transform_data(self);
     coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
     data->number_of_evaluations++;
-    
+
     /* Add a line for each hitting level reached. */
     if (y[0] <= data->next_target) {
         size_t i;
@@ -134,7 +134,7 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
                 fprintf(data->fdata_file, " %+5.4e", x[i]);
             }
         }
-        
+
         fprintf(data->fdata_file, "\n");
         if (data->idx_fval_trigger == INT_MAX)
             /* "jump" directly to the next closest target (to the
@@ -148,7 +148,7 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
             data->idx_fval_trigger--;
             _bbob2009_logger_update_next_target(data);
         }
-        
+
     }
     /* Flush output so that impatient users can see progress. */
     fflush(data->fdata_file);
@@ -179,7 +179,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
 coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path) {
     _bbob2009_logger_t *data;
     coco_problem_t *self;
-    
+
     data = coco_allocate_memory(sizeof(*data));
     data->path = coco_strdup(path);
     data->logfile = NULL; /* Open lazily in logger_evaluate_function(). */
@@ -190,7 +190,7 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path)
     data->next_target = DBL_MAX;
     data->number_of_evaluations = 0;
 
-    self = coco_allocate_transformed_problem(inner_problem, data, 
+    self = coco_allocate_transformed_problem(inner_problem, data,
                                              _bbob2009_logger_free_data);
     self->evaluate_function = _bbob2009_logger_evaluate_function;
     return self;
