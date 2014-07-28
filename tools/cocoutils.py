@@ -8,7 +8,7 @@ from __future__ import print_function
 
 import sys
 import os
-from shutil import copyfile
+from shutil import copyfile, copytree, rmtree
 from subprocess import CalledProcessError, check_output, call, STDOUT
 
 def hg(args):
@@ -18,10 +18,11 @@ def hg(args):
     full_command = ['hg']
     full_command.extend(args)
     try:
-        output = check_output(full_command, env=os.environ).rstrip()
+        output = check_output(full_command, env=os.environ, universal_newlines=True)
+        output = output.rstrip()
     except CalledProcessError as e:
         print('Failed to execute hg.')
-        sys.exit(-1)
+        raise
     return output
 
 def is_dirty():
@@ -41,11 +42,12 @@ def run(directory, args):
     oldwd = os.getcwd()
     try:
         os.chdir(directory)
-        output = check_output(args, stderr=STDOUT, env=os.environ)
+        output = check_output(args, stderr=STDOUT, env=os.environ, 
+                              universal_newlines=True)
     except CalledProcessError as e:
-        print("ERROR in platform.run: return value=%i" % e.returncode)
+        print("ERROR: return value=%i" % e.returncode)
         print(e.output)
-        sys.exit(-1)
+        raise
     finally:
         os.chdir(oldwd)
 
@@ -63,12 +65,34 @@ def python(directory, args, env=None):
     full_command.extend(args)
     try:
         os.chdir(directory)
-        output = check_output(full_command, stderr=STDOUT, env=os.environ)
+        output = check_output(full_command, stderr=STDOUT, env=os.environ,
+                              universal_newlines=True)
     except CalledProcessError as e:
         print("ERROR: return value=%i" % e.returncode)
         print(e.output)
         raise
-        sys.exit(-1)
+    finally:
+        os.chdir(oldwd)
+
+def rscript(directory, args, env=None):
+    print("RSCRIPT\t%s in %s" % (" ".join(args), directory))
+    oldwd = os.getcwd()
+    if os.environ.get('RSCRIPT') is not None:
+        ## Use the Rscript interpreter specified in the RSCRIPT
+        ## environment variable.
+        full_command = [os.environ['RSCRIPT']]
+    else:
+        ## No interpreter specified. Try to find an Rscript interpreter.
+        full_command = ['Rscript']
+    full_command.extend(args)
+    try:
+        os.chdir(directory)
+        output = check_output(full_command, stderr=STDOUT, env=os.environ,
+                              universal_newlines=True)
+    except CalledProcessError as e:
+        print("ERROR: return value=%i" % e.returncode)
+        print(e.output)
+        raise
     finally:
         os.chdir(oldwd)
 
@@ -76,10 +100,15 @@ def copy_file(source, destination):
     print("COPY\t%s -> %s" % (source, destination))
     copyfile(source, destination)
 
+def copy_tree(source_directory, destination_directory):
+    rmtree(destination_directory)
+    print("COPY\t%s -> %s" % (source_directory, destination_directory))
+    copytree(source_directory, destination_directory)
+    
 def write_file(string, destination):
     print("WRITE\t%s" % destination)
-    with open(destination, "w") as fd:
-        fd.write(string.decode())  # decode bytes type to string
+    with open(destination, 'w') as fd:
+        fd.write(string)
 
 def make(directory, target):
     """Run make to build a target"""
@@ -87,18 +116,18 @@ def make(directory, target):
     oldwd = os.getcwd()
     try:
         os.chdir(directory)
-        output = check_output(['make', target], stderr=STDOUT, env=os.environ)
+        output = check_output(['make', target], stderr=STDOUT, env=os.environ,
+                              universal_newlines=True)
     except CalledProcessError as e:
         print("ERROR: return value=%i" % e.returncode)
-        print(e.output)
-        sys.exit(-1)
+        raise
     finally:
         os.chdir(oldwd)
 
 def expand_file(source, destination, dictionary):
     print("EXPAND\t%s to %s" % (source, destination))
     from string import Template
-    with open(source, "r") as fd:
+    with open(source, 'r') as fd:
         content = Template(fd.read())
         with open(destination, "w") as outfd:
             outfd.write(content.safe_substitute(dictionary))

@@ -14,9 +14,7 @@ build/python/cython/coco.c
 build/python/cython/coco.h 
 build/python/cython/interface.c
 build/python/setup.py 
-build/r/skel/DESCRIPTION 
-build/r/skel/src/coco.c 
-build/r/skel/src/coco.h
+build/r/pkg
 release/.*
 .*\#.*
 .*\.orig
