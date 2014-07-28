@@ -73,7 +73,8 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
     strcat(index_name,problem_id);
     strcat(index_name,".info");
     coco_join_path(index_path, sizeof(index_name), data->path, index_name, NULL);
-    printf("%s\n",index_path);
+    /* OME: Do not output anything to stdout! */
+    /* printf("%s\n",index_path); */
     if (data->index_file == NULL) {
         data->index_file = fopen(index_path, "a+");
         if (data->index_file == NULL) {
