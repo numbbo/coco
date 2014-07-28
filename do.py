@@ -37,6 +37,16 @@ def test_c():
     make("build/c", "all")
     run('build/c', ['./coco_test', 'bbob2009_testcases.txt'])
 
+def leak_check():
+    build_c()
+    os.environ['CFLAGS'] = '-g -Os'
+    make("build/c", "clean")
+    make("build/c", "all")
+    valgrind_cmd = ['valgrind', '--track-origins=yes',
+                    '--leak-check=yes', '--error-exitcode=1',
+                    './coco_test', 'bbob2009_testcases.txt']
+    run('build/c', valgrind_cmd)
+    
 ################################################################################
 ## Python 2
 def build_python():
@@ -141,6 +151,7 @@ Available commands:
   test-c       - Run minimal test of C components
   test-python  - Run minimal test of Python 2 module
   test-r       - Run minimal test of R package
+  leak-check   - Check for memory leaks
 """)
 
 def main(args):
@@ -156,6 +167,7 @@ def main(args):
     elif cmd == 'test-r': test_r()
     elif cmd == 'build': build()
     elif cmd == 'test': test()
+    elif cmd == 'leak-check': leak_check()
     else: help()
 
 if __name__ == '__main__':
