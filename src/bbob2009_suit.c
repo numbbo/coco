@@ -5,6 +5,7 @@
 
 #include "bbob2009_legacy_code.c"
 
+#include "f_bbob_step_ellipsoid.c"
 #include "f_bent_cigar.c"
 #include "f_bueche-rastrigin.c"
 #include "f_different_powers.c"
@@ -168,28 +169,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         problem = linear_slope_problem(dimension, xopt);
         problem = shift_objective(problem, fopt);
     } else if (function_id == 7) {
-    	double xopt[40], fopt;
-    	double M[40*40], b[40], xopt[40], fopt, *current_row;
-    	double **rot;
-    	int i, j;
-        bbob2009_compute_xopt(xopt, rseed, dimension);
-        fopt = bbob2009_compute_fopt(function_id, instance_id);
-		rot = bbob2009_allocate_matrix(dimension, dimension);
-		bbob2009_compute_rotation(rot, rseed + 1000000, dimension);
-		for (i = 0; i < dimension; ++i) {
-			b[i] = 0.0;
-			current_row = M + i * dimension;
-			double exponent = i * 1.0 / (dimension - 1.0);
-			for (j = 0; j < dimension; ++j) {
-				current_row[j] = pow(sqrt(10), exponent) * rot[i][j];
-			}
-		}
-		bbob2009_free_matrix(rot, dimension);
-        problem = stepEllipsoidal_problem(dimension, xopt);
-        problem = shift_objective(problem, fopt);
-        problem = affine_transform_variables(problem, M, b, dimension);
-        problem = shift_variables(problem, xopt, 0);
-        /* Missing: penalization*/
+        problem = bbob_step_ellipsoid_problem(dimension, instance_id);
     } else if (function_id == 8) {
         double xopt[40], minus_one[40], fopt, factor;
         bbob2009_compute_xopt(xopt, rseed, dimension);
