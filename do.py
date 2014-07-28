@@ -16,12 +16,11 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.abspath('tools'))
 
 from amalgamate import amalgamate
-from cocoutils import make, run, python
-from cocoutils import copy_file, expand_file, write_file
+from cocoutils import make, run, python, rscript
+from cocoutils import copy_file, copy_tree, expand_file, write_file
 from cocoutils import hg_version, hg_revision
 
-core_files = ['src/coco_benchmark.c', 'src/coco_random.c',
-              'src/coco_generics.c', 'src/coco_c_runtime.c']
+core_files = ['src/coco_benchmark.c', 'src/coco_random.c', 'src/coco_generics.c']
 
 ################################################################################
 ## C
@@ -102,13 +101,17 @@ def test_python3():
 ################################################################################
 ## R
 def build_r():
-    amalgamate(core_files + ['src/coco_r_runtime.c'],  'build/r/skel/src/coco.c')
-    copy_file('src/coco.h', 'build/r/skel/src/coco.h')
-    expand_file('build/r/skel/DESCRIPTION.in', 'build/r/skel/DESCRIPTION',
+    copy_tree('build/r/skel', 'build/r/pkg')
+    amalgamate(core_files + ['src/coco_r_runtime.c'],  'build/r/pkg/src/coco.c')
+    copy_file('src/coco.h', 'build/r/pkg/src/coco.h')
+    expand_file('build/r/pkg/DESCRIPTION.in', 'build/r/pkg/DESCRIPTION',
                 {'COCO_VERSION': hg_version()})
+    rscript('build/r/', ['tools/roxygenize'])
+    run('build/r', ['R', 'CMD', 'build', 'pkg'])
 
 def test_r():
     build_r()
+    run('build/r', ['R', 'CMD', 'check', 'pkg'])
     pass
 
 ################################################################################
