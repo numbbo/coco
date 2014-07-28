@@ -19,10 +19,10 @@ static void _cv_evaluate_function(coco_problem_t *self, double *x, double *y) {
 
     data = coco_get_transform_data(self);
     inner_problem = coco_get_transform_inner_problem(self);
-    
+
     for (i = 0; i < self->number_of_variables; ++i) {
         /* OME: We could precalculate the scaling coefficients if we
-         * really wanted to. 
+         * really wanted to.
          */
         data->x[i] = pow(data->alpha, 0.5 * i / (self->number_of_variables - 1.0)) * x[i];
     }

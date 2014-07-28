@@ -22,7 +22,7 @@ static void _ov_evaluate_function(coco_problem_t *self, double *x, double *y) {
     data = coco_get_transform_data(self);
     oscillated_x = data->oscillated_x; /* short cut to make code more readable */
     inner_problem = coco_get_transform_inner_problem(self);
-    
+
     for (i = 0; i < self->number_of_variables; ++i) {
         if (x[i] > 0.0) {
             tmp = log(x[i]) / alpha;

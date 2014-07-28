@@ -19,7 +19,7 @@ typedef struct {
 static void _lht_evaluate_function(coco_problem_t *self, double *x, double *y) {
     _log_hitting_time_t *data;
     data = coco_get_transform_data(self);
-    
+
     coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
     data->number_of_evaluations++;
 
@@ -28,9 +28,9 @@ static void _lht_evaluate_function(coco_problem_t *self, double *x, double *y) {
         data->logfile = fopen(data->path, "w");
         if (data->logfile == NULL) {
             char *buf;
-            const char *error_format = 
+            const char *error_format =
                 "lht_evaluate_function() failed to open log file '%s'.";
-            size_t buffer_size = 
+            size_t buffer_size =
                 snprintf(NULL, 0, error_format, data->path);
             buf = (char *)coco_allocate_memory(buffer_size);
             snprintf(buf, buffer_size, error_format, data->path);
@@ -38,9 +38,9 @@ static void _lht_evaluate_function(coco_problem_t *self, double *x, double *y) {
             coco_free_memory(buf); /* Never reached */
         }
         fputs("target_value function_value number_of_evaluations\n",
-              data->logfile);                    
+              data->logfile);
     }
-    
+
     /* Add a line for each hitting level we have reached. */
     while (y[0] <= data->target_values[data->next_target_value] &&
            data->next_target_value < data->number_of_target_values) {
@@ -84,7 +84,7 @@ coco_problem_t *log_hitting_times(coco_problem_t *inner_problem,
     data->number_of_evaluations = 0;
     data->path = coco_strdup(path);
     data->logfile = NULL; /* Open lazily in lht_evaluate_function(). */
-    data->target_values = coco_duplicate_vector(target_values, 
+    data->target_values = coco_duplicate_vector(target_values,
                                                    number_of_target_values);
     data->number_of_target_values = number_of_target_values;
     data->next_target_value = 0;

@@ -20,11 +20,11 @@ static coco_problem_t *rastrigin_problem(const size_t number_of_variables) {
     size_t i, problem_id_length;
     coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
     problem->problem_name = coco_strdup("rastrigin function");
-    problem_id_length = snprintf(NULL, 0, 
+    problem_id_length = snprintf(NULL, 0,
                                  "%s_%02i", "rastrigin",
                                  (int)number_of_variables);
     problem->problem_id = (char *)coco_allocate_memory(problem_id_length + 1);
-    snprintf(problem->problem_id, problem_id_length + 1, 
+    snprintf(problem->problem_id, problem_id_length + 1,
              "%s_%02i", "rastrigin", (int)number_of_variables);
     problem->number_of_variables = number_of_variables;
     problem->number_of_objectives = 1;
@@ -37,6 +37,6 @@ static coco_problem_t *rastrigin_problem(const size_t number_of_variables) {
     }
     /* Calculate best parameter value */
     _rastrigin_evaluate(problem, problem->best_parameter, problem->best_value);
-    
+
     return problem;
 }

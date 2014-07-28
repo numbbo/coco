@@ -38,7 +38,7 @@ static void _atv_evaluate_function(coco_problem_t *self, double *x, double *y) {
 }
 
 static void _atv_free_data(void *thing) {
-    _atv_data_t *data = thing;    
+    _atv_data_t *data = thing;
     coco_free_memory(data->M);
     coco_free_memory(data->b);
     coco_free_memory(data->x);

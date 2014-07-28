@@ -38,7 +38,7 @@ static void coco_random_generate(coco_random_state_t *state) {
 coco_random_state_t *coco_new_random(uint32_t seed) {
     coco_random_state_t *state = (coco_random_state_t *)
         coco_allocate_memory(sizeof(coco_random_state_t));
-    size_t i; 
+    size_t i;
     /* Expand seed to fill initial state array. */
     for (i = 0; i < LONG_LAG; ++i) {
         state->x[i] = ((double)seed) / (double)((1ULL << 32) - 1);
@@ -58,7 +58,7 @@ double coco_uniform_random(coco_random_state_t *state) {
      * time to run the actual generator for one iteration to refill
      * the state with 'LONG_LAG' new values.
      */
-    if (state->index >= LONG_LAG) 
+    if (state->index >= LONG_LAG)
         coco_random_generate(state);
     return state->x[state->index++];
 }

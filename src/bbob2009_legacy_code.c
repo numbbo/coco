@@ -150,13 +150,13 @@ static void bbob2009_compute_rotation(double **B, int seed, int DIM) {
             prod = 0;
             for (k = 0; k < DIM; k++)
                 prod += B[k][i] * B[k][j];
-            for (k = 0; k < DIM; k++) 
+            for (k = 0; k < DIM; k++)
                 B[k][i] -= prod * B[k][j];
         }
         prod = 0;
         for (k = 0; k < DIM; k++)
             prod += B[k][i] * B[k][i];
-        for (k = 0; k < DIM; k++) 
+        for (k = 0; k < DIM; k++)
             B[k][i] /= sqrt(prod);
     }
 }
@@ -164,8 +164,8 @@ static void bbob2009_compute_rotation(double **B, int seed, int DIM) {
 /**
  * bbob2009_compute_xopt(xopt, seed, DIM):
  *
- * Randomly compute the location of the global optimum. 
- */ 
+ * Randomly compute the location of the global optimum.
+ */
 static void bbob2009_compute_xopt(double *xopt, int seed, int DIM) {
     int i;
     bbob2009_unif(xopt, DIM, seed);
@@ -190,7 +190,7 @@ double bbob2009_compute_fopt(int function_id, int instance_id) {
         rseed = 3;
     else if (function_id == 18)
         rseed = 17;
-    else if (function_id == 101 || function_id == 102 || function_id == 103 || 
+    else if (function_id == 101 || function_id == 102 || function_id == 103 ||
              function_id == 107 ||  function_id == 108 || function_id == 109)
         rseed = 1;
     else if (function_id == 104 || function_id == 105 || function_id == 106 ||
@@ -214,7 +214,7 @@ double bbob2009_compute_fopt(int function_id, int instance_id) {
     rrseed = rseed + 10000 * instance_id;
     bbob2009_gauss(&gval, 1, rrseed);
     bbob2009_gauss(&gval2, 1, rrseed + 1);
-    return bbob2009_fmin(1000., 
-                         bbob2009_fmax(-1000., 
+    return bbob2009_fmin(1000.,
+                         bbob2009_fmax(-1000.,
                                        bbob2009_round(100.*100.*gval/gval2)/100.));
 }

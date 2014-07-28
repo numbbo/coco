@@ -5,7 +5,7 @@
  * used by any external code.
  */
 
-#ifndef __NUMBBO_INTERNAL__ 
+#ifndef __NUMBBO_INTERNAL__
 #define __NUMBBO_INTERNAL__
 
 typedef void (*coco_initial_solution_function_t) (const struct coco_problem *self,
@@ -36,7 +36,7 @@ typedef void (*coco_free_function_t) (struct coco_problem *self);
  * number_of_constraints - Number of constraints.
  *
  * smallest_values_of_interest, largest_values_of_interest - Vectors
- *   of length 'number_of_variables'. Lower/Upper bounds of the 
+ *   of length 'number_of_variables'. Lower/Upper bounds of the
  *   region of interest.
  *
  * problem_name - Descriptive name for the test problem. May be NULL

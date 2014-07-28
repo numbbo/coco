@@ -1,5 +1,5 @@
 /*
- * Generic NUMBBO runtime implementation. 
+ * Generic NUMBBO runtime implementation.
  *
  * Other language interfaces might want to replace this so that memory
  * allocation and error handling go through the respective language
@@ -12,7 +12,7 @@
 
 void coco_error(const char *message) {
     fprintf(stderr, "FATAL ERROR: %s\n", message);
-    exit(EXIT_FAILURE);    
+    exit(EXIT_FAILURE);
 }
 
 void coco_warning(const char *message) {
@@ -30,7 +30,7 @@ void *coco_allocate_memory(const size_t size) {
         coco_error("coco_allocate_memory() failed.");
     return data;
 }
- 
+
 void coco_free_memory(void *data) {
     free(data);
 }
