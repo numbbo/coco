@@ -6,6 +6,7 @@ build/c/.*.o
 build/c/demo$
 build/c/random_search/
 build/doxygen
+build/python/bbob2009_testcases.txt
 build/python/build/
 build/python/dist/
 build/python/coco.egg
