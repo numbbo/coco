@@ -121,6 +121,7 @@ def make(directory, target):
                               universal_newlines=True)
     except CalledProcessError as e:
         print("ERROR: return value=%i" % e.returncode)
+        print(e.output)
         raise
     finally:
         os.chdir(oldwd)
