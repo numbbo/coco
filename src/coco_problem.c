@@ -148,7 +148,7 @@ coco_allocate_transformed_problem(coco_problem_t *inner_problem,
     data->free_data = free_data;
 
     self = coco_duplicate_problem(inner_problem);
-    self->evaluate_function = _tfp_evaluate_constraint;
+    self->evaluate_function = _tfp_evaluate_function;
     self->evaluate_constraint = _tfp_evaluate_constraint;
     self->recommend_solutions = _tfp_recommend_solutions;
     self->free_problem = _tfp_free_problem;

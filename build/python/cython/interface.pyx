@@ -1,6 +1,7 @@
 # -*- mode: cython -*-
 import numpy as np
 cimport numpy as np
+from cpython.version cimport PY_MAJOR_VERSION
 
 # Must initialize numpy or risk segfaults
 np.import_array()
@@ -26,20 +27,26 @@ cdef extern from "coco.h":
     const double *coco_get_smallest_values_of_interest(coco_problem_t *problem)
     const double *coco_get_largest_values_of_interest(coco_problem_t *problem)
 
+cdef bytes _bstring(s):
+    if type(s) is bytes:
+        return <bytes>s
+    elif isinstance(s, unicode):
+        return s.encode('ascii')
+    else:
+        raise TypeError(...)
+
 cdef class Problem:
     cdef coco_problem_t* problem
     cdef np.ndarray y
     cdef public np.ndarray lower_bounds
     cdef public np.ndarray upper_bounds
     
-    def __cinit__(self, char *problem_suit, int function_index,
-                  char *observer, char *options):
+    def __cinit__(self, problem_suit, int function_index):        
         cdef np.npy_intp shape[1]
-
-        self.problem = coco_get_problem(problem_suit, function_index)
+        _problem_suit = _bstring(problem_suit)
+        self.problem = coco_get_problem(_problem_suit, function_index)
         if self.problem is NULL:
             raise Exception("No such function")
-        self.problem = coco_observe_problem(observer, self.problem, options)
         self.y = np.zeros(coco_get_number_of_objectives(self.problem))
         ## FIXME: Inefficient because we copy the bounds instead of
         ## sharing the data.
@@ -48,6 +55,15 @@ cdef class Problem:
         for i in range(coco_get_number_of_variables(self.problem)):	    
             self.lower_bounds[i] = coco_get_smallest_values_of_interest(self.problem)[i]
             self.upper_bounds[i] = coco_get_largest_values_of_interest(self.problem)[i]
+
+    def add_obersever(self, char *observer, char *options):
+        self.problem = coco_observe_problem(observer, self.problem, options)
+
+    def number_of_variables(self):
+        """ 
+        Return the number of variables this problem instance expects as input.
+        """
+        return len(self.lower_bounds)
 
     def free(self):
         """
@@ -68,7 +84,7 @@ cdef class Problem:
 
     def __call__(self, np.ndarray[double, ndim=1, mode="c"] x):
         if self.problem is NULL:
-            raise Exception("Invalid problem.")        
+            raise Exception("Invalid problem.")
         coco_evaluate_function(self.problem,
 		               <double *>np.PyArray_DATA(x),
                                <double *>np.PyArray_DATA(self.y))
@@ -97,9 +113,11 @@ cdef class Benchmark:
     
     def __next__(self):
         try:
-            problem = Problem(self.problem_suit, self._function_index,
-                              self.observer, self.options)
+            problem = Problem(self.problem_suit, self._function_index)
+            problem.add_obersever(self.observer, self.options)
             self._function_index = self._function_index + 1
         except Exception, e:
             raise StopIteration()
         return problem
+
+__all__ = ['Problem', 'Benchmark']

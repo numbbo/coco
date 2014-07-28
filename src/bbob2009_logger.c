@@ -10,7 +10,7 @@
 #include "coco_problem.c"
 #include "coco_strdup.c"
 
-static const size_t nbpts_nbevals = 20;
+/* static const size_t nbpts_nbevals = 20; */
 static const size_t nbpts_fval = 5;
 
 typedef struct {
