@@ -74,6 +74,20 @@ static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, double *x, doubl
     y[0] = 0.1 * fmax(fabs(x1) * 1.0e-4, y[0]) + penalty + data->fopt;
 }
 
+static void _bbob_step_ellipsoid_free(coco_problem_t *self) {
+    _bbob_step_ellipsoid_t *data;
+    data = self->data;
+    coco_free_memory(data->x);
+    coco_free_memory(data->xx);
+    bbob2009_free_matrix(data->rot1, self->number_of_variables);
+    bbob2009_free_matrix(data->rot2, self->number_of_variables);
+    /* Let the generic free problem code deal with all of the
+     * coco_problem_t fields.
+     */
+    self->free_problem = NULL;
+    coco_free_problem(self);
+}
+
 static coco_problem_t *bbob_step_ellipsoid_problem(const size_t number_of_variables,
                                                    const int instance_id) {
     size_t i, problem_id_length, rseed;
@@ -81,8 +95,9 @@ static coco_problem_t *bbob_step_ellipsoid_problem(const size_t number_of_variab
     _bbob_step_ellipsoid_t *data;
     
     rseed = 7 + 10000 * instance_id;
-
+    
     data = coco_allocate_memory(sizeof(*data));
+    /* Allocate temporary storage and space for the rotation matrices */
     data->x = coco_allocate_vector(number_of_variables);
     data->xx = coco_allocate_vector(number_of_variables);
     data->xopt = coco_allocate_vector(number_of_variables);
@@ -109,6 +124,7 @@ static coco_problem_t *bbob_step_ellipsoid_problem(const size_t number_of_variab
     problem->number_of_constraints = 0;
     problem->data = data;
     problem->evaluate_function = _bbob_step_ellipsoid_evaluate;
+    problem->free_problem = _bbob_step_ellipsoid_free;
     for (i = 0; i < number_of_variables; ++i) {
         problem->smallest_values_of_interest[i] = -5.0;
         problem->largest_values_of_interest[i] = 5.0;
