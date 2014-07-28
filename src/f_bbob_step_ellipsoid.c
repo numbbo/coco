@@ -79,6 +79,7 @@ static void _bbob_step_ellipsoid_free(coco_problem_t *self) {
     data = self->data;
     coco_free_memory(data->x);
     coco_free_memory(data->xx);
+    coco_free_memory(data->xopt);
     bbob2009_free_matrix(data->rot1, self->number_of_variables);
     bbob2009_free_matrix(data->rot2, self->number_of_variables);
     /* Let the generic free problem code deal with all of the
