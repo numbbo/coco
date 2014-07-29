@@ -112,6 +112,7 @@ static void bbob2009_copy_rotation_matrix(double **rot,
  * NULL.
  */
 coco_problem_t *bbob2009_suit(const int function_index) {
+    size_t len;
     int i, instance_id, function_id, dimension, rseed;
     coco_problem_t *problem = NULL;
     bbob2009_decode_function_index(function_index, &function_id, &instance_id,
@@ -480,5 +481,23 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     } else {
         return NULL;
     }
+    
+    /* Now set the problem name and problem id of the final problem */
+    coco_free_memory(problem->problem_name);
+    coco_free_memory(problem->problem_id);
+    
+    problem->problem_name = coco_strdup("weierstrass function");
+    /* Construct a meaningful problem id */
+    len = snprintf(NULL, 0, "bbbob2009_f%02i_i%02i_d%02i", 
+                   function_id, instance_id, dimension);
+    problem->problem_id = coco_allocate_memory(len + 1);
+    len = snprintf(problem->problem_id, len + 1, "bbbob2009_f%02i_i%02i_d%02i",
+                   function_id, instance_id, dimension);
+
+    len = snprintf(NULL, 0, "BBOB2009 f%02i instance %i in %iD",
+                   function_id, instance_id, dimension);
+    problem->problem_name = coco_allocate_memory(len + 1);
+    len = snprintf(problem->problem_name, len + 1, "BBOB2009 f%02i instance %i in %iD",
+                   function_id, instance_id, dimension);
     return problem;
 }
