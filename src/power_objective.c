@@ -10,7 +10,6 @@ typedef struct {
 
 static void _powo_evaluate_function(coco_problem_t *self, double *x, double *y) {
     _powo_data_t *data;
-    coco_problem_t *inner_problem;
     data = coco_get_transform_data(self);
     coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
     y[0] = pow(y[0], data->exponent);
