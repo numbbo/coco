@@ -85,7 +85,7 @@ def test_python():
         os.environ.pop('USE_CYTHON')
         os.environ.pop('PYTHONPATH')
     except subprocess.CalledProcessError:
-        pass
+        sys.exit(-1)
     finally:
         shutil.rmtree(python_temp_home)
         pass
