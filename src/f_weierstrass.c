@@ -8,20 +8,18 @@
 
 static void f_weierstrass_evaluate(coco_problem_t *self, double *x, double *y) {
     size_t i, k; /* check what size_t exactly is and whether it can be cast to double */
+    double f_0 = 0.0;
     assert(self->number_of_objectives == 1);
-    /* Computation core */
-    /* Computing f_0 */
-    double f_0 = 0;
+
     for (i = 0; i < 12; ++i){
-        	f_0 += pow(2., ((double)-i)) * cos(2 * M_PI * pow(3., ((double)i)) * 0.5);
-        }
+        f_0 += pow(2., ((double)-i)) * cos(2 * M_PI * pow(3., ((double)i)) * 0.5);
+    }
 
     y[0] = 0.0;
     for (i = 0; i < self->number_of_variables; ++i) {
     	for (k = 0; k < 12; ++k){
-    		y[0] += pow(2., ((double)-k)) * cos(2 * M_PI * pow(3., ((double)k)) * (x[i] + 0.5));
+            y[0] += pow(2., ((double)-k)) * cos(2 * M_PI * pow(3., ((double)k)) * (x[i] + 0.5));
     	}
-
     }
     y[0] = 10 * pow((1./((double)self->number_of_variables)) * y[0] - f_0, 3.);
 }
@@ -52,5 +50,3 @@ static coco_problem_t *weierstrass_problem(const size_t number_of_variables) {
     f_weierstrass_evaluate(problem, problem->best_parameter, problem->best_value);
     return problem;
 }
-
-
