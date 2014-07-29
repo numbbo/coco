@@ -43,7 +43,7 @@ def leak_check():
     make("build/c", "clean")
     make("build/c", "all")
     valgrind_cmd = ['valgrind', '--track-origins=yes',
-                    '--leak-check=yes', '--error-exitcode=1',
+                    '--leak-check=full', '--error-exitcode=1',
                     './coco_test', 'bbob2009_testcases.txt']
     run('build/c', valgrind_cmd)
     
