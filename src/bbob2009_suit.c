@@ -378,6 +378,40 @@ coco_problem_t *bbob2009_suit(const int function_index) {
 
         bbob2009_free_matrix(rot1, dimension);
         bbob2009_free_matrix(rot2, dimension);
+    }  else if (function_id == 16) {
+        int i, j, k;
+        static double condition = 100.;
+        double M[40*40], b[40], xopt[40], fopt, *current_row;
+        double **rot1, **rot2;
+        fopt = bbob2009_compute_fopt(function_id, instance_id);
+        bbob2009_compute_xopt(xopt, rseed, dimension);
+
+        rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        rot2 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+        bbob2009_compute_rotation(rot2, rseed, dimension);
+        for (i = 0; i < dimension; ++i) {
+            b[i] = 0.0;
+            current_row = M + i * dimension;
+            for (j = 0; j < dimension; ++j) {
+                current_row[j] = 0.0;
+                for (k = 0; k < dimension; ++k) {
+                    double exponent = k * 1.0 / (dimension - 1.0);
+                    current_row[j] += rot1[i][k] * pow(1./sqrt(condition), exponent) * rot2[k][j];
+                }
+            }
+        }
+
+        problem = weierstrass_problem(dimension);
+        problem = shift_objective(problem, fopt);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = oscillate_variables(problem);
+        bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
+        problem = affine_transform_variables(problem, M, b, dimension);
+        problem = shift_variables(problem, xopt, 0);
+
+        bbob2009_free_matrix(rot1, dimension);
+        bbob2009_free_matrix(rot2, dimension);
     } else {
         return NULL;
     }
