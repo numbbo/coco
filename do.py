@@ -9,6 +9,7 @@ import re
 import os
 import shutil
 import tempfile
+import subprocess
 
 ## Change to the root directory of repository and add our tools/
 ## subdirectory to system wide search path for modules.
@@ -33,9 +34,12 @@ def build_c():
 
 def test_c():
     build_c()
-    make("build/c", "clean")
-    make("build/c", "all")
-    run('build/c', ['./coco_test', 'bbob2009_testcases.txt'])
+    try:
+        make("build/c", "clean")
+        make("build/c", "all")
+        run('build/c', ['./coco_test', 'bbob2009_testcases.txt'])
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
 
 def leak_check():
     build_c()
@@ -80,6 +84,8 @@ def test_python():
         python('build/python', ['coco_test.py', 'bbob2009_testcases.txt'])
         os.environ.pop('USE_CYTHON')
         os.environ.pop('PYTHONPATH')
+    except subprocess.CalledProcessError:
+        pass
     finally:
         shutil.rmtree(python_temp_home)
         pass
