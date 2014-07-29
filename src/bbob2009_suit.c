@@ -486,7 +486,6 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     coco_free_memory(problem->problem_name);
     coco_free_memory(problem->problem_id);
     
-    problem->problem_name = coco_strdup("weierstrass function");
     /* Construct a meaningful problem id */
     len = snprintf(NULL, 0, "bbbob2009_f%02i_i%02i_d%02i", 
                    function_id, instance_id, dimension);
