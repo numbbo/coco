@@ -1,9 +1,3 @@
-/*
- * f_attractiveSector.c
- *
- *  Created on: Jun 30, 2014
- *      Author: asma
- */
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
@@ -27,7 +21,6 @@ static void f_attractiveSector_evaluate(coco_problem_t *self, double *x, double 
     	}
         y[0] += condition * condition * x[i] * x[i];
     }
-    y[0] = pow(y[0], exp);
 }
 
 static coco_problem_t *attractiveSector_problem(const size_t number_of_variables) {
