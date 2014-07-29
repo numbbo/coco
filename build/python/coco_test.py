@@ -50,10 +50,12 @@ def process_test_cases(fd, suit_name, test_vectors):
         if not about_equal(y, expected_y):
             number_of_failures += 1
             if number_of_failures < 100:
-                print("%8i %8i FAILED expected=%.8e observed=%.8e" % (function_id, test_vector_id, expected_value, y))
+                print("%8i %8i FAILED expected=%.8e observed=%.8e" % (function_id, test_vector_id, expected_y, y))
             elif number_of_failures == 100:
                 print("... further failed tests suppressed ...")
     print("%i of %i tests passed (failure rate %.2f%%)" % (number_of_testcases - number_of_failures, number_of_testcases, (100.0 * number_of_failures) / number_of_testcases))
+    if number_of_failures > 0: 
+        sys.exit(-1)
 
 def process_testfile(testfile):
     with open(testfile, "r") as fd:
