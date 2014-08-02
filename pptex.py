@@ -376,7 +376,7 @@ def tableXLaTeX(table, spec, extraeol=()):
 
     # TODO: check that spec and extraeol have the right format? 
     if 1 < 3:
-        res = [r'\begin{tabularx}{1.03\textwidth}{%s}' % spec]
+        res = [r'\begin{tabularx}{1.0\textwidth}{%s}' % spec]
         for i, line in enumerate(table[:-1]):
             curline = ' & '.join(line) + r'\\' + extraeol[i]
             res.append(curline)

@@ -112,7 +112,7 @@ line_styles = [  # used by ppfigs and pprlmany
           {'marker': '2', 'markersize': 24, 'linestyle': '-', 'color': '#32cd32'}, # 'LimeGreen'
           {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': '#9acd32'}, # 'YellowGreen'
           {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': '#adff2f'}, # 'GreenYellow'
-          {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': '#ffff00'}, # 'Yellow'
+          #{'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': '#ffff00'}, # 'Yellow'
           {'marker': 'v', 'markersize': 30, 'linestyle': '--', 'color': '#000080'}, # 'NavyBlue'
           {'marker': '*', 'markersize': 31, 'linestyle': '--', 'color': 'r'}, # 'Red'
           {'marker': 's', 'markersize': 20, 'linestyle': '--', 'color': '#ffd700'}, # 'Goldenrod'
