@@ -117,6 +117,9 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     coco_problem_t *problem = NULL;
     bbob2009_decode_function_index(function_index, &function_id, &instance_id,
                                    &dimension);
+    /* This assert is a hint for the static analyzer. */
+    assert(dimension > 1);
+
     rseed = function_id + 10000 * instance_id;
 
     /* Break if we are past our 15 instances. */
@@ -403,7 +406,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
                 current_row[j] = 0.0;
                 for (k = 0; k < dimension; ++k) {
                     double exponent = k * 1.0 / (dimension - 1.0);
-                    current_row[j] += rot1[i][k] * pow(1.0 /sqrt(condition), exponent) * rot2[k][j];
+                    current_row[j] += rot1[i][k] * pow(1.0 / sqrt(condition), exponent) * rot2[k][j];
                 }
             }
         }
