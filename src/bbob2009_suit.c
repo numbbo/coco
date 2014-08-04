@@ -490,13 +490,13 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     len = snprintf(NULL, 0, "bbbob2009_f%02i_i%02i_d%02i", 
                    function_id, instance_id, dimension);
     problem->problem_id = coco_allocate_memory(len + 1);
-    len = snprintf(problem->problem_id, len + 1, "bbbob2009_f%02i_i%02i_d%02i",
+    snprintf(problem->problem_id, len + 1, "bbbob2009_f%02i_i%02i_d%02i",
                    function_id, instance_id, dimension);
 
     len = snprintf(NULL, 0, "BBOB2009 f%02i instance %i in %iD",
                    function_id, instance_id, dimension);
     problem->problem_name = coco_allocate_memory(len + 1);
-    len = snprintf(problem->problem_name, len + 1, "BBOB2009 f%02i instance %i in %iD",
+    snprintf(problem->problem_name, len + 1, "BBOB2009 f%02i instance %i in %iD",
                    function_id, instance_id, dimension);
     return problem;
 }
