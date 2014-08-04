@@ -120,7 +120,7 @@ double *coco_allocate_vector(const size_t number_of_elements) {
 }
 
 double *coco_duplicate_vector(const double *src,
-                                const size_t number_of_elements) {
+                              const size_t number_of_elements) {
     size_t i;
     double *dst = coco_allocate_vector(number_of_elements);
 
