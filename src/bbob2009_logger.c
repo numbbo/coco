@@ -62,6 +62,10 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
     char file_path_t[NUMBBO_PATH_MAX]= {0};
     char index_name[NUMBBO_PATH_MAX];
     char index_path[NUMBBO_PATH_MAX]= {0};
+
+    assert(data != NULL);
+    assert(problem_id != NULL);
+
     /*folder name and path for current function*/
     strcpy(folder_name,"data_");
     strcat(folder_name,problem_id);
@@ -183,6 +187,9 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path)
     data = coco_allocate_memory(sizeof(*data));
     data->path = coco_strdup(path);
     data->logfile = NULL; /* Open lazily in logger_evaluate_function(). */
+    data->index_file = NULL;
+    data->fdata_file = NULL;
+    data->tdata_file = NULL;
     _bbob2009_logger_prepare_files(data,
                                    *(inner_problem->best_value),
                                    inner_problem->problem_id);
