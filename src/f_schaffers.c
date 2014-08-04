@@ -10,6 +10,7 @@
 
 static void f_schaffers_evaluate(coco_problem_t *self, double *x, double *y) {
     size_t i;
+    assert(self->number_of_variables > 1);
     assert(self->number_of_objectives == 1);
 
     /* Computation core */

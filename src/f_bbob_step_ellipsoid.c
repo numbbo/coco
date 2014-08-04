@@ -31,7 +31,9 @@ static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, double *x, doubl
     double penalty = 0.0, x1;
     _bbob_step_ellipsoid_t *data;
 
+    assert(self->number_of_variables > 1);
     assert(self->number_of_objectives == 1);
+
     data = self->data;
     for (i = 0; i < self->number_of_variables; ++i) {
         double tmp;
