@@ -23,60 +23,64 @@ static int about_equal(const double a, const double b) {
     return relative_error < 1e-6;
 }
 
+static void usage(const char *program_name) {
+    fprintf(stderr, 
+            "COCO function test suit runner\n"
+            "\n"
+            "Usage:\n"
+            "  %s <testcasefile>\n"
+            "\n"
+            "This program tests the numerical accuracy of the functions in a\n"
+            "particular COCO test suit. Its sole argument is the name of a\n"
+            "text file that contains the test cases. The COCO distribution contains\n"
+            "(at least) the following test cases:\n"
+            "\n"
+            "  bbob2009_testcases.txt - Covers the 24 noise-free BBOB 2009\n"
+            "    functions in 2D, 3D, 5D, 10D, 20D and 40D.\n",
+            program_name);
+}
+
 int main(int argc, char **argv) {
     int header_shown = 0, number_of_failures = 0, shown_failures = 0;
     int number_of_testvectors = 0, number_of_testcases = 0, i, j;
-    testvector_t *testvectors;
+    testvector_t *testvectors = NULL;
     int previous_function_id = -1, function_id, testvector_id, ret;
-    double expected_value, *x, y;
     coco_problem_t *problem = NULL;
     char suit_name[128];
-    FILE *testfile;
+    FILE *testfile = NULL;
     
     if (argc != 2) {
-        fprintf(stderr, 
-                "COCO function test suit runner\n"
-                "\n"
-                "Usage:\n"
-                "  %s <testcasefile>\n"
-                "\n"
-                "This program tests the numerical accuracy of the functions in a\n"
-                "particular COCO test suit. Its sole argument is the name of a\n"
-                "text file that contains the test cases. The COCO distribution contains\n"
-                "(at least) the following test cases:\n"
-                "\n"
-                "  bbob2009_testcases.txt - Covers the 24 noise-free BBOB 2009\n"
-                "    functions in 2D, 3D, 5D, 10D, 20D and 40D.\n",
-                argv[0]);
-        return 1;
+        usage(argv[0]);
+        goto err;
     }
+
     testfile = fopen(argv[1], "r");
     if (testfile == NULL) {
         fprintf(stderr, "Failed to open testcases file %s.\n", argv[1]);
-        return 2;
+        goto err;
     }
 
-    ret = fscanf(testfile, "%s", suit_name);
+    ret = fscanf(testfile, "%127s", suit_name);
     if (ret != 1) {
         fprintf(stderr, "Failed to read suit name from testcases file.\n");
-        return 3;
+        goto err;
     }
     
-    ret = fscanf(testfile, "%i", &number_of_testvectors);
+    ret = fscanf(testfile, "%30i", &number_of_testvectors);
     if (ret != 1) {
         fprintf(stderr, "Failed to read number of test vectors from testcases file.\n");
-        return 3;
+        goto err;
     }
 
     testvectors = malloc(number_of_testvectors * sizeof(*testvectors));
     if (NULL == testvectors) {
         fprintf(stderr, "Failed to allocate memory for testvectors.\n");
-        return 4;
+        goto err;
     }
 
     for (i = 0; i < number_of_testvectors; ++i) {
         for (j = 0; j < 40; ++j) {
-            ret = fscanf(testfile, "%lf", &testvectors[i].x[j]);
+            ret = fscanf(testfile, "%30lf", &testvectors[i].x[j]);
             if (ret != 1) {
                 fprintf(stderr, "ERROR: Failed to parse testvector %i element %i.\n", 
                         i + 1, j + 1);
@@ -85,7 +89,8 @@ int main(int argc, char **argv) {
     }
 
     while (1) {
-        ret = fscanf(testfile, "%i %i %lf", 
+        double expected_value, *x, y;
+        ret = fscanf(testfile, "%30i %30i %30lf", 
                      &function_id, &testvector_id, &expected_value);
         if (ret != 3) 
             break;
@@ -132,4 +137,11 @@ int main(int argc, char **argv) {
     free(testvectors);
 
     return number_of_failures == 0 ? 0 : 1;
+
+err:
+    if (testfile != NULL)
+        fclose(testfile);
+    if (testvectors != NULL)
+        free(testvectors);
+    return 2;
 }
