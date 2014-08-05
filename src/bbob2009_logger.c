@@ -67,15 +67,15 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
     assert(problem_id != NULL);
 
     /*folder name and path for current function*/
-    strcpy(folder_name,"data_");
-    strcat(folder_name,problem_id);
+    strncpy(folder_name,"data_", NUMBBO_PATH_MAX);
+    strncat(folder_name, problem_id, NUMBBO_PATH_MAX - strlen(folder_name) - 1);
     coco_join_path(folder_path, sizeof(folder_path), data->path, folder_name, NULL);
     coco_create_path(folder_path);
 
     /*file name for the index file*/
-    strcpy(index_name,"bbobexp_");
-    strcat(index_name,problem_id);
-    strcat(index_name,".info");
+    strncpy(index_name,"bbobexp_", NUMBBO_PATH_MAX);
+    strncat(index_name,problem_id, NUMBBO_PATH_MAX - strlen(index_name) - 1);
+    strncat(index_name,".info", NUMBBO_PATH_MAX - strlen(index_name) - 1);
     coco_join_path(index_path, sizeof(index_name), data->path, index_name, NULL);
     /* OME: Do not output anything to stdout! */
     /* printf("%s\n",index_path); */
@@ -87,9 +87,9 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
     }
 
     /*file name for the .dat file*/
-    strcpy(file_name,"bbobexp_");
-    strcat(file_name,problem_id);
-    strcat(file_name,".dat");
+    strncpy(file_name,"bbobexp_", NUMBBO_PATH_MAX);
+    strncat(file_name,problem_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name,".dat", NUMBBO_PATH_MAX - strlen(file_name) - 1);
     coco_join_path(file_path, sizeof(file_name), folder_path, file_name, NULL);
     /*TODO: use the correct folder name (no dimension) once we can get
      * function type (sphere/F1....)*/
@@ -104,9 +104,9 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
             best_value);
 
     /*file name for the .tdat file*/
-    strcpy(file_name_t,"bbobexp_");
-    strcat(file_name_t,problem_id);
-    strcat(file_name_t,".tdat");
+    strncpy(file_name_t,"bbobexp_", NUMBBO_PATH_MAX);
+    strncat(file_name_t,problem_id, NUMBBO_PATH_MAX - strlen(file_name_t) - 1);
+    strncat(file_name_t,".tdat", NUMBBO_PATH_MAX - strlen(file_name_t) - 1);
     coco_join_path(file_path_t, sizeof(file_name), folder_path, file_name_t, NULL);
 
     if (data->tdata_file == NULL) {
