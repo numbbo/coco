@@ -49,8 +49,8 @@ void coco_join_path(char *path, size_t path_max_length, ...) {
         }
         /* Both should be safe because of the above check. */
         if (strlen(path) > 0)
-            strcat(path, coco_path_separator);
-        strcat(path, path_component);
+            strncat(path, coco_path_separator, path_max_length - strlen(path) - 1);
+        strncat(path, path_component, path_max_length - strlen(path) - 1);
     }
     va_end(args);
 }
