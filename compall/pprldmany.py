@@ -384,10 +384,12 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
     """
     if targets is None:
         targets = target_values  # set above or in config.py
-    if not isinstance(targets, pp.TargetValues):
+    try:
         if np.min(targets) >= 1:
             ValueError('smallest target f-value is not smaller than one, use ``pproc.TargetValues(targets)`` to prevent this error')
         targets = pp.TargetValues(targets)
+    except TypeError:
+        pass
     res = []
     assert len(pp.DataSetList(dsList).dictByDim()) == 1 # We never integrate over dimensions...
     data = []
@@ -432,7 +434,7 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
     return res
 
 def main(dictAlg, order=None, outputdir='.', info='default',
-         verbose=True):
+         dimension=None, verbose=True):
     """Generates a figure showing the performance of algorithms.
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
@@ -457,8 +459,13 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     tmp = pp.dictAlgByDim(dictAlg)
     # tmp = pp.DictAlg(dictAlg).by_dim()
 
-    if len(tmp) != 1:
-        raise Exception('We never integrate over dimension.')
+    if len(tmp) != 1 and dimension is None:
+        raise ValueError('We never integrate over dimension.')
+    if dimension is not None:
+        if dimension not in tmp.keys():
+            raise ValueError('dimension %d not in dictAlg dimensions %s'
+                             % (dimension, str(tmp.keys())))
+        tmp = {dimension: tmp[dimension]}
     dim = tmp.keys()[0]
     divisor = dim if divide_by_dimension else 1
 
@@ -628,10 +635,11 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     for i in xticks:
         tmp.append('%d' % round(np.log10(i)))
     a.set_xticklabels(tmp)
-    # print 'in_a_hurry ==', genericsettings.in_a_hurry
-    ppfig.saveFigure(figureName, verbose=verbose)
 
-    plt.close()
+    # print 'in_a_hurry ==', genericsettings.in_a_hurry
+    if 11 < 3:
+        ppfig.saveFigure(figureName, verbose=verbose)
+        plt.close()
 
     # TODO: should return status or sthg
 

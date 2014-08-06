@@ -91,9 +91,10 @@ def cocofy(filename):
 
 class TargetValues(object):
     """store and retrieve a list of target function values::
-    
+
+        >>> import numpy as np
         >>> import bbob_pproc.pproc as pp
-        >>> targets = [10**(i/5.0) for i in xrange(2, -8, -1)]
+        >>> targets = [10**i for i in np.arange(2, -8.1, -0.2)]
         >>> targets_as_class = pp.TargetValues(targets)
         >>> assert all(targets_as_class() == targets)
     
@@ -105,11 +106,13 @@ class TargetValues(object):
     be consistent with the derived ``class RunlengthBasedTargetValues``. 
     
     """
-    def __init__(self, target_values):
+    def __init__(self, target_values, discretize=None):
         if 11 < 3 and isinstance(target_values, TargetValues):  # type cast passing behavior
             self.__dict__ = target_values.__dict__
             return
         self.target_values = sorted(target_values, reverse=True)
+        if discretize:
+            self.target_values = self._discretize(self.target_values)
         self.short_info = ""
 
     @staticmethod
@@ -128,9 +131,18 @@ class TargetValues(object):
     def __len__(self):
         return len(self.target_values)
 
-    def __call__(self, fun_dim_but_not_use=None):
+    def __call__(self, fun_dim_but_not_use=None, discretize=None):
+        if discretize:
+            return self._discretize(self.target_values)
         return self.target_values
-
+    @staticmethod
+    def _discretize(target_list):
+        """return a "similar" list with targets in [10**i/5]
+        """
+        number_per_magnitude = 5  # will become input arg if needed
+        factor = float(number_per_magnitude)
+        return [10**(np.round(factor * np.log10(t)) / factor)
+                for t in target_list]
     def label(self, i):
         """return the ``i``-th target value as ``str``, to be overwritten by a derived class"""
         return toolsdivers.num2str(self.target_values[i], significant_digits=2)
@@ -168,7 +180,7 @@ class RunlengthBasedTargetValues(TargetValues):
     reference runlengths::
     
         >>> import bbob_pproc as bb
-        >>> targets = bb.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension=True 
+        >>> targets = bb.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
         >>> targets(fun_dim=(1, 20))
         
     returns a list of target f-values for F1 in 20-D, based on the 
@@ -195,7 +207,7 @@ class RunlengthBasedTargetValues(TargetValues):
     def short_info(self):
         return self._short_info    
         
-    def __init__(self, run_lengths, reference_data='bestGECCO2009', #  
+    def __init__(self, run_lengths, reference_data='bestGECCO2009',
                  smallest_target=1e-8, times_dimension=True, 
                  force_different_targets_factor=10**0.04,
                  unique_target_values=False,
@@ -206,13 +218,15 @@ class RunlengthBasedTargetValues(TargetValues):
         
         :param run_lengths: sequence of values. 
         :param reference_data: 
-            can be a string like ``"bestGECCO2009"`` or a 
-            ``DataSetList`` (not thoroughly tested). 
+            can be a string like ``"bestGECCO2009"`` or a dictionary
+            of best data sets (e.g. from ``bestalg.generate(...)``)
+            or a list of algorithm folder/data names (not thoroughly
+            tested).
         :param smallest_target:
         :param times_dimension:
         :param force_different_targets_factor:
             given the target values are computed from the 
-            ``reference_data_set``, enforces that all target
+            ``reference_data``, enforces that all target
             values are different by at last ``forced_different_targets_factor``
             if ``forced_different_targets_factor``. Default ``10**0.04`` means 
             that within the typical precision of ``10**0.2`` at most five 
@@ -221,6 +235,14 @@ class RunlengthBasedTargetValues(TargetValues):
             the next more difficult target (just) not reached within the
             target run length is chosen, where ``step_to_next_difficult_target``
             defines "how much more difficult".
+
+        TODO: check use case where ``reference_data`` is a dictionary similar
+        to ``bestalg.bestalgentries2009`` with each key dim_fun a reference
+        DataSet, computed by bestalg module or portfolio module.
+
+            dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
+            ref_data = bestalg.generate(dictAlg)
+            targets = RunlengthBasedTargetValues([1, 2, 4, 8], ref_data)
 
         """
         self.reference_data = reference_data
@@ -266,23 +288,37 @@ class RunlengthBasedTargetValues(TargetValues):
                 # ds._clean_data()
                 dsd[(ds.funcId, ds.dim)] = ds
             self.reference_data = dsd
+        elif isinstance(self.reference_data, list):
+            if not isinstance(self.reference_data[0], basestring):
+                raise ValueError("RunlengthBasedTargetValues() expected a string, dict, or list of strings as second argument,"
+                + (" got a list of %s" % str(type(self.reference_data[0]))))
+            # dsList, sortedAlgs, dictAlg = processInputArgs(self.reference_data)
+            self.reference_data = processInputArgs(self.reference_data)[2]
+            self.reference_algorithm = self.reference_data[self.reference_data.keys()[0]].algId
         else:
             # assert len(byalg) == 1
+            # we assume here that self.reference_data is a dictionary
+            # of best data sets
             self.reference_algorithm = self.reference_data[self.reference_data.keys()[0]].algId
         self.initialized = True
         return self
     def __len__(self):
         return len(self.run_lengths)  
-    def __call__(self, fun_dim=None):
+    def __call__(self, fun_dim=None, discretize=None):
         """Get all target values for the respective function and dimension  
-        and reference ERT values (passed during initializatio). `fun_dim` is 
-        a tuple ``(fun_nb, dimension)`` like ``(1, 20)`` for the 20-D sphere. 
+        and reference ERT values (passed during initialization). `fun_dim`
+        is a tuple ``(fun_nb, dimension)`` like ``(1, 20)`` for the 20-D
+        sphere.
+
+        ``if discretize`` all targets are in [10**i/5 for i in N], in case
+        achieved via rounding on the log-scale.
         
         Details: f_target = arg min_f { ERT_best(f) > max(1, target_budget * dimension**times_dimension_flag) }, 
         where f are the values of the ``DataSet`` ``target`` attribute. The next difficult target is chosen
         not smaller as target / 10**0.2. 
         
-        Shown is the ERT for targets that, within the given budget, the best 2009 algorithm just failed to achieve.
+        Returned are the ERT for targets that, within the given budget, the
+        best 2009 algorithm just failed to achieve.
 
         """            
         self.initialize()
@@ -326,7 +362,7 @@ class RunlengthBasedTargetValues(TargetValues):
                     print ds.target
                     # 1/0
         
-        # here the actual computation starts
+        # here the test computation starts
         targets = []
         if genericsettings.test: 
             for rl in self.run_lengths:
@@ -365,17 +401,19 @@ class RunlengthBasedTargetValues(TargetValues):
             # choose best target achieved by reference ERT times step_to_next_difficult_target
             indices = np.nonzero(ds.ert[:end] <= np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
             if not len(indices):
-                warnings.warn('  too easy runlength ' + str(rl) + ' for (f,dim)=' + str(fun_dim))
+                warnings.warn('  too easy run length ' + str(rl) +
+                              ' for (f,dim)=' + str(fun_dim))
                 targets.append(ds.target[0])
             else:
-                targets.append((1 + 1e-9) * ds.target[indices[-1]] / self.step_to_next_difficult_target)
+                targets.append((1 + 1e-9) * ds.target[indices[-1]]
+                               / self.step_to_next_difficult_target)
             
             if (len(targets) > 1 and targets[-1] >= targets[-2] and 
                 self.force_different_targets_factor > 1):
                 targets[-1] = targets[-2] / self.force_different_targets_factor
         targets = np.array(targets, copy=False)
         targets[targets < self.smallest_target] = self.smallest_target
-        
+
         # a few more sanity checks
         if targets[-1] < self.smallest_target:
             print 'runlength based targets', fun_dim, ': correction for small smallest target applied (should never happen)'
@@ -398,6 +436,8 @@ class RunlengthBasedTargetValues(TargetValues):
             len_ = len(targets)
             targets = np.array(list(reversed(sorted(set(targets)))))
             # print(' '.join((str(len(targets)), 'of', str(len_), 'targets kept')))
+        if discretize:
+            return self._discretize(targets)
         return targets    
 
     get_targets = __call__  # an alias
@@ -716,7 +756,7 @@ class DataSet():
             tmp.append(self.maxevals[i] == self.readmaxevals[i])
         if not all(tmp) or len(self.maxevals) != len(self.readmaxevals):
             warnings.warn('There is a difference between the maxevals in the '
-                          '*.info file and in the data files.')
+                          '*.info file and in the data files .')
 
         self._cut_data()
         # Compute ERT
@@ -868,7 +908,7 @@ class DataSet():
 
     def mMaxEvals(self):
         """Returns the maximum number of function evaluations over all runs (trials), 
-        obsolete and replaced by attribute `maxeval`
+        obsolete and replaced by attribute `max_eval`
         
         """
         return max(self.maxevals)
@@ -891,7 +931,11 @@ class DataSet():
     
     @property  # cave: setters work only with new style classes
     def max_eval(self):
-        """maximum number of function evaluations over all runs (trials)""" 
+        """maximum number of function evaluations over all runs (trials),
+
+            return max(self.maxevals)
+
+        """
         return max(self.maxevals)
 
     def nbRuns(self):
@@ -1590,7 +1634,7 @@ class DataSetList(list):
         """return a dictionary with an entry for each algorithm (or
         the dictionary value for only one algorithm if
         ``flatten_output_dict is True``) and
-        the left envelope rld-array. For each algorithm:
+        the left envelope rld-array. For each algorithm the entry contains
         a sorted rld-array of evaluations to reach the targets on all
         functions in ``func_list`` or all available functions, the
         list of solved functions, the list of processed functions. If
@@ -1651,6 +1695,9 @@ class DataSetList(list):
                                 np.array([data_per_target * [val]
                                     for val in reference_scores[ds.funcId]],
                                          copy=False)
+                        for i, line in enumerate(reference_scores[ds.funcId]):
+                            reference_scores[ds.funcId][i] = \
+                                np.sort(toolsstats.fix_data_number(line, data_per_target))
                     ref_scores.append(np.hstack(reference_scores[ds.funcId]))
                     # 'needs to be checked', qqq
                 evals = np.hstack(evals)  # "stack" len(targets) * 15 values
@@ -1813,8 +1860,8 @@ class DataSetList(list):
                 best_scores[i] = current_scores[i]
 
         if any(line is None for line in best_lines):
-            warnings.warn('best data lines not determined, (f, dim)='
-                          + str((fct, dim)))
+            warnings.warn('best data lines for f%s in %s-D could not be determined'
+                          % (str(fct), str(dim)))
         return best_lines, best_scores
 
     def get_sorted_algorithms(self, dimension, target_values,

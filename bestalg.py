@@ -31,6 +31,7 @@ import numpy as np
 
 from bbob_pproc import genericsettings, readalign, pproc
 from bbob_pproc.toolsdivers import print_done
+from bbob_pproc import toolsstats
 
 bestalgentries2009 = {}
 bestalgentries2010 = {}
@@ -87,7 +88,8 @@ class BestAlgSet():
     numbers of function evaluations for evals or function values for
     funvals.
 
-    Known bug: algorithms where the ERT is NaN or Inf are not taken into account!? 
+    Known bug: algorithms where the ERT is NaN or Inf are not taken into
+    account!?
     
     """
 
@@ -446,7 +448,7 @@ def generate(dictalg):
     """Generates dictionary of best algorithm data set.
     """
 
-    #dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
+    # dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
     res = {}
     for f, i in pproc.dictAlgByFun(dictalg).iteritems():
         for d, j in pproc.dictAlgByDim(i).iteritems():
@@ -565,21 +567,27 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
     
     
     print " done."
+
     
-    
-    
-    
-def extractBestAlgorithms(args = algs2009, f_factor=1.1,
-                          target_lb=1e-8, target_ub=1e2):
+def extractBestAlgorithms(args = algs2009, f_factor=2,
+                          target_lb=1e-8, target_ub=1e22):
     """Returns (and prints) per dimension a list of algorithms within
     algorithm list args that contains an algorithm if for any
         dimension/target/function pair this algorithm:
         - is the best algorithm wrt ERT
-        - its own ERT lies within a factor t_factor of the best ERT
+        - its own ERT lies within a factor f_factor of the best ERT
         - there is no algorithm within a factor of f_factor of the best ERT
           and the current algorithm is the second best.
 
     """
+
+    # TODO: use pproc.TargetValues class as input target values
+    # default target values:
+    targets = pproc.TargetValues(
+        10**np.arange(np.log10(max((1e-8, target_lb))),
+                      np.log10(target_ub) + 1e-9, 0.2))
+    # there should be a simpler way to express this to become the
+    # interface of this function
 
     print 'Loading algorithm data from given algorithm list...\n'  
 
@@ -596,8 +604,10 @@ def extractBestAlgorithms(args = algs2009, f_factor=1.1,
             
             for i in range(0, len(best.target)):
                 t = best.target[i]
-                if ((t <= target_ub) and (t >= target_lb)):
-                    # add best for this target:    
+                # if ((t <= target_ub) and (t >= target_lb)):
+                if toolsstats.in_approximately(t,
+                                    targets((f, d), discretize=True)):
+                    # add best for this target:
                     selectedAlgsPerProblemDF.append(best.algs[i])
                 
                     # add second best or all algorithms that have an ERT
