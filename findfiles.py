@@ -44,10 +44,8 @@ def main(directory='.', verbose=True):
     if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
         import tarfile
         dirname = '_extracted_' + directory[:directory.find('.t')]
-        if directory.endswith('.gz') or directory.endswith('.tgz'):
-            tarfile.TarFile.gzopen(directory).extractall(dirname)
-        else:
-            tarfile.TarFile.open(directory).extractall(dirname)
+        tarfile.TarFile.open(directory).extractall(dirname)
+        # TarFile.open handles tar.gz/tgz
         directory = dirname
         print '    archive extracted to folder', directory, '...'
         # archive = tarfile.TarFile(directory)

@@ -655,7 +655,9 @@ def significancetest(entry0, entry1, targets):
         curdata = []  # current data 
         for j, entry in enumerate((entry0, entry1)):
             tmp = evals[j][i].copy()
-            idx = np.isnan(tmp) + (tmp > FE_umin)
+            idx = np.isnan(tmp)
+            idx[idx == False] += tmp[idx == False] > FE_umin
+            # was not a bool before: idx = np.isnan(tmp) + (tmp > FE_umin)
             tmp = np.power(tmp, -1.)
             if idx.any():
                 tmp[idx] = -fvalues[j][idx]  # larger data is better
@@ -735,6 +737,9 @@ def sliding_window_data(data, width=2, operator=np.median,
     the same length as the original data and the window width
     is between width/2 at the border and width in the middle.
 
+    Return (smoothed_data, stats), where stats is a list with elements
+    [index_in_data, 2_10_25_50_75_90_98_percentile_of_window_at_i]
+
     """
     if width < 2:
         return (data, [])
@@ -771,5 +776,22 @@ def sliding_window_data(data, width=2, operator=np.median,
     return (np.array(smoothened_data, copy=False)
         if isinstance(data, np.ndarray) else smoothened_data, stats)
 
+def equals_approximately(a, b, abs=1e-11, rel=1e-11):
+    if b - abs <= a <= b + abs:
+        return True
+    if (1 - rel) * b <= a <= (1 + rel) * b:
+        return True
+    return False
 
-###############################################################################
+def in_approximately(a, list_, abs=1e-11, rel=1e-11):
+    """return True if ``a`` equals approximately any of the elements
+    in ``list_``, in short
+
+        return any([equals_approximately(a, b) for b in list_])
+
+    """
+    for b in list_:
+        if equals_approximately(a, b, abs, rel):
+            return True
+    return False
+
