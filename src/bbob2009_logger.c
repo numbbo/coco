@@ -15,7 +15,7 @@ static const size_t nbpts_fval = 5;
 
 typedef struct {
     char *path;/*path to the data folder*/
-    FILE *logfile;/*TODO: eventually removed*/
+    FILE *logfile;/*TODO: eventually remove*/
     FILE *index_file;/*index file*/
     FILE *fdata_file;/*function value aligned data file*/
     FILE *tdata_file;/*number of function evaluations aligned data file*/
