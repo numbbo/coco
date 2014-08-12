@@ -15,7 +15,6 @@ static const size_t nbpts_fval = 5;
 
 typedef struct {
     char *path;/*path to the data folder*/
-    FILE *logfile;/*TODO: eventually remove*/
     FILE *index_file;/*index file*/
     FILE *fdata_file;/*function value aligned data file*/
     FILE *tdata_file;/*number of function evaluations aligned data file*/
@@ -162,10 +161,6 @@ static void _bbob2009_logger_free_data(void *stuff) {
     _bbob2009_logger_t *data = stuff;
 
     coco_free_memory(data->path);
-    if (data->logfile != NULL) {
-        fclose(data->logfile);
-        data->logfile = NULL;
-    }
     if (data->index_file != NULL) {
         fclose(data->index_file);
         data->index_file = NULL;
@@ -186,7 +181,6 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path)
 
     data = coco_allocate_memory(sizeof(*data));
     data->path = coco_strdup(path);
-    data->logfile = NULL; /* Open lazily in logger_evaluate_function(). */
     data->index_file = NULL;
     data->fdata_file = NULL;
     data->tdata_file = NULL;
