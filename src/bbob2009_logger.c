@@ -13,7 +13,6 @@
 /* static const size_t nbpts_nbevals = 20; */
 static const size_t nbpts_fval = 5;
 
-
 typedef struct {
     char *path;/*path to the data folder*/
     FILE *index_file;/*index file*/
