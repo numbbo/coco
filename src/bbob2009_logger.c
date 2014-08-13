@@ -13,6 +13,7 @@
 /* static const size_t nbpts_nbevals = 20; */
 static const size_t nbpts_fval = 5;
 
+/*TODO: add possibility of adding a prefix to the index files*/
 
 typedef struct {
     char *path;/*path to the data folder*/
@@ -27,6 +28,8 @@ typedef struct {
     double evalsTrigger;
     long number_of_evaluations;
 } _bbob2009_logger_t;
+
+char* _file_header_str="%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n";
 
 static void _bbob2009_logger_update_next_target(_bbob2009_logger_t *data) {
     data->next_target = pow(10, data->idx_fval_trigger * 1.0 / nbpts_fval);
@@ -56,12 +59,12 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
     /*TODO: probably doable with less variables and less string function calls*/
     char folder_name[NUMBBO_PATH_MAX];
     char folder_path[NUMBBO_PATH_MAX]={0};
-    char file_name[NUMBBO_PATH_MAX];
-    char file_path[NUMBBO_PATH_MAX]= {0};
-    char file_name_t[NUMBBO_PATH_MAX];
-    char file_path_t[NUMBBO_PATH_MAX]= {0};
-    char index_name[NUMBBO_PATH_MAX];
-    char index_path[NUMBBO_PATH_MAX]= {0};
+    char ffile_name[NUMBBO_PATH_MAX];
+    char ffile_path[NUMBBO_PATH_MAX]= {0};
+    char tfile_name[NUMBBO_PATH_MAX];
+    char tfile_path[NUMBBO_PATH_MAX]= {0};
+    char ifile_name[NUMBBO_PATH_MAX];
+    char ifile_path[NUMBBO_PATH_MAX]= {0};
 
     assert(data != NULL);
     assert(problem_id != NULL);
@@ -73,51 +76,47 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
     coco_create_path(folder_path);
 
     /*file name for the index file*/
-    strncpy(index_name,"bbobexp_", NUMBBO_PATH_MAX);
-    strncat(index_name,problem_id, NUMBBO_PATH_MAX - strlen(index_name) - 1);
-    strncat(index_name,".info", NUMBBO_PATH_MAX - strlen(index_name) - 1);
-    coco_join_path(index_path, sizeof(index_name), data->path, index_name, NULL);
+    strncpy(ifile_name,"bbobexp_", NUMBBO_PATH_MAX);
+    strncat(ifile_name,problem_id, NUMBBO_PATH_MAX - strlen(ifile_name) - 1);
+    strncat(ifile_name,".info", NUMBBO_PATH_MAX - strlen(ifile_name) - 1);
+    coco_join_path(ifile_path, sizeof(ifile_name), data->path, ifile_name, NULL);
     /* OME: Do not output anything to stdout! */
-    /* printf("%s\n",index_path); */
+    /* printf("%s\n",ifile_path); */
     if (data->index_file == NULL) {
-        data->index_file = fopen(index_path, "a+");
+        data->index_file = fopen(ifile_path, "a+");
         if (data->index_file == NULL) {
             _bbob2009_logger_error_io(data->index_file);
         }
     }
 
     /*file name for the .dat file*/
-    strncpy(file_name,"bbobexp_", NUMBBO_PATH_MAX);
-    strncat(file_name,problem_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    strncat(file_name,".dat", NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    coco_join_path(file_path, sizeof(file_name), folder_path, file_name, NULL);
+    strncpy(ffile_name,"bbobexp_", NUMBBO_PATH_MAX);
+    strncat(ffile_name,problem_id, NUMBBO_PATH_MAX - strlen(ffile_name) - 1);
+    strncat(ffile_name,".dat", NUMBBO_PATH_MAX - strlen(ffile_name) - 1);
+    coco_join_path(ffile_path, sizeof(ffile_name), folder_path, ffile_name, NULL);
     /*TODO: use the correct folder name (no dimension) once we can get
      * function type (sphere/F1....)*/
     if (data->fdata_file == NULL) {
-        data->fdata_file = fopen(file_path, "a+");
+        data->fdata_file = fopen(ffile_path, "a+");
         if (data->fdata_file == NULL) {
             _bbob2009_logger_error_io(data->fdata_file);
         }
     }
-    fprintf(data->fdata_file,
-            "%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n",
-            best_value);
+    fprintf(data->fdata_file,_file_header_str,best_value);
 
     /*file name for the .tdat file*/
-    strncpy(file_name_t,"bbobexp_", NUMBBO_PATH_MAX);
-    strncat(file_name_t,problem_id, NUMBBO_PATH_MAX - strlen(file_name_t) - 1);
-    strncat(file_name_t,".tdat", NUMBBO_PATH_MAX - strlen(file_name_t) - 1);
-    coco_join_path(file_path_t, sizeof(file_name), folder_path, file_name_t, NULL);
+    strncpy(tfile_name,"bbobexp_", NUMBBO_PATH_MAX);
+    strncat(tfile_name,problem_id, NUMBBO_PATH_MAX - strlen(tfile_name) - 1);
+    strncat(tfile_name,".tdat", NUMBBO_PATH_MAX - strlen(tfile_name) - 1);
+    coco_join_path(tfile_path, sizeof(tfile_name), folder_path, tfile_name, NULL);
 
     if (data->tdata_file == NULL) {
-        data->tdata_file = fopen(file_path_t, "a+");
+        data->tdata_file = fopen(tfile_path, "a+");
         if (data->tdata_file == NULL) {
             _bbob2009_logger_error_io(data->tdata_file);
         }
     }
-    fprintf(data->tdata_file,
-            "%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n",
-            best_value);
+    fprintf(data->tdata_file,_file_header_str,best_value);
 }
 
 static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
