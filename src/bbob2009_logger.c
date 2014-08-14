@@ -16,7 +16,7 @@ static const size_t nbpts_fval = 5;
 /*TODO: add possibility of adding a prefix to the index files*/
 
 typedef struct {
-    char *path;/*path to the data folder*/
+    char *path;/*path to the data folder. TODO: should be fetched as a parameter with a default value*/
     FILE *index_file;/*index file*/
     FILE *fdata_file;/*function value aligned data file*/
     FILE *tdata_file;/*number of function evaluations aligned data file*/
@@ -35,6 +35,7 @@ static void _bbob2009_logger_update_next_target(_bbob2009_logger_t *data) {
     data->next_target = pow(10, data->idx_fval_trigger * 1.0 / nbpts_fval);
 }
 
+
 /**
  * Error when trying to create the file "path"
  */
@@ -49,6 +50,26 @@ static void _bbob2009_logger_error_io(FILE *path) {
     coco_free_memory(buf);
 }
 
+
+static void _bbob2009_logger_createFile(FILE ** target_file, const char* folder_path, const char * problem_id, const char* fileName_prefix, const char* file_extension){
+    char file_name[NUMBBO_PATH_MAX];
+    char file_path[NUMBBO_PATH_MAX]= {0};
+    /*file name for the .dat file*/
+    strncpy(file_name,fileName_prefix, NUMBBO_PATH_MAX);
+    strncat(file_name,problem_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name,file_extension, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    coco_join_path(file_path, sizeof(file_name), folder_path, file_name, NULL);
+    /*TODO: use the correct folder name (no dimension) once we can get
+     * function type (sphere/F1....)*/
+    if (*target_file == NULL) {
+        *target_file = fopen(file_path, "a+");
+        if (target_file == NULL) {
+            _bbob2009_logger_error_io(*target_file);
+        }
+    }
+}
+
+
 static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
                                            double best_value,
                                            const char * problem_id) {
@@ -56,66 +77,26 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
       Creates/opens the data files
       best_value if printed in the header
     */
-    /*TODO: probably doable with less variables and less string function calls*/
     char folder_name[NUMBBO_PATH_MAX];
     char folder_path[NUMBBO_PATH_MAX]={0};
-    char ffile_name[NUMBBO_PATH_MAX];
-    char ffile_path[NUMBBO_PATH_MAX]= {0};
-    char tfile_name[NUMBBO_PATH_MAX];
-    char tfile_path[NUMBBO_PATH_MAX]= {0};
-    char ifile_name[NUMBBO_PATH_MAX];
-    char ifile_path[NUMBBO_PATH_MAX]= {0};
 
     assert(data != NULL);
     assert(problem_id != NULL);
 
-    /*folder name and path for current function*/
+    /*generate folder name and path for current function*/
     strncpy(folder_name,"data_", NUMBBO_PATH_MAX);
     strncat(folder_name, problem_id, NUMBBO_PATH_MAX - strlen(folder_name) - 1);
     coco_join_path(folder_path, sizeof(folder_path), data->path, folder_name, NULL);
     coco_create_path(folder_path);
+    
 
-    /*file name for the index file*/
-    strncpy(ifile_name,"bbobexp_", NUMBBO_PATH_MAX);
-    strncat(ifile_name,problem_id, NUMBBO_PATH_MAX - strlen(ifile_name) - 1);
-    strncat(ifile_name,".info", NUMBBO_PATH_MAX - strlen(ifile_name) - 1);
-    coco_join_path(ifile_path, sizeof(ifile_name), data->path, ifile_name, NULL);
-    /* OME: Do not output anything to stdout! */
-    /* printf("%s\n",ifile_path); */
-    if (data->index_file == NULL) {
-        data->index_file = fopen(ifile_path, "a+");
-        if (data->index_file == NULL) {
-            _bbob2009_logger_error_io(data->index_file);
-        }
-    }
+    _bbob2009_logger_createFile(&(data->index_file), data->path, problem_id, "bbobexp_", ".info");
+    fprintf(data->index_file,_file_header_str,best_value);/*TODO: place holder, replace*/
 
-    /*file name for the .dat file*/
-    strncpy(ffile_name,"bbobexp_", NUMBBO_PATH_MAX);
-    strncat(ffile_name,problem_id, NUMBBO_PATH_MAX - strlen(ffile_name) - 1);
-    strncat(ffile_name,".dat", NUMBBO_PATH_MAX - strlen(ffile_name) - 1);
-    coco_join_path(ffile_path, sizeof(ffile_name), folder_path, ffile_name, NULL);
-    /*TODO: use the correct folder name (no dimension) once we can get
-     * function type (sphere/F1....)*/
-    if (data->fdata_file == NULL) {
-        data->fdata_file = fopen(ffile_path, "a+");
-        if (data->fdata_file == NULL) {
-            _bbob2009_logger_error_io(data->fdata_file);
-        }
-    }
+    _bbob2009_logger_createFile(&(data->fdata_file), folder_path, problem_id, "bbobexp_", ".dat");
     fprintf(data->fdata_file,_file_header_str,best_value);
 
-    /*file name for the .tdat file*/
-    strncpy(tfile_name,"bbobexp_", NUMBBO_PATH_MAX);
-    strncat(tfile_name,problem_id, NUMBBO_PATH_MAX - strlen(tfile_name) - 1);
-    strncat(tfile_name,".tdat", NUMBBO_PATH_MAX - strlen(tfile_name) - 1);
-    coco_join_path(tfile_path, sizeof(tfile_name), folder_path, tfile_name, NULL);
-
-    if (data->tdata_file == NULL) {
-        data->tdata_file = fopen(tfile_path, "a+");
-        if (data->tdata_file == NULL) {
-            _bbob2009_logger_error_io(data->tdata_file);
-        }
-    }
+    _bbob2009_logger_createFile(&(data->tdata_file), folder_path, problem_id, "bbobexp_", ".tdat");
     fprintf(data->tdata_file,_file_header_str,best_value);
 }
 
