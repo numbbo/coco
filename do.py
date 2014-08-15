@@ -149,15 +149,19 @@ Usage: do.py <command>
 
 Available commands:
 
-  build        - Build C, Python and R modules
-  test         - Test C, Python and R modules
-  build-c      - Build C framework
-  build-python - Build Python 2 modules
-  build-r      - Build R package
-  test-c       - Run minimal test of C components
-  test-python  - Run minimal test of Python 2 module
-  test-r       - Run minimal test of R package
-  leak-check   - Check for memory leaks
+  build         - Build C, Python and R modules
+  test          - Test C, Python and R modules
+  build-c       - Build C framework
+  build-python  - Build Python modules
+  build-python2 - Build Python 2 modules
+  build-python3 - Build Python 3 modules
+  build-r       - Build R package
+  test-c        - Run minimal test of C components
+  test-python   - Run minimal test of Python module
+  test-python2  - Run minimal test of Python 2 module
+  test-python3  - Run minimal test of Python 3 module
+  test-r        - Run minimal test of R package
+  leak-check    - Check for memory leaks
 """)
 
 def main(args):
@@ -169,6 +173,10 @@ def main(args):
     elif cmd == 'test-c': test_c()
     elif cmd == 'build-python': build_python()
     elif cmd == 'test-python': test_python()
+    elif cmd == 'build-python2': build_python2()
+    elif cmd == 'test-python2': test_python2()
+    elif cmd == 'build-python3': build_python3()
+    elif cmd == 'test-python3': test_python3()
     elif cmd == 'build-r': build_r()
     elif cmd == 'test-r': test_r()
     elif cmd == 'build': build()
