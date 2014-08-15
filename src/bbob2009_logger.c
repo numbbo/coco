@@ -51,14 +51,18 @@ static void _bbob2009_logger_error_io(FILE *path) {
 }
 
 
-static void _bbob2009_logger_createFile(FILE ** target_file, const char* folder_path, const char * problem_id, const char* fileName_prefix, const char* file_extension){
+static void _bbob2009_logger_createFile(FILE ** target_file, 
+                                        const char* folder_path, 
+                                        const char * problem_id, 
+                                        const char* fileName_prefix, 
+                                        const char* file_extension) {
     char file_name[NUMBBO_PATH_MAX];
-    char file_path[NUMBBO_PATH_MAX]= {0};
+    char file_path[NUMBBO_PATH_MAX] = {0};
     /*file name for the .dat file*/
-    strncpy(file_name,fileName_prefix, NUMBBO_PATH_MAX);
-    strncat(file_name,problem_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    strncat(file_name,file_extension, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    coco_join_path(file_path, sizeof(file_name), folder_path, file_name, NULL);
+    strncpy(file_name, fileName_prefix, NUMBBO_PATH_MAX);
+    strncat(file_name, problem_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, file_extension, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
     /*TODO: use the correct folder name (no dimension) once we can get
      * function type (sphere/F1....)*/
     if (*target_file == NULL) {
@@ -68,7 +72,6 @@ static void _bbob2009_logger_createFile(FILE ** target_file, const char* folder_
         }
     }
 }
-
 
 static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
                                            double best_value,
@@ -110,7 +113,8 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     /* Add a line for each hitting level reached. */
     if (y[0] <= data->next_target) {
         size_t i;
-        fprintf(data->fdata_file, "%ld", data->number_of_evaluations);/*for some reason, it's %.0f in the old code */
+        /* for some reason, it's %.0f in the old code */
+        fprintf(data->fdata_file, "%ld", data->number_of_evaluations);
         fprintf(data->fdata_file, " %+10.9e %+10.9e %+10.9e %+10.9e", y[0],
                 y[0], y[0], y[0]);
         if (self->number_of_variables<22) {
