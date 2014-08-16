@@ -405,8 +405,9 @@ coco_problem_t *bbob2009_suit(const int function_index) {
             for (j = 0; j < dimension; ++j) {
                 current_row[j] = 0.0;
                 for (k = 0; k < dimension; ++k) {
-                    double exponent = k * 1.0 / (dimension - 1.0);
-                    current_row[j] += rot1[i][k] * pow(1.0 / sqrt(condition), exponent) * rot2[k][j];
+                    const double base = 1.0 / sqrt(condition);
+                    const double exponent = k * 1.0 / (dimension - 1.0);
+                    current_row[j] += rot1[i][k] * pow(base, exponent) * rot2[k][j];
                 }
             }
         }
