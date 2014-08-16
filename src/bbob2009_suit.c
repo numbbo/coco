@@ -456,6 +456,9 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         int i, j;
         double M[40*40], b[40], xopt[40], fopt, *current_row;
         double **rot1, **rot2;
+        /* Reuse rseed from f17. */
+        rseed = 17 + 10000 * instance_id;
+
         fopt = bbob2009_compute_fopt(function_id, instance_id);
         bbob2009_compute_xopt(xopt, rseed, dimension);
 
@@ -467,8 +470,8 @@ coco_problem_t *bbob2009_suit(const int function_index) {
             b[i] = 0.0;
             current_row = M + i * dimension;
             for (j = 0; j < dimension; ++j) {
-                    double exponent = j * 1.0 / (dimension - 1.0);
-                    current_row[j] = rot1[i][j] * pow(sqrt(1000), exponent);
+                    double exponent = i * 1.0 / (dimension - 1.0);
+                    current_row[j] = rot2[i][j] * pow(sqrt(1000), exponent);
                 }
         }
 
@@ -476,7 +479,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         problem = shift_objective(problem, fopt);
         problem = affine_transform_variables(problem, M, b, dimension);
         problem = asymmetric_variable_transform(problem, 0.5);
-        bbob2009_copy_rotation_matrix(rot2, M, b, dimension);
+        bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
         problem = affine_transform_variables(problem, M, b, dimension);
         problem = shift_variables(problem, xopt, 0);
 
