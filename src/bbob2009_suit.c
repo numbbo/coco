@@ -203,9 +203,9 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         bbob2009_free_matrix(rot2, dimension);
 
         problem = attractive_sector_problem(dimension, xopt);
-        problem = shift_objective(problem, fopt);
         problem = oscillate_objective(problem);
         problem = power_objective(problem, 0.9);
+        problem = shift_objective(problem, fopt);
         problem = affine_transform_variables(problem, M, b, dimension);
         problem = shift_variables(problem, xopt, 0);
     } else if (function_id == 7) {
