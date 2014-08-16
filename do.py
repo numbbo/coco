@@ -53,7 +53,7 @@ def leak_check():
     
 ################################################################################
 ## Python 2
-def build_python():
+def _prep_python():
     amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/python/cython/coco.c')
     copy_file('src/coco.h', 'build/python/cython/coco.h')
     copy_file('src/bbob2009_testcases.txt', 'build/python/bbob2009_testcases.txt')
@@ -61,13 +61,16 @@ def build_python():
                 {'COCO_VERSION': hg_version()})
     expand_file('build/python/setup.py.in', 'build/python/setup.py',
                 {'COCO_VERSION': hg_version()})
+
+def build_python():
+    _prep_python()
     ## Force distutils to use Cython
     os.environ['USE_CYTHON'] = 'true'
     python('build/python', ['setup.py', 'sdist'])
     os.environ.pop('USE_CYTHON')
 
 def test_python():
-    build_python()
+    _prep_python()
     python('build/python', ['setup.py', 'check', '--metadata', '--strict'])
     ## Now install into a temporary location, run test and cleanup
     python_temp_home = tempfile.mkdtemp(prefix="coco")
