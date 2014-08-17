@@ -1,7 +1,11 @@
 # -*- mode: cython -*-
 import numpy as np
 cimport numpy as np
-from cpython.version cimport PY_MAJOR_VERSION
+
+from coco.exceptions import NoSuchProblemException 
+from coco.exceptions import InvalidProblemException
+
+__all__ = ['Problem', 'Benchmark']
 
 # Must initialize numpy or risk segfaults
 np.import_array()
@@ -46,7 +50,7 @@ cdef class Problem:
         _problem_suit = _bstring(problem_suit)
         self.problem = coco_get_problem(_problem_suit, function_index)
         if self.problem is NULL:
-            raise Exception("No such function")
+            raise NoSuchProblemException(problem_suit, function_index)
         self.y = np.zeros(coco_get_number_of_objectives(self.problem))
         ## FIXME: Inefficient because we copy the bounds instead of
         ## sharing the data.
@@ -59,11 +63,12 @@ cdef class Problem:
     def add_obersever(self, char *observer, char *options):
         self.problem = coco_observe_problem(observer, self.problem, options)
 
-    def number_of_variables(self):
+    property number_of_variables:
         """ 
-        Return the number of variables this problem instance expects as input.
+        The number of variables this problem instance expects as input.
         """
-        return len(self.lower_bounds)
+        def __get__(self):
+            return len(self.lower_bounds)
 
     def free(self):
         """
@@ -84,7 +89,7 @@ cdef class Problem:
 
     def __call__(self, np.ndarray[double, ndim=1, mode="c"] x):
         if self.problem is NULL:
-            raise Exception("Invalid problem.")
+            raise InvalidProblemException()
         coco_evaluate_function(self.problem,
 		               <double *>np.PyArray_DATA(x),
                                <double *>np.PyArray_DATA(self.y))
@@ -116,8 +121,6 @@ cdef class Benchmark:
             problem = Problem(self.problem_suit, self._function_index)
             problem.add_obersever(self.observer, self.options)
             self._function_index = self._function_index + 1
-        except Exception, e:
+        except NoSuchProblemException, e:
             raise StopIteration()
         return problem
-
-__all__ = ['Problem', 'Benchmark']
