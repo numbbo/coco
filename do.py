@@ -91,7 +91,6 @@ def test_python():
         sys.exit(-1)
     finally:
         shutil.rmtree(python_temp_home)
-        pass
 
 ################################################################################
 ## Python 2
