@@ -46,7 +46,7 @@ def process_test_cases(fd, suit_name, test_vectors):
             problem = Problem(suit_name, function_id)
             previous_function_id = function_id
         test_vector = test_vectors[test_vector_id]
-        y = problem(test_vector[:problem.number_of_variables()])
+        y = problem(test_vector[:problem.number_of_variables])
         if not about_equal(y, expected_y):
             number_of_failures += 1
             if number_of_failures < 100:
