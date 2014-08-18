@@ -29,7 +29,8 @@ core_files = ['src/coco_benchmark.c',
 ################################################################################
 ## C
 def build_c():
-    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/c/coco.c')
+    global release
+    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/c/coco.c', release)
     copy_file('src/coco.h', 'build/c/coco.h')
     copy_file('src/bbob2009_testcases.txt', 'build/c/bbob2009_testcases.txt')
     write_file(hg_revision(), "build/c/REVISION")
@@ -57,7 +58,9 @@ def leak_check():
 ################################################################################
 ## Python 2
 def _prep_python():
-    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/python/cython/coco.c')
+    global release
+    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/python/cython/coco.c', 
+               release)
     copy_file('src/coco.h', 'build/python/cython/coco.h')
     copy_file('src/bbob2009_testcases.txt', 'build/python/bbob2009_testcases.txt')
     expand_file('build/python/README.in', 'build/python/README',
@@ -122,8 +125,10 @@ def test_python3():
 ################################################################################
 ## R
 def build_r():
+    global release
     copy_tree('build/r/skel', 'build/r/pkg')
-    amalgamate(core_files + ['src/coco_r_runtime.c'],  'build/r/pkg/src/coco.c')
+    amalgamate(core_files + ['src/coco_r_runtime.c'],  'build/r/pkg/src/coco.c',
+               release)
     copy_file('src/coco.h', 'build/r/pkg/src/coco.h')
     expand_file('build/r/pkg/DESCRIPTION.in', 'build/r/pkg/DESCRIPTION',
                 {'COCO_VERSION': hg_version()})
@@ -167,6 +172,9 @@ Available commands:
   test-python3  - Run minimal test of Python 3 module
   test-r        - Run minimal test of R package
   leak-check    - Check for memory leaks
+
+To build a release version which does not include debugging information in the 
+amalgamations set the environment variable COCO_RELEASE to 'true'.
 """)
 
 def main(args):
@@ -190,4 +198,5 @@ def main(args):
     else: help()
 
 if __name__ == '__main__':
+    release = os.getenv('COCO_RELEASE', 'false') == 'true'
     main(sys.argv[1:])

@@ -10,7 +10,8 @@ import re
 from os import path
 
 class Amalgator:
-    def __init__(self, destination_file):
+    def __init__(self, destination_file, release):
+        self.release = release
         self.included_files = []
         self.destination_fd = open(destination_file, 'w')
         self.destination_fd.write("""
@@ -32,7 +33,8 @@ class Amalgator:
         self.included_files.append(filename)
         fd = open(filename)
         line_number = 1
-        self.destination_fd.write("#line %i \"%s\"\n" % (line_number, filename))
+        if not self.release:
+            self.destination_fd.write("#line %i \"%s\"\n" % (line_number, filename))
         for line in fd.readlines():
             ## Is this an include statement?
             matches = re.match("#include \"(.*)\"", line)
@@ -41,16 +43,17 @@ class Amalgator:
                 ## Has this file not been included previously?
                 if not include_file in self.included_files:
                     self.process_file(include_file)
-                self.destination_fd.write("#line %i \"%s\"\n" % 
-                                          (line_number + 1, filename))
+                if not self.release:
+                    self.destination_fd.write("#line %i \"%s\"\n" % 
+                                              (line_number + 1, filename))
             else:
                 self.destination_fd.write(line)
             line_number = line_number + 1
         fd.close()
 
-def amalgamate(source_files, destination_file):        
+def amalgamate(source_files, destination_file, release=False):
     print("AML\t%s -> %s" % (str(source_files), destination_file))
-    amalgator = Amalgator(destination_file)
+    amalgator = Amalgator(destination_file, release)
     for filename in source_files:
         amalgator.process_file(filename)
     amalgator.finish()
