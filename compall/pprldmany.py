@@ -637,7 +637,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     a.set_xticklabels(tmp)
 
     # print 'in_a_hurry ==', genericsettings.in_a_hurry
-    if 11 < 3:
+    if 1 < 3:
         ppfig.saveFigure(figureName, verbose=verbose)
         plt.close()
 
