@@ -198,6 +198,14 @@ void coco_free_memory(void *data);
  */
 char *coco_strdup(const char *string);
 
+/* FIXME: Find portable 64 bit integer type. */
+typedef uint64_t coco_nanotime_t;
+
+/**
+ * Return a monotonic nanosecond value. Useful to measure execution times.
+ */
+coco_nanotime_t coco_get_nanotime(void);
+
 #ifdef __cplusplus
 }
 #endif

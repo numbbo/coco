@@ -29,6 +29,9 @@ demo: demo.o coco.o
 coco_test: coco_test.o coco.o
 	${CC} ${LDFLAGS} -o coco_test coco_test.o coco.o
 
+coco_timiing: coco_timing.o coco.o
+	${CC} ${LDFLAGS} -o coco_timing coco_timing.o coco.o
+
 test_bbob2009_new: test_bbob2009_new.o coco.o
 	${CC} ${LDFLAGS} -o test_bbob2009_new test_bbob2009_new.o coco.o
 
