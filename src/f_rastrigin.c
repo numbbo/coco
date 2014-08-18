@@ -6,11 +6,13 @@
 #include "coco_problem.c"
 
 static void _rastrigin_evaluate(coco_problem_t *self, double *x, double *y) {
+    static const double two_pi = 2.0 * coco_pi;
     size_t i;
     double sum1 = 0.0, sum2 = 0.0;
     assert(self->number_of_objectives == 1);
+
     for (i = 0; i < self->number_of_variables; ++i) {
-        sum1 += cos(2 * coco_pi * x[i]);
+        sum1 += cos(two_pi * x[i]);
         sum2 += x[i] * x[i];
     }
     y[0] = 10.0 * (self->number_of_variables - sum1) + sum2;
