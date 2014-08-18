@@ -21,7 +21,10 @@ from cocoutils import make, run, python, rscript
 from cocoutils import copy_file, copy_tree, expand_file, write_file
 from cocoutils import hg_version, hg_revision
 
-core_files = ['src/coco_benchmark.c', 'src/coco_random.c', 'src/coco_generics.c']
+core_files = ['src/coco_benchmark.c',
+              'src/coco_random.c',
+              'src/coco_generics.c',
+              'src/coco_nanotimer.c']
 
 ################################################################################
 ## C
