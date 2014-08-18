@@ -375,7 +375,6 @@ coco_problem_t *bbob2009_suit(const int function_index) {
             }
         }
 
-
         problem = rastrigin_problem(dimension);
         problem = shift_objective(problem, fopt);
         problem = affine_transform_variables(problem, M, b, dimension);
