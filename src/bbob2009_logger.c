@@ -20,6 +20,7 @@ typedef struct {
     FILE *index_file;/*index file*/
     FILE *fdata_file;/*function value aligned data file*/
     FILE *tdata_file;/*number of function evaluations aligned data file*/
+    FILE *rdata_file;/*restart info data file*/
     long idx_fval_trigger; /* logging target = {10**(i/nbPtsF), i \in Z} */
     double next_target;
     long idx_nbevals_trigger;
@@ -51,9 +52,12 @@ static void _bbob2009_logger_error_io(FILE *path) {
 }
 
 
+/**
+ * Creates the the file fileName_prefix+problem_id+file_extension in folde_path
+ */
 static void _bbob2009_logger_createFile(FILE ** target_file, 
                                         const char* folder_path, 
-                                        const char * problem_id, 
+                                        const char* problem_id,
                                         const char* fileName_prefix, 
                                         const char* file_extension) {
     char file_name[NUMBBO_PATH_MAX];
@@ -64,7 +68,7 @@ static void _bbob2009_logger_createFile(FILE ** target_file,
     strncat(file_name, file_extension, NUMBBO_PATH_MAX - strlen(file_name) - 1);
     coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
     /*TODO: use the correct folder name (no dimension) once we can get
-     * function type (sphere/F1....)*/
+     * function type (sphere/F1...)*/
     if (*target_file == NULL) {
         *target_file = fopen(file_path, "a+");
         if (target_file == NULL) {
@@ -78,7 +82,6 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
                                            const char * problem_id) {
     /*
       Creates/opens the data files
-      best_value if printed in the header
     */
     char folder_name[NUMBBO_PATH_MAX];
     char folder_path[NUMBBO_PATH_MAX]={0};
@@ -101,6 +104,9 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
 
     _bbob2009_logger_createFile(&(data->tdata_file), folder_path, problem_id, "bbobexp_", ".tdat");
     fprintf(data->tdata_file,_file_header_str,best_value);
+    
+    _bbob2009_logger_createFile(&(data->rdata_file), folder_path, problem_id, "bbobexp_", ".rdat");
+    fprintf(data->rdata_file,_file_header_str,best_value);
 }
 
 static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
