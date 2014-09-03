@@ -77,7 +77,11 @@ static void _bbob2009_logger_createFile(FILE ** target_file,
     }
 }
 
-static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
+
+/**
+ * Generates the different files/folder needed by the logger to store the data
+ */
+static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
                                            double best_value,
                                            const char * problem_id) {
     /*
@@ -176,7 +180,7 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path)
     data->index_file = NULL;
     data->fdata_file = NULL;
     data->tdata_file = NULL;
-    _bbob2009_logger_prepare_files(data,
+    _bbob2009_logger_initialize(data,
                                    *(inner_problem->best_value),
                                    inner_problem->problem_id);
     data->idx_fval_trigger = INT_MAX;
