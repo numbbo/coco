@@ -81,7 +81,7 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
                                            double best_value,
                                            const char * problem_id) {
     /*
-      Creates/opens the data files
+      Creates/opens the data and index files
     */
     char folder_name[NUMBBO_PATH_MAX];
     char folder_path[NUMBBO_PATH_MAX]={0};
@@ -109,6 +109,7 @@ static void _bbob2009_logger_prepare_files(_bbob2009_logger_t *data,
     fprintf(data->rdata_file,_file_header_str,best_value);
 }
 
+
 static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
                                                double *x, double *y) {
     _bbob2009_logger_t *data;
@@ -119,7 +120,7 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     /* Add a line for each hitting level reached. */
     if (y[0] <= data->next_target) {
         size_t i;
-        /* for some reason, it's %.0f in the old code */
+        /* for some reason, it's %.0f in the old code instead of the 10.9e in the documentation*/
         fprintf(data->fdata_file, "%ld", data->number_of_evaluations);
         fprintf(data->fdata_file, " %+10.9e %+10.9e %+10.9e %+10.9e", y[0],
                 y[0], y[0], y[0]);
