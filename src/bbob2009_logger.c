@@ -79,7 +79,7 @@ static void _bbob2009_logger_createFile(FILE ** target_file,
 
 
 /**
- * Generates the different files/folder needed by the logger to store the data
+ * Generates the different files and folder needed by the logger to store the data
  */
 static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
                                            double best_value,
