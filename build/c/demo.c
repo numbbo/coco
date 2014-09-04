@@ -5,7 +5,7 @@
 
 void my_optimizer(coco_problem_t *problem) {
     int i;
-    static const int budget = 100000;
+    static const int budget = 1000000;
     const size_t number_of_variables = coco_get_number_of_variables(problem);
     coco_random_state_t *rng = coco_new_random(0xdeadbeef);
     double *x = coco_allocate_vector(number_of_variables);
@@ -26,10 +26,6 @@ void my_optimizer(coco_problem_t *problem) {
     }
     coco_free_random(rng);
     coco_free_memory(x);
-    /*if (problem != NULL) { //TODO: make this work with no seg faults. Needed for logging the best value at the end of a run
-        coco_free_problem(problem);
-    }*/
-    
 }
 
 int main() {

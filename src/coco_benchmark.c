@@ -49,5 +49,7 @@ void coco_benchmark(const char *problem_suit,
             break;
         problem = coco_observe_problem(observer, problem, options);
         optimizer(problem);
+        /* Free problem after optimization. */
+        coco_free_problem(problem);
     }
 }
