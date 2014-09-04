@@ -26,7 +26,10 @@ void my_optimizer(coco_problem_t *problem) {
     }
     coco_free_random(rng);
     coco_free_memory(x);
-    coco_free_problem(problem);
+    /*if (problem != NULL) { //TODO: make this work with no seg faults
+        coco_free_problem(problem);
+    }*/
+    
 }
 
 int main() {
