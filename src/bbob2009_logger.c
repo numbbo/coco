@@ -161,7 +161,7 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
     if (data->number_of_evaluations == 0 || y[0]<data->best_fitness)
         data->best_fitness=y[0];
-    print("%f\n",data->best_fitness);
+
     data->number_of_evaluations++;
 
     /* Add a line in the .dat file for each hitting level reached. */
