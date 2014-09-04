@@ -27,7 +27,9 @@ typedef struct {
     long idx_t_trigger; /* allows to track the index i in logging nbevals  = {int(10**(i/nbpts_nbevals)), i \in Z} */
     long idx_tdim_trigger; /* allows to track the index i in logging nbevals  = {dim * 10**i, i \in Z} */
     long number_of_evaluations;
-    double best_fitness;
+    double best_fvalue;
+    double * best_solution;
+    long number_of_variables; /*to only pass data as a parameter of some function*/
 } _bbob2009_logger_t;
 
 char* _file_header_str="%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n";
@@ -159,14 +161,17 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     _bbob2009_logger_t *data;
     data = coco_get_transform_data(self);
     coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
-    if (data->number_of_evaluations == 0 || y[0]<data->best_fitness)
-        data->best_fitness=y[0];
-
+    if (data->number_of_evaluations == 0 || y[0]<data->best_fvalue){
+        data->best_fvalue=y[0];
+        size_t i;
+        for (i=0; i<self->number_of_variables;i++)
+            data->best_solution[i]=x[i];
+        
+    }
     data->number_of_evaluations++;
 
     /* Add a line in the .dat file for each hitting level reached. */
     if (y[0] <= data->f_trigger) {
-        
         
         _bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations, y[0], y[0], y[0], y[0], x, self->number_of_variables);
         
@@ -187,7 +192,6 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
 
 static void _bbob2009_logger_free_data(void *stuff) {
     _bbob2009_logger_t *data = stuff;
-
     coco_free_memory(data->path);
     if (data->index_file != NULL) {
         fclose(data->index_file);
@@ -198,12 +202,17 @@ static void _bbob2009_logger_free_data(void *stuff) {
         data->fdata_file = NULL;
     }
     if (data->tdata_file != NULL) {
+        _bbob2009_logger_write_data(data->tdata_file, data->number_of_evaluations, data->best_fvalue, data->best_fvalue, data->best_fvalue, data->best_fvalue, data->best_solution, data->number_of_variables);
         fclose(data->tdata_file);
         data->tdata_file = NULL;
     }
     /*  TODO: write the finalize code for a single run here.  
      It should write data of the best-ever fitness value (should first be added to the _bbob2009_logger_t struct) and of the final function evaluation and close the data files.
      */
+    if (data->rdata_file != NULL) {
+        fclose(data->rdata_file);
+        data->rdata_file = NULL;
+    }
 }
 
 coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path) {
@@ -218,12 +227,14 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path)
     _bbob2009_logger_initialize(data,
                                    *(inner_problem->best_value),
                                    inner_problem->problem_id);
+    data->number_of_variables = inner_problem->number_of_variables;
     data->idx_f_trigger = INT_MAX;
     data->idx_t_trigger = 0;
     data->idx_tdim_trigger = 0;
     data->f_trigger = DBL_MAX;
     data->t_trigger = 0;
     data->number_of_evaluations = 0;
+    data->best_solution = coco_allocate_vector(inner_problem->number_of_variables);
 
     self = coco_allocate_transformed_problem(inner_problem, data,
                                              _bbob2009_logger_free_data);
