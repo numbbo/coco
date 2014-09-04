@@ -27,7 +27,7 @@ typedef struct {
     long idx_t_trigger; /* allows to track the index i in logging nbevals  = {int(10**(i/nbpts_nbevals)), i \in Z} */
     long idx_tdim_trigger; /* allows to track the index i in logging nbevals  = {dim * 10**i, i \in Z} */
     long number_of_evaluations;
-    double best_value;
+    double best_fitness;
 } _bbob2009_logger_t;
 
 char* _file_header_str="%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n";
@@ -159,6 +159,9 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     _bbob2009_logger_t *data;
     data = coco_get_transform_data(self);
     coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
+    if (data->number_of_evaluations == 0 || y[0]<data->best_fitness)
+        data->best_fitness=y[0];
+    print("%f\n",data->best_fitness);
     data->number_of_evaluations++;
 
     /* Add a line in the .dat file for each hitting level reached. */
@@ -221,7 +224,6 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path)
     data->f_trigger = DBL_MAX;
     data->t_trigger = 0;
     data->number_of_evaluations = 0;
-    
 
     self = coco_allocate_transformed_problem(inner_problem, data,
                                              _bbob2009_logger_free_data);
