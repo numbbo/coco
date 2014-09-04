@@ -177,9 +177,9 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     if (y[0] <= data->f_trigger) {
         
         
-        _bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations, y[0], data->best_fvalue, data->optimal_fvalue , x, self->number_of_variables);
-        //printf("%f\n",*(self->best_value));
-        //_bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations, y[0], y[0], y[0], y[0], x, self->number_of_variables);
+        _bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations, y[0], data->best_fvalue, data->optimal_fvalue , x, self->number_of_variables);        
+        /* printf("%f\n",*(self->best_value)); */
+        /* _bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations, y[0], y[0], y[0], y[0], x, self->number_of_variables); */
         
         _bbob2009_logger_update_f_trigger(data, y[0]);
     }
