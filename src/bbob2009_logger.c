@@ -235,7 +235,6 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path)
     data->t_trigger = 0;
     data->number_of_evaluations = 0;
     data->best_solution = coco_allocate_vector(inner_problem->number_of_variables);
-
     self = coco_allocate_transformed_problem(inner_problem, data,
                                              _bbob2009_logger_free_data);
     self->evaluate_function = _bbob2009_logger_evaluate_function;
