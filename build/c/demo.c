@@ -26,7 +26,7 @@ void my_optimizer(coco_problem_t *problem) {
     }
     coco_free_random(rng);
     coco_free_memory(x);
-    /*if (problem != NULL) { //TODO: make this work with no seg faults
+    /*if (problem != NULL) { //TODO: make this work with no seg faults. Needed for logging the best value at the end of a run
         coco_free_problem(problem);
     }*/
     
