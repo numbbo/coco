@@ -222,6 +222,11 @@ static void _bbob2009_logger_free_data(void *stuff) {
         fclose(data->rdata_file);
         data->rdata_file = NULL;
     }
+
+    if (data->best_solution != NULL) {
+        coco_free_memory(data->best_solution);
+        data->best_solution = NULL;
+    }
 }
 
 coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_name) {
