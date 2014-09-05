@@ -230,6 +230,7 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path)
     data->index_file = NULL;
     data->fdata_file = NULL;
     data->tdata_file = NULL;
+    data->rdata_file = NULL;
     _bbob2009_logger_initialize(data,
                                    *(inner_problem->best_value),
                                    inner_problem->problem_id);
