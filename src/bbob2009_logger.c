@@ -31,7 +31,7 @@ typedef struct {
     double last_fvalue;
     short written_last_eval; /*allows writing the the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
     double * best_solution;
-    /*to only pass data as a parameter in the free function*/
+    /*the following are to only pass data as a parameter in the free function*/
     long number_of_variables;
     double optimal_fvalue;
 } _bbob2009_logger_t;
@@ -67,7 +67,7 @@ static void _bbob2009_logger_update_t_trigger(_bbob2009_logger_t *data, long num
 
 
 /**
- * adds a line to a data file
+ * adds a formated line to a data file
  */
 static void _bbob2009_logger_write_data(FILE * target_file, long number_of_evaluations, double fvalue, double best_fvalue, double best_value, double * x, long number_of_variables){
     /* for some reason, it's %.0f in the old code instead of the 10.9e in the documentation*/
@@ -107,7 +107,7 @@ static void _bbob2009_logger_createFile(FILE ** target_file,
                                         const char* file_extension) {
     char file_name[NUMBBO_PATH_MAX];
     char file_path[NUMBBO_PATH_MAX] = {0};
-    /*file name for the .dat file*/
+    /*file name */
     strncpy(file_name, fileName_prefix, NUMBBO_PATH_MAX);
     strncat(file_name, problem_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
     strncat(file_name, file_extension, NUMBBO_PATH_MAX - strlen(file_name) - 1);
