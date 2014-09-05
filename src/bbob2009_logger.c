@@ -16,7 +16,8 @@ static const size_t nbpts_fval = 5;
 /*TODO: add possibility of adding a prefix to the index files*/
 
 typedef struct {
-    char *path;/*path to the data folder. TODO: should be fetched as a parameter with a default value*/
+    char *path;/*path to the data folder. Simply the Algname*/
+    const char *alg_name;/*path to the data folder. Simply the Algname*/
     FILE *index_file;/*index file*/
     FILE *fdata_file;/*function value aligned data file*/
     FILE *tdata_file;/*number of function evaluations aligned data file*/
@@ -146,7 +147,6 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
     
 
     _bbob2009_logger_createFile(&(data->index_file), data->path, problem_id, "bbobexp_", ".info");
-    fprintf(data->index_file,_file_header_str,optimal_fvalue);/*TODO: place holder, replace*/
 
     _bbob2009_logger_createFile(&(data->fdata_file), folder_path, problem_id, "bbobexp_", ".dat");
     fprintf(data->fdata_file,_file_header_str,optimal_fvalue);
@@ -156,6 +156,8 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
     
     _bbob2009_logger_createFile(&(data->rdata_file), folder_path, problem_id, "bbobexp_", ".rdat");
     fprintf(data->rdata_file,_file_header_str,optimal_fvalue);
+    
+    /* TODO: manage duplicate filenames by either using numbers or raising an error */
 }
 
 /**
@@ -222,12 +224,13 @@ static void _bbob2009_logger_free_data(void *stuff) {
     }
 }
 
-coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path) {
+coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_name) {
     _bbob2009_logger_t *data;
     coco_problem_t *self;
 
     data = coco_allocate_memory(sizeof(*data));
-    data->path = coco_strdup(path);
+    data->alg_name = alg_name;
+    data->path = coco_strdup(alg_name);/* This is the name of the folder which happens to be the algName*/
     data->index_file = NULL;
     data->fdata_file = NULL;
     data->tdata_file = NULL;
@@ -235,6 +238,11 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path)
     _bbob2009_logger_initialize(data,
                                    *(inner_problem->best_value),
                                    inner_problem->problem_id);
+
+    fprintf(data->index_file, "funcId = %s, DIM = %zu, Precision = %.3e, algId = '%s'\n", inner_problem->problem_name, inner_problem->number_of_variables, pow(10,-8), data->alg_name);/*TODO: move into a function */
+    
+    
+    
     data->number_of_variables = inner_problem->number_of_variables;
     data->optimal_fvalue = *(inner_problem->best_value);
     data->idx_f_trigger = INT_MAX;
