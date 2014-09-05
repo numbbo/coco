@@ -28,6 +28,8 @@ typedef struct {
     long idx_tdim_trigger; /* allows to track the index i in logging nbevals  = {dim * 10**i, i \in Z} */
     long number_of_evaluations;
     double best_fvalue;
+    double last_fvalue;
+    short written_last_eval; /*allows writing the the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
     double * best_solution;
     /*to only pass data as a parameter in the free function*/
     long number_of_variables;
@@ -164,27 +166,27 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     _bbob2009_logger_t *data;
     data = coco_get_transform_data(self);
     coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
+    data->last_fvalue = y[0];
+    data->written_last_eval = 0;
     if (data->number_of_evaluations == 0 || y[0]<data->best_fvalue){
         data->best_fvalue=y[0];
         size_t i;
         for (i=0; i<self->number_of_variables;i++)
             data->best_solution[i]=x[i];
-        
     }
     data->number_of_evaluations++;
 
-    /* Add a line in the .dat file for each hitting level reached. */
+    /* Add a line in the .dat file for each logging target reached. */
     if (y[0] <= data->f_trigger) {
         
-        
-        _bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations, y[0], data->best_fvalue, data->optimal_fvalue , x, self->number_of_variables);        
-        /* printf("%f\n",*(self->best_value)); */
-        /* _bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations, y[0], y[0], y[0], y[0], x, self->number_of_variables); */
+        _bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations, y[0], data->best_fvalue, data->optimal_fvalue , x, self->number_of_variables);
         
         _bbob2009_logger_update_f_trigger(data, y[0]);
     }
+    
     /* Add a line in the .tdat file each time an fevals trigger is reached. */
     if (data->number_of_evaluations >= data->t_trigger){
+        data->written_last_eval = 1;
         _bbob2009_logger_write_data(data->tdata_file, data->number_of_evaluations, y[0], data->best_fvalue, data->optimal_fvalue , x, self->number_of_variables);
         _bbob2009_logger_update_t_trigger(data, self->number_of_variables);
         
@@ -208,13 +210,12 @@ static void _bbob2009_logger_free_data(void *stuff) {
         data->fdata_file = NULL;
     }
     if (data->tdata_file != NULL) {
-        _bbob2009_logger_write_data(data->tdata_file, data->number_of_evaluations, data->best_fvalue, data->best_fvalue, data->optimal_fvalue , data->best_solution, data->number_of_variables);
+        if (! data->written_last_eval) /* TODO: make sure it handles restarts well. i.e., it writes at the end of a single run, not all the runs on a given instance. Maybe start with forcing it to generate a new "instance" of problem for each restart in the beginning*/
+            _bbob2009_logger_write_data(data->tdata_file, data->number_of_evaluations, data->last_fvalue, data->best_fvalue, data->optimal_fvalue , data->best_solution, data->number_of_variables);
         fclose(data->tdata_file);
         data->tdata_file = NULL;
     }
-    /*  TODO: write the finalize code for a single run here.  
-     It should write data of the best-ever fitness value (should first be added to the _bbob2009_logger_t struct) and of the final function evaluation and close the data files.
-     */
+    
     if (data->rdata_file != NULL) {
         fclose(data->rdata_file);
         data->rdata_file = NULL;
@@ -243,6 +244,9 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *path)
     data->t_trigger = 0;
     data->number_of_evaluations = 0;
     data->best_solution = coco_allocate_vector(inner_problem->number_of_variables);
+    /* TODO: the following inits are just to be in the safe side and should eventually be removed*/
+    data->written_last_eval = 1;
+    data->last_fvalue = DBL_MAX ;
     self = coco_allocate_transformed_problem(inner_problem, data,
                                              _bbob2009_logger_free_data);
     self->evaluate_function = _bbob2009_logger_evaluate_function;
