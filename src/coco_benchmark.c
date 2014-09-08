@@ -37,6 +37,7 @@ coco_problem_t *coco_observe_problem(const char *observer,
     }
 }
 
+
 void coco_benchmark(const char *problem_suit,
                     const char *observer,
                     const char *options,

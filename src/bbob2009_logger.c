@@ -31,7 +31,7 @@ typedef struct {
     double best_fvalue;
     double last_fvalue;
     short written_last_eval; /*allows writing the the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
-    double * best_solution;
+    double *best_solution;
     /*the following are to only pass data as a parameter in the free function*/
     long number_of_variables;
     double optimal_fvalue;
@@ -127,9 +127,7 @@ static void _bbob2009_logger_createFile(FILE ** target_file,
 /**
  * Generates the different files and folder needed by the logger to store the data
  */
-static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
-                                           double optimal_fvalue,
-                                           const char * problem_id) {
+static void _bbob2009_logger_initialize(_bbob2009_logger_t *data, coco_problem_t *inner_problem){
     /*
       Creates/opens the data and index files
     */
@@ -137,25 +135,25 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
     char folder_path[NUMBBO_PATH_MAX]={0};
 
     assert(data != NULL);
-    assert(problem_id != NULL);
+    assert(inner_problem->problem_id != NULL);
 
     /*generate folder name and path for current function*/
     strncpy(folder_name,"data_", NUMBBO_PATH_MAX);
-    strncat(folder_name, problem_id, NUMBBO_PATH_MAX - strlen(folder_name) - 1);
+    strncat(folder_name, inner_problem->problem_id, NUMBBO_PATH_MAX - strlen(folder_name) - 1);
     coco_join_path(folder_path, sizeof(folder_path), data->path, folder_name, NULL);
     coco_create_path(folder_path);
     
 
-    _bbob2009_logger_createFile(&(data->index_file), data->path, problem_id, "bbobexp_", ".info");
+    _bbob2009_logger_createFile(&(data->index_file), data->path, inner_problem->problem_id, "bbobexp_", ".info");
 
-    _bbob2009_logger_createFile(&(data->fdata_file), folder_path, problem_id, "bbobexp_", ".dat");
-    fprintf(data->fdata_file,_file_header_str,optimal_fvalue);
+    _bbob2009_logger_createFile(&(data->fdata_file), folder_path, inner_problem->problem_id, "bbobexp_", ".dat");
+    fprintf(data->fdata_file,_file_header_str,*(inner_problem->best_value));
 
-    _bbob2009_logger_createFile(&(data->tdata_file), folder_path, problem_id, "bbobexp_", ".tdat");
-    fprintf(data->tdata_file,_file_header_str,optimal_fvalue);
+    _bbob2009_logger_createFile(&(data->tdata_file), folder_path, inner_problem->problem_id, "bbobexp_", ".tdat");
+    fprintf(data->tdata_file,_file_header_str,*(inner_problem->best_value));
     
-    _bbob2009_logger_createFile(&(data->rdata_file), folder_path, problem_id, "bbobexp_", ".rdat");
-    fprintf(data->rdata_file,_file_header_str,optimal_fvalue);
+    _bbob2009_logger_createFile(&(data->rdata_file), folder_path, inner_problem->problem_id, "bbobexp_", ".rdat");
+    fprintf(data->rdata_file,_file_header_str,*(inner_problem->best_value));
     
     /* TODO: manage duplicate filenames by either using numbers or raising an error */
 }
@@ -240,9 +238,9 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_n
     data->fdata_file = NULL;
     data->tdata_file = NULL;
     data->rdata_file = NULL;
-    _bbob2009_logger_initialize(data,
-                                   *(inner_problem->best_value),
-                                   inner_problem->problem_id);
+    
+    
+    _bbob2009_logger_initialize(data,inner_problem);
 
     fprintf(data->index_file, "funcId = %s, DIM = %zu, Precision = %.3e, algId = '%s'\n", inner_problem->problem_name, inner_problem->number_of_variables, pow(10,-8), data->alg_name);/*TODO: move into a function */
     
