@@ -12,7 +12,7 @@ void my_optimizer(coco_problem_t *problem) {
     const double *lower = coco_get_smallest_values_of_interest(problem);
     const double *upper = coco_get_largest_values_of_interest(problem);
     double y;
-
+    
     /* Skip any problems with more than 20 variables */
     if (number_of_variables > 20) 
         return;
