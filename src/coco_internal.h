@@ -64,7 +64,6 @@ struct coco_problem {
     double *best_parameter;
     char *problem_name;
     char *problem_id;
-    char *alg_name;
     void *data;
 };
 

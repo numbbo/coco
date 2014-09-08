@@ -16,8 +16,9 @@ static const size_t nbpts_fval = 5;
 /*TODO: add possibility of adding a prefix to the index files*/
 
 typedef struct {
-    char *path;/*path to the data folder. Simply the Algname*/
-    const char *alg_name;/*path to the data folder. Simply the Algname*/
+    char *path;/*relative path to the data folder. Simply the Algname*/
+    const char *alg_name;/*the alg name, for now, remporarly the same as the path*/
+    char *current_data_file;/*relative path, starting from self.path, to the .dat of the current run. Needed by the .info*/
     FILE *index_file;/*index file*/
     FILE *fdata_file;/*function value aligned data file*/
     FILE *tdata_file;/*number of function evaluations aligned data file*/
@@ -133,7 +134,6 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data, coco_problem_t
     */
     char folder_name[NUMBBO_PATH_MAX];
     char folder_path[NUMBBO_PATH_MAX]={0};
-
     assert(data != NULL);
     assert(inner_problem->problem_id != NULL);
 
@@ -143,7 +143,8 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data, coco_problem_t
     coco_join_path(folder_path, sizeof(folder_path), data->path, folder_name, NULL);
     coco_create_path(folder_path);
     
-
+    data->current_data_file = coco_strdup(folder_path);/*TODO: put the correct file path*/
+    
     _bbob2009_logger_createFile(&(data->index_file), data->path, inner_problem->problem_id, "bbobexp_", ".info");
 
     _bbob2009_logger_createFile(&(data->fdata_file), folder_path, inner_problem->problem_id, "bbobexp_", ".dat");
@@ -197,11 +198,17 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     /* Flush output so that impatient users can see progress. */
     fflush(data->fdata_file);
 }
-
+/**
+ * Also servs as a finalize run method so. Must be called at the end of Each run to correctly fill the index file 
+    TODO: make sure it is called at the end of each run or move the writing into files to another function
+ */
 static void _bbob2009_logger_free_data(void *stuff) {
     _bbob2009_logger_t *data = stuff;
     coco_free_memory(data->path);
+    int instance_number;/*TODO: use the actual instance number instead of this variable*/
+    instance_number = 1;
     if (data->index_file != NULL) {
+        fprintf(data->index_file, ", %d:%lu|%.1e",instance_number, data->number_of_evaluations, data->best_fvalue - data->optimal_fvalue);
         fclose(data->index_file);
         data->index_file = NULL;
     }
@@ -242,7 +249,9 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_n
     
     _bbob2009_logger_initialize(data,inner_problem);
 
-    fprintf(data->index_file, "funcId = %s, DIM = %zu, Precision = %.3e, algId = '%s'\n", inner_problem->problem_name, inner_problem->number_of_variables, pow(10,-8), data->alg_name);/*TODO: move into a function */
+    fprintf(data->index_file, "funcId = %s, DIM = %zu, Precision = %.3e, algId = '%s'\n", inner_problem->problem_name, inner_problem->number_of_variables, pow(10,-8), data->alg_name);/*TODO: move into a function after opting the members of each struct*/
+    fprintf(data->index_file, "%%\n");/*TODO: place holder, should be replaced with user comments*/
+    fprintf(data->index_file, "%s", data->current_data_file);
     
     
     
