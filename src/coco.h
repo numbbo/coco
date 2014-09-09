@@ -19,6 +19,7 @@ extern "C" {
  * Our very own pi constant. Simplifies the case, when the value of pi changes.
  */
 static const double coco_pi = 3.14159265358979323846;
+static const double coco_two_pi = 2.0 * 3.14159265358979323846;
 
 struct coco_problem;
 typedef struct coco_problem coco_problem_t;
