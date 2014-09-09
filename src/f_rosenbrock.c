@@ -7,6 +7,7 @@ static void _rosenbrock_evaluate(coco_problem_t *self, double *x, double *y) {
     size_t i;
     double s1 = 0.0, s2 = 0.0, tmp;
     assert(self->number_of_objectives == 1);
+    assert(self->number_of_variables > 1);
     for (i = 0; i < self->number_of_variables - 1; ++i) {
         tmp = (x[i] * x[i] - x[i + 1]);
         s1 += tmp * tmp;
