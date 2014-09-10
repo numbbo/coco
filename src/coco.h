@@ -64,7 +64,7 @@ void coco_free_problem(coco_problem_t *self);
  *
  * @see coco_strdup()
  */
-const char *coco_get_problem_name(coco_problem_t *self);
+const char *coco_get_problem_name(const coco_problem_t *self);
 
 /**
  * Return the ID of the NUMBBO problem ${self}. The ID is guaranteed to
@@ -77,7 +77,7 @@ const char *coco_get_problem_name(coco_problem_t *self);
  *
  * @see coco_strdup
  */
-const char *coco_get_problem_id(coco_problem_t *self);
+const char *coco_get_problem_id(const coco_problem_t *self);
 
 /**
  * Return the number of variables of a COCO problem.
@@ -206,6 +206,17 @@ typedef uint64_t coco_nanotime_t;
  * Return a monotonic nanosecond value. Useful to measure execution times.
  */
 coco_nanotime_t coco_get_nanotime(void);
+
+
+/**
+ * Return the function ID of a BBOB 2009 problem or -1.
+ */
+int bbob2009_get_function_id(const coco_problem_t *problem);
+
+/**
+ * Return the function ID of a BBOB 2009 problem or -1.
+ */
+int bbob2009_get_instance_id(const coco_problem_t *problem);
 
 #ifdef __cplusplus
 }

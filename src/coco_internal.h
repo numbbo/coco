@@ -64,8 +64,6 @@ struct coco_problem {
     double *best_parameter;
     char *problem_name;
     char *problem_id;
-    int function_id;/*Needed by the logger*/
-    int instance_id;
     void *data;
 };
 

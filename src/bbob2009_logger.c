@@ -250,13 +250,14 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_n
     
     _bbob2009_logger_initialize(data,inner_problem);
 
-    fprintf(data->index_file, "funcId = %d, DIM = %zu, Precision = %.3e, algId = '%s'\n", inner_problem->function_id, inner_problem->number_of_variables, pow(10,-8), data->alg_name);/*TODO: move into a function after opting the members of each struct*/
-    fprintf(data->index_file, "%%\n");/*TODO: place holder, should be replaced with user comments*/
+    /* TODO: move into a function after opting the members of each struct */
+    fprintf(data->index_file, "funcId = %d, DIM = %zu, Precision = %.3e, algId = '%s'\n", 
+            bbob2009_get_function_id(inner_problem),
+            inner_problem->number_of_variables, pow(10,-8), data->alg_name);
+    /* TODO: place holder, should be replaced with user comments */
+    fprintf(data->index_file, "%%\n");
     fprintf(data->index_file, "%s", data->current_data_file);
     
-    
-    data->function_id = inner_problem->function_id;
-    data->instance_id = inner_problem->instance_id;
     data->number_of_variables = inner_problem->number_of_variables;
     data->optimal_fvalue = *(inner_problem->best_value);
     data->idx_f_trigger = INT_MAX;

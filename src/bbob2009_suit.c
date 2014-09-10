@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <math.h>
+#include <string.h>
 
 #include "coco_generics.c"
 
@@ -489,21 +490,15 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         return NULL;
     }
     
-    /* Set the instance number and function id of the problem*/
-
-    
-    problem->function_id = function_id;
-    problem->instance_id = instance_id;
-    
     /* Now set the problem name and problem id of the final problem */
     coco_free_memory(problem->problem_name);
     coco_free_memory(problem->problem_id);
     
     /* Construct a meaningful problem id */
-    len = snprintf(NULL, 0, "bbbob2009_f%02i_i%02i_d%02i", 
+    len = snprintf(NULL, 0, "bbob2009_f%02i_i%02i_d%02i", 
                    function_id, instance_id, dimension);
     problem->problem_id = coco_allocate_memory(len + 1);
-    snprintf(problem->problem_id, len + 1, "bbbob2009_f%02i_i%02i_d%02i",
+    snprintf(problem->problem_id, len + 1, "bbob2009_f%02i_i%02i_d%02i",
                    function_id, instance_id, dimension);
 
     len = snprintf(NULL, 0, "BBOB2009 f%02i instance %i in %iD",
@@ -512,4 +507,46 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     snprintf(problem->problem_name, len + 1, "BBOB2009 f%02i instance %i in %iD",
                    function_id, instance_id, dimension);
     return problem;
+}
+
+/* Return the bbob2009 function id of the problem or if it is not a bbob2009 problem -1. */
+int bbob2009_get_function_id(const coco_problem_t *problem) {
+    static const char *bbob_prefix = "bbob2009_";
+    const char *problem_id = coco_get_problem_id(problem);
+    assert(strlen(problem_id) >= 20);
+
+    if (strncmp(bbob_prefix, problem_id, strlen(bbob_prefix)) != 0) {
+        return -1;
+    }
+    
+    /* OME: Ugly hardcoded extraction. In a perfect world, we would
+     * parse the problem id by splitting on _ and then finding the 'f'
+     * field. Instead, we cound out the position of the function id in
+     * the string
+     *
+     *   01234567890123456789
+     *   bbob2009_fXX_iYY_dZZ 
+     */
+    return (problem_id[10] - '0') * 10 + (problem_id[11] - '0');
+}
+
+/* Return the bbob2009 instance id of the problem or if it is not a bbob2009 problem -1. */
+int bbob2009_get_instance_id(const coco_problem_t *problem) {
+    static const char *bbob_prefix = "bbob2009_";
+    const char *problem_id = coco_get_problem_id(problem);
+    assert(strlen(problem_id) >= 20);
+
+    if (strncmp(bbob_prefix, problem_id, strlen(bbob_prefix)) != 0) {
+        return -1;
+    }
+
+    /* OME: Ugly hardcoded extraction. In a perfect world, we would
+     * parse the problem id by splitting on _ and then finding the 'i'
+     * field. Instead, we cound out the position of the instance id in
+     * the string
+     *
+     *   01234567890123456789
+     *   bbob2009_fXX_iYY_dZZ 
+     */
+    return (problem_id[14] - '0') * 10 + (problem_id[15] - '0');
 }
