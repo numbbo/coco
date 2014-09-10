@@ -33,7 +33,9 @@ typedef struct {
     double last_fvalue;
     short written_last_eval; /*allows writing the the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
     double *best_solution;
-    /*the following are to only pass data as a parameter in the free function*/
+    /*the following are to only pass data as a parameter in the free function. The interface should probably be the same for all free functions so passing the problem as a second parameter is not an option even though we need info form it.*/
+    int function_id;
+    int instance_id;
     long number_of_variables;
     double optimal_fvalue;
 } _bbob2009_logger_t;
@@ -203,12 +205,11 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     TODO: make sure it is called at the end of each run or move the writing into files to another function
  */
 static void _bbob2009_logger_free_data(void *stuff) {
+    /*TODO: do all the "non simply freeing" stuff in another function that can have problem as input*/
     _bbob2009_logger_t *data = stuff;
     coco_free_memory(data->path);
-    int instance_number;/*TODO: use the actual instance number instead of this variable*/
-    instance_number = 1;
     if (data->index_file != NULL) {
-        fprintf(data->index_file, ", %d:%lu|%.1e",instance_number, data->number_of_evaluations, data->best_fvalue - data->optimal_fvalue);
+        fprintf(data->index_file, ", %d:%lu|%.1e",data->instance_id, data->number_of_evaluations, data->best_fvalue - data->optimal_fvalue);
         fclose(data->index_file);
         data->index_file = NULL;
     }
@@ -249,12 +250,13 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_n
     
     _bbob2009_logger_initialize(data,inner_problem);
 
-    fprintf(data->index_file, "funcId = %s, DIM = %zu, Precision = %.3e, algId = '%s'\n", inner_problem->problem_name, inner_problem->number_of_variables, pow(10,-8), data->alg_name);/*TODO: move into a function after opting the members of each struct*/
+    fprintf(data->index_file, "funcId = %d, DIM = %zu, Precision = %.3e, algId = '%s'\n", inner_problem->function_id, inner_problem->number_of_variables, pow(10,-8), data->alg_name);/*TODO: move into a function after opting the members of each struct*/
     fprintf(data->index_file, "%%\n");/*TODO: place holder, should be replaced with user comments*/
     fprintf(data->index_file, "%s", data->current_data_file);
     
     
-    
+    data->function_id = inner_problem->function_id;
+    data->instance_id = inner_problem->instance_id;
     data->number_of_variables = inner_problem->number_of_variables;
     data->optimal_fvalue = *(inner_problem->best_value);
     data->idx_f_trigger = INT_MAX;
