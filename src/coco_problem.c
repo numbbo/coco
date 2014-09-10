@@ -28,6 +28,8 @@ static coco_problem_t *coco_allocate_problem(const size_t number_of_variables,
     problem->best_value = coco_allocate_vector(number_of_objectives);
     problem->problem_name = NULL;
     problem->problem_id = NULL;
+    problem->function_id = -1;/*Note: just to have something in case we don't use the bbob2009 suit*/
+    problem->instance_id = -1;
     problem->data = NULL;
     return problem;
 }

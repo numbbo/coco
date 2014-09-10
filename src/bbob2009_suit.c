@@ -115,6 +115,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     size_t len;
     int i, instance_id, function_id, dimension, rseed;
     coco_problem_t *problem = NULL;
+    char *tmp_str; /*buffer for the conversion of function_id and instance_id into str */
     bbob2009_decode_function_index(function_index, &function_id, &instance_id,
                                    &dimension);
     /* This assert is a hint for the static analyzer. */
@@ -487,6 +488,12 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     } else {
         return NULL;
     }
+    
+    /* Set the instance number and function id of the problem*/
+
+    
+    problem->function_id = function_id;
+    problem->instance_id = instance_id;
     
     /* Now set the problem name and problem id of the final problem */
     coco_free_memory(problem->problem_name);

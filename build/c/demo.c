@@ -29,6 +29,6 @@ void my_optimizer(coco_problem_t *problem) {
 }
 
 int main() {
-    coco_benchmark("toy_suit", "bbob2009_observer", "random_search", my_optimizer);
+    coco_benchmark("bbob2009", "bbob2009_observer", "random_search", my_optimizer);
     return 0;
 }
