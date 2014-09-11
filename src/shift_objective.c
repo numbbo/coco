@@ -23,8 +23,9 @@ coco_problem_t *shift_objective(coco_problem_t *inner_problem,
     _shift_objective_t *data;
     data = coco_allocate_memory(sizeof(*data));
     data->offset = offset;
-
+    
     self = coco_allocate_transformed_problem(inner_problem, data, NULL);
     self->evaluate_function = _so_evaluate_function;
+    *(self->best_value)+=offset;
     return self;
 }
