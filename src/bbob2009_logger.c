@@ -171,7 +171,7 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
     data->last_fvalue = y[0];
     data->written_last_eval = 0;
-    if (data->number_of_evaluations == 0 || y[0]<data->best_fvalue){
+    if (data->number_of_evaluations == 0 || y[0] <data->best_fvalue){
         data->best_fvalue=y[0];
         size_t i;
         for (i=0; i<self->number_of_variables;i++)
@@ -209,7 +209,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
     _bbob2009_logger_t *data = stuff;
     coco_free_memory(data->path);
     if (data->index_file != NULL) {
-        fprintf(data->index_file, ", %d:%lu|%.1e",data->instance_id, data->number_of_evaluations, data->best_fvalue - data->optimal_fvalue);
+        fprintf(data->index_file, ":%lu|%.1e",data->number_of_evaluations, data->best_fvalue - data->optimal_fvalue);
         fclose(data->index_file);
         data->index_file = NULL;
     }
@@ -254,9 +254,8 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_n
     fprintf(data->index_file, "funcId = %d, DIM = %zu, Precision = %.3e, algId = '%s'\n", 
             bbob2009_get_function_id(inner_problem),
             inner_problem->number_of_variables, pow(10,-8), data->alg_name);
-    /* TODO: place holder, should be replaced with user comments */
-    fprintf(data->index_file, "%%\n");
-    fprintf(data->index_file, "%s", data->current_data_file);
+    fprintf(data->index_file, "%%\n");/* TODO: place holder, should be replaced with user comments */
+    fprintf(data->index_file, "%s, %d", data->current_data_file, bbob2009_get_instance_id(inner_problem));
     
     data->number_of_variables = inner_problem->number_of_variables;
     data->optimal_fvalue = *(inner_problem->best_value);
