@@ -233,7 +233,17 @@ static void _bbob2009_logger_free_data(void *stuff) {
      * that can have problem as input
      */
     _bbob2009_logger_t *data = stuff;
-    coco_free_memory(data->path);
+
+    if (data->path != NULL) {
+        coco_free_memory(data->path);
+        data->path = NULL;
+    }
+    
+    if (data->current_data_file != NULL) {
+        coco_free_memory(data->current_data_file);
+        data->current_data_file = NULL;
+    }
+
     if (data->index_file != NULL) {
         fprintf(data->index_file, ":%lu|%.1e", data->number_of_evaluations, 
                 data->best_fvalue - data->optimal_fvalue);
@@ -268,7 +278,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
     if (data->best_solution != NULL) {
         coco_free_memory(data->best_solution);
         data->best_solution = NULL;
-    }
+    }    
 }
 
 coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_name) {
