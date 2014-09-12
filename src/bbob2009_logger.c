@@ -40,11 +40,19 @@ typedef struct {
     double optimal_fvalue;
 } _bbob2009_logger_t;
 
-char* _file_header_str="%% function evaluation | noise-free fitness - Fopt (%13.12e) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...\n";
+static const char* _file_header_str = 
+    "%% function evaluation |"
+    "noise-free fitness - Fopt (%13.12e) |"
+    "best noise-free fitness - Fopt |"
+    "measured fitness |"
+    "best measured fitness |"
+    "x1 |"
+    "x2...\n";
 
 static void _bbob2009_logger_update_f_trigger(_bbob2009_logger_t *data, double fvalue) {
-    
-    /* "jump" directly to the next closest (but larger) target to the current fvalue from the initial target*/
+    /* "jump" directly to the next closest (but larger) target to the
+     * current fvalue from the initial target
+     */
     if (data->idx_f_trigger == INT_MAX)
         data->idx_f_trigger = ceil(log10(fvalue)) * nbpts_fval;
     else
@@ -57,26 +65,34 @@ static void _bbob2009_logger_update_f_trigger(_bbob2009_logger_t *data, double f
     }
 }
 
-
-static void _bbob2009_logger_update_t_trigger(_bbob2009_logger_t *data, long number_of_variables) {
-    while(data->number_of_evaluations >= floor(pow(10, (double)data->idx_t_trigger / (double) nbpts_nbevals)))
+static void _bbob2009_logger_update_t_trigger(_bbob2009_logger_t *data, 
+                                              long number_of_variables) {
+    while (data->number_of_evaluations >= floor(pow(10, (double)data->idx_t_trigger / (double) nbpts_nbevals)))
         data->idx_t_trigger++;
     
-    while(data->number_of_evaluations >= number_of_variables * pow(10, (double) data->idx_tdim_trigger))
+    while (data->number_of_evaluations >= number_of_variables * pow(10, (double) data->idx_tdim_trigger))
         data->idx_tdim_trigger++;
 
     data->t_trigger = fmin(floor(pow(10, (double)data->idx_t_trigger / (double)nbpts_nbevals)), number_of_variables * pow(10, (double) data->idx_tdim_trigger));
-
 }
-
 
 /**
  * adds a formated line to a data file
  */
-static void _bbob2009_logger_write_data(FILE * target_file, long number_of_evaluations, double fvalue, double best_fvalue, double best_value, double * x, long number_of_variables){
-    /* for some reason, it's %.0f in the old code instead of the 10.9e in the documentation*/
-    fprintf(target_file, "%ld %+10.9e %+10.9e %+10.9e %+10.9e", number_of_evaluations, fvalue - best_value, best_fvalue - best_value, fvalue, best_fvalue);
-    if (number_of_variables<22) {
+static void _bbob2009_logger_write_data(FILE * target_file, 
+                                        long number_of_evaluations, 
+                                        double fvalue, 
+                                        double best_fvalue, 
+                                        double best_value, 
+                                        double *x, 
+                                        size_t number_of_variables) {
+    /* for some reason, it's %.0f in the old code instead of the 10.9e
+     * in the documentation
+     */
+    fprintf(target_file, "%ld %+10.9e %+10.9e %+10.9e %+10.9e", 
+            number_of_evaluations, fvalue - best_value, 
+            best_fvalue - best_value, fvalue, best_fvalue);
+    if (number_of_variables < 22) {
         size_t i;
         for (i = 0; i < number_of_variables; i++) {
             fprintf(target_file, " %+5.4e", x[i]);
@@ -100,7 +116,6 @@ static void _bbob2009_logger_error_io(FILE *path) {
     coco_free_memory(buf);
 }
 
-
 /**
  * Creates the the file fileName_prefix+problem_id+file_extension in folde_path
  */
@@ -117,7 +132,8 @@ static void _bbob2009_logger_createFile(FILE ** target_file,
     strncat(file_name, file_extension, NUMBBO_PATH_MAX - strlen(file_name) - 1);
     coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
     /*TODO: use the correct folder name (no dimension) once we can get
-     * function type (sphere/F1...)*/
+     * function type (sphere/F1...)
+     */
     if (*target_file == NULL) {
         *target_file = fopen(file_path, "a+");
         if (target_file == NULL) {
@@ -126,11 +142,11 @@ static void _bbob2009_logger_createFile(FILE ** target_file,
     }
 }
 
-
 /**
  * Generates the different files and folder needed by the logger to store the data
  */
-static void _bbob2009_logger_initialize(_bbob2009_logger_t *data, coco_problem_t *inner_problem){
+static void _bbob2009_logger_initialize(_bbob2009_logger_t *data, 
+                                        coco_problem_t *inner_problem) {
     /*
       Creates/opens the data and index files
     */
@@ -141,21 +157,27 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data, coco_problem_t
 
     /*generate folder name and path for current function*/
     strncpy(folder_name,"data_", NUMBBO_PATH_MAX);
-    strncat(folder_name, inner_problem->problem_id, NUMBBO_PATH_MAX - strlen(folder_name) - 1);
+    strncat(folder_name, inner_problem->problem_id, 
+            NUMBBO_PATH_MAX - strlen(folder_name) - 1);
     coco_join_path(folder_path, sizeof(folder_path), data->path, folder_name, NULL);
     coco_create_path(folder_path);
     
-    data->current_data_file = coco_strdup(folder_path);/*TODO: put the correct file path*/
+    /* TODO: put the correct file path */
+    data->current_data_file = coco_strdup(folder_path);
     
-    _bbob2009_logger_createFile(&(data->index_file), data->path, inner_problem->problem_id, "bbobexp_", ".info");
+    _bbob2009_logger_createFile(&(data->index_file), data->path, 
+                                inner_problem->problem_id, "bbobexp_", ".info");
 
-    _bbob2009_logger_createFile(&(data->fdata_file), folder_path, inner_problem->problem_id, "bbobexp_", ".dat");
+    _bbob2009_logger_createFile(&(data->fdata_file), folder_path, 
+                                inner_problem->problem_id, "bbobexp_", ".dat");
     fprintf(data->fdata_file,_file_header_str,*(inner_problem->best_value));
 
-    _bbob2009_logger_createFile(&(data->tdata_file), folder_path, inner_problem->problem_id, "bbobexp_", ".tdat");
+    _bbob2009_logger_createFile(&(data->tdata_file), folder_path, 
+                                inner_problem->problem_id, "bbobexp_", ".tdat");
     fprintf(data->tdata_file,_file_header_str,*(inner_problem->best_value));
     
-    _bbob2009_logger_createFile(&(data->rdata_file), folder_path, inner_problem->problem_id, "bbobexp_", ".rdat");
+    _bbob2009_logger_createFile(&(data->rdata_file), folder_path, 
+                                inner_problem->problem_id, "bbobexp_", ".rdat");
     fprintf(data->rdata_file,_file_header_str,*(inner_problem->best_value));
     
     /* TODO: manage duplicate filenames by either using numbers or raising an error */
@@ -171,18 +193,19 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
     data->last_fvalue = y[0];
     data->written_last_eval = 0;
-    if (data->number_of_evaluations == 0 || y[0] <data->best_fvalue){
-        data->best_fvalue=y[0];
+    if (data->number_of_evaluations == 0 || y[0] <data->best_fvalue) {
         size_t i;
-        for (i=0; i<self->number_of_variables;i++)
+        data->best_fvalue = y[0];
+        for (i = 0; i < self->number_of_variables; i++)
             data->best_solution[i]=x[i];
     }
     data->number_of_evaluations++;
 
     /* Add a line in the .dat file for each logging target reached. */
-    if (y[0] <= data->f_trigger) {
-        
-        _bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations, y[0], data->best_fvalue, data->optimal_fvalue , x, self->number_of_variables);
+    if (y[0] <= data->f_trigger) {        
+        _bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations, 
+                                    y[0], data->best_fvalue, data->optimal_fvalue, 
+                                    x, self->number_of_variables);
         
         _bbob2009_logger_update_f_trigger(data, y[0]);
     }
@@ -190,26 +213,30 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     /* Add a line in the .tdat file each time an fevals trigger is reached. */
     if (data->number_of_evaluations >= data->t_trigger){
         data->written_last_eval = 1;
-        _bbob2009_logger_write_data(data->tdata_file, data->number_of_evaluations, y[0], data->best_fvalue, data->optimal_fvalue , x, self->number_of_variables);
+        _bbob2009_logger_write_data(data->tdata_file, data->number_of_evaluations, 
+                                    y[0], data->best_fvalue, data->optimal_fvalue, 
+                                    x, self->number_of_variables);
         _bbob2009_logger_update_t_trigger(data, self->number_of_variables);
-        
-        
-    }
-    
-
+    }    
     /* Flush output so that impatient users can see progress. */
     fflush(data->fdata_file);
 }
 /**
- * Also servs as a finalize run method so. Must be called at the end of Each run to correctly fill the index file 
-    TODO: make sure it is called at the end of each run or move the writing into files to another function
+ * Also serves as a finalize run method so. Must be called at the end
+ * of Each run to correctly fill the index file
+ *
+ * TODO: make sure it is called at the end of each run or move the
+ * writing into files to another function
  */
 static void _bbob2009_logger_free_data(void *stuff) {
-    /*TODO: do all the "non simply freeing" stuff in another function that can have problem as input*/
+    /*TODO: do all the "non simply freeing" stuff in another function
+     * that can have problem as input
+     */
     _bbob2009_logger_t *data = stuff;
     coco_free_memory(data->path);
     if (data->index_file != NULL) {
-        fprintf(data->index_file, ":%lu|%.1e",data->number_of_evaluations, data->best_fvalue - data->optimal_fvalue);
+        fprintf(data->index_file, ":%lu|%.1e", data->number_of_evaluations, 
+                data->best_fvalue - data->optimal_fvalue);
         fclose(data->index_file);
         data->index_file = NULL;
     }
@@ -218,8 +245,17 @@ static void _bbob2009_logger_free_data(void *stuff) {
         data->fdata_file = NULL;
     }
     if (data->tdata_file != NULL) {
-        if (! data->written_last_eval) /* TODO: make sure it handles restarts well. i.e., it writes at the end of a single run, not all the runs on a given instance. Maybe start with forcing it to generate a new "instance" of problem for each restart in the beginning*/
-            _bbob2009_logger_write_data(data->tdata_file, data->number_of_evaluations, data->last_fvalue, data->best_fvalue, data->optimal_fvalue , data->best_solution, data->number_of_variables);
+        /* TODO: make sure it handles restarts well. i.e., it writes
+         * at the end of a single run, not all the runs on a given
+         * instance. Maybe start with forcing it to generate a new
+         * "instance" of problem for each restart in the beginning
+         */
+        if (! data->written_last_eval) {
+            _bbob2009_logger_write_data(data->tdata_file, data->number_of_evaluations, 
+                                        data->last_fvalue, data->best_fvalue, 
+                                        data->optimal_fvalue , data->best_solution, 
+                                        data->number_of_variables);
+        }
         fclose(data->tdata_file);
         data->tdata_file = NULL;
     }
@@ -241,21 +277,23 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_n
 
     data = coco_allocate_memory(sizeof(*data));
     data->alg_name = alg_name;
-    data->path = coco_strdup(alg_name);/* This is the name of the folder which happens to be the algName*/
+    /* This is the name of the folder which happens to be the algName */
+    data->path = coco_strdup(alg_name);
     data->index_file = NULL;
     data->fdata_file = NULL;
     data->tdata_file = NULL;
     data->rdata_file = NULL;
-    
-    
+        
     _bbob2009_logger_initialize(data,inner_problem);
 
     /* TODO: move into a function after opting the members of each struct */
     fprintf(data->index_file, "funcId = %d, DIM = %zu, Precision = %.3e, algId = '%s'\n", 
             bbob2009_get_function_id(inner_problem),
             inner_problem->number_of_variables, pow(10,-8), data->alg_name);
-    fprintf(data->index_file, "%%\n");/* TODO: place holder, should be replaced with user comments */
-    fprintf(data->index_file, "%s, %d", data->current_data_file, bbob2009_get_instance_id(inner_problem));
+    /* TODO: place holder, should be replaced with user comments */
+    fprintf(data->index_file, "%%\n");
+    fprintf(data->index_file, "%s, %d", 
+            data->current_data_file, bbob2009_get_instance_id(inner_problem));
     
     data->number_of_variables = inner_problem->number_of_variables;
     data->optimal_fvalue = *(inner_problem->best_value);
@@ -266,7 +304,9 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_n
     data->t_trigger = 0;
     data->number_of_evaluations = 0;
     data->best_solution = coco_allocate_vector(inner_problem->number_of_variables);
-    /* TODO: the following inits are just to be in the safe side and should eventually be removed*/
+    /* TODO: the following inits are just to be in the safe side and
+     * should eventually be removed
+     */
     data->written_last_eval = 1;
     data->last_fvalue = DBL_MAX ;
     self = coco_allocate_transformed_problem(inner_problem, data,
@@ -274,4 +314,3 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_n
     self->evaluate_function = _bbob2009_logger_evaluate_function;
     return self;
 }
-

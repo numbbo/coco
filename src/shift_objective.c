@@ -26,6 +26,6 @@ coco_problem_t *shift_objective(coco_problem_t *inner_problem,
     
     self = coco_allocate_transformed_problem(inner_problem, data, NULL);
     self->evaluate_function = _so_evaluate_function;
-    *(self->best_value)+=offset;
+    self->best_value[0] += offset;
     return self;
 }
