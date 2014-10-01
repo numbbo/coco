@@ -13,6 +13,7 @@
 #include "f_different_powers.c"
 #include "f_discus.c"
 #include "f_ellipsoid.c"
+#include "f_griewankRosenbrock.c"
 #include "f_linear_slope.c"
 #include "f_rastrigin.c"
 #include "f_rosenbrock.c"
@@ -20,6 +21,9 @@
 #include "f_sharp_ridge.c"
 #include "f_sphere.c"
 #include "f_weierstrass.c"
+#include "f_griewankRosenbrock.c"
+#include "f_katsuura.c"
+#include "f_schwefel.c"
 
 #include "shift_objective.c"
 #include "oscillate_objective.c"
@@ -32,6 +36,8 @@
 #include "oscillate_variables.c"
 #include "scale_variables.c"
 #include "shift_variables.c"
+#include "x_hat_schwefel.c"
+#include "z_hat_schwefel.c"
 
 /**
  * bbob2009_decode_function_index(function_index, function_id, instance_id, dimension):
@@ -486,8 +492,99 @@ coco_problem_t *bbob2009_suit(const int function_index) {
 
         bbob2009_free_matrix(rot1, dimension);
         bbob2009_free_matrix(rot2, dimension);
+    } else if (function_id == 19) {
+    	int i, j, k;
+    	static double condition = 100.;
+    	double M[40*40], b[40], shift[40], fopt, *current_row;
+    	double **rot1;
+    	fopt = bbob2009_compute_fopt(function_id, instance_id);
+    	for (i = 0; i < dimension; ++i) {
+    	        shift[i] = -0.5;
+    	    }
+    	/* bbob2009_compute_xopt(xopt, rseed, dimension); */
+
+    	rot1 = bbob2009_allocate_matrix(dimension, dimension);
+        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+    	for (i = 0; i < dimension; ++i) {
+    	    for (j = 0; j < dimension; ++j) {
+    	    	rot1[i][j] *= fmax(1., sqrt(dimension)/8.);
+    	    }
+    	}
+
+    	problem = griewankRosenbrock_problem(dimension);
+    	problem = shift_objective(problem, fopt);
+    	problem = shift_variables(problem, shift, 0);
+    	bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
+    	problem = affine_transform_variables(problem, M, b, dimension);
+
+    	bbob2009_free_matrix(rot1, dimension);
+
+    } else if (function_id == 20) {
+    	int i, j, k;
+    	static double condition = 100.;
+    	double M[40*40], b[40], xopt[40], fopt, *current_row, *tmpvect;
+    	fopt = bbob2009_compute_fopt(function_id, instance_id);
+    	bbob2009_unif(tmpvect, dimension, rseed);
+    	for (i = 0; i < dimension; ++i) {
+    		xopt[i] = 4.2096874633/2;
+    		if (tmpvect[i] - 0.5 < 0) {
+    			xopt[i] *= -1;
+    		}
+    	}
+    	for (i = 0; i < dimension; ++i) {
+    		b[i] = 0.0;
+    		current_row = M + i * dimension;
+    		for (j = 0; j < dimension; ++j) {
+    			current_row[j] = 0.0;
+    		    if (i == j) {
+    		    	double exponent = i * 1.0 / (dimension - 1.0);
+    		    	current_row[j] = pow(sqrt(10), exponent);
+    		    }
+    		}
+    	}
+    	for (i = 0; i < dimension; ++i) {
+    		 tmpvect[i]= -1 * xopt[i];
+    	}
+    	problem = schwefel_problem(dimension);
+    	problem = shift_objective(problem, fopt);
+    	problem = scale_variables(problem, 100);
+    	problem = shift_variables(problem, tmpvect, 0);
+    	problem = affine_transform_variables(problem, M, b, dimension);
+    	problem = shift_variables(problem, xopt, 0);
+    	problem = z_hat(problem, xopt);
+    	problem = scale_variables(problem, 2);
+    	problem = x_hat(problem, rseed);
+
+
+    } else if (function_id == 23) {
+    	int i, j, k;
+    	double M[40*40], b[40], xopt[40], *current_row;
+    	double **rot1, **rot2;
+    	bbob2009_compute_xopt(xopt, rseed, dimension);
+
+    	rot1 = bbob2009_allocate_matrix(dimension, dimension);
+    	rot2 = bbob2009_allocate_matrix(dimension, dimension);
+    	bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+    	bbob2009_compute_rotation(rot2, rseed, dimension);
+    	for (i = 0; i < dimension; ++i) {
+    		b[i] = 0.0;
+    	    current_row = M + i * dimension;
+    	    for (j = 0; j < dimension; ++j) {
+    	    	current_row[j] = 0.0;
+    	    	for (k = 0; k < dimension; ++k) {
+    	    		double exponent = k * 1.0 / (dimension - 1.0);
+    	            current_row[j] += rot1[i][k] * pow(sqrt(100), exponent) * rot2[k][j];
+    	    	}
+    	    }
+    	}
+    	problem = katsuura_problem(dimension);
+    	problem = affine_transform_variables(problem, M, b, dimension);
+    	problem = shift_variables(problem, xopt, 0);
+
+    	bbob2009_free_matrix(rot1, dimension);
+    	bbob2009_free_matrix(rot2, dimension);
     } else {
-        return NULL;
+    	return NULL;
     }
     
     /* Now set the problem name and problem id of the final problem */
