@@ -24,6 +24,7 @@
 #include "f_griewankRosenbrock.c"
 #include "f_katsuura.c"
 #include "f_schwefel.c"
+#include "f_lunacek_bi_rastrigin.c"
 
 #include "shift_objective.c"
 #include "oscillate_objective.c"
@@ -583,6 +584,8 @@ coco_problem_t *bbob2009_suit(const int function_index) {
 
     	bbob2009_free_matrix(rot1, dimension);
     	bbob2009_free_matrix(rot2, dimension);
+    } else if (function_id == 24) {
+    	problem = bbob_lunacek_bi_rastrigin_problem(dimension, instance_id);
     } else {
     	return NULL;
     }
