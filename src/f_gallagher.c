@@ -6,6 +6,7 @@
 #include "bbob2009_legacy_code.c"
 
 double *peaks;
+int compare_doubles(const void *, const void *);
 
 typedef struct {
 	size_t rseed;
@@ -13,7 +14,7 @@ typedef struct {
 	double *tmx;
     double *xopt, fopt;
     double **rotation, **Xlocal, **arrScales;
-    double fitvalues[2] = {1.1, 9.1};
+    double fitvalues[2];
     double *arrCondition;
     double *peakvalues;
     size_t *rperm;
@@ -96,6 +97,8 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
     data->number_of_peaks = number_of_peaks;
     data->tmx = coco_allocate_vector(number_of_variables);
     data->xopt = coco_allocate_vector(number_of_variables);
+    data->fitvalues[0] = 1.1;
+    data->fitvalues[1] = 9.1;
     data->rotation = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
     data->Xlocal = bbob2009_allocate_matrix(number_of_variables, number_of_peaks);
     data->arrScales = bbob2009_allocate_matrix(number_of_peaks, number_of_variables);

@@ -25,6 +25,7 @@
 #include "f_katsuura.c"
 #include "f_schwefel.c"
 #include "f_lunacek_bi_rastrigin.c"
+#include "f_gallagher.c"
 
 #include "shift_objective.c"
 #include "oscillate_objective.c"
