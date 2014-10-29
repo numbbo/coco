@@ -496,20 +496,19 @@ coco_problem_t *bbob2009_suit(const int function_index) {
         bbob2009_free_matrix(rot2, dimension);
     } else if (function_id == 19) {
     	int i, j, k;
-    	static double condition = 100.;
     	double M[40*40], b[40], shift[40], fopt, *current_row;
-    	double **rot1;
+    	double scales, **rot1;
     	fopt = bbob2009_compute_fopt(function_id, instance_id);
     	for (i = 0; i < dimension; ++i) {
     	        shift[i] = -0.5;
     	    }
-    	/* bbob2009_compute_xopt(xopt, rseed, dimension); */
 
     	rot1 = bbob2009_allocate_matrix(dimension, dimension);
-        bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+        bbob2009_compute_rotation(rot1, rseed, dimension);
+        scales = fmax(1., sqrt((double)dimension)/8.);
     	for (i = 0; i < dimension; ++i) {
     	    for (j = 0; j < dimension; ++j) {
-    	    	rot1[i][j] *= fmax(1., sqrt(dimension)/8.);
+    	    	rot1[i][j] *= scales;
     	    }
     	}
 
