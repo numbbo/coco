@@ -14,10 +14,10 @@ static void f_griewankRosenbrock_evaluate(coco_problem_t *self, double *x, doubl
     /* Computation core */
     y[0] = 0.0;
     for (i = 0; i < self->number_of_variables - 1; ++i) {
-    	tmp = 100 * (x[i] * x[i] - x[i + 1]) * (x[i] * x[i] - x[i + 1]) + (x[i] - 1) * (x[i] - 1);
+    	tmp = 100. * (x[i] * x[i] - x[i + 1]) * (x[i] * x[i] - x[i + 1]) + (1 - x[i]) * (1 - x[i]);
     	y[0] += tmp/4000. - cos(tmp);
     }
-    y[0] = 10./(self->number_of_variables - 1) * y[0] + 10;
+    y[0] = 10. + 10. * y[0]/(double)(self->number_of_variables - 1);
 }
 
 static coco_problem_t *griewankRosenbrock_problem(const size_t number_of_variables) {
