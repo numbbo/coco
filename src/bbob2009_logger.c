@@ -152,7 +152,7 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
     */
     char folder_name[NUMBBO_PATH_MAX];
     char folder_path[NUMBBO_PATH_MAX]={0};
-    char tmp_fun_id[2];/*servs to extract the function id a a char *. There should be a better way of doing this */
+    char tmp_fun_id[2];/*servs to extract the function id as a char *. There should be a better way of doing this! */
     assert(data != NULL);
     assert(inner_problem->problem_id != NULL);
     /*generate folder name and path for current function*/
