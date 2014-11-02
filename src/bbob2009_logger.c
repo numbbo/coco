@@ -152,22 +152,21 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
     */
     char folder_name[NUMBBO_PATH_MAX];
     char folder_path[NUMBBO_PATH_MAX]={0};
+    char tmp_fun_id[2];/*servs to extract the function id a a char *. There should be a better way of doing this */
     assert(data != NULL);
     assert(inner_problem->problem_id != NULL);
-
     /*generate folder name and path for current function*/
-    strncpy(folder_name,"data_", NUMBBO_PATH_MAX);
-    strncat(folder_name, inner_problem->problem_id, 
+    strncpy(folder_name,"data_f", NUMBBO_PATH_MAX);
+    strncpy(tmp_fun_id,&(inner_problem->problem_id[10]), 2);
+    strncat(folder_name, tmp_fun_id,//inner_problem->problem_id,
             NUMBBO_PATH_MAX - strlen(folder_name) - 1);
     coco_join_path(folder_path, sizeof(folder_path), data->path, folder_name, NULL);
     coco_create_path(folder_path);
     
     /* TODO: put the correct file path */
     data->current_data_file = coco_strdup(folder_path);
-    
     _bbob2009_logger_createFile(&(data->index_file), data->path, 
                                 inner_problem->problem_id, "bbobexp_", ".info");
-
     _bbob2009_logger_createFile(&(data->fdata_file), folder_path, 
                                 inner_problem->problem_id, "bbobexp_", ".dat");
     fprintf(data->fdata_file,_file_header_str,*(inner_problem->best_value));
@@ -293,9 +292,9 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_n
     data->fdata_file = NULL;
     data->tdata_file = NULL;
     data->rdata_file = NULL;
-        
+    
     _bbob2009_logger_initialize(data,inner_problem);
-
+    
     /* TODO: move into a function after opting the members of each struct */
     fprintf(data->index_file, "funcId = %d, DIM = %zu, Precision = %.3e, algId = '%s'\n", 
             bbob2009_get_function_id(inner_problem),
