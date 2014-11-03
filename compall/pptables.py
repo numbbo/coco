@@ -12,7 +12,7 @@ from bbob_pproc import genericsettings, bestalg, toolsstats, pproc
 from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from bbob_pproc.toolsstats import significancetest, significance_all_best_vs_other
 from bbob_pproc.pproc import DataSetList
-from bbob_pproc.toolsdivers import prepend_to_file, str_to_latex, strip_pathname
+from bbob_pproc.toolsdivers import prepend_to_file, str_to_latex, strip_pathname2
 from bbob_pproc.pplogloss import detf
 #import bbob_pproc.pproc as pproc
 
@@ -432,7 +432,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
             #data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
             commandname = r'\alg%stables' % numtotext(i)
 #            header += r'\providecommand{%s}{{%s}{}}' % (commandname, str_to_latex(strip_pathname(alg)))
-            header += r'\providecommand{%s}{\StrLeft{%s}{\ntables}}' % (commandname, str_to_latex(strip_pathname(alg)))
+            header += r'\providecommand{%s}{\StrLeft{%s}{\ntables}}' % (commandname, str_to_latex(strip_pathname2(alg)))
             curline = [commandname + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
 
             for j, tmp in enumerate(zip(algerts[i], algdisp[i],  # j is target index
