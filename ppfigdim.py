@@ -489,12 +489,16 @@ def plot_previous_algorithms(func, target=values_of_interest):  # lambda x: [1e-
         bestalg.loadBBOB2009()
     bestalgdata = []
     for d in dimensions:
-        entry = bestalg.bestalgentries2009[(d, func)]
-        tmp = entry.detERT([target((func, d))[-1]])[0]
-        if not np.isinf(tmp):
-            bestalgdata.append(tmp / d)
-        else:
+        try:
+            entry = bestalg.bestalgentries2009[(d, func)]
+            tmp = entry.detERT([target((func, d))[-1]])[0]
+            if not np.isinf(tmp):
+                bestalgdata.append(tmp / d)
+            else:
+                bestalgdata.append(None)
+        except KeyError: #dimension not in bestalg
             bestalgdata.append(None)
+        
     res = plt.plot(dimensions, bestalgdata, color=refcolor, linewidth=10,
                    marker='d', markersize=25, markeredgecolor='k',
                    zorder= -2)
