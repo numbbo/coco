@@ -28,14 +28,14 @@ table_caption_one = r"""%
     #1.
     The ERT and in braces, as dispersion measure, the half difference between 90 and 
     10\%-tile of bootstrapped run lengths appear for each algorithm and 
-    run-length based target,  
-    the corresponding best ERT
     """
 table_caption_two1 = r"""%
+    target, the corresponding best ERT
     in the first row. The different target \Df-values are shown in the top row. 
     \#succ is the number of trials that reached the (final) target $\fopt + 10^{-8}$.
     """
 table_caption_two2 = r"""%
+    run-length based target, the corresponding best ERT
     (preceded by the target \Df-value in \textit{italics}) in the first row. 
     \#succ is the number of trials that reached the target value of the last column.
     """
