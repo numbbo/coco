@@ -56,12 +56,12 @@ def truncate_latex_command_file(filename, keeplines=200):
     
 def strip_pathname(name):
     """remove ../ and ./ and leading/trailing blanks and path separators from input string ``name``"""
-    return name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep)
+    return name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep).replace(os.sep, '/')
 
 def strip_pathname2(name):
     """remove ../ and ./ and leading/trailing blanks and path separators from input string ``name``
     and keep only the last two parts of the path"""
-    return os.sep.join(name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep).split(os.sep)[-2:])
+    return os.sep.join(name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep).split(os.sep)[-2:]).replace(os.sep, '/')
 
 def str_to_latex(string):
     """do replacements in ``string`` such that it most likely compiles with latex """
