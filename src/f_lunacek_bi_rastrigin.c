@@ -25,7 +25,6 @@ static void _bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, double *x,
 
     assert(self->number_of_variables > 1);
     assert(self->number_of_objectives == 1);
-
     data = self->data;
     for (i = 0; i < self->number_of_variables; ++i) {
         double tmp;
@@ -34,6 +33,7 @@ static void _bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, double *x,
             penalty += tmp * tmp;
     }
     /* Computing xopt  */
+    tmpvect = coco_allocate_vector(self->number_of_variables);
     bbob2009_unif(tmpvect, self->number_of_variables, data->rseed);
     for (i = 0; i < self->number_of_variables; ++i) {
     	data->xopt[i] = mu0;
@@ -68,7 +68,6 @@ static void _bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, double *x,
     	sum1 += (data->x_hat[i] - mu0) * (data->x_hat[i] - mu0);
     	sum2 += (data->x_hat[i] - mu1) * (data->x_hat[i] - mu1);
     	sum3 += cos(2 * M_PI * data->z[i]);
-
     }
     y[0] = fmin(sum1, d * (double)self->number_of_variables + s * sum2) + 10. * ((double)self->number_of_variables - sum3) + 1e4 * penalty;
     coco_free_memory(tmpvect);
