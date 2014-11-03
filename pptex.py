@@ -112,7 +112,7 @@ def numtotext(n):
 
 def writeLabels(label):
     """Format text to be output by LaTeX."""
-    #return label.replace('_', r'\_')
+    return label.replace('_', r'\_')
 
 def writeFEvals(fevals, precision='.2'):
     """Returns string representation of a number of function evaluations."""

@@ -35,7 +35,7 @@ scaling_figure_caption_end = (
                 r"correspond to different algorithms given in the legend of #1. " +
                 r"Light symbols give the maximum number of function evaluations from the longest trial " + 
                 r"divided by dimension. " +
-                (r"Black stars indicate statistically better result compared to all other algorithms " +
+                (r"Black stars indicate a statistically better result compared to all other algorithms " +
                  r"with $p<0.01$ and Bonferroni correction number of dimensions (six).  ") 
                          if show_significance else ''
                 )
