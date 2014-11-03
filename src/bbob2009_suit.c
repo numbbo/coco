@@ -523,7 +523,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     } else if (function_id == 20) {
     	int i, j, k;
     	static double condition = 100.;
-    	double M[40*40], b[40], xopt[40], fopt, *current_row, *tmpvect;
+    	double M[40*40], b[40], xopt[40], fopt, *current_row, *tmpvect=coco_allocate_vector(dimension);
     	fopt = bbob2009_compute_fopt(function_id, instance_id);
     	bbob2009_unif(tmpvect, dimension, rseed);
     	for (i = 0; i < dimension; ++i) {
@@ -532,6 +532,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     			xopt[i] *= -1;
     		}
     	}
+        
     	for (i = 0; i < dimension; ++i) {
     		b[i] = 0.0;
     		current_row = M + i * dimension;
@@ -555,7 +556,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     	problem = z_hat(problem, xopt);
     	problem = scale_variables(problem, 2);
     	problem = x_hat(problem, rseed);
-
+        free(tmpvect);
     } else if (function_id == 21) {
     	double fopt;
     	fopt = bbob2009_compute_fopt(function_id, instance_id);
