@@ -105,7 +105,6 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
     data->fopt = bbob2009_compute_fopt(21, instance_id);
     bbob2009_compute_xopt(data->xopt, rseed, number_of_variables);
     bbob2009_compute_rotation(data->rotation, rseed + 1000000, number_of_variables);
-
     problem = coco_allocate_problem(number_of_variables, 1, 0);
     /* Construct a meaningful problem id */
     if (number_of_peaks == 101) {
@@ -119,7 +118,7 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
     	problem->problem_id = coco_allocate_memory(problem_id_length + 1);
     	snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d", "bbob2009_f22", (int)number_of_variables);
     }
-
+    
     problem->number_of_variables = number_of_variables;
     problem->number_of_objectives = 1;
     problem->number_of_constraints = 0;
@@ -131,22 +130,26 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
         problem->largest_values_of_interest[i] = 5.0;
         problem->best_parameter[i] = 0.0;
     }
-
+    
     /* Initialize all the data of the inner problem */
+    peaks = coco_allocate_vector(number_of_variables * number_of_peaks);/*Allocated the largest needed size*/
     bbob2009_unif(peaks, number_of_peaks - 1, data->rseed);
+    data->rperm = (size_t *)malloc(number_of_peaks-1);/* TODO: consider using another function, must free all these */
     for (i = 0; i < number_of_peaks - 1; i++)
     	data->rperm[i] = i;
     qsort(data->rperm, number_of_peaks - 1, sizeof(size_t), compare_doubles);
-
+    
     /* Random permutation */
+    data->arrCondition = coco_allocate_vector(number_of_peaks);
     data->arrCondition[0] = sqrt(maxcondition);
+    data->peakvalues = coco_allocate_vector(number_of_peaks);
     data->peakvalues[0] = 10;
     for (i = 1; i < number_of_peaks; i++) {
     	data->arrCondition[i] = pow(maxcondition, (double)(data->rperm[i-1])/((double)(number_of_peaks - 2)));
     	data->peakvalues[i] = (double)(i-1)/(double)(number_of_peaks - 2) * (data->fitvalues[1] - data->fitvalues[0]) + data->fitvalues[0];
     }
     for (i = 0; i < number_of_peaks; i++) {
-    	bbob2009_unif(peaks, number_of_variables, data->rseed + 1000 * i);
+    	/*bbob2009_unif(peaks, number_of_variables, data->rseed + 1000 * i);*/
     	for (j = 0; j < number_of_variables; j++)
     		data->rperm[j] = j;
     	qsort(data->rperm, number_of_variables, sizeof(int), compare_doubles);
@@ -154,7 +157,7 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
     		data->arrScales[i][j] = pow(data->arrCondition[i], ((double)data->rperm[j])/((double)(number_of_variables - 1)) - 0.5);
     	}
     }
-
+    
     bbob2009_unif(peaks, number_of_variables * number_of_peaks, data->rseed);
     for (i = 0; i < number_of_variables; i++) {
     	data->xopt[i] = 0.8 * (10. * peaks[i] -5.);
@@ -171,6 +174,7 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
 
     /* Calculate best parameter value */
     problem->evaluate_function(problem, problem->best_parameter, problem->best_value);
+    free(peaks);/*TODO: right place for doing this?*/
     return problem;
 }
 
