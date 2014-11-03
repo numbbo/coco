@@ -21,7 +21,7 @@ np.seterr(under='ignore')  # ignore underflow
 #global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
 #set_trace()
 force_assertions = False  # another debug flag for time-consuming assertions
-in_a_hurry = 0 # [0, 1000] lower resolution, no eps, saves 30% time
+in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
