@@ -7,6 +7,7 @@
 typedef struct {
     int seed;
     double *x;
+    coco_free_function_t old_free_problem;
 } _x_hat_data_t;
 
 static void _x_hat_evaluate_function(coco_problem_t *self, double *x, double *y) {
