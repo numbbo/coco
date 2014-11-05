@@ -19,10 +19,11 @@ static void f_katsuura_evaluate(coco_problem_t *self, double *x, double *y) {
     		tmp2 = pow(2., (double)j);
     		tmp += fabs(tmp2 * x[i] - round(tmp2 * x[i])) / tmp2;
     	}
-    	tmp = 1 + (i+1) * tmp;
+    	tmp = 1. + (i+1) * tmp;
     	y[0] *= tmp;
     }
-    y[0] = (10./pow((double)self->number_of_variables, 2.)) * (pow(y[0], 10./pow((double)self->number_of_variables, 1.2)) - 1);
+    y[0] = 10./((double)self->number_of_variables)/((double)self->number_of_variables) * (-1. + pow(y[0], 10./pow((double)self->number_of_variables, 1.2)));
+    /* TODO: Penalization (function of the non-transformed variable x) */
 }
 
 static coco_problem_t *katsuura_problem(const size_t number_of_variables) {
