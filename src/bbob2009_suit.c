@@ -578,8 +578,9 @@ coco_problem_t *bbob2009_suit(const int function_index) {
 
     } else if (function_id == 23) {
     	int i, j, k;
-    	double M[40*40], b[40], xopt[40], *current_row;
+    	double M[40*40], b[40], xopt[40], *current_row, fopt;
     	double **rot1, **rot2;
+    	fopt = bbob2009_compute_fopt(function_id, instance_id);
     	bbob2009_compute_xopt(xopt, rseed, dimension);
 
     	rot1 = bbob2009_allocate_matrix(dimension, dimension);
@@ -598,6 +599,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     	    }
     	}
     	problem = katsuura_problem(dimension);
+    	problem = shift_objective(problem, fopt);
     	problem = affine_transform_variables(problem, M, b, dimension);
     	problem = shift_variables(problem, xopt, 0);
 
