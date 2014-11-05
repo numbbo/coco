@@ -10,10 +10,11 @@ typedef struct {
     double *xopt, fopt;
     double **rot1, **rot2;
     size_t rseed;
+    coco_free_function_t old_free_problem;
 } _bbob_lunacek_bi_rastrigin_t;
 
 static void _bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, double *x, double *y) {
-	static const double condition = 100;
+	static const double condition = 100.;
 	size_t i, j;
 	double penalty = 0.0;
 	static const double mu0 = 2.5;
@@ -34,25 +35,25 @@ static void _bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, double *x,
     }
     /* Computing xopt  */
     tmpvect = coco_allocate_vector(self->number_of_variables);
-    bbob2009_unif(tmpvect, self->number_of_variables, data->rseed);
+    bbob2009_gauss(tmpvect, self->number_of_variables, data->rseed);
     for (i = 0; i < self->number_of_variables; ++i) {
-    	data->xopt[i] = mu0;
-    	if (tmpvect[i] - 0.5 < 0){
+    	data->xopt[i] = 0.5 * mu0;
+    	if (tmpvect[i] < 0.){
     		data->xopt[i] *= -1.;
     	}
     }
     /* x_hat */
     for (i = 0; i < self->number_of_variables; ++i) {
-        	data->x_hat[i] = 2 * x[i];
-        	if (data->xopt[i] < 0){
-        		data->x_hat[i] *= -1.;
-        	}
-        }
+    	data->x_hat[i] = 2. * x[i];
+    	if (data->xopt[i] < 0.){
+    		data->x_hat[i] *= -1.;
+    	}
+    }
     /* affine transformation */
     for (i = 0; i < self->number_of_variables; ++i) {
     	double c1;
         tmpvect[i] = 0.0;
-        c1 = sqrt(pow(condition/10., i / (self->number_of_variables - 1.0)));
+        c1 = pow(sqrt(condition), ((double)i) / (double)(self->number_of_variables - 1));
         for (j = 0; j < self->number_of_variables; ++j) {
         	tmpvect[i] += c1 * data->rot2[i][j] * (data->x_hat[j] - mu0);
         }

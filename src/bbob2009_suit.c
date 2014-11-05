@@ -606,7 +606,10 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     	bbob2009_free_matrix(rot1, dimension);
     	bbob2009_free_matrix(rot2, dimension);
     } else if (function_id == 24) {
+    	double fopt;
+    	fopt = bbob2009_compute_fopt(function_id, instance_id);
     	problem = bbob_lunacek_bi_rastrigin_problem(dimension, instance_id);
+    	problem = shift_objective(problem, fopt);
     } else {
     	return NULL;
     }
