@@ -99,6 +99,12 @@ int main(int argc, char **argv) {
          * some functions is expensive because we have to generate
          * large rotation matrices.
          */
+        int rest = function_id %
+                        (5 * 24 * 6);
+        rest = rest % (5 * 24);
+        int f_id = rest / 5 + 1;
+        if (f_id == 20)
+        {
         if (previous_function_id != function_id) {
             if (NULL != problem)
                 coco_free_problem(problem);
@@ -106,6 +112,7 @@ int main(int argc, char **argv) {
             previous_function_id = function_id;
         }
         x = testvectors[testvector_id].x;
+
         coco_evaluate_function(problem, x, &y);
         if (!about_equal(expected_value, y)) {
             ++number_of_failures;
@@ -123,7 +130,7 @@ int main(int argc, char **argv) {
                 fflush(stdout);            
                 ++shown_failures;
             }
-        }
+        }}
     }
     fclose(testfile);
     /* Output summary statistics */

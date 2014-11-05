@@ -149,7 +149,7 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
     	data->peakvalues[i] = (double)(i-1)/(double)(number_of_peaks - 2) * (data->fitvalues[1] - data->fitvalues[0]) + data->fitvalues[0];
     }
     for (i = 0; i < number_of_peaks; i++) {
-    	/*bbob2009_unif(peaks, number_of_variables, data->rseed + 1000 * i);*/
+    	bbob2009_unif(peaks, number_of_variables, data->rseed + 1000 * i);
     	for (j = 0; j < number_of_variables; j++)
     		data->rperm[j] = j;
     	qsort(data->rperm, number_of_variables, sizeof(int), compare_doubles);
@@ -174,7 +174,7 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
 
     /* Calculate best parameter value */
     problem->evaluate_function(problem, problem->best_parameter, problem->best_value);
-    free(peaks);/*TODO: right place for doing this?*/
+    coco_free_memory(peaks);/*TODO: right place for doing this?*/
     return problem;
 }
 
