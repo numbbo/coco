@@ -8,6 +8,8 @@
  */
 
 #include <math.h>
+#include <stdio.h>
+#include "coco.h"
 
 static double bbob2009_fmin(double a, double b) {
     return (a < b) ? a : b;
@@ -62,7 +64,6 @@ static void bbob2009_unif(double* r, int N, int inseed) {
     int rgrand[32];
     int aktrand;
     int i;
-
     if (inseed < 0) inseed = -inseed;
     if (inseed < 1) inseed = 1;
     aktseed = inseed;
