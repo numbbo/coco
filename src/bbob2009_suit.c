@@ -524,12 +524,12 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     } else if (function_id == 20) {
     	int i, j, k;
     	static double condition = 10.;
-    	/*double M[40*40], b[40], xopt[40], fopt, *current_row, *tmpvect=coco_allocate_vector(dimension);
+    	double M[40*40], b[40], xopt[40], fopt, *current_row, *tmp1 = coco_allocate_vector(dimension), *tmp2 = coco_allocate_vector(dimension);
     	fopt = bbob2009_compute_fopt(function_id, instance_id);
-    	bbob2009_unif(tmpvect, dimension, rseed);
+    	bbob2009_unif(tmp1, dimension, rseed);
     	for (i = 0; i < dimension; ++i) {
     		xopt[i] = 0.5 * 4.2096874633;
-    		if (tmpvect[i] - 0.5 < 0) {
+    		if (tmp1[i] - 0.5 < 0) {
     			xopt[i] *= -1;
     		}
     	}
@@ -546,18 +546,20 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     		}
     	}
     	for (i = 0; i < dimension; ++i) {
-    		 tmpvect[i]= -1 * xopt[i];
-    	}*/
-    	problem = schwefel_problem(dimension, instance_id);
-    	/*problem = shift_objective(problem, fopt);
+    		 tmp1[i]= -2 * fabs(xopt[i]);
+    		 tmp2[i]= 2 * fabs(xopt[i]);
+    	}
+    	problem = schwefel_problem(dimension);
+    	problem = shift_objective(problem, fopt);
     	problem = scale_variables(problem, 100);
-    	problem = shift_variables(problem, tmpvect, 0);
+    	problem = shift_variables(problem, tmp1, 0);
     	problem = affine_transform_variables(problem, M, b, dimension);
-    	problem = shift_variables(problem, xopt, 0);
+    	problem = shift_variables(problem, tmp2, 0);
     	problem = z_hat(problem, xopt);
     	problem = scale_variables(problem, 2);
     	problem = x_hat(problem, rseed);
-    	coco_free_memory(tmpvect);*/
+    	coco_free_memory(tmp1);
+    	coco_free_memory(tmp2);
     } else if (function_id == 21) {
     	double fopt;
     	fopt = bbob2009_compute_fopt(function_id, instance_id);
