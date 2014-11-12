@@ -13,7 +13,7 @@
 ## or installing Cygwin and running GNU make from within Cygwin.
 
 LDFLAGS += -lm
-
+CFLAGS = -g -ggdb
 ########################################################################
 ## Toplevel targets
 all: demo coco_test bbob2009_test
@@ -24,16 +24,16 @@ clean:
 ########################################################################
 ## Programs
 demo: demo.o coco.o
-	${CC} ${LDFLAGS} -o demo coco.o demo.o 
+	${CC} ${CCFLAGS} ${LDFLAGS} -o demo coco.o demo.o 
 
 coco_test: coco_test.o coco.o
-	${CC} ${LDFLAGS} -o coco_test coco_test.o coco.o
+	${CC}  ${CCFLAGS} ${LDFLAGS} -o coco_test coco_test.o coco.o
 
 bbob2009_test: bbob2009_test.o coco.o
-	${CC} ${LDFLAGS} -o bbob2009_test bbob2009_test.o coco.o
+	${CC}  ${CCFLAGS} ${LDFLAGS} -o bbob2009_test bbob2009_test.o coco.o
 
 coco_timing: coco_timing.o coco.o
-	${CC} ${LDFLAGS} -o coco_timing coco_timing.o coco.o
+	${CC}  ${CCFLAGS} ${LDFLAGS} -o coco_timing coco_timing.o coco.o
 
 ########################################################################
 ## Additional dependencies

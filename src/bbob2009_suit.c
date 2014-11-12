@@ -565,16 +565,12 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     	fopt = bbob2009_compute_fopt(function_id, instance_id);
     	problem = bbob_gallagher_problem(dimension, instance_id, 101);
     	problem = shift_objective(problem, fopt);
-    	problem = power_objective(problem, 2.);
-    	problem = oscillate_objective(problem);
 
     } else if (function_id == 22) {
     	double fopt;
     	fopt = bbob2009_compute_fopt(function_id, instance_id);
     	problem = bbob_gallagher_problem(dimension, instance_id, 21);
     	problem = shift_objective(problem, fopt);
-    	problem = power_objective(problem, 2.);
-    	problem = oscillate_objective(problem);
 
     } else if (function_id == 23) {
     	int i, j, k;
