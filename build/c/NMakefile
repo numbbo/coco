@@ -8,7 +8,7 @@
 ##
 LD = link.exe
 #CFLAGS = /nologo /Z7 /TP /Ox /D_CRT_SECURE_NO_WARNINGS /Dsnprintf=_snprintf
-CFLAGS = /nologo /Z7 /Ox /D_CRT_SECURE_NO_WARNINGS /Dsnprintf=_snprintf
+CFLAGS = -g /nologo /Z7 /Ox /D_CRT_SECURE_NO_WARNINGS /Dsnprintf=_snprintf
 LDFLAGS = /nologo
 TARGETS = demo.exe test_bbob2009.exe
 
