@@ -25,9 +25,9 @@ typedef struct {
     FILE *rdata_file;/*restart info data file*/
     double f_trigger; /* next upper bound on the fvalue to trigger a log in the .dat file*/
     long t_trigger; /* next lower bound on nb fun evals to trigger a log in the .tdat file*/
-    long idx_f_trigger; /* allows to track the index i in logging target = {10**(i/nbpts_fval), i \in Z} */
-    long idx_t_trigger; /* allows to track the index i in logging nbevals  = {int(10**(i/nbpts_nbevals)), i \in Z} */
-    long idx_tdim_trigger; /* allows to track the index i in logging nbevals  = {dim * 10**i, i \in Z} */
+    int idx_f_trigger; /* allows to track the index i in logging target = {10**(i/nbpts_fval), i \in Z} */
+    int idx_t_trigger; /* allows to track the index i in logging nbevals  = {int(10**(i/nbpts_nbevals)), i \in Z} */
+    int idx_tdim_trigger; /* allows to track the index i in logging nbevals  = {dim * 10**i, i \in Z} */
     long number_of_evaluations;
     double best_fvalue;
     double last_fvalue;
@@ -53,15 +53,22 @@ static void _bbob2009_logger_update_f_trigger(_bbob2009_logger_t *data, double f
     /* "jump" directly to the next closest (but larger) target to the
      * current fvalue from the initial target
      */
-    if (data->idx_f_trigger == INT_MAX)
-        data->idx_f_trigger = ceil(log10(fvalue)) * nbpts_fval;
-    else
-        data->idx_f_trigger--;
-    
-    data->f_trigger = pow(10, data->idx_f_trigger * 1.0 / nbpts_fval);
-    while (fvalue <= data->f_trigger) {
-        data->idx_f_trigger--;
+
+    if (fvalue - data->optimal_fvalue <= 0.)  {
+        data->f_trigger = -DBL_MAX;
+    }
+    else{
+        if (data->idx_f_trigger == INT_MAX){/* first time*/
+            data->idx_f_trigger = ceil(log10(fvalue - data->optimal_fvalue)) * nbpts_fval;
+        }
+        else{/* We only call this function when we reach the current f_trigger*/
+            data->idx_f_trigger--;
+        }
         data->f_trigger = pow(10, data->idx_f_trigger * 1.0 / nbpts_fval);
+        while (fvalue - data->optimal_fvalue<= data->f_trigger) {
+            data->idx_f_trigger--;
+            data->f_trigger = pow(10, data->idx_f_trigger * 1.0 / nbpts_fval);
+        }
     }
 }
 
@@ -198,11 +205,10 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
     data->number_of_evaluations++;
 
     /* Add a line in the .dat file for each logging target reached. */
-    if (y[0] <= data->f_trigger) {        
+    if (y[0] - data->optimal_fvalue <= data->f_trigger) {
         _bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations, 
                                     y[0], data->best_fvalue, data->optimal_fvalue, 
                                     x, self->number_of_variables);
-        
         _bbob2009_logger_update_f_trigger(data, y[0]);
     }
     
@@ -213,9 +219,11 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
                                     y[0], data->best_fvalue, data->optimal_fvalue, 
                                     x, self->number_of_variables);
         _bbob2009_logger_update_t_trigger(data, self->number_of_variables);
-    }    
+    }
+    
     /* Flush output so that impatient users can see progress. */
     fflush(data->fdata_file);
+    
 }
 /**
  * Also serves as a finalize run method so. Must be called at the end
