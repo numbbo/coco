@@ -41,12 +41,12 @@ typedef struct {
 } _bbob2009_logger_t;
 
 static const char* _file_header_str = 
-    "%% function evaluation |"
-    "noise-free fitness - Fopt (%13.12e) |"
-    "best noise-free fitness - Fopt |"
-    "measured fitness |"
-    "best measured fitness |"
-    "x1 |"
+    "%% function evaluation | "
+    "noise-free fitness - Fopt (%13.12e) | "
+    "best noise-free fitness - Fopt | "
+    "measured fitness | "
+    "best measured fitness | "
+    "x1 | "
     "x2...\n";
 
 static void _bbob2009_logger_update_f_trigger(_bbob2009_logger_t *data, double fvalue) {
