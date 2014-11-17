@@ -155,22 +155,29 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
     /*
       Creates/opens the data and index files
     */
-    char folder_name[NUMBBO_PATH_MAX];
+    char folder_name[NUMBBO_PATH_MAX]={0};
     char folder_path[NUMBBO_PATH_MAX]={0};
     char tmpc_funId[2];/*servs to extract the function id as a char *. There should be a better way of doing this! */
     assert(data != NULL);
     assert(inner_problem->problem_id != NULL);
     /*generate folder name and path for current function*/
     strncpy(folder_name,"data_f", NUMBBO_PATH_MAX);
-    strncpy(tmpc_funId,&(inner_problem->problem_id[10]), 2);
+/*  strncpy(tmpc_funId,&(inner_problem->problem_id[10]), 2);*/
+    sprintf(tmpc_funId, "%d", bbob2009_get_function_id(inner_problem));
     strncat(folder_name, tmpc_funId,
             NUMBBO_PATH_MAX - strlen(folder_name) - 1);
     coco_join_path(folder_path, sizeof(folder_path), data->path, folder_name, NULL);
     coco_create_path(folder_path);
-    /* TODO: put the correct file path */
-    data->current_data_file = coco_strdup(folder_path);
+    strncat(folder_name, "/bbobexp_",
+            NUMBBO_PATH_MAX - strlen(folder_name) - 1);/*TODO: use coco_join_path for multi plateforme compatibily*/
+    strncat(folder_name, inner_problem->problem_id,
+            NUMBBO_PATH_MAX - strlen(folder_name) - 1);
+    strncat(folder_name, ".dat",
+            NUMBBO_PATH_MAX - strlen(folder_name) - 1);/*TODO: more elegant way? Also, it is NOT the folder_name*/
+    data->current_data_file = coco_strdup(folder_name);
     _bbob2009_logger_openFile(&(data->index_file), data->path,
                                 inner_problem->problem_id, "bbobexp_", ".info");
+    /*TODO: use tmpc_funId instead of problem_id, but make sure that when same function data is written correctly (no duplicate header)*/
     _bbob2009_logger_openFile(&(data->fdata_file), folder_path,
                                 inner_problem->problem_id, "bbobexp_", ".dat");
     fprintf(data->fdata_file,_file_header_str,*(inner_problem->best_value));
