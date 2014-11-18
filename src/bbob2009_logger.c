@@ -18,7 +18,6 @@ static const size_t nbpts_fval = 5;
 typedef struct {
     char *path;/*relative path to the data folder. Simply the Algname*/
     const char *alg_name;/*the alg name, for now, remporarly the same as the path*/
-    char *current_data_file;/*relative path, starting from self.path, to the .dat of the current run. Needed by the .info*/
     FILE *index_file;/*index file*/
     FILE *fdata_file;/*function value aligned data file*/
     FILE *tdata_file;/*number of function evaluations aligned data file*/
@@ -124,7 +123,7 @@ static void _bbob2009_logger_error_io(FILE *path) {
 }
 
 /**
- * Creates the the file fileName_prefix+problem_id+file_extension in folde_path
+ * Creates the file fileName_prefix+problem_id+file_extension in folde_path
  */
 static void _bbob2009_logger_openFile(FILE ** target_file,
                                         const char* folder_path, 
@@ -138,7 +137,6 @@ static void _bbob2009_logger_openFile(FILE ** target_file,
     strncat(file_name, problem_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
     strncat(file_name, file_extension, NUMBBO_PATH_MAX - strlen(file_name) - 1);
     coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
-    
     if (*target_file == NULL) {
         *target_file = fopen(file_path, "a+");
         if (target_file == NULL) {
@@ -148,36 +146,85 @@ static void _bbob2009_logger_openFile(FILE ** target_file,
 }
 
 /**
- * Generates the different files and folder needed by the logger to store the data
+ * Creates the index file fileName_prefix+problem_id+file_extension in folde_path
+ */
+static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
+                                           const char* folder_path,
+                                           const char* indexFile_prefix,
+                                           const char* function_id,
+                                           const char* dataFile_path){
+    char file_name[NUMBBO_PATH_MAX];
+    char file_path[NUMBBO_PATH_MAX] = {0};
+    FILE **target_file = &(data->index_file);
+    FILE *tmp_file;/*to check whether the file already exists. Don't want to use target_file*/
+    strncpy(file_name, indexFile_prefix, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, "_f", NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, function_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
+    if (*target_file == NULL) {
+        if ((tmp_file = fopen(file_path, "r")))/*TODO: Does not create new lines for new dims*/
+        {
+            *target_file = fopen(file_path, "a+");
+            if (target_file == NULL) {
+                _bbob2009_logger_error_io(*target_file);
+            }
+        }
+        else{/* ugly but necessary*/
+            *target_file = fopen(file_path, "a+");
+            if (target_file == NULL) {
+                _bbob2009_logger_error_io(*target_file);
+            }
+            fprintf(*target_file, "funcId = %d, DIM = %zu, Precision = %.3e, algId = '%s'\n",
+                    (int)strtol(function_id,NULL,10), data->number_of_variables, pow(10,-8), data->alg_name);
+            fprintf(*target_file, "%%\n");
+            fprintf(*target_file, "%s.info",
+                    dataFile_path);/*dataFile_path does not have the extension*/
+        }
+    }
+    
+}
+
+
+/**
+ * Generates the different files and folder needed by the logger to store the data if theses don't already exist
  */
 static void _bbob2009_logger_initialize(_bbob2009_logger_t *data, 
                                         coco_problem_t *inner_problem) {
     /*
       Creates/opens the data and index files
     */
-    char folder_name[NUMBBO_PATH_MAX]={0};
+    char dataFile_name[NUMBBO_PATH_MAX]={0};
+    char dataFile_path[NUMBBO_PATH_MAX]={0};/*relative path to the .dat file from where the .info file is*/
     char folder_path[NUMBBO_PATH_MAX]={0};
-    char tmpc_funId[2];/*servs to extract the function id as a char *. There should be a better way of doing this! */
+    char tmpc_funId[3];/*servs to extract the function id as a char *. There should be a better way of doing this! */
+    char indexFile_prefix[10]= "bbobexp";/*TODO: make the prefix bbobexp a parameter that the user can modify*/
     assert(data != NULL);
+    assert(inner_problem != NULL);
     assert(inner_problem->problem_id != NULL);
-    /*generate folder name and path for current function*/
-    strncpy(folder_name,"data_f", NUMBBO_PATH_MAX);
-/*  strncpy(tmpc_funId,&(inner_problem->problem_id[10]), 2);*/
     sprintf(tmpc_funId, "%d", bbob2009_get_function_id(inner_problem));
-    strncat(folder_name, tmpc_funId,
-            NUMBBO_PATH_MAX - strlen(folder_name) - 1);
-    coco_join_path(folder_path, sizeof(folder_path), data->path, folder_name, NULL);
+    /* prepare paths and names*/
+    strncpy(dataFile_path,"data_f", NUMBBO_PATH_MAX);
+    strncat(dataFile_path, tmpc_funId,
+            NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+    coco_join_path(folder_path, sizeof(folder_path), data->path, dataFile_path, NULL);
     coco_create_path(folder_path);
-    strncat(folder_name, "/bbobexp_",
-            NUMBBO_PATH_MAX - strlen(folder_name) - 1);/*TODO: use coco_join_path for multi plateforme compatibily*/
-    strncat(folder_name, inner_problem->problem_id,
-            NUMBBO_PATH_MAX - strlen(folder_name) - 1);
-    strncat(folder_name, ".dat",
-            NUMBBO_PATH_MAX - strlen(folder_name) - 1);/*TODO: more elegant way? Also, it is NOT the folder_name*/
-    data->current_data_file = coco_strdup(folder_name);
-    _bbob2009_logger_openFile(&(data->index_file), data->path,
-                                inner_problem->problem_id, "bbobexp_", ".info");
-    /*TODO: use tmpc_funId instead of problem_id, but make sure that when same function data is written correctly (no duplicate header)*/
+    strncat(dataFile_path, "/bbobexp_",
+            NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+    strncat(dataFile_path, indexFile_prefix,
+            NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+    strncat(dataFile_path, inner_problem->problem_id,
+            NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+
+    
+    /* index/info file*/
+    _bbob2009_logger_openIndexFile(data, data->path,
+                                   indexFile_prefix, tmpc_funId, dataFile_path);
+    fprintf(data->index_file, ", %d",
+            bbob2009_get_instance_id(inner_problem));
+    
+    
+    /*TODO: use tmpc_funId instead of problem_id, but make sure that when same function, data is written correctly (no duplicate header)*/
     _bbob2009_logger_openFile(&(data->fdata_file), folder_path,
                                 inner_problem->problem_id, "bbobexp_", ".dat");
     fprintf(data->fdata_file,_file_header_str,*(inner_problem->best_value));
@@ -250,10 +297,10 @@ static void _bbob2009_logger_free_data(void *stuff) {
         data->path = NULL;
     }
     
-    if (data->current_data_file != NULL) {
+    /*if (data->current_data_file != NULL) {
         coco_free_memory(data->current_data_file);
         data->current_data_file = NULL;
-    }
+    }*/
 
     if (data->index_file != NULL) {
         fprintf(data->index_file, ":%lu|%.1e", data->number_of_evaluations, 
@@ -295,7 +342,6 @@ static void _bbob2009_logger_free_data(void *stuff) {
 coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_name) {
     _bbob2009_logger_t *data;
     coco_problem_t *self;
-
     data = coco_allocate_memory(sizeof(*data));
     data->alg_name = alg_name;
     /* This is the name of the folder which happens to be the algName */
@@ -304,18 +350,6 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_n
     data->fdata_file = NULL;
     data->tdata_file = NULL;
     data->rdata_file = NULL;
-    
-    _bbob2009_logger_initialize(data,inner_problem);
-    
-    /* TODO: move into a function after opting the members of each struct */
-    fprintf(data->index_file, "funcId = %d, DIM = %zu, Precision = %.3e, algId = '%s'\n", 
-            bbob2009_get_function_id(inner_problem),
-            inner_problem->number_of_variables, pow(10,-8), data->alg_name);
-    /* TODO: place holder, should be replaced with user comments */
-    fprintf(data->index_file, "%%\n");
-    fprintf(data->index_file, "%s, %d", 
-            data->current_data_file, bbob2009_get_instance_id(inner_problem));
-    
     data->number_of_variables = inner_problem->number_of_variables;
     data->optimal_fvalue = *(inner_problem->best_value);
     data->idx_f_trigger = INT_MAX;
@@ -330,6 +364,8 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_n
      */
     data->written_last_eval = 1;
     data->last_fvalue = DBL_MAX ;
+    _bbob2009_logger_initialize(data,inner_problem);
+    
     self = coco_allocate_transformed_problem(inner_problem, data,
                                              _bbob2009_logger_free_data);
     self->evaluate_function = _bbob2009_logger_evaluate_function;

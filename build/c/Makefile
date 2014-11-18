@@ -13,7 +13,7 @@
 ## or installing Cygwin and running GNU make from within Cygwin.
 
 LDFLAGS += -lm
-CFLAGS = -g -ggdb
+CCFLAGS = -g -ggdb
 ########################################################################
 ## Toplevel targets
 all: demo coco_test bbob2009_test
