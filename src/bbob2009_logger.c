@@ -244,11 +244,6 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
             NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
     strncat(dataFile_path, tmpc_dim,
             NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
-/*    strncat(dataFile_path, indexFile_prefix,
-            NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);*/
-/*    strncat(dataFile_path, inner_problem->problem_id,
-            NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);*/
-
     
     /* index/info file*/
     _bbob2009_logger_openIndexFile(data, data->path,
@@ -256,15 +251,12 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
     fprintf(data->index_file, ", %d",
             bbob2009_get_instance_id(inner_problem));
     
-    /*TODO: use tmpc_funId instead of problem_id, but make sure that when same function, data is written correctly (no duplicate header)*/
     _bbob2009_logger_openFile(&(data->fdata_file), data->path, dataFile_path, ".dat");
     fprintf(data->fdata_file,_file_header_str,*(inner_problem->best_value));
 
     _bbob2009_logger_openFile(&(data->tdata_file), data->path, dataFile_path, ".tdat");
     fprintf(data->tdata_file,_file_header_str,*(inner_problem->best_value));
     
-    /*_bbob2009_logger_openFile(&(data->rdata_file), folder_path,
-                                inner_problem->problem_id, ".rdat");*/
     _bbob2009_logger_openFile(&(data->rdata_file), data->path, dataFile_path, ".rdat");
     fprintf(data->rdata_file,_file_header_str,*(inner_problem->best_value));
     
@@ -328,10 +320,6 @@ static void _bbob2009_logger_free_data(void *stuff) {
         data->path = NULL;
     }
     
-    /*if (data->current_data_file != NULL) {
-        coco_free_memory(data->current_data_file);
-        data->current_data_file = NULL;
-    }*/
 
     if (data->index_file != NULL) {
         fprintf(data->index_file, ":%lu|%.1e", data->number_of_evaluations, 
