@@ -44,7 +44,10 @@ void coco_benchmark(const char *problem_suit,
                     coco_optimizer_t optimizer) {
     int function_index;
     coco_problem_t *problem;
-    for (function_index = 0;function_index<90; ++function_index) {
+    for (function_index = 0;function_index<2; ++function_index) {
+        if (function_index==1) {
+            function_index=2157;
+        } 
         problem = coco_get_problem(problem_suit, function_index);
         if (NULL == problem)
             break;

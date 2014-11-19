@@ -12,6 +12,7 @@
 
 static const size_t nbpts_nbevals = 20;
 static const size_t nbpts_fval = 5;
+static size_t current_dim = -1;
 
 /*TODO: add possibility of adding a prefix to the index files*/
 
@@ -125,16 +126,15 @@ static void _bbob2009_logger_error_io(FILE *path) {
 /**
  * Creates the file fileName_prefix+problem_id+file_extension in folde_path
  */
-static void _bbob2009_logger_openFile(FILE ** target_file,
+static void OLD_bbob2009_logger_openFile(FILE ** target_file,
                                         const char* folder_path, 
                                         const char* problem_id,
-                                        const char* fileName_prefix, 
                                         const char* file_extension) {
     char file_name[NUMBBO_PATH_MAX];
     char file_path[NUMBBO_PATH_MAX] = {0};
     /*file name */
-    strncpy(file_name, fileName_prefix, NUMBBO_PATH_MAX);
-    strncat(file_name, problem_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+//    strncpy(file_name, fileName_prefix, NUMBBO_PATH_MAX);
+    strncpy(file_name, problem_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
     strncat(file_name, file_extension, NUMBBO_PATH_MAX - strlen(file_name) - 1);
     coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
     if (*target_file == NULL) {
@@ -144,6 +144,24 @@ static void _bbob2009_logger_openFile(FILE ** target_file,
         }
     }
 }
+
+static void _bbob2009_logger_openFile(FILE **target_file,
+                                      const char* path,
+                                      const char* dataFile_path,
+                                      const char* file_extension) {
+    char file_path[NUMBBO_PATH_MAX] = {0};
+    char relative_filePath[NUMBBO_PATH_MAX] ;
+    strncpy(relative_filePath, dataFile_path, NUMBBO_PATH_MAX - strlen(relative_filePath) - 1);
+    strncat(relative_filePath, file_extension, NUMBBO_PATH_MAX - strlen(relative_filePath) - 1);
+    coco_join_path(file_path, sizeof(file_path), path, relative_filePath, NULL);
+    if (*target_file == NULL) {
+        *target_file = fopen(file_path, "a+");
+        if (target_file == NULL) {
+            _bbob2009_logger_error_io(*target_file);
+        }
+    }
+}
+
 
 /**
  * Creates the index file fileName_prefix+problem_id+file_extension in folde_path
@@ -163,23 +181,31 @@ static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
     strncat(file_name, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
     coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
     if (*target_file == NULL) {
-        if ((tmp_file = fopen(file_path, "r")))/*TODO: Does not create new lines for new dims*/
+        
+        if ((tmp_file = fopen(file_path, "r")) && (current_dim == data->number_of_variables))/*TODO: Does not create new lines for new dims*/
         {
             *target_file = fopen(file_path, "a+");
             if (target_file == NULL) {
                 _bbob2009_logger_error_io(*target_file);
             }
+            fclose(tmp_file);
+            
         }
         else{/* ugly but necessary*/
             *target_file = fopen(file_path, "a+");
             if (target_file == NULL) {
                 _bbob2009_logger_error_io(*target_file);
             }
+            if (tmp_file) {/*File already exists, new dim so new line*/
+                fprintf(*target_file, "\n");
+            }
             fprintf(*target_file, "funcId = %d, DIM = %zu, Precision = %.3e, algId = '%s'\n",
                     (int)strtol(function_id,NULL,10), data->number_of_variables, pow(10,-8), data->alg_name);
             fprintf(*target_file, "%%\n");
-            fprintf(*target_file, "%s.info",
+            fprintf(*target_file, "%s.dat",
                     dataFile_path);/*dataFile_path does not have the extension*/
+            current_dim = data->number_of_variables;
+            
         }
     }
     
@@ -194,27 +220,34 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
     /*
       Creates/opens the data and index files
     */
-    char dataFile_name[NUMBBO_PATH_MAX]={0};
     char dataFile_path[NUMBBO_PATH_MAX]={0};/*relative path to the .dat file from where the .info file is*/
     char folder_path[NUMBBO_PATH_MAX]={0};
     char tmpc_funId[3];/*servs to extract the function id as a char *. There should be a better way of doing this! */
+    char tmpc_dim[3];/*servs to extract the dimension as a char *. There should be a better way of doing this! */
     char indexFile_prefix[10]= "bbobexp";/*TODO: make the prefix bbobexp a parameter that the user can modify*/
     assert(data != NULL);
     assert(inner_problem != NULL);
     assert(inner_problem->problem_id != NULL);
     sprintf(tmpc_funId, "%d", bbob2009_get_function_id(inner_problem));
+    sprintf(tmpc_dim, "%zu", inner_problem->number_of_variables);
     /* prepare paths and names*/
     strncpy(dataFile_path,"data_f", NUMBBO_PATH_MAX);
     strncat(dataFile_path, tmpc_funId,
             NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
     coco_join_path(folder_path, sizeof(folder_path), data->path, dataFile_path, NULL);
     coco_create_path(folder_path);
-    strncat(dataFile_path, "/bbobexp_",
+    strncat(dataFile_path, "/bbobexp_f",
             NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
-    strncat(dataFile_path, indexFile_prefix,
+    strncat(dataFile_path, tmpc_funId,
             NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
-    strncat(dataFile_path, inner_problem->problem_id,
+    strncat(dataFile_path, "_DIM",
             NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+    strncat(dataFile_path, tmpc_dim,
+            NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+/*    strncat(dataFile_path, indexFile_prefix,
+            NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);*/
+/*    strncat(dataFile_path, inner_problem->problem_id,
+            NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);*/
 
     
     /* index/info file*/
@@ -223,18 +256,16 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
     fprintf(data->index_file, ", %d",
             bbob2009_get_instance_id(inner_problem));
     
-    
     /*TODO: use tmpc_funId instead of problem_id, but make sure that when same function, data is written correctly (no duplicate header)*/
-    _bbob2009_logger_openFile(&(data->fdata_file), folder_path,
-                                inner_problem->problem_id, "bbobexp_", ".dat");
+    _bbob2009_logger_openFile(&(data->fdata_file), data->path, dataFile_path, ".dat");
     fprintf(data->fdata_file,_file_header_str,*(inner_problem->best_value));
 
-    _bbob2009_logger_openFile(&(data->tdata_file), folder_path,
-                                inner_problem->problem_id, "bbobexp_", ".tdat");
+    _bbob2009_logger_openFile(&(data->tdata_file), data->path, dataFile_path, ".tdat");
     fprintf(data->tdata_file,_file_header_str,*(inner_problem->best_value));
     
-    _bbob2009_logger_openFile(&(data->rdata_file), folder_path,
-                                inner_problem->problem_id, "bbobexp_", ".rdat");
+    /*_bbob2009_logger_openFile(&(data->rdata_file), folder_path,
+                                inner_problem->problem_id, ".rdat");*/
+    _bbob2009_logger_openFile(&(data->rdata_file), data->path, dataFile_path, ".rdat");
     fprintf(data->rdata_file,_file_header_str,*(inner_problem->best_value));
     
     /* TODO: manage duplicate filenames by either using numbers or raising an error */
