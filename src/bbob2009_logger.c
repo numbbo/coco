@@ -124,26 +124,8 @@ static void _bbob2009_logger_error_io(FILE *path) {
 }
 
 /**
- * Creates the file fileName_prefix+problem_id+file_extension in folde_path
+ * Creates the data files or simply opens it
  */
-static void OLD_bbob2009_logger_openFile(FILE ** target_file,
-                                        const char* folder_path, 
-                                        const char* problem_id,
-                                        const char* file_extension) {
-    char file_name[NUMBBO_PATH_MAX];
-    char file_path[NUMBBO_PATH_MAX] = {0};
-    /*file name */
-//    strncpy(file_name, fileName_prefix, NUMBBO_PATH_MAX);
-    strncpy(file_name, problem_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    strncat(file_name, file_extension, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
-    if (*target_file == NULL) {
-        *target_file = fopen(file_path, "a+");
-        if (target_file == NULL) {
-            _bbob2009_logger_error_io(*target_file);
-        }
-    }
-}
 
 static void _bbob2009_logger_openFile(FILE **target_file,
                                       const char* path,
@@ -280,7 +262,6 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self,
             data->best_solution[i]=x[i];
     }
     data->number_of_evaluations++;
-
     /* Add a line in the .dat file for each logging target reached. */
     if (y[0] - data->optimal_fvalue <= data->f_trigger) {
         _bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations, 
