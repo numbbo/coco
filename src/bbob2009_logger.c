@@ -194,6 +194,7 @@ static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
                     dataFile_path);/*dataFile_path does not have the extension*/
             current_dim = data->number_of_variables;
             current_funId = data->function_id;
+            fclose(tmp_file);
         }
     }
 }
@@ -300,7 +301,6 @@ static void _bbob2009_logger_free_data(void *stuff) {
      * that can have problem as input
      */
     _bbob2009_logger_t *data = stuff;
-
     if (data->path != NULL) {
         coco_free_memory(data->path);
         data->path = NULL;
@@ -368,6 +368,7 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem, const char *alg_n
      * should eventually be removed. Some fileds of the bbob2009_logger struct might be useless
      */
     data->function_id = bbob2009_get_function_id(inner_problem);
+    data->instance_id = bbob2009_get_instance_id(inner_problem);
     data->written_last_eval = 1;
     data->last_fvalue = DBL_MAX ;
     _bbob2009_logger_initialize(data,inner_problem);
