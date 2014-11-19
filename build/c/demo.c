@@ -5,7 +5,7 @@
 
 void my_optimizer(coco_problem_t *problem) {
     int i;
-    static const int budget = 1000;/*1000000;*/
+    static const int budget = 100;/*1000000;*/
     const size_t number_of_variables = coco_get_number_of_variables(problem);
     coco_random_state_t *rng = coco_new_random(0xdeadbeef);
     double *x = coco_allocate_vector(number_of_variables);
@@ -14,8 +14,8 @@ void my_optimizer(coco_problem_t *problem) {
     double y;
     
     /* Skip any problems with more than 20 variables */
-    if (number_of_variables > 20) 
-        return;
+/*    if (number_of_variables > 20)
+        return;*/
     for (i = 0; i < budget; ++i) {
         size_t j;
         for (j = 0; j < number_of_variables; ++j) {
