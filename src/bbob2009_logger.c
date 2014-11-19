@@ -127,7 +127,7 @@ static void _bbob2009_logger_error_io(FILE *path) {
  * Creates the data files or simply opens it
  */
 
-static void _bbob2009_logger_openFile(FILE **target_file,
+static void _bbob2009_logger_open_dataFile(FILE **target_file,
                                       const char* path,
                                       const char* dataFile_path,
                                       const char* file_extension) {
@@ -233,13 +233,13 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
     fprintf(data->index_file, ", %d",
             bbob2009_get_instance_id(inner_problem));
     
-    _bbob2009_logger_openFile(&(data->fdata_file), data->path, dataFile_path, ".dat");
+    _bbob2009_logger_open_dataFile(&(data->fdata_file), data->path, dataFile_path, ".dat");
     fprintf(data->fdata_file,_file_header_str,*(inner_problem->best_value));
 
-    _bbob2009_logger_openFile(&(data->tdata_file), data->path, dataFile_path, ".tdat");
+    _bbob2009_logger_open_dataFile(&(data->tdata_file), data->path, dataFile_path, ".tdat");
     fprintf(data->tdata_file,_file_header_str,*(inner_problem->best_value));
     
-    _bbob2009_logger_openFile(&(data->rdata_file), data->path, dataFile_path, ".rdat");
+    _bbob2009_logger_open_dataFile(&(data->rdata_file), data->path, dataFile_path, ".rdat");
     fprintf(data->rdata_file,_file_header_str,*(inner_problem->best_value));
     
     /* TODO: manage duplicate filenames by either using numbers or raising an error */
