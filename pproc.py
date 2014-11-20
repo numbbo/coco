@@ -451,6 +451,16 @@ class RunlengthBasedTargetValues(TargetValues):
         return toolsdivers.num2str(np.log10(self.run_lengths[i]), significant_digits=decimals+1)
         # return str(np.round(np.log10(self.run_lengths[i]), decimals))
     
+    def labels(self):
+        """target values as a list of ``str``"""
+        i, res = 0, []
+        try:
+            while True:
+                res.append(self.label(i))
+                i += 1
+        except IndexError:
+            return res
+    
     def label_name(self):
         return 'RL' + ('/dim' if self.times_dimension else '')
 

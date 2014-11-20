@@ -21,6 +21,7 @@ import getopt
 from pdb import set_trace
 import numpy
 import numpy as np
+from bbob_pproc import pproc
 
 ftarget = 1e-8  # used for ppfigs.main 
 ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
@@ -117,6 +118,15 @@ def main(argv=None):
         --conv 
             if this option is chosen, additionally convergence
             plots for each function and algorithm are generated.
+        --rld-single-fcts
+            generate also runlength distribution figures for each
+            single function.
+        --expensive
+            runlength-based f-target values and fixed display limits,
+            useful with comparatively small budgets. By default the
+            setting is based on the budget used in the data.
+        --not-expensive
+            expensive setting off. 
 
     Exceptions raised:
 
@@ -382,7 +392,7 @@ def main(argv=None):
                 if dim in inset.rldDimsOfInterest:
                     # ECDF for all functions altogether
                     try:
-                        pprldistr2.main(dictDim0[dim], dictDim1[dim],
+                        pprldistr2.main(dictDim0[dim], dictDim1[dim], dim,
                                         inset.rldValsOfInterest,
                                         outputdir, '%02dD_all' % dim, verbose)
                     except KeyError:
@@ -395,7 +405,7 @@ def main(argv=None):
                     dictFG1 = dictDim1[dim].dictByFuncGroup()
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
-                        pprldistr2.main(dictFG1[fGroup], dictFG0[fGroup],
+                        pprldistr2.main(dictFG1[fGroup], dictFG0[fGroup], dim,
                                         inset.rldValsOfInterest,
                                         outputdir, '%02dD_%s' % (dim, fGroup),
                                         verbose)
@@ -405,10 +415,18 @@ def main(argv=None):
                     dictFN1 = dictDim1[dim].dictByNoise()
 
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
-                        pprldistr2.main(dictFN1[fGroup], dictFN0[fGroup],
-                                        inset.rldValsOfInterest, outputdir,
-                                        '%02dD_%s' % (dim, fGroup),
+                        pprldistr2.main(dictFN1[fGroup], dictFN0[fGroup], dim,
+                                        inset.rldValsOfInterest,
+                                        outputdir, '%02dD_%s' % (dim, fGroup),
                                         verbose)
+                                                
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+                            ['\\providecommand{\\bbobpprldistrlegendtwo}[1]{',
+                             pprldistr.caption_two(),  # depends on the config setting, should depend on maxfevals
+                             '}'
+                            ])
+            
+            
             print "ECDF runlength ratio graphs done."
 
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):

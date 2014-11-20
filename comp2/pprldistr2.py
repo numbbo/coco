@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import os
 import numpy
 import matplotlib.pyplot as plt
-from bbob_pproc import toolsstats
+from bbob_pproc import toolsstats, pproc
 from bbob_pproc.ppfig import saveFigure, consecutiveNumbers, plotUnifLogXMarkers
 from pdb import set_trace
 
@@ -88,12 +88,13 @@ def computeERT(fevals, maxevals):
     res = toolsstats.sp(data, issuccessful=success)
     return res[0]
 
-def plotLogAbs(dsList0, dsList1, fvalueToReach, verbose=True):
+def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach, verbose=True):
     """Creates ECDF of run length ratios.
 
     :param DataSetList dsList0: reference
     :param DataSetList dsList1: data set list of algorithm of interest
-    :param seq fvalueToReach: target function values
+    :param int dim: dimension
+    :param TargetValues targetValuesToReach: target function values
     :param bool verbose: controls verbosity
 
     :returns: handles
@@ -105,10 +106,8 @@ def plotLogAbs(dsList0, dsList1, fvalueToReach, verbose=True):
     evals0 = {}
     evals1 = {}
 
-    targets = fvalueToReach  # yet to come: TargetValues class needs to be considered
-
-    succ0 = [0] * len(targets)
-    succ1 = [0] * len(targets)
+    succ0 = [0] * len(targetValuesToReach.labels())
+    succ1 = [0] * len(targetValuesToReach.labels())
 
     # TODO: check all functions are there...
     for func in set(dictFunc0.keys()) & set(dictFunc1.keys()):
@@ -120,27 +119,27 @@ def plotLogAbs(dsList0, dsList1, fvalueToReach, verbose=True):
         #    set_trace() # should not occur
         #    warnings.warn('')
 
-        evals0[func] = i0.detEvals(targets)
+        evals0[func] = i0.detEvals(targetValuesToReach((func, dim)))
         for i, evals in enumerate(evals0[func]):
             tmp = numpy.isnan(evals)
             evals[tmp] = numpy.inf
             if not tmp.all():
                 succ0[i] += 1
 
-        evals1[func] = i1.detEvals(targets)
+        evals1[func] = i1.detEvals(targetValuesToReach((func, dim)))
         for i, evals in enumerate(evals1[func]):
             tmp = numpy.isnan(evals)
             evals[tmp] = numpy.inf
             if not tmp.all():
                 succ1[i] += 1
 
-    for i, target in enumerate(reversed(sorted(targets))):
+    for j in range( len( targetValuesToReach ) ):
 
         x = []
         for func in evals0:
             # Compute the pair-wise ratio
-            tmp1 = numpy.reshape(evals1[func][i], (1, len(evals1[func][i])))
-            tmp0 = numpy.reshape(evals0[func][i], (len(evals0[func][i]), 1))
+            tmp1 = numpy.reshape(evals1[func][j], (1, len(evals1[func][j])))
+            tmp0 = numpy.reshape(evals0[func][j], (len(evals0[func][j]), 1))
             try:
                 x.append((tmp1/tmp0).flatten())  # inf/inf results in nan
             except FloatingPointError: 
@@ -149,14 +148,17 @@ def plotLogAbs(dsList0, dsList1, fvalueToReach, verbose=True):
                 
                 #TODO: check division, check numpy.inf...
 
-        label = '%+d: %d/%d' % (numpy.log10(target), succ1[i], succ0[i])
+        if isinstance( targetValuesToReach, pproc.RunlengthBasedTargetValues ):
+            label = '%s: %d/%d' % (targetValuesToReach.label(j), succ1[j], succ0[j])
+        else:
+            label = '%+d: %d/%d' % (targetValuesToReach.loglabel(j), succ1[j], succ0[j])
         if len(x) > 0:  # prevent warning/error
             x = numpy.hstack(x)
             x = x[numpy.isnan(x)==False] # Is it correct?
         n = len(x)
 
         if n == 0:
-            res.extend(plt.plot([], [], label=label, linewidth=3., **rldStyles[i]))
+            res.extend(plt.plot([], [], label=label, linewidth=3., **rldStyles[j]))
             continue # no plot?
 
         x.sort()
@@ -173,7 +175,7 @@ def plotLogAbs(dsList0, dsList1, fvalueToReach, verbose=True):
         #             abs(numpy.ceil(numpy.log10(x[-1]))))
         if len(x) == 0:
             res.append(plt.axhline(tmp/float(n), label=label,
-                                   linewidth=3., **rldStyles[i]))
+                                   linewidth=3., **rldStyles[j]))
             # tmp/float(n) == (n-tmp2)/float(n) # TODO: check
         else:
             x2 = numpy.hstack([numpy.repeat(x, 2)])
@@ -182,7 +184,7 @@ def plotLogAbs(dsList0, dsList1, fvalueToReach, verbose=True):
                                numpy.repeat(numpy.arange(tmp+1, n-tmp2) / float(n), 2),
                                (n-tmp2)/float(n)])
             #res.extend(plt.plot(x2, y2, label=label, linewidth=3., **rldStyles[i]))
-            plotArgs = rldStyles[i].copy()
+            plotArgs = rldStyles[j].copy()
             plotArgs['label'] = label
             plotArgs['linewidth'] = 3.
             #res.extend(plotUnifLogXMarkers(x2, y2, 3, plotArgs))
@@ -335,13 +337,14 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
 
     return res#, fsolved, funcs
 
-def main(dsList0, dsList1, valuesOfInterest=None,
+def main(dsList0, dsList1, dim, targetsOfInterest=None,
          outputdir='', info='default', verbose=True):
     """Generate figures of empirical cumulative distribution functions.
 
     :param DataSetList dsList0: data set of reference algorithm
     :param DataSetList dsList1: data set of algorithm of concern
-    :param sequence valuesOfInterest: target function values to be
+    :param int dim: dimension
+    :param TargetValues targetsOfInterest: target function values to be
                                       displayed
     :param bool isStoringXMax: if set to True, the first call BeautifyVD
                                sets the globals :py:data:`fmax` and 
@@ -364,8 +367,8 @@ def main(dsList0, dsList1, valuesOfInterest=None,
 
     figureName = os.path.join(outputdir,'pplogabs_%s' %(info))
 
-    handles = plotLogAbs(dsList0, dsList1,
-                         valuesOfInterest, verbose=verbose)
+    handles = plotLogAbs(dsList0, dsList1, dim,
+                         targetsOfInterest, verbose=verbose)
 
     beautify(handles)
 
