@@ -61,8 +61,8 @@ simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a
 
 fig_formats = ('eps', 'pdf') if not in_a_hurry else ('pdf', )
 
-instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 31:1, 32:1, 33:1, 34:1, 35:1,
-                       36:1, 37:1, 38:1, 39:1, 40:1}  # only for consistency checking
+instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 41:1, 42:1, 43:1, 44:1,
+                       45:1, 46:1, 47:1, 48:1, 49:1, 50:1}  # only for consistency checking
 line_styles_old = [  # used by ppfigs and pprlmany  
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
           {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, 
@@ -188,7 +188,7 @@ class Testbed(object):
                     continue  # ignore annotations
 
 class GECCOBBOBTestbed(Testbed):
-    """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013. 
+    """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
     """
     def __init__(self):
         # TODO: should become a function, as low_budget is a display setting
