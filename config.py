@@ -60,6 +60,10 @@ def config():
                                                                        unique_target_values=True)
             # pprldmany.caption = ... captions are still hard coded in LaTeX
             pprldmany.x_limit = genericsettings.maxevals_fix_display  # always fixed
+            
+        # genericsettings (to be used in rungeneric2 while calling pprldistr.comp(...)):    
+        genericsettings.rldValsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_single_rldistr, 
+                                                                          force_different_targets_factor=10**-0.2)
         # pprldistr:
         pprldistr.single_target_values = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_single_rldistr, 
                                                                           force_different_targets_factor=10**-0.2)

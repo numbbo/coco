@@ -111,8 +111,7 @@ caption_left_rlbased_targets = r"""%
      $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
 caption_wrap_up = r"""%
      Legends indicate for each target the number of functions that were solved in at
-     least one trial within the displayed budget.
-     """
+     least one trial within the displayed budget."""
 caption_right = r"""%
      Right subplots: ECDF of the
      best achieved $\Df$
@@ -121,10 +120,39 @@ caption_right = r"""%
      (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red),
      where \Df\ and \textsf{Df} denote the difference to the optimal function value.
      Light brown lines in the background show ECDFs for the most difficult target of all
-     algorithms benchmarked during BBOB-2009.
-     """
+     algorithms benchmarked during BBOB-2009."""
 caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_wrap_up + caption_right
 caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_wrap_up + caption_right
+
+caption_two_part_one = r"""%
+    Empirical cumulative distributions (ECDF) 
+    of run lengths and speed-up ratios in 5-D (left) and 20-D (right). 
+    Left sub-columns: ECDF of
+    the number of function evaluations divided by dimension $D$
+    (FEvals/D) """
+caption_two_left_fixed_targets = r"""%
+    to reach a target value $\fopt+\Df$ with $\Df=10^{k}$, where
+    $k\in\{1, -1, -4, -8\}$ is given by the first value in the legend, for
+    \algorithmA\ ($\circ$) and \algorithmB\ ($\triangledown$). Light beige lines show the ECDF of
+    FEvals for target value $\Df=10^{-8}$ of all algorithms benchmarked during
+    BBOB-2009. 
+    """
+caption_two_left_rlbased_targets = r"""%
+    to fall below $\fopt+\Df$ for
+    \algorithmA\ ($\circ$) and \algorithmB\ ($\triangledown$) where \Df\ is the
+    target just not reached by the GECCO-BBOB-2009 best algorithm within a budget of
+    $k\times\DIM$ evaluations, with $k$ being the value in the legend. """
+caption_two_right = r"""%
+    Right sub-columns: 
+    ECDF of FEval ratios of \algorithmA\ divided by \algorithmB for target
+    function values $10^k$ with $k$ given in the legend; all
+    trial pairs for each function. Pairs where both trials failed are disregarded,
+    pairs where one trial failed are visible in the limits being $>0$ or $<1$. The
+    legends indicate the target budget of $k\times\DIM$ evaluations and, after the colon, the number of functions that were solved in at least one trial
+    (\algorithmA\ first)."""
+caption_two_fixed = caption_two_part_one + caption_two_left_fixed_targets + caption_two_right
+caption_two_rlbased = caption_two_part_one + caption_two_left_rlbased_targets + caption_two_right
+
 
 
 previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'
@@ -165,6 +193,10 @@ def load_previous_RLBdata( filename = previous_RLBdata_filename ):
 def caption_single( max_evals_div_dim ):
     caption = caption_single_rlbased if genericsettings.runlength_based_targets else caption_single_fixed
     return caption.replace( r'TO_BE_REPLACED', '$' + 'D, '.join( [str( i ) for i in single_runlength_factors[:6]] ) + 'D,\dots$' )
+    
+def caption_two():
+    caption = caption_two_rlbased if genericsettings.runlength_based_targets else caption_two_fixed
+    return caption
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""
@@ -486,7 +518,9 @@ def comp( dsList0, dsList1, targets, isStoringXMax = False,
     # plt.rc("font", size=20)
     # plt.rc("legend", fontsize=20)
 
-    targets = pproc.TargetValues.cast( targets )
+    if not isinstance( targets, pproc.RunlengthBasedTargetValues ):
+        targets = pproc.TargetValues.cast( targets )
+  
     dictdim0 = dsList0.dictByDim()
     dictdim1 = dsList1.dictByDim()
     for d in set( dictdim0.keys() ) & set( dictdim1.keys() ):
@@ -504,7 +538,8 @@ def comp( dsList0, dsList1, targets, isStoringXMax = False,
         filename = os.path.join( outputdir, 'pprldistr_%02dD_%s' % ( d, info ) )
         fig = plt.figure()
         for j in range( len( targets ) ):
-            tmp = plotRLDistr( dictdim0[d], lambda fun_dim: targets( fun_dim )[j], targets.loglabel( j ),
+            tmp = plotRLDistr( dictdim0[d], lambda fun_dim: targets( fun_dim )[j], 
+                              targets.label( j ) if isinstance( targets, pproc.RunlengthBasedTargetValues ) else targets.loglabel( j ),
                               marker = genericsettings.line_styles[1]['marker'],
                               **rldStyles[j % len( rldStyles )] )
             plt.setp( tmp[-1], label = None ) # Remove automatic legend
@@ -514,11 +549,13 @@ def comp( dsList0, dsList1, targets, isStoringXMax = False,
                      markeredgecolor = plt.getp( tmp[-1], 'color' ),
                      markerfacecolor = 'none' )
 
-            tmp = plotRLDistr( dictdim1[d], lambda fun_dim: targets( fun_dim )[j], targets.loglabel( j ),
+            tmp = plotRLDistr( dictdim1[d], lambda fun_dim: targets( fun_dim )[j], 
+                              targets.label( j ) if isinstance( targets, pproc.RunlengthBasedTargetValues ) else targets.loglabel( j ),
                               marker = genericsettings.line_styles[0]['marker'],
                               **rldStyles[j % len( rldStyles )] )
             # modify the automatic legend: remover marker and change text
-            plt.setp( tmp[-1], marker = '', label = targets.loglabel( j ) )
+            plt.setp( tmp[-1], marker = '',
+                     label = targets.label( j ) if isinstance( targets, pproc.RunlengthBasedTargetValues ) else targets.loglabel( j ) )
             # Mods are added after to prevent them from appearing in the legend
             plt.setp( tmp, markersize = 15.,
                      markeredgewidth = plt.getp( tmp[-1], 'linewidth' ),
@@ -527,7 +564,13 @@ def comp( dsList0, dsList1, targets, isStoringXMax = False,
 
         funcs = set( i.funcId for i in dictdim0[d] ) | set( i.funcId for i in dictdim1[d] )
         text = 'f%s' % ( consecutiveNumbers( sorted( funcs ) ) )
-        plot_previous_algorithms( d, funcs )
+        
+        if not isinstance( targets, pproc.RunlengthBasedTargetValues ):
+            plot_previous_algorithms( d, funcs )
+
+        else:
+            plotRLB_previous_algorithms( d, funcs )
+        
         # plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim0[d]), ls='--', color='k')
         # plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim1[d]), color='k')
         plt.axvline( max( i.mMaxEvals() / i.dim for i in dictdim0[d] ),
@@ -708,6 +751,7 @@ def main( dsList, isStoringXMax = False, outputdir = '',
     # plt.rc("font", size=20)
     # plt.rc("legend", fontsize=20)
     targets = single_target_values # convenience abbreviation
+        
     for d, dictdim in dsList.dictByDim().iteritems():
         maxEvalsFactor = max( i.mMaxEvals() / d for i in dictdim )
         if isStoringXMax:
