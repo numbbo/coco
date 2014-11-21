@@ -62,13 +62,16 @@ def main(dictAlg, outputdir='.', verbose=True):
     """
     global warned  # bind variable warned into this scope
     dictFun = pproc.dictAlgByFun(dictAlg)
-    for l in dictFun:
-        for i in dictFun[l]: # please, what is i???
+    for l in dictFun:  # l appears to be the function id!?
+        for i in dictFun[l]: # please, what is i??? appears to be the algorithm-key
             plt.figure()
             if type(i) in (list, tuple):
-                figurename="ppconv_plot_" + i[0] + "_f"+ str(l)
+                figurename = "ppconv_plot_" + i[0] + "_f" + str(l)
             else:
-                figurename="ppconv_plot_" + dictFun[l][i].algId + "_f"+ str(l)
+                try:
+                    figurename = "ppconv_plot_" + dictFun[l][i].algId + "_f" + str(l)
+                except AttributeError:  # this is a (rather desperate) bug-fix
+                    figurename = "ppconv_plot_" + dictFun[l][i][0].algId + "_f" + str(l)
             plt.xlabel('number of function evaluations / dimension')
             plt.ylabel('Median of fitness')
             plt.grid()
