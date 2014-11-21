@@ -106,8 +106,11 @@ def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach, verbose=True):
     evals0 = {}
     evals1 = {}
 
-    succ0 = [0] * len(targetValuesToReach.labels())
-    succ1 = [0] * len(targetValuesToReach.labels())
+    if not isinstance(targetValuesToReach, pproc.TargetValues):
+        targetValuesToReach = pproc.TargetValues(targetValuesToReach)
+
+    succ0 = [0] * len(targetValuesToReach)
+    succ1 = [0] * len(targetValuesToReach)
 
     # TODO: check all functions are there...
     for func in set(dictFunc0.keys()) & set(dictFunc1.keys()):
@@ -133,8 +136,7 @@ def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach, verbose=True):
             if not tmp.all():
                 succ1[i] += 1
 
-    for j in range( len( targetValuesToReach ) ):
-
+    for j in range(len(targetValuesToReach)):
         x = []
         for func in evals0:
             # Compute the pair-wise ratio
@@ -148,10 +150,10 @@ def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach, verbose=True):
                 
                 #TODO: check division, check numpy.inf...
 
-        if isinstance( targetValuesToReach, pproc.RunlengthBasedTargetValues ):
+        if isinstance(targetValuesToReach, pproc.RunlengthBasedTargetValues):
             label = '%s: %d/%d' % (targetValuesToReach.label(j), succ1[j], succ0[j])
         else:
-            label = '%+d: %d/%d' % (targetValuesToReach.loglabel(j), succ1[j], succ0[j])
+            label = '%s: %d/%d' % (targetValuesToReach.loglabel(j), succ1[j], succ0[j])
         if len(x) > 0:  # prevent warning/error
             x = numpy.hstack(x)
             x = x[numpy.isnan(x)==False] # Is it correct?
