@@ -70,7 +70,7 @@ def main(dictAlg, outputdir='.', verbose=True):
             else:
                 try:
                     figurename = "ppconv_plot_" + dictFun[l][i].algId + "_f" + str(l)
-                except AttributeError:  # this is a (rather desperate) bug-fix
+                except AttributeError:  # this is a (rather desperate) bug-fix attempt that works for the unit test
                     figurename = "ppconv_plot_" + dictFun[l][i][0].algId + "_f" + str(l)
             plt.xlabel('number of function evaluations / dimension')
             plt.ylabel('Median of fitness')
