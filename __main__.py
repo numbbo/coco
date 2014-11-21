@@ -87,6 +87,11 @@ if __name__ == "__main__":
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'BFGS'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
     t0 = time.time()
+    os.system(python + command + '--conv' +
+                join_path(data_path, 'gecco-bbob-1-24', '2013', 'data', 'hutter2013_SMAC.tar.gz') +
+                join_path(data_path, 'gecco-bbob-1-24', '2013', 'data', 'auger2013_lmmCMA.tar.gz'))
+    print '  subtest finished in ', time.time() - t0, ' seconds'
+    t0 = time.time()
     os.system(python + command + ' --omit-single ' +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'DE-PSO ') +
                 join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'VNS '))
