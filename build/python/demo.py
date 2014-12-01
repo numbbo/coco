@@ -10,7 +10,7 @@ def my_optimizer(f, lower_bounds, upper_bounds, budget):
     for i in range(budget):
         y = f(x)
         
-for problem in coco.Benchmark("toy_suit", "toy_observer", "random_search"):
+for problem in coco.Benchmark("bbob2009", "bbob2009_observer", "random_search"):
     print "Optimizing '%s' ... " % str(problem)
     my_optimizer(problem,
                  problem.lower_bounds,

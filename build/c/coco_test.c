@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
             if (shown_failures < 100) {
                 fprintf(stdout, "%8i %8i FAILED expected=%.8e observed=%.8e\n",
                         function_id, testvector_id, expected_value, y);
-                fflush(stdout);  
+                fflush(stdout);
                 ++shown_failures;          
             } else if (shown_failures == 100) {
                 fprintf(stdout, "... further failed tests suppressed ...\n");

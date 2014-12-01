@@ -8,7 +8,9 @@
 const int NB_PEAKS_21 = 101;
 const int NB_PEAKS_22 = 21;
 const int MAX_DIM = 40;
-double peaks[NB_PEAKS_21 * MAX_DIM];
+double *peaks;
+double peaks21[NB_PEAKS_21 * MAX_DIM];
+double peaks22[NB_PEAKS_22 * MAX_DIM];
 int compare_doubles(const void *, const void *);
 
 typedef struct {
@@ -39,6 +41,7 @@ static void _bbob_gallagher_evaluate(coco_problem_t *self, double *x, double *y)
 			Fpen += tmp * tmp;
 		}
 	}
+    Fadd = 0.;
 	Fadd += Fpen;
 	/* Transformation in search space */
 	tmx = (double *)calloc(self->number_of_variables, sizeof(double));
@@ -98,13 +101,16 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
 	int rseed;
 	coco_problem_t *problem;
 	_bbob_gallagher_t *data;
-	double maxcondition = 1000., *arrCondition, fitvalues[2] = {1.1, 9.1};
+	double maxcondition = 1000.,maxcondition1 = 1000., *arrCondition, fitvalues[2] = {1.1, 9.1};/*maxcondition1 satisfies the old code and the doc but seems wrong in that it is, with very high probabiliy, not the largest condition level!!!*/
 	double b, c; /* Parameters for generating local optima. In the old code, they are different in f21 and f22 */
 
 	if (number_of_peaks == 101) {
 		rseed = 21 + 10000 * instance_id;
+        peaks = peaks21;
+        maxcondition1=sqrt(maxcondition1);
 	} else {
 		rseed = 22 + 10000 * instance_id;
+        peaks = peaks22;
 	}
 
 
@@ -146,14 +152,14 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
 
 	/* Initialize all the data of the inner problem */
 	bbob2009_unif(peaks, number_of_peaks - 1, data->rseed);
-	rperm = (size_t *)malloc((number_of_peaks - 1) * sizeof(double));
+	rperm = (size_t *)malloc((number_of_peaks - 1) * sizeof(size_t));
 	for (i = 0; i < number_of_peaks - 1; ++i)
-		rperm[i] = i;
+        rperm[i] = i;
 	qsort(rperm, number_of_peaks - 1, sizeof(size_t), compare_doubles);
 
 	/* Random permutation */
 	arrCondition = coco_allocate_vector(number_of_peaks);
-	arrCondition[0] = sqrt(maxcondition);
+	arrCondition[0] = maxcondition1;
 	data->peakvalues = coco_allocate_vector(number_of_peaks);
 	data->peakvalues[0] = 10;
 	for (i = 1; i < number_of_peaks; ++i) {
