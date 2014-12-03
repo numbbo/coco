@@ -18,7 +18,7 @@ used by other modules, but does not modify settings of other modules.
 import numpy as np
 import ppfig, ppfigdim, pptable
 from bbob_pproc import genericsettings, pproc, pprldistr
-from bbob_pproc.comp2 import ppfig2, ppscatter
+from bbob_pproc.comp2 import ppfig2, ppscatter, pptable2
 from bbob_pproc.compall import ppfigs, pprldmany, pptables
 
 def target_values(is_expensive, dict_max_fun_evals={}, runlength_limit=1e3):
@@ -69,7 +69,7 @@ def config():
         pprldistr.single_target_values = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_single_rldistr, 
                                                                           force_different_targets_factor=10**-0.2)
         pprldistr.runlen_xlimits_max = genericsettings.maxevals_fix_display / 2 if genericsettings.maxevals_fix_display else None # can be None
-        pprldistr.runlen_xlimits_min = 10**-0.3  # can be None 
+        pprldistr.runlen_xlimits_min = 10**-0.3  # can be None
         # ppfigdim:
         ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_scaling_figs,
                                                                        # [10**i for i in [2.0, 1.5, 1.0, 0.5, 0.1, -0.3]],
@@ -92,8 +92,11 @@ def config():
         pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
                                                                      force_different_targets_factor=10**-0.2)
         
+        # pptable2:
+        pptable2.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
+                                                                     force_different_targets_factor=10**-0.2)
+        
         # pptables (for rungenericmany):
-        #pptables.table_caption=pptable.table_caption_rlbased
         pptables.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
                                                                      force_different_targets_factor=10**-0.2)
 

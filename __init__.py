@@ -32,4 +32,4 @@ __all__  = ['comp2', 'compall', 'main', 'ppfigdim', 'pplogloss', 'pprldistr',
             'pproc', 'ppsingle', 'pptable', 'rungeneric', 'rungeneric1',
             'rungeneric2', 'rungenericmany', 'algportfolio']
 
-__version__ = '10.7'
+__version__ = '15.00'
