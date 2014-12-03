@@ -24,7 +24,8 @@ from bbob_pproc.compall import ppfigs, pprldmany, pptables
 def target_values(is_expensive, dict_max_fun_evals={}, runlength_limit=1e3):
     """manage target values setting in "expensive" optimization scenario, 
     when ``is_expensive not in (True, False), the setting is based on 
-    the comparison of entries in ``dict_max_fun_evals`` with ``runlength_limit``
+    the comparison of entries in ``dict_max_fun_evals`` with
+    ``runlength_limit``.
     
     """
     # if len(dict_max_fun_evals):

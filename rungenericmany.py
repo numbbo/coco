@@ -295,6 +295,7 @@ def main(argv=None):
 
 
         # compute maxfuneval values
+        # TODO: we should rather take min_algorithm max_evals
         dict_max_fun_evals = {}
         for ds in dsList:
             dict_max_fun_evals[ds.dim] = numpy.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(numpy.max(ds.maxevals))))
