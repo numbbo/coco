@@ -15,13 +15,13 @@ from __future__ import absolute_import
 import os, warnings
 import numpy
 import matplotlib.pyplot as plt
-from bbob_pproc import genericsettings, bestalg, toolsstats
+from bbob_pproc import genericsettings, bestalg, toolsstats, pproc
 from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec, writeLabels
 from bbob_pproc.toolsstats import significancetest
 
 from pdb import set_trace
 
-targetsOfInterest = (10., 1e-1, 1e-3, 1e-5, 1e-7) # Needs to be sorted
+targetsOfInterest = pproc.TargetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))
 targetf = 1e-8 # value for determining the success ratio
 samplesize = genericsettings.simulated_runlength_bootstrap_sample_size 
 
@@ -29,16 +29,35 @@ samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 funInfos = {}
 isBenchmarkinfosFound = False
 
-figure_legend = (
-    r"\ERT\ in number of function evaluations divided by the best \ERT\ measured during " +
-    r"BBOB-2009 given in the respective first row with the central 80\% range divided by two in brackets for " +
-    r"different $\Df$ values. \#succ is the number of trials that reached the final " +
-    r"target $\fopt + 10^{-8}$. " +
-    r"1:\algorithmAshort\ is \algorithmA\ and 2:\algorithmBshort\ is \algorithmB. " + 
-    r"Bold entries are statistically significantly better compared to the other algorithm, " + 
-    r"with $p=0.05$ or $p=10^{-k}$ where $k\in\{2,3,4,\dots\}$ is the number " +
-    r"following the $\star$ symbol, with Bonferroni correction of #1. " +
-    r"A $\downarrow$ indicates the same tested against the best BBOB-2009. ")
+
+table_caption_one = r"""%
+    Expected running time (ERT in number of function 
+    evaluations) divided by the respective best ERT measured during BBOB-2009 in
+    dimensions 5 (left) and 20 (right).
+    The ERT and in braces, as dispersion measure, the half difference between 90 and 
+    10\%-tile of bootstrapped run lengths appear for each algorithm and 
+    """
+table_caption_two1 = r"""%
+    target, the corresponding best ERT
+    in the first row. The different target \Df-values are shown in the top row. 
+    \#succ is the number of trials that reached the (final) target $\fopt + 10^{-8}$.
+    """
+table_caption_two2 = r"""%
+    run-length based target, the corresponding best ERT
+    (preceded by the target \Df-value in \textit{italics}) in the first row. 
+    \#succ is the number of trials that reached the target value of the last column.
+    """
+table_caption_rest = r"""%
+    The median number of conducted function evaluations is additionally given in 
+    \textit{italics}, if the target in the last column was never reached. 
+    1:\algorithmAshort\ is \algorithmA\ and 2:\algorithmBshort\ is \algorithmB.
+    Bold entries are statistically significantly better compared to the other algorithm,
+    with $p=0.05$ or $p=10^{-k}$ where $k\in\{2,3,4,\dots\}$ is the number
+    following the $\star$ symbol, with Bonferroni correction of #1.
+    A $\downarrow$ indicates the same tested against the best algorithm of BBOB-2009.
+    """
+table_caption = table_caption_one + table_caption_two1 + table_caption_rest
+table_caption_expensive = table_caption_one + table_caption_two2 + table_caption_rest
 
 infofile = os.path.join(os.path.split(__file__)[0], '..',
                         'benchmarkshortinfos.txt')
@@ -78,13 +97,19 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     dims = set.intersection(set(dictDim0.keys()), set(dictDim1.keys()))
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
-
-    header = [r'$\Delta f$']
-    for i in targetsOfInterest:
-        #header.append(r'\multicolumn{2}{@{}c@{}}{$10^{%d}$}' % (int(numpy.log10(i))))
-        header.append(r'\multicolumn{2}{@{}c@{}}{1e%+d}' % (int(numpy.log10(i))))
-    header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}')
-
+    
+    header = []
+    if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+        header = [r'\#FEs/D']
+        for label in targetsOfInterest.labels():
+            header.append(r'\multicolumn{2}{@{}c@{}}{%s}' % label) 
+    else:
+        header = [r'$\Delta f_\mathrm{opt}$']
+        for label in targetsOfInterest.labels():
+            header.append(r'\multicolumn{2}{@{\,}c@{\,}}{%s}'
+                        % label)
+    header.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
+    
     for d in dimsOfInterest: # TODO set as input arguments
         table = [header]
         extraeol = [r'\hline']
@@ -98,14 +123,34 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         nbtests = len(funcs) * 2. #len(dimsOfInterest)
 
         for f in sorted(funcs):
+            targets = targetsOfInterest((f, d))
+            targetf = targets[-1]
+            
             bestalgentry = bestalg.bestalgentries2009[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
-            bestalgdata = bestalgentry.detERT(targetsOfInterest)
-            bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest)
+            bestalgdata = bestalgentry.detERT(targets)
+            bestalgevals, bestalgalgs = bestalgentry.detEvals(targets)
 
-            for i in bestalgdata[:-1]:
-                curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % writeFEvalsMaxPrec(i, 2))
-            curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
+            if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+                # write ftarget:fevals
+                for i in xrange(len(bestalgdata[:-1])):
+                    temp = "%.1e" % targetsOfInterest((f, d))[i]
+                    if temp[-2]=="0":
+                        temp = temp[:-2]+temp[-1]
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
+                                   % (temp,writeFEvalsMaxPrec(bestalgdata[i], 2)))
+                temp = "%.1e" % targetsOfInterest((f, d))[-1]
+                if temp[-2]=="0":
+                    temp = temp[:-2]+temp[-1]
+                curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
+                               % (temp,writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
+            else:            
+                # write #fevals of the reference alg
+                for i in bestalgdata[:-1]:
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
+                                   % writeFEvalsMaxPrec(i, 2))
+                curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
+                               % writeFEvalsMaxPrec(bestalgdata[-1], 2))
 
             tmp = bestalgentry.detEvals([targetf])[0][0]
             tmp2 = numpy.sum(numpy.isnan(tmp) == False)
@@ -128,7 +173,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     warnings.warn('data missing for data set ' + str(nb) + ' and function ' + str(f))
                     print('*** Warning: data missing for data set ' + str(nb) + ' and function ' + str(f) + '***')
                     continue # TODO: problem here!
-                ertdata[nb] = entry.detERT(targetsOfInterest)
+                ertdata[nb] = entry.detERT(targets)
                 entries.append(entry)
 
             for _t in ertdata.values():
@@ -139,9 +184,9 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             if len(entries) < 2: # funcion not available for *both* algorithms
                 continue  # TODO: check which one is missing and make sure that what is there is displayed properly in the following
             
-            testres0vs1 = significancetest(entries[0], entries[1], targetsOfInterest)
-            testresbestvs1 = significancetest(bestalgentry, entries[1], targetsOfInterest)
-            testresbestvs0 = significancetest(bestalgentry, entries[0], targetsOfInterest)
+            testres0vs1 = significancetest(entries[0], entries[1], targets)
+            testresbestvs1 = significancetest(bestalgentry, entries[1], targets)
+            testresbestvs0 = significancetest(bestalgentry, entries[0], targets)
 
             for nb, entry in enumerate(entries):
                 if nb == 0:
@@ -152,7 +197,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                 #data = entry.detERT(targetsOfInterest)
                 dispersion = []
                 data = []
-                evals = entry.detEvals(targetsOfInterest)
+                evals = entry.detEvals(targets)
                 for i in evals:
                     succ = (numpy.isnan(i) == False)
                     tmp = i.copy()

@@ -130,28 +130,34 @@ caption_two_part_one = r"""%
     Left sub-columns: ECDF of
     the number of function evaluations divided by dimension $D$
     (FEvals/D) """
-caption_two_left_fixed_targets = r"""%
+caption_two_fixed_targets = r"""%
     to reach a target value $\fopt+\Df$ with $\Df=10^{k}$, where
     $k\in\{1, -1, -4, -8\}$ is given by the first value in the legend, for
     \algorithmA\ ($\circ$) and \algorithmB\ ($\triangledown$). Light beige lines show the ECDF of
     FEvals for target value $\Df=10^{-8}$ of all algorithms benchmarked during
     BBOB-2009.
-    """
-caption_two_left_rlbased_targets = r"""%
-    to fall below $\fopt+\Df$ for
-    \algorithmA\ ($\circ$) and \algorithmB\ ($\triangledown$) where \Df\ is the
-    target just not reached by the GECCO-BBOB-2009 best algorithm within a budget of
-    $k\times\DIM$ evaluations, with $k$ being the value in the legend. """
-caption_two_right = r"""%
-    Right sub-columns:
+    Right sub-columns: 
     ECDF of FEval ratios of \algorithmA\ divided by \algorithmB for target
     function values $10^k$ with $k$ given in the legend; all
     trial pairs for each function. Pairs where both trials failed are disregarded,
     pairs where one trial failed are visible in the limits being $>0$ or $<1$. The
-    legends indicate the target budget of $k\times\DIM$ evaluations and, after the colon, the number of functions that were solved in at least one trial
+    legend also indicates, after the colon, the number of functions that were solved in at least one trial
     (\algorithmA\ first)."""
-caption_two_fixed = caption_two_part_one + caption_two_left_fixed_targets + caption_two_right
-caption_two_rlbased = caption_two_part_one + caption_two_left_rlbased_targets + caption_two_right
+caption_two_rlbased_targets = r"""%
+    to fall below $\fopt+\Df$ for
+    \algorithmA\ ($\circ$) and \algorithmB\ ($\triangledown$) where \Df\ is the
+    target just not reached by the GECCO-BBOB-2009 best algorithm within a budget of
+    $k\times\DIM$ evaluations, with $k$ being the value in the legend. 
+    Right sub-columns:
+    ECDF of FEval ratios of \algorithmA\ divided by \algorithmB\ for run-length-based
+    targets; all
+    trial pairs for each function. Pairs where both trials failed are disregarded,
+    pairs where one trial failed are visible in the limits being $>0$ or $<1$. The
+    legends indicate the target budget of $k\times\DIM$ evaluations and,
+    after the colon, the number of functions that were solved in at least one trial
+    (\algorithmA\ first)."""
+caption_two_fixed = caption_two_part_one + caption_two_fixed_targets
+caption_two_rlbased = caption_two_part_one + caption_two_rlbased_targets
 
 
 
