@@ -12,12 +12,12 @@
  * using coco_free_memory().
  */
 char *coco_strdup(const char *string) {
-    size_t len;
-    char *duplicate;
-    if (string == NULL)
-        return NULL;
-    len = strlen(string);
-    duplicate = (char *)coco_allocate_memory(len + 1);
-    memcpy(duplicate, string, len + 1);
-    return duplicate;
+  size_t len;
+  char *duplicate;
+  if (string == NULL)
+    return NULL;
+  len = strlen(string);
+  duplicate = (char *)coco_allocate_memory(len + 1);
+  memcpy(duplicate, string, len + 1);
+  return duplicate;
 }

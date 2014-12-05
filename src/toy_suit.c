@@ -17,28 +17,28 @@
  * NULL.
  */
 coco_problem_t *toy_suit(const int function_index) {
-    static const int dims[] = {2, 3, 5, 10, 20};
-    const int fid = function_index % 6;
-    const int did = function_index / 6;
-    coco_problem_t *problem;
-    if (did >= 1)
-        return NULL;
+  static const int dims[] = {2, 3, 5, 10, 20};
+  const int fid = function_index % 6;
+  const int did = function_index / 6;
+  coco_problem_t *problem;
+  if (did >= 1)
+    return NULL;
 
-    if (fid == 0) {
-        problem = sphere_problem(dims[did]);
-    } else if (fid == 1) {
-        problem = ellipsoid_problem(dims[did]);
-    } else if (fid == 2) {
-        problem = rastrigin_problem(dims[did]);
-    } else if (fid == 3) {
-        problem = bueche_rastrigin_problem(dims[did]);
-    } else if (fid == 4) {
-        double xopt[20] = {5.0};
-        problem = linear_slope_problem(dims[did], xopt);
-    } else if (fid == 5) {
-        problem = rosenbrock_problem(dims[did]);
-    } else {
-        return NULL;
-    }
-    return problem;
+  if (fid == 0) {
+    problem = sphere_problem(dims[did]);
+  } else if (fid == 1) {
+    problem = ellipsoid_problem(dims[did]);
+  } else if (fid == 2) {
+    problem = rastrigin_problem(dims[did]);
+  } else if (fid == 3) {
+    problem = bueche_rastrigin_problem(dims[did]);
+  } else if (fid == 4) {
+    double xopt[20] = {5.0};
+    problem = linear_slope_problem(dims[did], xopt);
+  } else if (fid == 5) {
+    problem = rosenbrock_problem(dims[did]);
+  } else {
+    return NULL;
+  }
+  return problem;
 }

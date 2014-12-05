@@ -47,8 +47,8 @@ void coco_evaluate_constraint(coco_problem_t *self, double *x, double *y);
  * Recommend ${number_of_solutions} parameter settings (stored in
  * ${x}) as the current best guess solutions to the problem ${self}.
  */
-void coco_recommend_solutions(coco_problem_t *self,
-                                double *x, size_t number_of_solutions);
+void coco_recommend_solutions(coco_problem_t *self, double *x,
+                              size_t number_of_solutions);
 
 /**
  * Free the NUMBBO problem represented by ${self}.
@@ -94,13 +94,13 @@ size_t coco_get_number_of_objectives(const coco_problem_t *self);
  * suit.
  */
 coco_problem_t *coco_get_problem(const char *problem_suit,
-                                     const int function_index);
+                                 const int function_index);
 
 /**
  * tentative getters for region of interest
  */
-const double * coco_get_smallest_values_of_interest(const coco_problem_t *self);
-const double * coco_get_largest_values_of_interest(const coco_problem_t *self);
+const double *coco_get_smallest_values_of_interest(const coco_problem_t *self);
+const double *coco_get_largest_values_of_interest(const coco_problem_t *self);
 
 /**
  * Return an initial solution, i.e. a feasible variable setting, to the
@@ -109,10 +109,11 @@ const double * coco_get_largest_values_of_interest(const coco_problem_t *self);
  * By default, the center of the problems region of interest
  * is the initial solution.
  *
- * @see coco_get_smallest_values_of_interest() and coco_get_largest_values_of_interest()
+ * @see coco_get_smallest_values_of_interest() and
+ *coco_get_largest_values_of_interest()
  */
 void coco_get_initial_solution(const coco_problem_t *self,
-                                 double *initial_solution);
+                               double *initial_solution);
 
 /**
  * Add the observer named ${observer_name} to ${problem}. An
@@ -129,13 +130,11 @@ void coco_get_initial_solution(const coco_problem_t *self,
  * observer is the empty string ("").
  */
 coco_problem_t *coco_observe_problem(const char *observer_name,
-                                         coco_problem_t *problem,
-                                         const char *options);
+                                     coco_problem_t *problem,
+                                     const char *options);
 
-void coco_benchmark(const char *problem_suit,
-                      const char *observer,
-                      const char *options,
-                      coco_optimizer_t optimizer);
+void coco_benchmark(const char *problem_suit, const char *observer,
+                    const char *options, coco_optimizer_t optimizer);
 
 /**************************************************************************
  * Random number generator
@@ -189,7 +188,6 @@ void *coco_allocate_memory(const size_t size);
 double *coco_allocate_vector(const size_t size);
 void coco_free_memory(void *data);
 
-
 /**
  * Create a duplicate of a string and return a pointer to
  * it. The caller is responsible for releasing the allocated memory
@@ -206,7 +204,6 @@ typedef uint64_t coco_nanotime_t;
  * Return a monotonic nanosecond value. Useful to measure execution times.
  */
 coco_nanotime_t coco_get_nanotime(void);
-
 
 /**
  * Return the function ID of a BBOB 2009 problem or -1.

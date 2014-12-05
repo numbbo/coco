@@ -8,15 +8,15 @@
 #ifndef __NUMBBO_INTERNAL__
 #define __NUMBBO_INTERNAL__
 
-typedef void (*coco_initial_solution_function_t) (const struct coco_problem *self,
-                                                    double *y);
-typedef void (*coco_evaluate_function_t) (struct coco_problem *self,
-                                            double *x, double *y);
-typedef void (*coco_recommendation_function_t) (struct coco_problem *self,
-                                                  double *x,
-                                                  size_t number_of_solutions);
+typedef void (*coco_initial_solution_function_t)(
+    const struct coco_problem *self, double *y);
+typedef void (*coco_evaluate_function_t)(struct coco_problem *self, double *x,
+                                         double *y);
+typedef void (*coco_recommendation_function_t)(struct coco_problem *self,
+                                               double *x,
+                                               size_t number_of_solutions);
 
-typedef void (*coco_free_function_t) (struct coco_problem *self);
+typedef void (*coco_free_function_t)(struct coco_problem *self);
 
 /**
  * Description of a NUMBBO problem (instance)
@@ -50,21 +50,21 @@ typedef void (*coco_free_function_t) (struct coco_problem *self);
  *   needed by any of the methods.
  */
 struct coco_problem {
-    coco_initial_solution_function_t initial_solution;
-    coco_evaluate_function_t evaluate_function;
-    coco_evaluate_function_t evaluate_constraint;
-    coco_recommendation_function_t recommend_solutions;
-    coco_free_function_t free_problem;
-    size_t number_of_variables;
-    size_t number_of_objectives;
-    size_t number_of_constraints;
-    double *smallest_values_of_interest;
-    double *largest_values_of_interest;
-    double *best_value;
-    double *best_parameter;
-    char *problem_name;
-    char *problem_id;
-    void *data;
+  coco_initial_solution_function_t initial_solution;
+  coco_evaluate_function_t evaluate_function;
+  coco_evaluate_function_t evaluate_constraint;
+  coco_recommendation_function_t recommend_solutions;
+  coco_free_function_t free_problem;
+  size_t number_of_variables;
+  size_t number_of_objectives;
+  size_t number_of_constraints;
+  double *smallest_values_of_interest;
+  double *largest_values_of_interest;
+  double *best_value;
+  double *best_parameter;
+  char *problem_name;
+  char *problem_id;
+  void *data;
 };
 
 #endif
