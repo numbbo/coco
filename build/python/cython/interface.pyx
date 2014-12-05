@@ -1,8 +1,9 @@
 # -*- mode: cython -*-
+#cython: c_string_type=str, c_string_encoding=ascii
 import numpy as np
 cimport numpy as np
 
-from coco.exceptions import NoSuchProblemException 
+from coco.exceptions import NoSuchProblemException
 from coco.exceptions import InvalidProblemException
 
 __all__ = ['Problem', 'Benchmark']
@@ -13,18 +14,18 @@ np.import_array()
 cdef extern from "coco.h":
     ctypedef struct coco_problem_t:
         pass
-        
-    coco_problem_t *coco_get_problem(const char *benchmark, 
-                                         int function_index)
+
+    coco_problem_t *coco_get_problem(const char *benchmark,
+                                     int function_index)
 
     coco_problem_t *coco_observe_problem(const char *observer_name,
-                                          coco_problem_t *problem,
-                                          const char *options)
-    
+                                         coco_problem_t *problem,
+                                         const char *options)
+
     void coco_free_problem(coco_problem_t *problem)
-    
+
     void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
-    
+
     size_t coco_get_number_of_variables(coco_problem_t *problem)
     size_t coco_get_number_of_objectives(coco_problem_t *problem)
     const char *coco_get_problem_id(coco_problem_t *problem)
@@ -44,8 +45,8 @@ cdef class Problem:
     cdef np.ndarray y
     cdef public np.ndarray lower_bounds
     cdef public np.ndarray upper_bounds
-    
-    def __cinit__(self, problem_suit, int function_index):        
+
+    def __cinit__(self, problem_suit, int function_index):
         cdef np.npy_intp shape[1]
         _problem_suit = _bstring(problem_suit)
         self.problem = coco_get_problem(_problem_suit, function_index)
@@ -56,7 +57,7 @@ cdef class Problem:
         ## sharing the data.
         self.lower_bounds = np.zeros(coco_get_number_of_variables(self.problem))
         self.upper_bounds = np.zeros(coco_get_number_of_variables(self.problem))
-        for i in range(coco_get_number_of_variables(self.problem)):	    
+        for i in range(coco_get_number_of_variables(self.problem)):
             self.lower_bounds[i] = coco_get_smallest_values_of_interest(self.problem)[i]
             self.upper_bounds[i] = coco_get_largest_values_of_interest(self.problem)[i]
 
@@ -64,7 +65,7 @@ cdef class Problem:
         self.problem = coco_observe_problem(observer, self.problem, options)
 
     property number_of_variables:
-        """ 
+        """
         The number of variables this problem instance expects as input.
         """
         def __get__(self):
@@ -113,9 +114,9 @@ cdef class Benchmark:
         self.options = options
         self._function_index = 0
 
-    def __iter__(self):        
+    def __iter__(self):
         return self
-    
+
     def __next__(self):
         try:
             problem = Problem(self.problem_suit, self._function_index)
