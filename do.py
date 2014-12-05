@@ -75,6 +75,29 @@ def build_python():
     python('build/python', ['setup.py', 'sdist'])
     os.environ.pop('USE_CYTHON')
 
+def run_python(script_filename):
+    _prep_python()
+    python('build/python', ['setup.py', 'check', '--metadata', '--strict'])
+    ## Now install into a temporary location, run test and cleanup
+    python_temp_home = tempfile.mkdtemp(prefix="coco")
+    python_temp_lib = os.path.join(python_temp_home, "lib", "python")
+    try:
+        ## We setup a custom "homedir" here into which we install our
+        ## coco extension and then use that temporary installation for
+        ## the tests. Otherwise we would run the risk of contaminating
+        ## the Python installation of the build/test machine.
+        os.makedirs(python_temp_lib)
+        os.environ['PYTHONPATH'] = python_temp_lib
+        os.environ['USE_CYTHON'] = 'true'
+        python('build/python', ['setup.py', 'install', '--home', python_temp_home])
+        python('.', [script_filename])
+        os.environ.pop('USE_CYTHON')
+        os.environ.pop('PYTHONPATH')
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
+    finally:
+        shutil.rmtree(python_temp_home)
+
 def test_python():
     _prep_python()
     python('build/python', ['setup.py', 'check', '--metadata', '--strict'])
@@ -155,7 +178,7 @@ def test():
 def help():
     print("""COCO framework bootstrap tool.
 
-Usage: do.py <command>
+Usage: do.py <command> <arguments>
 
 Available commands:
 
@@ -166,6 +189,8 @@ Available commands:
   build-python2 - Build Python 2 modules
   build-python3 - Build Python 3 modules
   build-r       - Build R package
+  run-python    - Run a Python script with installed COCO module
+                  Takes a single argument (name of Python script file)
   test-c        - Run minimal test of C components
   test-python   - Run minimal test of Python module
   test-python2  - Run minimal test of Python 2 module
@@ -178,13 +203,14 @@ amalgamations set the environment variable COCO_RELEASE to 'true'.
 """)
 
 def main(args):
-    if len(args) != 1:
+    if len(args) < 1:
         help()
         sys.exit(0)
     cmd = args[0]
     if cmd == 'build-c': build_c()
     elif cmd == 'test-c': test_c()
     elif cmd == 'build-python': build_python()
+    elif cmd == 'run-python': run_python(args[1])
     elif cmd == 'test-python': test_python()
     elif cmd == 'build-python2': build_python2()
     elif cmd == 'test-python2': test_python2()
