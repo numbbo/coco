@@ -9,26 +9,24 @@
 
 static void f_schwefel_evaluate(coco_problem_t *self, double *x, double *y) {
   size_t i;
-  double tmp, condition = 10., penalty = 0., xopt[40], fopt, fadd;
+  double penalty, sum;
   assert(self->number_of_objectives == 1);
-  y[0] = 0.0;
 
   /* Boundary handling*/
+  penalty = 0.0;
   for (i = 0; i < self->number_of_variables; ++i) {
-    tmp = fabs(x[i]) - 500.;
-    if (tmp > 0.) {
+    const double tmp = fabs(x[i]) - 500.0;
+    if (tmp > 0.0)
       penalty += tmp * tmp;
-    }
   }
-  fadd += 0.01 * penalty;
 
   /* Computation core */
+  sum = 0.0;
   for (i = 0; i < self->number_of_variables; ++i) {
-    y[0] += x[i] * sin(sqrt(fabs(x[i])));
+    sum += x[i] * sin(sqrt(fabs(x[i])));
   }
-  y[0] =
-      0.01 * ((418.9828872724339) - y[0] / (double)self->number_of_variables);
-  y[0] += fadd;
+  y[0] = 0.01 * (penalty + 418.9828872724339 -
+                 sum / (double)self->number_of_variables);
 }
 
 static coco_problem_t *schwefel_problem(const size_t number_of_variables) {
