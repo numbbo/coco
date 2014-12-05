@@ -153,6 +153,7 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
   problem->data = data;
+  problem->free_problem = _bbob_gallagher_free;
   problem->evaluate_function = _bbob_gallagher_evaluate;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
