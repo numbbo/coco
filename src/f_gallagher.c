@@ -24,13 +24,11 @@ typedef struct {
 
 static void _bbob_gallagher_evaluate(coco_problem_t *self, double *x,
                                      double *y) {
-  size_t i, j, k; /*Loop over dim*/
-  /*int var;*/    /* TODO: If I try to declare a variable here, one test
-                     fails...which is weird  */
+  size_t i, j; /*Loop over dim*/
   double *tmx;
   _bbob_gallagher_t *data = self->data;
   double a = 0.1;
-  double tmp2, f = 0., Fadd, Fval, tmp, Fpen = 0., Ftrue = 0.;
+  double tmp2, f = 0., Fadd, tmp, Fpen = 0., Ftrue = 0.;
   double fac = -0.5 / (double)self->number_of_variables;
 
   assert(self->number_of_objectives == 1);
@@ -42,8 +40,7 @@ static void _bbob_gallagher_evaluate(coco_problem_t *self, double *x,
       Fpen += tmp * tmp;
     }
   }
-  Fadd = 0.;
-  Fadd += Fpen;
+  Fadd = Fpen;
   /* Transformation in search space */
   tmx = (double *)calloc(self->number_of_variables, sizeof(double));
   for (i = 0; i < self->number_of_variables; i++) {
@@ -181,7 +178,8 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
                           fitvalues[0];
   }
   coco_free_memory(rperm);
-  rperm = (size_t *)malloc(number_of_variables * sizeof(double));
+
+  rperm = (size_t *)malloc(number_of_variables * sizeof(size_t));
   for (i = 0; i < number_of_peaks; ++i) {
     bbob2009_unif(peaks, number_of_variables, data->rseed + 1000 * i);
     for (j = 0; j < number_of_variables; ++j)
