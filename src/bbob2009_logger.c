@@ -174,7 +174,7 @@ static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
   char file_name[NUMBBO_PATH_MAX];
   char file_path[NUMBBO_PATH_MAX] = {0};
   FILE **target_file = &(data->index_file);
-  FILE *tmp_file; /*to check whether the file already exists. Don't want to use
+  FILE *tmp_file = NULL; /*to check whether the file already exists. Don't want to use
                      target_file*/
   strncpy(file_name, indexFile_prefix, NUMBBO_PATH_MAX - strlen(file_name) - 1);
   strncat(file_name, "_f", NUMBBO_PATH_MAX - strlen(file_name) - 1);
@@ -191,7 +191,6 @@ static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
         _bbob2009_logger_error_io(*target_file, errnum);
       }
       fclose(tmp_file);
-
     } else { /* ugly but necessary*/
       *target_file = fopen(file_path, "a+");
       if (*target_file == NULL) {
@@ -200,6 +199,7 @@ static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
       }
       if (tmp_file) { /*File already exists, new dim so new line*/
         fprintf(*target_file, "\n");
+        fclose(tmp_file);
       }
       fprintf(*target_file,
               "funcId = %d, DIM = %zu, Precision = %.3e, algId = '%s'\n",
@@ -210,7 +210,6 @@ static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
               dataFile_path); /*dataFile_path does not have the extension*/
       current_dim = data->number_of_variables;
       current_funId = data->function_id;
-      fclose(tmp_file);
     }
   }
 }
