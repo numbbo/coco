@@ -125,8 +125,6 @@ coco_problem_t *bbob2009_suit(const int function_index) {
   size_t len;
   int i, instance_id, function_id, dimension, rseed;
   coco_problem_t *problem = NULL;
-  char *tmp_str; /*buffer for the conversion of function_id and instance_id into
-                    str */
   bbob2009_decode_function_index(function_index, &function_id, &instance_id,
                                  &dimension);
   /* This assert is a hint for the static analyzer. */
@@ -498,7 +496,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
   } else if (function_id == 19) {
-    int i, j, k;
+    int i, j;
     double M[40 * 40], b[40], shift[40], fopt;
     double scales, **rot1;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
@@ -524,7 +522,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     bbob2009_free_matrix(rot1, dimension);
 
   } else if (function_id == 20) {
-    int i, j, k;
+    int i, j;
     static double condition = 10.;
     double M[40 * 40], b[40], xopt[40], fopt, *current_row,
         *tmp1 = coco_allocate_vector(dimension),
