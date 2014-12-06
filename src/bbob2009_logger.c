@@ -171,7 +171,7 @@ static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
                                            const char *function_id,
                                            const char *dataFile_path) {
   int errnum;
-  char file_name[NUMBBO_PATH_MAX];
+  char file_name[NUMBBO_PATH_MAX] = {0};
   char file_path[NUMBBO_PATH_MAX] = {0};
   FILE **target_file = &(data->index_file);
   FILE *tmp_file = NULL; /*to check whether the file already exists. Don't want to use
