@@ -145,7 +145,7 @@ static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
                                            const char *dataFile_path,
                                            const char *file_extension) {
   char file_path[NUMBBO_PATH_MAX] = {0};
-  char relative_filePath[NUMBBO_PATH_MAX];
+  char relative_filePath[NUMBBO_PATH_MAX] = {0};
   int errnum;
   strncpy(relative_filePath, dataFile_path,
           NUMBBO_PATH_MAX - strlen(relative_filePath) - 1);
@@ -174,8 +174,9 @@ static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
   char file_name[NUMBBO_PATH_MAX] = {0};
   char file_path[NUMBBO_PATH_MAX] = {0};
   FILE **target_file = &(data->index_file);
-  FILE *tmp_file = NULL; /*to check whether the file already exists. Don't want to use
-                     target_file*/
+  FILE *tmp_file =
+      NULL; /*to check whether the file already exists. Don't want to use
+        target_file*/
   strncpy(file_name, indexFile_prefix, NUMBBO_PATH_MAX - strlen(file_name) - 1);
   strncat(file_name, "_f", NUMBBO_PATH_MAX - strlen(file_name) - 1);
   strncat(file_name, function_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
