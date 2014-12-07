@@ -27,6 +27,13 @@ core_files = ['src/coco_benchmark.c',
               'src/coco_nanotimer.c']
 
 ################################################################################
+## Examples
+def build_examples():
+    build_c()
+    copy_file('build/c/coco.c', 'examples/bbob2009-c-cmaes/coco.c')
+    copy_file('build/c/coco.h', 'examples/bbob2009-c-cmaes/coco.h')
+
+################################################################################
 ## C
 def build_c():
     global release
@@ -169,6 +176,7 @@ def build():
     build_c()
     build_python()
     build_r()
+    build_examples()
 
 def test():
     test_c()
@@ -182,21 +190,22 @@ Usage: do.py <command> <arguments>
 
 Available commands:
 
-  build         - Build C, Python and R modules
-  test          - Test C, Python and R modules
-  build-c       - Build C framework
-  build-python  - Build Python modules
-  build-python2 - Build Python 2 modules
-  build-python3 - Build Python 3 modules
-  build-r       - Build R package
-  run-python    - Run a Python script with installed COCO module
-                  Takes a single argument (name of Python script file)
-  test-c        - Run minimal test of C components
-  test-python   - Run minimal test of Python module
-  test-python2  - Run minimal test of Python 2 module
-  test-python3  - Run minimal test of Python 3 module
-  test-r        - Run minimal test of R package
-  leak-check    - Check for memory leaks
+  build          - Build C, Python and R modules
+  test           - Test C, Python and R modules
+  build-c        - Build C framework
+  build-python   - Build Python modules
+  build-python2  - Build Python 2 modules
+  build-python3  - Build Python 3 modules
+  build-r        - Build R package
+  build-examples - Update examples to latest framework code
+  run-python     - Run a Python script with installed COCO module
+                   Takes a single argument (name of Python script file)
+  test-c         - Run minimal test of C components
+  test-python    - Run minimal test of Python module
+  test-python2   - Run minimal test of Python 2 module
+  test-python3   - Run minimal test of Python 3 module
+  test-r         - Run minimal test of R package
+  leak-check     - Check for memory leaks
 
 To build a release version which does not include debugging information in the 
 amalgamations set the environment variable COCO_RELEASE to 'true'.
@@ -218,6 +227,7 @@ def main(args):
     elif cmd == 'test-python3': test_python3()
     elif cmd == 'build-r': build_r()
     elif cmd == 'test-r': test_r()
+    elif cmd == 'build-examples': build_examples()
     elif cmd == 'build': build()
     elif cmd == 'test': test()
     elif cmd == 'leak-check': leak_check()
