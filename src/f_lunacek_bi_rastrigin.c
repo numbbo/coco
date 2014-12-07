@@ -70,7 +70,7 @@ static void _bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, double *x,
   for (i = 0; i < self->number_of_variables; ++i) {
     sum1 += (data->x_hat[i] - mu0) * (data->x_hat[i] - mu0);
     sum2 += (data->x_hat[i] - mu1) * (data->x_hat[i] - mu1);
-    sum3 += cos(2 * M_PI * data->z[i]);
+    sum3 += cos(2 * coco_pi * data->z[i]);
   }
   y[0] = fmin(sum1, d * (double)self->number_of_variables + s * sum2) +
          10. * ((double)self->number_of_variables - sum3) + 1e4 * penalty;
