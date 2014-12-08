@@ -34,15 +34,7 @@ static void _bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, double *x,
     if (tmp > 0.0)
       penalty += tmp * tmp;
   }
-  /* Computing xopt  */
-  tmpvect = coco_allocate_vector(self->number_of_variables);
-  bbob2009_gauss(tmpvect, self->number_of_variables, data->rseed);
-  for (i = 0; i < self->number_of_variables; ++i) {
-    data->xopt[i] = 0.5 * mu0;
-    if (tmpvect[i] < 0.) {
-      data->xopt[i] *= -1.;
-    }
-  }
+
   /* x_hat */
   for (i = 0; i < self->number_of_variables; ++i) {
     data->x_hat[i] = 2. * x[i];
@@ -50,6 +42,8 @@ static void _bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, double *x,
       data->x_hat[i] *= -1.;
     }
   }
+
+  tmpvect = coco_allocate_vector(self->number_of_variables);
   /* affine transformation */
   for (i = 0; i < self->number_of_variables; ++i) {
     double c1;
@@ -95,6 +89,7 @@ static void _bbob_lunacek_bi_rastrigin_free(coco_problem_t *self) {
 static coco_problem_t *
 bbob_lunacek_bi_rastrigin_problem(const size_t number_of_variables,
                                   const int instance_id) {
+  double *tmpvect;
   size_t i, problem_id_length, rseed;
   coco_problem_t *problem;
   _bbob_lunacek_bi_rastrigin_t *data;
@@ -132,10 +127,24 @@ bbob_lunacek_bi_rastrigin_problem(const size_t number_of_variables,
   problem->data = data;
   problem->evaluate_function = _bbob_lunacek_bi_rastrigin_evaluate;
   problem->free_problem = _bbob_lunacek_bi_rastrigin_free;
+
+  /* Computing xopt  */
+  static const double mu0 = 2.5;
+  tmpvect = coco_allocate_vector(number_of_variables);
+  bbob2009_gauss(tmpvect, number_of_variables, rseed);
   for (i = 0; i < number_of_variables; ++i) {
+    data->xopt[i] = 0.5 * mu0;
+    if (tmpvect[i] < 0.0) {
+      data->xopt[i] *= -1.0;
+    }
+    problem->best_parameter[i] = data->xopt[i];
+  }
+  coco_free_memory(tmpvect);
+
+  for (i = 0; i < number_of_variables; ++i) {
+
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
-    problem->best_parameter[i] = 0.0;
   }
   /* Calculate best parameter value */
   problem->evaluate_function(problem, problem->best_parameter,
