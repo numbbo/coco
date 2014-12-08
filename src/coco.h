@@ -14,6 +14,11 @@ extern "C" {
 
 #include <stdlib.h> /* For size_t */
 #include <stdint.h>
+#include <math.h> /* For NAN among other things */
+
+#ifndef NAN
+#define NAN 0.0/0.0
+#endif
 
 /**
  * Our very own pi constant. Simplifies the case, when the value of pi changes.
