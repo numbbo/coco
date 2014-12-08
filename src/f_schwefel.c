@@ -27,6 +27,7 @@ static void f_schwefel_evaluate(coco_problem_t *self, double *x, double *y) {
   }
   y[0] = 0.01 * (penalty + 418.9828872724339 -
                  sum / (double)self->number_of_variables);
+  assert(y[0] >= self->best_value[0]);
 }
 
 static coco_problem_t *schwefel_problem(const size_t number_of_variables) {
@@ -51,9 +52,13 @@ static coco_problem_t *schwefel_problem(const size_t number_of_variables) {
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
-    problem->best_parameter[i] = 0;
+    problem->best_parameter[i] = NAN;
   }
-  /* Calculate best parameter value */
-  f_schwefel_evaluate(problem, problem->best_parameter, problem->best_value);
+  /* "Calculate" best parameter value 
+   *
+   * OME: Hard code optimal value for now...
+   */
+  problem->best_value[0] = 0.0;
+
   return problem;
 }
