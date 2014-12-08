@@ -35,7 +35,7 @@ static coco_problem_t *rosenbrock_problem(const size_t number_of_variables) {
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
-    problem->best_parameter[i] = 0.0;
+    problem->best_parameter[i] = 1.0;
   }
   /* Calculate best parameter value */
   _rosenbrock_evaluate(problem, problem->best_parameter, problem->best_value);
