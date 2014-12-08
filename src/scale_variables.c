@@ -24,6 +24,7 @@ static void _scv_evaluate_function(coco_problem_t *self, double *x, double *y) {
       data->x[i] = factor * x[i];
     }
     coco_evaluate_function(inner_problem, data->x, y);
+    assert(y[0] >= self->best_value[0]);
   } while (0);
 }
 
