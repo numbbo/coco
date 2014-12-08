@@ -1,5 +1,4 @@
-CFLAGS ?= -std=c99 -O2 -g -march=native
-CPPFLAGS := -D_POSIX_C_SOURCE=200809
+CFLAGS ?= -std=c99 -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=200809L -O0 -g -march=native
 OBJS := run_bbob.o coco.o cmaes.o
 LIBS := -lm
 
