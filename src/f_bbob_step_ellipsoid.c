@@ -25,7 +25,7 @@ typedef struct {
 } _bbob_step_ellipsoid_t;
 
 static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, double *x,
-                                          double *y) {
+                                           double *y) {
   static const double condition = 100;
   static const double alpha = 10.0;
   size_t i, j;
@@ -135,10 +135,12 @@ bbob_step_ellipsoid_problem(const size_t number_of_variables,
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
-    problem->best_parameter[i] = 0.0;
+    problem->best_parameter[i] = NAN;
   }
-  /* Calculate best parameter value */
-  problem->evaluate_function(problem, problem->best_parameter,
-                             problem->best_value);
+  /* "Calculate" best parameter value. 
+   *
+   * OME: Dirty hack for now because I did not want to invert the transformations to find the best_parameter :/
+   */
+  problem->best_value[0] = data->fopt;
   return problem;
 }
