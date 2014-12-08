@@ -178,6 +178,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     }
 
     problem = bueche_rastrigin_problem(dimension);
+    /* TODO: penalization */
     problem = brs_transform(problem);
     problem = oscillate_variables(problem);
     problem = shift_variables(problem, xopt, 0);
@@ -453,6 +454,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     }
 
     problem = schaffers_problem(dimension);
+    /* TODO: penalization */
     problem = shift_objective(problem, fopt);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = asymmetric_variable_transform(problem, 0.5);
@@ -486,6 +488,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     }
 
     problem = schaffers_problem(dimension);
+    /* TODO: penalization */
     problem = shift_objective(problem, fopt);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = asymmetric_variable_transform(problem, 0.5);
@@ -558,8 +561,8 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = shift_variables(problem, tmp2, 0);
     problem = z_hat(problem, xopt);
-    problem = scale_variables(problem, 2);
-    problem = x_hat(problem, rseed);
+    /*problem = scale_variables(problem, 2);*/
+    problem = x_hat(problem, xopt);
     coco_free_memory(tmp1);
     coco_free_memory(tmp2);
   } else if (function_id == 21) {

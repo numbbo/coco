@@ -13,7 +13,7 @@ static void _ellipsoid_evaluate(coco_problem_t *self, double *x, double *y) {
   assert(self->number_of_variables > 0);
   y[0] = x[i] * x[i];
   for (i = 1; i < self->number_of_variables; ++i) {
-    const double exponent = i / (self->number_of_variables - 1.0);
+    const double exponent = (double)i / (double)(self->number_of_variables - 1.0);
     y[0] += pow(condition, exponent) * x[i] * x[i];
   }
 }
