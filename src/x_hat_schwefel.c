@@ -18,12 +18,11 @@ static void _x_hat_evaluate_function(coco_problem_t *self, double *x,
   data = coco_get_transform_data(self);
   inner_problem = coco_get_transform_inner_problem(self);
   do {
-    const double seed = data->seed;
-    bbob2009_unif(data->x, self->number_of_variables, seed);
+    bbob2009_unif(data->x, self->number_of_variables, data->seed);
 
     for (i = 0; i < self->number_of_variables; ++i) {
-      if (data->x[i] - 0.5 < 0) {
-        data->x[i] = -1. * x[i];
+      if (data->x[i] - 0.5 < 0.0) {
+        data->x[i] = -x[i];
       } else {
         data->x[i] = x[i];
       }
@@ -38,9 +37,9 @@ static void _x_hat_free_data(void *thing) {
 }
 
 /**
- * Multiply the x-vector by the vector 1+-
+ * Multiply the x-vector by the vector 2 * 1+-
  */
-coco_problem_t *x_hat(coco_problem_t *inner_problem, const int seed) {
+coco_problem_t *x_hat(coco_problem_t *inner_problem, int seed) {
   _x_hat_data_t *data;
   coco_problem_t *self;
 
