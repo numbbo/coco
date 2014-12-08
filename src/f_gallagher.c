@@ -73,6 +73,7 @@ static void _bbob_gallagher_evaluate(coco_problem_t *self, double *x,
   Ftrue *= Ftrue;
   Ftrue += Fadd;
   y[0] = Ftrue;
+  assert(y[0] >= self->best_value[0]);
   coco_free_memory(tmx);
 }
 
@@ -155,7 +156,6 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
-    problem->best_parameter[i] = 0.0;
   }
 
   /* Initialize all the data of the inner problem */
@@ -196,6 +196,7 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
   bbob2009_unif(peaks, number_of_variables * number_of_peaks, data->rseed);
   for (i = 0; i < number_of_variables; ++i) {
     data->xopt[i] = 0.8 * (b * peaks[i] - c);
+    problem->best_parameter[i] = 0.8 * (b * peaks[i] - c);
     for (j = 0; j < number_of_peaks; ++j) {
       data->Xlocal[i][j] = 0.;
       for (k = 0; k < number_of_variables; ++k) {
