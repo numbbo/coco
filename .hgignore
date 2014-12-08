@@ -22,3 +22,4 @@ release/.*
 autodoc/
 tools/.*.pyc
 examples/bbob2009-c-cmaes/coco.[ch]
+.*\.swp
