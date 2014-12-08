@@ -21,7 +21,7 @@ static void _z_hat_evaluate_function(coco_problem_t *self, double *x,
   data->z[0] = x[0];
 
   for (i = 1; i < self->number_of_variables; ++i) {
-    data->z[i] = x[i] + 0.25 * (x[i - 1] - 2 * fabs(data->xopt[i - 1]));
+    data->z[i] = x[i] + 0.25 * (x[i - 1] - 2.0 * fabs(data->xopt[i - 1]));
   }
   coco_evaluate_function(inner_problem, data->z, y);
   assert(y[0] >= self->best_value[0]);
