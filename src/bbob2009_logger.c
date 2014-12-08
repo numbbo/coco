@@ -19,6 +19,7 @@ static size_t current_funId = -1;
 /*TODO: add possibility of adding a prefix to the index files*/
 
 typedef struct {
+  int is_initialized;
   char *path; /*relative path to the data folder. Simply the Algname*/
   const char *
       alg_name;      /*the alg name, for now, remporarly the same as the path*/
@@ -236,6 +237,7 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
   assert(data != NULL);
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
+
   sprintf(tmpc_funId, "%d", bbob2009_get_function_id(inner_problem));
   sprintf(tmpc_dim, "%zu", inner_problem->number_of_variables);
   /* prepare paths and names*/
@@ -270,6 +272,7 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
   fprintf(data->rdata_file, _file_header_str, *(inner_problem->best_value));
   /* TODO: manage duplicate filenames by either using numbers or raising an
    * error */
+  data->is_initialized = 1;
 }
 
 /**
@@ -279,6 +282,10 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self, double *x,
                                                double *y) {
   _bbob2009_logger_t *data;
   data = coco_get_transform_data(self);
+  if (!data->is_initialized) {
+    _bbob2009_logger_initialize(data, coco_get_transform_inner_problem(self));
+  }
+
   coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
   data->last_fvalue = y[0];
   data->written_last_eval = 0;
@@ -310,6 +317,7 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self, double *x,
   /* Flush output so that impatient users can see progress. */
   fflush(data->fdata_file);
 }
+
 /**
  * Also serves as a finalize run method so. Must be called at the end
  * of Each run to correctly fill the index file
@@ -394,7 +402,8 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
   data->instance_id = bbob2009_get_instance_id(inner_problem);
   data->written_last_eval = 1;
   data->last_fvalue = DBL_MAX;
-  _bbob2009_logger_initialize(data, inner_problem);
+  data->is_initialized = 0;
+
   self = coco_allocate_transformed_problem(inner_problem, data,
                                            _bbob2009_logger_free_data);
   self->evaluate_function = _bbob2009_logger_evaluate_function;
