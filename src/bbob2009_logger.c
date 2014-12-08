@@ -296,6 +296,10 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self, double *x,
       data->best_solution[i] = x[i];
   }
   data->number_of_evaluations++;
+
+  /* Add sanity check for optimal f value */
+  assert(y[0] >= data->optimal_fvalue);
+
   /* Add a line in the .dat file for each logging target reached. */
   if (y[0] - data->optimal_fvalue <= data->f_trigger) {
 
