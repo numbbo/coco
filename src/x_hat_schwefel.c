@@ -35,6 +35,7 @@ static void _x_hat_evaluate_function(coco_problem_t *self, double *x,
 static void _x_hat_free_data(void *thing) {
   _x_hat_data_t *data = thing;
   coco_free_memory(data->x);
+  coco_free_memory(data->xopt);
 }
 
 /**
