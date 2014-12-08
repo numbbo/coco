@@ -270,9 +270,10 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             # generate all data for ranksum test
             assert len(dictFunc[f]) == 1
             entry = dictFunc[f][0] # take the first element
-            ertdata = entry.detERT(targetsOfInterest((f,d)))
+            ertdata = entry.detERT(targetsOfInterest((f, d)))
 
-            testresbestvs1 = significancetest(bestalgentry, entry, targetsOfInterest((f,d)))
+            testresbestvs1 = significancetest(bestalgentry, entry,
+                                              targetsOfInterest((f, d)))
 
             #for nb, entry in enumerate(entries):
             #curline = [r'\algshort\hspace*{\fill}']
@@ -375,7 +376,8 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                         superscript = r'\downarrow' #* nbstars
                         # print z, linebest[i], line1
                     if nbstars > 1:
-                        superscript += str(int(nbstars))
+                        superscript += str(int(min((9, nbstars))))
+                        # superscript += str(int(nbstars))
 
                 #if superscript or significance0vs1:
                     #s = ''
