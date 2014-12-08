@@ -29,7 +29,7 @@ typedef void (*coco_free_function_t)(struct coco_problem *self);
  * Fields:
  *
  * number_of_variables - Number of parameters expected by the
- *   function and contraints.
+ *   function and constraints.
  *
  * number_of_objectives - Number of objectives.
  *

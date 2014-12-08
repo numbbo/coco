@@ -5,8 +5,9 @@
 #include "bbob2009_legacy_code.c"
 
 typedef struct {
-  int seed;
+  /*int seed;*/
   double *x;
+  double *xopt;
   coco_free_function_t old_free_problem;
 } _x_hat_data_t;
 
@@ -18,14 +19,13 @@ static void _x_hat_evaluate_function(coco_problem_t *self, double *x,
   data = coco_get_transform_data(self);
   inner_problem = coco_get_transform_inner_problem(self);
   do {
-    const double seed = data->seed;
-    bbob2009_unif(data->x, self->number_of_variables, seed);
+    /*const double seed = data->seed;
+    bbob2009_unif(data->x, self->number_of_variables, seed);*/
 
     for (i = 0; i < self->number_of_variables; ++i) {
-      if (data->x[i] - 0.5 < 0) {
-        data->x[i] = -1. * x[i];
-      } else {
-        data->x[i] = x[i];
+    	data->x[i] = 2. * x[i];
+    	if (data->xopt[i] < 0.) {
+        data->x[i] *= -1.;
       }
     }
     coco_evaluate_function(inner_problem, data->x, y);
@@ -38,15 +38,16 @@ static void _x_hat_free_data(void *thing) {
 }
 
 /**
- * Multiply the x-vector by the vector 1+-
+ * Multiply the x-vector by the vector 2 * 1+-
  */
-coco_problem_t *x_hat(coco_problem_t *inner_problem, const int seed) {
+coco_problem_t *x_hat(coco_problem_t *inner_problem, const double *xopt) {
   _x_hat_data_t *data;
   coco_problem_t *self;
 
   data = coco_allocate_memory(sizeof(*data));
-  data->seed = seed;
+  /*data->seed = seed;*/
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
+  data->xopt = coco_duplicate_vector(xopt, inner_problem->number_of_variables);
 
   self =
       coco_allocate_transformed_problem(inner_problem, data, _x_hat_free_data);

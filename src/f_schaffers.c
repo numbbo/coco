@@ -19,7 +19,7 @@ static void _schaffers_evaluate(coco_problem_t *self, double *x, double *y) {
     const double tmp = x[i] * x[i] + x[i + 1] * x[i + 1];
     y[0] += pow(tmp, 0.25) * (1.0 + pow(sin(50.0 * pow(tmp, 0.1)), 2.0));
   }
-  y[0] = pow(y[0] / (self->number_of_variables - 1.0), 2.0);
+  y[0] = pow(y[0] / (double)(self->number_of_variables - 1.0), 2.0);
 }
 
 static coco_problem_t *schaffers_problem(const size_t number_of_variables) {
