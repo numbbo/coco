@@ -1,3 +1,5 @@
+#include "coco_platform.h"
+
 #include <string.h>
 #include <stdio.h>
 

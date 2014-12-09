@@ -1,3 +1,4 @@
+#include "coco_platform.h"
 #include <assert.h>
 #include <math.h>
 
