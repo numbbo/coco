@@ -19,7 +19,10 @@ build/r/pkg
 release/.*
 .*\#.*
 .*\.orig
+.*\.swp
 autodoc/
 tools/.*.pyc
 examples/bbob2009-c-cmaes/coco.[ch]
-.*\.swp
+examples/bbob2009-c-cmaes/.*\.o
+examples/bbob2009-c-cmaes/run_bbob
+examples/bbob2009-c-cmaes/c-cmaes-v.*
