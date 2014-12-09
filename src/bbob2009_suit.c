@@ -1,4 +1,3 @@
-#define MAX_DIM 40
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>

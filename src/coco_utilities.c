@@ -8,47 +8,47 @@
 
 /* Figure out if we are on a sane platform or on the dominant platform. */
 #if defined(_WIN32) || defined(_WIN64)
-  #include <windows.h>
-  static const char *coco_path_separator = "\\";
-  #define NUMBBO_PATH_MAX MAX_PATH
-  #define HAVE_GFA 1
-#elif defined(__gnu_linux__) 
-  #include <sys/stat.h>
-  #include <sys/types.h>
-  #include <linux/limits.h>
-  static const char *coco_path_separator = "/";
-  #define HAVE_STAT 1
-  #define NUMBBO_PATH_MAX PATH_MAX
+#include <windows.h>
+static const char *coco_path_separator = "\\";
+#define NUMBBO_PATH_MAX MAX_PATH
+#define HAVE_GFA 1
+#elif defined(__gnu_linux__)
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <linux/limits.h>
+static const char *coco_path_separator = "/";
+#define HAVE_STAT 1
+#define NUMBBO_PATH_MAX PATH_MAX
 #elif defined(__APPLE__)
-  #include <sys/stat.h>
-  #include <sys/types.h>
-  #include <sys/syslimits.h>
-  static const char *coco_path_separator = "/";
-  #define HAVE_STAT 1
-  #define NUMBBO_PATH_MAX PATH_MAX
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/syslimits.h>
+static const char *coco_path_separator = "/";
+#define HAVE_STAT 1
+#define NUMBBO_PATH_MAX PATH_MAX
 #elif defined(__FreeBSD__)
-  #include <sys/stat.h>
-  #include <sys/types.h>
-  #include <limits.h>
-  static const char *coco_path_separator = "/";
-  #define HAVE_STAT 1
-  #define NUMBBO_PATH_MAX PATH_MAX
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <limits.h>
+static const char *coco_path_separator = "/";
+#define HAVE_STAT 1
+#define NUMBBO_PATH_MAX PATH_MAX
 #elif defined(__sun) || defined(sun)
-  #if defined(__SVR4) || defined(__svr4__)
-    /* Solaris */
-    #include <sys/stat.h>
-    #include <sys/types.h>
-    #include <limits.h>
-    static const char *coco_path_separator = "/";
-    #define HAVE_STAT 1
-    #define NUMBBO_PATH_MAX PATH_MAX
-  #endif
+#if defined(__SVR4) || defined(__svr4__)
+/* Solaris */
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <limits.h>
+static const char *coco_path_separator = "/";
+#define HAVE_STAT 1
+#define NUMBBO_PATH_MAX PATH_MAX
+#endif
 #else
-  #error Unknown platform
+#error Unknown platform
 #endif
 
 #if !defined(NUMBBO_PATH_MAX)
-  #error NUMBBO_PATH_MAX undefined
+#error NUMBBO_PATH_MAX undefined
 #endif
 
 void coco_join_path(char *path, size_t path_max_length, ...) {

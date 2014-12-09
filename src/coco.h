@@ -17,7 +17,7 @@ extern "C" {
 #include <math.h> /* For NAN among other things */
 
 #ifndef NAN
-#define NAN 0.0/0.0
+#define NAN 0.0 / 0.0
 #endif
 
 /**

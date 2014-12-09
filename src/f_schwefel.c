@@ -54,7 +54,7 @@ static coco_problem_t *schwefel_problem(const size_t number_of_variables) {
     problem->largest_values_of_interest[i] = 5.0;
     problem->best_parameter[i] = NAN;
   }
-  /* "Calculate" best parameter value 
+  /* "Calculate" best parameter value
    *
    * OME: Hard code optimal value for now...
    */
