@@ -1,3 +1,4 @@
+#define MAX_DIM 40
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
@@ -41,6 +42,8 @@
 #include "shift_variables.c"
 #include "x_hat_schwefel.c"
 #include "z_hat_schwefel.c"
+
+#define MAX_DIM 40
 
 /**
  * bbob2009_decode_function_index(function_index, function_id, instance_id,
@@ -137,7 +140,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     return NULL;
 
   if (function_id == 1) {
-    double xopt[40], fopt;
+    double xopt[MAX_DIM], fopt;
     bbob2009_compute_xopt(xopt, rseed, dimension);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
 
@@ -145,7 +148,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = shift_variables(problem, xopt, 0);
     problem = shift_objective(problem, fopt);
   } else if (function_id == 2) {
-    double xopt[40], fopt;
+    double xopt[MAX_DIM], fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
 
@@ -154,7 +157,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = shift_variables(problem, xopt, 0);
     problem = shift_objective(problem, fopt);
   } else if (function_id == 3) {
-    double xopt[40], fopt;
+    double xopt[MAX_DIM], fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
 
@@ -165,7 +168,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = shift_variables(problem, xopt, 0);
     problem = shift_objective(problem, fopt);
   } else if (function_id == 4) {
-    double xopt[40], fopt;
+    double xopt[MAX_DIM], fopt;
     rseed = 3 + 10000 * instance_id;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -178,19 +181,20 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     }
 
     problem = bueche_rastrigin_problem(dimension);
+    /* TODO: penalization */
     problem = brs_transform(problem);
     problem = oscillate_variables(problem);
     problem = shift_variables(problem, xopt, 0);
     problem = shift_objective(problem, fopt);
   } else if (function_id == 5) {
-    double xopt[40], fopt;
+    double xopt[MAX_DIM], fopt;
     bbob2009_compute_xopt(xopt, rseed, dimension);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     problem = linear_slope_problem(dimension, xopt);
     problem = shift_objective(problem, fopt);
   } else if (function_id == 6) {
     int i, j, k;
-    double M[40 * 40], b[40], xopt[40], fopt, *current_row;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -222,7 +226,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
   } else if (function_id == 7) {
     problem = bbob_step_ellipsoid_problem(dimension, instance_id);
   } else if (function_id == 8) {
-    double xopt[40], minus_one[40], fopt, factor;
+    double xopt[MAX_DIM], minus_one[MAX_DIM], fopt, factor;
     bbob2009_compute_xopt(xopt, rseed, dimension);
     for (i = 0; i < dimension; ++i) {
       minus_one[i] = -1.0;
@@ -244,7 +248,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = shift_objective(problem, fopt);
   } else if (function_id == 9) {
     int row, column;
-    double M[40 * 40], b[40], fopt, factor, *current_row;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], fopt, factor, *current_row;
     double **rot1;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
@@ -272,7 +276,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = shift_objective(problem, fopt);
   } else if (function_id == 10) {
-    double M[40 * 40], b[40], xopt[40], fopt;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt;
     double **rot1;
     bbob2009_compute_xopt(xopt, rseed, dimension);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
@@ -288,7 +292,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = shift_variables(problem, xopt, 0);
     problem = shift_objective(problem, fopt);
   } else if (function_id == 11) {
-    double M[40 * 40], b[40], xopt[40], fopt;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt;
     double **rot1;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -304,7 +308,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = shift_variables(problem, xopt, 0);
     problem = shift_objective(problem, fopt);
   } else if (function_id == 12) {
-    double M[40 * 40], b[40], xopt[40], fopt;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt;
     double **rot1;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed + 1000000, dimension);
@@ -322,7 +326,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = shift_variables(problem, xopt, 0);
   } else if (function_id == 13) {
     int i, j, k;
-    double M[40 * 40], b[40], xopt[40], fopt, *current_row;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -349,7 +353,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = shift_variables(problem, xopt, 0);
   } else if (function_id == 14) {
-    double M[40 * 40], b[40], xopt[40], fopt;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt;
     double **rot1;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -365,7 +369,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = shift_variables(problem, xopt, 0);
   } else if (function_id == 15) {
     int i, j, k;
-    double M[40 * 40], b[40], xopt[40], fopt, *current_row;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -400,7 +404,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
   } else if (function_id == 16) {
     int i, j, k;
     static double condition = 100.;
-    double M[40 * 40], b[40], xopt[40], fopt, *current_row;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -423,6 +427,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     }
 
     problem = weierstrass_problem(dimension);
+    /* TODO: penalization */
     problem = shift_objective(problem, fopt);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = oscillate_variables(problem);
@@ -434,7 +439,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     bbob2009_free_matrix(rot2, dimension);
   } else if (function_id == 17) {
     int i, j;
-    double M[40 * 40], b[40], xopt[40], fopt, *current_row;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -453,6 +458,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     }
 
     problem = schaffers_problem(dimension);
+    /* TODO: penalization */
     problem = shift_objective(problem, fopt);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = asymmetric_variable_transform(problem, 0.5);
@@ -464,7 +470,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     bbob2009_free_matrix(rot2, dimension);
   } else if (function_id == 18) {
     int i, j;
-    double M[40 * 40], b[40], xopt[40], fopt, *current_row;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
     double **rot1, **rot2;
     /* Reuse rseed from f17. */
     rseed = 17 + 10000 * instance_id;
@@ -486,6 +492,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     }
 
     problem = schaffers_problem(dimension);
+    /* TODO: penalization */
     problem = shift_objective(problem, fopt);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = asymmetric_variable_transform(problem, 0.5);
@@ -497,7 +504,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     bbob2009_free_matrix(rot2, dimension);
   } else if (function_id == 19) {
     int i, j;
-    double M[40 * 40], b[40], shift[40], fopt;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], shift[MAX_DIM], fopt;
     double scales, **rot1;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     for (i = 0; i < dimension; ++i) {
@@ -524,7 +531,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
   } else if (function_id == 20) {
     int i, j;
     static double condition = 10.;
-    double M[40 * 40], b[40], xopt[40], fopt, *current_row,
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row,
         *tmp1 = coco_allocate_vector(dimension),
         *tmp2 = coco_allocate_vector(dimension);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
@@ -574,7 +581,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = shift_objective(problem, fopt);
   } else if (function_id == 23) {
     int i, j, k;
-    double M[40 * 40], b[40], xopt[40], *current_row, fopt;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], *current_row, fopt;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -595,6 +602,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
       }
     }
     problem = katsuura_problem(dimension);
+    /* TODO: penalization */
     problem = shift_objective(problem, fopt);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = shift_variables(problem, xopt, 0);
@@ -672,3 +680,6 @@ int bbob2009_get_instance_id(const coco_problem_t *problem) {
    */
   return (problem_id[14] - '0') * 10 + (problem_id[15] - '0');
 }
+
+/* Undefine constants */
+#undef MAX_DIM
