@@ -25,7 +25,6 @@ static void f_katsuura_evaluate(coco_problem_t *self, double *x, double *y) {
   y[0] = 10. / ((double)self->number_of_variables) /
          ((double)self->number_of_variables) *
          (-1. + pow(y[0], 10. / pow((double)self->number_of_variables, 1.2)));
-  /* TODO: Penalization (function of the non-transformed variable x) */
 }
 
 static coco_problem_t *katsuura_problem(const size_t number_of_variables) {
