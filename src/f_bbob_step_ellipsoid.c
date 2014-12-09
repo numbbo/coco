@@ -11,6 +11,8 @@
  * TODO: It would be nice to have a generic step ellipsoid function to
  * complement this one.
  */
+#include "coco_platform.h"
+
 #include <assert.h>
 #include <math.h>
 

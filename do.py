@@ -23,8 +23,8 @@ from cocoutils import hg_version, hg_revision
 
 core_files = ['src/coco_benchmark.c',
               'src/coco_random.c',
-              'src/coco_generics.c',
-              'src/coco_nanotimer.c']
+              'src/coco_generics.c'
+              ]
 
 ################################################################################
 ## Examples
