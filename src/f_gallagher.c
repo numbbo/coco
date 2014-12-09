@@ -145,7 +145,11 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
              "bbob2009_f22", (int)number_of_variables);
     b = 9.8;
     c = 4.9;
-  } /* TODO: else */
+  } else {
+    b = 0.0;
+    c = 0.0;
+    coco_error("Bad number of peaks in f_gallagher");
+  }
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
