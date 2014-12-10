@@ -834,8 +834,18 @@ class DataSet():
         """yet a stump"""
         is_consistent = True
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
-            is_consistent = False
-            warnings.warn('  double instances in ' + str(self.instancenumbers))
+            # check exception of 2009 data sets with 3 times instances 1:5
+            is_consistent = True
+            for i in set(self.instancenumbers):
+                if i not in (1, 2, 3, 4, 5):
+                    is_consistent = False
+                    break
+                if self.instancenumbers.count(i) != 3:
+                    is_consistent = False
+                    break
+            if not is_consistent:
+                warnings.warn('  double instances in ' + str(self.instancenumbers))
+            
         return is_consistent
             
     def computeERTfromEvals(self):
