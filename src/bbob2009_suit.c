@@ -404,7 +404,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
   } else if (function_id == 16) {
     int i, j, k;
     static double condition = 100.;
-    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row, penalty_factor = 10.0/(double)dimension;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -427,19 +427,19 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     }
 
     problem = weierstrass_problem(dimension);
-    /* TODO: penalization */
     problem = shift_objective(problem, fopt);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = oscillate_variables(problem);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = shift_variables(problem, xopt, 0);
+    problem = penalize_uninteresting_values(problem, penalty_factor);
 
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
   } else if (function_id == 17) {
     int i, j;
-    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row, penalty_factor = 10.0;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -458,19 +458,19 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     }
 
     problem = schaffers_problem(dimension);
-    /* TODO: penalization */
     problem = shift_objective(problem, fopt);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = asymmetric_variable_transform(problem, 0.5);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = shift_variables(problem, xopt, 0);
+    problem = penalize_uninteresting_values(problem, penalty_factor);
 
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
   } else if (function_id == 18) {
     int i, j;
-    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row, penalty_factor = 10.0;
     double **rot1, **rot2;
     /* Reuse rseed from f17. */
     rseed = 17 + 10000 * instance_id;
@@ -492,13 +492,13 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     }
 
     problem = schaffers_problem(dimension);
-    /* TODO: penalization */
     problem = shift_objective(problem, fopt);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = asymmetric_variable_transform(problem, 0.5);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = shift_variables(problem, xopt, 0);
+    problem = penalize_uninteresting_values(problem, penalty_factor);
 
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
@@ -581,7 +581,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = shift_objective(problem, fopt);
   } else if (function_id == 23) {
     int i, j, k;
-    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], *current_row, fopt;
+    double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], *current_row, fopt, penalty_factor = 1.0;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -602,10 +602,10 @@ coco_problem_t *bbob2009_suit(const int function_index) {
       }
     }
     problem = katsuura_problem(dimension);
-    /* TODO: penalization */
     problem = shift_objective(problem, fopt);
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = shift_variables(problem, xopt, 0);
+    problem = penalize_uninteresting_values(problem, penalty_factor);
 
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
