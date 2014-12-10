@@ -122,14 +122,14 @@ def main(argv=None):
 
         # get all .info files in folder:
         FILES = []
-        dirList=os.listdir(folder)
-        for fname in dirList:
-            if fname.endswith('.info'):
-                FILES.append(fname)
+        for (path, dirs, files) in os.walk(folder):
+            for fname in files:
+                if fname.endswith('.info'):
+                    FILES.append(os.path.join(path, fname))
         
         for file in FILES:
             # open file to read and temp file to write
-            infile = open(folder + file,'r')
+            infile = open(file,'r')
             tempfile = open('temp.temp','w')
             while infile:
                 line = infile.readline()
@@ -161,10 +161,10 @@ def main(argv=None):
             infile.close()
             tempfile.close()
             # remove old file and rename temp file accordingly
-            remove(folder + file)
-            move('temp.temp', folder + file)
+            remove(file)
+            move('temp.temp', file)
             
-            print(folder + file + " changed")
+            print(file + " changed")
         
         sys.exit()
 
