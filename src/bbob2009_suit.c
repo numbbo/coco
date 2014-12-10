@@ -41,6 +41,7 @@
 #include "shift_variables.c"
 #include "x_hat_schwefel.c"
 #include "z_hat_schwefel.c"
+#include "penalize_uninteresting_values.c"
 
 #define MAX_DIM 40
 
@@ -167,7 +168,7 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     problem = shift_variables(problem, xopt, 0);
     problem = shift_objective(problem, fopt);
   } else if (function_id == 4) {
-    double xopt[MAX_DIM], fopt;
+    double xopt[MAX_DIM], fopt, penalty_factor = 100.0;
     rseed = 3 + 10000 * instance_id;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -180,11 +181,11 @@ coco_problem_t *bbob2009_suit(const int function_index) {
     }
 
     problem = bueche_rastrigin_problem(dimension);
-    /* TODO: penalization */
     problem = brs_transform(problem);
     problem = oscillate_variables(problem);
     problem = shift_variables(problem, xopt, 0);
     problem = shift_objective(problem, fopt);
+    problem = penalize_uninteresting_values(problem, penalty_factor);
   } else if (function_id == 5) {
     double xopt[MAX_DIM], fopt;
     bbob2009_compute_xopt(xopt, rseed, dimension);
