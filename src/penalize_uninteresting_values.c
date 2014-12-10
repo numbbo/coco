@@ -16,7 +16,8 @@ static void _puv_evaluate_function(coco_problem_t *self, double *x, double *y) {
 	double penalty = 0.0;
 	const double *lower_bounds = self->smallest_values_of_interest;
 	const double *upper_bounds = self->largest_values_of_interest;
-	for (size_t i = 0; i < self->number_of_variables; ++i) {
+	size_t i;
+	for (i = 0; i < self->number_of_variables; ++i) {
 		assert(lower_bounds[i] < upper_bounds[i]);
 		const double c1 = x[i] - upper_bounds[i];
 		const double c2 = lower_bounds[i] - x[i];
@@ -26,7 +27,7 @@ static void _puv_evaluate_function(coco_problem_t *self, double *x, double *y) {
 			penalty += c2 * c2;
 		}
 	}
-	for (size_t i = 0; i < self->number_of_objectives; ++i) {
+	for (i = 0; i < self->number_of_objectives; ++i) {
 		y[i] += data->factor * penalty;
 	}
 }
