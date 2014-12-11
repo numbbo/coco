@@ -1,48 +1,39 @@
+import java.util.ArrayList;
+import java.util.Random;
+import coco.Benchmark;
+
+/* Draft: determine native methods to declare */
 
 public class demo {
-	
-	public static void MY_OPTIMIZER(JNIproblem problem, ArrayList<double> lower_bounds, ArrayList<double> upper_bounds, double budget) {
-		int n = 
-		
-	}
-	
-	public static void MY_OPTIMIZER(JNIfgeneric fgeneric, int dim, double maxfunevals, Random rand) {
-
-        double[] x = new double[dim];
-
-        /* Obtain the target function value, which only use is termination */
-        double ftarget = fgeneric.getFtarget();
-        double f;
-
-        if (maxfunevals > 1e9 * dim) {
-             maxfunevals = 1e9 * dim;
-        }
-
-        for (double iter = 0.; iter < maxfunevals; iter++) {
-            /* Generate individual */
-            for (int i = 0; i < dim; i++) {
-                x[i] = 10. * rand.nextDouble() - 5.;
+    public static void my_optimizer(Problem problem, double[] lower_bounds, double[] upper_bounds, double budget) {
+        System.out.println("In optimizer...");
+        int n = lower_bounds.length;
+        int i, j;
+        double[] x = new double[n];
+        double y;
+        for (i = 0; i < budget; i++){
+            Random r = new Random();
+            for (j = 0; j < n; j++){
+                x[j] = lower_bounds[j] + (upper_bounds[j] - lower_bounds[j]) * r.nextDouble();
             }
-
-            /* evaluate X on the objective function */
-            f = fgeneric.evaluate(x);
-
-            if (f < ftarget) {
-                break;
-            }
+            y = problem.coco_evaluate_function(x);
         }
+        
+        
+        
+        
     }
-	
-	
-	
-	
-	
-	
-	
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
+    
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        Benchmark my_benchmark = new Benchmark("bbob2009", "bbob_observer", "random_search"); // parameters to be defined
+        while(true){
+            problem = my_benchmark.nextProblem();
+            System.out.println("Optimizing " + problem.toString());
+            my_optimizer(problem, problem.lowerBounds(), problem.upperBounds(), 10000);
+        }
+        
+        
+    }
+    
 }
