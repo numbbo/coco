@@ -7,14 +7,46 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*
- * Class:     javacoco_JNIinterface
- * Method:    coco_evaluate_function
- * Signature: (Ljavacoco/JNIinterface/Problem;[D)[D
- */
-JNIEXPORT jdoubleArray JNICALL Java_javacoco_JNIinterface_coco_evaluate_function
-  (JNIEnv *, jobject, jobject, jdoubleArray);
-
+    /*
+     * Class:     javacoco_JNIinterface
+     * Method:    coco_evaluate_function
+     * Signature: (Ljavacoco/Problem;[D)[D
+     */
+    JNIEXPORT jdoubleArray JNICALL Java_javacoco_JNIinterface_coco_evaluate_function
+    (JNIEnv *, jclass, jobject, jdoubleArray);
+    
+    /*
+     * Class:     javacoco_JNIinterface
+     * Method:    coco_get_number_of_variables
+     * Signature: (Ljavacoco/Problem;)I
+     */
+    JNIEXPORT jint JNICALL Java_javacoco_JNIinterface_coco_get_number_of_variables
+    (JNIEnv *, jclass, jobject);
+    
+    /*
+     * Class:     javacoco_JNIinterface
+     * Method:    coco_get_number_of_objectives
+     * Signature: (Ljavacoco/Problem;)I
+     */
+    JNIEXPORT jint JNICALL Java_javacoco_JNIinterface_coco_get_number_of_objectives
+    (JNIEnv *, jclass, jobject);
+    
+    /*
+     * Class:     javacoco_JNIinterface
+     * Method:    coco_get_smallest_values_of_interest
+     * Signature: (Ljavacoco/Problem;)[D
+     */
+    JNIEXPORT jdoubleArray JNICALL Java_javacoco_JNIinterface_coco_get_smallest_values_of_interest
+    (JNIEnv *, jclass, jobject);
+    
+    /*
+     * Class:     javacoco_JNIinterface
+     * Method:    coco_get_largest_values_of_interest
+     * Signature: (Ljavacoco/Problem;)[D
+     */
+    JNIEXPORT jdoubleArray JNICALL Java_javacoco_JNIinterface_coco_get_largest_values_of_interest
+    (JNIEnv *, jclass, jobject);
+    
 #ifdef __cplusplus
 }
 #endif

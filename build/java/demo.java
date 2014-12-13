@@ -28,10 +28,12 @@ public class demo {
         // TODO Auto-generated method stub
     	JNIinterface my_interface = new JNIinterface();
         Benchmark my_benchmark = new Benchmark("bbob2009", "bbob_observer", "random_search"); // parameters to be defined
-        while(true){
+        int i;
+        for (i = 0; i < 500; i++) {
             Problem problem = my_interface.next_problem(my_benchmark);
+            JNIinterface.coco_evaluate_function(problem, {1., 2.});
             System.out.println("Optimizing " + problem.toString());
-            my_optimizer(problem, problem.smallest_values_of_interest, problem.largest_values_of_interest, 10000);
+            my_optimizer(problem, JNIinterface.coco_get_smallest_values_of_interest(problem), JNIinterface.coco_get_largest_values_of_interest(problem), 10000);
         }
         
         
