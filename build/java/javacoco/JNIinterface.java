@@ -28,14 +28,16 @@ public abstract class JNIinterface {
 			super();
 			this.problem_suit = problem_suit;
 			this.function_index = function_index;
+			this.observer_name = new String("");
+			this.options = new String("");
 		}
 		
 		public Problem(String problem_suit, int function_index, String observer_name, String options) {
 			super();
-			this.problem_suit = problem_suit;
+			this.problem_suit = new String(problem_suit);
 			this.function_index = function_index;
-			this.observer_name = observer_name;
-			this.options = options;
+			this.observer_name = new String(observer_name);
+			this.options = new String(options);
 		}
 		
 		/* TODO: Getters and setters */
