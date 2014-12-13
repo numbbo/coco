@@ -16,9 +16,7 @@
  */
 JNIEXPORT jdoubleArray JNICALL Java_javacoco_JNIinterface_coco_evaluate_function
 (JNIEnv * jenv, jobject obj, jobject problem, jdoubleArray x) {
-	/* generate problem */
-
-	/* free problem */
+    
     double *y; /* Result of evaluation. To be allocated with coco_allocate_vector(coco_get_number_of_objectives(pb)) */
     coco_problem_t *pb = NULL; /* Will contain the C problem */
     
@@ -89,7 +87,6 @@ JNIEXPORT jdoubleArray JNICALL Java_javacoco_JNIinterface_coco_evaluate_function
     jy = (*jenv)->NewDoubleArray(jenv, nb_objectives);
     (*jenv)->SetDoubleArrayRegion(jenv, jy, 0, nb_objectives, y);
     
-    
     /* Free resources */
     coco_free_memory(y);
     coco_free_problem(pb);
@@ -97,7 +94,6 @@ JNIEXPORT jdoubleArray JNICALL Java_javacoco_JNIinterface_coco_evaluate_function
     (*jenv)->ReleaseStringUTFChars(jenv, jobserver, observer);
     (*jenv)->ReleaseStringUTFChars(jenv, joptions, options);
     (*jenv)->ReleaseDoubleArrayElements(jenv, x, cx, JNI_ABORT);
-    
     
     return jy;
 }
