@@ -312,3 +312,28 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
 	return res;
 }
 
+/*
+ * Class:     JNIinterface
+ * Method:    validProblem
+ * Signature: (Ljava/lang/String;I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_JNIinterface_validProblem
+(JNIEnv *jenv, jclass interface_cls, jstring suit, jint findex) {
+    coco_problem_t *pb = NULL;
+    const char *problem_suit;
+    
+    /* This test is both to prevent warning because cls was not used and check exceptions */
+    if (interface_cls == NULL)
+        printf("Null interface_cls found\n");
+    
+    problem_suit = (*jenv)->GetStringUTFChars(jenv, suit, NULL);
+    pb = coco_get_problem(problem_suit, findex);
+    (*jenv)->ReleaseStringUTFChars(jenv, suit, problem_suit);
+    if (pb == NULL)
+        return JNI_FALSE;
+    else
+        coco_free_problem(pb);
+        return JNI_TRUE;
+    
+}
+
