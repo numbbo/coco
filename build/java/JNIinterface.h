@@ -52,7 +52,7 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
  * Method:    cocoGetLargestValuesOfInterest
  * Signature: (LProblem;)[D
  */
-    JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
+JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
     (JNIEnv *, jclass, jobject);
     
 /*
@@ -60,8 +60,17 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
  * Method:    validProblem
  * Signature: (Ljava/lang/String;I)Z
  */
-    JNIEXPORT jboolean JNICALL Java_JNIinterface_validProblem
+JNIEXPORT jboolean JNICALL Java_JNIinterface_validProblem
     (JNIEnv *, jclass, jstring, jint);
+    
+/*
+ * Class:     JNIinterface
+ * Method:    cocoGetProblemId
+ * Signature: (LProblem;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemId
+    (JNIEnv *, jclass, jobject);
+
 
 #ifdef __cplusplus
 }

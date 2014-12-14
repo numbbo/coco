@@ -35,8 +35,10 @@ public class Problem {
 	/* toString method */
 	@Override
 	public String toString() {
-		if (this.problem_id != null)
-			return this.problem_id;
+        String pb_id = JNIinterface.cocoGetProblemId(this);
+        if (pb_id != null) {
+            return pb_id;
+        }
 		else
 			return "finalized/invalid problem";
 	}
