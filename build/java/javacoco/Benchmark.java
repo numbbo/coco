@@ -1,5 +1,3 @@
-package javacoco;
-
 public class Benchmark {
 	String problem_suit;
 	String observer;

@@ -9,7 +9,7 @@ public class JNIinterface {
 	
 	/* Class method */
 	/* TODO: Handle NoSuchProblem exception */
-	public Problem next_problem(Benchmark benchmark) {
+	public static Problem next_problem(Benchmark benchmark) {
 		Problem problem = new Problem(benchmark.problem_suit, benchmark.function_index, benchmark.observer, benchmark.options);
 		return problem;
 	}
