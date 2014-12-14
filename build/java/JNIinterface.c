@@ -37,7 +37,7 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoEvaluateFunction
 	jdouble *cx;
 	jdoubleArray jy; /* Returned double array */
 
-	/* This test is both to prevent warning because cls was not used and check exceptions */
+	/* This test is both to prevent warning because interface_cls was not used and check exceptions */
 	if (interface_cls == NULL)
 		printf("Null interface_cls found\n");
     
@@ -116,7 +116,7 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfVariables
 	jint jfunction_index;
     jclass cls;
 
-	/* This test is both to prevent warning because cls was not used and check exceptions */
+	/* This test is both to prevent warning because interface_cls was not used and check exceptions */
 	if (interface_cls == NULL)
 		printf("Null interface_cls found\n");
     
@@ -165,7 +165,7 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfObjectives
 	jint jfunction_index;
     jclass cls;
 
-	/* This test is both to prevent warning because cls was not used and check exceptions */
+	/* This test is both to prevent warning because interface_cls was not used and check exceptions */
 	if (interface_cls == NULL)
 		printf("Null interface_cls found\n");
     
@@ -218,7 +218,7 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetSmallestValuesOfInterest
 	jdoubleArray res;
     jclass cls;
 
-	/* This test is both to prevent warning because cls was not used and check exceptions */
+	/* This test is both to prevent warning because interface_cls was not used and check exceptions */
 	if (interface_cls == NULL)
 		printf("Null interface_cls found\n");
     
@@ -275,7 +275,7 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
 	jdoubleArray res;
     jclass cls;
 
-	/* This test is both to prevent warning because cls was not used and check exceptions */
+	/* This test is both to prevent warning because interface_cls was not used and check exceptions */
 	if (interface_cls == NULL)
 		printf("Null interface_cls found\n");
     
@@ -322,7 +322,7 @@ JNIEXPORT jboolean JNICALL Java_JNIinterface_validProblem
     coco_problem_t *pb = NULL;
     const char *problem_suit;
     
-    /* This test is both to prevent warning because cls was not used and check exceptions */
+    /* This test is both to prevent warning because interface_cls was not used and check exceptions */
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
     
@@ -335,5 +335,56 @@ JNIEXPORT jboolean JNICALL Java_JNIinterface_validProblem
         coco_free_problem(pb);
         return JNI_TRUE;
     
+}
+
+/*
+ * Class:     JNIinterface
+ * Method:    cocoGetProblemId
+ * Signature: (LProblem;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemId
+(JNIEnv *jenv, jclass interface_cls, jobject problem) {
+    coco_problem_t *pb = NULL;
+    const char *problem_suit;
+    int function_index;
+    const char *res;
+    
+    jfieldID fid;
+    jstring jproblem_suit;
+    jint jfunction_index;
+    jclass cls;
+    jstring jres;
+    
+    /* This test is both to prevent warning because interface_cls was not used and check exceptions */
+    if (interface_cls == NULL)
+    printf("Null interface_cls found\n");
+    
+    /* Get attributes from jobject problem */
+    cls = (*jenv)->GetObjectClass(jenv, problem);
+    if (cls == NULL)
+    printf("Null cls\n");
+    
+    /* Get problem_suit */
+    fid = (*jenv)->GetFieldID(jenv, cls, "problem_suit", "Ljava/lang/String;");
+    if(fid == NULL)
+    printf("Null fid\n");
+    jproblem_suit = (*jenv)->GetObjectField(jenv, problem, fid);
+    problem_suit = (*jenv)->GetStringUTFChars(jenv, jproblem_suit, NULL);
+    
+    /* Get function_index */
+    fid = (*jenv)->GetFieldID(jenv, cls, "function_index", "I");
+    if(fid == NULL)
+    printf("Null fid2\n");
+    jfunction_index = (*jenv)->GetIntField(jenv, problem, fid);
+    function_index = (int)jfunction_index;
+    
+    pb = coco_get_problem(problem_suit, function_index);
+    res = coco_get_problem_id(pb);
+    jres = (*jenv)->NewStringUTF(jenv, res);
+    
+    coco_free_problem(pb);
+    (*jenv)->ReleaseStringUTFChars(jenv, jproblem_suit, problem_suit);
+    
+    return jres;
 }
 
