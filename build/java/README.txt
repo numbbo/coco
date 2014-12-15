@@ -12,7 +12,7 @@ Files:
 
 Generating the shared library (tested on a Mac OS X version 10.9.5):
 Under build/java do:
-	gcc -I/System/Library/Frameworks/JavaVM.framework/Headers -I/System/Library/Frameworks/JavaVM.framework/Headers -c JNIinterface.c
+	gcc -I/System/Library/Frameworks/JavaVM.framework/Headers -c JNIinterface.c
 	gcc -dynamiclib -o libJNIinterface.jnilib JNIinterface.o
 
 To run the example:
