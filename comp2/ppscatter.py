@@ -55,7 +55,8 @@ targets = fixed_targets  # default
 colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 markersize = 14  # modified in config.py
-linewidth = 3
+markersize_addon_beyond_maxevals = -5
+linewidth = 2
 max_evals_line_length = 9  # length away from the diagonal as a factor, line indicates maximal evaluations for each data
 offset = 0. #0.02 offset provides a way to move away the box boundaries to display the outer markers fully, clip_on=False is more effective 
 
@@ -203,7 +204,11 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             xdata = numpy.array(entry0.detERT(targets((f, d))))
             ydata = numpy.array(entry1.detERT(targets((f, d))))
 
-            tmp = (numpy.isinf(xdata)==False) * (numpy.isinf(ydata)==False)
+            # plot "valid" data
+            tmp = ((numpy.isinf(xdata) == False) *
+                   (numpy.isinf(ydata) == False) *
+                   (xdata < entry0.mMaxEvals()) *
+                    ydata < entry1.mMaxEvals())
             if tmp.any():
                 try:
                     plt.plot(xdata[tmp], ydata[tmp], ls='',
@@ -214,7 +219,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                 except KeyError:
                     plt.plot(xdata[tmp], ydata[tmp], ls='', markersize=markersize,
                              marker='x', markerfacecolor='None',
-                             markeredgecolor=colors[i], markeredgewidth=3, 
+                             markeredgecolor=colors[i], markeredgewidth=3,
                              clip_on=False)
                 #try:
                 #    plt.scatter(xdata[tmp], ydata[tmp], s=10, marker=markers[i],
@@ -222,24 +227,44 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                 #except ValueError:
                 #    set_trace()
 
+            # plot beyond maxevals data
+            tmp = ((numpy.isinf(xdata) == False) *
+                   (numpy.isinf(ydata) == False) *
+                   np.logical_or(
+                       (xdata >= entry0.mMaxEvals()),
+                       (ydata >= entry1.mMaxEvals())))
+            if tmp.any():
+                try:
+                    plt.plot(xdata[tmp], ydata[tmp], ls='',
+                             markersize=markersize + markersize_addon_beyond_maxevals,
+                             marker=markers[i], markerfacecolor='None',
+                             markeredgecolor=colors[i], markeredgewidth=1,
+                             clip_on=False)
+                except KeyError:
+                    plt.plot(xdata[tmp], ydata[tmp], ls='', markersize=markersize,
+                             marker='x', markerfacecolor='None',
+                             markeredgecolor=colors[i], markeredgewidth=2,
+                             clip_on=False)
             #ax = plt.gca()
             ax = plt.axes()
 
-            tmp = numpy.isinf(xdata) * (numpy.isinf(ydata)==False)
+            tmp = numpy.isinf(xdata) * (numpy.isinf(ydata) == False)
             if tmp.any():
                 trans = blend(ax.transAxes, ax.transData)
                 #plt.scatter([1.]*numpy.sum(tmp), ydata[tmp], s=10, marker=markers[i],
                 #            facecolor='None', edgecolor=colors[i], linewidth=3,
                 #            transform=trans)
                 try:
-                    plt.plot([1.]*numpy.sum(tmp), ydata[tmp], markersize=markersize, ls='',
+                    plt.plot([1.]*numpy.sum(tmp), ydata[tmp],
+                             markersize=markersize + markersize_addon_beyond_maxevals, ls='',
                              marker=markers[i], markerfacecolor='None',
-                             markeredgecolor=colors[i], markeredgewidth=3,
+                             markeredgecolor=colors[i], markeredgewidth=1,
                              transform=trans, clip_on=False)
                 except KeyError:
-                    plt.plot([1.]*numpy.sum(tmp), ydata[tmp], markersize=markersize, ls='',
+                    plt.plot([1.]*numpy.sum(tmp), ydata[tmp],
+                             markersize=markersize, ls='',
                              marker='x', markerfacecolor='None',
-                             markeredgecolor=colors[i], markeredgewidth=3,
+                             markeredgecolor=colors[i], markeredgewidth=2,
                              transform=trans, clip_on=False)
                 #set_trace()
 
@@ -250,14 +275,16 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                 #                facecolor='None', edgecolor=colors[i], linewidth=3,
                 #                transform=trans)
                 try:
-                    plt.plot(xdata[tmp], [1.-offset]*numpy.sum(tmp), markersize=markersize, ls='',
+                    plt.plot(xdata[tmp], [1.-offset]*numpy.sum(tmp),
+                             markersize=markersize + markersize_addon_beyond_maxevals, ls='',
                              marker=markers[i], markerfacecolor='None',
-                             markeredgecolor=colors[i], markeredgewidth=3,
+                             markeredgecolor=colors[i], markeredgewidth=1,
                              transform=trans, clip_on=False)
                 except KeyError:
-                    plt.plot(xdata[tmp], [1.-offset]*numpy.sum(tmp), markersize=markersize, ls='',
+                    plt.plot(xdata[tmp], [1.-offset]*numpy.sum(tmp),
+                             markersize=markersize, ls='',
                              marker='x', markerfacecolor='None',
-                             markeredgecolor=colors[i], markeredgewidth=3,
+                             markeredgecolor=colors[i], markeredgewidth=2,
                              transform=trans, clip_on=False)
 
             tmp = numpy.isinf(xdata) * numpy.isinf(ydata)
@@ -266,14 +293,16 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                 #                facecolor='None', edgecolor=colors[i], linewidth=3,
                 #                transform=trans)
                 try:
-                    plt.plot([1.-offset]*numpy.sum(tmp), [1.-offset]*numpy.sum(tmp), markersize=markersize, ls='',
+                    plt.plot([1.-offset]*numpy.sum(tmp), [1.-offset]*numpy.sum(tmp),
+                             markersize=markersize + markersize_addon_beyond_maxevals, ls='',
                              marker=markers[i], markerfacecolor='None',
-                             markeredgecolor=colors[i], markeredgewidth=3,
+                             markeredgecolor=colors[i], markeredgewidth=1,
                              transform=ax.transAxes, clip_on=False)
                 except KeyError:
-                    plt.plot([1.-offset]*numpy.sum(tmp), [1.-offset]*numpy.sum(tmp), markersize=markersize, ls='',
+                    plt.plot([1.-offset]*numpy.sum(tmp), [1.-offset]*numpy.sum(tmp),
+                             markersize=markersize, ls='',
                              marker='x', markerfacecolor='None',
-                             markeredgecolor=colors[i], markeredgewidth=3,
+                             markeredgecolor=colors[i], markeredgewidth=2,
                              transform=ax.transAxes, clip_on=False)
 
                 #set_trace()
