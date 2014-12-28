@@ -108,12 +108,17 @@ class TargetValues(object):
     """
     def __init__(self, target_values, discretize=None):
         if 11 < 3 and isinstance(target_values, TargetValues):  # type cast passing behavior
-            self.__dict__ = target_values.__dict__
+            return self  # caveat: one might think a copy should be made
+            self.__dict__ = target_values.__dict__  # this is not a copy
             return
         self.target_values = sorted(target_values, reverse=True)
         if discretize:
             self.target_values = self._discretize(self.target_values)
-        self.short_info = ""
+        self._short_info = "absolute targets"
+
+    @property
+    def short_info(self):
+        return self._short_info
 
     @staticmethod
     def cast(target_values_or_class_instance, *args, **kwargs):
@@ -203,10 +208,6 @@ class RunlengthBasedTargetValues(TargetValues):
         else:
             return RunlengthBasedTargetValues(run_lengths_or_class_instance, *args, **kwargs)
         
-    @property
-    def short_info(self):
-        return self._short_info    
-        
     def __init__(self, run_lengths, reference_data='bestGECCO2009',
                  smallest_target=1e-8, times_dimension=True, 
                  force_different_targets_factor=10**0.04,
@@ -250,7 +251,7 @@ class RunlengthBasedTargetValues(TargetValues):
             force_different_targets_factor **= -1 
         # TODO: known_names collects only bestalg stuff, while also algorithm data can be used (see def initialize below) 
         self.known_names = ['bestGECCO2009', 'bestGECCOever'] # TODO: best-ever is not a time-invariant thing and therefore ambiguous
-        self._short_info = "budget-based"
+        self._short_info = "budget-based targets"
         self.run_lengths = sorted(run_lengths)
         self.smallest_target = smallest_target
         self.step_to_next_difficult_target = step_to_next_difficult_target**np.sign(np.log(step_to_next_difficult_target))
