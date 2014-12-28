@@ -53,6 +53,7 @@ from BBOB-2009 for df = 1e-8.
 
 import os
 import sys
+import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 from pdb import set_trace
@@ -495,9 +496,9 @@ def plot_previous_algorithms(func, target=values_of_interest):  # lambda x: [1e-
             if not np.isinf(tmp):
                 bestalgdata.append(tmp / d)
             else:
-                bestalgdata.append(None)
-        except KeyError: #dimension not in bestalg
-            bestalgdata.append(None)
+                bestalgdata.append(np.inf)
+        except KeyError: # dimension not in bestalg
+            bestalgdata.append(np.inf)  # None/nan give a runtime warning
         
     res = plt.plot(dimensions, bestalgdata, color=refcolor, linewidth=10,
                    marker='d', markersize=25, markeredgecolor='k',
@@ -541,7 +542,14 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             plt.gca().set_title(funInfos[func])
         plot_previous_algorithms(func, _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
-        saveFigure(filename, verbose=verbose)
+        with warnings.catch_warnings(record=True) as w:
+            saveFigure(filename, verbose=verbose)
+            if len(w):
+                for ww in w:
+                    print(ww)
+                print('while saving figure in "' + filename +
+                        '" (in ppfigdim.py:551)')
+
         plt.close()
 
 funInfos = read_fun_infos()
