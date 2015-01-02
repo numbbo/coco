@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """Generic routines for figure generation."""
+import os
 from operator import itemgetter
 from itertools import groupby
 import warnings
@@ -10,30 +11,122 @@ from matplotlib import pyplot as plt
 from pdb import set_trace
 from bbob_pproc import genericsettings, toolsstats
 
-def saveFigure(filename, figFormat=genericsettings.fig_formats, verbose=True):
-    """Save figure into an image file."""
 
+bbox_inches_choices = {  # do we also need pad_inches = 0?
+    'svg': 'tight',
+}
+
+
+def saveFigure(filename, figFormat=genericsettings.fig_formats,
+               verbose=True):
+    """Save figure into an image file.
+
+    `figFormat` can be a string or a list of strings, like
+    ``('pdf', 'svg')``
+
+    """
     if isinstance(figFormat, basestring):
+        figFormat = (figFormat, )
+    for format in figFormat:
+        # a hack for making smaller figures for browser display 
+        if format == 'svg':
+            svg_downsize_factor = 0.8
+            # plt.rcParams['font.size'] *= 0.7
+            # plt.plot(plt.xlim()[0], plt.ylim()[0], '.')
+            # pretty desperate way to get a smaller figure
+            plt.gcf().set_size_inches([svg_downsize_factor * v for v in
+                                       plt.gcf().get_size_inches()])
         try:
-            plt.savefig(filename + '.' + figFormat, dpi = 60 if genericsettings.in_a_hurry else 300,
-                        format=figFormat)
+            plt.savefig(filename + '.' + format,
+                        dpi = 60 if genericsettings.in_a_hurry else 300,
+                        format=format,
+                        bbox_inches=bbox_inches_choices.get(format, None)
+            )
             if verbose:
-                print 'Wrote figure in %s.' % (filename + '.' + figFormat)
+                print 'Wrote figure in %s.' %(filename + '.' + format)
         except IOError:
-            warnings.warn('%s is not writeable.' % (filename + '.' + figFormat))
-    else:
-        #if not isinstance(figFormat, basestring):
-        for entry in figFormat:
-            try:
-                plt.savefig(filename + '.' + entry, dpi = 60 if genericsettings.in_a_hurry else 300,
-                            format=entry)
-                if verbose:
-                    print 'Wrote figure in %s.' %(filename + '.' + entry)
-            except IOError:
-                warnings.warn('%s is not writeable.' % (filename + '.' + entry))
+            warnings.warn('%s is not writeable.' % (filename + '.' + format))
+        if format == 'svg':
+            plt.gcf().set_size_inches([v / svg_downsize_factor for v in
+                                       plt.gcf().get_size_inches()])
+
+html_header = """<HTML>
+<HEAD>
+   <META NAME="description" CONTENT="COCO/BBOB figures by function">
+   <META NAME="keywords" CONTENT="COCO, BBOB">
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <TITLE> %s </TITLE>
+</HEAD>
+<BODY>
+<H1> %s
+</H1>
+"""
+
+
+def next_dimension_str(s):
+    try:
+        dim = int(s.strip().strip('_').rstrip('D'))
+        return s.replace('%02d' % dim, '%02d' % next_dimension(dim))
+    except:
+        warnings.warn('next_dimension_str failed on "%s"' % s)
+        print(s)
+        raise
+
+
+def next_dimension(dim):
+    """next dimension when clicking single function html pages"""
+    if dim == 2:
+        return 3
+    if dim == 3:
+        return 5
+    if dim == 40:
+        return 2
+    return 2 * dim
+
+
+def save_single_functions_html(filename, algname='', extension='svg',
+                               add_to_names = ''):
+    name = filename.split(os.sep)[-1]
+    with open(filename + add_to_names + '.html', 'w') as f:
+        header_title = algname + ' ' + name + add_to_names
+        f.write(html_header % (header_title.strip().replace(' ', ', '),
+            algname))
+        if add_to_names.endswith('D'):
+            name_for_click = next_dimension_str(add_to_names)
+            f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
+        for ifun in range(1, 25):
+            f.write('<IMG SRC="' + name + '_f%03d' % (ifun)
+                    + add_to_names + '.%s">' % (extension))
+        if add_to_names.endswith('D'):
+            f.write('"\n</A>\n')
+        f.write("\n</BODY>\n</HTML>")
+
+
+def discretize_limits(limits, smaller_steps_limit=3.1):
+    """return limits with discrete values from k * 10*i for k in [1, 3].
+
+    `smaller_steps_limits` is defined on the log10 scale. """
+    ymin, ymax = limits
+    ymin=np.max((ymin, 10**-0.2))
+    ymax=int(ymax + 1)
+
+    ymax_new = 10**np.ceil(np.log10(ymax)) * (1 + 1e-6)
+    if 3. * ymax_new / 10 > ymax and np.log10(ymax / ymin) < smaller_steps_limit:
+        ymax_new *= 3. / 10
+    ymin_new = 10**np.floor(np.log10(ymin)) / (1 + 1e-6)
+    if 11 < 3 and 3 * ymin_new < ymin and np.log10(ymax / ymin) < 1.1:
+        ymin_new *= 3
+
+    if ymin_new < 1.1:
+        ymin_new = 10**-0.2
+    ymin_new = 10**-0.2
+    return ymin_new, ymax_new
+
 
 def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
     """Proxy plot function: markers are evenly spaced on the log x-scale
+
+    Remark/TODO: should be called plot_with_unif_markers!?
 
     This method generates plots with markers regularly spaced on the
     x-scale whereas the matplotlib.pyplot.plot function will put markers
@@ -53,7 +146,7 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
         if 11 < 3:
             return old_downsample(xdata, ydata)
         tfy = np.log10 if logscale else lambda x: x
-            
+
         xdatarange = np.log10(max([max(xdata), ax[0], ax[1]]) + 0.5) - np.log10(min([min(xdata), ax[0], ax[1]]) + 0.5)  #np.log10(xdata[-1]) - np.log10(xdata[0])
         ydatarange = tfy(max([max(ydata), ax[2], ax[3]]) + 0.5) - tfy(min([min(ydata), ax[2], ax[3]]) + 0.5)  # tfy(ydata[-1]) - tfy(ydata[0])
         nbmarkers = np.min([maxnb, nbperdecade + np.ceil(nbperdecade * (1e-99 + np.abs(np.log10(max(xdata)) - np.log10(min(xdata)))))])
@@ -72,7 +165,7 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
         xpos.append(xdata[-1])
         ypos.append(ydata[-1])
         return xpos, ypos
-    
+
     def old_downsample(xdata, ydata):
         """Downsample arrays of data, superseeded by method marker_position
         
@@ -215,7 +308,9 @@ def groupByRange(data):
     return res
 
 def logxticks(limits=[-np.inf, np.inf]):
-    """Modify log-scale figure xticks from 10^i to i for values with the ``limits``.
+    """Modify log-scale figure xticks from 10^i to i for values with the
+    ``limits`` and (re-)sets the current xlim() thereby turning autoscale
+    off (if it was on).
     
     This is to have xticks that are more visible.
     Modifying the x-limits of the figure after calling this method will
@@ -224,14 +319,15 @@ def logxticks(limits=[-np.inf, np.inf]):
     
     """
     _xticks = plt.xticks()
-    _xticks
+    xlims = plt.xlim()
     newxticks = []
     for j in _xticks[0]:
         if j > limits[0] and j < limits[1]: # tick annotations only within the limits
             newxticks.append('%d' % round(np.log10(j)))
         else:
             newxticks.append('')
-    plt.xticks(_xticks[0], newxticks)
+    plt.xticks(_xticks[0], newxticks)  # this changes the limits (only in newer versions of mpl?)
+    plt.xlim(xlims[0], xlims[1])
     # TODO: check the xlabel is changed accordingly?
 
 def beautify():
@@ -326,7 +422,7 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
                 res.setdefault(j, [])
                 res.get(j).append(tmp)
         return res
-    
+
     for i in range(len(valuesOfInterest)):
 
         succ = []
