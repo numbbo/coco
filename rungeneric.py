@@ -195,7 +195,8 @@ def main(argv=None):
 
     try:
         try:
-            opts, args = getopt.getopt(argv, shortoptlist, longoptlist + ['omit-single', 'in-a-hurry=', 'input-path='])
+            opts, args = getopt.getopt(argv, shortoptlist, longoptlist +
+                                       ['omit-single', 'in-a-hurry=', 'input-path='])
         except getopt.error, msg:
             raise Usage(msg)
 
