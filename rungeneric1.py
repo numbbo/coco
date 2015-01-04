@@ -32,6 +32,7 @@ from bbob_pproc import genericsettings, pptable, pprldistr, ppfigdim, pplogloss,
 from bbob_pproc.pproc import DataSetList
 from bbob_pproc.toolsdivers import print_done, prepend_to_file, strip_pathname, str_to_latex
 from bbob_pproc import ppconverrorbars
+from bbob_pproc.compall import pprldmany
 
 import matplotlib.pyplot as plt
 
@@ -41,8 +42,8 @@ __all__ = ['main']
 shortoptlist = "hvpfo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
                "fig-only", "rld-only", "los-only", "crafting-effort=",
-               "pickle", "verbose", "settings=", "conv", "expensive", 
-               "not-expensive", "runlength-based"]
+               "pickle", "verbose", "settings=", "conv", "rld-single-fcts",
+               "expensive", "not-expensive", "runlength-based"]
 
 # CLASS DEFINITIONS
 
@@ -193,6 +194,7 @@ def main(argv=None):
         isNoiseFree = False
         inputsettings = 'color'
         isConv = False
+        isRldOnSingleFcts = False
         isRLbased = None  # allows automatic choice
         isExpensive = None 
 
@@ -237,6 +239,8 @@ def main(argv=None):
                 inputsettings = a
             elif o == "--conv":
                 isConv = True
+            elif o == "--rld-single-fcts":
+                isRldOnSingleFcts = True
             elif o == "--runlength-based":
                 isRLbased = True
             elif o == "--expensive":
@@ -320,7 +324,7 @@ def main(argv=None):
         dictAlg = dsList.dictByAlg()
 
         if len(dictAlg) > 1:
-            warnings.warn('Data with multiple algId %s ' % (dictAlg) + 
+            warnings.warn('Data with multiple algId %s ' % str(dictAlg.keys()) +
                           'will be processed together.')
             # TODO: in this case, all is well as long as for a given problem
             # (given dimension and function) there is a single instance of
@@ -399,6 +403,10 @@ def main(argv=None):
                 pprldistr.fmax = None  # Resetting the max final value
                 pprldistr.evalfmax = None  # Resetting the max #fevalsfactor
 
+            if isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
+                # ECDFs for each function
+                pprldmany.all_single_functions(dictAlg, None,
+                        outputdir, verbose)
             print_done()
 
         if islogloss:
