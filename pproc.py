@@ -1404,10 +1404,13 @@ class DataSetList(list):
         for i in self:
             if i == o:
                 isFound = True
-                if i.instancenumbers == o.instancenumbers:
-                    warnings.warn("same DataSet found twice, second one from " + str(o.indexFiles) + " is disregarded")
+                if i.instancenumbers == o.instancenumbers and any([_i > 5 for _i in i.instancenumbers]):
+                    warnings.warn("same DataSet found twice, second one from "
+                        + str(o.indexFiles) + " is disregarded for instances "
+                        + str(i.instancenumbers))
                     break
-                if set(i.instancenumbers).intersection(o.instancenumbers):
+                if set(i.instancenumbers).intersection(o.instancenumbers) \
+                        and any([_i >5 for _i in set(i.instancenumbers).intersection(o.instancenumbers)]):
                     warnings.warn('instances ' + str(set(i.instancenumbers).intersection(o.instancenumbers))
                                   + (' found several times. Read data for F%d in %d-D' % (i.funcId, i.dim)) 
                                   # + ' found several times. Read data for F%(argone)d in %(argtwo)d-D ' % {'argone':i.funcId, 'argtwo':i.dim}
