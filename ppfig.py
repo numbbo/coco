@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """Generic routines for figure generation."""
+from __future__ import absolute_import
 import os
 from operator import itemgetter
 from itertools import groupby
@@ -9,7 +10,7 @@ import warnings
 import numpy as np
 from matplotlib import pyplot as plt
 from pdb import set_trace
-from bbob_pproc import genericsettings, toolsstats
+import genericsettings, toolsstats  # absolute_import => this refers to package root
 
 
 bbox_inches_choices = {  # do we also need pad_inches = 0?
@@ -126,7 +127,8 @@ def discretize_limits(limits, smaller_steps_limit=3.1):
 def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
     """Proxy plot function: markers are evenly spaced on the log x-scale
 
-    Remark/TODO: should be called plot_with_unif_markers!?
+    Remark/TODO: should be called plot_with_unif_markers!? Here is where
+    the ECDF plots "done in pprldmany" actually happen.
 
     This method generates plots with markers regularly spaced on the
     x-scale whereas the matplotlib.pyplot.plot function will put markers
@@ -140,7 +142,6 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
 
     """
     res = plt.plot(x, y, **kwargs)
-
     def marker_positions(xdata, ydata, nbperdecade, maxnb, ax):
         """replacement for downsample with at most 12 points"""
         if 11 < 3:
@@ -269,7 +270,6 @@ def consecutiveNumbers(data):
     """Groups a sequence of integers into ranges of consecutive numbers.
 
     Example::
-      >>> import sys
       >>> import os
       >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
       >>> import bbob_pproc as bb

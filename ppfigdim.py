@@ -58,7 +58,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pdb import set_trace
 from bbob_pproc import genericsettings, toolsstats, bestalg, pproc
-from bbob_pproc.ppfig import saveFigure, groupByRange
+import bbob_pproc.ppfig as ppfig
+from bbob_pproc.ppfig import saveFigure, save_single_functions_html, groupByRange
 
 values_of_interest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # to rename!?
 xlim_max = None
@@ -174,22 +175,30 @@ def beautify(axesLabel=True):
     # axisHandle.xaxis.grid(True, linewidth=0, which='major')
     ymin, ymax = plt.ylim()
 
+    # horizontal grid
     if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
         axisHandle.yaxis.grid(False, which='major')
         expon = values_of_interest.times_dimension - ynormalize_by_dimension
         for (i, y) in enumerate(reversed(values_of_interest.run_lengths)):
             plt.plot((1, 200), [y, y], 'k:', linewidth=0.2)
             if i / 2. == i // 2:
-                plt.plot((1, 200), [y, y * 200**expon], styles[i]['color'] + '-', linewidth=0.2)
+                plt.plot((1, 200), [y, y * 200**expon],
+                         styles[i]['color'] + '-', linewidth=0.2)
     else:
+        # TODO: none of this is visible in svg format!
         axisHandle.yaxis.grid(True, which='major')
+        for i in xrange(0, 11):
+            plt.plot((0.2, 20000), 2 * [10**i], 'k:', linewidth=2.5)
+
     # quadratic slanted "grid"
-    for i in xrange(-2, 7, 1 if ymax <= 1e3 else 2):
-        plt.plot((0.2, 200), (10**i, 10**(i + 3)), 'k:', linewidth=0.5)  # TODO: this should be done before the real lines are plotted? 
+    for i in xrange(-2, 7, 1 if ymax < 1e5 else 2):
+        plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:', linewidth=0.5)
+        # TODO: this should be done before the real lines are plotted?
 
     # for x in dimensions:
     #     plt.plot(2 * [x], [0.1, 1e11], 'k:', linewidth=0.5)
-    # ticks on axes
+
+    # Ticks on axes
     # axisHandle.invert_xaxis()
     dimticklist = dimensions 
     dimannlist = dimensions 
@@ -215,21 +224,20 @@ def beautify(axesLabel=True):
         # axisHandle.set_yticklabels(ticklabels)
     # axes limites
     plt.xlim(0.9 * dimensions[0], 1.125 * dimensions[-1]) 
-    plt.ylim(ymin=np.max((ymin, 10**-0.2)), ymax=int(ymax + 1))  # Set back the default maximum.
     if xlim_max is not None:
         if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
             plt.ylim(0.3, xlim_max)  # set in config 
         else:
             pass  # TODO: xlim_max seems to be not None even when not desired
             # plt.ylim(1, xlim_max)
-        if 11 < 3:
-            title = plt.gca().get_title()  # works not not as expected
-            if title.startswith('1 ') or title.startswith('5 '):
-                plt.ylim(0.5, 1e2)
-            if title.startswith('19 ') or title.startswith('20 '):
-                plt.ylim(0.5, 1e4)
+    plt.ylim(ppfig.discretize_limits((ymin, ymax)))
 
-
+    if 11 < 3:
+        title = plt.gca().get_title()  # works not not as expected
+        if title.startswith('1 ') or title.startswith('5 '):
+            plt.ylim(0.5, 1e2)
+        if title.startswith('19 ') or title.startswith('20 '):
+            plt.ylim(0.5, 1e4)
     if axesLabel:
         plt.xlabel('Dimension')
         if ynormalize_by_dimension:
@@ -477,7 +485,8 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
                 plt.text(j[0], 1.5 * j[1] / j[0]**ynormalize_by_dimension, 
                          "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
-                         verticalalignment="bottom", fontsize=plt.rcParams['font.size'] * 0.85)
+                         verticalalignment="bottom",
+                         fontsize=plt.rcParams['font.size'] * 0.85)
         # if later the ylim[0] becomes >> 1, this might be a problem
     return res
 
@@ -532,21 +541,26 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     dictFunc = dsList.dictByFunc()
 
+    save_single_functions_html(os.path.join(outputdir, 'ppfigdim'),
+                               dictFunc[dictFunc.keys()[0]][0].algId)
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)
-        plt.text(plt.xlim()[0], plt.ylim()[0], _valuesOfInterest.short_info, fontsize=14)
+        plt.text(plt.xlim()[0], plt.ylim()[0],
+                 _valuesOfInterest.short_info, fontsize=14)
         if func in functions_with_legend:
             plt.legend(loc="best")
         if isBenchmarkinfosFound:
-            plt.gca().set_title(funInfos[func])
+            # print(plt.rcParams['axes.titlesize'])
+            # print(plt.rcParams['font.size'])
+            plt.gca().set_title(funInfos[func], fontsize=24)  # 24 is global font.size
         plot_previous_algorithms(func, _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
-        with warnings.catch_warnings(record=True) as w:
+        with warnings.catch_warnings(record=True) as ws:
             saveFigure(filename, verbose=verbose)
-            if len(w):
-                for ww in w:
-                    print(ww)
+            if len(ws):
+                for w in ws:
+                    print(w)
                 print('while saving figure in "' + filename +
                         '" (in ppfigdim.py:551)')
 

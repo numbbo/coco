@@ -59,13 +59,48 @@ simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure (means what?)
 # not (yet) in use: pprldmany_target_values = pproc.TargetValues(10**np.arange(-8, 2, 0.2))  # might not work because of cyclic import
 
-fig_formats = ('eps', 'pdf') if not in_a_hurry else ('pdf', )
+fig_formats = ('eps', 'pdf') if not in_a_hurry else ('svg', 'pdf')
 
 instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 41:1, 42:1, 43:1, 44:1,
                        45:1, 46:1, 47:1, 48:1, 49:1, 50:1}  # only for consistency checking
-line_styles_old = [  # used by ppfigs and pprlmany  
+
+line_styles = [  # used by ppfigs and pprlmany  
+          {'marker': 'o', 'markersize': 31, 'linestyle': '-', 'color': '#000080'}, # 'NavyBlue'
+          {'marker': 'h', 'markersize': 30, 'linestyle': '-', 'color': '#ff00ff'}, # 'Magenta'
+          {'marker': '*', 'markersize': 33, 'linestyle': '-', 'color': '#ffa500'}, # 'Orange'
+          {'marker': 'v', 'markersize': 28, 'linestyle': '-', 'color': '#6495ed'}, # 'CornflowerBlue'
+          {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': 'r'}, # 'Red'
+          {'marker': '^', 'markersize': 25, 'linestyle': '-', 'color': '#9acd32'}, # 'YellowGreen'
+#          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'g'}, # 'green' avoid green because of
+#          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': '#ffd700'}, # 'Goldenrod' seems too light
+#          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'}, # 'Black' is too close to NavyBlue
+#          {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': '#d02090'}, # square, 'VioletRed' seems too close to red
+          {'marker': 'p', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
+          {'marker': 'H', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'}, # 'Gray'
+          # {'marker': 'o', 'markersize': 23, 'linestyle': '-', 'color': '#ffff00'}, # 'Yellow'
+          {'marker': '3', 'markersize': 23, 'linestyle': '-', 'color': '#adff2f'}, # 'GreenYellow'
+          {'marker': '1', 'markersize': 23, 'linestyle': '-', 'color': '#228b22'}, # 'ForestGreen'
+          {'marker': 'D', 'markersize': 23, 'linestyle': '-', 'color': '#ffc0cb'}, # 'Lavender'
+          {'marker': '<', 'markersize': 23, 'linestyle': '-', 'color': '#87ceeb'}, # 'SkyBlue' close to CornflowerBlue
+          {'marker': 'v', 'markersize': 23, 'linestyle': '--', 'color': '#000080'}, # 'NavyBlue'
+          {'marker': '*', 'markersize': 23, 'linestyle': '--', 'color': 'r'}, # 'Red'
+          {'marker': 's', 'markersize': 23, 'linestyle': '--', 'color': '#ffd700'}, # 'Goldenrod'
+          {'marker': 'd', 'markersize': 23, 'linestyle': '--', 'color': '#d02090'}, # square, 'VioletRed'
+          {'marker': '^', 'markersize': 23, 'linestyle': '--', 'color': '#6495ed'}, # 'CornflowerBlue'
+          {'marker': '<', 'markersize': 23, 'linestyle': '--', 'color': '#ffa500'}, # 'Orange'
+          {'marker': 'h', 'markersize': 23, 'linestyle': '--', 'color': '#ff00ff'}, # 'Magenta'
+          # {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'}, # square, magenta
+          {'marker': 'p', 'markersize': 23, 'linestyle': '--', 'color': '#bebebe'}, # 'Gray'
+          {'marker': 'H', 'markersize': 23, 'linestyle': '--', 'color': '#87ceeb'}, # 'SkyBlue'
+          {'marker': '1', 'markersize': 23, 'linestyle': '--', 'color': '#ffc0cb'}, # 'Lavender'
+          {'marker': '2', 'markersize': 23, 'linestyle': '--', 'color': '#228b22'}, # 'ForestGreen'
+          {'marker': '4', 'markersize': 23, 'linestyle': '--', 'color': '#32cd32'}, # 'LimeGreen'
+          {'marker': '3', 'markersize': 23, 'linestyle': '--', 'color': '#9acd32'}, # 'YellowGreen'
+          {'marker': 'D', 'markersize': 23, 'linestyle': '--', 'color': '#adff2f'}, # 'GreenYellow'
+          ]
+line_styles_old = [  # used by ppfigs and pprlmany
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
-          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, 
+          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'},
           {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'c'},
           {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'}, # square
           {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'},
@@ -80,7 +115,7 @@ line_styles_old = [  # used by ppfigs and pprlmany
           {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
           {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'r'},
-          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'b'}, 
+          {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'b'},
           {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'm'},
           {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'c'}, # square
           {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'y'},
@@ -96,12 +131,12 @@ line_styles_old = [  # used by ppfigs and pprlmany
           {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'r'}
           ]
 
-line_styles = [  # used by ppfigs and pprlmany  
+more_old_line_styles = [  # used by ppfigs and pprlmany
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': '#000080'}, # 'NavyBlue'
           {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, # 'Red'
-          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': '#ffd700'}, # 'Goldenrod'
+           {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': '#ffd700'}, # 'Goldenrod' seems too light
           {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': '#d02090'}, # square, 'VioletRed'
-          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'}, # 'Black'
+          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'}, # 'Black' is too close to NavyBlue
           {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': '#6495ed'}, # 'CornflowerBlue'
           {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': '#ffa500'}, # 'Orange'
           {'marker': 'p', 'markersize': 24, 'linestyle': '-', 'color': '#ff00ff'}, # 'Magenta'
@@ -131,7 +166,6 @@ line_styles = [  # used by ppfigs and pprlmany
 
 
 
-
 if 11 < 3:  # in case using my own linestyles
     line_styles = [  # used by ppfigs and pprlmany, to be modified  
           {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
@@ -150,7 +184,7 @@ if 11 < 3:  # in case using my own linestyles
           {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
           {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'}
           ]
-    
+
 minmax_algorithm_fontsize = [10, 15]  # depending on the number of algorithms
 
 rcaxeslarger = {"labelsize": 24, "titlesize": 28.8}

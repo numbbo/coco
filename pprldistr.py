@@ -286,12 +286,12 @@ def beautifyFVD(isStoringXMax = False, ylabel = True):
 
     if not fmax:
         xmin, fmax = plt.xlim()
-    plt.xlim(1e-8, fmax) # 1e-8 was 1.
+    plt.xlim(1.01e-8, fmax) # 1e-8 was 1.
     # axisHandle.invert_xaxis()
     a.set_xlabel('log10 of Df') # / Dftarget
     if ylabel:
         a.set_ylabel('proportion of trials')
-    logxticks(limits = plt.xlim())
+    logxticks(limits=plt.xlim())
     beautifyECDF()
     if not ylabel:
         a.set_yticklabels(())
