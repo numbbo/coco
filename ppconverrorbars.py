@@ -30,11 +30,12 @@ if __name__ == "__main__":
 
 from bbob_pproc import genericsettings, pproc
 from bbob_pproc.pproc import DataSetList
-from bbob_pproc.ppfig import saveFigure
+from bbob_pproc.ppfig import saveFigure, save_single_functions_html
 from bbob_pproc.toolsstats import prctile
     
 import matplotlib.pyplot as plt
 
+final_target = 1e-8  # comes from the original experimental setup
 warned = False  # print just one warning and set to True
 
 #FUNCTION DEFINITIONS
@@ -56,6 +57,13 @@ def rearrange(blist, flist):
         final_f.append(erg_f)
     return final_b, final_f
 
+
+def beautify():
+    plt.legend(loc=3)
+    plt.grid(True)
+    limits = plt.ylim()
+    plt.ylim(max((limits[0], final_target)), limits[1])
+
 def main(dictAlg, outputdir='.', verbose=True):
     """Main routine for generating convergence plots
 
@@ -65,13 +73,16 @@ def main(dictAlg, outputdir='.', verbose=True):
     for l in dictFun:  # l appears to be the function id!?
         for i in dictFun[l]: # please, what is i??? appears to be the algorithm-key
             plt.figure()
-            if type(i) in (list, tuple):
-                figurename = "ppconv_plot_" + i[0] + "_f" + str(l)
-            else:
-                try:
-                    figurename = "ppconv_plot_" + dictFun[l][i].algId + "_f" + str(l)
-                except AttributeError:  # this is a (rather desperate) bug-fix attempt that works for the unit test
-                    figurename = "ppconv_plot_" + dictFun[l][i][0].algId + "_f" + str(l)
+            if 1 < 3:  # no algorithm name in filename, as everywhere else
+                figurename = "ppconv_" + "f%03d" % l
+            else:  # previous version with algorithm name, but this is not very practical later
+                if type(i) in (list, tuple):
+                    figurename = "ppconv_plot_" + i[0] + "_f" + str(l)
+                else:
+                    try:
+                        figurename = "ppconv_plot_" + dictFun[l][i].algId + "_f" + str(l)
+                    except AttributeError:  # this is a (rather desperate) bug-fix attempt that works for the unit test
+                        figurename = "ppconv_plot_" + dictFun[l][i][0].algId + "_f" + str(l)
             plt.xlabel('number of function evaluations / dimension')
             plt.ylabel('Median of fitness')
             plt.grid()
@@ -91,12 +102,19 @@ def main(dictAlg, outputdir='.', verbose=True):
                     else:
                         plt.errorbar(bs[0] / j.dim, fs[0][0], label = labeltext)
                 except FloatingPointError:  # that's a bit of a hack
-                    if not warned:
+                    if 1 < 3 or not warned:
                         print('Warning: floating point error when plotting errorbars, ignored')
                     warned = True
-            plt.legend(loc=3)
-            saveFigure(os.path.join(outputdir, figurename.replace(' ','')),  genericsettings.fig_formats, verbose=verbose)
+            beautify()
+            saveFigure(os.path.join(outputdir, figurename.replace(' ','')),
+                       genericsettings.fig_formats, verbose=verbose)
             plt.close()
+    try:
+        algname = str(dictFun[l].keys()[0][0])
+    except KeyError:
+        algname = str(dictFun[l].keys()[0])
+    save_single_functions_html(os.path.join(outputdir, 'ppconv'),
+                               algname)  # first try
     print("Convergence plots done.")
         
 if __name__ == "__main__":
