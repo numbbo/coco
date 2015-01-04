@@ -448,6 +448,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                 if (len(best_alg_idx) > 0 and len(significance_versus_others) > 0 and 
                     i == best_alg_idx[j] and nbtests * significance_versus_others[j][1] < 0.05):
                     logp = -numpy.ceil(numpy.log10(nbtests * significance_versus_others[j][1]))
+                    logp = numpy.min((9, logp))  # not messing up the format and handling inf
                     str_significance_subsup =  r"^{%s%s}" % (significance_vs_others_symbol, str(int(logp)) if logp > 1 else '')
 
                 # moved out of the above else: this was a bug!?
