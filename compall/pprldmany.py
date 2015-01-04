@@ -65,11 +65,14 @@ perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size_r
 dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
 nbperdecade = 1
 median_max_evals_marker_format = ['x', 24, 3]
-
+label_fontsize = 18
 styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
 
 refcolor = 'wheat'
 """color of reference (best) algorithm"""
+
+save_figure = True
+close_figure = True
 
 # TODO: update the list below which are not relevant anymore
 
@@ -188,10 +191,10 @@ def beautify():
 
     global divide_by_dimension
     if divide_by_dimension:
-        plt.xlabel('log10 of (# f-evals / dimension)')
+        plt.xlabel('log10 of (# f-evals / dimension)', fontsize=label_fontsize)
     else:
-        plt.xlabel('log10 of # f-evals')
-    plt.ylabel('Proportion of function+target pairs')
+        plt.xlabel('log10 of # f-evals', fontsize=label_fontsize)
+    plt.ylabel('Proportion of function+target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
     pprldistr.beautifyECDF()
 
@@ -350,10 +353,11 @@ def plotLegend(handles, maxval):
                     # reshandles.extend(plt_plot((maxval, legx), (j, y),
                     reshandles.extend(plt_plot((maxval, legx), (j, y),
                                       color=plt.getp(h, 'markeredgecolor'), **tmp))
-                    reshandles.append(plt.text(maxval**(0.02 + annotation_line_end_relative), y,
-                                               plt.getp(h, 'label').split(os.sep)[-1],
-                                               horizontalalignment="left",
-                                               verticalalignment="center", size=fontsize))
+                    reshandles.append(
+                        plt.text(maxval**(0.02 + annotation_line_end_relative), y,
+                                 plt.getp(h, 'label').split(os.sep)[-1],
+                                 horizontalalignment="left",
+                                 verticalalignment="center", size=fontsize))
                     reslabels.append(plt.getp(h, 'label'))
                     #set_trace()
                     i += 1
@@ -432,6 +436,24 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
             h.extend(res)
             res = h # so the last element in res still has the label.
     return res
+
+def all_single_functions(dictAlg, sortedAlgs=None, outputdir='.',
+                         verbose=0):
+        dictFG = pp.dictAlgByFun(dictAlg)
+        for fg, tmpdictAlg in dictFG.iteritems():
+            dictDim = pp.dictAlgByDim(tmpdictAlg)
+            for d, entries in dictDim.iteritems():
+                single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
+                                         'pprldmany-single-functions'
+                                         # + os.sep + ('f%03d' % fg)
+                                         )
+                if not os.path.exists(single_fct_output_dir):
+                    os.makedirs(single_fct_output_dir)
+                main(entries,
+                       order=sortedAlgs,
+                       outputdir=single_fct_output_dir,
+                       info=('f%03d_%02dD' % (fg, d)),
+                       verbose=verbose)
 
 def main(dictAlg, order=None, outputdir='.', info='default',
          dimension=None, verbose=True):
@@ -562,6 +584,11 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         lines.append(plotdata(np.array(xbest2009), x_limit, maxevalsbest2009,
                                   CrE = 0., **args))
 
+    def algname_to_label(algname, dirname=None):
+        """to be extended to become generally useful"""
+        if isinstance(algname, (tuple, list)): # not sure this is needed
+            return ' '.join([str(name) for name in algname])
+        return str(algname)
     for i, alg in enumerate(order):
         try:
             data = dictData[alg]
@@ -575,46 +602,50 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         args['markeredgewidth'] = 1.5
         args['markerfacecolor'] = 'None'
         args['markeredgecolor'] = args['color']
-        args['label'] = alg
+        args['label'] = algname_to_label(alg)
         #args['markevery'] = perfprofsamplesize # option available in latest version of matplotlib
         #elif len(show_algorithms) > 0:
             #args['color'] = 'wheat'
             #args['ls'] = '-'
             #args['zorder'] = -1
+        # plotdata calls pprldistr.plotECDF which calls ppfig.plotUnifLog... which does the work
         lines.append(plotdata(np.array(data), x_limit, maxevals,
                                   CrE=CrEperAlg[alg], **args))
 
     labels, handles = plotLegend(lines, x_limit)
     if True:  # isLateXLeg:
         fileName = os.path.join(outputdir,'pprldmany_%s.tex' % (info))
-        try:
-            f = open(fileName, 'w')
+        with open(fileName, 'w') as f:
             f.write(r'\providecommand{\nperfprof}{7}')
-            algtocommand = {}
+            algtocommand = {}  # latex commands
             for i, alg in enumerate(order):
                 tmp = r'\alg%sperfprof' % pptex.numtotext(i)
-                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' % (tmp, toolsdivers.str_to_latex(toolsdivers.strip_pathname2(alg))))
-                algtocommand[alg] = tmp
-            commandnames = []
+                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' %
+                        (tmp, toolsdivers.str_to_latex(
+                                toolsdivers.strip_pathname2(algname_to_label(alg)))))
+                algtocommand[algname_to_label(alg)] = tmp
             if displaybest2009:
                 tmp = r'\algzeroperfprof'
                 f.write(r'\providecommand{%s}{best 2009}' % (tmp))
                 algtocommand['best 2009'] = tmp
 
-            for l in labels:
-                commandnames.append(algtocommand[l])
+            commandnames = []
+            for label in labels:
+                commandnames.append(algtocommand[label])
             # f.write(headleg)
-            f.write(r'\providecommand{\perfprofsidepanel}{\mbox{%s}' % commandnames[0]) # TODO: check len(labels) > 0
-            for i in range(1, len(labels)):
-                f.write('\n' + r'\vfill \mbox{%s}' % commandnames[i])
-            f.write('}\n')
+            if len(order) > 28:  # latex sidepanel won't work well for more than 25 algorithms, but original labels are also clipped
+                f.write(r'\providecommand{\perfprofsidepanel}{\mbox{%s}\vfill\mbox{%s}}'
+                        % (commandnames[0], commandnames[-1]))
+            else:
+                fontsize_command = r'\tiny{}' if len(order) > 19 else ''
+                f.write(r'\providecommand{\perfprofsidepanel}{{%s\mbox{%s}' %
+                        (fontsize_command, commandnames[0])) # TODO: check len(labels) > 0
+                for i in range(1, len(labels)):
+                    f.write('\n' + r'\vfill \mbox{%s}' % commandnames[i])
+                f.write('}}\n')
             # f.write(footleg)
             if verbose:
                 print 'Wrote right-hand legend in %s' % fileName
-        except:
-            raise # TODO: Does this make sense?
-        else:
-            f.close()
 
     figureName = os.path.join(outputdir,'pprldmany_%s' % (info))
     #beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
@@ -637,8 +668,15 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     a.set_xticklabels(tmp)
 
     # print 'in_a_hurry ==', genericsettings.in_a_hurry
-    if 1 < 3:
+    if save_figure:
         ppfig.saveFigure(figureName, verbose=verbose)
+        if len(dictFunc) == 1:
+            ppfig.save_single_functions_html(
+                os.path.join(outputdir, 'pprldmany'),
+                '', # algorithms names are clearly visible in the figure
+                add_to_names='_%02dD' %(dim)
+            )
+    if close_figure:
         plt.close()
 
     # TODO: should return status or sthg

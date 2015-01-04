@@ -70,8 +70,8 @@ def fix_styles(number, styles=styles):
     while len(styles) < number:
         styles.append(styles[len(styles) % m])
     for i in xrange(len(styles)):
-        styles[i].update({'linewidth': 4 - min([3, i/2.0]),  # thinner lines over thicker lines
-                          'markeredgewidth': 6 - min([2, i]), 
+        styles[i].update({'linewidth': 5 - min([2, i/3.0]),  # thinner lines over thicker lines
+                          'markeredgewidth': 6 - min([2, i / 2.0]),
                           'markerfacecolor': 'None'})
 refcolor = 'wheat'
 
@@ -358,8 +358,19 @@ def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', v
                         nbsucc.append('%d' % data[2])
 
             # Draw lines
-            tmp = plt.plot(dimert, ert, **styles[i]) #label=alg, )
-            plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
+            if 1 < 3:  # new version
+                # omit the line if a point in between is missing
+                for idim in range(len(dimert)):
+                    # plot line only if next dim < 2.1*dim (a hack)
+                    if idim < len(dimert) - 1 and dimert[idim + 1] < 2.1 * dimert[idim]:
+                        tmp = plt.plot(dimert[idim:idim+2], ert[idim:idim+2], **styles[i]) #label=alg, )
+                    else:  # plot remaining single points (some twice)
+                        tmp = plt.plot(dimert[idim], ert[idim], **styles[i]) #label=alg, )
+                    plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
+            else:  # to be removed
+                tmp = plt.plot(dimert, ert, **styles[i]) #label=alg, )
+                plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
+
             # For legend
             # tmp = plt.plot([], [], label=alg.replace('..' + os.sep, '').strip(os.sep), **styles[i])
             tmp = plt.plot([], [], label=alg.split(os.sep)[-1], **styles[i])

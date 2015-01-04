@@ -355,21 +355,25 @@ def main(argv=None):
                                    verbose=verbose)
             if isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
-                dictFG = pproc.dictAlgByFun(dictAlg)
-                for fg, tmpdictAlg in dictFG.iteritems():
-                    dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                    for d, entries in dictDim.iteritems():
-                        single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep + 
-                                                 'pprldmany-single-functions'
-                                                 # + os.sep + ('f%03d' % fg)
-                                                 )
-                        if not os.path.exists(single_fct_output_dir):
-                            os.makedirs(single_fct_output_dir)
-                        pprldmany.main(entries,
-                                       order=sortedAlgs,
-                                       outputdir=single_fct_output_dir,
-                                       info=('f%03d_%02dD' % (fg, d)),
-                                       verbose=verbose)
+                if 1 < 3:
+                    pprldmany.all_single_functions(dictAlg, sortedAlgs,
+                            outputdir, verbose)
+                else:  # subject to removal
+                    dictFG = pproc.dictAlgByFun(dictAlg)
+                    for fg, tmpdictAlg in dictFG.iteritems():
+                        dictDim = pproc.dictAlgByDim(tmpdictAlg)
+                        for d, entries in dictDim.iteritems():
+                            single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
+                                                     'pprldmany-single-functions'
+                                                     # + os.sep + ('f%03d' % fg)
+                                                     )
+                            if not os.path.exists(single_fct_output_dir):
+                                os.makedirs(single_fct_output_dir)
+                            pprldmany.main(entries,
+                                           order=sortedAlgs,
+                                           outputdir=single_fct_output_dir,
+                                           info=('f%03d_%02dD' % (fg, d)),
+                                           verbose=verbose)
             print "ECDFs of run lengths figures done."
 
         if isTab:
