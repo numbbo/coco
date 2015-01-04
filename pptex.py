@@ -30,14 +30,21 @@ latex_marker_map = {'o': r'$\circ$',
               '2': r'$\upY$', # need \usepackage{MnSymbol}
               '3': r'$\rightY$', # need \usepackage{MnSymbol}
               '4': r'$\leftY$'} # need \usepackage{MnSymbol}
-latex_color_map_old = {'g': 'green!45!black',
+latex_color_map_old = {
+             'g': 'green!45!black',
              'r': 'red',
              'c': 'cyan',
              'm': 'magenta',
              'y': 'yellow',
              'k': 'black',
              'b': 'blue'}
-latex_color_map = {'#000080': 'NavyBlue',
+latex_color_map = {
+             'c': 'cyan',
+             'm': 'magenta',
+             'y': 'yellow',
+             'b': 'blue',
+             'g': 'green',
+             '#000080': 'NavyBlue',
              'r': 'red',
              '#ffd700': 'Goldenrod',
              '#d02090': 'VioletRed',
