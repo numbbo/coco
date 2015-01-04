@@ -45,7 +45,7 @@ from bbob_pproc import pprldistr
 from bbob_pproc.pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
 from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname, str_to_latex
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
-from bbob_pproc.compall import ppfigs
+from bbob_pproc.compall import ppfigs, pprldmany
 from bbob_pproc import ppconverrorbars
 import matplotlib.pyplot as plt
 
@@ -55,7 +55,7 @@ __all__ = ['main']
 shortoptlist = "hvo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free", "fig-only",
                "rld-only", "tab-only", "sca-only", "verbose",
-               "settings=", "conv",
+               "settings=", "conv", "rld-single-fcts",
                "runlength-based", "expensive", "not-expensive"]
 
 #CLASS DEFINITIONS
@@ -184,6 +184,7 @@ def main(argv=None):
         outputdir = 'ppdata'
         inputsettings = 'color'
         isConv= False
+        isRldOnSingleFcts = False
         isRLbased = None  # allows automatic choice
         isExpensive = None 
 
@@ -222,6 +223,8 @@ def main(argv=None):
                 inputsettings = a
             elif o == "--conv":
                 isConv = True
+            elif o == "--rld-single-fcts":
+                isRldOnSingleFcts = True
             elif o == "--runlength-based":
                 isRLbased = True
             elif o == "--expensive":
@@ -463,6 +466,10 @@ def main(argv=None):
                                        True, outputdir,
                                        '%s' % fGroup, verbose)
 
+            if isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
+                # ECDFs for each function
+                pprldmany.all_single_functions(dictAlg, sortedAlgs,
+                        outputdir, verbose)
             print "ECDF runlength graphs done."
 
         if isConv:
