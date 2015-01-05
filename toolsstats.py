@@ -104,8 +104,10 @@ def sp1(data, maxvalue=np.Inf, issuccessful=None):
         return (np.mean(dat) / succ, succ, len(dat))
 
 def sp(data, maxvalue=np.Inf, issuccessful=None, allowinf=True):
-    """sp(data, issuccessful=None) computes the sum of the function evaluations
-    over all runs divided by the number of success, the so-called SP.
+    """sp(data, issuccessful=None) computes the sum of the function
+    evaluations over all runs divided by the number of success,
+    the so-called success performance which estimates the expected
+    runtime ERT.
 
     Input:
       data -- array contains, e.g., number of function
