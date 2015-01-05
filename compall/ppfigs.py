@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 """Creates ERTs and convergence figures for multiple algorithms."""
-
+from __future__ import absolute_import
 import os
 import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
-from bbob_pproc import toolsdivers, toolsstats, bestalg, pproc, genericsettings
-from bbob_pproc.ppfig import saveFigure
-from bbob_pproc.pptex import color_to_latex, marker_to_latex, writeLabels
+from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings
+from ..ppfig import saveFigure
+from ..pptex import color_to_latex, marker_to_latex, writeLabels
 
 # styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
 #           {'color': 'b'},
