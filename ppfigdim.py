@@ -50,16 +50,13 @@ from BBOB-2009 for df = 1e-8.
     bb.ppfigdim.plot_previous_algorithms(2) # plot BBOB 2009 best algorithm on fun 2
 
 """
-
+from __future__ import absolute_import
 import os
-import sys
 import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 from pdb import set_trace
-from bbob_pproc import genericsettings, toolsstats, bestalg, pproc
-import bbob_pproc.ppfig as ppfig
-from bbob_pproc.ppfig import saveFigure, save_single_functions_html, groupByRange
+from . import genericsettings, toolsstats, bestalg, pproc, ppfig
 
 values_of_interest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # to rename!?
 xlim_max = None
@@ -187,8 +184,8 @@ def beautify(axesLabel=True):
     else:
         # TODO: none of this is visible in svg format!
         axisHandle.yaxis.grid(True, which='major')
-        for i in xrange(0, 11):
-            plt.plot((0.2, 20000), 2 * [10**i], 'k:', linewidth=2.5)
+        # for i in xrange(0, 11):
+        #     plt.plot((0.2, 20000), 2 * [10**i], 'k:', linewidth=0.5)
 
     # quadratic slanted "grid"
     for i in xrange(-2, 7, 1 if ymax < 1e5 else 2):
@@ -541,8 +538,8 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     dictFunc = dsList.dictByFunc()
 
-    save_single_functions_html(os.path.join(outputdir, 'ppfigdim'),
-                               dictFunc[dictFunc.keys()[0]][0].algId)
+    ppfig.save_single_functions_html(os.path.join(outputdir, 'ppfigdim'),
+                                dictFunc[dictFunc.keys()[0]][0].algId)
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)
@@ -557,7 +554,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         plot_previous_algorithms(func, _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         with warnings.catch_warnings(record=True) as ws:
-            saveFigure(filename, verbose=verbose)
+            ppfig.saveFigure(filename, verbose=verbose)
             if len(ws):
                 for w in ws:
                     print(w)
