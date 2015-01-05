@@ -9,8 +9,8 @@ from itertools import groupby
 import warnings
 import numpy as np
 from matplotlib import pyplot as plt
-from pdb import set_trace
-import genericsettings, toolsstats  # absolute_import => this refers to package root
+# from pdb import set_trace
+from . import genericsettings, toolsstats  # absolute_import => . refers to where ppfig resides in the package
 
 
 bbox_inches_choices = {  # do we also need pad_inches = 0?
@@ -104,9 +104,13 @@ def save_single_functions_html(filename, algname='', extension='svg',
 
 
 def discretize_limits(limits, smaller_steps_limit=3.1):
-    """return limits with discrete values from k * 10*i for k in [1, 3].
+    """return new limits with discrete values in k * 10**i with k in [1, 3].
 
-    `smaller_steps_limits` is defined on the log10 scale. """
+    `limits` has len 2.
+
+    `smaller_steps_limits` is defined on the log10 scale and defines
+    when k == 3 is an additional option.
+    """
     ymin, ymax = limits
     ymin=np.max((ymin, 10**-0.2))
     ymax=int(ymax + 1)
@@ -124,11 +128,50 @@ def discretize_limits(limits, smaller_steps_limit=3.1):
     return ymin_new, ymax_new
 
 
+def marker_positions(xdata, ydata, nbperdecade, maxnb,
+                     ax_limits=None, y_transformation=None):
+    """return randomized marker positions
+
+    replacement for downsample, could be improved by becoming independent
+    of axis limits?
+    """
+    if ax_limits is None:  # use current axis limits
+        ax_limits = plt.axis()
+    tfy = y_transformation
+    if tfy is None:
+        tfy = lambda x: x  # identity
+    if 11 < 3:
+        return old_downsample(xdata, ydata)
+
+    xdatarange = np.log10(max([max(xdata), ax_limits[0], ax_limits[1]]) + 0.5) - \
+                 np.log10(min([min(xdata), ax_limits[0], ax_limits[1]]) + 0.5)  #np.log10(xdata[-1]) - np.log10(xdata[0])
+    ydatarange = tfy(max([max(ydata), ax_limits[2], ax_limits[3]]) + 0.5) - \
+                 tfy(min([min(ydata), ax_limits[2], ax_limits[3]]) + 0.5)  # tfy(ydata[-1]) - tfy(ydata[0])
+    nbmarkers = np.min([maxnb, nbperdecade +
+                               np.ceil(nbperdecade * (1e-99 + np.abs(np.log10(max(xdata)) - np.log10(min(xdata)))))])
+    probs = np.abs(np.diff(np.log10(xdata))) / xdatarange + \
+            np.abs(np.diff(tfy(ydata))) / ydatarange
+    xpos = []
+    ypos= []
+    if sum(probs) > 0:
+        xoff = np.random.rand() / nbmarkers
+        probs /= sum(probs)
+        cum = np.cumsum(probs)
+        for xact in np.arange(0, 1, 1./nbmarkers):
+            pos = xoff + xact + (1./nbmarkers) * (0.3 + 0.4 * np.random.rand())
+            idx = np.abs(cum - pos).argmin()  # index of closest value
+            xpos.append(xdata[idx])
+            ypos.append(ydata[idx])
+    xpos.append(xdata[-1])
+    ypos.append(ydata[-1])
+    return xpos, ypos
+
+
 def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
     """Proxy plot function: markers are evenly spaced on the log x-scale
 
     Remark/TODO: should be called plot_with_unif_markers!? Here is where
-    the ECDF plots "done in pprldmany" actually happen.
+    the ECDF plot "done in pprldmany" actually happens.
 
     This method generates plots with markers regularly spaced on the
     x-scale whereas the matplotlib.pyplot.plot function will put markers
@@ -139,119 +182,14 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
     label.
 
     This function only works with monotonous graph.
-
     """
-    res = plt.plot(x, y, **kwargs)
-    def marker_positions(xdata, ydata, nbperdecade, maxnb, ax):
-        """replacement for downsample with at most 12 points"""
-        if 11 < 3:
-            return old_downsample(xdata, ydata)
-        tfy = np.log10 if logscale else lambda x: x
-
-        xdatarange = np.log10(max([max(xdata), ax[0], ax[1]]) + 0.5) - np.log10(min([min(xdata), ax[0], ax[1]]) + 0.5)  #np.log10(xdata[-1]) - np.log10(xdata[0])
-        ydatarange = tfy(max([max(ydata), ax[2], ax[3]]) + 0.5) - tfy(min([min(ydata), ax[2], ax[3]]) + 0.5)  # tfy(ydata[-1]) - tfy(ydata[0])
-        nbmarkers = np.min([maxnb, nbperdecade + np.ceil(nbperdecade * (1e-99 + np.abs(np.log10(max(xdata)) - np.log10(min(xdata)))))])
-        probs = np.abs(np.diff(np.log10(xdata)))/xdatarange + np.abs(np.diff(tfy(ydata)))/ydatarange
-        xpos = []
-        ypos= []
-        if sum(probs) > 0:
-            xoff = np.random.rand() / nbmarkers
-            probs /= sum(probs)
-            cum = np.cumsum(probs)
-            for xact in np.arange(0, 1, 1./nbmarkers):
-                pos = xoff + xact + (1./nbmarkers) * (0.3 + 0.4 * np.random.rand())
-                idx = np.abs(cum - pos).argmin()  # index of closest value
-                xpos.append(xdata[idx])
-                ypos.append(ydata[idx])
-        xpos.append(xdata[-1])
-        ypos.append(ydata[-1])
-        return xpos, ypos
-
-    def old_downsample(xdata, ydata):
-        """Downsample arrays of data, superseeded by method marker_position
-        
-        From xdata and ydata return x and y which have only nbperdecade
-        elements times the number of decades in xdata.
-
-        """
-        # powers of ten 10**(i/nbperdecade)
-        # get segments coordinates x1, x2, y1, y2
-        # Add data at the front and the back,
-        # otherwise the line of markers is prolonged at the y-position
-        # of the first and last marker which may not correspond to the
-        # 1st and last y-value
-        if 'steps' in plt.getp(res[0], 'drawstyle'): # other conditions?
-            #xdata = np.hstack((10 ** (np.floor(np.log10(xdata[0]) * nbperdecade) / nbperdecade),
-            #                   xdata,
-            #                   10 ** (np.ceil(np.log10(xdata[-1]) * nbperdecade) / nbperdecade)))
-            #ydata = np.hstack((ydata[0], ydata, ydata[-1]))
-            # Add data only at the back
-            xdata = np.hstack((xdata,
-                               10 ** (np.ceil(np.log10(xdata[-1]) * nbperdecade) / nbperdecade)))
-            ydata = np.hstack((ydata, ydata[-1]))
-
-        tmpdata = np.column_stack((xdata, ydata))
-        it = groupby(tmpdata, lambda x: x[0])
-        seg = []
-        try:
-            k0, g0 = it.next()
-            g0 = np.vstack(g0)[:, 1]
-            while True:
-                if len(g0) > 1:
-                    seg.append(((k0, k0), (min(g0), max(g0))))
-                k, g = it.next()
-                g = np.vstack(g)[:, 1]
-                seg.append(((k0, k), (g0[-1], g[0])))
-                k0 = k
-                g0 = g
-        except StopIteration:
-            pass
-        downx = []
-        downy = []
-        for segx, segy in seg:
-            minidx = np.ceil(np.log10(min(segx[0], segx[1])) * nbperdecade)
-            maxidx = np.floor(np.log10(max(segx[0], segx[1])) * nbperdecade)
-            intermx = 10. ** (np.arange(minidx, maxidx + 1) / nbperdecade)
-            downx.extend(intermx)
-            if plt.getp(res[0], 'drawstyle') in ('steps', 'steps-pre'):
-                downy.extend(len(intermx) * [max(segy[0], segy[1])])
-            elif plt.getp(res[0], 'drawstyle') == 'steps-post':
-                downy.extend(len(intermx) * [min(segy[0], segy[1])])
-            elif plt.getp(res[0], 'drawstyle') == 'steps-mid':
-                if logscale:
-                    ymid = 10. ** ((np.log10(segy[0]) + np.log10(segy[1])) / 2.)
-                else:
-                    ymid = (segy[0] + segy[1]) / 2.
-                downy.extend(len(intermx) * [ymid])
-            elif plt.getp(res[0], 'drawstyle') == 'default':
-                # log interpolation / semi-log
-                dlgx = np.log10(segx[1]) - np.log10(segx[0])
-                if logscale:
-                    tmp = 10.**(np.log10(segy[0]) + (np.log10(intermx) - np.log10(segx[0])) * (np.log10(segy[1]) - np.log10(segy[0])) / dlgx)
-                else:
-                    tmp = segy[0] + (np.log10(intermx) - np.log10(segx[0])) * (segy[1] - segy[0]) / dlgx
-                downy.extend(tmp)
-        resdownx = []
-        resdowny = []
-        tmpdata = np.column_stack((downx, downy))
-        it = groupby(tmpdata, lambda x: x[0])
-        try:
-            while True:
-                k, g = it.next()
-                g = np.vstack(g)[:, 1]
-                resdownx.append(k)
-                resdowny.append(10.**((np.log10(min(g)) + np.log10(max(g))) / 2.))
-        except StopIteration:
-            pass
-        return resdownx, resdowny
+    res = plt.plot(x, y, **kwargs)  # shouldn't this be done in the calling code?
 
     if 'marker' in kwargs and len(x) > 0:
         # x2, y2 = downsample(x, y)
-        x2, y2 = marker_positions(x, y, nbperdecade, 19, plt.axis())
-        try:
-            res2 = plt.plot(x2, y2)
-        except ValueError:
-            raise # TODO
+        x2, y2 = marker_positions(x, y, nbperdecade, 19, plt.axis(),
+                                  np.log10 if logscale else None)
+        res2 = plt.plot(x2, y2)
         for i in res2:
             i.update_from(res[0]) # copy all attributes of res
         plt.setp(res2, linestyle='', label='')
@@ -278,7 +216,6 @@ def consecutiveNumbers(data):
 
     Range of consecutive numbers is at least 3 (therefore [4, 5] is
     represented as "4, 5").
-
     """
     res = []
     tmp = groupByRange(data)
@@ -299,7 +236,6 @@ def groupByRange(data):
     consecutive numbers all appear in same group.
     Useful for determining ranges of functions.
     Ref: http://docs.python.org/release/3.0.1/library/itertools.html
-
     """
     res = []
     for _k, g in groupby(enumerate(data), lambda (i,x):i-x):
@@ -316,7 +252,6 @@ def logxticks(limits=[-np.inf, np.inf]):
     Modifying the x-limits of the figure after calling this method will
     not update the ticks.
     Please make sure the xlabel is changed accordingly.
-    
     """
     _xticks = plt.xticks()
     xlims = plt.xlim()
@@ -356,13 +291,9 @@ def generateData(dataSet, targetFuncValue):
     """Returns an array of results to be plotted.
 
     1st column is ert, 2nd is  the number of success, 3rd the success
-    rate, 4th the sum of the number of  function evaluations, and
+    rate, 4th the sum of the number of function evaluations, and
     finally the median on successful runs.
-
     """
-    res = []
-    data = []
-
     it = iter(reversed(dataSet.evals))
     i = it.next()
     prev = np.array([np.nan] * len(i))
@@ -375,7 +306,8 @@ def generateData(dataSet, targetFuncValue):
             break
 
     data = prev[1:].copy() # keep only the number of function evaluations.
-    succ = (np.isnan(data) == False)
+    # was up to rev4997: succ = (np.isnan(data) == False)  # better: ~np.isnan(data)
+    succ = np.isfinite(data)
     if succ.any():
         med = toolsstats.prctile(data[succ], 50)[0]
         #Line above was modified at rev 3050 to make sure that we consider only
@@ -383,6 +315,7 @@ def generateData(dataSet, targetFuncValue):
     else:
         med = np.nan
 
+    # prepare to compute runlengths / ERT with restarts (sp1)
     data[np.isnan(data)] = dataSet.maxevals[np.isnan(data)]
 
     res = []
