@@ -243,12 +243,12 @@ def beautify(legend=False, rightlegend=False):
 
     ymin, ymax = plt.ylim()
 
-    # quadratic "grid"
+    # quadratic slanted "grid"
     if 1 < 3:
         for i in xrange(-2, 7, 1 if ymax < 1e5 else 2):
             plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:',
                      linewidth=0.5)  # grid should be on top
-    else:
+    else:  # to be removed
         plt.plot((2,200), (1, 1e2), 'k:', zorder=-1)  # -1 -> plotted below?
         # plt.plot((2,200), (1, 1e4), 'k:', zorder=-1)
         plt.plot((2,200), (1e3, 1e5), 'k:', zorder=-1)
