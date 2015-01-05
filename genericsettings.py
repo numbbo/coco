@@ -59,7 +59,8 @@ simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure (means what?)
 # not (yet) in use: pprldmany_target_values = pproc.TargetValues(10**np.arange(-8, 2, 0.2))  # might not work because of cyclic import
 
-fig_formats = ('eps', 'pdf') if not in_a_hurry else ('svg', 'pdf')
+fig_formats = ('eps', 'pdf') if not in_a_hurry else ('pdf',)
+# fig_formats = ('pdf, 'png', 'svg')
 
 instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 41:1, 42:1, 43:1, 44:1,
                        45:1, 46:1, 47:1, 48:1, 49:1, 50:1}  # only for consistency checking
