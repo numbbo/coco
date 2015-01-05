@@ -244,12 +244,17 @@ def beautify(legend=False, rightlegend=False):
     ymin, ymax = plt.ylim()
 
     # quadratic "grid"
-    plt.plot((2,200), (1, 1e2), 'k:', zorder=-1)
-    # plt.plot((2,200), (1, 1e4), 'k:', zorder=-1)
-    plt.plot((2,200), (1e3, 1e5), 'k:', zorder=-1)
-    # plt.plot((2,200), (1e3, 1e7), 'k:', zorder=-1)
-    plt.plot((2,200), (1e6, 1e8), 'k:', zorder=-1)
-    # plt.plot((2,200), (1e6, 1e10), 'k:', zorder=-1)
+    if 1 < 3:
+        for i in xrange(-2, 7, 1 if ymax < 1e5 else 2):
+            plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:',
+                     linewidth=0.5)  # grid should be on top
+    else:
+        plt.plot((2,200), (1, 1e2), 'k:', zorder=-1)  # -1 -> plotted below?
+        # plt.plot((2,200), (1, 1e4), 'k:', zorder=-1)
+        plt.plot((2,200), (1e3, 1e5), 'k:', zorder=-1)
+        # plt.plot((2,200), (1e3, 1e7), 'k:', zorder=-1)
+        plt.plot((2,200), (1e6, 1e8), 'k:', zorder=-1)
+        # plt.plot((2,200), (1e6, 1e10), 'k:', zorder=-1)
 
     plt.ylim(ymin=10**-0.2, ymax=ymax) # Set back the default maximum.
 
