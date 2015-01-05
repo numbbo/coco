@@ -106,10 +106,10 @@ def save_single_functions_html(filename, algname='', extension='svg',
 def discretize_limits(limits, smaller_steps_limit=3.1):
     """return new limits with discrete values in k * 10**i with k in [1, 3].
 
-    `limits` has len 2.
+    `limits` has len 2 and the new lower limit is always ``10**-0.2``. 
 
-    `smaller_steps_limits` is defined on the log10 scale and defines
-    when k == 3 is an additional option.
+    if `limits[1] / limits[0] < 10**smaller_steps_limits`, k == 3 is an 
+    additional choice.
     """
     ymin, ymax = limits
     ymin=np.max((ymin, 10**-0.2))
@@ -140,8 +140,6 @@ def marker_positions(xdata, ydata, nbperdecade, maxnb,
     tfy = y_transformation
     if tfy is None:
         tfy = lambda x: x  # identity
-    if 11 < 3:
-        return old_downsample(xdata, ydata)
 
     xdatarange = np.log10(max([max(xdata), ax_limits[0], ax_limits[1]]) + 0.5) - \
                  np.log10(min([min(xdata), ax_limits[0], ax_limits[1]]) + 0.5)  #np.log10(xdata[-1]) - np.log10(xdata[0])
@@ -315,7 +313,7 @@ def generateData(dataSet, targetFuncValue):
     else:
         med = np.nan
 
-    # prepare to compute runlengths / ERT with restarts (sp1)
+    # prepare to compute runlengths / ERT with restarts (AKA SP1)
     data[np.isnan(data)] = dataSet.maxevals[np.isnan(data)]
 
     res = []
