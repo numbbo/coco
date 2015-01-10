@@ -17,9 +17,9 @@ used by other modules, but does not modify settings of other modules.
 
 import numpy as np
 import ppfig, ppfigdim, pptable
-from bbob_pproc import genericsettings, pproc, pprldistr
-from bbob_pproc.comp2 import ppfig2, ppscatter, pptable2
-from bbob_pproc.compall import ppfigs, pprldmany, pptables
+from . import genericsettings, pproc, pprldistr
+from .comp2 import ppfig2, ppscatter, pptable2
+from .compall import ppfigs, pprldmany, pptables
 
 def target_values(is_expensive, dict_max_fun_evals={}, runlength_limit=1e3):
     """manage target values setting in "expensive" optimization scenario, 
