@@ -767,7 +767,7 @@ class DataSet():
             tmp.append(self.maxevals[i] == self.readmaxevals[i])
         if not all(tmp) or len(self.maxevals) != len(self.readmaxevals):
             warnings.warn('There is a difference between the maxevals in the '
-                          '*.info file and in the data files .')
+                          '*.info file and in the data files.')
 
         self._cut_data()
         # Compute ERT
