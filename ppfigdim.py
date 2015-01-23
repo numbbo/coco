@@ -225,8 +225,8 @@ def beautify(axesLabel=True):
         if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
             plt.ylim(0.3, xlim_max)  # set in config 
         else:
-            pass  # TODO: xlim_max seems to be not None even when not desired
-            # plt.ylim(1, xlim_max)
+            # pass  # TODO: xlim_max seems to be not None even when not desired
+            plt.ylim(ymax=min([plot.ylim()[1], xlim_max]))
     plt.ylim(ppfig.discretize_limits((ymin, ymax)))
 
     if 11 < 3:
