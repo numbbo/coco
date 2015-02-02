@@ -24,22 +24,22 @@ classdef Problem
             Pr.options = '';
         end
         
-        function cocoEvaluateFunction(Pr, x)
+        function y = cocoEvaluateFunction(Pr, x)
         end
         
-        function cocoGetNumberOfVariables(Pr)
+        function nb_var = cocoGetNumberOfVariables(Pr)
         end
         
-        function cocoGetNumberOfObjectives(Pr)
+        function nb_obj = cocoGetNumberOfObjectives(Pr)
         end
         
-        function cocoGetSmallestValuesOfInterest(Pr)
+        function res = cocoGetSmallestValuesOfInterest(Pr)
         end
         
-        function cocoGetLargestValuesOfInterest(Pr)
+        function res = cocoGetLargestValuesOfInterest(Pr)
         end
         
-        function cocoGetProblemId(Pr)
+        function pb_id = cocoGetProblemId(Pr)
         end
     end
     
