@@ -42,5 +42,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     /* call the computational routine */
     pb = coco_get_problem(problem_suit, (mwSize)findex);
     plhs[0] = mxCreateLogicalScalar(pb != NULL);
+    coco_free_problem(pb);
 }
 
