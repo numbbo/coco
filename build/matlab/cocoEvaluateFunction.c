@@ -40,7 +40,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
     /* make sure the second input argument is array of doubles */
     if(!mxIsDouble(prhs[1])) {
-        mexErrMsgIdAndTxt("cocoEvaluateFunction:notProblem","Input x must be aan array of doubles.");
+        mexErrMsgIdAndTxt("cocoEvaluateFunction:notDoubleArray","Input x must be aan array of doubles.");
     }
     /* get the properties of the Problem object */
     problem_suit_prop = mxGetProperty(prhs[0], 0, "problem_suit");
