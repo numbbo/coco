@@ -23,6 +23,7 @@ classdef Problem
             Pr.observer_name = '';
             Pr.options = '';
         end
+        % Multiple constructors...
         
         function y = cocoEvaluateFunction(Pr, x)
         end
