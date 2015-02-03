@@ -23,7 +23,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     coco_problem_t *pb = NULL;
     const char *class_name = NULL;
     int nb_variables;
-    double *res;
+    const double *res;
 
     /* check for proper number of arguments */
     if(nrhs!=2) {
