@@ -1,4 +1,4 @@
-classdef Benchmark
+classdef Benchmark < handle
   
     properties
         problem_suit
