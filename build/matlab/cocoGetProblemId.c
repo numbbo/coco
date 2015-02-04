@@ -16,19 +16,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mxArray *problem_suit_prop;
     int findex;
     mxArray *findex_prop;
+    char *observer = NULL;
+    mxArray *observer_prop;
+    char *options = NULL;
+    mxArray *options_prop;
     coco_problem_t *pb = NULL;
     const char *class_name = NULL;
-    int *res;
-    const mwSize dims[2] = {1, 1};
+    int nb_variables;
+    const char *res;
 
     /* check for proper number of arguments */
     if(nrhs!=1) {
-        mexErrMsgIdAndTxt("cocoGetNumberOfObjectives:nrhs","One input required.");
+        mexErrMsgIdAndTxt("cocoGetProblemId:nrhs","One input required.");
     }
     /* make sure the first input argument is Problem */
     class_name = mxGetClassName(prhs[0]); /* may be replaced by mxIsClass */
     if(strcmp(class_name, "Problem") != 0) {
-        mexErrMsgIdAndTxt("cocoGetNumberOfObjectives:notProblem","Input problem must be a Problem object.");
+        mexErrMsgIdAndTxt("cocoGetProblemId:notProblem","Input problem must be a Problem object.");
     }
     /* get the properties of the Problem object */
     problem_suit_prop = mxGetProperty(prhs[0], 0, "problem_suit");
@@ -37,11 +41,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     findex = (int)mxGetScalar(findex_prop);
     /* get the problem */
     pb = coco_get_problem(problem_suit, findex);
+    /* call coco_get_problem_id(...) */
+    res = coco_get_problem_id(pb);
     /* prepare the return value */
-
-    plhs[0] = mxCreateNumericArray(2, dims, mxINT32_CLASS, mxREAL);
-    res = (int *)mxGetData(plhs[0]);
-    res[0] = coco_get_number_of_objectives(pb);
+    plhs[0] = mxCreateString(res);
     /* free resources */
     coco_free_problem(pb);
     mxFree(problem_suit);

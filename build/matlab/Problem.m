@@ -17,31 +17,29 @@ classdef Problem
     end
     
     methods
-        function Pr = Problem(problem_suit, function_index)
-            Pr.problem_suit = problem_suit;
-            Pr.function_index = function_index;
-            Pr.observer_name = '';
-            Pr.options = '';
-        end
-        % Multiple constructors...
-        
-        function y = cocoEvaluateFunction(Pr, x)
-        end
-        
-        function nb_var = cocoGetNumberOfVariables(Pr)
-        end
-        
-        function nb_obj = cocoGetNumberOfObjectives(Pr)
-        end
-        
-        function res = cocoGetSmallestValuesOfInterest(Pr)
+        function Pr = Problem(varargin)
+            if nargin == 2
+                Pr.problem_suit = varargin{1};
+                Pr.function_index = varargin{2};
+                Pr.observer_name = '';
+                Pr.options = '';
+            else
+                if nargin == 4
+                    Pr.problem_suit = varargin{1};
+                    Pr.function_index = varargin{2};
+                    Pr.observer_name = varargin{3};
+                    Pr.options = varargin{4};
+                end
+            end
         end
         
-        function res = cocoGetLargestValuesOfInterest(Pr)
+        function S = toString(Pr)
+            S = cocoGetProblemId(Pr);
+            if isempty(S)
+                S = 'finalized/invalid problem';
+            end
         end
-        
-        function pb_id = cocoGetProblemId(Pr)
-        end
+
     end
     
 end

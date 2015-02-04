@@ -24,13 +24,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     const char *class_name = NULL;
     int nb_variables;
     const double *res;
+    double *v;
 
     /* check for proper number of arguments */
-    if(nrhs!=2) {
-        mexErrMsgIdAndTxt("cocoGetLargestValuesOfInterest:nrhs","Two inputs required.");
-    }
-    if(nlhs!=1) {
-        mexErrMsgIdAndTxt("cocoGetLargestValuesOfInterest:nlhs","One output required.");
+    if(nrhs!=1) {
+        mexErrMsgIdAndTxt("cocoGetLargestValuesOfInterest:nrhs","One input required.");
     }
     /* make sure the first input argument is Problem */
     class_name = mxGetClassName(prhs[0]); /* may be replaced by mxIsClass */
@@ -47,9 +45,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     /* prepare the return value */
     nb_variables = coco_get_number_of_variables(pb);
     plhs[0] = mxCreateDoubleMatrix(1, (mwSize)nb_variables, mxREAL);
-    res = mxGetPr(plhs[0]);
+    v = mxGetPr(plhs[0]);
     /* call coco_get_smallest_values_of_interest(...) */
     res = coco_get_largest_values_of_interest(pb);
+    for (int i = 0; i < nb_variables; i++){
+        v[i] = res[i];
+    }
     /* free resources */
     coco_free_problem(pb);
     mxFree(problem_suit);
