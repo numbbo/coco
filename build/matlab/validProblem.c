@@ -21,17 +21,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(nrhs!=2) {
         mexErrMsgIdAndTxt("validProblem:nrhs","Two inputs required.");
     }
-    if(nlhs!=1) {
-        mexErrMsgIdAndTxt("validProblem:nlhs","One output required.");
-    }
     /* make sure the first input argument is string */
     if(!mxIsChar(prhs[0])) {
         mexErrMsgIdAndTxt("validProblem:notString","Input problem_suit must be a string.");
     }
     /* make sure the second input argument is integer */
-    if(!mxIsInt8(prhs[1]) && !mxIsInt16(prhs[1]) && !mxIsInt32(prhs[1]) && !mxIsInt64(prhs[1])) {
+    /*if(!mxIsInt8(prhs[1]) && !mxIsInt16(prhs[1]) && !mxIsInt32(prhs[1]) && !mxIsInt64(prhs[1])) {
         mexErrMsgIdAndTxt("validProblem:notInteger","Input findex must be an integer.");
-    }
+    }*/ /* TODO : doesn't work... */
     /* get the value of the string input */
     problem_suit = mxArrayToString(prhs[0]);
     if(problem_suit == NULL) 

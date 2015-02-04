@@ -30,9 +30,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(nrhs!=2) {
         mexErrMsgIdAndTxt("cocoEvaluateFunction:nrhs","Two inputs required.");
     }
-    if(nlhs!=1) {
+    /*if(nlhs!=1) {
         mexErrMsgIdAndTxt("cocoEvaluateFunction:nlhs","One output required.");
-    }
+    }*/
     /* make sure the first input argument is Problem */
     class_name = mxGetClassName(prhs[0]); /* may be replaced by mxIsClass */
     if(strcmp(class_name, "Problem") != 0) {
@@ -62,6 +62,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     x = mxGetPr(prhs[1]);
     /* call coco_evaluate_function(...) */
     coco_evaluate_function(pb, x, y);
+    /*mexPrintf("%f", y[0]);*/
     /* free resources */
     coco_free_problem(pb);
     mxFree(problem_suit);
