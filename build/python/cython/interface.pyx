@@ -88,11 +88,7 @@ cdef class Problem:
             coco_free_problem(self.problem)
             self.problem = NULL
 
-    def __call__(self, np.ndarra
-    
-    
-    
-    [double, ndim=1, mode="c"] x):
+    def __call__(self, np.ndarray[double, ndim=1, mode="c"] x):
         if self.problem is NULL:
             raise InvalidProblemException()
         coco_evaluate_function(self.problem,
