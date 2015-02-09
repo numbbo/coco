@@ -1,0 +1,5 @@
+include AUTHORS
+include LICENSE
+include demo.py
+include coco_test.py
+include bbob2009_testcases.txt
