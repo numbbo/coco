@@ -39,7 +39,7 @@ class Amalgator:
             ## Is this an include statement?
             matches = re.match("#include \"(.*)\"", line)
             if matches:
-                include_file = path.join(path.dirname(filename), matches.group(1))
+                include_file = "/".join([path.dirname(filename), matches.group(1)])
                 ## Has this file not been included previously?
                 if not include_file in self.included_files:
                     self.process_file(include_file)
