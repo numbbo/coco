@@ -7,7 +7,7 @@
 #include "coco_strdup.c"
 
 /* Figure out if we are on a sane platform or on the dominant platform. */
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
 #include <windows.h>
 static const char *coco_path_separator = "\\";
 #define NUMBBO_PATH_MAX MAX_PATH
