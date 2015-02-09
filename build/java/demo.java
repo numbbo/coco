@@ -26,7 +26,7 @@ public class demo {
         	try {
         		Problem problem = JNIinterface.nextProblem(my_benchmark);
         		System.out.println("Optimizing " + problem);
-        		my_optimizer(problem, JNIinterface.cocoGetSmallestValuesOfInterest(problem), JNIinterface.cocoGetLargestValuesOfInterest(problem), 10000);
+        		my_optimizer(problem, JNIinterface.cocoGetSmallestValuesOfInterest(problem), JNIinterface.cocoGetLargestValuesOfInterest(problem), 1000);
         	} catch (NoSuchProblemException e) {
         		System.out.println(e);
         	} 
