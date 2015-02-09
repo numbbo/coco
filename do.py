@@ -10,6 +10,7 @@ import os
 import shutil
 import tempfile
 import subprocess
+from subprocess import call
 
 ## Change to the root directory of repository and add our tools/
 ## subdirectory to system wide search path for modules.
@@ -176,6 +177,7 @@ def build_matlab():
     global release
     amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/matlab/coco.c', release)
     copy_file('src/coco.h', 'build/matlab/coco.h')
+    call(["matlab", "-nodisplay", "-nosplash", "-nodesktop", "-r", "run('build/matlab/setup.m');exit;"])
 
 ################################################################################
 ## Global
