@@ -171,6 +171,13 @@ def test_r():
     pass
 
 ################################################################################
+## Matlab
+def build_matlab():
+    global release
+    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/matlab/coco.c', release)
+    copy_file('src/coco.h', 'build/matlab/coco.h')
+
+################################################################################
 ## Global
 def build():
     build_c()
@@ -197,7 +204,9 @@ Available commands:
   build-python2  - Build Python 2 modules
   build-python3  - Build Python 3 modules
   build-r        - Build R package
+  build-matlab   - Build Matlab package
   build-examples - Update examples to latest framework code
+  build-java     - Build Java package
   run-python     - Run a Python script with installed COCO module
                    Takes a single argument (name of Python script file)
   test-c         - Run minimal test of C components
@@ -226,6 +235,8 @@ def main(args):
     elif cmd == 'build-python3': build_python3()
     elif cmd == 'test-python3': test_python3()
     elif cmd == 'build-r': build_r()
+    elif cmd == 'build-matlab': build_matlab()
+    elif cmd == 'build-java': build_java()
     elif cmd == 'test-r': test_r()
     elif cmd == 'build-examples': build_examples()
     elif cmd == 'build': build()
