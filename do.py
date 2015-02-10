@@ -178,7 +178,8 @@ def build_matlab():
     global release
     amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/matlab/coco.c', release)
     copy_file('src/coco.h', 'build/matlab/coco.h')
-    call(["matlab", "-nodisplay", "-nosplash", "-nodesktop", "-r", "run('build/matlab/setup.m');exit;"])
+    call(["matlab", "-nodisplay", "-nosplash", "-nodesktop", "-r",
+          "run('build/matlab/setup.m');exit;"])
 
 ################################################################################
 ## Global
