@@ -241,7 +241,7 @@ def main(args):
     if len(args) < 1:
         help()
         sys.exit(0)
-    cmd = args[0]
+    cmd = args[0].replace('_', '-')
     if cmd == 'build-c': build_c()
     elif cmd == 'test-c': test_c()
     elif cmd == 'build-python': build_python()
