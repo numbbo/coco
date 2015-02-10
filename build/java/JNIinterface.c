@@ -21,10 +21,10 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoEvaluateFunction
 	coco_problem_t *pb = NULL; /* Will contain the C problem */
 
 	/* Necessary information to create the C problem */
-	char *problem_suit;
+	const char *problem_suit;
 	int function_index;
-	char *observer;
-	char *options;
+	const char *observer;
+	const char *options;
 	int nb_objectives;
 
 	/* Java variables */
@@ -107,7 +107,7 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfVariables
 (JNIEnv *jenv, jclass interface_cls, jobject problem) {
 
 	coco_problem_t *pb = NULL;
-	char *problem_suit;
+	const char *problem_suit;
 	int function_index;
 	int res;
 
@@ -156,7 +156,7 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfVariables
 JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfObjectives
 (JNIEnv *jenv, jclass interface_cls, jobject problem) {
 	coco_problem_t *pb = NULL;
-	char *problem_suit;
+	const char *problem_suit;
 	int function_index;
 	int res;
 
@@ -205,10 +205,10 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfObjectives
  */
 JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetSmallestValuesOfInterest
 (JNIEnv *jenv, jclass interface_cls, jobject problem) {
-	double *cres;
+	const double *cres;
 	coco_problem_t *pb = NULL;
 
-	char *problem_suit;
+	const char *problem_suit;
 	int function_index;
 	int nb_variables;
 
@@ -262,10 +262,10 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetSmallestValuesOfInterest
  */
 JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
 (JNIEnv *jenv, jclass interface_cls, jobject problem) {
-	double *cres;
+	const double *cres;
 	coco_problem_t *pb = NULL;
 
-	char *problem_suit;
+	const char *problem_suit;
 	int function_index;
 	int nb_variables;
 
