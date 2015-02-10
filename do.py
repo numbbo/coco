@@ -197,8 +197,10 @@ def build():
         try:
             builder()
         except:
-            print('ERROR: ' + str(builder) +
+            print("===========")
+            print('   ERROR: ' + str(builder) +
                   ' failed, call individually to diagnose')
+            print("===========")
 
 def test():
     test_c()
