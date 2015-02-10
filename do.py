@@ -194,6 +194,7 @@ def build_java():
     call(["gcc", "-I/System/Library/Frameworks/JavaVM.framework/Headers", "-c", "build/java/JNIinterface.c", "-o", "build/java/JNIinterface.o"])
     call(["gcc", "-dynamiclib", "-o", "build/java/libJNIinterface.jnilib", "build/java/JNIinterface.o"])
     call(["javac", "-cp", "build/java/", "build/java/Problem.java"])
+    call(["javac", "-cp", "build/java/", "build/java/demo.java"])
     #call(["javac", "build/java/Benchmark.java"])
     #call(["javac", "build/java/NoSuchProblemException.java"])
     #call(["javac", "build/java/JNIinterface.java"])
