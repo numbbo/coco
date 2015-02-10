@@ -178,16 +178,27 @@ def build_matlab():
     global release
     amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/matlab/coco.c', release)
     copy_file('src/coco.h', 'build/matlab/coco.h')
+    write_file(hg_revision(), "build/matlab/REVISION")
+    write_file(hg_version(), "build/matlab/VERSION")
     call(["matlab", "-nodisplay", "-nosplash", "-nodesktop", "-r",
           "run('build/matlab/setup.m');exit;"])
 
 ################################################################################
 ## Global
 def build():
-    build_c()
-    build_python()
-    build_r()
-    build_examples()
+    builders = [
+        build_c,
+        build_matlab,
+        build_python,
+        build_r,
+        build_examples
+    ]
+    for builder in builders:
+        try:
+            builder()
+        except:
+            print('ERROR: ' +str(builder) +
+                  ' failed, call individually to diagnose')
 
 def test():
     test_c()
