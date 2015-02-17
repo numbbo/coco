@@ -2,7 +2,6 @@ import java.util.Random;
 
 public class demo {
     public static void my_optimizer(Problem problem, double[] lower_bounds, double[] upper_bounds, double budget) {
-        System.out.println("In optimizer...");
         int n = lower_bounds.length;
         int i, j;
         double[] x = new double[n];
