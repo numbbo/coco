@@ -180,6 +180,7 @@ def build_matlab():
     copy_file('src/coco.h', 'build/matlab/coco.h')
     write_file(hg_revision(), "build/matlab/REVISION")
     write_file(hg_version(), "build/matlab/VERSION")
+    # TODO: why not using run as above? It seems more flexible and more verbose
     call(["matlab", "-nodisplay", "-nosplash", "-nodesktop", "-r",
           "run('build/matlab/setup.m');exit;"])
     
