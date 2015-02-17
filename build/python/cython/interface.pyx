@@ -61,7 +61,7 @@ cdef class Problem:
             self.lower_bounds[i] = coco_get_smallest_values_of_interest(self.problem)[i]
             self.upper_bounds[i] = coco_get_largest_values_of_interest(self.problem)[i]
 
-    def add_obersever(self, char *observer, char *options):
+    def add_observer(self, char *observer, char *options):
         self.problem = coco_observe_problem(observer, self.problem, options)
 
     property number_of_variables:
@@ -120,7 +120,7 @@ cdef class Benchmark:
     def __next__(self):
         try:
             problem = Problem(self.problem_suit, self._function_index)
-            problem.add_obersever(self.observer, self.options)
+            problem.add_observer(self.observer, self.options)
             self._function_index = self._function_index + 1
         except NoSuchProblemException, e:
             raise StopIteration()
