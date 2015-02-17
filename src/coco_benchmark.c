@@ -47,7 +47,7 @@ void coco_benchmark(const char *problem_suit, const char *observer,
     problem = coco_get_problem(problem_suit, function_index);
     if (NULL == problem)
       break;
-    problem = coco_observe_problem(observer, problem, options);
+    problem = coco_observe_problem(observer, problem, options);/* should remain invisible to the user*/
     optimizer(problem);
     /* Free problem after optimization. */
     coco_free_problem(problem);
