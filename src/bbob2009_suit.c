@@ -46,10 +46,10 @@
 #define MAX_DIM 40
 
 /**
- * bbob2009_decode_function_index(function_index, function_id, instance_id,
+ * bbob2009_decode_problem_index(problem_index, function_id, instance_id,
  *dimension):
  *
- * Decode the new function_index into the old convention of function,
+ * Decode the new problem_index into the old convention of function,
  * instance and dimension. We have 24 functions in 6 different
  * dimensions so a total of 144 functions and any number of
  * instances. A natural thing would be to order them so that the
@@ -65,7 +65,7 @@
  * 
  * This gives us:
  *
- * function_index | function_id | instance_id | dimension
+ * problem_index | function_id | instance_id | dimension
  * ---------------+-------------+-------------+-----------
  *              0 |           1 |           1 |         2
  *              1 |           1 |           2 |         2
@@ -86,17 +86,17 @@
  * The quickest way to decode this is using integer division and
  * remainders.
  */
-void bbob2009_decode_function_index(const int function_index, int *function_id,
+void bbob2009_decode_problem_index(const int problem_index, int *function_id,
                                     int *instance_id, int *dimension) {
   static const int dims[] = {2, 3, 5, 10, 20, 40};
   static const int number_of_consecutive_instances = 5;
   static const int number_of_functions = 24;
   static const int number_of_dimensions = 6;
   const int high_instance_id =
-      function_index / (number_of_consecutive_instances * number_of_functions *
+      problem_index / (number_of_consecutive_instances * number_of_functions *
                         number_of_dimensions);
   int low_instance_id;
-  int rest = function_index % (number_of_consecutive_instances *
+  int rest = problem_index % (number_of_consecutive_instances *
                                number_of_functions * number_of_dimensions);
   *dimension =
       dims[rest / (number_of_consecutive_instances * number_of_functions)];
@@ -122,17 +122,17 @@ static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b,
 }
 
 /**
- * bbob2009_suit(function_index):
+ * bbob2009_suit(problem_index):
  *
- * Return the ${function_index}-th benchmark problem from the BBOB2009
+ * Return the ${problem_index}-th benchmark problem from the BBOB2009
  * benchmark suit. If the function index is out of bounds, return *
  * NULL.
  */
-coco_problem_t *bbob2009_suit(const int function_index) {
+coco_problem_t *bbob2009_suit(const int problem_index) {
   size_t len;
   int i, instance_id, function_id, dimension, rseed;
   coco_problem_t *problem = NULL;
-  bbob2009_decode_function_index(function_index, &function_id, &instance_id,
+  bbob2009_decode_problem_index(problem_index, &function_id, &instance_id,
                                  &dimension);
   /* This assert is a hint for the static analyzer. */
   assert(dimension > 1);
