@@ -59,8 +59,9 @@
  * function in one dimension, then vary the function, then the
  * dimension.
  *
- * TODO: the default prescription is to do 15 repititions. Maybe the
- *       benchmark should take the desired instances as input? 
+ * TODO: this is the default prescription for 2009. This is typically
+ *       not what we want _now_. Maybe the benchmark initializer should
+ *       take the desired instances as input? 
  * 
  * This gives us:
  *
