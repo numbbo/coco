@@ -117,6 +117,14 @@ cdef class Benchmark:
     def __iter__(self):
         return self
 
+    def get_problem(self, problem_index):
+        try:
+            problem = Problem(self.problem_suit, problem_index)
+            problem.add_observer(self.observer, self.options)
+        except NoSuchProblemException, e:
+            return None
+        return problem
+	
     def __next__(self):
         try:
             problem = Problem(self.problem_suit, self._function_index)
