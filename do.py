@@ -43,6 +43,8 @@ def build_c():
     copy_file('src/bbob2009_testcases.txt', 'build/c/bbob2009_testcases.txt')
     write_file(hg_revision(), "build/c/REVISION")
     write_file(hg_version(), "build/c/VERSION")
+    make("build/c", "clean")
+    make("build/c", "all")
 
 def test_c():
     build_c()

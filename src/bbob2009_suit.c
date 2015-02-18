@@ -59,6 +59,9 @@
  * function in one dimension, then vary the function, then the
  * dimension.
  *
+ * TODO: the default prescription is to do 15 repititions. Maybe the
+ *       benchmark should take the desired instances as input? 
+ * 
  * This gives us:
  *
  * function_index | function_id | instance_id | dimension
