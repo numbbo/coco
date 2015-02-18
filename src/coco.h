@@ -95,11 +95,11 @@ size_t coco_get_number_of_variables(const coco_problem_t *self);
 size_t coco_get_number_of_objectives(const coco_problem_t *self);
 
 /**
- * Get the ${function_index}-th problem of the ${problem_suit} test
+ * Get the ${problem_index}-th problem of the ${problem_suit} test
  * suit.
  */
 coco_problem_t *coco_get_problem(const char *problem_suit,
-                                 const int function_index);
+                                 const int problem_index);
 
 /**
  * tentative getters for region of interest

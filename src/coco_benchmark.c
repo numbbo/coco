@@ -12,11 +12,11 @@
 #include "bbob2009_observer.c"
 
 coco_problem_t *coco_get_problem(const char *problem_suit,
-                                 const int function_index) {
+                                 const int problem_index) {
   if (0 == strcmp(problem_suit, "toy_suit")) {
-    return toy_suit(function_index);
+    return toy_suit(problem_index);
   } else if (0 == strcmp(problem_suit, "bbob2009")) {
-    return bbob2009_suit(function_index);
+    return bbob2009_suit(problem_index);
   } else {
     coco_warning("Unknown problem suit.");
     return NULL;
@@ -41,10 +41,10 @@ coco_problem_t *coco_observe_problem(const char *observer,
 
 void coco_benchmark(const char *problem_suit, const char *observer,
                     const char *options, coco_optimizer_t optimizer) {
-  int function_index;
+  int problem_index;
   coco_problem_t *problem;
-  for (function_index = 0;; ++function_index) {
-    problem = coco_get_problem(problem_suit, function_index);
+  for (problem_index = 0;; ++problem_index) {
+    problem = coco_get_problem(problem_suit, problem_index);
     if (NULL == problem)
       break;
     problem = coco_observe_problem(observer, problem, options);/* should remain invisible to the user*/
