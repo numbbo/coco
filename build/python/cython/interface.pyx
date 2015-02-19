@@ -16,7 +16,7 @@ cdef extern from "coco.h":
         pass
 
     coco_problem_t *coco_get_problem(const char *benchmark,
-                                     int function_index)
+                                     int problem_index)
 
     coco_problem_t *coco_observe_problem(const char *observer_name,
                                          coco_problem_t *problem,
@@ -41,17 +41,18 @@ cdef bytes _bstring(s):
         raise TypeError(...)
 
 cdef class Problem:
+    """Problem(problem_suit: str, problem_index: int)"""
     cdef coco_problem_t* problem
     cdef np.ndarray y
     cdef public np.ndarray lower_bounds
     cdef public np.ndarray upper_bounds
 
-    def __cinit__(self, problem_suit, int function_index):
+    def __cinit__(self, problem_suit, int problem_index):
         cdef np.npy_intp shape[1]
         _problem_suit = _bstring(problem_suit)
-        self.problem = coco_get_problem(_problem_suit, function_index)
+        self.problem = coco_get_problem(_problem_suit, problem_index)
         if self.problem is NULL:
-            raise NoSuchProblemException(problem_suit, function_index)
+            raise NoSuchProblemException(problem_suit, problem_index)
         self.y = np.zeros(coco_get_number_of_objectives(self.problem))
         ## FIXME: Inefficient because we copy the bounds instead of
         ## sharing the data.
@@ -65,15 +66,17 @@ cdef class Problem:
         self.problem = coco_observe_problem(observer, self.problem, options)
 
     property number_of_variables:
-        """
-        The number of variables this problem instance expects as input.
+        """Number of variables this problem instance expects as input.
         """
         def __get__(self):
-            return len(self.lower_bounds)
+            return coco_get_number_of_variables(self.problem)
+            # this was somewhat a hack, as a problem might not have bounds
+            # return len(self.lower_bounds)
 
     def free(self):
-        """
-        Free the given test problem. Not strictly necessary but it will
+        """Free the given test problem. 
+        
+        Not strictly necessary (unless for the observer), but it will  
         ensure that all files associated with the problem are closed as
         soon as possible and any memory is freed. After free()ing the
         problem, all other operations are invalid and will raise an
@@ -103,21 +106,32 @@ cdef class Problem:
             return "finalized/invalid problem"
 
 cdef class Benchmark:
+    """Benchmark(problem_suit: str, observer: str, options: str)
+    
+    Example::
+    
+        import coco
+        bm = coco.Benchmark("bbob2009", "bbob2009_observer", "random_search")
+    
+    """
     cdef char *problem_suit
     cdef char *observer
     cdef char *options
-    cdef int _function_index
+    cdef int _current_problem_index
+    cdef coco_problem_t *_current_problem
 
     def __cinit__(self, problem_suit, observer, options):
         self.problem_suit = problem_suit
         self.observer = observer
         self.options = options
-        self._function_index = 0
+        self._current_problem_index = -1
+        # self._current_problem = None  # doesn't compile for some reason
 
     def __iter__(self):
         return self
 
     def get_problem(self, problem_index):
+        """get_problem(problem_index: int)"""
         try:
             problem = Problem(self.problem_suit, problem_index)
             problem.add_observer(self.observer, self.options)
@@ -127,9 +141,10 @@ cdef class Benchmark:
 	
     def __next__(self):
         try:
-            problem = Problem(self.problem_suit, self._function_index)
+            self._current_problem_index += 1
+            problem = Problem(self.problem_suit, self._current_problem_index)
             problem.add_observer(self.observer, self.options)
-            self._function_index = self._function_index + 1
         except NoSuchProblemException, e:
             raise StopIteration()
+        # self._current_problem = problem
         return problem
