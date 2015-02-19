@@ -23,10 +23,10 @@ def is_recognized_repository_filetype(filename):
     return os.path.isdir(filename.strip()) or filename.find('.tar') > 0 or filename.find('.tgz') > 0
 
 def main(directory='.', verbose=True):
-    """Lists data files recursively in a given directory, tar files
+    """Lists "data" files recursively in a given directory, tar files
     are extracted. 
 
-    The data files have :file:`info` and :file:`pickle` extensions.
+    The "data" files have :file:`info` and :file:`pickle` extensions.
 
     TODO: not only recognize .tar and .tar.gz and .tgz but .zip...
     

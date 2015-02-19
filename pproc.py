@@ -28,11 +28,10 @@ import warnings
 from pdb import set_trace
 import numpy, numpy as np
 import matplotlib.pyplot as plt
-from bbob_pproc import genericsettings, findfiles, toolsstats, toolsdivers
-from bbob_pproc import genericsettings as gs
-from bbob_pproc.readalign import split, alignData, HMultiReader, VMultiReader
-from bbob_pproc.readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
-from bbob_pproc.ppfig import consecutiveNumbers
+from . import genericsettings, findfiles, toolsstats, toolsdivers
+from .readalign import split, alignData, HMultiReader, VMultiReader
+from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
+from .ppfig import consecutiveNumbers
 
 do_assertion = genericsettings.force_assertions # expensive assertions
 targets_displayed_for_info = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]  # only to display info in DataSetList.info
@@ -1368,6 +1367,7 @@ class DataSetList(list):
 
             # Read all data sets within one index file.
             nbLine = 1
+            data_file_names = []
             while True:
                 try:
                     header = f.next()
@@ -1381,7 +1381,8 @@ class DataSetList(list):
                                       'it will be skipped.')
                         nbLine += 2
                         continue
-                    data = f.next()
+                    data = f.next()  # this is the filename of the data file!?
+                    data_file_names.append(data)
                     nbLine += 3
                     #TODO: check that something is not wrong with the 3 lines.
                     self.append(DataSet(header, comment, data, indexFile,
@@ -1390,6 +1391,10 @@ class DataSetList(list):
                     break
             # Close index file
             f.close()
+            if len(data_file_names) != len(set(data_file_names)):
+                warnings.warn("WARNING: a data file has been referenced" +
+                    " several times in file %s\n" % indexFile +
+                    "         This is likely to produce spurious results")
 
         except IOError:
             print 'Could not open %s.' % indexFile
@@ -1984,7 +1989,7 @@ def parseinfo(s):
         if elem1.startswith('\'') and elem1.endswith('\''): # HACK
             elem1 = ('\'' + re.sub(r'(?<!\\)(\')', r'\\\1', elem1[1:-1]) + '\'')
         elem1 = ast.literal_eval(elem1)
-        res.append((elem0, elem1))
+        res.append((elem0, elem1))  # TODO: what are elem0 and elem1?
     return res
 
 
