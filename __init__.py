@@ -24,9 +24,9 @@ from __future__ import absolute_import
 
 import sys
 
-from bbob_pproc.cococommands import *
+from .cococommands import *
 
-from bbob_pproc.rungeneric import main as main
+from .rungeneric import main as main
 
 __all__  = ['comp2', 'compall', 'main', 'ppfigdim', 'pplogloss', 'pprldistr',
             'pproc', 'ppsingle', 'pptable', 'rungeneric', 'rungeneric1',

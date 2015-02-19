@@ -58,8 +58,8 @@ from pdb import set_trace
 import warnings
 import numpy as np
 
-import bbob_pproc.pproc as pp
-import bbob_pproc.readalign as ra
+from . import pproc as pp
+from . import readalign as ra
 
 #CLASS DEFINITIONS
 
