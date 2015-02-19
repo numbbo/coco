@@ -24,18 +24,18 @@ def my_optimizer(f, lower_bounds, upper_bounds, budget):
 
 if 1 < 3:
     # simplest use case 
-    for problem in coco.Benchmark(b"bbob2009", b"bbob2009_observer", b"random_search"):
+    for problem in coco.Benchmark("bbob2009", "bbob2009_observer", "random_search"):
         my_optimizer(problem,
                      problem.lower_bounds,
                      problem.upper_bounds,
                      MAXEVALS)
         print("done with '%s' ... " % str(problem))
-        problem.free()
+        problem.free()  # not strictly necessary (depends on the observer) 
     print("done.")
 
 elif 1 < 3:
-    # use case using problem_index which allows to pick and choose (e.g. for parallel experiments) 
-    bm = coco.Benchmark(b"bbob2009", b"bbob2009_observer", b"random_search")
+    # use case using problem_index which allows to pick and choose (e.g. to parallelize experiments) 
+    bm = coco.Benchmark("bbob2009", "bbob2009_observer", "random_search")
     problem_index = 0
     while True:
         if 11 < 3 or ((problem_index + 0) % 5):
@@ -52,9 +52,9 @@ elif 1 < 3:
     print("done.")
 
 if 11 < 3:
-    # use case with "random access", method coco.problem_index is not implemented yet
+    # use case with "random access" via dimension, function, instance, method coco.problem_index is not implemented yet
     raise NotImplementedError
-    bm = coco.Benchmark(b"bbob2009", b"bbob2009_observer", b"random_search")
+    bm = coco.Benchmark("bbob2009", "bbob2009_observer", "random_search")
     for dim in dimensions:
         for fun in functions:
             for instance in instances:
