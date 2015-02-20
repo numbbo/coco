@@ -39,6 +39,7 @@ elif 1 < 3:
     problem_index = 0
     while True:
         if 11 < 3 or ((problem_index + 0) % 5):
+            problem_index += 1
             continue
             # problem.free()  # in case we need to move the test after get_problem
         problem = bm.get_problem(problem_index)
