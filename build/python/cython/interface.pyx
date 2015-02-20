@@ -112,20 +112,22 @@ cdef class Benchmark:
     
         import coco
         bm = coco.Benchmark("bbob2009", "bbob2009_observer", "random_search")
+        
+    where the latter name defines the data folder. 
     
     """
     cdef char *problem_suit
     cdef char *observer
     cdef char *options
     cdef int _current_problem_index
-    cdef coco_problem_t *_current_problem
+    cdef Problem _current_problem
 
     def __cinit__(self, problem_suit, observer, options):
         self.problem_suit = problem_suit
         self.observer = observer
         self.options = options
         self._current_problem_index = -1
-        # self._current_problem = None  # doesn't compile for some reason
+        self._current_problem = None
 
     def __iter__(self):
         return self
@@ -146,5 +148,6 @@ cdef class Benchmark:
             problem.add_observer(self.observer, self.options)
         except NoSuchProblemException, e:
             raise StopIteration()
-        # self._current_problem = problem
+        # self._current_problem = problem.problem  is of type coco_problem_t *
+        self._current_problem = problem  # is of type Problem
         return problem
