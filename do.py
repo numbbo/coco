@@ -194,13 +194,10 @@ def build_java():
     copy_file('src/coco.h', 'build/java/coco.h')
     write_file(hg_revision(), "build/java/REVISION")
     write_file(hg_version(), "build/java/VERSION")
-    call(["gcc", "-I/System/Library/Frameworks/JavaVM.framework/Headers", "-c", "build/java/JNIinterface.c", "-o", "build/java/JNIinterface.o"])
-    call(["gcc", "-dynamiclib", "-o", "build/java/libJNIinterface.jnilib", "build/java/JNIinterface.o"])
-    call(["javac", "-cp", "build/java/", "build/java/Problem.java"])
-    call(["javac", "-cp", "build/java/", "build/java/demo.java"])
-    #call(["javac", "build/java/Benchmark.java"])
-    #call(["javac", "build/java/NoSuchProblemException.java"])
-    #call(["javac", "build/java/JNIinterface.java"])
+    run('build/java', ['gcc', '-I/System/Library/Frameworks/JavaVM.framework/Headers', '-c', 'JNIinterface.c'])
+    run('build/java', ['gcc', '-dynamiclib', '-o', 'libJNIinterface.jnilib', 'JNIinterface.o'])
+    run('build/java', ['javac', 'Problem.java'])
+    run('build/java', ['javac', 'demo.java'])
 
 ################################################################################
 ## Global
