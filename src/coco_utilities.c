@@ -93,6 +93,7 @@ void coco_create_path(const char *path) {
   /* Nothing to do if the path exists. */
   if (coco_path_exists(path))
     return;
+  mkdir(path);
 
 #elif defined(HAVE_STAT)
   char *tmp = NULL;
