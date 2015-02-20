@@ -195,18 +195,9 @@ def build_java():
     write_file(hg_revision(), "build/java/REVISION")
     write_file(hg_version(), "build/java/VERSION")
     run('build/java', ['gcc', '-I/System/Library/Frameworks/JavaVM.framework/Headers', '-c', 'JNIinterface.c'])
-    #call(["gcc", "-I/System/Library/Frameworks/JavaVM.framework/Headers", "-c", "build/java/JNIinterface.c", "-o", "build/java/JNIinterface.o"])
     run('build/java', ['gcc', '-dynamiclib', '-o', 'libJNIinterface.jnilib', 'JNIinterface.o'])
-    #call(["gcc", "-dynamiclib", "-o", "build/java/libJNIinterface.jnilib", "build/java/JNIinterface.o"])
     run('build/java', ['javac', 'Problem.java'])
-    #call(["javac", "-cp", "build/java/", "build/java/Problem.java"])
     run('build/java', ['javac', 'demo.java'])
-    #call(["javac", "-cp", "build/java/", "build/java/demo.java"])
-    
-    
-    #call(["javac", "build/java/Benchmark.java"])
-    #call(["javac", "build/java/NoSuchProblemException.java"])
-    #call(["javac", "build/java/JNIinterface.java"])
 
 ################################################################################
 ## Global
