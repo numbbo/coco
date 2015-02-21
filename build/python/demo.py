@@ -3,28 +3,27 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-import coco
+from coco import Benchmark
 import numpy as np
-try: range = xrange
+try: range = xrange  # let range always be an iterator
 except NameError: pass
 
 MAXEVALS = 1e2
 
-def my_optimizer(f, lower_bounds, upper_bounds, budget):
+def my_optimizer(fun, lower_bounds, upper_bounds, budget):
     n = len(lower_bounds)
     delta = upper_bounds - lower_bounds
-    x_min = y_min = None
+    x_min = f_min = None
     for i in range(int(budget)):
         x = lower_bounds + np.random.rand(n) * delta
-        y = f(x)
-        if y_min is None or y < y_min:
-            y_min = y
-            x_min = x
+        f = fun(x)
+        if f_min is None or f < f_min:
+            x_min, f_min = x, f
     return x_min
 
-if 1 < 3:
+if 11 < 3:
     # simplest use case 
-    for problem in coco.Benchmark("bbob2009", "bbob2009_observer", "random_search"):
+    for problem in Benchmark("bbob2009", "bbob2009_observer", "random_search"):
         my_optimizer(problem,
                      problem.lower_bounds,
                      problem.upper_bounds,
@@ -35,10 +34,10 @@ if 1 < 3:
 
 elif 1 < 3:
     # use case using problem_index which allows to pick and choose (e.g. to parallelize experiments) 
-    bm = coco.Benchmark("bbob2009", "bbob2009_observer", "random_search")
+    bm = Benchmark("bbob2009", "bbob2009_observer", "random_search")
     problem_index = 0
     while True:
-        if 11 < 3 or ((problem_index + 0) % 5):
+        if 11 < 3 and ((problem_index + 0) % 5):
             problem_index += 1
             continue
             # problem.free()  # in case we need to move the test after get_problem
@@ -55,7 +54,7 @@ elif 1 < 3:
 if 11 < 3:
     # use case with "random access" via dimension, function, instance, method coco.problem_index is not implemented yet
     raise NotImplementedError
-    bm = coco.Benchmark("bbob2009", "bbob2009_observer", "random_search")
+    bm = Benchmark("bbob2009", "bbob2009_observer", "random_search")
     dimensions = [2, 3, 5, 10, 20, 40] 
     functions = range(1, 25) 
     instances = np.r_[1:6, 31:41] 
