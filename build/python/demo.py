@@ -56,10 +56,13 @@ if 11 < 3:
     # use case with "random access" via dimension, function, instance, method coco.problem_index is not implemented yet
     raise NotImplementedError
     bm = coco.Benchmark("bbob2009", "bbob2009_observer", "random_search")
+    dimensions = [2, 3, 5, 10, 20, 40] 
+    functions = range(1, 25) 
+    instances = np.r_[1:6, 31:41] 
     for dim in dimensions:
         for fun in functions:
             for instance in instances:
-                problem_index = coco.problem_index(dim, fun, instance)
+                problem_index = bm.problem_index(dim, fun, instance)
                 problem = bm.get_problem(problem_index)
                 if not problem:
                     print("fun %d instance %d in dimension %d not found" %
