@@ -183,8 +183,7 @@ def build_matlab():
     write_file(hg_revision(), "build/matlab/REVISION")
     write_file(hg_version(), "build/matlab/VERSION")
     # TODO: why not using run as above? It seems more flexible and more verbose
-    call(["matlab", "-nodisplay", "-nosplash", "-nodesktop", "-r",
-          "run('build/matlab/setup.m');exit;"])
+    run('build/matlab', ['matlab', '-nodisplay', '-r', "run('./setup.m');exit"])
     
 ################################################################################
 ## Java
