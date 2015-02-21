@@ -15,6 +15,10 @@ static const size_t nbpts_nbevals = 20;
 static const size_t nbpts_fval = 5;
 static size_t current_dim = -1;
 static size_t current_funId = -1;
+/* The current_... mechanism fails if several problems are open. 
+ * For the time being this should lead to an error. 
+ */
+static int bbob2009_logger_is_open = 0;
 
 /*TODO: add possibility of adding a prefix to the index files*/
 
@@ -374,6 +378,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
     coco_free_memory(data->best_solution);
     data->best_solution = NULL;
   }
+  bbob2009_logger_is_open = 0;
 }
 
 coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
@@ -382,6 +387,8 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));
   data->alg_name = alg_name;
+  if (bbob2009_logger_is_open)
+    coco_error("The current bbob2009_logger (observer) must be closed before a new one is opened");
   /* This is the name of the folder which happens to be the algName */
   data->path = coco_strdup(alg_name);
   data->index_file = NULL;
@@ -411,5 +418,6 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
   self = coco_allocate_transformed_problem(inner_problem, data,
                                            _bbob2009_logger_free_data);
   self->evaluate_function = _bbob2009_logger_evaluate_function;
+  bbob2009_logger_is_open = 1; 
   return self;
 }
