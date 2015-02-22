@@ -44,9 +44,10 @@
 #include "penalize_uninteresting_values.c"
 
 #define MAX_DIM 40
-#define zzzBBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 5
-#define zzzBBOB2009_NUMBER_OF_FUNCITONS 24
-#define zzzBBOB2009_NUMBER_OF_DIMENSIONS 6
+#define BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 5
+#define BBOB2009_NUMBER_OF_FUNCITONS 24
+#define BBOB2009_NUMBER_OF_DIMENSIONS 6
+const int BBOB2009_DIMS[] = {2, 3, 5, 10, 20, 40};/*might end up useful outside of bbob2009_decode_problem_index*/
 
 
 /**
@@ -92,27 +93,34 @@
  */
 void bbob2009_decode_problem_index(const int problem_index, int *function_id,
                                     int *instance_id, int *dimension) {
-  static const int dims[] = {2, 3, 5, 10, 20, 40};
-  static const int number_of_consecutive_instances = 5;
-  static const int number_of_functions = 24;
-  static const int number_of_dimensions = 6;
   const int high_instance_id =
-      problem_index / (number_of_consecutive_instances * number_of_functions *
-                        number_of_dimensions);
+      problem_index / (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCITONS *
+                        BBOB2009_NUMBER_OF_DIMENSIONS);
   int low_instance_id;
-  int rest = problem_index % (number_of_consecutive_instances *
-                               number_of_functions * number_of_dimensions);
+  int rest = problem_index % (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES *
+                               BBOB2009_NUMBER_OF_FUNCITONS * BBOB2009_NUMBER_OF_DIMENSIONS);
   *dimension =
-      dims[rest / (number_of_consecutive_instances * number_of_functions)];
-  rest = rest % (number_of_consecutive_instances * number_of_functions);
-  *function_id = rest / number_of_consecutive_instances + 1;
-  rest = rest % number_of_consecutive_instances;
+      BBOB2009_DIMS[rest / (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCITONS)];
+  rest = rest % (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCITONS);
+  *function_id = rest / BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES + 1;
+  rest = rest % BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
   low_instance_id = rest + 1;
   *instance_id = low_instance_id + 5 * high_instance_id;
 }
 
-int bbob2009_encode_problem_index(int function_id, int instance_id, int dimension){
-    return instance_id/zzzBBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES ;
+/* Encodes a triplet of (function_id, instance_id, dimension_idx) into a problem_index
+ * The problem index can, then, be used to directly generate a problem
+ * It helps allow easier control on instances, functions and dimensions one wants to run
+ * all indices start from 0 TODO: start at 1 instead?
+ */
+int bbob2009_encode_problem_index(int function_id, int instance_id, int dimension_idx){
+    int cycleLength = BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCITONS * BBOB2009_NUMBER_OF_DIMENSIONS;
+    int tmp1 = instance_id % BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
+    int tmp2 = function_id * BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
+    int tmp3 = dimension_idx * (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCITONS);
+    int tmp4 = ((int)(instance_id / BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES) ) * cycleLength; /* just for safety */
+    
+    return tmp1 + tmp2 + tmp3 + tmp4;
 }
 
 static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b,
@@ -139,11 +147,35 @@ static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b,
 coco_problem_t *bbob2009_suit(const int problem_index) {
   size_t len;
   int i, instance_id, function_id, dimension, rseed;
+  int dimension_idx;
   coco_problem_t *problem = NULL;
   bbob2009_decode_problem_index(problem_index, &function_id, &instance_id,
                                  &dimension);
   /* This assert is a hint for the static analyzer. */
   assert(dimension > 1);
+    switch (dimension) {/*TODO: make this more dynamic*/
+            case 2:
+            dimension_idx = 0;
+            break;
+            case 3:
+            dimension_idx = 1;
+            break;
+            case 5:
+            dimension_idx = 2;
+            break;
+            case 10:
+            dimension_idx = 3;
+            break;
+            case 20:
+            dimension_idx = 4;
+            break;
+            case 40:
+            dimension_idx = 5;
+            break;
+        default:
+            break;
+    }
+  assert(problem_index == bbob2009_encode_problem_index(function_id - 1, instance_id - 1 , dimension_idx));
 
   rseed = function_id + 10000 * instance_id;
 
