@@ -44,6 +44,10 @@
 #include "penalize_uninteresting_values.c"
 
 #define MAX_DIM 40
+#define zzzBBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 5
+#define zzzBBOB2009_NUMBER_OF_FUNCITONS 24
+#define zzzBBOB2009_NUMBER_OF_DIMENSIONS 6
+
 
 /**
  * bbob2009_decode_problem_index(problem_index, function_id, instance_id,
@@ -105,6 +109,10 @@ void bbob2009_decode_problem_index(const int problem_index, int *function_id,
   rest = rest % number_of_consecutive_instances;
   low_instance_id = rest + 1;
   *instance_id = low_instance_id + 5 * high_instance_id;
+}
+
+int bbob2009_encode_problem_index(int function_id, int instance_id, int dimension){
+    return instance_id/zzzBBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES ;
 }
 
 static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b,
