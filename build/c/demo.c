@@ -38,19 +38,19 @@ coco_problem_t *get_bbob2009_problem(const int problem_index,
   coco_problem_t *problem;
   problem = coco_get_problem("bbob2009", problem_index);
   /* problem = bbob2009_suit(problem_index); */
-  if (problem == NULL)
+  if (problem == NULL)  /* this is not necessary anymore */
       return problem;
   problem = coco_observe_problem("bbob2009_observer", problem, options);
   return problem;
 }
 
-#if 11 < 3
+#if 0
 int main() {
   coco_benchmark("bbob2009", "bbob2009_observer", "random_search",
                  my_optimizer);
   return 0;
 }
-#elif 1 < 3
+#elif 1
 int main() {
   int problem_index; 
   coco_problem_t * problem;
@@ -69,13 +69,29 @@ int main() {
 }
 #else
 int main() {
-  int ifun, idim, iinst;
-  int *functions;
-  int dimensions[] = {2,3,5,10,20,40};
-  int *instances;
-  for (idim = 0; idim < 6; ++idim) {
-    /* bbob2009_get_problem_index(functions[ifun], dimensions[idim], instances[iinst]); */
+  const char * suit = "bbob2009";
+  const char * suit_options = ""; /* "instances:1-5, dimensions:2-20" */
+  const char * observer = "bbob2009_observer";
+  const char * observer_options = "random_search"; /* "folder:random_search, verbosity:1" */
+  int problem_index; 
+  coco_problem_t * problem;
+  problem_index = -1;
+  while (1) {
+      problem_index = coco_next_problem_index(suit, suit_options, problem_index);
+      if (problem_index < 0)
+          break;
+#if 0
+      problem = coco_get_problem(suit, problem_index); /* this should give a console message by the observer */
+      printf('got a problem');
+      problem = coco_observe_problem(observer, problem, observer_options);
+#endif
+      problem = get_bbob2009_problem(problem_index, "random_search");
+      printf("on problem with index %d ... ", problem_index);
+      my_optimizer(problem);
+      printf("done\n");
+      coco_free_problem(problem);  /* this should give a console message by the observer */
   }
   return 0;
 }
 #endif
+
