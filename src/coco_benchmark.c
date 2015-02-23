@@ -21,7 +21,8 @@ int coco_next_problem_index(const char *problem_suit,
     return bbob2009_next_problem_index(select_options, problem_index);
   }
   
-  /* each test suit should at least define its max index here */
+  /* each test suit should at least define its max index here
+     (we assume the min index is zero) */
   
   coco_warning("returned problem_index++ might not be valid");
   return problem_index + 1;
@@ -52,7 +53,7 @@ coco_problem_t *coco_observe_problem(const char *observer,
     return bbob2009_observer(problem, options);
   }
   
-  /* here each observe must have another entry */
+  /* here each observer must have another entry */
   
   if (0 == strcmp(observer, "no_observer")) {
     return problem;

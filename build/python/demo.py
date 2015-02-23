@@ -36,11 +36,8 @@ if 1 < 3:
     print('Generic usecase')
     bm = Benchmark("bbob2009", "", # "instances:1-5, dimensions:2-20", 
                    "bbob2009_observer", "random_search") #"folder:random_search, verbosity:1")
-    problem_index = -1
-    while True:
-        problem_index = bm.next_problem_index(problem_index)
-        if problem_index < 0:
-            break
+    problem_index = bm.next_problem_index(-1)  # is not necessarily 0
+    while problem_index >= 0:
         problem = bm.get_problem(problem_index)  # this should give a console message by the observer
         print("on '%s' ... " % (str(problem)), end='')
         my_optimizer(problem,
@@ -50,7 +47,8 @@ if 1 < 3:
         print("done")
         problem.free()  # this should give a console message by the observer
         # preferably free would not be necessary, but this might not be possible
-
+        problem_index = bm.next_problem_index(problem_index)
+ 
 if 11 < 3:
     # simple use case, somewhat Python specific, doesn't add much to the above
     # TODO: add suit options to this interface
