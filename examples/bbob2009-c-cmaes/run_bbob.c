@@ -59,6 +59,7 @@ void cma_optimizer(coco_problem_t *problem) {
     for (size_t i = 0; i < cmaes_Get(&cma, "lambda"); ++i) {
       /* Make sure candidate solution is inside the problems bounding box. If
        * not, resample until it is.
+       * On the bbob2009 benchmark this is neither necessary nor useful. 
        */
       while (!is_feasible(X[i], lower, upper, number_of_variables)) {
         cmaes_ReSampleSingle(&cma, i);
