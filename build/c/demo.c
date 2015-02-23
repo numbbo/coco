@@ -67,7 +67,7 @@ int main() {
   }
   return 0;
 }
-#else
+#elif 1
 int main() {
   const char * suit = "bbob2009";
   const char * suit_options = ""; /* "instances:1-5, dimensions:2-20" */
@@ -93,5 +93,28 @@ int main() {
   }
   return 0;
 }
+#elif 1
+int main() {
+  int problem_index, function_id, instance_id, dimension_idx;
+  coco_problem_t * problem;
+  /*int *functions;
+  int dimensions[] = {2,3,5,10,20,40};
+  int *instances;*/
+  for (dimension_idx = 0; dimension_idx < 6; dimension_idx++) {/*TODO: find way of using the constants in bbob200_suit*/
+      for (function_id = 0; function_id < 24; function_id++) {
+          for (instance_id = 0; instance_id < 15; instance_id++) {
+              problem_index = bbob2009_encode_problem_index(function_id, instance_id, dimension_idx);
+              problem = get_bbob2009_problem(problem_index, "random_search");
+              if (problem == NULL)
+              break;
+              my_optimizer(problem);
+              printf("done with problem %d (function %d)\n",
+                     problem_index, bbob2009_get_function_id(problem));
+              coco_free_problem(problem);
+          }
+      }
+    /*bbob2009_get_problem_index(functions[ifun], dimensions[idim], instances[iinst]); */
+  }
+  return 0;
+}
 #endif
-

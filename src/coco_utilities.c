@@ -62,7 +62,7 @@ void coco_join_path(char *path, size_t path_max_length, ...) {
     size_t component_length = strlen(path_component);
     if (path_length + path_separator_length + component_length >=
         path_max_length) {
-      coco_error("coco_file_path() failed because the ${path} is to short.");
+      coco_error("coco_file_path() failed because the ${path} is too short.");
       return; /* never reached */
     }
     /* Both should be safe because of the above check. */
