@@ -22,8 +22,8 @@ cdef extern from "coco.h":
                                          const char *options)
     
     int coco_next_problem_index(const char *benchmark, 
-                                const char *benchmark_options, 
-                                int problem_index)
+                                int problem_index,
+                                const char *benchmark_options)
 
     void coco_free_problem(coco_problem_t *problem)
 
@@ -148,8 +148,8 @@ cdef class Benchmark:
         return problem
         
     def next_problem_index(self, problem_index):
-        return coco_next_problem_index(self.problem_suit, self.problem_suit_options, 
-                                       problem_index)
+        return coco_next_problem_index(self.problem_suit, problem_index, 
+                                       self.problem_suit_options)
                 
     def __next__(self):
         try:

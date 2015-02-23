@@ -14,8 +14,8 @@
 /** return next problem_index or -1
  */
 int coco_next_problem_index(const char *problem_suit,
-                     const char *select_options,
-                     const int problem_index) {
+                     const int problem_index,
+                     const char *select_options) {
   if (0 == strcmp(problem_suit, "bbob2009")) {
     /* TODO: this is not (yet) implemented */
     return bbob2009_next_problem_index(select_options, problem_index);
