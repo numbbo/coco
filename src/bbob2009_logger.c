@@ -132,9 +132,9 @@ static void _bbob2009_logger_write_data(FILE *target_file,
  */
 static void _bbob2009_logger_error_io(FILE *path, int errnum) {
   char *buf;
-  const char *error_format = "Error opening file: %s\n "
-                             "bbob2009_logger_prepare() failed to open log "
-                             "file '%s'.";
+  const char *error_format = "Error opening file: %s\n ";
+                             /*"bbob2009_logger_prepare() failed to open log "
+                             "file '%s'.";*/
   size_t buffer_size = snprintf(NULL, 0, error_format, path);
   buf = (char *)coco_allocate_memory(buffer_size);
   snprintf(buf, buffer_size, error_format, strerror(errnum), path);
