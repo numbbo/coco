@@ -50,7 +50,11 @@ coco_problem_t *coco_observe_problem(const char *observer,
     return toy_observer(problem, options);
   } else if (0 == strcmp(observer, "bbob2009_observer")) {
     return bbob2009_observer(problem, options);
-  } else if (0 == strcmp(observer, "no_observer")) {
+  }
+  
+  /* here each observe must have another entry */
+  
+  if (0 == strcmp(observer, "no_observer")) {
     return problem;
   } else if (0 == strcmp(observer, "")) {
     coco_warning("Empty observer '' has no effect, to prevent this warning use 'no_observer' instead");
