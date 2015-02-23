@@ -732,19 +732,30 @@ int bbob2009_get_instance_id(const coco_problem_t *problem) {
   return (problem_id[14] - '0') * 10 + (problem_id[15] - '0');
 }
 
-
 /* TODO: specify selection_descriptor and implement this.
  *
- * Possible example for a descriptor: "instance:1-5, dimension:-20"
+ * Possible example for a descriptor: "instance:1-5, dimension:-20",
+ * where instances are relative numbers (w.r.t. to the instances in
+ * test bed), dimensions are absolute. 
 */
 int bbob2009_next_problem_index(const char *selection_descriptor, const int problem_index) {
+  const int first_index = 0;
+  const int last_index = 2159;
+  
   if (strlen(selection_descriptor) == 0) {
     if (problem_index < 0)
-      return 0;
-    if (problem_index < 2159)
+      return first_index;
+    if (problem_index < last_index)
       return problem_index + 1;
     return -1;
   }
+  
+  /* TODO:
+     o parse the selection_descriptor -> value bounds on funID, dimension, instance
+     o inrement problem_index until funID, dimension, instance match the restrictions
+       or max problem_index is succeeded. 
+    */
+  
   coco_error("next_problem_index is yet to be implemented for specific selections");
   return -1;
 }
