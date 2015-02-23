@@ -60,8 +60,9 @@
  * dimension.
  *
  * TODO: this is the default prescription for 2009. This is typically
- *       not what we want _now_. Maybe the benchmark initializer should
- *       take the desired instances as input? 
+ *       not what we want _now_, as the instances change in each
+ *       workshop. We should have provide-problem-instance-indices
+ *       methods to be able to run useful subsets of instances.
  * 
  * This gives us:
  *
@@ -132,6 +133,9 @@ coco_problem_t *bbob2009_suit(const int problem_index) {
   size_t len;
   int i, instance_id, function_id, dimension, rseed;
   coco_problem_t *problem = NULL;
+  
+  if (problem_index < 0)
+    return NULL; 
   bbob2009_decode_problem_index(problem_index, &function_id, &instance_id,
                                  &dimension);
   /* This assert is a hint for the static analyzer. */
@@ -641,8 +645,8 @@ coco_problem_t *bbob2009_suit(const int problem_index) {
   return problem;
 }
 
-/* Return the bbob2009 function id of the problem or if it is not a bbob2009
- * problem -1. */
+/* Return the bbob2009 function id of the problem or -1 if it is not a bbob2009
+ * problem. */
 int bbob2009_get_function_id(const coco_problem_t *problem) {
   static const char *bbob_prefix = "bbob2009_";
   const char *problem_id = coco_get_problem_id(problem);
@@ -663,8 +667,8 @@ int bbob2009_get_function_id(const coco_problem_t *problem) {
   return (problem_id[10] - '0') * 10 + (problem_id[11] - '0');
 }
 
-/* Return the bbob2009 instance id of the problem or if it is not a bbob2009
- * problem -1. */
+/* Return the bbob2009 instance id of the problem or -1 if it is not a bbob2009
+ * problem. */
 int bbob2009_get_instance_id(const coco_problem_t *problem) {
   static const char *bbob_prefix = "bbob2009_";
   const char *problem_id = coco_get_problem_id(problem);
@@ -683,6 +687,23 @@ int bbob2009_get_instance_id(const coco_problem_t *problem) {
    *   bbob2009_fXX_iYY_dZZ
    */
   return (problem_id[14] - '0') * 10 + (problem_id[15] - '0');
+}
+
+
+/* TODO: specify selection_descriptor and implement this.
+ *
+ * Possible example for a descriptor: "instance:1-5, dimension:-20"
+*/
+int bbob2009_next_problem_index(const char *selection_descriptor, const int problem_index) {
+  if (strlen(selection_descriptor) == 0) {
+    if (problem_index < 0)
+      return 0;
+    if (problem_index < 2159)
+      return problem_index + 1;
+    return -1;
+  }
+  coco_error("next_problem_index is yet to be implemented for specific selections");
+  return -1;
 }
 
 /* Undefine constants */
