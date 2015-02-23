@@ -22,7 +22,7 @@ cdef extern from "coco.h":
                                          const char *options)
     
     int coco_next_problem_index(const char *benchmark, 
-                                int problem_index,
+                                const int problem_index,
                                 const char *benchmark_options)
 
     void coco_free_problem(coco_problem_t *problem)
@@ -53,6 +53,8 @@ cdef class Problem:
     def __cinit__(self, problem_suit, int problem_index):
         cdef np.npy_intp shape[1]
         _problem_suit = _bstring(problem_suit)
+        # Implicit type conversion via passing safe, 
+        # see http://docs.cython.org/src/userguide/language_basics.html
         self.problem = coco_get_problem(_problem_suit, problem_index)
         if self.problem is NULL:
             raise NoSuchProblemException(problem_suit, problem_index)
@@ -65,8 +67,9 @@ cdef class Problem:
             self.lower_bounds[i] = coco_get_smallest_values_of_interest(self.problem)[i]
             self.upper_bounds[i] = coco_get_largest_values_of_interest(self.problem)[i]
 
-    def add_observer(self, char *observer, char *options):
-        self.problem = coco_observe_problem(observer, self.problem, options)
+    def add_observer(self, observer, options):
+        _observer, _options = _bstring(observer), _bstring(options)
+        self.problem = coco_observe_problem(_observer, self.problem, _options)
 
     property number_of_variables:
         """Number of variables this problem instance expects as input.
@@ -116,24 +119,24 @@ cdef class Benchmark:
     
         from cocoex import Benchmark
         bm = Benchmark("bbob2009", "", "bbob2009_observer", "random_search")
-        fun = bm.get_problem(0)  # first problem in suit
+        fun = bm.get_problem(0)  # first problem in *this* suit
         
     where the latter name defines the data folder. 
     
     """
-    cdef char *problem_suit
-    cdef char *problem_suit_options
-    cdef char *observer
-    cdef char *observer_options
+    cdef bytes problem_suit
+    cdef bytes problem_suit_options
+    cdef bytes observer
+    cdef bytes observer_options
     cdef int _current_problem_index
     cdef Problem _current_problem
 
     def __cinit__(self, problem_suit, problem_suit_options, 
                   observer, observer_options):
-        self.problem_suit = problem_suit
-        self.problem_suit_options = problem_suit_options
-        self.observer = observer
-        self.observer_options = observer_options
+        self.problem_suit = _bstring(problem_suit)
+        self.problem_suit_options = _bstring(problem_suit_options)
+        self.observer = _bstring(observer)
+        self.observer_options = _bstring(observer_options)
         self._current_problem_index = -1
         self._current_problem = None
 
