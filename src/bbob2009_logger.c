@@ -208,6 +208,7 @@ static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
         fclose(tmp_file);
       }
       fprintf(*target_file,
+              /* TODO: z-modifier is bound to fail as being incompatible to standard C */
               "funcId = %d, DIM = %zu, Precision = %.3e, algId = '%s'\n",
               (int)strtol(function_id, NULL, 10), data->number_of_variables,
               pow(10, -8), data->alg_name);

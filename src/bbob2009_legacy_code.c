@@ -129,7 +129,7 @@ static void bbob2009_gauss(double *g, int N, int seed) {
  * Compute a ${DIM}x${DIM} rotation matrix based on ${seed} and store
  * it in ${B}.
  */
-static void bbob2009_compute_rotation(double **B, int seed, int DIM) {
+static void bbob2009_compute_rotation(double **B, int seed, unsigned int DIM) {
   /* To ensure temporary data fits into gvec */
   double prod;
   double gvect[2000];
@@ -162,7 +162,7 @@ static void bbob2009_compute_rotation(double **B, int seed, int DIM) {
  *
  * Randomly compute the location of the global optimum.
  */
-static void bbob2009_compute_xopt(double *xopt, int seed, int DIM) {
+static void bbob2009_compute_xopt(double *xopt, int seed, unsigned int DIM) {
   int i;
   bbob2009_unif(xopt, DIM, seed);
   for (i = 0; i < DIM; i++) {

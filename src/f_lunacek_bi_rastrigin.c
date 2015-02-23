@@ -21,8 +21,8 @@ static void _bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, double *x,
   double penalty = 0.0;
   static const double mu0 = 2.5;
   static const double d = 1.;
-  double s = 1. - 0.5 / (sqrt((double)(self->number_of_variables + 20)) - 4.1);
-  double mu1 = -sqrt((mu0 * mu0 - d) / s);
+  const double s = 1. - 0.5 / (sqrt((double)(self->number_of_variables + 20)) - 4.1);
+  const double mu1 = -sqrt((mu0 * mu0 - d) / s);
   _bbob_lunacek_bi_rastrigin_t *data;
   double *tmpvect, sum1 = 0., sum2 = 0., sum3 = 0.;
 
@@ -94,6 +94,7 @@ bbob_lunacek_bi_rastrigin_problem(const size_t number_of_variables,
   size_t i, problem_id_length, rseed;
   coco_problem_t *problem;
   _bbob_lunacek_bi_rastrigin_t *data;
+  static const double mu0 = 2.5;
 
   rseed = 24 + 10000 * instance_id;
 
@@ -130,7 +131,6 @@ bbob_lunacek_bi_rastrigin_problem(const size_t number_of_variables,
   problem->free_problem = _bbob_lunacek_bi_rastrigin_free;
 
   /* Computing xopt  */
-  static const double mu0 = 2.5;
   tmpvect = coco_allocate_vector(number_of_variables);
   bbob2009_gauss(tmpvect, number_of_variables, rseed);
   for (i = 0; i < number_of_variables; ++i) {

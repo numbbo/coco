@@ -147,7 +147,8 @@ static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b,
  */
 coco_problem_t *bbob2009_suit(const int problem_index) {
   size_t len;
-  int i, instance_id, function_id, dimension, rseed;
+  int instance_id, function_id, rseed;
+  unsigned int dimension; /* unsigned prevents 49 compiler warnings */
   int dimension_idx;
   coco_problem_t *problem = NULL;
   
@@ -216,6 +217,7 @@ coco_problem_t *bbob2009_suit(const int problem_index) {
     problem = shift_variables(problem, xopt, 0);
     problem = shift_objective(problem, fopt);
   } else if (function_id == 4) {
+    int i;
     double xopt[MAX_DIM], fopt, penalty_factor = 100.0;
     rseed = 3 + 10000 * instance_id;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
@@ -274,6 +276,7 @@ coco_problem_t *bbob2009_suit(const int problem_index) {
   } else if (function_id == 7) {
     problem = bbob_step_ellipsoid_problem(dimension, instance_id);
   } else if (function_id == 8) {
+    int i; 
     double xopt[MAX_DIM], minus_one[MAX_DIM], fopt, factor;
     bbob2009_compute_xopt(xopt, rseed, dimension);
     for (i = 0; i < dimension; ++i) {
