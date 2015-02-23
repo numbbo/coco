@@ -50,7 +50,7 @@ int main() {
                  my_optimizer);
   return 0;
 }
-#elif 1
+#elif 0
 int main() {
   int problem_index; 
   coco_problem_t * problem;
@@ -70,28 +70,28 @@ int main() {
 #elif 1
 int main() {
   const char * suit = "bbob2009";
-  const char * suit_options = ""; /* "instances:1-5, dimensions:2-20" */
+  const char * suit_options = ""; /* e.g.: "instances:1-5, dimensions:2-20" */
   const char * observer = "bbob2009_observer";
-  const char * observer_options = "random_search"; /* "folder:random_search, verbosity:1" */
-  int problem_index; 
+  const char * observer_options = "random_search"; /* future: "folder:random_search, verbosity:1" */
   coco_problem_t * problem;
-  problem_index = -1;
+  int problem_index = -1;
   while (1) {
       problem_index = coco_next_problem_index(suit, problem_index, suit_options);
       if (problem_index < 0)
           break;
 #if 1
-      problem = coco_get_problem("bbob2009", problem_index);
-      /* this should give a console message by the observer (depending on verbosity): */
+      problem = coco_get_problem(suit, problem_index);
+      /* the following should give a console message by the observer (depending on verbosity): */
       problem = coco_observe_problem(observer, problem, observer_options);
 #else
-      problem = get_bbob2009_problem(problem_index, "random_search");
+      problem = get_bbob2009_problem(problem_index, observer_options);
 #endif
       printf("on problem with index %d ... ", problem_index);
       my_optimizer(problem);
-      printf("done\n");
+      printf("done\n"); /* to be removed */
       coco_free_problem(problem);  /* this should give a console message by the observer */
   }
+  printf("Done with suit %s (options '').\n", suit, suit_options);
   return 0;
 }
 #elif 1
