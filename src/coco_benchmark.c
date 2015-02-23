@@ -86,7 +86,7 @@ void coco_benchmark(const char *problem_suit, const char *problem_suit_options,
   int problem_index;
   int is_instance;
   coco_problem_t *problem;
-  char buf[222]; 
+  char buf[222]; /* TODO: this is ugly, how to improve? */
   for (problem_index = -1; ; ) {
     problem_index = coco_next_problem_index(problem_suit, problem_suit_options, problem_index); 
     if (problem_index < 0)
