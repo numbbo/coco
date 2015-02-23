@@ -32,6 +32,8 @@ void my_optimizer(coco_problem_t *problem) {
  * Return the ${problem_index}-th benchmark problem from the BBOB2009
  * benchmark suit with logging. If the problem index is out of bounds,
  * return NULL.
+ *
+ * Details: this is rather obsolete?
  */
 coco_problem_t *get_bbob2009_problem(const int problem_index,
                                     const char *options) {
@@ -69,30 +71,32 @@ int main() {
 }
 #elif 1
 int main() {
-  const char * suit = "bbob2009";
+  const char * suit_name = "bbob2009";
   const char * suit_options = ""; /* e.g.: "instances:1-5, dimensions:2-20" */
-  const char * observer = "bbob2009_observer";
+  const char * observer_name = "bbob2009_observer";
   const char * observer_options = "random_search"; /* future: "folder:random_search, verbosity:1" */
+  
   coco_problem_t * problem;
-  int problem_index = coco_next_problem_index(suit, -1, suit_options);
-  for ( ; problem_index >= 0;
-       problem_index = coco_next_problem_index(suit, problem_index, suit_options)) {
-#if 1
-      problem = coco_get_problem(suit, problem_index);
-      /* the following should give a console message by the observer (depending on verbosity): */
-      problem = coco_observe_problem(observer, problem, observer_options);
-#else
-      problem = get_bbob2009_problem(problem_index, observer_options);
-#endif
-      printf("on problem with index %d ... ", problem_index);
+  int problem_index = -1; /* next(-1) == first */
+  
+  for ( problem_index = coco_next_problem_index(suit_name, -1, suit_options); /* next(-1) == first */
+        problem_index >= 0;
+        problem_index = coco_next_problem_index(suit_name, problem_index, suit_options)
+      ) {
+      problem = coco_get_problem(suit_name, problem_index);
+          /* the following should give a console message by the observer (depending on verbosity): */
+      problem = coco_observe_problem(observer_name, problem, observer_options);
+          printf("on problem with index %d ... ", problem_index); /* to be removed */
       my_optimizer(problem);
-      printf("done\n"); /* to be removed */
+          printf("done\n"); /* to be removed */
       coco_free_problem(problem);  /* this should give a console message by the observer */
   }
-  printf("Done with suit %s (options '%s').\n", suit, suit_options);
+  printf("Done with suit %s (options '%s').\n", suit_name, suit_options);
   return 0;
 }
 #elif 1
+/* Interface via dimension, function-ID and instance-ID. This does not translate
+   directly to different languages. */
 int main() {
   int problem_index, function_id, instance_id, dimension_idx;
   coco_problem_t * problem;
@@ -101,7 +105,7 @@ int main() {
   int *instances;*/
   for (dimension_idx = 0; dimension_idx < 6; dimension_idx++) {/*TODO: find way of using the constants in bbob200_suit*/
       for (function_id = 0; function_id < 24; function_id++) {
-          for (instance_id = 0; instance_id < 15; instance_id++) {
+          for (instance_id = 0; instance_id < 15; instance_id++) { /* this is specific to 2009 */
               problem_index = bbob2009_encode_problem_index(function_id, instance_id, dimension_idx);
               problem = get_bbob2009_problem(problem_index, "random_search");
               if (problem == NULL)
