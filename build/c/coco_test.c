@@ -13,13 +13,17 @@ static int about_equal(const double a, const double b) {
    * Example: a = +EPS and b = -EPS then the relative error is 2 but
    * in fact the two numbers are both for all practical purposes 0.
    */
-  const double absolute_error = fabs(a - b);
-  const double larger = fabs(a) > fabs(b) ? a : b;
-  const double relative_error = fabs((a - b) / larger);
-
-  if (absolute_error < 2 * DBL_MIN)
+  if (a == b)
     return 1;
-  return relative_error < 1e-6;
+  {
+    const double absolute_error = fabs(a - b);
+    const double larger = fabs(a) > fabs(b) ? a : b;
+    const double relative_error = fabs((a - b) / larger);
+  
+    if (absolute_error < 2 * DBL_MIN)
+      return 1;
+    return relative_error < 1e-6;
+  }
 }
 
 static void usage(const char *program_name) {
