@@ -77,7 +77,7 @@ int main() {
   coco_problem_t * problem;
   problem_index = -1;
   while (1) {
-      problem_index = coco_next_problem_index(suit, suit_options, problem_index);
+      problem_index = coco_next_problem_index(suit, problem_index, suit_options);
       if (problem_index < 0)
           break;
 #if 0
