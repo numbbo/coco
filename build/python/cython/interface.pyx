@@ -3,10 +3,9 @@
 import numpy as np
 cimport numpy as np
 
-from coco.exceptions import NoSuchProblemException
-from coco.exceptions import InvalidProblemException
+from cocoex.exceptions import InvalidProblemException, NoSuchProblemException
 
-__all__ = ['Problem', 'Benchmark']
+# __all__ = ['Problem', 'Benchmark']
 
 # Must initialize numpy or risk segfaults
 np.import_array()
@@ -21,6 +20,10 @@ cdef extern from "coco.h":
     coco_problem_t *coco_observe_problem(const char *observer_name,
                                          coco_problem_t *problem,
                                          const char *options)
+    
+    int coco_next_problem_index(const char *benchmark, 
+                                const char *benchmark_options, 
+                                int problem_index)
 
     void coco_free_problem(coco_problem_t *problem)
 
@@ -95,7 +98,7 @@ cdef class Problem:
         if self.problem is NULL:
             raise InvalidProblemException()
         coco_evaluate_function(self.problem,
-		               <double *>np.PyArray_DATA(x),
+                               <double *>np.PyArray_DATA(x),
                                <double *>np.PyArray_DATA(self.y))
         return self.y
 
@@ -110,22 +113,25 @@ cdef class Benchmark:
     
     Example::
     
-        import coco
-        bm = coco.Benchmark("bbob2009", "bbob2009_observer", "random_search")
+        from cocoex import Benchmark
+        bm = Benchmark("bbob2009", "bbob2009_observer", "random_search")
         
     where the latter name defines the data folder. 
     
     """
     cdef char *problem_suit
+    cdef char *problem_suit_options
     cdef char *observer
-    cdef char *options
+    cdef char *observer_options
     cdef int _current_problem_index
     cdef Problem _current_problem
 
-    def __cinit__(self, problem_suit, observer, options):
+    def __cinit__(self, problem_suit, problem_suit_options, 
+                  observer, observer_options):
         self.problem_suit = problem_suit
+        self.problem_suit_options = problem_suit_options
         self.observer = observer
-        self.options = options
+        self.observer_options = observer_options
         self._current_problem_index = -1
         self._current_problem = None
 
@@ -136,16 +142,23 @@ cdef class Benchmark:
         """get_problem(problem_index: int)"""
         try:
             problem = Problem(self.problem_suit, problem_index)
-            problem.add_observer(self.observer, self.options)
+            problem.add_observer(self.observer, self.observer_options)
         except NoSuchProblemException, e:
             return None
         return problem
-	
+        
+    def next_problem_index(self, problem_index):
+        return coco_next_problem_index(self.problem_suit, self.problem_suit_options, 
+                                       problem_index)
+                
     def __next__(self):
         try:
-            self._current_problem_index += 1
+            # self._current_problem_index += 1
+            self._current_problem_index = self.next_problem_index(self._current_problem_index)
+            if self._current_problem_index < 0:
+                raise StopIteration()            
             problem = Problem(self.problem_suit, self._current_problem_index)
-            problem.add_observer(self.observer, self.options)
+            problem.add_observer(self.observer, self.observer_options)
         except NoSuchProblemException, e:
             raise StopIteration()
         # self._current_problem = problem.problem  is of type coco_problem_t *
