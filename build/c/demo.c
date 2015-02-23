@@ -80,12 +80,13 @@ int main() {
       problem_index = coco_next_problem_index(suit, problem_index, suit_options);
       if (problem_index < 0)
           break;
-#if 0
-      problem = coco_get_problem(suit, problem_index); /* this should give a console message by the observer */
-      printf('got a problem');
+#if 1
+      problem = coco_get_problem("bbob2009", problem_index);
+      /* this should give a console message by the observer (depending on verbosity): */
       problem = coco_observe_problem(observer, problem, observer_options);
-#endif
+#else
       problem = get_bbob2009_problem(problem_index, "random_search");
+#endif
       printf("on problem with index %d ... ", problem_index);
       my_optimizer(problem);
       printf("done\n");
