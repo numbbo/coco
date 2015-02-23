@@ -82,7 +82,7 @@ def build_python():
     _prep_python()
     ## Force distutils to use Cython
     os.environ['USE_CYTHON'] = 'true'
-    python('build/python', ['setup.py', 'sdist'])
+    # python('build/python', ['setup.py', 'sdist'])
     python('build/python', ['setup.py', 'install', '--user'])
     os.environ.pop('USE_CYTHON')
 
@@ -182,8 +182,7 @@ def build_matlab():
     copy_file('src/coco.h', 'build/matlab/coco.h')
     write_file(hg_revision(), "build/matlab/REVISION")
     write_file(hg_version(), "build/matlab/VERSION")
-    # TODO: why not using run as above? It seems more flexible and more verbose
-    run('build/matlab', ['matlab', '-nodisplay', '-r', "run('./setup.m');exit"])
+    run('build/matlab', ['matlab', '-nodisplay', '-nospash', '-r', "run('setup.m'); exit"])
     
 ################################################################################
 ## Java
@@ -193,9 +192,12 @@ def build_java():
     copy_file('src/coco.h', 'build/java/coco.h')
     write_file(hg_revision(), "build/java/REVISION")
     write_file(hg_version(), "build/java/VERSION")
-    run('build/java', ['gcc', '-I/System/Library/Frameworks/JavaVM.framework/Headers', '-c', 'JNIinterface.c'])
-    run('build/java', ['gcc', '-dynamiclib', '-o', 'libJNIinterface.jnilib', 'JNIinterface.o'])
+    run('build/java', ['gcc', '-I/System/Library/Frameworks/JavaVM.framework/Headers',
+                       '-c', 'JNIinterface.c'])
+    run('build/java', ['gcc', '-dynamiclib', '-o', 'libJNIinterface.jnilib',
+                       'JNIinterface.o'])
     run('build/java', ['javac', 'Problem.java'])
+    run('build/java', ['javac', 'Benchmark.java'])
     run('build/java', ['javac', 'demo.java'])
 
 ################################################################################
@@ -212,9 +214,11 @@ def build():
         try:
             builder()
         except:
+            failed = str(builder)
             print("===========")
-            print('   ERROR: ' + str(builder) +
-                  ' failed, call individually to diagnose')
+            print('   ERROR: ' + failed +
+                  ' failed, call "do.py ' + failed[failed.find('build_'):].split()[0] +
+                  '" individually for a more detailed error report')
             print("===========")
 
 def test():
