@@ -102,9 +102,10 @@ coco_problem_t *coco_get_problem(const char *problem_suit,
                                  const int problem_index);
 
 /**
- * Return the next problem index of the ${problem_suit}.
+ * Return the successor index of ${problem_index} in ${problem_suit},
+ * or -1 if no successor problem is available.
  *
- * We assume that the problems in the suit are ordered, such that
+ * We assume that problems in a benchmark suit are ordered, such that
  * each ${problem_index} has a successor, which is returned by this
  * function.
  */
@@ -218,17 +219,9 @@ void coco_free_memory(void *data);
  */
 char *coco_strdup(const char *string);
 
-/* TODO: specify selection_descriptor and implement this.
- *
- * TODO: These bbob2009... functions should probably not be in
+/* TODO: These bbob2009... functions should probably not be in
  * this header.
- * 
- * Possible example for a descriptor: "instance:1-5, dimension:-20",
- * where instances are relative numbers (w.r.t. to the instances in
- * test bed), dimensions are absolute. 
-*/
-int bbob2009_next_problem_index(const char *selection_descriptor, const int problem_index);
-
+ */
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
  */
