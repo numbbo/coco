@@ -109,12 +109,14 @@ cdef class Problem:
             return "finalized/invalid problem"
 
 cdef class Benchmark:
-    """Benchmark(problem_suit: str, observer: str, options: str)
+    """Benchmark(problem_suit: str, suit_options: str, 
+                 observer: str, observer_options: str)
     
     Example::
     
         from cocoex import Benchmark
-        bm = Benchmark("bbob2009", "bbob2009_observer", "random_search")
+        bm = Benchmark("bbob2009", "", "bbob2009_observer", "random_search")
+        fun = bm.get_problem(0)  # first problem in suit
         
     where the latter name defines the data folder. 
     

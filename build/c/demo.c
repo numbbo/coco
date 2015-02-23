@@ -74,11 +74,9 @@ int main() {
   const char * observer = "bbob2009_observer";
   const char * observer_options = "random_search"; /* future: "folder:random_search, verbosity:1" */
   coco_problem_t * problem;
-  int problem_index = -1;
-  while (1) {
-      problem_index = coco_next_problem_index(suit, problem_index, suit_options);
-      if (problem_index < 0)
-          break;
+  int problem_index = coco_next_problem_index(suit, -1, suit_options);
+  for ( ; problem_index >= 0;
+       problem_index = coco_next_problem_index(suit, problem_index, suit_options)) {
 #if 1
       problem = coco_get_problem(suit, problem_index);
       /* the following should give a console message by the observer (depending on verbosity): */
@@ -91,7 +89,7 @@ int main() {
       printf("done\n"); /* to be removed */
       coco_free_problem(problem);  /* this should give a console message by the observer */
   }
-  printf("Done with suit %s (options '').\n", suit, suit_options);
+  printf("Done with suit %s (options '%s').\n", suit, suit_options);
   return 0;
 }
 #elif 1

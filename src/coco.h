@@ -102,6 +102,17 @@ coco_problem_t *coco_get_problem(const char *problem_suit,
                                  const int problem_index);
 
 /**
+ * Return the next problem index of the ${problem_suit}.
+ *
+ * We assume that the problems in the suit are ordered, such that
+ * each ${problem_index} has a successor, which is returned by this
+ * function.
+ */
+int coco_next_problem_index(const char *problem_suit,
+                     const int problem_index,
+                     const char *select_options);
+
+/**
  * tentative getters for region of interest
  */
 const double *coco_get_smallest_values_of_interest(const coco_problem_t *self);
