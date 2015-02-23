@@ -141,6 +141,11 @@ coco_problem_t *coco_observe_problem(const char *observer_name,
 void coco_benchmark(const char *problem_suit, const char *observer,
                     const char *options, coco_optimizer_t optimizer);
 
+/* shall replace the above? */
+void new_coco_benchmark(const char *problem_suit, const char *problem_suit_options,
+                     const char *observer, const char *observer_options,
+                     coco_optimizer_t optimizer);
+
 /**************************************************************************
  * Random number generator
  */
@@ -201,6 +206,17 @@ void coco_free_memory(void *data);
  * @see coco_free_memory()
  */
 char *coco_strdup(const char *string);
+
+/* TODO: specify selection_descriptor and implement this.
+ *
+ * TODO: These bbob2009... functions should probably not be in
+ * this header.
+ * 
+ * Possible example for a descriptor: "instance:1-5, dimension:-20",
+ * where instances are relative numbers (w.r.t. to the instances in
+ * test bed), dimensions are absolute. 
+*/
+int bbob2009_next_problem_index(const char *selection_descriptor, const int problem_index);
 
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
