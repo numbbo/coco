@@ -20,6 +20,10 @@ int coco_next_problem_index(const char *problem_suit,
     /* TODO: this is not (yet) implemented */
     return bbob2009_next_problem_index(select_options, problem_index);
   }
+  
+  /* each test suit should at least define its max index here */
+  
+  coco_warning("returned problem_index++ might not be valid");
   return problem_index + 1;
 }
 
@@ -46,8 +50,10 @@ coco_problem_t *coco_observe_problem(const char *observer,
     return toy_observer(problem, options);
   } else if (0 == strcmp(observer, "bbob2009_observer")) {
     return bbob2009_observer(problem, options);
-  } else if (0 == strcmp(observer, "") ||
-             0 == strcmp(observer, "no_observer")) {
+  } else if (0 == strcmp(observer, "no_observer")) {
+    return problem;
+  } else if (0 == strcmp(observer, "")) {
+    coco_warning("Empty observer '' has no effect, to prevent this warning use 'no_observer' instead");
     return problem;
   } else {
     coco_error("Unknown observer.");
