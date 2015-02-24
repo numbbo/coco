@@ -215,11 +215,11 @@ def build():
             builder()
         except:
             failed = str(builder)
-            print("===========")
-            print('   ERROR: ' + failed +
-                  ' failed, call "do.py ' + failed[failed.find('build_'):].split()[0] +
-                  '" individually for a more detailed error report')
-            print("===========")
+            print("============")
+            print('   ERROR: %s failed, call "./do.py %s" individually'
+                    % (failed, failed[failed.find('build_'):].split()[0]) +
+                  ' for a more detailed error report')
+            print("============")
 
 def test():
     test_c()
