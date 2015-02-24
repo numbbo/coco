@@ -1,5 +1,5 @@
 /*
- * Public NumBBO interface
+ * Public CoCO/NumBBO experiments interface
  *
  * All public functions, constants and variables are defined in this
  * file. It is the authorative reference, if any function deviates
@@ -226,12 +226,12 @@ char *coco_strdup(const char *string);
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
  */
-int bbob2009_get_function_id(const coco_problem_t *problem);
+// int bbob2009_get_function_id(const coco_problem_t *problem);
 
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
  */
-int bbob2009_get_instance_id(const coco_problem_t *problem);
+// int bbob2009_get_instance_id(const coco_problem_t *problem);
 
 #ifdef __cplusplus
 }
