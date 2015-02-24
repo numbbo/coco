@@ -31,7 +31,7 @@ static coco_problem_t *linear_slope_problem(const size_t number_of_variables,
   problem->problem_name = coco_strdup("linear slope function");
   /* Construct a meaningful problem id */
   problem_id_length =
-      snprintf(NULL, 0, "%s_%02i", "linearSlope", (int)number_of_variables);
+      snprintf(NULL, 0, "%s_%02i", "linear_slope", (int)number_of_variables);
   problem->problem_id = (char *)coco_allocate_memory(problem_id_length + 1);
   snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d",
            "linear_slope", (int)number_of_variables);
