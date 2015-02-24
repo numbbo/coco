@@ -47,8 +47,7 @@
 #define BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 5
 #define BBOB2009_NUMBER_OF_FUNCITONS 24
 #define BBOB2009_NUMBER_OF_DIMENSIONS 6
-const int BBOB2009_DIMS[] = {2, 3, 5, 10, 20, 40};/*might end up useful outside of bbob2009_decode_problem_index*/
-
+const unsigned BBOB2009_DIMS[] = {2, 3, 5, 10, 20, 40};/*might end up useful outside of bbob2009_decode_problem_index*/
 
 /**
  * bbob2009_decode_problem_index(problem_index, function_id, instance_id,
@@ -93,7 +92,7 @@ const int BBOB2009_DIMS[] = {2, 3, 5, 10, 20, 40};/*might end up useful outside 
  * remainders.
  */
 void bbob2009_decode_problem_index(const int problem_index, int *function_id,
-                                    int *instance_id, int *dimension) {
+                                    int *instance_id, unsigned *dimension) {
   const int high_instance_id =
       problem_index / (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCITONS *
                         BBOB2009_NUMBER_OF_DIMENSIONS);
@@ -148,7 +147,7 @@ static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b,
 coco_problem_t *bbob2009_suit(const int problem_index) {
   size_t len;
   int instance_id, function_id, rseed;
-  unsigned int dimension; /* unsigned prevents 49 compiler warnings */
+  unsigned dimension; /* unsigned prevents 49 compiler warnings */
   int dimension_idx;
   coco_problem_t *problem = NULL;
   
