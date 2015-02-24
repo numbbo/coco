@@ -24,65 +24,40 @@ def my_optimizer(fun, lower_bounds, upper_bounds, budget):
 if 11 < 3:
     # generic usecase, possible if my_optimizer can be cast into a coco_optimizer_t *
     # which might often not be a straight forward type conversion, because the
-    # optimizer takes a function (pointer) as input
-    print('Smallest usecase')
-    Benchmark(my_optimizer,
+    # optimizer takes a function (pointer) as input and argument passing might be
+    # impossible to negotiate
+    print("Minimal usecase, doesn't work though")
+    Benchmark(my_optimizer,  # see above
               "bbob2009", "instances:1-5",  # of 15 instances (not instance nb)
               "bbob20009_observer", "folder:random_search, verbosity:1")
 
 if 1 < 3:
     # generic usecase possible in all languages
-    # TODO: implement method next_problem_index
     print('Generic usecase')
     bm = Benchmark("bbob2009", "", # "instances:1-5, dimensions:2-20", 
                    "bbob2009_observer", "random_search") #"folder:random_search, verbosity:1")
-    problem_index = bm.next_problem_index(-1)  # is not necessarily 0
+    problem_index = bm.next_problem_index(-1)  # get first index, is not necessarily 0!
     while problem_index >= 0:
         problem = bm.get_problem(problem_index)  # this should give a console message by the observer
-        print("on '%s' ... " % (str(problem)), end='')
-        my_optimizer(problem,
-                     problem.lower_bounds,
-                     problem.upper_bounds,
-                     MAXEVALS)
-        print("done")
-        problem.free()  # this should give a console message by the observer
-        # preferably free would not be necessary, but this might not be possible
+        if 'i02' in problem.id and problem_index < 30:
+            print("on '%s' ... " % problem.id, end='')
+            my_optimizer(problem, problem.lower_bounds, problem.upper_bounds,
+                         MAXEVALS)
+            print("done")  # to be removed when the observer is more verbose
+        problem.free()  # this should give a console message by the observer, preferably free would not be necessary, but how?
         problem_index = bm.next_problem_index(problem_index)
  
-if 11 < 3:
-    # simple use case, somewhat Python specific, doesn't add much to the above
-    # TODO: add suit options to this interface
+if 1 < 3:
+    # simple Pythonic use case, doesn't add much to the above but is safer
     print('Pythonic usecase')
-    for problem in Benchmark("bbob2009", "", # here go the suit options
+    for problem in Benchmark("bbob2009", "", # TODO: here go the suit options
                              "bbob2009_observer", "random_search"):
-        print("on '%s' ... " % (str(problem)), end='')
-        my_optimizer(problem,
-                     problem.lower_bounds,
-                     problem.upper_bounds,
-                     MAXEVALS)
-        print("done")
-        problem.free()  # not strictly necessary (depends on the observer) 
-    print("done.")
-
-if 11 < 3:
-    # depreciated
-    # use case using problem_index which allows to pick and choose (e.g. to parallelize experiments) 
-    print('Depreciated usecase')
-    bm = Benchmark("bbob2009", "bbob2009_observer", "", "random_search")
-    problem_index = 0
-    while True:
-        if 11 < 3 and ((problem_index + 0) % 5):
-            problem_index += 1
-            continue
-            # problem.free()  # in case we need to move the test after get_problem
-        problem = bm.get_problem(problem_index)
-        if not problem:
-            break
-        my_optimizer(problem, problem.lower_bounds, problem.upper_bounds,
-                     MAXEVALS)
-        print("done with '%s' ... " % str(problem))
-        problem.free()
-        problem_index += 1
+        if 'f11' in problem.id and 'i03' in problem.id:
+            print("on '%s' ... " % problem.id, end='')
+            my_optimizer(problem, problem.lower_bounds, problem.upper_bounds,
+                         MAXEVALS)
+            print("done")  # to be removed when the observer is more verbose
+        # problem.free()  # done in finalize of the generator Benchmark.__iter__ 
     print("done.")
 
 if 11 < 3:
