@@ -72,16 +72,16 @@ int main() {
 #elif 1
 int main() {
   const char * suit_name = "bbob2009";
-  const char * suit_options = ""; /* e.g.: "instances:1-5, dimensions:2-20" */
+  const char * suit_options = ""; /* e.g.: "instances:1-5, dimensions:-20" */
   const char * observer_name = "bbob2009_observer";
   const char * observer_options = "random_search"; /* future: "folder:random_search, verbosity:1" */
   
   coco_problem_t * problem;
   int problem_index = -1; /* next(-1) == first */
   
-  for ( problem_index = coco_next_problem_index(suit_name, -1, suit_options); /* next(-1) == first */
-        problem_index >= 0;
-        problem_index = coco_next_problem_index(suit_name, problem_index, suit_options)
+  for (problem_index = coco_next_problem_index(suit_name, -1, suit_options); /* next(-1) == first */
+       problem_index >= 0;
+       problem_index = coco_next_problem_index(suit_name, problem_index, suit_options)
       ) {
       problem = coco_get_problem(suit_name, problem_index);
           /* the following should give a console message by the observer (depending on verbosity): */
@@ -100,6 +100,7 @@ int main() {
 int main() {
   int problem_index, function_id, instance_id, dimension_idx;
   coco_problem_t * problem;
+  
   /*int *functions;
   int dimensions[] = {2,3,5,10,20,40};
   int *instances;*/
