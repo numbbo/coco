@@ -48,7 +48,7 @@ static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, double *x,
   for (i = 0; i < self->number_of_variables; ++i) {
     double c1;
     data->x[i] = 0.0;
-    c1 = sqrt(pow(condition / 10., i / (self->number_of_variables - 1.0)));
+    c1 = sqrt(pow(condition / 10., (double) i / (double) (self->number_of_variables - 1)));
     for (j = 0; j < self->number_of_variables; ++j) {
       data->x[i] += c1 * data->rot2[i][j] * (x[j] - data->xopt[j]);
     }
