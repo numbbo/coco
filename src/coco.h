@@ -107,7 +107,8 @@ coco_problem_t *coco_get_problem(const char *problem_suit,
  *
  * We assume that problems in a benchmark suit are ordered, such that
  * each ${problem_index} has a successor, which is returned by this
- * function.
+ * function. coco_next_problem_index(suit, -1, options) returns the
+ * first problem. 
  */
 int coco_next_problem_index(const char *problem_suit,
                      const int problem_index,
