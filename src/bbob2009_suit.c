@@ -738,13 +738,14 @@ int bbob2009_get_instance_id(const coco_problem_t *problem) {
  * where instances are relative numbers (w.r.t. to the instances in
  * test bed), dimensions are absolute. 
 */
-int bbob2009_next_problem_index(const char *selection_descriptor, const int problem_index) {
+int bbob2009_next_problem_index(int problem_index, const char *selection_descriptor) {
   const int first_index = 0;
   const int last_index = 2159;
   
+  if (problem_index < 0)
+    problem_index = first_index - 1;
+    
   if (strlen(selection_descriptor) == 0) {
-    if (problem_index < 0)
-      return first_index;
     if (problem_index < last_index)
       return problem_index + 1;
     return -1;

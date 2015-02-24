@@ -14,11 +14,11 @@
 /** return next problem_index or -1
  */
 int coco_next_problem_index(const char *problem_suit,
-                     const int problem_index,
-                     const char *select_options) {
+                            int problem_index,
+                            const char *select_options) {
   if (0 == strcmp(problem_suit, "bbob2009")) {
     /* TODO: this is not (yet) implemented */
-    return bbob2009_next_problem_index(select_options, problem_index);
+    return bbob2009_next_problem_index(problem_index, select_options);
   }
   
   /* each test suit should at least define its max index here
@@ -57,13 +57,17 @@ coco_problem_t *coco_observe_problem(const char *observer,
   
   if (0 == strcmp(observer, "no_observer")) {
     return problem;
-  } else if (0 == strcmp(observer, "")) {
+  } else if (strlen(observer) == 0) {
     coco_warning("Empty observer '' has no effect, to prevent this warning use 'no_observer' instead");
     return problem;
   } else {
-    coco_error("Unknown observer.");
-    return NULL; /* Never reached */
+    /* not so clear whether an error is better, depends on the usecase */
+    coco_warning("Unkown observer which has no effect, the reason might just be a typo in");
+    coco_warning(observer);
+    return problem;
   }
+  coco_error("Unknown observer.");
+  return NULL; /* Never reached */
 }
 
 #if 1
