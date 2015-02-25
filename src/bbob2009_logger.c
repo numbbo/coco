@@ -359,7 +359,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
   }
 
   if (data->index_file != NULL) {
-    fprintf(data->index_file, ":%lu|%.1e", data->number_of_evaluations,
+    fprintf(data->index_file, ":%lu|%.1e", (unsigned long) data->number_of_evaluations,
             data->best_fvalue - data->optimal_fvalue);
     fclose(data->index_file);
     data->index_file = NULL;
