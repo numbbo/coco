@@ -11,6 +11,7 @@
 #include "coco_problem.c"
 #include "coco_strdup.c"
 
+/* FIXME: these names could easily created conflicts with other coco.c-global names */
 static const size_t nbpts_nbevals = 20;
 static const size_t nbpts_fval = 5;
 static size_t current_dim = -1;
@@ -23,6 +24,8 @@ static size_t current_funId = -1;
  * file is generated. 
  */
 static int bbob2009_logger_is_open = 0;
+static int bbob2009_logger_verbosity = 9;  /* TODO: make this an option the user can modify */
+
 
 /*TODO: add possibility of adding a prefix to the index files*/
 
@@ -213,8 +216,8 @@ static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
       }
       fprintf(*target_file,
               /* TODO: z-modifier is bound to fail as being incompatible to standard C */
-              "funcId = %d, DIM = %zu, Precision = %.3e, algId = '%s'\n",
-              (int)strtol(function_id, NULL, 10), data->number_of_variables,
+              "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s'\n",
+              (int)strtol(function_id, NULL, 10), (unsigned long)data->number_of_variables,
               pow(10, -8), data->alg_name);
       fprintf(*target_file, "%%\n");
       fprintf(*target_file, "%s.dat",
@@ -241,14 +244,15 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
                          should be a better way of doing this! */
   char tmpc_dim[3];   /*servs to extract the dimension as a char *. There should
                          be a better way of doing this! */
-  char indexFile_prefix[10] = "bbobexp"; /*TODO: make the prefix bbobexp a
-                                            parameter that the user can modify*/
+  char indexFile_prefix[10] = "bbobexp"; /* TODO (minor): make the prefix bbobexp a
+                                            parameter that the user can modify */  
   assert(data != NULL);
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
 
   sprintf(tmpc_funId, "%d", bbob2009_get_function_id(inner_problem));
-  sprintf(tmpc_dim, "%zu", inner_problem->number_of_variables);
+  sprintf(tmpc_dim, "%lu", (unsigned long) inner_problem->number_of_variables);
+  
   /* prepare paths and names*/
   strncpy(dataFile_path, "data_f", NUMBBO_PATH_MAX);
   strncat(dataFile_path, tmpc_funId,
@@ -294,7 +298,8 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self, double *x,
   if (!data->is_initialized) {
     _bbob2009_logger_initialize(data, coco_get_transform_inner_problem(self));
   }
-
+  if (bbob2009_logger_verbosity > 2 && data->number_of_evaluations == 0)
+    printf("on problem %s ... ", coco_get_problem_id(coco_get_transform_inner_problem(self)));
   coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
   data->last_fvalue = y[0];
   data->written_last_eval = 0;
@@ -343,6 +348,11 @@ static void _bbob2009_logger_free_data(void *stuff) {
    * that can have problem as input
    */
   _bbob2009_logger_t *data = stuff;
+
+  if (bbob2009_logger_verbosity > 2 && data && data->number_of_evaluations > 0)
+    printf("best f=%e after %lu fevals (done observing)\n",
+           data->best_fvalue, (unsigned long) data->number_of_evaluations);
+
   if (data->path != NULL) {
     coco_free_memory(data->path);
     data->path = NULL;
@@ -423,6 +433,6 @@ coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
   self = coco_allocate_transformed_problem(inner_problem, data,
                                            _bbob2009_logger_free_data);
   self->evaluate_function = _bbob2009_logger_evaluate_function;
-  bbob2009_logger_is_open = 1; 
+  bbob2009_logger_is_open = 1;
   return self;
 }
