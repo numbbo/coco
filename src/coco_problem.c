@@ -35,7 +35,8 @@ coco_allocate_problem(const size_t number_of_variables,
   return problem;
 }
 
-static coco_problem_t *coco_duplicate_problem(coco_problem_t *other) {
+static coco_problem_t *
+coco_duplicate_problem(coco_problem_t *other) {
   size_t i;
   coco_problem_t *problem;
   problem = coco_allocate_problem(other->number_of_variables,
@@ -169,7 +170,8 @@ static void *coco_get_transform_data(coco_problem_t *self) {
   return ((coco_transform_data_t *)self->data)->data;
 }
 
-static coco_problem_t *coco_get_transform_inner_problem(coco_problem_t *self) {
+static coco_problem_t *
+coco_get_transform_inner_problem(coco_problem_t *self) {
   assert(self != NULL);
   assert(self->data != NULL);
   assert(((coco_transform_data_t *)self->data)->inner_problem != NULL);
