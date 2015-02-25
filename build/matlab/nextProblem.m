@@ -6,6 +6,7 @@ function Pr = nextProblem(benchmark)
         throw(baseException)
     end
     Pr = Problem(benchmark.problem_suit, benchmark.function_index, benchmark.observer, benchmark.options);
+    % FIXME: this should use the coco_next_problem_index function from coco.h
     benchmark.function_index = benchmark.function_index + 1;
     
 end
