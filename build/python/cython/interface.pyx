@@ -44,7 +44,7 @@ cdef class Problem:
     cdef np.ndarray y
     cdef public np.ndarray lower_bounds
     cdef public np.ndarray upper_bounds
-    # cdef public double[:] lower_vals_oi
+    cdef size_t _number_of_variables
     cdef size_t _number_of_objectives
     cdef problem_suite  # for the record
     cdef problem_index  # for the record
@@ -68,7 +68,7 @@ cdef class Problem:
         for i in range(coco_get_number_of_variables(self.problem)):
             self.lower_bounds[i] = coco_get_smallest_values_of_interest(self.problem)[i]
             self.upper_bounds[i] = coco_get_largest_values_of_interest(self.problem)[i]
-        # self.lower_vals_oi = coco_get_smallest_values_of_interest(self.problem)
+        self._number_of_variables = coco_get_number_of_variables(self.problem)
         self._number_of_objectives = coco_get_number_of_objectives(self.problem)
 
     def add_observer(self, observer, options):
@@ -81,21 +81,15 @@ cdef class Problem:
         _observer, _options = _bstring(observer), _bstring(options)
         self.problem = coco_observe_problem(_observer, self.problem, _options)
     
-    # shouldn't this be part of init?
     property number_of_variables:
-        """Number of variables this problem instance expects as input.
-        """
+        """Number of variables this problem instance expects as input."""
         def __get__(self):
-            return coco_get_number_of_variables(self.problem)
-            # this was somewhat a hack, as a problem might not have bounds
-            # return len(self.lower_bounds)
+            return self._number_of_variables
     
     @property
     def number_of_objectives(self):
         "number of objectives, if equal to 1, call returns a scalar"
         return self._number_of_objectives
-    # number_of_objectives = property(_get_number_of_objectives, None, None, 
-    # "number of objectives, if 1 call returns a scalar")
     
     def free(self):
         """Free the given test problem. 
@@ -122,10 +116,10 @@ cdef class Problem:
         x = np.array(x, copy=False, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
             raise ValueError(
-                "Dimension (`npsize(x)==%d`) of input `x` does" % np.size(x) +
-                " not match the problem dimension `number_of_variables==%d`." 
+                "Dimension (`npsize(x)==%d`) of input `x` does " % np.size(x) +
+                "not match the problem dimension `number_of_variables==%d`." 
                              % self.number_of_variables)
-        _x = x  # type conversion
+        _x = x  # this is the final type conversion
         if self.problem is NULL:
             raise InvalidProblemException()
         coco_evaluate_function(self.problem,
@@ -136,11 +130,13 @@ cdef class Problem:
     @property
     def id(self): 
         "id as string without spaces or weird characters"
-        return coco_get_problem_id(self.problem)
+        if self.problem is not NULL:
+            return coco_get_problem_id(self.problem)
     
     @property    
     def name(self):
-        return coco_get_problem_name(self.problem)
+        if self.problem is not NULL:
+            return coco_get_problem_name(self.problem)
     
     @property
     def info(self):
@@ -180,10 +176,11 @@ cdef class Benchmark:
     
     Example::
     
-        from cocoex import Benchmark
-        bm = Benchmark("bbob2009", "", "bbob2009_observer", "random_search")
-        fun = bm.get_problem(0)  # first problem in *this* suite
-        0 == bm.first_problem_index
+        >>> from cocoex import Benchmark
+        >>> bm = Benchmark("bbob2009", "", "bbob2009_observer", "random_search")
+        >>> assert bm.first_problem_index == 0  # true for bbob2009 suite
+        >>> fun = bm.get_problem(bm.first_problem_index)
+        >>> assert int(fun.id[fun.id.find('_f') + 2:].split('_')[0]) == 1
         
     where the latter name defines the data folder. 
     
@@ -192,8 +189,6 @@ cdef class Benchmark:
     cdef bytes problem_suite_options
     cdef bytes observer
     cdef bytes observer_options
-    cdef int _current_problem_index
-    cdef Problem _current_problem
     cdef _len
     cdef _dimensions
     cdef _objectives
@@ -204,8 +199,6 @@ cdef class Benchmark:
         self.problem_suite_options = _bstring(problem_suite_options)
         self.observer = _bstring(observer)
         self.observer_options = _bstring(observer_options)
-        self._current_problem_index = -1  # depreciated
-        self._current_problem = None  # depreciated 
         self._len = None
         self._dimensions = None
         self._objectives = None
@@ -222,12 +215,19 @@ cdef class Benchmark:
         taking an array of length Problem.number_of_variables as input and 
         return an array as output. 
         """
+        problem = self.get_problem_unobserved(problem_index)
+        if not problem:
+            return
         try:
-            problem = Problem(self.problem_suite, problem_index)
             problem.add_observer(self.observer, self.observer_options)
-        except NoSuchProblemException, e:
-            return None
-        return problem
+        except:
+            print("adding observer %s with options %s on problem %d of suite %s \n failed" 
+                % (self.observer, self.observer_options, problem_index, 
+                   self.problem_suite))
+            problem.free()
+            raise
+        else:
+            return problem
         
     def get_problem_unobserved(self, problem_index):
         """return problem without observer (problem_index: int).
@@ -237,9 +237,15 @@ cdef class Benchmark:
         """
         try:
             problem = Problem(self.problem_suite, problem_index)
-        except NoSuchProblemException, e:
-            return None
-        return problem
+            if not problem:
+                raise NoSuchProblemException
+        except:
+            print("problem %d of suite %s failed to initialize" 
+                % (problem_index, self.problem_suite))
+            # any chance that problem.free() makes sense here?
+            raise
+        else:
+            return problem
     
     @property    
     def first_problem_index(self):
@@ -304,23 +310,12 @@ cdef class Benchmark:
         
     def __iter__(self):
         for index in self.problem_indices:
+            problem = self.get_problem(index)
+            if not problem:
+                raise NoSuchProblemException(self.problem_suite, index)
             try:
-                problem = Problem(self.problem_suite, index)
-                if not problem:
-                    raise NoSuchProblemException
-            except Exception as e:  # as requires Python >= 2.6
-                print("problem %d of suite %s failed with exception %s" 
-                    % (index, self.problem_suite), str(e))
-                continue
-            try:
-                problem.add_observer(self.observer, self.observer_options)
-            except Exception as e:
-                print("adding observer %s with options %s on problem %d of suite %s \n failed with exception %s" 
-                    % (self.observer, self.observer_options, index, self.problem_suite), str(e))
-                continue
-            else:
                 yield problem
-            finally:
-                # now it is ctrl-C save
+            except:
+                raise
+            finally:  # makes this ctrl-c safe
                 problem.free()
-                
