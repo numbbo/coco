@@ -8,8 +8,8 @@ classdef Benchmark < handle
     end
     
     methods
-        function B = Benchmark(problme_suit, observer, options)
-            B.problem_suit = problme_suit;
+        function B = Benchmark(problem_suit, observer, options)
+            B.problem_suit = problem_suit;
             B.observer = observer;
             B.options = options;
             B.function_index = 0;
