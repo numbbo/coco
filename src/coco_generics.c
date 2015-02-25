@@ -3,21 +3,21 @@
 #include "coco.h"
 #include "coco_internal.h"
 
-void coco_evaluate_function(coco_problem_t *self, double *x, double *y) {
+void coco_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   /* implements a safer version of self->evaluate(self, x, y) */
   assert(self != NULL);
   assert(self->evaluate_function != NULL);
   self->evaluate_function(self, x, y);
 }
 
-void coco_evaluate_constraint(coco_problem_t *self, double *x, double *y) {
+void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y) {
   /* implements a safer version of self->evaluate(self, x, y) */
   assert(self != NULL);
   assert(self->evaluate_constraint != NULL);
   self->evaluate_constraint(self, x, y);
 }
 
-void coco_recommend_solutions(coco_problem_t *self, double *x,
+void coco_recommend_solutions(coco_problem_t *self, const double *x,
                               size_t number_of_solutions) {
   assert(self != NULL);
   assert(self->recommend_solutions != NULL);

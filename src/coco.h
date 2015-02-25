@@ -37,7 +37,7 @@ typedef void (*coco_optimizer_t)(coco_problem_t *problem);
  * @note Both x and y must point to correctly sized allocated memory
  * regions.
  */
-void coco_evaluate_function(coco_problem_t *self, double *x, double *y);
+void coco_evaluate_function(coco_problem_t *self, const double *x, double *y);
 
 /**
  * Evaluate the constraints of the NUMBB problem represented by
@@ -46,13 +46,14 @@ void coco_evaluate_function(coco_problem_t *self, double *x, double *y);
  *
  * Note: ${x} and ${y} are expected to be of the correct sizes.
  */
-void coco_evaluate_constraint(coco_problem_t *self, double *x, double *y);
+void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y);
+/* FIXME: should double *x be const double *x? */
 
 /**
  * Recommend ${number_of_solutions} parameter settings (stored in
  * ${x}) as the current best guess solutions to the problem ${self}.
  */
-void coco_recommend_solutions(coco_problem_t *self, double *x,
+void coco_recommend_solutions(coco_problem_t *self, const double *x,
                               size_t number_of_solutions);
 
 /**
