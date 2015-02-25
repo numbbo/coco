@@ -3,83 +3,76 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-from cocoex import Benchmark
 import numpy as np
+from cocoex import Benchmark
+
+try: import cma
+except: pass
 try: range = xrange  # let range always be an iterator
 except NameError: pass
 
-MAXEVALS = 1e2
+MAXEVALS = 1e2  # always start with something small
 
-def my_optimizer(fun, lower_bounds, upper_bounds, budget):
-    n = len(lower_bounds)
-    delta = upper_bounds - lower_bounds
+# prepare
+def random_search(fun, lower_bounds, upper_bounds, budget):
     x_min = f_min = None
     for i in range(int(budget)):
-        x = lower_bounds + np.random.rand(n) * delta
+        x = lower_bounds + np.random.rand(len(lower_bounds)) * (upper_bounds - lower_bounds)
         f = fun(x)
         if f_min is None or f < f_min:
             x_min, f_min = x, f
     return x_min
 
-if 11 < 3:
-    # generic usecase, possible if my_optimizer can be cast into a coco_optimizer_t *
-    # which might often not be a straight forward type conversion, because the
-    # optimizer takes a function (pointer) as input and argument passing might be
-    # impossible to negotiate
-    print("Minimal usecase, doesn't work though")
-    Benchmark(my_optimizer,  # see above
-              "bbob2009", "instances:1-5",  # of 15 instances (not instance nb)
-              "bbob20009_observer", "folder:random_search, verbosity:1")
+# set up
+solver = random_search  # cma.fmin #
+suite_name = "bbob2009"
+suite_options = ""  # options syntax could be: "instances:1-5; dimensions:2-20",
+observer_name = "bbob2009_observer"
+observer_options = "%s_on_%s" % (solver.__name__, suite_name)  # TODO: "folder:random_search; verbosity:1"
+
+# interface
+def coco_solve(problem):
+    # implement here the interface between the coco problem and given solver
+    global solver 
+    if solver.__name__ in ("random_search",):
+        solver(problem, problem.lower_bounds, problem.upper_bounds,
+                MAXEVALS)
+        return
+    if solver.__name__ == 'fmin' and solver.func_globals['__name__'] == 'cma':
+        center = (problem.lower_bounds + problem.upper_bounds) / 2
+        range_ = problem.upper_bounds - problem.lower_bounds
+        solver(problem, center, 0.2, dict(scaling=range_, maxfevals=MAXEVALS, verbose=-9))
+
+# run    
+if 1 < 3:
+    # simple Pythonic use case, never leaves a problem unfree()ed
+    print('Pythonic usecase')
+    for problem in Benchmark(suite_name, suite_options, observer_name, observer_options):
+        # use problem under some conditions
+        if 0 or ('f11' in problem.id and 'i03' in problem.id):
+            coco_solve(problem)
+    print("%s done." % suite_name)
 
 if 1 < 3:
     # generic usecase possible in all languages
     print('Generic usecase')
-    bm = Benchmark("bbob2009", "", # "instances:1-5, dimensions:2-20", 
-                   "bbob2009_observer", "random_search") #"folder:random_search, verbosity:1")
+    bm = Benchmark(suite_name, suite_options, observer_name, observer_options)  
     problem_index = bm.next_problem_index(-1)  # get first index, is not necessarily 0!
     while problem_index >= 0:
         problem = bm.get_problem(problem_index)  # this should give a console message by the observer
         # use problem under some conditions
         if 0 or ('i02' in problem.id and problem_index < 30):
-            print("on '%s' ... " % problem.id, end='')
-            my_optimizer(problem, problem.lower_bounds, problem.upper_bounds,
-                         MAXEVALS)
-            print("done")  # to be removed when the observer is more verbose
-        problem.free()  # this should give a console message by the observer, preferably free would not be necessary, but how?
+            # print("on '%s' ... " % problem.id, end='')
+            coco_solve(problem)
+        problem.free()  # preferably free would not be necessary, but how?
         problem_index = bm.next_problem_index(problem_index)
-    print("done.")
+    print("%s done." % suite_name)
  
-if 1 < 3:
-    # simple Pythonic use case, doesn't add much to the above but is safer
-    print('Pythonic usecase')
-    for problem in Benchmark("bbob2009", "", # TODO: here go the suit options
-                             "bbob2009_observer", "random_search"):
-        # use problem under some conditions
-        if 0 or ('f11' in problem.id and 'i03' in problem.id):
-            print("on '%s' ... " % problem.id, end='')
-            my_optimizer(problem, problem.lower_bounds, problem.upper_bounds,
-                         MAXEVALS)
-            print("done")  # to be removed when the observer is more verbose
-        # problem.free()  # done in finalize of the generator Benchmark.__iter__ 
-    print("done.")
-
 if 11 < 3:
-    # depreciated, the selection process should be implemented on the benchmark side
-    # use case with "random access" via dimension, function, instance, method coco.problem_index is not implemented yet
-    raise NotImplementedError
-    bm = Benchmark("bbob2009", "bbob2009_observer", "random_search")
-    dimensions = [2, 3, 5, 10, 20, 40] 
-    functions = range(1, 25) 
-    instances = np.r_[1:6, 31:41] 
-    for dim in dimensions:
-        for fun in functions:
-            for instance in instances:
-                problem_index = bm.problem_index(dim, fun, instance)
-                problem = bm.get_problem(problem_index)
-                if not problem:
-                    print("fun %d instance %d in dimension %d not found" %
-                          (fun, instance, dim))
-                    continue
-                my_optimizer(problem)
-                problem.free()
+    # generic usecase, possible if solver can be cast into a coco_optimizer_t *
+    # which might often not be a straight forward type conversion, because (i) the
+    # optimizer takes a function (pointer) as input and (ii) argument passing to
+    # the function might be impossible to negotiate
+    print("Minimal usecase, doesn't work though")
+    Benchmark(coco_solve, suite_name, suite_options, observer_name, observer_options)
 
