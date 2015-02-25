@@ -6,7 +6,7 @@
 
 #include "coco_problem.c"
 
-static void f_griewankRosenbrock_evaluate(coco_problem_t *self, double *x,
+static void f_griewankRosenbrock_evaluate(coco_problem_t *self, const double *x,
                                           double *y) {
   size_t i;
   double tmp = 0;

@@ -7,7 +7,7 @@
 #include "coco_generics.c"
 #include "bbob2009_legacy_code.c"
 
-static void f_schwefel_evaluate(coco_problem_t *self, double *x, double *y) {
+static void f_schwefel_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   double penalty, sum;
   assert(self->number_of_objectives == 1);

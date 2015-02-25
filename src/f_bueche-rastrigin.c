@@ -5,7 +5,7 @@
 
 #include "coco_problem.c"
 
-static void _bueche_rastrigin_evaluate(coco_problem_t *self, double *x,
+static void _bueche_rastrigin_evaluate(coco_problem_t *self, const double *x,
                                        double *y) {
   size_t i;
   double tmp = 0., tmp2 = 0.;

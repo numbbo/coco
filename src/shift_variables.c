@@ -9,7 +9,7 @@ typedef struct {
   coco_free_function_t old_free_problem;
 } _sv_data_t;
 
-static void _sv_evaluate_function(coco_problem_t *self, double *x, double *y) {
+static void _sv_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   _sv_data_t *data;
   coco_problem_t *inner_problem;

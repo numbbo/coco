@@ -6,7 +6,7 @@
 
 #include "coco_problem.c"
 
-static void f_katsuura_evaluate(coco_problem_t *self, double *x, double *y) {
+static void f_katsuura_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i, j;
   double tmp, tmp2;
   assert(self->number_of_objectives == 1);

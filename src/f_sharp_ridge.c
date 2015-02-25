@@ -4,7 +4,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-static void _sharp_ridge_evaluate(coco_problem_t *self, double *x, double *y) {
+static void _sharp_ridge_evaluate(coco_problem_t *self, const double *x, double *y) {
   static const double alpha = 100.0;
   size_t i;
   assert(self->number_of_variables > 1);

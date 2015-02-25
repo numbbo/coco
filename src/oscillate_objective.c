@@ -4,7 +4,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-static void _oo_evaluate_function(coco_problem_t *self, double *x, double *y) {
+static void _oo_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   static const double factor = 0.1;
   coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
   if (y[0] != 0) {

@@ -10,7 +10,7 @@
 
 typedef struct { double *x; } _brs_data_t;
 
-static void _brs_evaluate_function(coco_problem_t *self, double *x, double *y) {
+static void _brs_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   double factor;
   _brs_data_t *data;

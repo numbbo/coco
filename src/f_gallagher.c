@@ -22,7 +22,7 @@ typedef struct {
   coco_free_function_t old_free_problem;
 } _bbob_gallagher_t;
 
-static void _bbob_gallagher_evaluate(coco_problem_t *self, double *x,
+static void _bbob_gallagher_evaluate(coco_problem_t *self, const double *x,
                                      double *y) {
   size_t i, j; /*Loop over dim*/
   double *tmx;

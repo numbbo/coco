@@ -14,7 +14,7 @@ typedef struct {
   double bk[WEIERSTRASS_SUMMANDS];
 } _wss_problem_t;
 
-static void _weierstrass_evaluate(coco_problem_t *self, double *x, double *y) {
+static void _weierstrass_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i, j;
   _wss_problem_t *data = self->data;
   assert(self->number_of_objectives == 1);

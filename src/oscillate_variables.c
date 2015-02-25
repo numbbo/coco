@@ -10,7 +10,7 @@
 
 typedef struct { double *oscillated_x; } _ov_data_t;
 
-static void _ov_evaluate_function(coco_problem_t *self, double *x, double *y) {
+static void _ov_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   static const double alpha = 0.1;
   double tmp, base, *oscillated_x;
   size_t i;

@@ -3,7 +3,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-static void _rosenbrock_evaluate(coco_problem_t *self, double *x, double *y) {
+static void _rosenbrock_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   double s1 = 0.0, s2 = 0.0, tmp;
   assert(self->number_of_objectives == 1);

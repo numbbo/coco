@@ -117,7 +117,7 @@ static void _bbob2009_logger_update_t_trigger(_bbob2009_logger_t *data,
 static void _bbob2009_logger_write_data(FILE *target_file,
                                         long number_of_evaluations,
                                         double fvalue, double best_fvalue,
-                                        double best_value, double *x,
+                                        double best_value, const double *x,
                                         size_t number_of_variables) {
   /* for some reason, it's %.0f in the old code instead of the 10.9e
    * in the documentation
@@ -291,7 +291,7 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
 /**
  * Layer added to the transformed-problem evaluate_function by the logger
  */
-static void _bbob2009_logger_evaluate_function(coco_problem_t *self, double *x,
+static void _bbob2009_logger_evaluate_function(coco_problem_t *self, const double *x,
                                                double *y) {
   _bbob2009_logger_t *data;
   data = coco_get_transform_data(self);

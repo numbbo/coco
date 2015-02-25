@@ -10,10 +10,11 @@
 
 typedef void (*coco_initial_solution_function_t)(
     const struct coco_problem *self, double *y);
-typedef void (*coco_evaluate_function_t)(struct coco_problem *self, double *x,
+typedef void (*coco_evaluate_function_t)(struct coco_problem *self,
+                                         const double *x,
                                          double *y);
 typedef void (*coco_recommendation_function_t)(struct coco_problem *self,
-                                               double *x,
+                                               const double *x,
                                                size_t number_of_solutions);
 
 typedef void (*coco_free_function_t)(struct coco_problem *self);

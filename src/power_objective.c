@@ -6,7 +6,7 @@
 
 typedef struct { double exponent; } _powo_data_t;
 
-static void _powo_evaluate_function(coco_problem_t *self, double *x,
+static void _powo_evaluate_function(coco_problem_t *self, const double *x,
                                     double *y) {
   _powo_data_t *data;
   data = coco_get_transform_data(self);

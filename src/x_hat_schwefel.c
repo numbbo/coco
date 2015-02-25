@@ -10,7 +10,7 @@ typedef struct {
   coco_free_function_t old_free_problem;
 } _x_hat_data_t;
 
-static void _x_hat_evaluate_function(coco_problem_t *self, double *x,
+static void _x_hat_evaluate_function(coco_problem_t *self, const double *x,
                                      double *y) {
   size_t i;
   _x_hat_data_t *data;
@@ -18,7 +18,7 @@ static void _x_hat_evaluate_function(coco_problem_t *self, double *x,
   data = coco_get_transform_data(self);
   inner_problem = coco_get_transform_inner_problem(self);
   do {
-    bbob2009_unif(data->x, self->number_of_variables, data->seed);
+    bbob2009_unif(data->x, (int) self->number_of_variables, data->seed);
 
     for (i = 0; i < self->number_of_variables; ++i) {
       if (data->x[i] - 0.5 < 0.0) {

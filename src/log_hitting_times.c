@@ -16,7 +16,7 @@ typedef struct {
   long number_of_evaluations;
 } _log_hitting_time_t;
 
-static void _lht_evaluate_function(coco_problem_t *self, double *x, double *y) {
+static void _lht_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   _log_hitting_time_t *data;
   data = coco_get_transform_data(self);
 
