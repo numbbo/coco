@@ -41,7 +41,7 @@ cdef bytes _bstring(s):
 cdef class Problem:
     """Problem(problem_suite: str, problem_index: int)"""
     cdef coco_problem_t* problem
-    cdef np.ndarray y
+    cdef np.ndarray y  # argument for coco_evaluate
     cdef public np.ndarray lower_bounds
     cdef public np.ndarray upper_bounds
     cdef size_t _number_of_variables
@@ -174,16 +174,35 @@ cdef class Benchmark:
     """Benchmark(problem_suite: str, suite_options: str, 
                  observer: str, observer_options: str)
     
-    Example::
+    The following example runs the entire bbob2009 benchmark suite
+    on random search::
     
+        >>> import numpy as np
         >>> from cocoex import Benchmark
-        >>> bm = Benchmark("bbob2009", "", "bbob2009_observer", "random_search")
-        >>> assert bm.first_problem_index == 0  # true for bbob2009 suite
-        >>> fun = bm.get_problem(bm.first_problem_index)
-        >>> assert int(fun.id[fun.id.find('_f') + 2:].split('_')[0]) == 1
-        
-    where the latter name defines the data folder. 
-    
+        ... 
+        >>> MAX_FE = 22  # max f-evaluations
+        >>> def random_search(f, lb, ub, m):  # don't use m >> 1e5
+        ...     candidates = lb + (ub - lb) * np.random.rand(m, len(lb))
+        ...     return candidates[np.argmin([f(x) for x in candidates])]
+        ...
+        >>> solver = random_search
+        >>> benchmark = Benchmark("bbob2009", "", "bbob2009_observer", 
+        ...                "%s_on_%s" % (solver.__name__, "bbob2009"))
+        >>> for fun in benchmark:
+        ...     solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
+        >>> # data should be now in "random_search_on_bbob2009" folder 
+        >>>
+        >>>
+        >>> ### A more verbose loop which does exactly the same:
+        >>>
+        >>> problem_index = benchmark.first_problem_index
+        >>> assert problem_index == 0  # true for bbob2009 suite
+        >>> while problem_index >= 0:
+        ...     fun = benchmark.get_problem(problem_index)
+        ...     solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
+        ...     fun.free()
+        ...     problem_index = benchmark.next_problem_index(problem_index)
+
     """
     cdef bytes problem_suite
     cdef bytes problem_suite_options
@@ -251,7 +270,9 @@ cdef class Benchmark:
     def first_problem_index(self):
         "is `self.next_problem_index(-1)`"
         return self.next_problem_index(-1)
+    
     def next_problem_index(self, problem_index):
+        """see also `problem_indices`"""
         return coco_next_problem_index(self.problem_suite, problem_index, 
                                        self.problem_suite_options)
     @property
@@ -260,10 +281,11 @@ cdef class Benchmark:
         
         Example::
             
-            for i in bm.problem_indices:
-                print("There exists a problem with index %d" % i)
+            bm = cocoex.Benchmark(...)
+            for index in bm.problem_indices:
+                print("There exists a problem with index %d" % index)
                 # do something interesting, e.g.
-                # p = bm.get_problem(i)
+                # p = bm.get_problem(index)
                 # ...
             
         """
@@ -275,6 +297,9 @@ cdef class Benchmark:
                 
     @property
     def dimensions(self):
+        """return an ordered set with each problem dimensionality 
+        (`number_of_variables`) that appears in the suite
+        """
         if self._dimensions is None:
             s, o = set(), set()
             for i in self.problem_indices:
@@ -287,8 +312,11 @@ cdef class Benchmark:
     
     @property
     def objectives(self):
+        """return an ordered set with each `number_of_objectives` that appears 
+        in the suite. Usually this set has one element only. 
+        """
         if self._objectives is None:
-            self.dimensions  # purely for the side effect
+            self.dimensions  # purely for the side effect, prevent code duplication
         return self._objectives
 
     @property
