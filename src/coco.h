@@ -227,12 +227,12 @@ char *coco_strdup(const char *string);
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
  */
-// int bbob2009_get_function_id(const coco_problem_t *problem);
+int bbob2009_get_function_id(const coco_problem_t *problem);
 
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
  */
-// int bbob2009_get_instance_id(const coco_problem_t *problem);
+int bbob2009_get_instance_id(const coco_problem_t *problem);
 
 #ifdef __cplusplus
 }
