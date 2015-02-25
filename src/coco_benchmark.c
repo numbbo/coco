@@ -62,8 +62,8 @@ coco_problem_t *coco_observe_problem(const char *observer,
     return problem;
   } else {
     /* not so clear whether an error is better, depends on the usecase */
-    coco_warning("Unkown observer which has no effect, the reason might just be a typo in");
     coco_warning(observer);
+    coco_warning("is an unkown observer which has no effect (the reason might just be a typo)");
     return problem;
   }
   coco_error("Unknown observer.");
