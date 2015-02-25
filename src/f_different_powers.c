@@ -4,7 +4,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-static void _different_powers_evaluate(coco_problem_t *self, double *x,
+static void _different_powers_evaluate(coco_problem_t *self, const double *x,
                                        double *y) {
   size_t i;
   double sum = 0.0;

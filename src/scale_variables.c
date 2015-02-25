@@ -11,7 +11,7 @@ typedef struct {
   double *x;
 } _scv_data_t;
 
-static void _scv_evaluate_function(coco_problem_t *self, double *x, double *y) {
+static void _scv_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   _scv_data_t *data;
   coco_problem_t *inner_problem;

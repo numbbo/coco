@@ -5,7 +5,7 @@
 
 typedef struct { double offset; } _shift_objective_t;
 
-static void _so_evaluate_function(coco_problem_t *self, double *x, double *y) {
+static void _so_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   _shift_objective_t *data;
   data = coco_get_transform_data(self);
   coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);

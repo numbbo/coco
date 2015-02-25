@@ -14,7 +14,7 @@ typedef struct {
   coco_free_function_t old_free_problem;
 } _bbob_lunacek_bi_rastrigin_t;
 
-static void _bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, double *x,
+static void _bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, const double *x,
                                                 double *y) {
   static const double condition = 100.;
   size_t i, j;

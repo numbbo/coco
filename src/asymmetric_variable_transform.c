@@ -12,7 +12,7 @@ typedef struct {
   double beta;
 } _avt_data_t;
 
-static void _avt_evaluate_function(coco_problem_t *self, double *x, double *y) {
+static void _avt_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   double exponent;
   _avt_data_t *data;

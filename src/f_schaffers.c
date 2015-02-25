@@ -8,7 +8,7 @@
 
 /* Schaffers F7 function, transformations not implemented for the moment  */
 
-static void _schaffers_evaluate(coco_problem_t *self, double *x, double *y) {
+static void _schaffers_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   assert(self->number_of_variables > 1);
   assert(self->number_of_objectives == 1);

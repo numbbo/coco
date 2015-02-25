@@ -5,7 +5,7 @@
 
 #include "coco_problem.c"
 
-static void f_sphere_evaluate(coco_problem_t *self, double *x, double *y) {
+static void f_sphere_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   assert(self->number_of_objectives == 1);
   y[0] = 0.0;

@@ -5,7 +5,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-static void _rastrigin_evaluate(coco_problem_t *self, double *x, double *y) {
+static void _rastrigin_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   double sum1 = 0.0, sum2 = 0.0;
   assert(self->number_of_objectives == 1);

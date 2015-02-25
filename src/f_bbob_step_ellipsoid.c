@@ -26,7 +26,7 @@ typedef struct {
   double **rot1, **rot2;
 } _bbob_step_ellipsoid_t;
 
-static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, double *x,
+static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, const double *x,
                                           double *y) {
   static const double condition = 100;
   static const double alpha = 10.0;

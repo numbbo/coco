@@ -224,6 +224,9 @@ char *coco_strdup(const char *string);
 /* TODO: These bbob2009... functions should probably not be in
  * this header.
  */
+/* but they are necessary for Builder fbsd9-amd64-test-gcc at
+   http://numbbo.p-value.net/buildbot/builders/fbsd9-amd64-test-gcc
+   (not for the others) */
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
  */

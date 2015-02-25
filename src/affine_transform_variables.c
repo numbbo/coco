@@ -14,7 +14,7 @@
 
 typedef struct { double *M, *b, *x; } _atv_data_t;
 
-static void _atv_evaluate_function(coco_problem_t *self, double *x, double *y) {
+static void _atv_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   size_t i, j;
   _atv_data_t *data;
   coco_problem_t *inner_problem;

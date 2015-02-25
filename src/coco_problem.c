@@ -76,7 +76,7 @@ typedef struct {
   coco_transform_free_data_t free_data;
 } coco_transform_data_t;
 
-static void _tfp_evaluate_function(coco_problem_t *self, double *x, double *y) {
+static void _tfp_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   coco_transform_data_t *data;
   assert(self != NULL);
   assert(self->data != NULL);
@@ -86,7 +86,7 @@ static void _tfp_evaluate_function(coco_problem_t *self, double *x, double *y) {
   coco_evaluate_function(data->inner_problem, x, y);
 }
 
-static void _tfp_evaluate_constraint(coco_problem_t *self, double *x,
+static void _tfp_evaluate_constraint(coco_problem_t *self, const double *x,
                                      double *y) {
   coco_transform_data_t *data;
   assert(self != NULL);
@@ -97,7 +97,7 @@ static void _tfp_evaluate_constraint(coco_problem_t *self, double *x,
   coco_evaluate_constraint(data->inner_problem, x, y);
 }
 
-static void _tfp_recommend_solutions(coco_problem_t *self, double *x,
+static void _tfp_recommend_solutions(coco_problem_t *self, const double *x,
                                      size_t number_of_solutions) {
   coco_transform_data_t *data;
   assert(self != NULL);

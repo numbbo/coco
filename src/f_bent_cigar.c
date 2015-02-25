@@ -5,7 +5,7 @@
 
 #include "coco_problem.c"
 
-static void _bent_cigar_evaluate(coco_problem_t *self, double *x, double *y) {
+static void _bent_cigar_evaluate(coco_problem_t *self, const double *x, double *y) {
   static const double condition = 1.0e6;
   size_t i;
   assert(self->number_of_objectives == 1);

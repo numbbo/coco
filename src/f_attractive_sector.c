@@ -7,7 +7,7 @@
 
 typedef struct { double *xopt; } _as_problem_t;
 
-static void _attractive_sector_evaluate(coco_problem_t *self, double *x,
+static void _attractive_sector_evaluate(coco_problem_t *self, const double *x,
                                         double *y) {
   size_t i;
   _as_problem_t *data;
