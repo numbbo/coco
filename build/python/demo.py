@@ -32,23 +32,24 @@ observer_options = "%s_on_%s" % (solver.__name__, suite_name)  # TODO: "folder:r
 
 # interface
 def coco_solve(problem):
+    range_ = problem.upper_bounds - problem.lower_bounds
+    center = problem.lower_bounds + range_ / 2
+
     # implement here the interface between the coco problem and given solver
     global solver 
-    if solver.__name__ in ("random_search",):
+    if solver.__name__ in ("random_search", ):
         solver(problem, problem.lower_bounds, problem.upper_bounds,
                 MAXEVALS)
-        return
-    if solver.__name__ == 'fmin' and solver.func_globals['__name__'] == 'cma':
-        center = (problem.lower_bounds + problem.upper_bounds) / 2
-        range_ = problem.upper_bounds - problem.lower_bounds
+    elif solver.__name__ == 'fmin' and solver.func_globals['__name__'] == 'cma':
         solver(problem, center, 0.2, dict(scaling=range_, maxfevals=MAXEVALS, verbose=-9))
+    # elif ...:
 
 # run    
 if 1 < 3:
     # simple Pythonic use case, never leaves a problem unfree()ed
     print('Pythonic usecase')
     for problem in Benchmark(suite_name, suite_options, observer_name, observer_options):
-        # use problem under some conditions
+        # use problem only under some conditions, mainly for testing
         if 0 or ('f11' in problem.id and 'i03' in problem.id):
             coco_solve(problem)
     print("%s done." % suite_name)
@@ -60,7 +61,7 @@ if 1 < 3:
     problem_index = bm.next_problem_index(-1)  # get first index, is not necessarily 0!
     while problem_index >= 0:
         problem = bm.get_problem(problem_index)  # this should give a console message by the observer
-        # use problem under some conditions
+        # use problem only under some conditions, mainly for testing
         if 0 or ('i02' in problem.id and problem_index < 30):
             # print("on '%s' ... " % problem.id, end='')
             coco_solve(problem)
