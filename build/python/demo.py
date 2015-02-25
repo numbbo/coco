@@ -39,20 +39,23 @@ if 1 < 3:
     problem_index = bm.next_problem_index(-1)  # get first index, is not necessarily 0!
     while problem_index >= 0:
         problem = bm.get_problem(problem_index)  # this should give a console message by the observer
-        if 'i02' in problem.id and problem_index < 30:
+        # use problem under some conditions
+        if 0 or ('i02' in problem.id and problem_index < 30):
             print("on '%s' ... " % problem.id, end='')
             my_optimizer(problem, problem.lower_bounds, problem.upper_bounds,
                          MAXEVALS)
             print("done")  # to be removed when the observer is more verbose
         problem.free()  # this should give a console message by the observer, preferably free would not be necessary, but how?
         problem_index = bm.next_problem_index(problem_index)
+    print("done.")
  
 if 1 < 3:
     # simple Pythonic use case, doesn't add much to the above but is safer
     print('Pythonic usecase')
     for problem in Benchmark("bbob2009", "", # TODO: here go the suit options
                              "bbob2009_observer", "random_search"):
-        if 'f11' in problem.id and 'i03' in problem.id:
+        # use problem under some conditions
+        if 0 or ('f11' in problem.id and 'i03' in problem.id):
             print("on '%s' ... " % problem.id, end='')
             my_optimizer(problem, problem.lower_bounds, problem.upper_bounds,
                          MAXEVALS)
