@@ -62,6 +62,7 @@ struct coco_problem {
   double *smallest_values_of_interest;
   double *largest_values_of_interest;
   double *best_value;
+  /* double *final_target_difference; */
   double *best_parameter;
   char *problem_name;
   char *problem_id;
