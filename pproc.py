@@ -1393,8 +1393,12 @@ class DataSetList(list):
             f.close()
             if len(data_file_names) != len(set(data_file_names)):
                 warnings.warn("WARNING: a data file has been referenced" +
-                    " several times in file %s\n" % indexFile +
-                    "         This is likely to produce spurious results")
+                    " several times in file %s:" % indexFile)
+                data_file_names = sorted(data_file_names)
+                for i in range(1, data_file_names):
+                    if data_file_names[i-1] == data_file_names[i]:
+                        warnings.warn("    data file " + data_file_names[i])
+                warnings.warn("  This is likely to produce spurious results.")
 
         except IOError:
             print 'Could not open %s.' % indexFile
