@@ -96,7 +96,6 @@ int main() {
     problem = coco_get_problem(suite_name, problem_index);
         /* the following should give a console message by the observer (depending on verbosity): */
     problem = coco_observe_problem(observer_name, problem, observer_options);
-    //    printf("on problem with index %d ... ", problem_index); /* to be removed */
     if (problem == NULL) {
       printf("problem with index %d not found, skipped", problem_index);
       continue;
