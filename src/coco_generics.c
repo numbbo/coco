@@ -103,3 +103,13 @@ void coco_get_initial_solution(const coco_problem_t *self,
                                    self->largest_values_of_interest[i]);
   }
 }
+
+double coco_get_final_target_value1(const coco_problem_t *self) {
+  assert(self != NULL);
+  assert(self->best_value != NULL);
+  return self->best_value[0] + 1e-8; /* provisional implementation */
+  /*
+  assert(self->final_target_value != NULL);
+  return self->best_value[0] + self->final_delta_target_value[0];
+  */
+}
