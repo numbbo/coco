@@ -216,8 +216,8 @@ static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
       }
       fprintf(*target_file,
               /* TODO: z-modifier is bound to fail as being incompatible to standard C */
-              "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s'\n",
-              (int)strtol(function_id, NULL, 10), (unsigned long)data->number_of_variables,
+              "funcId = %d, DIM = %ld, Precision = %.3e, algId = '%s'\n",
+              (int)strtol(function_id, NULL, 10), (long)data->number_of_variables,
               pow(10, -8), data->alg_name);
       fprintf(*target_file, "%%\n");
       fprintf(*target_file, "%s.dat",
@@ -350,8 +350,8 @@ static void _bbob2009_logger_free_data(void *stuff) {
   _bbob2009_logger_t *data = stuff;
 
   if (bbob2009_logger_verbosity > 2 && data && data->number_of_evaluations > 0)
-    printf("best f=%e after %lu fevals (done observing)\n",
-           data->best_fvalue, (unsigned long) data->number_of_evaluations);
+    printf("best f=%e after %ld fevals (done observing)\n",
+           data->best_fvalue, (long)data->number_of_evaluations);
 
   if (data->path != NULL) {
     coco_free_memory(data->path);
@@ -359,7 +359,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
   }
 
   if (data->index_file != NULL) {
-    fprintf(data->index_file, ":%lu|%.1e", (unsigned long) data->number_of_evaluations,
+    fprintf(data->index_file, ":%ld|%.1e", (long)data->number_of_evaluations,
             data->best_fvalue - data->optimal_fvalue);
     fclose(data->index_file);
     data->index_file = NULL;
