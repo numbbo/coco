@@ -60,7 +60,7 @@ if 1 < 3:
     bm = Benchmark(suite_name, suite_options, observer_name, observer_options)  
     problem_index = bm.next_problem_index(-1)  # get first index, is not necessarily 0!
     while problem_index >= 0:
-        problem = bm.get_problem(problem_index)  # this should give a console message by the observer
+        problem = bm.get_problem(problem_index) 
         # use problem only under some conditions, mainly for testing
         if 0 or ('i02' in problem.id and problem_index < 30):
             # print("on '%s' ... " % problem.id, end='')
@@ -76,4 +76,3 @@ if 11 < 3:
     # the function might be impossible to negotiate
     print("Minimal usecase, doesn't work though")
     Benchmark(coco_solve, suite_name, suite_options, observer_name, observer_options)
-
