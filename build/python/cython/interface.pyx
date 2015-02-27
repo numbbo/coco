@@ -116,7 +116,7 @@ cdef class Problem:
         x = np.array(x, copy=False, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
             raise ValueError(
-                "Dimension (`npsize(x)==%d`) of input `x` does " % np.size(x) +
+                "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
                 "not match the problem dimension `number_of_variables==%d`." 
                              % self.number_of_variables)
         _x = x  # this is the final type conversion
@@ -212,7 +212,7 @@ cdef class Benchmark:
     cdef _dimensions
     cdef _objectives
 
-    def __init__(self, problem_suite, problem_suite_options, 
+    def __cinit__(self, problem_suite, problem_suite_options, 
                   observer, observer_options):
         self.problem_suite = _bstring(problem_suite)
         self.problem_suite_options = _bstring(problem_suite_options)
@@ -222,11 +222,6 @@ cdef class Benchmark:
         self._dimensions = None
         self._objectives = None
         
-    def __len__(self):
-        if self._len is None:
-            self._len = len(list(self.problem_indices))
-        return self._len
-
     def get_problem(self, problem_index):
         """return callable for benchmarking. 
         
@@ -236,7 +231,7 @@ cdef class Benchmark:
         """
         problem = self.get_problem_unobserved(problem_index)
         if not problem:
-            return
+            raise NoSuchProblemException
         try:
             problem.add_observer(self.observer, self.observer_options)
         except:
@@ -272,7 +267,19 @@ cdef class Benchmark:
         return self.next_problem_index(-1)
     
     def next_problem_index(self, problem_index):
-        """see also `problem_indices`"""
+        """`self.next_problem_index(-1)` is the first index. 
+        
+        Example::
+        
+            >>> from cocoex import Benchmark
+            >>> bm = Benchmark('bbob2009', '', 'bbob2009_observer', '_tmp')
+            >>> index bm.first_problem_index
+            >>> while index >= 0:  # -1 means no problem left
+            ...     # do something
+            ...     index = self.next_problem_index(index)
+                
+        See also `problem_indices` for the nicer design pattern. 
+        """
         return coco_next_problem_index(self.problem_suite, problem_index, 
                                        self.problem_suite_options)
     @property
@@ -281,11 +288,15 @@ cdef class Benchmark:
         
         Example::
             
-            bm = cocoex.Benchmark(...)
+            import cocoex
+            bm = cocoex.Benchmark('bbob2009', '', 'bbob2009_observer', '_tmp')
             for index in bm.problem_indices:
                 print("There exists a problem with index %d" % index)
                 # do something interesting, e.g.
-                # p = bm.get_problem(index)
+                with bm.get_problem(index) as fun:
+                    from scipy.optimize import fmin
+                    from numpy import zeros
+                    res = fmin(fun, zeros(fun.number_of_variables))                   
                 # ...
             
         """
@@ -322,6 +333,11 @@ cdef class Benchmark:
     @property
     def info(self):
         return str(self)
+
+    def __len__(self):
+        if self._len is None:
+            self._len = len(list(self.problem_indices))
+        return self._len
 
     def __str__(self):
         if self.objectives == [1]:
