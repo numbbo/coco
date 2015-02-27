@@ -23,7 +23,7 @@ static size_t current_funId = -1;
  * counter and as long as another logger is open, always a new info
  * file is generated. 
  */
-static int bbob2009_logger_is_open = 0;
+static int bbob2009_logger_is_open = 0;  /* this could become lock-list of .info files */
 static int bbob2009_logger_verbosity = 9;  /* TODO: make this an option the user can modify */
 
 
