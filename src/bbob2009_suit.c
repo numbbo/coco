@@ -45,9 +45,9 @@
 
 #define MAX_DIM 40
 #define BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 5
-#define BBOB2009_NUMBER_OF_FUNCITONS 24
+#define BBOB2009_NUMBER_OF_FUNCTIONS 24
 #define BBOB2009_NUMBER_OF_DIMENSIONS 6
-const unsigned BBOB2009_DIMS[] = {2, 3, 5, 10, 20, 40};/*might end up useful outside of bbob2009_decode_problem_index*/
+static const unsigned BBOB2009_DIMS[] = {2, 3, 5, 10, 20, 40};/*might end up useful outside of bbob2009_decode_problem_index*/
 
 /**
  * bbob2009_decode_problem_index(problem_index, function_id, instance_id,
@@ -91,17 +91,18 @@ const unsigned BBOB2009_DIMS[] = {2, 3, 5, 10, 20, 40};/*might end up useful out
  * The quickest way to decode this is using integer division and
  * remainders.
  */
-void bbob2009_decode_problem_index(const int problem_index, int *function_id,
+
+static void bbob2009_decode_problem_index(const int problem_index, int *function_id,
                                     int *instance_id, unsigned *dimension) {
   const int high_instance_id =
-      problem_index / (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCITONS *
+      problem_index / (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCTIONS *
                         BBOB2009_NUMBER_OF_DIMENSIONS);
   int low_instance_id;
   int rest = problem_index % (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES *
-                               BBOB2009_NUMBER_OF_FUNCITONS * BBOB2009_NUMBER_OF_DIMENSIONS);
+                               BBOB2009_NUMBER_OF_FUNCTIONS * BBOB2009_NUMBER_OF_DIMENSIONS);
   *dimension =
-      BBOB2009_DIMS[rest / (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCITONS)];
-  rest = rest % (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCITONS);
+      BBOB2009_DIMS[rest / (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCTIONS)];
+  rest = rest % (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCTIONS);
   *function_id = rest / BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES + 1;
   rest = rest % BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
   low_instance_id = rest + 1;
@@ -113,11 +114,11 @@ void bbob2009_decode_problem_index(const int problem_index, int *function_id,
  * It helps allow easier control on instances, functions and dimensions one wants to run
  * all indices start from 0 TODO: start at 1 instead?
  */
-int bbob2009_encode_problem_index(int function_id, int instance_id, int dimension_idx){
-    int cycleLength = BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCITONS * BBOB2009_NUMBER_OF_DIMENSIONS;
+static int bbob2009_encode_problem_index(int function_id, int instance_id, int dimension_idx){
+    int cycleLength = BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCTIONS * BBOB2009_NUMBER_OF_DIMENSIONS;
     int tmp1 = instance_id % BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
     int tmp2 = function_id * BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
-    int tmp3 = dimension_idx * (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCITONS);
+    int tmp3 = dimension_idx * (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCTIONS);
     int tmp4 = ((int)(instance_id / BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES) ) * cycleLength; /* just for safety */
     
     return tmp1 + tmp2 + tmp3 + tmp4;
@@ -144,7 +145,7 @@ static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b,
  * benchmark suit. If the function index is out of bounds, return *
  * NULL.
  */
-coco_problem_t *bbob2009_suit(const int problem_index) {
+static coco_problem_t *bbob2009_suit(const int problem_index) {
   size_t len;
   int instance_id, function_id, rseed;
   unsigned dimension; /* unsigned prevents 49 compiler warnings */
@@ -689,7 +690,7 @@ coco_problem_t *bbob2009_suit(const int problem_index) {
 
 /* Return the bbob2009 function id of the problem or -1 if it is not a bbob2009
  * problem. */
-int bbob2009_get_function_id(const coco_problem_t *problem) {
+static int bbob2009_get_function_id(const coco_problem_t *problem) {
   static const char *bbob_prefix = "bbob2009_";
   const char *problem_id = coco_get_problem_id(problem);
   assert(strlen(problem_id) >= 20);
@@ -711,7 +712,7 @@ int bbob2009_get_function_id(const coco_problem_t *problem) {
 
 /* Return the bbob2009 instance id of the problem or -1 if it is not a bbob2009
  * problem. */
-int bbob2009_get_instance_id(const coco_problem_t *problem) {
+static int bbob2009_get_instance_id(const coco_problem_t *problem) {
   static const char *bbob_prefix = "bbob2009_";
   const char *problem_id = coco_get_problem_id(problem);
   assert(strlen(problem_id) >= 20);
@@ -731,13 +732,15 @@ int bbob2009_get_instance_id(const coco_problem_t *problem) {
   return (problem_id[14] - '0') * 10 + (problem_id[15] - '0');
 }
 
-/* TODO: specify selection_descriptor and implement this.
+/* TODO: specify selection_descriptor and implement
  *
  * Possible example for a descriptor: "instance:1-5, dimension:-20",
  * where instances are relative numbers (w.r.t. to the instances in
- * test bed), dimensions are absolute. 
+ * test bed), dimensions are absolute.
+ *
+ * Return successor of problem_index or first index if problem_index < 0 or -1 otherwise.  
 */
-int bbob2009_next_problem_index(int problem_index, const char *selection_descriptor) {
+static int bbob2009_next_problem_index(int problem_index, const char *selection_descriptor) {
   const int first_index = 0;
   const int last_index = 2159;
   
@@ -762,3 +765,6 @@ int bbob2009_next_problem_index(int problem_index, const char *selection_descrip
 
 /* Undefine constants */
 #undef MAX_DIM
+#undef BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 
+#undef BBOB2009_NUMBER_OF_FUNCTIONS 
+#undef BBOB2009_NUMBER_OF_DIMENSIONS 
