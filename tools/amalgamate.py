@@ -26,30 +26,32 @@ class Amalgator:
 
     def finish(self):
         self.destination_fd.close()
+    def __del__(self):
+        try: self.finish()
+        except: pass
 
     def process_file(self, filename):
         if filename in self.included_files:
             return
         self.included_files.append(filename)
-        fd = open(filename)
-        line_number = 1
-        if not self.release:
-            self.destination_fd.write("#line %i \"%s\"\n" % (line_number, filename))
-        for line in fd.readlines():
-            ## Is this an include statement?
-            matches = re.match("#include \"(.*)\"", line)
-            if matches:
-                include_file = "/".join([path.dirname(filename), matches.group(1)])
-                ## Has this file not been included previously?
-                if not include_file in self.included_files:
-                    self.process_file(include_file)
-                if not self.release:
-                    self.destination_fd.write("#line %i \"%s\"\n" % 
-                                              (line_number + 1, filename))
-            else:
-                self.destination_fd.write(line)
-            line_number = line_number + 1
-        fd.close()
+        with open(filename) as fd:
+            line_number = 1
+            if not self.release:
+                self.destination_fd.write("#line %i \"%s\"\n" % (line_number, filename))
+            for line in fd.readlines():
+                ## Is this an include statement?
+                matches = re.match("#include \"(.*)\"", line)
+                if matches:
+                    include_file = "/".join([path.dirname(filename), matches.group(1)])
+                    ## Has this file not been included previously?
+                    if not include_file in self.included_files:
+                        self.process_file(include_file)
+                    if not self.release:
+                        self.destination_fd.write("#line %i \"%s\"\n" % 
+                                                  (line_number + 1, filename))
+                else:
+                    self.destination_fd.write(line)
+                line_number += 1
 
 def amalgamate(source_files, destination_file, release=False):
     print("AML\t%s -> %s" % (str(source_files), destination_file))
