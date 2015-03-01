@@ -56,10 +56,10 @@ void random_search(const size_t dimension,
 static const char * suite_name       = "bbob2009";
 static const char * suite_options    = ""; /* e.g.: "instances:1-5; dimensions:-20" */
 static const char * observer_name    = "bbob2009_observer"; /* writes data */
-/* static const char * observer_name = "no_observer"; /* writes no data */
+/* static const char * observer_name = "no_observer"; / * writes no data */
 static const char * observer_options = "random_search_on_bbob2009"; /* future: "folder:random_search; verbosity:1" */
 static const char * solver_name      = "random_search"; /* for the choice in coco_solver below */
-/*  static const char * solver_name   = "my_solver"; /* for the choice in coco_solver below */
+/*  static const char * solver_name   = "my_solver"; / * for the choice in coco_solver below */
 static const int number_of_batches   = 88;  /* use 1 for single batch :-) batches can be run independently in parallel */
 static int current_batch             = 3;  /* runs from 1 to number_of_batches, or any other consecutive sequence */
 
@@ -71,7 +71,7 @@ static int current_batch             = 3;  /* runs from 1 to number_of_batches, 
  * Definition of the objective function, which must
  * probably be adapted to the solver used. 
  */
-/* MODIFY this to the solver's needs */
+/* MODIFY this to work with the solver to be benchmarked */
 typedef void (*objective_function_t) (const double *, double *);
 void objective_function(const double *x, double *y) {
   /* MODIFY/REWRITE this function to work with the typedef two lines above */
