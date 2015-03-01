@@ -42,7 +42,7 @@ static void _avt_free_data(void *thing) {
 /**
  * Perform monotone oscillation transformation on input variables.
  */
-coco_problem_t *asymmetric_variable_transform(coco_problem_t *inner_problem,
+static coco_problem_t *asymmetric_variable_transform(coco_problem_t *inner_problem,
                                               const double beta) {
   _avt_data_t *data;
   coco_problem_t *self;

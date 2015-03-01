@@ -45,7 +45,7 @@ static void _brs_free_data(void *thing) {
 /**
  * Perform monotone oscillation transformation on input variables.
  */
-coco_problem_t *brs_transform(coco_problem_t *inner_problem) {
+static coco_problem_t *brs_transform(coco_problem_t *inner_problem) {
   _brs_data_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));

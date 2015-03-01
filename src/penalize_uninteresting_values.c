@@ -37,7 +37,7 @@ static void _puv_evaluate_function(coco_problem_t *self, const double *x, double
  * Add a penalty to all evaluations outside of the region of interest
  * of ${inner_problem}.
  */
-coco_problem_t *penalize_uninteresting_values(coco_problem_t *inner_problem, const double factor) {
+static coco_problem_t *penalize_uninteresting_values(coco_problem_t *inner_problem, const double factor) {
 	coco_problem_t *self;
 	_puv_data_t *data;
 	assert(inner_problem != NULL);

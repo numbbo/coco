@@ -96,6 +96,18 @@ size_t coco_get_number_of_variables(const coco_problem_t *self);
 size_t coco_get_number_of_objectives(const coco_problem_t *self);
 
 /**
+ * Future: 
+ * Return target value for first objective. Values below are not
+ * relevant in the performance assessment. 
+ *
+ * This function breaks the black-box property: the returned 
+ * value is not meant to be used by the optimization algorithm 
+ * other than for final termination. 
+
+double coco_get_final_target_value1(const coco_problem_t *self);
+ */
+
+/**
  * Get the ${problem_index}-th problem of the ${problem_suit} test
  * suit.
  */
@@ -104,16 +116,21 @@ coco_problem_t *coco_get_problem(const char *problem_suit,
 
 /**
  * Return the successor index of ${problem_index} in ${problem_suit},
- * or -1 if no successor problem is available.
+ * or the first index if ${problem_index} < 0,
+ * or -1 otherwise (no successor problem is available).
  *
- * We assume that problems in a benchmark suit are ordered, such that
- * each ${problem_index} has a successor, which is returned by this
- * function. coco_next_problem_index(suit, -1, options) returns the
- * first problem. 
+ * int index = -1;
+ * while (-1 < (index = coco_next_problem_index(suite, index, ""))) {
+ *   coco_problem_t *problem = coco_get_problem(suite, index); 
+ *   ...
+ *   coco_free_problem(problem);
+ * }
+ * 
+ * loops over all indices and problems consequently. 
  */
 int coco_next_problem_index(const char *problem_suit,
-                     const int problem_index,
-                     const char *select_options);
+                            const int problem_index,
+                            const char *select_options);
 
 /**
  * tentative getters for region of interest
@@ -230,12 +247,13 @@ char *coco_strdup(const char *string);
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
  */
-int bbob2009_get_function_id(const coco_problem_t *problem);
-
+/* int bbob2009_get_function_id(const coco_problem_t *problem);
+*/
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
  */
-int bbob2009_get_instance_id(const coco_problem_t *problem);
+/* int bbob2009_get_instance_id(const coco_problem_t *problem);
+*/
 
 #ifdef __cplusplus
 }

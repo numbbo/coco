@@ -36,7 +36,7 @@ static void _scv_free_data(void *thing) {
 /**
  * Scale all variables by factor before evaluation.
  */
-coco_problem_t *scale_variables(coco_problem_t *inner_problem,
+static coco_problem_t *scale_variables(coco_problem_t *inner_problem,
                                 const double factor) {
   _scv_data_t *data;
   coco_problem_t *self;

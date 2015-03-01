@@ -70,7 +70,7 @@ static void _lht_free_data(void *stuff) {
   }
 }
 
-coco_problem_t *log_hitting_times(coco_problem_t *inner_problem,
+static coco_problem_t *log_hitting_times(coco_problem_t *inner_problem,
                                   const double *target_values,
                                   const size_t number_of_target_values,
                                   const char *path) {

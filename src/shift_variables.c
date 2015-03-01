@@ -32,7 +32,7 @@ static void _sv_free_data(void *thing) {
 
 /* Shift all variables of ${inner_problem} by ${amount}.
  */
-coco_problem_t *shift_variables(coco_problem_t *inner_problem,
+static coco_problem_t *shift_variables(coco_problem_t *inner_problem,
                                 const double *offset, const int shift_bounds) {
   _sv_data_t *data;
   coco_problem_t *self;

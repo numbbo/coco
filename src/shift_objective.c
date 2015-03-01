@@ -15,7 +15,7 @@ static void _so_evaluate_function(coco_problem_t *self, const double *x, double 
 /**
  * Shift the objective value of the inner problem by offset.
  */
-coco_problem_t *shift_objective(coco_problem_t *inner_problem,
+static coco_problem_t *shift_objective(coco_problem_t *inner_problem,
                                 const double offset) {
   coco_problem_t *self;
   _shift_objective_t *data;
