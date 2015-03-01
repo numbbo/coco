@@ -144,10 +144,11 @@ error:
 #endif
 }
 
+#if 0
 /**
  * The caller is responsible to coco_free_memory(new_path), if
  * new_path != NULL
-
+ */
 void coco_create_new_path(const char *path, char *new_path) {
   size_t oldlen, newlen;
   long i;
@@ -174,7 +175,7 @@ void coco_create_new_path(const char *path, char *new_path) {
     coco_error("coco_create_new_path: could not create a new path");
   } 
 }
- */
+#endif
 
 double *coco_allocate_vector(const size_t number_of_elements) {
   const size_t block_size = number_of_elements * sizeof(double);
