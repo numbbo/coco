@@ -218,7 +218,7 @@ void coco_error(const char *message);
 /**
  * Function to warn about eror conditions.
  */
-void coco_warning(const char *message);
+void coco_warning(const char *message, ...);
 
 /* Memory managment routines.
  *
