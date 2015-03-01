@@ -11,6 +11,9 @@
 #include "coco_problem.c"
 #include "coco_strdup.c"
 
+static int bbob2009_get_function_id(const coco_problem_t *problem);
+static int bbob2009_get_instance_id(const coco_problem_t *problem);
+
 /* FIXME: these names could easily created conflicts with other coco.c-global names */
 static const size_t nbpts_nbevals = 20;
 static const size_t nbpts_fval = 5;
@@ -63,7 +66,7 @@ typedef struct {
   int instance_id;
   long number_of_variables;
   double optimal_fvalue;
-} _bbob2009_logger_t;
+} bbob2009_logger_t; 
 
 static const char *_file_header_str = "%% function evaluation | "
                                       "noise-free fitness - Fopt (%13.12e) | "
@@ -73,7 +76,7 @@ static const char *_file_header_str = "%% function evaluation | "
                                       "x1 | "
                                       "x2...\n";
 
-static void _bbob2009_logger_update_f_trigger(_bbob2009_logger_t *data,
+static void _bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
                                               double fvalue) {
   /* "jump" directly to the next closest (but larger) target to the
    * current fvalue from the initial target
@@ -96,7 +99,7 @@ static void _bbob2009_logger_update_f_trigger(_bbob2009_logger_t *data,
   }
 }
 
-static void _bbob2009_logger_update_t_trigger(_bbob2009_logger_t *data,
+static void _bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
                                               long number_of_variables) {
   while (data->number_of_evaluations >=
          floor(pow(10, (double)data->idx_t_trigger / (double)nbpts_nbevals)))
@@ -177,7 +180,7 @@ static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
  * Creates the index file fileName_prefix+problem_id+file_extension in
  * folde_path
  */
-static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
+static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                                            const char *folder_path,
                                            const char *indexFile_prefix,
                                            const char *function_id,
@@ -232,7 +235,7 @@ static void _bbob2009_logger_openIndexFile(_bbob2009_logger_t *data,
  * Generates the different files and folder needed by the logger to store the
  * data if theses don't already exist
  */
-static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
+static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
                                         coco_problem_t *inner_problem) {
   /*
     Creates/opens the data and index files
@@ -293,7 +296,7 @@ static void _bbob2009_logger_initialize(_bbob2009_logger_t *data,
  */
 static void _bbob2009_logger_evaluate_function(coco_problem_t *self, const double *x,
                                                double *y) {
-  _bbob2009_logger_t *data;
+  bbob2009_logger_t *data;
   data = coco_get_transform_data(self);
   if (!data->is_initialized) {
     _bbob2009_logger_initialize(data, coco_get_transform_inner_problem(self));
@@ -347,7 +350,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
   /*TODO: do all the "non simply freeing" stuff in another function
    * that can have problem as input
    */
-  _bbob2009_logger_t *data = stuff;
+  bbob2009_logger_t *data = stuff;
 
   if (bbob2009_logger_verbosity > 2 && data && data->number_of_evaluations > 0)
     printf("best f=%e after %ld fevals (done observing)\n",
@@ -396,9 +399,9 @@ static void _bbob2009_logger_free_data(void *stuff) {
   bbob2009_logger_is_open = 0;
 }
 
-coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
+static coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
                                 const char *alg_name) {
-  _bbob2009_logger_t *data;
+  bbob2009_logger_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));
   data->alg_name = alg_name;
