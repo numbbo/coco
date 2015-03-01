@@ -17,7 +17,7 @@ static void _powo_evaluate_function(coco_problem_t *self, const double *x,
 /**
  * Raise the objective value to the power of a given exponent.
  */
-coco_problem_t *power_objective(coco_problem_t *inner_problem,
+static coco_problem_t *power_objective(coco_problem_t *inner_problem,
                                 const double exponent) {
   _powo_data_t *data;
   coco_problem_t *self;

@@ -178,7 +178,7 @@ static void bbob2009_compute_xopt(double *xopt, int seed, unsigned int DIM) {
  * Randomly choose the objective offset for function ${function_id}
  * and instance ${instance_id}.
  */
-double bbob2009_compute_fopt(int function_id, int instance_id) {
+static double bbob2009_compute_fopt(int function_id, int instance_id) {
   int rseed, rrseed;
   double gval, gval2;
 

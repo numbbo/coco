@@ -2,7 +2,7 @@
 
 #include "bbob2009_logger.c"
 
-coco_problem_t *bbob2009_observer(coco_problem_t *problem,
+static coco_problem_t *bbob2009_observer(coco_problem_t *problem,
                                   const char *options) {
   if (problem == NULL)
     return problem;

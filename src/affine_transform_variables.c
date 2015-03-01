@@ -48,7 +48,7 @@ static void _atv_free_data(void *thing) {
  * - Resize bounds vectors if input and output dimensions do not match
  * - problem_id and problem_name need to be adjusted
  */
-coco_problem_t *affine_transform_variables(coco_problem_t *inner_problem,
+static coco_problem_t *affine_transform_variables(coco_problem_t *inner_problem,
                                            const double *M, const double *b,
                                            const size_t number_of_variables) {
   coco_problem_t *self;

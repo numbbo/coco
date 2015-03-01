@@ -38,7 +38,7 @@ static void _cv_free_data(void *thing) {
 /**
  * Perform monotone oscillation transformation on input variables.
  */
-coco_problem_t *condition_variables(coco_problem_t *inner_problem,
+static coco_problem_t *condition_variables(coco_problem_t *inner_problem,
                                     const double alpha) {
   _cv_data_t *data;
   coco_problem_t *self;

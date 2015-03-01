@@ -35,7 +35,7 @@ static void _z_hat_free_data(void *thing) {
 
 /* Compute the vector {z^hat} for f_schwefel
  */
-coco_problem_t *z_hat(coco_problem_t *inner_problem, const double *xopt) {
+static coco_problem_t *z_hat(coco_problem_t *inner_problem, const double *xopt) {
   _z_hat_data_t *data;
   coco_problem_t *self;
 

@@ -2,7 +2,7 @@
 #include "coco_utilities.c"
 #include "log_hitting_times.c"
 
-coco_problem_t *toy_observer(coco_problem_t *problem, const char *options) {
+static coco_problem_t *toy_observer(coco_problem_t *problem, const char *options) {
   size_t i;
   static const size_t number_of_targets = 20;
   double targets[20];

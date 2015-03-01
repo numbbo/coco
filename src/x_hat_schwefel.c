@@ -39,7 +39,7 @@ static void _x_hat_free_data(void *thing) {
 /**
  * Multiply the x-vector by the vector 2 * 1+-
  */
-coco_problem_t *x_hat(coco_problem_t *inner_problem, int seed) {
+static coco_problem_t *x_hat(coco_problem_t *inner_problem, int seed) {
   _x_hat_data_t *data;
   coco_problem_t *self;
 
