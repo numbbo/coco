@@ -52,6 +52,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     options_prop = mxGetProperty(prhs[0], 0, "options");
     options = mxArrayToString(options_prop); /* mxFree(options) */
     /* get the problem */
+    /* FIXME: evaluate function should call the evaluate
+              function of an already open problem instance of
+              get a new problem instance. Otherwise the observer
+              will invariably fail. */
     pb = coco_get_problem(problem_suit, findex);
     pb = coco_observe_problem(observer, pb, options);
     /* prepare the return value */
