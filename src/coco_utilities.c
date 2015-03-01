@@ -51,6 +51,17 @@ static const char *coco_path_separator = "/";
 #error NUMBBO_PATH_MAX undefined
 #endif
 
+/***********************************/
+/* Global definitions in this file */
+/***********************************/
+void coco_join_path(char *path, size_t path_max_length, ...);
+int coco_path_exists(const char *path);
+void coco_create_path(const char *path);
+double *coco_allocate_vector(const size_t number_of_elements);
+void coco_create_new_path(const char *path, char *new_path);
+double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
+/***********************************/
+
 void coco_join_path(char *path, size_t path_max_length, ...) {
   const size_t path_separator_length = strlen(coco_path_separator);
   va_list args;
@@ -132,6 +143,38 @@ error:
 #error Ooops
 #endif
 }
+
+/**
+ * The caller is responsible to coco_free_memory(new_path), if
+ * new_path != NULL
+
+void coco_create_new_path(const char *path, char *new_path) {
+  size_t oldlen, newlen;
+  long i;
+  assert(new_path == NULL);
+  if (coco_path_exists(path)) {
+    coco_create_path(path);
+    return;
+  }
+  coco_error("coco_create_new_path: NeverTested");
+  oldlen = strlen(path);
+  newlen = oldlen + 9;
+  new_path = coco_allocate_memory(newlen + 1);
+  strncpy(new_path, path, newlen - 1);
+  /* modify new_path name until path does not exist */
+  for (i = 1; i < 1e5; ++i) {
+    snprintf(&new_path[oldlen], newlen, "_%03ld", i);
+    if (!coco_path_exists(new_path)) {
+      /* not thread safe until path is created */
+      coco_create_path(new_path);
+      i = -1;
+      break;
+    }
+  if (i > 0)
+    coco_error("coco_create_new_path: could not create a new path");
+  } 
+}
+ */
 
 double *coco_allocate_vector(const size_t number_of_elements) {
   const size_t block_size = number_of_elements * sizeof(double);

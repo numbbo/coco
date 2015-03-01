@@ -8,6 +8,13 @@ void coco_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   assert(self != NULL);
   assert(self->evaluate_function != NULL);
   self->evaluate_function(self, x, y);
+  /* How about a little bit of bookkeeping here?
+  self->evaluations++;
+  if (y[0] < self->best_observed_value[0]) {
+    self->best_observed_value[0] = y[0];
+    self->best_observed_evaluation[0] = self->evaluations;
+  }
+  */
 }
 
 void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y) {
@@ -106,8 +113,10 @@ void coco_get_initial_solution(const coco_problem_t *self,
 
 double coco_get_final_target_value1(const coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->best_value != NULL);
-  return self->best_value[0] + 1e-8; /* provisional implementation */
+  coco_error("coco_get_final_target_value1: not yet fully implemented");
+  return 0;
+  /* assert(self->best_observed_value != NULL);
+  return self->best_observed value[0] + 1e-8; / * provisional implementation */
   /*
   assert(self->final_target_value != NULL);
   return self->best_value[0] + self->final_delta_target_value[0];
