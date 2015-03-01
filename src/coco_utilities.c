@@ -171,8 +171,10 @@ void coco_create_new_path(const char *path, char *new_path) {
       i = -1;
       break;
     }
-  if (i > 0)
-    coco_error("coco_create_new_path: could not create a new path");
+  if (i > 0) {
+    char *message = "coco_create_new_path: could not create a new path from '%s'";
+    coco_warning(message, path);
+    coco_error(message);
   } 
 }
 #endif
