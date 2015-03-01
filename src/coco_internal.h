@@ -20,7 +20,7 @@ typedef void (*coco_recommendation_function_t)(struct coco_problem *self,
 typedef void (*coco_free_function_t)(struct coco_problem *self);
 
 /**
- * Description of a NUMBBO problem (instance)
+ * Description of a COCO problem (instance)
  *
  * evaluate and free are opaque pointers which should not be called
  * directly. Instead they are used by the coco_* functions in

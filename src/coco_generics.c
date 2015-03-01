@@ -111,6 +111,15 @@ void coco_get_initial_solution(const coco_problem_t *self,
   }
 }
 
+#if 0  /* tentative, not in effect (yet): */
+size_t coco_get_evaluations_done(const coco_problem_t *self) {
+  assert(self != NULL);
+  return self->evaluations;
+}
+size_t coco_get_best_observed_value1(const coco_problem_t *self) {
+  assert(self != NULL);
+  return self->best_observed_value[0];
+}
 double coco_get_final_target_value1(const coco_problem_t *self) {
   assert(self != NULL);
   coco_error("coco_get_final_target_value1: not yet fully implemented");
@@ -122,3 +131,4 @@ double coco_get_final_target_value1(const coco_problem_t *self) {
   return self->best_value[0] + self->final_delta_target_value[0];
   */
 }
+#endif
