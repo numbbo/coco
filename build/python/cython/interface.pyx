@@ -90,6 +90,10 @@ cdef class Problem:
     def number_of_objectives(self):
         "number of objectives, if equal to 1, call returns a scalar"
         return self._number_of_objectives
+        
+    @property
+    def _best_observed_value(self):
+        raise NotImplementedError
     
     def free(self):
         """Free the given test problem. 
