@@ -7,6 +7,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "coco.h"
 
@@ -15,8 +16,14 @@ void coco_error(const char *message) {
   exit(EXIT_FAILURE);
 }
 
-void coco_warning(const char *message) {
-  fprintf(stderr, "WARNING: %s\n", message);
+void coco_warning(const char *message, ...) {
+  va_list args;
+  
+  fprintf(stderr, "WARNING: ");
+  va_start(args, message);
+  vfprintf(stderr, message, args);
+  va_end(args);
+  fprintf(stderr, "\n");
 }
 
 void *coco_allocate_memory(const size_t size) {
