@@ -2,13 +2,33 @@
 
 #include "coco_utilities.c"
 
+/***********************************/
+/* Global definitions in this file */
+/***********************************/
+
+coco_problem_t *
+coco_allocate_problem(const size_t number_of_variables,
+                      const size_t number_of_objectives,
+                      const size_t number_of_constraints); 
+coco_problem_t *
+coco_duplicate_problem(coco_problem_t *other);
+typedef void (*coco_transform_free_data_t)(void *data);
+coco_problem_t *
+coco_allocate_transformed_problem(coco_problem_t *inner_problem, void *userdata,
+                                  coco_transform_free_data_t free_data);
+void *coco_get_transform_data(coco_problem_t *self);
+coco_problem_t *
+coco_get_transform_inner_problem(coco_problem_t *self);
+
+/***********************************/
+
 /**
  * coco_allocate_problem(number_of_variables):
  *
  * Allocate and pre-populate a new coco_problem_t for a problem with
  * ${number_of_variables}.
  */
-static coco_problem_t *
+coco_problem_t *
 coco_allocate_problem(const size_t number_of_variables,
                       const size_t number_of_objectives,
                       const size_t number_of_constraints) {
@@ -35,7 +55,7 @@ coco_allocate_problem(const size_t number_of_variables,
   return problem;
 }
 
-static coco_problem_t *
+coco_problem_t *
 coco_duplicate_problem(coco_problem_t *other) {
   size_t i;
   coco_problem_t *problem;
@@ -64,8 +84,6 @@ coco_duplicate_problem(coco_problem_t *other) {
   problem->problem_id = coco_strdup(other->problem_id);
   return problem;
 }
-
-typedef void (*coco_transform_free_data_t)(void *data);
 
 /**
  * Generic data member of a transformed (or "outer") coco_problem_t.
@@ -142,7 +160,7 @@ static void _tfp_free_problem(coco_problem_t *self) {
  * default all methods will dispatch to the ${inner_problem} method.
  *
  */
-static coco_problem_t *
+coco_problem_t *
 coco_allocate_transformed_problem(coco_problem_t *inner_problem, void *userdata,
                                   coco_transform_free_data_t free_data) {
   coco_transform_data_t *data;
@@ -162,7 +180,7 @@ coco_allocate_transformed_problem(coco_problem_t *inner_problem, void *userdata,
   return self;
 }
 
-static void *coco_get_transform_data(coco_problem_t *self) {
+void *coco_get_transform_data(coco_problem_t *self) {
   assert(self != NULL);
   assert(self->data != NULL);
   assert(((coco_transform_data_t *)self->data)->data != NULL);
@@ -170,7 +188,7 @@ static void *coco_get_transform_data(coco_problem_t *self) {
   return ((coco_transform_data_t *)self->data)->data;
 }
 
-static coco_problem_t *
+coco_problem_t *
 coco_get_transform_inner_problem(coco_problem_t *self) {
   assert(self != NULL);
   assert(self->data != NULL);
