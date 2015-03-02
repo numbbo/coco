@@ -17,8 +17,14 @@ static int bbob2009_get_instance_id(const coco_problem_t *problem);
 /* FIXME: these names could easily created conflicts with other coco.c-global names */
 static const size_t nbpts_nbevals = 20;
 static const size_t nbpts_fval = 5;
-static size_t current_dim = -1;
-static size_t current_funId = -1;
+static size_t current_dim = 0;
+static size_t current_funId = 0;
+static size_t infoFile_firstInstance = 0;
+/*a possible solution: have a list of dims that are already in the file, if the ones we're about to log is != current_dim and the funId is currend_funId, create a new .info file with as suffix the number of the first instance */
+static const int number_of_dimensions = 6;/*should use BBOB2009_NUMBER_OF_DIMENSIONS*/
+static size_t dimensions_in_current_infoFile[number_of_dimensions] = {0,0,0,0,0,0};
+
+
 /* The current_... mechanism fails if several problems are open. 
  * For the time being this should lead to an error.
  *
@@ -27,7 +33,7 @@ static size_t current_funId = -1;
  * file is generated. 
  */
 static int bbob2009_logger_is_open = 0;  /* this could become lock-list of .info files */
-static int bbob2009_logger_verbosity = 9;  /* TODO: make this an option the user can modify */
+static int bbob2009_logger_verbosity = 2;  /* TODO: make this an option the user can modify */
 
 
 /*TODO: add possibility of adding a prefix to the index files*/
@@ -181,6 +187,81 @@ static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
  * folde_path
  */
 static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
+                                           const char *folder_path,
+                                           const char *indexFile_prefix,
+                                           const char *function_id,
+                                           const char *dataFile_path) {
+    int errnum;
+    char function_id_char[3];/*TODO: consider adding them to data*/
+    char infoFile_firstInstance_char[3];
+    sprintf(function_id_char, "%d", data->function_id);
+    sprintf(infoFile_firstInstance_char, "%zu", infoFile_firstInstance);
+    char file_name[NUMBBO_PATH_MAX] = {0};
+    char file_path[NUMBBO_PATH_MAX] = {0};
+    FILE **target_file = &(data->index_file);
+    FILE *tmp_file = NULL; /*to check whether the file already exists. Don't want to use
+           target_file*/
+    strncpy(file_name, indexFile_prefix, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, "_f", NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, function_id_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    //strncat(file_name, "_i", NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    //strncat(file_name, infoFile_firstInstance_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
+    printf("%s, %s\n",file_path, infoFile_firstInstance_char);
+    if (*target_file == NULL) {
+        tmp_file = fopen(file_path, "r");
+        if ((tmp_file ) &&
+            (current_dim == data->number_of_variables) &&
+            (current_funId == data->function_id)) {/*new instance of current funId and current dim*/
+            *target_file = fopen(file_path, "a+");
+            if (*target_file == NULL) {
+                errnum = errno;
+                _bbob2009_logger_error_io(*target_file, errnum);
+            }
+            fclose(tmp_file);
+        } else { /* ugly but necessary*/
+            *target_file = fopen(file_path, "a+");
+            if (*target_file == NULL) {
+                errnum = errno;
+                _bbob2009_logger_error_io(*target_file, errnum);
+            }
+            if (tmp_file) { /*File already exists, new dim so new line*/
+                fprintf(*target_file, "\n");
+                fclose(tmp_file);
+            }
+            if (current_dim != data->number_of_variables) {
+                int i;
+                for (i=0; i<number_of_dimensions && dimensions_in_current_infoFile[i]!=0 &&
+                     dimensions_in_current_infoFile[i]!=data->number_of_variables;i++) {
+                }
+                if (i<number_of_dimensions && dimensions_in_current_infoFile[i]!=data->number_of_variables) {
+                    dimensions_in_current_infoFile[i]=data->number_of_variables;
+                    
+                }else{
+                    for (int j=0; j<number_of_dimensions;j++){
+                        dimensions_in_current_infoFile[j]= 0;
+                    }
+                    dimensions_in_current_infoFile[i]=data->number_of_variables;
+                }
+            }
+            fprintf(*target_file,
+                    /* TODO: z-modifier is bound to fail as being incompatible to standard C */
+                    "funcId = %d, DIM = %ld, Precision = %.3e, algId = '%s'\n",
+                    (int)strtol(function_id, NULL, 10), (long)data->number_of_variables,
+                    pow(10, -8), data->alg_name);
+            fprintf(*target_file, "%%\n");
+            fprintf(*target_file, "%s.dat",
+                    dataFile_path); /*dataFile_path does not have the extension*/
+            current_dim = data->number_of_variables;
+            current_funId = data->function_id;
+            infoFile_firstInstance = data->instance_id;
+        }
+    }
+}
+
+
+static void _old_bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                                            const char *folder_path,
                                            const char *indexFile_prefix,
                                            const char *function_id,
