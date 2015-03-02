@@ -103,6 +103,7 @@ if __name__ == '__main__':
                 continue
             problem = bm.get_problem(problem_index) 
             coco_solve(problem)
+            print("%d evaluations done (according to Python interface)" % problem.evaluations)
             problem.free()  # preferably free would not be necessary, but how?
             addressed_problems += [problem_index]
         print("%s done (%d of %d problems benchmarked%s)." % 

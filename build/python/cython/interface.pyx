@@ -29,6 +29,7 @@ cdef extern from "coco.h":
     const char *coco_get_problem_name(coco_problem_t *problem)
     const double *coco_get_smallest_values_of_interest(coco_problem_t *problem)
     const double *coco_get_largest_values_of_interest(coco_problem_t *problem)
+    size_t coco_get_evaluations(coco_problem_t *problem)
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
@@ -94,6 +95,10 @@ cdef class Problem:
     @property
     def _best_observed_value(self):
         raise NotImplementedError
+        
+    @property
+    def evaluations(self):
+        return coco_get_evaluations(self.problem)
     
     def free(self):
         """Free the given test problem. 
