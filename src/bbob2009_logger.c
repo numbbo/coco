@@ -231,7 +231,7 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                 fclose(tmp_file);
             }
             if (current_dim != data->number_of_variables) {
-                int i;
+                int i, j;
                 for (i=0; i<bbob2009_number_of_dimensions && dimensions_in_current_infoFile[i]!=0 &&
                      dimensions_in_current_infoFile[i]!=data->number_of_variables;i++) {
                 }
@@ -239,7 +239,7 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                     dimensions_in_current_infoFile[i]=data->number_of_variables;
                     
                 }else{
-                    for (int j=0; j<bbob2009_number_of_dimensions;j++){
+                    for (j=0; j<bbob2009_number_of_dimensions;j++){
                         dimensions_in_current_infoFile[j]= 0;
                     }
                     dimensions_in_current_infoFile[i]=data->number_of_variables;
