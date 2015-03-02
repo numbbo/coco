@@ -11,6 +11,58 @@
 
 /*
  * Class:     JNIinterface
+ * Method:    cocoGetProblem
+ * Signature: (Ljava/lang/String;I)J
+ */
+JNIEXPORT jlong JNICALL Java_JNIinterface_cocoGetProblem
+(JNIEnv *jenv, jclass interface_cls, jstring jproblem_suit, jint jfunction_index) {
+    coco_problem_t *pb = NULL;
+    const char *problem_suit;
+    int function_index;
+    if (interface_cls == NULL)
+        printf("Null interface_cls found\n");
+    problem_suit = (*jenv)->GetStringUTFChars(jenv, jproblem_suit, NULL);
+    function_index = (int)jfunction_index;
+    pb = coco_get_problem(problem_suit, function_index);
+    return (jlong)pb; /* or long? */
+    
+}
+
+/*
+ * Class:     JNIinterface
+ * Method:    cocoObserveProblem
+ * Signature: (Ljava/lang/String;JLjava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_JNIinterface_cocoObserveProblem
+(JNIEnv *, jclass interface_cls, jstring jobserver, jlong jproblem, jstring joptions) {
+    coco_problem_t *pb = NULL;
+    const char *observer;
+    const char *options;
+    if (interface_cls == NULL)
+        printf("Null interface_cls found\n");
+    pb = (coco_problem_t *)jproblem;
+    observer = (*jenv)->GetStringUTFChars(jenv, jobserver, NULL);
+    options = (*jenv)->GetStringUTFChars(jenv, joptions, NULL);
+    pb = coco_observe_problem(observer, pb, options);
+    return (jlong)pb; /* or long? */
+}
+
+/*
+ * Class:     JNIinterface
+ * Method:    cocoFreeProblem
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_JNIinterface_cocoFreeProblem
+(JNIEnv *, jclass interface_cls, jlong jproblem) {
+    coco_problem_t *pb = NULL;
+    if (interface_cls == NULL)
+        printf("Null interface_cls found\n");
+    pb = (coco_problem_t *)jproblem;
+    coco_free_problem(pb);
+}
+
+/*
+ * Class:     JNIinterface
  * Method:    cocoEvaluateFunction
  * Signature: (LProblem;[D)[D
  */
