@@ -8,8 +8,9 @@ void coco_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   assert(self != NULL);
   assert(self->evaluate_function != NULL);
   self->evaluate_function(self, x, y);
+  if (self->data == NULL) /* "derived classes" don't increment evaluations, that's a hack */
+    self->evaluations++;
   /* How about a little bit of bookkeeping here?
-  self->evaluations++;
   if (y[0] < self->best_observed_value[0]) {
     self->best_observed_value[0] = y[0];
     self->best_observed_evaluation[0] = self->evaluations;

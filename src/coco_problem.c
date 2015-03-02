@@ -51,6 +51,7 @@ coco_allocate_problem(const size_t number_of_variables,
   problem->best_value = coco_allocate_vector(number_of_objectives);
   problem->problem_name = NULL;
   problem->problem_id = NULL;
+  problem->evaluations = 0;
   problem->data = NULL;
   return problem;
 }
