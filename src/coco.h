@@ -39,6 +39,11 @@ typedef void (*coco_optimizer_t)(coco_problem_t *problem);
  */
 void coco_evaluate_function(coco_problem_t *self, const double *x, double *y);
 
+/** Number of evaluations done on problem ${self}. 
+ * Tentative and yet versatile. 
+ */
+size_t coco_get_evaluations(coco_problem_t *self);
+
 /**
  * Evaluate the constraints of the NUMBB problem represented by
  * ${self} with the parameter settings ${x} and save the result in

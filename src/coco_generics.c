@@ -8,14 +8,18 @@ void coco_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   assert(self != NULL);
   assert(self->evaluate_function != NULL);
   self->evaluate_function(self, x, y);
-  if (self->data == NULL) /* "derived classes" don't increment evaluations, that's a hack */
-    self->evaluations++;
+  self->evaluations++; /* each derived class has its own counter, only the most outer will be visible */
   /* How about a little bit of bookkeeping here?
   if (y[0] < self->best_observed_value[0]) {
     self->best_observed_value[0] = y[0];
     self->best_observed_evaluation[0] = self->evaluations;
   }
   */
+}
+
+size_t coco_get_evaluations(coco_problem_t *self) {
+  assert(self != NULL);
+  return self->evaluations;  
 }
 
 void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y) {
