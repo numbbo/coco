@@ -15,13 +15,13 @@ static int bbob2009_get_function_id(const coco_problem_t *problem);
 static int bbob2009_get_instance_id(const coco_problem_t *problem);
 
 /* FIXME: these names could easily created conflicts with other coco.c-global names. Use bbob2009 as prefix to prevent conflicts. */
-static const size_t nbpts_nbevals = 20;
-static const size_t nbpts_fval = 5;
+static const size_t bbob2009_nbpts_nbevals = 20;
+static const size_t bbob2009_nbpts_fval = 5;
 static size_t current_dim = 0;
 static size_t current_funId = 0;
 static size_t infoFile_firstInstance = 0;
 /*a possible solution: have a list of dims that are already in the file, if the ones we're about to log is != current_dim and the funId is currend_funId, create a new .info file with as suffix the number of the first instance */
-static const int number_of_dimensions = 6;
+static const int bbob2009_number_of_dimensions = 6;
 static size_t dimensions_in_current_infoFile[6] = {0,0,0,0,0,0}; /*should use BBOB2009_NUMBER_OF_DIMENSIONS*/
 
 
@@ -52,9 +52,9 @@ typedef struct {
   long t_trigger;    /* next lower bound on nb fun evals to trigger a log in the
                         .tdat file*/
   int idx_f_trigger; /* allows to track the index i in logging target =
-                        {10**(i/nbpts_fval), i \in Z} */
+                        {10**(i/bbob2009_nbpts_fval), i \in Z} */
   int idx_t_trigger; /* allows to track the index i in logging nbevals  =
-                        {int(10**(i/nbpts_nbevals)), i \in Z} */
+                        {int(10**(i/bbob2009_nbpts_nbevals)), i \in Z} */
   int idx_tdim_trigger; /* allows to track the index i in logging nbevals  =
                            {dim * 10**i, i \in Z} */
   long number_of_evaluations;
@@ -93,14 +93,14 @@ static void _bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
   } else {
     if (data->idx_f_trigger == INT_MAX) { /* first time*/
       data->idx_f_trigger =
-          ceil(log10(fvalue - data->optimal_fvalue)) * nbpts_fval;
+          ceil(log10(fvalue - data->optimal_fvalue)) * bbob2009_nbpts_fval;
     } else { /* We only call this function when we reach the current f_trigger*/
       data->idx_f_trigger--;
     }
-    data->f_trigger = pow(10, data->idx_f_trigger * 1.0 / nbpts_fval);
+    data->f_trigger = pow(10, data->idx_f_trigger * 1.0 / bbob2009_nbpts_fval);
     while (fvalue - data->optimal_fvalue <= data->f_trigger) {
       data->idx_f_trigger--;
-      data->f_trigger = pow(10, data->idx_f_trigger * 1.0 / nbpts_fval);
+      data->f_trigger = pow(10, data->idx_f_trigger * 1.0 / bbob2009_nbpts_fval);
     }
   }
 }
@@ -108,7 +108,7 @@ static void _bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
 static void _bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
                                               long number_of_variables) {
   while (data->number_of_evaluations >=
-         floor(pow(10, (double)data->idx_t_trigger / (double)nbpts_nbevals)))
+         floor(pow(10, (double)data->idx_t_trigger / (double)bbob2009_nbpts_nbevals)))
     data->idx_t_trigger++;
 
   while (data->number_of_evaluations >=
@@ -116,7 +116,7 @@ static void _bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
     data->idx_tdim_trigger++;
 
   data->t_trigger =
-      fmin(floor(pow(10, (double)data->idx_t_trigger / (double)nbpts_nbevals)),
+      fmin(floor(pow(10, (double)data->idx_t_trigger / (double)bbob2009_nbpts_nbevals)),
            number_of_variables * pow(10, (double)data->idx_tdim_trigger));
 }
 
@@ -232,14 +232,14 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
             }
             if (current_dim != data->number_of_variables) {
                 int i;
-                for (i=0; i<number_of_dimensions && dimensions_in_current_infoFile[i]!=0 &&
+                for (i=0; i<bbob2009_number_of_dimensions && dimensions_in_current_infoFile[i]!=0 &&
                      dimensions_in_current_infoFile[i]!=data->number_of_variables;i++) {
                 }
-                if (i<number_of_dimensions && dimensions_in_current_infoFile[i]!=data->number_of_variables) {
+                if (i<bbob2009_number_of_dimensions && dimensions_in_current_infoFile[i]!=data->number_of_variables) {
                     dimensions_in_current_infoFile[i]=data->number_of_variables;
                     
                 }else{
-                    for (int j=0; j<number_of_dimensions;j++){
+                    for (int j=0; j<bbob2009_number_of_dimensions;j++){
                         dimensions_in_current_infoFile[j]= 0;
                     }
                     dimensions_in_current_infoFile[i]=data->number_of_variables;
