@@ -24,7 +24,18 @@ public class Problem {
 	}
 	
 	public void free() {
+		// check this.problem != NULL
 		JNIinterface.cocoFreeProblem(this.problem);
+	}
+	
+	public String id() {
+		// check this.problem != NULL
+		return JNIinterface.cocoGetProblemId(this.problem);
+	}
+	
+	public String name() {
+		// check this.problem != NULL
+		return JNIinterface.cocoGetProblemName(this.problem);
 	}
 	
 	/* toString method */
