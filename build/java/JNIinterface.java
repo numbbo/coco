@@ -21,10 +21,11 @@ public class JNIinterface {
 	public static native long cocoObserveProblem(String observer, long problem, String options); // to be implemented
 	public static native void cocoFreeProblem(long p); // to be implemented
 	public static native double[] cocoEvaluateFunction(Problem p, double[] x);
-    public static native int cocoGetNumberOfVariables(long p);
-    public static native int cocoGetNumberOfObjectives(long p);
-    public static native double[] cocoGetSmallestValuesOfInterest(long p);
-    public static native double[] cocoGetLargestValuesOfInterest(long p);
+    public static native int cocoGetNumberOfVariables(long p); // to be modified
+    public static native int cocoGetNumberOfObjectives(long p); // to be modified
+    public static native double[] cocoGetSmallestValuesOfInterest(long p); // to be modified
+    public static native double[] cocoGetLargestValuesOfInterest(long p); // to be modified
     public static native boolean validProblem(String suit, int function_index);
-    public static native String cocoGetProblemId(Problem p);
+    public static native String cocoGetProblemId(long p); // to be modified
+    public static native String cocoGetProblemName(long p); // to be implemented
 }
