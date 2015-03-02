@@ -55,14 +55,14 @@ static const char *coco_path_separator = "/";
 /***********************************/
 /* Global definitions in this file */
 /***********************************/
-
+/* outcommented for test purpose 
 void coco_join_path(char *path, size_t path_max_length, ...);
 int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
 double *coco_allocate_vector(const size_t number_of_elements);
 void coco_create_new_path(const char *path, size_t maxlen, char *new_path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
-
+*/
 /***********************************/
 
 void coco_join_path(char *path, size_t path_max_length, ...) {
