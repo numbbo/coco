@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "coco.h"
 #include "coco_internal.h"
@@ -59,7 +60,7 @@ void coco_join_path(char *path, size_t path_max_length, ...);
 int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
 double *coco_allocate_vector(const size_t number_of_elements);
-void coco_create_new_path(const char *path, char *new_path);
+void coco_create_new_path(const char *path, size_t maxlen, char *new_path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
 
 /***********************************/
@@ -147,33 +148,68 @@ error:
 }
 
 #if 0
-/**
- * The caller is responsible to coco_free_memory(new_path), if
- * new_path != NULL
+/** path and new_path can be the same argument. 
  */
-void coco_create_new_path(const char *path, char *new_path) {
-  size_t oldlen, newlen;
-  long i;
-  assert(new_path == NULL);
-  if (coco_path_exists(path)) {
+void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
+  size_t oldlen, len;
+  time_t now;
+  const char *snow;
+  char sep = '_';
+  int i, tries;
+  
+  coco_warning("path_exists -> %d", coco_path_exists(path));
+  if (!coco_path_exists(path)) {
     coco_create_path(path);
     return;
   }
-  coco_error("coco_create_new_path: NeverTested");
+
+  maxlen -= 1; /* prevent failure from misinterpretation of what maxlen is */
+  new_path[maxlen] = '\0';
   oldlen = strlen(path);
-  newlen = oldlen + 9;
-  new_path = coco_allocate_memory(newlen + 1);
-  strncpy(new_path, path, newlen - 1);
+  printf("oldlen=%ld, maxlen=%ld\n", (long)oldlen, (long) maxlen);
+  assert(maxlen > oldlen);
+  if (new_path != path)
+    strncpy(new_path, path, maxlen);
+  
   /* modify new_path name until path does not exist */
-  for (i = 1; i < 1e5; ++i) {
-    snprintf(&new_path[oldlen], newlen, "_%03ld", i);
+  for (tries = 0; tries <= (int)('z' - 'a'); ++tries) {
+    /* create new name */
+    now = time(NULL);
+    snow = ctime(&now);
+    /*                 012345678901234567890123
+     * snow =         "Www Mmm dd hh:mm:ss yyyy"
+     * new_path = "oldname_Mmm_dd_hh_mm_ss_yyyy[a-z]"
+     *                    ^ oldlen
+     */
+    new_path[oldlen] = sep;
+    strncpy(&new_path[oldlen+1], &snow[4], maxlen - oldlen - 1);
+    for (i = oldlen; i < maxlen; ++i) {
+      if (new_path[i] == ' ' || new_path[i] == ':') 
+        new_path[i] = sep;
+      if (new_path[i] == '\n')
+        new_path[i] = '\0';
+      if (new_path[i] == '\0')
+        break;
+    }
+    len = strlen(new_path);
+    if (len > 6) {
+      new_path[len - 5] = (char)(tries + 'a');
+      new_path[len - 4] = '\0';
+    }
+      
+    coco_warning("DEBUGGING coco_create_new_path: tyring new path name ''%s''", new_path);
+    
+    /* try new name */
+    coco_warning("path_exists (2) -> %d", coco_path_exists(path));
     if (!coco_path_exists(new_path)) {
       /* not thread safe until path is created */
       coco_create_path(new_path);
-      i = -1;
+      coco_warning("DEBUGGING coco_create_new_path: succeeded.");
+      tries = -1;
       break;
     }
-  if (i > 0) {
+  }
+  if (tries > 0) {
     char *message = "coco_create_new_path: could not create a new path from '%s'";
     coco_warning(message, path);
     coco_error(message);
