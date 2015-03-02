@@ -9,7 +9,7 @@ public class JNIinterface {
 		if (!validProblem(benchmark.problem_suit, benchmark.function_index)) {
 			throw new NoSuchProblemException(benchmark.problem_suit, benchmark.function_index);
 		}
-        Problem problem = new Problem(benchmark.problem_suit, benchmark.function_index, benchmark.observer, benchmark.options);
+        Problem problem = new Problem(benchmark.problem_suit, benchmark.function_index);
         benchmark.function_index ++;
         return problem;
 		

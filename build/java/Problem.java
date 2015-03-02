@@ -23,7 +23,7 @@ public class Problem {
 		this.problem = JNIinterface.cocoObserveProblem(observer, this.problem, options);
 	}
 	
-	public void free(this) {
+	public void free() {
 		JNIinterface.cocoFreeProblem(this.problem);
 	}
 	
