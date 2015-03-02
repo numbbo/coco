@@ -397,46 +397,13 @@ JNIEXPORT jboolean JNICALL Java_JNIinterface_validProblem
 JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemId
 (JNIEnv *jenv, jclass interface_cls, jlong problem) {
     coco_problem_t *pb = NULL;
-    const char *problem_suit;
-    int function_index;
     const char *res;
-    
-    jfieldID fid;
-    jstring jproblem_suit;
-    jint jfunction_index;
-    jclass cls;
     jstring jres;
-    
-    /* This test is both to prevent warning because interface_cls was not used and check exceptions */
     if (interface_cls == NULL)
-    printf("Null interface_cls found\n");
-    
-    /* Get attributes from jobject problem */
-    cls = (*jenv)->GetObjectClass(jenv, problem);
-    if (cls == NULL)
-    printf("Null cls\n");
-    
-    /* Get problem_suit */
-    fid = (*jenv)->GetFieldID(jenv, cls, "problem_suit", "Ljava/lang/String;");
-    if(fid == NULL)
-    printf("Null fid\n");
-    jproblem_suit = (*jenv)->GetObjectField(jenv, problem, fid);
-    problem_suit = (*jenv)->GetStringUTFChars(jenv, jproblem_suit, NULL);
-    
-    /* Get function_index */
-    fid = (*jenv)->GetFieldID(jenv, cls, "function_index", "I");
-    if(fid == NULL)
-    printf("Null fid2\n");
-    jfunction_index = (*jenv)->GetIntField(jenv, problem, fid);
-    function_index = (int)jfunction_index;
-    
-    pb = coco_get_problem(problem_suit, function_index);
+        printf("Null interface_cls found\n");
+    pb = (coco_problem_t *)jproblem;
     res = coco_get_problem_id(pb);
     jres = (*jenv)->NewStringUTF(jenv, res);
-    
-    coco_free_problem(pb);
-    (*jenv)->ReleaseStringUTFChars(jenv, jproblem_suit, problem_suit);
-    
     return jres;
 }
 
@@ -446,6 +413,15 @@ JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemId
  * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemName
-(JNIEnv *, jclass, jlong) {
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem) {
+    coco_problem_t *pb = NULL;
+    const char *res;
+    jstring jres;
+    if (interface_cls == NULL)
+        printf("Null interface_cls found\n");
+    pb = (coco_problem_t *)jproblem;
+    res = coco_get_problem_name(pb);
+    jres = (*jenv)->NewStringUTF(jenv, res);
+    return jres;
 }
 
