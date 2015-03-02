@@ -213,7 +213,7 @@ double coco_normal_random(coco_random_state_t *state);
 /**
  * Function to signal a fatal error conditions.
  */
-void coco_error(const char *message);
+void coco_error(const char *message, ...);
 
 /**
  * Function to warn about eror conditions.

@@ -14,7 +14,7 @@
  * made. We do not terminate immideatly because we want to give R a
  * chance to save any results or possibly recover.
  */
-void coco_error(const char *message) { error(message); }
+void coco_error(const char *message, ...) { error(message); }
 
 void coco_warning(const char *message, ...) { warning(message); }
 

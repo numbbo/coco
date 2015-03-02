@@ -11,8 +11,14 @@
 
 #include "coco.h"
 
-void coco_error(const char *message) {
-  fprintf(stderr, "FATAL ERROR: %s\n", message);
+void coco_error(const char *message, ...) {
+  va_list args;
+
+  fprintf(stderr, "FATAL ERROR: ");
+  va_start(args, message);
+  vfprintf(stderr, message, args);
+  va_end(args);
+  fprintf(stderr, "\n");
   exit(EXIT_FAILURE);
 }
 
