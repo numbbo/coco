@@ -79,7 +79,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 3:
         number_of_batches = int(sys.argv[3])
         
-    if 1 < 3:
+    if 11 < 3:
         # simple Pythonic use case, never leaves a problem unfree()ed, ctrl-C "safe"
         print('Pythonic usecase ...'); sys.stdout.flush()
         found_problems, addressed_problems = 0, 0
@@ -97,17 +97,16 @@ if __name__ == '__main__':
         # usecase with batches
         print('Batch usecase ...'); sys.stdout.flush()
         bm = Benchmark(suite_name, suite_options, observer_name, observer_options)  
-        found_problems, addressed_problems = 0, 0
+        addressed_problems = []
         for problem_index in bm.problem_indices: # bm.next_problem_index(problem_index) is also available
-            found_problems += 1
             if (problem_index + current_batch - 1) % number_of_batches:
                 continue
             problem = bm.get_problem(problem_index) 
             coco_solve(problem)
             problem.free()  # preferably free would not be necessary, but how?
-            addressed_problems += 1
+            addressed_problems += [problem_index]
         print("%s done (%d of %d problems benchmarked%s)." % 
-               (suite_name, addressed_problems, found_problems,
+               (suite_name, len(addressed_problems), len(bm),
                  ((" in batch %d of %d" % (current_batch, number_of_batches))
                    if number_of_batches > 1 else "")))
 
@@ -119,9 +118,9 @@ if __name__ == '__main__':
         problem_index = -1  # first index is not necessarily 0!
         while True:
             problem_index = bm.next_problem_index(problem_index)
-            found_problems += 1
             if problem_index < 0: 
                 break 
+            found_problems += 1
             if (problem_index + current_batch - 1) % number_of_batches:
                 continue
             problem = bm.get_problem(problem_index) 
@@ -142,5 +141,4 @@ if __name__ == '__main__':
         # the function might be impossible to negotiate
         print("Minimal usecase, doesn't work though")
         Benchmark(coco_solve, suite_name, suite_options, observer_name, observer_options)
-        
         
