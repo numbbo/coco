@@ -13,12 +13,18 @@ public class Problem {
 		this.problem = JNIinterface.cocoGetProblem(problem_suit, function_index);
 		this.problem_suit = problem_suit;
 		this.function_index = function_index;
-		this.observer_name = new String("");
-		this.options = new String("");
+		this.lower_bounds = JNIinterface.cocoGetSmallestValuesOfInterest(this.problem);
+		this.upper_bounds = JNIinterface.cocoGetLargestValuesOfInterest(this.problem);
+		this.number_of_variables = JNIinterface.cocoGetNumberOfVariables(this.problem);
+		this.number_of_objectives = JNIinterface.cocoGetNumberOfObjectives(this.problem);
 	}
 	
 	public void addObserver(String observer, String options) {
 		this.problem = JNIinterface.cocoObserveProblem(observer, this.problem, options);
+	}
+	
+	public void free(this) {
+		JNIinterface.cocoFreeProblem(this.problem);
 	}
 	
 	/* toString method */
