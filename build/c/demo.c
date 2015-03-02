@@ -13,7 +13,7 @@
     
     ==> 7.5e-3s/eval ~ 1e-2s / eval ~ 10s / 1e3evals ~ 2h / 1e6evals ~ 90d / 1e9evals
  */ 
-static const int MAX_BUDGET = 1e3;  /* work on small budgets first */
+static const int MAX_BUDGET = 1e2;  /* work on small budgets first */
 static coco_problem_t *current_coco_problem; /* used in objective_function */
 
 /**************************************************
