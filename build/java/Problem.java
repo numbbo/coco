@@ -17,7 +17,7 @@ public class Problem {
 		this.options = new String("");
 	}
 	
-	public long addObserver(String observer, String options) {
+	public void addObserver(String observer, String options) {
 		this.problem = JNIinterface.cocoObserveProblem(observer, this.problem, options);
 	}
 	
