@@ -101,10 +101,10 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoEvaluateFunction
 /*
  * Class:     JNIinterface
  * Method:    cocoGetNumberOfVariables
- * Signature: (LProblem;)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfVariables
-(JNIEnv *jenv, jclass interface_cls, jobject problem) {
+(JNIEnv *jenv, jclass interface_cls, jlong problem) {
 
 	coco_problem_t *pb = NULL;
 	const char *problem_suit;
@@ -151,10 +151,10 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfVariables
 /*
  * Class:     JNIinterface
  * Method:    cocoGetNumberOfObjectives
- * Signature: (LProblem;)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfObjectives
-(JNIEnv *jenv, jclass interface_cls, jobject problem) {
+(JNIEnv *jenv, jclass interface_cls, jlong problem) {
 	coco_problem_t *pb = NULL;
 	const char *problem_suit;
 	int function_index;
@@ -201,10 +201,10 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfObjectives
 /*
  * Class:     JNIinterface
  * Method:    cocoGetSmallestValuesOfInterest
- * Signature: (LProblem;)[D
+ * Signature: (J)[D
  */
 JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetSmallestValuesOfInterest
-(JNIEnv *jenv, jclass interface_cls, jobject problem) {
+(JNIEnv *jenv, jclass interface_cls, jlong problem) {
 	const double *cres;
 	coco_problem_t *pb = NULL;
 
@@ -258,10 +258,10 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetSmallestValuesOfInterest
 /*
  * Class:     JNIinterface
  * Method:    cocoGetLargestValuesOfInterest
- * Signature: (LProblem;)[D
+ * Signature: (J)[D
  */
 JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
-(JNIEnv *jenv, jclass interface_cls, jobject problem) {
+(JNIEnv *jenv, jclass interface_cls, jlong problem) {
 	const double *cres;
 	coco_problem_t *pb = NULL;
 
@@ -340,10 +340,10 @@ JNIEXPORT jboolean JNICALL Java_JNIinterface_validProblem
 /*
  * Class:     JNIinterface
  * Method:    cocoGetProblemId
- * Signature: (LProblem;)Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemId
-(JNIEnv *jenv, jclass interface_cls, jobject problem) {
+(JNIEnv *jenv, jclass interface_cls, jlong problem) {
     coco_problem_t *pb = NULL;
     const char *problem_suit;
     int function_index;
@@ -386,5 +386,14 @@ JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemId
     (*jenv)->ReleaseStringUTFChars(jenv, jproblem_suit, problem_suit);
     
     return jres;
+}
+
+/*
+ * Class:     JNIinterface
+ * Method:    cocoGetProblemName
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemName
+(JNIEnv *, jclass, jlong) {
 }
 
