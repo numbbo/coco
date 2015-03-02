@@ -198,7 +198,8 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
   strncat(file_name, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
   coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
   if (*target_file == NULL) {
-    if ((tmp_file = fopen(file_path, "r")) &&
+      tmp_file = fopen(file_path, "r");
+    if ((tmp_file ) &&
         (current_dim == data->number_of_variables) &&
         (current_funId == data->function_id)) {
       *target_file = fopen(file_path, "a+");
