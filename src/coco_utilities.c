@@ -52,17 +52,15 @@ static const char *coco_path_separator = "/";
 #error NUMBBO_PATH_MAX undefined
 #endif
 
-/***********************************/
-/* Global definitions in this file */
-/***********************************/
-/* outcommented for test purpose 
+/***********************************
+ * Global definitions in this file
+ * which are not in coco.h 
+ ***********************************/
 void coco_join_path(char *path, size_t path_max_length, ...);
 int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
-double *coco_allocate_vector(const size_t number_of_elements);
 void coco_create_new_path(const char *path, size_t maxlen, char *new_path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
-*/
 /***********************************/
 
 void coco_join_path(char *path, size_t path_max_length, ...) {
@@ -151,13 +149,12 @@ error:
 /** path and new_path can be the same argument. 
  */
 void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
+  char sep = '_';
   size_t oldlen, len;
   time_t now;
   const char *snow;
-  char sep = '_';
   int i, tries;
   
-  coco_warning("path_exists -> %d", coco_path_exists(path));
   if (!coco_path_exists(path)) {
     coco_create_path(path);
     return;
@@ -166,7 +163,6 @@ void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
   maxlen -= 1; /* prevent failure from misinterpretation of what maxlen is */
   new_path[maxlen] = '\0';
   oldlen = strlen(path);
-  printf("oldlen=%ld, maxlen=%ld\n", (long)oldlen, (long) maxlen);
   assert(maxlen > oldlen);
   if (new_path != path)
     strncpy(new_path, path, maxlen);
@@ -197,21 +193,17 @@ void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
       new_path[len - 4] = '\0';
     }
       
-    coco_warning("DEBUGGING coco_create_new_path: tyring new path name ''%s''", new_path);
-    
     /* try new name */
-    coco_warning("path_exists (2) -> %d", coco_path_exists(path));
     if (!coco_path_exists(new_path)) {
       /* not thread safe until path is created */
       coco_create_path(new_path);
-      coco_warning("DEBUGGING coco_create_new_path: succeeded.");
       tries = -1;
       break;
     }
   }
   if (tries > 0) {
-    char *message = "coco_create_new_path: could not create a new path from '%s'";
-    coco_warning(message, path);
+    char *message = "coco_create_new_path: could not create a new path from '%s' (%d attempts)";
+    coco_warning(message, path, tries);
     coco_error(message);
   } 
 }
