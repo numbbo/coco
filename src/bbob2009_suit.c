@@ -178,6 +178,7 @@ static coco_problem_t *bbob2009_suit(const int problem_index) {
             dimension_idx = 5;
             break;
         default:
+            dimension_idx = -1;
             break;
     }
   assert(problem_index == bbob2009_encode_problem_index(function_id - 1, instance_id - 1 , dimension_idx));
