@@ -16,7 +16,7 @@
  */
 void coco_error(const char *message) { error(message); }
 
-void coco_warning(const char *message) { warning(message); }
+void coco_warning(const char *message, ...) { warning(message); }
 
 void *coco_allocate_memory(const size_t size) {
   void *data;
