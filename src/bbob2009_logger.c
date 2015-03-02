@@ -14,7 +14,7 @@
 static int bbob2009_get_function_id(const coco_problem_t *problem);
 static int bbob2009_get_instance_id(const coco_problem_t *problem);
 
-/* FIXME: these names could easily created conflicts with other coco.c-global names */
+/* FIXME: these names could easily created conflicts with other coco.c-global names. Use bbob2009 as prefix to prevent conflicts. */
 static const size_t nbpts_nbevals = 20;
 static const size_t nbpts_fval = 5;
 static size_t current_dim = 0;
