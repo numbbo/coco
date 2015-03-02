@@ -9,51 +9,67 @@ extern "C" {
 #endif
 /*
  * Class:     JNIinterface
+ * Method:    cocoGetProblem
+ * Signature: (Ljava/lang/String;I)J
+ */
+JNIEXPORT jlong JNICALL Java_JNIinterface_cocoGetProblem
+    (JNIEnv *, jclass, jstring, jint);
+
+/*
+ * Class:     JNIinterface
+ * Method:    cocoObserveProblem
+ * Signature: (Ljava/lang/String;JLjava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_JNIinterface_cocoObserveProblem
+    (JNIEnv *, jclass, jstring, jlong, jstring);
+    
+/*
+ * Class:     JNIinterface
+ * Method:    cocoFreeProblem
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_JNIinterface_cocoFreeProblem
+    (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     JNIinterface
  * Method:    cocoEvaluateFunction
  * Signature: (LProblem;[D)[D
  */
 JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoEvaluateFunction
-  (JNIEnv *, jclass, jobject, jdoubleArray);
+    (JNIEnv *, jclass, jobject, jdoubleArray);
 
 /*
  * Class:     JNIinterface
  * Method:    cocoGetNumberOfVariables
- * Signature: (LProblem;)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfVariables
-  (JNIEnv *, jclass, jobject);
+    (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     JNIinterface
  * Method:    cocoGetNumberOfObjectives
- * Signature: (LProblem;)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfObjectives
-  (JNIEnv *, jclass, jobject);
+    (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     JNIinterface
  * Method:    cocoGetSmallestValuesOfInterest
- * Signature: (LProblem;)[D
+ * Signature: (J)[D
  */
 JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetSmallestValuesOfInterest
-  (JNIEnv *, jclass, jobject);
+    (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     JNIinterface
  * Method:    cocoGetLargestValuesOfInterest
- * Signature: (LProblem;)[D
+ * Signature: (J)[D
  */
-JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
-  (JNIEnv *, jclass, jobject);
-    
-/*
- * Class:     JNIinterface
- * Method:    cocoGetLargestValuesOfInterest
- * Signature: (LProblem;)[D
- */
-JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
-    (JNIEnv *, jclass, jobject);
+JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInteres
+    (JNIEnv *, jclass, jlong);
     
 /*
  * Class:     JNIinterface
@@ -66,10 +82,18 @@ JNIEXPORT jboolean JNICALL Java_JNIinterface_validProblem
 /*
  * Class:     JNIinterface
  * Method:    cocoGetProblemId
- * Signature: (LProblem;)Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemId
-    (JNIEnv *, jclass, jobject);
+    (JNIEnv *, jclass, jlong);
+    
+/*
+ * Class:     JNIinterface
+ * Method:    cocoGetProblemName
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemName
+    (JNIEnv *, jclass, jlong);
 
 
 #ifdef __cplusplus

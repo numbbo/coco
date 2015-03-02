@@ -1,6 +1,7 @@
 import java.util.Random;
 
 public class demo {
+	public static final double MAXEVALS = 10;
     public static void my_optimizer(Problem problem,
 				    double[] lower_bounds, double[] upper_bounds, double budget) {
         int n = lower_bounds.length;
@@ -16,8 +17,9 @@ public class demo {
         }
     }
     
+    
     public static void main(String[] args) {
-	double MAXEVALS = 10; 
+	
         Benchmark my_benchmark = new Benchmark("bbob2009", "bbob2009_observer", "random_search");
         while (true) {
 	    try {
