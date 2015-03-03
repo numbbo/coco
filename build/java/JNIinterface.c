@@ -19,13 +19,12 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoGetProblem
     
     coco_problem_t *pb = NULL;
     const char *problem_suit;
-    int function_index;
+    
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
     problem_suit = (*jenv)->GetStringUTFChars(jenv, jproblem_suit, NULL);
-    function_index = (int)jfunction_index;
-    pb = coco_get_problem(problem_suit, function_index);
-    return (jlong)pb; /* or long? */
+    pb = coco_get_problem(problem_suit, jfunction_index);
+    return (jlong)pb;
 }
 
 /*
@@ -39,13 +38,14 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoObserveProblem
     coco_problem_t *pb = NULL;
     const char *observer;
     const char *options;
+    
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
     pb = (coco_problem_t *)jproblem;
     observer = (*jenv)->GetStringUTFChars(jenv, jobserver, NULL);
     options = (*jenv)->GetStringUTFChars(jenv, joptions, NULL);
     pb = coco_observe_problem(observer, pb, options);
-    return (jlong)pb; /* or long? */
+    return (jlong)pb;
 }
 
 /*
@@ -57,6 +57,7 @@ JNIEXPORT void JNICALL Java_JNIinterface_cocoFreeProblem
 (JNIEnv *, jclass interface_cls, jlong jproblem) {
     
     coco_problem_t *pb = NULL;
+    
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
     pb = (coco_problem_t *)jproblem;
@@ -73,7 +74,6 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoEvaluateFunction
 
 	double *y; /* Result of evaluation. To be allocated with coco_allocate_vector(coco_get_number_of_objectives(pb)) */
 	coco_problem_t *pb = NULL; /* Will contain the C problem */
-    
 	jint nb_objectives;
     jclass cls;
 	jfieldID fid;
@@ -126,7 +126,6 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfVariables
 (JNIEnv *jenv, jclass interface_cls, jlong problem) {
 
 	coco_problem_t *pb = NULL;
-    
 	jint res;
     jclass cls;
 
@@ -147,7 +146,6 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfObjectives
 (JNIEnv *jenv, jclass interface_cls, jlong problem) {
     
     coco_problem_t *pb = NULL;
-    
     jint res;
     jclass cls;
     
@@ -166,53 +164,23 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfObjectives
  */
 JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetSmallestValuesOfInterest
 (JNIEnv *jenv, jclass interface_cls, jlong problem) {
-	const double *cres;
+    
+	const double *cres; /* or const jdouble *cres;? */
 	coco_problem_t *pb = NULL;
-
-	const char *problem_suit;
-	int function_index;
-	int nb_variables;
-
-	jfieldID fid;
-	jstring jproblem_suit;
-	jint jfunction_index;
+	jint nb_variables;
 	jdoubleArray res;
     jclass cls;
 
 	/* This test is both to prevent warning because interface_cls was not used and check exceptions */
 	if (interface_cls == NULL)
 		printf("Null interface_cls found\n");
-    
-    /* Get attributes from jobject problem */
-    cls = (*jenv)->GetObjectClass(jenv, problem);
-    if (cls == NULL)
-        printf("Null cls\n");
-
-	/* Get problem_suit */
-	fid = (*jenv)->GetFieldID(jenv, cls, "problem_suit", "Ljava/lang/String;");
-	if(fid == NULL)
-		printf("Null fid\n");
-	jproblem_suit = (*jenv)->GetObjectField(jenv, problem, fid);
-	problem_suit = (*jenv)->GetStringUTFChars(jenv, jproblem_suit, NULL);
-
-	/* Get function_index */
-	fid = (*jenv)->GetFieldID(jenv, cls, "function_index", "I");
-	if(fid == NULL)
-		printf("Null fid2\n");
-	jfunction_index = (*jenv)->GetIntField(jenv, problem, fid);
-	function_index = (int)jfunction_index;
-
-	pb = coco_get_problem(problem_suit, function_index);
-	cres = coco_get_smallest_values_of_interest(pb);
+    pb = (coco_problem_t *)problem;
+    cres = coco_get_smallest_values_of_interest(pb);
 	nb_variables = coco_get_number_of_variables(pb);
 
 	/* Prepare the return value */
 	res = (*jenv)->NewDoubleArray(jenv, nb_variables);
 	(*jenv)->SetDoubleArrayRegion(jenv, res, 0, nb_variables, cres);
-
-	coco_free_problem(pb);
-	(*jenv)->ReleaseStringUTFChars(jenv, jproblem_suit, problem_suit);
-
 	return res;
 }
 
@@ -223,54 +191,24 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetSmallestValuesOfInterest
  */
 JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
 (JNIEnv *jenv, jclass interface_cls, jlong problem) {
-	const double *cres;
-	coco_problem_t *pb = NULL;
-
-	const char *problem_suit;
-	int function_index;
-	int nb_variables;
-
-	jfieldID fid;
-	jstring jproblem_suit;
-	jint jfunction_index;
-	jdoubleArray res;
-    jclass cls;
-
-	/* This test is both to prevent warning because interface_cls was not used and check exceptions */
-	if (interface_cls == NULL)
-		printf("Null interface_cls found\n");
     
-    /* Get attributes from jobject problem */
-    cls = (*jenv)->GetObjectClass(jenv, problem);
-    if (cls == NULL)
-        printf("Null cls\n");
-
-	/* Get problem_suit */
-	fid = (*jenv)->GetFieldID(jenv, cls, "problem_suit", "Ljava/lang/String;");
-	if(fid == NULL)
-		printf("Null fid\n");
-	jproblem_suit = (*jenv)->GetObjectField(jenv, problem, fid);
-	problem_suit = (*jenv)->GetStringUTFChars(jenv, jproblem_suit, NULL);
-
-	/* Get function_index */
-	fid = (*jenv)->GetFieldID(jenv, cls, "function_index", "I");
-	if(fid == NULL)
-		printf("Null fid2\n");
-	jfunction_index = (*jenv)->GetIntField(jenv, problem, fid);
-	function_index = (int)jfunction_index;
-
-	pb = coco_get_problem(problem_suit, function_index);
-	cres = coco_get_largest_values_of_interest(pb);
-	nb_variables = coco_get_number_of_variables(pb);
-
-	/* Prepare the return value */
-	res = (*jenv)->NewDoubleArray(jenv, nb_variables);
-	(*jenv)->SetDoubleArrayRegion(jenv, res, 0, nb_variables, cres);
-
-	coco_free_problem(pb);
-	(*jenv)->ReleaseStringUTFChars(jenv, jproblem_suit, problem_suit);
-
-	return res;
+    const double *cres; /* or const jdouble *cres;? */
+    coco_problem_t *pb = NULL;
+    jint nb_variables;
+    jdoubleArray res;
+    jclass cls;
+    
+    /* This test is both to prevent warning because interface_cls was not used and check exceptions */
+    if (interface_cls == NULL)
+        printf("Null interface_cls found\n");
+    pb = (coco_problem_t *)problem;
+    cres = coco_get_largest_values_of_interest(pb);
+    nb_variables = coco_get_number_of_variables(pb);
+    
+    /* Prepare the return value */
+    res = (*jenv)->NewDoubleArray(jenv, nb_variables);
+    (*jenv)->SetDoubleArrayRegion(jenv, res, 0, nb_variables, cres);
+    return res;
 }
 
 /*

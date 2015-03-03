@@ -23,8 +23,8 @@ public class JNIinterface {
 	public static native double[] cocoEvaluateFunction(Problem p, double[] x);
     public static native int cocoGetNumberOfVariables(long p);
     public static native int cocoGetNumberOfObjectives(long p);
-    public static native double[] cocoGetSmallestValuesOfInterest(long p); // to be modified
-    public static native double[] cocoGetLargestValuesOfInterest(long p); // to be modified
+    public static native double[] cocoGetSmallestValuesOfInterest(long p);
+    public static native double[] cocoGetLargestValuesOfInterest(long p);
     public static native boolean validProblem(String suit, int function_index);
     public static native String cocoGetProblemId(long p);
     public static native String cocoGetProblemName(long p);
