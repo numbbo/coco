@@ -204,8 +204,10 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
     strncpy(file_name, indexFile_prefix, NUMBBO_PATH_MAX - strlen(file_name) - 1);
     strncat(file_name, "_f", NUMBBO_PATH_MAX - strlen(file_name) - 1);
     strncat(file_name, function_id_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    //strncat(file_name, "_i", NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    //strncat(file_name, infoFile_firstInstance_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+#if 0
+    strncat(file_name, "_i", NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, infoFile_firstInstance_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+#endif
     strncat(file_name, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
     coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
     printf("%s, %s\n",file_path, infoFile_firstInstance_char);
