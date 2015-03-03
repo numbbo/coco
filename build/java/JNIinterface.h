@@ -94,7 +94,14 @@ JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemId
  */
 JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemName
     (JNIEnv *, jclass, jlong);
-
+    
+/*
+ * Class:     JNIinterface
+ * Method:    cocoGetEvaluations
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetEvaluations
+    (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }
