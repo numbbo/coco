@@ -210,7 +210,7 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
     (*jenv)->SetDoubleArrayRegion(jenv, res, 0, nb_variables, cres);
     return res;
 }
-
+/****************************************************************************************/
 /*
  * Class:     JNIinterface
  * Method:    validProblem
@@ -270,5 +270,25 @@ JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemName
     res = coco_get_problem_name(pb);
     jres = (*jenv)->NewStringUTF(jenv, res);
     return jres;
+}
+
+/*
+ * Class:     JNIinterface
+ * Method:    cocoGetEvaluations
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetEvaluations
+(JNIEnv *jenv, jclass interface_cls, jlong problem) {
+    
+    coco_problem_t *pb = NULL;
+    jint res;
+    jclass cls;
+    
+    /* This test is both to prevent warning because interface_cls was not used and check exceptions */
+    if (interface_cls == NULL)
+        printf("Null interface_cls found\n");
+    pb = (coco_problem_t *)problem;
+    res = coco_get_evaluations(pb);
+    return res;
 }
 
