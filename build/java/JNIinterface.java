@@ -7,17 +7,6 @@ public class JNIinterface {
 		System.loadLibrary("JNIinterface");
 	}
 	
-	public static Problem nextProblem(Benchmark benchmark) throws NoSuchProblemException {
-		if (!validProblem(benchmark.problem_suit, benchmark.function_index)) {
-			throw new NoSuchProblemException(benchmark.problem_suit, benchmark.function_index);
-		}
-        Problem problem = new Problem(benchmark.problem_suit, benchmark.function_index);
-        benchmark.function_index ++;
-        return problem;
-		
-		
-	}
-	
 	/* Native methods */
 	public static native long cocoGetProblem(String problem_suit, int function_index);
 	public static native long cocoObserveProblem(String observer, long problem, String options);
@@ -31,4 +20,5 @@ public class JNIinterface {
     public static native String cocoGetProblemId(long p);
     public static native String cocoGetProblemName(long p);
     public static native int cocoGetEvaluations(long p);
+    public static native int cocoNextProblemIndex(String problem_suite, int problem_index, String select_options); // to be implemented
 }
