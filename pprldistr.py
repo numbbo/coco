@@ -50,6 +50,7 @@ import matplotlib.pyplot as plt
 from pdb import set_trace
 from bbob_pproc import toolsstats, genericsettings, pproc
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
+from pptex import color_to_latex, marker_to_latex
 
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)]
@@ -95,6 +96,8 @@ rldUnsuccStyles = (
                    {'color': 'k'},
                    ) # should not be too short
 
+styles = genericsettings.line_styles
+
 caption_part_one = r"""%
      Empirical cumulative distribution functions (ECDF), plotting the fraction of
      trials with an outcome not larger than the respective value on the $x$-axis.
@@ -130,34 +133,53 @@ caption_two_part_one = r"""%
     Left sub-columns: ECDF of
     the number of function evaluations divided by dimension $D$
     (FEvals/D) """
-caption_two_fixed_targets = r"""%
+
+symbAlgorithmA = r'{%s%s}' % (color_to_latex('k'),
+    marker_to_latex(styles[0]['marker']))
+symbAlgorithmB = r'{%s%s}' % (color_to_latex('k'),
+    marker_to_latex(styles[1]['marker']))    
+caption_two_fixed_targets_part1 = r"""%
     to reach a target value $\fopt+\Df$ with $\Df=10^{k}$, where
     $k\in\{1, -1, -4, -8\}$ is given by the first value in the legend, for
-    \algorithmA\ ($\circ$) and \algorithmB\ ($\triangledown$). Light beige lines show the ECDF of
-    FEvals for target value $\Df=10^{-8}$ of all algorithms benchmarked during
-    BBOB-2009.
+    \algorithmA\ ("""
+caption_two_fixed_targets_part2 =  r""") and \algorithmB\ ("""
+caption_two_fixed_targets_part3 = r""")%
+    . Light beige lines show the ECDF of FEvals for target value $\Df=10^{-8}$
+    of all algorithms benchmarked during BBOB-2009.
     Right sub-columns: 
     ECDF of FEval ratios of \algorithmA\ divided by \algorithmB for target
     function values $10^k$ with $k$ given in the legend; all
     trial pairs for each function. Pairs where both trials failed are disregarded,
     pairs where one trial failed are visible in the limits being $>0$ or $<1$. The
-    legend also indicates, after the colon, the number of functions that were solved in at least one trial
-    (\algorithmA\ first)."""
-caption_two_rlbased_targets = r"""%
+    legend also indicates, after the colon, the number of functions that were
+    solved in at least one trial (\algorithmA\ first)."""
+caption_two_rlbased_targets_part1 = r"""%
     to fall below $\fopt+\Df$ for
-    \algorithmA\ ($\circ$) and \algorithmB\ ($\triangledown$) where \Df\ is the
-    target just not reached by the GECCO-BBOB-2009 best algorithm within a budget of
-    $k\times\DIM$ evaluations, with $k$ being the value in the legend. 
+    \algorithmA\ ("""
+caption_two_rlbased_targets_part2 = r""") and \algorithmB\ ("""
+caption_two_rlbased_targets_part3 = r"""%
+    ) where \Df\ is the target just not reached by the GECCO-BBOB-2009 best
+    algorithm within a budget of $k\times\DIM$ evaluations, with $k$ being the
+    value in the legend. 
     Right sub-columns:
-    ECDF of FEval ratios of \algorithmA\ divided by \algorithmB\ for run-length-based
-    targets; all
-    trial pairs for each function. Pairs where both trials failed are disregarded,
-    pairs where one trial failed are visible in the limits being $>0$ or $<1$. The
-    legends indicate the target budget of $k\times\DIM$ evaluations and,
-    after the colon, the number of functions that were solved in at least one trial
-    (\algorithmA\ first)."""
-caption_two_fixed = caption_two_part_one + caption_two_fixed_targets
-caption_two_rlbased = caption_two_part_one + caption_two_rlbased_targets
+    ECDF of FEval ratios of \algorithmA\ divided by \algorithmB\ for
+    run-length-based targets; all trial pairs for each function. Pairs where
+    both trials failed are disregarded, pairs where one trial failed are visible
+    in the limits being $>0$ or $<1$. The legends indicate the target budget of
+    $k\times\DIM$ evaluations and, after the colon, the number of functions that
+    were solved in at least one trial (\algorithmA\ first)."""
+caption_two_fixed = (caption_two_part_one 
+                        + caption_two_fixed_targets_part1
+                        + symbAlgorithmA
+                        + caption_two_fixed_targets_part2
+                        + symbAlgorithmB
+                        + caption_two_fixed_targets_part3)
+caption_two_rlbased = (caption_two_part_one
+                        + caption_two_rlbased_targets_part1
+                        + symbAlgorithmA
+                        + caption_two_rlbased_targets_part2
+                        + symbAlgorithmB
+                        + caption_two_rlbased_targets_part3)
 
 
 
