@@ -99,7 +99,7 @@ def main(argv=None):
             processes only part of the data.
         --settings=SETTINGS
             changes the style of the output figures and tables. At the
-            moment only the only differences are in the colors of the
+            moment, the only differences are in the colors of the
             output figures. SETTINGS can be either "grayscale", "color"
             or "black-white". The default setting is "color".
         --tab-only, --rld-only, --fig-only
