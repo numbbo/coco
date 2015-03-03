@@ -12,7 +12,6 @@ public class Problem {
 	public Problem(String problem_suite, int function_index) {
 		super();
 		this.problem = JNIinterface.cocoGetProblem(problem_suit, function_index);
-		System.out.println(this.problem);
 		this.problem_suite = problem_suite;
 		this.function_index = function_index;
 		this.lower_bounds = JNIinterface.cocoGetSmallestValuesOfInterest(this.problem);
