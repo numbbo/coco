@@ -16,6 +16,7 @@
  */
 JNIEXPORT jlong JNICALL Java_JNIinterface_cocoGetProblem
 (JNIEnv *jenv, jclass interface_cls, jstring jproblem_suit, jint jfunction_index) {
+    
     coco_problem_t *pb = NULL;
     const char *problem_suit;
     int function_index;
@@ -25,7 +26,6 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoGetProblem
     function_index = (int)jfunction_index;
     pb = coco_get_problem(problem_suit, function_index);
     return (jlong)pb; /* or long? */
-    
 }
 
 /*
@@ -35,6 +35,7 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoGetProblem
  */
 JNIEXPORT jlong JNICALL Java_JNIinterface_cocoObserveProblem
 (JNIEnv *, jclass interface_cls, jstring jobserver, jlong jproblem, jstring joptions) {
+    
     coco_problem_t *pb = NULL;
     const char *observer;
     const char *options;
@@ -54,6 +55,7 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoObserveProblem
  */
 JNIEXPORT void JNICALL Java_JNIinterface_cocoFreeProblem
 (JNIEnv *, jclass interface_cls, jlong jproblem) {
+    
     coco_problem_t *pb = NULL;
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
@@ -124,44 +126,15 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfVariables
 (JNIEnv *jenv, jclass interface_cls, jlong problem) {
 
 	coco_problem_t *pb = NULL;
-	const char *problem_suit;
-	int function_index;
-	int res;
-
-	jfieldID fid;
-	jstring jproblem_suit;
-	jint jfunction_index;
+    
+	jint res;
     jclass cls;
 
 	/* This test is both to prevent warning because interface_cls was not used and check exceptions */
 	if (interface_cls == NULL)
 		printf("Null interface_cls found\n");
-    
-    /* Get attributes from jobject problem */
-    cls = (*jenv)->GetObjectClass(jenv, problem);
-    if (cls == NULL)
-        printf("Null cls\n");
-
-	/* Get problem_suit */
-	fid = (*jenv)->GetFieldID(jenv, cls, "problem_suit", "Ljava/lang/String;");
-	if(fid == NULL)
-		printf("Null fid\n");
-	jproblem_suit = (*jenv)->GetObjectField(jenv, problem, fid);
-	problem_suit = (*jenv)->GetStringUTFChars(jenv, jproblem_suit, NULL);
-
-	/* Get function_index */
-	fid = (*jenv)->GetFieldID(jenv, cls, "function_index", "I");
-	if(fid == NULL)
-		printf("Null fid2\n");
-	jfunction_index = (*jenv)->GetIntField(jenv, problem, fid);
-	function_index = (int)jfunction_index; /* conversion not necessary */
-
-	pb = coco_get_problem(problem_suit, function_index);
-	res = coco_get_number_of_variables(pb);
-
-	coco_free_problem(pb);
-	(*jenv)->ReleaseStringUTFChars(jenv, jproblem_suit, problem_suit);
-
+    pb = (coco_problem_t *)problem;
+    res = coco_get_number_of_variables(pb);
 	return res;
 }
 
@@ -172,47 +145,18 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfVariables
  */
 JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfObjectives
 (JNIEnv *jenv, jclass interface_cls, jlong problem) {
-	coco_problem_t *pb = NULL;
-	const char *problem_suit;
-	int function_index;
-	int res;
-
-	jfieldID fid;
-	jstring jproblem_suit;
-	jint jfunction_index;
-    jclass cls;
-
-	/* This test is both to prevent warning because interface_cls was not used and check exceptions */
-	if (interface_cls == NULL)
-		printf("Null interface_cls found\n");
     
-    /* Get attributes from jobject problem */
-    cls = (*jenv)->GetObjectClass(jenv, problem);
-    if (cls == NULL)
-        printf("Null cls\n");
-
-	/* Get problem_suit */
-	fid = (*jenv)->GetFieldID(jenv, cls, "problem_suit", "Ljava/lang/String;");
-	if(fid == NULL)
-		printf("Null fid\n");
-	jproblem_suit = (*jenv)->GetObjectField(jenv, problem, fid);
-	problem_suit = (*jenv)->GetStringUTFChars(jenv, jproblem_suit, NULL);
-
-	/* Get function_index */
-	fid = (*jenv)->GetFieldID(jenv, cls, "function_index", "I");
-	if(fid == NULL)
-		printf("Null fid2\n");
-	jfunction_index = (*jenv)->GetIntField(jenv, problem, fid);
-	function_index = (int)jfunction_index;
-
-	pb = coco_get_problem(problem_suit, function_index);
-	res = coco_get_number_of_objectives(pb);
-
-	coco_free_problem(pb);
-	(*jenv)->ReleaseStringUTFChars(jenv, jproblem_suit, problem_suit);
-
-	return res;
-
+    coco_problem_t *pb = NULL;
+    
+    jint res;
+    jclass cls;
+    
+    /* This test is both to prevent warning because interface_cls was not used and check exceptions */
+    if (interface_cls == NULL)
+        printf("Null interface_cls found\n");
+    pb = (coco_problem_t *)problem;
+    res = coco_get_number_of_objectives(pb);
+    return res;
 }
 
 /*
