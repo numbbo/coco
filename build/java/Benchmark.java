@@ -1,8 +1,11 @@
 public class Benchmark {
 	String problem_suit;
+	String problem_suite_options;
 	String observer;
-	String options;
-	int function_index;
+	String observer_options;
+	int len;
+	int dimensions;
+	int objectives;
 	
 	/* Constructor */
 	public Benchmark(String problme_suit, String observer, String options) {

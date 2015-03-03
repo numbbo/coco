@@ -1,17 +1,19 @@
+// TODO: Important: find a way to check if a problem is NULL, i.e. is (coco_problem_t *)this.problem is NULL
 public class Problem {
 	long problem; // stores the pointer to the C coco_problem_t structure  
 	int number_of_variables;
 	int number_of_objectives;
 	public double[] lower_bounds;
 	public double[] upper_bounds;
-	String problem_suit;
+	String problem_suite;
 	int function_index;
 	
 	/* Constructor */
-	public Problem(String problem_suit, int function_index) {
+	public Problem(String problem_suite, int function_index) {
 		super();
 		this.problem = JNIinterface.cocoGetProblem(problem_suit, function_index);
-		this.problem_suit = problem_suit;
+		System.out.println(this.problem);
+		this.problem_suite = problem_suite;
 		this.function_index = function_index;
 		this.lower_bounds = JNIinterface.cocoGetSmallestValuesOfInterest(this.problem);
 		this.upper_bounds = JNIinterface.cocoGetLargestValuesOfInterest(this.problem);
