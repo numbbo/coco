@@ -43,6 +43,8 @@ void coco_evaluate_function(coco_problem_t *self, const double *x, double *y);
  * Tentative and yet versatile. 
  */
 size_t coco_get_evaluations(coco_problem_t *self);
+double coco_get_best_observed_fvalue1(const coco_problem_t *self);
+double coco_get_final_target_fvalue1(const coco_problem_t *self);
 
 /**
  * Evaluate the constraints of the NUMBB problem represented by

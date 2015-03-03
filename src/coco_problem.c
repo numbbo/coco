@@ -1,3 +1,4 @@
+#include <float.h>
 #include "coco.h"
 
 #include "coco_utilities.c"
@@ -52,6 +53,9 @@ coco_allocate_problem(const size_t number_of_variables,
   problem->problem_name = NULL;
   problem->problem_id = NULL;
   problem->evaluations = 0;
+  problem->final_target_delta[0] = 1e-8; /* in case to be modified by the benchmark */
+  problem->best_observed_fvalue[0] = DBL_MAX; 
+  problem->best_observed_evaluation[0] = 0;
   problem->data = NULL;
   return problem;
 }

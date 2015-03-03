@@ -61,16 +61,16 @@ struct coco_problem {
   size_t number_of_constraints;
   double *smallest_values_of_interest;
   double *largest_values_of_interest;
-  double *best_value;
+  double *best_value; /* means: f-value */
   double *best_parameter;
   char *problem_name;
   char *problem_id;
   size_t evaluations;
-  /*
-  double[1] final_target_delta;
-  double[1] best_observed_value;
-  size_t[1] best_observed_evaluation;
-  */
+#if 1
+  double final_target_delta[1];
+  double best_observed_fvalue[1];
+  size_t best_observed_evaluation[1];
+#endif
   void *data;
   /* The prominent usecase for data is coco_transform_data_t*, making an
    * "onion of problems", initialized in coco_allocate_transformed_problem(...).

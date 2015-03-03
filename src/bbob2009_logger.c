@@ -11,6 +11,8 @@
 #include "coco_problem.c"
 #include "coco_strdup.c"
 
+static int bbob2009_logger_verbosity = 9;  /* TODO: make this an option the user can modify */
+
 static int bbob2009_get_function_id(const coco_problem_t *problem);
 static int bbob2009_get_instance_id(const coco_problem_t *problem);
 
@@ -33,8 +35,6 @@ static size_t dimensions_in_current_infoFile[6] = {0,0,0,0,0,0}; /*should use BB
  * file is generated. 
  */
 static int bbob2009_logger_is_open = 0;  /* this could become lock-list of .info files */
-static int bbob2009_logger_verbosity = 2;  /* TODO: make this an option the user can modify */
-
 
 /*TODO: add possibility of adding a prefix to the index files*/
 
@@ -210,7 +210,9 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
 #endif
     strncat(file_name, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
     coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
+#if 0
     printf("%s, %s\n",file_path, infoFile_firstInstance_char);
+#endif
     if (*target_file == NULL) {
         tmp_file = fopen(file_path, "r");
         if ((tmp_file ) &&
