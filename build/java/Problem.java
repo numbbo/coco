@@ -45,7 +45,7 @@ public class Problem {
 	/* toString method */
 	@Override
 	public String toString() {
-        String pb_id = JNIinterface.cocoGetProblemId(this);
+        String pb_id = JNIinterface.cocoGetProblemId(this.problem);
         if (pb_id != null) {
             return pb_id;
         }
