@@ -71,21 +71,11 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoEvaluateFunction
 
 	double *y; /* Result of evaluation. To be allocated with coco_allocate_vector(coco_get_number_of_objectives(pb)) */
 	coco_problem_t *pb = NULL; /* Will contain the C problem */
-
-	/* Necessary information to create the C problem */
-	const char *problem_suit;
-	int function_index;
-	const char *observer;
-	const char *options;
-	int nb_objectives;
-
-	/* Java variables */
+    
+	jint nb_objectives;
     jclass cls;
 	jfieldID fid;
-	jstring jproblem_suit;
-	jint jfunction_index;
-	jstring jobserver;
-	jstring joptions;
+	jlong jproblem;
 	jdouble *cx;
 	jdoubleArray jy; /* Returned double array */
 
@@ -97,41 +87,21 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoEvaluateFunction
     cls = (*jenv)->GetObjectClass(jenv, problem);
     if (cls == NULL)
         printf("Null cls\n");
-    
-    /* Get problem_suit */
-	fid = (*jenv)->GetFieldID(jenv, cls, "problem_suit", "Ljava/lang/String;");
+
+	/* Get Problem.problem */
+	fid = (*jenv)->GetFieldID(jenv, cls, "problem", "J");
 	if(fid == NULL)
 		printf("Null fid\n");
-	jproblem_suit = (*jenv)->GetObjectField(jenv, problem, fid);
-	problem_suit = (*jenv)->GetStringUTFChars(jenv, jproblem_suit, NULL);
-
-	/* Get function_index */
-	fid = (*jenv)->GetFieldID(jenv, cls, "function_index", "I");
-	if(fid == NULL)
-		printf("Null fid2\n");
-	jfunction_index = (*jenv)->GetIntField(jenv, problem, fid);
-	function_index = (int)jfunction_index;
-
-	/* Get observer */
-	fid = (*jenv)->GetFieldID(jenv, cls, "observer_name", "Ljava/lang/String;");
-	if(fid == NULL)
-		printf("Null fid3\n");
-	jobserver = (*jenv)->GetObjectField(jenv, problem, fid);
-	observer = (*jenv)->GetStringUTFChars(jenv, jobserver, NULL);
-
-	/* Get options */
-	fid = (*jenv)->GetFieldID(jenv, cls, "options", "Ljava/lang/String;");
-	if(fid == NULL)
-		printf("Null fid4\n");
-	joptions = (*jenv)->GetObjectField(jenv, problem, fid);
-	options = (*jenv)->GetStringUTFChars(jenv, joptions, NULL);
-
-	pb = coco_get_problem(problem_suit, function_index);
-	pb = coco_observe_problem(observer, pb, options);
+	jproblem = (*jenv)->GetLongField(jenv, problem, fid);
+	/* Cast it to coco_problem_t */
+    pb = (coco_problem_t *)jproblem;
 
 	/* Call coco_evaluate_function */
 	cx = (*jenv)->GetDoubleArrayElements(jenv, x, NULL);
-	nb_objectives = coco_get_number_of_objectives(pb);
+    fid = (*jenv)->GetFieldID(jenv, cls, "number_of_objectives", "I");
+    if(fid == NULL)
+        printf("Null fid2\n");
+    nb_objectives = (*jenv)->GetIntField(jenv, problem, fid);
 	y = coco_allocate_vector(nb_objectives);
 	coco_evaluate_function(pb, cx, y);
 
@@ -141,12 +111,7 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoEvaluateFunction
 
 	/* Free resources */
 	coco_free_memory(y);
-	coco_free_problem(pb);
-	(*jenv)->ReleaseStringUTFChars(jenv, jproblem_suit, problem_suit);
-	(*jenv)->ReleaseStringUTFChars(jenv, jobserver, observer);
-	(*jenv)->ReleaseStringUTFChars(jenv, joptions, options);
 	(*jenv)->ReleaseDoubleArrayElements(jenv, x, cx, JNI_ABORT);
-
 	return jy;
 }
 
@@ -189,7 +154,7 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfVariables
 	if(fid == NULL)
 		printf("Null fid2\n");
 	jfunction_index = (*jenv)->GetIntField(jenv, problem, fid);
-	function_index = (int)jfunction_index;
+	function_index = (int)jfunction_index; /* conversion not necessary */
 
 	pb = coco_get_problem(problem_suit, function_index);
 	res = coco_get_number_of_variables(pb);

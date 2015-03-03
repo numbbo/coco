@@ -38,6 +38,10 @@ public class Problem {
 		return JNIinterface.cocoGetProblemName(this.problem);
 	}
 	
+	public int evaluations() {
+		return JNIinterface.cocoGetEvaluations(this.problem);
+	}
+	
 	/* toString method */
 	@Override
 	public String toString() {

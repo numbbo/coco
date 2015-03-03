@@ -28,4 +28,5 @@ public class JNIinterface {
     public static native boolean validProblem(String suit, int function_index);
     public static native String cocoGetProblemId(long p);
     public static native String cocoGetProblemName(long p);
+    public static native int cocoGetEvaluations(long p); // to be implemented
 }
