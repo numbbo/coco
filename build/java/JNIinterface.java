@@ -1,3 +1,5 @@
+import java.lang.Long;
+
 public class JNIinterface {
 	
 	/* Load the library */

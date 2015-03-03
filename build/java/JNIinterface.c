@@ -33,7 +33,7 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoGetProblem
  * Signature: (Ljava/lang/String;JLjava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_JNIinterface_cocoObserveProblem
-(JNIEnv *, jclass interface_cls, jstring jobserver, jlong jproblem, jstring joptions) {
+(JNIEnv *jenv, jclass interface_cls, jstring jobserver, jlong jproblem, jstring joptions) {
     
     coco_problem_t *pb = NULL;
     const char *observer;
@@ -54,7 +54,7 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoObserveProblem
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_JNIinterface_cocoFreeProblem
-(JNIEnv *, jclass interface_cls, jlong jproblem) {
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem) {
     
     coco_problem_t *pb = NULL;
     
@@ -248,7 +248,7 @@ JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemId
     jstring jres;
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
-    pb = (coco_problem_t *)jproblem;
+    pb = (coco_problem_t *)problem;
     res = coco_get_problem_id(pb);
     jres = (*jenv)->NewStringUTF(jenv, res);
     return jres;
