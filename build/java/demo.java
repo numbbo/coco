@@ -36,6 +36,7 @@ public class demo {
         	try {
         		Problem problem = my_benchmark.getProblem(problem_index);
             	my_optimizer(problem, problem.lower_bounds, problem.upper_bounds, MAXEVALS);
+            	addressed_problems++;
             	System.out.println("done with problem " + problem + " ...");
             	problem.free();
         	} catch (NoSuchProblemException e) {
