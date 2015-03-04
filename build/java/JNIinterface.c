@@ -221,27 +221,14 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
  * Signature: (LProblem;)Z
  */
 JNIEXPORT jboolean JNICALL Java_JNIinterface_validProblem
-(JNIEnv *jenv, jclass interface_cls, jobject problem) {
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem) {
+    
     coco_problem_t *pb = NULL;
-    jclass cls;
-    jlong jproblem;
     jfieldID fid;
     
     /* This test is both to prevent warning because interface_cls was not used and check exceptions */
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
-    
-    /* Get attributes from jobject problem */
-    cls = (*jenv)->GetObjectClass(jenv, problem);
-    if (cls == NULL)
-        printf("Null cls\n");
-    
-    /* Get Problem.problem */
-    fid = (*jenv)->GetFieldID(jenv, cls, "problem", "J");
-    if(fid == NULL)
-        printf("Null fid\n");
-    jproblem = (*jenv)->GetLongField(jenv, problem, fid);
-    /* Cast it to coco_problem_t */
     pb = (coco_problem_t *)jproblem;
     if (pb == NULL)
         return JNI_FALSE;
