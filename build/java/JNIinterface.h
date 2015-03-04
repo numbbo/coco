@@ -77,7 +77,7 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInteres
  * Signature: (LProblem;)Z
  */
 JNIEXPORT jboolean JNICALL Java_JNIinterface_validProblem
-    (JNIEnv *, jclass, jobject);
+    (JNIEnv *, jclass, jlong);
     
 /*
  * Class:     JNIinterface

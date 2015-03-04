@@ -9,9 +9,12 @@ public class Problem {
 	int function_index;
 	
 	/* Constructor */
-	public Problem(String problem_suite, int function_index) {
+	public Problem(String problem_suite, int function_index) throws NoSuchProblemException {
 		super();
-		this.problem = JNIinterface.cocoGetProblem(problem_suit, function_index);
+		this.problem = JNIinterface.cocoGetProblem(problem_suite, function_index);
+		if (!JNIinterface.validProblem(this.problem)){
+			throw new NoSuchProblemException(problem_suite, function_index);
+		}
 		this.problem_suite = problem_suite;
 		this.function_index = function_index;
 		this.lower_bounds = JNIinterface.cocoGetSmallestValuesOfInterest(this.problem);
