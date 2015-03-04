@@ -22,9 +22,9 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoGetProblem
     
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
-    /* Free resources */
     problem_suite = (*jenv)->GetStringUTFChars(jenv, jproblem_suite, NULL);
     pb = coco_get_problem(problem_suite, jfunction_index);
+    (*jenv)->ReleaseStringUTFChars(jenv, jproblem_suite, problem_suite);
     return (jlong)pb;
 }
 
@@ -309,9 +309,9 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoNextProblemIndex
     problem_suite = (*jenv)->GetStringUTFChars(jenv, jproblem_suite, NULL);
     select_options = (*jenv)->GetStringUTFChars(jenv, jselect_options, NULL);
     res = coco_next_problem_index(problem_suite, problem_index, select_options);
-    /* Free resources
+    /* Free resources */
     (*jenv)->ReleaseStringUTFChars(jenv, jproblem_suite, problem_suite);
-    (*jenv)->ReleaseStringUTFChars(jenv, jselect_options, select_options);*/
+    (*jenv)->ReleaseStringUTFChars(jenv, jselect_options, select_options);
     return res;
 }
 
