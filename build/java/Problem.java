@@ -29,6 +29,7 @@ public class Problem {
 		JNIinterface.cocoFreeProblem(this.problem);
 	}
 	
+	// Methods or attributes? Can these values change after the constructor is called?
 	public String id() {
 		// check this.problem != NULL
 		return JNIinterface.cocoGetProblemId(this.problem);
