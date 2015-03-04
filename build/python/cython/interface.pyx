@@ -30,6 +30,8 @@ cdef extern from "coco.h":
     const double *coco_get_smallest_values_of_interest(coco_problem_t *problem)
     const double *coco_get_largest_values_of_interest(coco_problem_t *problem)
     size_t coco_get_evaluations(coco_problem_t *problem)
+    double coco_get_final_target_fvalue1(coco_problem_t *problem)
+    double coco_get_best_observed_fvalue1(coco_problem_t *problem)
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
@@ -91,15 +93,21 @@ cdef class Problem:
     def number_of_objectives(self):
         "number of objectives, if equal to 1, call returns a scalar"
         return self._number_of_objectives
-        
-    @property
-    def _best_observed_value(self):
-        raise NotImplementedError
-        
+            
     @property
     def evaluations(self):
         return coco_get_evaluations(self.problem)
     
+    @property
+    def final_target_fvalue1(self):
+        assert(self.problem)
+        return coco_get_final_target_fvalue1(self.problem)
+        
+    @property
+    def best_observed_fvalue1(self):
+        assert(self.problem)
+        return coco_get_best_observed_fvalue1(self.problem)
+
     def free(self):
         """Free the given test problem. 
         
