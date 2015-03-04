@@ -21,19 +21,26 @@ public class Benchmark {
 		this.current_problem_index = -1;
 	}
 	
-	public Problem getProblemUnobserved(int problem_index) {
+	public Problem getProblemUnobserved(int problem_index) throws NoSuchProblemException {
 		Problem problem = null;
 		try {
 			problem = new Problem(this.problem_suite, problem_index);
 		} catch (NoSuchProblemException e) {
-			System.out.println(e);
+			System.out.println("Benchmark.getProblemUnobserved: " + e);
+			throw e;
 		}
 		return problem;
 	}
 	
-	public Problem getProblem(int problem_index) {
-		Problem problem = getProblemUnobserved(problem_index);
-		problem.addObserver(this.observer, this.observer_options);
+	public Problem getProblem(int problem_index) throws NoSuchProblemException {
+		Problem problem = null;
+		try {
+			problem = getProblemUnobserved(problem_index);
+			problem.addObserver(this.observer, this.observer_options);
+		} catch (NoSuchProblemException e) {
+			System.out.println("Benchmark.getProblem: " + e);
+			throw e;
+		}
 		return problem;
 	}
 	
@@ -41,8 +48,15 @@ public class Benchmark {
 		return JNIinterface.cocoNextProblemIndex(this.problem_suite, problem_index, this.problem_suite_options);
 	}
 	
-	public Problem nextProblem() {
-		this.current_problem_index = nextProblemIndex(this.current_problem_index);
-		return getProblem(this.current_problem_index);
+	public Problem nextProblem() throws NoSuchProblemException {
+		Problem problem = null;
+		try {
+			this.current_problem_index = nextProblemIndex(this.current_problem_index);
+			problem = getProblem(this.current_problem_index);
+		} catch (NoSuchProblemException e) {
+			System.out.println("Benchmark.nextProblem: " + e);
+			throw e;
+		}
+		return problem;
 	}
 }
