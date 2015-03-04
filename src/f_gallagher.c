@@ -7,8 +7,11 @@
 
 #define NB_PEAKS_21 101
 #define NB_PEAKS_22 21
-#define MAX_DIM 40
+#define MAX_DIM BBOB2009_MAX_DIM
+
 static double *bbob_gallagher_peaks;
+/* To make dimension free of restrictions (and save memory for large MAX_DIM),
+   these should be allocated in bbob_gallagher_problem */
 static double bbob_gallagher_peaks21[NB_PEAKS_21 * MAX_DIM];
 static double bbob_gallagher_peaks22[NB_PEAKS_22 * MAX_DIM];
 static int compare_doubles(const void *, const void *);
@@ -42,6 +45,7 @@ static void _bbob_gallagher_evaluate(coco_problem_t *self, const double *x,
   }
   Fadd = Fpen;
   /* Transformation in search space */
+  /* FIXME: this should rather be done in bbob_gallagher_problem */
   tmx = (double *)calloc(self->number_of_variables, sizeof(double));
   for (i = 0; i < self->number_of_variables; i++) {
     for (j = 0; j < self->number_of_variables; ++j) {
@@ -74,6 +78,7 @@ static void _bbob_gallagher_evaluate(coco_problem_t *self, const double *x,
   Ftrue += Fadd;
   y[0] = Ftrue;
   assert(y[0] >= self->best_value[0]);
+  /* FIXME: tmx hasn't been allocated with coco_allocate... */
   coco_free_memory(tmx);
 }
 
@@ -104,9 +109,11 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
   double b,
       c; /* Parameters for generating local optima. In the old code, they are
             different in f21 and f22 */
-
+      
+  assert(number_of_variables <= MAX_DIM);
   if (number_of_peaks == 101) {
     rseed = 21 + 10000 * instance_id;
+    /* FIXME: rather use coco_allocate_vector here */
     bbob_gallagher_peaks = bbob_gallagher_peaks21;
     maxcondition1 = sqrt(maxcondition1);
   } else {
