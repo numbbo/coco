@@ -46,9 +46,9 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoObserveProblem
     observer = (*jenv)->GetStringUTFChars(jenv, jobserver, NULL);
     options = (*jenv)->GetStringUTFChars(jenv, joptions, NULL);
     pb = coco_observe_problem(observer, pb, options);
-    /* Free resources?
+    /* Free resources? */
     (*jenv)->ReleaseStringUTFChars(jenv, jobserver, observer);
-    (*jenv)->ReleaseStringUTFChars(jenv, joptions, options);*/
+    /*(*jenv)->ReleaseStringUTFChars(jenv, joptions, options);*/ /* Commented at the moment becuase options is not duplicated in bbob2009_logger() (called by coco_observe_problem()). Has to be enabled however */
     return (jlong)pb;
 }
 
