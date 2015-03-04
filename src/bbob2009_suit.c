@@ -43,7 +43,7 @@
 #include "z_hat_schwefel.c"
 #include "penalize_uninteresting_values.c"
 
-#define MAX_DIM 40
+#define MAX_DIM BBOB2009_MAX_DIM
 #define BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 5
 #define BBOB2009_NUMBER_OF_FUNCTIONS 24
 #define BBOB2009_NUMBER_OF_DIMENSIONS 6
