@@ -2,7 +2,7 @@ import java.util.Random;
 
 public class demo {
 	public static final int MAXEVALS = 100;
-	public static int number_of_batches = 99; // const or not?
+	public static int number_of_batches = 1; // const or not?
 	public static int current_batch = 1; // const or not?
 	
     public static void my_optimizer(Problem problem,

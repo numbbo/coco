@@ -46,9 +46,9 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoObserveProblem
     observer = (*jenv)->GetStringUTFChars(jenv, jobserver, NULL);
     options = (*jenv)->GetStringUTFChars(jenv, joptions, NULL);
     pb = coco_observe_problem(observer, pb, options);
-    /* Free resources? */
+    /* Free resources?
     (*jenv)->ReleaseStringUTFChars(jenv, jobserver, observer);
-    (*jenv)->ReleaseStringUTFChars(jenv, joptions, options);
+    (*jenv)->ReleaseStringUTFChars(jenv, joptions, options);*/
     return (jlong)pb;
 }
 
@@ -309,9 +309,9 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoNextProblemIndex
     problem_suite = (*jenv)->GetStringUTFChars(jenv, jproblem_suite, NULL);
     select_options = (*jenv)->GetStringUTFChars(jenv, jselect_options, NULL);
     res = coco_next_problem_index(problem_suite, problem_index, select_options);
-    /* Free resources */
+    /* Free resources
     (*jenv)->ReleaseStringUTFChars(jenv, jproblem_suite, problem_suite);
-    (*jenv)->ReleaseStringUTFChars(jenv, jselect_options, select_options);
+    (*jenv)->ReleaseStringUTFChars(jenv, jselect_options, select_options);*/
     return res;
 }
 
