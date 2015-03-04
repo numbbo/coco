@@ -1,4 +1,5 @@
 import java.util.Random;
+import java.lang.reflect.Method;
 
 public class demo {
 	public static final int MAXEVALS = 100;
