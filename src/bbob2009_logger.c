@@ -194,6 +194,9 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
     int errnum;
     char function_id_char[3];/*TODO: consider adding them to data*/
     char infoFile_firstInstance_char[3];
+    if (infoFile_firstInstance == 0) {
+        infoFile_firstInstance = data->instance_id;
+    }
     sprintf(function_id_char, "%d", data->function_id);
     sprintf(infoFile_firstInstance_char, "%zu", infoFile_firstInstance);
     char file_name[NUMBBO_PATH_MAX] = {0};
@@ -209,6 +212,7 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
     strncat(file_name, infoFile_firstInstance_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
 #endif
     strncat(file_name, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    printf("%s, %s: (%s,%zu)\n",file_name, file_path, infoFile_firstInstance_char, infoFile_firstInstance);
     coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
 #if 0
     printf("%s, %s\n",file_path, infoFile_firstInstance_char);
@@ -359,7 +363,7 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
   _bbob2009_logger_openIndexFile(data, data->path, indexFile_prefix, tmpc_funId,
                                  dataFile_path);
   fprintf(data->index_file, ", %d", bbob2009_get_instance_id(inner_problem));
-
+  /* data files*/
   _bbob2009_logger_open_dataFile(&(data->fdata_file), data->path, dataFile_path,
                                  ".dat");
   fprintf(data->fdata_file, _file_header_str, *(inner_problem->best_value));
