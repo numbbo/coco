@@ -67,10 +67,10 @@ instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 41:1, 42:1, 43:1, 44:1,
 
 line_styles = [  # used by ppfigs and pprlmany  
           {'marker': 'o', 'markersize': 31, 'linestyle': '-', 'color': '#000080'}, # 'NavyBlue'
-          {'marker': 'h', 'markersize': 30, 'linestyle': '-', 'color': '#ff00ff'}, # 'Magenta'
+          {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': '#ff00ff'}, # 'Magenta'
           {'marker': '*', 'markersize': 33, 'linestyle': '-', 'color': '#ffa500'}, # 'Orange'
           {'marker': 'v', 'markersize': 28, 'linestyle': '-', 'color': '#6495ed'}, # 'CornflowerBlue'
-          {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': 'r'}, # 'Red'
+          {'marker': 'h', 'markersize': 30, 'linestyle': '-', 'color': 'r'}, # 'Red'
           {'marker': '^', 'markersize': 25, 'linestyle': '-', 'color': '#9acd32'}, # 'YellowGreen'
 #          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'g'}, # 'green' avoid green because of
 #          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': '#ffd700'}, # 'Goldenrod' seems too light
