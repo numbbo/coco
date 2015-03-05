@@ -196,7 +196,6 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
     char infoFile_firstInstance_char[3];
     if (infoFile_firstInstance == 0) {
         infoFile_firstInstance = data->instance_id;
-        printf("infoFile_firstInstance: %d", infoFile_firstInstance);
     }
     sprintf(function_id_char, "%d", data->function_id);
     sprintf(infoFile_firstInstance_char, "%zu", infoFile_firstInstance);
