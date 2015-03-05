@@ -162,6 +162,33 @@ static void _bbob2009_logger_error_io(FILE *path, int errnum) {
  * Creates the data files or simply opens it
  */
 
+/*
+ calling sequence:
+ _bbob2009_logger_open_dataFile(&(data->fdata_file), data->path, dataFile_path,
+ ".dat");
+ */
+
+static void _bbob2009_logger_open_dataFile(bbob2009_logger_t *data,FILE **target_file, const char *path,
+                                           const char *dataFile_path,
+                                           const char *file_extension) {
+    char file_path[NUMBBO_PATH_MAX] = {0};
+    char relative_filePath[NUMBBO_PATH_MAX] = {0};
+    int errnum;
+    strncpy(relative_filePath, dataFile_path,
+            NUMBBO_PATH_MAX - strlen(relative_filePath) - 1);
+    strncat(relative_filePath, file_extension,
+            NUMBBO_PATH_MAX - strlen(relative_filePath) - 1);
+    coco_join_path(file_path, sizeof(file_path), path, relative_filePath, NULL);
+    if (*target_file == NULL) {
+        *target_file = fopen(file_path, "a+");
+        errnum = errno;
+        if (*target_file == NULL) {
+            _bbob2009_logger_error_io(*target_file, errnum);
+        }
+    }
+}
+
+/*
 static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
                                            const char *dataFile_path,
                                            const char *file_extension) {
@@ -180,7 +207,7 @@ static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
       _bbob2009_logger_error_io(*target_file, errnum);
     }
   }
-}
+}*/
 
 /**
  * Creates the index file fileName_prefix+problem_id+file_extension in
@@ -235,8 +262,8 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                     dimensions_in_current_infoFile[i]=data->number_of_variables;
                     newLine = 1;
                 }else{
-                    newLine = 0;
                     if (i<bbob2009_number_of_dimensions) {/*dimension already present*/
+                    newLine = 0;
                         file_path[strlen(file_path)-strlen(infoFile_firstInstance_char) - 7] = 0;/*truncate the instance part*/
                         infoFile_firstInstance = data->instance_id;
                         sprintf(infoFile_firstInstance_char, "%zu", infoFile_firstInstance);
@@ -245,6 +272,7 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                         strncat(file_path, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
                     }
                     else{/*we have all dimensions*/
+                        newLine = 1;/*TODO: fix*/
                         for (j=0; j<bbob2009_number_of_dimensions;j++){
                             dimensions_in_current_infoFile[j]= 0;
                         }
@@ -380,15 +408,15 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
                                  dataFile_path);
   fprintf(data->index_file, ", %d", bbob2009_get_instance_id(inner_problem));
   /* data files*/
-  _bbob2009_logger_open_dataFile(&(data->fdata_file), data->path, dataFile_path,
+  _bbob2009_logger_open_dataFile(data, &(data->fdata_file), data->path, dataFile_path,
                                  ".dat");
   fprintf(data->fdata_file, _file_header_str, *(inner_problem->best_value));
 
-  _bbob2009_logger_open_dataFile(&(data->tdata_file), data->path, dataFile_path,
+  _bbob2009_logger_open_dataFile(data, &(data->tdata_file), data->path, dataFile_path,
                                  ".tdat");
   fprintf(data->tdata_file, _file_header_str, *(inner_problem->best_value));
 
-  _bbob2009_logger_open_dataFile(&(data->rdata_file), data->path, dataFile_path,
+  _bbob2009_logger_open_dataFile(data, &(data->rdata_file), data->path, dataFile_path,
                                  ".rdat");
   fprintf(data->rdata_file, _file_header_str, *(inner_problem->best_value));
   /* TODO: manage duplicate filenames by either using numbers or raising an
