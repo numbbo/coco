@@ -218,7 +218,7 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                                            const char *indexFile_prefix,
                                            const char *function_id,
                                            const char *dataFile_path) {
-    int errnum, newLine=0;/*newLine is at 1 if we only need a new line in the info file*/
+    int errnum, newLine;/*newLine is at 1 if we need a new line in the info file*/
     char function_id_char[3];/*TODO: consider adding them to data*/
     char infoFile_firstInstance_char[3];
     if (infoFile_firstInstance == 0) {
@@ -243,53 +243,53 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
         if ((tmp_file ) &&
             (current_dim == data->number_of_variables) &&
             (current_funId == data->function_id)) {/*new instance of current funId and current dim*/
+            newLine = 0;
             *target_file = fopen(file_path, "a+");
             if (*target_file == NULL) {
                 errnum = errno;
                 _bbob2009_logger_error_io(*target_file, errnum);
             }
             fclose(tmp_file);
-        } else { /* file doesn't exist (new funId) or different new dim*/
-            /*check that the dim was not already present earlier in the file*/
+        }
+        else { /* either file doesn't exist (new funId) or new Dim*/
+            /*check that the dim was not already present earlier in the file, if so, create a new info file*/
             if (current_dim != data->number_of_variables) {
                 int i, j;
                 for (i=0; i<bbob2009_number_of_dimensions && dimensions_in_current_infoFile[i]!=0 &&
                      dimensions_in_current_infoFile[i]!=data->number_of_variables;i++) {
-                    ;
+                    ;/*checks whether dimension already present in the current infoFile*/
                 }
                 if (i<bbob2009_number_of_dimensions && dimensions_in_current_infoFile[i]==0) {
                     /*new dimension seen for the first time*/
                     dimensions_in_current_infoFile[i]=data->number_of_variables;
                     newLine = 1;
-                }else{
-                    if (i<bbob2009_number_of_dimensions) {/*dimension already present*/
-                    newLine = 0;
-                        file_path[strlen(file_path)-strlen(infoFile_firstInstance_char) - 7] = 0;/*truncate the instance part*/
-                        infoFile_firstInstance = data->instance_id;
-                        sprintf(infoFile_firstInstance_char, "%zu", infoFile_firstInstance);
-                        strncat(file_path, "_i", NUMBBO_PATH_MAX - strlen(file_name) - 1);
-                        strncat(file_path, infoFile_firstInstance_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-                        strncat(file_path, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
-                    }
-                    else{/*we have all dimensions*/
-                        newLine = 1;/*TODO: fix*/
-                        for (j=0; j<bbob2009_number_of_dimensions;j++){
+                }
+                else{
+                        if (i<bbob2009_number_of_dimensions) {/*dimension already present, need to create a new file*/
+                            newLine = 0;
+                            file_path[strlen(file_path)-strlen(infoFile_firstInstance_char) - 7] = 0;/*truncate the instance part*/
+                            infoFile_firstInstance = data->instance_id;
+                            sprintf(infoFile_firstInstance_char, "%zu", infoFile_firstInstance);
+                            strncat(file_path, "_i", NUMBBO_PATH_MAX - strlen(file_name) - 1);
+                            strncat(file_path, infoFile_firstInstance_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
+                            strncat(file_path, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
+                            
+                        }
+                        else{/*we have all dimensions*/
+                            newLine = 1;
+                        }
+                        for (j=0; j<bbob2009_number_of_dimensions;j++){/*new info file, reinitilize list of dims*/
                             dimensions_in_current_infoFile[j]= 0;
                         }
-
-                    }
                     dimensions_in_current_infoFile[i]=data->number_of_variables;
                 }
             }
-            
-            /* ugly but necessary*/
             *target_file = fopen(file_path, "a+");/*in any case, we append*/
             if (*target_file == NULL) {
                 errnum = errno;
                 _bbob2009_logger_error_io(*target_file, errnum);
             }
-            
-            if (tmp_file) { /*File already exists, new dim so just a new line*/
+            if (tmp_file) { /*File already exists, new dim so just a new line. ALso, close the tmp_file*/
                 if (newLine) {
                     fprintf(*target_file, "\n");
                 }
@@ -307,7 +307,6 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                     dataFile_path); /*dataFile_path does not have the extension*/
             current_dim = data->number_of_variables;
             current_funId = data->function_id;
-
         }
     }
 }
