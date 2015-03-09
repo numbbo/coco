@@ -35,6 +35,3 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     res = (long long *)mxGetData(plhs[0]);
     *res = (long long)pb;   
 }
-
-
-
