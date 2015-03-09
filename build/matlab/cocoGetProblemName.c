@@ -13,19 +13,20 @@
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     long long *ref;
-    coco_problem_t *problem = NULL;
-    const mwSize dims[2] = {1, 1};
-    int *res;
+    coco_problem_t *pb = NULL;
+    const char *res;
 
     /* check for proper number of arguments */
     if(nrhs!=1) {
-        mexErrMsgIdAndTxt("cocoGetNumberOfVariables:nrhs","One input required.");
+        mexErrMsgIdAndTxt("cocoGetProblemName:nrhs","One input required.");
     }
     /* get the problem */
     ref = (long long *)mxGetData(prhs[0]);
-    problem = (coco_problem_t *)(*ref);
+    pb = (coco_problem_t *)(*ref);
+    /* call coco_get_problem_name(...) */
+    res = coco_get_problem_name(pb);
     /* prepare the return value */
-    plhs[0] = mxCreateNumericArray(2, dims, mxINT32_CLASS, mxREAL);
-    res = (int *)mxGetData(plhs[0]);
-    res[0] = coco_get_number_of_variables(problem);
+    plhs[0] = mxCreateString(res);
 }
+
+

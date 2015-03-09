@@ -23,13 +23,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
     /* get problem_suite */
     problem_suite = mxArrayToString(prhs[0]);
-    
     /* get function_index */
     findex = (int)mxGetScalar(prhs[1]);
-    
     /* call coco_get_problem() */
     pb = coco_get_problem(problem_suite, findex);
-    
     /* prepare the return value */
     plhs[0] = mxCreateNumericMatrix(1, 1 ,mxINT64_CLASS, mxREAL);
     res = (long long *)mxGetData(plhs[0]);
