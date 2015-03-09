@@ -43,7 +43,7 @@ typedef struct {
   int is_initialized;
   char *path; /*relative path to the data folder. Simply the Algname*/
   const char *
-      alg_name;      /*the alg name, for now, remporarly the same as the path*/
+      alg_name;      /*the alg name, for now, temporarly the same as the path*/
   FILE *index_file;  /*index file*/
   FILE *fdata_file;  /*function value aligned data file*/
   FILE *tdata_file;  /*number of function evaluations aligned data file*/
@@ -497,11 +497,14 @@ static void _bbob2009_logger_free_data(void *stuff) {
     printf("best f=%e after %ld fevals (done observing)\n",
            data->best_fvalue, (long)data->number_of_evaluations);
     }
+  if (data->alg_name != NULL) {
+	  coco_free_memory(data->alg_name);
+	  data->alg_name = NULL;
+  }
   if (data->path != NULL) {
     coco_free_memory(data->path);
     data->path = NULL;
   }
-
   if (data->index_file != NULL) {
     fprintf(data->index_file, ":%ld|%.1e", (long)data->number_of_evaluations,
             data->best_fvalue - data->optimal_fvalue);
