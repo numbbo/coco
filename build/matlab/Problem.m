@@ -1,40 +1,49 @@
-classdef Problem
+classdef Problem < handle
     
     properties
-      number_of_variables
-      number_of_objectives
-      number_of_constraints
-      smallest_values_of_interest
-      largest_values_of_interest
-      best_value
-      best_parameter
-      problem_name
-      problem_id
-      problem_suit
-      function_index
-      observer_name
-      options
+        problem
+        number_of_variables
+        number_of_objectives
+        lower_bounds
+        upper_bounds
+        problem_suite
+        function_index
     end
     
     methods
-        function Pr = Problem(varargin)
-            if nargin == 2
-                Pr.problem_suit = varargin{1};
-                Pr.function_index = varargin{2};
-                Pr.observer_name = '';
-                Pr.options = '';
-            else
-                if nargin == 4
-                    Pr.problem_suit = varargin{1};
-                    Pr.function_index = varargin{2};
-                    Pr.observer_name = varargin{3};
-                    Pr.options = varargin{4};
-                end
-            end
+        function Pr = Problem(problem_suite, function_index)
+            Pr.problem = cocoGetProblem(problem_suite, function_index);
+            Pr.problem_suite = problem_suite;
+            Pr.function_index = function_index;
+            Pr.lower_bounds = cocoGetSmallestValuesOfInterest(Pr.problem);
+            Pr.upper_bounds = cocoGetLargestValuesOfInterest(Pr.problem);
+            Pr.number_of_variables = cocoGetNumberOfVariables(Pr.problem);
+            Pr.number_of_objectives = cocoGetNumberOfObjectives(Pr.problem);
         end
         
+        function addObserver(Pr, observer, options)
+            Pr.problem = cocoObserveProblem(observer, Pr.problem, options);
+        end
+        
+        function free(Pr)
+            cocoFreeProblem(Pr.problem);
+        end
+        
+        function S = id(Pr)
+            S = cocoGetProblemId(Pr.problem);
+        end
+        
+        function S = name(Pr)
+            S = cocoGetProblemName(Pr.problem); % TODO: to be defined
+        end
+        
+        function eval = evaluations(Pr)
+            eval = cocoGetEvaluations(Pr.problem); % TODO: to be defined
+        end
+        
+        % TODO: remove toString
         function S = toString(Pr)
-            S = cocoGetProblemId(Pr);
+            S = cocoGetProblemId(Pr.problem);
             if isempty(S)
                 S = 'finalized/invalid problem';
             end
