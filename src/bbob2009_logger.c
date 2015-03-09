@@ -545,7 +545,7 @@ static coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
   bbob2009_logger_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));
-  data->alg_name = alg_name; /* FIXME Asma: data->alg_name = coco_strdup(alg_name) instead, because alg_name can be released elsewhere */
+  data->alg_name = coco_strdup(alg_name);
   if (bbob2009_logger_is_open)
     coco_error("The current bbob2009_logger (observer) must be closed before a new one is opened");
   /* This is the name of the folder which happens to be the algName */
