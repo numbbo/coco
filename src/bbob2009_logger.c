@@ -168,7 +168,7 @@ static void _bbob2009_logger_error_io(FILE *path, int errnum) {
  ".dat");
  */
 
-static void _bbob2009_logger_open_dataFile(bbob2009_logger_t *data,FILE **target_file, const char *path,
+static void _bbob2009_logger_open_dataFile(bbob2009_logger_t *data, FILE **target_file, const char *path,
                                            const char *dataFile_path,
                                            const char *file_extension) {
     char file_path[NUMBBO_PATH_MAX] = {0};
@@ -218,12 +218,11 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                                            const char *indexFile_prefix,
                                            const char *function_id,
                                            const char *dataFile_path) {
+    char used_dataFile_path[NUMBBO_PATH_MAX] = {0};/*to add the instance number TODO: this should be done outside*/
+    strncpy(used_dataFile_path, dataFile_path, NUMBBO_PATH_MAX - strlen(used_dataFile_path) - 1);
     int errnum, newLine;/*newLine is at 1 if we need a new line in the info file*/
     char function_id_char[3];/*TODO: consider adding them to data*/
     char infoFile_firstInstance_char[3];
-    if (infoFile_firstInstance == 0) {
-        infoFile_firstInstance = data->instance_id;
-    }
     sprintf(function_id_char, "%d", data->function_id);
     sprintf(infoFile_firstInstance_char, "%zu", infoFile_firstInstance);
     char file_name[NUMBBO_PATH_MAX] = {0};
@@ -273,7 +272,6 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                             strncat(file_path, "_i", NUMBBO_PATH_MAX - strlen(file_name) - 1);
                             strncat(file_path, infoFile_firstInstance_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
                             strncat(file_path, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
-                            
                         }
                         else{/*we have all dimensions*/
                             newLine = 1;
@@ -303,8 +301,11 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                     (int)strtol(function_id, NULL, 10), (long)data->number_of_variables,
                     pow(10, -8), data->alg_name);
             fprintf(*target_file, "%%\n");
+            strncat(used_dataFile_path, "_i", NUMBBO_PATH_MAX - strlen(used_dataFile_path) - 1);
+            strncat(used_dataFile_path, infoFile_firstInstance_char,
+                    NUMBBO_PATH_MAX - strlen(used_dataFile_path) - 1);
             fprintf(*target_file, "%s.dat",
-                    dataFile_path); /*dataFile_path does not have the extension*/
+                    used_dataFile_path); /*dataFile_path does not have the extension*/
             current_dim = data->number_of_variables;
             current_funId = data->function_id;
         }
@@ -402,6 +403,10 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
   strncat(dataFile_path, "_DIM", NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
   strncat(dataFile_path, tmpc_dim, NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
 
+  if (infoFile_firstInstance == 0) {
+        infoFile_firstInstance = data->instance_id;
+  }
+  
   /* index/info file*/
   _bbob2009_logger_openIndexFile(data, data->path, indexFile_prefix, tmpc_funId,
                                  dataFile_path);
