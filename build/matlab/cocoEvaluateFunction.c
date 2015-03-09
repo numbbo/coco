@@ -12,15 +12,9 @@
 /* The gateway function */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    char *problem_suit;
-    mxArray *problem_suit_prop;
-    int findex;
-    mxArray *findex_prop;
-    char *observer = NULL;
-    mxArray *observer_prop;
-    char *options = NULL;
-    mxArray *options_prop;
-    coco_problem_t *pb = NULL;
+    long long *ref;
+    mxArray *problem_prop;
+    coco_problem_t *problem = NULL;
     const char *class_name = NULL;
     int nb_objectives;
     double *x;
@@ -42,34 +36,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(!mxIsDouble(prhs[1])) {
         mexErrMsgIdAndTxt("cocoEvaluateFunction:notDoubleArray","Input x must be aan array of doubles.");
     }
-    /* get the properties of the Problem object */
-    problem_suit_prop = mxGetProperty(prhs[0], 0, "problem_suit");
-    problem_suit = mxArrayToString(problem_suit_prop); /* mxFree(problem_suit) */
-    findex_prop = mxGetProperty(prhs[0], 0, "function_index");
-    findex = (int)mxGetScalar(findex_prop);
-    observer_prop = mxGetProperty(prhs[0], 0, "observer_name");
-    observer = mxArrayToString(observer_prop); /* mxFree(observer) */
-    options_prop = mxGetProperty(prhs[0], 0, "options");
-    options = mxArrayToString(options_prop); /* mxFree(options) */
-    /* get the problem */
-    /* FIXME: evaluate function should call the evaluate
-              function of an already open problem instance of
-              get a new problem instance. Otherwise the observer
-              will invariably fail. */
-    pb = coco_get_problem(problem_suit, findex);
-    pb = coco_observe_problem(observer, pb, options);
-    /* prepare the return value */
-    nb_objectives = coco_get_number_of_objectives(pb);
-    plhs[0] = mxCreateDoubleMatrix(1, (mwSize)nb_objectives, mxREAL);
-    y = mxGetPr(plhs[0]);
+    /* get Problem.problem */
+    problem_prop = mxGetProperty(prhs[0], 0, "problem");
+    ref = (long long *)mxGetData(problem_prop);
+    problem = (coco_problem_t *)(*ref);
     /* get the x vector */
     x = mxGetPr(prhs[1]);
+    /* prepare the return value */
+    nb_objectives = coco_get_number_of_objectives(problem);
+    plhs[0] = mxCreateDoubleMatrix(1, (mwSize)nb_objectives, mxREAL);
+    y = mxGetPr(plhs[0]);
     /* call coco_evaluate_function(...) */
-    coco_evaluate_function(pb, x, y);
-    /*mexPrintf("%f", y[0]);*/
-    /* free resources */
-    coco_free_problem(pb);
-    mxFree(problem_suit);
-    mxFree(observer);
-    mxFree(options);
+    coco_evaluate_function(problem, x, y);
 }
