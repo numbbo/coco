@@ -22,6 +22,7 @@ static const size_t bbob2009_nbpts_fval = 5;
 static size_t current_dim = 0;
 static size_t current_funId = 0;
 static size_t infoFile_firstInstance = 0;
+char infoFile_firstInstance_char[3];
 /*a possible solution: have a list of dims that are already in the file, if the ones we're about to log is != current_dim and the funId is currend_funId, create a new .info file with as suffix the number of the first instance */
 static const int bbob2009_number_of_dimensions = 6;
 static size_t dimensions_in_current_infoFile[6] = {0,0,0,0,0,0}; /*TODO should use BBOB2009_NUMBER_OF_DIMENSIONS*/
@@ -168,7 +169,7 @@ static void _bbob2009_logger_error_io(FILE *path, int errnum) {
  ".dat");
  */
 
-static void _bbob2009_logger_open_dataFile(bbob2009_logger_t *data, FILE **target_file, const char *path,
+static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
                                            const char *dataFile_path,
                                            const char *file_extension) {
     char file_path[NUMBBO_PATH_MAX] = {0};
@@ -223,7 +224,6 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
     strncpy(used_dataFile_path, dataFile_path, NUMBBO_PATH_MAX - strlen(used_dataFile_path) - 1);
     int errnum, newLine;/*newLine is at 1 if we need a new line in the info file*/
     char function_id_char[3];/*TODO: consider adding them to data*/
-    char infoFile_firstInstance_char[3];
     if (infoFile_firstInstance == 0) {
         infoFile_firstInstance = data->instance_id;
     }
@@ -412,15 +412,19 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
                                  dataFile_path);
   fprintf(data->index_file, ", %d", bbob2009_get_instance_id(inner_problem));
   /* data files*/
-  _bbob2009_logger_open_dataFile(data, &(data->fdata_file), data->path, dataFile_path,
+  /*TODO: definitely improvable but works for now*/
+  strncat(dataFile_path, "_i", NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+  strncat(dataFile_path, infoFile_firstInstance_char,
+            NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+  _bbob2009_logger_open_dataFile(&(data->fdata_file), data->path, dataFile_path,
                                  ".dat");
   fprintf(data->fdata_file, _file_header_str, *(inner_problem->best_value));
 
-  _bbob2009_logger_open_dataFile(data, &(data->tdata_file), data->path, dataFile_path,
+  _bbob2009_logger_open_dataFile(&(data->tdata_file), data->path, dataFile_path,
                                  ".tdat");
   fprintf(data->tdata_file, _file_header_str, *(inner_problem->best_value));
 
-  _bbob2009_logger_open_dataFile(data, &(data->rdata_file), data->path, dataFile_path,
+  _bbob2009_logger_open_dataFile(&(data->rdata_file), data->path, dataFile_path,
                                  ".rdat");
   fprintf(data->rdata_file, _file_header_str, *(inner_problem->best_value));
   /* TODO: manage duplicate filenames by either using numbers or raising an
