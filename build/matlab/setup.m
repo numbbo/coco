@@ -1,7 +1,13 @@
+mex -Dchar16_t=uint16_t cocoGetProblem.c
+mex -Dchar16_t=uint16_t cocoObserveProblem.c
+mex -Dchar16_t=uint16_t cocoFreeProblem.c
 mex -Dchar16_t=uint16_t cocoEvaluateFunction.c
-mex -Dchar16_t=uint16_t cocoGetLargestValuesOfInterest.c
-mex -Dchar16_t=uint16_t cocoGetSmallestValuesOfInterest.c
-mex -Dchar16_t=uint16_t cocoGetNumberOfObjectives.c
 mex -Dchar16_t=uint16_t cocoGetNumberOfVariables.c
-mex -Dchar16_t=uint16_t cocoGetProblemId.c
+mex -Dchar16_t=uint16_t cocoGetNumberOfObjectives.c
+mex -Dchar16_t=uint16_t cocoGetSmallestValuesOfInterest.c
+mex -Dchar16_t=uint16_t cocoGetLargestValuesOfInterest.c
 mex -Dchar16_t=uint16_t validProblem.c
+mex -Dchar16_t=uint16_t cocoGetProblemId.c
+mex -Dchar16_t=uint16_t cocoGetProblemName.c
+mex -Dchar16_t=uint16_t cocoGetEvaluations.c
+mex -Dchar16_t=uint16_t cocoNextProblemIndex.c

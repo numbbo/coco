@@ -21,7 +21,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgIdAndTxt("cocoFreeProblem:nrhs","One input required.");
     }
     /* get the problem */
-    ref = (long long *)mxGetData(prhs[1]);
+    ref = (long long *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
     /* call coco_free_problem() */
     coco_free_problem(problem);
