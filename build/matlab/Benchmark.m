@@ -14,7 +14,7 @@ classdef Benchmark < handle
     methods
         function B = Benchmark(problem_suite, problem_suite_options, observer, observer_options)
             B.problem_suite = problem_suite;
-            B.problem_suite_options = problem_suite_options
+            B.problem_suite_options = problem_suite_options;
             B.observer = observer;
             B.observer_options = observer_options;
             B.len = 0;
@@ -24,12 +24,22 @@ classdef Benchmark < handle
         end
         
         function Pr = getProblemUnobserved(B, problem_index) % handle exceptions
-            Pr = Problem(B.problem_suite, problem_index);
+            try
+                Pr = Problem(B.problem_suite, problem_index);
+            catch e
+                disp(['Benchmark.getProblemUnobserved: ', e.message]);
+                throw(e);
+            end
         end
         
         function Pr = getProblem(B, problem_index) % handle exceptions
-            Pr = getProblemUnobserved(B, problem_index);
-            addObserver(Pr, B.observer, B.observer_options);
+            try
+                Pr = getProblemUnobserved(B, problem_index);
+                addObserver(Pr, B.observer, B.observer_options);
+            catch e
+                disp(['Benchmark.getProblem: ', e.message]);
+                throw(e);
+            end
         end
         
         function index = nextProblemIndex(B, problem_index)
@@ -37,8 +47,13 @@ classdef Benchmark < handle
         end
         
         function Pr = nextProblem(B) % handle exceptions
-            B.current_problem_index = nextProblemIndex(B, B.current_problem_index);
-            Pr = getProblem(B, B.current_problem_index);
+            try
+                B.current_problem_index = nextProblemIndex(B, B.current_problem_index);
+                Pr = getProblem(B, B.current_problem_index);
+            catch e
+                disp(['Benchmark.nextProblem: ', e.message]);
+                throw(e);
+            end
         end
     end
     

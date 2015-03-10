@@ -13,6 +13,12 @@ classdef Problem < handle
     methods
         function Pr = Problem(problem_suite, function_index)
             Pr.problem = cocoGetProblem(problem_suite, function_index);
+            if ~validProblem(Pr.problem)
+                msgID = 'Problem:NoSuchProblem';
+                msg = ['Problem.Problem: Problem suit ', problem_suite, ' lacks a function with function id ', num2str(function_index)];
+                baseException = MException(msgID, msg);
+                throw(baseException)
+            end
             Pr.problem_suite = problem_suite;
             Pr.function_index = function_index;
             Pr.lower_bounds = cocoGetSmallestValuesOfInterest(Pr.problem);

@@ -182,7 +182,7 @@ def build_matlab():
     copy_file('src/coco.h', 'build/matlab/coco.h')
     write_file(hg_revision(), "build/matlab/REVISION")
     write_file(hg_version(), "build/matlab/VERSION")
-    run('build/matlab', ['matlab', '-nodisplay', '-nospash', '-r', "run('setup.m'); exit"])
+    run('build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
     
 ################################################################################
 ## Java
