@@ -23,9 +23,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgIdAndTxt("cocoGetSmallestValuesOfInterest:nrhs","One input required.");
     }
     /* get the problem */
-    ref = (long long *)mxGetData(prhs[1]);
+    ref = (long long *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
-    
     nb_variables = coco_get_number_of_variables(problem);
     plhs[0] = mxCreateDoubleMatrix(1, (mwSize)nb_variables, mxREAL);
     v = mxGetPr(plhs[0]);
