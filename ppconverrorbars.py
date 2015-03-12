@@ -42,7 +42,8 @@ warned = False  # print just one warning and set to True
 
 
 def rearrange(blist, flist):
-    """Alligns the number of evaluations taken from the blist with the correpsning flist"""
+    """Alligns the number of evaluations taken from the blist with the
+       corresponding flist"""
     final_b=[]
     final_f=[]
     for i in range(0,len(blist)): #runs over dimensions
