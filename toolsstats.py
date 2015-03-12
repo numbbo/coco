@@ -655,12 +655,13 @@ def significancetest(entry0, entry1, targets):
 
         # 2. 3. 4. Collect data for the significance test:
         curdata = []  # current data 
+        
         for j, entry in enumerate((entry0, entry1)):
             tmp = evals[j][i].copy()
             idx = np.isnan(tmp)
             idx[idx == False] += tmp[idx == False] > FE_umin
             # was not a bool before: idx = np.isnan(tmp) + (tmp > FE_umin)
-            tmp = np.power(tmp, -1.)
+            tmp[idx == False] = np.power(tmp[idx == False], -1.)
             if idx.any():
                 tmp[idx] = -fvalues[j][idx]  # larger data is better
             curdata.append(tmp)

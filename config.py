@@ -43,8 +43,8 @@ def target_values(is_expensive, dict_max_fun_evals={}, runlength_limit=1e3):
             genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive
         else:
             genericsettings.runlength_based_targets = False
-
-    
+            
+            
 def config():
     """called from a high level, e.g. rungeneric, to configure the lower level 
     modules via modifying parameter settings. 
