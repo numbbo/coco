@@ -176,8 +176,7 @@ def main(argv=None):
         outputdir = 'ppdata'
         isNoisy = False
         isNoiseFree = False
-
-        isPer = True
+        isRLDistr = True
         isTab = True
         isFig = True
         inputsettings = "color"
@@ -201,7 +200,7 @@ def main(argv=None):
                 isNoiseFree = True
             #The next 3 are for testing purpose
             elif o == "--tab-only":
-                isPer = False
+                isRLDistr = False
                 isFig = False
             elif o == "--rld-single-fcts":
                 isRldOnSingleFcts = True
@@ -209,7 +208,7 @@ def main(argv=None):
                 isTab = False
                 isFig = False
             elif o == "--fig-only":
-                isPer = False
+                isRLDistr = False
                 isTab = False
             elif o == "--perf-only":
                 isTab = False
@@ -324,11 +323,11 @@ def main(argv=None):
         plt.rc("font", **inset.rcfont)
         plt.rc("legend", **inset.rclegend)
 
-        #convergence plots
+        # convergence plots
         if isConv:
             ppconverrorbars.main(dictAlg,outputdir,verbose)
-        # Performance profiles
-        if isPer:
+        # empirical cumulative distribution functions (ECDFs) aka Data profiles
+        if isRLDistr:
             config.config()
             # ECDFs per noise groups
             dictNoi = pproc.dictAlgByNoi(dictAlg)

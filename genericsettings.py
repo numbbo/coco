@@ -198,6 +198,40 @@ rctick = {"labelsize": 20}
 rcfont = {"size": 20}
 rclegend = {"fontsize": 20}
     
+# extracted default settings from rungeneric1, rungeneric2, and rungenericmany
+# after the variables have been made consistent:    
+#inputCrE = 0.
+#isFig = True
+#isTab = True
+#isNoisy = False
+#isNoiseFree = False        
+#isConv = False
+#verbose = False
+#outputdir = 'ppdata'
+#inputsettings = 'color'
+#isRLbased = None  # allows automatic choice
+#isExpensive = None 
+#isRldOnSingleFcts = False
+#isRLDistr = True #
+##
+#isPostProcessed = False # only affects rungeneric1
+#isLogLoss = True # only affects rungeneric1
+#isPickled = False # only affects rungeneric1
+##    
+#isScatter = True # only affects rungeneric2
+#isScaleUp = True # only affects rungeneric2
+    
+#longoptlist = ["help", "output-dir=", "noisy", "noise-free",
+#               "tab-only", "fig-only", "rld-only", "rld-single-fcts",
+#               "verbose", "settings=", "conv", 
+#               "expensive", "not-expensive", "runlength-based",
+#               "los-only", "crafting-effort=", "pickle",
+#               "sca-only"]
+# thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
+# and "sca-only" only affects rungeneric2
+
+
+    
 class Testbed(object):
     """this might become the future way to have settings related to testbeds
     TODO: should go somewhere else than genericsettings.py 

@@ -174,11 +174,11 @@ def main(argv=None):
             usage()
             sys.exit()
 
-        isfigure = True
-        isrldistr = True
-        istable = True
-        isscatter = True
-        isscaleup = True
+        isFig = True
+        isRLDistr = True
+        isTab = True
+        isScatter = True
+        isScaleUp = True
         isNoisy = False
         isNoiseFree = False
         verbose = False
@@ -201,21 +201,21 @@ def main(argv=None):
             #elif o in ("-s", "--style"):
             #    inputsettings = a
             elif o == "--fig-only":
-                isrldistr = False
-                istable = False
-                isscatter = False
+                isRLDistr = False
+                isTab = False
+                isScatter = False
             elif o == "--rld-only":
-                isfigure = False
-                istable = False
-                isscatter = False
+                isFig = False
+                isTab = False
+                isScatter = False
             elif o == "--tab-only":
-                isfigure = False
-                isrldistr = False
-                isscatter = False
+                isFig = False
+                isRLDistr = False
+                isScatter = False
             elif o == "--sca-only":
-                isfigure = False
-                isrldistr = False
-                istable = False
+                isFig = False
+                isRLDistr = False
+                isTab = False
             elif o == "--noisy":
                 isNoisy = True
             elif o == "--noise-free":
@@ -322,7 +322,7 @@ def main(argv=None):
         config.config()
         
         ######################### Post-processing #############################
-        if isfigure or isrldistr or istable or isscatter:
+        if isFig or isRLDistr or isTab or isScatter:
             if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
                 if verbose:
@@ -367,7 +367,7 @@ def main(argv=None):
             raise Usage('Data Mismatch: \n  ' + ' '.join(txt)
                         + '\nTry using --noise-free or --noisy flags.')
 
-        if isfigure:
+        if isFig:
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
             plt.rc("ytick", **inset.rcticklarger)
@@ -382,7 +382,7 @@ def main(argv=None):
         plt.rc("font", **inset.rcfont)
         plt.rc("legend", **inset.rclegend)
 
-        if isrldistr:
+        if isRLDistr:
             if len(dictFN0) > 1 or len(dictFN1) > 1:
                 warnings.warn('Data for functions from both the noisy and ' +
                               'non-noisy testbeds have been found. Their ' +
@@ -476,7 +476,7 @@ def main(argv=None):
         if isConv:
             ppconverrorbars.main(dictAlg,outputdir,verbose)
 
-        if istable:
+        if isTab:
             dictNG0 = dsList0.dictByNoise()
             dictNG1 = dsList1.dictByNoise()
 
@@ -539,7 +539,7 @@ def main(argv=None):
                             ])
             print "Tables done."
 
-        if isscatter:
+        if isScatter:
             if genericsettings.runlength_based_targets:
                 ppscatter.targets = ppscatter.runlength_based_targets
             ppscatter.main(dsList1, dsList0, outputdir, verbose=verbose)
@@ -550,7 +550,7 @@ def main(argv=None):
                             ])
             print "Scatter plots done."
 
-        if isscaleup:
+        if isScaleUp:
             plt.rc("axes", labelsize=20, titlesize=24)
             plt.rc("xtick", labelsize=20)
             plt.rc("ytick", labelsize=20)
@@ -562,7 +562,7 @@ def main(argv=None):
             plt.rcdefaults()
             print "Scaling figures done."
 
-        if isfigure or isrldistr or istable or isscatter or isscaleup:
+        if isFig or isRLDistr or isTab or isScatter or isScaleUp:
             print "Output data written to folder %s" % outputdir
 
         plt.rcdefaults()
