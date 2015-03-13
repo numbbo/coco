@@ -40,10 +40,11 @@ __all__ = ['main']
 
 # Used by getopt:
 shortoptlist = "hvpfo:"
-longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
-               "fig-only", "rld-only", "los-only", "crafting-effort=",
-               "pickle", "verbose", "settings=", "conv", "rld-single-fcts",
-               "expensive", "not-expensive", "runlength-based"]
+longoptlist = ["help", "output-dir=", "noisy", "noise-free",
+               "tab-only", "fig-only", "rld-only", "rld-single-fcts",
+               "verbose", "settings=", "conv", 
+               "expensive", "not-expensive", "runlength-based",
+               "los-only", "crafting-effort=", "pickle"]
 
 # CLASS DEFINITIONS
 
