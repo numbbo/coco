@@ -51,9 +51,6 @@ import matplotlib.pyplot as plt
 
 __all__ = ['main']
 
-# Used by getopt:
-shortoptlist = "hvo:"
-
 #CLASS DEFINITIONS
 
 class Usage(Exception):
@@ -161,7 +158,7 @@ def main(argv=None):
     try:
 
         try:
-            opts, args = getopt.getopt(argv, shortoptlist, genericsettings.longoptlist)
+            opts, args = getopt.getopt(argv, genericsettings.shortoptlist, genericsettings.longoptlist)
         except getopt.error, msg:
              raise Usage(msg)
 
@@ -186,7 +183,7 @@ def main(argv=None):
 
         #Process options
         for o, a in opts:
-            if o in ("-v","--verbose"):
+            if o in ("-v", "--verbose"):
                 verbose = True
             elif o in ("-h", "--help"):
                 usage()
@@ -231,7 +228,7 @@ def main(argv=None):
                 warnings.warn("option --los-only will have no effect with rungeneric2.py")
             elif o == "--crafting-effort=":
                 warnings.warn("option --crafting-effort will have no effect with rungeneric2.py")
-            elif o == "--pickle":
+            elif o in ("-p", "--pickle"):
                 warnings.warn("option --pickle will have no effect with rungeneric2.py")
             else:
                 assert False, "unhandled option"

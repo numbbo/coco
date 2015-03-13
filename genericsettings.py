@@ -220,7 +220,9 @@ rclegend = {"fontsize": 20}
 ##    
 #isScatter = True # only affects rungeneric2
 #isScaleUp = True # only affects rungeneric2
-    
+
+# Used by getopt:
+shortoptlist = "hvpo:"    
 longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "tab-only", "fig-only", "rld-only", "rld-single-fcts",
                "verbose", "settings=", "conv", 
