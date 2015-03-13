@@ -183,8 +183,8 @@ def main(argv=None):
             sys.exit()
 
         inputCrE = 0.
-        isfigure = True
-        istab = True
+        isFig = True
+        isTab = True
         isrldistr = True
         islogloss = True
         isPostProcessed = False
@@ -216,20 +216,20 @@ def main(argv=None):
                 isNoiseFree = True
             # The next 4 are for testing purpose
             elif o == "--tab-only":
-                isfigure = False
+                isFig = False
                 isrldistr = False
                 islogloss = False
             elif o == "--fig-only":
-                istab = False
+                isTab = False
                 isrldistr = False
                 islogloss = False
             elif o == "--rld-only":
-                istab = False
-                isfigure = False
+                isTab = False
+                isFig = False
                 islogloss = False
             elif o == "--los-only":
-                istab = False
-                isfigure = False
+                isTab = False
+                isFig = False
                 isrldistr = False
             elif o == "--crafting-effort":
                 try:
@@ -334,7 +334,7 @@ def main(argv=None):
             # TODO: put some errors where this case would be a problem.
             # raise Usage?
 
-        if isfigure or istab or isrldistr or islogloss:
+        if isFig or isTab or isrldistr or islogloss:
             if not os.path.exists(outputdir):
                 os.makedirs(outputdir)
                 if verbose:
@@ -346,7 +346,7 @@ def main(argv=None):
         if isConv:
             ppconverrorbars.main(dictAlg, outputdir, verbose)
 
-        if isfigure:
+        if isFig:
             print "Scaling figures...",
             sys.stdout.flush()
             # ERT/dim vs dim.
@@ -365,7 +365,7 @@ def main(argv=None):
         plt.rc("font", **inset.rcfont)
         plt.rc("legend", **inset.rclegend)
 
-        if istab:
+        if isTab:
             print "TeX tables...",
             sys.stdout.flush()
             dictNoise = dsList.dictByNoise()
@@ -469,7 +469,7 @@ def main(argv=None):
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\algname}{' + 
                          (str_to_latex(strip_pathname(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
-        if isfigure or istab or isrldistr or islogloss:
+        if isFig or isTab or isrldistr or islogloss:
             print "Output data written to folder %s" % outputdir
 
         plt.rcdefaults()
