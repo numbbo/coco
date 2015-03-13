@@ -37,23 +37,6 @@ from bbob_pproc.toolsdivers import prepend_to_file, truncate_latex_command_file,
 
 __all__ = ['main']
 
-# Combine optlist for getopt:
-# Make a set of the short option list, has one-letter elements that could be
-# followed by colon
-shortoptlist = set()
-for i in (rungeneric1.shortoptlist, rungeneric2.shortoptlist,
-          rungenericmany.shortoptlist):
-    tmp = i[:]
-    # split into logical elements: one-letter that could be followed by colon
-    while tmp:
-        if len(tmp) > 1 and tmp[1] is ':':
-            shortoptlist.add(tmp[0:2])
-            tmp = tmp[2:]
-        else:
-            shortoptlist.add(tmp[0])
-            tmp = tmp[1:]
-shortoptlist = ''.join(shortoptlist)
-
 #CLASS DEFINITIONS
 
 class Usage(Exception):
@@ -191,7 +174,7 @@ def main(argv=None):
 
     try:
         try:
-            opts, args = getopt.getopt(argv, shortoptlist, genericsettings.longoptlist +
+            opts, args = getopt.getopt(argv, genericsettings.shortoptlist, genericsettings.longoptlist +
                                        ['omit-single', 'in-a-hurry=', 'input-path='])
         except getopt.error, msg:
             raise Usage(msg)
@@ -205,20 +188,12 @@ def main(argv=None):
         inputdir = '.'
 
         #Process options
-        shortoptlist1 = list("-" + i.rstrip(":")
-                             for i in _splitshortoptlist(rungeneric1.shortoptlist))
-        shortoptlist2 = list("-" + i.rstrip(":")
-                             for i in _splitshortoptlist(rungeneric2.shortoptlist))
-        shortoptlistmany = list("-" + i.rstrip(":")
-                                for i in _splitshortoptlist(rungenericmany.shortoptlist))
-        shortoptlist1.remove("-o")
-        shortoptlist2.remove("-o")
-        shortoptlistmany.remove("-o")
+        shortoptlist = list("-" + i.rstrip(":")
+                             for i in _splitshortoptlist(genericsettings.shortoptlist))
+        shortoptlist.remove("-o")
         longoptlist = list( "--" + i.rstrip("=") for i in genericsettings.longoptlist)
         
-        genopts1 = []
-        genopts2 = []
-        genoptsmany = []
+        genopts = []
         for o, a in opts:
             if o in ("-h", "--help"):
                 usage()
@@ -231,22 +206,12 @@ def main(argv=None):
                 inputdir = a
             else:
                 isAssigned = False
-                if o in longoptlist or o in shortoptlist1:
-                    genopts1.append(o)
+                if o in longoptlist or o in shortoptlist:
+                    genopts.append(o)
                     # Append o and then a separately otherwise the list of
                     # command line arguments might be incorrect
                     if a:
-                        genopts1.append(a)
-                    isAssigned = True
-                if o in longoptlist or o in shortoptlist2:
-                    genopts2.append(o)
-                    if a:
-                        genopts2.append(a)
-                    isAssigned = True
-                if o in longoptlist or o in shortoptlistmany:
-                    genoptsmany.append(o)
-                    if a:
-                        genoptsmany.append(a)
+                        genopts.append(a)
                     isAssigned = True
                 if o in ("-v","--verbose"):
                     verbose = True
@@ -279,15 +244,15 @@ def main(argv=None):
             # remove '../' from algorithm output folder
             if len(args) == 1 or '--omit-single' not in dict(opts):
                 tmpoutputdir = os.path.join(outputdir, alg.replace('..' + os.sep, '').lstrip(os.sep))
-                rungeneric1.main(genopts1
+                rungeneric1.main(genopts
                                 + ["-o", tmpoutputdir, alg])
                 prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
                                 ['\\providecommand{\\algfolder}{' + alg.replace('..' + os.sep, '').rstrip(os.sep).replace(os.sep, '/') + '/}'])
 
         if len(args) == 2:
-            rungeneric2.main(genopts2 + ["-o", outputdir] + args)
+            rungeneric2.main(genopts + ["-o", outputdir] + args)
         elif len(args) > 2:
-            rungenericmany.main(genoptsmany + ["-o", outputdir] + args)
+            rungenericmany.main(genopts + ["-o", outputdir] + args)
 
         open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a').close() 
         

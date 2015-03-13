@@ -38,9 +38,6 @@ import matplotlib.pyplot as plt
 
 __all__ = ['main']
 
-# Used by getopt:
-shortoptlist = "hvpo:"
-
 # CLASS DEFINITIONS
 
 class Usage(Exception):
@@ -161,10 +158,10 @@ def main(argv=None):
         # disregarded.
 
     if 1 < 3:
-        opts, args = getopt.getopt(argv, shortoptlist, genericsettings.longoptlist)
+        opts, args = getopt.getopt(argv, genericsettings.shortoptlist, genericsettings.longoptlist)
         if 11 < 3:
             try:
-                opts, args = getopt.getopt(argv, shortoptlist, genericsettings.longoptlist)
+                opts, args = getopt.getopt(argv, genericsettings.shortoptlist, genericsettings.longoptlist)
             except getopt.error, msg:
                 raise Usage(msg)
 
