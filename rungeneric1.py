@@ -39,13 +39,7 @@ import matplotlib.pyplot as plt
 __all__ = ['main']
 
 # Used by getopt:
-shortoptlist = "hvpfo:"
-longoptlist = ["help", "output-dir=", "noisy", "noise-free",
-               "tab-only", "fig-only", "rld-only", "rld-single-fcts",
-               "verbose", "settings=", "conv", 
-               "expensive", "not-expensive", "runlength-based",
-               "los-only", "crafting-effort=", "pickle",
-               "sca-only"]
+shortoptlist = "hvpo:"
 
 # CLASS DEFINITIONS
 
@@ -167,17 +161,17 @@ def main(argv=None):
         # disregarded.
 
     if 1 < 3:
-        opts, args = getopt.getopt(argv, shortoptlist, longoptlist)
+        opts, args = getopt.getopt(argv, shortoptlist, genericsettings.longoptlist)
         if 11 < 3:
             try:
-                opts, args = getopt.getopt(argv, shortoptlist, longoptlist)
+                opts, args = getopt.getopt(argv, shortoptlist, genericsettings.longoptlist)
             except getopt.error, msg:
                 raise Usage(msg)
 
         if not (args) and not '--help' in argv and not 'h' in argv:
             print 'not enough input arguments given'
             print 'cave: the following options also need an argument:'
-            print [o for o in longoptlist if o[-1] == '=']
+            print [o for o in genericsettings.longoptlist if o[-1] == '=']
             print 'options given:'
             print opts
             print 'try --help for help'

@@ -54,10 +54,6 @@ for i in (rungeneric1.shortoptlist, rungeneric2.shortoptlist,
             tmp = tmp[1:]
 shortoptlist = ''.join(shortoptlist)
 
-longoptlist = list(set.union(set(rungeneric1.longoptlist),
-                             set(rungeneric2.longoptlist),
-                             set(rungenericmany.longoptlist)))
-
 #CLASS DEFINITIONS
 
 class Usage(Exception):
@@ -195,7 +191,7 @@ def main(argv=None):
 
     try:
         try:
-            opts, args = getopt.getopt(argv, shortoptlist, longoptlist +
+            opts, args = getopt.getopt(argv, shortoptlist, genericsettings.longoptlist +
                                        ['omit-single', 'in-a-hurry=', 'input-path='])
         except getopt.error, msg:
             raise Usage(msg)
@@ -218,10 +214,8 @@ def main(argv=None):
         shortoptlist1.remove("-o")
         shortoptlist2.remove("-o")
         shortoptlistmany.remove("-o")
-        longoptlist1 = list( "--" + i.rstrip("=") for i in rungeneric1.longoptlist)
-        longoptlist2 = list( "--" + i.rstrip("=") for i in rungeneric2.longoptlist)
-        longoptlistmany = list( "--" + i.rstrip("=") for i in rungenericmany.longoptlist)
-
+        longoptlist = list( "--" + i.rstrip("=") for i in genericsettings.longoptlist)
+        
         genopts1 = []
         genopts2 = []
         genoptsmany = []
@@ -237,19 +231,19 @@ def main(argv=None):
                 inputdir = a
             else:
                 isAssigned = False
-                if o in longoptlist1 or o in shortoptlist1:
+                if o in longoptlist or o in shortoptlist1:
                     genopts1.append(o)
                     # Append o and then a separately otherwise the list of
                     # command line arguments might be incorrect
                     if a:
                         genopts1.append(a)
                     isAssigned = True
-                if o in longoptlist2 or o in shortoptlist2:
+                if o in longoptlist or o in shortoptlist2:
                     genopts2.append(o)
                     if a:
                         genopts2.append(a)
                     isAssigned = True
-                if o in longoptlistmany or o in shortoptlistmany:
+                if o in longoptlist or o in shortoptlistmany:
                     genoptsmany.append(o)
                     if a:
                         genoptsmany.append(a)
@@ -261,6 +255,7 @@ def main(argv=None):
                     isAssigned = True
                 if not isAssigned:
                     assert False, "unhandled option"
+                    
 
         if (not verbose):
             warnings.filterwarnings('module', '.*', UserWarning, '.*')

@@ -53,12 +53,6 @@ __all__ = ['main']
 
 # Used by getopt:
 shortoptlist = "hvo:"
-longoptlist = ["help", "output-dir=", "noisy", "noise-free",
-               "tab-only", "fig-only", "rld-only", "rld-single-fcts",
-               "verbose", "settings=", "conv",
-               "expensive", "not-expensive", "runlength-based", 
-               "los-only", "crafting-effort=", "pickle",
-               "sca-only"]
 
 #CLASS DEFINITIONS
 
@@ -167,7 +161,7 @@ def main(argv=None):
     try:
 
         try:
-            opts, args = getopt.getopt(argv, shortoptlist, longoptlist)
+            opts, args = getopt.getopt(argv, shortoptlist, genericsettings.longoptlist)
         except getopt.error, msg:
              raise Usage(msg)
 

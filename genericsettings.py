@@ -221,12 +221,12 @@ rclegend = {"fontsize": 20}
 #isScatter = True # only affects rungeneric2
 #isScaleUp = True # only affects rungeneric2
     
-#longoptlist = ["help", "output-dir=", "noisy", "noise-free",
-#               "tab-only", "fig-only", "rld-only", "rld-single-fcts",
-#               "verbose", "settings=", "conv", 
-#               "expensive", "not-expensive", "runlength-based",
-#               "los-only", "crafting-effort=", "pickle",
-#               "sca-only"]
+longoptlist = ["help", "output-dir=", "noisy", "noise-free",
+               "tab-only", "fig-only", "rld-only", "rld-single-fcts",
+               "verbose", "settings=", "conv", 
+               "expensive", "not-expensive", "runlength-based",
+               "los-only", "crafting-effort=", "pickle",
+               "sca-only"]
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
 # and "sca-only" only affects rungeneric2
 
