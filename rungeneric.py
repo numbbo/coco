@@ -264,7 +264,7 @@ def main(argv=None):
 
         if (not verbose):
             warnings.filterwarnings('module', '.*', UserWarning, '.*')
-            warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear 
+            #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear 
 
         print ("Post-processing: will generate output " +
                "data in folder %s" % outputdir)

@@ -57,6 +57,7 @@ longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "tab-only", "fig-only", "rld-only", "rld-single-fcts",
                "verbose", "settings=", "conv",
                "expensive", "not-expensive", "runlength-based", 
+               "los-only", "crafting-effort=", "pickle",
                "sca-only"]
 
 #CLASS DEFINITIONS
@@ -232,6 +233,12 @@ def main(argv=None):
                 isExpensive = True  # comprises runlength-based
             elif o == "--not-expensive":
                 isExpensive = False  
+            elif o == "--los-only":
+                warnings.warn("option --los-only will have no effect with rungeneric2.py")
+            elif o == "--crafting-effort=":
+                warnings.warn("option --crafting-effort will have no effect with rungeneric2.py")
+            elif o == "--pickle":
+                warnings.warn("option --pickle will have no effect with rungeneric2.py")
             else:
                 assert False, "unhandled option"
 
