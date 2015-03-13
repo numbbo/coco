@@ -45,12 +45,6 @@ __all__ = ['main']
 
 # Used by getopt:
 shortoptlist = "hvo:"
-longoptlist = ["help", "output-dir=", "noisy", "noise-free",
-               "tab-only", "fig-only", "rld-only", "rld-single-fcts",  
-               "verbose", "settings=", "conv", 
-               "expensive", "not-expensive", "runlength-based",
-               "los-only", "crafting-effort=", "pickle",
-               "sca-only"]
 #CLASS DEFINITIONS
 
 class Usage(Exception):
@@ -112,8 +106,6 @@ def main(argv=None):
         --conv
             if this option is chosen, additionally convergence
             plots for each function and algorithm are generated.
-        --perf-only
-            generate only performance plots
         --rld-single-fcts
             generate also runlength distribution figures for each
             single function. 
@@ -166,7 +158,7 @@ def main(argv=None):
 
     try:
         try:
-            opts, args = getopt.getopt(argv, shortoptlist, longoptlist)
+            opts, args = getopt.getopt(argv, shortoptlist, genericsettings.longoptlist)
         except getopt.error, msg:
             raise Usage(msg)
 
@@ -212,9 +204,6 @@ def main(argv=None):
             elif o == "--fig-only":
                 isRLDistr = False
                 isTab = False
-            elif o == "--perf-only":
-                isTab = False
-                isFig = False
             elif o == "--settings":
                 inputsettings = a
             elif o == "--conv":
