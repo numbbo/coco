@@ -284,7 +284,3 @@ class GECCOBBOBNoisefreeTestbed(GECCOBBOBTestbed):
 # TODO: this needs to be set somewhere, e.g. in rungeneric*
 # or even better by investigating in the data attributes
 current_testbed = GECCOBBOBNoisefreeTestbed() 
-
-if in_a_hurry:
-    print 'in_a_hurry like', in_a_hurry, '(should finally be set to zero)'
-    

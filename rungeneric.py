@@ -202,6 +202,8 @@ def main(argv=None):
                 outputdir = a
             elif o in ("--in-a-hurry", ):
                 genericsettings.in_a_hurry = int(a)
+                if in_a_hurry:
+                    print 'in_a_hurry like', in_a_hurry, '(should finally be set to zero)'
             elif o in ("--input-path", ):
                 inputdir = a
             else:
@@ -213,10 +215,10 @@ def main(argv=None):
                     if a:
                         genopts.append(a)
                     isAssigned = True
-                if o in ("-v","--verbose"):
+                if o in ("-v", "--verbose"):
                     verbose = True
                     isAssigned = True
-                if o in ('--omit-single', '--in-a-hurry'):
+                if o == '--omit-single':
                     isAssigned = True
                 if not isAssigned:
                     assert False, "unhandled option"
