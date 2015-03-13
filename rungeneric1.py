@@ -44,7 +44,8 @@ longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "tab-only", "fig-only", "rld-only", "rld-single-fcts",
                "verbose", "settings=", "conv", 
                "expensive", "not-expensive", "runlength-based",
-               "los-only", "crafting-effort=", "pickle"]
+               "los-only", "crafting-effort=", "pickle",
+               "sca-only"]
 
 # CLASS DEFINITIONS
 
@@ -247,7 +248,9 @@ def main(argv=None):
             elif o == "--expensive":
                 isExpensive = True  # comprises runlength-based
             elif o == "--not-expensive":
-                isExpensive = False  
+                isExpensive = False
+            elif o == "--sca-only":
+                warnings.warn("option --sca-only will have no effect with rungeneric1.py")
             else:
                 assert False, "unhandled option"
 
