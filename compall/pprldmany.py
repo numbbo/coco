@@ -667,7 +667,6 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         tmp.append('%d' % round(np.log10(i)))
     a.set_xticklabels(tmp)
 
-    # print 'in_a_hurry ==', genericsettings.in_a_hurry
     if save_figure:
         ppfig.saveFigure(figureName, verbose=verbose)
         if len(dictFunc) == 1:
