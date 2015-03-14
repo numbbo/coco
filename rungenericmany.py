@@ -172,6 +172,7 @@ def main(argv=None):
         isRldOnSingleFcts = False
 
         #Process options
+        outputdir = genericsettings.outputdir
         for o, a in opts:
             if o in ("-v","--verbose"):
                 verbose = True
@@ -179,7 +180,7 @@ def main(argv=None):
                 usage()
                 sys.exit()
             elif o in ("-o", "--output-dir"):
-                genericsettings.outputdir = a
+                outputdir = a
             elif o == "--noisy":
                 genericsettings.isNoisy = True
             elif o == "--noise-free":
@@ -252,13 +253,13 @@ def main(argv=None):
 
     if 1 < 3:
         print ("Post-processing: will generate output " +
-               "data in folder %s" % genericsettings.outputdir)
+               "data in folder %s" % outputdir)
         print "  this might take several minutes."
 
-        if not os.path.exists(genericsettings.outputdir):
-            os.makedirs(genericsettings.outputdir)
+        if not os.path.exists(outputdir):
+            os.makedirs(outputdir)
             if verbose:
-                print 'Folder %s was created.' % (genericsettings.outputdir)
+                print 'Folder %s was created.' % (outputdir)
 
         # prepend the algorithm name command to the tex-command file
         abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
@@ -266,7 +267,7 @@ def main(argv=None):
         for i, alg in enumerate(args):
             lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
                     str_to_latex(strip_pathname2(alg)) + '}')
-        prepend_to_file(os.path.join(genericsettings.outputdir,
+        prepend_to_file(os.path.join(outputdir,
                     'bbob_pproc_commands.tex'), 
                     lines, 5000, 
                     'bbob_proc_commands.tex truncated, consider removing the file before the text run'
@@ -317,7 +318,7 @@ def main(argv=None):
 
         # convergence plots
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, genericsettings.outputdir, verbose)
+            ppconverrorbars.main(dictAlg, outputdir, verbose)
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if isRLDistr:
             config.config()
@@ -331,7 +332,7 @@ def main(argv=None):
                     # config.config()
                     pprldmany.main(entries, # pass expensive flag here? 
                                    order=sortedAlgs,
-                                   outputdir=genericsettings.outputdir,
+                                   outputdir=outputdir,
                                    info=('%02dD_%s' % (d, ng)),
                                    verbose=verbose)
             # ECDFs per function groups
@@ -341,20 +342,20 @@ def main(argv=None):
                 for d, entries in dictDim.iteritems():
                     pprldmany.main(entries,
                                    order=sortedAlgs,
-                                   outputdir=genericsettings.outputdir,
+                                   outputdir=outputdir,
                                    info=('%02dD_%s' % (d, fg)),
                                    verbose=verbose)
             if isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
                 if 1 < 3:
                     pprldmany.all_single_functions(dictAlg, sortedAlgs,
-                            genericsettings.outputdir, verbose)
+                            outputdir, verbose)
                 else:  # subject to removal
                     dictFG = pproc.dictAlgByFun(dictAlg)
                     for fg, tmpdictAlg in dictFG.iteritems():
                         dictDim = pproc.dictAlgByDim(tmpdictAlg)
                         for d, entries in dictDim.iteritems():
-                            single_fct_output_dir = (genericsettings.outputdir.rstrip(os.sep) + os.sep +
+                            single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
                                                      'pprldmany-single-functions'
                                                      # + os.sep + ('f%03d' % fg)
                                                      )
@@ -369,12 +370,12 @@ def main(argv=None):
 
         if genericsettings.isTab:
             if isExpensive:
-                prepend_to_file(os.path.join(genericsettings.outputdir,
+                prepend_to_file(os.path.join(outputdir,
                             'bbob_pproc_commands.tex'), 
                             ['\providecommand{\\bbobpptablesmanylegend}[1]{' + 
                              pptables.tables_many_expensive_legend + '}'])
             else:
-                prepend_to_file(os.path.join(genericsettings.outputdir,
+                prepend_to_file(os.path.join(outputdir,
                             'bbob_pproc_commands.tex'), 
                             ['\providecommand{\\bbobpptablesmanylegend}[1]{' + 
                              pptables.tables_many_legend + '}'])
@@ -383,7 +384,7 @@ def main(argv=None):
                 dictDim = pproc.dictAlgByDim(tmpdictng)
                 for d, tmpdictdim in dictDim.iteritems():
                     pptables.main(tmpdictdim, sortedAlgs,
-                                  genericsettings.outputdir, verbose)
+                                  outputdir, verbose)
             print "Comparison tables done."
 
         global ftarget  # not nice
@@ -396,7 +397,7 @@ def main(argv=None):
             if genericsettings.runlength_based_targets:
                 ftarget = pproc.RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
             ppfigs.main(dictAlg, sortedAlgs, ftarget,
-                        genericsettings.outputdir, verbose)
+                        outputdir, verbose)
             plt.rcdefaults()
             print "Scaling figures done."
 
