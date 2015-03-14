@@ -185,6 +185,7 @@ def main(argv=None):
         isExpensive = None 
 
         # Process options
+        outputdir = genericsettings.outputdir
         for o, a in opts:
             if o in ("-v", "--verbose"):
                 verbose = True
@@ -194,7 +195,7 @@ def main(argv=None):
             elif o in ("-p", "--pickle"):
                 isPickled = True
             elif o in ("-o", "--output-dir"):
-                genericsettings.outputdir = a
+                outputdir = a
             elif o == "--noisy":
                 genericsettings.isNoisy = True
             elif o == "--noise-free":
@@ -266,7 +267,7 @@ def main(argv=None):
             # warnings.simplefilter('ignore')            
 
         print ("Post-processing (1): will generate output " + 
-               "data in folder %s" % genericsettings.outputdir)
+               "data in folder %s" % outputdir)
         print "  this might take several minutes."
 
         filelist = list()
@@ -322,16 +323,16 @@ def main(argv=None):
             # raise Usage?
 
         if genericsettings.isFig or genericsettings.isTab or isrldistr or islogloss:
-            if not os.path.exists(genericsettings.outputdir):
-                os.makedirs(genericsettings.outputdir)
+            if not os.path.exists(outputdir):
+                os.makedirs(outputdir)
                 if verbose:
-                    print 'Folder %s was created.' % (genericsettings.outputdir)
+                    print 'Folder %s was created.' % (outputdir)
 
         if isPickled:
             dsList.pickle(verbose=verbose)
 
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, genericsettings.outputdir, verbose)
+            ppconverrorbars.main(dictAlg, outputdir, verbose)
 
         if genericsettings.isFig:
             print "Scaling figures...",
@@ -343,7 +344,7 @@ def main(argv=None):
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
             ppfigdim.main(dsList, ppfigdim.values_of_interest,
-                          genericsettings.outputdir, verbose)
+                          outputdir, verbose)
             plt.rcdefaults()
             print_done()
 
@@ -359,7 +360,7 @@ def main(argv=None):
             dictNoise = dsList.dictByNoise()
             for noise, sliceNoise in dictNoise.iteritems():
                 pptable.main(sliceNoise, inset.tabDimsOfInterest,
-                             genericsettings.outputdir, noise, verbose)
+                             outputdir, noise, verbose)
             print_done()
 
         if isrldistr:
@@ -379,16 +380,16 @@ def main(argv=None):
                     continue
 
                 pprldistr.main(sliceDim, True,
-                               genericsettings.outputdir, 'all', verbose)
+                               outputdir, 'all', verbose)
                 dictNoise = sliceDim.dictByNoise()
                 for noise, sliceNoise in dictNoise.iteritems():
                     pprldistr.main(sliceNoise, True,
-                                   genericsettings.outputdir,
+                                   outputdir,
                                    '%s' % noise, verbose)
                 dictFG = sliceDim.dictByFuncGroup()
                 for fGroup, sliceFuncGroup in dictFG.items():
                     pprldistr.main(sliceFuncGroup, True,
-                                   genericsettings.outputdir,
+                                   outputdir,
                                    '%s' % fGroup, verbose)
 
                 pprldistr.fmax = None  # Resetting the max final value
@@ -397,7 +398,7 @@ def main(argv=None):
             if isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
                 pprldmany.all_single_functions(dictAlg, None,
-                                               genericsettings.outputdir,
+                                               outputdir,
                                                verbose)
             print_done()
 
@@ -425,21 +426,21 @@ def main(argv=None):
                         continue
                     info = '%s' % ng
                     pplogloss.main(sliceDim, CrE, True,
-                                   genericsettings.outputdir, info,
+                                   outputdir, info,
                                    verbose=verbose)
                     pplogloss.generateTable(sliceDim, CrE,
-                                            genericsettings.outputdir, info,
+                                            outputdir, info,
                                             verbose=verbose)
                     for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
                         info = '%s' % fGroup
                         pplogloss.main(sliceFuncGroup, CrE, True,
-                                       genericsettings.outputdir, info,
+                                       outputdir, info,
                                        verbose=verbose)
                     pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
 
             print_done()
 
-        latex_commands_file = os.path.join(genericsettings.outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
+        latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglosstablecaption}[1]{', 
                          pplogloss.table_caption, '}'])
@@ -464,7 +465,7 @@ def main(argv=None):
                         ['\\providecommand{\\algname}{' + 
                          (str_to_latex(strip_pathname(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
         if genericsettings.isFig or genericsettings.isTab or isrldistr or islogloss:
-            print "Output data written to folder %s" % genericsettings.outputdir
+            print "Output data written to folder %s" % outputdir
 
         plt.rcdefaults()
 
