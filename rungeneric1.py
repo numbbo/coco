@@ -174,19 +174,12 @@ def main(argv=None):
             print 'try --help for help'
             sys.exit()
 
-        inputCrE = 0.
-        isFig = True
-        isTab = True
         isrldistr = True
         islogloss = True
         isPostProcessed = False
         isPickled = False
         verbose = False
-        outputdir = 'ppdata'
-        isNoisy = False
-        isNoiseFree = False
         inputsettings = 'color'
-        isConv = False
         isRldOnSingleFcts = False
         isRLbased = None  # allows automatic choice
         isExpensive = None 
@@ -201,37 +194,37 @@ def main(argv=None):
             elif o in ("-p", "--pickle"):
                 isPickled = True
             elif o in ("-o", "--output-dir"):
-                outputdir = a
+                genericsettings.outputdir = a
             elif o == "--noisy":
-                isNoisy = True
+                genericsettings.isNoisy = True
             elif o == "--noise-free":
-                isNoiseFree = True
+                genericsettings.isNoiseFree = True
             # The next 4 are for testing purpose
             elif o == "--tab-only":
-                isFig = False
+                genericsettings.isFig = False
                 isrldistr = False
                 islogloss = False
             elif o == "--fig-only":
-                isTab = False
+                genericsettings.isTab = False
                 isrldistr = False
                 islogloss = False
             elif o == "--rld-only":
-                isTab = False
-                isFig = False
+                genericsettings.isTab = False
+                genericsettings.isFig = False
                 islogloss = False
             elif o == "--los-only":
-                isTab = False
-                isFig = False
+                genericsettings.isTab = False
+                genericsettings.isFig = False
                 isrldistr = False
             elif o == "--crafting-effort":
                 try:
-                    inputCrE = float(a)
+                    genericsettings.inputCrE = float(a)
                 except ValueError:
                     raise Usage('Expect a valid float for flag crafting-effort.')
             elif o == "--settings":
                 inputsettings = a
             elif o == "--conv":
-                isConv = True
+                genericsettings.isConv = True
             elif o == "--rld-single-fcts":
                 isRldOnSingleFcts = True
             elif o == "--runlength-based":
@@ -273,7 +266,7 @@ def main(argv=None):
             # warnings.simplefilter('ignore')            
 
         print ("Post-processing (1): will generate output " + 
-               "data in folder %s" % outputdir)
+               "data in folder %s" % genericsettings.outputdir)
         print "  this might take several minutes."
 
         filelist = list()
@@ -292,9 +285,9 @@ def main(argv=None):
         if not dsList:
             raise Usage("Nothing to do: post-processing stopped.")
 
-        if isNoisy and not isNoiseFree:
+        if genericsettings.isNoisy and not genericsettings.isNoiseFree:
             dsList = dsList.dictByNoise().get('nzall', DataSetList())
-        if isNoiseFree and not isNoisy:
+        if genericsettings.isNoiseFree and not genericsettings.isNoisy:
             dsList = dsList.dictByNoise().get('noiselessall', DataSetList())
 
         # compute maxfuneval values
@@ -328,19 +321,19 @@ def main(argv=None):
             # TODO: put some errors where this case would be a problem.
             # raise Usage?
 
-        if isFig or isTab or isrldistr or islogloss:
-            if not os.path.exists(outputdir):
-                os.makedirs(outputdir)
+        if genericsettings.isFig or genericsettings.isTab or isrldistr or islogloss:
+            if not os.path.exists(genericsettings.outputdir):
+                os.makedirs(genericsettings.outputdir)
                 if verbose:
-                    print 'Folder %s was created.' % (outputdir)
+                    print 'Folder %s was created.' % (genericsettings.outputdir)
 
         if isPickled:
             dsList.pickle(verbose=verbose)
 
-        if isConv:
-            ppconverrorbars.main(dictAlg, outputdir, verbose)
+        if genericsettings.isConv:
+            ppconverrorbars.main(dictAlg, genericsettings.outputdir, verbose)
 
-        if isFig:
+        if genericsettings.isFig:
             print "Scaling figures...",
             sys.stdout.flush()
             # ERT/dim vs dim.
@@ -349,7 +342,8 @@ def main(argv=None):
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
-            ppfigdim.main(dsList, ppfigdim.values_of_interest, outputdir, verbose)
+            ppfigdim.main(dsList, ppfigdim.values_of_interest,
+                          genericsettings.outputdir, verbose)
             plt.rcdefaults()
             print_done()
 
@@ -359,13 +353,13 @@ def main(argv=None):
         plt.rc("font", **inset.rcfont)
         plt.rc("legend", **inset.rclegend)
 
-        if isTab:
+        if genericsettings.isTab:
             print "TeX tables...",
             sys.stdout.flush()
             dictNoise = dsList.dictByNoise()
             for noise, sliceNoise in dictNoise.iteritems():
-                pptable.main(sliceNoise, inset.tabDimsOfInterest, outputdir,
-                             noise, verbose)
+                pptable.main(sliceNoise, inset.tabDimsOfInterest,
+                             genericsettings.outputdir, noise, verbose)
             print_done()
 
         if isrldistr:
@@ -385,15 +379,17 @@ def main(argv=None):
                     continue
 
                 pprldistr.main(sliceDim, True,
-                               outputdir, 'all', verbose)
+                               genericsettings.outputdir, 'all', verbose)
                 dictNoise = sliceDim.dictByNoise()
                 for noise, sliceNoise in dictNoise.iteritems():
                     pprldistr.main(sliceNoise, True,
-                                   outputdir, '%s' % noise, verbose)
+                                   genericsettings.outputdir,
+                                   '%s' % noise, verbose)
                 dictFG = sliceDim.dictByFuncGroup()
                 for fGroup, sliceFuncGroup in dictFG.items():
-                    pprldistr.main(sliceFuncGroup,
-                                   True, outputdir, '%s' % fGroup, verbose)
+                    pprldistr.main(sliceFuncGroup, True,
+                                   genericsettings.outputdir,
+                                   '%s' % fGroup, verbose)
 
                 pprldistr.fmax = None  # Resetting the max final value
                 pprldistr.evalfmax = None  # Resetting the max #fevalsfactor
@@ -401,7 +397,8 @@ def main(argv=None):
             if isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
                 pprldmany.all_single_functions(dictAlg, None,
-                        outputdir, verbose)
+                                               genericsettings.outputdir,
+                                               verbose)
             print_done()
 
         if islogloss:
@@ -414,7 +411,7 @@ def main(argv=None):
                     testbed = 'noisy'
                 txt = ("Please input crafting effort value "
                        + "for %s testbed:\n  CrE = " % testbed)
-                CrE = inputCrE
+                CrE = genericsettings.inputCrE
                 while CrE is None:
                     try:
                         CrE = float(raw_input(txt))
@@ -427,19 +424,22 @@ def main(argv=None):
                     except KeyError:
                         continue
                     info = '%s' % ng
-                    pplogloss.main(sliceDim, CrE, True, outputdir, info,
+                    pplogloss.main(sliceDim, CrE, True,
+                                   genericsettings.outputdir, info,
                                    verbose=verbose)
-                    pplogloss.generateTable(sliceDim, CrE, outputdir, info,
+                    pplogloss.generateTable(sliceDim, CrE,
+                                            genericsettings.outputdir, info,
                                             verbose=verbose)
                     for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
                         info = '%s' % fGroup
-                        pplogloss.main(sliceFuncGroup, CrE, True, outputdir, info,
+                        pplogloss.main(sliceFuncGroup, CrE, True,
+                                       genericsettings.outputdir, info,
                                        verbose=verbose)
                     pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
 
             print_done()
 
-        latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
+        latex_commands_file = os.path.join(genericsettings.outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglosstablecaption}[1]{', 
                          pplogloss.table_caption, '}'])
@@ -463,8 +463,8 @@ def main(argv=None):
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\algname}{' + 
                          (str_to_latex(strip_pathname(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
-        if isFig or isTab or isrldistr or islogloss:
-            print "Output data written to folder %s" % outputdir
+        if genericsettings.isFig or genericsettings.isTab or isrldistr or islogloss:
+            print "Output data written to folder %s" % genericsettings.outputdir
 
         plt.rcdefaults()
 
