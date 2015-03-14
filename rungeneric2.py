@@ -166,17 +166,11 @@ def main(argv=None):
             usage()
             sys.exit()
 
-        isFig = True
         isRLDistr = True
-        isTab = True
         isScatter = True
         isScaleUp = True
-        isNoisy = False
-        isNoiseFree = False
         verbose = False
-        outputdir = 'ppdata'
         inputsettings = 'color'
-        isConv= False
         isRldOnSingleFcts = False
         isRLbased = None  # allows automatic choice
         isExpensive = None 
@@ -189,33 +183,33 @@ def main(argv=None):
                 usage()
                 sys.exit()
             elif o in ("-o", "--output-dir"):
-                outputdir = a
+                genericsettings.outputdir = a
             #elif o in ("-s", "--style"):
             #    inputsettings = a
             elif o == "--fig-only":
                 isRLDistr = False
-                isTab = False
+                genericsettings.isTab = False
                 isScatter = False
             elif o == "--rld-only":
-                isFig = False
-                isTab = False
+                genericsettings.isFig = False
+                genericsettings.isTab = False
                 isScatter = False
             elif o == "--tab-only":
-                isFig = False
+                genericsettings.isFig = False
                 isRLDistr = False
                 isScatter = False
             elif o == "--sca-only":
-                isFig = False
+                genericsettings.isFig = False
                 isRLDistr = False
-                isTab = False
+                genericsettings.isTab = False
             elif o == "--noisy":
-                isNoisy = True
+                genericsettings.isNoisy = True
             elif o == "--noise-free":
-                isNoiseFree = True
+                genericsettings.isNoiseFree = True
             elif o == "--settings":
                 inputsettings = a
             elif o == "--conv":
-                isConv = True
+                genericsettings.isConv = True
             elif o == "--rld-single-fcts":
                 isRldOnSingleFcts = True
             elif o == "--runlength-based":
@@ -251,7 +245,7 @@ def main(argv=None):
             warnings.simplefilter('ignore')            
 
         print ("Post-processing will generate comparison " +
-               "data in folder %s" % outputdir)
+               "data in folder %s" % genericsettings.outputdir)
         print "  this might take several minutes."
 
         dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
@@ -265,9 +259,9 @@ def main(argv=None):
             sys.exit()
 
         for i in dictAlg:
-            if isNoisy and not isNoiseFree:
+            if genericsettings.isNoisy and not genericsettings.isNoiseFree:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('nzall', DataSetList())
-            if isNoiseFree and not isNoisy:
+            if genericsettings.isNoiseFree and not genericsettings.isNoisy:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
 
         for i in dsList:
@@ -320,11 +314,11 @@ def main(argv=None):
         config.config()
         
         ######################### Post-processing #############################
-        if isFig or isRLDistr or isTab or isScatter:
-            if not os.path.exists(outputdir):
-                os.mkdir(outputdir)
+        if genericsettings.isFig or isRLDistr or genericsettings.isTab or isScatter:
+            if not os.path.exists(genericsettings.outputdir):
+                os.mkdir(genericsettings.outputdir)
                 if verbose:
-                    print 'Folder %s was created.' % (outputdir)
+                    print 'Folder %s was created.' % (genericsettings.outputdir)
             
             # prepend the algorithm name command to the tex-command file
             abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -332,8 +326,8 @@ def main(argv=None):
             for i, alg in enumerate(args):
                 lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
                         str_to_latex(strip_pathname(alg)) + '}')
-            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
-                         lines, 1000, 
+            prepend_to_file(os.path.join(genericsettings.outputdir,
+                         'bbob_pproc_commands.tex'), lines, 1000, 
                          'bbob_proc_commands.tex truncated, consider removing the file before the text run'
                          )
 
@@ -365,13 +359,14 @@ def main(argv=None):
             raise Usage('Data Mismatch: \n  ' + ' '.join(txt)
                         + '\nTry using --noise-free or --noisy flags.')
 
-        if isFig:
+        if genericsettings.isFig:
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
-            ppfig2.main(dsList0, dsList1, ppfig2_ftarget, outputdir, verbose)
+            ppfig2.main(dsList0, dsList1, ppfig2_ftarget,
+                        genericsettings.outputdir, verbose)
             print "log ERT1/ERT0 vs target function values done."
 
         plt.rc("axes", **inset.rcaxes)
@@ -396,7 +391,9 @@ def main(argv=None):
                     try:
                         pprldistr2.main(dictDim0[dim], dictDim1[dim], dim,
                                         inset.rldValsOfInterest,
-                                        outputdir, '%02dD_all' % dim, verbose)
+                                        genericsettings.outputdir,
+                                        '%02dD_all' % dim,
+                                        verbose)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.'
                                       % (dim))
@@ -409,7 +406,8 @@ def main(argv=None):
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr2.main(dictFG1[fGroup], dictFG0[fGroup], dim,
                                         inset.rldValsOfInterest,
-                                        outputdir, '%02dD_%s' % (dim, fGroup),
+                                        genericsettings.outputdir,
+                                        '%02dD_%s' % (dim, fGroup),
                                         verbose)
 
                     # ECDFs per noise groups
@@ -419,10 +417,12 @@ def main(argv=None):
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr2.main(dictFN1[fGroup], dictFN0[fGroup], dim,
                                         inset.rldValsOfInterest,
-                                        outputdir, '%02dD_%s' % (dim, fGroup),
+                                        genericsettings.outputdir,
+                                        '%02dD_%s' % (dim, fGroup),
                                         verbose)
                                                 
-            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+            prepend_to_file(os.path.join(genericsettings.outputdir,
+                            'bbob_pproc_commands.tex'),
                             ['\\providecommand{\\bbobpprldistrlegendtwo}[1]{',
                              pprldistr.caption_two(),  # depends on the config setting, should depend on maxfevals
                              '}'
@@ -440,7 +440,7 @@ def main(argv=None):
                         pprldistr.comp(dictDim1[dim], dictDim0[dim],
                                        inset.rldValsOfInterest, # TODO: let rldVals... possibly be RL-based targets
                                        True,
-                                       outputdir, 'all', verbose)
+                                       genericsettings.outputdir, 'all', verbose)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.'
                                       % (dim))
@@ -452,8 +452,8 @@ def main(argv=None):
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr.comp(dictFG1[fGroup], dictFG0[fGroup],
-                                       inset.rldValsOfInterest, 
-                                       True, outputdir,
+                                       inset.rldValsOfInterest, True,
+                                       genericsettings.outputdir,
                                        '%s' % fGroup, verbose)
 
                     # ECDFs per noise groups
@@ -461,20 +461,20 @@ def main(argv=None):
                     dictFN1 = dictDim1[dim].dictByNoise()
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr.comp(dictFN1[fGroup], dictFN0[fGroup],
-                                       inset.rldValsOfInterest, 
-                                       True, outputdir,
+                                       inset.rldValsOfInterest, True,
+                                       genericsettings.outputdir,
                                        '%s' % fGroup, verbose)
 
             if isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
                 pprldmany.all_single_functions(dictAlg, sortedAlgs,
-                        outputdir, verbose)
+                        genericsettings.outputdir, verbose)
             print "ECDF runlength graphs done."
 
-        if isConv:
-            ppconverrorbars.main(dictAlg,outputdir,verbose)
+        if genericsettings.isConv:
+            ppconverrorbars.main(dictAlg, genericsettings.outputdir, verbose)
 
-        if isTab:
+        if genericsettings.isTab:
             dictNG0 = dsList0.dictByNoise()
             dictNG1 = dsList1.dictByNoise()
 
@@ -507,7 +507,8 @@ def main(argv=None):
                         group1.append(tmp1)
                     for i, g in enumerate(zip(group0, group1)):
                         pptable2.main(g[0], g[1], inset.tabDimsOfInterest,
-                                      outputdir, '%s%d' % (nGroup, i), verbose)
+                                      genericsettings.outputdir,
+                                      '%s%d' % (nGroup, i), verbose)
                 else:
                     if 11 < 3:  # future handling: 
                         dictFunc0 = dsList0.dictByFunc()
@@ -516,21 +517,24 @@ def main(argv=None):
                         funcs.sort()
 #                        nbgroups = int(numpy.ceil(len(funcs)/testbedsettings.numberOfFunctions))
 #                        pptable2.main(dsList0, dsList1,
-#                                      testbedsettings.tabDimsOfInterest, outputdir,
+#                                      testbedsettings.tabDimsOfInterest, genericsettings.outputdir,
 #                                      '%s' % (testbedsettings.testbedshortname), verbose)
                     else:
                         pptable2.main(dictNG0[nGroup], dictNG1[nGroup],
-                                      inset.tabDimsOfInterest, outputdir,
+                                      inset.tabDimsOfInterest,
+                                      genericsettings.outputdir,
                                       '%s' % (nGroup), verbose)
 
             if isinstance(pptable2.targetsOfInterest, pproc.RunlengthBasedTargetValues):
-                prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
+                prepend_to_file(os.path.join(genericsettings.outputdir,
+                            'bbob_pproc_commands.tex'), 
                             ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
                              pptable2.table_caption_expensive, 
                              '}'
                             ])
             else:
-                prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
+                prepend_to_file(os.path.join(genericsettings.outputdir,
+                            'bbob_pproc_commands.tex'), 
                             ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
                              pptable2.table_caption, 
                              '}'
@@ -540,8 +544,10 @@ def main(argv=None):
         if isScatter:
             if genericsettings.runlength_based_targets:
                 ppscatter.targets = ppscatter.runlength_based_targets
-            ppscatter.main(dsList1, dsList0, outputdir, verbose=verbose)
-            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
+            ppscatter.main(dsList1, dsList0, genericsettings.outputdir,
+                           verbose=verbose)
+            prepend_to_file(os.path.join(genericsettings.outputdir,
+                            'bbob_pproc_commands.tex'), 
                             ['\\providecommand{\\bbobppscatterlegend}[1]{', 
                              ppscatter.figure_caption(), 
                              '}'
@@ -556,12 +562,13 @@ def main(argv=None):
             plt.rc("legend", fontsize=20)
             if genericsettings.runlength_based_targets:
                 ftarget = RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
-            ppfigs.main(dictAlg, sortedAlgs, ftarget, outputdir, verbose)
+            ppfigs.main(dictAlg, sortedAlgs, ftarget,
+                        genericsettings.outputdir, verbose)
             plt.rcdefaults()
             print "Scaling figures done."
 
-        if isFig or isRLDistr or isTab or isScatter or isScaleUp:
-            print "Output data written to folder %s" % outputdir
+        if genericsettings.isFig or isRLDistr or genericsettings.isTab or isScatter or isScaleUp:
+            print "Output data written to folder %s" % genericsettings.outputdir
 
         plt.rcdefaults()
 

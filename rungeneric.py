@@ -184,7 +184,6 @@ def main(argv=None):
             sys.exit()
 
         verbose = False
-        outputdir = 'ppdata'
         inputdir = '.'
 
         #Process options
@@ -199,7 +198,7 @@ def main(argv=None):
                 usage()
                 sys.exit()
             elif o in ("-o", "--output-dir"):
-                outputdir = a
+                genericsettings.outputdir = a
             elif o in ("--in-a-hurry", ):
                 genericsettings.in_a_hurry = int(a)
                 if in_a_hurry:
@@ -229,15 +228,16 @@ def main(argv=None):
             #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear 
 
         print ("Post-processing: will generate output " +
-               "data in folder %s" % outputdir)
+               "data in folder %s" % genericsettings.outputdir)
         print "  this might take several minutes."
 
-        if not os.path.exists(outputdir):
-            os.makedirs(outputdir)
+        if not os.path.exists(genericsettings.outputdir):
+            os.makedirs(genericsettings.outputdir)
             if verbose:
-                print 'Folder %s was created.' % (outputdir)
+                print 'Folder %s was created.' % (genericsettings.outputdir)
         
-        truncate_latex_command_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'))
+        truncate_latex_command_file(os.path.join(genericsettings.outputdir,
+                                                 'bbob_pproc_commands.tex'))
 
         for i in range(len(args)):  # prepend common path inputdir to all names
             args[i] = os.path.join(inputdir, args[i])
@@ -245,18 +245,22 @@ def main(argv=None):
         for i, alg in enumerate(args):
             # remove '../' from algorithm output folder
             if len(args) == 1 or '--omit-single' not in dict(opts):
-                tmpoutputdir = os.path.join(outputdir, alg.replace('..' + os.sep, '').lstrip(os.sep))
+                tmpoutputdir = os.path.join(genericsettings.outputdir,
+                                alg.replace('..' + os.sep, '').lstrip(os.sep))
                 rungeneric1.main(genopts
                                 + ["-o", tmpoutputdir, alg])
-                prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
-                                ['\\providecommand{\\algfolder}{' + alg.replace('..' + os.sep, '').rstrip(os.sep).replace(os.sep, '/') + '/}'])
+                prepend_to_file(os.path.join(genericsettings.outputdir,
+                                'bbob_pproc_commands.tex'), 
+                                ['\\providecommand{\\algfolder}{'
+                                 + alg.replace('..' + os.sep, '').rstrip(os.sep).replace(os.sep, '/') + '/}'])
 
         if len(args) == 2:
-            rungeneric2.main(genopts + ["-o", outputdir] + args)
+            rungeneric2.main(genopts + ["-o", genericsettings.outputdir] + args)
         elif len(args) > 2:
-            rungenericmany.main(genopts + ["-o", outputdir] + args)
+            rungenericmany.main(genopts + ["-o", genericsettings.outputdir] + args)
 
-        open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a').close() 
+        open(os.path.join(genericsettings.outputdir,
+                          'bbob_pproc_commands.tex'), 'a').close() 
         
         print_done()
 

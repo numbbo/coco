@@ -198,16 +198,15 @@ rctick = {"labelsize": 20}
 rcfont = {"size": 20}
 rclegend = {"fontsize": 20}
     
-# extracted default settings from rungeneric1, rungeneric2, and rungenericmany
-# after the variables have been made consistent:    
-#inputCrE = 0.
-#isFig = True
-#isTab = True
-#isNoisy = False
-#isNoiseFree = False        
-#isConv = False
+# default settings for rungeneric, rungeneric1, rungeneric2, and rungenericmany
+inputCrE = 0.
+isFig = True
+isTab = True
+isNoisy = False
+isNoiseFree = False        
+isConv = False
 #verbose = False
-#outputdir = 'ppdata'
+outputdir = 'ppdata'
 #inputsettings = 'color'
 #isRLbased = None  # allows automatic choice
 #isExpensive = None 
