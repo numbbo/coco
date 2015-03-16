@@ -19,13 +19,13 @@ static int bbob2009_get_instance_id(const coco_problem_t *problem);
 /* FIXME: these names could easily created conflicts with other coco.c-global names. Use bbob2009 as prefix to prevent conflicts. */
 static const size_t bbob2009_nbpts_nbevals = 20;
 static const size_t bbob2009_nbpts_fval = 5;
-static long current_dim = 0;
+static size_t current_dim = 0;
 static long current_funId = 0;
-static size_t infoFile_firstInstance = 0;
+static int infoFile_firstInstance = 0;
 char infoFile_firstInstance_char[3];
 /*a possible solution: have a list of dims that are already in the file, if the ones we're about to log is != current_dim and the funId is currend_funId, create a new .info file with as suffix the number of the first instance */
 static const int bbob2009_number_of_dimensions = 6;
-static long dimensions_in_current_infoFile[6] = {0,0,0,0,0,0}; /*TODO should use BBOB2009_NUMBER_OF_DIMENSIONS*/
+static size_t dimensions_in_current_infoFile[6] = {0,0,0,0,0,0}; /*TODO should use BBOB2009_NUMBER_OF_DIMENSIONS*/
 
 
 /* The current_... mechanism fails if several problems are open. 
@@ -52,11 +52,11 @@ typedef struct {
                         .dat file*/
   long t_trigger;    /* next lower bound on nb fun evals to trigger a log in the
                         .tdat file*/
-  int idx_f_trigger; /* allows to track the index i in logging target =
+  size_t idx_f_trigger; /* allows to track the index i in logging target =
                         {10**(i/bbob2009_nbpts_fval), i \in Z} */
-  int idx_t_trigger; /* allows to track the index i in logging nbevals  =
+  size_t idx_t_trigger; /* allows to track the index i in logging nbevals  =
                         {int(10**(i/bbob2009_nbpts_nbevals)), i \in Z} */
-  int idx_tdim_trigger; /* allows to track the index i in logging nbevals  =
+  size_t idx_tdim_trigger; /* allows to track the index i in logging nbevals  =
                            {dim * 10**i, i \in Z} */
   long number_of_evaluations;
   double best_fvalue;
@@ -71,7 +71,7 @@ typedef struct {
    * form it.*/
   int function_id; /*TODO: consider changing name*/
   int instance_id;
-  long number_of_variables;
+  size_t number_of_variables;
   double optimal_fvalue;
 } bbob2009_logger_t; 
 
@@ -94,7 +94,7 @@ static void _bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
   } else {
     if (data->idx_f_trigger == INT_MAX) { /* first time*/
       data->idx_f_trigger =
-          ceil(log10(fvalue - data->optimal_fvalue)) * bbob2009_nbpts_fval;
+          (size_t)(ceil(log10(fvalue - data->optimal_fvalue)) * bbob2009_nbpts_fval);
     } else { /* We only call this function when we reach the current f_trigger*/
       data->idx_f_trigger--;
     }
@@ -107,7 +107,7 @@ static void _bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
 }
 
 static void _bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
-                                              long number_of_variables) {
+                                              size_t number_of_variables) {
   while (data->number_of_evaluations >=
          floor(pow(10, (double)data->idx_t_trigger / (double)bbob2009_nbpts_nbevals)))
     data->idx_t_trigger++;
@@ -117,7 +117,7 @@ static void _bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
     data->idx_tdim_trigger++;
 
   data->t_trigger =
-      fmin(floor(pow(10, (double)data->idx_t_trigger / (double)bbob2009_nbpts_nbevals)),
+      (long)fmin(floor(pow(10, (double)data->idx_t_trigger / (double)bbob2009_nbpts_nbevals)),
            number_of_variables * pow(10, (double)data->idx_tdim_trigger));
 }
 
@@ -152,7 +152,7 @@ static void _bbob2009_logger_error_io(FILE *path, int errnum) {
   const char *error_format = "Error opening file: %s\n ";
                              /*"bbob2009_logger_prepare() failed to open log "
                              "file '%s'.";*/
-  size_t buffer_size = snprintf(NULL, 0, error_format, path);
+  size_t buffer_size = (size_t)(snprintf(NULL, 0, error_format, path));/*to silence warning*/
   buf = (char *)coco_allocate_memory(buffer_size);
   snprintf(buf, buffer_size, error_format, strerror(errnum), path);
   coco_error(buf);
@@ -228,7 +228,7 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
         infoFile_firstInstance = data->instance_id;
     }
     sprintf(function_id_char, "%d", data->function_id);
-    sprintf(infoFile_firstInstance_char, "%zu", infoFile_firstInstance);
+    sprintf(infoFile_firstInstance_char, "%d", infoFile_firstInstance);
     char file_name[NUMBBO_PATH_MAX] = {0};
     char file_path[NUMBBO_PATH_MAX] = {0};
     FILE **target_file = &(data->index_file);
@@ -272,7 +272,7 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                             newLine = 0;
                             file_path[strlen(file_path)-strlen(infoFile_firstInstance_char) - 7] = 0;/*truncate the instance part*/
                             infoFile_firstInstance = data->instance_id;
-                            sprintf(infoFile_firstInstance_char, "%zu", infoFile_firstInstance);
+                            sprintf(infoFile_firstInstance_char, "%d", infoFile_firstInstance);
                             strncat(file_path, "_i", NUMBBO_PATH_MAX - strlen(file_name) - 1);
                             strncat(file_path, infoFile_firstInstance_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
                             strncat(file_path, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
