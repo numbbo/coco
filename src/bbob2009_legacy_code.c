@@ -134,7 +134,7 @@ static void bbob2009_compute_rotation(double **B, int seed, unsigned int DIM) {
   /* To ensure temporary data fits into gvec */
   double prod;
   double gvect[2000];
-  int i, j, k; /*Loop over pairs of column vectors*/
+  unsigned i, j, k; /*Loop over pairs of column vectors. unsigned instead of int to silence warning*/
 
   assert(DIM * DIM < 2000);
 
@@ -164,7 +164,7 @@ static void bbob2009_compute_rotation(double **B, int seed, unsigned int DIM) {
  * Randomly compute the location of the global optimum.
  */
 static void bbob2009_compute_xopt(double *xopt, int seed, unsigned int DIM) {
-  int i;
+  unsigned i;
   bbob2009_unif(xopt, DIM, seed);
   for (i = 0; i < DIM; i++) {
     xopt[i] = 8 * floor(1e4 * xopt[i]) / 1e4 - 4;
