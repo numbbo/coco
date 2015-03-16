@@ -15,13 +15,13 @@ cdef extern from "coco.h":
         pass
     coco_problem_t *coco_get_problem(const char *benchmark,
                                      int problem_index)
-    coco_problem_t *coco_observe_problem(const char *observer_name,
-                                         coco_problem_t *problem,
-                                         const char *options)
     int coco_next_problem_index(const char *benchmark, 
                                 const int problem_index,
                                 const char *benchmark_options)
     void coco_free_problem(coco_problem_t *problem)
+    coco_problem_t *coco_observe_problem(const char *observer_name,
+                                         coco_problem_t *problem,
+                                         const char *options)
     void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
     size_t coco_get_number_of_variables(coco_problem_t *problem)
     size_t coco_get_number_of_objectives(coco_problem_t *problem)
@@ -29,8 +29,8 @@ cdef extern from "coco.h":
     const char *coco_get_problem_name(coco_problem_t *problem)
     const double *coco_get_smallest_values_of_interest(coco_problem_t *problem)
     const double *coco_get_largest_values_of_interest(coco_problem_t *problem)
-    size_t coco_get_evaluations(coco_problem_t *problem)
     double coco_get_final_target_fvalue1(coco_problem_t *problem)
+    size_t coco_get_evaluations(coco_problem_t *problem)
     double coco_get_best_observed_fvalue1(coco_problem_t *problem)
 
 cdef bytes _bstring(s):
@@ -63,16 +63,16 @@ cdef class Problem:
         self.problem = coco_get_problem(_problem_suite, problem_index)
         if self.problem is NULL:
             raise NoSuchProblemException(problem_suite, problem_index)
-        self.y = np.zeros(coco_get_number_of_objectives(self.problem))
-        ## FIXME: Inefficient because we copy the bounds instead of
-        ## sharing the data.
-        self.lower_bounds = np.zeros(coco_get_number_of_variables(self.problem))
-        self.upper_bounds = np.zeros(coco_get_number_of_variables(self.problem))
-        for i in range(coco_get_number_of_variables(self.problem)):
-            self.lower_bounds[i] = coco_get_smallest_values_of_interest(self.problem)[i]
-            self.upper_bounds[i] = coco_get_largest_values_of_interest(self.problem)[i]
         self._number_of_variables = coco_get_number_of_variables(self.problem)
         self._number_of_objectives = coco_get_number_of_objectives(self.problem)
+        self.y = np.zeros(self._number_of_objectives)
+        ## FIXME: Inefficient because we copy the bounds instead of
+        ## sharing the data.
+        self.lower_bounds = np.zeros(self._number_of_variables)
+        self.upper_bounds = np.zeros(self._number_of_variables)
+        for i in range(self._number_of_variables):
+            self.lower_bounds[i] = coco_get_smallest_values_of_interest(self.problem)[i]
+            self.upper_bounds[i] = coco_get_largest_values_of_interest(self.problem)[i]
 
     def add_observer(self, observer, options):
         """`add_observer(observer: str, options: str)`
@@ -180,6 +180,7 @@ cdef class Problem:
             return "<finalized/invalid problem>"
         
     def __enter__(self):
+        """Allows ``with Benchmark(...).get_problem(...) as problem:``"""
         return self
     def __exit__(self, exception_type, exception_value, traceback):
         try:
