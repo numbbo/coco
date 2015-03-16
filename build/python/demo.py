@@ -42,7 +42,7 @@ def random_search(fun, lbounds, ubounds, budget):
     
 # set up
 MAXEVALS = 1e2  # always start with something small, CAVEAT: this might be modified from input args
-solver = random_search # cma.fmin # fmin_slsqp #   
+solver = random_search # fmin_slsqp # cma.fmin #    
 suite_name = "bbob2009"
 suite_options = ""  # options syntax could be: "instances:1-5; dimensions:2-20",
 observer_name = "bbob2009_observer"
@@ -57,18 +57,28 @@ def coco_solve(fun):
     center = fun.lower_bounds + range_ / 2
     dim = len(fun.lower_bounds)
 
-    # ENHANCE: restarts from randomized x0 points
-    # NEEDED: know the remaining budget
-    global solver 
-    if solver.__name__ in ("random_search", ):
-        solver(fun, fun.lower_bounds, fun.upper_bounds,
-                MAXEVALS)
-    elif solver.__name__ == 'fmin' and solver.func_globals['__name__'] == 'cma':
-        solver(fun, center, 0.2, restarts=8, options=dict(scaling=range_, maxfevals=MAXEVALS, verbose=-9))
-    elif solver.__name__ == 'fmin_slsqp':
-        solver(fun, center, iter=MAXEVALS / dim + 1, iprint=-1)
-    # IMPLEMENT HERE the call to given solver
-    # elif ...:
+    runs = 0
+    while MAXEVALS > fun.evaluations:
+        # print("%f %f" % (fun.best_observed_fvalue1, fun.final_target_fvalue1))
+        if fun.best_observed_fvalue1 < fun.final_target_fvalue1:
+            break
+        remaining_budget = MAXEVALS - fun.evaluations
+        x0 = center + (fun.evaluations > 0) * 0.9 * range_ * (np.random.rand(dim) - 0.5)
+
+        global solver 
+        if solver.__name__ in ("random_search", ):
+            solver(fun, fun.lower_bounds, fun.upper_bounds,
+                    remaining_budget)
+        elif solver.__name__ == 'fmin' and solver.func_globals['__name__'] == 'cma':
+            solver(fun, x0, 0.2, restarts=8,
+                   options=dict(scaling=range_, maxfevals=remaining_budget, verbose=-9))
+        elif solver.__name__ == 'fmin_slsqp':
+            solver(fun, x0, iter=1 + remaining_budget / dim, iprint=-1)
+        # IMPLEMENT HERE the call to given solver
+        # elif ...:
+        runs += 1
+    if runs > 1:
+        print("%d runs, " % runs, end="")
 
 # run 
 if __name__ == '__main__':
@@ -88,6 +98,7 @@ if __name__ == '__main__':
             found_problems += 1
             # use problem only under some conditions, mainly for testing
             if 1 or ('f11' in problem.id and 'i03' in problem.id):
+                print("%4d: " % problem_index, end="")
                 coco_solve(problem)
                 addressed_problems += 1
         print("%s done (%d of %d problems benchmarked)." 
@@ -101,9 +112,9 @@ if __name__ == '__main__':
         for problem_index in bm.problem_indices: # bm.next_problem_index(problem_index) is also available
             if (problem_index + current_batch - 1) % number_of_batches:
                 continue
-            problem = bm.get_problem(problem_index) 
+            problem = bm.get_problem(problem_index)
+            print("%4d: " % problem_index, end="")
             coco_solve(problem)
-            print("%d evaluations done (according to Python interface)" % problem.evaluations)
             problem.free()  # preferably free would not be necessary, but how?
             addressed_problems += [problem_index]
         print("%s done (%d of %d problems benchmarked%s)." % 
@@ -127,9 +138,10 @@ if __name__ == '__main__':
             problem = bm.get_problem(problem_index) 
             # use problem only under some conditions, mainly for testing
             if 1 or ('d20' in problem.id and 'i01' in problem.id):
+                print("%4d: " % problem_index, end="")
                 coco_solve(problem)
                 addressed_problems += 1
-            problem.free()  # preferably free would not be necessary, but how?
+            problem.free()  # preferably free would not be necessary
         print("%s done (%d of %d problems benchmarked%s)." % 
                (suite_name, addressed_problems, found_problems,
                  ((" in batch %d of %d" % (current_batch, number_of_batches))
