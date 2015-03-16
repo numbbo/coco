@@ -11,7 +11,7 @@
 #include "coco_problem.c"
 #include "coco_strdup.c"
 
-static int bbob2009_logger_verbosity = 1;  /* TODO: make this an option the user can modify */
+static int bbob2009_logger_verbosity = 3;  /* TODO: make this an option the user can modify */
 
 static int bbob2009_get_function_id(const coco_problem_t *problem);
 static int bbob2009_get_instance_id(const coco_problem_t *problem);
