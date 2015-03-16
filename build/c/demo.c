@@ -60,7 +60,7 @@ static const char * observer_name    = "bbob2009_observer"; /* writes data */
 static const char * observer_options = "random_search_on_bbob2009"; /* future: "folder:random_search; verbosity:1" */
 static const char * solver_name      = "random_search"; /* for the choice in coco_solver below */
 /*  static const char * solver_name   = "my_solver"; / * for the choice in coco_solver below */
-static const int number_of_batches   = 1;  /* use 1 for single batch :-) batches can be run independently in parallel */
+static const int number_of_batches   = 3;  /* use 1 for single batch :-) batches can be run independently in parallel */
 static int current_batch             = 1;  /* runs from 1 to number_of_batches, or any other consecutive sequence */
 
 /**************************************************

@@ -19,13 +19,13 @@ static int bbob2009_get_instance_id(const coco_problem_t *problem);
 /* FIXME: these names could easily created conflicts with other coco.c-global names. Use bbob2009 as prefix to prevent conflicts. */
 static const size_t bbob2009_nbpts_nbevals = 20;
 static const size_t bbob2009_nbpts_fval = 5;
-static size_t current_dim = 0;
-static size_t current_funId = 0;
+static long current_dim = 0;
+static long current_funId = 0;
 static size_t infoFile_firstInstance = 0;
 char infoFile_firstInstance_char[3];
 /*a possible solution: have a list of dims that are already in the file, if the ones we're about to log is != current_dim and the funId is currend_funId, create a new .info file with as suffix the number of the first instance */
 static const int bbob2009_number_of_dimensions = 6;
-static size_t dimensions_in_current_infoFile[6] = {0,0,0,0,0,0}; /*TODO should use BBOB2009_NUMBER_OF_DIMENSIONS*/
+static long dimensions_in_current_infoFile[6] = {0,0,0,0,0,0}; /*TODO should use BBOB2009_NUMBER_OF_DIMENSIONS*/
 
 
 /* The current_... mechanism fails if several problems are open. 
@@ -497,10 +497,12 @@ static void _bbob2009_logger_free_data(void *stuff) {
     printf("best f=%e after %ld fevals (done observing)\n",
            data->best_fvalue, (long)data->number_of_evaluations);
     }
-  if (data->alg_name != NULL) {
+    /*WASSIM: const char * does not need to be freed */
+  /*if (data->alg_name != NULL) {
 	  coco_free_memory(data->alg_name);
 	  data->alg_name = NULL;
-  }
+  }*/
+    
   if (data->path != NULL) {
     coco_free_memory(data->path);
     data->path = NULL;
