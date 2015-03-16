@@ -41,9 +41,8 @@ def random_search(fun, lbounds, ubounds, budget):
     return x_min
     
 # set up
-MAXEVALS = 1e3  # always start with something small, CAVEAT: this might be modified from input args
-solver = fmin_slsqp # random_search # cma.fmin #    
-solver = cma.fmin # fmin_slsqp # random_search #     
+MAXEVALS = 1e2  # always start with something small, CAVEAT: this might be modified from input args
+solver = random_search # fmin_slsqp # cma.fmin #    
 suite_name = "bbob2009"
 suite_options = ""  # options syntax could be: "instances:1-5; dimensions:2-20",
 observer_name = "bbob2009_observer"
@@ -99,7 +98,7 @@ if __name__ == '__main__':
             found_problems += 1
             # use problem only under some conditions, mainly for testing
             if 1 or ('f11' in problem.id and 'i03' in problem.id):
-                print("%d: " % problem_index, end="")
+                print("%4d: " % problem_index, end="")
                 coco_solve(problem)
                 addressed_problems += 1
         print("%s done (%d of %d problems benchmarked)." 
@@ -114,7 +113,7 @@ if __name__ == '__main__':
             if (problem_index + current_batch - 1) % number_of_batches:
                 continue
             problem = bm.get_problem(problem_index)
-            print("%d: " % problem_index, end="")
+            print("%4d: " % problem_index, end="")
             coco_solve(problem)
             problem.free()  # preferably free would not be necessary, but how?
             addressed_problems += [problem_index]
@@ -139,10 +138,10 @@ if __name__ == '__main__':
             problem = bm.get_problem(problem_index) 
             # use problem only under some conditions, mainly for testing
             if 1 or ('d20' in problem.id and 'i01' in problem.id):
-                print("%d: " % problem_index, end="")
+                print("%4d: " % problem_index, end="")
                 coco_solve(problem)
                 addressed_problems += 1
-            problem.free()  # preferably free would not be necessary, but how?
+            problem.free()  # preferably free would not be necessary
         print("%s done (%d of %d problems benchmarked%s)." % 
                (suite_name, addressed_problems, found_problems,
                  ((" in batch %d of %d" % (current_batch, number_of_batches))
