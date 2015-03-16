@@ -316,57 +316,6 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
     }
 }
 
-/*
-static void _old_bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
-                                           const char *folder_path,
-                                           const char *indexFile_prefix,
-                                           const char *function_id,
-                                           const char *dataFile_path) {
-  int errnum;
-  char file_name[NUMBBO_PATH_MAX] = {0};
-  char file_path[NUMBBO_PATH_MAX] = {0};
-  FILE **target_file = &(data->index_file);
-  FILE *tmp_file =
-      NULL;
-  strncpy(file_name, indexFile_prefix, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-  strncat(file_name, "_f", NUMBBO_PATH_MAX - strlen(file_name) - 1);
-  strncat(file_name, function_id, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-  strncat(file_name, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
-  coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
-  if (*target_file == NULL) {
-      tmp_file = fopen(file_path, "r");
-    if ((tmp_file ) &&
-        (current_dim == data->number_of_variables) &&
-        (current_funId == data->function_id)) {
-      *target_file = fopen(file_path, "a+");
-      if (*target_file == NULL) {
-        errnum = errno;
-        _bbob2009_logger_error_io(*target_file, errnum);
-      }
-      fclose(tmp_file);
-    } else {
-      *target_file = fopen(file_path, "a+");
-      if (*target_file == NULL) {
-        errnum = errno;
-        _bbob2009_logger_error_io(*target_file, errnum);
-      }
-      if (tmp_file) {
-        fprintf(*target_file, "\n");
-        fclose(tmp_file);
-      }
-      fprintf(*target_file,
-              
-              "funcId = %d, DIM = %ld, Precision = %.3e, algId = '%s'\n",
-              (int)strtol(function_id, NULL, 10), (long)data->number_of_variables,
-              pow(10, -8), data->alg_name);
-      fprintf(*target_file, "%%\n");
-      fprintf(*target_file, "%s.dat",
-              dataFile_path);
-      current_dim = data->number_of_variables;
-      current_funId = data->function_id;
-    }
-  }
-}*/
 
 /**
  * Generates the different files and folder needed by the logger to store the
