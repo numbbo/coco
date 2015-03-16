@@ -88,7 +88,8 @@ if __name__ == '__main__':
         current_batch = int(sys.argv[2])
     if len(sys.argv) > 3:
         number_of_batches = int(sys.argv[3])
-        
+    
+    print("Benchmarking solver %s" % str(solver))
     if 11 < 3:
         # simple Pythonic use case, never leaves a problem unfree()ed, ctrl-C "safe"
         print('Pythonic usecase ...'); sys.stdout.flush()
