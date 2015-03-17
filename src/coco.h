@@ -177,7 +177,7 @@ coco_problem_t *coco_observe_problem(const char *observer_name,
                                      const char *options);
 
 void coco_benchmark(const char *problem_suit, const char *observer,
-                    const char *options, coco_optimizer_t optimizer);
+                    const char *observer_options, coco_optimizer_t optimizer);
 
 /* shall replace the above? */
 void new_coco_benchmark(const char *problem_suit, const char *problem_suit_options,
