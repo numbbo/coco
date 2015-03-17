@@ -446,11 +446,10 @@ static void _bbob2009_logger_free_data(void *stuff) {
     printf("best f=%e after %ld fevals (done observing)\n",
            data->best_fvalue, (long)data->number_of_evaluations);
     }
-    /*WASSIM: const char * does not need to be freed */
-  /*if (data->alg_name != NULL) {
-	  coco_free_memory(data->alg_name);
+  if (data->alg_name != NULL) {
+	  coco_free_memory((void*)data->alg_name);
 	  data->alg_name = NULL;
-  }*/
+  }
     
   if (data->path != NULL) {
     coco_free_memory(data->path);
