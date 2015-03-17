@@ -21,7 +21,6 @@ import getopt
 from pdb import set_trace
 import numpy
 import numpy as np
-from bbob_pproc import pproc
 
 ftarget = 1e-8  # used for ppfigs.main 
 ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
@@ -40,6 +39,7 @@ if __name__ == "__main__":
     # matplotlib.use('pdf')
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
+from bbob_pproc import pproc
 from bbob_pproc import genericsettings, config
 from bbob_pproc import pprldistr
 from bbob_pproc.pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
