@@ -202,8 +202,8 @@ def main(argv=None):
                 outputdir = a
             elif o in ("--in-a-hurry", ):
                 genericsettings.in_a_hurry = int(a)
-                if in_a_hurry:
-                    print 'in_a_hurry like', in_a_hurry, '(should finally be set to zero)'
+                if genericsettings.in_a_hurry:
+                    print 'in_a_hurry like', genericsettings.in_a_hurry, '(should finally be set to zero)'
             elif o in ("--input-path", ):
                 inputdir = a
             else:
