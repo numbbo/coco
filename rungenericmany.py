@@ -166,8 +166,6 @@ def main(argv=None):
 
         verbose = False
         isRLDistr = True
-        inputsettings = "color"
-        isRLbased = None  # allows automatic choice
         isExpensive = None 
         isRldOnSingleFcts = False
 
@@ -198,11 +196,11 @@ def main(argv=None):
                 isRLDistr = False
                 genericsettings.isTab = False
             elif o == "--settings":
-                inputsettings = a
+                genericsettings.inputsettings = a
             elif o == "--conv":
                 genericsettings.isConv = True
             elif o == "--runlength-based":
-                isRLbased = True
+                genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 isExpensive = True  # comprises runlength-based
             elif o == "--not-expensive":
@@ -220,10 +218,10 @@ def main(argv=None):
 
         # from bbob_pproc import bbob2010 as inset # input settings
         # TODO: conditional imports are NOT the way to go here
-        if inputsettings == "color":
+        if genericsettings.inputsettings == "color":
             from bbob_pproc import config, genericsettings as inset # input settings
             config.config()
-        elif inputsettings == "grayscale":
+        elif genericsettings.inputsettings == "grayscale":
             # this settings strategy (by proving different settings files) is problematic, 
             # because it means copy-paste of the settings
             # file and future changes have a great chance to make the pasted files incompatible
@@ -231,10 +229,10 @@ def main(argv=None):
             from bbob_pproc import config, grayscalesettings as inset # input settings
             # better would be just adjust the previous settings, as config is doing it, 
             # so a config_grayscalesettings.py module seems the better approach to go 
-        elif inputsettings == "black-white":
+        elif genericsettings.inputsettings == "black-white":
             from bbob_pproc import config, bwsettings as inset # input settings
         else:
-            txt = ('Settings: %s is not an appropriate ' % inputsettings
+            txt = ('Settings: %s is not an appropriate ' % genericsettings.inputsettings
                    + 'argument for input flag "--settings".')
             raise Usage(txt)
 
@@ -242,8 +240,6 @@ def main(argv=None):
             warnings.filterwarnings('module', '.*', Warning, '.*')  # same warning just once
             warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear 
 
-        if isRLbased is not None:
-            genericsettings.runlength_based_targets = isRLbased
         config.target_values(isExpensive)
         
     except Usage, err:
@@ -291,8 +287,6 @@ def main(argv=None):
         dict_max_fun_evals = {}
         for ds in dsList:
             dict_max_fun_evals[ds.dim] = numpy.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(numpy.max(ds.maxevals))))
-        if isRLbased is not None:
-            genericsettings.runlength_based_targets = isRLbased
             
         # set target values
         from bbob_pproc import config

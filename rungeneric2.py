@@ -170,9 +170,7 @@ def main(argv=None):
         isScatter = True
         isScaleUp = True
         verbose = False
-        inputsettings = 'color'
         isRldOnSingleFcts = False
-        isRLbased = None  # allows automatic choice
         isExpensive = None 
 
         #Process options
@@ -185,8 +183,6 @@ def main(argv=None):
                 sys.exit()
             elif o in ("-o", "--output-dir"):
                 outputdir = a
-            #elif o in ("-s", "--style"):
-            #    inputsettings = a
             elif o == "--fig-only":
                 isRLDistr = False
                 genericsettings.isTab = False
@@ -208,13 +204,13 @@ def main(argv=None):
             elif o == "--noise-free":
                 genericsettings.isNoiseFree = True
             elif o == "--settings":
-                inputsettings = a
+                genericsettings.inputsettings = a
             elif o == "--conv":
                 genericsettings.isConv = True
             elif o == "--rld-single-fcts":
                 isRldOnSingleFcts = True
             elif o == "--runlength-based":
-                isRLbased = True
+                genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 isExpensive = True  # comprises runlength-based
             elif o == "--not-expensive":
@@ -229,15 +225,15 @@ def main(argv=None):
                 assert False, "unhandled option"
 
         # from bbob_pproc import bbob2010 as inset # input settings
-        if inputsettings == "color":
+        if genericsettings.inputsettings == "color":
             from bbob_pproc import genericsettings as inset # input settings
             config.config()
-        elif inputsettings == "grayscale": # probably very much obsolete
+        elif genericsettings.inputsettings == "grayscale": # probably very much obsolete
             from bbob_pproc import grayscalesettings as inset # input settings
-        elif inputsettings == "black-white": # probably very much obsolete
+        elif genericsettings.inputsettings == "black-white": # probably very much obsolete
             from bbob_pproc import bwsettings as inset # input settings
         else:
-            txt = ('Settings: %s is not an appropriate ' % inputsettings
+            txt = ('Settings: %s is not an appropriate ' % genericsettings.inputsettings
                    + 'argument for input flag "--settings".')
             raise Usage(txt)
 
@@ -307,8 +303,6 @@ def main(argv=None):
             dict_max_fun_evals1[ds.dim] = np.max((dict_max_fun_evals1.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
         for ds in dsList1:
             dict_max_fun_evals2[ds.dim] = np.max((dict_max_fun_evals2.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
-        if isRLbased is not None:
-            genericsettings.runlength_based_targets = isRLbased
         config.target_values(isExpensive, {1: min([max([val/dim for dim, val in dict_max_fun_evals1.iteritems()]), 
                                                    max([val/dim for dim, val in dict_max_fun_evals2.iteritems()])]
                                                   )})
