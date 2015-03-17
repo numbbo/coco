@@ -125,8 +125,8 @@ static int bbob2009_encode_problem_index(int function_id, int instance_id, int d
 }
 
 static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b,
-                                          const int dimension) {
-  int row, column;
+                                          const size_t dimension) {
+  size_t row, column;
   double *current_row;
 
   for (row = 0; row < dimension; ++row) {
