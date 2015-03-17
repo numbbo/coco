@@ -205,19 +205,18 @@ isTab = True
 isNoisy = False
 isNoiseFree = False        
 isConv = False
-#verbose = False
+verbose = False
 outputdir = 'ppdata'
 inputsettings = 'color'
-#isExpensive = None 
-#isRldOnSingleFcts = False
-#isRLDistr = True #
+isExpensive = None 
+isRldOnSingleFcts = False
+isRLDistr = True
 ##
-#isPostProcessed = False # only affects rungeneric1
-#isLogLoss = True # only affects rungeneric1
-#isPickled = False # only affects rungeneric1
+isLogLoss = True # only affects rungeneric1
+isPickled = False # only affects rungeneric1
 ##    
-#isScatter = True # only affects rungeneric2
-#isScaleUp = True # only affects rungeneric2
+isScatter = True # only affects rungeneric2
+isScaleUp = True # only affects rungeneric2, only set here and not altered by any command line argument for now
 
 # Used by getopt:
 shortoptlist = "hvpo:"    

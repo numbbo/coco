@@ -54,11 +54,11 @@ def main(argv=None):
     r"""Post-processing COCO data of a single algorithm.
 
     Provided with some data, this routine outputs figure and TeX files
-    in a folder needed for the compilation of latex document
-    :file:`template1XXX.tex` or :file:`noisytemplate1XXX.tex`, where 
-    :file:`XXX` is either :file:`ecj` or :file:`generic`. The template
-    file needs to be edited so that the commands
-    ``\bbobdatapath`` and ``\algfolder`` point to the output folder.
+    in a folder needed for the compilation of the provided LaTeX templates
+    for one algorithm (``*article.tex`` or ``*1*.tex``).
+    The used template file needs to be edited so that the commands
+    ``\bbobdatapath`` and ``\algfolder`` point to the output folder created
+    by this routine.
 
     These output files will contain performance tables, performance
     scaling figures and empirical cumulative distribution figures. On
@@ -174,24 +174,16 @@ def main(argv=None):
             print 'try --help for help'
             sys.exit()
 
-        isrldistr = True
-        islogloss = True
-        isPostProcessed = False
-        isPickled = False
-        verbose = False
-        isRldOnSingleFcts = False
-        isExpensive = None 
-
         # Process options
         outputdir = genericsettings.outputdir
         for o, a in opts:
             if o in ("-v", "--verbose"):
-                verbose = True
+                genericsettings.verbose = True
             elif o in ("-h", "--help"):
                 usage()
                 sys.exit()
             elif o in ("-p", "--pickle"):
-                isPickled = True
+                genericsettings.isPickled = True
             elif o in ("-o", "--output-dir"):
                 outputdir = a
             elif o == "--noisy":
@@ -201,20 +193,20 @@ def main(argv=None):
             # The next 4 are for testing purpose
             elif o == "--tab-only":
                 genericsettings.isFig = False
-                isrldistr = False
-                islogloss = False
+                genericsettings.isRLDistr = False
+                genericsettings.isLogLoss = False
             elif o == "--fig-only":
                 genericsettings.isTab = False
-                isrldistr = False
-                islogloss = False
+                genericsettings.isRLDistr = False
+                genericsettings.isLogLoss = False
             elif o == "--rld-only":
                 genericsettings.isTab = False
                 genericsettings.isFig = False
-                islogloss = False
+                genericsettings.isLogLoss = False
             elif o == "--los-only":
                 genericsettings.isTab = False
                 genericsettings.isFig = False
-                isrldistr = False
+                genericsettings.isRLDistr = False
             elif o == "--crafting-effort":
                 try:
                     genericsettings.inputCrE = float(a)
@@ -225,13 +217,13 @@ def main(argv=None):
             elif o == "--conv":
                 genericsettings.isConv = True
             elif o == "--rld-single-fcts":
-                isRldOnSingleFcts = True
+                genericsettings.isRldOnSingleFcts = True
             elif o == "--runlength-based":
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
-                isExpensive = True  # comprises runlength-based
+                genericsettings.isExpensive = True  # comprises runlength-based
             elif o == "--not-expensive":
-                isExpensive = False
+                genericsettings.isExpensive = False
             elif o == "--sca-only":
                 warnings.warn("option --sca-only will have no effect with rungeneric1.py")
             else:
@@ -260,7 +252,7 @@ def main(argv=None):
             finally:
                 fp.close()
 
-        if (not verbose):
+        if (not genericsettings.verbose):
             warnings.simplefilter('module')
             # warnings.simplefilter('ignore')            
 
@@ -272,14 +264,14 @@ def main(argv=None):
         for i in args:
             i = i.strip()
             if os.path.isdir(i):
-                filelist.extend(findfiles.main(i, verbose))
+                filelist.extend(findfiles.main(i, genericsettings.verbose))
             elif os.path.isfile(i):
                 filelist.append(i)
             else:
                 txt = 'Input file or folder %s could not be found.' % i
                 print txt
                 raise Usage(txt)
-        dsList = DataSetList(filelist, verbose)
+        dsList = DataSetList(filelist, genericsettings.verbose)
         
         if not dsList:
             raise Usage("Nothing to do: post-processing stopped.")
@@ -295,10 +287,10 @@ def main(argv=None):
             dict_max_fun_evals[ds.dim] = np.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
         
         from bbob_pproc import config
-        config.target_values(isExpensive, dict_max_fun_evals)
+        config.target_values(genericsettings.isExpensive, dict_max_fun_evals)
         config.config()
 
-        if (verbose):
+        if (genericsettings.verbose):
             for i in dsList:
                 if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) != 
                     inset.instancesOfInterest):
@@ -318,17 +310,17 @@ def main(argv=None):
             # TODO: put some errors where this case would be a problem.
             # raise Usage?
 
-        if genericsettings.isFig or genericsettings.isTab or isrldistr or islogloss:
+        if genericsettings.isFig or genericsettings.isTab or genericsettings.isRLDistr or genericsettings.isLogLoss:
             if not os.path.exists(outputdir):
                 os.makedirs(outputdir)
-                if verbose:
+                if genericsettings.verbose:
                     print 'Folder %s was created.' % (outputdir)
 
-        if isPickled:
-            dsList.pickle(verbose=verbose)
+        if genericsettings.isPickled:
+            dsList.pickle(verbose=genericsettings.verbose)
 
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, outputdir, verbose)
+            ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
 
         if genericsettings.isFig:
             print "Scaling figures...",
@@ -340,7 +332,7 @@ def main(argv=None):
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
             ppfigdim.main(dsList, ppfigdim.values_of_interest,
-                          outputdir, verbose)
+                          outputdir, genericsettings.verbose)
             plt.rcdefaults()
             print_done()
 
@@ -356,10 +348,10 @@ def main(argv=None):
             dictNoise = dsList.dictByNoise()
             for noise, sliceNoise in dictNoise.iteritems():
                 pptable.main(sliceNoise, inset.tabDimsOfInterest,
-                             outputdir, noise, verbose)
+                             outputdir, noise, genericsettings.verbose)
             print_done()
 
-        if isrldistr:
+        if genericsettings.isRLDistr:
             print "ECDF graphs...",
             sys.stdout.flush()
             dictNoise = dsList.dictByNoise()
@@ -376,29 +368,29 @@ def main(argv=None):
                     continue
 
                 pprldistr.main(sliceDim, True,
-                               outputdir, 'all', verbose)
+                               outputdir, 'all', genericsettings.verbose)
                 dictNoise = sliceDim.dictByNoise()
                 for noise, sliceNoise in dictNoise.iteritems():
                     pprldistr.main(sliceNoise, True,
                                    outputdir,
-                                   '%s' % noise, verbose)
+                                   '%s' % noise, genericsettings.verbose)
                 dictFG = sliceDim.dictByFuncGroup()
                 for fGroup, sliceFuncGroup in dictFG.items():
                     pprldistr.main(sliceFuncGroup, True,
                                    outputdir,
-                                   '%s' % fGroup, verbose)
+                                   '%s' % fGroup, genericsettings.verbose)
 
                 pprldistr.fmax = None  # Resetting the max final value
                 pprldistr.evalfmax = None  # Resetting the max #fevalsfactor
 
-            if isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
+            if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
                 pprldmany.all_single_functions(dictAlg, None,
                                                outputdir,
-                                               verbose)
+                                               genericsettings.verbose)
             print_done()
 
-        if islogloss:
+        if genericsettings.isLogLoss:
             print "ERT loss ratio figures and tables...",
             sys.stdout.flush()
             for ng, sliceNoise in dsList.dictByNoise().iteritems():
@@ -423,15 +415,15 @@ def main(argv=None):
                     info = '%s' % ng
                     pplogloss.main(sliceDim, CrE, True,
                                    outputdir, info,
-                                   verbose=verbose)
+                                   verbose=genericsettings.verbose)
                     pplogloss.generateTable(sliceDim, CrE,
                                             outputdir, info,
-                                            verbose=verbose)
+                                            verbose=genericsettings.verbose)
                     for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
                         info = '%s' % fGroup
                         pplogloss.main(sliceFuncGroup, CrE, True,
                                        outputdir, info,
-                                       verbose=verbose)
+                                       verbose=genericsettings.verbose)
                     pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
 
             print_done()
@@ -460,7 +452,7 @@ def main(argv=None):
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\algname}{' + 
                          (str_to_latex(strip_pathname(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
-        if genericsettings.isFig or genericsettings.isTab or isrldistr or islogloss:
+        if genericsettings.isFig or genericsettings.isTab or genericsettings.isRLDistr or genericsettings.isLogLoss:
             print "Output data written to folder %s" % outputdir
 
         plt.rcdefaults()

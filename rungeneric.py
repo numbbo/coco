@@ -73,22 +73,23 @@ def main(argv=None):
     Depending on the number of data path input arguments, this routine will:
 
     * call sub-routine :py:func:`bbob_pproc.rungeneric1.main` for each
-      input arguments; each input argument will be used as output
+      input argument; each input argument will be used as output
       sub-folder relative to the main output folder,
     * call either sub-routines :py:func:`bbob_pproc.rungeneric2.main`
       (2 input arguments) or :py:func:`bbob_pproc.rungenericmany.main`
       (more than 2) for the input arguments altogether.
 
     The output figures and tables written by default to the output folder 
-    :file:`ppdata` are used in latex templates:
+    :file:`ppdata` are used in the following provided LaTeX templates:
 
-    * :file:`template1generic.tex`, :file:`noisytemplate1generic.tex`
-      for results with a **single** algorithm on the noise-free and noisy
-      testbeds respectively
-    * :file:`template2generic.tex`, :file:`noisytemplate2generic.tex`, 
+    * :file:`*article.tex` and :file:`*1*.tex`
+      for results with a **single** algorithm
+    * :file:`*cmp.tex` and :file:`*2*.tex` 
       for showing the comparison of **2** algorithms
-    * :file:`template3generic.tex`, :file:`noisytemplate3generic.tex` 
+    * :file:`*many.tex` and :file:`*3*.tex` 
       for showing the comparison of **more than 2** algorithms.
+    The templates with `noisy` mentioned in the filename have to be used
+      for the noisy testbed, the others for the noise-less one.
 
     These latex templates need to be copied in the current working directory 
     and possibly edited so that the LaTeX commands ``\bbobdatapath`` and
@@ -183,7 +184,6 @@ def main(argv=None):
             usage()
             sys.exit()
 
-        verbose = False
         inputdir = '.'
 
         #Process options
@@ -216,7 +216,7 @@ def main(argv=None):
                         genopts.append(a)
                     isAssigned = True
                 if o in ("-v", "--verbose"):
-                    verbose = True
+                    genericsettings.verbose = True
                     isAssigned = True
                 if o == '--omit-single':
                     isAssigned = True
@@ -224,7 +224,7 @@ def main(argv=None):
                     assert False, "unhandled option"
                     
 
-        if (not verbose):
+        if (not genericsettings.verbose):
             warnings.filterwarnings('module', '.*', UserWarning, '.*')
             #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear 
 
@@ -234,7 +234,7 @@ def main(argv=None):
 
         if not os.path.exists(outputdir):
             os.makedirs(outputdir)
-            if verbose:
+            if genericsettings.verbose:
                 print 'Folder %s was created.' % (outputdir)
         
         truncate_latex_command_file(os.path.join(outputdir,
