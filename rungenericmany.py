@@ -58,11 +58,10 @@ def main(argv=None):
     r"""Main routine for post-processing the data of multiple algorithms.
 
     Provided with some data, this routine outputs figure and TeX files
-    in a folder needed for the compilation of latex document
-    :file:`template3XXX.tex` or :file:`noisytemplate3XXX.tex`, where
-    :file:`XXX` is either :file:`ecj` or :file:`generic`. The template
-    file needs to be edited so that the command ``\bbobdatapath`` points
-    to the output folder.
+    in a folder needed for the compilation of the provided LaTeX templates
+    for comparing multiple algorithms (``*many.tex`` or ``*3*.tex``).
+    The used template file needs to be edited so that the commands
+    ``\bbobdatapath`` points to the output folder created by this routine.
 
     These output files will contain performance tables, performance
     scaling figures and empirical cumulative distribution figures. On
@@ -164,16 +163,11 @@ def main(argv=None):
             usage()
             sys.exit()
 
-        verbose = False
-        isRLDistr = True
-        isExpensive = None 
-        isRldOnSingleFcts = False
-
         #Process options
         outputdir = genericsettings.outputdir
         for o, a in opts:
             if o in ("-v","--verbose"):
-                verbose = True
+                genericsettings.verbose = True
             elif o in ("-h", "--help"):
                 usage()
                 sys.exit()
@@ -185,15 +179,15 @@ def main(argv=None):
                 genericsettings.isNoiseFree = True
             #The next 3 are for testing purpose
             elif o == "--tab-only":
-                isRLDistr = False
+                genericsettings.isRLDistr = False
                 genericsettings.isFig = False
             elif o == "--rld-single-fcts":
-                isRldOnSingleFcts = True
+                genericsettings.isRldOnSingleFcts = True
             elif o == "--rld-only":
                 genericsettings.isTab = False
                 genericsettings.isFig = False
             elif o == "--fig-only":
-                isRLDistr = False
+                genericsettings.isRLDistr = False
                 genericsettings.isTab = False
             elif o == "--settings":
                 genericsettings.inputsettings = a
@@ -202,9 +196,9 @@ def main(argv=None):
             elif o == "--runlength-based":
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
-                isExpensive = True  # comprises runlength-based
+                genericsettings.isExpensive = True  # comprises runlength-based
             elif o == "--not-expensive":
-                isExpensive = False  
+                genericsettings.isExpensive = False  
             elif o == "--sca-only":
                 warnings.warn("option --sca-only will have no effect with rungenericmany.py")
             elif o == "--los-only":
@@ -236,11 +230,11 @@ def main(argv=None):
                    + 'argument for input flag "--settings".')
             raise Usage(txt)
 
-        if (not verbose):
+        if (not genericsettings.verbose):
             warnings.filterwarnings('module', '.*', Warning, '.*')  # same warning just once
             warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear 
 
-        config.target_values(isExpensive)
+        config.target_values(genericsettings.isExpensive)
         
     except Usage, err:
         print >>sys.stderr, err.msg
@@ -254,7 +248,7 @@ def main(argv=None):
 
         if not os.path.exists(outputdir):
             os.makedirs(outputdir)
-            if verbose:
+            if genericsettings.verbose:
                 print 'Folder %s was created.' % (outputdir)
 
         # prepend the algorithm name command to the tex-command file
@@ -269,7 +263,7 @@ def main(argv=None):
                     'bbob_proc_commands.tex truncated, consider removing the file before the text run'
                     )
 
-        dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
+        dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=genericsettings.verbose)
 
         if not dsList:
             sys.exit()
@@ -290,7 +284,7 @@ def main(argv=None):
             
         # set target values
         from bbob_pproc import config
-        config.target_values(isExpensive, dict_max_fun_evals)
+        config.target_values(genericsettings.isExpensive, dict_max_fun_evals)
         config.config()
 
 
@@ -312,9 +306,9 @@ def main(argv=None):
 
         # convergence plots
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, outputdir, verbose)
+            ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
-        if isRLDistr:
+        if genericsettings.isRLDistr:
             config.config()
             # ECDFs per noise groups
             dictNoi = pproc.dictAlgByNoi(dictAlg)
@@ -328,7 +322,7 @@ def main(argv=None):
                                    order=sortedAlgs,
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, ng)),
-                                   verbose=verbose)
+                                   verbose=genericsettings.verbose)
             # ECDFs per function groups
             dictFG = pproc.dictAlgByFuncGroup(dictAlg)
             for fg, tmpdictAlg in dictFG.iteritems():
@@ -338,12 +332,12 @@ def main(argv=None):
                                    order=sortedAlgs,
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, fg)),
-                                   verbose=verbose)
-            if isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
+                                   verbose=genericsettings.verbose)
+            if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
                 if 1 < 3:
                     pprldmany.all_single_functions(dictAlg, sortedAlgs,
-                            outputdir, verbose)
+                            outputdir, genericsettings.verbose)
                 else:  # subject to removal
                     dictFG = pproc.dictAlgByFun(dictAlg)
                     for fg, tmpdictAlg in dictFG.iteritems():
@@ -359,11 +353,11 @@ def main(argv=None):
                                            order=sortedAlgs,
                                            outputdir=single_fct_output_dir,
                                            info=('f%03d_%02dD' % (fg, d)),
-                                           verbose=verbose)
+                                           verbose=genericsettings.verbose)
             print "ECDFs of run lengths figures done."
 
         if genericsettings.isTab:
-            if isExpensive:
+            if genericsettings.isExpensive:
                 prepend_to_file(os.path.join(outputdir,
                             'bbob_pproc_commands.tex'), 
                             ['\providecommand{\\bbobpptablesmanylegend}[1]{' + 
@@ -378,7 +372,7 @@ def main(argv=None):
                 dictDim = pproc.dictAlgByDim(tmpdictng)
                 for d, tmpdictdim in dictDim.iteritems():
                     pptables.main(tmpdictdim, sortedAlgs,
-                                  outputdir, verbose)
+                                  outputdir, genericsettings.verbose)
             print "Comparison tables done."
 
         global ftarget  # not nice
@@ -391,7 +385,7 @@ def main(argv=None):
             if genericsettings.runlength_based_targets:
                 ftarget = pproc.RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
             ppfigs.main(dictAlg, sortedAlgs, ftarget,
-                        outputdir, verbose)
+                        outputdir, genericsettings.verbose)
             plt.rcdefaults()
             print "Scaling figures done."
 
