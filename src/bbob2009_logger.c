@@ -52,11 +52,11 @@ typedef struct {
                         .dat file*/
   long t_trigger;    /* next lower bound on nb fun evals to trigger a log in the
                         .tdat file*/
-  size_t idx_f_trigger; /* allows to track the index i in logging target =
+  int idx_f_trigger; /* allows to track the index i in logging target =
                         {10**(i/bbob2009_nbpts_fval), i \in Z} */
-  size_t idx_t_trigger; /* allows to track the index i in logging nbevals  =
+  int idx_t_trigger; /* allows to track the index i in logging nbevals  =
                         {int(10**(i/bbob2009_nbpts_nbevals)), i \in Z} */
-  size_t idx_tdim_trigger; /* allows to track the index i in logging nbevals  =
+  int idx_tdim_trigger; /* allows to track the index i in logging nbevals  =
                            {dim * 10**i, i \in Z} */
   long number_of_evaluations;
   double best_fvalue;
@@ -221,18 +221,20 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                                            const char *dataFile_path) {
     /*to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
     char used_dataFile_path[NUMBBO_PATH_MAX] = {0};
-    strncpy(used_dataFile_path, dataFile_path, NUMBBO_PATH_MAX - strlen(used_dataFile_path) - 1);
     int errnum, newLine;/*newLine is at 1 if we need a new line in the info file*/
     char function_id_char[3];/*TODO: consider adding them to data*/
+    char file_name[NUMBBO_PATH_MAX] = {0};
+    char file_path[NUMBBO_PATH_MAX] = {0};
+    FILE **target_file;
+    FILE *tmp_file;
+    strncpy(used_dataFile_path, dataFile_path, NUMBBO_PATH_MAX - strlen(used_dataFile_path) - 1);
     if (infoFile_firstInstance == 0) {
         infoFile_firstInstance = data->instance_id;
     }
     sprintf(function_id_char, "%d", data->function_id);
     sprintf(infoFile_firstInstance_char, "%d", infoFile_firstInstance);
-    char file_name[NUMBBO_PATH_MAX] = {0};
-    char file_path[NUMBBO_PATH_MAX] = {0};
-    FILE **target_file = &(data->index_file);
-    FILE *tmp_file = NULL; /*to check whether the file already exists. Don't want to use
+    target_file = &(data->index_file);
+    tmp_file = NULL; /*to check whether the file already exists. Don't want to use
            target_file*/
     strncpy(file_name, indexFile_prefix, NUMBBO_PATH_MAX - strlen(file_name) - 1);
     strncat(file_name, "_f", NUMBBO_PATH_MAX - strlen(file_name) - 1);
@@ -446,6 +448,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
     printf("best f=%e after %ld fevals (done observing)\n",
            data->best_fvalue, (long)data->number_of_evaluations);
     }
+    /*WASSIM: const char * does not need to be freed */
   if (data->alg_name != NULL) {
 	  coco_free_memory((void*)data->alg_name);
 	  data->alg_name = NULL;
