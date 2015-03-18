@@ -94,7 +94,7 @@ static void _bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
   } else {
     if (data->idx_f_trigger == INT_MAX) { /* first time*/
       data->idx_f_trigger =
-          (size_t)(ceil(log10(fvalue - data->optimal_fvalue)) * bbob2009_nbpts_fval);
+          (int)(ceil(log10(fvalue - data->optimal_fvalue)) * bbob2009_nbpts_fval);
     } else { /* We only call this function when we reach the current f_trigger*/
       data->idx_f_trigger--;
     }
