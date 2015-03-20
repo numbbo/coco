@@ -103,6 +103,11 @@ size_t coco_get_number_of_variables(const coco_problem_t *self);
 size_t coco_get_number_of_objectives(const coco_problem_t *self);
 
 /**
+ * Return the number of constraints of a COCO problem.
+ */
+size_t coco_get_number_of_constraints(const coco_problem_t *self);
+
+/**
  * Future: 
  * Return target value for first objective. Values below are not
  * relevant in the performance assessment. 
