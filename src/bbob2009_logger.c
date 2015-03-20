@@ -448,7 +448,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
     printf("best f=%e after %ld fevals (done observing)\n",
            data->best_fvalue, (long)data->number_of_evaluations);
     }
-    /*WASSIM: const char * does not need to be freed */
+    /*WASSIM: const char * does not need to be freed. Niko: if it has been allocated, it must be free'd. */
   if (data->alg_name != NULL) {
 	  coco_free_memory((void*)data->alg_name);
 	  data->alg_name = NULL;
