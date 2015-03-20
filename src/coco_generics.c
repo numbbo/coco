@@ -103,6 +103,12 @@ size_t coco_get_number_of_objectives(const coco_problem_t *self) {
   return self->number_of_objectives;
 }
 
+size_t coco_get_number_of_constraints(const coco_problem_t *self) {
+  assert(self != NULL);
+  assert(self->problem_id != NULL);
+  return self->number_of_constraints;
+}
+
 const double *coco_get_smallest_values_of_interest(const coco_problem_t *self) {
   assert(self != NULL);
   assert(self->problem_id != NULL);
