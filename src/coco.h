@@ -123,7 +123,7 @@ double coco_get_final_target_value1(const coco_problem_t *self);
  * Get the ${problem_index}-th problem of the ${problem_suit} test
  * suit.
  */
-coco_problem_t *coco_get_problem(const char *problem_suit,
+coco_problem_t *coco_get_problem(const char *problem_suite,
                                  const int problem_index);
 
 /**
@@ -140,7 +140,7 @@ coco_problem_t *coco_get_problem(const char *problem_suit,
  * 
  * loops over all indices and problems consequently. 
  */
-int coco_next_problem_index(const char *problem_suit,
+int coco_next_problem_index(const char *problem_suite,
                             const int problem_index,
                             const char *select_options);
 
@@ -181,11 +181,11 @@ coco_problem_t *coco_observe_problem(const char *observer_name,
                                      coco_problem_t *problem,
                                      const char *options);
 
-void coco_benchmark(const char *problem_suit, const char *observer,
+void coco_benchmark(const char *problem_suite, const char *observer,
                     const char *observer_options, coco_optimizer_t optimizer);
 
 /* shall replace the above? */
-void new_coco_benchmark(const char *problem_suit, const char *problem_suit_options,
+void new_coco_benchmark(const char *problem_suite, const char *problem_suit_options,
                      const char *observer, const char *observer_options,
                      coco_optimizer_t optimizer);
 
