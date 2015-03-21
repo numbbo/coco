@@ -30,7 +30,7 @@ static coco_problem_t *sphere_problem(const size_t number_of_variables) {
   problem->number_of_constraints = 0;
   problem->evaluate_function = f_sphere_evaluate;
   for (i = 0; i < number_of_variables; ++i) {
-    problem->smallest_values_of_interest[i] = -5.0;
+    problem->smallest_values_of_interest[i] = -5.0; /* FIXME: this is not sphere-specific */
     problem->largest_values_of_interest[i] = 5.0;
     problem->best_parameter[i] = 0.0;
   }
