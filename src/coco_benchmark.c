@@ -11,6 +11,8 @@
 #include "bbob2009_suit.c"
 #include "bbob2009_observer.c"
 
+#include "mo_suite_first_attempt.c"
+
 /** return next problem_index or -1
  */
 int coco_next_problem_index(const char *problem_suit,
@@ -34,8 +36,10 @@ coco_problem_t *coco_get_problem(const char *problem_suit,
     return toy_suit(problem_index);
   } else if (0 == strcmp(problem_suit, "bbob2009")) {
     return bbob2009_suit(problem_index);
+  } else if (0 == strcmp(problem_suit, "mo_suite_first_attempt")) {
+    return mo_suite_first_attempt(problem_index);
   } else {
-    coco_warning("Unknown problem suit.");
+    coco_warning("Unknown problem suite.");
     return NULL;
   }
 }
