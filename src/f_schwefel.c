@@ -32,9 +32,6 @@ static void f_schwefel_evaluate(coco_problem_t *self, const double *x, double *y
 
 static coco_problem_t *schwefel_problem(const size_t number_of_variables) {
   size_t i, problem_id_length;
-  /*fprintf(stdout, "%2i\n",
-              instance);
-  fflush(stdout);*/
   coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("schwefel function");
   /* Construct a meaningful problem id */
@@ -48,7 +45,6 @@ static coco_problem_t *schwefel_problem(const size_t number_of_variables) {
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
   problem->evaluate_function = f_schwefel_evaluate;
-
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
