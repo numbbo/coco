@@ -21,6 +21,8 @@ static void _oo_evaluate_function(coco_problem_t *self, const double *x, double 
 
 /**
  * Oscillate the objective value of the inner problem.
+ *
+ * Caveat: this can change best_parameter and best_value. 
  */
 static coco_problem_t *oscillate_objective(coco_problem_t *inner_problem) {
   coco_problem_t *self;

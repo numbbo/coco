@@ -142,7 +142,7 @@ static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b,
  * bbob2009_suit(problem_index):
  *
  * Return the ${problem_index}-th benchmark problem from the BBOB2009
- * benchmark suit. If the function index is out of bounds, return *
+ * benchmark suit. If the function index is out of bounds, return
  * NULL.
  */
 static coco_problem_t *bbob2009_suit(const int problem_index) {
