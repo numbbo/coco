@@ -69,7 +69,7 @@ void coco_recommend_solutions(coco_problem_t *self, const double *x,
 void coco_free_problem(coco_problem_t *self);
 
 /**
- * Return the name of a NUMBBO problem.
+ * Return the name of a COCO problem.
  *
  * @note Do not modify the returned string! If you free the problem,
  * the returned pointer becomes invalid. When in doubt, strdup() the
@@ -80,9 +80,11 @@ void coco_free_problem(coco_problem_t *self);
 const char *coco_get_problem_name(const coco_problem_t *self);
 
 /**
- * Return the ID of the NUMBBO problem ${self}. The ID is guaranteed to
+ * Return the ID of the COCO problem ${self}. The ID is guaranteed to
  * contain only characters in the set [a-z0-9_-]. It should therefore
  * be safe to use the ID to construct filenames or other identifiers.
+ *
+ * Each problem ID should be unique within each benchmark suite. 
  *
  * @note Do not modify the returned string! If you free the problem,
  * the returned pointer becomes invalid. When in doubt, strdup() the
