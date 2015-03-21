@@ -11,9 +11,7 @@
 #include "bbob2009_suit.c"
 #include "bbob2009_observer.c"
 
-/* #include "mo_suite_first_attempt.c"
-*/
-coco_problem_t *mo_suite_first_attempt(size_t problem_index) { return NULL; }
+#include "mo_suite_first_attempt.c"
 
 /** return next problem_index or -1
  */
@@ -87,7 +85,7 @@ coco_problem_t *coco_observe_problem(const char *observer,
   if (0 == strcmp(observer, "no_observer")) {
     return problem;
   } else if (strlen(observer) == 0) {
-    coco_warning("Empty observer '' has no effect, to prevent this warning use 'no_observer' instead");
+    coco_warning("Empty observer '' has no effect. To prevent this warning use 'no_observer' instead");
     return problem;
   } else {
     /* not so clear whether an error is better, depends on the usecase */
