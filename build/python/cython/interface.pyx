@@ -46,8 +46,10 @@ cdef class Problem:
     """Problem(problem_suite: str, problem_index: int)"""
     cdef coco_problem_t* problem
     cdef np.ndarray y  # argument for coco_evaluate
-    cdef public np.ndarray lower_bounds
-    cdef public np.ndarray upper_bounds
+    # cdef public np.ndarray lower_bounds
+    # cdef public np.ndarray upper_bounds
+    cdef public np.ndarray _lower_bounds
+    cdef public np.ndarray _upper_bounds
     cdef size_t _number_of_variables
     cdef size_t _number_of_objectives
     cdef size_t _number_of_constraints
@@ -71,11 +73,13 @@ cdef class Problem:
         self.y = np.zeros(self._number_of_objectives)
         ## FIXME: Inefficient because we copy the bounds instead of
         ## sharing the data.
-        self.lower_bounds = np.zeros(self._number_of_variables)
-        self.upper_bounds = np.zeros(self._number_of_variables)
+        self._lower_bounds = -np.inf * np.ones(self._number_of_variables)
+        self._upper_bounds = np.inf * np.ones(self._number_of_variables)
         for i in range(self._number_of_variables):
-            self.lower_bounds[i] = coco_get_smallest_values_of_interest(self.problem)[i]
-            self.upper_bounds[i] = coco_get_largest_values_of_interest(self.problem)[i]
+            if coco_get_smallest_values_of_interest(self.problem) is not NULL:
+                self._lower_bounds[i] = coco_get_smallest_values_of_interest(self.problem)[i]
+            if coco_get_largest_values_of_interest(self.problem) is not NULL:
+                self._upper_bounds[i] = coco_get_largest_values_of_interest(self.problem)[i]
 
     def add_observer(self, observer, options):
         """`add_observer(observer: str, options: str)`
@@ -102,6 +106,16 @@ cdef class Problem:
         "number of constraints"
         return self._number_of_constraints
 
+    @property
+    def lower_bounds(self):
+        "depending on the tested, these are not necessarily strict bounds"
+        return self._lower_bounds
+        
+    @property
+    def upper_bounds(self):
+        "depending on the tested, these are not necessarily strict bounds"
+        return self._upper_bounds
+        
     @property
     def evaluations(self):
         return coco_get_evaluations(self.problem)
