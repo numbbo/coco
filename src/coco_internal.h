@@ -55,7 +55,7 @@ struct coco_problem {
   coco_evaluate_function_t evaluate_function;
   coco_evaluate_function_t evaluate_constraint;
   coco_recommendation_function_t recommend_solutions;
-  coco_free_function_t free_problem;
+  coco_free_function_t free_problem; /* AKA free_self */
   size_t number_of_variables;
   size_t number_of_objectives;
   size_t number_of_constraints;

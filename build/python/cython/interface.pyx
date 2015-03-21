@@ -25,6 +25,7 @@ cdef extern from "coco.h":
     void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
     size_t coco_get_number_of_variables(coco_problem_t *problem)
     size_t coco_get_number_of_objectives(coco_problem_t *problem)
+    size_t coco_get_number_of_constraints(coco_problem_t *problem)
     const char *coco_get_problem_id(coco_problem_t *problem)
     const char *coco_get_problem_name(coco_problem_t *problem)
     const double *coco_get_smallest_values_of_interest(coco_problem_t *problem)
@@ -49,6 +50,7 @@ cdef class Problem:
     cdef public np.ndarray upper_bounds
     cdef size_t _number_of_variables
     cdef size_t _number_of_objectives
+    cdef size_t _number_of_constraints
     cdef problem_suite  # for the record
     cdef problem_index  # for the record
 
@@ -65,6 +67,7 @@ cdef class Problem:
             raise NoSuchProblemException(problem_suite, problem_index)
         self._number_of_variables = coco_get_number_of_variables(self.problem)
         self._number_of_objectives = coco_get_number_of_objectives(self.problem)
+        self._number_of_constraints = coco_get_number_of_constraints(self.problem)
         self.y = np.zeros(self._number_of_objectives)
         ## FIXME: Inefficient because we copy the bounds instead of
         ## sharing the data.
@@ -94,6 +97,11 @@ cdef class Problem:
         "number of objectives, if equal to 1, call returns a scalar"
         return self._number_of_objectives
             
+    @property
+    def number_of_constraints(self):
+        "number of constraints"
+        return self._number_of_constraints
+
     @property
     def evaluations(self):
         return coco_get_evaluations(self.problem)
