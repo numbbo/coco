@@ -46,6 +46,7 @@ cdef class Problem:
     """Problem(problem_suite: str, problem_index: int)"""
     cdef coco_problem_t* problem
     cdef np.ndarray y  # argument for coco_evaluate
+    # cdef public const double[:] test_bounds
     # cdef public np.ndarray lower_bounds
     # cdef public np.ndarray upper_bounds
     cdef public np.ndarray _lower_bounds
@@ -75,6 +76,7 @@ cdef class Problem:
         ## sharing the data.
         self._lower_bounds = -np.inf * np.ones(self._number_of_variables)
         self._upper_bounds = np.inf * np.ones(self._number_of_variables)
+        # self.test_bounds = coco_get_smallest_values_of_interest(self.problem)  # fails
         for i in range(self._number_of_variables):
             if coco_get_smallest_values_of_interest(self.problem) is not NULL:
                 self._lower_bounds[i] = coco_get_smallest_values_of_interest(self.problem)[i]
