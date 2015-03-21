@@ -11,32 +11,57 @@
 #include "bbob2009_suit.c"
 #include "bbob2009_observer.c"
 
-#include "mo_suite_first_attempt.c"
+/* #include "mo_suite_first_attempt.c"
+*/
+coco_problem_t *mo_suite_first_attempt(size_t problem_index) { return NULL; }
 
 /** return next problem_index or -1
  */
-int coco_next_problem_index(const char *problem_suit,
+int coco_next_problem_index(const char *problem_suite,
                             int problem_index,
                             const char *select_options) {
-  if (0 == strcmp(problem_suit, "bbob2009")) {
-    /* TODO: this is not (yet) implemented */
+  coco_problem_t *problem; /* to check validity */
+  long last_index = -1;
+  
+  /* code specific to known benchmark suites */
+  /* for efficiency reasons, each test suit should define
+   * at least its last_index here */
+  if (0 == strcmp(problem_suite, "bbob2009")) {
+    /* without selection_options: last_index = 2159; */
     return bbob2009_next_problem_index(problem_index, select_options);
   }
+
+  /** generic implementation:
+   *   first index == 0,
+   *   ++index until index > max_index or problem(index) == NULL
+   **/
   
-  /* each test suit should at least define its max index here
-     (we assume the min index is zero) */
+  if (problem_index < 0)
+    problem_index = -1;
+  ++problem_index;
+  if (last_index >= 0) {
+    if (problem_index <= last_index)
+      return problem_index;
+    else
+      return -1;
+  }
   
-  coco_warning("returned problem_index++ might not be valid");
-  return problem_index + 1;
+  /* last resort: last_index is not known */
+  problem = coco_get_problem(problem_suite, problem_index);
+  if (problem == NULL) {
+    return -1;
+  }
+  coco_free_problem(problem);
+  return problem_index;
 }
 
-coco_problem_t *coco_get_problem(const char *problem_suit,
+coco_problem_t *coco_get_problem(const char *problem_suite,
                                  const int problem_index) {
-  if (0 == strcmp(problem_suit, "toy_suit")) {
+  if (0 == strcmp(problem_suite, "toy_suit")) {
     return toy_suit(problem_index);
-  } else if (0 == strcmp(problem_suit, "bbob2009")) {
+  } else if (0 == strcmp(problem_suite, "bbob2009")) {
     return bbob2009_suit(problem_index);
-  } else if (0 == strcmp(problem_suit, "mo_suite_first_attempt")) {
+  } else if (0 == strcmp(problem_suite, "mo_suite_first_attempt")) {
     return mo_suite_first_attempt(problem_index);
   } else {
     coco_warning("Unknown problem suite.");
@@ -75,12 +100,12 @@ coco_problem_t *coco_observe_problem(const char *observer,
 }
 
 #if 1
-void coco_benchmark(const char *problem_suit, const char *observer,
+void coco_benchmark(const char *problem_suite, const char *observer,
                     const char *options, coco_optimizer_t optimizer) {
   int problem_index;
   coco_problem_t *problem;
   for (problem_index = 0;; ++problem_index) {
-    problem = coco_get_problem(problem_suit, problem_index);
+    problem = coco_get_problem(problem_suite, problem_index);
     if (NULL == problem)
       break;
     problem = coco_observe_problem(observer, problem, options); /* should remain invisible to the user*/
@@ -93,7 +118,7 @@ void coco_benchmark(const char *problem_suit, const char *observer,
 #else
 /** improved interface for coco_benchmark:
  */
-void coco_benchmark(const char *problem_suit, const char *problem_suit_options,
+void coco_benchmark(const char *problem_suite, const char *problem_suite_options,
                      const char *observer, const char *observer_options,
                      coco_optimizer_t optimizer) {
   int problem_index;
@@ -101,13 +126,13 @@ void coco_benchmark(const char *problem_suit, const char *problem_suit_options,
   coco_problem_t *problem;
   char buf[222]; /* TODO: this is ugly, how to improve? */
   for (problem_index = -1; ; ) {
-    problem_index = coco_next_problem_index(problem_suit, problem_suit_options, problem_index); 
+    problem_index = coco_next_problem_index(problem_suite, problem_suite_options, problem_index); 
     if (problem_index < 0)
       break;
-    problem = coco_get_problem(problem_suit, problem_index);
+    problem = coco_get_problem(problem_suite, problem_index);
     if (problem == NULL)
       snprintf(buf, 221, "problem index %d not found in problem suit %s (this is probably a bug)",
-               problem_index, problem_suit); 
+               problem_index, problem_suite); 
       coco_warning(buf);
       break;
     problem = coco_observe_problem(observer, problem, observer_options); /* should remain invisible to the user*/
