@@ -114,7 +114,7 @@ void coco_benchmark(const char *problem_suite, const char *observer,
 }
 
 #else
-/** improved interface for coco_benchmark:
+/** "improved" interface for coco_benchmark: is it worth-while to have suite-options on the C-level? 
  */
 void coco_benchmark(const char *problem_suite, const char *problem_suite_options,
                      const char *observer, const char *observer_options,

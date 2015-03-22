@@ -142,7 +142,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
   size_t len;
   long rseed;
   coco_problem_t *problem = NULL;
-  const unsigned long dimension = (unsigned long) dimension_;
+  const size_t dimension = (unsigned long) dimension_;
   
   /* This assert is a hint for the static analyzer. */
   assert(dimension > 1);
