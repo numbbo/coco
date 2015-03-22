@@ -82,14 +82,7 @@ def coco_solve(fun):
         print("%d runs, " % runs, end="")
 
 # run 
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        MAXEVALS = float(sys.argv[1])
-    if len(sys.argv) > 2:
-        current_batch = int(sys.argv[2])
-    if len(sys.argv) > 3:
-        number_of_batches = int(sys.argv[3])
-    
+def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=number_of_batches):
     print("Benchmarking solver %s" % str(solver))
     if 11 < 3:
         # simple Pythonic use case, never leaves a problem unfree()ed, ctrl-C "safe"
@@ -157,3 +150,11 @@ if __name__ == '__main__':
         print("Minimal usecase, doesn't work though")
         Benchmark(coco_solve, suite_name, suite_options, observer_name, observer_options)
         
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        MAXEVALS = float(sys.argv[1])
+    if len(sys.argv) > 2:
+        current_batch = int(sys.argv[2])
+    if len(sys.argv) > 3:
+        number_of_batches = int(sys.argv[3])
+    main(MAXEVALS, current_batch, number_of_batches)
