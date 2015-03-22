@@ -17,7 +17,7 @@
  * NULL.
  */
 static coco_problem_t *toy_suit(const int function_index) {
-  static const int dims[] = {2, 3, 5, 10, 20};
+  static const size_t dims[] = {2, 3, 5, 10, 20};
   const int fid = function_index % 6;
   const int did = function_index / 6;
   coco_problem_t *problem;

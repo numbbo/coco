@@ -18,7 +18,7 @@ void coco_evaluate_function(coco_problem_t *self, const double *x, double *y) {
 #endif
 }
 
-size_t coco_get_evaluations(coco_problem_t *self) {
+long coco_get_evaluations(coco_problem_t *self) {
   assert(self != NULL);
   return self->evaluations;  
 }

@@ -105,7 +105,7 @@ size_t coco_get_number_of_constraints(const coco_problem_t *self);
  * Number of evaluations done on problem ${self}. 
  * Tentative and yet versatile. 
  */
-size_t coco_get_evaluations(coco_problem_t *self);
+long coco_get_evaluations(coco_problem_t *self);
 double coco_get_best_observed_fvalue1(const coco_problem_t *self);
 double coco_get_final_target_fvalue1(const coco_problem_t *self);
 

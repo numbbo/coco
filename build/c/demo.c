@@ -81,36 +81,37 @@ void objective_function(const double *x, double *y) {
   /* MODIFY/REWRITE this function to work with the typedef two lines above */
   coco_evaluate_function(CURRENT_COCO_PROBLEM, x, y); /* this call writes objective_function(x) in y */
 }
-/* Minimal solver definition only to avoid compile/link errors below for my_solver */
-void my_solver(objective_function_t func,
-               const double *initial_x, size_t dim) {
-  double y; func(initial_x, &y); /* rather useless solver evaluates only the initial value */
+/* Minimal solver definition only to avoid compile/link errors/warnings below for my_solver */
+void my_solver(objective_function_t func, const double *initial_x, size_t dim, long budget) {
+  double y; func(initial_x, &y); 
 }
 /**
  * Finally, coco_solver calls, depending on SOLVER_NAME, one
- * of the defined solvers (e.g. random_search, my_solver, ...),
+ * of the defined optimizers (e.g. random_search, my_solver, ...),
  * using the respective matching objective function. 
  */
-void coco_solver(coco_problem_t *problem) { /* should take budget as argument */
+void coco_solver(coco_problem_t *problem) { /* should at the least take budget as argument, but this is not coco_benchmark compliant */
   /* prepare, set up convenience definitions */
   size_t dimension = coco_get_number_of_variables(problem);
   const double * lbounds = coco_get_smallest_values_of_interest(problem);
   const double * ubounds = coco_get_largest_values_of_interest(problem);
   double * initial_x = coco_allocate_vector(coco_get_number_of_variables(problem));
   const double final_target = coco_get_final_target_fvalue1(problem);
+  long remaining_budget; 
   
   coco_get_initial_solution(problem, initial_x);
   CURRENT_COCO_PROBLEM = problem; /* do not change this, it's used in objective_function */
 
-  /* ENHANCE: loop over independent restarts here */
-  /* call the solver */
-  if (strcmp("random_search", SOLVER_NAME) == 0) { /* example case, no need to modify */
-    random_search(dimension, objective_function_example,
-                  lbounds, ubounds, MAX_BUDGET, final_target);
-  } else if (strcmp("my_solver", SOLVER_NAME) == 0) {
-    /* MODIFY this call according to objective_function_t and solver's needs */
-    my_solver(objective_function, /* MODIFY my_solver to your_solver ... */
-              initial_x, dimension); 
+  while ((remaining_budget = MAX_BUDGET - coco_get_evaluations(problem)) > 0) {
+    /* call the solver */
+    if (strcmp("random_search", SOLVER_NAME) == 0) { /* example case, no need to modify */
+      random_search(dimension, objective_function_example,
+                    lbounds, ubounds, remaining_budget, final_target);
+    } else if (strcmp("my_solver", SOLVER_NAME) == 0) {
+      /* MODIFY this call according to objective_function_t and solver's needs */
+      my_solver(objective_function, /* MODIFY my_solver to your_solver ... */
+                initial_x, dimension, remaining_budget); 
+    }
   }
   coco_free_memory(initial_x);
 }
@@ -174,7 +175,6 @@ int main() { /* longer example supporting several batches */
 #elif 1
 /* Interface via dimension, function-ID and instance-ID. This does not translate
    directly to different languages or benchmark suites. */
-static const coco_optimizer_t coco_solver = coco_random_search;
 int main() {
   int problem_index, function_id, instance_id, dimension_idx;
   coco_problem_t * problem;

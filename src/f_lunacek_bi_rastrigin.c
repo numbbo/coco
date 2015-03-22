@@ -10,7 +10,7 @@ typedef struct {
   double *x_hat, *z;
   double *xopt, fopt;
   double **rot1, **rot2;
-  size_t rseed;
+  long rseed;
   coco_free_function_t old_free_problem;
 } _bbob_lunacek_bi_rastrigin_t;
 
@@ -91,7 +91,8 @@ static coco_problem_t *
 bbob_lunacek_bi_rastrigin_problem(const size_t number_of_variables,
                                   const long instance_id) {
   double *tmpvect;
-  size_t i, problem_id_length, rseed;
+  size_t i, problem_id_length;
+  long rseed;
   coco_problem_t *problem;
   _bbob_lunacek_bi_rastrigin_t *data;
   static const double mu0 = 2.5;
@@ -110,9 +111,9 @@ bbob_lunacek_bi_rastrigin_problem(const size_t number_of_variables,
   data->rseed = rseed;
 
   data->fopt = bbob2009_compute_fopt(24, instance_id);
-  bbob2009_compute_xopt(data->xopt, rseed, number_of_variables);
-  bbob2009_compute_rotation(data->rot1, rseed + 1000000, number_of_variables);
-  bbob2009_compute_rotation(data->rot2, rseed, number_of_variables);
+  bbob2009_compute_xopt(data->xopt, rseed, (long)number_of_variables);
+  bbob2009_compute_rotation(data->rot1, rseed + 1000000, (long)number_of_variables);
+  bbob2009_compute_rotation(data->rot2, rseed, (long)number_of_variables);
 
   problem = coco_allocate_problem(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("BBOB f24");
@@ -132,7 +133,7 @@ bbob_lunacek_bi_rastrigin_problem(const size_t number_of_variables,
 
   /* Computing xopt  */
   tmpvect = coco_allocate_vector(number_of_variables);
-  bbob2009_gauss(tmpvect, number_of_variables, rseed);
+  bbob2009_gauss(tmpvect, (long)number_of_variables, rseed);
   for (i = 0; i < number_of_variables; ++i) {
     data->xopt[i] = 0.5 * mu0;
     if (tmpvect[i] < 0.0) {

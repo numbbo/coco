@@ -5,7 +5,7 @@
 #include "bbob2009_legacy_code.c"
 
 typedef struct {
-  int seed;
+  long seed;
   double *x;
   coco_free_function_t old_free_problem;
 } _x_hat_data_t;
@@ -18,7 +18,7 @@ static void _x_hat_evaluate_function(coco_problem_t *self, const double *x,
   data = coco_get_transform_data(self);
   inner_problem = coco_get_transform_inner_problem(self);
   do {
-    bbob2009_unif(data->x, (int) self->number_of_variables, data->seed);
+    bbob2009_unif(data->x, (long)self->number_of_variables, data->seed);
 
     for (i = 0; i < self->number_of_variables; ++i) {
       if (data->x[i] - 0.5 < 0.0) {
@@ -39,7 +39,7 @@ static void _x_hat_free_data(void *thing) {
 /**
  * Multiply the x-vector by the vector 2 * 1+-
  */
-static coco_problem_t *x_hat(coco_problem_t *inner_problem, int seed) {
+static coco_problem_t *x_hat(coco_problem_t *inner_problem, long seed) {
   _x_hat_data_t *data;
   coco_problem_t *self;
 
