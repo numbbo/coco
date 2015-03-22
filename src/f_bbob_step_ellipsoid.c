@@ -97,7 +97,7 @@ static void _bbob_step_ellipsoid_free(coco_problem_t *self) {
 
 static coco_problem_t *
 bbob_step_ellipsoid_problem(const size_t number_of_variables,
-                            const int instance_id) {
+                            const long instance_id) {
   size_t i, problem_id_length, rseed;
   coco_problem_t *problem;
   _bbob_step_ellipsoid_t *data;

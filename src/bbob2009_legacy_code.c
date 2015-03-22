@@ -51,13 +51,14 @@ static void bbob2009_free_matrix(double **matrix, const size_t n) {
  * Generate N uniform random numbers using ${inseed} as the seed and
  * store them in ${r}.
  */
-static void bbob2009_unif(double *r, int N, int inseed) {
-  /* generates N uniform numbers with starting seed*/
-  int aktseed;
-  int tmp;
-  int rgrand[32];
-  int aktrand;
-  int i;
+static void bbob2009_unif(double *r, long N, long inseed) {
+  /* generates N uniform numbers with starting seed */
+  long aktseed;
+  long tmp;
+  long rgrand[32];
+  long aktrand;
+  long i;
+  
   if (inseed < 0)
     inseed = -inseed;
   if (inseed < 1)
@@ -110,7 +111,7 @@ static double **bbob2009_reshape(double **B, double *vector, int m, int n) {
  * Generate ${N} Gaussian random numbers using the seed ${seed} and
  * store them in ${g}.
  */
-static void bbob2009_gauss(double *g, int N, int seed) {
+static void bbob2009_gauss(double *g, long N, long seed) {
   int i;
   double uniftmp[6000];
   assert(2 * N < 6000);
@@ -130,11 +131,11 @@ static void bbob2009_gauss(double *g, int N, int seed) {
  * Compute a ${DIM}x${DIM} rotation matrix based on ${seed} and store
  * it in ${B}.
  */
-static void bbob2009_compute_rotation(double **B, int seed, unsigned int DIM) {
+static void bbob2009_compute_rotation(double **B, long seed, long DIM) {
   /* To ensure temporary data fits into gvec */
   double prod;
   double gvect[2000];
-  unsigned i, j, k; /*Loop over pairs of column vectors. unsigned instead of int to silence warning*/
+  long i, j, k; /* Loop over pairs of column vectors. */
 
   assert(DIM * DIM < 2000);
 
@@ -163,8 +164,8 @@ static void bbob2009_compute_rotation(double **B, int seed, unsigned int DIM) {
  *
  * Randomly compute the location of the global optimum.
  */
-static void bbob2009_compute_xopt(double *xopt, int seed, unsigned int DIM) {
-  unsigned i;
+static void bbob2009_compute_xopt(double *xopt, long seed, long DIM) {
+  long i;
   bbob2009_unif(xopt, DIM, seed);
   for (i = 0; i < DIM; i++) {
     xopt[i] = 8 * floor(1e4 * xopt[i]) / 1e4 - 4;
@@ -179,8 +180,8 @@ static void bbob2009_compute_xopt(double *xopt, int seed, unsigned int DIM) {
  * Randomly choose the objective offset for function ${function_id}
  * and instance ${instance_id}.
  */
-static double bbob2009_compute_fopt(int function_id, int instance_id) {
-  int rseed, rrseed;
+static double bbob2009_compute_fopt(int function_id, long instance_id) {
+  long rseed, rrseed;
   double gval, gval2;
 
   if (function_id == 4)
