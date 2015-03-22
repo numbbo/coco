@@ -110,12 +110,14 @@ cdef class Problem:
 
     @property
     def lower_bounds(self):
-        "depending on the tested, these are not necessarily strict bounds"
+        """depending on the test bed, these are not necessarily strict bounds
+        """
         return self._lower_bounds
         
     @property
     def upper_bounds(self):
-        "depending on the tested, these are not necessarily strict bounds"
+        """depending on the test bed, these are not necessarily strict bounds
+        """
         return self._upper_bounds
         
     @property
@@ -178,6 +180,11 @@ cdef class Problem:
     def name(self):
         if self.problem is not NULL:
             return coco_get_problem_name(self.problem)
+            
+    @property
+    def index(self):
+        """problem index in the benchmark suite"""
+        return self.problem_index
     
     @property
     def info(self):
@@ -285,7 +292,21 @@ cdef class Benchmark:
             raise
         else:
             return problem
-        
+    
+    def get_problem_by_id(self, id):
+        for i in self.problem_indices:
+            p = self.get_problem(i)
+            if p.id == id:
+                return p
+            p.free()
+
+    def find_problem_id(self, id):
+        if not isinstance(id, (list, tuple)):
+            id = [id]
+        for p in self:
+            if all([p.id.find(i) >= 0 for i in id]):
+                print("  id=%s, index=%d" % (p.id, p.index))
+                
     def get_problem_unobserved(self, problem_index):
         """return problem without observer (problem_index: int).
         
