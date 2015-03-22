@@ -3,9 +3,15 @@
 
 #include "coco_utilities.c"
 
-/***********************************/
-/* Global definitions in this file */
-/***********************************/
+/***********************************
+ * Global definitions in this file
+ *
+ * TODO: are these really needed? 
+ * Only if they would need to be used from
+ * outside. Benchmarks that are included in
+ * coco_benchmark.c can include coco_problem.c
+ * directly due to the amalgamate magic.
+ ***********************************/
 
 coco_problem_t *
 coco_allocate_problem(const size_t number_of_variables,
@@ -308,9 +314,12 @@ coco_problem_t *coco_stacked_problem_allocate(const char *problem_id, const char
     if (largest != NULL)
       problem->largest_values_of_interest[i] = largest[i];
       
-    /* FIXME: just to do something we set best_parameter */
-    if (problem1->best_parameter != NULL)
-      problem->best_parameter[i] = problem1->best_parameter[i]; /* somewhat non-sensical */
+    if (problem->best_parameter)
+      coco_free_memory(problem->best_parameter);
+    problem->best_parameter = NULL;
+    if (problem->best_value)
+      coco_free_memory(problem->best_value);
+    problem->best_value = NULL; 
   }
   
   /* setup data holder */
