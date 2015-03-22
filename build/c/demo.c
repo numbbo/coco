@@ -135,7 +135,7 @@ int main() {  /* short example, also nice to read */
     problem = coco_get_problem(SUITE_NAME, problem_index);
     problem = coco_observe_problem(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
     coco_solver(problem);
-    coco_free_problem(problem);  /* this should give a console message by the observer */
+    coco_free_problem(problem);
   }
   printf("Done with suite '%s' (options '%s')", SUITE_NAME, SUITE_OPTIONS);
   if (NUMBER_OF_BATCHES > 1) printf(" batch %d/%d.\n", CURRENT_BATCH, NUMBER_OF_BATCHES);
@@ -163,8 +163,8 @@ int main() { /* longer example supporting several batches */
       printf("problem with index %d not found, skipped", problem_index);
       continue;
     }
-    coco_solver(problem);
-    coco_free_problem(problem);  /* this should give a console message by the observer */
+    coco_solver(problem); /* depending on verbosity, this gives a message from the observer */
+    coco_free_problem(problem);  
   }
   printf("Done with suite '%s' (options '%s')", SUITE_NAME, SUITE_OPTIONS);
   if (NUMBER_OF_BATCHES > 1) printf(" batch %d/%d.\n", CURRENT_BATCH, NUMBER_OF_BATCHES);
@@ -191,8 +191,6 @@ int main() {
               if (problem == NULL)
                 break;
               coco_solver(problem);
-              // printf("done with problem %d (function %d)\n",
-              //        problem_index, bbob2009_get_function_id(problem));
               coco_free_problem(problem);
           }
       }
