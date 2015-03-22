@@ -17,7 +17,7 @@ static double bbob_gallagher_peaks22[NB_PEAKS_22 * MAX_DIM];
 static int compare_doubles(const void *, const void *);
 
 typedef struct {
-  int rseed;
+  long rseed;
   unsigned int number_of_peaks;
   double *xopt;
   double **rotation, **Xlocal, **arrScales;
@@ -95,10 +95,10 @@ static void _bbob_gallagher_free(coco_problem_t *self) {
 }
 
 static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
-                                              const int instance_id,
+                                              const long instance_id,
                                               const unsigned int number_of_peaks) {
   size_t i, j, k, problem_id_length, *rperm;
-  int rseed;
+  long rseed;
   coco_problem_t *problem;
   _bbob_gallagher_t *data;
   double maxcondition = 1000., maxcondition1 = 1000., *arrCondition,
