@@ -13,6 +13,22 @@
 
 #include "mo_suite_first_attempt.c"
 
+/**
+ * A new benchmark suite must providing a function that returns a
+ * coco_problem or NULL when given an problem_index as input.
+ *
+ * The file containing this (static) function must be included above
+ * and the function call must be added to coco_get_problem below.
+ * 
+ * If the benchmark does not have continuous problem indices starting with,
+ * zero, additional functionality must also be added to coco_next_problem_index
+ * (it should done in any case for efficiency).
+ *
+ * To construct a benchmark suite, useful tools are coco_transformed...
+ * coco_stacked..., bbob2009_problem() and the various existing base
+ * functions and transformations like shift_variables...
+ */
+
 /** return next problem_index or -1
  */
 int coco_next_problem_index(const char *problem_suite,
@@ -36,6 +52,7 @@ int coco_next_problem_index(const char *problem_suite,
   
   if (problem_index < 0)
     problem_index = -1;
+    
   ++problem_index;
   if (last_index >= 0) {
     if (problem_index <= last_index)
