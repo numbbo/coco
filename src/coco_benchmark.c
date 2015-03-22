@@ -8,7 +8,7 @@
 #include "toy_suit.c"
 #include "toy_observer.c"
 
-#include "bbob2009_suit.c"
+#include "bbob2009_suite.c"
 #include "bbob2009_observer.c"
 
 #include "mo_suite_first_attempt.c"
@@ -58,7 +58,7 @@ coco_problem_t *coco_get_problem(const char *problem_suite,
   if (0 == strcmp(problem_suite, "toy_suit")) {
     return toy_suit(problem_index);
   } else if (0 == strcmp(problem_suite, "bbob2009")) {
-    return bbob2009_suit(problem_index);
+    return bbob2009_suite(problem_index);
   } else if (0 == strcmp(problem_suite, "mo_suite_first_attempt")) {
     return mo_suite_first_attempt(problem_index);
   } else {
