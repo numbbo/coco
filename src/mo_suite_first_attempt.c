@@ -27,6 +27,7 @@ static coco_problem_t *mo_first_attempt_get_problem(
  * NULL.
  */
 static coco_problem_t *mo_suite_first_attempt(const int problem_index) {
+  coco_problem_t *problem;
   long dimension = 10;
   int f1, f2;
   
@@ -40,6 +41,8 @@ static coco_problem_t *mo_suite_first_attempt(const int problem_index) {
   dimension = 10;
   f1 = 1;
   f2 = 1 + (problem_index % 24); 
-  return mo_first_attempt_get_problem(dimension, f1, 0, f2, 1);
+  problem = mo_first_attempt_get_problem(dimension, f1, 0, f2, 1);
+  problem->index = problem_index;
+  return problem; 
 }
 
