@@ -55,7 +55,7 @@ cdef class Problem:
     cdef size_t _number_of_objectives
     cdef size_t _number_of_constraints
     cdef problem_suite  # for the record
-    cdef problem_index  # for the record
+    cdef problem_index  # for the record, this is not public but used in index property
 
     def __cinit__(self, problem_suite, int problem_index):
         # see http://docs.cython.org/src/userguide/special_methods.html
@@ -185,6 +185,11 @@ cdef class Problem:
     def index(self):
         """problem index in the benchmark suite"""
         return self.problem_index
+
+    @property
+    def suite(self):
+        """benchmark suite this problem is from"""
+        return self.problem_suite
     
     @property
     def info(self):

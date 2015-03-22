@@ -770,6 +770,7 @@ static int bbob2009_next_problem_index(int problem_index, const char *selection_
  * NULL.
  */
 static coco_problem_t *bbob2009_suite(long problem_index) {
+  coco_problem_t *problem;
   int function_id;
   long dimension, instance_id;
   
@@ -777,7 +778,9 @@ static coco_problem_t *bbob2009_suite(long problem_index) {
     return NULL; 
   bbob2009_decode_problem_index(problem_index, &function_id, &instance_id,
                                  &dimension);
-  return bbob2009_problem(function_id, dimension, instance_id);
+  problem = bbob2009_problem(function_id, dimension, instance_id);
+  problem->index = problem_index;
+  return problem;
 }
 
 /* Undefine constants */
