@@ -27,6 +27,7 @@ except NameError: pass
 # prepare (the most basic example solver)
 def random_search(fun, lbounds, ubounds, budget):
     """Efficient implementation of uniform random search between `lbounds` and `ubounds`. """
+    lbounds, ubounds = np.array(lbounds), np.array(ubounds)
     dim, x_min, f_min = len(lbounds), (lbounds + ubounds) / 2, None
     max_chunk_size = 1 + 4e4 / dim
     while budget > 0:

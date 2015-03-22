@@ -1,3 +1,4 @@
-from .utilities import about_equal
+import utilities
 from ._interface import Problem, Benchmark
-from .exceptions import NoSuchProblemException, InvalidProblemException
+# from .utilities import about_equal
+# from .exceptions import NoSuchProblemException, InvalidProblemException

@@ -268,8 +268,9 @@ cdef class Benchmark:
         """return callable for benchmarking. 
         
         get_problem(problem_index: int) -> Problem, where Problem is callable,
-        taking an array of length Problem.number_of_variables as input and 
-        return an array as output. 
+        taking an array of length `Problem.number_of_variables` as input and 
+        return a `float` or `np.array` (when Problem.number_of_objectives > 1) 
+        as output. 
         """
         problem = self.get_problem_unobserved(problem_index)
         if not problem:
@@ -405,3 +406,5 @@ cdef class Benchmark:
                 raise
             finally:  # makes this ctrl-c safe
                 problem.free()
+# has no effect
+# del InvalidProblemException, NoSuchProblemException

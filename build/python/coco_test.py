@@ -4,7 +4,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from cocoex import about_equal, Problem
+from cocoex import Problem
+from cocoex.utilities import about_equal
 import numpy as np
 import sys
 
