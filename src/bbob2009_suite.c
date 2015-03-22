@@ -147,7 +147,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
   /* This assert is a hint for the static analyzer. */
   assert(dimension > 1);
   if (dimension > MAX_DIM)
-    coco_error("bbob2009_suit currently supports dimension up to %ld (%ld given)", 
+    coco_error("bbob2009_suite currently supports dimension up to %ld (%ld given)", 
         MAX_DIM, dimension);
 
 #if 0
@@ -763,13 +763,13 @@ static int bbob2009_next_problem_index(int problem_index, const char *selection_
 }
 
 /**
- * bbob2009_suit(problem_index):
+ * bbob2009_suite(problem_index):
  *
  * Return the ${problem_index}-th benchmark problem from the BBOB2009
  * benchmark suit. If the function index is out of bounds, return
  * NULL.
  */
-static coco_problem_t *bbob2009_suit(long problem_index) {
+static coco_problem_t *bbob2009_suite(long problem_index) {
   int function_id;
   long dimension, instance_id;
   

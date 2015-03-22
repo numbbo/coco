@@ -1,7 +1,7 @@
 /*
  * Legacy code from BBOB2009 required to replicate the 2009 functions.
  *
- * All of this code should only be used by the bbob2009_suit functions
+ * All of this code should only be used by the bbob2009_suite functions
  * to provide compatibility to the legacy code. New test beds should
  * strive to use the new numbbo facilities for random number
  * generation etc.
