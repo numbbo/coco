@@ -125,7 +125,7 @@ int main() {
                  coco_solver);
   return 0;
 }
-#elif 1
+#elif 0
 int main() {  /* short example, also nice to read */
   coco_problem_t *problem;
   int problem_index;

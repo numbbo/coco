@@ -102,26 +102,6 @@ size_t coco_get_number_of_objectives(const coco_problem_t *self);
 size_t coco_get_number_of_constraints(const coco_problem_t *self);
 
 /**
- * Number of evaluations done on problem ${self}. 
- * Tentative and yet versatile. 
- */
-long coco_get_evaluations(coco_problem_t *self);
-double coco_get_best_observed_fvalue1(const coco_problem_t *self);
-double coco_get_final_target_fvalue1(const coco_problem_t *self);
-
-/**
- * Future: 
- * Return target value for first objective. Values below are not
- * relevant in the performance assessment. 
- *
- * This function breaks the black-box property: the returned 
- * value is not meant to be used by the optimization algorithm 
- * other than for final termination. 
-
-double coco_get_final_target_value1(const coco_problem_t *self);
- */
-
-/**
  * Get the ${problem_index}-th problem of the ${problem_suit} test
  * suit.
  */
@@ -145,6 +125,25 @@ coco_problem_t *coco_get_problem(const char *problem_suite,
 int coco_next_problem_index(const char *problem_suite,
                             const int problem_index,
                             const char *select_options);
+
+/**
+ * Number of evaluations done on problem ${self}. 
+ * Tentative and yet versatile. 
+ */
+long coco_get_evaluations(coco_problem_t *self);
+double coco_get_best_observed_fvalue1(const coco_problem_t *self);
+
+/**
+ * Return target value for first objective. Values below are not
+ * relevant in the performance assessment. 
+ *
+ * This function breaks the black-box property: the returned 
+ * value is not meant to be used by the optimization algorithm 
+ * other than for final termination. 
+
+
+ */
+double coco_get_final_target_fvalue1(const coco_problem_t *self);
 
 /**
  * tentative getters for region of interest
