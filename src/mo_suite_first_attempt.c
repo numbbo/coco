@@ -6,14 +6,14 @@
 #include "coco_problem.c"
 #include "bbob2009_suite.c"
 
-static coco_problem_t *mo_first_attempt_get_problem(
+static coco_problem_t *mo_bbob2009_get_problem(
         long dimension, int f1, long instance1, int f2, long instance2) {
   coco_problem_t *problem, *problem1, *problem2;
 
   /* or get bbob problems by fun, dimension, instance */
   problem1 = bbob2009_problem(f1, dimension, instance1);
   problem2 = bbob2009_problem(f2, dimension, instance2);
-  problem = coco_stacked_problem_allocate("We-need-a-unique_id-here-F010x-d10", /* coco_strdup should be improved with varargs to achieve this */
+  problem = coco_stacked_problem_allocate("We-need-a-unique_id-here-F010x-d10", /* coco_strdup should be improved with varargs to achieve this easily */
                                           "sphere-sphere",
                                           problem1, problem2);
   return problem;
@@ -40,8 +40,8 @@ static coco_problem_t *mo_suite_first_attempt(const int problem_index) {
   
   dimension = 10;
   f1 = 1;
-  f2 = 1 + (problem_index % 24); 
-  problem = mo_first_attempt_get_problem(dimension, f1, 0, f2, 1);
+  f2 = 1 + (problem_index % 24);
+  problem = mo_bbob2009_get_problem(dimension, f1, 0, f2, 1);
   problem->index = problem_index;
   return problem; 
 }
