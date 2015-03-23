@@ -62,8 +62,8 @@ static const char * SUITE_OPTIONS    = ""; /* e.g.: "instances:1-5; dimensions:-
 static const char * OBSERVER_NAME    = "bbob2009_observer"; /* writes data */
 /* static const char * OBSERVER_NAME = "no_observer"; / * writes no data */
 static const char * OBSERVER_OPTIONS = "random_search_on_bbob2009"; /* future: "folder:random_search; verbosity:1" */
-static const char * SOLVER_NAME      = "random_search"; /* for the choice in coco_solver below */
-/*  static const char * SOLVER_NAME   = "my_solver"; / * for the choice in coco_solver below */
+static const char * SOLVER_NAME      = "random_search"; /* for the choice in coco_optimize below */
+/*  static const char * SOLVER_NAME   = "my_solver"; / * for the choice in coco_optimize below */
 static const int NUMBER_OF_BATCHES   = 1;  /* use 1 for single batch :-) batches can be run independently in parallel */
 static int CURRENT_BATCH             = 1;  /* runs from 1 to NUMBER_OF_BATCHES, or any other consecutive sequence */
 
@@ -86,11 +86,11 @@ void my_solver(objective_function_t func, const double *initial_x, size_t dim, l
   double y; func(initial_x, &y); 
 }
 /**
- * Finally, coco_solver calls, depending on SOLVER_NAME, one
+ * Finally, coco_optimize calls, depending on SOLVER_NAME, one
  * of the defined optimizers (e.g. random_search, my_solver, ...),
  * using the respective matching objective function. 
  */
-void coco_solver(coco_problem_t *problem) { /* should at the least take budget as argument, but this is not coco_benchmark compliant */
+void coco_optimize(coco_problem_t *problem) { /* should at the least take budget as argument, but this is not coco_benchmark compliant */
   /* prepare, set up convenience definitions */
   size_t dimension = coco_get_number_of_variables(problem);
   const double * lbounds = coco_get_smallest_values_of_interest(problem);
@@ -122,7 +122,7 @@ void coco_solver(coco_problem_t *problem) { /* should at the least take budget a
 #if 0
 int main() {
   coco_benchmark(SUITE_NAME, OBSERVER_NAME, OBSERVER_OPTIONS,
-                 coco_solver);
+                 coco_optimize);
   return 0;
 }
 #elif 0
@@ -134,7 +134,7 @@ int main() {  /* short example, also nice to read */
        problem_index = coco_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)) {
     problem = coco_get_problem(SUITE_NAME, problem_index);
     problem = coco_observe_problem(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
-    coco_solver(problem);
+    coco_optimize(problem);
     coco_free_problem(problem);
   }
   printf("Done with suite '%s' (options '%s')", SUITE_NAME, SUITE_OPTIONS);
@@ -163,7 +163,7 @@ int main() { /* longer example supporting several batches */
       printf("problem with index %d not found, skipped", problem_index);
       continue;
     }
-    coco_solver(problem); /* depending on verbosity, this gives a message from the observer */
+    coco_optimize(problem); /* depending on verbosity, this gives a message from the observer */
     coco_free_problem(problem);  
   }
   printf("Done with suite '%s' (options '%s')", SUITE_NAME, SUITE_OPTIONS);
@@ -190,7 +190,7 @@ int main() {
               problem = coco_observe_problem(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
               if (problem == NULL)
                 break;
-              coco_solver(problem);
+              coco_optimize(problem);
               coco_free_problem(problem);
           }
       }

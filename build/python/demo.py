@@ -52,18 +52,18 @@ number_of_batches = 99  # CAVEAT: this might be modified below from input args
 current_batch = 1
 
 # interface
-def coco_solve(fun):
+def coco_optimize(fun, budget=MAXEVALS):
     """fun is a callable, to be optimized by global variable `solver`"""
     range_ = fun.upper_bounds - fun.lower_bounds
     center = fun.lower_bounds + range_ / 2
     dim = len(fun.lower_bounds)
 
     runs = 0
-    while MAXEVALS > fun.evaluations:
+    while budget > fun.evaluations:
         # print("%f %f" % (fun.best_observed_fvalue1, fun.final_target_fvalue1))
         if fun.best_observed_fvalue1 < fun.final_target_fvalue1:
             break
-        remaining_budget = MAXEVALS - fun.evaluations
+        remaining_budget = budget - fun.evaluations
         x0 = center + (fun.evaluations > 0) * 0.9 * range_ * (np.random.rand(dim) - 0.5)
 
         global solver 
@@ -92,14 +92,15 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
                                  observer_name, observer_options):
             found_problems += 1
             # use problem only under some conditions, mainly for testing
-            if 1 or ('f11' in problem.id and 'i03' in problem.id):
-                print("%4d: " % problem_index, end="")
-                coco_solve(problem)
-                addressed_problems += 1
+            if not  ('f11' in problem.id and 'i03' in problem.id):
+                continue
+            print("%4d: " % problem_index, end="")
+            coco_optimize(problem, MAXEVALS)
+            addressed_problems += 1
         print("%s done (%d of %d problems benchmarked)." 
                 % (suite_name, addressed_problems, found_problems))
     
-    elif 1 < 3:
+    elif 11 < 3:
         # usecase with batches
         print('Batch usecase ...'); sys.stdout.flush()
         bm = Benchmark(suite_name, suite_options, observer_name, observer_options)  
@@ -109,7 +110,7 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
                 continue
             problem = bm.get_problem(problem_index)
             print("%4d: " % problem_index, end="")
-            coco_solve(problem)
+            coco_optimize(problem, MAXEVALS)
             problem.free()  # preferably free would not be necessary, but how?
             addressed_problems += [problem_index]
         print("%s done (%d of %d problems benchmarked%s)." % 
@@ -117,7 +118,7 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
                  ((" in batch %d of %d" % (current_batch, number_of_batches))
                    if number_of_batches > 1 else "")))
 
-    elif 1 < 3:
+    elif 11 < 3:
         # generic example, similarly possible in all languages, with batches
         print('Generic usecase with batches...'); sys.stdout.flush()
         bm = Benchmark(suite_name, suite_options, observer_name, observer_options)  
@@ -134,7 +135,7 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
             # use problem only under some conditions, mainly for testing
             if 1 or ('d20' in problem.id and 'i01' in problem.id):
                 print("%4d: " % problem_index, end="")
-                coco_solve(problem)
+                coco_optimize(problem, MAXEVALS)
                 addressed_problems += 1
             problem.free()  # preferably free would not be necessary
         print("%s done (%d of %d problems benchmarked%s)." % 
@@ -148,7 +149,8 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
         # optimizer takes a function (pointer) as input and (ii) argument passing to
         # the function might be impossible to negotiate
         print("Minimal usecase, doesn't work though")
-        Benchmark(coco_solve, suite_name, suite_options, observer_name, observer_options)
+        Benchmark(coco_optimize, suite_name, suite_options,
+                  observer_name, observer_options)
         
 if __name__ == '__main__':
     if len(sys.argv) > 1:
