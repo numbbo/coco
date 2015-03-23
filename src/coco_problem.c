@@ -31,8 +31,7 @@ coco_get_transform_inner_problem(coco_problem_t *self);
 
 /* typedef coco_stacked_problem_data_t; */
 coco_problem_t *
-coco_stacked_problem_allocate(const char *new_problem_id, const char *new_problem_name, 
-                              coco_problem_t *problem1_to_be_stacked,
+coco_stacked_problem_allocate(coco_problem_t *problem1_to_be_stacked,
                               coco_problem_t *problem2_to_be_stacked);
 
 /***********************************/
@@ -225,17 +224,24 @@ typedef struct {
 
 static void stacked_problem_evaluate(coco_problem_t *self, const double *x, double *y) {
   coco_stacked_problem_data_t* data = (coco_stacked_problem_data_t*)self->data; 
-  assert(self->number_of_objectives == 2);
+
+  assert(coco_get_number_of_objectives(self) ==
+           coco_get_number_of_objectives(data->problem1) + coco_get_number_of_objectives(data->problem2));
+
   coco_evaluate_function(data->problem1, x, &y[0]);
-  coco_evaluate_function(data->problem2, x, &y[1]);
+  coco_evaluate_function(data->problem2, x, &y[coco_get_number_of_objectives(data->problem1)]);
 }
 
 static void stacked_problem_evaluate_constraint(coco_problem_t *self, const double *x, double *y) {
   coco_stacked_problem_data_t* data = (coco_stacked_problem_data_t*)self->data;
+
+  assert(coco_get_number_of_constraints(self) ==
+           coco_get_number_of_constraints(data->problem1) + coco_get_number_of_constraints(data->problem2));
+
   if (coco_get_number_of_constraints(data->problem1) > 0)
     coco_evaluate_constraint(data->problem1, x, y);
   if (coco_get_number_of_constraints(data->problem2) > 0)
-    coco_evaluate_constraint(data->problem1, x, &y[coco_get_number_of_constraints(data->problem1)]);  
+    coco_evaluate_constraint(data->problem2, x, &y[coco_get_number_of_constraints(data->problem1)]);  
 }
 
 static void stacked_problem_free(coco_problem_t *self) {
@@ -272,14 +278,14 @@ static void stacked_problem_free(coco_problem_t *self) {
  * Details: regions of interest must either agree or at least one
  * of them must be NULL. Best parameter becomes somewhat meaningless. 
  */
-coco_problem_t *coco_stacked_problem_allocate(const char *problem_id, const char *problem_name, 
-                                              coco_problem_t *problem1, coco_problem_t *problem2) {
+coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1, coco_problem_t *problem2) {
   const size_t number_of_variables = coco_get_number_of_variables(problem1); 
   const size_t number_of_objectives =
       coco_get_number_of_objectives(problem1) + coco_get_number_of_objectives(problem2);
   const size_t number_of_constraints =
       coco_get_number_of_constraints(problem1) + coco_get_number_of_constraints(problem2);
   size_t i;
+  char *s;
   const double *smallest, *largest;
   coco_stacked_problem_data_t *data;
   coco_problem_t *problem; /* the new coco problem */
@@ -287,9 +293,14 @@ coco_problem_t *coco_stacked_problem_allocate(const char *problem_id, const char
   assert(coco_get_number_of_variables(problem1) == coco_get_number_of_variables(problem2));
 
   problem = coco_allocate_problem(number_of_variables, number_of_objectives, number_of_constraints);
-  problem->problem_id = coco_strdup(problem_id); 
-  problem->problem_name = coco_strdup(problem_name); 
 
+  s = coco_strconcat(coco_get_problem_id(problem1), "_-_");
+  problem->problem_id = coco_strconcat(s, coco_get_problem_id(problem2));
+  coco_free_memory(s);
+  s = coco_strconcat(coco_get_problem_name(problem1), " + ");
+  problem->problem_name = coco_strconcat(s, coco_get_problem_name(problem2));
+  coco_free_memory(s);
+             
   problem->evaluate_function = stacked_problem_evaluate;
   if (number_of_constraints > 0)
     problem->evaluate_constraint = stacked_problem_evaluate_constraint;
