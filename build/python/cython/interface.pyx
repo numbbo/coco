@@ -256,7 +256,7 @@ cdef class Benchmark:
         ...     solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
         ...     fun.free()
         ...     problem_index = benchmark.next_problem_index(problem_index)
-
+    
     """
     cdef bytes problem_suite
     cdef bytes problem_suite_options
@@ -299,6 +299,11 @@ cdef class Benchmark:
             return problem
     
     def get_problem_by_id(self, id):
+        """return the first problem in the benchmark with ``problem.id==id``, 
+        or `None`. 
+        
+        `problem.id` is supposed to be unique.
+        """
         for i in self.problem_indices:
             p = self.get_problem(i)
             if p.id == id:
