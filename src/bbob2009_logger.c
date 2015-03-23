@@ -369,15 +369,15 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
             NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
   _bbob2009_logger_open_dataFile(&(data->fdata_file), data->path, dataFile_path,
                                  ".dat");
-  fprintf(data->fdata_file, _file_header_str, *(inner_problem->best_value));
+  fprintf(data->fdata_file, _file_header_str, data->optimal_fvalue);
 
   _bbob2009_logger_open_dataFile(&(data->tdata_file), data->path, dataFile_path,
                                  ".tdat");
-  fprintf(data->tdata_file, _file_header_str, *(inner_problem->best_value));
+  fprintf(data->tdata_file, _file_header_str, data->optimal_fvalue);
 
   _bbob2009_logger_open_dataFile(&(data->rdata_file), data->path, dataFile_path,
                                  ".rdat");
-  fprintf(data->rdata_file, _file_header_str, *(inner_problem->best_value));
+  fprintf(data->rdata_file, _file_header_str, data->optimal_fvalue);
   /* TODO: manage duplicate filenames by either using numbers or raising an
    * error */
   data->is_initialized = 1;
@@ -511,7 +511,18 @@ static coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
   data->tdata_file = NULL;
   data->rdata_file = NULL;
   data->number_of_variables = inner_problem->number_of_variables;
-  data->optimal_fvalue = *(inner_problem->best_value);
+  if (inner_problem->best_value == NULL) {
+      coco_error("Optimal f value must be defined for each problem in order for the logger to work propertly");
+      /*Setting the value to 0 results in the assertion y>=optimal_fvalue being susceptible to failure*/
+      /*coco_warning("undefined optimal f value, used 0. instead");
+      data->optimal_fvalue = 0;*/
+  }
+  else
+  {
+    data->optimal_fvalue = *(inner_problem->best_value);
+  }
+  
+
   data->idx_f_trigger = INT_MAX;
   data->idx_t_trigger = 0;
   data->idx_tdim_trigger = 0;
