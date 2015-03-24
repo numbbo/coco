@@ -1,23 +1,20 @@
 #!/usr/bin/env python
-"""Usage:
+"""Usage from a system shell::
 
-    ./demo.py 100 1 20
+    [python] ./demo.py 100 1 20
     
-runs the first of 20 batches with 100 as maximal budget of f-evaluations.
+runs the first of 20 batches with maximal budget of 100 f-evaluations.
 
-:: 
+Usage from a python shell:: 
 
     >>> import demo
     >>> demo.main(100, 1, 99)
     
-does the same out of 99 batches. 
+does the same from 99 batches. 
 
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-import sys
+from __future__ import absolute_import, division, print_function, unicode_literals
+import sys, time
 import numpy as np  # "pip install numpy" installs numpy
 from cocoex import Benchmark
 
@@ -34,8 +31,9 @@ except NameError: pass
     time_pre_opt =[  3,  20,  171, 336, 657  ],
     time =        [  2,  13,  101, 201,      ],
     time_in_C =   [  2,  10,   80, 152, 299, ],
-    time_cma =    [168, 444, 1417,]  # 0.05 millisecond per feval
-    time_slsqp =  [  -1, ]  # requires restart for a fair measurement
+    time_cma =    [179, 444, 1417, ]  # until budget (0.05 millisecond per feval)
+    time_slsqp =  [  8,  48,  412, ]  # until final target
+    time_slsqp =  [  8,  53,  491, ]  # until budget
 """
 
 # prepare (the most basic example solver)
@@ -85,19 +83,23 @@ def coco_optimize(fun, budget=MAXEVALS):
             solver(fun, fun.lower_bounds, fun.upper_bounds,
                     remaining_budget)
         elif solver.__name__ == 'fmin' and solver.func_globals['__name__'] == 'cma':
+            # x0 = "%f + %f * np.rand(%d)" % (center[0], range_[0], dim)  # for bbob
             solver(fun, x0, 0.2, restarts=8,
                    options=dict(scaling=range_, maxfevals=remaining_budget, verbose=-9))
         elif solver.__name__ == 'fmin_slsqp':
             solver(fun, x0, iter=1 + remaining_budget / dim, iprint=-1)
         # IMPLEMENT HERE the call to given solver
         # elif ...:
+        else:
+            print("no entry for solver %s" % str(solver.__name__))
         runs += 1
     if runs > 1:
         print("%d runs, " % runs, end="")
 
 # run 
 def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=number_of_batches):
-    print("Benchmarking solver %s" % str(solver))
+    print("Benchmarking solver %s, %s" % (str(solver), time.asctime(), ))
+    t0 = time.clock()
     if 11 < 3:
         # simple Pythonic use case, never leaves a problem unfree()ed, ctrl-C "safe"
         print('Pythonic usecase ...'); sys.stdout.flush()
@@ -106,12 +108,13 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
                                  observer_name, observer_options):
             found_problems += 1
             # use problem only under some conditions, mainly for testing
-            if not  ('f11' in problem.id and 'i03' in problem.id):
+            if 11 < 3 and not ('f11' in problem.id and 'i03' in problem.id):
                 continue
             coco_optimize(problem, MAXEVALS)
             addressed_problems += 1
-        print("%s done (%d of %d problems benchmarked)." 
-                % (suite_name, addressed_problems, found_problems))
+        print("%s done (%d of %d problems benchmarked), %s (%f s)." 
+                % (suite_name, addressed_problems, found_problems,
+                   time.asctime(), (time.clock()-t0)/60**0))
     
     elif 1 < 3:
         # usecase with batches
@@ -126,12 +129,12 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
             coco_optimize(problem, MAXEVALS)
             problem.free()  # preferably free would not be necessary, but how?
             addressed_problems += [problem_index]
-        print("%s done (%d of %d problems benchmarked%s)." % 
+        print("%s done (%d of %d problems benchmarked%s), %s (%f min)." % 
                (suite_name, len(addressed_problems), len(bm),
                  ((" in batch %d of %d" % (current_batch, number_of_batches))
-                   if number_of_batches > 1 else "")))
+                   if number_of_batches > 1 else ""), time.asctime(), (time.clock()-t0)/60))
 
-    elif 11 < 3:
+    elif 1 < 3:
         # generic example with batches, similarly possible in all languages
         print('Generic usecase with batches...'); sys.stdout.flush()
         bm = Benchmark(suite_name, suite_options, observer_name, observer_options)  
@@ -151,18 +154,20 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
                 coco_optimize(problem, MAXEVALS)
                 addressed_problems += 1
             problem.free()  # preferably free would not be necessary
-        print("%s done (%d of %d problems benchmarked%s)." % 
+        print("%s done (%d of %d problems benchmarked%s), %s (%f min)." % 
                (suite_name, addressed_problems, found_problems,
                  ((" in batch %d of %d" % (current_batch, number_of_batches))
-                   if number_of_batches > 1 else "")))
+                   if number_of_batches > 1 else ""), time.asctime(), (time.clock()-t0)/60, ))
      
     if 11 < 3:
         # generic usecase, possible if solver can be cast into a coco_optimizer_t *
         # which might often not be a straight forward type conversion, because (i) the
-        # optimizer takes a function (pointer) as input and (ii) argument passing to
-        # the function might be impossible to negotiate
+        # optimizer takes a function (pointer) as input, (ii) argument passing to
+        # the optimizer seems not possible (e.g. max budget) unless the interface
+        # is changed and (iii) argument passing to the function might be impossible
+        # to negotiate. 
         print("Minimal usecase, doesn't work though")
-        Benchmark(coco_optimize, suite_name, suite_options,
+        Benchmark(coco_optimize, suite_name, suite_options,  # suite options are in the possible future
                   observer_name, observer_options)
         
 if __name__ == '__main__':

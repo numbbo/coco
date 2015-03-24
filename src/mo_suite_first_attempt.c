@@ -38,7 +38,7 @@ int coco_problem_id_is_fine(const char *id, ...) {
  * Do sprintf(coco_get_problem_id(problem), id, ...) in the right way. 
  *
  */
-void coco_problem_set_id(coco_problem_t *problem, const char *id, ...) {
+void coco_problem_setf_id(coco_problem_t *problem, const char *id, ...) {
   va_list args;
 
   va_start(args, id);
@@ -55,7 +55,7 @@ void coco_problem_set_id(coco_problem_t *problem, const char *id, ...) {
  * needs at the minimum some (more) testing. 
  *
  */
-void coco_problem_set_name(coco_problem_t *problem, const char *name, ...) {
+void coco_problem_setf_name(coco_problem_t *problem, const char *name, ...) {
   va_list args;
   
   va_start(args, name);
@@ -95,8 +95,8 @@ static coco_problem_t *mo_suite_first_attempt(const int problem_index) {
     problem = coco_stacked_problem_allocate(problem, problem2);
     /* repeat the last two lines to add more objectives */
 #if 0
-    coco_problem_set_idf(problem, "ID-F%03d-F%03d-d03%ld-%06ld", f, f2, dimension, problem_index);
-    coco_problem_set_namef(problem, "%s + %s",
+    coco_problem_setf_id(problem, "ID-F%03d-F%03d-d03%ld-%06ld", f, f2, dimension, problem_index);
+    coco_problem_setf_name(problem, "%s + %s",
                           coco_get_problem_name(problem), coco_get_problem_name(problem2));
 #endif
     problem->index = problem_index;
@@ -105,3 +105,6 @@ static coco_problem_t *mo_suite_first_attempt(const int problem_index) {
   } /* else if ... */
   return NULL;
 }
+
+        
+        
