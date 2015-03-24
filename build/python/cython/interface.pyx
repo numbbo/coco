@@ -416,8 +416,11 @@ cdef class Benchmark:
     def __str__(self):
         if self.objectives == [1]:
             o = 'single-objective'
+        elif self.objectives == [2]:
+            o = 'bi-objective'
         else:
-            o = str(self.objectives)
+            o = "%s-objective" % (str(self.objectives[0]) 
+                if len(self.objectives) == 1 else str(self.objectives))
         return 'Suite with %d %s problems in dimensions %s' % (
             len(self), o, str(self.dimensions))
     

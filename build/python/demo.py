@@ -1,4 +1,18 @@
 #!/usr/bin/env python
+"""Usage:
+
+    ./demo.py 100 1 20
+    
+runs the first of 20 batches with 100 as maximal budget of f-evaluations.
+
+:: 
+
+    >>> import demo
+    >>> demo.main(100, 1, 99)
+    
+does the same out of 99 batches. 
+
+"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -94,13 +108,12 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
             # use problem only under some conditions, mainly for testing
             if not  ('f11' in problem.id and 'i03' in problem.id):
                 continue
-            print("%4d: " % problem_index, end="")
             coco_optimize(problem, MAXEVALS)
             addressed_problems += 1
         print("%s done (%d of %d problems benchmarked)." 
                 % (suite_name, addressed_problems, found_problems))
     
-    elif 11 < 3:
+    elif 1 < 3:
         # usecase with batches
         print('Batch usecase ...'); sys.stdout.flush()
         bm = Benchmark(suite_name, suite_options, observer_name, observer_options)  
@@ -109,7 +122,7 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
             if (problem_index + current_batch - 1) % number_of_batches:
                 continue
             problem = bm.get_problem(problem_index)
-            print("%4d: " % problem_index, end="")
+            # print("%4d: " % problem_index, end="")
             coco_optimize(problem, MAXEVALS)
             problem.free()  # preferably free would not be necessary, but how?
             addressed_problems += [problem_index]
@@ -119,7 +132,7 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
                    if number_of_batches > 1 else "")))
 
     elif 11 < 3:
-        # generic example, similarly possible in all languages, with batches
+        # generic example with batches, similarly possible in all languages
         print('Generic usecase with batches...'); sys.stdout.flush()
         bm = Benchmark(suite_name, suite_options, observer_name, observer_options)  
         found_problems, addressed_problems = 0, 0

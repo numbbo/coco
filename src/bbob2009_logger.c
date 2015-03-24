@@ -388,14 +388,18 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
  */
 static void _bbob2009_logger_evaluate_function(coco_problem_t *self, const double *x,
                                                double *y) {
-  bbob2009_logger_t *data;
-  data = coco_get_transform_data(self);
+  bbob2009_logger_t *data = coco_get_transform_data(self);
+  coco_problem_t * inner_problem = coco_get_transform_inner_problem(self);
+  
   if (!data->is_initialized) {
-    _bbob2009_logger_initialize(data, coco_get_transform_inner_problem(self));
+    _bbob2009_logger_initialize(data, inner_problem);
   }
-  if (bbob2009_logger_verbosity > 2 && data->number_of_evaluations == 0)
-    printf("on problem %s ... ", coco_get_problem_id(coco_get_transform_inner_problem(self)));
-  coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
+  if (bbob2009_logger_verbosity > 2 && data->number_of_evaluations == 0) {
+    if (inner_problem->index >= 0)
+      printf("%4ld: ", inner_problem->index);
+    printf("on problem %s ... ", coco_get_problem_id(inner_problem));
+  }
+  coco_evaluate_function(inner_problem, x, y);
   data->last_fvalue = y[0];
   data->written_last_eval = 0;
   if (data->number_of_evaluations == 0 || y[0] < data->best_fvalue) {
@@ -452,7 +456,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
     printf("best f=%e after %ld fevals (done observing)\n",
            data->best_fvalue, (long)data->number_of_evaluations);
     }
-    /*WASSIM: const char * does not need to be freed. Niko: if it has been allocated, it must be free'd. */
+  /*WASSIM: const char * does not need to be freed. Niko: if it has been allocated, it must be free'd. */
   if (data->alg_name != NULL) {
 	  coco_free_memory((void*)data->alg_name);
 	  data->alg_name = NULL;
