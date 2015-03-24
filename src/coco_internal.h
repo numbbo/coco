@@ -65,7 +65,7 @@ struct coco_problem {
   double *best_parameter;
   char *problem_name; /* problem is redundant but useful when searching */
   char *problem_id; /* problem is redundant but useful when searching */
-  long index; 
+  long index; /* unique index within the current/parent benchmark suite */
   long evaluations;
   double final_target_delta[1];
   double best_observed_fvalue[1];

@@ -11,6 +11,7 @@
  * outside. Benchmarks that are included in
  * coco_benchmark.c can include coco_problem.c
  * directly due to the amalgamate magic.
+ * 
  ***********************************/
 
 coco_problem_t *

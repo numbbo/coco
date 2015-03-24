@@ -4,42 +4,10 @@
 #include <string.h>
 
 #include "coco.h"
+#include "coco_strdup.c"
 #include "coco_problem.c"
 #include "bbob2009_suite.c"
 
-
-char * coco_strdup2_v(const char *str, va_list args) {
-  static char buf[444];
-#if 1 /* this might not be defined on very old systems */
-  vsnprintf(buf, 442, str, args); /* apparently args cannot be used another time */
-#else /* less save alternative */
-  vsprintf(buf, str, args); /* apparently args cannot be used another time */
-#endif
-  return coco_strdup(buf);
-}
-char * coco_strdup2(const char *str, ...) {
-  va_list args;
-  char *s;
-
-  va_start(args, str);
-  s = coco_strdup2_v(str, args);
-  va_end(args);
-  return s;
-}
-
-void
-coco_problem_set_str_v(char **target, const char *value, va_list args) {
-  if (*target)
-    coco_free_memory(*target);
-  *target = coco_strdup2_v(value, args);
-}
-void
-coco_problem_set_str(char **target, const char *value, ...) {
-  va_list args;
-  va_start(args, value);
-  coco_problem_set_str_v(target, value, args);
-  va_end(args);
-}
 
 int coco_problem_id_is_fine(const char *id, ...) {
   va_list args;
@@ -50,7 +18,7 @@ int coco_problem_id_is_fine(const char *id, ...) {
   int result = OK;
   
   va_start(args, id);
-  s = coco_strdup2_v(id, args);
+  s = coco_vstrdupf(id, args);
   va_end(args);
   for (cp = s; *cp != '\0'; ++cp) {
     if (('A' <= *cp) && (*cp <= 'Z'))
@@ -74,10 +42,13 @@ void coco_problem_set_id(coco_problem_t *problem, const char *id, ...) {
   va_list args;
 
   va_start(args, id);
-  coco_problem_set_str_v(&(problem->problem_id), id, args);
+  coco_free_memory(problem->problem_id);
+  problem->problem_id = coco_vstrdupf(id, args);
   va_end(args);
-  if (!coco_problem_id_is_fine(coco_get_problem_id(problem)))
-    coco_error("Problem id should only contain standard chars, not like '%s'", coco_get_problem_id(problem));
+  if (!coco_problem_id_is_fine(problem->problem_id)) {
+    coco_error("Problem id should only contain standard chars, not like '%s'",
+               coco_get_problem_id(problem));
+  }
 }
 /**
  * Do sprintf(coco_get_problem_id(problem), id, ...) in the right way, tentative, 
@@ -87,12 +58,11 @@ void coco_problem_set_id(coco_problem_t *problem, const char *id, ...) {
 void coco_problem_set_name(coco_problem_t *problem, const char *name, ...) {
   va_list args;
   
-  printf("in set name\n");
   va_start(args, name);
-  coco_problem_set_str_v(&(problem->problem_name), name, args);
+  coco_free_memory(problem->problem_name);
+  problem->problem_name = coco_vstrdupf(name, args);
   va_end(args);
 }
-
 
 /**
  * mo_suit...(problem_index):
@@ -125,8 +95,8 @@ static coco_problem_t *mo_suite_first_attempt(const int problem_index) {
     problem = coco_stacked_problem_allocate(problem, problem2);
     /* repeat the last two lines to add more objectives */
 #if 0
-    coco_problem_set_id(problem, "ID-F%03d-F%03d-d03%ld-%06ld", f, f2, dimension, problem_index);
-    coco_problem_set_name(problem, "%s + %s",
+    coco_problem_set_idf(problem, "ID-F%03d-F%03d-d03%ld-%06ld", f, f2, dimension, problem_index);
+    coco_problem_set_namef(problem, "%s + %s",
                           coco_get_problem_name(problem), coco_get_problem_name(problem2));
 #endif
     problem->index = problem_index;
