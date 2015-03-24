@@ -12,7 +12,7 @@
 #include "coco_strdup.c"
 
 static int bbob2009_logger_verbosity = 3;  /* TODO: make this an option the user can modify */
-
+static int raisedOptValWarning;
 static int bbob2009_get_function_id(const coco_problem_t *problem);
 static int bbob2009_get_instance_id(const coco_problem_t *problem);
 
@@ -407,7 +407,11 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self, const doubl
   data->number_of_evaluations++;
 
   /* Add sanity check for optimal f value */
-  assert(y[0] >= data->optimal_fvalue);
+  /*assert(y[0] >= data->optimal_fvalue);*/
+  if (!raisedOptValWarning && y[0] < data->optimal_fvalue) {
+      coco_warning("Observed fitness is smaller than supposed optimal fitness.");
+      raisedOptValWarning = 1;
+  }
 
   /* Add a line in the .dat file for each logging target reached. */
   if (y[0] - data->optimal_fvalue <= data->f_trigger) {
@@ -512,16 +516,16 @@ static coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
   data->rdata_file = NULL;
   data->number_of_variables = inner_problem->number_of_variables;
   if (inner_problem->best_value == NULL) {
-      coco_error("Optimal f value must be defined for each problem in order for the logger to work propertly");
+      /*coco_error("Optimal f value must be defined for each problem in order for the logger to work propertly");*/
       /*Setting the value to 0 results in the assertion y>=optimal_fvalue being susceptible to failure*/
-      /*coco_warning("undefined optimal f value, used 0. instead");
-      data->optimal_fvalue = 0;*/
+      coco_warning("undefined optimal f value. Set to 0");
+      data->optimal_fvalue = 0;
   }
   else
   {
-    data->optimal_fvalue = *(inner_problem->best_value);
+      data->optimal_fvalue = *(inner_problem->best_value);
   }
-  
+  raisedOptValWarning = 0;
 
   data->idx_f_trigger = INT_MAX;
   data->idx_t_trigger = 0;
