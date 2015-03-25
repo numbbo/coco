@@ -16,9 +16,9 @@
  *   function with code snippets like (approximately)
 
         logger->folder = coco_allocate_memory(sizeof(char) * (strlen(options) + 1));
-        if (!coco_options_read(options, "folder", " %s", (void*)logger->folder))
+        if (!coco_options_read(options, "folder", " %s", logger->folder))
             sscanf(options, " %s", logger->folder);
-        coco_options_read(options, "verbose", " %i", (void*)&(logger->verbose));
+        coco_options_read(options, "verbose", " %i", &(logger->verbose));
 
     with 
         

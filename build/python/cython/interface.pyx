@@ -23,6 +23,9 @@ cdef extern from "coco.h":
                                          coco_problem_t *problem,
                                          const char *options)
     void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
+    void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y)
+    void coco_recommend_solutions(coco_problem_t *self, const double *x,
+                              size_t number_of_solutions)
     size_t coco_get_number_of_variables(coco_problem_t *problem)
     size_t coco_get_number_of_objectives(coco_problem_t *problem)
     size_t coco_get_number_of_constraints(coco_problem_t *problem)
@@ -93,6 +96,47 @@ cdef class Problem:
         _observer, _options = _bstring(observer), _bstring(options)
         self.problem = coco_observe_problem(_observer, self.problem, _options)
     
+    def constraint(self, x):
+        """return constraint values for `x`. 
+        
+        By convention, constraints with values >= 0 are satisfied.
+        """
+        raise NotImplementedError("has never been tested, incomment this to start testing")
+        cdef np.ndarray[double, ndim=1, mode="c"] _x
+        x = np.array(x, copy=False, dtype=np.double, order='C')
+        if np.size(x) != self.number_of_variables:
+            raise ValueError(
+                "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
+                "not match the problem dimension `number_of_variables==%d`." 
+                             % self.number_of_variables)
+        _x = x  # this is the final type conversion
+        if self.problem is NULL:
+            raise InvalidProblemException()
+        coco_evaluate_constraint(self.problem,
+                               <double *>np.PyArray_DATA(_x),
+                               <double *>np.PyArray_DATA(self.y))
+        return self.y
+        
+    def recommend(self, arx):
+        """Recommend a list of solutions (with len 1 in the single-objective
+        case). """
+        raise NotImplementedError("has never been tested, incomment this to start testing")
+        cdef np.ndarray[double, ndim=1, mode="c"] _x
+        assert isinstance(arx, list)
+        number = len(arx)
+        x = np.hstack(arx)
+        x = np.array(x, copy=False, dtype=np.double, order='C')
+        if np.size(x) != number * self.number_of_variables:
+            raise ValueError(
+                "Dimensions, `arx.shape==%s`, of input `arx` " % str(arx.shape) +
+                "do not match the problem dimension `number_of_variables==%d`." 
+                             % self.number_of_variables)
+        _x = x  # this is the final type conversion
+        if self.problem is NULL:
+            raise InvalidProblemException()
+        coco_recommend_solutions(self.problem, <double *>np.PyArray_DATA(_x),
+                                 number)
+        
     property number_of_variables:
         """Number of variables this problem instance expects as input."""
         def __get__(self):

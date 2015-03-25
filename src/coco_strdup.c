@@ -42,7 +42,7 @@ char * coco_vstrdupf(const char *str, va_list args) {
   vsnprintf(buf, 442, str, args); /* apparently args cannot be used another time */
 #else /* less save alternative */
   assert(strlen(str) < 222);
-  vsprintf(buf, str, args); /* apparently args cannot be used another time */
+  vsprintf(buf, str, args); 
 #endif
   return coco_strdup(buf);
 }
