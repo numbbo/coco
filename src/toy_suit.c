@@ -16,10 +16,10 @@
  * benchmark suit. If the function index is out of bounds, return
  * NULL.
  */
-static coco_problem_t *toy_suit(const int function_index) {
+static coco_problem_t *toy_suit(const long function_index) {
   static const size_t dims[] = {2, 3, 5, 10, 20};
-  const int fid = function_index % 6;
-  const int did = function_index / 6;
+  const long fid = function_index % 6;
+  const long did = function_index / 6;
   coco_problem_t *problem;
   if (did >= 1)
     return NULL;

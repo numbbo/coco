@@ -31,8 +31,8 @@
 
 /** return next problem_index or -1
  */
-int coco_next_problem_index(const char *problem_suite,
-                            int problem_index,
+long coco_next_problem_index(const char *problem_suite,
+                            long problem_index,
                             const char *select_options) {
   coco_problem_t *problem; /* to check validity */
   long last_index = -1;
@@ -71,7 +71,7 @@ int coco_next_problem_index(const char *problem_suite,
 }
 
 coco_problem_t *coco_get_problem(const char *problem_suite,
-                                 const int problem_index) {
+                                 const long problem_index) {
   if (0 == strcmp(problem_suite, "toy_suit")) {
     return toy_suit(problem_index);
   } else if (0 == strcmp(problem_suite, "bbob2009")) {
