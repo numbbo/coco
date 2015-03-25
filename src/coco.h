@@ -109,7 +109,7 @@ size_t coco_get_number_of_constraints(const coco_problem_t *self);
  * suit.
  */
 coco_problem_t *coco_get_problem(const char *problem_suite,
-                                 const int problem_index);
+                                 const long problem_index);
 
 /**
  * Return the successor index of ${problem_index} in ${problem_suit},
@@ -125,8 +125,8 @@ coco_problem_t *coco_get_problem(const char *problem_suite,
  * 
  * loops over all indices and problems consequently. 
  */
-int coco_next_problem_index(const char *problem_suite,
-                            const int problem_index,
+long coco_next_problem_index(const char *problem_suite,
+                            const long problem_index,
                             const char *select_options);
 
 /**
