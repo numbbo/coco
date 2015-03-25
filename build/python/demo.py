@@ -61,7 +61,7 @@ suite_options = ""  # options syntax could be: "instances:1-5; dimensions:2-20",
 observer_name = "bbob2009_observer"
 observer_options = "%s_on_%s" % (solver.__name__, suite_name)  # TODO: "folder:random_search; verbosity:1"
 number_of_batches = 99  # CAVEAT: this might be modified below from input args
-current_batch = 1
+current_batch = 1       # ditto
 
 # interface
 def coco_optimize(fun, budget=MAXEVALS):

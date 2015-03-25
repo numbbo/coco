@@ -395,9 +395,9 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self, const doubl
     _bbob2009_logger_initialize(data, inner_problem);
   }
   if (bbob2009_logger_verbosity > 2 && data->number_of_evaluations == 0) {
-      if (inner_problem->index >= 0){
-          printf("%4ld: ", inner_problem->index);
-      }
+    if (inner_problem->index >= 0) {
+      printf("%4ld: ", inner_problem->index);
+    }
     printf("on problem %s ... ", coco_get_problem_id(inner_problem));
   }
   coco_evaluate_function(inner_problem, x, y);
@@ -458,8 +458,8 @@ static void _bbob2009_logger_free_data(void *stuff) {
            data->best_fvalue, (long)data->number_of_evaluations);
     }
   if (data->alg_name != NULL) {
-	  coco_free_memory((void*)data->alg_name);
-	  data->alg_name = NULL;
+    coco_free_memory((void*)data->alg_name);
+    data->alg_name = NULL;
   }
     
   if (data->path != NULL) {

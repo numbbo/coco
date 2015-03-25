@@ -51,6 +51,9 @@ void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y);
 /**
  * Recommend ${number_of_solutions} parameter settings (stored in
  * ${x}) as the current best guess solutions to the problem ${self}.
+ *
+ * ${number_of_solutions} is expected to be larger than 1 only
+ * if coco_get_number_of_objectives(self) is larger than 1. 
  */
 void coco_recommend_solutions(coco_problem_t *self, const double *x,
                               size_t number_of_solutions);
