@@ -1,8 +1,8 @@
 public class NoSuchProblemException extends Exception {
 	
     String suit;
-    int function_id;
-    public NoSuchProblemException(String suit, int function_id) {
+    long function_id;
+    public NoSuchProblemException(String suit, long function_id) {
     	this.suit = suit;
     	this.function_id = function_id;
 	}
