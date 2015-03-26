@@ -15,7 +15,7 @@
  * Signature: (Ljava/lang/String;I)J
  */
 JNIEXPORT jlong JNICALL Java_JNIinterface_cocoGetProblem
-(JNIEnv *jenv, jclass interface_cls, jstring jproblem_suite, jint jfunction_index) {
+(JNIEnv *jenv, jclass interface_cls, jstring jproblem_suite, jlong jfunction_index) {
     
     coco_problem_t *pb = NULL;
     const char *problem_suite;

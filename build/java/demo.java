@@ -24,9 +24,9 @@ public class demo {
     public static void main(String[] args) {
     	System.out.println("'Generic usecase with batches...'");
         Benchmark my_benchmark = new Benchmark("bbob2009", "", "bbob2009_observer", "random_search_on_bbob2009");
-        int problem_index = -1;
-        int found_problems = 0;
-        int addressed_problems = 0;
+        long problem_index = -1;
+        long found_problems = 0;
+        long addressed_problems = 0;
         while (true) {
         	problem_index = my_benchmark.nextProblemIndex(problem_index);
         	if (problem_index < 0)
@@ -38,7 +38,7 @@ public class demo {
         		Problem problem = my_benchmark.getProblem(problem_index);
             	my_optimizer(problem, problem.lower_bounds, problem.upper_bounds, MAXEVALS);
             	addressed_problems++;
-            	System.out.println("done with problem " + problem + " ...");
+            	// System.out.println("done with problem " + problem + " ...");
             	problem.free();
         	} catch (NoSuchProblemException e) {
     			System.out.println("demo.main: " + e);
