@@ -297,8 +297,8 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetEvaluations
  * Method:    cocoNextProblemIndex
  * Signature: (Ljava/lang/String;ILjava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_JNIinterface_cocoNextProblemIndex
-(JNIEnv *jenv, jclass interface_cls, jstring jproblem_suite, jint problem_index, jstring jselect_options) {
+JNIEXPORT jlong JNICALL Java_JNIinterface_cocoNextProblemIndex
+(JNIEnv *jenv, jclass interface_cls, jstring jproblem_suite, jlong problem_index, jstring jselect_options) {
     
     const char *problem_suite;
     const char *select_options;

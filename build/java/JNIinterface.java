@@ -8,7 +8,7 @@ public class JNIinterface {
 	}
 	
 	/* Native methods */
-	public static native long cocoGetProblem(String problem_suit, int function_index);
+	public static native long cocoGetProblem(String problem_suit, long function_index);
 	public static native long cocoObserveProblem(String observer, long problem, String options);
 	public static native void cocoFreeProblem(long p);
 	public static native double[] cocoEvaluateFunction(Problem p, double[] x);
@@ -20,5 +20,5 @@ public class JNIinterface {
     public static native String cocoGetProblemId(long p);
     public static native String cocoGetProblemName(long p);
     public static native int cocoGetEvaluations(long p);
-    public static native int cocoNextProblemIndex(String problem_suite, int problem_index, String select_options);
+    public static native long cocoNextProblemIndex(String problem_suite, long problem_index, String select_options);
 }

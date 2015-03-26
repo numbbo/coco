@@ -6,10 +6,10 @@ public class Problem {
 	public double[] lower_bounds;
 	public double[] upper_bounds;
 	String problem_suite;
-	int function_index;
+	long function_index; // AKA problem_index
 	
 	/* Constructor */
-	public Problem(String problem_suite, int function_index) throws NoSuchProblemException {
+	public Problem(String problem_suite, long function_index) throws NoSuchProblemException {
 		super();
 		this.problem = JNIinterface.cocoGetProblem(problem_suite, function_index);
 		if (!JNIinterface.validProblem(this.problem)){

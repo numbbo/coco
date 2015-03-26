@@ -6,7 +6,7 @@ public class Benchmark {
 	int len;
 	int dimensions;
 	int objectives;
-	int current_problem_index;
+	long current_problem_index;
 	
 	/* Constructor */
 	public Benchmark(String problem_suite, String problem_suite_options, String observer, String observer_options) {
@@ -21,7 +21,7 @@ public class Benchmark {
 		this.current_problem_index = -1;
 	}
 	
-	public Problem getProblemUnobserved(int problem_index) throws NoSuchProblemException {
+	public Problem getProblemUnobserved(long problem_index) throws NoSuchProblemException {
 		Problem problem = null;
 		try {
 			problem = new Problem(this.problem_suite, problem_index);
@@ -32,7 +32,7 @@ public class Benchmark {
 		return problem;
 	}
 	
-	public Problem getProblem(int problem_index) throws NoSuchProblemException {
+	public Problem getProblem(long problem_index) throws NoSuchProblemException {
 		Problem problem = null;
 		try {
 			problem = getProblemUnobserved(problem_index);
@@ -44,7 +44,7 @@ public class Benchmark {
 		return problem;
 	}
 	
-	public int nextProblemIndex(int problem_index) {
+	public long nextProblemIndex(long problem_index) {
 		return JNIinterface.cocoNextProblemIndex(this.problem_suite, problem_index, this.problem_suite_options);
 	}
 	
