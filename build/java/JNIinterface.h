@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;I)J
  */
 JNIEXPORT jlong JNICALL Java_JNIinterface_cocoGetProblem
-    (JNIEnv *, jclass, jstring, jint);
+    (JNIEnv *, jclass, jstring, jlong);
 
 /*
  * Class:     JNIinterface
@@ -108,8 +108,8 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetEvaluations
  * Method:    cocoNextProblemIndex
  * Signature: (Ljava/lang/String;ILjava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_JNIinterface_cocoNextProblemIndex
-    (JNIEnv *, jclass, jstring, jint, jstring);
+JNIEXPORT jlong JNICALL Java_JNIinterface_cocoNextProblemIndex
+    (JNIEnv *, jclass, jstring, jlong, jstring);
 
 #ifdef __cplusplus
 }
