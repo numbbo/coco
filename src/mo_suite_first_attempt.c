@@ -7,9 +7,6 @@
 #include "coco_strdup.c"
 #include "coco_problem.c"
 #include "bbob2009_suite.c"
-#if 0
-#include "biobjective_problem.c" 
-#endif
 
 int coco_problem_id_is_fine(const char *id, ...) {
   va_list args;
