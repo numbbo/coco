@@ -192,6 +192,8 @@ def build_java():
     copy_file('src/coco.h', 'build/java/coco.h')
     write_file(hg_revision(), "build/java/REVISION")
     write_file(hg_version(), "build/java/VERSION")
+    run('build/java', ['javac', 'JNIinterface.java'])
+    run('build/java', ['javah', 'JNIinterface'])
     run('build/java', ['gcc', '-I/System/Library/Frameworks/JavaVM.framework/Headers',
                        '-c', 'JNIinterface.c'])
     run('build/java', ['gcc', '-dynamiclib', '-o', 'libJNIinterface.jnilib',
@@ -205,7 +207,9 @@ def build_java():
 def build():
     builders = [
         build_c,
+        build_java, 
         build_matlab,
+        # build_octave, 
         build_python,
         build_r,
         build_examples
