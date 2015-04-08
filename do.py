@@ -165,7 +165,7 @@ def build_r():
                release)
     copy_file('src/coco.h', 'build/r/pkg/src/coco.h')
     expand_file('build/r/pkg/DESCRIPTION.in', 'build/r/pkg/DESCRIPTION',
-                {'COCO_VERSION': hg_version()})
+                {'COCO_VERSION': hg_version()})  # FIXME: it seems that this doesn't work, because it writes '0.0.789' instead of 0.0.789
     rscript('build/r/', ['tools/roxygenize'])
     run('build/r', ['R', 'CMD', 'build', 'pkg'])
 

@@ -1,4 +1,4 @@
-library("numbbo")
+library("numbbo")  # should rather be library("coco") !?
 
 my_optimizer <- function(f, lower, upper) {
   n <- length(lower)

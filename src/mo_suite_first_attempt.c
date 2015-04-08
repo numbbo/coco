@@ -7,6 +7,8 @@
 #include "coco_strdup.c"
 #include "coco_problem.c"
 #include "bbob2009_suite.c"
+/* #include "biobjective_problem.c"
+*/
 
 int coco_problem_id_is_fine(const char *id, ...) {
   va_list args;
@@ -34,7 +36,9 @@ int coco_problem_id_is_fine(const char *id, ...) {
   return result;  
 }
 /**
- * Do sprintf(coco_get_problem_id(problem), id, ...) in the right way. 
+ * Formatted printing of a problem ID, mimicking
+ * sprintf(coco_get_problem_id(problem), id, ...) while taking care
+ * of memory (de-)allocations. 
  *
  */
 void coco_problem_setf_id(coco_problem_t *problem, const char *id, ...) {
@@ -50,8 +54,9 @@ void coco_problem_setf_id(coco_problem_t *problem, const char *id, ...) {
   }
 }
 /**
- * Do sprintf(coco_get_problem_id(problem), id, ...) in the right way, tentative, 
- * needs at the minimum some (more) testing. 
+ * Formatted printing of a problem name, mimicking
+ * sprintf(coco_get_problem_name(problem), name, ...) while taking care
+ * of memory (de-)allocation, tentative, needs at the minimum some (more) testing. 
  *
  */
 void coco_problem_setf_name(coco_problem_t *problem, const char *name, ...) {
