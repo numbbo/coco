@@ -245,8 +245,8 @@ cdef class Problem:
                     if self.number_of_objectives == 1 
                     else str(self.number_of_objectives))
             return "%s %s problem (%s)" % (self.id, objective,  
-                self.name.replace(self.name.split()[1], 
-                                  self.name.split()[1] + "(%d)" 
+                self.name.replace(self.name.split()[0], 
+                                  self.name.split()[0] + "(%d)" 
                                   % self.problem_index))
         else:
             return "finalized/invalid problem"
@@ -320,15 +320,25 @@ cdef class Benchmark:
         self._dimensions = None
         self._objectives = None
         
-    def get_problem(self, problem_index):
+    def get_problem(self, problem_index, *snippets):
         """return callable for benchmarking. 
         
-        get_problem(problem_index: int) -> Problem, where Problem is callable,
-        taking an array of length `Problem.number_of_variables` as input and 
-        return a `float` or `np.array` (when Problem.number_of_objectives > 1) 
-        as output. 
+        get_problem(problem_index_or_snippet: int or str, *snippets: str) -> Problem, 
+        where Problem is a callable, taking an array of length 
+        `Problem.number_of_variables` as input and return a `float` or 
+        `np.array` (when Problem.number_of_objectives > 1) as output. When
+        `snippets` are given, the first problem of which the id contains all 
+        snippets including `problem_index_or_snippet' is returned. 
+
+        Example::
+            >>> import cocoex as cc
+            >>> b = cc.Benchmark('bbob2009', "", "no_observer", "")
+            >>> f6 = b.get_problem('f06', 'd10')
+            >>> print(f6)
+            bbob2009_f06_i01_d10 single-objective problem (BBOB2009(385) f06 instance 1 in 10D)
+            >>> f6.free()
         """
-        problem = self.get_problem_unobserved(problem_index)
+        problem = self.get_problem_unobserved(problem_index, *snippets)
         if not problem:
             raise NoSuchProblemException
         try:
@@ -342,43 +352,65 @@ cdef class Benchmark:
         else:
             return problem
     
-    def get_problem_by_id(self, id):
-        """return the first problem in the benchmark with ``problem.id==id``, 
-        or `None`. 
-        
-        `problem.id` is supposed to be unique.
-        """
-        for i in self.problem_indices:
-            p = self.get_problem(i)
-            if p.id == id:
-                return p
-            p.free()
-
-    def find_problem_id(self, id):
-        if not isinstance(id, (list, tuple)):
-            id = [id]
-        for p in self:
-            if all([p.id.find(i) >= 0 for i in id]):
-                print("  id=%s, index=%d" % (p.id, p.index))
-                
-    def get_problem_unobserved(self, problem_index):
-        """return problem without observer (problem_index: int).
+    def get_problem_unobserved(self, problem_index, *snippets):
+        """`get_problem_unobserved(problem_index: int or str, *snippets: str)`
+        return problem without observer.
         
         Useful if writing of data is not necessary. Unobserved problems
-        do not need to be free'd. 
+        do not need to be free'd explicitly. See `get_problem` for details. 
         """
+        if problem_index == str(problem_index):
+            s = problem_index
+            problem_index = self._get_problem_index_from_id(problem_index, *snippets)
+            if problem_index is None:
+                if snippets:
+                    raise ValueError("No problem matches snippets")
+                else:
+                    raise ValueError("Problem with id=%s not found" % s)
         try:
             problem = Problem(self.problem_suite, problem_index)
             if not problem:
                 raise NoSuchProblemException
         except:
-            print("problem %d of suite %s failed to initialize" 
-                % (problem_index, self.problem_suite))
+            print("problem %s of suite %s failed to initialize" 
+                % (str(problem_index), self.problem_suite))
             # any chance that problem.free() makes sense here?
             raise
         else:
             return problem
     
+    def find_problem_ids(self, *id_snippets, verbose=False):
+        """`find_problem_ids(*id_snippets, verbose=False)`
+        returns all problem ids that contain each of the `id_snippets`.
+        """
+        res = []
+        for p in self:
+            if all([p.id.find(i) >= 0 for i in id_snippets]):
+                if verbose:
+                    print("  id=%s, index=%d" % (p.id, p.index))
+                res.append(p.id)
+        return res
+                
+    def _get_problem_index_from_id(self, id, *snippets):
+        """`_get_problem_index_from_id(id, *snippets)`
+        returns the first problem index in the benchmark with ``problem.id==id``, 
+        or the first problem index containing both `id` and all `snippets`, 
+        or `None`. 
+        
+        See also `find_problem_ids`. 
+        """
+        if snippets:      
+            try:
+                id = self.find_problem_ids(id, *snippets)[0]
+            except IndexError:
+                return None
+        for i in self.problem_indices:
+            with self.get_problem_unobserved(i) as p:
+                found = p.id == id
+            if found:
+                return i
+        return None
+
     @property    
     def first_problem_index(self):
         "is `self.next_problem_index(-1)`"
@@ -452,6 +484,10 @@ cdef class Benchmark:
     def info(self):
         return str(self)
 
+    def __call__(self, *args):
+        """alias to get_problem_unobserved"""
+        return self.get_problem_unobserved(*args)
+        
     def __len__(self):
         if self._len is None:
             self._len = len(list(self.problem_indices))
@@ -484,5 +520,20 @@ cdef class Benchmark:
                 raise
             finally:  # makes this ctrl-c safe
                 problem.free()
+
+class Benchmarks(object):
+    """Each attribute is an unobserved Benchmark instance. Observed benchmark 
+    instances need to have set an output folder whose name should be related
+    to the benchmarked algorithm. """
+    def __init__(self, benchmarks_dict):
+        for k in benchmarks_dict:
+            setattr(self, k, benchmarks_dict[k])
+            
+benchmarks = Benchmarks(dict([
+    ['bbob2009unobserved', Benchmark("bbob2009", "", "no_observer", "")], 
+    # ['bbob2009', Benchmark("bbob2009", "", "bbob2009_observer", "_tmp_")], 
+     ]))
+
+
 # has no effect
 # del InvalidProblemException, NoSuchProblemException
