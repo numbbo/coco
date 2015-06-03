@@ -303,6 +303,7 @@ def main(argv=None):
         plt.rc("ytick", **inset.rctick)
         plt.rc("font", **inset.rcfont)
         plt.rc("legend", **inset.rclegend)
+        plt.rc('pdf', fonttype = 42)
 
         # convergence plots
         if genericsettings.isConv:
@@ -382,6 +383,7 @@ def main(argv=None):
             plt.rc("ytick", labelsize=20)
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
+            plt.rc('pdf', fonttype = 42)
             if genericsettings.runlength_based_targets:
                 ftarget = pproc.RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
             ppfigs.main(dictAlg, sortedAlgs, ftarget,
