@@ -331,6 +331,7 @@ def main(argv=None):
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
+            plt.rc('pdf', fonttype = 42)
             ppfigdim.main(dsList, ppfigdim.values_of_interest,
                           outputdir, genericsettings.verbose)
             plt.rcdefaults()
@@ -341,6 +342,7 @@ def main(argv=None):
         plt.rc("ytick", **inset.rctick)
         plt.rc("font", **inset.rcfont)
         plt.rc("legend", **inset.rclegend)
+        plt.rc('pdf', fonttype = 42)
 
         if genericsettings.isTab:
             print "TeX tables...",

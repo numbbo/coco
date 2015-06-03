@@ -31,6 +31,7 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
     import matplotlib
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
+    matplotlib.rc('pdf', fonttype = 42)
 
 from bbob_pproc import genericsettings, rungeneric1, rungeneric2, rungenericmany
 from bbob_pproc.toolsdivers import prepend_to_file, truncate_latex_command_file, print_done

@@ -353,6 +353,7 @@ def main(argv=None):
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
+            plt.rc('pdf', fonttype = 42)
             ppfig2.main(dsList0, dsList1, ppfig2_ftarget,
                         outputdir, genericsettings.verbose)
             print "log ERT1/ERT0 vs target function values done."
@@ -362,6 +363,7 @@ def main(argv=None):
         plt.rc("ytick", **inset.rctick)
         plt.rc("font", **inset.rcfont)
         plt.rc("legend", **inset.rclegend)
+        plt.rc('pdf', fonttype = 42)
 
         if genericsettings.isRLDistr:
             if len(dictFN0) > 1 or len(dictFN1) > 1:
@@ -548,6 +550,7 @@ def main(argv=None):
             plt.rc("ytick", labelsize=20)
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
+            plt.rc('pdf', fonttype = 42)
             if genericsettings.runlength_based_targets:
                 ftarget = RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
             ppfigs.main(dictAlg, sortedAlgs, ftarget,
