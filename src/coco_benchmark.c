@@ -13,6 +13,9 @@
 
 #include "mo_suite_first_attempt.c"
 
+#include "biobjective_suite_300.c"
+#include "biobjective_observer.c"
+
 /**
  * A new benchmark suite must providing a function that returns a
  * coco_problem or NULL when given an problem_index as input.
@@ -78,6 +81,8 @@ coco_problem_t *coco_get_problem(const char *problem_suite,
     return bbob2009_suite(problem_index);
   } else if (0 == strcmp(problem_suite, "mo_suite_first_attempt")) {
     return mo_suite_first_attempt(problem_index);
+  } else if (0 == strcmp(problem_suite, "biobjective_combinations")) {
+    return biobjective_suite_300(problem_index);
   } else {
     coco_warning("Unknown problem suite.");
     return NULL;
@@ -95,6 +100,8 @@ coco_problem_t *coco_observe_problem(const char *observer,
     return toy_observer(problem, options);
   } else if (0 == strcmp(observer, "bbob2009_observer")) {
     return bbob2009_observer(problem, options);
+  } else if (0 == strcmp(observer, "mo_toy_observer")) {
+    return mo_toy_observer(problem, options);
   }
   
   /* here each observer must have another entry */

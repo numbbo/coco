@@ -46,6 +46,16 @@ def build_c():
     make("build/c", "clean")
     make("build/c", "all")
 
+def build_c_mo():  # added for the multiobjective case
+    global release
+    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/c/mo/coco.c', release)
+    copy_file('src/coco.h', 'build/c/mo/coco.h')
+    # copy_file('src/bbob2009_testcases.txt', 'build/c/bbob2009_testcases.txt')
+    write_file(hg_revision(), "build/c/mo/REVISION")
+    write_file(hg_version(), "build/c/mo/VERSION")
+    make("build/c/mo", "clean")
+    make("build/c/mo", "all")
+
 def test_c():
     build_c()
     try:
@@ -267,6 +277,7 @@ def main(args):
     cmd = args[0].replace('_', '-')
     if cmd == 'build-c': build_c()
     elif cmd == 'test-c': test_c()
+    elif cmd == 'build-c-mo': build_c_mo()  # added for the multiobjective case
     elif cmd == 'build-python': build_python()
     elif cmd == 'run-python': run_python(args[1])
     elif cmd == 'test-python': test_python()

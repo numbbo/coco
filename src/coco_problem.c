@@ -92,12 +92,14 @@ coco_duplicate_problem(coco_problem_t *other) {
         other->smallest_values_of_interest[i];
     problem->largest_values_of_interest[i] =
         other->largest_values_of_interest[i];
-    problem->best_parameter[i] = other->best_parameter[i];
+    if (other->best_parameter)
+      problem->best_parameter[i] = other->best_parameter[i];
   }
 
-  for (i = 0; i < problem->number_of_objectives; ++i) {
-    problem->best_value[i] = other->best_value[i];
-  }
+  if (other->best_value)
+    for (i = 0; i < problem->number_of_objectives; ++i) {
+        problem->best_value[i] = other->best_value[i];
+    }
 
   problem->problem_name = coco_strdup(other->problem_name);
   problem->problem_id = coco_strdup(other->problem_id);
