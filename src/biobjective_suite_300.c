@@ -21,7 +21,7 @@
  */
 
 // const size_t DIMENSIONS[6] = {2, 3, 5, 10, 20, 40};
-static const size_t instace_list[5][2] = { {2, 4},
+static const size_t instance_list[5][2] = { {2, 4},
                                             {3, 5},
                                             {7, 8},
                                             {9, 10},
@@ -92,10 +92,10 @@ static coco_problem_t *biobjective_suite_300(const long problem_index) {
     
     problem1 = bbob2009_problem(biobjective_list[combination_idx][0],
                                 BBOB2009_DIMS[dimension_idx],
-                                instace_list[instance_idx][0]);
+                                instance_list[instance_idx][0]);
     problem2 = bbob2009_problem(biobjective_list[combination_idx][1],
                                 BBOB2009_DIMS[dimension_idx],
-                                instace_list[instance_idx][1]);
+                                instance_list[instance_idx][1]);
     problem = coco_stacked_problem_allocate(problem1, problem2);
     problem->index = problem_index;
     
