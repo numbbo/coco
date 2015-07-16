@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
 from bbob_pproc import genericsettings, pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from bbob_pproc.pproc import DataSetList
-from bbob_pproc.toolsdivers import print_done, prepend_to_file, strip_pathname, str_to_latex
+from bbob_pproc.toolsdivers import print_done, prepend_to_file, strip_pathname2, str_to_latex
 from bbob_pproc import ppconverrorbars
 from bbob_pproc.compall import pprldmany
 
@@ -453,7 +453,7 @@ def main(argv=None):
                         ['\\providecommand{\\algfolder}{}'])  # is overwritten in rungeneric.py
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\algname}{' + 
-                         (str_to_latex(strip_pathname(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
+                         (str_to_latex(strip_pathname2(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
         if genericsettings.isFig or genericsettings.isTab or genericsettings.isRLDistr or genericsettings.isLogLoss:
             print "Output data written to folder %s" % outputdir
 

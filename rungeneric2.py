@@ -43,7 +43,7 @@ from bbob_pproc import pproc
 from bbob_pproc import genericsettings, config
 from bbob_pproc import pprldistr
 from bbob_pproc.pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
-from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname, str_to_latex
+from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname2, str_to_latex
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 from bbob_pproc.compall import ppfigs, pprldmany
 from bbob_pproc import ppconverrorbars
@@ -313,7 +313,7 @@ def main(argv=None):
             lines = []
             for i, alg in enumerate(args):
                 lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
-                        str_to_latex(strip_pathname(alg)) + '}')
+                        str_to_latex(strip_pathname2(alg)) + '}')
             prepend_to_file(os.path.join(outputdir,
                          'bbob_pproc_commands.tex'), lines, 1000, 
                          'bbob_proc_commands.tex truncated, consider removing the file before the text run'
