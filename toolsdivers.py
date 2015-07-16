@@ -65,7 +65,7 @@ def strip_pathname2(name):
     from input string ``name``, replace any remaining path separator
     with '/', and keep only the last two parts of the path, or only the
     last"""
-    return os.sep.join(name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep).split(os.sep)[-2:]).replace('data', '').replace('Data', '').replace('DATA', '').strip(os.sep).replace(os.sep, '/')
+    return os.sep.join(name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep).split(os.sep)[-2:]).replace('data', '').replace('Data', '').replace('DATA', '').replace('.tar.gz', '').replace('.tgz', '').replace('.tar', '').strip(os.sep).replace(os.sep, '/')
 
 def str_to_latex(string):
     """do replacements in ``string`` such that it most likely compiles with latex """
