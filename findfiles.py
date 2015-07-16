@@ -15,7 +15,7 @@ This module can be called from the shell, it will recursively look for
 import os
 import warnings
 #import zipfile
-#import tarfile
+import tarfile
 
 # Initialization
 
@@ -42,12 +42,15 @@ def main(directory='.', verbose=True):
                 #~ (root,elem) = os.path.split(elem)
                 #~ filelist = IndexFile(root,elem,archive)
     if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
-        import tarfile
         dirname = '_extracted_' + directory[:directory.find('.t')]
-        tarfile.TarFile.open(directory).extractall(dirname)
-        # TarFile.open handles tar.gz/tgz
+        # extract only if extracted folder does not exist yet or if it was
+        # extracted earlier than last change of archive:
+        if ((not os.path.exists(dirname))
+                or (os.path.getmtime(dirname) < os.path.getmtime(directory))): 
+            tarfile.TarFile.open(directory).extractall(dirname)
+            # TarFile.open handles tar.gz/tgz
+            print '    archive extracted to folder', dirname, '...'
         directory = dirname
-        print '    archive extracted to folder', directory, '...'
         # archive = tarfile.TarFile(directory)
         # for elem in archivefile.namelist():
         #    ~ if elem.endswith('.info'):
@@ -69,6 +72,7 @@ def main(directory='.', verbose=True):
     if not filelist:
         warnings.warn('Could not find any file of interest in %s!' % root)
     return filelist
+
 
 if __name__ == '__main__':
     main()
