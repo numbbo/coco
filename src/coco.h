@@ -31,7 +31,7 @@ typedef struct coco_problem coco_problem_t;
 typedef void (*coco_optimizer_t)(coco_problem_t *problem);
 
 /**
- * Evaluate the NUMBB problem represented by ${self} with the
+ * Evaluate the NUMBBO problem represented by ${self} with the
  * parameter settings ${x} and save the result in ${y}.
  *
  * @note Both x and y must point to correctly sized allocated memory
@@ -44,7 +44,7 @@ void coco_evaluate_function(coco_problem_t *self, const double *x, double *y);
  * ${self} with the parameter settings ${x} and save the result in
  * ${y}.
  *
- * Note: ${x} and ${y} are expected to be of the correct sizes.
+ * @note ${x} and ${y} are expected to be of the correct sizes.
  */
 void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y);
 
@@ -52,7 +52,7 @@ void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y);
  * Recommend ${number_of_solutions} parameter settings (stored in
  * ${x}) as the current best guess solutions to the problem ${self}.
  *
- * ${number_of_solutions} is expected to be larger than 1 only
+ * @note ${number_of_solutions} is expected to be larger than 1 only
  * if coco_get_number_of_objectives(self) is larger than 1. 
  */
 void coco_recommend_solutions(coco_problem_t *self, const double *x,
