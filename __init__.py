@@ -30,6 +30,7 @@ from .rungeneric import main as main
 
 __all__  = ['comp2', 'compall', 'main', 'ppfigdim', 'pplogloss', 'pprldistr',
             'pproc', 'ppsingle', 'pptable', 'rungeneric', 'rungeneric1',
-            'rungeneric2', 'rungenericmany', 'algportfolio']
+            'rungeneric2', 'rungenericmany', 'algportfolio', 'pptex',
+            'toolsstats']
 
 __version__ = '15.00'
