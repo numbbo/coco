@@ -1,8 +1,4 @@
-# numbbo
-#
-# Numerical Black-Box Optimization Benchmarking Framework
-#
-#
+# numbbo: Numerical Black-Box Optimization Benchmarking Framework
 
 The code resembles the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
 now rewritten fully in ANSI C with the other four languages Java, MATLAB, python, and R calling the C code.
@@ -12,17 +8,18 @@ data structure / object. coco.h, demo.c and coco_internal.h are probably the bes
 (but see also below). coco_problem_t defines a benchmark function instance (in a given dimension), and is 
 called via coco_evaluate_function.
 
+# Building the Code
 Building of the code is done by merging/amalgamation of all C-code into a single C file, coco.c (by calling
 do.py, see below). Like this it becomes very simple to include/use the code in different projects.
 
-Description by folder:
+# Description by folder:
 
 o the do.py file in the root folder is a tool to build the entire distribution (like a make file, maybe it
 should rather have been named make.py). It has switches for just building some languages etc, e.g.
 
-   ./do.py build  # builds all
-   ./do.py build-python
-   ./do.py build-c
+    ./do.py build  # builds all
+    ./do.py build-python
+    ./do.py build-c
 
 are valid commands (on a Linux or OSX shell). do.py is a neat and simplifying replacement for make.
 
