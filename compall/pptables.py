@@ -45,7 +45,9 @@ table_caption_rest = r"""%
     Entries, succeeded by a star, are statistically significantly better (according to
     the rank-sum test) when compared to all other algorithms of the table, with
     $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
-    than 1, with Bonferroni correction by the number of instances.
+    than 1, with Bonferroni correction by the number of instances. A $\downarrow$
+    indicates the same tested against the best algorithm of BBOB-2009. Best results
+    are printed in bold.
     """
 tables_many_legend = table_caption_one + table_caption_two1 + table_caption_rest
 tables_many_expensive_legend = table_caption_one + table_caption_two2 + table_caption_rest
