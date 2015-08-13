@@ -41,8 +41,8 @@ def build_c():
     amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/c/coco.c', release)
     copy_file('src/coco.h', 'build/c/coco.h')
     copy_file('src/bbob2009_testcases.txt', 'build/c/bbob2009_testcases.txt')
-    write_file(hg_revision(), "build/c/REVISION")
-    write_file(hg_version(), "build/c/VERSION")
+    # write_file(hg_revision(), "build/c/REVISION")
+    # write_file(hg_version(), "build/c/VERSION")
     make("build/c", "clean")
     make("build/c", "all")
 
@@ -51,8 +51,8 @@ def build_c_mo():  # added for the multiobjective case
     amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/c/mo/coco.c', release)
     copy_file('src/coco.h', 'build/c/mo/coco.h')
     # copy_file('src/bbob2009_testcases.txt', 'build/c/bbob2009_testcases.txt')
-    write_file(hg_revision(), "build/c/mo/REVISION")
-    write_file(hg_version(), "build/c/mo/VERSION")
+    # write_file(hg_revision(), "build/c/mo/REVISION")
+    # write_file(hg_version(), "build/c/mo/VERSION")
     make("build/c/mo", "clean")
     make("build/c/mo", "all")
 
