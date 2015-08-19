@@ -9,6 +9,7 @@ from itertools import groupby
 import warnings
 import numpy as np
 from matplotlib import pyplot as plt
+import shutil
 # from pdb import set_trace
 from . import genericsettings, toolsstats  # absolute_import => . refers to where ppfig resides in the package
 
@@ -57,10 +58,12 @@ html_header = """<HTML>
    <META NAME="keywords" CONTENT="COCO, BBOB">
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
    <TITLE> %s </TITLE>
+   <SCRIPT SRC="sorttable.js"></SCRIPT>
 </HEAD>
 <BODY>
 <H1> %s
 </H1>
+<H2> %s </H2>\n
 """
 
 
@@ -86,12 +89,12 @@ def next_dimension(dim):
 
 
 def save_single_functions_html(filename, algname='', extension='svg',
-                               add_to_names = ''):
+                               add_to_names = '', description=''):
     name = filename.split(os.sep)[-1]
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ' ' + name + add_to_names
         f.write(html_header % (header_title.strip().replace(' ', ', '),
-            algname))
+            algname, description))
         if add_to_names.endswith('D'):
             name_for_click = next_dimension_str(add_to_names)
             f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
@@ -101,6 +104,14 @@ def save_single_functions_html(filename, algname='', extension='svg',
         if add_to_names.endswith('D'):
             f.write('"\n</A>\n')
         f.write("\n</BODY>\n</HTML>")
+    
+def copy_js_files(outputdir):
+    """Copies js files to output directory."""
+    
+    js_folder = os.path.join(os.getcwd(), './js')
+    for file in os.listdir(js_folder):
+        if file.endswith(".js"):
+            shutil.copy(os.path.join(js_folder, file), outputdir)  
 
 
 def discretize_limits(limits, smaller_steps_limit=3.1):

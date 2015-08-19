@@ -197,6 +197,8 @@ rcaxes = {"labelsize": 20, "titlesize": 24}
 rctick = {"labelsize": 20}
 rcfont = {"size": 20}
 rclegend = {"fontsize": 20}
+
+html_file_name = 'resultsummary'
     
 # default settings for rungeneric, rungeneric1, rungeneric2, and rungenericmany
 inputCrE = 0.
