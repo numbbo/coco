@@ -108,7 +108,7 @@ def save_single_functions_html(filename, algname='', extension='svg',
 def copy_js_files(outputdir):
     """Copies js files to output directory."""
     
-    js_folder = os.path.join(os.getcwd(), './js')
+    js_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'js')
     for file in os.listdir(js_folder):
         if file.endswith(".js"):
             shutil.copy(os.path.join(js_folder, file), outputdir)  
