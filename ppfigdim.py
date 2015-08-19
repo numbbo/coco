@@ -538,8 +538,11 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     dictFunc = dsList.dictByFunc()
 
-    ppfig.save_single_functions_html(os.path.join(outputdir, 'ppfigdim'),
-                                dictFunc[dictFunc.keys()[0]][0].algId)
+    ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.html_file_name),
+                                dictFunc[dictFunc.keys()[0]][0].algId,
+                                description = 'Expected number of <i>f</i>-evaluations to reach target')
+    ppfig.copy_js_files(outputdir)
+    
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)

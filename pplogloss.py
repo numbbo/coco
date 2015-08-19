@@ -25,7 +25,7 @@ except ImportError:
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from matplotlib import mlab as mlab
 
-from bbob_pproc import toolsstats, bestalg
+from bbob_pproc import toolsstats, bestalg, genericsettings
 from bbob_pproc.pptex import writeFEvals2
 from bbob_pproc.ppfig import saveFigure
 
@@ -510,7 +510,7 @@ def beautify():
     #a.yaxis.grid(True, which='minor')
     a.yaxis.grid(True, which='major')
 
-def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
+def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True, isFirstTable = False):
     """Generates ERT loss ratio tables.
 
     :param DataSetList dsList: input data set
@@ -524,7 +524,6 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
     #Set variables
     prcOfInterest = [0, 10, 25, 50, 75, 90]
     for d, dsdim in dsList.dictByDim().iteritems():
-        res = []
         maxevals = []
         funcs = []
         mFE = []
@@ -541,84 +540,235 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
         #Set variables: Done
         data = generateData(dsList, EVALS, CrE)
     
-        tmp = "\\textbf{\\textit{f}\\raisebox{-0.35ex}{%d}--\\textit{f}\\raisebox{-0.35ex}{%d} in %d-D}, maxFE/D=%s" \
-            % (min(funcs), max(funcs), d, writeFEvals2(int(mFE/d), maxdigits=6))
-    
-        res.append(r" & \multicolumn{" + str(len(prcOfInterest)) + "}{|c}{" + tmp + "}")
-    
-        header = ["\\#FEs/D"]
-        for i in prcOfInterest:
-            if i == 0:
-                tmp = "best"
-            elif i == 50:
-                tmp = "\\textbf{med}"
-            else:
-                tmp = "%d\\%%" % i
-            header.append(tmp)
-    
-        #set_trace()
-        res.append(" & ".join(header))
-        for i in range(len(EVALS)):
-            tmpdata = list(data[f][i] for f in data)
-            #set_trace()
-            tmpdata = toolsstats.prctile(tmpdata, prcOfInterest)
-            # format entries
-            #tmp = [writeFEvals(EVALS[i]/d, '.0')]
-            if EVALS[i]/d < 200:
-                tmp = [writeFEvals2(EVALS[i]/d, 3)]
-            else:
-                tmp = [writeFEvals2(EVALS[i]/d, 1)]
-            for j in tmpdata:
-                # tmp.append(writeFEvals(j, '.2'))
-                # tmp.append(writeFEvals2(j, 2))
-                if j == 0.:
-                    tmp.append("~\\,0")
-                elif j < 1:
-                    tmp.append("~\\,%1.2f" % j)
-                elif j < 10:
-                    tmp.append("\\hspace*{1ex}%1.1f" % j)
-                elif j < 100:
-                    tmp.append("%2.0f" % j)
-                else:
-                    ar = ("%1.1e" % j).split('e')
-                    tmp.append(ar[0] + 'e' + str(int(ar[1])))
-                # print tmp[-1]
-            res.append(" & ".join(tmp))
-    
-        # add last line: runlength distribution for which 1e-8 was not reached.
-        tmp = [r"$\text{RL}_{\text{US}}$/D"]
-        tmpdata = []
-        for i in dsList:
-            it = reversed(i.evals)
-            curline = None
-            nextline = it.next()
-            while nextline[0] <= f_thresh:
-                curline = nextline[1:]
-                nextline = it.next()
-            if curline is None:
-                tmpdata.extend(i.maxevals)
-            else:
-                tmpdata.extend(i.maxevals[np.isnan(curline)])
-    
-        #set_trace()
-        if tmpdata: # if it is not empty
-            tmpdata = toolsstats.prctile(tmpdata, prcOfInterest)
-            for j in tmpdata:
-               tmp.append(writeFEvals2(j/d, 1))
-            res.append(" & ".join(tmp))
-    
-        res = (r"\\"+ "\n").join(res)
-        res = r"\begin{tabular}{c|" + len(prcOfInterest) * "l" +"}\n" + res
-        #res = r"\begin{tabular}{ccccc}" + "\n" + res
-        res = res + "\n" + r"\end{tabular}" + "\n"
-    
-        filename = os.path.join(outputdir, 'pploglosstable_%02dD_%s.tex' % (d, info))
-        f = open(filename, 'w')
-        f.write(res)
-        f.close()
-        if verbose:
-            print "Wrote ERT loss ratio table in %s." % filename
+        generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data, outputdir, info, verbose)
+        generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data, outputdir, info, verbose,  isFirstTable)
 
+        
+def generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data, 
+                        outputdir='.', info='default', verbose=True):
+    """Generates single ERT loss ratio table.
+
+    :param DataSetList dsList: input data set
+    :param funcs:
+    :param mFE:
+    :param d:
+    :param prcOfInterest:
+    :param EVALS:
+    :param data:
+    :param string outputdir: output folder (must exist)
+    :param string info: string suffix for output file names
+    :param bool verbose: controls verbosity
+
+    """
+
+    res = []
+    
+    tmp = "\\textbf{\\textit{f}\\raisebox{-0.35ex}{%d}--\\textit{f}\\raisebox{-0.35ex}{%d} in %d-D}, maxFE/D=%s" \
+        % (min(funcs), max(funcs), d, writeFEvals2(int(mFE/d), maxdigits=6))
+
+    res.append(r" & \multicolumn{" + str(len(prcOfInterest)) + "}{|c}{" + tmp + "}")
+
+    header = ["\\#FEs/D"]
+    for i in prcOfInterest:
+        if i == 0:
+            tmp = "best"
+        elif i == 50:
+            tmp = "\\textbf{med}"
+        else:
+            tmp = "%d\\%%" % i
+        header.append(tmp)
+
+    #set_trace()
+    res.append(" & ".join(header))
+    for i in range(len(EVALS)):
+        tmpdata = list(data[f][i] for f in data)
+        #set_trace()
+        tmpdata = toolsstats.prctile(tmpdata, prcOfInterest)
+        # format entries
+        #tmp = [writeFEvals(EVALS[i]/d, '.0')]
+        if EVALS[i]/d < 200:
+            tmp = [writeFEvals2(EVALS[i]/d, 3)]
+        else:
+            tmp = [writeFEvals2(EVALS[i]/d, 1)]
+        for j in tmpdata:
+            # tmp.append(writeFEvals(j, '.2'))
+            # tmp.append(writeFEvals2(j, 2))
+            if j == 0.:
+                tmp.append("~\\,0")
+            elif j < 1:
+                tmp.append("~\\,%1.2f" % j)
+            elif j < 10:
+                tmp.append("\\hspace*{1ex}%1.1f" % j)
+            elif j < 100:
+                tmp.append("%2.0f" % j)
+            else:
+                ar = ("%1.1e" % j).split('e')
+                tmp.append(ar[0] + 'e' + str(int(ar[1])))
+            # print tmp[-1]
+        res.append(" & ".join(tmp))
+
+    # add last line: runlength distribution for which 1e-8 was not reached.
+    tmp = [r"$\text{RL}_{\text{US}}$/D"]
+    tmpdata = []
+    for i in dsList:
+        it = reversed(i.evals)
+        curline = None
+        nextline = it.next()
+        while nextline[0] <= f_thresh:
+            curline = nextline[1:]
+            nextline = it.next()
+        if curline is None:
+            tmpdata.extend(i.maxevals)
+        else:
+            tmpdata.extend(i.maxevals[np.isnan(curline)])
+
+    #set_trace()
+    if tmpdata: # if it is not empty
+        tmpdata = toolsstats.prctile(tmpdata, prcOfInterest)
+        for j in tmpdata:
+           tmp.append(writeFEvals2(j/d, 1))
+        res.append(" & ".join(tmp))
+
+    res = (r"\\"+ "\n").join(res)
+    res = r"\begin{tabular}{c|" + len(prcOfInterest) * "l" +"}\n" + res
+    #res = r"\begin{tabular}{ccccc}" + "\n" + res
+    res = res + "\n" + r"\end{tabular}" + "\n"
+
+    filename = os.path.join(outputdir, 'pploglosstable_%02dD_%s.tex' % (d, info))
+    f = open(filename, 'w')
+    f.write(res)
+    f.close()
+    if verbose:
+        print "Wrote ERT loss ratio table in %s." % filename
+
+def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data, 
+                        outputdir='.', info='default', verbose=True, isFirstTable=False):
+    """Generates single ERT loss ratio table.
+
+    :param DataSetList dsList: input data set
+    :param funcs:
+    :param mFE:
+    :param d:
+    :param prcOfInterest:
+    :param EVALS:
+    :param data:
+    :param string outputdir: output folder (must exist)
+    :param string info: string suffix for output file names
+    :param bool verbose: controls verbosity
+
+    """
+
+    res = []
+    
+    header = ["<thead>\n<tr>\n<th>#FEs/D</td>\n"]
+    for i in prcOfInterest:
+        if i == 0:
+            tmp = "best"
+        elif i == 50:
+            tmp = "med"
+        else:
+            tmp = "%d %%" % i
+        header.append("<td>%s</td>\n" % tmp)
+    
+    #set_trace()
+    res.append("".join(header))
+    res.append("</tr>\n</thead>\n")
+    
+    # add footer line: runlength distribution for which 1e-8 was not reached.
+    res.append("<tfoot>\n<tr>\n")
+    tmp = ["<th>RL<sub>US</sub>/D</td>\n"]
+    tmpdata = []
+    for i in dsList:
+        it = reversed(i.evals)
+        curline = None
+        nextline = it.next()
+        while nextline[0] <= f_thresh:
+            curline = nextline[1:]
+            nextline = it.next()
+        if curline is None:
+            tmpdata.extend(i.maxevals)
+        else:
+            tmpdata.extend(i.maxevals[np.isnan(curline)])
+
+    #set_trace()
+    if tmpdata: # if it is not empty
+        tmpdata = toolsstats.prctile(tmpdata, prcOfInterest)
+        for j in tmpdata:
+           tmp.append("<td>%s</td>\n" % writeFEvals2(j/d, 1))
+        res.append("".join(tmp))
+
+    res.append("</tr>\n</tfoot>\n")
+    
+    
+    # add data    
+    res.append("<tbody>\n")
+    for i in range(len(EVALS)):
+        tmpdata = list(data[f][i] for f in data)
+        #set_trace()
+        tmpdata = toolsstats.prctile(tmpdata, prcOfInterest)
+
+        res.append("<tr>\n")
+
+        # format entries
+        #tmp = [writeFEvals(EVALS[i]/d, '.0')]
+
+        if EVALS[i]/d < 200:
+            tmp = writeFEvals2(EVALS[i]/d, 3)
+        else:
+            tmp = writeFEvals2(EVALS[i]/d, 1)
+            
+        tmp = ["<th sorttable_customkey=\"%f\">%s</th>\n" % ((EVALS[i]/d), tmp)]
+        
+        for j in tmpdata:
+            # tmp.append(writeFEvals(j, '.2'))
+            # tmp.append(writeFEvals2(j, 2))
+            if j == 0.:
+                tmp1 = "0"
+            elif j < 1:
+                tmp1 = "%1.2f" % j
+            elif j < 10:
+                tmp1 = "%1.1f" % j
+            elif j < 100:
+                tmp1 = "%2.0f" % j
+            else:
+                ar = ("%1.1e" % j).split('e')
+                tmp1  = ar[0] + 'e' + str(int(ar[1]))
+                
+            tmp.append("<td sorttable_customkey=\"%f\">%s</td>\n" % (j, tmp1))
+
+        res.append("".join(tmp))
+        res.append("</tr>\n")
+
+    res.append("</tbody>\n")
+
+    res = ("").join(res)
+
+    if isFirstTable:
+        mainHeader = '<H2> ERT loss ratio versus the budget in number of <i>f</i>-evaluations divided by dimension</H2>\n'  
+    else:
+        mainHeader = ''    
+        
+    function = "<p><b><i>f</i><sub>%d</sub>&ndash;<i>f</i><sub>%d</sub> in %d-D</b>, maxFE/D=%s</p>\n" % (min(funcs), max(funcs), d, writeFEvals2(int(mFE/d), maxdigits=6))
+    
+    #res.append("<thead>\n<tr>\n")
+    res = mainHeader + function + "<table class=\"sortable\">\n" + res
+    res = res + "</table>\n"
+
+    filename = os.path.join(outputdir, genericsettings.html_file_name + '.html')
+    lines = []
+    with open(filename) as infile:
+        for line in infile:
+            if '</BODY>' in line:
+                lines.append(res)
+            lines.append(line)
+            
+    with open(filename, 'w') as outfile:
+        for line in lines:
+            outfile.write(line)     
+        
+    if verbose:
+        print "Wrote ERT loss ratio table in %s." % filename
+        
 def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
                    info='default', verbose=True):
     """Generates ERT loss ratio figures.
