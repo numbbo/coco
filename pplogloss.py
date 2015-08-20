@@ -754,7 +754,7 @@ def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
     res = mainHeader + function + "<table class=\"sortable\">\n" + res
     res = res + "</table>\n"
 
-    filename = os.path.join(outputdir, 'ppfigdim' + '.html')
+    filename = os.path.join(outputdir, genericsettings.html_file_name + '.html')
     lines = []
     with open(filename) as infile:
         for line in infile:
