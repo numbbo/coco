@@ -842,8 +842,14 @@ class DataSet():
                 if self.instancenumbers.count(i) != 3:
                     is_consistent = False
                     break
-        if not is_consistent:
-            warnings.warn('  double instances in ' + str(self.instancenumbers))
+            if not is_consistent:
+                warnings.warn('  double instances in ' + str(self.instancenumbers))
+        elif len(self.instancenumbers) < 15:
+            is_consistent = False
+            warnings.warn('  less than 15 instances in ' + str(self.instancenumbers))
+        elif len(self.instancenumbers) > 15:
+            is_consistent = False
+            warnings.warn('  more than 15 instances in ' + str(self.instancenumbers))
         return is_consistent
             
     def computeERTfromEvals(self):
@@ -1356,6 +1362,9 @@ class DataSetList(list):
                 warnings.warn(s)
                 print s
             self.sort()
+
+        for ds in self:
+            ds.consistency_check()
             
     def processIndexFile(self, indexFile, verbose=True):
         """Reads in an index (.info?) file information on the different runs."""
