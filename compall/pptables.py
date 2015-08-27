@@ -296,6 +296,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
             # should be strictly 1. TODO: find a way to warn
             # TODO: do this checking before... why wasn't it triggered by ppperprof?
             if len(entries) > 1:
+                print entries
                 txt = ("There is more than a single entry associated with "
                        "folder %s on %d-D f%d." % (sortedAlgs[n], df[0], df[1]))
                 raise Exception(txt)
