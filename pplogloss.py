@@ -510,7 +510,7 @@ def beautify():
     #a.yaxis.grid(True, which='minor')
     a.yaxis.grid(True, which='major')
 
-def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True, isFirstTable = False):
+def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
     """Generates ERT loss ratio tables.
 
     :param DataSetList dsList: input data set
@@ -541,7 +541,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True, i
         data = generateData(dsList, EVALS, CrE)
     
         generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data, outputdir, info, verbose)
-        generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data, outputdir, info, verbose,  isFirstTable)
+        generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data, outputdir, info, verbose)
 
         
 def generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data, 
@@ -642,7 +642,7 @@ def generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
         print "Wrote ERT loss ratio table in %s." % filename
 
 def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data, 
-                        outputdir='.', info='default', verbose=True, isFirstTable=False):
+                        outputdir='.', info='default', verbose=True):
     """Generates single ERT loss ratio table.
 
     :param DataSetList dsList: input data set
@@ -743,22 +743,16 @@ def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
 
     res = ("").join(res)
 
-    if isFirstTable:
-        mainHeader = '<H2> ERT loss ratio versus the budget in number of <i>f</i>-evaluations divided by dimension</H2>\n'  
-    else:
-        mainHeader = ''    
-        
     function = "<p><b><i>f</i><sub>%d</sub>&ndash;<i>f</i><sub>%d</sub> in %d-D</b>, maxFE/D=%s</p>\n" % (min(funcs), max(funcs), d, writeFEvals2(int(mFE/d), maxdigits=6))
     
-    #res.append("<thead>\n<tr>\n")
-    res = mainHeader + function + "<table class=\"sortable\">\n" + res
+    res = function + "<table class=\"sortable\">\n" + res
     res = res + "</table>\n"
 
     filename = os.path.join(outputdir, genericsettings.html_file_name + '.html')
     lines = []
     with open(filename) as infile:
         for line in infile:
-            if '</BODY>' in line:
+            if '<!--tables-->' in line:
                 lines.append(res)
             lines.append(line)
             

@@ -540,7 +540,8 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.html_file_name),
                                 dictFunc[dictFunc.keys()[0]][0].algId,
-                                description = 'Expected number of <i>f</i>-evaluations to reach target')
+                                description = 'Expected number of <i>f</i>-evaluations to reach target',
+                                single=True)
     ppfig.copy_js_files(outputdir)
     
     for func in dictFunc:

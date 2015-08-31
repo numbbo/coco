@@ -163,7 +163,6 @@ def main2(dsList, dimsOfInterest, outputdir='.', info='', verbose=True):
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
     for d, dsdim in dsList.dictByDim().iteritems():
-        dictfun = dsdim.dictByFunc()
         res = []
         for f, dsfun in sorted(dsdim.dictByFunc().iteritems()):
             assert len(dsfun) == 1, ('Expect one-element DataSetList for a '
@@ -200,24 +199,28 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         # insert a separator between the default file name and the additional
         # information string.
 
-    dims = set(dictDim.keys())
     if not bestalg.bestalgentries2009:
         bestalg.loadBBOB2009()
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
         header = [r'\#FEs/D']
+        headerHtml = ['<thead>\n<tr>\n<th>#FEs/D</th>\n']
         for i in targetsOfInterest.labels():
-            header.append(r'\multicolumn{2}{@{}c@{}}{%s}'
-                      % i) 
+            header.append(r'\multicolumn{2}{@{}c@{}}{%s}' % i) 
+            headerHtml.append('<td>%s</td>\n' % i)
 
     else:
         header = [r'$\Delta f$']
+        headerHtml = ['<thead>\n<tr>\n<th>&#916; f</th>\n']
         for i in targetsOfInterest.target_values:
-            header.append(r'\multicolumn{2}{@{}c@{}}{1e%+d}'
-                      % (int(np.log10(i))))
+            header.append(r'\multicolumn{2}{@{}c@{}}{1e%+d}' % (int(np.log10(i))))
+            headerHtml.append('<td>1e%+d</td>\n' % (int(np.log10(i))))
+                      
     header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}')
+    headerHtml.append('<td>#succ</td>\n</tr>\n</thead>\n')
 
     for d in dimsOfInterest:
         table = [header]
+        tableHtml = headerHtml
         extraeol = [r'\hline']
         try:
             dictFunc = dictDim[d].dictByFunc()
@@ -226,9 +229,12 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         funcs = set(dictFunc.keys())
         nbtests = float(len(funcs)) # #funcs tests times one algorithm
 
+        tableHtml.append('<tbody>\n')
         for f in sorted(funcs):
+            tableHtml.append('<tr>\n')
             bestalgentry = bestalg.bestalgentries2009[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
+            curlineHtml = ['<th>f<sub>%d</sub></th>\n' % f]
             bestalgdata = bestalgentry.detERT(targetsOfInterest((f,d)))
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest((f,d)))
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
@@ -238,12 +244,16 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     if temp[-2]=="0":
                         temp=temp[:-2]+temp[-1]
                     curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
-                                   % (temp,writeFEvalsMaxPrec(bestalgdata[i], 2)))
+                                   % (temp, writeFEvalsMaxPrec(bestalgdata[i], 2)))
+                    curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
+                                       % (temp, writeFEvalsMaxPrec(bestalgdata[i], 2)))
                 temp="%.1e" %targetsOfInterest((f,d))[-1]
                 if temp[-2]=="0":
                     temp=temp[:-2]+temp[-1]
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
-                               % (temp,writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
+                               % (temp, writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
+                curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
+                                   % (temp, writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
                 #success
                 targetf=targetsOfInterest((f,d))[-1]
                            
@@ -252,8 +262,10 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 for i in bestalgdata[:-1]:
                     curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
                                    % writeFEvalsMaxPrec(i, 2))
+                    curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(i, 2))
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
                                % writeFEvalsMaxPrec(bestalgdata[-1], 2))
+                curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
     
 
 
@@ -263,8 +275,13 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             curline.append('%d' % (tmp2))
             if tmp2 > 0:
                 curline.append('/%d' % len(tmp))
+                curlineHtml.append('<td>%d/%d</td>\n' % (tmp2, len(tmp)))
+            else:
+                curlineHtml.append('<td>%d</td>\n' % (tmp2))
 
             table.append(curline[:])
+            tableHtml.extend(curlineHtml[:])
+            tableHtml.append('</tr>\n')
             extraeol.append('')
 
             # generate all data for ranksum test
@@ -275,9 +292,11 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             testresbestvs1 = significancetest(bestalgentry, entry,
                                               targetsOfInterest((f, d)))
 
+            tableHtml.append('<tr>\n')
             #for nb, entry in enumerate(entries):
             #curline = [r'\algshort\hspace*{\fill}']
             curline = ['']
+            curlineHtml = ['<th></th>\n']
             #data = entry.detERT(targetsOfInterest)
             evals = entry.detEvals(targetsOfInterest((f,d)))
             dispersion = []
@@ -328,41 +347,55 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 if np.isinf(bestalgdata[i]): # if the best did not solve the problem
                     tmp = writeFEvalsMaxPrec(float(ert), 2)
                     if not np.isinf(ert):
+                        tmpHtml = '<i>%s</i>' % (tmp)
                         tmp = r'\textit{%s}' % (tmp)
                         if isBold:
                             tmp = r'\textbf{%s}' % tmp
+                            tmpHtml = '<b>%s</b>' % tmpHtml
 
                     tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                   % (alignment, tmp))
+                    tableentryHtml = ('<td>%s</td>' % tmpHtml)
                 else:
                     # Formatting
                     tmp = float(ert) / bestalgdata[i]
                     assert not np.isnan(tmp)
                     tableentry = writeFEvalsMaxPrec(tmp, 2)
+                    tableentryHtml = writeFEvalsMaxPrec(tmp, 2)
 
                     if np.isinf(tmp) and i == len(data)-1:
                         tableentry = (tableentry
                                       + r'\textit{%s}' % writeFEvals2(np.median(entry.maxevals), 2))
+                        tableentryHtml = (tableentryHtml
+                                      + ' <i>%s</i>' % writeFEvals2(np.median(entry.maxevals), 2))
                         if isBold:
                             tableentry = r'\textbf{%s}' % tableentry
+                            tableentryHtml = '<b>%s</b>' % tableentryHtml
                         elif 11 < 3: # and significance0vs1 < 0:
                             tableentry = r'\textit{%s}' % tableentry
+                            tableentryHtml = '<i>%s</i>' % tableentryHtml
                         tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                       % (alignment, tableentry))
                     elif tableentry.find('e') > -1 or (np.isinf(tmp) and i != len(data) - 1):
                         if isBold:
                             tableentry = r'\textbf{%s}' % tableentry
+                            tableentryHtml = '<b>%s</b>' % tableentryHtml
                         elif 11 < 3: # and significance0vs1 < 0:
                             tableentry = r'\textit{%s}' % tableentry
+                            tableentryHtml = '<i>%s</i>' % tableentryHtml
                         tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                       % (alignment, tableentry))
                     else:
                         tmp = tableentry.split('.', 1)
+                        tmpHtml = tableentryHtml.split('.', 1)
                         if isBold:
                             tmp = list(r'\textbf{%s}' % i for i in tmp)
+                            tmpHtml = list('<b>%s</b>' % i for i in tmpHtml)
                         elif 11 < 3: # and significance0vs1 < 0:
                             tmp = list(r'\textit{%s}' % i for i in tmp)
+                            tmpHtml = list('<i>%s</i>' % i for i in tmpHtml)
                         tableentry = ' & .'.join(tmp)
+                        tableentryHtml = '.'.join(tmpHtml)
                         if len(tmp) == 1:
                             tableentry += '&'
 
@@ -398,6 +431,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     else:
                         tmp = writeFEvalsMaxPrec(dispersion[i], 1)
                     tableentry += (r'${\scriptscriptstyle(%s)}$' % tmp)
+                    tableentryHtml += (' (%s)' % tmp)
 
                 if superscript:
                     s = r'$^{' + superscript + r'}$'
@@ -407,6 +441,8 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     else:
                         tableentry += s
 
+                tableentryHtml = tableentryHtml.replace('$\infty$', '&infin;')                
+                curlineHtml.append('<td>%s</td>\n' % tableentryHtml)
                 curline.append(tableentry)
 
                 #curline.append(tableentry)
@@ -420,12 +456,18 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             try:
                 tmp = tmp[0]
                 curline.append('%d' % np.sum(np.isnan(tmp) == False))
+                curlineHtml.append('<td>%d' % np.sum(np.isnan(tmp) == False))
             except IndexError:
                 curline.append('%d' % 0)
+                curlineHtml.append('<td>%d' % 0)
             curline.append('/%d' % entry.nbRuns())
+            curlineHtml.append('/%d</td>\n' % entry.nbRuns())
 
             table.append(curline[:])
+            tableHtml.extend(curlineHtml[:])
+            tableHtml.append('</tr>\n')
             extraeol.append(r'\hline')
+        
         extraeol[-1] = ''
 
         outputfile = os.path.join(outputdir, 'pptable_%02dD%s.tex' % (d, info))
@@ -440,5 +482,21 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         f = open(outputfile, 'w')
         f.write(res)
         f.close()
+
+        res = ("").join(str(item) for item in tableHtml)
+        res = '<p><b>%dD</b></p>\n<table>\n%s</table>\n' % (d, res)
+
+        filename = os.path.join(outputdir, genericsettings.html_file_name + '.html')
+        lines = []
+        with open(filename) as infile:
+            for line in infile:
+                if '<!--pptableHtml-->' in line:
+                    lines.append(res)
+                lines.append(line)
+                
+        with open(filename, 'w') as outfile:
+            for line in lines:
+                outfile.write(line)     
+
         if verbose:
             print "Table written in %s" % outputfile

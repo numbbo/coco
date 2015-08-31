@@ -87,9 +87,8 @@ def next_dimension(dim):
         return 2
     return 2 * dim
 
-
 def save_single_functions_html(filename, algname='', extension='svg',
-                               add_to_names = '', description=''):
+                               add_to_names = '', description='', single=False):
     name = filename.split(os.sep)[-1]
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ' ' + name + add_to_names
@@ -103,6 +102,34 @@ def save_single_functions_html(filename, algname='', extension='svg',
                     + add_to_names + '.%s">' % (extension))
         if add_to_names.endswith('D'):
             f.write('"\n</A>\n')
+            
+        if single:
+            headerERT = 'ERT in number of function evaluations'
+            f.write("<H2> %s </H2>\n" % headerERT)
+            f.write("\n<!--pptableHtml-->\n")
+    
+            names = ['pprldistr', 'ppfvdistr']
+            dimensions = [5, 20]
+            types = ['separ', 'lcond', 'hcond', 'multi', 'mult2', 'noiselessall']
+            
+            headerECDF = ' Empirical cumulative distribution functions (ECDF)'
+            f.write("<H2> %s </H2>\n" % headerECDF)
+            for ftype in types:
+                for dimension in dimensions:
+                    for name in names:
+                        f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
+            
+            headerERTLoss = 'ERT loss ratios'
+            f.write("<H2> %s </H2>\n" % headerERTLoss)
+            for dimension in dimensions:
+                f.write('<IMG SRC="pplogloss_%02dD_noiselessall.%s">' % (dimension, extension))
+            f.write("\n<!--tables-->\n")
+            
+            types = ['separ', 'lcond', 'hcond', 'multi', 'mult2']
+            for ftype in types:
+                for dimension in dimensions:
+                    f.write('<IMG SRC="pplogloss_%02dD_%s.%s">' % (dimension, ftype, extension))
+        
         f.write("\n</BODY>\n</HTML>")
     
 def copy_js_files(outputdir):

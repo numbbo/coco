@@ -409,7 +409,6 @@ def main(argv=None):
                     except (SyntaxError, NameError, ValueError):
                         print "Float value required."
                 dictDim = sliceNoise.dictByDim()
-                isFirstTable = True
                 for d in inset.rldDimsOfInterest:
                     try:
                         sliceDim = dictDim[d]
@@ -421,15 +420,13 @@ def main(argv=None):
                                    verbose=genericsettings.verbose)
                     pplogloss.generateTable(sliceDim, CrE,
                                             outputdir, info,
-                                            verbose=genericsettings.verbose, 
-                                            isFirstTable=isFirstTable)
+                                            verbose=genericsettings.verbose)
                     for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
                         info = '%s' % fGroup
                         pplogloss.main(sliceFuncGroup, CrE, True,
                                        outputdir, info,
                                        verbose=genericsettings.verbose)
                     pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
-                    isFirstTable = False
 
             print_done()
 
