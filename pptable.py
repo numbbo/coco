@@ -234,7 +234,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             tableHtml.append('<tr>\n')
             bestalgentry = bestalg.bestalgentries2009[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
-            curlineHtml = ['<th>f<sub>%d</sub></th>\n' % f]
+            curlineHtml = ['<th><b>f<sub>%d</sub></b></th>\n' % f]
             bestalgdata = bestalgentry.detERT(targetsOfInterest((f,d)))
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest((f,d)))
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
@@ -400,16 +400,20 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                             tableentry += '&'
 
                 superscript = ''
+                superscriptHtml = ''
 
                 if nbstars > 0:
                     #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
                     if z > 0:
                         superscript = r'\uparrow' #* nbstars
+                        superscriptHtml = '&uarr;'
                     else:
                         superscript = r'\downarrow' #* nbstars
+                        superscriptHtml = '&darr;'
                         # print z, linebest[i], line1
                     if nbstars > 1:
                         superscript += str(int(min((9, nbstars))))
+                        superscriptHtml += str(int(min(9, nbstars)))
                         # superscript += str(int(nbstars))
 
                 #if superscript or significance0vs1:
@@ -435,11 +439,13 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
                 if superscript:
                     s = r'$^{' + superscript + r'}$'
+                    shtml = '<sup>' + superscriptHtml + '</sup>' 
 
                     if tableentry.endswith('}'):
                         tableentry = tableentry[:-1] + s + r'}'
                     else:
                         tableentry += s
+                    tableentryHtml += shtml
 
                 tableentryHtml = tableentryHtml.replace('$\infty$', '&infin;')                
                 curlineHtml.append('<td>%s</td>\n' % tableentryHtml)
@@ -486,7 +492,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         res = ("").join(str(item) for item in tableHtml)
         res = '<p><b>%dD</b></p>\n<table>\n%s</table>\n' % (d, res)
 
-        filename = os.path.join(outputdir, genericsettings.html_file_name + '.html')
+        filename = os.path.join(outputdir, genericsettings.single_algorithm_file_name + '.html')
         lines = []
         with open(filename) as infile:
             for line in infile:

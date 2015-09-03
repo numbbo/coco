@@ -464,6 +464,19 @@ def main(argv=None):
         if genericsettings.isConv:
             ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
 
+        if genericsettings.isScatter:
+            if genericsettings.runlength_based_targets:
+                ppscatter.targets = ppscatter.runlength_based_targets
+            ppscatter.main(dsList1, dsList0, outputdir,
+                           verbose=genericsettings.verbose)
+            prepend_to_file(os.path.join(outputdir,
+                            'bbob_pproc_commands.tex'), 
+                            ['\\providecommand{\\bbobppscatterlegend}[1]{', 
+                             ppscatter.figure_caption(), 
+                             '}'
+                            ])
+            print "Scatter plots done."
+
         if genericsettings.isTab:
             dictNG0 = dsList0.dictByNoise()
             dictNG1 = dsList1.dictByNoise()
@@ -530,19 +543,6 @@ def main(argv=None):
                              '}'
                             ])
             print "Tables done."
-
-        if genericsettings.isScatter:
-            if genericsettings.runlength_based_targets:
-                ppscatter.targets = ppscatter.runlength_based_targets
-            ppscatter.main(dsList1, dsList0, outputdir,
-                           verbose=genericsettings.verbose)
-            prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'), 
-                            ['\\providecommand{\\bbobppscatterlegend}[1]{', 
-                             ppscatter.figure_caption(), 
-                             '}'
-                            ])
-            print "Scatter plots done."
 
         if genericsettings.isScaleUp:
             plt.rc("axes", labelsize=20, titlesize=24)

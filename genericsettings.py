@@ -206,7 +206,9 @@ rctick = {"labelsize": 20}
 rcfont = {"size": 20}
 rclegend = {"fontsize": 20}
 
-html_file_name = 'ppfigdim'
+single_algorithm_file_name = 'SingleAlgorithmResults'
+two_algorithm_file_name = 'TwoAlgorithmResults'
+many_algorithm_file_name = 'ManyAlgorithmResults'
     
 # default settings for rungeneric, rungeneric1, rungeneric2, and rungenericmany
 inputCrE = 0.
