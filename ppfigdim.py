@@ -538,10 +538,9 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     dictFunc = dsList.dictByFunc()
 
-    ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.html_file_name),
+    ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
                                 dictFunc[dictFunc.keys()[0]][0].algId,
-                                description = 'Expected number of <i>f</i>-evaluations to reach target',
-                                single=True)
+                                algorithmCount=ppfig.AlgorithmCount.ONE)
     ppfig.copy_js_files(outputdir)
     
     for func in dictFunc:

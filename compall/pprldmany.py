@@ -673,7 +673,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             ppfig.save_single_functions_html(
                 os.path.join(outputdir, 'pprldmany'),
                 '', # algorithms names are clearly visible in the figure
-                add_to_names='_%02dD' %(dim)
+                add_to_names='_%02dD' %(dim),
+                algorithmCount=ppfig.AlgorithmCount.MANY
             )
     if close_figure:
         plt.close()

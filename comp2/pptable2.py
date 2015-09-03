@@ -101,17 +101,22 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     header = []
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
         header = [r'\#FEs/D']
+        headerHtml = ['<thead>\n<tr>\n<th>#FEs/D</th>\n']
         for label in targetsOfInterest.labels():
             header.append(r'\multicolumn{2}{@{}c@{}}{%s}' % label) 
+            headerHtml.append('<td>%s</td>\n' % label)
     else:
         header = [r'$\Delta f_\mathrm{opt}$']
+        headerHtml = ['<thead>\n<tr>\n<th>&#916; f</th>\n']
         for label in targetsOfInterest.labels():
-            header.append(r'\multicolumn{2}{@{\,}c@{\,}}{%s}'
-                        % label)
+            header.append(r'\multicolumn{2}{@{\,}c@{\,}}{%s}' % label)
+            headerHtml.append('<td>%s</td>\n' % label)
     header.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
+    headerHtml.append('<td>#succ</td>\n</tr>\n</thead>\n')
     
     for d in dimsOfInterest: # TODO set as input arguments
         table = [header]
+        tableHtml = headerHtml
         extraeol = [r'\hline']
         try:
             dictFunc0 = dictDim0[d].dictByFunc()
@@ -122,12 +127,15 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
         nbtests = len(funcs) * 2. #len(dimsOfInterest)
 
+        tableHtml.append('<tbody>\n')
         for f in sorted(funcs):
+            tableHtml.append('<tr>\n')
             targets = targetsOfInterest((f, d))
             targetf = targets[-1]
             
             bestalgentry = bestalg.bestalgentries2009[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
+            curlineHtml = ['<th><b>f<sub>%d</sub></b></th>\n' % f]
             bestalgdata = bestalgentry.detERT(targets)
             bestalgevals, bestalgalgs = bestalgentry.detEvals(targets)
 
@@ -139,26 +147,38 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         temp = temp[:-2]+temp[-1]
                     curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
                                    % (temp,writeFEvalsMaxPrec(bestalgdata[i], 2)))
+                    curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
+                                       % (temp, writeFEvalsMaxPrec(bestalgdata[i], 2)))
                 temp = "%.1e" % targetsOfInterest((f, d))[-1]
                 if temp[-2]=="0":
                     temp = temp[:-2]+temp[-1]
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
                                % (temp,writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
+                curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
+                                   % (temp, writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
             else:            
                 # write #fevals of the reference alg
                 for i in bestalgdata[:-1]:
                     curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
                                    % writeFEvalsMaxPrec(i, 2))
+                    curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(i, 2))
+
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
                                % writeFEvalsMaxPrec(bestalgdata[-1], 2))
+                curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
 
             tmp = bestalgentry.detEvals([targetf])[0][0]
             tmp2 = numpy.sum(numpy.isnan(tmp) == False)
             curline.append('%d' % (tmp2))
             if tmp2 > 0:
                 curline.append('/%d' % len(tmp))
+                curlineHtml.append('<td>%d/%d</td>\n' % (tmp2, len(tmp)))
+            else:
+                curlineHtml.append('<td>%d</td>\n' % (tmp2))
 
             table.append(curline[:])
+            tableHtml.extend(curlineHtml[:])
+            tableHtml.append('</tr>\n')
             extraeol.append('')
 
             rankdata0 = []  # never used
@@ -189,10 +209,13 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             testresbestvs0 = significancetest(bestalgentry, entries[0], targets)
 
             for nb, entry in enumerate(entries):
+                tableHtml.append('<tr>\n')
                 if nb == 0:
                     curline = [r'1:\:\algorithmAshort\hspace*{\fill}']
+                    curlineHtml = ['<th>1: %s</th>\n' % writeLabels(alg0)]
                 else:
                     curline = [r'2:\:\algorithmBshort\hspace*{\fill}']
+                    curlineHtml = ['<th>2: %s</th>\n' % writeLabels(alg1)]
 
                 #data = entry.detERT(targetsOfInterest)
                 dispersion = []
@@ -236,14 +259,17 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
                         tmp = writeFEvalsMaxPrec(float(dati), 2)
                         if not numpy.isinf(dati):
+                            tmpHtml = '<i>%s</i>' % (tmp)
                             tmp = r'\textit{%s}' % (tmp)
                             if isBold:
                                 tmp = r'\textbf{%s}' % tmp
+                                tmpHtml = '<b>%s</b>' % tmpHtml
 
                         if dispersion[i] and numpy.isfinite(dispersion[i]):
                             tmp += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i], 1)
                         tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                       % (alignment, tmp))
+                        tableentryHtml = (' (%s)' % tmp)
                     else:
                         # Formatting
                         tmp = float(dati)/bestalgdata[i]
@@ -253,41 +279,56 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             isscientific = True
                         tableentry = writeFEvals2(tmp, 2, isscientific=isscientific)
                         tableentry = writeFEvalsMaxPrec(tmp, 2)
+                        tableentryHtml = writeFEvalsMaxPrec(tmp, 2)
 
                         if numpy.isinf(tmp) and i == len(data)-1:
                             tableentry = (tableentry 
                                           + r'\textit{%s}' % writeFEvals2(numpy.median(entry.maxevals), 2))
+                            tableentryHtml = (tableentryHtml
+                                          + ' <i>%s</i>' % writeFEvals2(numpy.median(entry.maxevals), 2))
                             if isBold:
                                 tableentry = r'\textbf{%s}' % tableentry
+                                tableentryHtml = '<b>%s</b>' % tableentryHtml
                             elif 11 < 3 and significance0vs1 < 0:  # cave: negative significance has no meaning anymore
                                 tableentry = r'\textit{%s}' % tableentry
+                                tableentryHtml = '<i>%s</i>' % tableentryHtml
                             if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
                                 tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
+                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
 
                         elif tableentry.find('e') > -1 or (numpy.isinf(tmp) and i != len(data) - 1):
                             if isBold:
                                 tableentry = r'\textbf{%s}' % tableentry
+                                tableentryHtml = '<b>%s</b>' % tableentryHtml
                             elif 11 < 3 and significance0vs1 < 0:
                                 tableentry = r'\textit{%s}' % tableentry
+                                tableentryHtml = '<i>%s</i>' % tableentryHtml
                             if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
                                 tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
+                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
                         else:
                             tmp = tableentry.split('.', 1)
+                            tmpHtml = tableentryHtml.split('.', 1)
                             if isBold:
                                 tmp = list(r'\textbf{%s}' % i for i in tmp)
+                                tmpHtml = list('<b>%s</b>' % i for i in tmpHtml)
                             elif 11 < 3 and significance0vs1 < 0:
                                 tmp = list(r'\textit{%s}' % i for i in tmp)
+                                tmpHtml = list('<i>%s</i>' % i for i in tmpHtml)
                             tableentry = ' & .'.join(tmp)
+                            tableentryHtml = '.'.join(tmpHtml)
                             if len(tmp) == 1:
                                 tableentry += '&'
                             if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
                                 tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
+                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
 
                     superscript = ''
+                    superscriptHtml = ''
 
                     if nb == 0:
                         z, p = testresbestvs0[i]
@@ -301,25 +342,35 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
                         if z > 0:
                             superscript = r'\uparrow' #* nbstars
+                            superscriptHtml = '&uarr;'
                         else:
                             superscript = r'\downarrow' #* nbstars
+                            superscriptHtml = '&darr;'
                             # print z, linebest[i], line1
                         if nbstars > 1:
                             superscript += str(int(nbstars))
+                            superscriptHtml += str(int(nbstars))
 
                     if superscript or significance0vs1:
                         s = ''
+                        shtml = ''
                         if significance0vs1 > 0:
                             s = '\star'
+                            shtml = '&#9733;'
                         if significance0vs1 > 1:
                             s += str(significance0vs1)
+                            shtml += str(significance0vs1)
                         s = r'$^{' + s + superscript + r'}$'
+                        shtml = '<sup>' + shtml + superscriptHtml + '</sup>' 
 
                         if tableentry.endswith('}'):
                             tableentry = tableentry[:-1] + s + r'}'
                         else:
                             tableentry += s
+                        tableentryHtml += shtml
 
+                    tableentryHtml = tableentryHtml.replace('$\infty$', '&infin;')                
+                    curlineHtml.append('<td>%s</td>\n' % tableentryHtml)
                     curline.append(tableentry)
 
                     #curline.append(tableentry)
@@ -333,11 +384,16 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                 try:
                     tmp = tmp[0]
                     curline.append('%d' % numpy.sum(numpy.isnan(tmp) == False))
+                    curlineHtml.append('<td>%d' % numpy.sum(numpy.isnan(tmp) == False))
                 except IndexError:
                     curline.append('%d' % 0)
+                    curlineHtml.append('<td>%d' % 0)
                 curline.append('/%d' % entry.nbRuns())
+                curlineHtml.append('/%d</td>\n' % entry.nbRuns())
 
                 table.append(curline[:])
+                tableHtml.extend(curlineHtml[:])
+                tableHtml.append('</tr>\n')
                 extraeol.append('')
 
             extraeol[-1] = r'\hline'
@@ -355,6 +411,22 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         f = open(outputfile, 'w')
         f.write(res)
         f.close()
+        
+        res = ("").join(str(item) for item in tableHtml)
+        res = '<p><b>%dD</b></p>\n<table>\n%s</table>\n' % (d, res)
+
+        filename = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
+        lines = []
+        with open(filename) as infile:
+            for line in infile:
+                if '<!--pptable2Html-->' in line:
+                    lines.append(res)
+                lines.append(line)
+                
+        with open(filename, 'w') as outfile:
+            for line in lines:
+                outfile.write(line)     
+
         if verbose:
             print "Table written in %s" % outputfile
 

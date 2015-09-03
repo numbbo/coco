@@ -19,6 +19,12 @@ bbox_inches_choices = {  # do we also need pad_inches = 0?
 }
 
 
+def enum(*sequential, **named):
+    enums = dict(zip(sequential, range(len(sequential))), **named)
+    return type('Enum', (), enums)
+    
+AlgorithmCount = enum('ONE', 'TWO', 'MANY')
+
 def saveFigure(filename, figFormat=genericsettings.fig_formats,
                verbose=True):
     """Save figure into an image file.
@@ -63,7 +69,6 @@ html_header = """<HTML>
 <BODY>
 <H1> %s
 </H1>
-<H2> %s </H2>\n
 """
 
 
@@ -88,25 +93,30 @@ def next_dimension(dim):
     return 2 * dim
 
 def save_single_functions_html(filename, algname='', extension='svg',
-                               add_to_names = '', description='', single=False):
+                               add_to_names = '', algorithmCount=AlgorithmCount.ONE):
     name = filename.split(os.sep)[-1]
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ' ' + name + add_to_names
-        f.write(html_header % (header_title.strip().replace(' ', ', '),
-            algname, description))
-        if add_to_names.endswith('D'):
-            name_for_click = next_dimension_str(add_to_names)
-            f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
-        for ifun in range(1, 25):
-            f.write('<IMG SRC="' + name + '_f%03d' % (ifun)
-                    + add_to_names + '.%s">' % (extension))
-        if add_to_names.endswith('D'):
-            f.write('"\n</A>\n')
+        f.write(html_header % (header_title.strip().replace(' ', ', '), algname))
             
-        if single:
+        if algorithmCount is AlgorithmCount.ONE:
+            headerERT = 'Expected number of <i>f</i>-evaluations to reach target'
+            f.write("<H2> %s </H2>\n" % headerERT)
+            if add_to_names.endswith('D'):
+                name_for_click = next_dimension_str(add_to_names)
+                f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
+            for ifun in range(1, 25):
+                f.write('<IMG SRC="ppfigdim_f%03d' % (ifun)
+                        + add_to_names + '.%s">' % (extension))
+            if add_to_names.endswith('D'):
+                f.write('"\n</A>\n')
+
+            #f.write("<p/>\n###bbobppfigdimlegend###\n<p/><p/>")
+
             headerERT = 'ERT in number of function evaluations'
             f.write("<H2> %s </H2>\n" % headerERT)
             f.write("\n<!--pptableHtml-->\n")
+            #f.write("<p/>\n###bbobpptablecaption###\n<p/><p/>")
     
             names = ['pprldistr', 'ppfvdistr']
             dimensions = [5, 20]
@@ -119,17 +129,65 @@ def save_single_functions_html(filename, algname='', extension='svg',
                     for name in names:
                         f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
             
+            #f.write("<p/>\n###bbobpprldistrlegend###\n<p/><p/>")
+
             headerERTLoss = 'ERT loss ratios'
             f.write("<H2> %s </H2>\n" % headerERTLoss)
             for dimension in dimensions:
                 f.write('<IMG SRC="pplogloss_%02dD_noiselessall.%s">' % (dimension, extension))
             f.write("\n<!--tables-->\n")
-            
+            #f.write("<p/>\n###bbobloglosstablecaption###\n<p/><p/>")
+        
             types = ['separ', 'lcond', 'hcond', 'multi', 'mult2']
             for ftype in types:
                 for dimension in dimensions:
                     f.write('<IMG SRC="pplogloss_%02dD_%s.%s">' % (dimension, ftype, extension))
+                    
+            #f.write("<p/>\n###bbobloglossfigurecaption###\n<p/><p/>")
         
+        elif algorithmCount is AlgorithmCount.TWO:
+            headerERT = 'Scaling of ERT with dimension'
+            f.write("\n<H2> %s </H2>\n" % headerERT)
+            for ifun in range(1, 25):
+                f.write('<IMG SRC="ppfigs_f%03d' % (ifun)
+                        + add_to_names + '.%s">' % (extension))
+        
+            headerERT = 'Scatter plots per function'
+            f.write("\n<H2> %s </H2>\n" % headerERT)
+            if add_to_names.endswith('D'):
+                name_for_click = next_dimension_str(add_to_names)
+                f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
+            for ifun in range(1, 25):
+                f.write('<IMG SRC="ppscatter_f%03d' % (ifun)
+                        + add_to_names + '.%s">' % (extension))
+            if add_to_names.endswith('D'):
+                f.write('"\n</A>\n')
+    
+            names = ['pprldistr', 'pplogabs']
+            dimensions = [5, 20]
+            types = ['separ', 'lcond', 'hcond', 'multi', 'mult2', 'noiselessall']
+
+            headerECDF = 'Empirical cumulative distribution functions (ECDFs) per function group'
+            f.write("\n<H2> %s </H2>\n" % headerECDF)
+            for ftype in types:
+                for dimension in dimensions:
+                    for name in names:
+                        f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
+
+            headerERT = 'Table showing the ERT in number of function evaluations divided by the best ERT measured during BBOB-2009'
+            f.write("\n<H2> %s </H2>\n" % headerERT)
+            f.write("\n<!--pptable2Html-->\n")
+            
+        elif algorithmCount is AlgorithmCount.MANY:
+            if add_to_names.endswith('D'):
+                name_for_click = next_dimension_str(add_to_names)
+                f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
+            for ifun in range(1, 25):
+                f.write('<IMG SRC="' + name + '_f%03d' % (ifun)
+                        + add_to_names + '.%s">' % (extension))
+            if add_to_names.endswith('D'):
+                f.write('"\n</A>\n')
+    
         f.write("\n</BODY>\n</HTML>")
     
 def copy_js_files(outputdir):
@@ -439,3 +497,4 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
             res.append(t)
 
     return res
+

@@ -39,8 +39,8 @@ try:
 except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
-# from bbob_pproc import readalign
-from ..ppfig import saveFigure, save_single_functions_html
+from bbob_pproc import genericsettings
+from ..ppfig import saveFigure, save_single_functions_html, AlgorithmCount
 from .. import toolsdivers
 from .. import pproc
 
@@ -353,8 +353,9 @@ def main(dsList0, dsList1, outputdir, verbose=True):
         saveFigure(filename, verbose=verbose)
         if f == 1:
             save_single_functions_html(
-                os.path.join(outputdir, 'ppscatter'),
-                "%s vs %s" % (entry1.algId, entry0.algId))
+                os.path.join(outputdir, genericsettings.two_algorithm_file_name),
+                "%s vs %s" % (entry1.algId, entry0.algId),
+                algorithmCount=AlgorithmCount.TWO)
         plt.close()
 
     #plt.rcdefaults()
