@@ -75,7 +75,9 @@ except IOError, (errno, strerror):
           'Titles in figures will not be displayed.'
 
 significance_vs_others_symbol = r"\star"
+significance_vs_others_symbol_html = r"&#9733;"
 significance_vs_ref_symbol = r"\downarrow"
+significance_vs_ref_symbol_html = r"&darr;"
 maxfloatrepr = 10000.
 samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 targetf = 1e-8
@@ -361,6 +363,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                 
         # Create the table
         table = []
+        tableHtml = []
         spec = r'@{}c@{}|*{%d}{@{\,}r@{}X@{\,}}|@{}r@{}@{}l@{}' % (len(targets)) # in case StrLeft not working: replaced c@{} with l@{ }
         spec = r'@{}c@{}|*{%d}{@{}r@{}X@{}}|@{}r@{}@{}l@{}' % (len(targets)) # in case StrLeft not working: replaced c@{} with l@{ }
         extraeol = []
@@ -375,23 +378,31 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
         if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 curline = [r'\#FEs/D']
+                curlineHtml = ['<thead>\n<tr>\n<th>#FEs/D</th>\n']
                 for i in targetsOfInterest.labels():
-                    curline.append(r'\multicolumn{2}{@{}c@{}}{%s}'
-                                % i) 
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % i) 
+                    curlineHtml.append('<td>%s</td>\n' % i)
                                 
             else:
                 curline = [r'$\Delta f_\mathrm{opt}$']
+                curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub></th>\n']
                 for t in targets:
                     curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
                                 % writeFEvals2(t, precision=1, isscientific=True))
+                    curlineHtml.append('<td>%s</td>\n' % writeFEvals2(t, precision=1, isscientific=True))
 #                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
 #                            % writeFEvals2(targets[-1], precision=1, isscientific=True))
             curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
+            curlineHtml.append('<td>#succ</td>\n</tr>\n</thead>\n')
             table.append(curline)
+            tableHtml.extend(curlineHtml)
+            
         extraeol.append(r'\hline')
 #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
 
+        tableHtml.append('<tbody>\n')
         curline = [r'ERT$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
+        curlineHtml = ['<th>ERT<sub>best</sub></th>\n'] if with_table_heading else ['<th><b>f%d</b></th>\n' % df[1]]
         if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
             # write ftarget:fevals
             for i in xrange(len(refalgert[:-1])):
@@ -399,27 +410,38 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                 if temp[-2]=="0":
                     temp=temp[:-2]+temp[-1]
                 curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
-                                   % (temp,writeFEvalsMaxPrec(refalgert[i], 2)))
+                                   % (temp, writeFEvalsMaxPrec(refalgert[i], 2)))
+                curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
+                                   % (temp, writeFEvalsMaxPrec(refalgert[i], 2)))
             temp="%.1e" %targetsOfInterest((df[1], df[0]))[-1]
             if temp[-2]=="0":
                 temp=temp[:-2]+temp[-1]
             curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
-                               % (temp,writeFEvalsMaxPrec(refalgert[-1], 2))) 
+                               % (temp ,writeFEvalsMaxPrec(refalgert[-1], 2))) 
+            curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
+                                   % (temp, writeFEvalsMaxPrec(refalgert[-1], 2))) 
         else:            
             # write #fevals of the reference alg
             for i in refalgert[:-1]:
                 curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
                                    % writeFEvalsMaxPrec(i, 2))
+                curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(i, 2))
             curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
                                % writeFEvalsMaxPrec(refalgert[-1], 2))
-    
+            curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(refalgert[-1], 2))
+
         # write the success ratio for the reference alg
         tmp2 = numpy.sum(numpy.isnan(refalgevals) == False) # count the nb of success
         curline.append('%d' % (tmp2))
         if tmp2 > 0:
             curline.append('/%d' % len(refalgevals))
+            curlineHtml.append('<td>%d/%d</td>\n' % (tmp2, len(refalgevals)))
+        else:
+            curlineHtml.append('<td>%d</td>\n' % (tmp2))
 
         table.append(curline[:])
+        tableHtml.extend(curlineHtml[:])
+        tableHtml.append('</tr>\n')
         extraeol.append('')
 
         #for i, gna in enumerate(zip((1, 2, 3), ('bla', 'blo', 'bli'))):
@@ -431,12 +453,14 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
 
         header = r'\providecommand{\ntables}{7}'
         for i, alg in enumerate(algnames):
+            tableHtml.append('<tr>\n')
             #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
             #data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
             commandname = r'\alg%stables' % numtotext(i)
 #            header += r'\providecommand{%s}{{%s}{}}' % (commandname, str_to_latex(strip_pathname(alg)))
             header += r'\providecommand{%s}{\StrLeft{%s}{\ntables}}' % (commandname, str_to_latex(strip_pathname2(alg)))
             curline = [commandname + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
+            curlineHtml = ['<th>%s</th>\n' % str_to_latex(strip_pathname2(alg)).partition(' ')[0]]
 
             for j, tmp in enumerate(zip(algerts[i], algdisp[i],  # j is target index
                                         isBoldArray[i], algtestres[i])):
@@ -448,11 +472,13 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                 data = ert/refalgert[j]
                 # write star for significance against all other algorithms
                 str_significance_subsup = ''
+                str_significance_subsup_html = ''
                 if (len(best_alg_idx) > 0 and len(significance_versus_others) > 0 and 
                     i == best_alg_idx[j] and nbtests * significance_versus_others[j][1] < 0.05):
                     logp = -numpy.ceil(numpy.log10(nbtests * significance_versus_others[j][1]))
                     logp = numpy.min((9, logp))  # not messing up the format and handling inf
                     str_significance_subsup =  r"^{%s%s}" % (significance_vs_others_symbol, str(int(logp)) if logp > 1 else '')
+                    str_significance_subsup_html = '<sup>%s%s</sup>' % (significance_vs_others_symbol_html, str(int(logp)) if logp > 1 else '')
 
                 # moved out of the above else: this was a bug!?
                 z, p = testres
@@ -473,6 +499,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                         # tmp2[-1] += r'$^{%s}$' % superscript
                         str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol, 
                                                                  str(int(nbstars)) if nbstars > 1 else '')
+                        str_significance_subsup_html = '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html, 
+                                                                 str(int(nbstars)) if nbstars > 1 else '')
                 if str_significance_subsup:
                     str_significance_subsup = '$%s$' % str_significance_subsup
 
@@ -486,15 +514,22 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                                           writeFEvalsMaxPrec(algerts[i][j], 2),
                                           writeFEvalsMaxPrec(dispersion, precdispersion), 
                                           str_significance_subsup))
+                        curlineHtml.append('<td><b>%s</b> (%s)%s</td>\n'
+                                       % (writeFEvalsMaxPrec(algerts[i][j], 2),
+                                          writeFEvalsMaxPrec(dispersion, precdispersion), 
+                                          str_significance_subsup_html))
                         continue
 
                     tmp = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
+                    tmpHtml = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
                     if data >= maxfloatrepr or data < 0.01: # either inf or scientific notation
                         if numpy.isinf(data) and j == len(algerts[i]) - 1:
                             tmp += r'\,\textit{%s}' % writeFEvalsMaxPrec(algfinaldata[i][1], 0, maxfloatrepr=maxfloatrepr)
+                            tmpHtml += '<i>%s</i>' % writeFEvalsMaxPrec(algfinaldata[i][1], 0, maxfloatrepr=maxfloatrepr)
                         else:
                             tmp = writeFEvalsMaxPrec(data, precscien, maxfloatrepr=data)
                             if isBold:
+                                tmpHtml = '<b>%s</b>' % tmp
                                 tmp = r'\textbf{%s}' % tmp
 
                         if not numpy.isnan(dispersion):
@@ -504,7 +539,10 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                             else:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
                             tmp += r'\mbox{\tiny (%s)}' % tmpdisp
+                            tmpHtml += ' (%s)' % tmpdisp
                         curline.append(r'\multicolumn{2}{%s}{%s%s}' % (alignment, tmp, str_significance_subsup))
+                        tmpHtml = tmpHtml.replace('$\infty$', '&infin;')                
+                        curlineHtml.append('<td>%s%s</td>' % (tmpHtml, str_significance_subsup_html))
                     else:
                         tmp2 = tmp.split('.', 1)
                         if len(tmp2) < 2:
@@ -513,9 +551,15 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                             tmp2[-1] = '.' + tmp2[-1]
                         if isBold:
                             tmp3 = []
+                            tmp3html = []
                             for k in tmp2:
                                 tmp3.append(r'\textbf{%s}' % k)
+                                tmp3html.append('<b>%s</b>' % k)
                             tmp2 = tmp3
+                            tmp2html = tmp3html
+                        else:
+                            tmp2html = []
+                            tmp2html.extend(tmp2)
                         if not numpy.isnan(dispersion):
                             tmpdisp = dispersion/refalgert[j]
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
@@ -523,12 +567,19 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                             else:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
                             tmp2[-1] += (r'\mbox{\tiny (%s)}' % (tmpdisp))
+                            tmp2html[-1] += ' (%s)' % tmpdisp
                         tmp2[-1] += str_significance_subsup
+                        tmp2html[-1] += str_significance_subsup_html
                         curline.extend(tmp2)
+                        tmp2html = ("").join(str(item) for item in tmp2html)
+                        tmp2html = tmp2html.replace('$\infty$', '&infin;')                
+                        curlineHtml.append('<td>%s</td>' % tmp2html)
                                         
             curline.append('%d' % algnbsucc[i])
             curline.append('/%d' % algnbruns[i])
             table.append(curline)
+            curlineHtml.append('<td>%d/%d</td>\n' % (algnbsucc[i], algnbruns[i]))
+            tableHtml.extend(curlineHtml[:])
             extraeol.append('')
 
         # Write table
@@ -538,6 +589,23 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
             f = open(filename, 'w')
             f.write(header + '\n')
             f.write(res)
+
+            res = ("").join(str(item) for item in tableHtml)
+            res = '\n<table>\n%s</table>\n<p/>\n' % res
+    
+            if df[0] in (5, 20):
+                filename = os.path.join(outputdir, genericsettings.many_algorithm_file_name + '.html')
+                lines = []
+                with open(filename) as infile:
+                    for line in infile:
+                        if '<!--' + 'pptablesf%03d%02dDHtml' % (df[1], df[0]) + '-->' in line:
+                            lines.append(res)
+                        lines.append(line)
+                        
+                with open(filename, 'w') as outfile:
+                    for line in lines:
+                        outfile.write(line)     
+    
             if verbose:
                 print 'Wrote table in %s' % filename
         except:

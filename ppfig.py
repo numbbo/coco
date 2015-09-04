@@ -23,7 +23,7 @@ def enum(*sequential, **named):
     enums = dict(zip(sequential, range(len(sequential))), **named)
     return type('Enum', (), enums)
     
-AlgorithmCount = enum('ONE', 'TWO', 'MANY')
+AlgorithmCount = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY')
 
 def saveFigure(filename, figFormat=genericsettings.fig_formats,
                verbose=True):
@@ -93,7 +93,7 @@ def next_dimension(dim):
     return 2 * dim
 
 def save_single_functions_html(filename, algname='', extension='svg',
-                               add_to_names = '', algorithmCount=AlgorithmCount.ONE):
+                               add_to_names = '', algorithmCount=AlgorithmCount.NON_SPECIFIED):
     name = filename.split(os.sep)[-1]
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ' ' + name + add_to_names
@@ -179,15 +179,61 @@ def save_single_functions_html(filename, algname='', extension='svg',
             f.write("\n<!--pptable2Html-->\n")
             
         elif algorithmCount is AlgorithmCount.MANY:
+            headerERT = 'Scaling of ERT with dimension'
+            f.write("\n<H2> %s </H2>\n" % headerERT)
             if add_to_names.endswith('D'):
                 name_for_click = next_dimension_str(add_to_names)
                 f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
             for ifun in range(1, 25):
-                f.write('<IMG SRC="' + name + '_f%03d' % (ifun)
+                f.write('<IMG SRC="ppfigs_f%03d' % (ifun)
                         + add_to_names + '.%s">' % (extension))
             if add_to_names.endswith('D'):
                 f.write('"\n</A>\n')
     
+            names = ['pprldmany']
+            dimensions = [5]
+            types = ['separ', 'lcond', 'hcond', 'multi', 'mult2', 'noiselessall']
+            
+            headerECDF = 'Empirical Cumulative Distribution Functions (ECDFs) per function group for dimension 5'
+            f.write("\n<H2> %s </H2>\n" % headerECDF)
+            for ftype in types:
+                for dimension in dimensions:
+                    for name in names:
+                        f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
+
+            dimensions = [20]
+            
+            headerECDF = 'Empirical Cumulative Distribution Functions (ECDFs) per function group for dimension 20'
+            f.write("\n<H2> %s </H2>\n" % headerECDF)
+            for ftype in types:
+                for dimension in dimensions:
+                    for name in names:
+                        f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
+
+            headerERT = 'Table showing the ERT in number of function evaluations divided by' \
+                        'the best ERT measured during BBOB-2009 for dimension 5'
+            f.write("\n<H2> %s </H2>\n" % headerERT)
+            for ifun in range(1, 25):
+                f.write("\n<!--pptablesf%03d05DHtml-->\n" % ifun)
+
+            headerERT = 'Table showing the ERT in number of function evaluations divided by' \
+                        'the best ERT measured during BBOB-2009 for dimension 20'
+            f.write("\n<H2> %s </H2>\n" % headerERT)
+            for ifun in range(1, 25):
+                f.write("\n<!--pptablesf%03d20DHtml-->\n" % ifun)
+
+        elif algorithmCount is AlgorithmCount.NON_SPECIFIED:
+            headerERT = 'Scaling of ERT with dimension'
+            f.write("\n<H2> %s </H2>\n" % headerERT)
+            if add_to_names.endswith('D'):
+                name_for_click = next_dimension_str(add_to_names)
+                f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
+            for ifun in range(1, 25):
+                f.write('<IMG SRC="'+ filename + '_f%03d' % (ifun)
+                        + add_to_names + '.%s">' % (extension))
+            if add_to_names.endswith('D'):
+                f.write('"\n</A>\n')
+
         f.write("\n</BODY>\n</HTML>")
     
 def copy_js_files(outputdir):
