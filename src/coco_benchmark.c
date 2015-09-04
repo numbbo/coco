@@ -17,7 +17,7 @@
 #include "biobjective_observer.c"
 
 /**
- * A new benchmark suite must providing a function that returns a
+ * A new benchmark suite must provide a function that returns a
  * coco_problem or NULL when given an problem_index as input.
  *
  * The file containing this (static) function must be included above
@@ -73,6 +73,13 @@ long coco_next_problem_index(const char *problem_suite,
   return problem_index;
 }
 
+/* coco_suite_get_problem(problem_suite, problem_index):
+ *
+ * return the coco_problem with index ${problem_index} from
+ * suite ${problem_suite}. The problem must be de-allocated
+ * using the function ${coco_free_problem}.
+ *
+ */
 coco_problem_t *coco_get_problem(const char *problem_suite,
                                  const long problem_index) {
   if (0 == strcmp(problem_suite, "toy_suit")) {
@@ -122,6 +129,11 @@ coco_problem_t *coco_observe_problem(const char *observer,
 }
 
 #if 1
+/* coco_benchmark(problem_suite, observer, options, optimizer):
+ *
+ * Benchmark a solver ${optimizer} with a testbed ${problem_suite}
+ * using the data logger ${observer} to write data. 
+ */
 void coco_benchmark(const char *problem_suite, const char *observer,
                     const char *options, coco_optimizer_t optimizer) {
   int problem_index;
@@ -146,7 +158,7 @@ void coco_benchmark(const char *problem_suite, const char *problem_suite_options
   int problem_index;
   int is_instance;
   coco_problem_t *problem;
-  char buf[222]; /* TODO: this is ugly, how to improve? */
+  char buf[222]; /* TODO: this is ugly, how to improve? The new implementation of coco_warning makes this obsolete */
   for (problem_index = -1; ; ) {
     problem_index = coco_next_problem_index(problem_suite, problem_suite_options, problem_index); 
     if (problem_index < 0)
