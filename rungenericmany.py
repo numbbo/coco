@@ -32,7 +32,7 @@ if __name__ == "__main__":
     import matplotlib
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
-from bbob_pproc import genericsettings
+from bbob_pproc import genericsettings, ppfig
 from bbob_pproc import dataoutput, pproc
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname2, str_to_latex
@@ -304,6 +304,12 @@ def main(argv=None):
         plt.rc("font", **inset.rcfont)
         plt.rc("legend", **inset.rclegend)
         plt.rc('pdf', fonttype = 42)
+
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.many_algorithm_file_name),
+            '', # algorithms names are clearly visible in the figure
+            algorithmCount=ppfig.AlgorithmCount.MANY
+        )
 
         # convergence plots
         if genericsettings.isConv:

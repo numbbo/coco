@@ -674,7 +674,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 os.path.join(outputdir, 'pprldmany'),
                 '', # algorithms names are clearly visible in the figure
                 add_to_names='_%02dD' %(dim),
-                algorithmCount=ppfig.AlgorithmCount.MANY
+                algorithmCount=ppfig.AlgorithmCount.NON_SPECIFIED
             )
     if close_figure:
         plt.close()
