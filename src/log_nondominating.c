@@ -67,11 +67,14 @@ static void lnd_evaluate_function(coco_problem_t *self, const double *x, double 
   
   /* Write out a line for this newly evaluated solution if it is nondominated */
   // write main info to the log file for pfront
-  for (size_t i=0; i < mo_archive->updatesize; i++) {
+  size_t i;
+  size_t j;
+  size_t k;
+  for (i=0; i < mo_archive->updatesize; i++) {
       entry = mo_archive->update[i];
-      for (size_t j=0; j < coco_get_number_of_variables(coco_get_transform_inner_problem(self)); j++) // all decision variables of a solution
+      for (j=0; j < coco_get_number_of_variables(coco_get_transform_inner_problem(self)); j++) // all decision variables of a solution
           fprintf(data->logfile, "%13.10e\t", entry->var[j]);
-      for (size_t k=0; k < coco_get_number_of_objectives(coco_get_transform_inner_problem(self)); k++) // all objective values of a solution
+      for (k=0; k < coco_get_number_of_objectives(coco_get_transform_inner_problem(self)); k++) // all objective values of a solution
           fprintf(data->logfile, "%13.10e\t", entry->obj[k]);
       fprintf(data->logfile, "%zu", entry->birth);  // its timestamp (FEval)
       fprintf(data->logfile, "\n");  // go to the next line for another solution

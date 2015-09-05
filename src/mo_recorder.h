@@ -29,7 +29,7 @@ struct mococo_solutions_archive {
 void mococo_allocate_archive(struct mococo_solutions_archive *archive, size_t maxsize, size_t sizeVar, size_t sizeObj, size_t maxUpdate);
 void mococo_free_archive(struct mococo_solutions_archive *archive);
 void mococo_reset_archive(struct mococo_solutions_archive *archive);
-void mococo_push_to_archive(double **pop, double **obj, struct mococo_solutions_archive *archive, size_t nPop, size_t timestamp);
+void mococo_push_to_archive(const double **pop, double **obj, struct mococo_solutions_archive *archive, size_t nPop, size_t timestamp);
 void mococo_mark_updates(struct mococo_solutions_archive *archive, size_t timestamp);
 // void mococo_recorder(const char *mode);
 
