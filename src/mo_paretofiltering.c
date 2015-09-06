@@ -25,8 +25,10 @@ void mococo_pareto_filtering(struct mococo_solutions_archive *archive) {
     size_t nObjs = archive->numobj;
     bool *frontFlag = (bool*) malloc(len * sizeof(bool));
     double *obj = (double*) malloc(len * nObjs * sizeof(double));
-    for (size_t i=0; i < len; i++) {
-        for (size_t k=0; k < nObjs; k++) {
+    size_t i;
+    for (i=0; i < len; i++) {
+        size_t k;
+        for (k=0; k < nObjs; k++) {
             obj[i + k*len] = archive->active[i]->obj[k];
         }
         frontFlag[i] = false;
@@ -37,7 +39,7 @@ void mococo_pareto_filtering(struct mococo_solutions_archive *archive) {
     
     // Mark non-dominated solutions and filter out dominated ones
     size_t s = 0;
-    for (size_t i=0; i < len; i++) {
+    for (i=0; i < len; i++) {
         if (frontFlag[i] == true) {
             archive->active[i]->status = 1;
             if (i != s)
