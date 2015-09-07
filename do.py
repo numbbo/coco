@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('tools'))
 from amalgamate import amalgamate
 from cocoutils import make, run, python, rscript
 from cocoutils import copy_file, copy_tree, expand_file, write_file
-from cocoutils import hg_version, hg_revision
+from cocoutils import git_version
 
 core_files = ['src/coco_benchmark.c',
               'src/coco_random.c',
@@ -84,9 +84,9 @@ def _prep_python():
     copy_file('src/coco.h', 'build/python/cython/coco.h')
     copy_file('src/bbob2009_testcases.txt', 'build/python/bbob2009_testcases.txt')
     expand_file('build/python/README.in', 'build/python/README',
-                {'COCO_VERSION': ""}) # hg_version()})
+                {'COCO_VERSION': git_version()}) # hg_version()})
     expand_file('build/python/setup.py.in', 'build/python/setup.py',
-                {'COCO_VERSION': ""}) # hg_version()})
+                {'COCO_VERSION': git_version()}) # hg_version()})
 
 def build_python():
     _prep_python()

@@ -37,7 +37,7 @@ setup(
     package_dir = {'cocoex': 'python'},
     cmdclass=cmdclass,
     ext_modules = extensions,
-    url = 'https://code.google.com/p/numbbo/',
+    url = 'https://github.com/numbbo/numbbo/',
     license = 'BSD',
     maintainer = 'Olaf Mersmann',
     maintainer_email = 'olafm@p-value.net',
