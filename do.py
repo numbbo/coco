@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('tools'))
 from amalgamate import amalgamate
 from cocoutils import make, run, python, rscript
 from cocoutils import copy_file, copy_tree, expand_file, write_file
-from cocoutils import git_version
+from cocoutils import git_version, git_revision
 
 core_files = ['src/coco_benchmark.c',
               'src/coco_random.c',
@@ -200,8 +200,8 @@ def build_java():
     global release
     amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/java/coco.c', release)
     copy_file('src/coco.h', 'build/java/coco.h')
-    write_file(hg_revision(), "build/java/REVISION")
-    write_file(hg_version(), "build/java/VERSION")
+    write_file(git_revision(), "build/java/REVISION")
+    write_file(git_version(), "build/java/VERSION")
     run('build/java', ['javac', 'JNIinterface.java'])
     run('build/java', ['javah', 'JNIinterface'])
     run('build/java', ['gcc', '-I/System/Library/Frameworks/JavaVM.framework/Headers',
