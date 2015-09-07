@@ -15,7 +15,8 @@
 typedef void (*coco_optimizer_t)(coco_problem_t *problem, long budget);
 #endif
 
-/** Return the first problem in benchmark ${suite} with ${id} as problem ID,
+/**
+ * Return the first problem in benchmark ${suite} with ${id} as problem ID,
  * or NULL. 
  */
 coco_problem_t *coco_suite_get_problem_by_id(const char *suite, const char *id);
