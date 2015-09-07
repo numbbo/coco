@@ -204,7 +204,7 @@ def build_java():
     write_file(git_version(), "build/java/VERSION")
     run('build/java', ['javac', 'JNIinterface.java'])
     run('build/java', ['javah', 'JNIinterface'])
-    run('build/java', ['gcc', '-I/System/Library/Frameworks/JavaVM.framework/Headers',
+    run('build/java', ['gcc', # '-I/System/Library/Frameworks/JavaVM.framework/Headers',
                        '-c', 'JNIinterface.c'])
     run('build/java', ['gcc', '-dynamiclib', '-o', 'libJNIinterface.jnilib',
                        'JNIinterface.o'])
