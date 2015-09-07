@@ -25,6 +25,20 @@ def hg(args):
         raise
     return output
 
+def git(args):
+    """Run a git command and return its output.
+
+    All errors are deemed fatal and the system will quit."""
+    full_command = ['git']
+    full_command.extend(args)
+    try:
+        output = check_output(full_command, env=os.environ, universal_newlines=True)
+        output = output.rstrip()
+    except CalledProcessError as e:
+        print('Failed to execute git.')
+        raise
+    return output
+
 def is_dirty():
     """Return True if the current working copy has uncommited changes."""
     return hg(['hg', 'id', '-i'])[-1] == '+'
@@ -36,6 +50,14 @@ def hg_version():
 
 def hg_revision():
     return hg(['id', '-i'])
+
+def git_version():
+    """Return somewhat readible version number from git"""
+    return git(['describe', '--tags'])
+
+def git_revision():
+    """Return unreadible git revision identifier"""
+    return git(['rev-parse', 'HEAD'])
 
 def run(directory, args):
     print("RUN\t%s in %s" % (" ".join(args), directory))
