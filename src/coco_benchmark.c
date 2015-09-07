@@ -73,9 +73,10 @@ long coco_next_problem_index(const char *problem_suite,
   return problem_index;
 }
 
-/* coco_suite_get_problem(problem_suite, problem_index):
+/**
+ * coco_suite_get_problem(problem_suite, problem_index):
  *
- * return the coco_problem with index ${problem_index} from
+ * return the coco problem with index ${problem_index} from
  * suite ${problem_suite}. The problem must be de-allocated
  * using the function ${coco_free_problem}.
  *

@@ -1,5 +1,5 @@
 /*
- * Implementation of the BBOB Gamma transformation for variables.
+ * Implementation of the BBOB Gamma(?) transformation for variables.
  */
 #include <math.h>
 #include <assert.h>
@@ -36,7 +36,7 @@ static void _cv_free_data(void *thing) {
 }
 
 /**
- * Perform monotone oscillation transformation on input variables.
+ * Perform monotone oscillation(?) transformation on input variables.
  */
 static coco_problem_t *condition_variables(coco_problem_t *inner_problem,
                                     const double alpha) {
