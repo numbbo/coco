@@ -25,16 +25,16 @@ clean:
 ########################################################################
 ## Programs
 demo: demo.o coco.o
-	${CC} ${CCFLAGS} ${LDFLAGS} -o demo coco.o demo.o 
+	${CC} ${CCFLAGS} -o demo coco.o demo.o ${LDFLAGS}  
 
 coco_test: coco_test.o coco.o
-	${CC}  ${CCFLAGS} ${LDFLAGS} -o coco_test coco_test.o coco.o
+	${CC}  ${CCFLAGS} -o coco_test coco_test.o coco.o ${LDFLAGS}
 
 bbob2009_test: bbob2009_test.o coco.o
-	${CC}  ${CCFLAGS} ${LDFLAGS} -o bbob2009_test bbob2009_test.o coco.o
+	${CC}  ${CCFLAGS} -o bbob2009_test bbob2009_test.o coco.o ${LDFLAGS} 
 
 coco_timing: coco_timing.o coco.o
-	${CC}  ${CCFLAGS} ${LDFLAGS} -o coco_timing coco_timing.o coco.o
+	${CC}  ${CCFLAGS} -o coco_timing coco_timing.o coco.o ${LDFLAGS}
 
 ########################################################################
 ## Additional dependencies
