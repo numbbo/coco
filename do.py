@@ -41,8 +41,8 @@ def build_c():
     amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/c/coco.c', release)
     copy_file('src/coco.h', 'build/c/coco.h')
     copy_file('src/bbob2009_testcases.txt', 'build/c/bbob2009_testcases.txt')
-    # write_file(hg_revision(), "build/c/REVISION")
-    # write_file(hg_version(), "build/c/VERSION")
+    write_file(git_revision(), "build/c/REVISION")
+    write_file(git_version(), "build/c/VERSION")
     make("build/c", "clean")
     make("build/c", "all")
 
@@ -51,8 +51,8 @@ def build_c_mo():  # added for the multiobjective case
     amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/c/mo/coco.c', release)
     copy_file('src/coco.h', 'build/c/mo/coco.h')
     # copy_file('src/bbob2009_testcases.txt', 'build/c/bbob2009_testcases.txt')
-    # write_file(hg_revision(), "build/c/mo/REVISION")
-    # write_file(hg_version(), "build/c/mo/VERSION")
+    write_file(git_revision(), "build/c/mo/REVISION")
+    write_file(git_version(), "build/c/mo/VERSION")
     make("build/c/mo", "clean")
     make("build/c/mo", "all")
 
@@ -157,12 +157,12 @@ def test_python2():
 ################################################################################
 ## Python 3
 def build_python3():
-    os.environ['PYTHON'] = 'python3.4'
+    os.environ['PYTHON'] = 'python3'
     build_python()
     os.environ.pop('PYTHON')
 
 def test_python3():
-    os.environ['PYTHON'] = 'python3.4'
+    os.environ['PYTHON'] = 'python3'
     test_python()
     os.environ.pop('PYTHON')
 
@@ -177,7 +177,7 @@ def build_r():
     expand_file('build/r/pkg/DESCRIPTION.in', 'build/r/pkg/DESCRIPTION',
                 {'COCO_VERSION': hg_version()})  # FIXME: it seems that this doesn't work, because it writes '0.0.789' instead of 0.0.789
     rscript('build/r/', ['tools/roxygenize'])
-    run('build/r', ['R', 'CMD', 'build', 'pkg'])
+    rusn('build/r', ['R', 'CMD', 'build', 'pkg'])
 
 def test_r():
     build_r()
