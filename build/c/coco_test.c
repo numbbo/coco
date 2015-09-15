@@ -22,7 +22,7 @@ static int about_equal(const double a, const double b) {
   
     if (absolute_error < 2 * DBL_MIN)
       return 1;
-    return relative_error < 1e-6;
+    return relative_error < 4e-6;
   }
 }
 
