@@ -25,7 +25,7 @@ clean:
 ########################################################################
 ## Programs
 demo_mo: demo_mo.o coco.o
-	${CC} ${CCFLAGS} ${LDFLAGS} -o demo_mo coco.o demo_mo.o 
+	${CC} ${CCFLAGS} -o demo_mo coco.o demo_mo.o ${LDFLAGS}
 
 ########################################################################
 ## Additional dependencies
