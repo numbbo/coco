@@ -233,7 +233,7 @@ def build():
         # build_octave, 
         build_python,
         build_r,
-        build_examples
+        build_examples,
         build_c_mo
     ]
     for builder in builders:
