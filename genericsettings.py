@@ -209,7 +209,9 @@ rclegend = {"fontsize": 20}
 single_algorithm_file_name = 'SingleAlgorithmResults'
 two_algorithm_file_name = 'TwoAlgorithmResults'
 many_algorithm_file_name = 'ManyAlgorithmResults'
-    
+
+latex_commands_for_html = 'latex_commands_for_html'    
+
 # default settings for rungeneric, rungeneric1, rungeneric2, and rungenericmany
 inputCrE = 0.
 isFig = True
