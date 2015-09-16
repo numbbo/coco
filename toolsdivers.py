@@ -43,6 +43,21 @@ def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
             break
     f.close()
         
+def replace_in_file(filename, old_text, new_text):
+    """"replace a string in the file with another string"""
+
+    lines = []    
+    try:
+        lines = list(open(filename, 'r'))
+    except IOError:
+        print 'File %s does not exist.' % filename
+    
+    if lines:    
+        f = open(filename, 'w')
+        for line in lines:
+            f.write(line.replace(old_text, new_text) + '\n')
+        f.close()
+        
 def truncate_latex_command_file(filename, keeplines=200):
     """truncate file but keep in good latex shape"""
     open(filename, 'a').close()

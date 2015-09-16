@@ -11,7 +11,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import shutil
 # from pdb import set_trace
-from . import genericsettings, toolsstats  # absolute_import => . refers to where ppfig resides in the package
+from . import genericsettings, toolsstats, htmldesc  # absolute_import => . refers to where ppfig resides in the package
 
 
 bbox_inches_choices = {  # do we also need pad_inches = 0?
@@ -93,12 +93,14 @@ def next_dimension(dim):
     return 2 * dim
 
 def save_single_functions_html(filename, algname='', extension='svg',
-                               add_to_names = '', algorithmCount=AlgorithmCount.NON_SPECIFIED):
+                               add_to_names = '', algorithmCount = AlgorithmCount.NON_SPECIFIED,
+                               values_of_interest = []):
     name = filename.split(os.sep)[-1]
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ' ' + name + add_to_names
         f.write(html_header % (header_title.strip().replace(' ', ', '), algname))
             
+        captionStringFormat = '<p/>\n%s\n<p/><p/>'
         if algorithmCount is AlgorithmCount.ONE:
             headerERT = 'Expected number of <i>f</i>-evaluations to reach target'
             f.write("<H2> %s </H2>\n" % headerERT)
@@ -111,12 +113,15 @@ def save_single_functions_html(filename, algname='', extension='svg',
             if add_to_names.endswith('D'):
                 f.write('"\n</A>\n')
 
-            #f.write("<p/>\n###bbobppfigdimlegend###\n<p/><p/>")
+            key = 'bbobppfigdimlegendrlbased' if genericsettings.runlength_based_targets else 'bbobppfigdimlegendfixed'
+            joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
+            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##')
+                .replace('valuesofinterest', joined_values_of_interest))
 
             headerERT = 'ERT in number of function evaluations'
             f.write("<H2> %s </H2>\n" % headerERT)
             f.write("\n<!--pptableHtml-->\n")
-            #f.write("<p/>\n###bbobpptablecaption###\n<p/><p/>")
+            f.write(captionStringFormat % htmldesc.getValue('##bbobpptablecaption##'))
     
             names = ['pprldistr', 'ppfvdistr']
             dimensions = [5, 20]
@@ -129,21 +134,22 @@ def save_single_functions_html(filename, algname='', extension='svg',
                     for name in names:
                         f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
             
-            #f.write("<p/>\n###bbobpprldistrlegend###\n<p/><p/>")
+            key = 'bbobpprldistrlegendrlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendfixed'
+            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
             headerERTLoss = 'ERT loss ratios'
             f.write("<H2> %s </H2>\n" % headerERTLoss)
             for dimension in dimensions:
                 f.write('<IMG SRC="pplogloss_%02dD_noiselessall.%s">' % (dimension, extension))
             f.write("\n<!--tables-->\n")
-            #f.write("<p/>\n###bbobloglosstablecaption###\n<p/><p/>")
+            f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption##'))
         
             types = ['separ', 'lcond', 'hcond', 'multi', 'mult2']
             for ftype in types:
                 for dimension in dimensions:
                     f.write('<IMG SRC="pplogloss_%02dD_%s.%s">' % (dimension, ftype, extension))
                     
-            #f.write("<p/>\n###bbobloglossfigurecaption###\n<p/><p/>")
+            f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption##'))
         
         elif algorithmCount is AlgorithmCount.TWO:
             headerERT = 'Scaling of ERT with dimension'

@@ -540,7 +540,8 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
                                 dictFunc[dictFunc.keys()[0]][0].algId,
-                                algorithmCount=ppfig.AlgorithmCount.ONE)
+                                algorithmCount=ppfig.AlgorithmCount.ONE,
+                                values_of_interest = values_of_interest)
     ppfig.copy_js_files(outputdir)
     
     for func in dictFunc:
