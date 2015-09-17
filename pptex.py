@@ -30,6 +30,23 @@ latex_marker_map = {'o': r'$\circ$',
               '2': r'$\upY$', # need \usepackage{MnSymbol}
               '3': r'$\rightY$', # need \usepackage{MnSymbol}
               '4': r'$\leftY$'} # need \usepackage{MnSymbol}
+html_marker_map = {
+              'o': r'&#9675;',
+              'd': r'&#9826;',
+              's': r'&#9723;',
+              'v': r'&#9661;',
+              '*': r'&#9734;',
+              'h': r'varhexagon',
+              '^': r'&#9651;',
+              'p': r'pentagon',
+              'H': r'hexagon',
+              '<': r'&#9665;',
+              'D': r'&#9671;',
+              '>': r'&#9655;',
+              '1': r'downY',
+              '2': r'upY',
+              '3': r'rightY',
+              '4': r'leftY'}
 latex_color_map_old = {
              'g': 'green!45!black',
              'r': 'red',
@@ -102,6 +119,9 @@ def color_to_latex(color):
 
 def marker_to_latex(marker):
     return latex_marker_map[marker]
+
+def marker_to_html(marker):
+    return html_marker_map[marker]
 
 def numtotext(n):
     """Returns a text from a positive integer.

@@ -195,38 +195,14 @@ def save_single_functions_html(filename, algname='', extension='svg',
                         + add_to_names + '.%s">' % (extension))
             if add_to_names.endswith('D'):
                 f.write('"\n</A>\n')
-    
-            names = ['pprldmany']
-            dimensions = [5]
-            types = ['separ', 'lcond', 'hcond', 'multi', 'mult2', 'noiselessall']
             
-            headerECDF = 'Empirical Cumulative Distribution Functions (ECDFs) per function group for dimension 5'
-            f.write("\n<H2> %s </H2>\n" % headerECDF)
-            for ftype in types:
-                for dimension in dimensions:
-                    for name in names:
-                        f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
+            f.write(captionStringFormat % '##bbobppfigslegend##')
 
-            dimensions = [20]
-            
-            headerECDF = 'Empirical Cumulative Distribution Functions (ECDFs) per function group for dimension 20'
-            f.write("\n<H2> %s </H2>\n" % headerECDF)
-            for ftype in types:
-                for dimension in dimensions:
-                    for name in names:
-                        f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
-
-            headerERT = 'Table showing the ERT in number of function evaluations divided by' \
-                        'the best ERT measured during BBOB-2009 for dimension 5'
-            f.write("\n<H2> %s </H2>\n" % headerERT)
-            for ifun in range(1, 25):
-                f.write("\n<!--pptablesf%03d05DHtml-->\n" % ifun)
-
-            headerERT = 'Table showing the ERT in number of function evaluations divided by' \
-                        'the best ERT measured during BBOB-2009 for dimension 20'
-            f.write("\n<H2> %s </H2>\n" % headerERT)
-            for ifun in range(1, 25):
-                f.write("\n<!--pptablesf%03d20DHtml-->\n" % ifun)
+            write_ECDF(f, 5, extension, captionStringFormat)
+            write_ECDF(f, 20, extension, captionStringFormat)
+                
+            write_pptables(f, 5, captionStringFormat)
+            write_pptables(f, 20, captionStringFormat)
 
         elif algorithmCount is AlgorithmCount.NON_SPECIFIED:
             headerERT = 'Scaling of ERT with dimension'
@@ -242,6 +218,33 @@ def save_single_functions_html(filename, algname='', extension='svg',
 
         f.write("\n</BODY>\n</HTML>")
     
+def write_ECDF(f, dimension, extension, captionStringFormat):
+    """Writes line for ECDF images."""
+    names = ['pprldmany']
+    types = ['separ', 'lcond', 'hcond', 'multi', 'mult2', 'noiselessall']
+    
+    headerECDF = 'Empirical Cumulative Distribution Functions (ECDFs) per function group for dimension %d' % dimension
+    f.write("\n<H2> %s </H2>\n" % headerECDF)
+    for ftype in types:
+        for name in names:
+            f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
+    
+    f.write(captionStringFormat % ('\n##bbobECDFslegend%d##' % dimension))
+
+def write_pptables(f, dimension, captionStringFormat):
+    """Writes line for pptables images."""
+
+    headerERT = 'Table showing the ERT in number of function evaluations divided by' \
+                'the best ERT measured during BBOB-2009 for dimension %d' % dimension
+    
+    f.write("\n<H2> %s </H2>\n" % headerERT)
+    for ifun in range(1, 25):
+        f.write("\n<!--pptablesf%03d%02dDHtml-->\n" % (ifun, dimension))
+    
+    if genericsettings.isTab:
+        key = 'bbobpptablesmanylegendexpensive' if genericsettings.isExpensive else 'bbobpptablesmanylegend'
+        f.write(captionStringFormat % htmldesc.getValue('##' + key + str(dimension) + '##'))
+
 def copy_js_files(outputdir):
     """Copies js files to output directory."""
     

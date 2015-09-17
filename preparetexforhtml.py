@@ -18,6 +18,7 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import genericsettings, pplogloss, ppfigdim, pptable, pprldistr
+from bbob_pproc.compall import pptables, ppfigs
 
 # Initialization
 
@@ -55,13 +56,36 @@ def main(verbose=True):
     
     f = open(latex_commands_for_html, 'w')
     
-    f.writelines(['\\providecommand{\\bbobloglosstablecaption}[1]{\n', pplogloss.table_caption, '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobloglossfigurecaption}[1]{\n', pplogloss.figure_caption, '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobpprldistrlegendrlbased}[1]{\n', pprldistr.caption_single_rlbased.replace('TO_BE_REPLACED', 'TOBEREPLACED'),  '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobpprldistrlegendfixed}[1]{\n', pprldistr.caption_single_fixed.replace('TO_BE_REPLACED', 'TOBEREPLACED'),  '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobppfigdimlegendrlbased}[1]{\n', ppfigdim.scaling_figure_caption_rlbased.replace('values_of_interest', 'valuesofinterest'), '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobppfigdimlegendfixed}[1]{\n', ppfigdim.scaling_figure_caption_fixed.replace('values_of_interest', 'valuesofinterest'), '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobpptablecaption}[1]{\n', pptable.table_caption, '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobloglosstablecaption}[1]{\n', 
+                  pplogloss.table_caption, '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobloglossfigurecaption}[1]{\n', 
+                  pplogloss.figure_caption, '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobpprldistrlegendrlbased}[1]{\n', 
+                  pprldistr.caption_single_rlbased.replace('TO_BE_REPLACED', 'TOBEREPLACED'), '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobpprldistrlegendfixed}[1]{\n', 
+                  pprldistr.caption_single_fixed.replace('TO_BE_REPLACED', 'TOBEREPLACED'), '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobppfigdimlegendrlbased}[1]{\n', 
+                  ppfigdim.scaling_figure_caption_rlbased.replace('values_of_interest', 'valuesofinterest'), '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobppfigdimlegendfixed}[1]{\n', 
+                  ppfigdim.scaling_figure_caption_fixed.replace('values_of_interest', 'valuesofinterest'), '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobpptablecaption}[1]{\n', 
+                  pptable.table_caption, '\n}\n'])
+
+
+    f.writelines(['\\providecommand{\\bbobppfigslegendrlbased}[1]{\n', 
+                  ppfigs.scaling_figure_caption_start_rlbased.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobppfigslegendfixed}[1]{\n', 
+                  ppfigs.scaling_figure_caption_start_fixed.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobppfigslegendend}[1]{\n', 
+                  ppfigs.scaling_figure_caption_end, '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobECDFslegendrlbased}[1]{\n', 
+                  ppfigs.ecdfs_figure_caption_rlbased.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobECDFslegendstandard}[1]{\n', 
+                  ppfigs.ecdfs_figure_caption_standard.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobpptablesmanylegend}[1]{\n', 
+                  pptables.tables_many_legend, '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobpptablesmanylegendexpensive}[1]{\n', 
+                  pptables.tables_many_expensive_legend, '\n}\n'])
     
     f.write(header)    
 
@@ -73,11 +97,24 @@ def main(verbose=True):
     f.write(prepare_item('bbobppfigdimlegendfixed'))
     f.write(prepare_item('bbobpptablecaption'))
 
+    f.write(prepare_item('bbobppfigslegendrlbased'))
+    f.write(prepare_item('bbobppfigslegendfixed'))
+    f.write(prepare_item('bbobppfigslegendend', param = '$f_1$ and $f_{24}$'))
+    
+    for dim in ['5', '20']:
+        for command_name in ['bbobECDFslegendrlbased', 'bbobECDFslegendstandard']:
+            f.write(prepare_item(command_name + dim, command_name, str(dim)))
+        for command_name in ['bbobpptablesmanylegend', 'bbobpptablesmanylegendexpensive']:
+            f.write(prepare_item(command_name + dim, command_name, 'dimension ' + dim))
+
     f.write('\n\#\#\#\n\\end{document}\n')
 
-def prepare_item(name):
+def prepare_item(name, command_name = '', param = ''):
     
-    return '\#\#%s\#\#\n\\%s{}\n' % (name, name)
+    if not command_name:
+        command_name = name
+        
+    return '\#\#%s\#\#\n\\%s{%s}\n' % (name, command_name, param)
 
 
 if __name__ == '__main__':

@@ -7,9 +7,9 @@ import os
 import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
-from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings
+from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings, htmldesc
 from ..ppfig import saveFigure
-from ..pptex import color_to_latex, marker_to_latex, writeLabels
+from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 
 # styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
 #           {'color': 'b'},
@@ -115,6 +115,30 @@ def ecdfs_figure_caption(target):
                                                          target.reference_algorithm)
     else:
         s = ecdfs_figure_caption_standard
+    return s
+
+def scaling_figure_caption_html(target):
+    # need to be used in rungenericmany.py!?
+    assert len(target) == 1
+    if isinstance(target, pproc.RunlengthBasedTargetValues):
+        s = htmldesc.getValue('##bbobppfigslegendrlbased##').replace('BBOBPPFIGSFTARGET', 
+                                                         toolsdivers.number_to_latex(target.label(0)))
+        s = s.replace('REFERENCEALGORITHM', target.reference_algorithm)
+    else:
+        s = htmldesc.getValue('##bbobppfigslegendfixed##').replace('BBOBPPFIGSFTARGET', 
+                                                       toolsdivers.number_to_latex(target.label(0)))
+    if show_significance:                                                       
+        s += htmldesc.getValue('##bbobppfigslegendend##')
+    
+    return s
+
+def ecdfs_figure_caption_html(target, dimension):
+    assert len(target) == 1
+    if isinstance(target, pproc.RunlengthBasedTargetValues):
+        s = htmldesc.getValue('##bbobECDFslegendrlbased%d##' % dimension).replace('REFERENCEALGORITHM', 
+                                                         target.reference_algorithm)
+    else:
+        s = htmldesc.getValue('##bbobECDFslegendstandard%d##' % dimension)
     return s
 
 
@@ -452,14 +476,20 @@ def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', v
 
         plt.close()
 
+    
+    htmlFile = os.path.join(outputdir, genericsettings.many_algorithm_file_name + '.html')
     # generate commands in tex file:
     try:
         abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
         alg_definitions = []
+        alg_definitions_html = ''
         for i in range(len(sortedAlgs)):
             symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
                                 marker_to_latex(styles[i]['marker']))
-            alg_definitions.append((', ' if i > 0 else '') + '%s:%s' % (symb, '\\algorithm' + abc[i % len(abc)]))
+            symb_html = '<span style="color:%s;">%s</span>' % (styles[i]['color'], marker_to_html(styles[i]['marker']))
+            
+            alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
+            alg_definitions_html += (', ' if i > 0 else '') + '%s: %s' % (symb_html, toolsdivers.strip_pathname2(sortedAlgs[i]).replace('_', ' '))
         toolsdivers.prepend_to_file(latex_commands_filename, 
                 [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
                  #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
@@ -472,6 +502,9 @@ def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', v
                 ecdfs_figure_caption(target), '}']
                 )
 
+        toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption_html(target) + 'Legend: ' + alg_definitions_html)
+        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend5##', ecdfs_figure_caption_html(target, 5))
+        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend20##', ecdfs_figure_caption_html(target, 20))
 
         if verbose:
             print 'Wrote commands and legend to %s' % filename
