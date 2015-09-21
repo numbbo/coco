@@ -157,6 +157,7 @@ def save_single_functions_html(filename, algname='', extension='svg',
             for ifun in range(1, 25):
                 f.write('<IMG SRC="ppfigs_f%03d' % (ifun)
                         + add_to_names + '.%s">' % (extension))
+            f.write(captionStringFormat % '##bbobppfigslegend##')
         
             headerERT = 'Scatter plots per function'
             f.write("\n<H2> %s </H2>\n" % headerERT)
@@ -169,6 +170,8 @@ def save_single_functions_html(filename, algname='', extension='svg',
             if add_to_names.endswith('D'):
                 f.write('"\n</A>\n')
     
+            f.write(captionStringFormat % '##bbobppscatterlegend##')
+
             names = ['pprldistr', 'pplogabs']
             dimensions = [5, 20]
             types = ['separ', 'lcond', 'hcond', 'multi', 'mult2', 'noiselessall']
@@ -180,9 +183,13 @@ def save_single_functions_html(filename, algname='', extension='svg',
                     for name in names:
                         f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
 
+            key = 'bbobpprldistrlegendtworlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendtwofixed'
+            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
+
             headerERT = 'Table showing the ERT in number of function evaluations divided by the best ERT measured during BBOB-2009'
             f.write("\n<H2> %s </H2>\n" % headerERT)
             f.write("\n<!--pptable2Html-->\n")
+            f.write(captionStringFormat % '##bbobpptablestwolegend##')
             
         elif algorithmCount is AlgorithmCount.MANY:
             headerERT = 'Scaling of ERT with dimension'

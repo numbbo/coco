@@ -122,11 +122,11 @@ def scaling_figure_caption_html(target):
     assert len(target) == 1
     if isinstance(target, pproc.RunlengthBasedTargetValues):
         s = htmldesc.getValue('##bbobppfigslegendrlbased##').replace('BBOBPPFIGSFTARGET', 
-                                                         toolsdivers.number_to_latex(target.label(0)))
+                                                         toolsdivers.number_to_html(target.label(0)))
         s = s.replace('REFERENCEALGORITHM', target.reference_algorithm)
     else:
         s = htmldesc.getValue('##bbobppfigslegendfixed##').replace('BBOBPPFIGSFTARGET', 
-                                                       toolsdivers.number_to_latex(target.label(0)))
+                                                       toolsdivers.number_to_html(target.label(0)))
     if show_significance:                                                       
         s += htmldesc.getValue('##bbobppfigslegendend##')
     
@@ -477,7 +477,8 @@ def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', v
         plt.close()
 
     
-    htmlFile = os.path.join(outputdir, genericsettings.many_algorithm_file_name + '.html')
+    filePrefix = genericsettings.two_algorithm_file_name if len(sortedAlgs) == 2 else genericsettings.many_algorithm_file_name
+    htmlFile = os.path.join(outputdir, filePrefix + '.html')
     # generate commands in tex file:
     try:
         abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'

@@ -19,6 +19,7 @@ if __name__ == "__main__":
 
 from bbob_pproc import genericsettings, pplogloss, ppfigdim, pptable, pprldistr
 from bbob_pproc.compall import pptables, ppfigs
+from bbob_pproc.comp2 import ppscatter, pptable2
 
 # Initialization
 
@@ -28,7 +29,8 @@ header = """
 
 % Packages
 \\usepackage{graphicx}
-\\usepackage{xcolor}
+\usepackage[usenames,dvipsnames]{xcolor}
+\\usepackage{MnSymbol}
 
 % pre-defined commands
 \\newcommand{\\DIM}{\ensuremath{\mathrm{DIM}}}
@@ -71,7 +73,6 @@ def main(verbose=True):
     f.writelines(['\\providecommand{\\bbobpptablecaption}[1]{\n', 
                   pptable.table_caption, '\n}\n'])
 
-
     f.writelines(['\\providecommand{\\bbobppfigslegendrlbased}[1]{\n', 
                   ppfigs.scaling_figure_caption_start_rlbased.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
     f.writelines(['\\providecommand{\\bbobppfigslegendfixed}[1]{\n', 
@@ -86,7 +87,38 @@ def main(verbose=True):
                   pptables.tables_many_legend, '\n}\n'])
     f.writelines(['\\providecommand{\\bbobpptablesmanylegendexpensive}[1]{\n', 
                   pptables.tables_many_expensive_legend, '\n}\n'])
-    
+
+    ppscatterLegend = ppscatter.caption_start_rlbased.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
+    ppscatterLegend = ppscatterLegend.replace('\\algorithmA', 'algorithmA')
+    ppscatterLegend = ppscatterLegend.replace('\\algorithmB', 'algorithmB')    
+    f.writelines(['\\providecommand{\\bbobppscatterlegendrlbased}[1]{\n', ppscatterLegend, '\n}\n'])
+
+    ppscatterLegend = ppscatter.caption_start_fixed.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
+    ppscatterLegend = ppscatterLegend.replace('\\algorithmA', 'algorithmA')
+    ppscatterLegend = ppscatterLegend.replace('\\algorithmB', 'algorithmB')    
+    f.writelines(['\\providecommand{\\bbobppscatterlegendfixed}[1]{\n', ppscatterLegend, '\n}\n'])
+    f.writelines(['\\providecommand{\\bbobppscatterlegendend}[1]{\n', 
+                  ppscatter.caption_finish, '\n}\n'])
+
+    pprldistrtwo = pprldistr.caption_two_rlbased.replace('\\algorithmA', 'algorithmA')
+    pprldistrtwo = pprldistrtwo.replace('\\algorithmB', 'algorithmB')    
+    f.writelines(['\\providecommand{\\bbobpprldistrlegendtworlbased}[1]{\n', pprldistrtwo, '\n}\n'])
+
+    pprldistrtwo = pprldistr.caption_two_fixed.replace('\\algorithmA', 'algorithmA')
+    pprldistrtwo = pprldistrtwo.replace('\\algorithmB', 'algorithmB')    
+    f.writelines(['\\providecommand{\\bbobpprldistrlegendtwofixed}[1]{\n', pprldistrtwo, '\n}\n'])
+
+    pptable2Legend = pptable2.table_caption_expensive.replace('\\algorithmA', 'algorithmA')
+    pptable2Legend = pptable2Legend.replace('\\algorithmB', 'algorithmB')    
+    pptable2Legend = pptable2Legend.replace('\\algorithmAshort', 'algorithmAshort')    
+    pptable2Legend = pptable2Legend.replace('\\algorithmBshort', 'algorithmBshort')    
+    f.writelines(['\\providecommand{\\bbobpptablestwolegendexpensive}[1]{\n', pptable2Legend, '\n}\n'])
+    pptable2Legend = pptable2.table_caption.replace('\\algorithmA', 'algorithmA')
+    pptable2Legend = pptable2Legend.replace('\\algorithmB', 'algorithmB')    
+    pptable2Legend = pptable2Legend.replace('\\algorithmAshort', 'algorithmAshort')    
+    pptable2Legend = pptable2Legend.replace('\\algorithmBshort', 'algorithmBshort')    
+    f.writelines(['\\providecommand{\\bbobpptablestwolegend}[1]{\n', pptable2Legend, '\n}\n'])
+
     f.write(header)    
 
     f.write(prepare_item('bbobloglosstablecaption'))
@@ -101,6 +133,16 @@ def main(verbose=True):
     f.write(prepare_item('bbobppfigslegendfixed'))
     f.write(prepare_item('bbobppfigslegendend', param = '$f_1$ and $f_{24}$'))
     
+    f.write(prepare_item('bbobppscatterlegendrlbased'))
+    f.write(prepare_item('bbobppscatterlegendfixed', param = '$f_1$ - $f_{24}$'))
+    f.write(prepare_item('bbobppscatterlegendend'))
+    
+    f.write(prepare_item('bbobpprldistrlegendtworlbased'))
+    f.write(prepare_item('bbobpprldistrlegendtwofixed'))
+    
+    f.write(prepare_item('bbobpptablestwolegendexpensive', param = '48'))
+    f.write(prepare_item('bbobpptablestwolegend', param = '48'))
+
     for dim in ['5', '20']:
         for command_name in ['bbobECDFslegendrlbased', 'bbobECDFslegendstandard']:
             f.write(prepare_item(command_name + dim, command_name, str(dim)))

@@ -55,7 +55,7 @@ def replace_in_file(filename, old_text, new_text):
     if lines:    
         f = open(filename, 'w')
         for line in lines:
-            f.write(line.replace(old_text, new_text) + '\n')
+            f.write(line.replace(old_text, new_text))
         f.close()
         
 def truncate_latex_command_file(filename, keeplines=200):
@@ -182,4 +182,15 @@ def number_to_latex(number_as_string):
         else:
             s = s.replace('e', '\\times10^{')
         s += '}'
+    return s
+
+def number_to_html(number_as_string):
+    """usage as ``number_to_html(num2str(1.023e-12)) == "'-1.0 x 10<sup>-12</sup>'"``"""
+    s = number_as_string
+    if s.find('e') > 0:
+        if s.startswith('1e') or s.startswith('-1e'):
+            s = s.replace('1e', '10<sup>')
+        else:
+            s = s.replace('e', ' x 10<sup>')
+        s += '</sup>'
     return s

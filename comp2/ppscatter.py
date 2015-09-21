@@ -39,7 +39,7 @@ try:
 except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
-from bbob_pproc import genericsettings
+from bbob_pproc import genericsettings, htmldesc
 from ..ppfig import saveFigure, save_single_functions_html, AlgorithmCount
 from .. import toolsdivers
 from .. import pproc
@@ -110,6 +110,23 @@ def figure_caption():
         s = s.replace('NBLOW', toolsdivers.number_to_latex(targets.label(0)))
         s = s.replace('NBUP', toolsdivers.number_to_latex(targets.label(-1)))
     s += caption_finish
+    return s
+
+def figure_caption_html():
+    if isinstance(targets, pproc.RunlengthBasedTargetValues):
+        s = htmldesc.getValue('##bbobppscatterlegendrlbased##')
+        s = s.replace('NBTARGETS', str(len(targets)))
+        s = s.replace('NBLOW', toolsdivers.number_to_html(targets.label(0)) + 
+                      r'\times\DIM' if targets.times_dimension else '')
+        s = s.replace('NBUP', toolsdivers.number_to_html(targets.label(-1)) + 
+                      r'\times\DIM' if targets.times_dimension else '')
+        s = s.replace('REFERENCEALGORITHM', targets.reference_algorithm)
+    else:
+        s = htmldesc.getValue('##bbobppscatterlegendfixed##')
+        s = s.replace('NBTARGETS', str(len(targets)))
+        s = s.replace('NBLOW', toolsdivers.number_to_html(targets.label(0)))
+        s = s.replace('NBUP', toolsdivers.number_to_html(targets.label(-1)))
+    s += htmldesc.getValue('##bbobppscatterlegendend##')
     return s
 
 def beautify():
