@@ -206,9 +206,9 @@ rctick = {"labelsize": 20}
 rcfont = {"size": 20}
 rclegend = {"fontsize": 20}
 
-single_algorithm_file_name = 'SingleAlgorithmResults'
-two_algorithm_file_name = 'TwoAlgorithmResults'
-many_algorithm_file_name = 'ManyAlgorithmResults'
+single_algorithm_file_name = 'templateBBOBarticle'
+two_algorithm_file_name = 'templateBBOBcmp'
+many_algorithm_file_name = 'templateBBOBmany'
 
 latex_commands_for_html = 'latex_commands_for_html'    
 
