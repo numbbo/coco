@@ -140,6 +140,10 @@ def main(argv=None):
         
             takes values between 0 (default) and 1000, fast processing that 
             does not write eps files and uses a small number of bootstrap samples
+            
+        --svg
+            
+            generate also the svg figures which are used in html files 
 
     Exceptions raised:
     
@@ -207,6 +211,8 @@ def main(argv=None):
                     print 'in_a_hurry like', genericsettings.in_a_hurry, '(should finally be set to zero)'
             elif o in ("--input-path", ):
                 inputdir = a
+            elif o in ("--svg"):
+                genericsettings.generate_svg_files = True
             else:
                 isAssigned = False
                 if o in longoptlist or o in shortoptlist:

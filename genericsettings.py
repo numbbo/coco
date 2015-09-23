@@ -25,6 +25,7 @@ in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
+generate_svg_files = False # generate the svg figures
 scaling_figures_with_boxes = True 
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
@@ -58,10 +59,6 @@ simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a
 # summarized_target_function_values = [-1, 3] # easy easy 
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure (means what?)
 # not (yet) in use: pprldmany_target_values = pproc.TargetValues(10**np.arange(-8, 2, 0.2))  # might not work because of cyclic import
-
-fig_formats = ('eps', 'pdf') if not in_a_hurry else ('pdf',)
-# fig_formats = ('pdf', 'svg') # comment in this line for HTML output
-# fig_formats = ('eps', 'pdf', 'pdf', 'png', 'svg')
 
 instancesOfInterest2009 = {1:3, 2:3, 3:3, 4:3, 5:3}  # 2009 instances
 instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1,
@@ -239,11 +236,18 @@ longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "verbose", "settings=", "conv", 
                "expensive", "not-expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
-               "sca-only"]
+               "sca-only", "svg"]
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
 # and "sca-only" only affects rungeneric2
 
-
+def getFigFormats():
+    if in_a_hurry:
+        fig_formats = ('pdf', 'svg') if generate_svg_files else ('pdf',)
+    else:
+        fig_formats = ('eps', 'pdf', 'svg') if generate_svg_files else ('eps', 'pdf')
+    # fig_formats = ('eps', 'pdf', 'pdf', 'png', 'svg')
+    
+    return fig_formats
     
 class Testbed(object):
     """this might become the future way to have settings related to testbeds
