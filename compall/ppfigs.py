@@ -541,7 +541,7 @@ def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', v
             if f in (1, 24, 101, 130):
                 plt.legend()
 
-        saveFigure(filename, figFormat=genericsettings.fig_formats, verbose=verbose)
+        saveFigure(filename, figFormat=genericsettings.getFigFormats(), verbose=verbose)
 
         plt.close()
 

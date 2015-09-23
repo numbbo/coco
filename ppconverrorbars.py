@@ -108,7 +108,7 @@ def main(dictAlg, outputdir='.', verbose=True):
                     warned = True
             beautify()
             saveFigure(os.path.join(outputdir, figurename.replace(' ','')),
-                       genericsettings.fig_formats, verbose=verbose)
+                       genericsettings.getFigFormats(), verbose=verbose)
             plt.close()
     try:
         algname = str(dictFun[l].keys()[0][0])

@@ -25,14 +25,16 @@ def enum(*sequential, **named):
     
 AlgorithmCount = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY')
 
-def saveFigure(filename, figFormat=genericsettings.fig_formats,
-               verbose=True):
+def saveFigure(filename, figFormat=(), verbose=True):
     """Save figure into an image file.
 
     `figFormat` can be a string or a list of strings, like
     ``('pdf', 'svg')``
 
     """
+    if not figFormat:    
+        figFormat=genericsettings.getFigFormats()    
+        
     if isinstance(figFormat, basestring):
         figFormat = (figFormat, )
     for format in figFormat:
@@ -69,6 +71,7 @@ html_header = """<HTML>
 <BODY>
 <H1> %s
 </H1>
+<H2 style="color:red"> %s </H2>
 """
 
 
@@ -98,7 +101,8 @@ def save_single_functions_html(filename, algname='', extension='svg',
     name = filename.split(os.sep)[-1]
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ' ' + name + add_to_names
-        f.write(html_header % (header_title.strip().replace(' ', ', '), algname))
+        imageWarning = '' if extension in genericsettings.getFigFormats() else 'For generating figures use the --svg option.'
+        f.write(html_header % (header_title.strip().replace(' ', ', '), algname, imageWarning))
             
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
         if algorithmCount is AlgorithmCount.ONE:
