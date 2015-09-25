@@ -400,7 +400,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
         extraeol.append(r'\hline')
 #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
 
-        tableHtml.append('<tbody>\n')
+        tableHtml.append('<tbody>\n<tr>\n')
         curline = [r'ERT$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
         curlineHtml = ['<th>ERT<sub>best</sub></th>\n'] if with_table_heading else ['<th><b>f%d</b></th>\n' % df[1]]
         if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
@@ -514,18 +514,21 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                                           writeFEvalsMaxPrec(algerts[i][j], 2),
                                           writeFEvalsMaxPrec(dispersion, precdispersion), 
                                           str_significance_subsup))
-                        curlineHtml.append('<td><b>%s</b> (%s)%s</td>\n'
-                                       % (writeFEvalsMaxPrec(algerts[i][j], 2),
+                        curlineHtml.append('<td sorttable_customkey=\"%f\"><b>%s</b> (%s)%s</td>\n'
+                                       % (algerts[i][j],
+                                          writeFEvalsMaxPrec(algerts[i][j], 2),
                                           writeFEvalsMaxPrec(dispersion, precdispersion), 
                                           str_significance_subsup_html))
                         continue
 
                     tmp = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
                     tmpHtml = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
+                    sortKey = data
                     if data >= maxfloatrepr or data < 0.01: # either inf or scientific notation
                         if numpy.isinf(data) and j == len(algerts[i]) - 1:
                             tmp += r'\,\textit{%s}' % writeFEvalsMaxPrec(algfinaldata[i][1], 0, maxfloatrepr=maxfloatrepr)
                             tmpHtml += '<i>%s</i>' % writeFEvalsMaxPrec(algfinaldata[i][1], 0, maxfloatrepr=maxfloatrepr)
+                            sortKey = algfinaldata[i][1]
                         else:
                             tmp = writeFEvalsMaxPrec(data, precscien, maxfloatrepr=data)
                             if isBold:
@@ -542,7 +545,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                             tmpHtml += ' (%s)' % tmpdisp
                         curline.append(r'\multicolumn{2}{%s}{%s%s}' % (alignment, tmp, str_significance_subsup))
                         tmpHtml = tmpHtml.replace('$\infty$', '&infin;')                
-                        curlineHtml.append('<td>%s%s</td>' % (tmpHtml, str_significance_subsup_html))
+                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>' % (sortKey, tmpHtml, str_significance_subsup_html))
                     else:
                         tmp2 = tmp.split('.', 1)
                         if len(tmp2) < 2:
@@ -573,12 +576,12 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                         curline.extend(tmp2)
                         tmp2html = ("").join(str(item) for item in tmp2html)
                         tmp2html = tmp2html.replace('$\infty$', '&infin;')                
-                        curlineHtml.append('<td>%s</td>' % tmp2html)
+                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s</td>' % (data, tmp2html))
                                         
             curline.append('%d' % algnbsucc[i])
             curline.append('/%d' % algnbruns[i])
             table.append(curline)
-            curlineHtml.append('<td>%d/%d</td>\n' % (algnbsucc[i], algnbruns[i]))
+            curlineHtml.append('<td sorttable_customkey=\"%d\">%d/%d</td>\n' % (algnbsucc[i], algnbsucc[i], algnbruns[i]))
             tableHtml.extend(curlineHtml[:])
             extraeol.append('')
 
@@ -591,7 +594,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
             f.write(res)
 
             res = ("").join(str(item) for item in tableHtml)
-            res = '\n<table>\n%s</table>\n<p/>\n' % res
+            res = '\n<table class=\"sortable\" style=\"width:800px \">\n%s</table>\n<p/>\n' % res
     
             if df[0] in (5, 20):
                 filename = os.path.join(outputdir, genericsettings.many_algorithm_file_name + '.html')

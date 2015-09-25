@@ -260,13 +260,20 @@ def save_single_functions_html(filename, algname='', extension='svg',
 def write_ECDF(f, dimension, extension, captionStringFormat):
     """Writes line for ECDF images."""
     names = ['pprldmany']
-    types = ['separ', 'lcond', 'hcond', 'multi', 'mult2', 'noiselessall']
+    types = OrderedDict([
+        ('separ', 'Separable functions'), 
+        ('lcond', 'Moderate functions'), 
+        ('hcond', 'Ill-conditioned functions'), 
+        ('multi', 'Multi-modal functions'), 
+        ('mult2', 'Weakly structured multi-modal functions'), 
+        ('noiselessall', 'All functions')])
     
     headerECDF = 'Empirical Cumulative Distribution Functions (ECDFs) per function group for dimension %d' % dimension
     f.write("\n<H2> %s </H2>\n" % headerECDF)
-    for ftype in types:
+    for typeKey, typeValue in types.iteritems():
+        f.write('<p><b>%s</b></p>' % typeValue)
         for name in names:
-            f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
+            f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, typeKey, extension))
     
     f.write(captionStringFormat % ('\n##bbobECDFslegend%d##' % dimension))
 
