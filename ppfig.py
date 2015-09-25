@@ -4,6 +4,7 @@
 """Generic routines for figure generation."""
 from __future__ import absolute_import
 import os
+from collections import OrderedDict
 from operator import itemgetter
 from itertools import groupby
 import warnings
@@ -129,14 +130,23 @@ def save_single_functions_html(filename, algname='', extension='svg',
     
             names = ['pprldistr', 'ppfvdistr']
             dimensions = [5, 20]
-            types = ['separ', 'lcond', 'hcond', 'multi', 'mult2', 'noiselessall']
+            types = OrderedDict([
+                ('separ', 'Separable functions'), 
+                ('lcond', 'Misc. moderate functions'), 
+                ('hcond', 'Ill-conditioned functions'), 
+                ('multi', 'Multi-modal functions'), 
+                ('mult2', 'Weak structure functions'), 
+                ('noiselessall', 'All functions')])
             
             headerECDF = ' Empirical cumulative distribution functions (ECDF)'
             f.write("<H2> %s </H2>\n" % headerECDF)
-            for ftype in types:
-                for dimension in dimensions:
+            for dimension in dimensions:
+                for typeKey, typeValue in types.iteritems():
+                    f.write('<p><b>%s in %d-D</b></p>' % (typeValue, dimension))
+                    f.write('<div>')
                     for name in names:
-                        f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
+                        f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, typeKey, extension))
+                    f.write('</div>')
             
             key = 'bbobpprldistrlegendrlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendfixed'
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
@@ -148,10 +158,19 @@ def save_single_functions_html(filename, algname='', extension='svg',
             f.write("\n<!--tables-->\n")
             f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption##'))
         
-            types = ['separ', 'lcond', 'hcond', 'multi', 'mult2']
-            for ftype in types:
+            types = OrderedDict([
+                ('separ', 'Separable functions'), 
+                ('lcond', 'Moderate functions'), 
+                ('hcond', 'Ill-conditioned functions'), 
+                ('multi', 'Multi-modal functions'), 
+                ('mult2', 'Weak structure functions')])
+
+            for typeKey, typeValue in types.iteritems():
+                f.write('<p><b>%s in %s</b></p>' % (typeValue, '-D and '.join(str(x) for x in dimensions) + '-D'))
+                f.write('<div>')
                 for dimension in dimensions:
-                    f.write('<IMG SRC="pplogloss_%02dD_%s.%s">' % (dimension, ftype, extension))
+                    f.write('<IMG SRC="pplogloss_%02dD_%s.%s">' % (dimension, typeKey, extension))
+                f.write('</div>')
                     
             f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption##'))
         
@@ -178,14 +197,23 @@ def save_single_functions_html(filename, algname='', extension='svg',
 
             names = ['pprldistr', 'pplogabs']
             dimensions = [5, 20]
-            types = ['separ', 'lcond', 'hcond', 'multi', 'mult2', 'noiselessall']
+            types = OrderedDict([
+                ('separ', 'Separable functions'), 
+                ('lcond', 'Moderate functions'), 
+                ('hcond', 'Ill-conditioned functions'), 
+                ('multi', 'Multi-modal functions'), 
+                ('mult2', 'Weak structure functions'), 
+                ('noiselessall', 'All functions')])
 
             headerECDF = 'Empirical cumulative distribution functions (ECDFs) per function group'
             f.write("\n<H2> %s </H2>\n" % headerECDF)
-            for ftype in types:
-                for dimension in dimensions:
+            for dimension in dimensions:
+                for typeKey, typeValue in types.iteritems():
+                    f.write('<p><b>%s in %d-D</b></p>' % (typeValue, dimension))
+                    f.write('<div>')
                     for name in names:
-                        f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, ftype, extension))
+                        f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, typeKey, extension))
+                    f.write('</div>')
 
             key = 'bbobpprldistrlegendtworlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendtwofixed'
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))

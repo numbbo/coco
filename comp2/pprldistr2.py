@@ -45,7 +45,7 @@ def beautify(handles):
                ('', '', '', '', ''))
     plt.ylim(-0.01, 1.01)
     axisHandle.set_xlabel('log10 of FEvals ratio')
-    axisHandle.set_ylabel('proportion')
+    axisHandle.set_ylabel('proportion of trials')
     axisHandle.grid(True)
     xticks = axisHandle.get_xticks()
     newxticks = []
