@@ -59,9 +59,9 @@ def main(verbose=True):
     f = open(latex_commands_for_html, 'w')
     
     f.writelines(['\\providecommand{\\bbobloglosstablecaption}[1]{\n', 
-                  pplogloss.table_caption, '\n}\n'])
+                  pplogloss.table_caption.replace('Figure~\\ref{fig:ERTlogloss}', 'the following figure'), '\n}\n'])
     f.writelines(['\\providecommand{\\bbobloglossfigurecaption}[1]{\n', 
-                  pplogloss.figure_caption, '\n}\n'])
+                  pplogloss.figure_caption.replace('Figure~\\ref{tab:ERTloss}', 'the previous figure'), '\n}\n'])
     f.writelines(['\\providecommand{\\bbobpprldistrlegendrlbased}[1]{\n', 
                   pprldistr.caption_single_rlbased.replace('TO_BE_REPLACED', 'TOBEREPLACED'), '\n}\n'])
     f.writelines(['\\providecommand{\\bbobpprldistrlegendfixed}[1]{\n', 

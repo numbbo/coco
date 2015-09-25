@@ -490,7 +490,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         f.close()
 
         res = ("").join(str(item) for item in tableHtml)
-        res = '<p><b>%dD</b></p>\n<table>\n%s</table>\n' % (d, res)
+        res = '<p><b>%d-D</b></p>\n<table>\n%s</table>\n' % (d, res)
 
         filename = os.path.join(outputdir, genericsettings.single_algorithm_file_name + '.html')
         lines = []
