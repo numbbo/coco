@@ -311,6 +311,8 @@ def main(argv=None):
             algorithmCount=ppfig.AlgorithmCount.MANY
         )
 
+        ppfig.copy_js_files(outputdir)
+        
         # convergence plots
         if genericsettings.isConv:
             ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
