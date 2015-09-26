@@ -12,13 +12,13 @@ static coco_problem_t *CURRENT_COCO_PROBLEM; /* used in objective_function */
  **************************************************/
 static const long MAX_BUDGET = 1e2;  /* work on small budgets first */
 static const char * SUITE_NAME       = "biobjective_combinations";
-static const char * SUITE_OPTIONS    = ""; /* e.g.: "instances:1-5; dimensions:-20" */
+/* static const char * SUITE_OPTIONS    = "";*/ /* e.g.: "instances:1-5; dimensions:-20" */
 /* static const char * OBSERVER_NAME = "no_observer"; / * writes no data */
 static const char * OBSERVER_NAME    = "mo_toy_observer"; /* writes data */
 static const char * OBSERVER_OPTIONS = "mo_random_search_on_biobjective_suite_300";
 static const char * SOLVER_NAME      = "mo_random_search"; /* for the choice in coco_optimize below */
-// static const int NUMBER_OF_BATCHES   = 88;  /* use 1 for single batch :-) batches can be run independently in parallel */
-// static int CURRENT_BATCH             = 1;  /* runs from 1 to NUMBER_OF_BATCHES, or any other consecutive sequence */
+/* static const int NUMBER_OF_BATCHES   = 88;*/  /* use 1 for single batch :-) batches can be run independently in parallel */
+/* static int CURRENT_BATCH             = 1;*/  /* runs from 1 to NUMBER_OF_BATCHES, or any other consecutive sequence */
 
 
 /**************************************************
@@ -68,8 +68,8 @@ void coco_optimize(coco_problem_t *problem) { /* should at the least take budget
   const double * lbounds = coco_get_smallest_values_of_interest(problem);
   const double * ubounds = coco_get_largest_values_of_interest(problem);
   double * initial_x = coco_allocate_vector(coco_get_number_of_variables(problem));
-  // const double final_target = coco_get_final_target_fvalue1(problem);
-  const double final_target = 1e-3;
+  /* const double final_target = coco_get_final_target_fvalue1(problem);*/
+  /* const double final_target = 1e-3; */
   long remaining_budget; 
   
   coco_get_initial_solution(problem, initial_x);
@@ -94,7 +94,7 @@ void coco_optimize(coco_problem_t *problem) { /* should at the least take budget
  * Bi-objective BBOB 2009 functions
  */
 
-// Added here for compilability!!!
+/* Added here for compilability!!!*/
 #define BIOBJECTIVE_NUMBER_OF_COMBINATIONS 300
 #define BIOBJECTIVE_NUMBER_OF_INSTANCES 5
 #define BIOBJECTIVE_NUMBER_OF_DIMENSIONS 5

@@ -5,6 +5,7 @@
 #include "coco.h"
 
 #include "coco_problem.c"
+#include "coco_utilities.c"
 
 static void f_katsuura_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i, j;
@@ -17,7 +18,7 @@ static void f_katsuura_evaluate(coco_problem_t *self, const double *x, double *y
     tmp = 0;
     for (j = 1; j < 33; ++j) {
       tmp2 = pow(2., (double)j);
-      tmp += fabs(tmp2 * x[i] - round(tmp2 * x[i])) / tmp2;
+      tmp += fabs(tmp2 * x[i] - doubleround(tmp2 * x[i])) / tmp2;
     }
     tmp = 1. + (i + 1) * tmp;
     y[0] *= tmp;

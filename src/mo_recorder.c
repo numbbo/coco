@@ -1,5 +1,5 @@
-#include <sys/types.h> // for creating folder
-#include <sys/stat.h>  // for creating folder
+#include <sys/types.h> /* for creating folder */
+#include <sys/stat.h>  /* for creating folder */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +8,8 @@
 
 
 void mococo_allocate_archive(struct mococo_solutions_archive *archive, size_t maxsize, size_t sizeVar, size_t sizeObj, size_t maxUpdate) {
+    size_t i;
+  
     archive->maxsize = maxsize;
     archive->maxupdatesize = maxUpdate;
     archive->size = 0;
@@ -22,10 +24,9 @@ void mococo_allocate_archive(struct mococo_solutions_archive *archive, size_t ma
         exit(EXIT_FAILURE);
     }
     
-    // Allocate memory for each solution entry
-    size_t i;
+    /* Allocate memory for each solution entry */
     for (i=0; i < maxsize; i++) {
-        archive->entry[i].status = 0;  // 0: inactive | 1: active
+        archive->entry[i].status = 0;  /* 0: inactive | 1: active */
         archive->entry[i].birth = 0;
         archive->entry[i].var = (double*) malloc(sizeVar * sizeof(double));
         archive->entry[i].obj = (double*) malloc(sizeObj * sizeof(double));
@@ -37,9 +38,10 @@ void mococo_allocate_archive(struct mococo_solutions_archive *archive, size_t ma
 }
 
 void mococo_reset_archive(struct mococo_solutions_archive *archive) {
+    size_t i;
+    
     archive->size = 0;
     archive->updatesize = 0;
-    size_t i;
     for (i=0; i < archive->maxsize; i++) {
         archive->entry[i].status = 0;
         archive->entry[i].birth = 0;
@@ -63,9 +65,12 @@ void mococo_push_to_archive(const double **pop, double **obj, struct mococo_solu
     size_t s = archive->size;
     size_t tnext = 0;
     size_t i;
+    size_t t;
+    size_t j;
+    size_t k;
+        
     for (i=0; i < nPop; i++) {
-        // Find a non-active slot for the new i-th solution
-        size_t t;
+        /* Find a non-active slot for the new i-th solution */
         for (t = tnext; t < archive->maxsize; t++) {
             if (archive->entry[t].status == 0) {
                 archive->active[s] = &(archive->entry[t]);
@@ -73,15 +78,13 @@ void mococo_push_to_archive(const double **pop, double **obj, struct mococo_solu
                 break;
             }
         }
-        // Keep the i-th solution in the slot found
+        /* Keep the i-th solution in the slot found */
         entry = archive->active[s];
         entry->status = 1;
         entry->birth = timestamp;
-        size_t j;
-        for (j=0; j < archive->numvar; j++)   // all decision variables of a solution
+        for (j=0; j < archive->numvar; j++)   /* all decision variables of a solution */
             entry->var[j] = pop[i][j];
-        size_t k;
-        for (k=0; k < archive->numobj; k++)   // all objective values of a solution
+        for (k=0; k < archive->numobj; k++)   /* all objective values of a solution */
             entry->obj[k] = obj[i][k];
         s++;
     }

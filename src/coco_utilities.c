@@ -61,6 +61,9 @@ int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
 void coco_create_new_path(const char *path, size_t maxlen, char *new_path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
+double doubleround(double a);
+double doublemax(double a, double b);
+double doublemin(double a, double b);
 /***********************************/
 
 void coco_join_path(char *path, size_t path_max_length, ...) {
@@ -105,7 +108,7 @@ void coco_create_path(const char *path) {
   /* Nothing to do if the path exists. */
   if (coco_path_exists(path))
     return;
-  mkdir(path);
+  CreateDirectory(path, NULL);
 
 #elif defined(HAVE_STAT)
   char *tmp = NULL;
@@ -227,4 +230,27 @@ double *coco_duplicate_vector(const double *src,
     dst[i] = src[i];
   }
   return dst;
+}
+
+/* some math functions which are not contained in C89 standard */
+double doubleround(double number) {
+    return floor(number + 0.5);
+}
+
+double doublemax(double a, double b) {
+    if (a >= b) {
+        return a;
+    }
+    else {
+        return b;
+    }     
+}
+
+double doublemin(double a, double b) {
+    if (a <= b) {
+        return a;
+    }
+    else {
+        return b;
+    }     
 }

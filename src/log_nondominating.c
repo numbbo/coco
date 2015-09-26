@@ -26,6 +26,9 @@ static struct mococo_solution_entry *entry;
 
 static void lnd_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   _log_nondominating_t *data;
+  size_t i;
+  size_t j;
+  size_t k;
   data = coco_get_transform_data(self);
 
   coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
@@ -66,18 +69,15 @@ static void lnd_evaluate_function(coco_problem_t *self, const double *x, double 
   mococo_mark_updates(mo_archive, data->number_of_evaluations);
   
   /* Write out a line for this newly evaluated solution if it is nondominated */
-  // write main info to the log file for pfront
-  size_t i;
-  size_t j;
-  size_t k;
+  /* write main info to the log file for pfront*/
   for (i=0; i < mo_archive->updatesize; i++) {
       entry = mo_archive->update[i];
-      for (j=0; j < coco_get_number_of_variables(coco_get_transform_inner_problem(self)); j++) // all decision variables of a solution
+      for (j=0; j < coco_get_number_of_variables(coco_get_transform_inner_problem(self)); j++) /* all decision variables of a solution */
           fprintf(data->logfile, "%13.10e\t", entry->var[j]);
-      for (k=0; k < coco_get_number_of_objectives(coco_get_transform_inner_problem(self)); k++) // all objective values of a solution
+      for (k=0; k < coco_get_number_of_objectives(coco_get_transform_inner_problem(self)); k++) /* all objective values of a solution */
           fprintf(data->logfile, "%13.10e\t", entry->obj[k]);
-      fprintf(data->logfile, "%zu", entry->birth);  // its timestamp (FEval)
-      fprintf(data->logfile, "\n");  // go to the next line for another solution
+      fprintf(data->logfile, "%zu", entry->birth);  /* its timestamp (FEval) */
+      fprintf(data->logfile, "\n");  /* go to the next line for another solution */
   }
   /********************************************************************************/
   
@@ -94,17 +94,18 @@ static void _lnd_free_data(void *stuff) {
     coco_free_memory(data->path);
     data->path = NULL;
   }
-  // if (data->target_values != NULL) {
-  //   coco_free_memory(data->target_values);
-  //   data->target_values = NULL;
-  // }
+  /* if (data->target_values != NULL) {
+    coco_free_memory(data->target_values);
+    data->target_values = NULL;
+  }
+  */
   if (data->logfile != NULL) {
     fclose(data->logfile);
     data->logfile = NULL;
     
     /***************************************************************/
     /* TODO: Temporary put it here, to check later */
-    mococo_free_archive(mo_archive); // free the archive
+    mococo_free_archive(mo_archive); /* free the archive */
     free(mo_archive);
     /***************************************************************/
   }
