@@ -20,14 +20,14 @@
  * Ref: Benchmarking Numerical Multiobjective Optimizers Revisited @ GECCO'15
  */
 
-// const size_t DIMENSIONS[6] = {2, 3, 5, 10, 20, 40};
+/* const size_t DIMENSIONS[6] = {2, 3, 5, 10, 20, 40};*/
 static const size_t instance_list[5][2] = { {2, 4},
                                             {3, 5},
                                             {7, 8},
                                             {9, 10},
                                             {11, 12} };
-//--> we must map this number to the two corresponding BBOB functions
-static int biobjective_list[300][2]; // 300 is the total number of 2-obj combinations (< 24*24)
+/* --> we must map this number to the two corresponding BBOB functions */
+static int biobjective_list[300][2]; /* 300 is the total number of 2-obj combinations (< 24*24)*/
 static int defined = 0;
 
 /**
@@ -61,13 +61,19 @@ static long biobjective_encode_problem_index(int combination_idx, long instance_
 
 static void biobjective_decode_problem_index(const long problem_index, int *combination_idx,
                                              long *instance_idx, long *dimension_idx) {
+    long rest;
     *dimension_idx = problem_index / (BIOBJECTIVE_NUMBER_OF_INSTANCES * BIOBJECTIVE_NUMBER_OF_COMBINATIONS);
-    long rest = problem_index % (BIOBJECTIVE_NUMBER_OF_INSTANCES * BIOBJECTIVE_NUMBER_OF_COMBINATIONS);
+    rest = problem_index % (BIOBJECTIVE_NUMBER_OF_INSTANCES * BIOBJECTIVE_NUMBER_OF_COMBINATIONS);
     *combination_idx = (int)(rest / BIOBJECTIVE_NUMBER_OF_INSTANCES);
     *instance_idx = rest % BIOBJECTIVE_NUMBER_OF_INSTANCES;
 }
 
 static coco_problem_t *biobjective_suite_300(const long problem_index) {  
+    int combination_idx;
+    long instance_idx, dimension_idx;
+    coco_problem_t *problem1, *problem2, *problem;
+      
+  
     if (problem_index < 0) 
         return NULL;
     
@@ -84,10 +90,6 @@ static coco_problem_t *biobjective_suite_300(const long problem_index) {
         defined = 1;
     }
     
-    int combination_idx;
-    long instance_idx, dimension_idx;
-    int problem1_index, problem2_index;
-    coco_problem_t *problem1, *problem2, *problem;
     biobjective_decode_problem_index(problem_index, &combination_idx, &instance_idx, &dimension_idx);
     
     problem1 = bbob2009_problem(biobjective_list[combination_idx][0],

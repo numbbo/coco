@@ -48,6 +48,10 @@ static const char *coco_path_separator = "/";
 #error Unknown platform
 #endif
 
+#if defined(HAVE_GFA) && !defined(__CYGWIN__)
+S_IRWXU = "0700";
+#endif
+
 #if !defined(NUMBBO_PATH_MAX)
 #error NUMBBO_PATH_MAX undefined
 #endif
@@ -61,6 +65,9 @@ int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
 void coco_create_new_path(const char *path, size_t maxlen, char *new_path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
+double doubleround(double a);
+double doublemax(double a, double b);
+double doublemin(double a, double b);
 /***********************************/
 
 void coco_join_path(char *path, size_t path_max_length, ...) {
@@ -100,19 +107,12 @@ int coco_path_exists(const char *path) {
 }
 
 void coco_create_path(const char *path) {
-#if defined(HAVE_GFA)
-  /* FIXME: Unimplemented for now. */
-  /* Nothing to do if the path exists. */
-  if (coco_path_exists(path))
-    return;
-  mkdir(path);
-
-#elif defined(HAVE_STAT)
+/* current version should now work with Windows, Linux, and Mac */
   char *tmp = NULL;
   char buf[4096];
   char *p;
   size_t len = strlen(path);
-  assert(strcmp(coco_path_separator, "/") == 0);
+  char path_sep = coco_path_separator[0];
 
   /* Nothing to do if the path exists. */
   if (coco_path_exists(path))
@@ -120,16 +120,16 @@ void coco_create_path(const char *path) {
 
   tmp = coco_strdup(path);
   /* Remove possible trailing slash */
-  if (tmp[len - 1] == '/')
+  if (tmp[len - 1] == path_sep)
     tmp[len - 1] = 0;
   for (p = tmp + 1; *p; p++) {
-    if (*p == '/') {
+    if (*p == path_sep) {
       *p = 0;
       if (!coco_path_exists(tmp)) {
         if (0 != mkdir(tmp, S_IRWXU))
           goto error;
       }
-      *p = '/';
+      *p = path_sep;
     }
   }
   if (0 != mkdir(tmp, S_IRWXU))
@@ -140,9 +140,6 @@ error:
   snprintf(buf, sizeof(buf), "mkdir(\"%s\") failed.", tmp);
   coco_error(buf);
   return; /* never reached */
-#else
-#error Ooops
-#endif
 }
 
 #if 0
@@ -227,4 +224,27 @@ double *coco_duplicate_vector(const double *src,
     dst[i] = src[i];
   }
   return dst;
+}
+
+/* some math functions which are not contained in C89 standard */
+double doubleround(double number) {
+    return floor(number + 0.5);
+}
+
+double doublemax(double a, double b) {
+    if (a >= b) {
+        return a;
+    }
+    else {
+        return b;
+    }     
+}
+
+double doublemin(double a, double b) {
+    if (a <= b) {
+        return a;
+    }
+    else {
+        return b;
+    }     
 }

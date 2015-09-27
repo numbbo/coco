@@ -10,39 +10,27 @@
 ## something else or install Cygwin and run GNU make from within Cygwin
 ## directly.
 
+
 LDFLAGS += -lm
-CCFLAGS = -g -ggdb -std=c89 -pedantic 
+CCFLAGS = -g -ggdb -Wall -std=c89 -pedantic
 
 ########################################################################
 ## Toplevel targets
-all: demo.exe coco_test.exe bbob2009_test.exe
+all: demo_mo.exe
 
 clean:
-	IF EXIST "bbob2009_test.o" DEL /F bbob2009_test.o 
-	IF EXIST "bbob2009_test.exe" DEL /F bbob2009_test.exe
 	IF EXIST "coco.o" DEL /F coco.o
-	IF EXIST "coco_test.o" DEL /F coco_test.o
-	IF EXIST "coco_test.exe" DEL /F coco_test.exe
-	IF EXIST "demo.o" DEL /F demo.o
-	IF EXIST "demo.exe" DEL /F demo.exe
+	IF EXIST "demo_mo.o" DEL /F demo_mo.o
+	IF EXIST "demo_mo.exe" DEL /F demo_mo.exe
 
 ########################################################################
 ## Programs
-demo.exe: demo.o coco.o
-	${CC} ${CCFLAGS} -o demo.exe coco.o demo.o ${LDFLAGS}  
-
-coco_test.exe: coco_test.o coco.o
-	${CC}  ${CCFLAGS} -o coco_test.exe coco_test.o coco.o ${LDFLAGS}
-
-bbob2009_test.exe: bbob2009_test.o coco.o
-	${CC}  ${CCFLAGS} -o bbob2009_test.exe bbob2009_test.o coco.o ${LDFLAGS} 
-
-coco_timing.exe: coco_timing.o coco.o
-	${CC}  ${CCFLAGS} -o coco_timing.exe coco_timing.o coco.o ${LDFLAGS}
+demo_mo.exe: demo_mo.o coco.o
+	${CC} ${CCFLAGS} -o demo_mo.exe coco.o demo_mo.o ${LDFLAGS}
 
 ########################################################################
 ## Additional dependencies
 coco.o: coco.h
-demo.o: coco.h
-coco_test.o: coco.h
-bbob2009_test.o: coco.h
+	${CC} -c ${CCFLAGS} -o coco.o coco.c ${LDFLAGS}
+demo_mo.o: coco.h
+	${CC} -c ${CCFLAGS} -o demo_mo.o demo_mo.c ${LDFLAGS}

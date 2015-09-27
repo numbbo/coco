@@ -14,17 +14,18 @@
 #include "coco_platform.h"
 
 #include <assert.h>
-#include <math.h>
 
 #include "coco.h"
 #include "coco_problem.c"
 #include "bbob2009_legacy_code.c"
+#include "coco_utilities.c"
 
 typedef struct {
   double *x, *xx;
   double *xopt, fopt;
   double **rot1, **rot2;
 } _bbob_step_ellipsoid_t;
+
 
 static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, const double *x,
                                           double *y) {
@@ -57,9 +58,9 @@ static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, const double *x,
 
   for (i = 0; i < self->number_of_variables; ++i) {
     if (fabs(data->x[i]) > 0.5)
-      data->x[i] = round(data->x[i]);
+      data->x[i] = doubleround(data->x[i]);
     else
-      data->x[i] = round(alpha * data->x[i]) / alpha;
+      data->x[i] = doubleround(alpha * data->x[i]) / alpha;
   }
 
   for (i = 0; i < self->number_of_variables; ++i) {
@@ -77,7 +78,7 @@ static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, const double *x,
     y[0] += pow(condition, exponent) * data->xx[i] * data->xx[i];
     ;
   }
-  y[0] = 0.1 * fmax(fabs(x1) * 1.0e-4, y[0]) + penalty + data->fopt;
+  y[0] = 0.1 * doublemax(fabs(x1) * 1.0e-4, y[0]) + penalty + data->fopt;
 }
 
 static void _bbob_step_ellipsoid_free(coco_problem_t *self) {
