@@ -38,6 +38,6 @@ coco_timing: coco_timing.o coco.o
 
 ########################################################################
 ## Additional dependencies
-demo.o: coco.h
-coco_test.o: coco.h
-bbob2009_test.o: coco.h
+demo.o: coco.h coco.c demo.c
+coco_test.o: coco.h coco.c coco_test.c
+bbob2009_test.o: coco.h coco.c bbob2009_test.c

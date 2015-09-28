@@ -48,8 +48,8 @@ static const char *coco_path_separator = "/";
 #error Unknown platform
 #endif
 
-#if defined(HAVE_GFA) && !defined(__CYGWIN__)
-S_IRWXU = "0700";
+#if defined(HAVE_GFA)
+#define S_IRWXU "0700"
 #endif
 
 #if !defined(NUMBBO_PATH_MAX)
