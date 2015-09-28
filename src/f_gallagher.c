@@ -4,6 +4,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 #include "bbob2009_legacy_code.c"
+#include "coco_utilities.c"
 
 #define NB_PEAKS_21 101
 #define NB_PEAKS_22 21
@@ -60,7 +61,7 @@ static void _bbob_gallagher_evaluate(coco_problem_t *self, const double *x,
       tmp2 += data->arrScales[i][j] * tmp * tmp;
     }
     tmp2 = data->peakvalues[i] * exp(fac * tmp2);
-    f = fmax(f, tmp2);
+    f = doublemax(f, tmp2);
   }
 
   f = 10. - f;

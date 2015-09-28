@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "coco_generics.c"
+#include "coco_utilities.c"
 
 #include "bbob2009_legacy_code.c"
 
@@ -285,10 +286,8 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
      *   fmax(1.0, sqrt(dimension) / 8.0);
      * follows
      */
-    factor = sqrt(dimension) / 8.0;
-    if (factor < 1.0)
-      factor = 1.0;
-
+    factor = doublemax(1.0, sqrt(dimension) / 8.0);
+    
     problem = rosenbrock_problem(dimension);
     problem = shift_variables(problem, minus_one, 0);
     problem = scale_variables(problem, factor);
@@ -561,7 +560,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
     bbob2009_compute_rotation(rot1, rseed, dimension_);
-    scales = fmax(1., sqrt((double)dimension) / 8.);
+    scales = doublemax(1., sqrt((double)dimension) / 8.);
     for (i = 0; i < dimension; ++i) {
       for (j = 0; j < dimension; ++j) {
         rot1[i][j] *= scales;
