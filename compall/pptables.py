@@ -378,70 +378,78 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
         if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 curline = [r'\#FEs/D']
-                curlineHtml = ['<thead>\n<tr>\n<th>#FEs/D</th>\n']
+                curlineHtml = ['<thead>\n<tr>\n<th>#FEs/D<br>REPLACEH</th>\n']
+                counter = 1
                 for i in targetsOfInterest.labels():
                     curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % i) 
-                    curlineHtml.append('<td>%s</td>\n' % i)
-                                
+                    curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
+                    counter += 1
             else:
                 curline = [r'$\Delta f_\mathrm{opt}$']
-                curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub></th>\n']
+                curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
+                counter = 1
                 for t in targets:
                     curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
                                 % writeFEvals2(t, precision=1, isscientific=True))
-                    curlineHtml.append('<td>%s</td>\n' % writeFEvals2(t, precision=1, isscientific=True))
+                    curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
+                    counter += 1
 #                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
 #                            % writeFEvals2(targets[-1], precision=1, isscientific=True))
             curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
-            curlineHtml.append('<td>#succ</td>\n</tr>\n</thead>\n')
+            curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
             table.append(curline)
-            tableHtml.extend(curlineHtml)
             
         extraeol.append(r'\hline')
 #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
 
-        tableHtml.append('<tbody>\n<tr>\n')
         curline = [r'ERT$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
-        curlineHtml = ['<th>ERT<sub>best</sub></th>\n'] if with_table_heading else ['<th><b>f%d</b></th>\n' % df[1]]
+        replaceValue = 'ERT<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
+        curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
         if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
             # write ftarget:fevals
+            counter = 1
             for i in xrange(len(refalgert[:-1])):
                 temp="%.1e" %targetsOfInterest((df[1], df[0]))[i]
                 if temp[-2]=="0":
                     temp=temp[:-2]+temp[-1]
                 curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
                                    % (temp, writeFEvalsMaxPrec(refalgert[i], 2)))
-                curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
-                                   % (temp, writeFEvalsMaxPrec(refalgert[i], 2)))
+                replaceValue = '<i>%s</i>:%s' % (temp, writeFEvalsMaxPrec(refalgert[i], 2))
+                curlineHtml = [item.replace('REPLACE%d' % counter, replaceValue) for item in curlineHtml]
+                counter += 1
+                
             temp="%.1e" %targetsOfInterest((df[1], df[0]))[-1]
             if temp[-2]=="0":
                 temp=temp[:-2]+temp[-1]
             curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
                                % (temp ,writeFEvalsMaxPrec(refalgert[-1], 2))) 
-            curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
-                                   % (temp, writeFEvalsMaxPrec(refalgert[-1], 2))) 
+            replaceValue = '<i>%s</i>:%s' % (temp, writeFEvalsMaxPrec(refalgert[-1], 2)) 
+            curlineHtml = [item.replace('REPLACE%d' % counter, replaceValue) for item in curlineHtml]
         else:            
             # write #fevals of the reference alg
+            counter = 1
             for i in refalgert[:-1]:
                 curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
                                    % writeFEvalsMaxPrec(i, 2))
-                curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(i, 2))
+                curlineHtml = [item.replace('REPLACE%d' % counter, writeFEvalsMaxPrec(i, 2)) for item in curlineHtml]
+                counter += 1
             curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
                                % writeFEvalsMaxPrec(refalgert[-1], 2))
-            curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(refalgert[-1], 2))
+            curlineHtml = [item.replace('REPLACE%d' % counter, writeFEvalsMaxPrec(refalgert[-1], 2)) for item in curlineHtml]
 
         # write the success ratio for the reference alg
         tmp2 = numpy.sum(numpy.isnan(refalgevals) == False) # count the nb of success
         curline.append('%d' % (tmp2))
         if tmp2 > 0:
             curline.append('/%d' % len(refalgevals))
-            curlineHtml.append('<td>%d/%d</td>\n' % (tmp2, len(refalgevals)))
+            replaceValue = '%d/%d' % (tmp2, len(refalgevals))
         else:
-            curlineHtml.append('<td>%d</td>\n' % (tmp2))
+            replaceValue = '%d' % tmp2
+        curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
 
         table.append(curline[:])
         tableHtml.extend(curlineHtml[:])
-        tableHtml.append('</tr>\n')
+        tableHtml.append('<tbody>\n')
         extraeol.append('')
 
         #for i, gna in enumerate(zip((1, 2, 3), ('bla', 'blo', 'bli'))):
