@@ -248,9 +248,9 @@ def save_single_functions_html(filename, algname='', extension='svg',
             f.write("\n<H2> %s </H2>\n" % headerERT)
             if add_to_names.endswith('D'):
                 name_for_click = next_dimension_str(add_to_names)
-                f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
+                f.write('<A HREF="%s">\n' % (name + name_for_click  + '.html'))
             for ifun in range(1, 25):
-                f.write('<IMG SRC="'+ filename + '_f%03d' % (ifun)
+                f.write('<IMG SRC="'+ name + '_f%03d' % (ifun)
                         + add_to_names + '.%s">' % (extension))
             if add_to_names.endswith('D'):
                 f.write('"\n</A>\n')

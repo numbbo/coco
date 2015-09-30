@@ -103,6 +103,9 @@ def main(argv=None):
         --conv
             if this option is chosen, additionally convergence plots
             for each function and algorithm are generated.
+        --rld-single-fcts
+            generate also runlength distribution figures for each
+            single function.
         --expensive
             runlength-based f-target values and fixed display limits,
             useful with comparatively small budgets. By default the
