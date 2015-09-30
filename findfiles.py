@@ -42,7 +42,8 @@ def main(directory='.', verbose=True):
                 #~ (root,elem) = os.path.split(elem)
                 #~ filelist = IndexFile(root,elem,archive)
     if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
-        dirname = '_extracted_' + directory[:directory.find('.t')]
+        dirList = directory[:directory.find('.t')].split(os.sep)
+        dirname = os.sep.join(dirList[:len(dirList) - 1]) + os.sep + '_extracted_' + dirList[-1]
         # extract only if extracted folder does not exist yet or if it was
         # extracted earlier than last change of archive:
         if ((not os.path.exists(dirname))
