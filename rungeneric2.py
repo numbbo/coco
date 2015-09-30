@@ -121,6 +121,8 @@ def main(argv=None):
             setting is based on the budget used in the data.
         --not-expensive
             expensive setting off. 
+        --svg
+            generate also the svg figures which are used in html files 
 
     Exceptions raised:
 
@@ -209,6 +211,8 @@ def main(argv=None):
                 genericsettings.isExpensive = True  # comprises runlength-based
             elif o == "--not-expensive":
                 genericsettings.isExpensive = False  
+            elif o == "--svg":
+                genericsettings.generate_svg_files = True
             elif o == "--los-only":
                 warnings.warn("option --los-only will have no effect with rungeneric2.py")
             elif o == "--crafting-effort=":
@@ -570,7 +574,7 @@ def main(argv=None):
             plt.rc('pdf', fonttype = 42)
             if genericsettings.runlength_based_targets:
                 ftarget = RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
-            ppfigs.main(dictAlg, sortedAlgs, ftarget,
+            ppfigs.main(dictAlg, genericsettings.two_algorithm_file_name, sortedAlgs, ftarget,
                         outputdir, genericsettings.verbose)
             plt.rcdefaults()
             print "Scaling figures done."

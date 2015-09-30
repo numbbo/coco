@@ -109,6 +109,8 @@ def main(argv=None):
             setting is based on the budget used in the data.
         --not-expensive
             expensive setting off. 
+        --svg
+            generate also the svg figures which are used in html files 
         --runlength-based
             runlength-based f-target values, such that the
             "level of difficulty" is similar for all functions. 
@@ -224,6 +226,8 @@ def main(argv=None):
                 genericsettings.isExpensive = True  # comprises runlength-based
             elif o == "--not-expensive":
                 genericsettings.isExpensive = False
+            elif o == "--svg":
+                genericsettings.generate_svg_files = True
             elif o == "--sca-only":
                 warnings.warn("option --sca-only will have no effect with rungeneric1.py")
             else:
