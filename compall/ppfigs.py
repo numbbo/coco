@@ -329,7 +329,7 @@ def generateData(dataSet, target):
     res[3] = numpy.max(dataSet.maxevals)
     return res
 
-def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', verbose=True):
+def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', verbose=True):
     """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
     
     One function and one target per figure.
@@ -477,8 +477,7 @@ def main(dictAlg, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', v
         plt.close()
 
     
-    filePrefix = genericsettings.two_algorithm_file_name if len(sortedAlgs) == 2 else genericsettings.many_algorithm_file_name
-    htmlFile = os.path.join(outputdir, filePrefix + '.html')
+    htmlFile = os.path.join(outputdir, htmlFilePrefix + '.html')
     # generate commands in tex file:
     try:
         abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
