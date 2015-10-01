@@ -33,32 +33,8 @@ def main(directory='.', verbose=True):
     """
     
     filelist = list()
-    directory = directory.strip()
+    directory = get_directory(directory, True)
     
-    #~ if directory.endswith('.zip'):
-        #~ archive = zipfile.ZipFile(directory)
-        #~ for elem in archive.namelist():
-            #~ if elem.endswith('.info'):
-                #~ (root,elem) = os.path.split(elem)
-                #~ filelist = IndexFile(root,elem,archive)
-    if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
-        dirList = directory[:directory.find('.t')].split(os.sep)
-        dirname = os.sep.join(dirList[:len(dirList) - 1]) + os.sep + '_extracted_' + dirList[-1]
-        # extract only if extracted folder does not exist yet or if it was
-        # extracted earlier than last change of archive:
-        if ((not os.path.exists(dirname))
-                or (os.path.getmtime(dirname) < os.path.getmtime(directory))): 
-            tarfile.TarFile.open(directory).extractall(dirname)
-            # TarFile.open handles tar.gz/tgz
-            print '    archive extracted to folder', dirname, '...'
-        directory = dirname
-        # archive = tarfile.TarFile(directory)
-        # for elem in archivefile.namelist():
-        #    ~ if elem.endswith('.info'):
-        #        ~ (root,elem) = os.path.split(elem)
-        #        ~ filelist = IndexFile(root,elem,archive)
-    #~ else:
-
     # Search through the directory directory and all its subfolders.
     for root, _dirs, files in os.walk(directory):
         if verbose:
@@ -74,6 +50,36 @@ def main(directory='.', verbose=True):
         warnings.warn('Could not find any file of interest in %s!' % root)
     return filelist
 
+
+def get_directory(directory, extractFiles):
+
+    directory = directory.strip()
+    
+    #~ if directory.endswith('.zip'):
+        #~ archive = zipfile.ZipFile(directory)
+        #~ for elem in archive.namelist():
+            #~ if elem.endswith('.info'):
+                #~ (root,elem) = os.path.split(elem)
+                #~ filelist = IndexFile(root,elem,archive)
+    if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
+        dirList = directory[:directory.find('.t')].split(os.sep)
+        dirname = os.sep.join(dirList[:len(dirList) - 1]) + os.sep + '_extracted_' + dirList[-1]
+        # extract only if extracted folder does not exist yet or if it was
+        # extracted earlier than last change of archive:
+        if (extractFiles):        
+            if ((not os.path.exists(dirname))
+                    or (os.path.getmtime(dirname) < os.path.getmtime(directory))): 
+                tarfile.TarFile.open(directory).extractall(dirname)
+                # TarFile.open handles tar.gz/tgz
+                print '    archive extracted to folder', dirname, '...'
+        directory = dirname
+            # archive = tarfile.TarFile(directory)
+            # for elem in archivefile.namelist():
+            #    ~ if elem.endswith('.info'):
+            #        ~ (root,elem) = os.path.split(elem)
+            #        ~ filelist = IndexFile(root,elem,archive)
+    
+    return directory
 
 if __name__ == '__main__':
     main()
