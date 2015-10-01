@@ -263,6 +263,9 @@ def main(argv=None):
             warnings.simplefilter('module')
             # warnings.simplefilter('ignore')            
 
+        #get directory name if outputdir is a archive file
+        outputdir = findfiles.get_directory(outputdir, False)
+        
         print ("Post-processing (1): will generate output " + 
                "data in folder %s" % outputdir)
         print "  this might take several minutes."
