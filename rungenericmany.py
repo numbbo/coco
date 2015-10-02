@@ -35,7 +35,7 @@ if __name__ == "__main__":
 from bbob_pproc import genericsettings, ppfig
 from bbob_pproc import dataoutput, pproc
 from bbob_pproc.pproc import DataSetList, processInputArgs
-from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname2, str_to_latex
+from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname1, str_to_latex
 from bbob_pproc.compall import pprldmany, pptables, ppfigs
 from bbob_pproc import ppconverrorbars
 
@@ -260,7 +260,7 @@ def main(argv=None):
         lines = []
         for i, alg in enumerate(args):
             lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
-                    str_to_latex(strip_pathname2(alg)) + '}')
+                    str_to_latex(strip_pathname1(alg)) + '}')
         prepend_to_file(os.path.join(outputdir,
                     'bbob_pproc_commands.tex'), 
                     lines, 5000, 

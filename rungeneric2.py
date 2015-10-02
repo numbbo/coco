@@ -44,7 +44,7 @@ from bbob_pproc import genericsettings, config
 from bbob_pproc import pprldistr
 from bbob_pproc import htmldesc
 from bbob_pproc.pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
-from bbob_pproc.toolsdivers import prepend_to_file, replace_in_file, strip_pathname2, str_to_latex
+from bbob_pproc.toolsdivers import prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
 from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 from bbob_pproc.compall import ppfigs, pprldmany
 from bbob_pproc import ppconverrorbars
@@ -318,7 +318,7 @@ def main(argv=None):
             lines = []
             for i, alg in enumerate(args):
                 lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
-                        str_to_latex(strip_pathname2(alg)) + '}')
+                        str_to_latex(strip_pathname1(alg)) + '}')
             prepend_to_file(os.path.join(outputdir,
                          'bbob_pproc_commands.tex'), lines, 1000, 
                          'bbob_proc_commands.tex truncated, consider removing the file before the text run'
@@ -555,13 +555,13 @@ def main(argv=None):
             key =  '##bbobpptablestwolegendexpensive##' if isinstance(pptable2.targetsOfInterest, pproc.RunlengthBasedTargetValues) else '##bbobpptablestwolegend##'
             replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
                         
-            alg0 = set(i[0] for i in dsList0.dictByAlg().keys()).pop()[0:3]
-            alg1 = set(i[0] for i in dsList1.dictByAlg().keys()).pop()[0:3]
+            alg0 = set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, '')[0:3]
+            alg1 = set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, '')[0:3]
             replace_in_file(htmlFileName, 'algorithmAshort', alg0)
             replace_in_file(htmlFileName, 'algorithmBshort', alg1)
             
             for i, alg in enumerate(args):
-                replace_in_file(htmlFileName, 'algorithm' + abc[i], strip_pathname2(alg))
+                replace_in_file(htmlFileName, 'algorithm' + abc[i], str_to_latex(strip_pathname1(alg)))
 
             print "Tables done."
 

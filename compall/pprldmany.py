@@ -355,7 +355,7 @@ def plotLegend(handles, maxval):
                                       color=plt.getp(h, 'markeredgecolor'), **tmp))
                     reshandles.append(
                         plt.text(maxval**(0.02 + annotation_line_end_relative), y,
-                                 plt.getp(h, 'label').split(os.sep)[-1],
+                                 toolsdivers.str_to_latex(toolsdivers.strip_pathname1(plt.getp(h, 'label'))),
                                  horizontalalignment="left",
                                  verticalalignment="center", size=fontsize))
                     reslabels.append(plt.getp(h, 'label'))

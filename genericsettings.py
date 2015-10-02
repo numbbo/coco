@@ -209,6 +209,8 @@ many_algorithm_file_name = 'templateBBOBmany'
 
 latex_commands_for_html = 'latex_commands_for_html'    
 
+extraction_folder_prefix = '_extracted_'
+
 # default settings for rungeneric, rungeneric1, rungeneric2, and rungenericmany
 inputCrE = 0.
 isFig = True

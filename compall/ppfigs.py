@@ -402,7 +402,8 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outpu
 
             # For legend
             # tmp = plt.plot([], [], label=alg.replace('..' + os.sep, '').strip(os.sep), **styles[i])
-            tmp = plt.plot([], [], label=alg.split(os.sep)[-1], **styles[i])
+            algorithmName = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(alg))
+            tmp = plt.plot([], [], label = algorithmName, **styles[i])
             plt.setp(tmp[0], markersize=12.,
                      markeredgecolor=plt.getp(tmp[0], 'color'))
 
@@ -489,7 +490,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outpu
             symb_html = '<span style="color:%s;">%s</span>' % (styles[i]['color'], marker_to_html(styles[i]['marker']))
             
             alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
-            alg_definitions_html += (', ' if i > 0 else '') + '%s: %s' % (symb_html, toolsdivers.strip_pathname2(sortedAlgs[i]).replace('_', ' '))
+            alg_definitions_html += (', ' if i > 0 else '') + '%s: %s' % (symb_html, toolsdivers.str_to_latex(toolsdivers.strip_pathname1(sortedAlgs[i])))
         toolsdivers.prepend_to_file(latex_commands_filename, 
                 [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
                  #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),

@@ -10,6 +10,8 @@ import os, sys, time
 import numpy as np
 import warnings
 
+from bbob_pproc import genericsettings
+
 def print_done(message='  done'):
     """prints a message with time stamp"""
     print message, '(' + time.asctime() + ').'
@@ -74,6 +76,12 @@ def strip_pathname(name):
     from input string ``name`` and replace any remaining path separator
     with '/'"""
     return name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep).replace(os.sep, '/')
+
+def strip_pathname1(name):
+    """remove ../ and ./ and leading/trailing blanks and path separators
+    from input string ``name``, replace any remaining path separator
+    with '/', and keep only the last part of the path"""
+    return (name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep).split(os.sep)[-1]).replace('data', '').replace('Data', '').replace('DATA', '').replace('.tar.gz', '').replace('.tgz', '').replace('.tar', '').replace(genericsettings.extraction_folder_prefix, '').strip(os.sep).replace(os.sep, '/')
 
 def strip_pathname2(name):
     """remove ../ and ./ and leading/trailing blanks and path separators
