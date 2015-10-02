@@ -369,9 +369,11 @@ def main(dsList0, dsList1, outputdir, verbose=True):
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
         saveFigure(filename, verbose=verbose)
         if f == 1:
+            algName1 = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(entry1.algId))
+            algName0 = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(entry0.algId))
             save_single_functions_html(
                 os.path.join(outputdir, genericsettings.two_algorithm_file_name),
-                "%s vs %s" % (entry1.algId, entry0.algId),
+                "%s vs %s" % (algName1, algName0),
                 algorithmCount=AlgorithmCount.TWO)
         plt.close()
 

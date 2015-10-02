@@ -84,8 +84,8 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     dictDim0 = dsList0.dictByDim()
     dictDim1 = dsList1.dictByDim()
 
-    alg0 = set(i[0] for i in dsList0.dictByAlg().keys()).pop()[0:3]
-    alg1 = set(i[0] for i in dsList1.dictByAlg().keys()).pop()[0:3]
+    alg0 = set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, '')[0:3]
+    alg1 = set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, '')[0:3]
 
     open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a'
          ).write(r'\providecommand{\algorithmAshort}{%s}' % writeLabels(alg0) + '\n' +
@@ -212,10 +212,10 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                 tableHtml.append('<tr>\n')
                 if nb == 0:
                     curline = [r'1:\:\algorithmAshort\hspace*{\fill}']
-                    curlineHtml = ['<th>1: %s</th>\n' % writeLabels(alg0)]
+                    curlineHtml = ['<th>1: %s</th>\n' % alg0]
                 else:
                     curline = [r'2:\:\algorithmBshort\hspace*{\fill}']
-                    curlineHtml = ['<th>2: %s</th>\n' % writeLabels(alg1)]
+                    curlineHtml = ['<th>2: %s</th>\n' % alg1]
 
                 #data = entry.detERT(targetsOfInterest)
                 dispersion = []
