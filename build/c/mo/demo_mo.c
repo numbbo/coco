@@ -94,7 +94,7 @@ void coco_optimize(coco_problem_t *problem) { /* should at the least take budget
  * Bi-objective BBOB 2009 functions
  */
 
-/* Added here for compilability!!!*/
+/* Added here for compatibility!!!*/
 #define BIOBJECTIVE_NUMBER_OF_COMBINATIONS 300
 #define BIOBJECTIVE_NUMBER_OF_INSTANCES 5
 #define BIOBJECTIVE_NUMBER_OF_DIMENSIONS 5
