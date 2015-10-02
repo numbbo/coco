@@ -173,13 +173,13 @@ static void _bbob2009_logger_error_io(FILE *path, int errnum) {
 static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
                                            const char *dataFile_path,
                                            const char *file_extension) {
-    char file_path[NUMBBO_PATH_MAX] = {0};
-    char relative_filePath[NUMBBO_PATH_MAX] = {0};
+    char file_path[COCO_PATH_MAX] = {0};
+    char relative_filePath[COCO_PATH_MAX] = {0};
     int errnum;
     strncpy(relative_filePath, dataFile_path,
-            NUMBBO_PATH_MAX - strlen(relative_filePath) - 1);
+            COCO_PATH_MAX - strlen(relative_filePath) - 1);
     strncat(relative_filePath, file_extension,
-            NUMBBO_PATH_MAX - strlen(relative_filePath) - 1);
+            COCO_PATH_MAX - strlen(relative_filePath) - 1);
     coco_join_path(file_path, sizeof(file_path), path, relative_filePath, NULL);
     if (*target_file == NULL) {
         *target_file = fopen(file_path, "a+");
@@ -194,13 +194,13 @@ static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
 static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
                                            const char *dataFile_path,
                                            const char *file_extension) {
-  char file_path[NUMBBO_PATH_MAX] = {0};
-  char relative_filePath[NUMBBO_PATH_MAX] = {0};
+  char file_path[COCO_PATH_MAX] = {0};
+  char relative_filePath[COCO_PATH_MAX] = {0};
   int errnum;
   strncpy(relative_filePath, dataFile_path,
-          NUMBBO_PATH_MAX - strlen(relative_filePath) - 1);
+          COCO_PATH_MAX - strlen(relative_filePath) - 1);
   strncat(relative_filePath, file_extension,
-          NUMBBO_PATH_MAX - strlen(relative_filePath) - 1);
+          COCO_PATH_MAX - strlen(relative_filePath) - 1);
   coco_join_path(file_path, sizeof(file_path), path, relative_filePath, NULL);
   if (*target_file == NULL) {
     *target_file = fopen(file_path, "a+");
@@ -221,14 +221,14 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                                            const char *function_id,
                                            const char *dataFile_path) {
     /*to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
-    char used_dataFile_path[NUMBBO_PATH_MAX] = {0};
+    char used_dataFile_path[COCO_PATH_MAX] = {0};
     int errnum, newLine;/*newLine is at 1 if we need a new line in the info file*/
     char function_id_char[3];/*TODO: consider adding them to data*/
-    char file_name[NUMBBO_PATH_MAX] = {0};
-    char file_path[NUMBBO_PATH_MAX] = {0};
+    char file_name[COCO_PATH_MAX] = {0};
+    char file_path[COCO_PATH_MAX] = {0};
     FILE **target_file;
     FILE *tmp_file;
-    strncpy(used_dataFile_path, dataFile_path, NUMBBO_PATH_MAX - strlen(used_dataFile_path) - 1);
+    strncpy(used_dataFile_path, dataFile_path, COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
     if (infoFile_firstInstance == 0) {
         infoFile_firstInstance = data->instance_id;
     }
@@ -237,12 +237,12 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
     target_file = &(data->index_file);
     tmp_file = NULL; /*to check whether the file already exists. Don't want to use
            target_file*/
-    strncpy(file_name, indexFile_prefix, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    strncat(file_name, "_f", NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    strncat(file_name, function_id_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    strncat(file_name, "_i", NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    strncat(file_name, infoFile_firstInstance_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-    strncat(file_name, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
+    strncpy(file_name, indexFile_prefix, COCO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, "_f", COCO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, function_id_char, COCO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, "_i", COCO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, infoFile_firstInstance_char, COCO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, ".info", COCO_PATH_MAX - strlen(file_name) - 1);
     coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
     if (*target_file == NULL) {
         tmp_file = fopen(file_path, "r");/*to check for existence*/
@@ -276,9 +276,9 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                             file_path[strlen(file_path)-strlen(infoFile_firstInstance_char) - 7] = 0;/*truncate the instance part*/
                             infoFile_firstInstance = data->instance_id;
                             sprintf(infoFile_firstInstance_char, "%d", infoFile_firstInstance);
-                            strncat(file_path, "_i", NUMBBO_PATH_MAX - strlen(file_name) - 1);
-                            strncat(file_path, infoFile_firstInstance_char, NUMBBO_PATH_MAX - strlen(file_name) - 1);
-                            strncat(file_path, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
+                            strncat(file_path, "_i", COCO_PATH_MAX - strlen(file_name) - 1);
+                            strncat(file_path, infoFile_firstInstance_char, COCO_PATH_MAX - strlen(file_name) - 1);
+                            strncat(file_path, ".info", COCO_PATH_MAX - strlen(file_name) - 1);
                         }
                         else{/*we have all dimensions*/
                             newLine = 1;
@@ -308,9 +308,9 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                     (int)strtol(function_id, NULL, 10), (long)data->number_of_variables,
                     pow(10, -8), data->alg_name);
             fprintf(*target_file, "%%\n");
-            strncat(used_dataFile_path, "_i", NUMBBO_PATH_MAX - strlen(used_dataFile_path) - 1);
+            strncat(used_dataFile_path, "_i", COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
             strncat(used_dataFile_path, infoFile_firstInstance_char,
-                    NUMBBO_PATH_MAX - strlen(used_dataFile_path) - 1);
+                    COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
             fprintf(*target_file, "%s.dat",
                     used_dataFile_path); /*dataFile_path does not have the extension*/
             current_dim = data->number_of_variables;
@@ -329,9 +329,9 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
   /*
     Creates/opens the data and index files
   */
-  char dataFile_path[NUMBBO_PATH_MAX] = {
+  char dataFile_path[COCO_PATH_MAX] = {
       0}; /*relative path to the .dat file from where the .info file is*/
-  char folder_path[NUMBBO_PATH_MAX] = {0};
+  char folder_path[COCO_PATH_MAX] = {0};
   char tmpc_funId[3]; /*serves to extract the function id as a char *. There
                          should be a better way of doing this! */
   char tmpc_dim[3];   /*serves to extract the dimension as a char *. There should
@@ -346,18 +346,18 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
   sprintf(tmpc_dim, "%lu", (unsigned long) inner_problem->number_of_variables);
   
   /* prepare paths and names*/
-  strncpy(dataFile_path, "data_f", NUMBBO_PATH_MAX);
+  strncpy(dataFile_path, "data_f", COCO_PATH_MAX);
   strncat(dataFile_path, tmpc_funId,
-          NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+          COCO_PATH_MAX - strlen(dataFile_path) - 1);
   coco_join_path(folder_path, sizeof(folder_path), data->path, dataFile_path,
                  NULL);
   coco_create_path(folder_path);
   strncat(dataFile_path, "/bbobexp_f",
-          NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+          COCO_PATH_MAX - strlen(dataFile_path) - 1);
   strncat(dataFile_path, tmpc_funId,
-          NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
-  strncat(dataFile_path, "_DIM", NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
-  strncat(dataFile_path, tmpc_dim, NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+          COCO_PATH_MAX - strlen(dataFile_path) - 1);
+  strncat(dataFile_path, "_DIM", COCO_PATH_MAX - strlen(dataFile_path) - 1);
+  strncat(dataFile_path, tmpc_dim, COCO_PATH_MAX - strlen(dataFile_path) - 1);
 
   /* index/info file*/
   _bbob2009_logger_openIndexFile(data, data->path, indexFile_prefix, tmpc_funId,
@@ -365,9 +365,9 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
   fprintf(data->index_file, ", %d", bbob2009_get_instance_id(inner_problem));
   /* data files*/
   /*TODO: definitely improvable but works for now*/
-  strncat(dataFile_path, "_i", NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+  strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
   strncat(dataFile_path, infoFile_firstInstance_char,
-            NUMBBO_PATH_MAX - strlen(dataFile_path) - 1);
+            COCO_PATH_MAX - strlen(dataFile_path) - 1);
   _bbob2009_logger_open_dataFile(&(data->fdata_file), data->path, dataFile_path,
                                  ".dat");
   fprintf(data->fdata_file, _file_header_str, data->optimal_fvalue);

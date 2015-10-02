@@ -11,7 +11,7 @@
 #if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
 #include <windows.h>
 static const char *coco_path_separator = "\\";
-#define NUMBBO_PATH_MAX MAX_PATH
+#define COCO_PATH_MAX MAX_PATH
 #define HAVE_GFA 1
 #elif defined(__gnu_linux__)
 #include <sys/stat.h>
@@ -19,21 +19,21 @@ static const char *coco_path_separator = "\\";
 #include <linux/limits.h>
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
-#define NUMBBO_PATH_MAX PATH_MAX
+#define COCO_PATH_MAX PATH_MAX
 #elif defined(__APPLE__)
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/syslimits.h>
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
-#define NUMBBO_PATH_MAX PATH_MAX
+#define COCO_PATH_MAX PATH_MAX
 #elif defined(__FreeBSD__)
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <limits.h>
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
-#define NUMBBO_PATH_MAX PATH_MAX
+#define COCO_PATH_MAX PATH_MAX
 #elif defined(__sun) || defined(sun)
 #if defined(__SVR4) || defined(__svr4__)
 /* Solaris */
@@ -42,7 +42,7 @@ static const char *coco_path_separator = "/";
 #include <limits.h>
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
-#define NUMBBO_PATH_MAX PATH_MAX
+#define COCO_PATH_MAX PATH_MAX
 #endif
 #else
 #error Unknown platform
@@ -52,8 +52,8 @@ static const char *coco_path_separator = "/";
 #define S_IRWXU "0700"
 #endif
 
-#if !defined(NUMBBO_PATH_MAX)
-#error NUMBBO_PATH_MAX undefined
+#if !defined(COCO_PATH_MAX)
+#error COCO_PATH_MAX undefined
 #endif
 
 /***********************************

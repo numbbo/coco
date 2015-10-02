@@ -6,8 +6,8 @@ static coco_problem_t *toy_observer(coco_problem_t *problem, const char *options
   size_t i;
   static const size_t number_of_targets = 20;
   double targets[20];
-  char base_path[NUMBBO_PATH_MAX] = {0};
-  char filename[NUMBBO_PATH_MAX] = {0};
+  char base_path[COCO_PATH_MAX] = {0};
+  char filename[COCO_PATH_MAX] = {0};
 
   /* Calculate target levels: */
   for (i = number_of_targets; i > 0; --i) {

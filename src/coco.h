@@ -5,8 +5,8 @@
  * file. It is the authoritative reference, if any function deviates
  * from the documented behavior it is considered a bug.
  */
-#ifndef __NUMBBO_H__
-#define __NUMBBO_H__
+#ifndef __COCO_H__
+#define __COCO_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,7 +31,7 @@ typedef struct coco_problem coco_problem_t;
 typedef void (*coco_optimizer_t)(coco_problem_t *problem);
 
 /**
- * Evaluate the NUMBBO problem represented by ${self} with the
+ * Evaluate the COCO problem represented by ${self} with the
  * parameter settings ${x} and save the result in ${y}.
  *
  * @note Both x and y must point to correctly sized allocated memory
@@ -40,7 +40,7 @@ typedef void (*coco_optimizer_t)(coco_problem_t *problem);
 void coco_evaluate_function(coco_problem_t *self, const double *x, double *y);
 
 /**
- * Evaluate the constraints of the NUMBB problem represented by
+ * Evaluate the constraints of the COCO problem represented by
  * ${self} with the parameter settings ${x} and save the result in
  * ${y}.
  *
@@ -59,7 +59,7 @@ void coco_recommend_solutions(coco_problem_t *self, const double *x,
                               size_t number_of_solutions);
 
 /**
- * Free the NUMBBO problem represented by ${self}.
+ * Free the COCO problem represented by ${self}.
  */
 void coco_free_problem(coco_problem_t *self);
 

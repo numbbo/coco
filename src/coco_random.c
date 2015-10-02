@@ -2,7 +2,7 @@
 
 #include "coco.h"
 
-#define NUMBBO_NORMAL_POLAR /* Use polar transformation method */
+#define COCO_NORMAL_POLAR /* Use polar transformation method */
 
 #define SHORT_LAG 273
 #define LONG_LAG 607
@@ -65,7 +65,7 @@ double coco_uniform_random(coco_random_state_t *state) {
 
 double coco_normal_random(coco_random_state_t *state) {
   double normal;
-#ifdef NUMBBO_NORMAL_POLAR
+#ifdef COCO_NORMAL_POLAR
   const double u1 = coco_uniform_random(state);
   const double u2 = coco_uniform_random(state);
   normal = sqrt(-2 * log(u1)) * cos(2 * coco_pi * u2);

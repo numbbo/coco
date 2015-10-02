@@ -1,5 +1,5 @@
 /*
- * R NUMBBO runtime implementation.
+ * R COCO runtime implementation.
  */
 #include <stdio.h>
 #include <stdlib.h>

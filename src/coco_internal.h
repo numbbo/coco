@@ -1,12 +1,12 @@
 /*
- * Internal NumBBO structures and typedefs.
+ * Internal COCO structures and typedefs.
  *
- * These are used throughout the NumBBO code base but should not be
+ * These are used throughout the COCO code base but should not be
  * used by any external code.
  */
 
-#ifndef __NUMBBO_INTERNAL__
-#define __NUMBBO_INTERNAL__
+#ifndef __COCO_INTERNAL__
+#define __COCO_INTERNAL__
 
 typedef void (*coco_initial_solution_function_t)(
     const struct coco_problem *self, double *y);
