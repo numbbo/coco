@@ -12,7 +12,7 @@ typedef struct {
   double beta;
 } _avt_data_t;
 
-static void _avt_evaluate_function(coco_problem_t *self, const double *x, double *y) {
+static void private_avt_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   double exponent;
   _avt_data_t *data;
@@ -34,7 +34,7 @@ static void _avt_evaluate_function(coco_problem_t *self, const double *x, double
   coco_evaluate_function(inner_problem, data->x, y);
 }
 
-static void _avt_free_data(void *thing) {
+static void private_avt_free_data(void *thing) {
   _avt_data_t *data = thing;
   coco_free_memory(data->x);
 }
@@ -49,7 +49,7 @@ static coco_problem_t *asymmetric_variable_transform(coco_problem_t *inner_probl
   data = coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->beta = beta;
-  self = coco_allocate_transformed_problem(inner_problem, data, _avt_free_data);
-  self->evaluate_function = _avt_evaluate_function;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_avt_free_data);
+  self->evaluate_function = private_avt_evaluate_function;
   return self;
 }

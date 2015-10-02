@@ -108,7 +108,7 @@ static long biobjective_encode_problem_index(int combination_idx, long instance_
 
 /* Interface via dimension, function-ID and instance-ID. This does not translate
    directly to different languages or benchmark suites. */
-int main() {
+int main(void) {
   int problem_index, combination_idx, instance_idx, dimension_idx;
   coco_problem_t *problem;
   

@@ -85,7 +85,7 @@ static void lnd_evaluate_function(coco_problem_t *self, const double *x, double 
   fflush(data->logfile);
 }
 
-static void _lnd_free_data(void *stuff) {
+static void private_lnd_free_data(void *stuff) {
   _log_nondominating_t *data;
   assert(stuff != NULL);
   data = stuff;
@@ -122,7 +122,7 @@ static coco_problem_t *log_nondominating(coco_problem_t *inner_problem,
   data->path = coco_strdup(path);
   data->logfile = NULL; /* Open lazily in lht_evaluate_function(). */
   data->max_size_of_archive = max_size_of_archive;
-  self = coco_allocate_transformed_problem(inner_problem, data, _lnd_free_data);
+  self = coco_allocate_transformed_problem(inner_problem, data, private_lnd_free_data);
   self->evaluate_function = lnd_evaluate_function;
   return self;
 }

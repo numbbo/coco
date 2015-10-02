@@ -7,7 +7,7 @@
 
 typedef struct { double *xopt; } coco_bbob_attractive_sector_problem_data_t;
 
-static void _attractive_sector_evaluate(coco_problem_t *self, const double *x,
+static void private_attractive_sector_evaluate(coco_problem_t *self, const double *x,
                                         double *y) {
   size_t i;
   coco_bbob_attractive_sector_problem_data_t *data;
@@ -24,7 +24,7 @@ static void _attractive_sector_evaluate(coco_problem_t *self, const double *x,
   }
 }
 
-static void _attractive_sector_free(coco_problem_t *self) {
+static void private_attractive_sector_free(coco_problem_t *self) {
   coco_bbob_attractive_sector_problem_data_t *data;
   data = self->data;
   coco_free_memory(data->xopt);
@@ -53,15 +53,15 @@ attractive_sector_problem(const size_t number_of_variables,
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
   problem->data = data;
-  problem->evaluate_function = _attractive_sector_evaluate;
-  problem->free_problem = _attractive_sector_free;
+  problem->evaluate_function = private_attractive_sector_evaluate;
+  problem->free_problem = private_attractive_sector_free;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
     problem->best_parameter[i] = 0.0;
   }
   /* Calculate best parameter value */
-  _attractive_sector_evaluate(problem, problem->best_parameter,
+  private_attractive_sector_evaluate(problem, problem->best_parameter,
                               problem->best_value);
   return problem;
 }

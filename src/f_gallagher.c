@@ -26,7 +26,7 @@ typedef struct {
   coco_free_function_t old_free_problem;
 } _bbob_gallagher_t;
 
-static void _bbob_gallagher_evaluate(coco_problem_t *self, const double *x,
+static void private_bbob_gallagher_evaluate(coco_problem_t *self, const double *x,
                                      double *y) {
   size_t i, j; /*Loop over dim*/
   double *tmx;
@@ -83,7 +83,7 @@ static void _bbob_gallagher_evaluate(coco_problem_t *self, const double *x,
   coco_free_memory(tmx);
 }
 
-static void _bbob_gallagher_free(coco_problem_t *self) {
+static void private_bbob_gallagher_free(coco_problem_t *self) {
   _bbob_gallagher_t *data;
   data = self->data;
   coco_free_memory(data->xopt);
@@ -163,8 +163,8 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
   problem->data = data;
-  problem->free_problem = _bbob_gallagher_free;
-  problem->evaluate_function = _bbob_gallagher_evaluate;
+  problem->free_problem = private_bbob_gallagher_free;
+  problem->evaluate_function = private_bbob_gallagher_evaluate;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;

@@ -5,7 +5,7 @@
 
 #include "coco_problem.c"
 
-static void _bent_cigar_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void private_bent_cigar_evaluate(coco_problem_t *self, const double *x, double *y) {
   static const double condition = 1.0e6;
   size_t i;
   assert(self->number_of_objectives == 1);
@@ -30,13 +30,13 @@ static coco_problem_t *bent_cigar_problem(const size_t number_of_variables) {
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
-  problem->evaluate_function = _bent_cigar_evaluate;
+  problem->evaluate_function = private_bent_cigar_evaluate;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
     problem->best_parameter[i] = 0.0;
   }
   /* Calculate best parameter value */
-  _bent_cigar_evaluate(problem, problem->best_parameter, problem->best_value);
+  private_bent_cigar_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }

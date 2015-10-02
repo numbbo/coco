@@ -84,7 +84,7 @@ static const char *_file_header_str = "%% function evaluation | "
                                       "x1 | "
                                       "x2...\n";
 
-static void _bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
+static void private_bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
                                               double fvalue) {
   /* "jump" directly to the next closest (but larger) target to the
    * current fvalue from the initial target
@@ -107,7 +107,7 @@ static void _bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
   }
 }
 
-static void _bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
+static void private_bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
                                               size_t number_of_variables) {
   while (data->number_of_evaluations >=
          floor(pow(10, (double)data->idx_t_trigger / (double)bbob2009_nbpts_nbevals)))
@@ -125,7 +125,7 @@ static void _bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
 /**
  * adds a formated line to a data file
  */
-static void _bbob2009_logger_write_data(FILE *target_file,
+static void private_bbob2009_logger_write_data(FILE *target_file,
                                         long number_of_evaluations,
                                         double fvalue, double best_fvalue,
                                         double best_value, const double *x,
@@ -148,7 +148,7 @@ static void _bbob2009_logger_write_data(FILE *target_file,
 /**
  * Error when trying to create the file "path"
  */
-static void _bbob2009_logger_error_io(FILE *path, int errnum) {
+static void private_bbob2009_logger_error_io(FILE *path, int errnum) {
   char *buf;
   const char *error_format = "Error opening file: %s\n ";
                              /*"bbob2009_logger_prepare() failed to open log "
@@ -170,7 +170,7 @@ static void _bbob2009_logger_error_io(FILE *path, int errnum) {
  ".dat");
  */
 
-static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
+static void private_bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
                                            const char *dataFile_path,
                                            const char *file_extension) {
     char file_path[COCO_PATH_MAX] = {0};
@@ -185,7 +185,7 @@ static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
         *target_file = fopen(file_path, "a+");
         errnum = errno;
         if (*target_file == NULL) {
-            _bbob2009_logger_error_io(*target_file, errnum);
+            private_bbob2009_logger_error_io(*target_file, errnum);
         }
     }
 }
@@ -215,7 +215,7 @@ static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
  * Creates the index file fileName_prefix+problem_id+file_extension in
  * folde_path
  */
-static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
+static void private_bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                                            const char *folder_path,
                                            const char *indexFile_prefix,
                                            const char *function_id,
@@ -253,7 +253,7 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
             *target_file = fopen(file_path, "a+");
             if (*target_file == NULL) {
                 errnum = errno;
-                _bbob2009_logger_error_io(*target_file, errnum);
+                private_bbob2009_logger_error_io(*target_file, errnum);
             }
             fclose(tmp_file);
         }
@@ -292,7 +292,7 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
             *target_file = fopen(file_path, "a+");/*in any case, we append*/
             if (*target_file == NULL) {
                 errnum = errno;
-                _bbob2009_logger_error_io(*target_file, errnum);
+                private_bbob2009_logger_error_io(*target_file, errnum);
             }
             if (tmp_file) { /*File already exists, new dim so just a new line. ALso, close the tmp_file*/
                 if (newLine) {
@@ -324,7 +324,7 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
  * Generates the different files and folder needed by the logger to store the
  * data if theses don't already exist
  */
-static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
+static void private_bbob2009_logger_initialize(bbob2009_logger_t *data,
                                         coco_problem_t *inner_problem) {
   /*
     Creates/opens the data and index files
@@ -360,7 +360,7 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
   strncat(dataFile_path, tmpc_dim, COCO_PATH_MAX - strlen(dataFile_path) - 1);
 
   /* index/info file*/
-  _bbob2009_logger_openIndexFile(data, data->path, indexFile_prefix, tmpc_funId,
+  private_bbob2009_logger_openIndexFile(data, data->path, indexFile_prefix, tmpc_funId,
                                  dataFile_path);
   fprintf(data->index_file, ", %d", bbob2009_get_instance_id(inner_problem));
   /* data files*/
@@ -368,15 +368,15 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
   strncat(dataFile_path, infoFile_firstInstance_char,
             COCO_PATH_MAX - strlen(dataFile_path) - 1);
-  _bbob2009_logger_open_dataFile(&(data->fdata_file), data->path, dataFile_path,
+  private_bbob2009_logger_open_dataFile(&(data->fdata_file), data->path, dataFile_path,
                                  ".dat");
   fprintf(data->fdata_file, _file_header_str, data->optimal_fvalue);
 
-  _bbob2009_logger_open_dataFile(&(data->tdata_file), data->path, dataFile_path,
+  private_bbob2009_logger_open_dataFile(&(data->tdata_file), data->path, dataFile_path,
                                  ".tdat");
   fprintf(data->tdata_file, _file_header_str, data->optimal_fvalue);
 
-  _bbob2009_logger_open_dataFile(&(data->rdata_file), data->path, dataFile_path,
+  private_bbob2009_logger_open_dataFile(&(data->rdata_file), data->path, dataFile_path,
                                  ".rdat");
   fprintf(data->rdata_file, _file_header_str, data->optimal_fvalue);
   /* TODO: manage duplicate filenames by either using numbers or raising an
@@ -387,13 +387,13 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
 /**
  * Layer added to the transformed-problem evaluate_function by the logger
  */
-static void _bbob2009_logger_evaluate_function(coco_problem_t *self, const double *x,
+static void private_bbob2009_logger_evaluate_function(coco_problem_t *self, const double *x,
                                                double *y) {
   bbob2009_logger_t *data = coco_get_transform_data(self);
   coco_problem_t * inner_problem = coco_get_transform_inner_problem(self);
   
   if (!data->is_initialized) {
-    _bbob2009_logger_initialize(data, inner_problem);
+    private_bbob2009_logger_initialize(data, inner_problem);
   }
   if (bbob2009_logger_verbosity > 2 && data->number_of_evaluations == 0) {
     if (inner_problem->index >= 0) {
@@ -422,19 +422,19 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self, const doubl
   /* Add a line in the .dat file for each logging target reached. */
   if (y[0] - data->optimal_fvalue <= data->f_trigger) {
 
-    _bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations,
+    private_bbob2009_logger_write_data(data->fdata_file, data->number_of_evaluations,
                                 y[0], data->best_fvalue, data->optimal_fvalue,
                                 x, self->number_of_variables);
-    _bbob2009_logger_update_f_trigger(data, y[0]);
+    private_bbob2009_logger_update_f_trigger(data, y[0]);
   }
 
   /* Add a line in the .tdat file each time an fevals trigger is reached. */
   if (data->number_of_evaluations >= data->t_trigger) {
     data->written_last_eval = 1;
-    _bbob2009_logger_write_data(data->tdata_file, data->number_of_evaluations,
+    private_bbob2009_logger_write_data(data->tdata_file, data->number_of_evaluations,
                                 y[0], data->best_fvalue, data->optimal_fvalue,
                                 x, self->number_of_variables);
-    _bbob2009_logger_update_t_trigger(data, self->number_of_variables);
+    private_bbob2009_logger_update_t_trigger(data, self->number_of_variables);
   }
 
   /* Flush output so that impatient users can see progress. */
@@ -448,7 +448,7 @@ static void _bbob2009_logger_evaluate_function(coco_problem_t *self, const doubl
  * TODO: make sure it is called at the end of each run or move the
  * writing into files to another function
  */
-static void _bbob2009_logger_free_data(void *stuff) {
+static void private_bbob2009_logger_free_data(void *stuff) {
   /*TODO: do all the "non simply freeing" stuff in another function
    * that can have problem as input
    */
@@ -484,7 +484,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
      * "instance" of problem for each restart in the beginning
      */
     if (!data->written_last_eval) {
-      _bbob2009_logger_write_data(data->tdata_file, data->number_of_evaluations,
+      private_bbob2009_logger_write_data(data->tdata_file, data->number_of_evaluations,
                                   data->last_fvalue, data->best_fvalue,
                                   data->optimal_fvalue, data->best_solution,
                                   data->number_of_variables);
@@ -551,8 +551,8 @@ static coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
   data->is_initialized = 0;
 
   self = coco_allocate_transformed_problem(inner_problem, data,
-                                           _bbob2009_logger_free_data);
-  self->evaluate_function = _bbob2009_logger_evaluate_function;
+                                           private_bbob2009_logger_free_data);
+  self->evaluate_function = private_bbob2009_logger_evaluate_function;
   bbob2009_logger_is_open = 1;
   return self;
 }

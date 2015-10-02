@@ -27,7 +27,7 @@ typedef struct {
 } _bbob_step_ellipsoid_t;
 
 
-static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, const double *x,
+static void private_bbob_step_ellipsoid_evaluate(coco_problem_t *self, const double *x,
                                           double *y) {
   static const double condition = 100;
   static const double alpha = 10.0;
@@ -81,7 +81,7 @@ static void _bbob_step_ellipsoid_evaluate(coco_problem_t *self, const double *x,
   y[0] = 0.1 * doublemax(fabs(x1) * 1.0e-4, y[0]) + penalty + data->fopt;
 }
 
-static void _bbob_step_ellipsoid_free(coco_problem_t *self) {
+static void private_bbob_step_ellipsoid_free(coco_problem_t *self) {
   _bbob_step_ellipsoid_t *data;
   data = self->data;
   coco_free_memory(data->x);
@@ -134,8 +134,8 @@ bbob_step_ellipsoid_problem(const size_t number_of_variables,
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
   problem->data = data;
-  problem->evaluate_function = _bbob_step_ellipsoid_evaluate;
-  problem->free_problem = _bbob_step_ellipsoid_free;
+  problem->evaluate_function = private_bbob_step_ellipsoid_evaluate;
+  problem->free_problem = private_bbob_step_ellipsoid_free;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;

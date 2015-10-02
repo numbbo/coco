@@ -14,7 +14,7 @@ typedef struct {
   double bk[WEIERSTRASS_SUMMANDS];
 } _wss_problem_t;
 
-static void _weierstrass_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void private_weierstrass_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i, j;
   _wss_problem_t *data = self->data;
   assert(self->number_of_objectives == 1);
@@ -52,7 +52,7 @@ static coco_problem_t *weierstrass_problem(const size_t number_of_variables) {
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
-  problem->evaluate_function = _weierstrass_evaluate;
+  problem->evaluate_function = private_weierstrass_evaluate;
   problem->data = data;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
@@ -61,7 +61,7 @@ static coco_problem_t *weierstrass_problem(const size_t number_of_variables) {
   }
 
   /* Calculate best parameter value */
-  _weierstrass_evaluate(problem, problem->best_parameter, problem->best_value);
+  private_weierstrass_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }
 

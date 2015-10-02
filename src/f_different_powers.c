@@ -4,7 +4,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-static void _different_powers_evaluate(coco_problem_t *self, const double *x,
+static void private_different_powers_evaluate(coco_problem_t *self, const double *x,
                                        double *y) {
   size_t i;
   double sum = 0.0;
@@ -32,14 +32,14 @@ different_powers_problem(const size_t number_of_variables) {
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
-  problem->evaluate_function = _different_powers_evaluate;
+  problem->evaluate_function = private_different_powers_evaluate;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
     problem->best_parameter[i] = 0.0;
   }
   /* Calculate best parameter value */
-  _different_powers_evaluate(problem, problem->best_parameter,
+  private_different_powers_evaluate(problem, problem->best_parameter,
                              problem->best_value);
   return problem;
 }

@@ -10,7 +10,7 @@ typedef struct {
   coco_free_function_t old_free_problem;
 } _x_hat_data_t;
 
-static void _x_hat_evaluate_function(coco_problem_t *self, const double *x,
+static void private_x_hat_evaluate_function(coco_problem_t *self, const double *x,
                                      double *y) {
   size_t i;
   _x_hat_data_t *data;
@@ -31,7 +31,7 @@ static void _x_hat_evaluate_function(coco_problem_t *self, const double *x,
   } while (0);
 }
 
-static void _x_hat_free_data(void *thing) {
+static void private_x_hat_free_data(void *thing) {
   _x_hat_data_t *data = thing;
   coco_free_memory(data->x);
 }
@@ -48,7 +48,7 @@ static coco_problem_t *x_hat(coco_problem_t *inner_problem, long seed) {
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
   self =
-      coco_allocate_transformed_problem(inner_problem, data, _x_hat_free_data);
-  self->evaluate_function = _x_hat_evaluate_function;
+      coco_allocate_transformed_problem(inner_problem, data, private_x_hat_free_data);
+  self->evaluate_function = private_x_hat_evaluate_function;
   return self;
 }

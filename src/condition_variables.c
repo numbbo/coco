@@ -12,7 +12,7 @@ typedef struct {
   double alpha;
 } _cv_data_t;
 
-static void _cv_evaluate_function(coco_problem_t *self, const double *x, double *y) {
+static void private_cv_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   _cv_data_t *data;
   coco_problem_t *inner_problem;
@@ -30,7 +30,7 @@ static void _cv_evaluate_function(coco_problem_t *self, const double *x, double 
   coco_evaluate_function(inner_problem, data->x, y);
 }
 
-static void _cv_free_data(void *thing) {
+static void private_cv_free_data(void *thing) {
   _cv_data_t *data = thing;
   coco_free_memory(data->x);
 }
@@ -45,7 +45,7 @@ static coco_problem_t *condition_variables(coco_problem_t *inner_problem,
   data = coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->alpha = alpha;
-  self = coco_allocate_transformed_problem(inner_problem, data, _cv_free_data);
-  self->evaluate_function = _cv_evaluate_function;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_cv_free_data);
+  self->evaluate_function = private_cv_evaluate_function;
   return self;
 }

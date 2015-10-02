@@ -14,7 +14,7 @@
 
 typedef struct { double *M, *b, *x; } _atv_data_t;
 
-static void _atv_evaluate_function(coco_problem_t *self, const double *x, double *y) {
+static void private_atv_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   size_t i, j;
   _atv_data_t *data;
   coco_problem_t *inner_problem;
@@ -35,7 +35,7 @@ static void _atv_evaluate_function(coco_problem_t *self, const double *x, double
   coco_evaluate_function(inner_problem, data->x, y);
 }
 
-static void _atv_free_data(void *thing) {
+static void private_atv_free_data(void *thing) {
   _atv_data_t *data = thing;
   coco_free_memory(data->M);
   coco_free_memory(data->b);
@@ -61,7 +61,7 @@ static coco_problem_t *affine_transform_variables(coco_problem_t *inner_problem,
   data->b = coco_duplicate_vector(b, inner_problem->number_of_variables);
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_allocate_transformed_problem(inner_problem, data, _atv_free_data);
-  self->evaluate_function = _atv_evaluate_function;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_atv_free_data);
+  self->evaluate_function = private_atv_evaluate_function;
   return self;
 }

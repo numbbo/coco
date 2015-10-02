@@ -115,7 +115,7 @@ typedef struct {
   coco_transform_free_data_t free_data;
 } coco_transform_data_t;
 
-static void _tfp_evaluate_function(coco_problem_t *self, const double *x, double *y) {
+static void private_tfp_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   coco_transform_data_t *data;
   assert(self != NULL);
   assert(self->data != NULL);
@@ -125,7 +125,7 @@ static void _tfp_evaluate_function(coco_problem_t *self, const double *x, double
   coco_evaluate_function(data->inner_problem, x, y);
 }
 
-static void _tfp_evaluate_constraint(coco_problem_t *self, const double *x,
+static void private_tfp_evaluate_constraint(coco_problem_t *self, const double *x,
                                      double *y) {
   coco_transform_data_t *data;
   assert(self != NULL);
@@ -136,7 +136,7 @@ static void _tfp_evaluate_constraint(coco_problem_t *self, const double *x,
   coco_evaluate_constraint(data->inner_problem, x, y);
 }
 
-static void _tfp_recommend_solutions(coco_problem_t *self, const double *x,
+static void private_tfp_recommend_solutions(coco_problem_t *self, const double *x,
                                      size_t number_of_solutions) {
   coco_transform_data_t *data;
   assert(self != NULL);
@@ -147,7 +147,7 @@ static void _tfp_recommend_solutions(coco_problem_t *self, const double *x,
   coco_recommend_solutions(data->inner_problem, x, number_of_solutions);
 }
 
-static void _tfp_free_problem(coco_problem_t *self) {
+static void private_tfp_free_problem(coco_problem_t *self) {
   coco_transform_data_t *data;
   assert(self != NULL);
   assert(self->data != NULL);
@@ -193,10 +193,10 @@ coco_allocate_transformed_problem(coco_problem_t *inner_problem, void *userdata,
   data->free_data = free_data;
 
   self = coco_duplicate_problem(inner_problem);
-  self->evaluate_function = _tfp_evaluate_function;
-  self->evaluate_constraint = _tfp_evaluate_constraint;
-  self->recommend_solutions = _tfp_recommend_solutions;
-  self->free_problem = _tfp_free_problem;
+  self->evaluate_function = private_tfp_evaluate_function;
+  self->evaluate_constraint = private_tfp_evaluate_constraint;
+  self->recommend_solutions = private_tfp_recommend_solutions;
+  self->free_problem = private_tfp_free_problem;
   self->data = data;
   return self;
 }

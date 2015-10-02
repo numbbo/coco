@@ -16,7 +16,7 @@ typedef struct {
   long number_of_evaluations;
 } _log_hitting_time_t;
 
-static void _lht_evaluate_function(coco_problem_t *self, const double *x, double *y) {
+static void private_lht_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   _log_hitting_time_t *data;
   data = coco_get_transform_data(self);
 
@@ -51,7 +51,7 @@ static void _lht_evaluate_function(coco_problem_t *self, const double *x, double
   fflush(data->logfile);
 }
 
-static void _lht_free_data(void *stuff) {
+static void private_lht_free_data(void *stuff) {
   _log_hitting_time_t *data;
   assert(stuff != NULL);
   data = stuff;
@@ -86,7 +86,7 @@ static coco_problem_t *log_hitting_times(coco_problem_t *inner_problem,
   data->number_of_target_values = number_of_target_values;
   data->next_target_value = 0;
 
-  self = coco_allocate_transformed_problem(inner_problem, data, _lht_free_data);
-  self->evaluate_function = _lht_evaluate_function;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_lht_free_data);
+  self->evaluate_function = private_lht_evaluate_function;
   return self;
 }

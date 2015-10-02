@@ -5,7 +5,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-static void _linear_slope_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void private_linear_slope_evaluate(coco_problem_t *self, const double *x, double *y) {
   static const double alpha = 100.0;
   size_t i;
   assert(self->number_of_objectives == 1);
@@ -36,7 +36,7 @@ static coco_problem_t *linear_slope_problem(const size_t number_of_variables,
   snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d",
            "linear_slope", (int)number_of_variables);
 
-  problem->evaluate_function = _linear_slope_evaluate;
+  problem->evaluate_function = private_linear_slope_evaluate;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
@@ -47,6 +47,6 @@ static coco_problem_t *linear_slope_problem(const size_t number_of_variables,
     }
   }
   /* Calculate best parameter value */
-  _linear_slope_evaluate(problem, problem->best_parameter, problem->best_value);
+  private_linear_slope_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }
