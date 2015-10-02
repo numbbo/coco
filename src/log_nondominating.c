@@ -34,7 +34,7 @@ static void lnd_evaluate_function(coco_problem_t *self, const double *x, double 
   coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
   data->number_of_evaluations++;
 
-  /* Open logfile if it is not alread open */
+  /* Open logfile if it is not already open */
   if (data->logfile == NULL) {
     data->logfile = fopen(data->path, "w");
     if (data->logfile == NULL) {
@@ -76,7 +76,7 @@ static void lnd_evaluate_function(coco_problem_t *self, const double *x, double 
           fprintf(data->logfile, "%13.10e\t", entry->var[j]);
       for (k=0; k < coco_get_number_of_objectives(coco_get_transform_inner_problem(self)); k++) /* all objective values of a solution */
           fprintf(data->logfile, "%13.10e\t", entry->obj[k]);
-      fprintf(data->logfile, "%zu", entry->birth);  /* its timestamp (FEval) */
+      fprintf(data->logfile, "%zu", entry->birth);  /* its time stamp (FEval) */
       fprintf(data->logfile, "\n");  /* go to the next line for another solution */
   }
   /********************************************************************************/

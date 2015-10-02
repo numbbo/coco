@@ -10,8 +10,8 @@
 #include "coco.h"
 
 /* After we have thrown an error, the framework is (by definition) in
- * an undefinded state and no further calls into the framework may by
- * made. We do not terminate immideatly because we want to give R a
+ * an undefined state and no further calls into the framework may by
+ * made. We do not terminate immediately because we want to give R a
  * chance to save any results or possibly recover.
  */
 void coco_error(const char *message, ...) { error(message); }

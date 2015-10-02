@@ -2,8 +2,8 @@
  * Public CoCO/NumBBO experiments interface
  *
  * All public functions, constants and variables are defined in this
- * file. It is the authorative reference, if any function deviates
- * from the documented behaviour it is considered a bug.
+ * file. It is the authoritative reference, if any function deviates
+ * from the documented behavior it is considered a bug.
  */
 #ifndef __NUMBBO_H__
 #define __NUMBBO_H__
@@ -232,11 +232,11 @@ double coco_normal_random(coco_random_state_t *state);
 void coco_error(const char *message, ...);
 
 /**
- * Function to warn about eror conditions.
+ * Function to warn about error conditions.
  */
 void coco_warning(const char *message, ...);
 
-/* Memory managment routines.
+/* Memory management routines.
  *
  * Their implementation may never fail. They either return a valid
  * pointer or terminate the program.

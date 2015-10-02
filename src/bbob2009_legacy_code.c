@@ -3,7 +3,7 @@
  *
  * All of this code should only be used by the bbob2009_suite functions
  * to provide compatibility to the legacy code. New test beds should
- * strive to use the new numbbo facilities for random number
+ * strive to use the new COCO facilities for random number
  * generation etc.
  */
 

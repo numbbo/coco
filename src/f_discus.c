@@ -25,7 +25,7 @@ static coco_problem_t *discus_problem(const size_t number_of_variables) {
   snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d", "discus",
            (int)number_of_variables);
 
-  /* TODO: the next three lines seem superfluous and even counterproductive/bugprone */
+  /* TODO: the next three lines seem superfluous and even counterproductive/bug-prone */
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;

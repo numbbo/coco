@@ -1,11 +1,11 @@
 /*
  * f_bbob_step_ellipsoid.c
  *
- * The BBOB step ellipsoid function intertwins the variable and
+ * The BBOB step ellipsoid function intertwines the variable and
  * objective transformations in such a way that it is hard to devise a
  * composition of generic transformations to implement it. In the end
  * one would have to implement several custom transformations which
- * would be used soley by this problem. Therefore we opt to implement
+ * would be used solely by this problem. Therefore we opt to implement
  * it as a monolithic function instead.
  *
  * TODO: It would be nice to have a generic step ellipsoid function to

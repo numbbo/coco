@@ -80,6 +80,6 @@ double coco_normal_random(coco_random_state_t *state) {
   return normal;
 }
 
-/* Be hygenic (for amalgamation) and undef lags. */
+/* Be hygienic (for amalgamation) and undef lags. */
 #undef SHORT_LAG
 #undef LONG_LAG

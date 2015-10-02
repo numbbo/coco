@@ -9,7 +9,7 @@ extern "C" {
 
 struct mococo_solution_entry {
   int status;    /* 0: inactive | 1: active */
-  size_t birth;  /* timestamp to know which are newly created */
+  size_t birth;  /* time stamp to know which are newly created */
   double *var;
   double *obj;
 };

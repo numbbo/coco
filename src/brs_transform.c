@@ -1,5 +1,5 @@
 /*
- * Implementation of the ominuous 's_i scaling' of the BBOB Bueche-Rastrigin
+ * Implementation of the ominous 's_i scaling' of the BBOB Bueche-Rastrigin
  * function.
  */
 #include <math.h>

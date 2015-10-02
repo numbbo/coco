@@ -105,7 +105,7 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
   double maxcondition = 1000., maxcondition1 = 1000., *arrCondition,
          fitvalues[2] = {1.1, 9.1}; /*maxcondition1 satisfies the old code and
                                        the doc but seems wrong in that it is,
-                                       with very high probabiliy, not the
+                                       with very high probability, not the
                                        largest condition level!!!*/
   double b,
       c; /* Parameters for generating local optima. In the old code, they are

@@ -6,7 +6,7 @@
 
 #include "coco_problem.c"
 
-/* Schaffers F7 function, transformations not implemented for the moment  */
+/* Schaffer's F7 function, transformations not implemented for the moment  */
 
 static void _schaffers_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;

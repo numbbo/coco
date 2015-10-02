@@ -23,7 +23,8 @@ static size_t current_dim = 0;
 static long current_funId = 0;
 static int infoFile_firstInstance = 0;
 char infoFile_firstInstance_char[3];
-/*a possible solution: have a list of dims that are already in the file, if the ones we're about to log is != current_dim and the funId is currend_funId, create a new .info file with as suffix the number of the first instance */
+/* a possible solution: have a list of dims that are already in the file, if the ones we're about to log is != current_dim and
+ * the funId is currend_funId, create a new .info file with as suffix the number of the first instance */
 static const int bbob2009_number_of_dimensions = 6;
 static size_t dimensions_in_current_infoFile[6] = {0,0,0,0,0,0}; /*TODO should use BBOB2009_NUMBER_OF_DIMENSIONS*/
 
@@ -43,7 +44,7 @@ typedef struct {
   int is_initialized;
   char *path; /*relative path to the data folder. Simply the Algname*/
   const char *
-      alg_name;      /*the alg name, for now, temporarly the same as the path*/
+      alg_name;      /*the alg name, for now, temporarily the same as the path*/
   FILE *index_file;  /*index file*/
   FILE *fdata_file;  /*function value aligned data file*/
   FILE *tdata_file;  /*number of function evaluations aligned data file*/
@@ -244,7 +245,7 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
     strncat(file_name, ".info", NUMBBO_PATH_MAX - strlen(file_name) - 1);
     coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
     if (*target_file == NULL) {
-        tmp_file = fopen(file_path, "r");/*to check for existance*/
+        tmp_file = fopen(file_path, "r");/*to check for existence*/
         if ((tmp_file ) &&
             (current_dim == data->number_of_variables) &&
             (current_funId == data->function_id)) {/*new instance of current funId and current dim*/
@@ -282,7 +283,7 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                         else{/*we have all dimensions*/
                             newLine = 1;
                         }
-                        for (j=0; j<bbob2009_number_of_dimensions;j++){/*new info file, reinitilize list of dims*/
+                        for (j=0; j<bbob2009_number_of_dimensions;j++){/*new info file, reinitialize list of dims*/
                             dimensions_in_current_infoFile[j]= 0;
                         }
                     dimensions_in_current_infoFile[i]=data->number_of_variables;
@@ -331,9 +332,9 @@ static void _bbob2009_logger_initialize(bbob2009_logger_t *data,
   char dataFile_path[NUMBBO_PATH_MAX] = {
       0}; /*relative path to the .dat file from where the .info file is*/
   char folder_path[NUMBBO_PATH_MAX] = {0};
-  char tmpc_funId[3]; /*servs to extract the function id as a char *. There
+  char tmpc_funId[3]; /*serves to extract the function id as a char *. There
                          should be a better way of doing this! */
-  char tmpc_dim[3];   /*servs to extract the dimension as a char *. There should
+  char tmpc_dim[3];   /*serves to extract the dimension as a char *. There should
                          be a better way of doing this! */
   char indexFile_prefix[10] = "bbobexp"; /* TODO (minor): make the prefix bbobexp a
                                             parameter that the user can modify */  
@@ -520,7 +521,7 @@ static coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
   data->rdata_file = NULL;
   data->number_of_variables = inner_problem->number_of_variables;
   if (inner_problem->best_value == NULL) {
-      /*coco_error("Optimal f value must be defined for each problem in order for the logger to work propertly");*/
+      /*coco_error("Optimal f value must be defined for each problem in order for the logger to work properly");*/
       /*Setting the value to 0 results in the assertion y>=optimal_fvalue being susceptible to failure*/
       coco_warning("undefined optimal f value. Set to 0");
       data->optimal_fvalue = 0;
@@ -540,7 +541,7 @@ static coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
   data->best_solution =
       coco_allocate_vector(inner_problem->number_of_variables);
   /* TODO: the following inits are just to be in the safe side and
-   * should eventually be removed. Some fileds of the bbob2009_logger struct
+   * should eventually be removed. Some fields of the bbob2009_logger struct
    * might be useless
    */
   data->function_id = bbob2009_get_function_id(inner_problem);

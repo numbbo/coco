@@ -697,7 +697,7 @@ static int bbob2009_get_function_id(const coco_problem_t *problem) {
 
   /* OME: Ugly hardcoded extraction. In a perfect world, we would
    * parse the problem id by splitting on _ and then finding the 'f'
-   * field. Instead, we cound out the position of the function id in
+   * field. Instead, we could out the position of the function id in
    * the string
    *
    *   01234567890123456789
@@ -719,7 +719,7 @@ static int bbob2009_get_instance_id(const coco_problem_t *problem) {
 
   /* OME: Ugly hardcoded extraction. In a perfect world, we would
    * parse the problem id by splitting on _ and then finding the 'i'
-   * field. Instead, we cound out the position of the instance id in
+   * field. Instead, we could out the position of the instance id in
    * the string
    *
    *   01234567890123456789
@@ -753,7 +753,7 @@ static long bbob2009_next_problem_index(long problem_index, const char *selectio
   
   /* TODO:
      o parse the selection_descriptor -> value bounds on funID, dimension, instance
-     o inrement problem_index until funID, dimension, instance match the restrictions
+     o increment problem_index until funID, dimension, instance match the restrictions
        or max problem_index is succeeded. 
     */
   

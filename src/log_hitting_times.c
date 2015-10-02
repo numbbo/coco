@@ -23,7 +23,7 @@ static void _lht_evaluate_function(coco_problem_t *self, const double *x, double
   coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
   data->number_of_evaluations++;
 
-  /* Open logfile if it is not alread open */
+  /* Open logfile if it is not already open */
   if (data->logfile == NULL) {
     data->logfile = fopen(data->path, "w");
     if (data->logfile == NULL) {
