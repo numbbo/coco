@@ -1,5 +1,5 @@
 /*
- * Generic NUMBBO runtime implementation.
+ * Generic COCO runtime implementation.
  *
  * Other language interfaces might want to replace this so that memory
  * allocation and error handling go through the respective language

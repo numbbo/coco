@@ -272,7 +272,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
     problem = affine_transform_variables(problem, M, b, dimension);
     problem = shift_variables(problem, xopt, 0);
   } else if (function_id == 7) {
-    problem = bbob_step_ellipsoid_problem(dimension, instance_id);
+    problem = step_ellipsoid_problem(dimension, instance_id);
   } else if (function_id == 8) {
     unsigned i;
     double xopt[MAX_DIM], minus_one[MAX_DIM], fopt, factor;
@@ -619,12 +619,12 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
   } else if (function_id == 21) {
     double fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    problem = bbob_gallagher_problem(dimension, instance_id, 101);
+    problem = gallagher_problem(dimension, instance_id, 101);
     problem = shift_objective(problem, fopt);
   } else if (function_id == 22) {
     double fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    problem = bbob_gallagher_problem(dimension, instance_id, 21);
+    problem = gallagher_problem(dimension, instance_id, 21);
     problem = shift_objective(problem, fopt);
   } else if (function_id == 23) {
     unsigned i, j, k;
@@ -659,7 +659,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
   } else if (function_id == 24) {
     double fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    problem = bbob_lunacek_bi_rastrigin_problem(dimension, instance_id);
+    problem = lunacek_bi_rastrigin_problem(dimension, instance_id);
     problem = shift_objective(problem, fopt);
   } else {
     return NULL;

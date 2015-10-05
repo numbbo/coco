@@ -12,9 +12,9 @@ typedef struct {
   double **rot1, **rot2;
   long rseed;
   coco_free_function_t old_free_problem;
-} _bbob_lunacek_bi_rastrigin_t;
+} _lunacek_bi_rastrigin_t;
 
-static void private_bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, const double *x,
+static void private_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, const double *x,
                                                 double *y) {
   static const double condition = 100.;
   size_t i, j;
@@ -23,7 +23,7 @@ static void private_bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, con
   static const double d = 1.;
   const double s = 1. - 0.5 / (sqrt((double)(self->number_of_variables + 20)) - 4.1);
   const double mu1 = -sqrt((mu0 * mu0 - d) / s);
-  _bbob_lunacek_bi_rastrigin_t *data;
+  _lunacek_bi_rastrigin_t *data;
   double *tmpvect, sum1 = 0., sum2 = 0., sum3 = 0.;
 
   assert(self->number_of_variables > 1);
@@ -72,8 +72,8 @@ static void private_bbob_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, con
   coco_free_memory(tmpvect);
 }
 
-static void private_bbob_lunacek_bi_rastrigin_free(coco_problem_t *self) {
-  _bbob_lunacek_bi_rastrigin_t *data;
+static void private_lunacek_bi_rastrigin_free(coco_problem_t *self) {
+  _lunacek_bi_rastrigin_t *data;
   data = self->data;
   coco_free_memory(data->x_hat);
   coco_free_memory(data->z);
@@ -88,13 +88,13 @@ static void private_bbob_lunacek_bi_rastrigin_free(coco_problem_t *self) {
 }
 
 static coco_problem_t *
-bbob_lunacek_bi_rastrigin_problem(const size_t number_of_variables,
+lunacek_bi_rastrigin_problem(const size_t number_of_variables,
                                   const long instance_id) {
   double *tmpvect;
   size_t i, problem_id_length;
   long rseed;
   coco_problem_t *problem;
-  _bbob_lunacek_bi_rastrigin_t *data;
+  _lunacek_bi_rastrigin_t *data;
   static const double mu0 = 2.5;
 
   rseed = 24 + 10000 * instance_id;
@@ -128,8 +128,8 @@ bbob_lunacek_bi_rastrigin_problem(const size_t number_of_variables,
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
   problem->data = data;
-  problem->evaluate_function = private_bbob_lunacek_bi_rastrigin_evaluate;
-  problem->free_problem = private_bbob_lunacek_bi_rastrigin_free;
+  problem->evaluate_function = private_lunacek_bi_rastrigin_evaluate;
+  problem->free_problem = private_lunacek_bi_rastrigin_free;
 
   /* Computing xopt  */
   tmpvect = coco_allocate_vector(number_of_variables);

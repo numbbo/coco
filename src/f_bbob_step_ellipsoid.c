@@ -24,16 +24,16 @@ typedef struct {
   double *x, *xx;
   double *xopt, fopt;
   double **rot1, **rot2;
-} _bbob_step_ellipsoid_t;
+} _step_ellipsoid_t;
 
 
-static void private_bbob_step_ellipsoid_evaluate(coco_problem_t *self, const double *x,
+static void private_step_ellipsoid_evaluate(coco_problem_t *self, const double *x,
                                           double *y) {
   static const double condition = 100;
   static const double alpha = 10.0;
   size_t i, j;
   double penalty = 0.0, x1;
-  _bbob_step_ellipsoid_t *data;
+  _step_ellipsoid_t *data;
 
   assert(self->number_of_variables > 1);
   assert(self->number_of_objectives == 1);
@@ -81,8 +81,8 @@ static void private_bbob_step_ellipsoid_evaluate(coco_problem_t *self, const dou
   y[0] = 0.1 * doublemax(fabs(x1) * 1.0e-4, y[0]) + penalty + data->fopt;
 }
 
-static void private_bbob_step_ellipsoid_free(coco_problem_t *self) {
-  _bbob_step_ellipsoid_t *data;
+static void private_step_ellipsoid_free(coco_problem_t *self) {
+  _step_ellipsoid_t *data;
   data = self->data;
   coco_free_memory(data->x);
   coco_free_memory(data->xx);
@@ -97,12 +97,12 @@ static void private_bbob_step_ellipsoid_free(coco_problem_t *self) {
 }
 
 static coco_problem_t *
-bbob_step_ellipsoid_problem(const size_t number_of_variables,
+step_ellipsoid_problem(const size_t number_of_variables,
                             const long instance_id) {
   size_t i, problem_id_length;
   long rseed;
   coco_problem_t *problem;
-  _bbob_step_ellipsoid_t *data;
+  _step_ellipsoid_t *data;
 
   rseed = 7 + 10000 * instance_id;
 
@@ -134,8 +134,8 @@ bbob_step_ellipsoid_problem(const size_t number_of_variables,
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
   problem->data = data;
-  problem->evaluate_function = private_bbob_step_ellipsoid_evaluate;
-  problem->free_problem = private_bbob_step_ellipsoid_free;
+  problem->evaluate_function = private_step_ellipsoid_evaluate;
+  problem->free_problem = private_step_ellipsoid_free;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;

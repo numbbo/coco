@@ -10,11 +10,11 @@
 #define NB_PEAKS_22 21
 #define MAX_DIM BBOB2009_MAX_DIM
 
-static double *bbob_gallagher_peaks;
+static double *gallagher_peaks;
 /* To make dimension free of restrictions (and save memory for large MAX_DIM),
    these should be allocated in bbob_gallagher_problem */
-static double bbob_gallagher_peaks21[NB_PEAKS_21 * MAX_DIM];
-static double bbob_gallagher_peaks22[NB_PEAKS_22 * MAX_DIM];
+static double gallagher_peaks21[NB_PEAKS_21 * MAX_DIM];
+static double gallagher_peaks22[NB_PEAKS_22 * MAX_DIM];
 static int compare_doubles(const void *, const void *);
 
 typedef struct {
@@ -24,13 +24,13 @@ typedef struct {
   double **rotation, **Xlocal, **arrScales;
   double *peakvalues;
   coco_free_function_t old_free_problem;
-} _bbob_gallagher_t;
+} _gallagher_t;
 
-static void private_bbob_gallagher_evaluate(coco_problem_t *self, const double *x,
+static void private_gallagher_evaluate(coco_problem_t *self, const double *x,
                                      double *y) {
   size_t i, j; /*Loop over dim*/
   double *tmx;
-  _bbob_gallagher_t *data = self->data;
+  _gallagher_t *data = self->data;
   double a = 0.1;
   double tmp2, f = 0., Fadd, tmp, Fpen = 0., Ftrue = 0.;
   double fac = -0.5 / (double)self->number_of_variables;
@@ -83,8 +83,8 @@ static void private_bbob_gallagher_evaluate(coco_problem_t *self, const double *
   coco_free_memory(tmx);
 }
 
-static void private_bbob_gallagher_free(coco_problem_t *self) {
-  _bbob_gallagher_t *data;
+static void private_gallagher_free(coco_problem_t *self) {
+  _gallagher_t *data;
   data = self->data;
   coco_free_memory(data->xopt);
   coco_free_memory(data->peakvalues);
@@ -95,13 +95,13 @@ static void private_bbob_gallagher_free(coco_problem_t *self) {
   coco_free_problem(self);
 }
 
-static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
+static coco_problem_t *gallagher_problem(const size_t number_of_variables,
                                               const long instance_id,
                                               const unsigned int number_of_peaks) {
   size_t i, j, k, problem_id_length, *rperm;
   long rseed;
   coco_problem_t *problem;
-  _bbob_gallagher_t *data;
+  _gallagher_t *data;
   double maxcondition = 1000., maxcondition1 = 1000., *arrCondition,
          fitvalues[2] = {1.1, 9.1}; /*maxcondition1 satisfies the old code and
                                        the doc but seems wrong in that it is,
@@ -115,11 +115,11 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
   if (number_of_peaks == 101) {
     rseed = 21 + 10000 * instance_id;
     /* FIXME: rather use coco_allocate_vector here */
-    bbob_gallagher_peaks = bbob_gallagher_peaks21;
+    gallagher_peaks = gallagher_peaks21;
     maxcondition1 = sqrt(maxcondition1);
   } else {
     rseed = 22 + 10000 * instance_id;
-    bbob_gallagher_peaks = bbob_gallagher_peaks22;
+    gallagher_peaks = gallagher_peaks22;
   }
 
   data = coco_allocate_memory(sizeof(*data));
@@ -163,15 +163,15 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
   problem->data = data;
-  problem->free_problem = private_bbob_gallagher_free;
-  problem->evaluate_function = private_bbob_gallagher_evaluate;
+  problem->free_problem = private_gallagher_free;
+  problem->evaluate_function = private_gallagher_evaluate;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
   }
 
   /* Initialize all the data of the inner problem */
-  bbob2009_unif(bbob_gallagher_peaks, number_of_peaks - 1, data->rseed);
+  bbob2009_unif(gallagher_peaks, number_of_peaks - 1, data->rseed);
   rperm = (size_t *)malloc((number_of_peaks - 1) * sizeof(size_t));
   for (i = 0; i < number_of_peaks - 1; ++i)
     rperm[i] = i;
@@ -193,7 +193,7 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
 
   rperm = (size_t *)malloc(number_of_variables * sizeof(size_t));
   for (i = 0; i < number_of_peaks; ++i) {
-    bbob2009_unif(bbob_gallagher_peaks, (long)number_of_variables, data->rseed + 1000 * (long)i);
+    bbob2009_unif(gallagher_peaks, (long)number_of_variables, data->rseed + 1000 * (long)i);
     for (j = 0; j < number_of_variables; ++j)
       rperm[j] = j;
     qsort(rperm, number_of_variables, sizeof(size_t), compare_doubles);
@@ -205,15 +205,15 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
   }
   coco_free_memory(rperm);
 
-  bbob2009_unif(bbob_gallagher_peaks, (long)(number_of_variables * number_of_peaks), data->rseed);
+  bbob2009_unif(gallagher_peaks, (long)(number_of_variables * number_of_peaks), data->rseed);
   for (i = 0; i < number_of_variables; ++i) {
-    data->xopt[i] = 0.8 * (b * bbob_gallagher_peaks[i] - c);
-    problem->best_parameter[i] = 0.8 * (b * bbob_gallagher_peaks[i] - c);
+    data->xopt[i] = 0.8 * (b * gallagher_peaks[i] - c);
+    problem->best_parameter[i] = 0.8 * (b * gallagher_peaks[i] - c);
     for (j = 0; j < number_of_peaks; ++j) {
       data->Xlocal[i][j] = 0.;
       for (k = 0; k < number_of_variables; ++k) {
         data->Xlocal[i][j] +=
-            data->rotation[i][k] * (b * bbob_gallagher_peaks[j * number_of_variables + k] - c);
+            data->rotation[i][k] * (b * gallagher_peaks[j * number_of_variables + k] - c);
       }
       if (j == 0) {
         data->Xlocal[i][j] *= 0.8;
@@ -230,8 +230,8 @@ static coco_problem_t *bbob_gallagher_problem(const size_t number_of_variables,
 }
 
 static int compare_doubles(const void *a, const void *b) {
-  double temp = bbob_gallagher_peaks[*(const int *)a] -
-                bbob_gallagher_peaks[*(const int *)b]; /* TODO: replace int by size_t? */
+  double temp = gallagher_peaks[*(const int *)a] -
+                gallagher_peaks[*(const int *)b]; /* TODO: replace int by size_t? */
   if (temp > 0)
     return 1;
   else if (temp < 0)
