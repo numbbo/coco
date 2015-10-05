@@ -94,7 +94,7 @@ void coco_optimize(coco_problem_t *problem) { /* should at the least take budget
  * Bi-objective BBOB 2009 functions
  */
 
-/* Added here for compatibility!!!*/
+/* Added here for compilability!!!*/
 #define BIOBJECTIVE_NUMBER_OF_COMBINATIONS 300
 #define BIOBJECTIVE_NUMBER_OF_INSTANCES 5
 #define BIOBJECTIVE_NUMBER_OF_DIMENSIONS 5
@@ -108,7 +108,7 @@ static long biobjective_encode_problem_index(int combination_idx, long instance_
 
 /* Interface via dimension, function-ID and instance-ID. This does not translate
    directly to different languages or benchmark suites. */
-int main(void) {
+int main() {
   int problem_index, combination_idx, instance_idx, dimension_idx;
   coco_problem_t *problem;
   
