@@ -1,19 +1,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "coco.h"
+#include "numbbo.h"
+#include "../../src/bbob2009_fopt.c"
 
 void my_optimizer(coco_problem_t *problem) {
   static const int budget = 102; /* 100000;*/
   coco_random_state_t *rng = coco_new_random(0xdeadbeef);
-  double *x;
+  double *x = (double *)malloc(problem->number_of_parameters * sizeof(double));
   double y;
-  int i, j;
-
-  x = coco_allocate_vector(coco_get_number_of_variables(problem));
-  for (i = 1; i < budget; ++i) {
-    bbob2009_unif(x, coco_get_number_of_variables(problem), i);
-    for (j = 0; j < coco_get_number_of_variables(problem); ++j) {
+  for (int i = 1; i < budget; ++i) {
+    bbob2009_unif(x, problem->number_of_parameters, i);
+    for (int j = 0; j < problem->number_of_parameters; ++j) {
       /*const double range = problem->upper_bounds[j] -
       problem->lower_bounds[j];
       x[j] = problem->lower_bounds[j] + coco_uniform_random(rng) * range;*/
@@ -27,6 +25,8 @@ void my_optimizer(coco_problem_t *problem) {
   }
   coco_free_random(rng);
   free(x);
+  printf("%s\n", problem->problem_name);
+  printf("%s\n", problem->problem_id);
 }
 
 int main(int argc, char **argv) {

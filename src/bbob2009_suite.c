@@ -154,7 +154,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
 #if 0
   {  /* to be removed */
     int dimension_idx;
-    switch (dimension) {/*TODO: make this more dynamic*/
+    switch (dimension) {/*TODO: make this more dynamic*//* This*/
             case 2:
             dimension_idx = 0;
             break;

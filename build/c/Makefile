@@ -17,7 +17,7 @@ CCFLAGS = -g -ggdb -std=c89 -Wall -pedantic
 
 ########################################################################
 ## Toplevel targets
-all: demo coco_test bbob2009_test demo_test
+all: demo coco_test bbob2009_test
 
 clean:
 	rm -f bbob2009_test.o bbob2009_test coco.o coco_test.o coco_test demo.o demo
@@ -36,12 +36,8 @@ bbob2009_test: bbob2009_test.o coco.o
 coco_timing: coco_timing.o coco.o
 	${CC}  ${CCFLAGS} -o coco_timing coco_timing.o coco.o ${LDFLAGS}
 
-demo_test: demo_test.o coco.o
-	${CC}  ${CCFLAGS} -o demo_test demo_test.o coco.o ${LDFLAGS}
-
 ########################################################################
 ## Additional dependencies
 demo.o: coco.h coco.c demo.c
 coco_test.o: coco.h coco.c coco_test.c
 bbob2009_test.o: coco.h coco.c bbob2009_test.c
-demo_test.o: coco.h coco.c demo_test.c

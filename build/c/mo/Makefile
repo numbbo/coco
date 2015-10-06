@@ -13,7 +13,7 @@
 ## or installing Cygwin and running GNU make from within Cygwin.
 
 LDFLAGS += -lm
-CCFLAGS = -g -ggdb -Wall -std=c89 -pedantic
+CCFLAGS = -g -ggdb -std=c89 -Wall -pedantic -Wextra -Wstrict-prototypes -Wshadow -Wno-sign-compare
 
 ########################################################################
 ## Toplevel targets
