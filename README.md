@@ -1,4 +1,4 @@
-# numbbo: Numerical Black-Box Optimization Benchmarking Framework
+# numbbo: Numerical Black-Box Optimization Benchmarking Framework 
 
 The code resembles the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
 now rewritten fully in ANSI C with the other four languages Java, MATLAB, python, and R calling the C code.
