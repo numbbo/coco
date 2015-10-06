@@ -23,14 +23,14 @@ static void _lht_evaluate_function(coco_problem_t *self, const double *x, double
   coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
   data->number_of_evaluations++;
 
-  /* Open logfile if it is not alread open */
+  /* Open logfile if it is not already open */
   if (data->logfile == NULL) {
     data->logfile = fopen(data->path, "w");
     if (data->logfile == NULL) {
       char *buf;
       const char *error_format =
           "lht_evaluate_function() failed to open log file '%s'.";
-      size_t buffer_size = snprintf(NULL, 0, error_format, data->path);
+      size_t buffer_size = (size_t)(snprintf(NULL, 0, error_format, data->path));
       buf = (char *)coco_allocate_memory(buffer_size);
       snprintf(buf, buffer_size, error_format, data->path);
       coco_error(buf);
