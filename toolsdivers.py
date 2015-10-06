@@ -113,8 +113,8 @@ def num2str(val, significant_digits=2, force_rounding=False,
     
     ``remove_trailing_zeros`` removes zeros, if and only if the value is exactly. 
      
-    >>> from bbob_pproc import toolsdivers as as bb
-    >>> print [td.num2str(val) for val in [12345, 1234.5, 123.45, 12.345, 1.2345, .12345, .012345, .0012345]
+    >>> from bbob_pproc import toolsdivers as td
+    >>> print [td.num2str(val) for val in [12345, 1234.5, 123.45, 12.345, 1.2345, .12345, .012345, .0012345]]
     ['12345', '1.2e3', '1.2e2', '12', '1.2', '0.12', '0.012', '1.2e-3']
     
     """
