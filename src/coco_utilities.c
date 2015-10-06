@@ -49,7 +49,7 @@ static const char *coco_path_separator = "/";
 #endif
 
 #if defined(HAVE_GFA)
-#define S_IRWXU "0700"
+#define S_IRWXU 0700
 #endif
 
 #if !defined(NUMBBO_PATH_MAX)
