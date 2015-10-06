@@ -13,7 +13,7 @@
 ## or installing Cygwin and running GNU make from within Cygwin.
 
 LDFLAGS += -lm
-CCFLAGS = -g -ggdb -std=c89 -Wall -pedantic
+CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow -Wno-sign-compare -Wconversion
 
 ########################################################################
 ## Toplevel targets
@@ -38,6 +38,11 @@ coco_timing: coco_timing.o coco.o
 
 ########################################################################
 ## Additional dependencies
+coco.o: coco.h coco.c
+	${CC} -c ${CCFLAGS} -o coco.o coco.c
 demo.o: coco.h coco.c demo.c
+	${CC} -c ${CCFLAGS} -o demo.o demo.c
 coco_test.o: coco.h coco.c coco_test.c
+	${CC} -c ${CCFLAGS} -o coco_test.o coco_test.c
 bbob2009_test.o: coco.h coco.c bbob2009_test.c
+	${CC} -c ${CCFLAGS} -o bbob2009_test.o bbob2009_test.c
