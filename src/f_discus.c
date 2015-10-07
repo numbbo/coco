@@ -20,10 +20,10 @@ static coco_problem_t *discus_problem(const size_t number_of_variables) {
   problem->problem_name = coco_strdup("discus function");
   /* Construct a meaningful problem id */
   problem_id_length =
-      snprintf(NULL, 0, "%s_%02i", "discus", (int)number_of_variables);
+      (size_t)snprintf(NULL, 0, "%s_%02lu", "discus", (long)number_of_variables);
   problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d", "discus",
-           (int)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "discus",
+           (long)number_of_variables);
 
   /* TODO: the next three lines seem superfluous and even counterproductive/bug-prone */
   problem->number_of_variables = number_of_variables;

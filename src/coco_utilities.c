@@ -7,6 +7,9 @@
 #include "coco_internal.h"
 #include "coco_strdup.c"
 
+/* To get rid of the implicit-function-declaration warning. */
+int mkdir(const char *pathname, mode_t mode);
+
 /* Figure out if we are on a sane platform or on the dominant platform. */
 #if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
 #include <windows.h>
@@ -34,8 +37,7 @@ static const char *coco_path_separator = "/";
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
 #define COCO_PATH_MAX PATH_MAX
-#elif defined(__sun) || defined(sun)
-#if defined(__SVR4) || defined(__svr4__)
+#elif (defined(__sun) || defined(sun)) && (defined(__SVR4) || defined(__svr4__))
 /* Solaris */
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -43,13 +45,12 @@ static const char *coco_path_separator = "/";
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
 #define COCO_PATH_MAX PATH_MAX
-#endif
 #else
 #error Unknown platform
 #endif
 
 #if defined(HAVE_GFA)
-#define S_IRWXU "0700"
+#define S_IRWXU 0700
 #endif
 
 #if !defined(COCO_PATH_MAX)
@@ -109,7 +110,7 @@ int coco_path_exists(const char *path) {
 void coco_create_path(const char *path) {
 /* current version should now work with Windows, Linux, and Mac */
   char *tmp = NULL;
-  char buf[4096];
+  char *message;
   char *p;
   size_t len = strlen(path);
   char path_sep = coco_path_separator[0];
@@ -137,8 +138,8 @@ void coco_create_path(const char *path) {
   coco_free_memory(tmp);
   return;
 error:
-  snprintf(buf, sizeof(buf), "mkdir(\"%s\") failed.", tmp);
-  coco_error(buf);
+  message = "mkdir(\"%s\") failed";
+  coco_error(message, tmp);
   return; /* never reached */
 }
 

@@ -138,19 +138,19 @@ static coco_problem_t *gallagher_problem(const size_t number_of_variables,
   if (number_of_peaks == NB_PEAKS_21) {
     problem->problem_name = coco_strdup("BBOB f21");
     problem_id_length =
-        snprintf(NULL, 0, "%s_%02i", "bbob2009_f21", (int)number_of_variables);
+        (size_t)snprintf(NULL, 0, "%s_%02lu", "bbob2009_f21", (long)number_of_variables);
     problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-    snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d",
-             "bbob2009_f21", (int)number_of_variables);
+    snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu",
+             "bbob2009_f21", (long)number_of_variables);
     b = 10.;
     c = 5.;
   } else if (number_of_peaks == NB_PEAKS_22) {
     problem->problem_name = coco_strdup("BBOB f22");
     problem_id_length =
-        snprintf(NULL, 0, "%s_%02i", "bbob2009_f22", (int)number_of_variables);
+        (size_t)snprintf(NULL, 0, "%s_%02lu", "bbob2009_f22", (long)number_of_variables);
     problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-    snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d",
-             "bbob2009_f22", (int)number_of_variables);
+    snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu",
+             "bbob2009_f22", (long)number_of_variables);
     b = 9.8;
     c = 4.9;
   } else {

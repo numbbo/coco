@@ -11,7 +11,7 @@ static coco_problem_t *toy_observer(coco_problem_t *problem, const char *options
 
   /* Calculate target levels: */
   for (i = number_of_targets; i > 0; --i) {
-    targets[i - 1] = pow(10.0, (number_of_targets - i) - 9.0);
+    targets[i - 1] = pow(10.0, (double)(long)(number_of_targets - i) - 9.0);
   }
 
   coco_join_path(base_path, sizeof(base_path), options, "toy_so",

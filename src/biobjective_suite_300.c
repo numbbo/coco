@@ -79,7 +79,7 @@ static coco_problem_t *biobjective_suite_300(const long problem_index) {
     
     if (defined == 0) {
         int k = 0;
-        size_t i, j;
+        int i, j;
         for (i = 1; i <= 24; ++i) {
             for (j = i; j <= 24; ++j) {
                 biobjective_list[k][0] = i;
@@ -94,10 +94,10 @@ static coco_problem_t *biobjective_suite_300(const long problem_index) {
     
     problem1 = bbob2009_problem(biobjective_list[combination_idx][0],
                                 BBOB2009_DIMS[dimension_idx],
-                                instance_list[instance_idx][0]);
+                                (long)instance_list[instance_idx][0]);
     problem2 = bbob2009_problem(biobjective_list[combination_idx][1],
                                 BBOB2009_DIMS[dimension_idx],
-                                instance_list[instance_idx][1]);
+                                (long)instance_list[instance_idx][1]);
     problem = coco_stacked_problem_allocate(problem1, problem2);
     problem->index = problem_index;
     

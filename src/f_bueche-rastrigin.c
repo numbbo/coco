@@ -15,7 +15,7 @@ static void private_bueche_rastrigin_evaluate(coco_problem_t *self, const double
     tmp += cos(2 * coco_pi * x[i]);
     tmp2 += x[i] * x[i];
   }
-  y[0] = 10 * (self->number_of_variables - tmp) + tmp2 + 0;
+  y[0] = 10.0 * ((double)(long)self->number_of_variables - tmp) + tmp2 + 0;
 }
 
 static coco_problem_t *
@@ -24,11 +24,11 @@ bueche_rastrigin_problem(const size_t number_of_variables) {
   coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("Bueche-Rastrigin function");
   /* Construct a meaningful problem id */
-  problem_id_length = snprintf(NULL, 0, "%s_%02i", "bueche-rastrigin",
-                               (int)number_of_variables);
+  problem_id_length = (size_t)snprintf(NULL, 0, "%s_%02lu", "bueche-rastrigin",
+                               (long)number_of_variables);
   problem->problem_id = (char *)coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d",
-           "skewRastriginBueche", (int)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu",
+           "skewRastriginBueche", (long)number_of_variables);
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;

@@ -25,7 +25,7 @@ static void private_weierstrass_evaluate(coco_problem_t *self, const double *x, 
       y[0] += cos(2 * coco_pi * (x[i] + 0.5) * data->bk[j]) * data->ak[j];
     }
   }
-  y[0] = 10.0 * pow(y[0] / self->number_of_variables - data->f0, 3.0);
+  y[0] = 10.0 * pow(y[0] / (double)(long)self->number_of_variables - data->f0, 3.0);
 }
 
 static coco_problem_t *weierstrass_problem(const size_t number_of_variables) {
@@ -44,10 +44,10 @@ static coco_problem_t *weierstrass_problem(const size_t number_of_variables) {
   problem->problem_name = coco_strdup("weierstrass function");
   /* Construct a meaningful problem id */
   problem_id_length =
-      snprintf(NULL, 0, "%s_%02i", "weierstrass", (int)number_of_variables);
+      (size_t)snprintf(NULL, 0, "%s_%02lu", "weierstrass", (long)number_of_variables);
   problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d", "weierstrass",
-           (int)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "weierstrass",
+           (long)number_of_variables);
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;

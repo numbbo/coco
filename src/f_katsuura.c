@@ -20,7 +20,7 @@ static void f_katsuura_evaluate(coco_problem_t *self, const double *x, double *y
       tmp2 = pow(2., (double)j);
       tmp += fabs(tmp2 * x[i] - doubleround(tmp2 * x[i])) / tmp2;
     }
-    tmp = 1. + (i + 1) * tmp;
+    tmp = 1.0 + ((double)(long)i + 1) * tmp;
     y[0] *= tmp;
   }
   y[0] = 10. / ((double)self->number_of_variables) /
@@ -34,10 +34,10 @@ static coco_problem_t *katsuura_problem(const size_t number_of_variables) {
   problem->problem_name = coco_strdup("katsuura function");
   /* Construct a meaningful problem id */
   problem_id_length =
-      snprintf(NULL, 0, "%s_%02i", "katsuura", (int)number_of_variables);
+      (size_t)snprintf(NULL, 0, "%s_%02lu", "katsuura", (long)number_of_variables);
   problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d", "katsuura",
-           (int)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "katsuura",
+           (long)number_of_variables);
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;

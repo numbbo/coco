@@ -74,7 +74,7 @@ static void private_step_ellipsoid_evaluate(coco_problem_t *self, const double *
   y[0] = 0.0;
   for (i = 0; i < self->number_of_variables; ++i) {
     double exponent;
-    exponent = i / (self->number_of_variables - 1.0);
+    exponent = (double)(long)i / ((double)(long)self->number_of_variables - 1.0);
     y[0] += pow(condition, exponent) * data->xx[i] * data->xx[i];
     ;
   }
@@ -125,10 +125,10 @@ step_ellipsoid_problem(const size_t number_of_variables,
   problem->problem_name = coco_strdup("BBOB f7");
   /* Construct a meaningful problem id */
   problem_id_length =
-      snprintf(NULL, 0, "%s_%02i", "bbob2009_f7", (int)number_of_variables);
+      (size_t)snprintf(NULL, 0, "%s_%02lu", "bbob2009_f7", (long)number_of_variables);
   problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d", "bbob2009_f7",
-           (int)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "bbob2009_f7",
+           (long)number_of_variables);
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
