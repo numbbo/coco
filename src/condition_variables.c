@@ -25,7 +25,7 @@ static void _cv_evaluate_function(coco_problem_t *self, const double *x, double 
      * really wanted to.
      */
     data->x[i] =
-        pow(data->alpha, 0.5 * i / (self->number_of_variables - 1.0)) * x[i];
+        pow(data->alpha, 0.5 * (double)(long)i / ((double)(long)self->number_of_variables - 1.0)) * x[i];
   }
   coco_evaluate_function(inner_problem, data->x, y);
 }

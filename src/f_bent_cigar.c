@@ -22,10 +22,10 @@ static coco_problem_t *bent_cigar_problem(const size_t number_of_variables) {
   problem->problem_name = coco_strdup("bent cigar function");
   /* Construct a meaningful problem id */
   problem_id_length =
-      snprintf(NULL, 0, "%s_%02i", "bent_cigar", (int)number_of_variables);
+      (size_t)snprintf(NULL, 0, "%s_%02lu", "bent_cigar", (long)number_of_variables);
   problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d", "bent_cigar",
-           (int)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "bent_cigar",
+           (long)number_of_variables);
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;

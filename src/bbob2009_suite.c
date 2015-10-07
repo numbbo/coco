@@ -148,7 +148,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
   /* This assert is a hint for the static analyzer. */
   assert(dimension > 1);
   if (dimension > MAX_DIM)
-    coco_error("bbob2009_suite currently supports dimension up to %ld (%ld given)", 
+    coco_error("bbob2009_suite currently supports dimension up to %lu (%lu given)",
         MAX_DIM, dimension);
 
 #if 0
@@ -257,7 +257,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
       for (j = 0; j < dimension; ++j) {
         current_row[j] = 0.0;
         for (k = 0; k < dimension; ++k) {
-          double exponent = k * 1.0 / ((int)dimension - 1.0);
+          double exponent = 1.0 * (int)k / ((double)(long)dimension - 1.0);
           current_row[j] += rot1[i][k] * pow(sqrt(10.0), exponent) * rot2[k][j];
         }
       }
@@ -286,7 +286,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
      *   fmax(1.0, sqrt(dimension) / 8.0);
      * follows
      */
-    factor = doublemax(1.0, sqrt(dimension) / 8.0);
+    factor = doublemax(1.0, sqrt((double)dimension) / 8.0);
     
     problem = rosenbrock_problem(dimension);
     problem = shift_variables(problem, minus_one, 0);
@@ -304,7 +304,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
      *   fmax(1.0, sqrt(dimension) / 8.0);
      * follows
      */
-    factor = sqrt(dimension) / 8.0;
+    factor = sqrt((double)(long)dimension) / 8.0;
     if (factor < 1.0)
       factor = 1.0;
     /* Compute affine transformation */
@@ -388,7 +388,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
       for (j = 0; j < dimension; ++j) {
         current_row[j] = 0.0;
         for (k = 0; k < dimension; ++k) {
-          double exponent = k * 1.0 / (dimension - 1.0);
+          double exponent = 1.0 * (int)k / ((double)(long)dimension - 1.0);
           current_row[j] += rot1[i][k] * pow(sqrt(10), exponent) * rot2[k][j];
         }
       }
@@ -431,7 +431,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
       for (j = 0; j < dimension; ++j) {
         current_row[j] = 0.0;
         for (k = 0; k < dimension; ++k) {
-          double exponent = k * 1.0 / (dimension - 1.0);
+          double exponent = 1.0 * (int)k / ((double)(long)dimension - 1.0);
           current_row[j] += rot1[i][k] * pow(sqrt(10), exponent) * rot2[k][j];
         }
       }
@@ -467,7 +467,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
         current_row[j] = 0.0;
         for (k = 0; k < dimension; ++k) {
           const double base = 1.0 / sqrt(condition);
-          const double exponent = k * 1.0 / (dimension - 1.0);
+          const double exponent = 1.0 * (int)k / ((double)(long)dimension - 1.0);
           current_row[j] += rot1[i][k] * pow(base, exponent) * rot2[k][j];
         }
       }
@@ -499,7 +499,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
       b[i] = 0.0;
       current_row = M + i * dimension;
       for (j = 0; j < dimension; ++j) {
-        double exponent = i / (dimension - 1.0);
+        double exponent = 1.0 * (int)i / ((double)(long)dimension - 1.0);
         current_row[j] = rot2[i][j] * pow(sqrt(10), exponent);
       }
     }
@@ -533,7 +533,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
       b[i] = 0.0;
       current_row = M + i * dimension;
       for (j = 0; j < dimension; ++j) {
-        double exponent = i * 1.0 / (dimension - 1.0);
+        double exponent = 1.0 * (int)i / ((double)(long)dimension - 1.0);
         current_row[j] = rot2[i][j] * pow(sqrt(1000), exponent);
       }
     }
@@ -596,7 +596,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
       for (j = 0; j < dimension; ++j) {
         current_row[j] = 0.0;
         if (i == j) {
-          double exponent = (double)i / (dimension - 1);
+          double exponent = 1.0 * (int)i / ((double)(long)dimension - 1);
           current_row[j] = pow(sqrt(condition), exponent);
         }
       }
@@ -643,7 +643,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
       for (j = 0; j < dimension; ++j) {
         current_row[j] = 0.0;
         for (k = 0; k < dimension; ++k) {
-          double exponent = k * 1.0 / (dimension - 1.0);
+          double exponent = 1.0 * (int)k / ((double)(long)dimension - 1.0);
           current_row[j] += rot1[i][k] * pow(sqrt(100), exponent) * rot2[k][j];
         }
       }
@@ -670,13 +670,13 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
   coco_free_memory(problem->problem_id);
 
   /* Construct a meaningful problem id */
-  len = snprintf(NULL, 0, "bbob2009_f%02i_i%02li_d%02lu", function_id,
+  len = (size_t)snprintf(NULL, 0, "bbob2009_f%02i_i%02li_d%02lu", function_id,
                  instance_id, dimension);
   problem->problem_id = coco_allocate_memory(len + 1);
   snprintf(problem->problem_id, len + 1, "bbob2009_f%02i_i%02li_d%02lu",
            function_id, instance_id, dimension);
 
-  len = snprintf(NULL, 0, "BBOB2009 f%02i instance %li in %luD", function_id,
+  len = (size_t)snprintf(NULL, 0, "BBOB2009 f%02i instance %li in %luD", function_id,
                  instance_id, dimension);
   problem->problem_name = coco_allocate_memory(len + 1);
   snprintf(problem->problem_name, len + 1, "BBOB2009 f%02i instance %li in %luD",

@@ -24,7 +24,7 @@ static void _brs_evaluate_function(coco_problem_t *self, const double *x, double
      * (i-1)/(D-1)). Instead we compute the equivalent
      * sqrt(10)^((i-1)/(D-1)) just like the legacy code.
      */
-    factor = pow(sqrt(10.0), i / (self->number_of_variables - 1.0));
+    factor = pow(sqrt(10.0), (double)(long)i / ((double)(long)self->number_of_variables - 1.0));
     /* Documentation specifies odd indexes and starts indexing
      * from 1, we use all even indexes since C starts indexing
      * with 0.

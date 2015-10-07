@@ -17,7 +17,7 @@ typedef struct {
     char *path;
     FILE *logfile;
     size_t max_size_of_archive;
-    long number_of_evaluations;
+    size_t number_of_evaluations;
 } _log_nondominating_t;
 
 static struct mococo_solutions_archive *mo_archive;
@@ -47,7 +47,7 @@ static void lnd_evaluate_function(coco_problem_t *self, const double *x, double 
       coco_error(buf);
       coco_free_memory(buf); /* Never reached */
     }
-    fprintf(data->logfile, "# %ld variables  |  %ld objectives  |  func eval number\n",
+    fprintf(data->logfile, "# %lu variables  |  %lu objectives  |  func eval number\n",
             coco_get_number_of_variables(coco_get_transform_inner_problem(self)),
             coco_get_number_of_objectives(coco_get_transform_inner_problem(self)));
     
@@ -76,7 +76,7 @@ static void lnd_evaluate_function(coco_problem_t *self, const double *x, double 
           fprintf(data->logfile, "%13.10e\t", entry->var[j]);
       for (k=0; k < coco_get_number_of_objectives(coco_get_transform_inner_problem(self)); k++) /* all objective values of a solution */
           fprintf(data->logfile, "%13.10e\t", entry->obj[k]);
-      fprintf(data->logfile, "%ld", entry->birth);  /* its timestamp (FEval) */
+      fprintf(data->logfile, "%lu", entry->birth);  /* its timestamp (FEval) */
       fprintf(data->logfile, "\n");  /* go to the next line for another solution */
   }
   /********************************************************************************/
