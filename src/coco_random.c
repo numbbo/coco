@@ -45,7 +45,7 @@ coco_random_state_t *coco_new_random(uint32_t seed) {
   for (i = 0; i < LONG_LAG; ++i) {
     state->x[i] = ((double)seed) / (double)((1UL << 32) - 1);
     /* Advance seed based on simple RNG from TAOCP */
-    seed = 1812433253UL * (seed ^ (seed >> 30)) + (i + 1);
+    seed = (uint32_t)1812433253UL * (seed ^ (seed >> 30)) + ((uint32_t)i + 1);
   }
   state->index = 0;
   return state;

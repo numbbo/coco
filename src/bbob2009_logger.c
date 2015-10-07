@@ -94,14 +94,14 @@ static void _bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
   } else {
     if (data->idx_f_trigger == INT_MAX) { /* first time*/
       data->idx_f_trigger =
-          (int)(ceil(log10(fvalue - data->optimal_fvalue)) * bbob2009_nbpts_fval);
+          (int)(ceil(log10(fvalue - data->optimal_fvalue)) * (double)(long)bbob2009_nbpts_fval);
     } else { /* We only call this function when we reach the current f_trigger*/
       data->idx_f_trigger--;
     }
-    data->f_trigger = pow(10, data->idx_f_trigger * 1.0 / bbob2009_nbpts_fval);
+    data->f_trigger = pow(10, data->idx_f_trigger * 1.0 / (double)(long)bbob2009_nbpts_fval);
     while (fvalue - data->optimal_fvalue <= data->f_trigger) {
       data->idx_f_trigger--;
-      data->f_trigger = pow(10, data->idx_f_trigger * 1.0 / bbob2009_nbpts_fval);
+      data->f_trigger = pow(10, data->idx_f_trigger * 1.0 / (double)(long)bbob2009_nbpts_fval);
     }
   }
 }
@@ -109,16 +109,16 @@ static void _bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
 static void _bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
                                               size_t number_of_variables) {
   while (data->number_of_evaluations >=
-         floor(pow(10, (double)data->idx_t_trigger / (double)bbob2009_nbpts_nbevals)))
+         floor(pow(10, (double)data->idx_t_trigger / (double)(long)bbob2009_nbpts_nbevals)))
     data->idx_t_trigger++;
 
   while (data->number_of_evaluations >=
-         (int)number_of_variables * pow(10, (double)data->idx_tdim_trigger))
+         (double)(long)number_of_variables * pow(10, (double)data->idx_tdim_trigger))
     data->idx_tdim_trigger++;
 
   data->t_trigger =
-      (long)doublemin(floor(pow(10, (double)data->idx_t_trigger / (double)bbob2009_nbpts_nbevals)),
-    	 (int)number_of_variables * pow(10, (double)data->idx_tdim_trigger));
+      (long)doublemin(floor(pow(10, (double)data->idx_t_trigger / (double)(long)bbob2009_nbpts_nbevals)),
+    	 (double)(long)number_of_variables * pow(10, (double)data->idx_tdim_trigger));
 }
 
 /**
@@ -302,9 +302,8 @@ static void _bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
             }
             
             fprintf(*target_file,
-                    /* TODO: z-modifier is bound to fail as being incompatible to standard C */
-                    "funcId = %d, DIM = %ld, Precision = %.3e, algId = '%s'\n",
-                    (int)strtol(function_id, NULL, 10), (long)data->number_of_variables,
+                    "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s'\n",
+                    (int)strtol(function_id, NULL, 10), data->number_of_variables,
                     pow(10, -8), data->alg_name);
             fprintf(*target_file, "%%\n");
             strncat(used_dataFile_path, "_i", NUMBBO_PATH_MAX - strlen(used_dataFile_path) - 1);
@@ -455,7 +454,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
 
   if (bbob2009_logger_verbosity > 2 && data && data->number_of_evaluations > 0) {
     printf("best f=%e after %ld fevals (done observing)\n",
-           data->best_fvalue, (long)data->number_of_evaluations);
+           data->best_fvalue, data->number_of_evaluations);
     }
   if (data->alg_name != NULL) {
     coco_free_memory((void*)data->alg_name);
@@ -467,7 +466,7 @@ static void _bbob2009_logger_free_data(void *stuff) {
     data->path = NULL;
   }
   if (data->index_file != NULL) {
-    fprintf(data->index_file, ":%ld|%.1e", (long)data->number_of_evaluations,
+    fprintf(data->index_file, ":%ld|%.1e", data->number_of_evaluations,
             data->best_fvalue - data->optimal_fvalue);
     fclose(data->index_file);
     data->index_file = NULL;

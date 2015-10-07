@@ -95,8 +95,8 @@ static void bbob2009_unif(double *r, long N, long inseed) {
  * Convert from packed matrix storage to an array of array of double
  * representation.
  */
-static double **bbob2009_reshape(double **B, double *vector, int m, int n) {
-  int i, j;
+static double **bbob2009_reshape(double **B, double *vector, long m, long n) {
+  long i, j;
   for (i = 0; i < m; i++) {
     for (j = 0; j < n; j++) {
       B[i][j] = vector[j * m + i];

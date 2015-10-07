@@ -29,11 +29,11 @@ griewankRosenbrock_problem(const size_t number_of_variables) {
   coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("griewank rosenbrock function");
   /* Construct a meaningful problem id */
-  problem_id_length = snprintf(NULL, 0, "%s_%02i", "griewank rosenbrock",
-                               (int)number_of_variables);
+  problem_id_length = (size_t)snprintf(NULL, 0, "%s_%02lu", "griewank rosenbrock",
+                               (long)number_of_variables);
   problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d",
-           "griewank rosenbrock", (int)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu",
+           "griewank rosenbrock", (long)number_of_variables);
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;

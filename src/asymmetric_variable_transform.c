@@ -25,7 +25,7 @@ static void _avt_evaluate_function(coco_problem_t *self, const double *x, double
     if (x[i] > 0.0) {
       exponent =
           1.0 +
-          (data->beta * i) / (self->number_of_variables - 1.0) * sqrt(x[i]);
+          (data->beta * (double)(long)i) / ((double)(long)self->number_of_variables - 1.0) * sqrt(x[i]);
       data->x[i] = pow(x[i], exponent);
     } else {
       data->x[i] = x[i];
