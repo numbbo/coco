@@ -38,4 +38,4 @@ void mococo_mark_updates(struct mococo_solutions_archive *archive, size_t timest
 }
 #endif
 
-#endif	/* MO_RECORDER_H */
+#endif

@@ -54,11 +54,11 @@ char * coco_vstrdupf(const char *str, va_list args) {
    * which limits the max length. Longer strings should
    * never appear anyway, so this is rather a non-issue. */
   
-#if 1 
+#if 0
   written = vsnprintf(buf, coco_vstrdupf_buflen - 2, str, args); 
   if (written < 0)
     coco_error("coco_vstrdupf(): vsnprintf failed on '%s'", str);
-#else /* less save alternative, if vsnprintf is not available */
+#else /* less safe alternative, if vsnprintf is not available */
   assert(strlen(str) < coco_vstrdupf_buflen / 2 - 2);
   written = vsprintf(buf, str, args); 
   if (written < 0)

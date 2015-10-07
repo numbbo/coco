@@ -36,10 +36,10 @@ static coco_problem_t *schwefel_problem(const size_t number_of_variables) {
   problem->problem_name = coco_strdup("schwefel function");
   /* Construct a meaningful problem id */
   problem_id_length =
-      snprintf(NULL, 0, "%s_%02i", "schwefel", (int)number_of_variables);
+      (size_t)snprintf(NULL, 0, "%s_%02lu", "schwefel", (long)number_of_variables);
   problem->problem_id = (char *)coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d", "schwefel",
-           (int)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "schwefel",
+           (long)number_of_variables);
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
