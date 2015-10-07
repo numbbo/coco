@@ -257,7 +257,7 @@ static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long i
       for (j = 0; j < dimension; ++j) {
         current_row[j] = 0.0;
         for (k = 0; k < dimension; ++k) {
-          double exponent = k * 1.0 / (dimension - 1.0);
+          double exponent = k * 1.0 / ((int)dimension - 1.0);
           current_row[j] += rot1[i][k] * pow(sqrt(10.0), exponent) * rot2[k][j];
         }
       }

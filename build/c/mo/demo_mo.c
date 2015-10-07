@@ -108,8 +108,9 @@ static long biobjective_encode_problem_index(int combination_idx, long instance_
 
 /* Interface via dimension, function-ID and instance-ID. This does not translate
    directly to different languages or benchmark suites. */
-int main() {
-  int problem_index, combination_idx, instance_idx, dimension_idx;
+int main(void) {
+  long problem_index;
+  int combination_idx, instance_idx, dimension_idx;
   coco_problem_t *problem;
   
   for (dimension_idx = 0; dimension_idx < 3; dimension_idx++) {
@@ -118,7 +119,7 @@ int main() {
               problem_index = biobjective_encode_problem_index(combination_idx,
                                                                instance_idx,
                                                                dimension_idx);
-printf("problem_index = %d, combination_idx = %d, instance_idx = %d, dimension_idx = %d\n", problem_index, combination_idx, instance_idx, dimension_idx);
+printf("problem_index = %ld, combination_idx = %d, instance_idx = %d, dimension_idx = %d\n", problem_index, combination_idx, instance_idx, dimension_idx);
               problem = coco_get_problem(SUITE_NAME, problem_index);
               
               problem = coco_observe_problem(OBSERVER_NAME, problem, OBSERVER_OPTIONS);

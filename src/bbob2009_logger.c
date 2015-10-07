@@ -113,12 +113,12 @@ static void _bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
     data->idx_t_trigger++;
 
   while (data->number_of_evaluations >=
-         number_of_variables * pow(10, (double)data->idx_tdim_trigger))
+         (int)number_of_variables * pow(10, (double)data->idx_tdim_trigger))
     data->idx_tdim_trigger++;
 
   data->t_trigger =
       (long)doublemin(floor(pow(10, (double)data->idx_t_trigger / (double)bbob2009_nbpts_nbevals)),
-           number_of_variables * pow(10, (double)data->idx_tdim_trigger));
+    	 (int)number_of_variables * pow(10, (double)data->idx_tdim_trigger));
 }
 
 /**
@@ -152,7 +152,7 @@ static void _bbob2009_logger_error_io(FILE *path, int errnum) {
   const char *error_format = "Error opening file: %s\n ";
                              /*"bbob2009_logger_prepare() failed to open log "
                              "file '%s'.";*/
-  size_t buffer_size = (size_t)(snprintf(NULL, 0, error_format, path));/*to silence warning*/
+  size_t buffer_size = (size_t)snprintf(NULL, 0, error_format, path);/*to silence warning*/
   buf = (char *)coco_allocate_memory(buffer_size);
   snprintf(buf, buffer_size, error_format, strerror(errnum), path);
   coco_error(buf);

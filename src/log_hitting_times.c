@@ -30,7 +30,7 @@ static void _lht_evaluate_function(coco_problem_t *self, const double *x, double
       char *buf;
       const char *error_format =
           "lht_evaluate_function() failed to open log file '%s'.";
-      size_t buffer_size = (size_t)(snprintf(NULL, 0, error_format, data->path));
+      size_t buffer_size = (size_t)snprintf(NULL, 0, error_format, data->path);
       buf = (char *)coco_allocate_memory(buffer_size);
       snprintf(buf, buffer_size, error_format, data->path);
       coco_error(buf);

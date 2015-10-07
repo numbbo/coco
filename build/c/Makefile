@@ -20,7 +20,7 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 all: demo coco_test bbob2009_test
 
 clean:
-	rm -f bbob2009_test.o bbob2009_test coco.o coco_test.o coco_test demo.o demo
+	rm -f coco.o coco_test.o coco_test demo.o demo bbob2009_test.o bbob2009_test 
 
 ########################################################################
 ## Programs
@@ -32,9 +32,6 @@ coco_test: coco_test.o coco.o
 
 bbob2009_test: bbob2009_test.o coco.o
 	${CC}  ${CCFLAGS} -o bbob2009_test bbob2009_test.o coco.o ${LDFLAGS} 
-
-coco_timing: coco_timing.o coco.o
-	${CC}  ${CCFLAGS} -o coco_timing coco_timing.o coco.o ${LDFLAGS}
 
 ########################################################################
 ## Additional dependencies
