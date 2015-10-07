@@ -95,7 +95,7 @@ class TargetValues(object):
         >>> import bbob_pproc.pproc as pp
         >>> targets = [10**i for i in np.arange(2, -8.1, -0.2)]
         >>> targets_as_class = pp.TargetValues(targets)
-        >>> assert all(targets_as_class() == targets)
+        >>> assert all(targets_as_class() == target for target in targets)
     
     In itself this class is useless, as it does not more than a simple list
     could do, but it serves as interface for derived classes, where ``targets()``
@@ -518,7 +518,7 @@ class DataSet():
     
         >>> import sys
         >>> import os
-        >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+        >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname('__file__'))))
         >>> import bbob_pproc as bb
         >>> dslist = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info')
         >>> dslist  # nice display in particular in IPython
@@ -544,11 +544,16 @@ class DataSet():
         __ne__
         __repr__
         _attributes
+        _complement_data
+        _cut_data
         _detEvals2
+        _detMaxEvals
+        _evals
         _extra_attr
         algId
         comment
         computeERTfromEvals
+        consistency_check
         createDictInstance
         createDictInstanceCount
         dataFiles
@@ -560,6 +565,7 @@ class DataSet():
         dim
         ert
         evals
+        evals_
         finalfunvals
         funcId
         funvals
@@ -569,9 +575,11 @@ class DataSet():
         instancenumbers
         isFinalized
         mMaxEvals
+        max_eval
         maxevals
         nbRuns
         pickle
+        plot
         precision
         readfinalFminusFtarget
         readmaxevals
@@ -579,7 +587,7 @@ class DataSet():
         target
         >>> all(ds.evals[:, 0] == ds.target)  # first column of ds.evals is the "target" f-value
         True
-        >>> ds.evals[0::10,:][:, (0,5,6)]  # show row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
+        >>> ds.evals[0::10, (0,5,6)]  # show row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
         array([[  3.98107171e+07,   1.00000000e+00,   1.00000000e+00],
                [  3.98107171e+05,   2.00000000e+01,   8.40000000e+01],
                [  3.98107171e+03,   1.61600000e+03,   1.04500000e+03],
@@ -587,15 +595,17 @@ class DataSet():
                [  3.98107171e-01,   4.42400000e+03,   5.11800000e+03],
                [  3.98107171e-03,   4.73200000e+03,   5.41300000e+03],
                [  3.98107171e-05,   5.04000000e+03,   5.74800000e+03],
-               [  3.98107171e-07,   5.36200000e+03,   6.07000000e+03],
-               [  3.98107171e-09,   5.68200000e+03,              nan]])
+               [  3.98107171e-07,   5.36200000e+03,   6.07000000e+03]])
 
-        >>> ds.evals[-1,:][:, (0,5,6)]  # show last row, same columns
+        >>> ds.evals[-1,(0,5,6)]  # show last row, same columns
         array([  1.58489319e-09,              nan,              nan])
         >>> ds.info()  # prints similar data more nicely formated 
         Algorithm: cmaes V3.30.beta
         Function ID: 2
-        Dimension:10
+        Dimension DIM = 10
+        Number of trials: 15
+        Final target Df: 1e-08
+        min / max number of evals: 1 / 6346
              Df  evals: best    10%     25%     50%     75%     90%     max
           __________________________________________________________________
           1.0e+03  |    1018    1027    1381    1698    1921    2093    2348
@@ -612,7 +622,8 @@ class DataSet():
                [  1.00000000e+01,   3.98107171e+05,   6.12666667e+01],
                [  2.00000000e+01,   3.98107171e+03,   1.13626667e+03],
                [  3.00000000e+01,   3.98107171e+01,   3.07186667e+03],
-               [  4.00000000e+01,   3.98107171e-01,   4.81333333e+03]])
+               [  4.00000000e+01,   3.98107171e-01,   4.81333333e+03],
+               [ -1.00000000e+00,   1.00000000e-08,   6.09626667e+03]])
         
     """
 

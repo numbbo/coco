@@ -50,7 +50,7 @@ algs2009 = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
 algs2010 = ("1komma2", "1komma2mir", "1komma2mirser", "1komma2ser", "1komma4",
 "1komma4mir", "1komma4mirser", "1komma4ser", "1plus1", "1plus2mirser", "ABC",
 "AVGNEWUOA", "CMAEGS", "DE-F-AUC", "DEuniform", "IPOP-ACTCMA-ES",
-"IPOP-CMA-ES", "MOS", "NBC-CMA", "NEWUOA", "PM-AdapSS-DE", "RCGA", "SPSA",
+"BIPOP-CMA-ES", "MOS", "NBC-CMA", "NEWUOA", "PM-AdapSS-DE", "RCGA", "SPSA",
 "oPOEMS", "pPOEMS")
 
 algs2012 = ("ACOR", "BIPOPaCMA", "BIPOPsaACM", "aCMA", "CMAES", "aCMAa", "aCMAm", "aCMAma", "aCMAmah", "aCMAmh", "DBRCGA", "DE", "DEAE", "DEb", "DEctpb", "IPOPsaACM", "JADE", "JADEb", "JADEctpb", "NBIPOPaCMA", "NIPOPaCMA", "DE-AUTO", "DE-BFGS", "DE-ROLL", "DE-SIMPLEX", "MVDE", "PSO-BFGS", "xNES", "xNESas", "SNES")
@@ -466,17 +466,19 @@ def customgenerate(args = algs2009):
     This method is called from the python command line from a directory
     containing all necessary data folders::
 
-      >>> from bbob_pproc import bestalg
-      >>> import os
-      >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
-      >>> os.chdir("bbob_pproc/data")
-      >>> bestalg.customgenerate()
-      Searching in ALPS ...
-      ...
-      Found 324 file(s)!
-      Unpickled ALPS/ppdata_f001_02.pickle.
-      ...
-      bbob_pproc/bestalg.py:116: UserWarning: Algorithm ... was not tested on f127 20-D.
+     >>> from bbob_pproc import bestalg
+     >>> import os
+     >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+     >>> os.chdir(path)
+     >>> os.chdir("../../../data-archive/data/gecco-bbob-1-24/2009/data")
+     >>> bestalg.customgenerate()
+     >>> os.chdir(path)
+     Searching in ALPS ...
+     ...
+     Found 324 file(s)!
+     Unpickled ALPS/ppdata_f001_02.pickle.
+     ...
+     bbob_pproc/bestalg.py:116: UserWarning: Algorithm ... was not tested on f127 20-D.
 
     """
 
@@ -514,10 +516,12 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
 
        >>> from bbob_pproc import bestalg
        >>> import os
-       >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
-       >>> os.chdir("bbob_pproc/data")
-       >>> bestalg.getAllContributingAlgorithmsToBest(('IPOP-CMA-ES', 'RANDOMSEARCH'))
-       Searching in IPOP-CMA-ES ...
+       >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+       >>> os.chdir(path)
+       >>> os.chdir("../../../data-archive/data/gecco-bbob-1-24/2009/data")
+       >>> bestalg.getAllContributingAlgorithmsToBest(('BIPOP-CMA-ES', 'RANDOMSEARCH'))
+       >>> os.chdir(path)
+       Searching in BIPOP-CMA-ES ...
        ...
        Found 144 file(s)!
        ...
