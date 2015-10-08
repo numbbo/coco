@@ -7,9 +7,6 @@
 #include "coco_internal.h"
 #include "coco_strdup.c"
 
-/* To get rid of the implicit-function-declaration warning. */
-int mkdir(const char *pathname, mode_t mode);
-
 /* Figure out if we are on a sane platform or on the dominant platform. */
 #if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
 #include <windows.h>
@@ -56,6 +53,9 @@ static const char *coco_path_separator = "/";
 #if !defined(NUMBBO_PATH_MAX)
 #error NUMBBO_PATH_MAX undefined
 #endif
+
+/* To get rid of the implicit-function-declaration warning. */
+int mkdir(const char *pathname, mode_t mode);
 
 /***********************************
  * Global definitions in this file
