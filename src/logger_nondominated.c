@@ -6,26 +6,24 @@
 #include "coco_utilities.c"
 #include "coco_problem.c"
 #include "coco_strdup.c"
+#include "mo_pareto_filtering.c"
 
 /* For making my multiobjective recorder work */
 #include "mo_recorder.h"
 #include "mo_recorder.c"
-#include "mo_paretofiltering.c"
-
 
 typedef struct {
     char *path;
     FILE *logfile;
     size_t max_size_of_archive;
     size_t number_of_evaluations;
-} _log_nondominating_t;
+} _logger_nondominated_t;
 
 static struct mococo_solutions_archive *mo_archive;
 static struct mococo_solution_entry *entry;
 
-
-static void lnd_evaluate_function(coco_problem_t *self, const double *x, double *y) {
-  _log_nondominating_t *data;
+static void private_logger_nondominated_evaluate_function(coco_problem_t *self, const double *x, double *y) {
+  _logger_nondominated_t *data;
   size_t i;
   size_t j;
   size_t k;
@@ -40,7 +38,7 @@ static void lnd_evaluate_function(coco_problem_t *self, const double *x, double 
     if (data->logfile == NULL) {
       char *buf;
       const char *error_format =
-          "lnd_evaluate_function() failed to open log file '%s'.";
+          "private_logger_nondominated_evaluate_function() failed to open log file '%s'.";
       size_t buffer_size = (size_t)snprintf(NULL, 0, error_format, data->path);
       buf = (char *)coco_allocate_memory(buffer_size);
       snprintf(buf, buffer_size, error_format, data->path);
@@ -85,8 +83,8 @@ static void lnd_evaluate_function(coco_problem_t *self, const double *x, double 
   fflush(data->logfile);
 }
 
-static void private_lnd_free_data(void *stuff) {
-  _log_nondominating_t *data;
+static void private_logger_nondominated_free_data(void *stuff) {
+  _logger_nondominated_t *data;
   assert(stuff != NULL);
   data = stuff;
 
@@ -111,18 +109,17 @@ static void private_lnd_free_data(void *stuff) {
   }
 }
 
-static coco_problem_t *log_nondominating(coco_problem_t *inner_problem,
-                                  const size_t max_size_of_archive,
-                                  const char *path) {
-  _log_nondominating_t *data;
+static coco_problem_t *logger_nondominated(coco_problem_t *inner_problem,
+    const size_t max_size_of_archive, const char *path) {
+  _logger_nondominated_t *data;
   coco_problem_t *self;
 
   data = coco_allocate_memory(sizeof(*data));
   data->number_of_evaluations = 0;
   data->path = coco_strdup(path);
-  data->logfile = NULL; /* Open lazily in lht_evaluate_function(). */
+  data->logfile = NULL; /* Open lazily in private_logger_nondominated_evaluate_function(). */
   data->max_size_of_archive = max_size_of_archive;
-  self = coco_allocate_transformed_problem(inner_problem, data, private_lnd_free_data);
-  self->evaluate_function = lnd_evaluate_function;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_logger_nondominated_free_data);
+  self->evaluate_function = private_logger_nondominated_evaluate_function;
   return self;
 }

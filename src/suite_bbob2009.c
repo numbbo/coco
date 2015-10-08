@@ -763,7 +763,7 @@ static long suite_bbob2009_next_problem_index(long problem_index, const char *se
  * suite_bbob2009(problem_index):
  *
  * Return the ${problem_index}-th benchmark problem from the BBOB2009
- * benchmark suit. If the function index is out of bounds, return
+ * benchmark suite. If the function index is out of bounds, return
  * NULL.
  */
 static coco_problem_t *suite_bbob2009(long problem_index) {

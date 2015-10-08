@@ -5,11 +5,11 @@
 
 #include "coco_problem.c"
 
-typedef struct { double *xopt; } attractive_sector_problem_data_t;
+typedef struct { double *xopt; } _1u_as_data_t;
 
 static void private_evaluate_1u_as(coco_problem_t *self, const double *x, double *y) {
   size_t i;
-  attractive_sector_problem_data_t *data;
+  _1u_as_data_t *data;
 
   assert(self->number_of_objectives == 1);
   data = self->data;
@@ -24,7 +24,7 @@ static void private_evaluate_1u_as(coco_problem_t *self, const double *x, double
 }
 
 static void private_free_1u_as(coco_problem_t *self) {
-  attractive_sector_problem_data_t *data;
+  _1u_as_data_t *data;
   data = self->data;
   coco_free_memory(data->xopt);
   self->free_problem = NULL;
@@ -35,7 +35,7 @@ static coco_problem_t *
 f_1u_attractive_sector(const size_t number_of_variables, const double *xopt) {
   size_t i, problem_id_length;
   coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
-  attractive_sector_problem_data_t *data;
+  _1u_as_data_t *data;
   data = coco_allocate_memory(sizeof(*data));
   data->xopt = coco_duplicate_vector(xopt, number_of_variables);
 

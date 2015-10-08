@@ -1,5 +1,5 @@
 /*
- * Test function and instance ID extraction for BBOB2009 problem suit.
+ * Test function and instance ID extraction for BBOB2009 problem suites.
  */
 
 #include <stdio.h>

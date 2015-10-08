@@ -12,7 +12,7 @@ typedef struct {
   double **rot1, **rot2;
   long rseed;
   coco_free_function_t old_free_problem;
-} _lunacek_bi_rastrigin_t;
+} _1u_lbr_data_t;
 
 static void private_evaluate_1u_lbr(coco_problem_t *self, const double *x, double *y) {
   static const double condition = 100.;
@@ -22,7 +22,7 @@ static void private_evaluate_1u_lbr(coco_problem_t *self, const double *x, doubl
   static const double d = 1.;
   const double s = 1. - 0.5 / (sqrt((double)(self->number_of_variables + 20)) - 4.1);
   const double mu1 = -sqrt((mu0 * mu0 - d) / s);
-  _lunacek_bi_rastrigin_t *data;
+  _1u_lbr_data_t *data;
   double *tmpvect, sum1 = 0., sum2 = 0., sum3 = 0.;
 
   assert(self->number_of_variables > 1);
@@ -72,7 +72,7 @@ static void private_evaluate_1u_lbr(coco_problem_t *self, const double *x, doubl
 }
 
 static void private_free_1u_lbr(coco_problem_t *self) {
-  _lunacek_bi_rastrigin_t *data;
+  _1u_lbr_data_t *data;
   data = self->data;
   coco_free_memory(data->x_hat);
   coco_free_memory(data->z);
@@ -92,7 +92,7 @@ f_1u_lunacek_bi_rastrigin(const size_t number_of_variables, const long instance_
   size_t i, problem_id_length;
   long rseed;
   coco_problem_t *problem;
-  _lunacek_bi_rastrigin_t *data;
+  _1u_lbr_data_t *data;
   static const double mu0 = 2.5;
 
   rseed = 24 + 10000 * instance_id;

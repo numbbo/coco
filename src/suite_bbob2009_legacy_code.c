@@ -9,6 +9,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <assert.h>
 #include "coco.h"
 #define BBOB2009_MAX_DIM 40
 

@@ -10,12 +10,12 @@
 typedef struct {
   double *x;
   double beta;
-} _avt_data_t;
+} _tv_asy_data_t;
 
 static void private_evaluate_function_tv_asy(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   double exponent;
-  _avt_data_t *data;
+  _tv_asy_data_t *data;
   coco_problem_t *inner_problem;
 
   data = coco_get_transform_data(self);
@@ -35,7 +35,7 @@ static void private_evaluate_function_tv_asy(coco_problem_t *self, const double 
 }
 
 static void private_free_data_tv_asy(void *thing) {
-  _avt_data_t *data = thing;
+  _tv_asy_data_t *data = thing;
   coco_free_memory(data->x);
 }
 
@@ -44,7 +44,7 @@ static void private_free_data_tv_asy(void *thing) {
  */
 static coco_problem_t *f_tran_var_asymmetric(coco_problem_t *inner_problem,
                                               const double beta) {
-  _avt_data_t *data;
+  _tv_asy_data_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);

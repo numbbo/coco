@@ -8,12 +8,12 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-typedef struct { double *x; } _brs_data_t;
+typedef struct { double *x; } _tv_brs_data_t;
 
 static void private_evaluate_function_tv_brs(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   double factor;
-  _brs_data_t *data;
+  _tv_brs_data_t *data;
   coco_problem_t *inner_problem;
 
   data = coco_get_transform_data(self);
@@ -38,7 +38,7 @@ static void private_evaluate_function_tv_brs(coco_problem_t *self, const double 
 }
 
 static void private_free_data_tv_brs(void *thing) {
-  _brs_data_t *data = thing;
+  _tv_brs_data_t *data = thing;
   coco_free_memory(data->x);
 }
 
@@ -46,7 +46,7 @@ static void private_free_data_tv_brs(void *thing) {
  * Perform monotone oscillation transformation on input variables.
  */
 static coco_problem_t *f_tran_var_brs(coco_problem_t *inner_problem) {
-  _brs_data_t *data;
+  _tv_brs_data_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);

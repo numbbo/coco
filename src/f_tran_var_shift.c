@@ -7,11 +7,11 @@ typedef struct {
   double *offset;
   double *shifted_x;
   coco_free_function_t old_free_problem;
-} _sv_data_t;
+} _tv_sh_data_t;
 
 static void private_evaluate_function_tv_sh(coco_problem_t *self, const double *x, double *y) {
   size_t i;
-  _sv_data_t *data;
+  _tv_sh_data_t *data;
   coco_problem_t *inner_problem;
 
   data = coco_get_transform_data(self);
@@ -25,7 +25,7 @@ static void private_evaluate_function_tv_sh(coco_problem_t *self, const double *
 }
 
 static void private_free_data_tv_sh(void *thing) {
-  _sv_data_t *data = thing;
+  _tv_sh_data_t *data = thing;
   coco_free_memory(data->shifted_x);
   coco_free_memory(data->offset);
 }
@@ -35,7 +35,7 @@ static void private_free_data_tv_sh(void *thing) {
  */
 static coco_problem_t *f_tran_var_shift(coco_problem_t *inner_problem,
                                 const double *offset, const int shift_bounds) {
-  _sv_data_t *data;
+  _tv_sh_data_t *data;
   coco_problem_t *self;
   if (shift_bounds)
     coco_error("shift_bounds not implemented.");

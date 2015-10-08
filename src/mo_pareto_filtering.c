@@ -1,10 +1,10 @@
 /* paretofront returns the logical Pareto membership of a set of points
-   synopsis:  frontFlag = paretofront(objMat)
-   Created by Yi Cao: y.cao@cranfield.ac.uk
-   for compiling type:
-   mex paretofront.c
-
-   adapted to fit ANSI C89 standard by the BBOBies
+ *  synopsis:  frontFlag = paretofront(objMat)
+ * Created by Yi Cao: y.cao@cranfield.ac.uk
+ * for compiling type:
+ * mex paretofront.c
+ *
+ * Renamed and adapted to fit ANSI C89 standard by the BBOBies
  * no '//' comments
  * no use of C++ bool datatype anymore
  */
@@ -13,48 +13,6 @@
 #include <stdlib.h>  /* memory, e.g. malloc */
 #include <math.h>
 #include "mo_recorder.h"
-
-void mococo_pareto_front(int *frontFlag, double *obj, size_t nrow, size_t ncol);
-
-
-void mococo_pareto_filtering(struct mococo_solutions_archive *archive) {
-  /* Create the objective vectors and frontFlag of appropriate format for paretofront() */
-  size_t len = archive->size;
-  size_t nObjs = archive->numobj;
-  int *frontFlag = (int*) malloc(len * sizeof(int));
-  double *obj = (double*) malloc(len * nObjs * sizeof(double));
-  size_t i;
-  size_t s;
-
-  for (i=0; i < len; i++) {
-    size_t k;
-    for (k=0; k < nObjs; k++) {
-      obj[i + k*len] = archive->active[i]->obj[k];
-    }
-    frontFlag[i] = 0; /* set to false */
-  }
-
-  /* Call the non-dominated sorting engine */
-  mococo_pareto_front(frontFlag, obj, len, nObjs);
-
-  /* Mark non-dominated solutions and filter out dominated ones */
-  s = 0;
-  for (i=0; i < len; i++) {
-    if (frontFlag[i]) {
-      archive->active[i]->status = 1;
-      if (i != s)
-        archive->active[s] = archive->active[i];
-      s++;
-    } else {
-      archive->active[i]->status = 0; /* filter out dominated solutions */
-    }
-  }
-  archive->size = s;
-
-  free(obj);
-  free(frontFlag);
-}
-
 
 void mococo_pareto_front(int *frontFlag, double *obj, size_t nrow, size_t ncol) {
   size_t t, s, i, j, j1, j2;
@@ -114,3 +72,43 @@ void mococo_pareto_front(int *frontFlag, double *obj, size_t nrow, size_t ncol) 
   }
   free(checklist);
 }
+
+void mococo_pareto_filtering(struct mococo_solutions_archive *archive) {
+  /* Create the objective vectors and frontFlag of appropriate format for mococo_pareto_front() */
+  size_t len = archive->size;
+  size_t nObjs = archive->numobj;
+  int *frontFlag = (int*) malloc(len * sizeof(int));
+  double *obj = (double*) malloc(len * nObjs * sizeof(double));
+  size_t i;
+  size_t s;
+
+  for (i=0; i < len; i++) {
+    size_t k;
+    for (k=0; k < nObjs; k++) {
+      obj[i + k*len] = archive->active[i]->obj[k];
+    }
+    frontFlag[i] = 0; /* set to false */
+  }
+
+  /* Call the non-dominated sorting engine */
+  mococo_pareto_front(frontFlag, obj, len, nObjs);
+
+  /* Mark non-dominated solutions and filter out dominated ones */
+  s = 0;
+  for (i=0; i < len; i++) {
+    if (frontFlag[i]) {
+      archive->active[i]->status = 1;
+      if (i != s)
+        archive->active[s] = archive->active[i];
+      s++;
+    } else {
+      archive->active[i]->status = 0; /* filter out dominated solutions */
+    }
+  }
+  archive->size = s;
+
+  free(obj);
+  free(frontFlag);
+}
+
+

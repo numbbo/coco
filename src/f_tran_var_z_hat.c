@@ -7,12 +7,12 @@ typedef struct {
   double *xopt;
   double *z;
   coco_free_function_t old_free_problem;
-} _z_hat_data_t;
+} _tv_zh_data_t;
 
 static void private_evaluate_function_tv_zh(coco_problem_t *self, const double *x,
                                      double *y) {
   size_t i;
-  _z_hat_data_t *data;
+  _tv_zh_data_t *data;
   coco_problem_t *inner_problem;
 
   data = coco_get_transform_data(self);
@@ -28,7 +28,7 @@ static void private_evaluate_function_tv_zh(coco_problem_t *self, const double *
 }
 
 static void private_free_data_tv_zh(void *thing) {
-  _z_hat_data_t *data = thing;
+  _tv_zh_data_t *data = thing;
   coco_free_memory(data->xopt);
   coco_free_memory(data->z);
 }
@@ -37,7 +37,7 @@ static void private_free_data_tv_zh(void *thing) {
  * Compute the vector {z^hat} for the BBOB Schwefel function.
  */
 static coco_problem_t *f_tran_var_z_hat(coco_problem_t *inner_problem, const double *xopt) {
-  _z_hat_data_t *data;
+  _tv_zh_data_t *data;
   coco_problem_t *self;
 
   data = coco_allocate_memory(sizeof(*data));

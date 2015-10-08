@@ -5,6 +5,7 @@
 #include "coco_problem.c"
 #include "f_tran_obj_shift.c"
 #include "f_tran_var_affine.c"
+#include "f_1u_attractive_sector.c" /* Added to get rid of compiler errors. */
 #include "suite_bbob2009_legacy_code.c"
 
 /**
@@ -19,7 +20,6 @@ typedef void (*coco_optimizer_t)(coco_problem_t *problem, long budget);
  * Return the first problem in benchmark ${suite} with ${id} as problem ID,
  * or NULL. 
  */
-coco_problem_t *coco_suite_get_problem_by_id(const char *suite, const char *id);
 coco_problem_t *coco_suite_get_problem_by_id(const char *suite, const char *id) {
   const char *suite_options = "";
   long index = coco_next_problem_index(suite, -1, suite_options);
@@ -41,8 +41,7 @@ int coco_problem_id_is_fine(const char *id, ...);
  * Construct a meaningful problem id for a bbob2009 problem,
  * the allocated memory must be free()ed by the caller. 
  * */
-static char *
-bbob2009_problem_id(const char *name, size_t number_of_variables) {
+static char *bbob2009_problem_id(const char *name, size_t number_of_variables) {
   char * problem_id;
   
   problem_id = coco_strdupf("%s_%04lu", name, number_of_variables);
@@ -76,13 +75,9 @@ bbob2009_problem_id(const char *name, size_t number_of_variables) {
  * Details: this is yet a tentative name/interface.
  * FIXME: find a better interface for best_parameter?
  */
-coco_problem_t *coco_allocate_so_problem_from_sss(const char * problem_id,
-                             const char * problem_name,
-                             coco_evaluate_function_t fct,
-                             size_t number_of_variables,
-                             double smallest_value_of_interest,
-                             double largest_value_of_interest,
-                             double best_parameter) {
+coco_problem_t *coco_allocate_so_problem_from_sss(const char * problem_id, const char * problem_name,
+coco_evaluate_function_t fct, size_t number_of_variables, double smallest_value_of_interest,
+double largest_value_of_interest, double best_parameter) {
   size_t i;
   coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
   
@@ -135,8 +130,7 @@ static coco_problem_t *b2bob2009_raw_bent_cigar_problem(const size_t number_of_v
 }
 
 /*** transform into final bbob2009 problem in coco format ***/
-static coco_problem_t *
-b2bob2009_bent_cigar_problem(long dimension_, long instance_id) {
+static coco_problem_t *b2bob2009_bent_cigar_problem(long dimension_, long instance_id) {
     const int function_id = 12;
     const size_t dimension = (size_t)dimension_; /* prevent subtle warnings */
     double *M = coco_allocate_vector(dimension * dimension);
@@ -175,10 +169,10 @@ typedef struct { double *xopt; } coco_bbob_attractive_sector_problem_data_t;
 
 /*** define computation of raw function as coco_evaluate_function_t type ***/
 static void b2bob2009_raw_attractive_sector_evaluate(coco_problem_t *self, const double *x,
-                                        double *y) {
+    double *y) {
   const size_t dimension = coco_get_number_of_variables(self);
   size_t i;
-  coco_bbob_attractive_sector_problem_data_t *data;
+  _1u_as_data_t *data;
 
   assert(coco_get_number_of_objectives(self) == 1);
   data = self->data;
@@ -192,25 +186,22 @@ static void b2bob2009_raw_attractive_sector_evaluate(coco_problem_t *self, const
   }
 }
 /*** define raw function as coco_problem_t ***/
-static coco_problem_t *
-b2bob2009_raw_attractive_sector_problem(const size_t number_of_variables,
-                          const double *xopt) {
-  coco_bbob_attractive_sector_problem_data_t *data;
+static coco_problem_t *b2bob2009_raw_attractive_sector_problem(const size_t number_of_variables,
+    const double *xopt) {
+  _1u_as_data_t *data;
   char *problem_id = bbob2009_problem_id("attractive_sector", number_of_variables);
   coco_problem_t *problem = coco_allocate_so_problem_from_sss(problem_id, "attractive sector function",
-                                         _attractive_sector_evaluate,
-                                         number_of_variables, -5, 5, 0);
+      private_evaluate_1u_as, number_of_variables, -5, 5, 0);
   coco_free_memory(problem_id);
   data = coco_allocate_memory(sizeof(*data));
   data->xopt = coco_duplicate_vector(xopt, number_of_variables);
   problem->data = data;
-  problem->free_problem = _attractive_sector_free;
+  problem->free_problem = private_free_1u_as;
   return problem;
 }
 
 /*** transform into final bbob2009 problem in coco format ***/
-static coco_problem_t *
-b2bob2009_attractive_sector_problem(long dimension_, long instance_id) {
+static coco_problem_t *b2bob2009_attractive_sector_problem(long dimension_, long instance_id) {
     const int function_id = 6;
     const size_t dimension = (size_t)dimension_; /* prevent subtle warnings */
     double *M = coco_allocate_vector(dimension * dimension);

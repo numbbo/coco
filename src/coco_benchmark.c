@@ -5,13 +5,12 @@
 
 #include "coco.h"
 
-#include "mo_suite_first_attempt.c"
-
-#include "biobjective_suite_300.c"
-#include "biobjective_observer.c"
 #include "observer_bbob2009.c"
+#include "observer_mo_toy.c"
 #include "observer_toy.c"
+#include "suite_2o_300.c"
 #include "suite_bbob2009.c"
+#include "suite_mo_first_attempt.c"
 #include "suite_toy.c"
 
 /**
@@ -38,7 +37,7 @@ long coco_next_problem_index(const char *problem_suite, long problem_index,
   long last_index = -1;
 
   /* code specific to known benchmark suites */
-  /* for efficiency reasons, each test suit should define
+  /* for efficiency reasons, each test suite should define
    * at least its last_index here */
   if (0 == strcmp(problem_suite, "suite_bbob2009")) {
     /* without selection_options: last_index = 2159; */
@@ -85,9 +84,9 @@ coco_problem_t *coco_get_problem(const char *problem_suite,
   } else if (0 == strcmp(problem_suite, "suite_bbob2009")) {
     return suite_bbob2009(problem_index);
   } else if (0 == strcmp(problem_suite, "mo_suite_first_attempt")) {
-    return mo_suite_first_attempt(problem_index);
+    return suite_mo_first_attempt(problem_index);
   } else if (0 == strcmp(problem_suite, "biobjective_combinations")) {
-    return biobjective_suite_300(problem_index);
+    return suite_2o_300(problem_index);
   } else {
     coco_warning("Unknown problem suite.");
     return NULL;
@@ -105,7 +104,7 @@ coco_problem_t *coco_observe_problem(const char *observer,
   } else if (0 == strcmp(observer, "observer_bbob2009")) {
     return observer_bbob2009(problem, options);
   } else if (0 == strcmp(observer, "mo_toy_observer")) {
-    return mo_toy_observer(problem, options);
+    return observer_mo_toy(problem, options);
   }
 
   /* here each observer must have another entry */
@@ -162,7 +161,7 @@ void coco_benchmark(const char *problem_suite, const char *problem_suite_options
     break;
     problem = coco_get_problem(problem_suite, problem_index);
     if (problem == NULL) {
-      snprintf(buf, 221, "problem index %d not found in problem suit %s (this is probably a bug)",
+      snprintf(buf, 221, "problem index %d not found in problem suite %s (this is probably a bug)",
         problem_index, problem_suite);
       coco_warning(buf);
       break;

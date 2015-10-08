@@ -106,7 +106,7 @@ size_t coco_get_number_of_constraints(const coco_problem_t *self);
 
 /**
  * Get the ${problem_index}-th problem of the ${problem_suit} test
- * suit.
+ * suite.
  */
 coco_problem_t *coco_get_problem(const char *problem_suite,
                                  const long problem_index);

@@ -73,7 +73,7 @@ typedef struct {
   int instance_id;
   size_t number_of_variables;
   double optimal_fvalue;
-} bbob2009_logger_t; 
+} logger_bbob2009_t; 
 
 static const char *bbob2009_file_header_str = "%% function evaluation | "
                                       "noise-free fitness - Fopt (%13.12e) | "
@@ -83,7 +83,7 @@ static const char *bbob2009_file_header_str = "%% function evaluation | "
                                       "x1 | "
                                       "x2...\n";
 
-static void private_bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
+static void private_bbob2009_logger_update_f_trigger(logger_bbob2009_t *data,
   double fvalue) {
   /* "jump" directly to the next closest (but larger) target to the
    * current fvalue from the initial target
@@ -106,7 +106,7 @@ static void private_bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
   }
 }
 
-static void private_bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
+static void private_bbob2009_logger_update_t_trigger(logger_bbob2009_t *data,
   size_t number_of_variables) {
   while (data->number_of_evaluations >=
          floor(pow(10, (double)data->idx_t_trigger / (double)(long)bbob2009_nbpts_nbevals)))
@@ -210,7 +210,7 @@ static void private_bbob2009_logger_open_dataFile(FILE **target_file, const char
  * Creates the index file fileName_prefix+problem_id+file_extension in
  * folde_path
  */
-static void private_bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
+static void private_bbob2009_logger_openIndexFile(logger_bbob2009_t *data,
   const char *folder_path, const char *indexFile_prefix,
   const char *function_id, const char *dataFile_path) {
     /*to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
@@ -316,7 +316,7 @@ static void private_bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
  * Generates the different files and folder needed by the logger to store the
  * data if theses don't already exist
  */
-static void private_bbob2009_logger_initialize(bbob2009_logger_t *data,
+static void private_bbob2009_logger_initialize(logger_bbob2009_t *data,
   coco_problem_t *inner_problem) {
   /*
     Creates/opens the data and index files
@@ -381,7 +381,7 @@ static void private_bbob2009_logger_initialize(bbob2009_logger_t *data,
  */
 static void private_bbob2009_logger_evaluate_function(coco_problem_t *self,
   const double *x, double *y) {
-  bbob2009_logger_t *data = coco_get_transform_data(self);
+  logger_bbob2009_t *data = coco_get_transform_data(self);
   coco_problem_t * inner_problem = coco_get_transform_inner_problem(self);
   
   if (!data->is_initialized) {
@@ -444,7 +444,7 @@ static void private_bbob2009_logger_free_data(void *stuff) {
   /*TODO: do all the "non simply freeing" stuff in another function
    * that can have problem as input
    */
-  bbob2009_logger_t *data = stuff;
+  logger_bbob2009_t *data = stuff;
 
   if (bbob2009_logger_verbosity > 2 && data && data->number_of_evaluations > 0) {
     printf("best f=%e after %ld fevals (done observing)\n",
@@ -498,7 +498,7 @@ static void private_bbob2009_logger_free_data(void *stuff) {
 }
 
 static coco_problem_t *logger_bbob2009(coco_problem_t *inner_problem, const char *alg_name) {
-  bbob2009_logger_t *data;
+  logger_bbob2009_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));
   data->alg_name = coco_strdup(alg_name);

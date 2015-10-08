@@ -24,7 +24,7 @@ typedef struct {
   double *x, *xx;
   double *xopt, fopt;
   double **rot1, **rot2;
-} _step_ellipsoid_t;
+} _1u_bse_data_t;
 
 
 static void private_evaluate_1u_bse(coco_problem_t *self, const double *x, double *y) {
@@ -32,7 +32,7 @@ static void private_evaluate_1u_bse(coco_problem_t *self, const double *x, doubl
   static const double alpha = 10.0;
   size_t i, j;
   double penalty = 0.0, x1;
-  _step_ellipsoid_t *data;
+  _1u_bse_data_t *data;
 
   assert(self->number_of_variables > 1);
   assert(self->number_of_objectives == 1);
@@ -81,7 +81,7 @@ static void private_evaluate_1u_bse(coco_problem_t *self, const double *x, doubl
 }
 
 static void private_free_1u_bse(coco_problem_t *self) {
-  _step_ellipsoid_t *data;
+  _1u_bse_data_t *data;
   data = self->data;
   coco_free_memory(data->x);
   coco_free_memory(data->xx);
@@ -100,7 +100,7 @@ f_1u_bbob_step_ellipsoid(const size_t number_of_variables, const long instance_i
   size_t i, problem_id_length;
   long rseed;
   coco_problem_t *problem;
-  _step_ellipsoid_t *data;
+  _1u_bse_data_t *data;
 
   rseed = 7 + 10000 * instance_id;
 

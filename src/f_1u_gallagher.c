@@ -24,12 +24,12 @@ typedef struct {
   double **rotation, **Xlocal, **arrScales;
   double *peakvalues;
   coco_free_function_t old_free_problem;
-} _gallagher_t;
+} _1u_g_data_t;
 
 static void private_evaluate_1u_g(coco_problem_t *self, const double *x, double *y) {
   size_t i, j; /*Loop over dim*/
   double *tmx;
-  _gallagher_t *data = self->data;
+  _1u_g_data_t *data = self->data;
   double a = 0.1;
   double tmp2, f = 0., Fadd, tmp, Fpen = 0., Ftrue = 0.;
   double fac = -0.5 / (double)self->number_of_variables;
@@ -83,7 +83,7 @@ static void private_evaluate_1u_g(coco_problem_t *self, const double *x, double 
 }
 
 static void private_free_1u_g(coco_problem_t *self) {
-  _gallagher_t *data;
+  _1u_g_data_t *data;
   data = self->data;
   coco_free_memory(data->xopt);
   coco_free_memory(data->peakvalues);
@@ -99,7 +99,7 @@ static coco_problem_t *f_1u_gallagher(const size_t number_of_variables,
   size_t i, j, k, problem_id_length, *rperm;
   long rseed;
   coco_problem_t *problem;
-  _gallagher_t *data;
+  _1u_g_data_t *data;
   double maxcondition = 1000., maxcondition1 = 1000., *arrCondition,
          fitvalues[2] = {1.1, 9.1}; /*maxcondition1 satisfies the old code and
                                        the doc but seems wrong in that it is,

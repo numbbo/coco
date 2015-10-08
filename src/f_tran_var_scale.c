@@ -9,11 +9,11 @@
 typedef struct {
   double factor;
   double *x;
-} _scv_data_t;
+} _tv_sc_data_t;
 
 static void private_evaluate_function_tv_sc(coco_problem_t *self, const double *x, double *y) {
   size_t i;
-  _scv_data_t *data;
+  _tv_sc_data_t *data;
   coco_problem_t *inner_problem;
   data = coco_get_transform_data(self);
   inner_problem = coco_get_transform_inner_problem(self);
@@ -29,7 +29,7 @@ static void private_evaluate_function_tv_sc(coco_problem_t *self, const double *
 }
 
 static void private_free_data_tv_sc(void *thing) {
-  _scv_data_t *data = thing;
+  _tv_sc_data_t *data = thing;
   coco_free_memory(data->x);
 }
 
@@ -38,7 +38,7 @@ static void private_free_data_tv_sc(void *thing) {
  */
 static coco_problem_t *f_tran_var_scale(coco_problem_t *inner_problem,
                                 const double factor) {
-  _scv_data_t *data;
+  _tv_sc_data_t *data;
   coco_problem_t *self;
 
   data = coco_allocate_memory(sizeof(*data));

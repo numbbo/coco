@@ -7,8 +7,6 @@
 #include "coco_strdup.c"
 #include "coco_problem.c"
 #include "suite_bbob2009.c"
-/* #include "biobjective_problem.c"
-*/
 
 int coco_problem_id_is_fine(const char *id, ...) {
   va_list args;
@@ -75,7 +73,7 @@ void coco_problem_setf_name(coco_problem_t *problem, const char *name, ...) {
  * If the function index is out of bounds, return
  * NULL.
  */
-static coco_problem_t *mo_suite_first_attempt(const long problem_index) {
+static coco_problem_t *suite_mo_first_attempt(const long problem_index) {
   coco_problem_t *problem, *problem2;
   long dimension, instance, instance2;
   int f, f2;

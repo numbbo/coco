@@ -12,11 +12,11 @@ typedef struct {
   double f0;
   double ak[WEIERSTRASS_SUMMANDS];
   double bk[WEIERSTRASS_SUMMANDS];
-} _wss_problem_t;
+} _1u_w_data_t;
 
 static void private_evaluate_1u_w(coco_problem_t *self, const double *x, double *y) {
   size_t i, j;
-  _wss_problem_t *data = self->data;
+  _1u_w_data_t *data = self->data;
   assert(self->number_of_objectives == 1);
 
   y[0] = 0.0;
@@ -31,7 +31,7 @@ static void private_evaluate_1u_w(coco_problem_t *self, const double *x, double 
 static coco_problem_t *f_1u_weierstrass(const size_t number_of_variables) {
   size_t i, problem_id_length;
   coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
-  _wss_problem_t *data;
+  _1u_w_data_t *data;
   data = coco_allocate_memory(sizeof(*data));
 
   data->f0 = 0.0;
