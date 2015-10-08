@@ -1,0 +1,51 @@
+/*
+ * Scale variables by a given factor.
+ */
+#include <assert.h>
+
+#include "coco.h"
+#include "coco_problem.c"
+
+typedef struct {
+  double factor;
+  double *x;
+} _scv_data_t;
+
+static void private_evaluate_function_tv_sc(coco_problem_t *self, const double *x, double *y) {
+  size_t i;
+  _scv_data_t *data;
+  coco_problem_t *inner_problem;
+  data = coco_get_transform_data(self);
+  inner_problem = coco_get_transform_inner_problem(self);
+  do {
+    const double factor = data->factor;
+
+    for (i = 0; i < self->number_of_variables; ++i) {
+      data->x[i] = factor * x[i];
+    }
+    coco_evaluate_function(inner_problem, data->x, y);
+    assert(y[0] >= self->best_value[0]);
+  } while (0);
+}
+
+static void private_free_data_tv_sc(void *thing) {
+  _scv_data_t *data = thing;
+  coco_free_memory(data->x);
+}
+
+/**
+ * Scale all variables by factor before evaluation.
+ */
+static coco_problem_t *f_tran_var_scale(coco_problem_t *inner_problem,
+                                const double factor) {
+  _scv_data_t *data;
+  coco_problem_t *self;
+
+  data = coco_allocate_memory(sizeof(*data));
+  data->factor = factor;
+  data->x = coco_allocate_vector(inner_problem->number_of_variables);
+
+  self = coco_allocate_transformed_problem(inner_problem, data, private_free_data_tv_sc);
+  self->evaluate_function = private_evaluate_function_tv_sc;
+  return self;
+}

@@ -4,8 +4,8 @@
 #include "coco_internal.h"
 #include "coco_problem.c"
 #include "bbob2009_legacy_code.c"
-#include "f_transform_objective_shift.c"
-#include "f_transform_variables_affine.c"
+#include "f_tran_obj_shift.c"
+#include "f_tran_var_affine.c"
 
 /**
  * A collection of "random" future code (snippets)
@@ -157,11 +157,11 @@ b2bob2009_bent_cigar_problem(long dimension_, long instance_id) {
     bbob2009_free_matrix(rot1, dimension);
 
     problem = b2bob2009_raw_bent_cigar_problem(dimension);
-    problem = f_transform_objective_shift(problem, fopt);
-    problem = f_transform_variables_affine(problem, M, b, dimension);
-    problem = f_transform_variables_asymmetric(problem, 0.5);
-    problem = f_transform_variables_affine(problem, M, b, dimension);
-    problem = f_transform_variables_shift(problem, xopt, 0);
+    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_tran_var_affine(problem, M, b, dimension);
+    problem = f_tran_var_asymmetric(problem, 0.5);
+    problem = f_tran_var_affine(problem, M, b, dimension);
+    problem = f_tran_var_shift(problem, xopt, 0);
     coco_free_memory(M);
     coco_free_memory(b);
     coco_free_memory(xopt);
@@ -247,10 +247,10 @@ b2bob2009_attractive_sector_problem(long dimension_, long instance_id) {
     bbob2009_free_matrix(rot2, dimension);
 
     problem = b2bob2009_raw_attractive_sector_problem(dimension, xopt);
-    problem = f_transform_objective_oscillate(problem);
-    problem = f_transform_objective_power(problem, 0.9);
-    problem = f_transform_objective_shift(problem, fopt);
-    problem = f_transform_variables_affine(problem, M, b, dimension);
-    problem = f_transform_variables_shift(problem, xopt, 0);
+    problem = f_tran_obj_oscillate(problem);
+    problem = f_tran_obj_power(problem, 0.9);
+    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_tran_var_affine(problem, M, b, dimension);
+    problem = f_tran_var_shift(problem, xopt, 0);
     return problem;
   }

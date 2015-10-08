@@ -1,13 +1,13 @@
 #include "coco_generics.c"
+#include "f_1u_bueche_rastrigin.c"
+#include "f_1u_ellipsoid.c"
+#include "f_1u_linear_slope.c"
+#include "f_1u_rastrigin.c"
+#include "f_1u_rosenbrock.c"
+#include "f_1u_sphere.c"
 
 #include "log_hitting_times.c"
 
-#include "f_sphere.c"
-#include "f_ellipsoid.c"
-#include "f_rastrigin.c"
-#include "f_rosenbrock.c"
-#include "f_bueche-rastrigin.c"
-#include "f_linear_slope.c"
 
 /**
  * toy_suit(function_index):
@@ -25,18 +25,18 @@ static coco_problem_t *toy_suit(const long function_index) {
     return NULL;
 
   if (fid == 0) {
-    problem = sphere_problem(dims[did]);
+    problem = f_1u_sphere(dims[did]);
   } else if (fid == 1) {
-    problem = ellipsoid_problem(dims[did]);
+    problem = f_1u_ellipsoid(dims[did]);
   } else if (fid == 2) {
-    problem = rastrigin_problem(dims[did]);
+    problem = f_1u_rastrigin(dims[did]);
   } else if (fid == 3) {
-    problem = bueche_rastrigin_problem(dims[did]);
+    problem = f_1u_bueche_rastrigin(dims[did]);
   } else if (fid == 4) {
     double xopt[20] = {5.0};
-    problem = linear_slope_problem(dims[did], xopt);
+    problem = f_1u_linear_slope(dims[did], xopt);
   } else if (fid == 5) {
-    problem = rosenbrock_problem(dims[did]);
+    problem = f_1u_rosenbrock(dims[did]);
   } else {
     return NULL;
   }
