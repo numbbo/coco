@@ -95,7 +95,7 @@ class TargetValues(object):
         >>> import bbob_pproc.pproc as pp
         >>> targets = [10**i for i in np.arange(2, -8.1, -0.2)]
         >>> targets_as_class = pp.TargetValues(targets)
-        >>> assert all(targets_as_class() == target for target in targets)
+        >>> assert targets_as_class() == targets
     
     In itself this class is useless, as it does not more than a simple list
     could do, but it serves as interface for derived classes, where ``targets()``
