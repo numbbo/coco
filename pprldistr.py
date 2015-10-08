@@ -50,7 +50,7 @@ import matplotlib.pyplot as plt
 from pdb import set_trace
 from bbob_pproc import toolsstats, genericsettings, pproc
 from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
-from pptex import color_to_latex, marker_to_latex
+from bbob_pproc.pptex import color_to_latex, marker_to_latex
 
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)]
