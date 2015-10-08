@@ -12,21 +12,20 @@
 #include "coco_strdup.c"
 
 static int bbob2009_logger_verbosity = 3;  /* TODO: make this an option the user can modify */
-static int raisedOptValWarning;
+static int bbob2009_raisedOptValWarning;
 static int bbob2009_get_function_id(const coco_problem_t *problem);
 static int bbob2009_get_instance_id(const coco_problem_t *problem);
 
-/* FIXME: these names could easily created conflicts with other coco.c-global names. Use bbob2009 as prefix to prevent conflicts. */
 static const size_t bbob2009_nbpts_nbevals = 20;
 static const size_t bbob2009_nbpts_fval = 5;
-static size_t current_dim = 0;
-static long current_funId = 0;
-static int infoFile_firstInstance = 0;
-char infoFile_firstInstance_char[3];
-/* a possible solution: have a list of dims that are already in the file, if the ones we're about to log is != current_dim and
+static size_t bbob2009_current_dim = 0;
+static long bbob2009_current_funId = 0;
+static int bbob2009_infoFile_firstInstance = 0;
+char bbob2009_infoFile_firstInstance_char[3];
+/* a possible solution: have a list of dims that are already in the file, if the ones we're about to log is != bbob2009_current_dim and
  * the funId is currend_funId, create a new .info file with as suffix the number of the first instance */
 static const int bbob2009_number_of_dimensions = 6;
-static size_t dimensions_in_current_infoFile[6] = {0,0,0,0,0,0}; /*TODO should use BBOB2009_NUMBER_OF_DIMENSIONS*/
+static size_t bbob2009_dimensions_in_current_infoFile[6] = {0,0,0,0,0,0}; /*TODO should use BBOB2009_NUMBER_OF_DIMENSIONS*/
 
 
 /* The current_... mechanism fails if several problems are open. 
@@ -76,7 +75,7 @@ typedef struct {
   double optimal_fvalue;
 } bbob2009_logger_t; 
 
-static const char *_file_header_str = "%% function evaluation | "
+static const char *bbob2009_file_header_str = "%% function evaluation | "
                                       "noise-free fitness - Fopt (%13.12e) | "
                                       "best noise-free fitness - Fopt | "
                                       "measured fitness | "
@@ -85,7 +84,7 @@ static const char *_file_header_str = "%% function evaluation | "
                                       "x2...\n";
 
 static void private_bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
-                                              double fvalue) {
+  double fvalue) {
   /* "jump" directly to the next closest (but larger) target to the
    * current fvalue from the initial target
    */
@@ -108,7 +107,7 @@ static void private_bbob2009_logger_update_f_trigger(bbob2009_logger_t *data,
 }
 
 static void private_bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
-                                              size_t number_of_variables) {
+  size_t number_of_variables) {
   while (data->number_of_evaluations >=
          floor(pow(10, (double)data->idx_t_trigger / (double)(long)bbob2009_nbpts_nbevals)))
     data->idx_t_trigger++;
@@ -126,10 +125,8 @@ static void private_bbob2009_logger_update_t_trigger(bbob2009_logger_t *data,
  * adds a formated line to a data file
  */
 static void private_bbob2009_logger_write_data(FILE *target_file,
-                                        long number_of_evaluations,
-                                        double fvalue, double best_fvalue,
-                                        double best_value, const double *x,
-                                        size_t number_of_variables) {
+  long number_of_evaluations, double fvalue, double best_fvalue,
+  double best_value, const double *x, size_t number_of_variables) {
   /* for some reason, it's %.0f in the old code instead of the 10.9e
    * in the documentation
    */
@@ -171,8 +168,7 @@ static void private_bbob2009_logger_error_io(FILE *path, int errnum) {
  */
 
 static void private_bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
-                                           const char *dataFile_path,
-                                           const char *file_extension) {
+  const char *dataFile_path, const char *file_extension) {
     char file_path[COCO_PATH_MAX] = {0};
     char relative_filePath[COCO_PATH_MAX] = {0};
     int errnum;
@@ -191,9 +187,8 @@ static void private_bbob2009_logger_open_dataFile(FILE **target_file, const char
 }
 
 /*
-static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
-                                           const char *dataFile_path,
-                                           const char *file_extension) {
+static void private_bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
+  const char *dataFile_path, const char *file_extension) {
   char file_path[COCO_PATH_MAX] = {0};
   char relative_filePath[COCO_PATH_MAX] = {0};
   int errnum;
@@ -216,10 +211,8 @@ static void _bbob2009_logger_open_dataFile(FILE **target_file, const char *path,
  * folde_path
  */
 static void private_bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
-                                           const char *folder_path,
-                                           const char *indexFile_prefix,
-                                           const char *function_id,
-                                           const char *dataFile_path) {
+  const char *folder_path, const char *indexFile_prefix,
+  const char *function_id, const char *dataFile_path) {
     /*to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
     char used_dataFile_path[COCO_PATH_MAX] = {0};
     int errnum, newLine;/*newLine is at 1 if we need a new line in the info file*/
@@ -229,11 +222,11 @@ static void private_bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
     FILE **target_file;
     FILE *tmp_file;
     strncpy(used_dataFile_path, dataFile_path, COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
-    if (infoFile_firstInstance == 0) {
-        infoFile_firstInstance = data->instance_id;
+    if (bbob2009_infoFile_firstInstance == 0) {
+      bbob2009_infoFile_firstInstance = data->instance_id;
     }
     sprintf(function_id_char, "%d", data->function_id);
-    sprintf(infoFile_firstInstance_char, "%d", infoFile_firstInstance);
+    sprintf(bbob2009_infoFile_firstInstance_char, "%d", bbob2009_infoFile_firstInstance);
     target_file = &(data->index_file);
     tmp_file = NULL; /*to check whether the file already exists. Don't want to use
            target_file*/
@@ -241,14 +234,14 @@ static void private_bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
     strncat(file_name, "_f", COCO_PATH_MAX - strlen(file_name) - 1);
     strncat(file_name, function_id_char, COCO_PATH_MAX - strlen(file_name) - 1);
     strncat(file_name, "_i", COCO_PATH_MAX - strlen(file_name) - 1);
-    strncat(file_name, infoFile_firstInstance_char, COCO_PATH_MAX - strlen(file_name) - 1);
+    strncat(file_name, bbob2009_infoFile_firstInstance_char, COCO_PATH_MAX - strlen(file_name) - 1);
     strncat(file_name, ".info", COCO_PATH_MAX - strlen(file_name) - 1);
     coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
     if (*target_file == NULL) {
         tmp_file = fopen(file_path, "r");/*to check for existence*/
         if ((tmp_file ) &&
-            (current_dim == data->number_of_variables) &&
-            (current_funId == data->function_id)) {/*new instance of current funId and current dim*/
+            (bbob2009_current_dim == data->number_of_variables) &&
+            (bbob2009_current_funId == data->function_id)) {/*new instance of current funId and current dim*/
             newLine = 0;
             *target_file = fopen(file_path, "a+");
             if (*target_file == NULL) {
@@ -259,34 +252,34 @@ static void private_bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
         }
         else { /* either file doesn't exist (new funId) or new Dim*/
             /*check that the dim was not already present earlier in the file, if so, create a new info file*/
-            if (current_dim != data->number_of_variables) {
+            if (bbob2009_current_dim != data->number_of_variables) {
                 int i, j;
-                for (i=0; i<bbob2009_number_of_dimensions && dimensions_in_current_infoFile[i]!=0 &&
-                     dimensions_in_current_infoFile[i]!=data->number_of_variables;i++) {
+                for (i=0; i<bbob2009_number_of_dimensions && bbob2009_dimensions_in_current_infoFile[i]!=0 &&
+                bbob2009_dimensions_in_current_infoFile[i]!=data->number_of_variables;i++) {
                     ;/*checks whether dimension already present in the current infoFile*/
                 }
-                if (i<bbob2009_number_of_dimensions && dimensions_in_current_infoFile[i]==0) {
+                if (i<bbob2009_number_of_dimensions && bbob2009_dimensions_in_current_infoFile[i]==0) {
                     /*new dimension seen for the first time*/
-                    dimensions_in_current_infoFile[i]=data->number_of_variables;
+                    bbob2009_dimensions_in_current_infoFile[i]=data->number_of_variables;
                     newLine = 1;
                 }
                 else{
                         if (i<bbob2009_number_of_dimensions) {/*dimension already present, need to create a new file*/
                             newLine = 0;
-                            file_path[strlen(file_path)-strlen(infoFile_firstInstance_char) - 7] = 0;/*truncate the instance part*/
-                            infoFile_firstInstance = data->instance_id;
-                            sprintf(infoFile_firstInstance_char, "%d", infoFile_firstInstance);
+                            file_path[strlen(file_path)-strlen(bbob2009_infoFile_firstInstance_char) - 7] = 0;/*truncate the instance part*/
+                            bbob2009_infoFile_firstInstance = data->instance_id;
+                            sprintf(bbob2009_infoFile_firstInstance_char, "%d", bbob2009_infoFile_firstInstance);
                             strncat(file_path, "_i", COCO_PATH_MAX - strlen(file_name) - 1);
-                            strncat(file_path, infoFile_firstInstance_char, COCO_PATH_MAX - strlen(file_name) - 1);
+                            strncat(file_path, bbob2009_infoFile_firstInstance_char, COCO_PATH_MAX - strlen(file_name) - 1);
                             strncat(file_path, ".info", COCO_PATH_MAX - strlen(file_name) - 1);
                         }
                         else{/*we have all dimensions*/
                             newLine = 1;
                         }
                         for (j=0; j<bbob2009_number_of_dimensions;j++){/*new info file, reinitialize list of dims*/
-                            dimensions_in_current_infoFile[j]= 0;
+                          bbob2009_dimensions_in_current_infoFile[j]= 0;
                         }
-                    dimensions_in_current_infoFile[i]=data->number_of_variables;
+                        bbob2009_dimensions_in_current_infoFile[i]=data->number_of_variables;
                 }
             }
             *target_file = fopen(file_path, "a+");/*in any case, we append*/
@@ -308,12 +301,12 @@ static void private_bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
                     pow(10, -8), data->alg_name);
             fprintf(*target_file, "%%\n");
             strncat(used_dataFile_path, "_i", COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
-            strncat(used_dataFile_path, infoFile_firstInstance_char,
+            strncat(used_dataFile_path, bbob2009_infoFile_firstInstance_char,
                     COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
             fprintf(*target_file, "%s.dat",
                     used_dataFile_path); /*dataFile_path does not have the extension*/
-            current_dim = data->number_of_variables;
-            current_funId = data->function_id;
+            bbob2009_current_dim = data->number_of_variables;
+            bbob2009_current_funId = data->function_id;
         }
     }
 }
@@ -324,7 +317,7 @@ static void private_bbob2009_logger_openIndexFile(bbob2009_logger_t *data,
  * data if theses don't already exist
  */
 static void private_bbob2009_logger_initialize(bbob2009_logger_t *data,
-                                        coco_problem_t *inner_problem) {
+  coco_problem_t *inner_problem) {
   /*
     Creates/opens the data and index files
   */
@@ -365,19 +358,19 @@ static void private_bbob2009_logger_initialize(bbob2009_logger_t *data,
   /* data files*/
   /*TODO: definitely improvable but works for now*/
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
-  strncat(dataFile_path, infoFile_firstInstance_char,
+  strncat(dataFile_path, bbob2009_infoFile_firstInstance_char,
             COCO_PATH_MAX - strlen(dataFile_path) - 1);
   private_bbob2009_logger_open_dataFile(&(data->fdata_file), data->path, dataFile_path,
                                  ".dat");
-  fprintf(data->fdata_file, _file_header_str, data->optimal_fvalue);
+  fprintf(data->fdata_file, bbob2009_file_header_str, data->optimal_fvalue);
 
   private_bbob2009_logger_open_dataFile(&(data->tdata_file), data->path, dataFile_path,
                                  ".tdat");
-  fprintf(data->tdata_file, _file_header_str, data->optimal_fvalue);
+  fprintf(data->tdata_file, bbob2009_file_header_str, data->optimal_fvalue);
 
   private_bbob2009_logger_open_dataFile(&(data->rdata_file), data->path, dataFile_path,
                                  ".rdat");
-  fprintf(data->rdata_file, _file_header_str, data->optimal_fvalue);
+  fprintf(data->rdata_file, bbob2009_file_header_str, data->optimal_fvalue);
   /* TODO: manage duplicate filenames by either using numbers or raising an
    * error */
   data->is_initialized = 1;
@@ -386,8 +379,8 @@ static void private_bbob2009_logger_initialize(bbob2009_logger_t *data,
 /**
  * Layer added to the transformed-problem evaluate_function by the logger
  */
-static void private_bbob2009_logger_evaluate_function(coco_problem_t *self, const double *x,
-                                               double *y) {
+static void private_bbob2009_logger_evaluate_function(coco_problem_t *self,
+  const double *x, double *y) {
   bbob2009_logger_t *data = coco_get_transform_data(self);
   coco_problem_t * inner_problem = coco_get_transform_inner_problem(self);
   
@@ -413,9 +406,9 @@ static void private_bbob2009_logger_evaluate_function(coco_problem_t *self, cons
 
   /* Add sanity check for optimal f value */
   /*assert(y[0] >= data->optimal_fvalue);*/
-  if (!raisedOptValWarning && y[0] < data->optimal_fvalue) {
+  if (!bbob2009_raisedOptValWarning && y[0] < data->optimal_fvalue) {
       coco_warning("Observed fitness is smaller than supposed optimal fitness.");
-      raisedOptValWarning = 1;
+      bbob2009_raisedOptValWarning = 1;
   }
 
   /* Add a line in the .dat file for each logging target reached. */
@@ -504,8 +497,7 @@ static void private_bbob2009_logger_free_data(void *stuff) {
   bbob2009_logger_is_open = 0;
 }
 
-static coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
-                                const char *alg_name) {
+static coco_problem_t *logger_bbob2009(coco_problem_t *inner_problem, const char *alg_name) {
   bbob2009_logger_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));
@@ -529,7 +521,7 @@ static coco_problem_t *bbob2009_logger(coco_problem_t *inner_problem,
   {
       data->optimal_fvalue = *(inner_problem->best_value);
   }
-  raisedOptValWarning = 0;
+  bbob2009_raisedOptValWarning = 0;
 
   data->idx_f_trigger = INT_MAX;
   data->idx_t_trigger = 0;

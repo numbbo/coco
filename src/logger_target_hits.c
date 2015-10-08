@@ -14,10 +14,10 @@ typedef struct {
   size_t number_of_target_values;
   size_t next_target_value;
   long number_of_evaluations;
-} _log_hitting_time_t;
+} logger_target_hits_t;
 
-static void private_lht_evaluate_function(coco_problem_t *self, const double *x, double *y) {
-  _log_hitting_time_t *data;
+static void private_evaluate_function_lth(coco_problem_t *self, const double *x, double *y) {
+  logger_target_hits_t *data;
   data = coco_get_transform_data(self);
 
   coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
@@ -51,8 +51,8 @@ static void private_lht_evaluate_function(coco_problem_t *self, const double *x,
   fflush(data->logfile);
 }
 
-static void private_lht_free_data(void *stuff) {
-  _log_hitting_time_t *data;
+static void private_free_data_lth(void *stuff) {
+  logger_target_hits_t *data;
   assert(stuff != NULL);
   data = stuff;
 
@@ -70,11 +70,9 @@ static void private_lht_free_data(void *stuff) {
   }
 }
 
-static coco_problem_t *log_hitting_times(coco_problem_t *inner_problem,
-                                  const double *target_values,
-                                  const size_t number_of_target_values,
-                                  const char *path) {
-  _log_hitting_time_t *data;
+static coco_problem_t *logger_target_hits(coco_problem_t *inner_problem,
+  const double *target_values, const size_t number_of_target_values, const char *path) {
+  logger_target_hits_t *data;
   coco_problem_t *self;
 
   data = coco_allocate_memory(sizeof(*data));
@@ -86,7 +84,7 @@ static coco_problem_t *log_hitting_times(coco_problem_t *inner_problem,
   data->number_of_target_values = number_of_target_values;
   data->next_target_value = 0;
 
-  self = coco_allocate_transformed_problem(inner_problem, data, private_lht_free_data);
-  self->evaluate_function = private_lht_evaluate_function;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_free_data_lth);
+  self->evaluate_function = private_evaluate_function_lth;
   return self;
 }

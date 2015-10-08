@@ -5,16 +5,14 @@
 
 #include "coco.h"
 
-#include "toy_suit.c"
-#include "toy_observer.c"
-
-#include "bbob2009_suite.c"
-#include "bbob2009_observer.c"
-
 #include "mo_suite_first_attempt.c"
 
 #include "biobjective_suite_300.c"
 #include "biobjective_observer.c"
+#include "observer_bbob2009.c"
+#include "observer_toy.c"
+#include "suite_bbob2009.c"
+#include "suite_toy.c"
 
 /**
  * A new benchmark suite must provide a function that returns a
@@ -29,7 +27,7 @@
  *
  * To construct a benchmark suite, useful tools are coco_transformed...
  * coco_stacked..., bbob2009_problem() and the various existing base
- * functions and transformations like shift_variables...
+ * functions and transformations like f_tran_var_shift...
  */
 
 /** return next problem_index or -1
@@ -42,9 +40,9 @@ long coco_next_problem_index(const char *problem_suite, long problem_index,
   /* code specific to known benchmark suites */
   /* for efficiency reasons, each test suit should define
    * at least its last_index here */
-  if (0 == strcmp(problem_suite, "bbob2009")) {
+  if (0 == strcmp(problem_suite, "suite_bbob2009")) {
     /* without selection_options: last_index = 2159; */
-    return bbob2009_next_problem_index(problem_index, select_options);
+    return suite_bbob2009_next_problem_index(problem_index, select_options);
   }
 
   /** generic implementation:
@@ -73,7 +71,7 @@ long coco_next_problem_index(const char *problem_suite, long problem_index,
 }
 
 /**
- * coco_suite_get_problem(problem_suite, problem_index):
+ * coco_get_problem(problem_suite, problem_index):
  *
  * return the coco problem with index ${problem_index} from
  * suite ${problem_suite}. The problem must be de-allocated
@@ -82,10 +80,10 @@ long coco_next_problem_index(const char *problem_suite, long problem_index,
  */
 coco_problem_t *coco_get_problem(const char *problem_suite,
     const long problem_index) {
-  if (0 == strcmp(problem_suite, "toy_suit")) {
-    return toy_suit(problem_index);
-  } else if (0 == strcmp(problem_suite, "bbob2009")) {
-    return bbob2009_suite(problem_index);
+  if (0 == strcmp(problem_suite, "suite_toy")) {
+    return suite_toy(problem_index);
+  } else if (0 == strcmp(problem_suite, "suite_bbob2009")) {
+    return suite_bbob2009(problem_index);
   } else if (0 == strcmp(problem_suite, "mo_suite_first_attempt")) {
     return mo_suite_first_attempt(problem_index);
   } else if (0 == strcmp(problem_suite, "biobjective_combinations")) {
@@ -102,10 +100,10 @@ coco_problem_t *coco_observe_problem(const char *observer,
     coco_warning("Trying to observe a NULL problem has no effect.");
     return problem;
   }
-  if (0 == strcmp(observer, "toy_observer")) {
-    return toy_observer(problem, options);
-  } else if (0 == strcmp(observer, "bbob2009_observer")) {
-    return bbob2009_observer(problem, options);
+  if (0 == strcmp(observer, "observer_toy")) {
+    return observer_toy(problem, options);
+  } else if (0 == strcmp(observer, "observer_bbob2009")) {
+    return observer_bbob2009(problem, options);
   } else if (0 == strcmp(observer, "mo_toy_observer")) {
     return mo_toy_observer(problem, options);
   }

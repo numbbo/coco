@@ -3,8 +3,8 @@
 
 #include "coco.h"
 #include "coco_problem.c"
-#include "bbob2009_legacy_code.c"
 #include "coco_utilities.c"
+#include "suite_bbob2009_legacy_code.c"
 
 #define NB_PEAKS_21 101
 #define NB_PEAKS_22 21

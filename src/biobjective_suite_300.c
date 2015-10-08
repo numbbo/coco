@@ -6,7 +6,7 @@
 #include "coco.h"
 #include "coco_strdup.c"
 #include "coco_problem.c"
-#include "bbob2009_suite.c"
+#include "suite_bbob2009.c"
 
 #define BIOBJECTIVE_NUMBER_OF_COMBINATIONS 300
 #define BIOBJECTIVE_NUMBER_OF_INSTANCES 5
@@ -92,10 +92,10 @@ static coco_problem_t *biobjective_suite_300(const long problem_index) {
     
     biobjective_decode_problem_index(problem_index, &combination_idx, &instance_idx, &dimension_idx);
     
-    problem1 = bbob2009_problem(biobjective_list[combination_idx][0],
+    problem1 = suite_bbob2009_problem(biobjective_list[combination_idx][0],
                                 BBOB2009_DIMS[dimension_idx],
                                 (long)instance_list[instance_idx][0]);
-    problem2 = bbob2009_problem(biobjective_list[combination_idx][1],
+    problem2 = suite_bbob2009_problem(biobjective_list[combination_idx][1],
                                 BBOB2009_DIMS[dimension_idx],
                                 (long)instance_list[instance_idx][1]);
     problem = coco_stacked_problem_allocate(problem1, problem2);

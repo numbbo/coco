@@ -1,7 +1,7 @@
 /*
  * Legacy code from BBOB2009 required to replicate the 2009 functions.
  *
- * All of this code should only be used by the bbob2009_suite functions
+ * All of this code should only be used by the suite_bbob2009 functions
  * to provide compatibility to the legacy code. New test beds should
  * strive to use the new COCO facilities for random number
  * generation etc.
@@ -46,7 +46,7 @@ static void bbob2009_free_matrix(double **matrix, const size_t n) {
 }
 
 /**
-* bbob2009_unif(r, N, inseed):
+ * bbob2009_unif(r, N, inseed):
  *
  * Generate N uniform random numbers using ${inseed} as the seed and
  * store them in ${r}.

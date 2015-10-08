@@ -10,7 +10,7 @@
 
 int main(void) {
   long problem_idx = -1;
-  const char *suite = "bbob2009";
+  const char *suite = "suite_bbob2009";
   coco_problem_t *problem = NULL;
 
   while ((problem_idx = coco_next_problem_index(suite, problem_idx, "")) >= 0) {

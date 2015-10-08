@@ -6,17 +6,17 @@
 #include "f_1u_rosenbrock.c"
 #include "f_1u_sphere.c"
 
-#include "log_hitting_times.c"
+#include "logger_target_hits.c"
 
 
 /**
- * toy_suit(function_index):
+ * suite_toy(function_index):
  *
  * Return the ${function_index}-th benchmark problem in the toy
- * benchmark suit. If the function index is out of bounds, return
+ * benchmark suite. If the function index is out of bounds, return
  * NULL.
  */
-static coco_problem_t *toy_suit(const long function_index) {
+static coco_problem_t *suite_toy(const long function_index) {
   static const size_t dims[] = {2, 3, 5, 10, 20};
   const long fid = function_index % 6;
   const long did = function_index / 6;

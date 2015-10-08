@@ -3,9 +3,9 @@
 #include "coco.h"
 #include "coco_internal.h"
 #include "coco_problem.c"
-#include "bbob2009_legacy_code.c"
 #include "f_tran_obj_shift.c"
 #include "f_tran_var_affine.c"
+#include "suite_bbob2009_legacy_code.c"
 
 /**
  * A collection of "random" future code (snippets)

@@ -1,8 +1,8 @@
 #include "coco.h"
 #include "coco_utilities.c"
-#include "log_hitting_times.c"
+#include "logger_target_hits.c"
 
-static coco_problem_t *toy_observer(coco_problem_t *problem, const char *options) {
+static coco_problem_t *observer_toy(coco_problem_t *problem, const char *options) {
   size_t i;
   static const size_t number_of_targets = 20;
   double targets[20];
@@ -23,6 +23,6 @@ static coco_problem_t *toy_observer(coco_problem_t *problem, const char *options
   coco_create_path(base_path);
   coco_join_path(filename, sizeof(filename), base_path,
                  "first_hitting_times.txt", NULL);
-  problem = log_hitting_times(problem, targets, number_of_targets, filename);
+  problem = logger_target_hits(problem, targets, number_of_targets, filename);
   return problem;
 }

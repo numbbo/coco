@@ -4,7 +4,7 @@
 
 #include "coco.h"
 #include "coco_problem.c"
-#include "bbob2009_legacy_code.c"
+#include "suite_bbob2009_legacy_code.c"
 
 typedef struct {
   double *x_hat, *z;

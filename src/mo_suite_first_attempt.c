@@ -6,7 +6,7 @@
 #include "coco.h"
 #include "coco_strdup.c"
 #include "coco_problem.c"
-#include "bbob2009_suite.c"
+#include "suite_bbob2009.c"
 /* #include "biobjective_problem.c"
 */
 
@@ -93,9 +93,9 @@ static coco_problem_t *mo_suite_first_attempt(const long problem_index) {
     instance = 0;
     instance2 = 1;
     
-    problem = bbob2009_problem(f, dimension, instance);
+    problem = suite_bbob2009_problem(f, dimension, instance);
 
-    problem2 = bbob2009_problem(f2, dimension, instance2);
+    problem2 = suite_bbob2009_problem(f2, dimension, instance2);
     problem = coco_stacked_problem_allocate(problem, problem2);
     /* repeat the last two lines to add more objectives */
 #if 0

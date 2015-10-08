@@ -5,7 +5,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 #include "coco_generics.c"
-#include "bbob2009_legacy_code.c"
+#include "suite_bbob2009_legacy_code.c"
 
 static void private_evaluate_1u_schwef(coco_problem_t *self, const double *x, double *y) {
   size_t i;

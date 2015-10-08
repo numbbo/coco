@@ -1,6 +1,6 @@
 #include "coco.h"
 
-#include "bbob2009_logger.c"
+#include "logger_bbob2009.c"
 
 /* TODO:
  *
@@ -36,12 +36,11 @@
         }
  * 
  */   
-static coco_problem_t *bbob2009_observer(coco_problem_t *problem,
-                                  const char *options) {
+static coco_problem_t *observer_bbob2009(coco_problem_t *problem, const char *options) {
   if (problem == NULL)
     return problem;
   /* TODO: " */
   coco_create_path(options); 
-  problem = bbob2009_logger(problem, options);
+  problem = logger_bbob2009(problem, options);
   return problem;
 }

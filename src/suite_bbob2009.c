@@ -6,7 +6,6 @@
 #include "coco_generics.c"
 #include "coco_utilities.c"
 
-#include "bbob2009_legacy_code.c"
 #include "f_1u_attractive_sector.c"
 #include "f_1u_bbob_step_ellipsoid.c"
 #include "f_1u_bent_cigar.c"
@@ -41,6 +40,7 @@
 #include "f_tran_var_shift.c"
 #include "f_tran_var_x_hat.c"
 #include "f_tran_var_z_hat.c"
+#include "suite_bbob2009_legacy_code.c"
 
 #define MAX_DIM BBOB2009_MAX_DIM
 #define BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 5
@@ -50,7 +50,7 @@ static const unsigned BBOB2009_DIMS[] = {2, 3, 5, 10, 20, 40};/*might end up use
 
 /**
  * bbob2009_decode_problem_index(problem_index, function_id, instance_id,
- *dimension):
+ * dimension):
  *
  * Decode the new problem_index into the old convention of function,
  * instance and dimension. We have 24 functions in 6 different
@@ -137,7 +137,7 @@ static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b,
   }
 }
 
-static coco_problem_t *bbob2009_problem(int function_id, long dimension_, long instance_id) {
+static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, long instance_id) {
   size_t len;
   long rseed;
   coco_problem_t *problem = NULL;
@@ -736,7 +736,7 @@ static int bbob2009_get_instance_id(const coco_problem_t *problem) {
  *
  * Details: this function is not necessary unless selection is implemented. 
 */
-static long bbob2009_next_problem_index(long problem_index, const char *selection_descriptor) {
+static long suite_bbob2009_next_problem_index(long problem_index, const char *selection_descriptor) {
   const long first_index = 0;
   const long last_index = 2159;
   
@@ -760,13 +760,13 @@ static long bbob2009_next_problem_index(long problem_index, const char *selectio
 }
 
 /**
- * bbob2009_suite(problem_index):
+ * suite_bbob2009(problem_index):
  *
  * Return the ${problem_index}-th benchmark problem from the BBOB2009
  * benchmark suit. If the function index is out of bounds, return
  * NULL.
  */
-static coco_problem_t *bbob2009_suite(long problem_index) {
+static coco_problem_t *suite_bbob2009(long problem_index) {
   coco_problem_t *problem;
   int function_id;
   long dimension, instance_id;
@@ -775,7 +775,7 @@ static coco_problem_t *bbob2009_suite(long problem_index) {
     return NULL; 
   bbob2009_decode_problem_index(problem_index, &function_id, &instance_id,
                                  &dimension);
-  problem = bbob2009_problem(function_id, dimension, instance_id);
+  problem = suite_bbob2009_problem(function_id, dimension, instance_id);
   problem->index = problem_index;
   return problem;
 }
