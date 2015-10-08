@@ -522,19 +522,19 @@ class DataSet():
         >>> import bbob_pproc as bb
         >>> dslist = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info')
         >>> dslist  # nice display in particular in IPython
-        [DataSet(cmaes V3.30.beta on f2 2-D),
-         DataSet(cmaes V3.30.beta on f2 3-D),
-         DataSet(cmaes V3.30.beta on f2 5-D),
-         DataSet(cmaes V3.30.beta on f2 10-D),
-         DataSet(cmaes V3.30.beta on f2 20-D),
-         DataSet(cmaes V3.30.beta on f2 40-D)]
+        [DataSet(BIPOP-CMA-ES on f2 2-D),
+         DataSet(BIPOP-CMA-ES on f2 3-D),
+         DataSet(BIPOP-CMA-ES on f2 5-D),
+         DataSet(BIPOP-CMA-ES on f2 10-D),
+         DataSet(BIPOP-CMA-ES on f2 20-D),
+         DataSet(BIPOP-CMA-ES on f2 40-D)]
         >>> type(dslist)
         <class 'bbob_pproc.pproc.DataSetList'>
         >>> len(dslist)
         6
         >>> ds = dslist[3]  # a single data set of type DataSet
         >>> ds
-        DataSet(cmaes V3.30.beta on f2 10-D)
+        DataSet(BIPOP-CMA-ES on f2 10-D)
         >>> for d in dir(ds): print d  # dir(ds) shows attributes and methods of ds
         _DataSet__parseHeader
         __doc__
@@ -600,7 +600,7 @@ class DataSet():
         >>> ds.evals[-1,(0,5,6)]  # show last row, same columns
         array([  1.58489319e-09,              nan,              nan])
         >>> ds.info()  # prints similar data more nicely formated 
-        Algorithm: cmaes V3.30.beta
+        Algorithm: BIPOP-CMA-ES
         Function ID: 2
         Dimension DIM = 10
         Number of trials: 15

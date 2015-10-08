@@ -30,10 +30,10 @@ Examples:
 * Get some information on a :py:class:`DataSetList` instance::
 
       >>> print ds # doctest:+ELLIPSIS
-      [DataSet(cmaes V3.30.beta on f2 2-D), ..., DataSet(cmaes V3.30.beta on f2 40-D)]
+      [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
       >>> bb.info(ds)
       6 data set(s)
-      Algorithm(s): cmaes V3.30.beta
+      Algorithm(s): BIPOP-CMA-ES
       Dimension(s): 2, 3, 5, 10, 20, 40
       Function(s): 2
       Max evals: 75017
