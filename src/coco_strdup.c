@@ -5,8 +5,8 @@
 #include "coco.h"
 
 char *coco_strdup(const char *string);
-char * coco_strdupf(const char *str, ...);
-char * coco_vstrdupf(const char *str, va_list args);
+char *coco_strdupf(const char *str, ...);
+char *coco_vstrdupf(const char *str, va_list args);
 char *coco_strconcat(const char *s1, const char *s2); 
 long coco_strfind(const char *base, const char *seq); 
 
@@ -31,7 +31,7 @@ char *coco_strdup(const char *string) {
  * Formatted string duplication. Optional arguments are
  * used like in sprintf. 
  */ 
-char * coco_strdupf(const char *str, ...) {
+char *coco_strdupf(const char *str, ...) {
   va_list args;
   char *s;
 
@@ -45,7 +45,7 @@ char * coco_strdupf(const char *str, ...) {
 /**
  * va_list version of formatted string duplication coco_strdupf()
  */
-char * coco_vstrdupf(const char *str, va_list args) {
+char *coco_vstrdupf(const char *str, va_list args) {
   static char buf[coco_vstrdupf_buflen];
   long written; 
   /* apparently args can only be used once, therefore

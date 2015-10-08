@@ -2,6 +2,8 @@
 #include <assert.h>
 
 #include "coco.h"
+#include "coco_archive.c"
+#include "coco_archive.h"
 
 #include "coco_utilities.c"
 #include "coco_problem.c"
@@ -9,8 +11,6 @@
 #include "mo_pareto_filtering.c"
 
 /* For making my multiobjective recorder work */
-#include "mo_recorder.h"
-#include "mo_recorder.c"
 
 typedef struct {
     char *path;
@@ -19,8 +19,8 @@ typedef struct {
     size_t number_of_evaluations;
 } _logger_nondominated_t;
 
-static struct mococo_solutions_archive *mo_archive;
-static struct mococo_solution_entry *entry;
+static struct coco_archive *mo_archive;
+static struct coco_arhive_entry *entry;
 
 static void private_logger_nondominated_evaluate_function(coco_problem_t *self, const double *x, double *y) {
   _logger_nondominated_t *data;
@@ -52,8 +52,8 @@ static void private_logger_nondominated_evaluate_function(coco_problem_t *self, 
     /*********************************************************************/
     /* TODO: Temporary put it here, to check later */
     /* Allocate memory for the archive */
-    mo_archive = (struct mococo_solutions_archive *) malloc(1 * sizeof(struct mococo_solutions_archive));
-    mococo_allocate_archive(mo_archive, data->max_size_of_archive,
+    mo_archive = (struct coco_archive *) malloc(1 * sizeof(struct coco_archive));
+    coco_allocate_archive(mo_archive, data->max_size_of_archive,
                           coco_get_number_of_variables(coco_get_transform_inner_problem(self)),
                           coco_get_number_of_objectives(coco_get_transform_inner_problem(self)), 1);
     /*********************************************************************/
@@ -62,13 +62,13 @@ static void private_logger_nondominated_evaluate_function(coco_problem_t *self, 
   /********************************************************************************/
   /* Finish evaluations of 1 single solution of the pop, with nObj objectives,
    * now update the archive with this newly evaluated solution and check its nondomination. */
-  mococo_push_to_archive(&x, &y, mo_archive, 1, data->number_of_evaluations);
+  coco_push_to_archive(&x, &y, mo_archive, 1, data->number_of_evaluations);
   mococo_pareto_filtering(mo_archive);  /***** TODO: IMPROVE THIS ROUTINE *****/
-  mococo_mark_updates(mo_archive, data->number_of_evaluations);
+  coco_mark_updates(mo_archive, data->number_of_evaluations);
   
   /* Write out a line for this newly evaluated solution if it is nondominated */
   /* write main info to the log file for pfront*/
-  for (i=0; i < mo_archive->updatesize; i++) {
+  for (i=0; i < mo_archive->update_size; i++) {
       entry = mo_archive->update[i];
       for (j=0; j < coco_get_number_of_variables(coco_get_transform_inner_problem(self)); j++) /* all decision variables of a solution */
           fprintf(data->logfile, "%13.10e\t", entry->var[j]);
@@ -103,7 +103,7 @@ static void private_logger_nondominated_free_data(void *stuff) {
     
     /***************************************************************/
     /* TODO: Temporary put it here, to check later */
-    mococo_free_archive(mo_archive); /* free the archive */
+    coco_free_archive(mo_archive); /* free the archive */
     free(mo_archive);
     /***************************************************************/
   }

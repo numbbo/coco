@@ -60,7 +60,7 @@ static void private_evaluate_1u_g(coco_problem_t *self, const double *x, double 
       tmp2 += data->arrScales[i][j] * tmp * tmp;
     }
     tmp2 = data->peakvalues[i] * exp(fac * tmp2);
-    f = doublemax(f, tmp2);
+    f = coco_max_double(f, tmp2);
   }
 
   f = 10. - f;

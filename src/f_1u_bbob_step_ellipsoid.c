@@ -57,9 +57,9 @@ static void private_evaluate_1u_bse(coco_problem_t *self, const double *x, doubl
 
   for (i = 0; i < self->number_of_variables; ++i) {
     if (fabs(data->x[i]) > 0.5)
-      data->x[i] = doubleround(data->x[i]);
+      data->x[i] = coco_round_double(data->x[i]);
     else
-      data->x[i] = doubleround(alpha * data->x[i]) / alpha;
+      data->x[i] = coco_round_double(alpha * data->x[i]) / alpha;
   }
 
   for (i = 0; i < self->number_of_variables; ++i) {
@@ -77,7 +77,7 @@ static void private_evaluate_1u_bse(coco_problem_t *self, const double *x, doubl
     y[0] += pow(condition, exponent) * data->xx[i] * data->xx[i];
     ;
   }
-  y[0] = 0.1 * doublemax(fabs(x1) * 1.0e-4, y[0]) + penalty + data->fopt;
+  y[0] = 0.1 * coco_max_double(fabs(x1) * 1.0e-4, y[0]) + penalty + data->fopt;
 }
 
 static void private_free_1u_bse(coco_problem_t *self) {

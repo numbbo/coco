@@ -18,7 +18,7 @@ static void private_evaluate_1u_k(coco_problem_t *self, const double *x, double 
     tmp = 0;
     for (j = 1; j < 33; ++j) {
       tmp2 = pow(2., (double)j);
-      tmp += fabs(tmp2 * x[i] - doubleround(tmp2 * x[i])) / tmp2;
+      tmp += fabs(tmp2 * x[i] - coco_round_double(tmp2 * x[i])) / tmp2;
     }
     tmp = 1.0 + ((double)(long)i + 1) * tmp;
     y[0] *= tmp;

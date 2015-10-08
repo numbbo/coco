@@ -22,7 +22,7 @@ from cocoutils import make, run, python, rscript
 from cocoutils import copy_file, copy_tree, expand_file, write_file
 from cocoutils import git_version, git_revision
 
-core_files = ['src/coco_benchmark.c',
+core_files = ['src/coco_suites.c',
               'src/coco_random.c',
               'src/coco_generics.c'
               ]
@@ -38,7 +38,7 @@ def build_examples():
 ## C
 def build_c():
     global release
-    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/c/coco.c', release)
+    amalgamate(core_files + ['src/coco_runtime_c.c'],  'build/c/coco.c', release)
     copy_file('src/coco.h', 'build/c/coco.h')
     copy_file('src/bbob2009_testcases.txt', 'build/c/bbob2009_testcases.txt')
     write_file(git_revision(), "build/c/REVISION")
@@ -69,7 +69,7 @@ def leak_check():
 ## Python 2
 def _prep_python():
     global release
-    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/python/cython/coco.c', 
+    amalgamate(core_files + ['src/coco_runtime_c.c'],  'build/python/cython/coco.c', 
                release)
     copy_file('src/coco.h', 'build/python/cython/coco.h')
     copy_file('src/bbob2009_testcases.txt', 'build/python/bbob2009_testcases.txt')
@@ -161,7 +161,7 @@ def test_python3():
 def build_r():
     global release
     copy_tree('build/r/skel', 'build/r/pkg')
-    amalgamate(core_files + ['src/coco_r_runtime.c'],  'build/r/pkg/src/coco.c',
+    amalgamate(core_files + ['src/coco_runtime_r.c'],  'build/r/pkg/src/coco.c',
                release)
     copy_file('src/coco.h', 'build/r/pkg/src/coco.h')
     expand_file('build/r/pkg/DESCRIPTION.in', 'build/r/pkg/DESCRIPTION',
@@ -178,7 +178,7 @@ def test_r():
 ## Matlab
 def build_matlab():
     global release
-    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/matlab/coco.c', release)
+    amalgamate(core_files + ['src/coco_runtime_r.c'],  'build/matlab/coco.c', release)
     copy_file('src/coco.h', 'build/matlab/coco.h')
     write_file(hg_revision(), "build/matlab/REVISION")
     write_file(hg_version(), "build/matlab/VERSION")
@@ -188,7 +188,7 @@ def build_matlab():
 ## Java
 def build_java():
     global release
-    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/java/coco.c', release)
+    amalgamate(core_files + ['src/coco_runtime_c.c'],  'build/java/coco.c', release)
     copy_file('src/coco.h', 'build/java/coco.h')
     write_file(git_revision(), "build/java/REVISION")
     write_file(git_version(), "build/java/VERSION")
@@ -206,7 +206,7 @@ def build_java():
 ## multiobjective Coco
 def build_c_mo():  # added for the multiobjective case
     global release
-    amalgamate(core_files + ['src/coco_c_runtime.c'],  'build/c/mo/coco.c', release)
+    amalgamate(core_files + ['src/coco_runtime_c.c'],  'build/c/mo/coco.c', release)
     copy_file('src/coco.h', 'build/c/mo/coco.h')
     # copy_file('src/bbob2009_testcases.txt', 'build/c/bbob2009_testcases.txt')
     write_file(git_revision(), "build/c/mo/REVISION")

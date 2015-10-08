@@ -66,9 +66,9 @@ int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
 void coco_create_new_path(const char *path, size_t maxlen, char *new_path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
-double doubleround(double a);
-double doublemax(double a, double b);
-double doublemin(double a, double b);
+double coco_round_double(double a);
+double coco_max_double(double a, double b);
+double coco_min_double(double a, double b);
 /***********************************/
 
 void coco_join_path(char *path, size_t path_max_length, ...) {
@@ -228,11 +228,11 @@ double *coco_duplicate_vector(const double *src,
 }
 
 /* some math functions which are not contained in C89 standard */
-double doubleround(double number) {
+double coco_round_double(double number) {
     return floor(number + 0.5);
 }
 
-double doublemax(double a, double b) {
+double coco_max_double(double a, double b) {
     if (a >= b) {
         return a;
     }
@@ -241,7 +241,7 @@ double doublemax(double a, double b) {
     }     
 }
 
-double doublemin(double a, double b) {
+double coco_min_double(double a, double b) {
     if (a <= b) {
         return a;
     }

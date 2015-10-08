@@ -117,7 +117,7 @@ static void private_bbob2009_logger_update_t_trigger(logger_bbob2009_t *data,
     data->idx_tdim_trigger++;
 
   data->t_trigger =
-      (long)doublemin(floor(pow(10, (double)data->idx_t_trigger / (double)(long)bbob2009_nbpts_nbevals)),
+      (long)coco_min_double(floor(pow(10, (double)data->idx_t_trigger / (double)(long)bbob2009_nbpts_nbevals)),
     	 (double)(long)number_of_variables * pow(10, (double)data->idx_tdim_trigger));
 }
 

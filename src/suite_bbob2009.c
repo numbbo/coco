@@ -284,7 +284,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
      *   fmax(1.0, sqrt(dimension) / 8.0);
      * follows
      */
-    factor = doublemax(1.0, sqrt((double)dimension) / 8.0);
+    factor = coco_max_double(1.0, sqrt((double)dimension) / 8.0);
     
     problem = f_1u_rosenbrock(dimension);
     problem = f_tran_var_shift(problem, minus_one, 0);
@@ -558,7 +558,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
     bbob2009_compute_rotation(rot1, rseed, dimension_);
-    scales = doublemax(1., sqrt((double)dimension) / 8.);
+    scales = coco_max_double(1., sqrt((double)dimension) / 8.);
     for (i = 0; i < dimension; ++i) {
       for (j = 0; j < dimension; ++j) {
         rot1[i][j] *= scales;

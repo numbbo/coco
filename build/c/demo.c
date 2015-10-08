@@ -57,13 +57,13 @@ void random_search(size_t dimension,
  *   Set up the experiment                    
  **************************************************/
 static const long MAX_BUDGET = 1e2;  /* work on small budgets first */
-static const char * SUITE_NAME       = "bbob2009";
-static const char * SUITE_OPTIONS    = ""; /* e.g.: "instances:1-5; dimensions:-20" */
-static const char * OBSERVER_NAME    = "bbob2009_observer"; /* writes data */
-/* static const char * OBSERVER_NAME = "no_observer"; / * writes no data */
-static const char * OBSERVER_OPTIONS = "random_search_on_bbob2009"; /* future: "folder:random_search; verbosity:1" */
-static const char * SOLVER_NAME      = "random_search"; /* for the choice in coco_optimize below */
-/*  static const char * SOLVER_NAME   = "my_solver"; / * for the choice in coco_optimize below */
+static const char *SUITE_NAME       = "suite_bbob2009";
+static const char *SUITE_OPTIONS    = ""; /* e.g.: "instances:1-5; dimensions:-20" */
+static const char *OBSERVER_NAME    = "observer_bbob2009"; /* writes data */
+/* static const char *OBSERVER_NAME = "no_observer"; / * writes no data */
+static const char *OBSERVER_OPTIONS = "random_search_on_suite_bbob2009"; /* future: "folder:random_search; verbosity:1" */
+static const char *SOLVER_NAME      = "random_search"; /* for the choice in coco_optimize below */
+/*  static const char *SOLVER_NAME   = "my_solver"; / * for the choice in coco_optimize below */
 static const int NUMBER_OF_BATCHES   = 88;  /* use 1 for single batch :-) batches can be run independently in parallel */
 static int CURRENT_BATCH             = 1;  /* runs from 1 to NUMBER_OF_BATCHES, or any other consecutive sequence */
 

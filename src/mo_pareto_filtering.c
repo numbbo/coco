@@ -12,7 +12,8 @@
 #include <stdio.h>
 #include <stdlib.h>  /* memory, e.g. malloc */
 #include <math.h>
-#include "mo_recorder.h"
+
+#include "coco_archive.h"
 
 void mococo_pareto_front(int *frontFlag, double *obj, size_t nrow, size_t ncol) {
   size_t t, s, i, j, j1, j2;
@@ -73,10 +74,10 @@ void mococo_pareto_front(int *frontFlag, double *obj, size_t nrow, size_t ncol) 
   free(checklist);
 }
 
-void mococo_pareto_filtering(struct mococo_solutions_archive *archive) {
+void mococo_pareto_filtering(struct coco_archive *archive) {
   /* Create the objective vectors and frontFlag of appropriate format for mococo_pareto_front() */
   size_t len = archive->size;
-  size_t nObjs = archive->numobj;
+  size_t nObjs = archive->num_obj;
   int *frontFlag = (int*) malloc(len * sizeof(int));
   double *obj = (double*) malloc(len * nObjs * sizeof(double));
   size_t i;

@@ -66,7 +66,7 @@ static void private_evaluate_1u_lbr(coco_problem_t *self, const double *x, doubl
     sum2 += (data->x_hat[i] - mu1) * (data->x_hat[i] - mu1);
     sum3 += cos(2 * coco_pi * data->z[i]);
   }
-  y[0] = doublemin(sum1, d * (double)self->number_of_variables + s * sum2) +
+  y[0] = coco_min_double(sum1, d * (double)self->number_of_variables + s * sum2) +
          10. * ((double)self->number_of_variables - sum3) + 1e4 * penalty;
   coco_free_memory(tmpvect);
 }
