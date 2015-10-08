@@ -4,7 +4,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-static void private_oo_evaluate_function(coco_problem_t *self, const double *x, double *y) {
+static void private_evaluate_function_too(coco_problem_t *self, const double *x, double *y) {
   static const double factor = 0.1;
   coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
   if (y[0] != 0) {
@@ -24,9 +24,9 @@ static void private_oo_evaluate_function(coco_problem_t *self, const double *x, 
  *
  * Caveat: this can change best_parameter and best_value. 
  */
-static coco_problem_t *oscillate_objective(coco_problem_t *inner_problem) {
+static coco_problem_t *f_transform_objective_oscillate(coco_problem_t *inner_problem) {
   coco_problem_t *self;
   self = coco_allocate_transformed_problem(inner_problem, NULL, NULL);
-  self->evaluate_function = private_oo_evaluate_function;
+  self->evaluate_function = private_evaluate_function_too;
   return self;
 }

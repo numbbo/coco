@@ -7,7 +7,7 @@ typedef struct {
   double factor;
 } _puv_data_t;
 
-static void private_puv_evaluate_function(coco_problem_t *self, const double *x, double *y) {
+static void private_evaluate_function_topen(coco_problem_t *self, const double *x, double *y) {
 	_puv_data_t *data = coco_get_transform_data(self);
 	const double *lower_bounds = self->smallest_values_of_interest;
 	const double *upper_bounds = self->largest_values_of_interest;
@@ -32,12 +32,10 @@ static void private_puv_evaluate_function(coco_problem_t *self, const double *x,
 }
 
 /**
- * penalize_uninteresting_values(inner_problem):
- *
  * Add a penalty to all evaluations outside of the region of interest
  * of ${inner_problem}.
  */
-static coco_problem_t *penalize_uninteresting_values(coco_problem_t *inner_problem, const double factor) {
+static coco_problem_t *f_transform_objective_penalize(coco_problem_t *inner_problem, const double factor) {
 	coco_problem_t *self;
 	_puv_data_t *data;
 	assert(inner_problem != NULL);
@@ -46,6 +44,6 @@ static coco_problem_t *penalize_uninteresting_values(coco_problem_t *inner_probl
 	data = coco_allocate_memory(sizeof(*data));
 	data->factor = factor;
 	self = coco_allocate_transformed_problem(inner_problem, data, NULL);
-	self->evaluate_function = private_puv_evaluate_function;
+	self->evaluate_function = private_evaluate_function_topen;
 	return self;
 }

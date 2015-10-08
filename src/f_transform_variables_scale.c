@@ -11,7 +11,7 @@ typedef struct {
   double *x;
 } _scv_data_t;
 
-static void private_scv_evaluate_function(coco_problem_t *self, const double *x, double *y) {
+static void private_evaluate_function_tvsc(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   _scv_data_t *data;
   coco_problem_t *inner_problem;
@@ -28,7 +28,7 @@ static void private_scv_evaluate_function(coco_problem_t *self, const double *x,
   } while (0);
 }
 
-static void private_scv_free_data(void *thing) {
+static void private_free_data_tvsc(void *thing) {
   _scv_data_t *data = thing;
   coco_free_memory(data->x);
 }
@@ -36,7 +36,7 @@ static void private_scv_free_data(void *thing) {
 /**
  * Scale all variables by factor before evaluation.
  */
-static coco_problem_t *scale_variables(coco_problem_t *inner_problem,
+static coco_problem_t *f_transform_variables_scale(coco_problem_t *inner_problem,
                                 const double factor) {
   _scv_data_t *data;
   coco_problem_t *self;
@@ -45,7 +45,7 @@ static coco_problem_t *scale_variables(coco_problem_t *inner_problem,
   data->factor = factor;
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_allocate_transformed_problem(inner_problem, data, private_scv_free_data);
-  self->evaluate_function = private_scv_evaluate_function;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_free_data_tvsc);
+  self->evaluate_function = private_evaluate_function_tvsc;
   return self;
 }

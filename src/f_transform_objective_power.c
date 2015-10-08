@@ -6,7 +6,7 @@
 
 typedef struct { double exponent; } _powo_data_t;
 
-static void private_powo_evaluate_function(coco_problem_t *self, const double *x,
+static void private_evaluate_function_topow(coco_problem_t *self, const double *x,
                                     double *y) {
   _powo_data_t *data;
   data = coco_get_transform_data(self);
@@ -17,7 +17,7 @@ static void private_powo_evaluate_function(coco_problem_t *self, const double *x
 /**
  * Raise the objective value to the power of a given exponent.
  */
-static coco_problem_t *power_objective(coco_problem_t *inner_problem,
+static coco_problem_t *f_transform_objective_power(coco_problem_t *inner_problem,
                                 const double exponent) {
   _powo_data_t *data;
   coco_problem_t *self;
@@ -26,6 +26,6 @@ static coco_problem_t *power_objective(coco_problem_t *inner_problem,
   data->exponent = exponent;
 
   self = coco_allocate_transformed_problem(inner_problem, data, NULL);
-  self->evaluate_function = private_powo_evaluate_function;
+  self->evaluate_function = private_evaluate_function_topow;
   return self;
 }

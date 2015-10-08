@@ -9,7 +9,7 @@ typedef struct {
   coco_free_function_t old_free_problem;
 } _z_hat_data_t;
 
-static void private_z_hat_evaluate_function(coco_problem_t *self, const double *x,
+static void private_evaluate_function_tvz(coco_problem_t *self, const double *x,
                                      double *y) {
   size_t i;
   _z_hat_data_t *data;
@@ -27,15 +27,16 @@ static void private_z_hat_evaluate_function(coco_problem_t *self, const double *
   assert(y[0] >= self->best_value[0]);
 }
 
-static void private_z_hat_free_data(void *thing) {
+static void private_free_data_tvz(void *thing) {
   _z_hat_data_t *data = thing;
   coco_free_memory(data->xopt);
   coco_free_memory(data->z);
 }
 
-/* Compute the vector {z^hat} for f_schwefel
+/*
+ * Compute the vector {z^hat} for the BBOB Schwefel function.
  */
-static coco_problem_t *z_hat(coco_problem_t *inner_problem, const double *xopt) {
+static coco_problem_t *f_transform_variables_z_hat(coco_problem_t *inner_problem, const double *xopt) {
   _z_hat_data_t *data;
   coco_problem_t *self;
 
@@ -44,7 +45,7 @@ static coco_problem_t *z_hat(coco_problem_t *inner_problem, const double *xopt) 
   data->z = coco_allocate_vector(inner_problem->number_of_variables);
 
   self =
-      coco_allocate_transformed_problem(inner_problem, data, private_z_hat_free_data);
-  self->evaluate_function = private_z_hat_evaluate_function;
+      coco_allocate_transformed_problem(inner_problem, data, private_free_data_tvz);
+  self->evaluate_function = private_evaluate_function_tvz;
   return self;
 }

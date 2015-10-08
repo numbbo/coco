@@ -4,17 +4,9 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-/*
- * Perform an affine transformation of the variable vector:
- *
- *   x |-> Mx + b
- *
- * The matrix M is stored in row-major format.
- */
-
 typedef struct { double *M, *b, *x; } _atv_data_t;
 
-static void private_atv_evaluate_function(coco_problem_t *self, const double *x, double *y) {
+static void private_evaluate_function_tvaff(coco_problem_t *self, const double *x, double *y) {
   size_t i, j;
   _atv_data_t *data;
   coco_problem_t *inner_problem;
@@ -35,7 +27,7 @@ static void private_atv_evaluate_function(coco_problem_t *self, const double *x,
   coco_evaluate_function(inner_problem, data->x, y);
 }
 
-static void private_atv_free_data(void *thing) {
+static void private_free_data_tvaff(void *thing) {
   _atv_data_t *data = thing;
   coco_free_memory(data->M);
   coco_free_memory(data->b);
@@ -48,7 +40,14 @@ static void private_atv_free_data(void *thing) {
  * - Resize bounds vectors if input and output dimensions do not match
  * - problem_id and problem_name need to be adjusted
  */
-static coco_problem_t *affine_transform_variables(coco_problem_t *inner_problem,
+/*
+ * Perform an affine transformation of the variable vector:
+ *
+ *   x |-> Mx + b
+ *
+ * The matrix M is stored in row-major format.
+ */
+static coco_problem_t *f_transform_variables_affine(coco_problem_t *inner_problem,
                                            const double *M, const double *b,
                                            const size_t number_of_variables) {
   coco_problem_t *self;
@@ -61,7 +60,7 @@ static coco_problem_t *affine_transform_variables(coco_problem_t *inner_problem,
   data->b = coco_duplicate_vector(b, inner_problem->number_of_variables);
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_allocate_transformed_problem(inner_problem, data, private_atv_free_data);
-  self->evaluate_function = private_atv_evaluate_function;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_free_data_tvaff);
+  self->evaluate_function = private_evaluate_function_tvaff;
   return self;
 }
