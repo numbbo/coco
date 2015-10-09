@@ -8,8 +8,8 @@
 #include "observer_bbob2009.c"
 #include "observer_mo_toy.c"
 #include "observer_toy.c"
-#include "suite_2o_300.c"
 #include "suite_bbob2009.c"
+#include "suite_biobj_300.c"
 #include "suite_mo_first_attempt.c"
 #include "suite_toy.c"
 
@@ -31,8 +31,7 @@
 
 /** return next problem_index or -1
  */
-long coco_next_problem_index(const char *problem_suite, long problem_index,
-    const char *select_options) {
+long coco_next_problem_index(const char *problem_suite, long problem_index, const char *select_options) {
   coco_problem_t *problem; /* to check validity */
   long last_index = -1;
 
@@ -77,24 +76,22 @@ long coco_next_problem_index(const char *problem_suite, long problem_index,
  * using the function ${coco_free_problem}.
  *
  */
-coco_problem_t *coco_get_problem(const char *problem_suite,
-    const long problem_index) {
+coco_problem_t *coco_get_problem(const char *problem_suite, const long problem_index) {
   if (0 == strcmp(problem_suite, "suite_toy")) {
     return suite_toy(problem_index);
   } else if (0 == strcmp(problem_suite, "suite_bbob2009")) {
     return suite_bbob2009(problem_index);
   } else if (0 == strcmp(problem_suite, "suite_mo_first_attempt")) {
     return suite_mo_first_attempt(problem_index);
-  } else if (0 == strcmp(problem_suite, "suite_2o_300")) {
-    return suite_2o_300(problem_index);
+  } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
+    return suite_biobj_300(problem_index);
   } else {
     coco_warning("Unknown problem suite.");
     return NULL;
   }
 }
 
-coco_problem_t *coco_observe_problem(const char *observer,
-    coco_problem_t *problem, const char *options) {
+coco_problem_t *coco_observe_problem(const char *observer, coco_problem_t *problem, const char *options) {
   if (problem == NULL) {
     coco_warning("Trying to observe a NULL problem has no effect.");
     return problem;
@@ -124,14 +121,34 @@ coco_problem_t *coco_observe_problem(const char *observer,
   return NULL; /* Never reached */
 }
 
+/**
+ * Return the first problem in benchmark ${suite} with ${id} as problem ID,
+ * or NULL.
+ */
+coco_problem_t *coco_suite_get_problem_by_id(const char *suite, const char *id) {
+  const char *suite_options = "";
+  long index = coco_next_problem_index(suite, -1, suite_options);
+  coco_problem_t *problem;
+  const char *prob_id;
+
+  for (; index >= 0; coco_next_problem_index(suite, index, suite_options)) {
+    problem = coco_get_problem(suite, index);
+    prob_id = coco_get_problem_id(problem);
+    if (strlen(prob_id) == strlen(id) && strncmp(prob_id, id, strlen(prob_id)) == 0)
+      return problem;
+    coco_free_problem(problem);
+  }
+  return NULL;
+}
+
 #if 1
 /* coco_benchmark(problem_suite, observer, options, optimizer):
  *
  * Benchmark a solver ${optimizer} with a testbed ${problem_suite}
  * using the data logger ${observer} to write data. 
  */
-void coco_benchmark(const char *problem_suite, const char *observer,
-    const char *options, coco_optimizer_t optimizer) {
+void coco_benchmark(const char *problem_suite, const char *observer, const char *options,
+    coco_optimizer_t optimizer) {
   int problem_index;
   coco_problem_t *problem;
   for (problem_index = 0;; ++problem_index) {
@@ -162,7 +179,7 @@ void coco_benchmark(const char *problem_suite, const char *problem_suite_options
     problem = coco_get_problem(problem_suite, problem_index);
     if (problem == NULL) {
       snprintf(buf, 221, "problem index %d not found in problem suite %s (this is probably a bug)",
-        problem_index, problem_suite);
+          problem_index, problem_suite);
       coco_warning(buf);
       break;
     }

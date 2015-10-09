@@ -14,18 +14,16 @@ static void private_evaluate_1u_ras(coco_problem_t *self, const double *x, doubl
     sum1 += cos(coco_two_pi * x[i]);
     sum2 += x[i] * x[i];
   }
-  y[0] = 10.0 * ((double)(long)self->number_of_variables - sum1) + sum2;
+  y[0] = 10.0 * ((double) (long) self->number_of_variables - sum1) + sum2;
 }
 
 static coco_problem_t *f_1u_rastrigin(const size_t number_of_variables) {
   size_t i, problem_id_length;
   coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("rastrigin function");
-  problem_id_length =
-	(size_t)snprintf(NULL, 0, "%s_%02lu", "rastrigin", (long)number_of_variables);
-  problem->problem_id = (char *)coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "rastrigin",
-           (long)number_of_variables);
+  problem_id_length = (size_t) snprintf(NULL, 0, "%s_%02lu", "rastrigin", (long) number_of_variables);
+  problem->problem_id = (char *) coco_allocate_memory(problem_id_length + 1);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "rastrigin", (long) number_of_variables);
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;

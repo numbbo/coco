@@ -24,8 +24,8 @@ static void private_evaluate_function_tv_con(coco_problem_t *self, const double 
     /* OME: We could precalculate the scaling coefficients if we
      * really wanted to.
      */
-    data->x[i] =
-        pow(data->alpha, 0.5 * (double)(long)i / ((double)(long)self->number_of_variables - 1.0)) * x[i];
+    data->x[i] = pow(data->alpha, 0.5 * (double) (long) i / ((double) (long) self->number_of_variables - 1.0))
+        * x[i];
   }
   coco_evaluate_function(inner_problem, data->x, y);
 }
@@ -38,8 +38,7 @@ static void private_free_data_tv_con(void *thing) {
 /**
  * Perform monotone oscillation(?) transformation on input variables.
  */
-static coco_problem_t *f_tran_var_conditioning(coco_problem_t *inner_problem,
-                                    const double alpha) {
+static coco_problem_t *f_tran_var_conditioning(coco_problem_t *inner_problem, const double alpha) {
   _tv_con_data_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));

@@ -14,9 +14,13 @@
  * made. We do not terminate immediately because we want to give R a
  * chance to save any results or possibly recover.
  */
-void coco_error(const char *message, ...) { error(message); }
+void coco_error(const char *message, ...) {
+  error(message);
+}
 
-void coco_warning(const char *message, ...) { warning(message); }
+void coco_warning(const char *message, ...) {
+  warning(message);
+}
 
 void *coco_allocate_memory(const size_t size) {
   void *data;
@@ -27,4 +31,6 @@ void *coco_allocate_memory(const size_t size) {
   return data;
 }
 
-void coco_free_memory(void *data) { Free(data); }
+void coco_free_memory(void *data) {
+  Free(data);
+}

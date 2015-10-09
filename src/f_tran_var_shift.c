@@ -33,16 +33,15 @@ static void private_free_data_tv_sh(void *thing) {
 /*
  * Shift all variables of ${inner_problem} by ${offset}.
  */
-static coco_problem_t *f_tran_var_shift(coco_problem_t *inner_problem,
-                                const double *offset, const int shift_bounds) {
+static coco_problem_t *f_tran_var_shift(coco_problem_t *inner_problem, const double *offset,
+    const int shift_bounds) {
   _tv_sh_data_t *data;
   coco_problem_t *self;
   if (shift_bounds)
     coco_error("shift_bounds not implemented.");
 
   data = coco_allocate_memory(sizeof(*data));
-  data->offset =
-      coco_duplicate_vector(offset, inner_problem->number_of_variables);
+  data->offset = coco_duplicate_vector(offset, inner_problem->number_of_variables);
   data->shifted_x = coco_allocate_vector(inner_problem->number_of_variables);
 
   self = coco_allocate_transformed_problem(inner_problem, data, private_free_data_tv_sh);

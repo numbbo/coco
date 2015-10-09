@@ -8,9 +8,9 @@
 #include "coco_problem.c"
 #include "suite_bbob2009.c"
 
-#define BIOBJECTIVE_NUMBER_OF_COMBINATIONS 300
-#define BIOBJECTIVE_NUMBER_OF_INSTANCES 5
-#define BIOBJECTIVE_NUMBER_OF_DIMENSIONS 5
+#define SUITE_BIOBJ_NUMBER_OF_COMBINATIONS 300
+#define SUITE_BIOBJ_NUMBER_OF_INSTANCES 5
+#define SUITE_BIOBJ_NUMBER_OF_DIMENSIONS 5
 
 /**
  * The biobjective suite of 300 function combinations generated
@@ -22,7 +22,7 @@
 /* const size_t DIMENSIONS[6] = {2, 3, 5, 10, 20, 40};*/
 static const size_t instance_list[5][2] = { { 2, 4 }, { 3, 5 }, { 7, 8 }, { 9, 10 }, { 11, 12 } };
 /* --> we must map this number to the two corresponding BBOB functions */
-static int biobjective_list[300][2]; /* 300 is the total number of 2-obj combinations (< 24*24)*/
+static int problem_list[300][2]; /* 300 is the total number of 2-obj combinations (< 24*24)*/
 static int defined = 0;
 
 /**
@@ -46,23 +46,23 @@ static int defined = 0;
  *           7498 |        4 |         300 |        20
  *           7499 |        5 |         300 |        20
  */
-static long suite_2o_300_encode_problem_index(int combination_idx, long instance_idx, int dimension_idx) {
+static long suite_biobj_300_encode_problem_index(int combination_idx, long instance_idx, int dimension_idx) {
   long problem_index;
-  problem_index = instance_idx + combination_idx * BIOBJECTIVE_NUMBER_OF_INSTANCES
-      + dimension_idx * (BIOBJECTIVE_NUMBER_OF_INSTANCES * BIOBJECTIVE_NUMBER_OF_COMBINATIONS);
+  problem_index = instance_idx + combination_idx * SUITE_BIOBJ_NUMBER_OF_INSTANCES
+      + dimension_idx * (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_COMBINATIONS);
   return problem_index;
 }
 
-static void suite_2o_300_decode_problem_index(const long problem_index, int *combination_idx,
+static void suite_biobj_300_decode_problem_index(const long problem_index, int *combination_idx,
     long *instance_idx, long *dimension_idx) {
   long rest;
-  *dimension_idx = problem_index / (BIOBJECTIVE_NUMBER_OF_INSTANCES * BIOBJECTIVE_NUMBER_OF_COMBINATIONS);
-  rest = problem_index % (BIOBJECTIVE_NUMBER_OF_INSTANCES * BIOBJECTIVE_NUMBER_OF_COMBINATIONS);
-  *combination_idx = (int) (rest / BIOBJECTIVE_NUMBER_OF_INSTANCES);
-  *instance_idx = rest % BIOBJECTIVE_NUMBER_OF_INSTANCES;
+  *dimension_idx = problem_index / (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_COMBINATIONS);
+  rest = problem_index % (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_COMBINATIONS);
+  *combination_idx = (int) (rest / SUITE_BIOBJ_NUMBER_OF_INSTANCES);
+  *instance_idx = rest % SUITE_BIOBJ_NUMBER_OF_INSTANCES;
 }
 
-static coco_problem_t *suite_2o_300(const long problem_index) {
+static coco_problem_t *suite_biobj_300(const long problem_index) {
   int combination_idx;
   long instance_idx, dimension_idx;
   coco_problem_t *problem1, *problem2, *problem;
@@ -75,19 +75,19 @@ static coco_problem_t *suite_2o_300(const long problem_index) {
     int i, j;
     for (i = 1; i <= 24; ++i) {
       for (j = i; j <= 24; ++j) {
-        biobjective_list[k][0] = i;
-        biobjective_list[k][1] = j;
+        problem_list[k][0] = i;
+        problem_list[k][1] = j;
         k++;
       }
     }
     defined = 1;
   }
 
-  suite_2o_300_decode_problem_index(problem_index, &combination_idx, &instance_idx, &dimension_idx);
+  suite_biobj_300_decode_problem_index(problem_index, &combination_idx, &instance_idx, &dimension_idx);
 
-  problem1 = suite_bbob2009_problem(biobjective_list[combination_idx][0], BBOB2009_DIMS[dimension_idx],
+  problem1 = suite_bbob2009_problem(problem_list[combination_idx][0], BBOB2009_DIMS[dimension_idx],
       (long) instance_list[instance_idx][0]);
-  problem2 = suite_bbob2009_problem(biobjective_list[combination_idx][1], BBOB2009_DIMS[dimension_idx],
+  problem2 = suite_bbob2009_problem(problem_list[combination_idx][1], BBOB2009_DIMS[dimension_idx],
       (long) instance_list[instance_idx][1]);
   problem = coco_stacked_problem_allocate(problem1, problem2);
   problem->index = problem_index;
@@ -96,6 +96,6 @@ static coco_problem_t *suite_2o_300(const long problem_index) {
 }
 
 /* Undefine constants */
-#undef BIOBJECTIVE_NUMBER_OF_COMBINATIONS
-#undef BIOBJECTIVE_NUMBER_OF_INSTANCES
-#undef BIOBJECTIVE_NUMBER_OF_DIMENSIONS
+#undef SUITE_BIOBJ_NUMBER_OF_COMBINATIONS
+#undef SUITE_BIOBJ_NUMBER_OF_INSTANCES
+#undef SUITE_BIOBJ_NUMBER_OF_DIMENSIONS

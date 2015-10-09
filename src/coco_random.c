@@ -38,20 +38,21 @@ static void coco_random_generate(coco_random_state_t *state) {
 }
 
 coco_random_state_t *coco_new_random(uint32_t seed) {
-  coco_random_state_t *state =
-      (coco_random_state_t *)coco_allocate_memory(sizeof(coco_random_state_t));
+  coco_random_state_t *state = (coco_random_state_t *) coco_allocate_memory(sizeof(coco_random_state_t));
   size_t i;
   /* Expand seed to fill initial state array. */
   for (i = 0; i < LONG_LAG; ++i) {
-    state->x[i] = ((double)seed) / (double)((1UL << 32) - 1);
+    state->x[i] = ((double) seed) / (double) ((1UL << 32) - 1);
     /* Advance seed based on simple RNG from TAOCP */
-    seed = (uint32_t)1812433253UL * (seed ^ (seed >> 30)) + ((uint32_t)i + 1);
+    seed = (uint32_t) 1812433253UL * (seed ^ (seed >> 30)) + ((uint32_t) i + 1);
   }
   state->index = 0;
   return state;
 }
 
-void coco_free_random(coco_random_state_t *state) { coco_free_memory(state); }
+void coco_free_random(coco_random_state_t *state) {
+  coco_free_memory(state);
+}
 
 double coco_uniform_random(coco_random_state_t *state) {
   /* If we have consumed all random numbers in our archive, it is

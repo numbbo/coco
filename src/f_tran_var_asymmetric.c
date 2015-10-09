@@ -23,9 +23,8 @@ static void private_evaluate_function_tv_asy(coco_problem_t *self, const double 
 
   for (i = 0; i < self->number_of_variables; ++i) {
     if (x[i] > 0.0) {
-      exponent =
-          1.0 +
-          (data->beta * (double)(long)i) / ((double)(long)self->number_of_variables - 1.0) * sqrt(x[i]);
+      exponent = 1.0
+          + (data->beta * (double) (long) i) / ((double) (long) self->number_of_variables - 1.0) * sqrt(x[i]);
       data->x[i] = pow(x[i], exponent);
     } else {
       data->x[i] = x[i];
@@ -42,8 +41,7 @@ static void private_free_data_tv_asy(void *thing) {
 /**
  * Perform monotone oscillation transformation on input variables.
  */
-static coco_problem_t *f_tran_var_asymmetric(coco_problem_t *inner_problem,
-                                              const double beta) {
+static coco_problem_t *f_tran_var_asymmetric(coco_problem_t *inner_problem, const double beta) {
   _tv_asy_data_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));

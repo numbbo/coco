@@ -5,7 +5,9 @@
 
 #include "coco_problem.c"
 
-typedef struct { double *xopt; } _1u_as_data_t;
+typedef struct {
+  double *xopt;
+} _1u_as_data_t;
 
 static void private_evaluate_1u_as(coco_problem_t *self, const double *x, double *y) {
   size_t i;
@@ -41,11 +43,10 @@ f_1u_attractive_sector(const size_t number_of_variables, const double *xopt) {
 
   problem->problem_name = coco_strdup("attractive sector function");
   /* Construct a meaningful problem id */
-  problem_id_length = (size_t)snprintf(NULL, 0, "%s_%02lu", "attractive_sector",
-                               (long)number_of_variables);
+  problem_id_length = (size_t) snprintf(NULL, 0, "%s_%02lu", "attractive_sector", (long) number_of_variables);
   problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu",
-           "attractive_sector", (long)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "attractive_sector",
+      (long) number_of_variables);
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
@@ -59,7 +60,6 @@ f_1u_attractive_sector(const size_t number_of_variables, const double *xopt) {
     problem->best_parameter[i] = 0.0;
   }
   /* Calculate best parameter value */
-  private_evaluate_1u_as(problem, problem->best_parameter,
-                              problem->best_value);
+  private_evaluate_1u_as(problem, problem->best_parameter, problem->best_value);
   return problem;
 }

@@ -26,7 +26,6 @@ typedef struct {
   double **rot1, **rot2;
 } _1u_bse_data_t;
 
-
 static void private_evaluate_1u_bse(coco_problem_t *self, const double *x, double *y) {
   static const double condition = 100;
   static const double alpha = 10.0;
@@ -73,7 +72,7 @@ static void private_evaluate_1u_bse(coco_problem_t *self, const double *x, doubl
   y[0] = 0.0;
   for (i = 0; i < self->number_of_variables; ++i) {
     double exponent;
-    exponent = (double)(long)i / ((double)(long)self->number_of_variables - 1.0);
+    exponent = (double) (long) i / ((double) (long) self->number_of_variables - 1.0);
     y[0] += pow(condition, exponent) * data->xx[i] * data->xx[i];
     ;
   }
@@ -109,24 +108,20 @@ f_1u_bbob_step_ellipsoid(const size_t number_of_variables, const long instance_i
   data->x = coco_allocate_vector(number_of_variables);
   data->xx = coco_allocate_vector(number_of_variables);
   data->xopt = coco_allocate_vector(number_of_variables);
-  data->rot1 =
-      bbob2009_allocate_matrix(number_of_variables, number_of_variables);
-  data->rot2 =
-      bbob2009_allocate_matrix(number_of_variables, number_of_variables);
+  data->rot1 = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
+  data->rot2 = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
 
   data->fopt = bbob2009_compute_fopt(7, instance_id);
-  bbob2009_compute_xopt(data->xopt, rseed, (long)number_of_variables);
-  bbob2009_compute_rotation(data->rot1, rseed + 1000000, (long)number_of_variables);
-  bbob2009_compute_rotation(data->rot2, rseed, (long)number_of_variables);
+  bbob2009_compute_xopt(data->xopt, rseed, (long) number_of_variables);
+  bbob2009_compute_rotation(data->rot1, rseed + 1000000, (long) number_of_variables);
+  bbob2009_compute_rotation(data->rot2, rseed, (long) number_of_variables);
 
   problem = coco_allocate_problem(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("BBOB f7");
   /* Construct a meaningful problem id */
-  problem_id_length =
-      (size_t)snprintf(NULL, 0, "%s_%02lu", "bbob2009_f7", (long)number_of_variables);
+  problem_id_length = (size_t) snprintf(NULL, 0, "%s_%02lu", "bbob2009_f7", (long) number_of_variables);
   problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "bbob2009_f7",
-           (long)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "bbob2009_f7", (long) number_of_variables);
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;

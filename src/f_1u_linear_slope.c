@@ -14,7 +14,7 @@ static void private_evaluate_1u_ls(coco_problem_t *self, const double *x, double
     double base, exponent, si;
 
     base = sqrt(alpha);
-    exponent = (double)(long)i / ((double)(long)self->number_of_variables - 1);
+    exponent = (double) (long) i / ((double) (long) self->number_of_variables - 1);
     if (self->best_parameter[i] > 0.0) {
       si = pow(base, exponent);
     } else {
@@ -24,17 +24,15 @@ static void private_evaluate_1u_ls(coco_problem_t *self, const double *x, double
   }
 }
 
-static coco_problem_t *f_1u_linear_slope(const size_t number_of_variables,
-  const double *best_parameter) {
+static coco_problem_t *f_1u_linear_slope(const size_t number_of_variables, const double *best_parameter) {
   size_t i, problem_id_length;
   coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("linear slope function");
   /* Construct a meaningful problem id */
-  problem_id_length =
-		  (size_t)snprintf(NULL, 0, "%s_%02lu", "linear_slope", (long)number_of_variables);
-  problem->problem_id = (char *)coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu",
-           "linear_slope", (long)number_of_variables);
+  problem_id_length = (size_t) snprintf(NULL, 0, "%s_%02lu", "linear_slope", (long) number_of_variables);
+  problem->problem_id = (char *) coco_allocate_memory(problem_id_length + 1);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "linear_slope",
+      (long) number_of_variables);
 
   problem->evaluate_function = private_evaluate_1u_ls;
   for (i = 0; i < number_of_variables; ++i) {

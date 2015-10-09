@@ -13,11 +13,17 @@
 #include "coco.h"
 #define BBOB2009_MAX_DIM 40
 
-static double bbob2009_fmin(double a, double b) { return (a < b) ? a : b; }
+static double bbob2009_fmin(double a, double b) {
+  return (a < b) ? a : b;
+}
 
-static double bbob2009_fmax(double a, double b) { return (a > b) ? a : b; }
+static double bbob2009_fmax(double a, double b) {
+  return (a > b) ? a : b;
+}
 
-static double bbob2009_round(double x) { return floor(x + 0.5); }
+static double bbob2009_round(double x) {
+  return floor(x + 0.5);
+}
 
 /**
  * bbob2009_allocate_matrix(n, m):
@@ -28,7 +34,7 @@ static double bbob2009_round(double x) { return floor(x + 0.5); }
 static double **bbob2009_allocate_matrix(const size_t n, const size_t m) {
   double **matrix = NULL;
   size_t i;
-  matrix = (double **)coco_allocate_memory(sizeof(double *) * n);
+  matrix = (double **) coco_allocate_memory(sizeof(double *) * n);
   for (i = 0; i < n; ++i) {
     matrix[i] = coco_allocate_vector(m);
   }
@@ -59,14 +65,14 @@ static void bbob2009_unif(double *r, long N, long inseed) {
   long rgrand[32];
   long aktrand;
   long i;
-  
+
   if (inseed < 0)
     inseed = -inseed;
   if (inseed < 1)
     inseed = 1;
   aktseed = inseed;
   for (i = 39; i >= 0; i--) {
-    tmp = (int)floor((double)aktseed / (double)127773);
+    tmp = (int) floor((double) aktseed / (double) 127773);
     aktseed = 16807 * (aktseed - tmp * 127773) - 2836 * tmp;
     if (aktseed < 0)
       aktseed = aktseed + 2147483647;
@@ -75,14 +81,14 @@ static void bbob2009_unif(double *r, long N, long inseed) {
   }
   aktrand = rgrand[0];
   for (i = 0; i < N; i++) {
-    tmp = (int)floor((double)aktseed / (double)127773);
+    tmp = (int) floor((double) aktseed / (double) 127773);
     aktseed = 16807 * (aktseed - tmp * 127773) - 2836 * tmp;
     if (aktseed < 0)
       aktseed = aktseed + 2147483647;
-    tmp = (int)floor((double)aktrand / (double)67108865);
+    tmp = (int) floor((double) aktrand / (double) 67108865);
     aktrand = rgrand[tmp];
     rgrand[tmp] = aktseed;
-    r[i] = (double)aktrand / 2.147483647e9;
+    r[i] = (double) aktrand / 2.147483647e9;
     if (r[i] == 0.) {
       r[i] = 1e-99;
     }
@@ -160,6 +166,19 @@ static void bbob2009_compute_rotation(double **B, long seed, long DIM) {
   }
 }
 
+static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b, const size_t dimension) {
+  size_t row, column;
+  double *current_row;
+
+  for (row = 0; row < dimension; ++row) {
+    current_row = M + row * dimension;
+    for (column = 0; column < dimension; ++column) {
+      current_row[column] = rot[row][column];
+    }
+    b[row] = 0.0;
+  }
+}
+
 /**
  * bbob2009_compute_xopt(xopt, seed, DIM):
  *
@@ -189,11 +208,11 @@ static double bbob2009_compute_fopt(int function_id, long instance_id) {
     rseed = 3;
   else if (function_id == 18)
     rseed = 17;
-  else if (function_id == 101 || function_id == 102 || function_id == 103 ||
-           function_id == 107 || function_id == 108 || function_id == 109)
+  else if (function_id == 101 || function_id == 102 || function_id == 103 || function_id == 107
+      || function_id == 108 || function_id == 109)
     rseed = 1;
-  else if (function_id == 104 || function_id == 105 || function_id == 106 ||
-           function_id == 110 || function_id == 111 || function_id == 112)
+  else if (function_id == 104 || function_id == 105 || function_id == 106 || function_id == 110
+      || function_id == 111 || function_id == 112)
     rseed = 8;
   else if (function_id == 113 || function_id == 114 || function_id == 115)
     rseed = 7;
@@ -213,7 +232,5 @@ static double bbob2009_compute_fopt(int function_id, long instance_id) {
   rrseed = rseed + 10000 * instance_id;
   bbob2009_gauss(&gval, 1, rrseed);
   bbob2009_gauss(&gval2, 1, rrseed + 1);
-  return bbob2009_fmin(
-      1000.,
-      bbob2009_fmax(-1000., bbob2009_round(100. * 100. * gval / gval2) / 100.));
+  return bbob2009_fmin(1000., bbob2009_fmax(-1000., bbob2009_round(100. * 100. * gval / gval2) / 100.));
 }

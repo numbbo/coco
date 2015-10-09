@@ -8,7 +8,9 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-typedef struct { double *oscillated_x; } _tv_osc_data_t;
+typedef struct {
+  double *oscillated_x;
+} _tv_osc_data_t;
 
 static void private_evaluate_function_tv_osc(coco_problem_t *self, const double *x, double *y) {
   static const double alpha = 0.1;

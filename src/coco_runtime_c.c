@@ -24,7 +24,7 @@ void coco_error(const char *message, ...) {
 
 void coco_warning(const char *message, ...) {
   va_list args;
-  
+
   fprintf(stderr, "WARNING: ");
   va_start(args, message);
   vfprintf(stderr, message, args);
@@ -44,4 +44,6 @@ void *coco_allocate_memory(const size_t size) {
   return data;
 }
 
-void coco_free_memory(void *data) { free(data); }
+void coco_free_memory(void *data) {
+  free(data);
+}

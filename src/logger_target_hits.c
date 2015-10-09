@@ -16,7 +16,7 @@ typedef struct {
   long number_of_evaluations;
 } logger_target_hits_t;
 
-static void private_evaluate_function_lth(coco_problem_t *self, const double *x, double *y) {
+static void private_logger_target_hits_evaluate(coco_problem_t *self, const double *x, double *y) {
   logger_target_hits_t *data;
   data = coco_get_transform_data(self);
 
@@ -28,10 +28,9 @@ static void private_evaluate_function_lth(coco_problem_t *self, const double *x,
     data->logfile = fopen(data->path, "w");
     if (data->logfile == NULL) {
       char *buf;
-      const char *error_format =
-          "lht_evaluate_function() failed to open log file '%s'.";
-      size_t buffer_size = (size_t)snprintf(NULL, 0, error_format, data->path);
-      buf = (char *)coco_allocate_memory(buffer_size);
+      const char *error_format = "lht_evaluate_function() failed to open log file '%s'.";
+      size_t buffer_size = (size_t) snprintf(NULL, 0, error_format, data->path);
+      buf = (char *) coco_allocate_memory(buffer_size);
       snprintf(buf, buffer_size, error_format, data->path);
       coco_error(buf);
       coco_free_memory(buf); /* Never reached */
@@ -40,18 +39,17 @@ static void private_evaluate_function_lth(coco_problem_t *self, const double *x,
   }
 
   /* Add a line for each hitting level we have reached. */
-  while (y[0] <= data->target_values[data->next_target_value] &&
-         data->next_target_value < data->number_of_target_values) {
-    fprintf(data->logfile, "%e %e %li\n",
-            data->target_values[data->next_target_value], y[0],
-            data->number_of_evaluations);
+  while (y[0] <= data->target_values[data->next_target_value]
+      && data->next_target_value < data->number_of_target_values) {
+    fprintf(data->logfile, "%e %e %li\n", data->target_values[data->next_target_value], y[0],
+        data->number_of_evaluations);
     data->next_target_value++;
   }
   /* Flush output so that impatient users can see progress. */
   fflush(data->logfile);
 }
 
-static void private_free_data_lth(void *stuff) {
+static void private_logger_target_hits_free(void *stuff) {
   logger_target_hits_t *data;
   assert(stuff != NULL);
   data = stuff;
@@ -70,8 +68,8 @@ static void private_free_data_lth(void *stuff) {
   }
 }
 
-static coco_problem_t *logger_target_hits(coco_problem_t *inner_problem,
-  const double *target_values, const size_t number_of_target_values, const char *path) {
+static coco_problem_t *logger_target_hits(coco_problem_t *inner_problem, const double *target_values,
+    const size_t number_of_target_values, const char *path) {
   logger_target_hits_t *data;
   coco_problem_t *self;
 
@@ -79,12 +77,11 @@ static coco_problem_t *logger_target_hits(coco_problem_t *inner_problem,
   data->number_of_evaluations = 0;
   data->path = coco_strdup(path);
   data->logfile = NULL; /* Open lazily in lht_evaluate_function(). */
-  data->target_values =
-      coco_duplicate_vector(target_values, number_of_target_values);
+  data->target_values = coco_duplicate_vector(target_values, number_of_target_values);
   data->number_of_target_values = number_of_target_values;
   data->next_target_value = 0;
 
-  self = coco_allocate_transformed_problem(inner_problem, data, private_free_data_lth);
-  self->evaluate_function = private_evaluate_function_lth;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_logger_target_hits_free);
+  self->evaluate_function = private_logger_target_hits_evaluate;
   return self;
 }

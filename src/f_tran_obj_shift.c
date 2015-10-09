@@ -3,7 +3,9 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-typedef struct { double offset; } _shift_objective_t;
+typedef struct {
+  double offset;
+} _shift_objective_t;
 
 static void private_evaluate_function_to_sh(coco_problem_t *self, const double *x, double *y) {
   _shift_objective_t *data;
@@ -15,8 +17,7 @@ static void private_evaluate_function_to_sh(coco_problem_t *self, const double *
 /**
  * Shift the objective value of the inner problem by offset.
  */
-static coco_problem_t *f_tran_obj_shift(coco_problem_t *inner_problem,
-                                const double offset) {
+static coco_problem_t *f_tran_obj_shift(coco_problem_t *inner_problem, const double offset) {
   coco_problem_t *self;
   _shift_objective_t *data;
   data = coco_allocate_memory(sizeof(*data));

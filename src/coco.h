@@ -56,7 +56,7 @@ void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y);
  * if coco_get_number_of_objectives(self) is larger than 1. 
  */
 void coco_recommend_solutions(coco_problem_t *self, const double *x,
-                              size_t number_of_solutions);
+    size_t number_of_solutions);
 
 /**
  * Free the COCO problem represented by ${self}.
@@ -109,7 +109,7 @@ size_t coco_get_number_of_constraints(const coco_problem_t *self);
  * suite.
  */
 coco_problem_t *coco_get_problem(const char *problem_suite,
-                                 const long problem_index);
+    const long problem_index);
 
 /**
  * Return the successor index of ${problem_index} in ${problem_suit},
@@ -126,8 +126,8 @@ coco_problem_t *coco_get_problem(const char *problem_suite,
  * loops over all indices and problems consequently. 
  */
 long coco_next_problem_index(const char *problem_suite,
-                            const long problem_index,
-                            const char *select_options);
+    const long problem_index,
+    const char *select_options);
 
 /**
  * Number of evaluations done on problem ${self}. 
@@ -165,7 +165,7 @@ const double *coco_get_largest_values_of_interest(const coco_problem_t *self);
  *coco_get_largest_values_of_interest()
  */
 void coco_get_initial_solution(const coco_problem_t *self,
-                               double *initial_solution);
+    double *initial_solution);
 
 /**
  * Add the observer named ${observer_name} to ${problem}. An
@@ -182,16 +182,16 @@ void coco_get_initial_solution(const coco_problem_t *self,
  * observer is the empty string ("").
  */
 coco_problem_t *coco_observe_problem(const char *observer_name,
-                                     coco_problem_t *problem,
-                                     const char *options);
+    coco_problem_t *problem,
+    const char *options);
 
 void coco_benchmark(const char *problem_suite, const char *observer,
-                    const char *observer_options, coco_optimizer_t optimizer);
+    const char *observer_options, coco_optimizer_t optimizer);
 
 /* shall replace the above? */
 void new_coco_benchmark(const char *problem_suite, const char *problem_suit_options,
-                     const char *observer, const char *observer_options,
-                     coco_optimizer_t optimizer);
+    const char *observer, const char *observer_options,
+    coco_optimizer_t optimizer);
 
 /**************************************************************************
  * Random number generator
@@ -258,18 +258,18 @@ char *coco_strdup(const char *string);
  * this header.
  */
 /* but they are necessary for Builder fbsd9-amd64-test-gcc at
-   http://numbbo.p-value.net/buildbot/builders/fbsd9-amd64-test-gcc
-   (not for the others) */
+ * http://numbbo.p-value.net/buildbot/builders/fbsd9-amd64-test-gcc
+ * (not for the others) */
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
  */
 /* int bbob2009_get_function_id(const coco_problem_t *problem);
-*/
+ */
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
  */
 /* int bbob2009_get_instance_id(const coco_problem_t *problem);
-*/
+ */
 
 #ifdef __cplusplus
 }

@@ -36,8 +36,7 @@ static void private_free_data_tv_sc(void *thing) {
 /**
  * Scale all variables by factor before evaluation.
  */
-static coco_problem_t *f_tran_var_scale(coco_problem_t *inner_problem,
-                                const double factor) {
+static coco_problem_t *f_tran_var_scale(coco_problem_t *inner_problem, const double factor) {
   _tv_sc_data_t *data;
   coco_problem_t *self;
 

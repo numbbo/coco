@@ -2,6 +2,7 @@
 
 #include "coco.h"
 #include "coco_internal.h"
+#include "coco_suites.c"
 #include "coco_problem.c"
 #include "f_tran_obj_shift.c"
 #include "f_tran_var_affine.c"
@@ -10,47 +11,26 @@
 
 /**
  * A collection of "random" future code (snippets)
- */ 
+ */
 
 #if 0  /* doesn't compile, not compliant with old code */
 typedef void (*coco_optimizer_t)(coco_problem_t *problem, long budget);
 #endif
 
 /**
- * Return the first problem in benchmark ${suite} with ${id} as problem ID,
- * or NULL. 
- */
-coco_problem_t *coco_suite_get_problem_by_id(const char *suite, const char *id) {
-  const char *suite_options = "";
-  long index = coco_next_problem_index(suite, -1, suite_options);
-  coco_problem_t *problem;
-  const char *prob_id; 
-  
-  for (; index >= 0; coco_next_problem_index(suite, index, suite_options)) {
-    problem = coco_get_problem(suite, index);
-    prob_id = coco_get_problem_id(problem);
-    if (strlen(prob_id) == strlen(id) && strncmp(prob_id, id, strlen(prob_id)) == 0)
-      return problem;
-    coco_free_problem(problem);
-  }
-  return NULL;
-}
-
-int coco_problem_id_is_fine(const char *id, ...);
-/**
  * Construct a meaningful problem id for a bbob2009 problem,
  * the allocated memory must be free()ed by the caller. 
  * */
 static char *bbob2009_problem_id(const char *name, size_t number_of_variables) {
   char * problem_id;
-  
+
   problem_id = coco_strdupf("%s_%04lu", name, number_of_variables);
-  if (coco_problem_id_is_fine(problem_id))
+  if (coco_suite_problem_id_is_fine(problem_id))
     return problem_id;
   coco_warning("Problem ID '%s' is not valid", problem_id);
   coco_free_memory(problem_id);
   coco_error("Invalid problem ID");
-  return NULL;  /* never reached, but prevents pedantic warning */
+  return NULL; /* never reached, but prevents pedantic warning */
 }
 
 /**
@@ -76,11 +56,11 @@ static char *bbob2009_problem_id(const char *name, size_t number_of_variables) {
  * FIXME: find a better interface for best_parameter?
  */
 coco_problem_t *coco_allocate_so_problem_from_sss(const char * problem_id, const char * problem_name,
-coco_evaluate_function_t fct, size_t number_of_variables, double smallest_value_of_interest,
-double largest_value_of_interest, double best_parameter) {
+    coco_evaluate_function_t fct, size_t number_of_variables, double smallest_value_of_interest,
+    double largest_value_of_interest, double best_parameter) {
   size_t i;
   coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
-  
+
   problem->problem_id = coco_strdup(problem_id);
   problem->problem_name = coco_strdup(problem_name);
   problem->number_of_variables = number_of_variables;
@@ -121,55 +101,52 @@ static void b2bob2009_raw_bent_cigar_evaluate(coco_problem_t *self, const double
 /*** define as coco_problem_t ***/
 static coco_problem_t *b2bob2009_raw_bent_cigar_problem(const size_t number_of_variables) {
   char *problem_id = bbob2009_problem_id("bent_cigar", number_of_variables);
-  coco_problem_t *problem = coco_allocate_so_problem_from_sss(
-                                problem_id, "bent cigar function",
-                                b2bob2009_raw_bent_cigar_evaluate,
-                                number_of_variables, -5, 5, 0);
+  coco_problem_t *problem = coco_allocate_so_problem_from_sss(problem_id, "bent cigar function",
+      b2bob2009_raw_bent_cigar_evaluate, number_of_variables, -5, 5, 0);
   coco_free_memory(problem_id);
   return problem;
 }
 
 /*** transform into final bbob2009 problem in coco format ***/
 static coco_problem_t *b2bob2009_bent_cigar_problem(long dimension_, long instance_id) {
-    const int function_id = 12;
-    const size_t dimension = (size_t)dimension_; /* prevent subtle warnings */
-    double *M = coco_allocate_vector(dimension * dimension);
-    double *b = coco_allocate_vector(dimension);
-    double *xopt = coco_allocate_vector(dimension);
-    double fopt;
-    double **rot1;
-    long rseed = function_id + 10000 * instance_id;
+  const int function_id = 12;
+  const size_t dimension = (size_t) dimension_; /* prevent subtle warnings */
+  double *M = coco_allocate_vector(dimension * dimension);
+  double *b = coco_allocate_vector(dimension);
+  double *xopt = coco_allocate_vector(dimension);
+  double fopt;
+  double **rot1;
+  long rseed = function_id + 10000 * instance_id;
 
-    coco_problem_t *problem; 
-    
-    fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed + 1000000, dimension_);
+  coco_problem_t *problem;
 
-    rot1 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
-    bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
-    bbob2009_free_matrix(rot1, dimension);
+  fopt = bbob2009_compute_fopt(function_id, instance_id);
+  bbob2009_compute_xopt(xopt, rseed + 1000000, dimension_);
 
-    problem = b2bob2009_raw_bent_cigar_problem(dimension);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_asymmetric(problem, 0.5);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    coco_free_memory(M);
-    coco_free_memory(b);
-    coco_free_memory(xopt);
-    return problem;
+  rot1 = bbob2009_allocate_matrix(dimension, dimension);
+  bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
+  bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
+  bbob2009_free_matrix(rot1, dimension);
+
+  problem = b2bob2009_raw_bent_cigar_problem(dimension);
+  problem = f_tran_obj_shift(problem, fopt);
+  problem = f_tran_var_affine(problem, M, b, dimension);
+  problem = f_tran_var_asymmetric(problem, 0.5);
+  problem = f_tran_var_affine(problem, M, b, dimension);
+  problem = f_tran_var_shift(problem, xopt, 0);
+  coco_free_memory(M);
+  coco_free_memory(b);
+  coco_free_memory(xopt);
+  return problem;
 }
 
 /***************** EXAMPLE: ATTRACTIVE SECTOR PROBLEM ****************/
 #if 0
-typedef struct { double *xopt; } coco_bbob_attractive_sector_problem_data_t;
+typedef struct {double *xopt;} coco_bbob_attractive_sector_problem_data_t;
 #endif
 
 /*** define computation of raw function as coco_evaluate_function_t type ***/
-static void b2bob2009_raw_attractive_sector_evaluate(coco_problem_t *self, const double *x,
-    double *y) {
+static void b2bob2009_raw_attractive_sector_evaluate(coco_problem_t *self, const double *x, double *y) {
   const size_t dimension = coco_get_number_of_variables(self);
   size_t i;
   _1u_as_data_t *data;
@@ -202,46 +179,46 @@ static coco_problem_t *b2bob2009_raw_attractive_sector_problem(const size_t numb
 
 /*** transform into final bbob2009 problem in coco format ***/
 static coco_problem_t *b2bob2009_attractive_sector_problem(long dimension_, long instance_id) {
-    const int function_id = 6;
-    const size_t dimension = (size_t)dimension_; /* prevent subtle warnings */
-    double *M = coco_allocate_vector(dimension * dimension);
-    double *b = coco_allocate_vector(dimension);
-    double *xopt = coco_allocate_vector(dimension);
-    double *current_row, fopt;
-    size_t i, j, k;
-    double **rot1, **rot2;
+  const int function_id = 6;
+  const size_t dimension = (size_t) dimension_; /* prevent subtle warnings */
+  double *M = coco_allocate_vector(dimension * dimension);
+  double *b = coco_allocate_vector(dimension);
+  double *xopt = coco_allocate_vector(dimension);
+  double *current_row, fopt;
+  size_t i, j, k;
+  double **rot1, **rot2;
 
-    long rseed = function_id + 10000 * instance_id;
+  long rseed = function_id + 10000 * instance_id;
 
-    coco_problem_t *problem; 
-    
-    fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+  coco_problem_t *problem;
 
-    /* compute affine transformation M from two rotation matrices */
-    rot1 = bbob2009_allocate_matrix(dimension, dimension);
-    rot2 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
-    bbob2009_compute_rotation(rot2, rseed, dimension_);
-    for (i = 0; i < dimension; ++i) {
-      b[i] = 0.0;
-      current_row = M + i * dimension;
-      for (j = 0; j < dimension; ++j) {
-        current_row[j] = 0.0;
-        for (k = 0; k < dimension; ++k) {
-          double exponent = (double)k / (double)(dimension - 1);
-          current_row[j] += rot1[i][k] * pow(sqrt(10.0), exponent) * rot2[k][j];
-        }
+  fopt = bbob2009_compute_fopt(function_id, instance_id);
+  bbob2009_compute_xopt(xopt, rseed, dimension_);
+
+  /* compute affine transformation M from two rotation matrices */
+  rot1 = bbob2009_allocate_matrix(dimension, dimension);
+  rot2 = bbob2009_allocate_matrix(dimension, dimension);
+  bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
+  bbob2009_compute_rotation(rot2, rseed, dimension_);
+  for (i = 0; i < dimension; ++i) {
+    b[i] = 0.0;
+    current_row = M + i * dimension;
+    for (j = 0; j < dimension; ++j) {
+      current_row[j] = 0.0;
+      for (k = 0; k < dimension; ++k) {
+        double exponent = (double) k / (double) (dimension - 1);
+        current_row[j] += rot1[i][k] * pow(sqrt(10.0), exponent) * rot2[k][j];
       }
     }
-    bbob2009_free_matrix(rot1, dimension);
-    bbob2009_free_matrix(rot2, dimension);
-
-    problem = b2bob2009_raw_attractive_sector_problem(dimension, xopt);
-    problem = f_tran_obj_oscillate(problem);
-    problem = f_tran_obj_power(problem, 0.9);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    return problem;
   }
+  bbob2009_free_matrix(rot1, dimension);
+  bbob2009_free_matrix(rot2, dimension);
+
+  problem = b2bob2009_raw_attractive_sector_problem(dimension, xopt);
+  problem = f_tran_obj_oscillate(problem);
+  problem = f_tran_obj_power(problem, 0.9);
+  problem = f_tran_obj_shift(problem, fopt);
+  problem = f_tran_var_affine(problem, M, b, dimension);
+  problem = f_tran_var_shift(problem, xopt, 0);
+  return problem;
+}

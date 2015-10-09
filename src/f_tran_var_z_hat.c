@@ -9,8 +9,7 @@ typedef struct {
   coco_free_function_t old_free_problem;
 } _tv_zh_data_t;
 
-static void private_evaluate_function_tv_zh(coco_problem_t *self, const double *x,
-                                     double *y) {
+static void private_evaluate_function_tv_zh(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   _tv_zh_data_t *data;
   coco_problem_t *inner_problem;
@@ -44,8 +43,7 @@ static coco_problem_t *f_tran_var_z_hat(coco_problem_t *inner_problem, const dou
   data->xopt = coco_duplicate_vector(xopt, inner_problem->number_of_variables);
   data->z = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self =
-      coco_allocate_transformed_problem(inner_problem, data, private_free_data_tv_zh);
+  self = coco_allocate_transformed_problem(inner_problem, data, private_free_data_tv_zh);
   self->evaluate_function = private_evaluate_function_tv_zh;
   return self;
 }

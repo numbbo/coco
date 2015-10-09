@@ -11,11 +11,11 @@ static coco_problem_t *CURRENT_COCO_PROBLEM; /* used in objective_function */
  *   Set up the experiment                    
  **************************************************/
 static const long MAX_BUDGET = 1e2;  /* work on small budgets first */
-static const char *SUITE_NAME       = "suite_2o_300";
+static const char *SUITE_NAME       = "suite_biobj_300";
 /* static const char *SUITE_OPTIONS    = "";*/ /* e.g.: "instances:1-5; dimensions:-20" */
 /* static const char *OBSERVER_NAME = "no_observer"; / * writes no data */
 static const char *OBSERVER_NAME    = "observer_mo_toy"; /* writes data */
-static const char *OBSERVER_OPTIONS = "mo_random_search_on_suite_2o_300";
+static const char *OBSERVER_OPTIONS = "mo_random_search_on_suite_biobj_300";
 static const char *SOLVER_NAME      = "mo_random_search"; /* for the choice in coco_optimize below */
 /* static const int NUMBER_OF_BATCHES   = 88;*/  /* use 1 for single batch :-) batches can be run independently in parallel */
 /* static int CURRENT_BATCH             = 1;*/  /* runs from 1 to NUMBER_OF_BATCHES, or any other consecutive sequence */
@@ -95,14 +95,14 @@ void coco_optimize(coco_problem_t *problem) { /* should at the least take budget
  */
 
 /* Added here for compilability!!!*/
-#define BIOBJECTIVE_NUMBER_OF_COMBINATIONS 300
-#define BIOBJECTIVE_NUMBER_OF_INSTANCES 5
-#define BIOBJECTIVE_NUMBER_OF_DIMENSIONS 5
+#define SUITE_BIOBJ_NUMBER_OF_COMBINATIONS 300
+#define SUITE_BIOBJ_NUMBER_OF_INSTANCES 5
+#define SUITE_BIOBJ_NUMBER_OF_DIMENSIONS 5
 static long biobjective_encode_problem_index(int combination_idx, long instance_idx, int dimension_idx) {
     long problem_index;
     problem_index = instance_idx + 
-                    combination_idx * BIOBJECTIVE_NUMBER_OF_INSTANCES + 
-                    dimension_idx * (BIOBJECTIVE_NUMBER_OF_INSTANCES * BIOBJECTIVE_NUMBER_OF_COMBINATIONS);
+                    combination_idx * SUITE_BIOBJ_NUMBER_OF_INSTANCES + 
+                    dimension_idx * (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_COMBINATIONS);
     return problem_index;
 }
 

@@ -19,7 +19,7 @@ static void private_evaluate_1u_gr(coco_problem_t *self, const double *x, double
     tmp = 100.0 * c1 * c1 + c2 * c2;
     y[0] += tmp / 4000. - cos(tmp);
   }
-  y[0] = 10. + 10. * y[0] / (double)(self->number_of_variables - 1);
+  y[0] = 10. + 10. * y[0] / (double) (self->number_of_variables - 1);
 }
 
 static coco_problem_t *f_1u_griewank_rosenbrock(const size_t number_of_variables) {
@@ -27,11 +27,11 @@ static coco_problem_t *f_1u_griewank_rosenbrock(const size_t number_of_variables
   coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("griewank rosenbrock function");
   /* Construct a meaningful problem id */
-  problem_id_length = (size_t)snprintf(NULL, 0, "%s_%02lu", "griewank rosenbrock",
-                               (long)number_of_variables);
+  problem_id_length = (size_t) snprintf(NULL, 0, "%s_%02lu", "griewank rosenbrock",
+      (long) number_of_variables);
   problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu",
-           "griewank rosenbrock", (long)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "griewank rosenbrock",
+      (long) number_of_variables);
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
@@ -43,7 +43,6 @@ static coco_problem_t *f_1u_griewank_rosenbrock(const size_t number_of_variables
     problem->best_parameter[i] = 1.0; /* z^opt = 1*/
   }
   /* Calculate best parameter value */
-  private_evaluate_1u_gr(problem, problem->best_parameter,
-                                problem->best_value);
+  private_evaluate_1u_gr(problem, problem->best_parameter, problem->best_value);
   return problem;
 }

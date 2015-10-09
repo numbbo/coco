@@ -13,8 +13,7 @@ static void private_evaluate_function_to_osc(coco_problem_t *self, const double 
     if (y[0] > 0) {
       y[0] = pow(exp(log_y + 0.49 * (sin(log_y) + sin(0.79 * log_y))), factor);
     } else {
-      y[0] = -pow(exp(log_y + 0.49 * (sin(0.55 * log_y) + sin(0.31 * log_y))),
-                  factor);
+      y[0] = -pow(exp(log_y + 0.49 * (sin(0.55 * log_y) + sin(0.31 * log_y))), factor);
     }
   }
 }

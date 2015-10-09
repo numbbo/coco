@@ -19,7 +19,7 @@ static void private_evaluate_1u_schaff(coco_problem_t *self, const double *x, do
     const double tmp = x[i] * x[i] + x[i + 1] * x[i + 1];
     y[0] += pow(tmp, 0.25) * (1.0 + pow(sin(50.0 * pow(tmp, 0.1)), 2.0));
   }
-  y[0] = pow(y[0] / ((double)(long)self->number_of_variables - 1.0), 2.0);
+  y[0] = pow(y[0] / ((double) (long) self->number_of_variables - 1.0), 2.0);
 }
 
 static coco_problem_t *f_1u_schaffers(const size_t number_of_variables) {
@@ -27,11 +27,9 @@ static coco_problem_t *f_1u_schaffers(const size_t number_of_variables) {
   coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("schaffers function");
   /* Construct a meaningful problem id */
-  problem_id_length =
-      (size_t)snprintf(NULL, 0, "%s_%02lu", "schaffers", (long)number_of_variables);
+  problem_id_length = (size_t) snprintf(NULL, 0, "%s_%02lu", "schaffers", (long) number_of_variables);
   problem->problem_id = coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "schaffers",
-           (long)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "schaffers", (long) number_of_variables);
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;

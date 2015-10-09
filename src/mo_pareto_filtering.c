@@ -61,8 +61,7 @@ void mococo_pareto_front(int *frontFlag, double *obj, size_t nrow, size_t ncol) 
         if (!checklist[i])
           continue;
         checklist[i] = 0; /* set to false */
-        for (j = 0, j1 = i, j2 = t; j < ncol; j++, j1 += nrow, j2 +=
-            nrow) {
+        for (j = 0, j1 = i, j2 = t; j < ncol; j++, j1 += nrow, j2 += nrow) {
           if (obj[j1] < obj[j2]) {
             checklist[i] = 1; /* set to true */
             break;
@@ -74,7 +73,7 @@ void mococo_pareto_front(int *frontFlag, double *obj, size_t nrow, size_t ncol) 
   free(checklist);
 }
 
-void mococo_pareto_filtering(struct coco_archive *archive) {
+void mococo_pareto_filtering(coco_archive_t *archive) {
   /* Create the objective vectors and frontFlag of appropriate format for mococo_pareto_front() */
   size_t len = archive->size;
   size_t nObjs = archive->num_obj;
@@ -83,10 +82,10 @@ void mococo_pareto_filtering(struct coco_archive *archive) {
   size_t i;
   size_t s;
 
-  for (i=0; i < len; i++) {
+  for (i = 0; i < len; i++) {
     size_t k;
-    for (k=0; k < nObjs; k++) {
-      obj[i + k*len] = archive->active[i]->obj[k];
+    for (k = 0; k < nObjs; k++) {
+      obj[i + k * len] = archive->active[i]->obj[k];
     }
     frontFlag[i] = 0; /* set to false */
   }
@@ -96,7 +95,7 @@ void mococo_pareto_filtering(struct coco_archive *archive) {
 
   /* Mark non-dominated solutions and filter out dominated ones */
   s = 0;
-  for (i=0; i < len; i++) {
+  for (i = 0; i < len; i++) {
     if (frontFlag[i]) {
       archive->active[i]->status = 1;
       if (i != s)
@@ -111,5 +110,4 @@ void mococo_pareto_filtering(struct coco_archive *archive) {
   free(obj);
   free(frontFlag);
 }
-
 
