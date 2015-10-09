@@ -9,7 +9,7 @@ typedef struct {
   coco_free_function_t old_free_problem;
 } _tv_sh_data_t;
 
-static void private_evaluate_function_tv_sh(coco_problem_t *self, const double *x, double *y) {
+static void private_evaluate_tran_var_shift(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   _tv_sh_data_t *data;
   coco_problem_t *inner_problem;
@@ -24,7 +24,7 @@ static void private_evaluate_function_tv_sh(coco_problem_t *self, const double *
   assert(y[0] >= self->best_value[0]);
 }
 
-static void private_free_data_tv_sh(void *thing) {
+static void private_free_tran_var_shift(void *thing) {
   _tv_sh_data_t *data = thing;
   coco_free_memory(data->shifted_x);
   coco_free_memory(data->offset);
@@ -44,7 +44,7 @@ static coco_problem_t *f_tran_var_shift(coco_problem_t *inner_problem, const dou
   data->offset = coco_duplicate_vector(offset, inner_problem->number_of_variables);
   data->shifted_x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_allocate_transformed_problem(inner_problem, data, private_free_data_tv_sh);
-  self->evaluate_function = private_evaluate_function_tv_sh;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_free_tran_var_shift);
+  self->evaluate_function = private_evaluate_tran_var_shift;
   return self;
 }

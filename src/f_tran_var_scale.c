@@ -11,7 +11,7 @@ typedef struct {
   double *x;
 } _tv_sc_data_t;
 
-static void private_evaluate_function_tv_sc(coco_problem_t *self, const double *x, double *y) {
+static void private_evaluate_tran_var_scale(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   _tv_sc_data_t *data;
   coco_problem_t *inner_problem;
@@ -28,7 +28,7 @@ static void private_evaluate_function_tv_sc(coco_problem_t *self, const double *
   } while (0);
 }
 
-static void private_free_data_tv_sc(void *thing) {
+static void private_free_tran_var_scale(void *thing) {
   _tv_sc_data_t *data = thing;
   coco_free_memory(data->x);
 }
@@ -44,7 +44,7 @@ static coco_problem_t *f_tran_var_scale(coco_problem_t *inner_problem, const dou
   data->factor = factor;
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_allocate_transformed_problem(inner_problem, data, private_free_data_tv_sc);
-  self->evaluate_function = private_evaluate_function_tv_sc;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_free_tran_var_scale);
+  self->evaluate_function = private_evaluate_tran_var_scale;
   return self;
 }

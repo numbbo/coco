@@ -42,10 +42,10 @@
 #include "f_tran_var_z_hat.c"
 #include "suite_bbob2009_legacy_code.c"
 
-#define MAX_DIM BBOB2009_MAX_DIM
-#define BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 5
-#define BBOB2009_NUMBER_OF_FUNCTIONS 24
-#define BBOB2009_NUMBER_OF_DIMENSIONS 6
+#define MAX_DIM SUITE_BBOB2009_MAX_DIM
+#define SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 5
+#define SUITE_BBOB2009_NUMBER_OF_FUNCTIONS 24
+#define SUITE_BBOB2009_NUMBER_OF_DIMENSIONS 6
 static const unsigned BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up useful outside of bbob2009_decode_problem_index*/
 
 /**
@@ -94,16 +94,16 @@ static const unsigned BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up u
 static void suite_bbob2009_decode_problem_index(const long problem_index, int *function_id, long *instance_id,
     long *dimension) {
   const long high_instance_id = problem_index
-      / (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCTIONS *
-      BBOB2009_NUMBER_OF_DIMENSIONS);
+      / (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS *
+      SUITE_BBOB2009_NUMBER_OF_DIMENSIONS);
   long low_instance_id;
-  long rest = problem_index % (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES *
-  BBOB2009_NUMBER_OF_FUNCTIONS * BBOB2009_NUMBER_OF_DIMENSIONS);
+  long rest = problem_index % (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES *
+  SUITE_BBOB2009_NUMBER_OF_FUNCTIONS * SUITE_BBOB2009_NUMBER_OF_DIMENSIONS);
   *dimension =
-      BBOB2009_DIMS[rest / (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCTIONS)];
-  rest = rest % (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCTIONS);
-  *function_id = (int) (rest / BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES + 1);
-  rest = rest % BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
+      BBOB2009_DIMS[rest / (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS)];
+  rest = rest % (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS);
+  *function_id = (int) (rest / SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES + 1);
+  rest = rest % SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
   low_instance_id = rest + 1;
   *instance_id = low_instance_id + 5 * high_instance_id;
 }
@@ -114,12 +114,12 @@ static void suite_bbob2009_decode_problem_index(const long problem_index, int *f
  * all indices start from 0 TODO: start at 1 instead?
  */
 static long suite_bbob2009_encode_problem_index(int function_id, long instance_id, int dimension_idx) {
-  long cycleLength = BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCTIONS
-      * BBOB2009_NUMBER_OF_DIMENSIONS;
-  long tmp1 = instance_id % BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
-  long tmp2 = function_id * BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
-  long tmp3 = dimension_idx * (BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * BBOB2009_NUMBER_OF_FUNCTIONS);
-  long tmp4 = ((long) (instance_id / BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES)) * cycleLength; /* just for safety */
+  long cycleLength = SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS
+      * SUITE_BBOB2009_NUMBER_OF_DIMENSIONS;
+  long tmp1 = instance_id % SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
+  long tmp2 = function_id * SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
+  long tmp3 = dimension_idx * (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS);
+  long tmp4 = ((long) (instance_id / SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES)) * cycleLength; /* just for safety */
 
   return tmp1 + tmp2 + tmp3 + tmp4;
 }
@@ -766,6 +766,6 @@ static coco_problem_t *suite_bbob2009(long problem_index) {
 
 /* Undefine constants */
 #undef MAX_DIM
-#undef BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 
-#undef BBOB2009_NUMBER_OF_FUNCTIONS 
-#undef BBOB2009_NUMBER_OF_DIMENSIONS 
+#undef SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 
+#undef SUITE_BBOB2009_NUMBER_OF_FUNCTIONS 
+#undef SUITE_BBOB2009_NUMBER_OF_DIMENSIONS 

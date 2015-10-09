@@ -26,7 +26,7 @@ char bbob2009_infoFile_firstInstance_char[3];
  * is != bbob2009_current_dim and the funId is currend_funId, create a new .info file with as suffix the
  * number of the first instance */
 static const int bbob2009_number_of_dimensions = 6;
-static size_t bbob2009_dimensions_in_current_infoFile[6] = { 0, 0, 0, 0, 0, 0 }; /* TODO should use BBOB2009_NUMBER_OF_DIMENSIONS */
+static size_t bbob2009_dimensions_in_current_infoFile[6] = { 0, 0, 0, 0, 0, 0 }; /* TODO should use SUITE_BBOB2009_NUMBER_OF_DIMENSIONS */
 
 /* The current_... mechanism fails if several problems are open. 
  * For the time being this should lead to an error.

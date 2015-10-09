@@ -9,7 +9,7 @@ typedef struct {
   double *xopt;
 } _1u_as_data_t;
 
-static void private_evaluate_1u_as(coco_problem_t *self, const double *x, double *y) {
+static void private_evaluate_1u_attractive_sector(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   _1u_as_data_t *data;
 
@@ -25,7 +25,7 @@ static void private_evaluate_1u_as(coco_problem_t *self, const double *x, double
   }
 }
 
-static void private_free_1u_as(coco_problem_t *self) {
+static void private_free_1u_attractive_sector(coco_problem_t *self) {
   _1u_as_data_t *data;
   data = self->data;
   coco_free_memory(data->xopt);
@@ -52,14 +52,14 @@ f_1u_attractive_sector(const size_t number_of_variables, const double *xopt) {
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
   problem->data = data;
-  problem->evaluate_function = private_evaluate_1u_as;
-  problem->free_problem = private_free_1u_as;
+  problem->evaluate_function = private_evaluate_1u_attractive_sector;
+  problem->free_problem = private_free_1u_attractive_sector;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
     problem->best_parameter[i] = 0.0;
   }
   /* Calculate best parameter value */
-  private_evaluate_1u_as(problem, problem->best_parameter, problem->best_value);
+  private_evaluate_1u_attractive_sector(problem, problem->best_parameter, problem->best_value);
   return problem;
 }

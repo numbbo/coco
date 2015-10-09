@@ -14,7 +14,7 @@ typedef struct {
   coco_free_function_t old_free_problem;
 } _1u_lbr_data_t;
 
-static void private_evaluate_1u_lbr(coco_problem_t *self, const double *x, double *y) {
+static void private_evaluate_1u_lunacek_bi_rastrigin(coco_problem_t *self, const double *x, double *y) {
   static const double condition = 100.;
   size_t i, j;
   double penalty = 0.0;
@@ -70,7 +70,7 @@ static void private_evaluate_1u_lbr(coco_problem_t *self, const double *x, doubl
   coco_free_memory(tmpvect);
 }
 
-static void private_free_1u_lbr(coco_problem_t *self) {
+static void private_free_1u_lunacek_bi_rastrigin(coco_problem_t *self) {
   _1u_lbr_data_t *data;
   data = self->data;
   coco_free_memory(data->x_hat);
@@ -122,8 +122,8 @@ f_1u_lunacek_bi_rastrigin(const size_t number_of_variables, const long instance_
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
   problem->data = data;
-  problem->evaluate_function = private_evaluate_1u_lbr;
-  problem->free_problem = private_free_1u_lbr;
+  problem->evaluate_function = private_evaluate_1u_lunacek_bi_rastrigin;
+  problem->free_problem = private_free_1u_lunacek_bi_rastrigin;
 
   /* Computing xopt  */
   tmpvect = coco_allocate_vector(number_of_variables);

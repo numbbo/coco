@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "coco.h"
-#define BBOB2009_MAX_DIM 40
+#define SUITE_BBOB2009_MAX_DIM 40
 
 static double bbob2009_fmin(double a, double b) {
   return (a < b) ? a : b;

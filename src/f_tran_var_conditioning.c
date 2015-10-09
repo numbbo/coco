@@ -12,7 +12,7 @@ typedef struct {
   double alpha;
 } _tv_con_data_t;
 
-static void private_evaluate_function_tv_con(coco_problem_t *self, const double *x, double *y) {
+static void private_evaluate_tran_var_conditioning(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   _tv_con_data_t *data;
   coco_problem_t *inner_problem;
@@ -30,7 +30,7 @@ static void private_evaluate_function_tv_con(coco_problem_t *self, const double 
   coco_evaluate_function(inner_problem, data->x, y);
 }
 
-static void private_free_data_tv_con(void *thing) {
+static void private_free_tran_var_conditioning(void *thing) {
   _tv_con_data_t *data = thing;
   coco_free_memory(data->x);
 }
@@ -44,7 +44,7 @@ static coco_problem_t *f_tran_var_conditioning(coco_problem_t *inner_problem, co
   data = coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->alpha = alpha;
-  self = coco_allocate_transformed_problem(inner_problem, data, private_free_data_tv_con);
-  self->evaluate_function = private_evaluate_function_tv_con;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_free_tran_var_conditioning);
+  self->evaluate_function = private_evaluate_tran_var_conditioning;
   return self;
 }
