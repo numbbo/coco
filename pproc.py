@@ -921,8 +921,9 @@ class DataSet():
         sinfo += '\nDimension DIM = ' + str(self.dim)
         sinfo += '\nNumber of trials: ' + str(self.nbRuns())
         sinfo += '\nFinal target Df: ' + str(self.precision)
-        sinfo += '\nmin / max number of evals: '  + str(int(min(self.evals[0]))) + ' / '  + str(int(max(self.maxevals)))
-        sinfo += '\n    evals/DIM: best    15%     50%     85%     max  |  ERT/DIM  nsucc'
+        # sinfo += '\nmin / max number of evals: '  + str(int(min(self.evals[0]))) + ' / '  + str(int(max(self.maxevals)))
+        sinfo += '\nmin / max number of evals per trial: '  + str(int(min(self.maxevals))) + ' / '  + str(int(max(self.maxevals)))
+        sinfo += '\n   evals/DIM:  best     15%     50%     85%     max |  ERT/DIM  nsucc'
         sinfo += '\n  ---Df---|-----------------------------------------|----------------'
         evals = self.detEvals(targets, copy=False)
         nsucc = self.detSuccesses(targets)
