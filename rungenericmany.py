@@ -259,7 +259,11 @@ def main(argv=None):
         abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
         lines = []
         for i, alg in enumerate(args):
-            lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
+            if (i<52):
+                lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
+                    str_to_latex(strip_pathname1(alg)) + '}')
+            else:
+                lines.append('\\providecommand{\\algorithm' + abc[i//52] + abc[i-i//52*52] + '}{' + 
                     str_to_latex(strip_pathname1(alg)) + '}')
         prepend_to_file(os.path.join(outputdir,
                     'bbob_pproc_commands.tex'), 
