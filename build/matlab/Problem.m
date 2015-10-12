@@ -2,7 +2,7 @@ classdef Problem < handle
     
     properties
         problem
-        number_of_variables
+        dimension
         number_of_objectives
         lower_bounds
         upper_bounds
@@ -13,34 +13,34 @@ classdef Problem < handle
     methods
         function Pr = Problem(problem_suite, function_index)
             Pr.problem = cocoGetProblem(problem_suite, function_index);
-            if ~validProblem(Pr.problem)
+            if ~cocoProblemIsValid(Pr.problem)
                 msgID = 'Problem:NoSuchProblem';
-                msg = ['Problem.Problem: Problem suit ', problem_suite, ' lacks a function with function id ', num2str(function_index)];
+                msg = ['Problem.Problem: Problem suite ', problem_suite, ' lacks a function with function id ', num2str(function_index)];
                 baseException = MException(msgID, msg);
                 throw(baseException)
             end
             Pr.problem_suite = problem_suite;
             Pr.function_index = function_index;
-            Pr.lower_bounds = cocoGetSmallestValuesOfInterest(Pr.problem);
-            Pr.upper_bounds = cocoGetLargestValuesOfInterest(Pr.problem);
-            Pr.number_of_variables = cocoGetNumberOfVariables(Pr.problem);
-            Pr.number_of_objectives = cocoGetNumberOfObjectives(Pr.problem);
+            Pr.lower_bounds = cocoProblemGetSmallestValuesOfInterest(Pr.problem);
+            Pr.upper_bounds = cocoProblemGetLargestValuesOfInterest(Pr.problem);
+            Pr.dimension = cocoProblemGetDimension(Pr.problem);
+            Pr.number_of_objectives = cocoProblemGetNumberOfObjectives(Pr.problem);
         end
         
         function addObserver(Pr, observer, options)
-            Pr.problem = cocoObserveProblem(observer, Pr.problem, options);
+            Pr.problem = cocoProblemAddObserver(observer, Pr.problem, options);
         end
         
         function free(Pr)
-            cocoFreeProblem(Pr.problem);
+            cocoProblemFree(Pr.problem);
         end
         
         function S = id(Pr)
-            S = cocoGetProblemId(Pr.problem);
+            S = cocoProblemGetId(Pr.problem);
         end
         
         function S = name(Pr)
-            S = cocoGetProblemName(Pr.problem); % TODO: to be defined
+            S = cocoProblemGetName(Pr.problem); % TODO: to be defined
         end
         
         function eval = evaluations(Pr)
@@ -49,7 +49,7 @@ classdef Problem < handle
         
         % TODO: remove toString
         function S = toString(Pr)
-            S = cocoGetProblemId(Pr.problem);
+            S = cocoProblemGetId(Pr.problem);
             if isempty(S)
                 S = 'finalized/invalid problem';
             end

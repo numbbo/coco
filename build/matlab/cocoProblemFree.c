@@ -18,11 +18,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     /* check for proper number of arguments */
     if(nrhs!=1) {
-        mexErrMsgIdAndTxt("cocoFreeProblem:nrhs","One input required.");
+        mexErrMsgIdAndTxt("cocoProblemFree:nrhs","One input required.");
     }
     /* get the problem */
     ref = (long long *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
-    /* call coco_free_problem() */
-    coco_free_problem(problem);
+    /* call coco_problem_free() */
+    coco_problem_free(problem);
 }

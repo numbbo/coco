@@ -19,7 +19,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     /* check for proper number of arguments */
     if(nrhs!=3) {
-        mexErrMsgIdAndTxt("cocoObserveProblem:nrhs","Three inputs required.");
+        mexErrMsgIdAndTxt("cocoProblemAddObserver:nrhs","Three inputs required.");
     }
     /* get the observer */
     observer = mxArrayToString(prhs[0]);
@@ -28,8 +28,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     problem = (coco_problem_t *)(*ref);
     /* get the options */
     options = mxArrayToString(prhs[2]);
-    /* call coco_observe_problem() */
-    problem = coco_observe_problem(observer, problem, options);
+    /* call coco_problem_add_observer() */
+    problem = coco_problem_add_observer(problem, observer, options);
     /* prepare the return value */
     plhs[0] = mxCreateNumericMatrix(1, 1 ,mxINT64_CLASS, mxREAL);
     ref = (long long *)mxGetData(plhs[0]);

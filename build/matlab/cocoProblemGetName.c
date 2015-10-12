@@ -18,13 +18,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     /* check for proper number of arguments */
     if(nrhs!=1) {
-        mexErrMsgIdAndTxt("cocoGetProblemName:nrhs","One input required.");
+        mexErrMsgIdAndTxt("cocoProblemGetName:nrhs","One input required.");
     }
     /* get the problem */
     ref = (long long *)mxGetData(prhs[0]);
     pb = (coco_problem_t *)(*ref);
-    /* call coco_get_problem_name(...) */
-    res = coco_get_problem_name(pb);
+    /* call coco_problem_get_name(...) */
+    res = coco_problem_get_name(pb);
     /* prepare the return value */
     plhs[0] = mxCreateString(res);
 }

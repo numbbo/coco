@@ -19,7 +19,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     /* check for proper number of arguments */
     if(nrhs!=1) {
-        mexErrMsgIdAndTxt("cocoGetEvaluations:nrhs","One input required.");
+        mexErrMsgIdAndTxt("cocoProblemGetEvaluations:nrhs","One input required.");
     }
     /* get the problem */
     ref = (long long *)mxGetData(prhs[0]);
@@ -27,5 +27,5 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     /* prepare the return value */
     plhs[0] = mxCreateNumericArray(2, dims, mxINT32_CLASS, mxREAL);
     res = (int *)mxGetData(plhs[0]);
-    res[0] = coco_get_evaluations(problem);
+    res[0] = coco_problem_get_evaluations(problem);
 }

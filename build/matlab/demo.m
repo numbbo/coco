@@ -1,7 +1,7 @@
 MAX_EVALS = 100;
 number_of_batches = 1;
 current_batch = 1;
-my_benchmark = Benchmark('bbob2009', '', 'bbob2009_observer', 'random_search');
+my_benchmark = Benchmark('suite_bbob2009', '', 'observer_bbob2009', 'random_search');
 problem_index = -1;
 while true
     try

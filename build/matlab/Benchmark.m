@@ -43,7 +43,7 @@ classdef Benchmark < handle
         end
         
         function index = nextProblemIndex(B, problem_index)
-            index = cocoNextProblemIndex(B.problem_suite, problem_index, B.problem_suite_options);
+            index = cocoSuiteNextProblemIndex(B.problem_suite, problem_index, B.problem_suite_options);
         end
         
         function Pr = nextProblem(B) % handle exceptions

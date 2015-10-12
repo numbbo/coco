@@ -1,3 +1,3 @@
-function output = validProblem(suit, function_index)
+function output = cocoProblemIsValid(suite, function_index)
 end
 
