@@ -721,7 +721,7 @@ static int suite_bbob2009_get_instance_id(const coco_problem_t *problem) {
  *
  * Details: this function is not necessary unless selection is implemented. 
  */
-static long suite_bbob2009_next_problem_index(long problem_index, const char *selection_descriptor) {
+static long suite_bbob2009_get_next_problem_index(long problem_index, const char *selection_descriptor) {
   const long first_index = 0;
   const long last_index = 2159;
 

@@ -90,7 +90,7 @@ const char *coco_problem_get_name(const coco_problem_t *self);
 const char *coco_problem_get_id(const coco_problem_t *self);
 
 /**
- * Return the number of variables of a COCO problem.
+ * Return the dimension of a COCO problem.
  */
 size_t coco_problem_get_dimension(const coco_problem_t *self);
 
@@ -117,7 +117,7 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite,
  * or -1 otherwise (no successor problem is available).
  *
  * int index = -1;
- * while (-1 < (index = coco_suite_next_problem_index(suite, index, ""))) {
+ * while (-1 < (index = coco_suite_get_next_problem_index(suite, index, ""))) {
  *   coco_problem_t *problem = coco_suite_get_problem(suite, index); 
  *   ...
  *   coco_problem_free(problem);
@@ -125,7 +125,7 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite,
  * 
  * loops over all indices and problems consequently. 
  */
-long coco_suite_next_problem_index(const char *problem_suite,
+long coco_suite_get_next_problem_index(const char *problem_suite,
     const long problem_index,
     const char *select_options);
 

@@ -5,7 +5,7 @@ my_benchmark = Benchmark('suite_bbob2009', '', 'observer_bbob2009', 'random_sear
 problem_index = -1;
 while true
     try
-        problem_index = nextProblemIndex(my_benchmark, problem_index);
+        problem_index = getNextProblemIndex(my_benchmark, problem_index);
         if (problem_index < 0)
             break;
         end

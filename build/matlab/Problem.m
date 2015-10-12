@@ -13,7 +13,7 @@ classdef Problem < handle
     methods
         function Pr = Problem(problem_suite, function_index)
             Pr.problem = cocoGetProblem(problem_suite, function_index);
-            if ~cocoProblemIsValid(Pr.problem)
+            if ~problemIsValid(Pr.problem)
                 msgID = 'Problem:NoSuchProblem';
                 msg = ['Problem.Problem: Problem suite ', problem_suite, ' lacks a function with function id ', num2str(function_index)];
                 baseException = MException(msgID, msg);

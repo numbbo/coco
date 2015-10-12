@@ -133,7 +133,7 @@ int main() {  /* short example, also nice to read */
   int problem_index;
   
   for (problem_index = 0; problem_index >= 0;
-       problem_index = coco_suite_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)) {
+       problem_index = coco_suite_get_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)) {
     problem = coco_suite_get_problem(SUITE_NAME, problem_index);
     problem = coco_problem_add_observer(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
     coco_optimize(problem);
@@ -148,13 +148,13 @@ int main() {  /* short example, also nice to read */
 #elif 1
 int main(void) { /* longer example supporting several batches */
   coco_problem_t * problem;
-  long problem_index = coco_suite_next_problem_index(
+  long problem_index = coco_suite_get_next_problem_index(
                         SUITE_NAME, -1, SUITE_OPTIONS); /* next(-1) == first */
   if (NUMBER_OF_BATCHES > 1)
     printf("Running only batch %d out of %d batches for suite %s\n",
            CURRENT_BATCH, NUMBER_OF_BATCHES, SUITE_NAME);
   for ( ; problem_index >= 0;
-       problem_index = coco_suite_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)
+       problem_index = coco_suite_get_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)
       ) {
     /* here we reject indices from other batches */
     if (((problem_index - CURRENT_BATCH + 1) % NUMBER_OF_BATCHES) != 0)

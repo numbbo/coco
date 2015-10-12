@@ -28,7 +28,7 @@ public class demo {
         long found_problems = 0;
         long addressed_problems = 0;
         while (true) {
-        	problem_index = my_benchmark.nextProblemIndex(problem_index);
+        	problem_index = my_benchmark.getNextProblemIndex(problem_index);
         	if (problem_index < 0)
         		break;
         	found_problems++;

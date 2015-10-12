@@ -22,7 +22,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     /* check for proper number of arguments */
     if(nrhs!=3) {
-        mexErrMsgIdAndTxt("cocoSuiteNextProblemIndex:nrhs","Three inputs required.");
+        mexErrMsgIdAndTxt("cocoSuiteGetNextProblemIndex:nrhs","Three inputs required.");
     }
     /* get problem_suite */
     problem_suite = mxArrayToString(prhs[0]);
@@ -32,5 +32,5 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     select_options = mxArrayToString(prhs[2]);
     plhs[0] = mxCreateNumericArray(2, dims, mxINT32_CLASS, mxREAL);
     res = (int *)mxGetData(plhs[0]);
-    res[0] = coco_suite_next_problem_index(problem_suite, problem_index, select_options);
+    res[0] = coco_suite_get_next_problem_index(problem_suite, problem_index, select_options);
 }

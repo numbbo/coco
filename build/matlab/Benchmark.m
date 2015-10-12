@@ -42,16 +42,16 @@ classdef Benchmark < handle
             end
         end
         
-        function index = nextProblemIndex(B, problem_index)
-            index = cocoSuiteNextProblemIndex(B.problem_suite, problem_index, B.problem_suite_options);
+        function index = getNextProblemIndex(B, problem_index)
+            index = cocoSuiteGetNextProblemIndex(B.problem_suite, problem_index, B.problem_suite_options);
         end
         
-        function Pr = nextProblem(B) % handle exceptions
+        function Pr = getNextProblem(B) % handle exceptions
             try
-                B.current_problem_index = nextProblemIndex(B, B.current_problem_index);
+                B.current_problem_index = getNextProblemIndex(B, B.current_problem_index);
                 Pr = getProblem(B, B.current_problem_index);
             catch e
-                disp(['Benchmark.nextProblem: ', e.message]);
+                disp(['Benchmark.getNextProblem: ', e.message]);
                 throw(e);
             end
         end

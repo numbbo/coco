@@ -21,7 +21,7 @@
  * and the function call must be added to coco_suite_get_problem below.
  * 
  * If the benchmark does not have continuous problem indices starting with,
- * zero, additional functionality must also be added to coco_suite_next_problem_index
+ * zero, additional functionality must also be added to coco_suite_get_next_problem_index
  * (it should done in any case for efficiency).
  *
  * To construct a benchmark suite, useful tools are coco_transformed...
@@ -31,7 +31,7 @@
 
 /** return next problem_index or -1
  */
-long coco_suite_next_problem_index(const char *problem_suite, long problem_index, const char *select_options) {
+long coco_suite_get_next_problem_index(const char *problem_suite, long problem_index, const char *select_options) {
   coco_problem_t *problem; /* to check validity */
   long last_index = -1;
 
@@ -40,7 +40,7 @@ long coco_suite_next_problem_index(const char *problem_suite, long problem_index
    * at least its last_index here */
   if (0 == strcmp(problem_suite, "suite_bbob2009")) {
     /* without selection_options: last_index = 2159; */
-    return suite_bbob2009_next_problem_index(problem_index, select_options);
+    return suite_bbob2009_get_next_problem_index(problem_index, select_options);
   }
 
   /** generic implementation:
@@ -127,11 +127,11 @@ coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, const char *o
  */
 coco_problem_t *coco_suite_get_problem_by_id(const char *suite, const char *id) {
   const char *suite_options = "";
-  long index = coco_suite_next_problem_index(suite, -1, suite_options);
+  long index = coco_suite_get_next_problem_index(suite, -1, suite_options);
   coco_problem_t *problem;
   const char *prob_id;
 
-  for (; index >= 0; coco_suite_next_problem_index(suite, index, suite_options)) {
+  for (; index >= 0; coco_suite_get_next_problem_index(suite, index, suite_options)) {
     problem = coco_suite_get_problem(suite, index);
     prob_id = coco_problem_get_id(problem);
     if (strlen(prob_id) == strlen(id) && strncmp(prob_id, id, strlen(prob_id)) == 0)
@@ -173,7 +173,7 @@ void coco_suite_benchmark(const char *problem_suite, const char *problem_suite_o
   coco_problem_t *problem;
   char buf[222]; /* TODO: this is ugly, how to improve? The new implementation of coco_warning makes this obsolete */
   for (problem_index = -1;; ) {
-    problem_index = coco_suite_next_problem_index(problem_suite, problem_suite_options, problem_index);
+    problem_index = coco_suite_get_next_problem_index(problem_suite, problem_suite_options, problem_index);
     if (problem_index < 0)
     break;
     problem = coco_suite_get_problem(problem_suite, problem_index);

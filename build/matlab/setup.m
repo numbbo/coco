@@ -10,4 +10,4 @@ mex -Dchar16_t=uint16_t cocoProblemGetNumberOfObjectives.c
 mex -Dchar16_t=uint16_t cocoProblemGetSmallestValuesOfInterest.c
 mex -Dchar16_t=uint16_t cocoProblemIsValid.c
 mex -Dchar16_t=uint16_t cocoSuiteGetProblem.c
-mex -Dchar16_t=uint16_t cocoSuiteNextProblemIndex.c
+mex -Dchar16_t=uint16_t cocoSuiteGetNextProblemIndex.c
