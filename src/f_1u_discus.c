@@ -16,7 +16,7 @@ static void private_1u_discus_evaluate(coco_problem_t *self, const double *x, do
 
 static coco_problem_t *f_1u_discus(const size_t number_of_variables) {
   size_t i, problem_id_length;
-  coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
+  coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("discus function");
   /* Construct a meaningful problem id */
   problem_id_length = (size_t) snprintf(NULL, 0, "%s_%02lu", "discus", (long) number_of_variables);

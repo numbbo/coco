@@ -41,7 +41,7 @@ static coco_problem_t *suite_mo_first_attempt(const long problem_index) {
 #if 0
     coco_suite_problem_setf_id(problem, "ID-F%03d-F%03d-d03%ld-%06ld", f, f2, dimension, problem_index);
     coco_suite_problem_setf_name(problem, "%s + %s",
-        coco_get_problem_name(problem), coco_get_problem_name(problem2));
+        coco_problem_get_name(problem), coco_problem_get_name(problem2));
 #endif
     problem->index = problem_index;
 

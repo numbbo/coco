@@ -59,7 +59,7 @@ coco_problem_t *coco_allocate_so_problem_from_sss(const char * problem_id, const
     coco_evaluate_function_t fct, size_t number_of_variables, double smallest_value_of_interest,
     double largest_value_of_interest, double best_parameter) {
   size_t i;
-  coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
+  coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
 
   problem->problem_id = coco_strdup(problem_id);
   problem->problem_name = coco_strdup(problem_name);
@@ -94,8 +94,8 @@ static double b2bob2009_raw_bent_cigar(size_t dimension, const double *x) {
 
 /*** transform into coco_evaluate_function_t type ***/
 static void b2bob2009_raw_bent_cigar_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(coco_get_number_of_objectives(self) == 1);
-  y[0] = b2bob2009_raw_bent_cigar(coco_get_number_of_variables(self), x);
+  assert(coco_problem_get_number_of_objectives(self) == 1);
+  y[0] = b2bob2009_raw_bent_cigar(coco_problem_get_dimension(self), x);
 }
 
 /*** define as coco_problem_t ***/
@@ -147,11 +147,11 @@ typedef struct {double *xopt;} coco_bbob_attractive_sector_problem_data_t;
 
 /*** define computation of raw function as coco_evaluate_function_t type ***/
 static void b2bob2009_raw_attractive_sector_evaluate(coco_problem_t *self, const double *x, double *y) {
-  const size_t dimension = coco_get_number_of_variables(self);
+  const size_t dimension = coco_problem_get_dimension(self);
   size_t i;
   _1u_attractive_sector_data_t *data;
 
-  assert(coco_get_number_of_objectives(self) == 1);
+  assert(coco_problem_get_number_of_objectives(self) == 1);
   data = self->data;
   y[0] = 0.0;
   for (i = 0; i < dimension; ++i) {

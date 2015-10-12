@@ -35,7 +35,7 @@ void mo_random_search(mo_objective_function_t func,
                       const double *lower,
                       const double *upper,
                       long budget) {
-  coco_random_state_t *rng = coco_new_random(0xdeadbeef); /* use coco fcts for convenience */
+  coco_random_state_t *rng = coco_random_new(0xdeadbeef); /* use coco fcts for convenience */
   double *x = coco_allocate_vector(dimension);
   double *y = coco_allocate_vector(number_of_objectives);
   long i;
@@ -43,7 +43,7 @@ void mo_random_search(mo_objective_function_t func,
   for (i = 0; i < budget; ++i) {
     size_t j;
     for (j = 0; j < dimension; ++j) {
-      x[j] = lower[j] + coco_uniform_random(rng) * (upper[j] - lower[j]);
+      x[j] = lower[j] + coco_random_uniform(rng) * (upper[j] - lower[j]);
     }
     func(x, y);
      /* To be of any real use, we would need to retain the best x-value here.
@@ -51,7 +51,7 @@ void mo_random_search(mo_objective_function_t func,
       * observer takes care of book-keeping. 
       */
   }
-  coco_free_random(rng);
+  coco_random_free(rng);
   coco_free_memory(x);
   coco_free_memory(y);
 }
@@ -64,22 +64,22 @@ void mo_random_search(mo_objective_function_t func,
  */
 void coco_optimize(coco_problem_t *problem) { /* should at the least take budget as argument, but this is not coco_benchmark compliant */
   /* prepare, set up convenience definitions */
-  size_t dimension = coco_get_number_of_variables(problem);
-  const double * lbounds = coco_get_smallest_values_of_interest(problem);
-  const double * ubounds = coco_get_largest_values_of_interest(problem);
-  double * initial_x = coco_allocate_vector(coco_get_number_of_variables(problem));
+  size_t dimension = coco_problem_get_dimension(problem);
+  const double * lbounds = coco_problem_get_smallest_values_of_interest(problem);
+  const double * ubounds = coco_problem_get_largest_values_of_interest(problem);
+  double * initial_x = coco_allocate_vector(coco_problem_get_dimension(problem));
   /* const double final_target = coco_get_final_target_fvalue1(problem);*/
   /* const double final_target = 1e-3; */
   long remaining_budget; 
   
-  coco_get_initial_solution(problem, initial_x);
+  coco_problem_get_initial_solution(problem, initial_x);
   CURRENT_COCO_PROBLEM = problem; /* do not change this, it's used in objective_function */
 
-  while ((remaining_budget = MAX_BUDGET - coco_get_evaluations(problem)) > 0) {
+  while ((remaining_budget = MAX_BUDGET - coco_problem_get_evaluations(problem)) > 0) {
     /* call the solver */
     if (strcmp("mo_random_search", SOLVER_NAME) == 0) { /* random search for bi-objective case */
       mo_random_search(mo_objective_function,
-                       coco_get_number_of_objectives(problem), dimension,
+                       coco_problem_get_number_of_objectives(problem), dimension,
                        lbounds, ubounds, remaining_budget);
     }
   }
@@ -120,13 +120,13 @@ int main(void) {
                                                                instance_idx,
                                                                dimension_idx);
 printf("problem_index = %ld, combination_idx = %d, instance_idx = %d, dimension_idx = %d\n", problem_index, combination_idx, instance_idx, dimension_idx);
-              problem = coco_get_problem(SUITE_NAME, problem_index);
+              problem = coco_suite_get_problem(SUITE_NAME, problem_index);
               
-              problem = coco_observe_problem(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
+              problem = coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
               if (problem == NULL)
                 break;
               coco_optimize(problem);
-              coco_free_problem(problem);
+              coco_problem_free(problem);
           }
       }
   }

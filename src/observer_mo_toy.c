@@ -12,7 +12,7 @@ static coco_problem_t *observer_mo_toy(coco_problem_t *problem, const char *opti
   char base_path[COCO_PATH_MAX] = { 0 };
   char filename[COCO_PATH_MAX] = { 0 };
   coco_join_path(base_path, sizeof(base_path), options, "log_nondominated_solutions",
-      coco_get_problem_id(problem), NULL);
+      coco_problem_get_id(problem), NULL);
   if (coco_path_exists(base_path)) {
     coco_error("Result directory exists.");
     return NULL; /* never reached */

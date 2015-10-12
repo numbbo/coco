@@ -17,8 +17,8 @@ static void private_tran_var_conditioning_evaluate(coco_problem_t *self, const d
   _tran_var_conditioning_data_t *data;
   coco_problem_t *inner_problem;
 
-  data = coco_get_transform_data(self);
-  inner_problem = coco_get_transform_inner_problem(self);
+  data = coco_transformed_get_data(self);
+  inner_problem = coco_transformed_get_inner_problem(self);
 
   for (i = 0; i < self->number_of_variables; ++i) {
     /* OME: We could precalculate the scaling coefficients if we
@@ -44,7 +44,7 @@ static coco_problem_t *f_tran_var_conditioning(coco_problem_t *inner_problem, co
   data = coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->alpha = alpha;
-  self = coco_allocate_transformed_problem(inner_problem, data, private_tran_var_conditioning_free);
+  self = coco_transformed_allocate(inner_problem, data, private_tran_var_conditioning_free);
   self->evaluate_function = private_tran_var_conditioning_evaluate;
   return self;
 }

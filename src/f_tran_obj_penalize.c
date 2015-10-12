@@ -8,7 +8,7 @@ typedef struct {
 } _tran_obj_penalize_data_t;
 
 static void private_tran_obj_penalize_evaluate(coco_problem_t *self, const double *x, double *y) {
-  _tran_obj_penalize_data_t *data = coco_get_transform_data(self);
+  _tran_obj_penalize_data_t *data = coco_transformed_get_data(self);
   const double *lower_bounds = self->smallest_values_of_interest;
   const double *upper_bounds = self->largest_values_of_interest;
   double penalty = 0.0;
@@ -23,9 +23,9 @@ static void private_tran_obj_penalize_evaluate(coco_problem_t *self, const doubl
       penalty += c2 * c2;
     }
   }
-  assert(coco_get_transform_inner_problem(self) != NULL);
+  assert(coco_transformed_get_inner_problem(self) != NULL);
   /*assert(problem->state != NULL);*/
-  coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
+  coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
   for (i = 0; i < self->number_of_objectives; ++i) {
     y[i] += data->factor * penalty;
   }
@@ -43,7 +43,7 @@ static coco_problem_t *f_tran_obj_penalize(coco_problem_t *inner_problem, const 
 
   data = coco_allocate_memory(sizeof(*data));
   data->factor = factor;
-  self = coco_allocate_transformed_problem(inner_problem, data, NULL);
+  self = coco_transformed_allocate(inner_problem, data, NULL);
   self->evaluate_function = private_tran_obj_penalize_evaluate;
   return self;
 }

@@ -27,9 +27,9 @@ static void private_logger_nondominated_evaluate(coco_problem_t *self, const dou
   size_t i;
   size_t j;
   size_t k;
-  data = coco_get_transform_data(self);
+  data = coco_transformed_get_data(self);
 
-  coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
+  coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
   data->number_of_evaluations++;
 
   /* Open logfile if it is not already open */
@@ -46,16 +46,16 @@ static void private_logger_nondominated_evaluate(coco_problem_t *self, const dou
       coco_free_memory(buf); /* Never reached */
     }
     fprintf(data->logfile, "# %lu variables  |  %lu objectives  |  func eval number\n",
-        coco_get_number_of_variables(coco_get_transform_inner_problem(self)),
-        coco_get_number_of_objectives(coco_get_transform_inner_problem(self)));
+        coco_problem_get_dimension(coco_transformed_get_inner_problem(self)),
+        coco_problem_get_number_of_objectives(coco_transformed_get_inner_problem(self)));
 
     /*********************************************************************/
     /* TODO: Temporary put it here, to check later */
     /* Allocate memory for the archive */
     mo_archive = (coco_archive_t *) malloc(1 * sizeof(coco_archive_t));
     coco_archive_allocate(mo_archive, data->max_size_of_archive,
-        coco_get_number_of_variables(coco_get_transform_inner_problem(self)),
-        coco_get_number_of_objectives(coco_get_transform_inner_problem(self)), 1);
+        coco_problem_get_dimension(coco_transformed_get_inner_problem(self)),
+        coco_problem_get_number_of_objectives(coco_transformed_get_inner_problem(self)), 1);
     /*********************************************************************/
   }
 
@@ -70,9 +70,9 @@ static void private_logger_nondominated_evaluate(coco_problem_t *self, const dou
   /* write main info to the log file for pfront*/
   for (i = 0; i < mo_archive->update_size; i++) {
     entry = mo_archive->update[i];
-    for (j = 0; j < coco_get_number_of_variables(coco_get_transform_inner_problem(self)); j++) /* all decision variables of a solution */
+    for (j = 0; j < coco_problem_get_dimension(coco_transformed_get_inner_problem(self)); j++) /* all decision variables of a solution */
       fprintf(data->logfile, "%13.10e\t", entry->var[j]);
-    for (k = 0; k < coco_get_number_of_objectives(coco_get_transform_inner_problem(self)); k++) /* all objective values of a solution */
+    for (k = 0; k < coco_problem_get_number_of_objectives(coco_transformed_get_inner_problem(self)); k++) /* all objective values of a solution */
       fprintf(data->logfile, "%13.10e\t", entry->obj[k]);
     fprintf(data->logfile, "%lu", entry->birth); /* its timestamp (FEval) */
     fprintf(data->logfile, "\n"); /* go to the next line for another solution */
@@ -119,7 +119,7 @@ static coco_problem_t *logger_nondominated(coco_problem_t *inner_problem, const 
   data->path = coco_strdup(path);
   data->logfile = NULL; /* Open lazily in private_logger_nondominated_evaluate_function(). */
   data->max_size_of_archive = max_size_of_archive;
-  self = coco_allocate_transformed_problem(inner_problem, data, private_logger_nondominated_free);
+  self = coco_transformed_allocate(inner_problem, data, private_logger_nondominated_free);
   self->evaluate_function = private_logger_nondominated_evaluate;
   return self;
 }

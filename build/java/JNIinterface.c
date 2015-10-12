@@ -23,7 +23,7 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoGetProblem
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
     problem_suite = (*jenv)->GetStringUTFChars(jenv, jproblem_suite, NULL);
-    pb = coco_get_problem(problem_suite, jfunction_index);
+    pb = coco_suite_get_problem(problem_suite, jfunction_index);
     (*jenv)->ReleaseStringUTFChars(jenv, jproblem_suite, problem_suite);
     return (jlong)pb;
 }
@@ -45,10 +45,10 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoObserveProblem
     pb = (coco_problem_t *)jproblem;
     observer = (*jenv)->GetStringUTFChars(jenv, jobserver, NULL);
     options = (*jenv)->GetStringUTFChars(jenv, joptions, NULL);
-    pb = coco_observe_problem(observer, pb, options);
+    pb = coco_problem_add_observer(pb, observer, options);
     /* Free resources? */
     (*jenv)->ReleaseStringUTFChars(jenv, jobserver, observer);
-    /*(*jenv)->ReleaseStringUTFChars(jenv, joptions, options);*/ /* Commented at the moment becuase options is not duplicated in bbob2009_logger() (called by coco_observe_problem()). Has to be enabled however */
+    /*(*jenv)->ReleaseStringUTFChars(jenv, joptions, options);*/ /* Commented at the moment becuase options is not duplicated in logger_bbob2009() (called by coco_problem_add_observer()). Has to be enabled however */
     return (jlong)pb;
 }
 
@@ -65,7 +65,7 @@ JNIEXPORT void JNICALL Java_JNIinterface_cocoFreeProblem
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
     pb = (coco_problem_t *)jproblem;
-    coco_free_problem(pb);
+    coco_problem_free(pb);
 }
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT void JNICALL Java_JNIinterface_cocoFreeProblem
 JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoEvaluateFunction
 (JNIEnv *jenv, jclass interface_cls, jobject problem, jdoubleArray x) {
 
-	double *y; /* Result of evaluation. To be allocated with coco_allocate_vector(coco_get_number_of_objectives(pb)) */
+	double *y; /* Result of evaluation. To be allocated with coco_allocate_vector(coco_problem_get_number_of_objectives(pb)) */
 	coco_problem_t *pb = NULL; /* Will contain the C problem */
 	jint nb_objectives;
     jclass cls;
@@ -137,7 +137,7 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfVariables
 	if (interface_cls == NULL)
 		printf("Null interface_cls found\n");
     pb = (coco_problem_t *)problem;
-    res = coco_get_number_of_variables(pb);
+    res = coco_problem_get_dimension(pb);
 	return res;
 }
 
@@ -157,7 +157,7 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetNumberOfObjectives
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
     pb = (coco_problem_t *)problem;
-    res = coco_get_number_of_objectives(pb);
+    res = coco_problem_get_number_of_objectives(pb);
     return res;
 }
 
@@ -178,9 +178,10 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetSmallestValuesOfInterest
 	/* This test is both to prevent warning because interface_cls was not used and check exceptions */
 	if (interface_cls == NULL)
 		printf("Null interface_cls found\n");
-    pb = (coco_problem_t *)problem;
-    cres = coco_get_smallest_values_of_interest(pb);
-	nb_variables = coco_get_number_of_variables(pb);
+
+	pb = (coco_problem_t *)problem;
+  cres = coco_problem_get_smallest_values_of_interest(pb);
+	nb_variables = coco_problem_get_dimension(pb);
 
 	/* Prepare the return value */
 	res = (*jenv)->NewDoubleArray(jenv, nb_variables);
@@ -206,8 +207,8 @@ JNIEXPORT jdoubleArray JNICALL Java_JNIinterface_cocoGetLargestValuesOfInterest
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
     pb = (coco_problem_t *)problem;
-    cres = coco_get_largest_values_of_interest(pb);
-    nb_variables = coco_get_number_of_variables(pb);
+    cres = coco_problem_get_largest_values_of_interest(pb);
+    nb_variables = coco_problem_get_dimension(pb);
     
     /* Prepare the return value */
     res = (*jenv)->NewDoubleArray(jenv, nb_variables);
@@ -249,7 +250,7 @@ JNIEXPORT jstring JNICALL Java_JNIinterface_cocoGetProblemId
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
     pb = (coco_problem_t *)problem;
-    res = coco_get_problem_id(pb);
+    res = coco_problem_get_id(pb);
     jres = (*jenv)->NewStringUTF(jenv, res);
     return jres;
 }
@@ -288,7 +289,7 @@ JNIEXPORT jint JNICALL Java_JNIinterface_cocoGetEvaluations
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
     pb = (coco_problem_t *)problem;
-    res = coco_get_evaluations(pb);
+    res = coco_problem_get_evaluations(pb);
     return res;
 }
 
@@ -308,7 +309,7 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoNextProblemIndex
         printf("Null interface_cls found\n");
     problem_suite = (*jenv)->GetStringUTFChars(jenv, jproblem_suite, NULL);
     select_options = (*jenv)->GetStringUTFChars(jenv, jselect_options, NULL);
-    res = coco_next_problem_index(problem_suite, problem_index, select_options);
+    res = coco_suite_next_problem_index(problem_suite, problem_index, select_options);
     /* Free resources */
     (*jenv)->ReleaseStringUTFChars(jenv, jproblem_suite, problem_suite);
     (*jenv)->ReleaseStringUTFChars(jenv, jselect_options, select_options);

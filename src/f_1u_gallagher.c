@@ -90,7 +90,7 @@ static void private_1u_gallagher_free(coco_problem_t *self) {
   bbob2009_free_matrix(data->Xlocal, self->number_of_variables);
   bbob2009_free_matrix(data->arrScales, data->number_of_peaks);
   self->free_problem = NULL;
-  coco_free_problem(self);
+  coco_problem_free(self);
 }
 
 static coco_problem_t *f_1u_gallagher(const size_t number_of_variables, const long instance_id,
@@ -126,7 +126,7 @@ static coco_problem_t *f_1u_gallagher(const size_t number_of_variables, const lo
   data->Xlocal = bbob2009_allocate_matrix(number_of_variables, number_of_peaks);
   data->arrScales = bbob2009_allocate_matrix(number_of_peaks, number_of_variables);
   bbob2009_compute_rotation(data->rotation, rseed, (long) number_of_variables);
-  problem = coco_allocate_problem(number_of_variables, 1, 0);
+  problem = coco_problem_allocate(number_of_variables, 1, 0);
   /* Construct a meaningful problem id */
   if (number_of_peaks == NB_PEAKS_21) {
     problem->problem_name = coco_strdup("BBOB f21");

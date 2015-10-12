@@ -5,13 +5,13 @@
 
 void my_optimizer(coco_problem_t *problem) {
   static const int budget = 102; /* 100000;*/
-  coco_random_state_t *rng = coco_new_random(0xdeadbeef);
+  coco_random_state_t *rng = coco_random_new(0xdeadbeef);
 
-  double *x = (double *)malloc(coco_get_number_of_variables(problem) * sizeof(double));
+  double *x = (double *)malloc(coco_problem_get_dimension(problem) * sizeof(double));
   double y;
   for (int i = 1; i < budget; ++i) {
-    bbob2009_unif(x, coco_get_number_of_variables(problem), i);
-    for (int j = 0; j < coco_get_number_of_variables(problem); ++j) {
+    bbob2009_unif(x, coco_problem_get_dimension(problem), i);
+    for (int j = 0; j < coco_problem_get_dimension(problem); ++j) {
       /*const double range = problem->upper_bounds[j] -
       problem->lower_bounds[j];
       x[j] = problem->lower_bounds[j] + coco_uniform_random(rng) * range;*/
@@ -23,14 +23,14 @@ void my_optimizer(coco_problem_t *problem) {
     }*/
     coco_evaluate_function(problem, x, &y);
   }
-  coco_free_random(rng);
+  coco_random_free(rng);
   free(x);
   printf("%s\n", problem->problem_name);
   printf("%s\n", problem->problem_id);
 }
 
 int main(int argc, char **argv) {
-  coco_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer);
+  coco_suite_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer);
 }
 /*
 params.funcId = ifun;

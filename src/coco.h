@@ -53,7 +53,7 @@ void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y);
  * ${x}) as the current best guess solutions to the problem ${self}.
  *
  * @note ${number_of_solutions} is expected to be larger than 1 only
- * if coco_get_number_of_objectives(self) is larger than 1. 
+ * if coco_problem_get_number_of_objectives(self) is larger than 1. 
  */
 void coco_recommend_solutions(coco_problem_t *self, const double *x,
     size_t number_of_solutions);
@@ -61,7 +61,7 @@ void coco_recommend_solutions(coco_problem_t *self, const double *x,
 /**
  * Free the COCO problem represented by ${self}.
  */
-void coco_free_problem(coco_problem_t *self);
+void coco_problem_free(coco_problem_t *self);
 
 /**
  * Return the name of a COCO problem.
@@ -72,7 +72,7 @@ void coco_free_problem(coco_problem_t *self);
  *
  * @see coco_strdup()
  */
-const char *coco_get_problem_name(const coco_problem_t *self);
+const char *coco_problem_get_name(const coco_problem_t *self);
 
 /**
  * Return the ID of the COCO problem ${self}. The ID is guaranteed to
@@ -87,28 +87,28 @@ const char *coco_get_problem_name(const coco_problem_t *self);
  *
  * @see coco_strdup
  */
-const char *coco_get_problem_id(const coco_problem_t *self);
+const char *coco_problem_get_id(const coco_problem_t *self);
 
 /**
  * Return the number of variables of a COCO problem.
  */
-size_t coco_get_number_of_variables(const coco_problem_t *self);
+size_t coco_problem_get_dimension(const coco_problem_t *self);
 
 /**
  * Return the number of objectives of a COCO problem.
  */
-size_t coco_get_number_of_objectives(const coco_problem_t *self);
+size_t coco_problem_get_number_of_objectives(const coco_problem_t *self);
 
 /**
  * Return the number of constraints of a COCO problem.
  */
-size_t coco_get_number_of_constraints(const coco_problem_t *self);
+size_t coco_problem_get_number_of_constraints(const coco_problem_t *self);
 
 /**
  * Get the ${problem_index}-th problem of the ${problem_suit} test
  * suite.
  */
-coco_problem_t *coco_get_problem(const char *problem_suite,
+coco_problem_t *coco_suite_get_problem(const char *problem_suite,
     const long problem_index);
 
 /**
@@ -117,15 +117,15 @@ coco_problem_t *coco_get_problem(const char *problem_suite,
  * or -1 otherwise (no successor problem is available).
  *
  * int index = -1;
- * while (-1 < (index = coco_next_problem_index(suite, index, ""))) {
- *   coco_problem_t *problem = coco_get_problem(suite, index); 
+ * while (-1 < (index = coco_suite_next_problem_index(suite, index, ""))) {
+ *   coco_problem_t *problem = coco_suite_get_problem(suite, index); 
  *   ...
- *   coco_free_problem(problem);
+ *   coco_problem_free(problem);
  * }
  * 
  * loops over all indices and problems consequently. 
  */
-long coco_next_problem_index(const char *problem_suite,
+long coco_suite_next_problem_index(const char *problem_suite,
     const long problem_index,
     const char *select_options);
 
@@ -133,8 +133,8 @@ long coco_next_problem_index(const char *problem_suite,
  * Number of evaluations done on problem ${self}. 
  * Tentative and yet versatile. 
  */
-long coco_get_evaluations(coco_problem_t *self);
-double coco_get_best_observed_fvalue1(const coco_problem_t *self);
+long coco_problem_get_evaluations(coco_problem_t *self);
+double coco_problem_get_best_observed_fvalue1(const coco_problem_t *self);
 
 /**
  * Return target value for first objective. Values below are not
@@ -146,13 +146,13 @@ double coco_get_best_observed_fvalue1(const coco_problem_t *self);
 
 
  */
-double coco_get_final_target_fvalue1(const coco_problem_t *self);
+double coco_problem_get_final_target_fvalue1(const coco_problem_t *self);
 
 /**
  * tentative getters for region of interest
  */
-const double *coco_get_smallest_values_of_interest(const coco_problem_t *self);
-const double *coco_get_largest_values_of_interest(const coco_problem_t *self);
+const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *self);
+const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *self);
 
 /**
  * Return an initial solution, i.e. a feasible variable setting, to the
@@ -161,10 +161,10 @@ const double *coco_get_largest_values_of_interest(const coco_problem_t *self);
  * By default, the center of the problems region of interest
  * is the initial solution.
  *
- * @see coco_get_smallest_values_of_interest() and
- *coco_get_largest_values_of_interest()
+ * @see coco_problem_get_smallest_values_of_interest() and
+ *coco_problem_get_largest_values_of_interest()
  */
-void coco_get_initial_solution(const coco_problem_t *self,
+void coco_problem_get_initial_solution(const coco_problem_t *self,
     double *initial_solution);
 
 /**
@@ -181,11 +181,10 @@ void coco_get_initial_solution(const coco_problem_t *self,
  * interface design for interpreted languages. A short hand for this
  * observer is the empty string ("").
  */
-coco_problem_t *coco_observe_problem(const char *observer_name,
-    coco_problem_t *problem,
+coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, const char *observer_name,
     const char *options);
 
-void coco_benchmark(const char *problem_suite, const char *observer,
+void coco_suite_benchmark(const char *problem_suite, const char *observer,
     const char *observer_options, coco_optimizer_t optimizer);
 
 /* shall replace the above? */
@@ -203,18 +202,18 @@ typedef struct coco_random_state coco_random_state_t;
 /**
  * Create a new random number stream using ${seed} and return its state.
  */
-coco_random_state_t *coco_new_random(uint32_t seed);
+coco_random_state_t *coco_random_new(uint32_t seed);
 
 /**
  * Free all memory associated with the RNG state.
  */
-void coco_free_random(coco_random_state_t *state);
+void coco_random_free(coco_random_state_t *state);
 
 /**
  * Return one uniform [0, 1) random value from the random number
  * generator associated with ${state}.
  */
-double coco_uniform_random(coco_random_state_t *state);
+double coco_random_uniform(coco_random_state_t *state);
 
 /**
  * Generate an approximately normal random number.
@@ -224,7 +223,7 @@ double coco_uniform_random(coco_random_state_t *state);
  * 6, variance 1 and is approximately normal. Subtract 6 and you get
  * an approximately N(0, 1) random number.
  */
-double coco_normal_random(coco_random_state_t *state);
+double coco_random_normal(coco_random_state_t *state);
 
 /**
  * Function to signal a fatal error conditions.

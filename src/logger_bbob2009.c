@@ -349,8 +349,8 @@ static void private_logger_bbob2009_initialize(logger_bbob2009_t *data, coco_pro
  * Layer added to the transformed-problem evaluate_function by the logger
  */
 static void private_logger_bbob2009_evaluate(coco_problem_t *self, const double *x, double *y) {
-  logger_bbob2009_t *data = coco_get_transform_data(self);
-  coco_problem_t * inner_problem = coco_get_transform_inner_problem(self);
+  logger_bbob2009_t *data = coco_transformed_get_data(self);
+  coco_problem_t * inner_problem = coco_transformed_get_inner_problem(self);
 
   if (!data->is_initialized) {
     private_logger_bbob2009_initialize(data, inner_problem);
@@ -359,7 +359,7 @@ static void private_logger_bbob2009_evaluate(coco_problem_t *self, const double 
     if (inner_problem->index >= 0) {
       printf("%4ld: ", inner_problem->index);
     }
-    printf("on problem %s ... ", coco_get_problem_id(inner_problem));
+    printf("on problem %s ... ", coco_problem_get_id(inner_problem));
   }
   coco_evaluate_function(inner_problem, x, y);
   data->last_fvalue = y[0];
@@ -501,7 +501,7 @@ static coco_problem_t *logger_bbob2009(coco_problem_t *inner_problem, const char
   data->last_fvalue = DBL_MAX;
   data->is_initialized = 0;
 
-  self = coco_allocate_transformed_problem(inner_problem, data, private_logger_bbob2009_free);
+  self = coco_transformed_allocate(inner_problem, data, private_logger_bbob2009_free);
   self->evaluate_function = private_logger_bbob2009_evaluate;
   bbob2009_logger_is_open = 1;
   return self;

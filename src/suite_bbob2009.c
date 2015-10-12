@@ -671,7 +671,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
  * problem. */
 static int suite_bbob2009_get_function_id(const coco_problem_t *problem) {
   static const char *bbob_prefix = "bbob2009_";
-  const char *problem_id = coco_get_problem_id(problem);
+  const char *problem_id = coco_problem_get_id(problem);
   assert(strlen(problem_id) >= 20);
 
   if (strncmp(bbob_prefix, problem_id, strlen(bbob_prefix)) != 0) {
@@ -693,7 +693,7 @@ static int suite_bbob2009_get_function_id(const coco_problem_t *problem) {
  * problem. */
 static int suite_bbob2009_get_instance_id(const coco_problem_t *problem) {
   static const char *bbob_prefix = "bbob2009_";
-  const char *problem_id = coco_get_problem_id(problem);
+  const char *problem_id = coco_problem_get_id(problem);
   assert(strlen(problem_id) >= 20);
 
   if (strncmp(bbob_prefix, problem_id, strlen(bbob_prefix)) != 0) {

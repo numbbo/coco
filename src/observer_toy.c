@@ -14,7 +14,7 @@ static coco_problem_t *observer_toy(coco_problem_t *problem, const char *options
     targets[i - 1] = pow(10.0, (double) (long) (number_of_targets - i) - 9.0);
   }
 
-  coco_join_path(base_path, sizeof(base_path), options, "toy_so", coco_get_problem_id(problem), NULL);
+  coco_join_path(base_path, sizeof(base_path), options, "toy_so", coco_problem_get_id(problem), NULL);
   if (coco_path_exists(base_path)) {
     coco_error("Result directory exists.");
     return NULL; /* never reached */

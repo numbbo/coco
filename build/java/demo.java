@@ -23,7 +23,7 @@ public class demo {
     
     public static void main(String[] args) {
     	System.out.println("'Generic usecase with batches...'");
-        Benchmark my_benchmark = new Benchmark("bbob2009", "", "bbob2009_observer", "random_search_on_bbob2009");
+        Benchmark my_benchmark = new Benchmark("suite_bbob2009", "", "observer_bbob2009", "random_search_on_bbob2009");
         long problem_index = -1;
         long found_problems = 0;
         long addressed_problems = 0;

@@ -18,8 +18,8 @@ static void private_tran_var_brs_evaluate(coco_problem_t *self, const double *x,
   _tran_var_brs_data_t *data;
   coco_problem_t *inner_problem;
 
-  data = coco_get_transform_data(self);
-  inner_problem = coco_get_transform_inner_problem(self);
+  data = coco_transformed_get_data(self);
+  inner_problem = coco_transformed_get_inner_problem(self);
 
   for (i = 0; i < self->number_of_variables; ++i) {
     /* Function documentation says we should compute 10^(0.5 *
@@ -52,7 +52,7 @@ static coco_problem_t *f_tran_var_brs(coco_problem_t *inner_problem) {
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
-  self = coco_allocate_transformed_problem(inner_problem, data, private_tran_var_brs_free);
+  self = coco_transformed_allocate(inner_problem, data, private_tran_var_brs_free);
   self->evaluate_function = private_tran_var_brs_evaluate;
   return self;
 }

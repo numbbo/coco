@@ -18,9 +18,9 @@ typedef struct {
 
 static void private_logger_target_hits_evaluate(coco_problem_t *self, const double *x, double *y) {
   logger_target_hits_t *data;
-  data = coco_get_transform_data(self);
+  data = coco_transformed_get_data(self);
 
-  coco_evaluate_function(coco_get_transform_inner_problem(self), x, y);
+  coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
   data->number_of_evaluations++;
 
   /* Open logfile if it is not already open */
@@ -81,7 +81,7 @@ static coco_problem_t *logger_target_hits(coco_problem_t *inner_problem, const d
   data->number_of_target_values = number_of_target_values;
   data->next_target_value = 0;
 
-  self = coco_allocate_transformed_problem(inner_problem, data, private_logger_target_hits_free);
+  self = coco_transformed_allocate(inner_problem, data, private_logger_target_hits_free);
   self->evaluate_function = private_logger_target_hits_evaluate;
   return self;
 }

@@ -37,7 +37,7 @@ static void coco_random_generate(coco_random_state_t *state) {
   state->index = 0;
 }
 
-coco_random_state_t *coco_new_random(uint32_t seed) {
+coco_random_state_t *coco_random_new(uint32_t seed) {
   coco_random_state_t *state = (coco_random_state_t *) coco_allocate_memory(sizeof(coco_random_state_t));
   size_t i;
   /* Expand seed to fill initial state array. */
@@ -50,11 +50,11 @@ coco_random_state_t *coco_new_random(uint32_t seed) {
   return state;
 }
 
-void coco_free_random(coco_random_state_t *state) {
+void coco_random_free(coco_random_state_t *state) {
   coco_free_memory(state);
 }
 
-double coco_uniform_random(coco_random_state_t *state) {
+double coco_random_uniform(coco_random_state_t *state) {
   /* If we have consumed all random numbers in our archive, it is
    * time to run the actual generator for one iteration to refill
    * the state with 'LONG_LAG' new values.
@@ -64,17 +64,17 @@ double coco_uniform_random(coco_random_state_t *state) {
   return state->x[state->index++];
 }
 
-double coco_normal_random(coco_random_state_t *state) {
+double coco_random_normal(coco_random_state_t *state) {
   double normal;
 #ifdef COCO_NORMAL_POLAR
-  const double u1 = coco_uniform_random(state);
-  const double u2 = coco_uniform_random(state);
+  const double u1 = coco_random_uniform(state);
+  const double u2 = coco_random_uniform(state);
   normal = sqrt(-2 * log(u1)) * cos(2 * coco_pi * u2);
 #else
   int i;
   normal = 0.0;
   for (i = 0; i < 12; ++i) {
-    normal += coco_uniform_random(state);
+    normal += coco_random_uniform(state);
   }
   normal -= 6.0;
 #endif

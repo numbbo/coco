@@ -18,10 +18,10 @@
  * coco_problem or NULL when given an problem_index as input.
  *
  * The file containing this (static) function must be included above
- * and the function call must be added to coco_get_problem below.
+ * and the function call must be added to coco_suite_get_problem below.
  * 
  * If the benchmark does not have continuous problem indices starting with,
- * zero, additional functionality must also be added to coco_next_problem_index
+ * zero, additional functionality must also be added to coco_suite_next_problem_index
  * (it should done in any case for efficiency).
  *
  * To construct a benchmark suite, useful tools are coco_transformed...
@@ -31,7 +31,7 @@
 
 /** return next problem_index or -1
  */
-long coco_next_problem_index(const char *problem_suite, long problem_index, const char *select_options) {
+long coco_suite_next_problem_index(const char *problem_suite, long problem_index, const char *select_options) {
   coco_problem_t *problem; /* to check validity */
   long last_index = -1;
 
@@ -60,23 +60,23 @@ long coco_next_problem_index(const char *problem_suite, long problem_index, cons
   }
 
   /* last resort: last_index is not known */
-  problem = coco_get_problem(problem_suite, problem_index);
+  problem = coco_suite_get_problem(problem_suite, problem_index);
   if (problem == NULL) {
     return -1;
   }
-  coco_free_problem(problem);
+  coco_problem_free(problem);
   return problem_index;
 }
 
 /**
- * coco_get_problem(problem_suite, problem_index):
+ * coco_suite_get_problem(problem_suite, problem_index):
  *
  * return the coco problem with index ${problem_index} from
  * suite ${problem_suite}. The problem must be de-allocated
- * using the function ${coco_free_problem}.
+ * using the function ${coco_problem_free}.
  *
  */
-coco_problem_t *coco_get_problem(const char *problem_suite, const long problem_index) {
+coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long problem_index) {
   if (0 == strcmp(problem_suite, "suite_toy")) {
     return suite_toy(problem_index);
   } else if (0 == strcmp(problem_suite, "suite_bbob2009")) {
@@ -91,7 +91,7 @@ coco_problem_t *coco_get_problem(const char *problem_suite, const long problem_i
   }
 }
 
-coco_problem_t *coco_observe_problem(const char *observer, coco_problem_t *problem, const char *options) {
+coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, const char *observer, const char *options) {
   if (problem == NULL) {
     coco_warning("Trying to observe a NULL problem has no effect.");
     return problem;
@@ -127,45 +127,45 @@ coco_problem_t *coco_observe_problem(const char *observer, coco_problem_t *probl
  */
 coco_problem_t *coco_suite_get_problem_by_id(const char *suite, const char *id) {
   const char *suite_options = "";
-  long index = coco_next_problem_index(suite, -1, suite_options);
+  long index = coco_suite_next_problem_index(suite, -1, suite_options);
   coco_problem_t *problem;
   const char *prob_id;
 
-  for (; index >= 0; coco_next_problem_index(suite, index, suite_options)) {
-    problem = coco_get_problem(suite, index);
-    prob_id = coco_get_problem_id(problem);
+  for (; index >= 0; coco_suite_next_problem_index(suite, index, suite_options)) {
+    problem = coco_suite_get_problem(suite, index);
+    prob_id = coco_problem_get_id(problem);
     if (strlen(prob_id) == strlen(id) && strncmp(prob_id, id, strlen(prob_id)) == 0)
       return problem;
-    coco_free_problem(problem);
+    coco_problem_free(problem);
   }
   return NULL;
 }
 
 #if 1
-/* coco_benchmark(problem_suite, observer, options, optimizer):
+/* coco_suite_benchmark(problem_suite, observer, options, optimizer):
  *
  * Benchmark a solver ${optimizer} with a testbed ${problem_suite}
  * using the data logger ${observer} to write data. 
  */
-void coco_benchmark(const char *problem_suite, const char *observer, const char *options,
+void coco_suite_benchmark(const char *problem_suite, const char *observer, const char *options,
     coco_optimizer_t optimizer) {
   int problem_index;
   coco_problem_t *problem;
   for (problem_index = 0;; ++problem_index) {
-    problem = coco_get_problem(problem_suite, problem_index);
+    problem = coco_suite_get_problem(problem_suite, problem_index);
     if (NULL == problem)
       break;
-    problem = coco_observe_problem(observer, problem, options); /* should remain invisible to the user*/
+    problem = coco_problem_add_observer(problem, observer, options); /* should remain invisible to the user*/
     optimizer(problem);
     /* Free problem after optimization. */
-    coco_free_problem(problem);
+    coco_problem_free(problem);
   }
 }
 
 #else
-/** "improved" interface for coco_benchmark: is it worth-while to have suite-options on the C-level? 
+/** "improved" interface for coco_suite_benchmark: is it worth-while to have suite-options on the C-level? 
  */
-void coco_benchmark(const char *problem_suite, const char *problem_suite_options,
+void coco_suite_benchmark(const char *problem_suite, const char *problem_suite_options,
     const char *observer, const char *observer_options,
     coco_optimizer_t optimizer) {
   int problem_index;
@@ -173,19 +173,19 @@ void coco_benchmark(const char *problem_suite, const char *problem_suite_options
   coco_problem_t *problem;
   char buf[222]; /* TODO: this is ugly, how to improve? The new implementation of coco_warning makes this obsolete */
   for (problem_index = -1;; ) {
-    problem_index = coco_next_problem_index(problem_suite, problem_suite_options, problem_index);
+    problem_index = coco_suite_next_problem_index(problem_suite, problem_suite_options, problem_index);
     if (problem_index < 0)
     break;
-    problem = coco_get_problem(problem_suite, problem_index);
+    problem = coco_suite_get_problem(problem_suite, problem_index);
     if (problem == NULL) {
       snprintf(buf, 221, "problem index %d not found in problem suite %s (this is probably a bug)",
           problem_index, problem_suite);
       coco_warning(buf);
       break;
     }
-    problem = coco_observe_problem(observer, problem, observer_options); /* should remain invisible to the user*/
+    problem = coco_problem_add_observer(observer, problem, observer_options); /* should remain invisible to the user*/
     optimizer(problem);
-    coco_free_problem(problem);
+    coco_problem_free(problem);
   }
 }
 #endif

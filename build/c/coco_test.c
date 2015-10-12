@@ -107,8 +107,8 @@ int main(int argc, char **argv) {
      */
     if (previous_function_id != function_id) {
       if (NULL != problem)
-        coco_free_problem(problem);
-      problem = coco_get_problem(suit_name, function_id);
+        coco_problem_free(problem);
+      problem = coco_suite_get_problem(suit_name, function_id);
       previous_function_id = function_id;
     }
     x = testvectors[testvector_id].x;
@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
         fprintf(stdout,
                 "%8i %8i FAILED expected=%.8e observed=%.8e function_id=%s\n",
                 function_id, testvector_id, expected_value, y,
-                coco_get_problem_id(problem));
+                coco_problem_get_id(problem));
         fflush(stdout);
         ++shown_failures;
       } else if (shown_failures == 100) {
@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
 
   /* Free any remaining allocated memory so that we pass valgrind checks. */
   if (NULL != problem)
-    coco_free_problem(problem);
+    coco_problem_free(problem);
   free(testvectors);
 
   return number_of_failures == 0 ? 0 : 1;

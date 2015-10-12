@@ -82,7 +82,7 @@ static void private_1u_lunacek_bi_rastrigin_free(coco_problem_t *self) {
    * coco_problem_t fields.
    */
   self->free_problem = NULL;
-  coco_free_problem(self);
+  coco_problem_free(self);
 }
 
 static coco_problem_t *
@@ -110,7 +110,7 @@ f_1u_lunacek_bi_rastrigin(const size_t number_of_variables, const long instance_
   bbob2009_compute_rotation(data->rot1, rseed + 1000000, (long) number_of_variables);
   bbob2009_compute_rotation(data->rot2, rseed, (long) number_of_variables);
 
-  problem = coco_allocate_problem(number_of_variables, 1, 0);
+  problem = coco_problem_allocate(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("BBOB f24");
   /* Construct a meaningful problem id */
   problem_id_length = (size_t) snprintf(NULL, 0, "%s_%02lu", "bbob2009_f24", (long) number_of_variables);

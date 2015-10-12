@@ -14,8 +14,8 @@ static void private_tran_var_z_hat_evaluate(coco_problem_t *self, const double *
   _tran_var_z_hat_data_t *data;
   coco_problem_t *inner_problem;
 
-  data = coco_get_transform_data(self);
-  inner_problem = coco_get_transform_inner_problem(self);
+  data = coco_transformed_get_data(self);
+  inner_problem = coco_transformed_get_inner_problem(self);
 
   data->z[0] = x[0];
 
@@ -43,7 +43,7 @@ static coco_problem_t *f_tran_var_z_hat(coco_problem_t *inner_problem, const dou
   data->xopt = coco_duplicate_vector(xopt, inner_problem->number_of_variables);
   data->z = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_allocate_transformed_problem(inner_problem, data, private_tran_var_z_hat_free);
+  self = coco_transformed_allocate(inner_problem, data, private_tran_var_z_hat_free);
   self->evaluate_function = private_tran_var_z_hat_evaluate;
   return self;
 }
