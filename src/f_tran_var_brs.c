@@ -10,12 +10,12 @@
 
 typedef struct {
   double *x;
-} _tv_brs_data_t;
+} _tran_var_brs_data_t;
 
-static void private_evaluate_tran_var_brs(coco_problem_t *self, const double *x, double *y) {
+static void private_tran_var_brs_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   double factor;
-  _tv_brs_data_t *data;
+  _tran_var_brs_data_t *data;
   coco_problem_t *inner_problem;
 
   data = coco_get_transform_data(self);
@@ -39,8 +39,8 @@ static void private_evaluate_tran_var_brs(coco_problem_t *self, const double *x,
   coco_evaluate_function(inner_problem, data->x, y);
 }
 
-static void private_free_tran_var_brs(void *thing) {
-  _tv_brs_data_t *data = thing;
+static void private_tran_var_brs_free(void *thing) {
+  _tran_var_brs_data_t *data = thing;
   coco_free_memory(data->x);
 }
 
@@ -48,11 +48,11 @@ static void private_free_tran_var_brs(void *thing) {
  * Perform monotone oscillation transformation on input variables.
  */
 static coco_problem_t *f_tran_var_brs(coco_problem_t *inner_problem) {
-  _tv_brs_data_t *data;
+  _tran_var_brs_data_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
-  self = coco_allocate_transformed_problem(inner_problem, data, private_free_tran_var_brs);
-  self->evaluate_function = private_evaluate_tran_var_brs;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_tran_var_brs_free);
+  self->evaluate_function = private_tran_var_brs_evaluate;
   return self;
 }

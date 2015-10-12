@@ -12,11 +12,11 @@ typedef struct {
   double f0;
   double ak[WEIERSTRASS_SUMMANDS];
   double bk[WEIERSTRASS_SUMMANDS];
-} _1u_w_data_t;
+} _1u_weierstrass_data_t;
 
-static void private_evaluate_1u_weierstrass(coco_problem_t *self, const double *x, double *y) {
+static void private_1u_weierstrass_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i, j;
-  _1u_w_data_t *data = self->data;
+  _1u_weierstrass_data_t *data = self->data;
   assert(self->number_of_objectives == 1);
 
   y[0] = 0.0;
@@ -31,7 +31,7 @@ static void private_evaluate_1u_weierstrass(coco_problem_t *self, const double *
 static coco_problem_t *f_1u_weierstrass(const size_t number_of_variables) {
   size_t i, problem_id_length;
   coco_problem_t *problem = coco_allocate_problem(number_of_variables, 1, 0);
-  _1u_w_data_t *data;
+  _1u_weierstrass_data_t *data;
   data = coco_allocate_memory(sizeof(*data));
 
   data->f0 = 0.0;
@@ -50,7 +50,7 @@ static coco_problem_t *f_1u_weierstrass(const size_t number_of_variables) {
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
-  problem->evaluate_function = private_evaluate_1u_weierstrass;
+  problem->evaluate_function = private_1u_weierstrass_evaluate;
   problem->data = data;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
@@ -59,7 +59,7 @@ static coco_problem_t *f_1u_weierstrass(const size_t number_of_variables) {
   }
 
   /* Calculate best parameter value */
-  private_evaluate_1u_weierstrass(problem, problem->best_parameter, problem->best_value);
+  private_1u_weierstrass_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }
 

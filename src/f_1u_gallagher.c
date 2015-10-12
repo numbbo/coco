@@ -24,12 +24,12 @@ typedef struct {
   double **rotation, **Xlocal, **arrScales;
   double *peakvalues;
   coco_free_function_t old_free_problem;
-} _1u_g_data_t;
+} _1u_gallagher_data_t;
 
-static void private_evaluate_1u_gallagher(coco_problem_t *self, const double *x, double *y) {
+static void private_1u_gallagher_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i, j; /*Loop over dim*/
   double *tmx;
-  _1u_g_data_t *data = self->data;
+  _1u_gallagher_data_t *data = self->data;
   double a = 0.1;
   double tmp2, f = 0., Fadd, tmp, Fpen = 0., Ftrue = 0.;
   double fac = -0.5 / (double) self->number_of_variables;
@@ -81,8 +81,8 @@ static void private_evaluate_1u_gallagher(coco_problem_t *self, const double *x,
   coco_free_memory(tmx);
 }
 
-static void private_free_1u_gallagher(coco_problem_t *self) {
-  _1u_g_data_t *data;
+static void private_1u_gallagher_free(coco_problem_t *self) {
+  _1u_gallagher_data_t *data;
   data = self->data;
   coco_free_memory(data->xopt);
   coco_free_memory(data->peakvalues);
@@ -98,7 +98,7 @@ static coco_problem_t *f_1u_gallagher(const size_t number_of_variables, const lo
   size_t i, j, k, problem_id_length, *rperm;
   long rseed;
   coco_problem_t *problem;
-  _1u_g_data_t *data;
+  _1u_gallagher_data_t *data;
   double maxcondition = 1000., maxcondition1 = 1000., *arrCondition, fitvalues[2] = { 1.1, 9.1 }; /*maxcondition1 satisfies the old code and
    the doc but seems wrong in that it is,
    with very high probability, not the
@@ -154,8 +154,8 @@ static coco_problem_t *f_1u_gallagher(const size_t number_of_variables, const lo
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
   problem->data = data;
-  problem->free_problem = private_free_1u_gallagher;
-  problem->evaluate_function = private_evaluate_1u_gallagher;
+  problem->free_problem = private_1u_gallagher_free;
+  problem->evaluate_function = private_1u_gallagher_evaluate;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;

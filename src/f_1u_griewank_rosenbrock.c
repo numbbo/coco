@@ -6,7 +6,7 @@
 
 #include "coco_problem.c"
 
-static void private_evaluate_1u_griewank_rosenbrock(coco_problem_t *self, const double *x, double *y) {
+static void private_1u_griewank_rosenbrock_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   double tmp = 0;
   assert(self->number_of_objectives == 1);
@@ -36,13 +36,13 @@ static coco_problem_t *f_1u_griewank_rosenbrock(const size_t number_of_variables
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
-  problem->evaluate_function = private_evaluate_1u_griewank_rosenbrock;
+  problem->evaluate_function = private_1u_griewank_rosenbrock_evaluate;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
     problem->best_parameter[i] = 1.0; /* z^opt = 1*/
   }
   /* Calculate best parameter value */
-  private_evaluate_1u_griewank_rosenbrock(problem, problem->best_parameter, problem->best_value);
+  private_1u_griewank_rosenbrock_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }

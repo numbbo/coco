@@ -149,7 +149,7 @@ typedef struct {double *xopt;} coco_bbob_attractive_sector_problem_data_t;
 static void b2bob2009_raw_attractive_sector_evaluate(coco_problem_t *self, const double *x, double *y) {
   const size_t dimension = coco_get_number_of_variables(self);
   size_t i;
-  _1u_as_data_t *data;
+  _1u_attractive_sector_data_t *data;
 
   assert(coco_get_number_of_objectives(self) == 1);
   data = self->data;
@@ -165,15 +165,15 @@ static void b2bob2009_raw_attractive_sector_evaluate(coco_problem_t *self, const
 /*** define raw function as coco_problem_t ***/
 static coco_problem_t *b2bob2009_raw_attractive_sector_problem(const size_t number_of_variables,
     const double *xopt) {
-  _1u_as_data_t *data;
+  _1u_attractive_sector_data_t *data;
   char *problem_id = bbob2009_problem_id("attractive_sector", number_of_variables);
   coco_problem_t *problem = coco_allocate_so_problem_from_sss(problem_id, "attractive sector function",
-      private_evaluate_1u_attractive_sector, number_of_variables, -5, 5, 0);
+      private_1u_attractive_sector_evaluate, number_of_variables, -5, 5, 0);
   coco_free_memory(problem_id);
   data = coco_allocate_memory(sizeof(*data));
   data->xopt = coco_duplicate_vector(xopt, number_of_variables);
   problem->data = data;
-  problem->free_problem = private_free_1u_attractive_sector;
+  problem->free_problem = private_1u_attractive_sector_free;
   return problem;
 }
 

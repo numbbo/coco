@@ -7,11 +7,11 @@ typedef struct {
   double *xopt;
   double *z;
   coco_free_function_t old_free_problem;
-} _tv_zh_data_t;
+} _tran_var_z_hat_data_t;
 
-static void private_evaluate_tran_var_z_hat(coco_problem_t *self, const double *x, double *y) {
+static void private_tran_var_z_hat_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
-  _tv_zh_data_t *data;
+  _tran_var_z_hat_data_t *data;
   coco_problem_t *inner_problem;
 
   data = coco_get_transform_data(self);
@@ -26,8 +26,8 @@ static void private_evaluate_tran_var_z_hat(coco_problem_t *self, const double *
   assert(y[0] >= self->best_value[0]);
 }
 
-static void private_free_tran_var_z_hat(void *thing) {
-  _tv_zh_data_t *data = thing;
+static void private_tran_var_z_hat_free(void *thing) {
+  _tran_var_z_hat_data_t *data = thing;
   coco_free_memory(data->xopt);
   coco_free_memory(data->z);
 }
@@ -36,14 +36,14 @@ static void private_free_tran_var_z_hat(void *thing) {
  * Compute the vector {z^hat} for the BBOB Schwefel function.
  */
 static coco_problem_t *f_tran_var_z_hat(coco_problem_t *inner_problem, const double *xopt) {
-  _tv_zh_data_t *data;
+  _tran_var_z_hat_data_t *data;
   coco_problem_t *self;
 
   data = coco_allocate_memory(sizeof(*data));
   data->xopt = coco_duplicate_vector(xopt, inner_problem->number_of_variables);
   data->z = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_allocate_transformed_problem(inner_problem, data, private_free_tran_var_z_hat);
-  self->evaluate_function = private_evaluate_tran_var_z_hat;
+  self = coco_allocate_transformed_problem(inner_problem, data, private_tran_var_z_hat_free);
+  self->evaluate_function = private_tran_var_z_hat_evaluate;
   return self;
 }
