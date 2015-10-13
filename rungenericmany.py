@@ -33,7 +33,7 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from bbob_pproc import genericsettings, ppfig
-from bbob_pproc import dataoutput, pproc
+from bbob_pproc import dataoutput, pproc, pptex
 from bbob_pproc.pproc import DataSetList, processInputArgs
 from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname1, str_to_latex
 from bbob_pproc.compall import pprldmany, pptables, ppfigs
@@ -256,15 +256,10 @@ def main(argv=None):
                 print 'Folder %s was created.' % (outputdir)
 
         # prepend the algorithm name command to the tex-command file
-        abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
         lines = []
         for i, alg in enumerate(args):
-            if (i<52):
-                lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
-                    str_to_latex(strip_pathname1(alg)) + '}')
-            else:
-                lines.append('\\providecommand{\\algorithm' + abc[i//52] + abc[i-i//52*52] + '}{' + 
-                    str_to_latex(strip_pathname1(alg)) + '}')
+            lines.append('\\providecommand{\\algorithm' + pptex.numtotext(i) + 
+                    '}{' +  str_to_latex(strip_pathname1(alg)) + '}')
         prepend_to_file(os.path.join(outputdir,
                     'bbob_pproc_commands.tex'), 
                     lines, 5000, 
