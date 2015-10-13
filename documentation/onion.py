@@ -2,8 +2,8 @@
 ## onion.py - example to show how the wrapping of functions in the C
 ##   code works. 
 ##
-## This is a simplified version of the numbbo_problem_t /
-## numbbo_transformed_problem_t structure of the C code for
+## This is a simplified version of the coco_problem_t /
+## coco_transformed_problem_t structure of the C code for
 ## illustation purposes. The idea behind the C code is the same but we
 ## need much more boilerplate code to get there. 
 class sphere_function(object):

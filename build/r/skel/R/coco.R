@@ -29,7 +29,7 @@ coco_get_generator <- function(benchmark) {
     res <- function(x) {
       .Call(do_evaluate_function, problem, as.numeric(x))
     }
-    class(res) <- "numbbo_problem"
+    class(res) <- "coco_problem"
     res
   }
 }

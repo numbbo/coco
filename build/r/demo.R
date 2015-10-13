@@ -1,4 +1,4 @@
-library("numbbo")  # should rather be library("coco") !?
+library("coco")
 
 my_optimizer <- function(f, lower, upper) {
   n <- length(lower)
@@ -8,5 +8,5 @@ my_optimizer <- function(f, lower, upper) {
   }
 }
 
-numbbo_benchmark("suite_toy", "observer_toy", my_optimizer)
+coco_benchmark("suite_toy", "observer_toy", my_optimizer)
 
