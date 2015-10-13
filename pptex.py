@@ -12,7 +12,7 @@ from bbob_pproc import toolsstats
 from pdb import set_trace
 
 #GLOBAL VARIABLES DEFINITION
-alphabet = string.ascii_letters
+alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 #conversion of matplotlib elements to LaTeX
 latex_marker_map = {'o': r'$\circ$',
               'd': r'$\diamondsuit$',
@@ -129,13 +129,17 @@ def numtotext(n):
     Is to be used for generating command names: they cannot include number
     characters.
 
-    WARNING: n can only be smaller than 51
+    WARNING: n should not be larger than (53*52)-1 = 2755 for the moment
 
     """
-    if n > 51:
+    if n < 52:
+        str = alphabet[n]
+    elif n < 53*52:
+        str = alphabet[(n-52)//52] + alphabet[n-n//52*52]        
+    else:
         raise Exception('Cannot handle a number of algorithms that large.')
 
-    return alphabet[n]
+    return str
 
 def writeLabels(label):
     """Format text to be output by LaTeX."""
