@@ -471,14 +471,13 @@ def customgenerate(args = algs2009):
      >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
      >>> os.chdir(path)
      >>> os.chdir("../../../data-archive/data/gecco-bbob-1-24/2009/data")
-     >>> bestalg.customgenerate()
-     >>> os.chdir(path)
+     >>> bestalg.customgenerate() #doctest:+ELLIPSIS
      Searching in ALPS ...
+     Found 144 file(s).
+       using: ALPS
      ...
-     Found 324 file(s)!
-     Unpickled ALPS/ppdata_f001_02.pickle.
-     ...
-     bbob_pproc/bestalg.py:116: UserWarning: Algorithm ... was not tested on f127 20-D.
+     done with writing pickle...
+     >>> os.chdir(path)
 
     """
 
@@ -519,17 +518,12 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
        >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
        >>> os.chdir(path)
        >>> os.chdir("../../../data-archive/data/gecco-bbob-1-24/2009/data")
-       >>> bestalg.getAllContributingAlgorithmsToBest(('BIPOP-CMA-ES', 'RANDOMSEARCH'))
+       >>> bestalg.getAllContributingAlgorithmsToBest(('BIPOP-CMA-ES', 'RANDOMSEARCH')) #doctest:+ELLIPSIS
        Generating best algorithm data from given algorithm list...
        Searching in BIPOP-CMA-ES ...
-       Found 144 file(s)!
-         using: BIPOP-CMA-ES
-       Searching in RANDOMSEARCH ...
+       ...
        Found 144 file(s).
-         using: RANDOMSEARCH
-       done with writing pickle...
-       loading of best algorithm data done.
-           ...
+       ...
        >>> os.chdir(path)
        
     """

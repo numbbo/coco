@@ -185,8 +185,11 @@ class RunlengthBasedTargetValues(TargetValues):
     
         >>> import bbob_pproc as bb
         >>> targets = bb.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
-        >>> targets(fun_dim=(1, 20))
-        
+        >>> targets(fun_dim=(1, 20)) # doctest:+ELLIPSIS
+        Loading best algorithm data from BBOB-2009...   done ...
+        array([  6.30957345e+01,   5.75439938e+01,   1.00000000e-08,
+                 1.00000000e-08,   1.00000000e-08])
+             
     returns a list of target f-values for F1 in 20-D, based on the 
     ERT values ``[0.5,...,50]``. 
         
