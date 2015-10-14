@@ -4,7 +4,7 @@
 """Routines for the generation of TeX tables."""
 from __future__ import absolute_import
 
-import os
+import os, sys
 from pdb import set_trace
 import warnings
 import numpy
@@ -553,6 +553,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                             tmpHtml += ' (%s)' % tmpdisp
                         curline.append(r'\multicolumn{2}{%s}{%s%s}' % (alignment, tmp, str_significance_subsup))
                         tmpHtml = tmpHtml.replace('$\infty$', '&infin;')                
+                        if (numpy.isinf(sortKey)):
+                            sortKey = sys.maxint
                         curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>' % (sortKey, tmpHtml, str_significance_subsup_html))
                     else:
                         tmp2 = tmp.split('.', 1)
