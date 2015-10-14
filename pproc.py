@@ -525,12 +525,7 @@ class DataSet():
         >>> import bbob_pproc as bb
         >>> dslist = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info')
         >>> dslist  # nice display in particular in IPython
-        [DataSet(BIPOP-CMA-ES on f2 2-D),
-         DataSet(BIPOP-CMA-ES on f2 3-D),
-         DataSet(BIPOP-CMA-ES on f2 5-D),
-         DataSet(BIPOP-CMA-ES on f2 10-D),
-         DataSet(BIPOP-CMA-ES on f2 20-D),
-         DataSet(BIPOP-CMA-ES on f2 40-D)]
+        [DataSet(BIPOP-CMA-ES on f2 2-D), DataSet(BIPOP-CMA-ES on f2 3-D), DataSet(BIPOP-CMA-ES on f2 5-D), DataSet(BIPOP-CMA-ES on f2 10-D), DataSet(BIPOP-CMA-ES on f2 20-D), DataSet(BIPOP-CMA-ES on f2 40-D)]
         >>> type(dslist)
         <class 'bbob_pproc.pproc.DataSetList'>
         >>> len(dslist)
