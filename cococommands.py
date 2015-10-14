@@ -22,10 +22,7 @@ Examples:
 
 * Load a data set, assign to variable :py:data:`ds`::
 
-      >>> ds = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info') # doctest:+ELLIPSIS
-      Processing BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info.
-      ...
-      Processing ['BIPOP-CMA-ES_hansen_noiseless/data_f2/bbobexp_f2_DIM40.tdat']: 15/15 trials found.
+      >>> ds = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info')
 
 * Get some information on a :py:class:`DataSetList` instance::
 
