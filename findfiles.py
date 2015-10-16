@@ -85,7 +85,7 @@ def get_directory(directory, extractFiles):
 
 def get_output_directory_subfolder(directory):
 
-    directory = directory.strip()
+    directory = directory.strip().rstrip(os.path.sep)
     
     if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
         directory = directory[:directory.find('.t')]
