@@ -8,7 +8,13 @@ This test can and should become much more sophisticated.
 """
 
 import os, sys, time
-# import bbob_pproc as bb
+import fnmatch
+
+# Add the path to bbob_pproc
+if __name__ == "__main__":
+    (filepath, filename) = os.path.split(sys.argv[0])
+    sys.path.append(os.path.join(filepath, os.path.pardir))
+
 import doctest
 
 def join_path(a, *p):
@@ -104,8 +110,15 @@ if __name__ == "__main__":
     t0 = time.time()
 
     if 1 < 3:
-        doctest.testmod(report=True)  # this is quite cool!
-              
+        failure_count = 0
+        test_count = 0
+        #doctest.testmod(report=True, verbose=True)  # this is quite cool!
+        # go through the py files in the bbob_pproc folder
+        for root, dirnames, filenames in os.walk(os.path.dirname(os.path.realpath(__file__))):
+          for filename in fnmatch.filter(filenames, '*.py'):
+            current_failure_count, current_test_count = doctest.testfile(os.path.join(root, filename), report=True, verbose=True)              
+            failure_count += current_failure_count
+            test_count += current_test_count
     else:
         stdout = sys.stdout
         fn = '_bbob_pproc_doctest_.txt'
@@ -120,6 +133,8 @@ if __name__ == "__main__":
     # print('    more info in file _bbob_pproc_doctest_.txt)')
     print '*** done testing module bbob_pproc ***'
     
+#    if (failure_count > 0):
+#        raise ValueError('%d of %d tests failed' % (failure_count, test_count))
     
 """     
         sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
