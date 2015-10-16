@@ -24,11 +24,11 @@ def main():
 
     FNULL = open(os.devnull, 'w')
     args = "pdflatex %s" % texFile
-    subprocess.call(args, stdout=FNULL, stderr=FNULL, shell=False)    
+    subprocess.call(args.split(), stdout=FNULL, stderr=FNULL, shell=False)    
     
     tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth\\tth.exe')
     args = "%s %s" % (tthFile, texFile)
-    subprocess.call(args, stdout=FNULL, stderr=FNULL, shell=False)    
+    subprocess.call(args.split(), stdout=FNULL, stderr=FNULL, shell=False)    
 
 if __name__ == '__main__':
     main()
