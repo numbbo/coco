@@ -11,6 +11,9 @@
 #include "bbob2009_suite.c"
 #include "bbob2009_observer.c"
 
+#include "consprob2015_suite.c"
+#include "consprob2015_observer.c"
+
 #include "mo_suite_first_attempt.c"
 
 #include "biobjective_suite_300.c"
@@ -46,6 +49,11 @@ long coco_next_problem_index(const char *problem_suite,
   if (0 == strcmp(problem_suite, "bbob2009")) {
     /* without selection_options: last_index = 2159; */
     return bbob2009_next_problem_index(problem_index, select_options);
+  }
+  
+  if (0 == strcmp(problem_suite, "consprob2015")) {
+    /* without selection_options: last_index = 2159; */
+    return consprob2015_next_problem_index(problem_index, select_options);
   }
 
   /** generic implementation:
@@ -87,6 +95,8 @@ coco_problem_t *coco_get_problem(const char *problem_suite,
     return toy_suit(problem_index);
   } else if (0 == strcmp(problem_suite, "bbob2009")) {
     return bbob2009_suite(problem_index);
+  } else if (0 == strcmp(problem_suite, "consprob2015")) {
+    return consprob2015_suite(problem_index);
   } else if (0 == strcmp(problem_suite, "mo_suite_first_attempt")) {
     return mo_suite_first_attempt(problem_index);
   } else if (0 == strcmp(problem_suite, "biobjective_combinations")) {
@@ -108,6 +118,8 @@ coco_problem_t *coco_observe_problem(const char *observer,
     return toy_observer(problem, options);
   } else if (0 == strcmp(observer, "bbob2009_observer")) {
     return bbob2009_observer(problem, options);
+  } else if (0 == strcmp(observer, "consprob2015_observer")) {
+    return consprob2015_observer(problem, options);
   } else if (0 == strcmp(observer, "mo_toy_observer")) {
     return mo_toy_observer(problem, options);
   }
