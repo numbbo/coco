@@ -51,7 +51,7 @@ def test_c():
     try:
         make("build/c", "clean")
         make("build/c", "all")
-        run('build/c', ['./coco_test', 'bbob2009_testcases.txt'])
+        run('build/c', ['./demo'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
