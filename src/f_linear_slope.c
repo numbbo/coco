@@ -14,7 +14,7 @@ static void _linear_slope_evaluate(coco_problem_t *self, const double *x, double
     double base, exponent, si;
 
     base = sqrt(alpha);
-    exponent = i * 1.0 / (self->number_of_variables - 1);
+    exponent = (double)(long)i / ((double)(long)self->number_of_variables - 1);
     if (self->best_parameter[i] > 0.0) {
       si = pow(base, exponent);
     } else {
@@ -31,10 +31,10 @@ static coco_problem_t *linear_slope_problem(const size_t number_of_variables,
   problem->problem_name = coco_strdup("linear slope function");
   /* Construct a meaningful problem id */
   problem_id_length =
-      snprintf(NULL, 0, "%s_%02i", "linear_slope", (int)number_of_variables);
+		  (size_t)snprintf(NULL, 0, "%s_%02lu", "linear_slope", (long)number_of_variables);
   problem->problem_id = (char *)coco_allocate_memory(problem_id_length + 1);
-  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02d",
-           "linear_slope", (int)number_of_variables);
+  snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu",
+           "linear_slope", (long)number_of_variables);
 
   problem->evaluate_function = _linear_slope_evaluate;
   for (i = 0; i < number_of_variables; ++i) {

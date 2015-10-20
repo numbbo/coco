@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 
-void mococo_pareto_front(int *frontFlag, double *obj, unsigned nrow, unsigned ncol);
+void mococo_pareto_front(int *frontFlag, double *obj, size_t nrow, size_t ncol);
 
 
 void mococo_pareto_filtering(struct mococo_solutions_archive *archive) {
@@ -61,62 +61,63 @@ void mococo_pareto_filtering(struct mococo_solutions_archive *archive) {
 }
 
 
-void mococo_pareto_front(int *frontFlag, double *obj, unsigned nrow, unsigned ncol) {
-    unsigned t, s, i, j, j1, j2;
-    int *checklist, colDominatedFlag;
-    
-    checklist = (int*)malloc(nrow*sizeof(int));
-    
-    for(t=0; t<nrow; t++)
-        checklist[t] = 1; /* set to true */
-    for(s=0; s<nrow; s++) {
-        t = s;
-        if (!checklist[t])
-            continue;
-        checklist[t] = 0; /* set to false */
-        colDominatedFlag = 1; /* set to true */
-        for(i=t+1; i<nrow; i++) {
-            if (!checklist[i])
-                continue;
-            checklist[i] = false;
-            for (j=0,j1=i,j2=t; j<ncol; j++,j1+=nrow,j2+=nrow) {
-                if (obj[j1] < obj[j2]) {
-                    checklist[i] = 1; /* set to true */
-                    break;
-                }
-            }
-            if (!checklist[i])
-                continue;
-            colDominatedFlag = 0; /* set to false */
-            for (j=0,j1=i,j2=t; j<ncol; j++,j1+=nrow,j2+=nrow) {
-                if (obj[j1] > obj[j2]) {
-                    colDominatedFlag = 1; /* set to true */
-                    break;
-                }
-            }
-            if (!colDominatedFlag) { /* swap active index continue checking */
-                frontFlag[t] = 0; /* set to false */
-                checklist[i] = 0; /* set to false */
-                colDominatedFlag = 1; /**/
-                t = i;
-            }
-        }
-        frontFlag[t] = colDominatedFlag;
-        if (t>s) {
-            for (i=s+1; i<t; i++) {
-                if (!checklist[i])
-                    continue;
-                checklist[i] = 0; /* set to false */
-                for (j=0,j1=i,j2=t; j<ncol; j++,j1+=nrow,j2+=nrow) {
-                    if (obj[j1] < obj[j2]) {
-                        checklist[i] = 1; /* set to true */
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    free(checklist); 
+void mococo_pareto_front(int *frontFlag, double *obj, size_t nrow, size_t ncol) {
+	size_t t, s, i, j, j1, j2;
+	int *checklist, colDominatedFlag;
+
+	checklist = (int*) malloc(nrow * sizeof(int));
+
+	for (t = 0; t < nrow; t++)
+		checklist[t] = 1; /* set to true */
+	for (s = 0; s < nrow; s++) {
+		t = s;
+		if (!checklist[t])
+			continue;
+		checklist[t] = 0; /* set to false */
+		colDominatedFlag = 1; /* set to true */
+		for (i = t + 1; i < nrow; i++) {
+			if (!checklist[i])
+				continue;
+			checklist[i] = false;
+			for (j = 0, j1 = i, j2 = t; j < ncol; j++, j1 += nrow, j2 += nrow) {
+				if (obj[j1] < obj[j2]) {
+					checklist[i] = 1; /* set to true */
+					break;
+				}
+			}
+			if (!checklist[i])
+				continue;
+			colDominatedFlag = 0; /* set to false */
+			for (j = 0, j1 = i, j2 = t; j < ncol; j++, j1 += nrow, j2 += nrow) {
+				if (obj[j1] > obj[j2]) {
+					colDominatedFlag = 1; /* set to true */
+					break;
+				}
+			}
+			if (!colDominatedFlag) { /* swap active index continue checking */
+				frontFlag[t] = 0; /* set to false */
+				checklist[i] = 0; /* set to false */
+				colDominatedFlag = 1; /**/
+				t = i;
+			}
+		}
+		frontFlag[t] = colDominatedFlag;
+		if (t > s) {
+			for (i = s + 1; i < t; i++) {
+				if (!checklist[i])
+					continue;
+				checklist[i] = 0; /* set to false */
+				for (j = 0, j1 = i, j2 = t; j < ncol; j++, j1 += nrow, j2 +=
+						nrow) {
+					if (obj[j1] < obj[j2]) {
+						checklist[i] = 1; /* set to true */
+						break;
+					}
+				}
+			}
+		}
+	}
+	free(checklist);
 }
 
 #ifdef __cplusplus

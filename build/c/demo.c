@@ -83,7 +83,9 @@ void objective_function(const double *x, double *y) {
 }
 /* Minimal solver definition only to avoid compile/link errors/warnings below for my_solver */
 void my_solver(objective_function_t func, const double *initial_x, size_t dim, long budget) {
-  double y; func(initial_x, &y); 
+  double y;
+  (void)dim; (void)budget;
+  func(initial_x, &y);
 }
 /**
  * Finally, coco_optimize calls, depending on SOLVER_NAME, one
@@ -144,9 +146,9 @@ int main() {  /* short example, also nice to read */
 }
 
 #elif 1
-int main() { /* longer example supporting several batches */
+int main(void) { /* longer example supporting several batches */
   coco_problem_t * problem;
-  int problem_index = coco_next_problem_index(
+  long problem_index = coco_next_problem_index(
                         SUITE_NAME, -1, SUITE_OPTIONS); /* next(-1) == first */
   if (NUMBER_OF_BATCHES > 1)
     printf("Running only batch %d out of %d batches for suite %s\n",
@@ -160,7 +162,7 @@ int main() { /* longer example supporting several batches */
     problem = coco_get_problem(SUITE_NAME, problem_index);
     problem = coco_observe_problem(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
     if (problem == NULL) {
-      printf("problem with index %d not found, skipped", problem_index);
+      printf("problem with index %ld not found, skipped", problem_index);
       continue;
     }
     coco_optimize(problem); /* depending on verbosity, this gives a message from the observer */
@@ -175,8 +177,9 @@ int main() { /* longer example supporting several batches */
 #elif 1
 /* Interface via dimension, function-ID and instance-ID. This does not translate
    directly to different languages or benchmark suites. */
-int main() {
-  int problem_index, function_id, instance_id, dimension_idx;
+int main(void) {
+  long problem_index;
+  int function_id, instance_id, dimension_idx;
   coco_problem_t * problem;
   
   /*int *functions;

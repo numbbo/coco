@@ -46,7 +46,8 @@ static void usage(const char *program_name) {
 
 int main(int argc, char **argv) {
   int header_shown = 0, number_of_failures = 0, shown_failures = 0;
-  int number_of_testvectors = 0, number_of_testcases = 0, i, j;
+  size_t number_of_testvectors = 0, i, j;
+  int number_of_testcases = 0;
   testvector_t *testvectors = NULL;
   int previous_function_id = -1, function_id, testvector_id, ret;
   coco_problem_t *problem = NULL;
@@ -70,7 +71,7 @@ int main(int argc, char **argv) {
     goto err;
   }
 
-  ret = fscanf(testfile, "%30i", &number_of_testvectors);
+  ret = fscanf(testfile, "%30lu", &number_of_testvectors);
   if (ret != 1) {
     fprintf(stderr,
             "Failed to read number of test vectors from testcases file.\n");
@@ -87,7 +88,7 @@ int main(int argc, char **argv) {
     for (j = 0; j < 40; ++j) {
       ret = fscanf(testfile, "%30lf", &testvectors[i].x[j]);
       if (ret != 1) {
-        fprintf(stderr, "ERROR: Failed to parse testvector %i element %i.\n",
+        fprintf(stderr, "ERROR: Failed to parse testvector %lu element %lu.\n",
                 i + 1, j + 1);
       }
     }

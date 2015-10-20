@@ -34,8 +34,7 @@ static const char *coco_path_separator = "/";
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
 #define NUMBBO_PATH_MAX PATH_MAX
-#elif defined(__sun) || defined(sun)
-#if defined(__SVR4) || defined(__svr4__)
+#elif (defined(__sun) || defined(sun)) && (defined(__SVR4) || defined(__svr4__))
 /* Solaris */
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -43,18 +42,20 @@ static const char *coco_path_separator = "/";
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
 #define NUMBBO_PATH_MAX PATH_MAX
-#endif
 #else
 #error Unknown platform
 #endif
 
 #if defined(HAVE_GFA)
-#define S_IRWXU "0700"
+#define S_IRWXU 0700
 #endif
 
 #if !defined(NUMBBO_PATH_MAX)
 #error NUMBBO_PATH_MAX undefined
 #endif
+
+/* To get rid of the implicit-function-declaration warning. */
+int mkdir(const char *pathname, mode_t mode);
 
 /***********************************
  * Global definitions in this file
@@ -109,7 +110,7 @@ int coco_path_exists(const char *path) {
 void coco_create_path(const char *path) {
 /* current version should now work with Windows, Linux, and Mac */
   char *tmp = NULL;
-  char buf[4096];
+  char *message;
   char *p;
   size_t len = strlen(path);
   char path_sep = coco_path_separator[0];
@@ -137,8 +138,8 @@ void coco_create_path(const char *path) {
   coco_free_memory(tmp);
   return;
 error:
-  snprintf(buf, sizeof(buf), "mkdir(\"%s\") failed.", tmp);
-  coco_error(buf);
+  message = "mkdir(\"%s\") failed";
+  coco_error(message, tmp);
   return; /* never reached */
 }
 
