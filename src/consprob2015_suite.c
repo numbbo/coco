@@ -188,13 +188,11 @@ static coco_problem_t *consprob2015_problem(int function_id, long dimension_, lo
     return NULL;
 
   if (function_id == 1) {
-    double xopt[MAX_DIM], fopt;
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    double fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
 
     problem = sphere_problem(dimension);
-    problem = coco_add_constraints(problem, "linear_constraint");
-    problem = shift_variables(problem, xopt, 0);
+    problem = coco_add_constraints(problem, "linear_constraint", 5);
     problem = shift_objective(problem, fopt);
   } else {
     return NULL;
