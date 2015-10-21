@@ -14,7 +14,7 @@ static const long MAX_BUDGET = 1e2;  /* work on small budgets first */
 static const char *SUITE_NAME       = "suite_biobj_300";
 /* static const char *SUITE_OPTIONS    = "";*/ /* e.g.: "instances:1-5; dimensions:-20" */
 /* static const char *OBSERVER_NAME = "no_observer"; / * writes no data */
-static const char *OBSERVER_NAME    = "observer_mo_toy"; /* writes data */
+static const char *OBSERVER_NAME    = "observer_mo"; /* writes data */
 static const char *OBSERVER_OPTIONS = "mo_random_search_on_suite_biobj_300";
 static const char *SOLVER_NAME      = "mo_random_search"; /* for the choice in coco_optimize below */
 /* static const int NUMBER_OF_BATCHES   = 88;*/  /* use 1 for single batch :-) batches can be run independently in parallel */
@@ -112,23 +112,25 @@ int main(void) {
   long problem_index;
   int combination_idx, instance_idx, dimension_idx;
   coco_problem_t *problem;
-  
+
   for (dimension_idx = 0; dimension_idx < 3; dimension_idx++) {
-      for (combination_idx = 0; combination_idx < 300; combination_idx++) {
-          for (instance_idx = 0; instance_idx < 5; instance_idx++) {
-              problem_index = biobjective_encode_problem_index(combination_idx,
-                                                               instance_idx,
-                                                               dimension_idx);
-printf("problem_index = %ld, combination_idx = %d, instance_idx = %d, dimension_idx = %d\n", problem_index, combination_idx, instance_idx, dimension_idx);
-              problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-              
-              problem = coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
-              if (problem == NULL)
-                break;
-              coco_optimize(problem);
-              coco_problem_free(problem);
-          }
+    for (combination_idx = 0; combination_idx < 3; combination_idx++) { /* TODO: Should be 300 instead of 3! */
+      for (instance_idx = 0; instance_idx < 5; instance_idx++) {
+
+        problem_index = biobjective_encode_problem_index(combination_idx, instance_idx, dimension_idx);
+        printf("problem_index = %ld, combination_idx = %d, instance_idx = %d, dimension_idx = %d\n",
+            problem_index, combination_idx, instance_idx, dimension_idx);
+
+        problem = coco_suite_get_problem(SUITE_NAME, problem_index);
+        problem = coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
+
+        if (problem == NULL)
+          break;
+        coco_optimize(problem);
+        coco_problem_free(problem);
       }
+    }
   }
+
   return 0;
 }

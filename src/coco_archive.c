@@ -1,5 +1,3 @@
-#include <sys/types.h> /* for creating folder */
-#include <sys/stat.h>  /* for creating folder */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

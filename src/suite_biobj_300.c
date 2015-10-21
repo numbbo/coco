@@ -46,12 +46,15 @@ static int defined = 0;
  *           7498 |        4 |         300 |        20
  *           7499 |        5 |         300 |        20
  */
+/* Commented to silence the compiler.
+
 static long suite_biobj_300_encode_problem_index(int combination_idx, long instance_idx, int dimension_idx) {
   long problem_index;
   problem_index = instance_idx + combination_idx * SUITE_BIOBJ_NUMBER_OF_INSTANCES
       + dimension_idx * (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_COMBINATIONS);
   return problem_index;
 }
+*/
 
 static void suite_biobj_300_decode_problem_index(const long problem_index, int *combination_idx,
     long *instance_idx, long *dimension_idx) {

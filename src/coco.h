@@ -14,6 +14,7 @@ extern "C" {
 
 #include <stdlib.h> /* For size_t */
 #include <stdint.h>
+#include <assert.h>
 #include <math.h> /* For NAN among other things */
 
 #ifndef NAN

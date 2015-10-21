@@ -7,6 +7,7 @@
 
 #include "observer_bbob2009.c"
 #include "observer_mo_toy.c"
+#include "observer_mo.c"
 #include "observer_toy.c"
 #include "suite_bbob2009.c"
 #include "suite_biobj_300.c"
@@ -102,6 +103,8 @@ coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, const char *o
     return observer_bbob2009(problem, options);
   } else if (0 == strcmp(observer, "observer_mo_toy")) {
     return observer_mo_toy(problem, options);
+  } else if (0 == strcmp(observer, "observer_mo")) {
+    return observer_mo(problem, options);
   }
 
   /* here each observer must have another entry */
@@ -172,10 +175,10 @@ void coco_suite_benchmark(const char *problem_suite, const char *problem_suite_o
   int is_instance;
   coco_problem_t *problem;
   char buf[222]; /* TODO: this is ugly, how to improve? The new implementation of coco_warning makes this obsolete */
-  for (problem_index = -1;; ) {
+  for (problem_index = -1;;) {
     problem_index = coco_suite_get_next_problem_index(problem_suite, problem_suite_options, problem_index);
     if (problem_index < 0)
-    break;
+      break;
     problem = coco_suite_get_problem(problem_suite, problem_index);
     if (problem == NULL) {
       snprintf(buf, 221, "problem index %d not found in problem suite %s (this is probably a bug)",
