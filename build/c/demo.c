@@ -17,12 +17,13 @@ double objective_function_example(const double *x) {
     return y;
 }
 
-typedef double (*constraint_function_example_t) (const double *);
-double constraint_function_example(const double *x) {
-    double y;
-    coco_evaluate_constraint(CURRENT_COCO_PROBLEM, x, &y);
+typedef double (*constraint_function_example_t) (const double *, double *);
+double *constraint_function_example(const double *x, double *y) {
+    
+    coco_evaluate_constraint(CURRENT_COCO_PROBLEM, x, y);
     return y;
 }
+
 void random_search(size_t dimension,
                    objective_function_example_t fun,
                    constraint_function_example_t cons,
@@ -32,32 +33,37 @@ void random_search(size_t dimension,
                    double final_target,
 		   double feasibility_threshold) {
   coco_random_state_t *rng = coco_new_random(0xdeadbeef); /* use coco fcts for convenience */
+  
+  size_t number_of_constraints = coco_get_number_of_constraints(CURRENT_COCO_PROBLEM);
   double *x = coco_allocate_vector(dimension);
+  double *constraint_function_value = coco_allocate_vector(number_of_constraints);
   double objective_function_value;
-  double constraint_function_value;
   long i;
+  size_t j, k;
 
   for (i = 0; i < budget; ++i) {
-    size_t j;
     for (j = 0; j < dimension; ++j) {
       x[j] = lower[j] + coco_uniform_random(rng) * (upper[j] - lower[j]);
     }
     objective_function_value = fun(x);
-    constraint_function_value = cons(x);
+    cons(x, constraint_function_value);
     
+    /*
     printf("\n\nIteration i = %d\n\n", i);
     for (j = 0; j < dimension; ++j) {
       printf("x[%d] = %f\n", j, x[j]);
     
     }
     printf("f(x) = %f\n", objective_function_value);
-    printf("c(x) = %f\n", constraint_function_value);
-    
+    for (k = 0; k < number_of_constraints; ++k) {
+      printf("c[%d](x) = %f\n", k, constraint_function_value[k]);
+    }
+    */
      /* To be of any real use, we would need to retain the best x-value here.
       * For benchmarking purpose the implementation suffices, as the
       * observer takes care of bookkeeping. 
       */
-    if (objective_function_value <= final_target && constraint_function_value <= feasibility_threshold)
+    if (objective_function_value <= final_target)
       break;
   }
   coco_free_random(rng);
