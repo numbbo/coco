@@ -114,9 +114,10 @@ if __name__ == "__main__":
         test_count = 0
         #doctest.testmod(report=True, verbose=True)  # this is quite cool!
         # go through the py files in the bbob_pproc folder
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
         for root, dirnames, filenames in os.walk(os.path.dirname(os.path.realpath(__file__))):
           for filename in fnmatch.filter(filenames, '*.py'):
-            current_failure_count, current_test_count = doctest.testfile(os.path.join(root, filename), report=True, verbose=True)              
+            current_failure_count, current_test_count = doctest.testfile(os.path.join(root, filename), report=True, verbose=True, module_relative=False)              
             failure_count += current_failure_count
             test_count += current_test_count
     else:
