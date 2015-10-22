@@ -89,7 +89,7 @@ coco_problem_t *coco_get_problem(const char *problem_suite,
     return bbob2009_suite(problem_index);
   } else if (0 == strcmp(problem_suite, "mo_suite_first_attempt")) {
     return mo_suite_first_attempt(problem_index);
-  } else if (0 == strcmp(problem_suite, "biobjective_combinations")) {
+  } else if (0 == strcmp(problem_suite, "biobjective_suite_300")) {
     return biobjective_suite_300(problem_index);
   } else {
     coco_warning("Unknown problem suite.");
