@@ -12,6 +12,15 @@
 #include "mo_avl_tree.c"
 #include "mo_generics.c"
 
+/* Data for each indicator */
+typedef struct {
+  char *input_file_name;
+  FILE *output_file;
+  double *target_values;
+  size_t number_of_targets;
+  size_t next_target;
+} logger_mo_indicator_t;
+
 /* Data needed for the multiobjective logger */
 typedef struct {
   char *path;
@@ -33,7 +42,8 @@ typedef struct {
   size_t time_stamp;
 } logger_mo_node_t;
 
-static size_t last_objective;
+static size_t LAST_OBJECTIVE; /* Used for ordering solutions in the archive tree. */
+
 static int logger_mo_tree_update(logger_mo_t *data, logger_mo_node_t *node_item);
 static void logger_mo_output_nondominated(FILE *logfile, avl_tree_t *buffer_tree, const size_t dim,
     const size_t num_obj);
@@ -79,9 +89,9 @@ static void logger_mo_node_free(logger_mo_node_t *item, void *userdata) {
 static int compare_by_last_objective(const logger_mo_node_t *item1, const logger_mo_node_t *item2, void *userdata) {
   /* This ordering is used by the archive_tree. */
 
-  if (item1->y[last_objective] < item2->y[last_objective])
+  if (item1->y[LAST_OBJECTIVE] < item2->y[LAST_OBJECTIVE])
     return -1;
-  else if (item1->y[last_objective] > item2->y[last_objective])
+  else if (item1->y[LAST_OBJECTIVE] > item2->y[LAST_OBJECTIVE])
     return 1;
   else
     return 0;
@@ -131,7 +141,7 @@ static void private_logger_mo_evaluate(coco_problem_t *self, const double *x, do
         data->number_of_variables, data->number_of_objectives);
 
     /* Initialize the AVL trees */
-    last_objective = data->number_of_objectives - 1;
+    LAST_OBJECTIVE = data->number_of_objectives - 1;
     data->archive_tree = avl_tree_construct((avl_compare_t) compare_by_last_objective,
         (avl_free_t) logger_mo_node_free);
     data->buffer_tree = avl_tree_construct((avl_compare_t) compare_by_time_stamp, NULL);
@@ -148,7 +158,7 @@ static void private_logger_mo_evaluate(coco_problem_t *self, const double *x, do
         data->number_of_objectives);
   }
 
-  /* TODO If the archive was updated, compute and output a bunch of indicators*/
+  /* TODO If the archive was updated, compute and output a bunch of indicators */
 
   /* Flush output so that impatient users can see progress. */
   fflush(data->logfile);
@@ -171,7 +181,7 @@ static int logger_mo_tree_update(logger_mo_t *data, logger_mo_node_t *node_item)
     trigger_update = 1;
     next_node = data->archive_tree->head;
   } else {
-    dominance = get_dominance(node_item->y, ((logger_mo_node_t*) node->item)->y, data->number_of_objectives);
+    dominance = mococo_get_dominance(node_item->y, ((logger_mo_node_t*) node->item)->y, data->number_of_objectives);
     if (dominance > -1) {
       trigger_update = 1;
       next_node = node->next;
@@ -193,7 +203,7 @@ static int logger_mo_tree_update(logger_mo_t *data, logger_mo_node_t *node_item)
        * dominance = 0: the given node and the next node are nondominated
        * dominance = 1: the given node dominates the next node */
       node = next_node;
-      dominance = get_dominance(node_item->y, ((logger_mo_node_t*) node->item)->y,
+      dominance = mococo_get_dominance(node_item->y, ((logger_mo_node_t*) node->item)->y,
           data->number_of_objectives);
       if (dominance == 1) {
         next_node = node->next;

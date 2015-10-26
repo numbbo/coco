@@ -100,6 +100,7 @@ typedef struct avl_allocator {
 } avl_allocator_t;
 
 static void avl_rebalance(avl_tree_t *, avl_node_t *);
+static avl_node_t *avl_node_insert_after(avl_tree_t *avltree, avl_node_t *node, avl_node_t *newnode);
 
 #ifdef AVL_COUNT
 #define NODE_COUNT(n)  ((n) ? (n)->count : 0)
@@ -379,6 +380,14 @@ static avl_node_t *avl_item_search_left(const avl_tree_t *tree, const void *item
 }
 */
 
+/* Searches for an item, returning either the last (rightmost) exact
+ * match, or (if no exact match could be found) the last (rightmost)
+ * of the nodes that have an item smaller than the search item.
+ * If exact is not NULL, *exact will be set to:
+ *    0  if the returned node is inequal or NULL
+ *    1  if the returned node is equal
+ * Returns NULL if no equal or smaller element could be found.
+ * O(lg n) */
 static avl_node_t *avl_item_search_right(const avl_tree_t *tree, const void *item, int *exact) {
   const avl_node_t *node;
   int c;
@@ -393,6 +402,9 @@ static avl_node_t *avl_item_search_right(const avl_tree_t *tree, const void *ite
   return avl_const_node(node);
 }
 
+/* Searches for the item in the tree and returns a matching node if found
+ * or NULL if not.
+ * O(lg n) */
 static avl_node_t *avl_item_search(const avl_tree_t *avltree, const void *item) {
   int c;
   avl_node_t *n;
@@ -400,6 +412,10 @@ static avl_node_t *avl_item_search(const avl_tree_t *avltree, const void *item) 
   return c ? n : NULL;
 }
 
+/* Initializes a new tree for elements that will be ordered using
+ * the supplied strcmp()-like function.
+ * Returns the value of avltree (even if it's NULL).
+ * O(1) */
 static avl_tree_t *avl_tree_init(avl_tree_t *avltree, avl_compare_t cmp, avl_free_t free) {
   if (avltree) {
     avltree->head = NULL;
@@ -413,10 +429,18 @@ static avl_tree_t *avl_tree_init(avl_tree_t *avltree, avl_compare_t cmp, avl_fre
   return avltree;
 }
 
+/* Allocates and initializes a new tree for elements that will be
+ * ordered using the supplied strcmp()-like function.
+ * Returns NULL if memory could not be allocated.
+ * O(1) */
 static avl_tree_t *avl_tree_construct(avl_compare_t cmp, avl_free_t free) {
   return avl_tree_init((avl_tree_t *) malloc(sizeof(avl_tree_t)), cmp, free);
 }
 
+/* Reinitializes the tree structure for reuse. Nothing is free()d.
+ * Compare and free functions are left alone.
+ * Returns the value of avltree (even if it's NULL).
+ * O(1) */
 static avl_tree_t *avl_tree_clear(avl_tree_t *avltree) {
   if (avltree)
     avltree->top = avltree->head = avltree->tail = NULL;
@@ -437,6 +461,10 @@ static void avl_node_free(avl_tree_t *avltree, avl_node_t *node) {
   }
 }
 
+/* Free()s all nodes in the tree but leaves the tree itself.
+ * If the tree's free is not NULL it will be invoked on every item.
+ * Returns the value of avltree (even if it's NULL).
+ * O(n) */
 static avl_tree_t *avl_tree_purge(avl_tree_t *avltree) {
   avl_node_t *node, *next;
   avl_free_t func;
@@ -468,6 +496,9 @@ static avl_tree_t *avl_tree_purge(avl_tree_t *avltree) {
   return avl_tree_clear(avltree);
 }
 
+/* Frees the entire tree efficiently. Nodes will be free()d.
+ * If the tree's free is not NULL it will be invoked on every item.
+ * O(n) */
 static void avl_tree_destruct(avl_tree_t *avltree) {
   if (!avltree)
     return;
@@ -485,12 +516,18 @@ static void avl_node_clear(avl_node_t *newnode) {
 #   endif
 }
 
+/* Initializes memory for use as a node.
+ * Returns the value of avlnode (even if it's NULL).
+ * O(1) */
 static avl_node_t *avl_node_init(avl_node_t *newnode, const void *item) {
   if (newnode)
     newnode->item = avl_const_item(item);
   return newnode;
 }
 
+/* Allocates and initializes memory for use as a node.
+ * Returns the value of avlnode (or NULL if the allocation failed).
+ * O(1) */
 static avl_node_t *avl_alloc(avl_tree_t *avltree, const void *item) {
   avl_node_t *newnode;
   avl_allocator_t *allocator = avltree ? avltree->allocator : (avl_allocator_t *) NULL;
@@ -520,8 +557,9 @@ static avl_node_t *avl_insert_top(avl_tree_t *avltree, avl_node_t *newnode) {
   return newnode;
 }
 
-static avl_node_t *avl_node_insert_after(avl_tree_t *avltree, avl_node_t *node, avl_node_t *newnode);
-
+/* Insert a node before another node. Returns the new node.
+ * If old is NULL, the item is appended to the tree.
+ * O(lg n) */
 static avl_node_t *avl_node_insert_before(avl_tree_t *avltree, avl_node_t *node, avl_node_t *newnode) {
   if (!avltree || !newnode)
     return NULL;
@@ -551,6 +589,9 @@ static avl_node_t *avl_node_insert_before(avl_tree_t *avltree, avl_node_t *node,
   return newnode;
 }
 
+/* Insert a node after another node. Returns the new node.
+ * If old is NULL, the item is prepended to the tree.
+ * O(lg n) */
 static avl_node_t *avl_node_insert_after(avl_tree_t *avltree, avl_node_t *node, avl_node_t *newnode) {
   if (!avltree || !newnode)
     return NULL;
@@ -580,6 +621,9 @@ static avl_node_t *avl_node_insert_after(avl_tree_t *avltree, avl_node_t *node, 
   return newnode;
 }
 
+/* Insert a node into the tree and return it.
+ * Returns NULL if an equal node is already in the tree.
+ * O(lg n) */
 static avl_node_t *avl_node_insert(avl_tree_t *avltree, avl_node_t *newnode) {
   avl_node_t *node;
   int c;
@@ -603,6 +647,10 @@ static avl_node_t *avl_node_insert_somewhere(avl_tree_t *avltree, avl_node_t *ne
 }
 */
 
+/* Insert an item into the tree and return the new node.
+ * Returns NULL and sets errno if memory for the new node could not be
+ * allocated or if the node is already in the tree (EEXIST).
+ * O(lg n) */
 static avl_node_t *avl_item_insert(avl_tree_t *avltree, const void *item) {
   avl_node_t *newnode;
 
@@ -682,6 +730,11 @@ static avl_node_t *avl_item_insert_right(avl_tree_t *avltree, const void *item) 
 }
 */
 
+/* Deletes a node from the tree.
+ * Returns the value of the node (even if it's NULL).
+ * The item will NOT be free()d regardless of the tree's free handler.
+ * This function comes in handy if you need to update the search key.
+ * O(lg n) */
 static avl_node_t *avl_node_unlink(avl_tree_t *avltree, avl_node_t *avlnode) {
   avl_node_t *parent;
   avl_node_t **superparent;
@@ -739,6 +792,10 @@ static avl_node_t *avl_node_unlink(avl_tree_t *avltree, avl_node_t *avlnode) {
   return avlnode;
 }
 
+/* Deletes a node from the tree. Returns immediately if the node is NULL.
+ * If the tree's free is not NULL, it is invoked on the item.
+ * If it is, returns the item. In all other cases returns NULL.
+ * O(lg n) */
 static void *avl_node_delete(avl_tree_t *avltree, avl_node_t *avlnode) {
   void *item = NULL;
   if (avlnode) {
@@ -751,6 +808,10 @@ static void *avl_node_delete(avl_tree_t *avltree, avl_node_t *avlnode) {
   return item;
 }
 
+/* Searches for an item in the tree and deletes it if found.
+ * If the tree's free is not NULL, it is invoked on the item.
+ * If it is, returns the item. In all other cases returns NULL.
+ * O(lg n) */
 static void *avl_item_delete(avl_tree_t *avltree, const void *item) {
   return avl_node_delete(avltree, avl_item_search(avltree, item));
 }
