@@ -596,7 +596,7 @@ class DataSet():
                [  3.98107171e-07,   5.36200000e+03,   6.07000000e+03]])
 
         >>> ds.evals[-1,(0,5,6)]  # show last row, same columns
-        array([  1.58489319e-09,              nan,              nan])
+        array([  1.00000000e-08,   5.67600000e+03,   6.26900000e+03])
         >>> ds.info()  # prints similar data more nicely formated 
         Algorithm: BIPOP-CMA-ES
         Function ID: 2
@@ -852,7 +852,7 @@ class DataSet():
                     is_consistent = False
                     break
             if not is_consistent:
-                warnings.warn('  double instances in ' + str(self.instancenumbers))
+                warnings.warn(self.pickleFile + '  double instances in ' + str(self.instancenumbers))
         elif len(self.instancenumbers) < 15:
             is_consistent = False
             warnings.warn('  less than 15 instances in ' + str(self.instancenumbers))
