@@ -106,7 +106,7 @@ coco_problem_t *coco_create_incomplete_named_bounded_problem(
 
 /***************** EXAMPLE: BENT CIGAR PROBLEM ****************/
 /*** generic definition without any dependencies on COCO ***/
-static double b3bob2009_raw_bent_cigar(size_t dimension, const double *x) {
+static double b2bob2009_raw_bent_cigar(size_t dimension, const double *x) {
   static const double condition = 1.0e6;
   size_t i;
   double res;
@@ -119,7 +119,7 @@ static double b3bob2009_raw_bent_cigar(size_t dimension, const double *x) {
 }
 
 /*** transform into coco_evaluate_function_t type ***/
-static void b3bob2009_raw_bent_cigar_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void b2bob2009_raw_bent_cigar_evaluate(coco_problem_t *self, const double *x, double *y) {
   assert(coco_get_number_of_objectives(self) == 1);
   y[0] = b2bob2009_raw_bent_cigar(coco_get_number_of_variables(self), x);
 }
@@ -131,43 +131,9 @@ static coco_problem_t *b3bob2009_raw_bent_cigar_problem(const size_t number_of_v
                                 problem_id, "bent cigar",
                                 number_of_variables, 1, 0, -5, 5, 0);
   coco_free_memory(problem_id);
-  problem->evaluate_function = b3bob2009_raw_bent_cigar_evaluate;
+  problem->evaluate_function = b2bob2009_raw_bent_cigar_evaluate;
   coco_evaluate(problem, problem->best_parameter, problem->best_value); /* Calculate best parameter value */
   return problem;
-}
-
-/*** transform into final bbob2009 problem in coco format ***/
-static coco_problem_t *
-b3bob2009_bent_cigar_problem(long dimension_, long instance_id) {
-    const int function_id = 12;
-    const size_t dimension = (size_t)dimension_; /* prevent subtle warnings */
-    double *M = coco_allocate_vector(dimension * dimension);
-    double *b = coco_allocate_vector(dimension);
-    double *xopt = coco_allocate_vector(dimension);
-    double fopt;
-    double **rot1;
-    long rseed = function_id + 10000 * instance_id;
-
-    coco_problem_t *problem; 
-    
-    fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed + 1000000, dimension_);
-
-    rot1 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
-    bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
-    bbob2009_free_matrix(rot1, dimension);
-
-    problem = b3bob2009_raw_bent_cigar_problem(dimension);
-    problem = shift_objective(problem, fopt); /* these have been renamed */
-    problem = affine_transform_variables(problem, M, b, dimension);
-    problem = asymmetric_variable_transform(problem, 0.5);
-    problem = affine_transform_variables(problem, M, b, dimension);
-    problem = shift_variables(problem, xopt, 0);
-    coco_free_memory(M);
-    coco_free_memory(b);
-    coco_free_memory(xopt);
-    return problem;
 }
 
 /**
@@ -221,25 +187,6 @@ coco_problem_t *coco_allocate_so_problem_from_sss(const char * problem_id,
 }
 
 /***************** EXAMPLE: BENT CIGAR PROBLEM ****************/
-/*** generic definition without any dependencies on COCO ***/
-static double b2bob2009_raw_bent_cigar(size_t dimension, const double *x) {
-  static const double condition = 1.0e6;
-  size_t i;
-  double res;
-
-  res = x[0] * x[0];
-  for (i = 1; i < dimension; ++i) {
-    res += condition * x[i] * x[i];
-  }
-  return res;
-}
-
-/*** transform into coco_evaluate_function_t type ***/
-static void b2bob2009_raw_bent_cigar_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(coco_get_number_of_objectives(self) == 1);
-  y[0] = b2bob2009_raw_bent_cigar(coco_get_number_of_variables(self), x);
-}
-
 /*** define as coco_problem_t ***/
 static coco_problem_t *b2bob2009_raw_bent_cigar_problem(const size_t number_of_variables) {
   char *problem_id = bbob2009_problem_id("bent_cigar", number_of_variables);
