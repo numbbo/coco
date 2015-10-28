@@ -105,6 +105,7 @@ coco_problem_t *coco_create_incomplete_named_bounded_problem(
 }
 
 /***************** EXAMPLE: BENT CIGAR PROBLEM ****************/
+
 /*** generic definition without any dependencies on COCO ***/
 static double b2bob2009_raw_bent_cigar(size_t dimension, const double *x) {
   static const double condition = 1.0e6;
@@ -118,13 +119,15 @@ static double b2bob2009_raw_bent_cigar(size_t dimension, const double *x) {
   return res;
 }
 
-/*** transform into coco_evaluate_function_t type ***/
+/*** same function interfaced as coco_evaluate_function_t type ***/
 static void b2bob2009_raw_bent_cigar_evaluate(coco_problem_t *self, const double *x, double *y) {
   assert(coco_get_number_of_objectives(self) == 1);
+  assert(coco_get_number_of_constraints(self) == 0);
+  assert(y != NULL);
   y[0] = b2bob2009_raw_bent_cigar(coco_get_number_of_variables(self), x);
 }
 
-/*** define as coco_problem_t ***/
+/*** definition of coco_problem_t using coco_create_incomplete_named_bounded_problem helper ***/
 static coco_problem_t *b3bob2009_raw_bent_cigar_problem(const size_t number_of_variables) {
   char *problem_id = bbob2009_problem_id("bent_cigar", number_of_variables);
   coco_problem_t *problem = coco_create_incomplete_named_bounded_problem(
@@ -146,7 +149,7 @@ static coco_problem_t *b3bob2009_raw_bent_cigar_problem(const size_t number_of_v
  *                            double largest_value_of_interest,
  *                            double best_parameter):
  *
- * Obsolete, to be removed. 
+ * OBOSLETE, DEPRECIATED, TO BE REMOVED. 
  * Return a single-objective coco problem constructed from a function and
  * scalar values for bounds and best parameter.
  *
