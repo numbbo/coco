@@ -187,12 +187,12 @@ void coco_suite_benchmark(const char *problem_suite,
                           const char *observer_options,
                           coco_optimizer_t optimizer);
 
-/* shall replace the above? */
+/* shall replace the above?
 void new_coco_benchmark(const char *problem_suite,
-                        const char *problem_suit_options,
+                        const char *problem_suite_options,
                         const char *observer,
                         const char *observer_options,
-                        coco_optimizer_t optimizer);
+                        coco_optimizer_t optimizer); */
 
 /**************************************************************************
  * Random number generator
