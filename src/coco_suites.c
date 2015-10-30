@@ -31,7 +31,9 @@
 
 /** return next problem_index or -1
  */
-long coco_suite_get_next_problem_index(const char *problem_suite, long problem_index, const char *select_options) {
+long coco_suite_get_next_problem_index(const char *problem_suite,
+                                       long problem_index,
+                                       const char *select_options) {
   coco_problem_t *problem; /* to check validity */
   long last_index = -1;
 
@@ -147,8 +149,10 @@ coco_problem_t *coco_suite_get_problem_by_id(const char *suite, const char *id) 
  * Benchmark a solver ${optimizer} with a testbed ${problem_suite}
  * using the data logger ${observer} to write data. 
  */
-void coco_suite_benchmark(const char *problem_suite, const char *observer, const char *options,
-    coco_optimizer_t optimizer) {
+void coco_suite_benchmark(const char *problem_suite,
+                          const char *observer,
+                          const char *options,
+                          coco_optimizer_t optimizer) {
   int problem_index;
   coco_problem_t *problem;
   for (problem_index = 0;; ++problem_index) {

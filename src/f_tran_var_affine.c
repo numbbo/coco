@@ -49,8 +49,10 @@ static void private_tran_var_affine_free(void *thing) {
  *
  * The matrix M is stored in row-major format.
  */
-static coco_problem_t *f_tran_var_affine(coco_problem_t *inner_problem, const double *M, const double *b,
-    const size_t number_of_variables) {
+static coco_problem_t *f_tran_var_affine(coco_problem_t *inner_problem,
+                                         const double *M,
+                                         const double *b,
+                                         const size_t number_of_variables) {
   coco_problem_t *self;
   _tran_var_affine_data_t *data;
   size_t entries_in_M;

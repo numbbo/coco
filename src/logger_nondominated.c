@@ -109,8 +109,9 @@ static void private_logger_nondominated_free(void *stuff) {
   }
 }
 
-static coco_problem_t *logger_nondominated(coco_problem_t *inner_problem, const size_t max_size_of_archive,
-    const char *path) {
+static coco_problem_t *logger_nondominated(coco_problem_t *inner_problem,
+                                           const size_t max_size_of_archive,
+                                           const char *path) {
   logger_nondominated_t *data;
   coco_problem_t *self;
 

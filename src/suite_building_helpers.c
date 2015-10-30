@@ -55,9 +55,13 @@ static char *bbob2009_problem_id(const char *name, size_t number_of_variables) {
  * Details: this is yet a tentative name/interface.
  * FIXME: find a better interface for best_parameter?
  */
-coco_problem_t *coco_allocate_so_problem_from_sss(const char * problem_id, const char * problem_name,
-    coco_evaluate_function_t fct, size_t number_of_variables, double smallest_value_of_interest,
-    double largest_value_of_interest, double best_parameter) {
+coco_problem_t *coco_allocate_so_problem_from_sss(const char * problem_id,
+                                                  const char * problem_name,
+                                                  coco_evaluate_function_t fct,
+                                                  size_t number_of_variables,
+                                                  double smallest_value_of_interest,
+                                                  double largest_value_of_interest,
+                                                  double best_parameter) {
   size_t i;
   coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
 
@@ -142,7 +146,7 @@ static coco_problem_t *b2bob2009_bent_cigar_problem(long dimension_, long instan
 
 /***************** EXAMPLE: ATTRACTIVE SECTOR PROBLEM ****************/
 #if 0
-typedef struct {double *xopt;} coco_bbob_attractive_sector_problem_data_t;
+typedef struct {double *xopt;}coco_bbob_attractive_sector_problem_data_t;
 #endif
 
 /*** define computation of raw function as coco_evaluate_function_t type ***/
@@ -164,7 +168,7 @@ static void b2bob2009_raw_attractive_sector_evaluate(coco_problem_t *self, const
 }
 /*** define raw function as coco_problem_t ***/
 static coco_problem_t *b2bob2009_raw_attractive_sector_problem(const size_t number_of_variables,
-    const double *xopt) {
+                                                               const double *xopt) {
   _1u_attractive_sector_data_t *data;
   char *problem_id = bbob2009_problem_id("attractive_sector", number_of_variables);
   coco_problem_t *problem = coco_allocate_so_problem_from_sss(problem_id, "attractive sector function",
