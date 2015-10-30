@@ -431,7 +431,7 @@ cdef class Benchmark:
                 
         See also `problem_indices` for the nicer design pattern. 
         """
-        return coco_problem_next_problem_index(self.problem_suite, problem_index, 
+        return coco_suite_get_next_problem_index(self.problem_suite, problem_index, 
                                        self.problem_suite_options)
     @property
     def problem_indices(self):
