@@ -17,7 +17,7 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: demo coco_test bbob2009_test
+all: demo coco_test bbob2009_test 
 
 clean:
 	rm -f coco.o coco_test.o coco_test demo.o demo bbob2009_test.o bbob2009_test 
