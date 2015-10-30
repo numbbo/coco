@@ -4,10 +4,10 @@
 #include "coco_internal.h"
 #include "coco_suites.c"
 #include "coco_problem.c"
-#include "f_tran_obj_shift.c"
-#include "f_tran_var_affine.c"
-#include "f_1u_attractive_sector.c" /* Added to get rid of compiler errors. */
+#include "f_attractive_sector.c" /* Added to get rid of compiler errors. */
 #include "suite_bbob2009_legacy_code.c"
+#include "transform_obj_shift.c"
+#include "transform_vars_affine.c"
 
 /**
  * A collection of "random" future code (snippets)
