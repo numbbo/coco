@@ -11,7 +11,7 @@
 #if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
 #include <windows.h>
 static const char *coco_path_separator = "\\";
-#define NUMBBO_PATH_MAX MAX_PATH
+#define COCO_PATH_MAX MAX_PATH
 #define HAVE_GFA 1
 #elif defined(__gnu_linux__)
 #include <sys/stat.h>
@@ -19,21 +19,21 @@ static const char *coco_path_separator = "\\";
 #include <linux/limits.h>
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
-#define NUMBBO_PATH_MAX PATH_MAX
+#define COCO_PATH_MAX PATH_MAX
 #elif defined(__APPLE__)
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/syslimits.h>
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
-#define NUMBBO_PATH_MAX PATH_MAX
+#define COCO_PATH_MAX PATH_MAX
 #elif defined(__FreeBSD__)
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <limits.h>
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
-#define NUMBBO_PATH_MAX PATH_MAX
+#define COCO_PATH_MAX PATH_MAX
 #elif (defined(__sun) || defined(sun)) && (defined(__SVR4) || defined(__svr4__))
 /* Solaris */
 #include <sys/stat.h>
@@ -41,7 +41,7 @@ static const char *coco_path_separator = "/";
 #include <limits.h>
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
-#define NUMBBO_PATH_MAX PATH_MAX
+#define COCO_PATH_MAX PATH_MAX
 #else
 #error Unknown platform
 #endif
@@ -50,8 +50,8 @@ static const char *coco_path_separator = "/";
 #define S_IRWXU 0700
 #endif
 
-#if !defined(NUMBBO_PATH_MAX)
-#error NUMBBO_PATH_MAX undefined
+#if !defined(COCO_PATH_MAX)
+#error COCO_PATH_MAX undefined
 #endif
 
 /* To get rid of the implicit-function-declaration warning. */
@@ -66,9 +66,9 @@ int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
 void coco_create_new_path(const char *path, size_t maxlen, char *new_path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
-double doubleround(double a);
-double doublemax(double a, double b);
-double doublemin(double a, double b);
+double coco_round_double(const double a);
+double coco_max_double(const double a, const double b);
+double coco_min_double(const double a, const double b);
 /***********************************/
 
 void coco_join_path(char *path, size_t path_max_length, ...) {
@@ -80,8 +80,7 @@ void coco_join_path(char *path, size_t path_max_length, ...) {
   va_start(args, path_max_length);
   while (NULL != (path_component = va_arg(args, char *))) {
     size_t component_length = strlen(path_component);
-    if (path_length + path_separator_length + component_length >=
-        path_max_length) {
+    if (path_length + path_separator_length + component_length >= path_max_length) {
       coco_error("coco_file_path() failed because the ${path} is too short.");
       return; /* never reached */
     }
@@ -96,8 +95,7 @@ void coco_join_path(char *path, size_t path_max_length, ...) {
 int coco_path_exists(const char *path) {
 #if defined(HAVE_GFA)
   DWORD dwAttrib = GetFileAttributes(path);
-  return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
-          (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+  return (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 #elif defined(HAVE_STAT)
   struct stat buf;
   int res = stat(path, &buf);
@@ -108,7 +106,7 @@ int coco_path_exists(const char *path) {
 }
 
 void coco_create_path(const char *path) {
-/* current version should now work with Windows, Linux, and Mac */
+  /* current version should now work with Windows, Linux, and Mac */
   char *tmp = NULL;
   char *message;
   char *p;
@@ -137,8 +135,7 @@ void coco_create_path(const char *path) {
     goto error;
   coco_free_memory(tmp);
   return;
-error:
-  message = "mkdir(\"%s\") failed";
+  error: message = "mkdir(\"%s\") failed";
   coco_error(message, tmp);
   return; /* never reached */
 }
@@ -152,7 +149,7 @@ void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
   time_t now;
   const char *snow;
   int i, tries;
-  
+
   if (!coco_path_exists(path)) {
     coco_create_path(path);
     return;
@@ -163,8 +160,8 @@ void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
   oldlen = strlen(path);
   assert(maxlen > oldlen);
   if (new_path != path)
-    strncpy(new_path, path, maxlen);
-  
+  strncpy(new_path, path, maxlen);
+
   /* modify new_path name until path does not exist */
   for (tries = 0; tries <= (int)('z' - 'a'); ++tries) {
     /* create new name */
@@ -178,19 +175,19 @@ void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
     new_path[oldlen] = sep;
     strncpy(&new_path[oldlen+1], &snow[4], maxlen - oldlen - 1);
     for (i = oldlen; i < maxlen; ++i) {
-      if (new_path[i] == ' ' || new_path[i] == ':') 
-        new_path[i] = sep;
+      if (new_path[i] == ' ' || new_path[i] == ':')
+      new_path[i] = sep;
       if (new_path[i] == '\n')
-        new_path[i] = '\0';
+      new_path[i] = '\0';
       if (new_path[i] == '\0')
-        break;
+      break;
     }
     len = strlen(new_path);
     if (len > 6) {
       new_path[len - 5] = (char)(tries + 'a');
       new_path[len - 4] = '\0';
     }
-      
+
     /* try new name */
     if (!coco_path_exists(new_path)) {
       /* not thread safe until path is created */
@@ -203,17 +200,16 @@ void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
     char *message = "coco_create_new_path: could not create a new path from '%s' (%d attempts)";
     coco_warning(message, path, tries);
     coco_error(message);
-  } 
+  }
 }
 #endif
 
 double *coco_allocate_vector(const size_t number_of_elements) {
   const size_t block_size = number_of_elements * sizeof(double);
-  return (double *)coco_allocate_memory(block_size);
+  return (double *) coco_allocate_memory(block_size);
 }
 
-double *coco_duplicate_vector(const double *src,
-                              const size_t number_of_elements) {
+double *coco_duplicate_vector(const double *src, const size_t number_of_elements) {
   size_t i;
   double *dst;
 
@@ -228,24 +224,22 @@ double *coco_duplicate_vector(const double *src,
 }
 
 /* some math functions which are not contained in C89 standard */
-double doubleround(double number) {
-    return floor(number + 0.5);
+double coco_round_double(const double number) {
+  return floor(number + 0.5);
 }
 
-double doublemax(double a, double b) {
-    if (a >= b) {
-        return a;
-    }
-    else {
-        return b;
-    }     
+double coco_max_double(const double a, const double b) {
+  if (a >= b) {
+    return a;
+  } else {
+    return b;
+  }
 }
 
-double doublemin(double a, double b) {
-    if (a <= b) {
-        return a;
-    }
-    else {
-        return b;
-    }     
+double coco_min_double(const double a, const double b) {
+  if (a <= b) {
+    return a;
+  } else {
+    return b;
+  }
 }

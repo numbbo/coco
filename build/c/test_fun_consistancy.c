@@ -6,7 +6,7 @@
 
 void my_optimizer(coco_problem_t *problem) {
   static const int budget = 102; /* 100000;*/
-  coco_random_state_t *rng = coco_new_random(0xdeadbeef);
+  coco_random_state_t *rng = coco_random_new(0xdeadbeef);
   double *x = (double *)malloc(problem->number_of_parameters * sizeof(double));
   double y;
   FILE *fd = fopen("const_check_newC.txt", "w");
@@ -24,7 +24,7 @@ void my_optimizer(coco_problem_t *problem) {
       fprintf(fd, "%.5f %.5f : %.5f\n", x[0], x[1], y);
     }
   }
-  coco_free_random(rng);
+  coco_random_free(rng);
   free(x);
   fclose(fd);
   printf("%s\n", problem->problem_name);
@@ -32,7 +32,7 @@ void my_optimizer(coco_problem_t *problem) {
 }
 
 int main(int argc, char **argv) {
-  coco_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer);
+  coco_suite_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer);
 }
 /*
  params.funcId = ifun;
