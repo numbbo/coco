@@ -60,7 +60,9 @@ char *coco_vstrdupf(const char *str, va_list args) {
   coco_error("coco_vstrdupf(): vsnprintf failed on '%s'", str);
 #else /* less safe alternative, if vsnprintf is not available */
   assert(strlen(str) < coco_vstrdupf_buflen / 2 - 2);
-  written = vsprintf(buf, str, args);
+  if (strlen(str) >= coco_vstrdupf_buflen / 2 - 2)
+    coco_error("coco_vstrdupf(): string is too long");
+  written = vsprintf(buf, str, args); 
   if (written < 0)
     coco_error("coco_vstrdupf(): vsprintf failed on '%s'", str);
 #endif
