@@ -11,7 +11,7 @@
 ## directly.
 
 LDFLAGS += -lm
-CCFLAGS = -g -ggdb -std=c89 -pedantic 
+CCFLAGS = -g -ggdb -Wall -std=c89 -pedantic 
 
 ########################################################################
 ## Toplevel targets
