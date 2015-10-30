@@ -13,29 +13,30 @@ np.import_array()
 cdef extern from "coco.h":
     ctypedef struct coco_problem_t:
         pass
-    coco_problem_t *coco_get_problem(const char *benchmark,
-                                     int problem_index)
-    int coco_next_problem_index(const char *benchmark, 
-                                const int problem_index,
-                                const char *benchmark_options)
-    void coco_free_problem(coco_problem_t *problem)
-    coco_problem_t *coco_observe_problem(const char *observer_name,
-                                         coco_problem_t *problem,
-                                         const char *options)
+    coco_problem_t *coco_suite_get_problem(const char *problem_suite,
+                                           const long problem_index)
+    int coco_suite_get_next_problem_index(const char *problem_suite, 
+                                          const long problem_index,
+                                          const char *select_options)
+    void coco_problem_free(coco_problem_t *problem)
+    coco_problem_t *coco_problem_add_observer(coco_problem_t *problem,
+                                              const char *observer_name,
+                                              const char *options)
     void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
-    void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y)
-    void coco_recommend_solutions(coco_problem_t *self, const double *x,
-                              size_t number_of_solutions)
-    size_t coco_get_number_of_variables(coco_problem_t *problem)
-    size_t coco_get_number_of_objectives(coco_problem_t *problem)
-    size_t coco_get_number_of_constraints(coco_problem_t *problem)
-    const char *coco_get_problem_id(coco_problem_t *problem)
-    const char *coco_get_problem_name(coco_problem_t *problem)
-    const double *coco_get_smallest_values_of_interest(coco_problem_t *problem)
-    const double *coco_get_largest_values_of_interest(coco_problem_t *problem)
-    double coco_get_final_target_fvalue1(coco_problem_t *problem)
-    size_t coco_get_evaluations(coco_problem_t *problem)
-    double coco_get_best_observed_fvalue1(coco_problem_t *problem)
+    void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
+    void coco_recommend_solutions(coco_problem_t *problem, 
+                                  const double *x,
+                                  size_t number_of_solutions)
+    size_t coco_problem_get_dimension(coco_problem_t *problem)
+    size_t coco_problem_get_number_of_objectives(coco_problem_t *problem)
+    size_t coco_problem_get_number_of_constraints(coco_problem_t *problem)
+    const char *coco_problem_get_id(coco_problem_t *problem)
+    const char *coco_problem_get_name(coco_problem_t *problem)
+    const double *coco_problem_get_smallest_values_of_interest(coco_problem_t *problem)
+    const double *coco_problem_get_largest_values_of_interest(coco_problem_t *problem)
+    double coco_problem_get_final_target_fvalue1(coco_problem_t *problem)
+    size_t coco_problem_get_evaluations(coco_problem_t *problem)
+    double coco_problem_get_best_observed_fvalue1(coco_problem_t *problem)
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
@@ -46,7 +47,7 @@ cdef bytes _bstring(s):
         raise TypeError(...)
 
 cdef class Problem:
-    """Problem(problem_suite: str, problem_index: int)"""
+    """Problem(problem_suite: str, problem_index: long)"""
     cdef coco_problem_t* problem
     cdef np.ndarray y  # argument for coco_evaluate
     # cdef public const double[:] test_bounds
@@ -60,7 +61,7 @@ cdef class Problem:
     cdef problem_suite  # for the record
     cdef problem_index  # for the record, this is not public but used in index property
 
-    def __cinit__(self, problem_suite, int problem_index):
+    def __cinit__(self, problem_suite, long problem_index):
         # see http://docs.cython.org/src/userguide/special_methods.html
         cdef np.npy_intp shape[1]
         _problem_suite = _bstring(problem_suite)
@@ -68,33 +69,33 @@ cdef class Problem:
         self.problem_index = problem_index
         # Implicit type conversion via passing safe, 
         # see http://docs.cython.org/src/userguide/language_basics.html
-        self.problem = coco_get_problem(_problem_suite, problem_index)
+        self.problem = coco_suite_get_problem(_problem_suite, problem_index)
         if self.problem is NULL:
             raise NoSuchProblemException(problem_suite, problem_index)
-        self._number_of_variables = coco_get_number_of_variables(self.problem)
-        self._number_of_objectives = coco_get_number_of_objectives(self.problem)
-        self._number_of_constraints = coco_get_number_of_constraints(self.problem)
+        self._number_of_variables = coco_problem_get_dimension(self.problem)
+        self._number_of_objectives = coco_problem_get_number_of_objectives(self.problem)
+        self._number_of_constraints = coco_problem_get_number_of_constraints(self.problem)
         self.y = np.zeros(self._number_of_objectives)
         ## FIXME: Inefficient because we copy the bounds instead of
         ## sharing the data.
         self._lower_bounds = -np.inf * np.ones(self._number_of_variables)
         self._upper_bounds = np.inf * np.ones(self._number_of_variables)
-        # self.test_bounds = coco_get_smallest_values_of_interest(self.problem)  # fails
+        # self.test_bounds = coco_problem_get_smallest_values_of_interest(self.problem)  # fails
         for i in range(self._number_of_variables):
-            if coco_get_smallest_values_of_interest(self.problem) is not NULL:
-                self._lower_bounds[i] = coco_get_smallest_values_of_interest(self.problem)[i]
-            if coco_get_largest_values_of_interest(self.problem) is not NULL:
-                self._upper_bounds[i] = coco_get_largest_values_of_interest(self.problem)[i]
+            if coco_problem_get_smallest_values_of_interest(self.problem) is not NULL:
+                self._lower_bounds[i] = coco_problem_get_smallest_values_of_interest(self.problem)[i]
+            if coco_problem_get_largest_values_of_interest(self.problem) is not NULL:
+                self._upper_bounds[i] = coco_problem_get_largest_values_of_interest(self.problem)[i]
 
     def add_observer(self, observer, options):
         """`add_observer(observer: str, options: str)`
         
-        A valid observer is "bbob2009_observer" and `options`
+        A valid observer is "observer_bbob2009" and `options`
         give the folder to be written into.             
             
         """
         _observer, _options = _bstring(observer), _bstring(options)
-        self.problem = coco_observe_problem(_observer, self.problem, _options)
+        self.problem = coco_problem_add_observer(self.problem, _observer, _options)
     
     def constraint(self, x):
         """return constraint values for `x`. 
@@ -166,17 +167,17 @@ cdef class Problem:
         
     @property
     def evaluations(self):
-        return coco_get_evaluations(self.problem)
+        return coco_problem_get_evaluations(self.problem)
     
     @property
     def final_target_fvalue1(self):
         assert(self.problem)
-        return coco_get_final_target_fvalue1(self.problem)
+        return coco_problem_get_final_target_fvalue1(self.problem)
         
     @property
     def best_observed_fvalue1(self):
         assert(self.problem)
-        return coco_get_best_observed_fvalue1(self.problem)
+        return coco_problem_get_best_observed_fvalue1(self.problem)
 
     def free(self):
         """Free the given test problem. 
@@ -188,13 +189,13 @@ cdef class Problem:
         exception.
         """
         if self.problem is not NULL:
-            coco_free_problem(self.problem)
+            coco_problem_free(self.problem)
             self.problem = NULL
 
     def __dealloc__(self):
         # see http://docs.cython.org/src/userguide/special_methods.html
         if self.problem is not NULL:
-            coco_free_problem(self.problem)
+            coco_problem_free(self.problem)
             self.problem = NULL
 
     # def __call__(self, np.ndarray[double, ndim=1, mode="c"] x):
@@ -218,12 +219,12 @@ cdef class Problem:
     def id(self): 
         "id as string without spaces or weird characters"
         if self.problem is not NULL:
-            return coco_get_problem_id(self.problem)
+            return coco_problem_get_id(self.problem)
     
     @property    
     def name(self):
         if self.problem is not NULL:
-            return coco_get_problem_name(self.problem)
+            return coco_problem_get_name(self.problem)
             
     @property
     def index(self):
@@ -284,7 +285,7 @@ cdef class Benchmark:
         ...     return candidates[np.argmin([f(x) for x in candidates])]
         ...
         >>> solver = random_search
-        >>> benchmark = Benchmark("bbob2009", "", "bbob2009_observer", 
+        >>> benchmark = Benchmark("suite_bbob2009", "", "observer_bbob2009", 
         ...                "%s_on_%s" % (solver.__name__, "bbob2009"))
         >>> for fun in benchmark:
         ...     solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
@@ -332,7 +333,7 @@ cdef class Benchmark:
 
         Example::
             >>> import cocoex as cc
-            >>> b = cc.Benchmark('bbob2009', "", "no_observer", "")
+            >>> b = cc.Benchmark('suite_bbob2009', "", "no_observer", "")
             >>> f6 = b.get_problem('f06', 'd10')
             >>> print(f6)
             bbob2009_f06_i01_d10 single-objective problem (BBOB2009(385) f06 instance 1 in 10D)
@@ -422,7 +423,7 @@ cdef class Benchmark:
         Example::
         
             >>> from cocoex import Benchmark
-            >>> bm = Benchmark('bbob2009', '', 'bbob2009_observer', '_tmp')
+            >>> bm = Benchmark('suite_bbob2009', '', 'observer_bbob2009', '_tmp')
             >>> index bm.first_problem_index
             >>> while index >= 0:  # -1 means no problem left
             ...     # do something
@@ -430,7 +431,7 @@ cdef class Benchmark:
                 
         See also `problem_indices` for the nicer design pattern. 
         """
-        return coco_next_problem_index(self.problem_suite, problem_index, 
+        return coco_problem_next_problem_index(self.problem_suite, problem_index, 
                                        self.problem_suite_options)
     @property
     def problem_indices(self):
@@ -439,7 +440,7 @@ cdef class Benchmark:
         Example::
             
             import cocoex
-            bm = cocoex.Benchmark('bbob2009', '', 'bbob2009_observer', '_tmp')
+            bm = cocoex.Benchmark('suite_bbob2009', '', 'observer_bbob2009', '_tmp')
             for index in bm.problem_indices:
                 print("There exists a problem with index %d" % index)
                 # do something interesting, e.g.

@@ -93,29 +93,29 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
   }
 }
 
-coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, const char *observer, const char *options) {
+coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, const char *observer_name, const char *options) {
   if (problem == NULL) {
     coco_warning("Trying to observe a NULL problem has no effect.");
     return problem;
   }
-  if (0 == strcmp(observer, "observer_toy")) {
+  if (0 == strcmp(observer_name, "observer_toy")) {
     return observer_toy(problem, options);
-  } else if (0 == strcmp(observer, "observer_bbob2009")) {
+  } else if (0 == strcmp(observer_name, "observer_bbob2009")) {
     return observer_bbob2009(problem, options);
-  } else if (0 == strcmp(observer, "observer_mo_toy")) {
+  } else if (0 == strcmp(observer_name, "observer_mo_toy")) {
     return observer_mo_toy(problem, options);
   }
 
   /* here each observer must have another entry */
 
-  if (0 == strcmp(observer, "no_observer")) {
+  if (0 == strcmp(observer_name, "no_observer")) {
     return problem;
-  } else if (strlen(observer) == 0) {
+  } else if (strlen(observer_name) == 0) {
     coco_warning("Empty observer '' has no effect. To prevent this warning use 'no_observer' instead");
     return problem;
   } else {
     /* not so clear whether an error is better, depends on the usecase */
-    coco_warning(observer);
+    coco_warning(observer_name);
     coco_warning("is an unknown observer which has no effect (the reason might just be a typo)");
     return problem;
   }
