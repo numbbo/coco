@@ -1,10 +1,10 @@
 #include "coco_generics.c"
-#include "f_1u_bueche_rastrigin.c"
-#include "f_1u_ellipsoid.c"
-#include "f_1u_linear_slope.c"
-#include "f_1u_rastrigin.c"
-#include "f_1u_rosenbrock.c"
-#include "f_1u_sphere.c"
+#include "f_bueche_rastrigin.c"
+#include "f_ellipsoid.c"
+#include "f_linear_slope.c"
+#include "f_rastrigin.c"
+#include "f_rosenbrock.c"
+#include "f_sphere.c"
 
 #include "logger_target_hits.c"
 
