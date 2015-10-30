@@ -13,9 +13,9 @@
 #include <stdlib.h>  /* memory, e.g. malloc */
 #include <math.h>
 
-#include "coco_archive.h"
+#include "coco_archive.c"
 
-void mococo_pareto_front(int *frontFlag, double *obj, size_t nrow, size_t ncol) {
+void mo_pareto_front(int *frontFlag, double *obj, size_t nrow, size_t ncol) {
   size_t t, s, i, j, j1, j2;
   int *checklist, colDominatedFlag;
 
@@ -73,8 +73,8 @@ void mococo_pareto_front(int *frontFlag, double *obj, size_t nrow, size_t ncol) 
   free(checklist);
 }
 
-void mococo_pareto_filtering(coco_archive_t *archive) {
-  /* Create the objective vectors and frontFlag of appropriate format for mococo_pareto_front() */
+void mo_pareto_filtering(coco_archive_t *archive) {
+  /* Create the objective vectors and frontFlag of appropriate format for mo_pareto_front() */
   size_t len = archive->size;
   size_t nObjs = archive->num_obj;
   int *frontFlag = (int*) malloc(len * sizeof(int));
@@ -91,7 +91,7 @@ void mococo_pareto_filtering(coco_archive_t *archive) {
   }
 
   /* Call the non-dominated sorting engine */
-  mococo_pareto_front(frontFlag, obj, len, nObjs);
+  mo_pareto_front(frontFlag, obj, len, nObjs);
 
   /* Mark non-dominated solutions and filter out dominated ones */
   s = 0;

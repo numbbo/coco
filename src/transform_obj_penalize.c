@@ -5,10 +5,10 @@
 
 typedef struct {
   double factor;
-} _tran_obj_penalize_data_t;
+} transform_obj_penalize_data_t;
 
-static void private_tran_obj_penalize_evaluate(coco_problem_t *self, const double *x, double *y) {
-  _tran_obj_penalize_data_t *data = coco_transformed_get_data(self);
+static void private_transform_obj_penalize_evaluate(coco_problem_t *self, const double *x, double *y) {
+  transform_obj_penalize_data_t *data = coco_transformed_get_data(self);
   const double *lower_bounds = self->smallest_values_of_interest;
   const double *upper_bounds = self->largest_values_of_interest;
   double penalty = 0.0;
@@ -35,15 +35,15 @@ static void private_tran_obj_penalize_evaluate(coco_problem_t *self, const doubl
  * Add a penalty to all evaluations outside of the region of interest
  * of ${inner_problem}.
  */
-static coco_problem_t *f_tran_obj_penalize(coco_problem_t *inner_problem, const double factor) {
+static coco_problem_t *f_transform_obj_penalize(coco_problem_t *inner_problem, const double factor) {
   coco_problem_t *self;
-  _tran_obj_penalize_data_t *data;
+  transform_obj_penalize_data_t *data;
   assert(inner_problem != NULL);
   /* assert(offset != NULL); */
 
   data = coco_allocate_memory(sizeof(*data));
   data->factor = factor;
   self = coco_transformed_allocate(inner_problem, data, NULL);
-  self->evaluate_function = private_tran_obj_penalize_evaluate;
+  self->evaluate_function = private_transform_obj_penalize_evaluate;
   return self;
 }
