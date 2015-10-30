@@ -2,8 +2,8 @@
 ## onion.py - example to show how the wrapping of functions in the C
 ##   code works. 
 ##
-## This is a simplified version of the numbbo_problem_t /
-## numbbo_transformed_problem_t structure of the C code for
+## This is a simplified version of the coco_problem_t /
+## coco_transformed_problem_t structure of the C code for
 ## illustation purposes. The idea behind the C code is the same but we
 ## need much more boilerplate code to get there. 
 class sphere_function(object):
@@ -46,9 +46,9 @@ class transformed_problem(object):
     def best_value(self):
         return self._inner_problem.best_value()
 
-class shift_variable(transformed_problem):
+class tran_var_shift(transformed_problem):
     def __init__(self, inner_problem, shift):
-        super(shift_variable, self).__init__(inner_problem)
+        super(tran_var_shift, self).__init__(inner_problem)
         self.shift = shift
 
     def __call__(self, x):
@@ -57,9 +57,9 @@ class shift_variable(transformed_problem):
     def best_parameter(self):
         return self._inner_problem.best_parameter() + self.shift
 
-class offset_objective(transformed_problem):
+class tran_obj_offset(transformed_problem):
     def __init__(self, inner_problem, offset):
-        super(offset_objective, self).__init__(inner_problem)
+        super(tran_obj_offset, self).__init__(inner_problem)
         self.offset = offset
 
     def __call__(self, x):
@@ -71,9 +71,9 @@ class offset_objective(transformed_problem):
 
 ## Example usage:
 sphere = sphere_function()
-offset_sphere = offset_objective(sphere, 2)
-shifted_sphere = shift_variable(sphere, 2)
-shifted_offset_sphere = shift_variable(offset_sphere, 3)
+offset_sphere = tran_obj_offset(sphere, 2)
+shifted_sphere = tran_var_shift(sphere, 2)
+shifted_offset_sphere = tran_var_shift(offset_sphere, 3)
 
 sphere(2)
 sphere.best_parameter()
