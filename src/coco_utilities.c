@@ -101,7 +101,7 @@ int coco_path_exists(const char *path) {
   res = (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 #elif defined(HAVE_STAT)
   struct stat buf;
-  res = (!stat(buf, &statbuf) && S_ISDIR(statbuf.st_mode));
+  res = (!stat(path, &buf) && S_ISDIR(buf.st_mode));
 #else
 #error Ooops
 #endif
