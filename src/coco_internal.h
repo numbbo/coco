@@ -1,23 +1,20 @@
 /*
- * Internal NumBBO structures and typedefs.
+ * Internal COCO structures and typedefs.
  *
- * These are used throughout the NumBBO code base but should not be
+ * These are used throughout the COCO code base but should not be
  * used by any external code.
  */
 
-#ifndef __NUMBBO_INTERNAL__
-#define __NUMBBO_INTERNAL__
+#ifndef __COCO_INTERNAL__
+#define __COCO_INTERNAL__
 
-typedef void (*coco_initial_solution_function_t)(
-    const struct coco_problem *self, double *y);
-typedef void (*coco_evaluate_function_t)(struct coco_problem *self,
-                                         const double *x,
-                                         double *y);
-typedef void (*coco_recommendation_function_t)(struct coco_problem *self,
+typedef void (*coco_initial_solution_function_t)(const coco_problem_t *self, double *y);
+typedef void (*coco_evaluate_function_t)(coco_problem_t *self, const double *x, double *y);
+typedef void (*coco_recommendation_function_t)(coco_problem_t *self,
                                                const double *x,
                                                size_t number_of_solutions);
 
-typedef void (*coco_free_function_t)(struct coco_problem *self);
+typedef void (*coco_free_function_t)(coco_problem_t *self);
 
 /**
  * Description of a COCO problem (instance)
@@ -71,17 +68,17 @@ struct coco_problem {
   double best_observed_fvalue[1];
   long best_observed_evaluation[1];
   void *data;
-  /* The prominent usecase for data is coco_transform_data_t*, making an
-   * "onion of problems", initialized in coco_allocate_transformed_problem(...).
+  /* The prominent usecase for data is coco_transformed_data_t*, making an
+   * "onion of problems", initialized in coco_transformed_allocate(...).
    * This makes the current ("outer" or "transformed") problem a "derived
    * problem class", which inherits from the "inner" problem, the "base class".
    *   - data holds the meta-information to administer the inheritance
    *   - data->data holds the additional fields of the derived class (the outer problem)
    * Specifically:  
-   * data = coco_transform_data_t *  / * mnemonic: inheritance data or onion data or link data
+   * data = coco_transformed_data_t *  / * mnemonic: inheritance data or onion data or link data
    *          - coco_problem_t *inner_problem;  / * now we have a linked list
    *          - void *data;  / * defines the additional attributes/fields etc. to be used by the "outer" problem (derived class)
-   *          - coco_transform_free_data_t free_data;  / * deleter for allocated memory in (not of) data->data
+   *          - coco_transformed_free_data_t free_data;  / * deleter for allocated memory in (not of) data->data
    */
 };
 
