@@ -33,8 +33,7 @@ static void private_1u_attractive_sector_free(coco_problem_t *self) {
   coco_problem_free(self);
 }
 
-static coco_problem_t *
-f_1u_attractive_sector(const size_t number_of_variables, const double *xopt) {
+static coco_problem_t *f_1u_attractive_sector(const size_t number_of_variables, const double *xopt) {
   size_t i, problem_id_length;
   coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
   _1u_attractive_sector_data_t *data;

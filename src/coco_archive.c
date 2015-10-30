@@ -6,8 +6,11 @@
 
 #include "coco_archive.h"
 
-void coco_archive_allocate(coco_archive_t *archive, size_t max_size, size_t size_var, size_t size_obj,
-    size_t max_update) {
+void coco_archive_allocate(coco_archive_t *archive,
+                           size_t max_size,
+                           size_t size_var,
+                           size_t size_obj,
+                           size_t max_update) {
   size_t i;
 
   archive->max_size = max_size;
@@ -59,8 +62,11 @@ void coco_archive_free(coco_archive_t *archive) {
   free(archive->entry);
 }
 
-void coco_archive_push(coco_archive_t *archive, const double **var, double **obj, size_t num_var,
-    size_t time_stamp) {
+void coco_archive_push(coco_archive_t *archive,
+                       const double **var,
+                       double **obj,
+                       size_t num_var,
+                       size_t time_stamp) {
   coco_archive_entry_t *entry;
   size_t s = archive->size;
   size_t tnext = 0;

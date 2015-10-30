@@ -55,8 +55,7 @@ void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y);
  * @note ${number_of_solutions} is expected to be larger than 1 only
  * if coco_problem_get_number_of_objectives(self) is larger than 1. 
  */
-void coco_recommend_solutions(coco_problem_t *self, const double *x,
-    size_t number_of_solutions);
+void coco_recommend_solutions(coco_problem_t *self, const double *x, size_t number_of_solutions);
 
 /**
  * Free the COCO problem represented by ${self}.
@@ -108,8 +107,7 @@ size_t coco_problem_get_number_of_constraints(const coco_problem_t *self);
  * Get the ${problem_index}-th problem of the ${problem_suit} test
  * suite.
  */
-coco_problem_t *coco_suite_get_problem(const char *problem_suite,
-    const long problem_index);
+coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long problem_index);
 
 /**
  * Return the successor index of ${problem_index} in ${problem_suit},
@@ -126,8 +124,8 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite,
  * loops over all indices and problems consequently. 
  */
 long coco_suite_get_next_problem_index(const char *problem_suite,
-    const long problem_index,
-    const char *select_options);
+                                       const long problem_index,
+                                       const char *select_options);
 
 /**
  * Number of evaluations done on problem ${self}. 
@@ -164,8 +162,7 @@ const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *
  * @see coco_problem_get_smallest_values_of_interest() and
  *coco_problem_get_largest_values_of_interest()
  */
-void coco_problem_get_initial_solution(const coco_problem_t *self,
-    double *initial_solution);
+void coco_problem_get_initial_solution(const coco_problem_t *self, double *initial_solution);
 
 /**
  * Add the observer named ${observer_name} to ${problem}. An
@@ -181,16 +178,21 @@ void coco_problem_get_initial_solution(const coco_problem_t *self,
  * interface design for interpreted languages. A short hand for this
  * observer is the empty string ("").
  */
-coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, const char *observer_name,
-    const char *options);
+coco_problem_t *coco_problem_add_observer(coco_problem_t *problem,
+                                          const char *observer_name,
+                                          const char *options);
 
-void coco_suite_benchmark(const char *problem_suite, const char *observer,
-    const char *observer_options, coco_optimizer_t optimizer);
+void coco_suite_benchmark(const char *problem_suite,
+                          const char *observer,
+                          const char *observer_options,
+                          coco_optimizer_t optimizer);
 
 /* shall replace the above? */
-void new_coco_benchmark(const char *problem_suite, const char *problem_suit_options,
-    const char *observer, const char *observer_options,
-    coco_optimizer_t optimizer);
+void new_coco_benchmark(const char *problem_suite,
+                        const char *problem_suit_options,
+                        const char *observer,
+                        const char *observer_options,
+                        coco_optimizer_t optimizer);
 
 /**************************************************************************
  * Random number generator

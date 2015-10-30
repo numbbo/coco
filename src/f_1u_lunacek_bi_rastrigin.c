@@ -85,8 +85,7 @@ static void private_1u_lunacek_bi_rastrigin_free(coco_problem_t *self) {
   coco_problem_free(self);
 }
 
-static coco_problem_t *
-f_1u_lunacek_bi_rastrigin(const size_t number_of_variables, const long instance_id) {
+static coco_problem_t *f_1u_lunacek_bi_rastrigin(const size_t number_of_variables, const long instance_id) {
   double *tmpvect;
   size_t i, problem_id_length;
   long rseed;

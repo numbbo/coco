@@ -33,8 +33,9 @@ static void private_tran_var_shift_free(void *thing) {
 /*
  * Shift all variables of ${inner_problem} by ${offset}.
  */
-static coco_problem_t *f_tran_var_shift(coco_problem_t *inner_problem, const double *offset,
-    const int shift_bounds) {
+static coco_problem_t *f_tran_var_shift(coco_problem_t *inner_problem,
+                                        const double *offset,
+                                        const int shift_bounds) {
   _tran_var_shift_data_t *data;
   coco_problem_t *self;
   if (shift_bounds)

@@ -24,12 +24,18 @@ typedef struct {
   coco_archive_entry_t **update;
 } coco_archive_t;
 
-void coco_archive_allocate(coco_archive_t *archive, size_t max_size, size_t size_var, size_t size_obj,
-    size_t max_update);
+void coco_archive_allocate(coco_archive_t *archive,
+                           size_t max_size,
+                           size_t size_var,
+                           size_t size_obj,
+                           size_t max_update);
 void coco_archive_free(coco_archive_t *archive);
 void coco_archive_reset(coco_archive_t *archive);
-void coco_archive_push(coco_archive_t *archive, const double **var, double **obj, size_t num_var,
-    size_t time_stamp);
+void coco_archive_push(coco_archive_t *archive,
+                       const double **var,
+                       double **obj,
+                       size_t num_var,
+                       size_t time_stamp);
 void coco_archive_mark_updates(coco_archive_t *archive, size_t time_stamp);
 
 #ifdef	__cplusplus

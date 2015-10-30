@@ -14,24 +14,22 @@
  * 
  ***********************************/
 
-coco_problem_t *
-coco_problem_allocate(const size_t number_of_variables, const size_t number_of_objectives,
-    const size_t number_of_constraints);
-coco_problem_t *
-coco_problem_duplicate(coco_problem_t *other);
+coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
+                                      const size_t number_of_objectives,
+                                      const size_t number_of_constraints);
+coco_problem_t *coco_problem_duplicate(coco_problem_t *other);
 typedef void (*coco_transformed_free_data_t)(void *data);
 
 /* typedef coco_transformed_data_t; */
-coco_problem_t *
-coco_transformed_allocate(coco_problem_t *inner_problem, void *userdata,
-    coco_transformed_free_data_t free_data);
+coco_problem_t *coco_transformed_allocate(coco_problem_t *inner_problem,
+                                          void *userdata,
+                                          coco_transformed_free_data_t free_data);
 void *coco_transformed_get_data(coco_problem_t *self);
-coco_problem_t *
-coco_transformed_get_inner_problem(coco_problem_t *self);
+coco_problem_t *coco_transformed_get_inner_problem(coco_problem_t *self);
 
 /* typedef coco_stacked_problem_data_t; */
-coco_problem_t *
-coco_stacked_problem_allocate(coco_problem_t *problem1_to_be_stacked, coco_problem_t *problem2_to_be_stacked);
+coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1_to_be_stacked,
+                                              coco_problem_t *problem2_to_be_stacked);
 
 /***********************************/
 
@@ -41,9 +39,9 @@ coco_stacked_problem_allocate(coco_problem_t *problem1_to_be_stacked, coco_probl
  * Allocate and pre-populate a new coco_problem_t for a problem with
  * ${number_of_variables}.
  */
-coco_problem_t *
-coco_problem_allocate(const size_t number_of_variables, const size_t number_of_objectives,
-    const size_t number_of_constraints) {
+coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
+                                      const size_t number_of_objectives,
+                                      const size_t number_of_constraints) {
   coco_problem_t *problem;
   problem = (coco_problem_t *) coco_allocate_memory(sizeof(coco_problem_t));
   /* Initialize fields to sane/safe defaults */
@@ -69,8 +67,7 @@ coco_problem_allocate(const size_t number_of_variables, const size_t number_of_o
   return problem;
 }
 
-coco_problem_t *
-coco_problem_duplicate(coco_problem_t *other) {
+coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
   size_t i;
   coco_problem_t *problem;
   problem = coco_problem_allocate(other->number_of_variables, other->number_of_objectives,
@@ -127,7 +124,9 @@ static void private_coco_transformed_evaluate_constraint(coco_problem_t *self, c
   coco_evaluate_constraint(data->inner_problem, x, y);
 }
 
-static void private_coco_transformed_recommend_solutions(coco_problem_t *self, const double *x, size_t number_of_solutions) {
+static void private_coco_transformed_recommend_solutions(coco_problem_t *self,
+                                                         const double *x,
+                                                         size_t number_of_solutions) {
   coco_transformed_data_t *data;
   assert(self != NULL);
   assert(self->data != NULL);
@@ -171,9 +170,9 @@ static void private_coco_transformed_free_problem(coco_problem_t *self) {
  * default all methods will dispatch to the ${inner_problem} method.
  *
  */
-coco_problem_t *
-coco_transformed_allocate(coco_problem_t *inner_problem, void *userdata,
-    coco_transformed_free_data_t free_data) {
+coco_problem_t *coco_transformed_allocate(coco_problem_t *inner_problem,
+                                          void *userdata,
+                                          coco_transformed_free_data_t free_data) {
   coco_transformed_data_t *data;
   coco_problem_t *self;
 
@@ -199,8 +198,7 @@ void *coco_transformed_get_data(coco_problem_t *self) {
   return ((coco_transformed_data_t *) self->data)->data;
 }
 
-coco_problem_t *
-coco_transformed_get_inner_problem(coco_problem_t *self) {
+coco_problem_t *coco_transformed_get_inner_problem(coco_problem_t *self) {
   assert(self != NULL);
   assert(self->data != NULL);
   assert(((coco_transformed_data_t *) self->data)->inner_problem != NULL);
@@ -220,7 +218,8 @@ static void coco_stacked_problem_evaluate(coco_problem_t *self, const double *x,
 
   assert(
       coco_problem_get_number_of_objectives(self)
-          == coco_problem_get_number_of_objectives(data->problem1) + coco_problem_get_number_of_objectives(data->problem2));
+          == coco_problem_get_number_of_objectives(data->problem1)
+              + coco_problem_get_number_of_objectives(data->problem2));
 
   coco_evaluate_function(data->problem1, x, &y[0]);
   coco_evaluate_function(data->problem2, x, &y[coco_problem_get_number_of_objectives(data->problem1)]);
@@ -231,7 +230,8 @@ static void coco_stacked_problem_evaluate_constraint(coco_problem_t *self, const
 
   assert(
       coco_problem_get_number_of_constraints(self)
-          == coco_problem_get_number_of_constraints(data->problem1) + coco_problem_get_number_of_constraints(data->problem2));
+          == coco_problem_get_number_of_constraints(data->problem1)
+              + coco_problem_get_number_of_constraints(data->problem2));
 
   if (coco_problem_get_number_of_constraints(data->problem1) > 0)
     coco_evaluate_constraint(data->problem1, x, y);

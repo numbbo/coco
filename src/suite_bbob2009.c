@@ -91,16 +91,18 @@ static const unsigned BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up u
  * remainders.
  */
 
-static void suite_bbob2009_decode_problem_index(const long problem_index, int *function_id, long *instance_id,
-    long *dimension) {
+static void suite_bbob2009_decode_problem_index(const long problem_index,
+                                                int *function_id,
+                                                long *instance_id,
+                                                long *dimension) {
   const long high_instance_id = problem_index
       / (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS *
       SUITE_BBOB2009_NUMBER_OF_DIMENSIONS);
   long low_instance_id;
   long rest = problem_index % (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES *
   SUITE_BBOB2009_NUMBER_OF_FUNCTIONS * SUITE_BBOB2009_NUMBER_OF_DIMENSIONS);
-  *dimension =
-      BBOB2009_DIMS[rest / (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS)];
+  *dimension = BBOB2009_DIMS[rest
+      / (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS)];
   rest = rest % (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS);
   *function_id = (int) (rest / SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES + 1);
   rest = rest % SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
@@ -118,7 +120,8 @@ static long suite_bbob2009_encode_problem_index(int function_id, long instance_i
       * SUITE_BBOB2009_NUMBER_OF_DIMENSIONS;
   long tmp1 = instance_id % SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
   long tmp2 = function_id * SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
-  long tmp3 = dimension_idx * (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS);
+  long tmp3 = dimension_idx
+      * (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS);
   long tmp4 = ((long) (instance_id / SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES)) * cycleLength; /* just for safety */
 
   return tmp1 + tmp2 + tmp3 + tmp4;

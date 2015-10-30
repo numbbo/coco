@@ -93,8 +93,9 @@ static void private_1u_gallagher_free(coco_problem_t *self) {
   coco_problem_free(self);
 }
 
-static coco_problem_t *f_1u_gallagher(const size_t number_of_variables, const long instance_id,
-    const unsigned int number_of_peaks) {
+static coco_problem_t *f_1u_gallagher(const size_t number_of_variables,
+                                      const long instance_id,
+                                      const unsigned int number_of_peaks) {
   size_t i, j, k, problem_id_length, *rperm;
   long rseed;
   coco_problem_t *problem;

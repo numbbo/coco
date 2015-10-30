@@ -53,8 +53,10 @@ static long suite_biobj_300_encode_problem_index(int combination_idx, long insta
   return problem_index;
 }
 
-static void suite_biobj_300_decode_problem_index(const long problem_index, int *combination_idx,
-    long *instance_idx, long *dimension_idx) {
+static void suite_biobj_300_decode_problem_index(const long problem_index,
+                                                 int *combination_idx,
+                                                 long *instance_idx,
+                                                 long *dimension_idx) {
   long rest;
   *dimension_idx = problem_index / (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_COMBINATIONS);
   rest = problem_index % (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_COMBINATIONS);
