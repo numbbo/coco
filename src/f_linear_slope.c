@@ -5,7 +5,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 
-static void private_1u_linear_slope_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void private_f_linear_slope_evaluate(coco_problem_t *self, const double *x, double *y) {
   static const double alpha = 100.0;
   size_t i;
   assert(self->number_of_objectives == 1);
@@ -24,7 +24,7 @@ static void private_1u_linear_slope_evaluate(coco_problem_t *self, const double 
   }
 }
 
-static coco_problem_t *f_1u_linear_slope(const size_t number_of_variables, const double *best_parameter) {
+static coco_problem_t *f_linear_slope(const size_t number_of_variables, const double *best_parameter) {
   size_t i, problem_id_length;
   coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("linear slope function");
@@ -34,7 +34,7 @@ static coco_problem_t *f_1u_linear_slope(const size_t number_of_variables, const
   snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "linear_slope",
       (long) number_of_variables);
 
-  problem->evaluate_function = private_1u_linear_slope_evaluate;
+  problem->evaluate_function = private_f_linear_slope_evaluate;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
@@ -45,6 +45,6 @@ static coco_problem_t *f_1u_linear_slope(const size_t number_of_variables, const
     }
   }
   /* Calculate best parameter value */
-  private_1u_linear_slope_evaluate(problem, problem->best_parameter, problem->best_value);
+  private_f_linear_slope_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }

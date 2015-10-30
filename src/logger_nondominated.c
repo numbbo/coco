@@ -3,7 +3,6 @@
 
 #include "coco.h"
 #include "coco_archive.c"
-#include "coco_archive.h"
 
 #include "coco_utilities.c"
 #include "coco_problem.c"
@@ -63,7 +62,7 @@ static void private_logger_nondominated_evaluate(coco_problem_t *self, const dou
   /* Finish evaluations of 1 single solution of the pop, with n_obj objectives,
    * now update the archive with this newly evaluated solution and check its nondomination. */
   coco_archive_push(mo_archive, &x, &y, 1, data->number_of_evaluations);
-  mococo_pareto_filtering(mo_archive); /***** TODO: IMPROVE THIS ROUTINE *****/
+  mo_pareto_filtering(mo_archive); /***** TODO: IMPROVE THIS ROUTINE *****/
   coco_archive_mark_updates(mo_archive, data->number_of_evaluations);
 
   /* Write out a line for this newly evaluated solution if it is nondominated */

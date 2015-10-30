@@ -5,7 +5,7 @@
 
 #include "coco_problem.c"
 
-static void private_1u_bueche_rastrigin_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void private_f_bueche_rastrigin_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   double tmp = 0., tmp2 = 0.;
   assert(self->number_of_objectives == 1);
@@ -17,7 +17,7 @@ static void private_1u_bueche_rastrigin_evaluate(coco_problem_t *self, const dou
   y[0] = 10.0 * ((double) (long) self->number_of_variables - tmp) + tmp2 + 0;
 }
 
-static coco_problem_t *f_1u_bueche_rastrigin(const size_t number_of_variables) {
+static coco_problem_t *f_bueche_rastrigin(const size_t number_of_variables) {
   size_t i, problem_id_length;
   coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("Bueche-Rastrigin function");
@@ -30,13 +30,13 @@ static coco_problem_t *f_1u_bueche_rastrigin(const size_t number_of_variables) {
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = 1;
   problem->number_of_constraints = 0;
-  problem->evaluate_function = private_1u_bueche_rastrigin_evaluate;
+  problem->evaluate_function = private_f_bueche_rastrigin_evaluate;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
     problem->best_parameter[i] = 0.0;
   }
   /* Calculate best parameter value */
-  private_1u_bueche_rastrigin_evaluate(problem, problem->best_parameter, problem->best_value);
+  private_f_bueche_rastrigin_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }

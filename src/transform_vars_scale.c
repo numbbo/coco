@@ -9,11 +9,11 @@
 typedef struct {
   double factor;
   double *x;
-} _tran_var_scale_data_t;
+} transform_vars_scale_data_t;
 
-static void private_tran_var_scale_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void private_transform_vars_scale_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
-  _tran_var_scale_data_t *data;
+  transform_vars_scale_data_t *data;
   coco_problem_t *inner_problem;
   data = coco_transformed_get_data(self);
   inner_problem = coco_transformed_get_inner_problem(self);
@@ -28,23 +28,23 @@ static void private_tran_var_scale_evaluate(coco_problem_t *self, const double *
   } while (0);
 }
 
-static void private_tran_var_scale_free(void *thing) {
-  _tran_var_scale_data_t *data = thing;
+static void private_transform_vars_scale_free(void *thing) {
+  transform_vars_scale_data_t *data = thing;
   coco_free_memory(data->x);
 }
 
 /**
  * Scale all variables by factor before evaluation.
  */
-static coco_problem_t *f_tran_var_scale(coco_problem_t *inner_problem, const double factor) {
-  _tran_var_scale_data_t *data;
+static coco_problem_t *f_transform_vars_scale(coco_problem_t *inner_problem, const double factor) {
+  transform_vars_scale_data_t *data;
   coco_problem_t *self;
 
   data = coco_allocate_memory(sizeof(*data));
   data->factor = factor;
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_transformed_allocate(inner_problem, data, private_tran_var_scale_free);
-  self->evaluate_function = private_tran_var_scale_evaluate;
+  self = coco_transformed_allocate(inner_problem, data, private_transform_vars_scale_free);
+  self->evaluate_function = private_transform_vars_scale_evaluate;
   return self;
 }

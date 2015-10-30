@@ -8,11 +8,11 @@ typedef struct {
   long seed;
   double *x;
   coco_free_function_t old_free_problem;
-} _tran_var_x_hat_data_t;
+} transform_vars_x_hat_data_t;
 
-static void private_tran_var_x_hat_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void private_transform_vars_x_hat_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
-  _tran_var_x_hat_data_t *data;
+  transform_vars_x_hat_data_t *data;
   coco_problem_t *inner_problem;
   data = coco_transformed_get_data(self);
   inner_problem = coco_transformed_get_inner_problem(self);
@@ -30,23 +30,23 @@ static void private_tran_var_x_hat_evaluate(coco_problem_t *self, const double *
   } while (0);
 }
 
-static void private_tran_var_x_hat_free(void *thing) {
-  _tran_var_x_hat_data_t *data = thing;
+static void private_transform_vars_x_hat_free(void *thing) {
+  transform_vars_x_hat_data_t *data = thing;
   coco_free_memory(data->x);
 }
 
 /**
  * Multiply the x-vector by the vector 2 * 1+-.
  */
-static coco_problem_t *f_tran_var_x_hat(coco_problem_t *inner_problem, long seed) {
-  _tran_var_x_hat_data_t *data;
+static coco_problem_t *f_transform_vars_x_hat(coco_problem_t *inner_problem, long seed) {
+  transform_vars_x_hat_data_t *data;
   coco_problem_t *self;
 
   data = coco_allocate_memory(sizeof(*data));
   data->seed = seed;
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_transformed_allocate(inner_problem, data, private_tran_var_x_hat_free);
-  self->evaluate_function = private_tran_var_x_hat_evaluate;
+  self = coco_transformed_allocate(inner_problem, data, private_transform_vars_x_hat_free);
+  self->evaluate_function = private_transform_vars_x_hat_evaluate;
   return self;
 }

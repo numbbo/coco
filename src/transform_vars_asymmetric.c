@@ -10,12 +10,12 @@
 typedef struct {
   double *x;
   double beta;
-} _tran_var_asymmetric_data_t;
+} transform_vars_asymmetric_data_t;
 
-static void private_tran_var_asymmetric_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void private_transform_vars_asymmetric_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   double exponent;
-  _tran_var_asymmetric_data_t *data;
+  transform_vars_asymmetric_data_t *data;
   coco_problem_t *inner_problem;
 
   data = coco_transformed_get_data(self);
@@ -33,21 +33,21 @@ static void private_tran_var_asymmetric_evaluate(coco_problem_t *self, const dou
   coco_evaluate_function(inner_problem, data->x, y);
 }
 
-static void private_tran_var_asymmetric_free(void *thing) {
-  _tran_var_asymmetric_data_t *data = thing;
+static void private_transform_vars_asymmetric_free(void *thing) {
+  transform_vars_asymmetric_data_t *data = thing;
   coco_free_memory(data->x);
 }
 
 /**
  * Perform monotone oscillation transformation on input variables.
  */
-static coco_problem_t *f_tran_var_asymmetric(coco_problem_t *inner_problem, const double beta) {
-  _tran_var_asymmetric_data_t *data;
+static coco_problem_t *f_transform_vars_asymmetric(coco_problem_t *inner_problem, const double beta) {
+  transform_vars_asymmetric_data_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->beta = beta;
-  self = coco_transformed_allocate(inner_problem, data, private_tran_var_asymmetric_free);
-  self->evaluate_function = private_tran_var_asymmetric_evaluate;
+  self = coco_transformed_allocate(inner_problem, data, private_transform_vars_asymmetric_free);
+  self->evaluate_function = private_transform_vars_asymmetric_evaluate;
   return self;
 }

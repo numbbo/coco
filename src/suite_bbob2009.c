@@ -179,29 +179,29 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
     bbob2009_compute_xopt(xopt, rseed, dimension_);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
 
-    problem = f_1u_sphere(dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_sphere(dimension);
+    problem = f_transform_vars_shift(problem, xopt, 0);
+    problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 2) {
     double xopt[MAX_DIM], fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension_);
 
-    problem = f_1u_ellipsoid(dimension);
-    problem = f_tran_var_oscillate(problem);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_ellipsoid(dimension);
+    problem = f_transform_vars_oscillate(problem);
+    problem = f_transform_vars_shift(problem, xopt, 0);
+    problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 3) {
     double xopt[MAX_DIM], fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension_);
 
-    problem = f_1u_rastrigin(dimension);
-    problem = f_tran_var_conditioning(problem, 10.0);
-    problem = f_tran_var_asymmetric(problem, 0.2);
-    problem = f_tran_var_oscillate(problem);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_rastrigin(dimension);
+    problem = f_transform_vars_conditioning(problem, 10.0);
+    problem = f_transform_vars_asymmetric(problem, 0.2);
+    problem = f_transform_vars_oscillate(problem);
+    problem = f_transform_vars_shift(problem, xopt, 0);
+    problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 4) {
     unsigned i; /*to prevent warnings, changed for all i,j and k variables used to iterate over coordinates*/
     double xopt[MAX_DIM], fopt, penalty_factor = 100.0;
@@ -216,18 +216,18 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
       xopt[i] = fabs(xopt[i]);
     }
 
-    problem = f_1u_bueche_rastrigin(dimension);
-    problem = f_tran_var_brs(problem);
-    problem = f_tran_var_oscillate(problem);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_obj_penalize(problem, penalty_factor);
+    problem = f_bueche_rastrigin(dimension);
+    problem = f_transform_vars_brs(problem);
+    problem = f_transform_vars_oscillate(problem);
+    problem = f_transform_vars_shift(problem, xopt, 0);
+    problem = f_transform_obj_shift(problem, fopt);
+    problem = f_transform_obj_penalize(problem, penalty_factor);
   } else if (function_id == 5) {
     double xopt[MAX_DIM], fopt;
     bbob2009_compute_xopt(xopt, rseed, dimension_);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    problem = f_1u_linear_slope(dimension, xopt);
-    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_linear_slope(dimension, xopt);
+    problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 6) {
     unsigned i, j, k;
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
@@ -253,14 +253,14 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
 
-    problem = f_1u_attractive_sector(dimension, xopt);
-    problem = f_tran_obj_oscillate(problem);
-    problem = f_tran_obj_power(problem, 0.9);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
+    problem = f_attractive_sector(dimension, xopt);
+    problem = f_transform_obj_oscillate(problem);
+    problem = f_transform_obj_power(problem, 0.9);
+    problem = f_transform_obj_shift(problem, fopt);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_shift(problem, xopt, 0);
   } else if (function_id == 7) {
-    problem = f_1u_bbob_step_ellipsoid(dimension, instance_id);
+    problem = f_bbob_step_ellipsoid(dimension, instance_id);
   } else if (function_id == 8) {
     unsigned i;
     double xopt[MAX_DIM], minus_one[MAX_DIM], fopt, factor;
@@ -276,11 +276,11 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
      */
     factor = coco_max_double(1.0, sqrt((double) dimension) / 8.0);
 
-    problem = f_1u_rosenbrock(dimension);
-    problem = f_tran_var_shift(problem, minus_one, 0);
-    problem = f_tran_var_scale(problem, factor);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_rosenbrock(dimension);
+    problem = f_transform_vars_shift(problem, minus_one, 0);
+    problem = f_transform_vars_scale(problem, factor);
+    problem = f_transform_vars_shift(problem, xopt, 0);
+    problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 9) {
     unsigned row, column;
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], fopt, factor, *current_row;
@@ -307,9 +307,9 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
     }
     bbob2009_free_matrix(rot1, dimension);
 
-    problem = f_1u_rosenbrock(dimension);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_rosenbrock(dimension);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 10) {
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt;
     double **rot1;
@@ -321,11 +321,11 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     bbob2009_free_matrix(rot1, dimension);
 
-    problem = f_1u_ellipsoid(dimension);
-    problem = f_tran_var_oscillate(problem);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_ellipsoid(dimension);
+    problem = f_transform_vars_oscillate(problem);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_shift(problem, xopt, 0);
+    problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 11) {
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt;
     double **rot1;
@@ -337,11 +337,11 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     bbob2009_free_matrix(rot1, dimension);
 
-    problem = f_1u_discus(dimension);
-    problem = f_tran_var_oscillate(problem);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_discus(dimension);
+    problem = f_transform_vars_oscillate(problem);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_shift(problem, xopt, 0);
+    problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 12) {
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt;
     double **rot1;
@@ -353,12 +353,12 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     bbob2009_free_matrix(rot1, dimension);
 
-    problem = f_1u_bent_cigar(dimension);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_asymmetric(problem, 0.5);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
+    problem = f_bent_cigar(dimension);
+    problem = f_transform_obj_shift(problem, fopt);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_asymmetric(problem, 0.5);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_shift(problem, xopt, 0);
   } else if (function_id == 13) {
     unsigned i, j, k;
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
@@ -383,10 +383,10 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
     }
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
-    problem = f_1u_sharp_ridge(dimension);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
+    problem = f_sharp_ridge(dimension);
+    problem = f_transform_obj_shift(problem, fopt);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_shift(problem, xopt, 0);
   } else if (function_id == 14) {
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt;
     double **rot1;
@@ -398,10 +398,10 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     bbob2009_free_matrix(rot1, dimension);
 
-    problem = f_1u_different_powers(dimension);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
+    problem = f_different_powers(dimension);
+    problem = f_transform_obj_shift(problem, fopt);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_shift(problem, xopt, 0);
   } else if (function_id == 15) {
     unsigned i, j, k;
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
@@ -425,14 +425,14 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
       }
     }
 
-    problem = f_1u_rastrigin(dimension);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_asymmetric(problem, 0.2);
-    problem = f_tran_var_oscillate(problem);
+    problem = f_rastrigin(dimension);
+    problem = f_transform_obj_shift(problem, fopt);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_asymmetric(problem, 0.2);
+    problem = f_transform_vars_oscillate(problem);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_shift(problem, xopt, 0);
 
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
@@ -462,14 +462,14 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
       }
     }
 
-    problem = f_1u_weierstrass(dimension);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_oscillate(problem);
+    problem = f_weierstrass(dimension);
+    problem = f_transform_obj_shift(problem, fopt);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_oscillate(problem);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    problem = f_tran_obj_penalize(problem, penalty_factor);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_shift(problem, xopt, 0);
+    problem = f_transform_obj_penalize(problem, penalty_factor);
 
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
@@ -493,14 +493,14 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
       }
     }
 
-    problem = f_1u_schaffers(dimension);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_asymmetric(problem, 0.5);
+    problem = f_schaffers(dimension);
+    problem = f_transform_obj_shift(problem, fopt);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_asymmetric(problem, 0.5);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    problem = f_tran_obj_penalize(problem, penalty_factor);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_shift(problem, xopt, 0);
+    problem = f_transform_obj_penalize(problem, penalty_factor);
 
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
@@ -527,14 +527,14 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
       }
     }
 
-    problem = f_1u_schaffers(dimension);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_asymmetric(problem, 0.5);
+    problem = f_schaffers(dimension);
+    problem = f_transform_obj_shift(problem, fopt);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_asymmetric(problem, 0.5);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    problem = f_tran_obj_penalize(problem, penalty_factor);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_shift(problem, xopt, 0);
+    problem = f_transform_obj_penalize(problem, penalty_factor);
 
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
@@ -556,11 +556,11 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
       }
     }
 
-    problem = f_1u_griewank_rosenbrock(dimension);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_shift(problem, shift, 0);
+    problem = f_griewank_rosenbrock(dimension);
+    problem = f_transform_obj_shift(problem, fopt);
+    problem = f_transform_vars_shift(problem, shift, 0);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
-    problem = f_tran_var_affine(problem, M, b, dimension);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
 
     bbob2009_free_matrix(rot1, dimension);
 
@@ -593,27 +593,27 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
       tmp1[i] = -2 * fabs(xopt[i]);
       tmp2[i] = 2 * fabs(xopt[i]);
     }
-    problem = f_1u_schwefel(dimension);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_scale(problem, 100);
-    problem = f_tran_var_shift(problem, tmp1, 0);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, tmp2, 0);
-    problem = f_tran_var_z_hat(problem, xopt);
-    problem = f_tran_var_scale(problem, 2);
-    problem = f_tran_var_x_hat(problem, rseed);
+    problem = f_schwefel(dimension);
+    problem = f_transform_obj_shift(problem, fopt);
+    problem = f_transform_vars_scale(problem, 100);
+    problem = f_transform_vars_shift(problem, tmp1, 0);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_shift(problem, tmp2, 0);
+    problem = f_transform_vars_z_hat(problem, xopt);
+    problem = f_transform_vars_scale(problem, 2);
+    problem = f_transform_vars_x_hat(problem, rseed);
     coco_free_memory(tmp1);
     coco_free_memory(tmp2);
   } else if (function_id == 21) {
     double fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    problem = f_1u_gallagher(dimension, instance_id, 101);
-    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_gallagher(dimension, instance_id, 101);
+    problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 22) {
     double fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    problem = f_1u_gallagher(dimension, instance_id, 21);
-    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_gallagher(dimension, instance_id, 21);
+    problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 23) {
     unsigned i, j, k;
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], *current_row, fopt, penalty_factor = 1.0;
@@ -636,19 +636,19 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, 
         }
       }
     }
-    problem = f_1u_katsuura(dimension);
-    problem = f_tran_obj_shift(problem, fopt);
-    problem = f_tran_var_affine(problem, M, b, dimension);
-    problem = f_tran_var_shift(problem, xopt, 0);
-    problem = f_tran_obj_penalize(problem, penalty_factor);
+    problem = f_katsuura(dimension);
+    problem = f_transform_obj_shift(problem, fopt);
+    problem = f_transform_vars_affine(problem, M, b, dimension);
+    problem = f_transform_vars_shift(problem, xopt, 0);
+    problem = f_transform_obj_penalize(problem, penalty_factor);
 
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
   } else if (function_id == 24) {
     double fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    problem = f_1u_lunacek_bi_rastrigin(dimension, instance_id);
-    problem = f_tran_obj_shift(problem, fopt);
+    problem = f_lunacek_bi_rastrigin(dimension, instance_id);
+    problem = f_transform_obj_shift(problem, fopt);
   } else {
     return NULL;
   }

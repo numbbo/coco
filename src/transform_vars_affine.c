@@ -6,11 +6,11 @@
 
 typedef struct {
   double *M, *b, *x;
-} _tran_var_affine_data_t;
+} transform_vars_affine_data_t;
 
-static void private_tran_var_affine_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void private_transform_vars_affine_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i, j;
-  _tran_var_affine_data_t *data;
+  transform_vars_affine_data_t *data;
   coco_problem_t *inner_problem;
 
   data = coco_transformed_get_data(self);
@@ -29,8 +29,8 @@ static void private_tran_var_affine_evaluate(coco_problem_t *self, const double 
   coco_evaluate_function(inner_problem, data->x, y);
 }
 
-static void private_tran_var_affine_free(void *thing) {
-  _tran_var_affine_data_t *data = thing;
+static void private_transform_vars_affine_free(void *thing) {
+  transform_vars_affine_data_t *data = thing;
   coco_free_memory(data->M);
   coco_free_memory(data->b);
   coco_free_memory(data->x);
@@ -49,12 +49,12 @@ static void private_tran_var_affine_free(void *thing) {
  *
  * The matrix M is stored in row-major format.
  */
-static coco_problem_t *f_tran_var_affine(coco_problem_t *inner_problem,
+static coco_problem_t *f_transform_vars_affine(coco_problem_t *inner_problem,
                                          const double *M,
                                          const double *b,
                                          const size_t number_of_variables) {
   coco_problem_t *self;
-  _tran_var_affine_data_t *data;
+  transform_vars_affine_data_t *data;
   size_t entries_in_M;
 
   entries_in_M = inner_problem->number_of_variables * number_of_variables;
@@ -63,7 +63,7 @@ static coco_problem_t *f_tran_var_affine(coco_problem_t *inner_problem,
   data->b = coco_duplicate_vector(b, inner_problem->number_of_variables);
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_transformed_allocate(inner_problem, data, private_tran_var_affine_free);
-  self->evaluate_function = private_tran_var_affine_evaluate;
+  self = coco_transformed_allocate(inner_problem, data, private_transform_vars_affine_free);
+  self->evaluate_function = private_transform_vars_affine_evaluate;
   return self;
 }
