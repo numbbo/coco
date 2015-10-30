@@ -22,18 +22,18 @@ void cma_optimizer(coco_problem_t *problem) {
   double *const *X, *y;
 
   /* Extract number of variables and bounds from problem */
-  const size_t number_of_variables = coco_get_number_of_variables(problem);
-  const double *lower = coco_get_smallest_values_of_interest(problem);
-  const double *upper = coco_get_largest_values_of_interest(problem);
+  const size_t number_of_variables = coco_problem_get_dimension(problem);
+  const double *lower = coco_problem_get_smallest_values_of_interest(problem);
+  const double *upper = coco_problem_get_largest_values_of_interest(problem);
 
   /* Skip "big" problems for now... */
   if (number_of_variables > 20) {
     fprintf(stderr, "fid-%04i: Skipping '%s'\n", function_id++,
-        coco_get_problem_id(problem));
+        coco_problem_get_id(problem));
     return;
   } else {
     fprintf(stderr, "fid-%04i: Optimizing '%s'\n", function_id++,
-            coco_get_problem_id(problem));
+            coco_problem_get_id(problem));
   }
 
   /* Allocate vectors for initial solution and initial sigma */
@@ -84,6 +84,6 @@ int main() {
   strncat(algorithm_id, cma.version, 200 - strlen(algorithm_id) - 1);
   cmaes_exit(&cma);
 
-  coco_benchmark("bbob2009", "bbob2009_observer", algorithm_id, cma_optimizer);
+  coco_suite_benchmark("suite_bbob2009", "observer_bbob2009", algorithm_id, cma_optimizer);
   return 0;
 }
