@@ -13,29 +13,30 @@ np.import_array()
 cdef extern from "coco.h":
     ctypedef struct coco_problem_t:
         pass
-    coco_problem_t *coco_get_problem(const char *benchmark,
-                                     int problem_index)
-    int coco_next_problem_index(const char *benchmark, 
-                                const int problem_index,
-                                const char *benchmark_options)
-    void coco_free_problem(coco_problem_t *problem)
-    coco_problem_t *coco_observe_problem(const char *observer_name,
-                                         coco_problem_t *problem,
-                                         const char *options)
+    coco_problem_t *coco_suite_get_problem(const char *problem_suite,
+                                           const long problem_index)
+    int coco_suite_get_next_problem_index(const char *problem_suite, 
+                                          const long problem_index,
+                                          const char *select_options)
+    void coco_problem_free(coco_problem_t *problem)
+    coco_problem_t *coco_problem_add_observer(coco_problem_t *problem,
+                                              const char *observer_name,
+                                              const char *options)
     void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
-    void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y)
-    void coco_recommend_solutions(coco_problem_t *self, const double *x,
-                              size_t number_of_solutions)
-    size_t coco_get_number_of_variables(coco_problem_t *problem)
-    size_t coco_get_number_of_objectives(coco_problem_t *problem)
-    size_t coco_get_number_of_constraints(coco_problem_t *problem)
-    const char *coco_get_problem_id(coco_problem_t *problem)
-    const char *coco_get_problem_name(coco_problem_t *problem)
-    const double *coco_get_smallest_values_of_interest(coco_problem_t *problem)
-    const double *coco_get_largest_values_of_interest(coco_problem_t *problem)
-    double coco_get_final_target_fvalue1(coco_problem_t *problem)
-    size_t coco_get_evaluations(coco_problem_t *problem)
-    double coco_get_best_observed_fvalue1(coco_problem_t *problem)
+    void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
+    void coco_recommend_solutions(coco_problem_t *problem, 
+                                  const double *x,
+                                  size_t number_of_solutions)
+    size_t coco_problem_get_dimension(coco_problem_t *problem)
+    size_t coco_problem_get_number_of_objectives(coco_problem_t *problem)
+    size_t coco_problem_get_number_of_constraints(coco_problem_t *problem)
+    const char *coco_problem__get_id(coco_problem_t *problem)
+    const char *coco_problem_get_name(coco_problem_t *problem)
+    const double *coco_problem_get_smallest_values_of_interest(coco_problem_t *problem)
+    const double *coco_problem_get_largest_values_of_interest(coco_problem_t *problem)
+    double coco_problem_get_final_target_fvalue1(coco_problem_t *problem)
+    size_t coco_problem_get_evaluations(coco_problem_t *problem)
+    double coco_problem_get_best_observed_fvalue1(coco_problem_t *problem)
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
