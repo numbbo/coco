@@ -12,6 +12,9 @@
 #include "mo_avl_tree.c"
 #include "mo_generics.c"
 
+/* Flags controlling the computation of indicators and logger output (set through observer options) */
+static int bla;
+
 /* Data for each indicator */
 typedef struct {
   char *input_file_name;
@@ -29,7 +32,7 @@ typedef struct {
   size_t number_of_variables;
   size_t number_of_objectives;
 
-  /* The tree keeping non-dominated solutions (accumulated) over time */
+  /* The tree keeping currently non-dominated solutions */
   avl_tree_t *archive_tree;
   /* The tree with pointers to nondominated solutions that haven't been logged yet */
   avl_tree_t *buffer_tree;
@@ -40,24 +43,23 @@ typedef struct {
   double *x;
   double *y;
   size_t time_stamp;
-} logger_mo_node_t;
+} logger_mo_avl_item_t;
 
-static size_t LAST_OBJECTIVE; /* Used for ordering solutions in the archive tree. */
-
-static int logger_mo_tree_update(logger_mo_t *data, logger_mo_node_t *node_item);
+static int logger_mo_tree_update(logger_mo_t *data, logger_mo_avl_item_t *node_item);
 static void logger_mo_output_nondominated(FILE *logfile, avl_tree_t *buffer_tree, const size_t dim,
     const size_t num_obj);
+static void logger_mo_output_tree(const avl_tree_t *tree, FILE *fp, const size_t num_obj) ;
 
 /**
  * Creates and returns the information on the solution in the form of a node's ${item} in the AVL tree.
  */
-static logger_mo_node_t* logger_mo_node_create(const double *x, const double *y, const size_t time_stamp,
+static logger_mo_avl_item_t* logger_mo_node_create(const double *x, const double *y, const size_t time_stamp,
     const size_t dim, const size_t num_obj) {
 
   size_t i;
 
   /* Allocate memory to hold the data structure logger_mo_node_t */
-  logger_mo_node_t *item = (logger_mo_node_t*) coco_allocate_memory(sizeof(logger_mo_node_t));
+  logger_mo_avl_item_t *item = (logger_mo_avl_item_t*) coco_allocate_memory(sizeof(logger_mo_avl_item_t));
 
   /* Allocate memory to store the (copied) data of the new node */
   item->x = coco_allocate_vector(dim);
@@ -75,7 +77,7 @@ static logger_mo_node_t* logger_mo_node_create(const double *x, const double *y,
 /**
  * Frees the data of the given logger_mo_node_t.
  */
-static void logger_mo_node_free(logger_mo_node_t *item, void *userdata) {
+static void logger_mo_node_free(logger_mo_avl_item_t *item, void *userdata) {
 
   coco_free_memory(item->x);
   coco_free_memory(item->y);
@@ -86,12 +88,12 @@ static void logger_mo_node_free(logger_mo_node_t *item, void *userdata) {
 /**
  * Defines the ordering of AVL tree nodes based on the value of the last objective.
  */
-static int compare_by_last_objective(const logger_mo_node_t *item1, const logger_mo_node_t *item2, void *userdata) {
+static int compare_by_last_objective(const logger_mo_avl_item_t *item1, const logger_mo_avl_item_t *item2, void *userdata) {
   /* This ordering is used by the archive_tree. */
 
-  if (item1->y[LAST_OBJECTIVE] < item2->y[LAST_OBJECTIVE])
+  if (item1->y[1] < item2->y[1])
     return -1;
-  else if (item1->y[LAST_OBJECTIVE] > item2->y[LAST_OBJECTIVE])
+  else if (item1->y[1] > item2->y[1])
     return 1;
   else
     return 0;
@@ -102,7 +104,7 @@ static int compare_by_last_objective(const logger_mo_node_t *item1, const logger
 /**
  * Defines the ordering of AVL tree nodes based on the time stamp.
  */
-static int compare_by_time_stamp(const logger_mo_node_t *item1, const logger_mo_node_t *item2, void *userdata) {
+static int compare_by_time_stamp(const logger_mo_avl_item_t *item1, const logger_mo_avl_item_t *item2, void *userdata) {
   /* This ordering is used by the buffer_tree. */
 
   if (item1->time_stamp < item2->time_stamp)
@@ -117,7 +119,7 @@ static int compare_by_time_stamp(const logger_mo_node_t *item1, const logger_mo_
 
 static void private_logger_mo_evaluate(coco_problem_t *self, const double *x, double *y) {
   logger_mo_t *data;
-  logger_mo_node_t *node_item;
+  logger_mo_avl_item_t *node_item;
   int update_performed;
 
   data = coco_transformed_get_data(self);
@@ -141,7 +143,6 @@ static void private_logger_mo_evaluate(coco_problem_t *self, const double *x, do
         data->number_of_variables, data->number_of_objectives);
 
     /* Initialize the AVL trees */
-    LAST_OBJECTIVE = data->number_of_objectives - 1;
     data->archive_tree = avl_tree_construct((avl_compare_t) compare_by_last_objective,
         (avl_free_t) logger_mo_node_free);
     data->buffer_tree = avl_tree_construct((avl_compare_t) compare_by_time_stamp, NULL);
@@ -169,7 +170,7 @@ static void private_logger_mo_evaluate(coco_problem_t *self, const double *x, do
  * nodes in the archive tree.
  * Returns 1 if the update was performed and 0 otherwise.
  */
-static int logger_mo_tree_update(logger_mo_t *data, logger_mo_node_t *node_item) {
+static int logger_mo_tree_update(logger_mo_t *data, logger_mo_avl_item_t *node_item) {
 
   avl_node_t *node, *next_node;
   int trigger_update = 0;
@@ -181,7 +182,7 @@ static int logger_mo_tree_update(logger_mo_t *data, logger_mo_node_t *node_item)
     trigger_update = 1;
     next_node = data->archive_tree->head;
   } else {
-    dominance = mococo_get_dominance(node_item->y, ((logger_mo_node_t*) node->item)->y, data->number_of_objectives);
+    dominance = mococo_get_dominance(node_item->y, ((logger_mo_avl_item_t*) node->item)->y, data->number_of_objectives);
     if (dominance > -1) {
       trigger_update = 1;
       next_node = node->next;
@@ -203,7 +204,7 @@ static int logger_mo_tree_update(logger_mo_t *data, logger_mo_node_t *node_item)
        * dominance = 0: the given node and the next node are nondominated
        * dominance = 1: the given node dominates the next node */
       node = next_node;
-      dominance = mococo_get_dominance(node_item->y, ((logger_mo_node_t*) node->item)->y,
+      dominance = mococo_get_dominance(node_item->y, ((logger_mo_avl_item_t*) node->item)->y,
           data->number_of_objectives);
       if (dominance == 1) {
         next_node = node->next;
@@ -222,6 +223,27 @@ static int logger_mo_tree_update(logger_mo_t *data, logger_mo_node_t *node_item)
 }
 
 /**
+ * Outputs the AVL tree to the given file.
+ * TODO: This is used only for tests during coding... Should it be removed?
+ */
+static void logger_mo_output_tree(const avl_tree_t *tree, FILE *fp, const size_t num_obj) {
+
+  avl_node_t *node;
+  size_t i;
+
+  node = tree->head;
+
+  while (node) {
+    for (i = 0; i < num_obj; i++) {
+      fprintf(fp, "%13.10e\t", ((logger_mo_avl_item_t*) node->item)->y[i]);
+    }
+    fprintf(fp, "\n");
+
+    node = node->next;
+  }
+}
+
+/**
  * Output nondominated solutions that haven't been logged yet (pointed to by nodes of ${buffer_tree}).
  */
 static void logger_mo_output_nondominated(FILE *logfile, avl_tree_t *buffer_tree, const size_t dim,
@@ -236,10 +258,10 @@ static void logger_mo_output_nondominated(FILE *logfile, avl_tree_t *buffer_tree
     solution = buffer_tree->head;
     while (solution != NULL) {
       for (i = 0; i < dim; i++)
-        fprintf(logfile, "%13.10e\t", ((logger_mo_node_t*) solution->item)->x[i]);
+        fprintf(logfile, "%13.10e\t", ((logger_mo_avl_item_t*) solution->item)->x[i]);
       for (j = 0; j < num_obj; j++)
-        fprintf(logfile, "%13.10e\t", ((logger_mo_node_t*) solution->item)->y[j]);
-      fprintf(logfile, "%lu", ((logger_mo_node_t*) solution->item)->time_stamp);
+        fprintf(logfile, "%13.10e\t", ((logger_mo_avl_item_t*) solution->item)->y[j]);
+      fprintf(logfile, "%lu", ((logger_mo_avl_item_t*) solution->item)->time_stamp);
       fprintf(logfile, "\n");
       solution = solution->next;
     }
@@ -267,7 +289,7 @@ static void private_logger_mo_free(void *stuff) {
   avl_tree_destruct(data->buffer_tree);
 }
 
-static coco_problem_t *logger_mo(coco_problem_t *inner_problem, const char *path) {
+static coco_problem_t *logger_mo(coco_problem_t *inner_problem, const char *observer_options) {
   logger_mo_t *data;
   coco_problem_t *self;
 
@@ -275,8 +297,8 @@ static coco_problem_t *logger_mo(coco_problem_t *inner_problem, const char *path
   data->number_of_evaluations = 0;
   data->number_of_variables = coco_problem_get_dimension(inner_problem);
   data->number_of_objectives = coco_problem_get_number_of_objectives(inner_problem);
-  data->path = coco_strdup(path);
-  data->logfile = NULL; /* Open lazily in private_logger_nondominated_evaluate_function(). */
+  data->path = coco_strdup(observer_options);
+  data->logfile = NULL; /* Open lazily in private_logger_mo_evaluate(). */
   self = coco_transformed_allocate(inner_problem, data, private_logger_mo_free);
   self->evaluate_function = private_logger_mo_evaluate;
   return self;
