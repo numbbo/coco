@@ -68,12 +68,12 @@ typedef struct {
 } logger_bbob2009_t;
 
 static const char *bbob2009_file_header_str = "%% function evaluation | "
-                                              "noise-free fitness - Fopt (%13.12e) | "
-                                              "best noise-free fitness - Fopt | "
-                                              "measured fitness | "
-                                              "best measured fitness | "
-                                              "x1 | "
-                                              "x2...\n";
+    "noise-free fitness - Fopt (%13.12e) | "
+    "best noise-free fitness - Fopt | "
+    "measured fitness | "
+    "best measured fitness | "
+    "x1 | "
+    "x2...\n";
 
 static void private_logger_bbob2009_update_f_trigger(logger_bbob2009_t *data, double fvalue) {
   /* "jump" directly to the next closest (but larger) target to the
@@ -114,8 +114,13 @@ static void private_logger_bbob2009_update_t_trigger(logger_bbob2009_t *data, si
 /**
  * adds a formated line to a data file
  */
-static void private_logger_bbob2009_write_data(FILE *target_file, long number_of_evaluations, double fvalue,
-    double best_fvalue, double best_value, const double *x, size_t number_of_variables) {
+static void private_logger_bbob2009_write_data(FILE *target_file,
+                                               long number_of_evaluations,
+                                               double fvalue,
+                                               double best_fvalue,
+                                               double best_value,
+                                               const double *x,
+                                               size_t number_of_variables) {
   /* for some reason, it's %.0f in the old code instead of the 10.9e
    * in the documentation
    */
@@ -154,8 +159,10 @@ static void private_logger_bbob2009_error_io(FILE *path, int errnum) {
  ".dat");
  */
 
-static void private_logger_bbob2009_open_dataFile(FILE **target_file, const char *path,
-    const char *dataFile_path, const char *file_extension) {
+static void private_logger_bbob2009_open_dataFile(FILE **target_file,
+                                                  const char *path,
+                                                  const char *dataFile_path,
+                                                  const char *file_extension) {
   char file_path[COCO_PATH_MAX] = { 0 };
   char relative_filePath[COCO_PATH_MAX] = { 0 };
   int errnum;
@@ -174,32 +181,35 @@ static void private_logger_bbob2009_open_dataFile(FILE **target_file, const char
 }
 
 /*
-static void private_logger_bbob2009_open_dataFile(FILE **target_file, const char *path,
-    const char *dataFile_path, const char *file_extension) {
-  char file_path[COCO_PATH_MAX] = { 0 };
-  char relative_filePath[COCO_PATH_MAX] = { 0 };
-  int errnum;
-  strncpy(relative_filePath, dataFile_path,
-  COCO_PATH_MAX - strlen(relative_filePath) - 1);
-  strncat(relative_filePath, file_extension,
-  COCO_PATH_MAX - strlen(relative_filePath) - 1);
-  coco_join_path(file_path, sizeof(file_path), path, relative_filePath, NULL);
-  if (*target_file == NULL) {
-    *target_file = fopen(file_path, "a+");
-    errnum = errno;
-    if (*target_file == NULL) {
-      _bbob2009_logger_error_io(*target_file, errnum);
-    }
-  }
-}
-*/
+ static void private_logger_bbob2009_open_dataFile(FILE **target_file, const char *path,
+ const char *dataFile_path, const char *file_extension) {
+ char file_path[COCO_PATH_MAX] = { 0 };
+ char relative_filePath[COCO_PATH_MAX] = { 0 };
+ int errnum;
+ strncpy(relative_filePath, dataFile_path,
+ COCO_PATH_MAX - strlen(relative_filePath) - 1);
+ strncat(relative_filePath, file_extension,
+ COCO_PATH_MAX - strlen(relative_filePath) - 1);
+ coco_join_path(file_path, sizeof(file_path), path, relative_filePath, NULL);
+ if (*target_file == NULL) {
+ *target_file = fopen(file_path, "a+");
+ errnum = errno;
+ if (*target_file == NULL) {
+ _bbob2009_logger_error_io(*target_file, errnum);
+ }
+ }
+ }
+ */
 
 /**
  * Creates the index file fileName_prefix+problem_id+file_extension in
  * folde_path
  */
-static void private_logger_bbob2009_openIndexFile(logger_bbob2009_t *data, const char *folder_path,
-    const char *indexFile_prefix, const char *function_id, const char *dataFile_path) {
+static void private_logger_bbob2009_openIndexFile(logger_bbob2009_t *data,
+                                                  const char *folder_path,
+                                                  const char *indexFile_prefix,
+                                                  const char *function_id,
+                                                  const char *dataFile_path) {
   /* to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
   char used_dataFile_path[COCO_PATH_MAX] = { 0 };
   int errnum, newLine; /* newLine is at 1 if we need a new line in the info file */
