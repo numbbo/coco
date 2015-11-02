@@ -17,15 +17,17 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: demo_mo
+all: demo_mo demo_mo_toy
 
 clean:
-	rm -f coco.o demo_mo.o demo_mo
+	rm -f coco.o demo_mo.o demo_mo demo_mo_toy.o demo_mo_toy
 
 ########################################################################
 ## Programs
 demo_mo: demo_mo.o coco.o
 	${CC} ${CCFLAGS} -o demo_mo coco.o demo_mo.o ${LDFLAGS}
+demo_mo_toy: demo_mo_toy.o coco.o
+	${CC} ${CCFLAGS} -o demo_mo_toy coco.o demo_mo_toy.o ${LDFLAGS}
 
 ########################################################################
 ## Additional dependencies
@@ -33,3 +35,5 @@ coco.o: coco.h coco.c
 	${CC} -c ${CCFLAGS} -o coco.o coco.c
 demo_mo.o: coco.h coco.c demo_mo.c
 	${CC} -c ${CCFLAGS} -o demo_mo.o demo_mo.c
+demo_mo_toy.o: coco.h coco.c demo_mo_toy.c
+	${CC} -c ${CCFLAGS} -o demo_mo_toy.o demo_mo_toy.c

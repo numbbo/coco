@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "coco.h"
 
 /**
@@ -84,7 +85,7 @@ static double *mococo_get_doubles_from_file(const char *filename) {
   /* Prepare the vector */
   result = coco_allocate_vector(number_of_lines);
   for (i = 0; i < number_of_lines; i++) {
-    fscanf(fp, "%f", result[i]);
+    fscanf(fp, "%lf", &result[i]);
   }
   fclose(fp);
 
@@ -159,8 +160,8 @@ static double mococo_get_matching_double_value(const char ***matrix_of_strings, 
 static void mococo_append_to_file(const char *filename, const char *string) {
 
   FILE *fp = fopen(filename, "a");
-  fprinf(fp, string);
-  fprinf(fp, "\n");
+  fprintf(fp, string);
+  fprintf(fp, "\n");
   fclose(fp);
 }
 
