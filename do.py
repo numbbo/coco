@@ -217,7 +217,7 @@ def build_c_mo():  # added for the multiobjective case
 def test_c_mo():
     build_c_mo()
     try:
-        run('build/c/mo', ['./demo_mo'])
+        run('build/c/mo', ['./demo_mo', 'test'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
 

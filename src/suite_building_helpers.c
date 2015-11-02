@@ -4,10 +4,10 @@
 #include "coco_internal.h"
 #include "coco_suites.c"
 #include "coco_problem.c"
-#include "f_tran_obj_shift.c"
-#include "f_tran_var_affine.c"
-#include "f_1u_attractive_sector.c" /* Added to get rid of compiler errors. */
+#include "f_attractive_sector.c" /* Added to get rid of compiler errors. */
 #include "suite_bbob2009_legacy_code.c"
+#include "transform_obj_shift.c"
+#include "transform_vars_affine.c"
 
 /**
  * A collection of "random" future code (snippets)
@@ -55,9 +55,13 @@ static char *bbob2009_problem_id(const char *name, size_t number_of_variables) {
  * Details: this is yet a tentative name/interface.
  * FIXME: find a better interface for best_parameter?
  */
-coco_problem_t *coco_allocate_so_problem_from_sss(const char * problem_id, const char * problem_name,
-    coco_evaluate_function_t fct, size_t number_of_variables, double smallest_value_of_interest,
-    double largest_value_of_interest, double best_parameter) {
+coco_problem_t *coco_allocate_so_problem_from_sss(const char * problem_id,
+                                                  const char * problem_name,
+                                                  coco_evaluate_function_t fct,
+                                                  size_t number_of_variables,
+                                                  double smallest_value_of_interest,
+                                                  double largest_value_of_interest,
+                                                  double best_parameter) {
   size_t i;
   coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
 
@@ -129,11 +133,11 @@ static coco_problem_t *b2bob2009_bent_cigar_problem(long dimension_, long instan
   bbob2009_free_matrix(rot1, dimension);
 
   problem = b2bob2009_raw_bent_cigar_problem(dimension);
-  problem = f_tran_obj_shift(problem, fopt);
-  problem = f_tran_var_affine(problem, M, b, dimension);
-  problem = f_tran_var_asymmetric(problem, 0.5);
-  problem = f_tran_var_affine(problem, M, b, dimension);
-  problem = f_tran_var_shift(problem, xopt, 0);
+  problem = f_transform_obj_shift(problem, fopt);
+  problem = f_transform_vars_affine(problem, M, b, dimension);
+  problem = f_transform_vars_asymmetric(problem, 0.5);
+  problem = f_transform_vars_affine(problem, M, b, dimension);
+  problem = f_transform_vars_shift(problem, xopt, 0);
   coco_free_memory(M);
   coco_free_memory(b);
   coco_free_memory(xopt);
@@ -142,14 +146,14 @@ static coco_problem_t *b2bob2009_bent_cigar_problem(long dimension_, long instan
 
 /***************** EXAMPLE: ATTRACTIVE SECTOR PROBLEM ****************/
 #if 0
-typedef struct {double *xopt;} coco_bbob_attractive_sector_problem_data_t;
+typedef struct {double *xopt;} f_attractive_sector_data_t;
 #endif
 
 /*** define computation of raw function as coco_evaluate_function_t type ***/
 static void b2bob2009_raw_attractive_sector_evaluate(coco_problem_t *self, const double *x, double *y) {
   const size_t dimension = coco_problem_get_dimension(self);
   size_t i;
-  _1u_attractive_sector_data_t *data;
+  f_attractive_sector_data_t *data;
 
   assert(coco_problem_get_number_of_objectives(self) == 1);
   data = self->data;
@@ -164,16 +168,16 @@ static void b2bob2009_raw_attractive_sector_evaluate(coco_problem_t *self, const
 }
 /*** define raw function as coco_problem_t ***/
 static coco_problem_t *b2bob2009_raw_attractive_sector_problem(const size_t number_of_variables,
-    const double *xopt) {
-  _1u_attractive_sector_data_t *data;
+                                                               const double *xopt) {
+  f_attractive_sector_data_t *data;
   char *problem_id = bbob2009_problem_id("attractive_sector", number_of_variables);
   coco_problem_t *problem = coco_allocate_so_problem_from_sss(problem_id, "attractive sector function",
-      private_1u_attractive_sector_evaluate, number_of_variables, -5, 5, 0);
+      private_f_attractive_sector_evaluate, number_of_variables, -5, 5, 0);
   coco_free_memory(problem_id);
   data = coco_allocate_memory(sizeof(*data));
   data->xopt = coco_duplicate_vector(xopt, number_of_variables);
   problem->data = data;
-  problem->free_problem = private_1u_attractive_sector_free;
+  problem->free_problem = private_f_attractive_sector_free;
   return problem;
 }
 
@@ -215,10 +219,10 @@ static coco_problem_t *b2bob2009_attractive_sector_problem(long dimension_, long
   bbob2009_free_matrix(rot2, dimension);
 
   problem = b2bob2009_raw_attractive_sector_problem(dimension, xopt);
-  problem = f_tran_obj_oscillate(problem);
-  problem = f_tran_obj_power(problem, 0.9);
-  problem = f_tran_obj_shift(problem, fopt);
-  problem = f_tran_var_affine(problem, M, b, dimension);
-  problem = f_tran_var_shift(problem, xopt, 0);
+  problem = f_transform_obj_oscillate(problem);
+  problem = f_transform_obj_power(problem, 0.9);
+  problem = f_transform_obj_shift(problem, fopt);
+  problem = f_transform_vars_affine(problem, M, b, dimension);
+  problem = f_transform_vars_shift(problem, xopt, 0);
   return problem;
 }

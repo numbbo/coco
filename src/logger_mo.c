@@ -3,7 +3,6 @@
 
 #include "coco.h"
 #include "coco_archive.c"
-#include "coco_archive.h"
 
 #include "coco_utilities.c"
 #include "coco_problem.c"

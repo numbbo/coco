@@ -27,12 +27,14 @@
  *
  * To construct a benchmark suite, useful tools are coco_transformed...
  * coco_stacked..., bbob2009_problem() and the various existing base
- * functions and transformations like f_tran_var_shift...
+ * functions and transformations like transform_vars_shift...
  */
 
 /** return next problem_index or -1
  */
-long coco_suite_get_next_problem_index(const char *problem_suite, long problem_index, const char *select_options) {
+long coco_suite_get_next_problem_index(const char *problem_suite,
+                                       long problem_index,
+                                       const char *select_options) {
   coco_problem_t *problem; /* to check validity */
   long last_index = -1;
 
@@ -92,31 +94,31 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
   }
 }
 
-coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, const char *observer, const char *options) {
+coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, const char *observer_name, const char *options) {
   if (problem == NULL) {
     coco_warning("Trying to observe a NULL problem has no effect.");
     return problem;
   }
-  if (0 == strcmp(observer, "observer_toy")) {
+  if (0 == strcmp(observer_name, "observer_toy")) {
     return observer_toy(problem, options);
-  } else if (0 == strcmp(observer, "observer_bbob2009")) {
+  } else if (0 == strcmp(observer_name, "observer_bbob2009")) {
     return observer_bbob2009(problem, options);
-  } else if (0 == strcmp(observer, "observer_mo_toy")) {
+  } else if (0 == strcmp(observer_name, "observer_mo_toy")) {
     return observer_mo_toy(problem, options);
-  } else if (0 == strcmp(observer, "observer_mo")) {
+  } else if (0 == strcmp(observer_name, "observer_mo")) {
     return observer_mo(problem, options);
   }
 
   /* here each observer must have another entry */
 
-  if (0 == strcmp(observer, "no_observer")) {
+  if (0 == strcmp(observer_name, "no_observer")) {
     return problem;
-  } else if (strlen(observer) == 0) {
+  } else if (strlen(observer_name) == 0) {
     coco_warning("Empty observer '' has no effect. To prevent this warning use 'no_observer' instead");
     return problem;
   } else {
     /* not so clear whether an error is better, depends on the usecase */
-    coco_warning(observer);
+    coco_warning(observer_name);
     coco_warning("is an unknown observer which has no effect (the reason might just be a typo)");
     return problem;
   }
@@ -150,8 +152,10 @@ coco_problem_t *coco_suite_get_problem_by_id(const char *suite, const char *id) 
  * Benchmark a solver ${optimizer} with a testbed ${problem_suite}
  * using the data logger ${observer} to write data. 
  */
-void coco_suite_benchmark(const char *problem_suite, const char *observer, const char *options,
-    coco_optimizer_t optimizer) {
+void coco_suite_benchmark(const char *problem_suite,
+                          const char *observer,
+                          const char *options,
+                          coco_optimizer_t optimizer) {
   int problem_index;
   coco_problem_t *problem;
   for (problem_index = 0;; ++problem_index) {

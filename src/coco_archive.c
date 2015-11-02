@@ -2,10 +2,30 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "coco_archive.h"
+typedef struct {
+  int status; /* 0: inactive | 1: active */
+  size_t birth; /* time stamp to know which are newly created */
+  double *var;
+  double *obj;
+} coco_archive_entry_t;
 
-void coco_archive_allocate(coco_archive_t *archive, size_t max_size, size_t size_var, size_t size_obj,
-    size_t max_update) {
+typedef struct {
+  size_t max_size;
+  size_t max_update_size;
+  size_t size;
+  size_t update_size;
+  size_t num_var;
+  size_t num_obj;
+  coco_archive_entry_t *entry;
+  coco_archive_entry_t **active;
+  coco_archive_entry_t **update;
+} coco_archive_t;
+
+static void coco_archive_allocate(coco_archive_t *archive,
+                                  size_t max_size,
+                                  size_t size_var,
+                                  size_t size_obj,
+                                  size_t max_update) {
   size_t i;
 
   archive->max_size = max_size;
@@ -35,7 +55,7 @@ void coco_archive_allocate(coco_archive_t *archive, size_t max_size, size_t size
   }
 }
 
-void coco_archive_reset(coco_archive_t *archive) {
+static void coco_archive_reset(coco_archive_t *archive) {
   size_t i;
 
   archive->size = 0;
@@ -46,7 +66,7 @@ void coco_archive_reset(coco_archive_t *archive) {
   }
 }
 
-void coco_archive_free(coco_archive_t *archive) {
+static void coco_archive_free(coco_archive_t *archive) {
   size_t i;
   for (i = 0; i < archive->max_size; i++) {
     free(archive->entry[i].var);
@@ -57,8 +77,11 @@ void coco_archive_free(coco_archive_t *archive) {
   free(archive->entry);
 }
 
-void coco_archive_push(coco_archive_t *archive, const double **var, double **obj, size_t num_var,
-    size_t time_stamp) {
+static void coco_archive_push(coco_archive_t *archive,
+                              const double **var,
+                              double **obj,
+                              size_t num_var,
+                              size_t time_stamp) {
   coco_archive_entry_t *entry;
   size_t s = archive->size;
   size_t tnext = 0;
@@ -89,7 +112,7 @@ void coco_archive_push(coco_archive_t *archive, const double **var, double **obj
   archive->size = s;
 }
 
-void coco_archive_mark_updates(coco_archive_t *archive, size_t time_stamp) {
+static void coco_archive_mark_updates(coco_archive_t *archive, size_t time_stamp) {
   size_t u = 0;
   size_t i;
   for (i = 0; i < archive->size; i++) {

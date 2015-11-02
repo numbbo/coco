@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <dirent.h>
 
 #include "coco.h"
 #include "coco_internal.h"
@@ -65,6 +66,7 @@ void coco_join_path(char *path, size_t path_max_length, ...);
 int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
 void coco_create_new_path(const char *path, size_t maxlen, char *new_path);
+int coco_remove_directory(const char *path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
 double coco_round_double(const double a);
 double coco_max_double(const double a, const double b);
@@ -93,16 +95,17 @@ void coco_join_path(char *path, size_t path_max_length, ...) {
 }
 
 int coco_path_exists(const char *path) {
+  int res;
 #if defined(HAVE_GFA)
   DWORD dwAttrib = GetFileAttributes(path);
-  return (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+  res = (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 #elif defined(HAVE_STAT)
   struct stat buf;
-  int res = stat(path, &buf);
-  return res == 0;
+  res = (!stat(path, &buf) && S_ISDIR(buf.st_mode));
 #else
 #error Ooops
 #endif
+  return res;
 }
 
 void coco_create_path(const char *path) {
@@ -203,6 +206,62 @@ void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
   }
 }
 #endif
+
+/**
+ * Removes the given directory and all its contents.
+ */
+int coco_remove_directory(const char *path) {
+
+  DIR *d = opendir(path);
+  size_t path_len = strlen(path);
+  int r = -1;
+  int r2 = -1;
+  char *buf;
+  size_t len;
+
+  /* Nothing to do if the folder does not exist. */
+  if (!coco_path_exists(path))
+    return 0;
+
+  if (d) {
+    struct dirent *p;
+
+    r = 0;
+
+    while (!r && (p = readdir(d))) {
+
+      /* Skip the names "." and ".." as we don't want to recurse on them. */
+      if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, "..")) {
+        continue;
+      }
+
+      len = path_len + strlen(p->d_name) + 2;
+      buf = malloc(len);
+
+      if (buf) {
+        snprintf(buf, len, "%s/%s", path, p->d_name);
+
+        if (coco_path_exists(buf)) { /* The buf is a directory. */
+          r2 = coco_remove_directory(buf);
+        } else { /* The buf is a file. */
+          r2 = unlink(buf);
+        }
+
+        free(buf);
+      }
+
+      r = r2;
+    }
+
+    closedir(d);
+  }
+
+  if (!r) {
+    r = rmdir(path);
+  }
+
+  return r;
+}
 
 double *coco_allocate_vector(const size_t number_of_elements) {
   const size_t block_size = number_of_elements * sizeof(double);

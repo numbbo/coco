@@ -68,8 +68,10 @@ static void private_logger_target_hits_free(void *stuff) {
   }
 }
 
-static coco_problem_t *logger_target_hits(coco_problem_t *inner_problem, const double *target_values,
-    const size_t number_of_target_values, const char *path) {
+static coco_problem_t *logger_target_hits(coco_problem_t *inner_problem,
+                                          const double *target_values,
+                                          const size_t number_of_target_values,
+                                          const char *path) {
   logger_target_hits_t *data;
   coco_problem_t *self;
 
