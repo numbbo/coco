@@ -44,14 +44,14 @@ public class Benchmark {
 		return problem;
 	}
 	
-	public long nextProblemIndex(long problem_index) {
-		return JNIinterface.cocoNextProblemIndex(this.problem_suite, problem_index, this.problem_suite_options);
+	public long getNextProblemIndex(long problem_index) {
+		return JNIinterface.cocoSuiteGetNextProblemIndex(this.problem_suite, problem_index, this.problem_suite_options);
 	}
 	
 	public Problem nextProblem() throws NoSuchProblemException {
 		Problem problem = null;
 		try {
-			this.current_problem_index = nextProblemIndex(this.current_problem_index);
+			this.current_problem_index = getNextProblemIndex(this.current_problem_index);
 			problem = getProblem(this.current_problem_index);
 		} catch (NoSuchProblemException e) {
 			System.out.println("Benchmark.nextProblem: " + e);

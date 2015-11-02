@@ -22,9 +22,9 @@ def read_test_vectors(fd):
         test_vectors[i] = np.fromstring(line, dtype=float, sep=" ")    
     return test_vectors
 
-def process_test_cases(fd, suit_name, test_vectors):
+def process_test_cases(fd, suite_name, test_vectors):
     """
-    Read test cases for benchmark suit ${suit_name} from ${fd} and evaluate them.
+    Read test cases for benchmark suite ${suite_name} from ${fd} and evaluate them.
     """
     number_of_testcases = 0
     number_of_failures = 0
@@ -44,7 +44,7 @@ def process_test_cases(fd, suit_name, test_vectors):
         ## We cache the problem instances because creating an instance
         ## can be expensive depending on the transformation.
         if function_id != previous_function_id:
-            problem = Problem(suit_name, function_id)
+            problem = Problem(suite_name, function_id)
             previous_function_id = function_id
         test_vector = test_vectors[test_vector_id]
         y = problem(test_vector[:problem.number_of_variables])
@@ -60,9 +60,9 @@ def process_test_cases(fd, suit_name, test_vectors):
 
 def process_testfile(testfile):
     with open(testfile, "r") as fd:
-        test_suit = fd.readline().rstrip()
+        test_suite = fd.readline().rstrip()
         test_vectors = read_test_vectors(fd)
-        process_test_cases(fd, test_suit, test_vectors)
+        process_test_cases(fd, test_suite, test_vectors)
 
 def main(args):
     for arg in args:

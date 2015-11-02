@@ -17,7 +17,7 @@
  * a definition.
  */
 #if defined(unix) || defined(__unix__) || defined(__unix)
-/* On Unix like platforms, force POSIX 2008 behaviour which gives us fmin(),
+/* On Unix like platforms, force POSIX 2008 behavior which gives us fmin(),
  * fmax(), round() and snprintf() even if we do not have a C99 compiler.
  */
 #define _POSIX_C_SOURCE 200809L
