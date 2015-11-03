@@ -8,17 +8,17 @@ public class JNIinterface {
 	}
 	
 	/* Native methods */
-	public static native long cocoGetProblem(String problem_suit, long function_index);
-	public static native long cocoObserveProblem(String observer, long problem, String options);
-	public static native void cocoFreeProblem(long p);
+	public static native long cocoSuiteGetProblem(String problem_suit, long function_index);
+	public static native long cocoProblemAddObserver(long problem, String observer, String options);
+	public static native void cocoProblemFree(long p);
 	public static native double[] cocoEvaluateFunction(Problem p, double[] x);
-    public static native int cocoGetNumberOfVariables(long p);
-    public static native int cocoGetNumberOfObjectives(long p);
-    public static native double[] cocoGetSmallestValuesOfInterest(long p);
-    public static native double[] cocoGetLargestValuesOfInterest(long p);
-    public static native boolean validProblem(long p);
-    public static native String cocoGetProblemId(long p);
-    public static native String cocoGetProblemName(long p);
-    public static native int cocoGetEvaluations(long p);
-    public static native long cocoNextProblemIndex(String problem_suite, long problem_index, String select_options);
+	public static native int cocoProblemGetDimension(long p);
+	public static native int cocoProblemGetNumberOfObjectives(long p);
+	public static native double[] cocoProblemGetSmallestValuesOfInterest(long p);
+	public static native double[] cocoProblemGetLargestValuesOfInterest(long p);
+	public static native boolean cocoProblemIsValid(long p);
+	public static native String cocoProblemGetId(long p);
+	public static native String cocoProblemGetName(long p);
+	public static native int cocoProblemGetEvaluations(long p);
+	public static native long cocoSuiteGetNextProblemIndex(String problem_suite, long problem_index, String select_options);
 }

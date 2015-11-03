@@ -43,7 +43,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     /* get the x vector */
     x = mxGetPr(prhs[1]);
     /* prepare the return value */
-    nb_objectives = coco_get_number_of_objectives(problem);
+    nb_objectives = coco_problem_get_number_of_objectives(problem);
     plhs[0] = mxCreateDoubleMatrix(1, (mwSize)nb_objectives, mxREAL);
     y = mxGetPr(plhs[0]);
     /* call coco_evaluate_function(...) */
