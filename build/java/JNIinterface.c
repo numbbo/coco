@@ -268,7 +268,7 @@ JNIEXPORT jstring JNICALL Java_JNIinterface_cocoProblemGetName
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
     pb = (coco_problem_t *)jproblem;
-    res = coco_get_problem_name(pb);
+    res = coco_problem_get_name(pb);
     jres = (*jenv)->NewStringUTF(jenv, res);
     return jres;
 }
