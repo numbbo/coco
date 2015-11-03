@@ -12,12 +12,27 @@
 extern "C" {
 #endif
 
-#include <stdlib.h> /* For size_t */
+#ifdef _MSC_VER
+
+typedef __int32 int32_t;
+typedef unsigned __int32 uint32_t;
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+
+#else
 #include <stdint.h>
+#endif
 #include <math.h> /* For NAN among other things */
 
 #ifndef NAN
-#define NAN 0.0 / 0.0
+#define NAN 8.8888e88
+#endif
+
+#ifdef _MSC_VER
+/* To silence the Visual Studio compiler (C4996 warnings in the python build). */
+#pragma warning(disable:4996)
+/* To be able to use the snprintf() function. */
+#define snprintf _snprintf
 #endif
 
 /**
@@ -124,7 +139,7 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
  * loops over all indices and problems consequently. 
  */
 long coco_suite_get_next_problem_index(const char *problem_suite,
-                                       const long problem_index,
+                                       long problem_index,
                                        const char *select_options);
 
 /**
@@ -254,6 +269,9 @@ void coco_free_memory(void *data);
  * @see coco_free_memory()
  */
 char *coco_strdup(const char *string);
+
+/* TODO: Should this be here? It's needed to make the MO COCO test ... */
+int coco_remove_directory(const char *path);
 
 /* TODO: These bbob2009... functions should probably not be in
  * this header.
