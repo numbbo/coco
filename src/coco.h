@@ -2,22 +2,37 @@
  * Public CoCO/NumBBO experiments interface
  *
  * All public functions, constants and variables are defined in this
- * file. It is the authorative reference, if any function deviates
- * from the documented behaviour it is considered a bug.
+ * file. It is the authoritative reference, if any function deviates
+ * from the documented behavior it is considered a bug.
  */
-#ifndef __NUMBBO_H__
-#define __NUMBBO_H__
+#ifndef __COCO_H__
+#define __COCO_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdlib.h> /* For size_t */
+#ifdef _MSC_VER
+
+typedef __int32 int32_t;
+typedef unsigned __int32 uint32_t;
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+
+#else
 #include <stdint.h>
+#endif
 #include <math.h> /* For NAN among other things */
 
 #ifndef NAN
-#define NAN 0.0 / 0.0
+#define NAN 8.8888e88
+#endif
+
+#ifdef _MSC_VER
+/* To silence the Visual Studio compiler (C4996 warnings in the python build). */
+#pragma warning(disable:4996)
+/* To be able to use the snprintf() function. */
+#define snprintf _snprintf
 #endif
 
 /**
@@ -31,7 +46,7 @@ typedef struct coco_problem coco_problem_t;
 typedef void (*coco_optimizer_t)(coco_problem_t *problem);
 
 /**
- * Evaluate the NUMBBO problem represented by ${self} with the
+ * Evaluate the COCO problem represented by ${self} with the
  * parameter settings ${x} and save the result in ${y}.
  *
  * @note Both x and y must point to correctly sized allocated memory
@@ -40,7 +55,7 @@ typedef void (*coco_optimizer_t)(coco_problem_t *problem);
 void coco_evaluate_function(coco_problem_t *self, const double *x, double *y);
 
 /**
- * Evaluate the constraints of the NUMBB problem represented by
+ * Evaluate the constraints of the COCO problem represented by
  * ${self} with the parameter settings ${x} and save the result in
  * ${y}.
  *
@@ -53,15 +68,14 @@ void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y);
  * ${x}) as the current best guess solutions to the problem ${self}.
  *
  * @note ${number_of_solutions} is expected to be larger than 1 only
- * if coco_get_number_of_objectives(self) is larger than 1. 
+ * if coco_problem_get_number_of_objectives(self) is larger than 1. 
  */
-void coco_recommend_solutions(coco_problem_t *self, const double *x,
-                              size_t number_of_solutions);
+void coco_recommend_solutions(coco_problem_t *self, const double *x, size_t number_of_solutions);
 
 /**
- * Free the NUMBBO problem represented by ${self}.
+ * Free the COCO problem represented by ${self}.
  */
-void coco_free_problem(coco_problem_t *self);
+void coco_problem_free(coco_problem_t *self);
 
 /**
  * Return the name of a COCO problem.
@@ -72,7 +86,7 @@ void coco_free_problem(coco_problem_t *self);
  *
  * @see coco_strdup()
  */
-const char *coco_get_problem_name(const coco_problem_t *self);
+const char *coco_problem_get_name(const coco_problem_t *self);
 
 /**
  * Return the ID of the COCO problem ${self}. The ID is guaranteed to
@@ -87,29 +101,28 @@ const char *coco_get_problem_name(const coco_problem_t *self);
  *
  * @see coco_strdup
  */
-const char *coco_get_problem_id(const coco_problem_t *self);
+const char *coco_problem_get_id(const coco_problem_t *self);
 
 /**
- * Return the number of variables of a COCO problem.
+ * Return the dimension of a COCO problem.
  */
-size_t coco_get_number_of_variables(const coco_problem_t *self);
+size_t coco_problem_get_dimension(const coco_problem_t *self);
 
 /**
  * Return the number of objectives of a COCO problem.
  */
-size_t coco_get_number_of_objectives(const coco_problem_t *self);
+size_t coco_problem_get_number_of_objectives(const coco_problem_t *self);
 
 /**
  * Return the number of constraints of a COCO problem.
  */
-size_t coco_get_number_of_constraints(const coco_problem_t *self);
+size_t coco_problem_get_number_of_constraints(const coco_problem_t *self);
 
 /**
  * Get the ${problem_index}-th problem of the ${problem_suit} test
- * suit.
+ * suite.
  */
-coco_problem_t *coco_get_problem(const char *problem_suite,
-                                 const long problem_index);
+coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long problem_index);
 
 /**
  * Return the successor index of ${problem_index} in ${problem_suit},
@@ -117,24 +130,24 @@ coco_problem_t *coco_get_problem(const char *problem_suite,
  * or -1 otherwise (no successor problem is available).
  *
  * int index = -1;
- * while (-1 < (index = coco_next_problem_index(suite, index, ""))) {
- *   coco_problem_t *problem = coco_get_problem(suite, index); 
+ * while (-1 < (index = coco_suite_get_next_problem_index(suite, index, ""))) {
+ *   coco_problem_t *problem = coco_suite_get_problem(suite, index); 
  *   ...
- *   coco_free_problem(problem);
+ *   coco_problem_free(problem);
  * }
  * 
  * loops over all indices and problems consequently. 
  */
-long coco_next_problem_index(const char *problem_suite,
-                            const long problem_index,
-                            const char *select_options);
+long coco_suite_get_next_problem_index(const char *problem_suite,
+                                       long problem_index,
+                                       const char *select_options);
 
 /**
  * Number of evaluations done on problem ${self}. 
  * Tentative and yet versatile. 
  */
-long coco_get_evaluations(coco_problem_t *self);
-double coco_get_best_observed_fvalue1(const coco_problem_t *self);
+long coco_problem_get_evaluations(coco_problem_t *self);
+double coco_problem_get_best_observed_fvalue1(const coco_problem_t *self);
 
 /**
  * Return target value for first objective. Values below are not
@@ -146,13 +159,13 @@ double coco_get_best_observed_fvalue1(const coco_problem_t *self);
 
 
  */
-double coco_get_final_target_fvalue1(const coco_problem_t *self);
+double coco_problem_get_final_target_fvalue1(const coco_problem_t *self);
 
 /**
  * tentative getters for region of interest
  */
-const double *coco_get_smallest_values_of_interest(const coco_problem_t *self);
-const double *coco_get_largest_values_of_interest(const coco_problem_t *self);
+const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *self);
+const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *self);
 
 /**
  * Return an initial solution, i.e. a feasible variable setting, to the
@@ -161,11 +174,10 @@ const double *coco_get_largest_values_of_interest(const coco_problem_t *self);
  * By default, the center of the problems region of interest
  * is the initial solution.
  *
- * @see coco_get_smallest_values_of_interest() and
- *coco_get_largest_values_of_interest()
+ * @see coco_problem_get_smallest_values_of_interest() and
+ *coco_problem_get_largest_values_of_interest()
  */
-void coco_get_initial_solution(const coco_problem_t *self,
-                               double *initial_solution);
+void coco_problem_get_initial_solution(const coco_problem_t *self, double *initial_solution);
 
 /**
  * Add the observer named ${observer_name} to ${problem}. An
@@ -181,17 +193,21 @@ void coco_get_initial_solution(const coco_problem_t *self,
  * interface design for interpreted languages. A short hand for this
  * observer is the empty string ("").
  */
-coco_problem_t *coco_observe_problem(const char *observer_name,
-                                     coco_problem_t *problem,
-                                     const char *options);
+coco_problem_t *coco_problem_add_observer(coco_problem_t *problem,
+                                          const char *observer_name,
+                                          const char *options);
 
-void coco_benchmark(const char *problem_suite, const char *observer,
-                    const char *observer_options, coco_optimizer_t optimizer);
+void coco_suite_benchmark(const char *problem_suite,
+                          const char *observer,
+                          const char *observer_options,
+                          coco_optimizer_t optimizer);
 
-/* shall replace the above? */
-void new_coco_benchmark(const char *problem_suite, const char *problem_suit_options,
-                     const char *observer, const char *observer_options,
-                     coco_optimizer_t optimizer);
+/* shall replace the above?
+void new_coco_benchmark(const char *problem_suite,
+                        const char *problem_suite_options,
+                        const char *observer,
+                        const char *observer_options,
+                        coco_optimizer_t optimizer); */
 
 /**************************************************************************
  * Random number generator
@@ -203,18 +219,18 @@ typedef struct coco_random_state coco_random_state_t;
 /**
  * Create a new random number stream using ${seed} and return its state.
  */
-coco_random_state_t *coco_new_random(uint32_t seed);
+coco_random_state_t *coco_random_new(uint32_t seed);
 
 /**
  * Free all memory associated with the RNG state.
  */
-void coco_free_random(coco_random_state_t *state);
+void coco_random_free(coco_random_state_t *state);
 
 /**
  * Return one uniform [0, 1) random value from the random number
  * generator associated with ${state}.
  */
-double coco_uniform_random(coco_random_state_t *state);
+double coco_random_uniform(coco_random_state_t *state);
 
 /**
  * Generate an approximately normal random number.
@@ -224,7 +240,7 @@ double coco_uniform_random(coco_random_state_t *state);
  * 6, variance 1 and is approximately normal. Subtract 6 and you get
  * an approximately N(0, 1) random number.
  */
-double coco_normal_random(coco_random_state_t *state);
+double coco_random_normal(coco_random_state_t *state);
 
 /**
  * Function to signal a fatal error conditions.
@@ -232,11 +248,11 @@ double coco_normal_random(coco_random_state_t *state);
 void coco_error(const char *message, ...);
 
 /**
- * Function to warn about eror conditions.
+ * Function to warn about error conditions.
  */
 void coco_warning(const char *message, ...);
 
-/* Memory managment routines.
+/* Memory management routines.
  *
  * Their implementation may never fail. They either return a valid
  * pointer or terminate the program.
@@ -254,22 +270,25 @@ void coco_free_memory(void *data);
  */
 char *coco_strdup(const char *string);
 
+/* TODO: Should this be here? It's needed to make the MO COCO test ... */
+int coco_remove_directory(const char *path);
+
 /* TODO: These bbob2009... functions should probably not be in
  * this header.
  */
 /* but they are necessary for Builder fbsd9-amd64-test-gcc at
-   http://numbbo.p-value.net/buildbot/builders/fbsd9-amd64-test-gcc
-   (not for the others) */
+ * http://numbbo.p-value.net/buildbot/builders/fbsd9-amd64-test-gcc
+ * (not for the others) */
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
  */
 /* int bbob2009_get_function_id(const coco_problem_t *problem);
-*/
+ */
 /**
  * Return the function ID of a BBOB 2009 problem or -1.
  */
 /* int bbob2009_get_instance_id(const coco_problem_t *problem);
-*/
+ */
 
 #ifdef __cplusplus
 }

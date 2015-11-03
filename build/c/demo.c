@@ -31,7 +31,7 @@ void random_search(size_t dimension,
                    const double *upper,
                    long budget,
                    double final_target) {
-  coco_random_state_t *rng = coco_new_random(0xdeadbeef); /* use coco fcts for convenience */
+  coco_random_state_t *rng = coco_random_new(0xdeadbeef); /* use coco fcts for convenience */
   double *x = coco_allocate_vector(dimension);
   double y;
   long i;
@@ -39,7 +39,7 @@ void random_search(size_t dimension,
   for (i = 0; i < budget; ++i) {
     size_t j;
     for (j = 0; j < dimension; ++j) {
-      x[j] = lower[j] + coco_uniform_random(rng) * (upper[j] - lower[j]);
+      x[j] = lower[j] + coco_random_uniform(rng) * (upper[j] - lower[j]);
     }
     y = fun(x);
      /* To be of any real use, we would need to retain the best x-value here.
@@ -49,7 +49,7 @@ void random_search(size_t dimension,
     if (y <= final_target)
       break;
   }
-  coco_free_random(rng);
+  coco_random_free(rng);
   coco_free_memory(x);
 }
 
@@ -57,13 +57,13 @@ void random_search(size_t dimension,
  *   Set up the experiment                    
  **************************************************/
 static const long MAX_BUDGET = 1e2;  /* work on small budgets first */
-static const char * SUITE_NAME       = "bbob2009";
-static const char * SUITE_OPTIONS    = ""; /* e.g.: "instances:1-5; dimensions:-20" */
-static const char * OBSERVER_NAME    = "bbob2009_observer"; /* writes data */
-/* static const char * OBSERVER_NAME = "no_observer"; / * writes no data */
-static const char * OBSERVER_OPTIONS = "random_search_on_bbob2009"; /* future: "folder:random_search; verbosity:1" */
-static const char * SOLVER_NAME      = "random_search"; /* for the choice in coco_optimize below */
-/*  static const char * SOLVER_NAME   = "my_solver"; / * for the choice in coco_optimize below */
+static const char *SUITE_NAME       = "suite_bbob2009";
+static const char *SUITE_OPTIONS    = ""; /* e.g.: "instances:1-5; dimensions:-20" */
+static const char *OBSERVER_NAME    = "observer_bbob2009"; /* writes data */
+/* static const char *OBSERVER_NAME = "no_observer"; / * writes no data */
+static const char *OBSERVER_OPTIONS = "random_search_on_suite_bbob2009"; /* future: "folder:random_search; verbosity:1" */
+static const char *SOLVER_NAME      = "random_search"; /* for the choice in coco_optimize below */
+/*  static const char *SOLVER_NAME   = "my_solver"; / * for the choice in coco_optimize below */
 static const int NUMBER_OF_BATCHES   = 88;  /* use 1 for single batch :-) batches can be run independently in parallel */
 static int CURRENT_BATCH             = 1;  /* runs from 1 to NUMBER_OF_BATCHES, or any other consecutive sequence */
 
@@ -83,7 +83,9 @@ void objective_function(const double *x, double *y) {
 }
 /* Minimal solver definition only to avoid compile/link errors/warnings below for my_solver */
 void my_solver(objective_function_t func, const double *initial_x, size_t dim, long budget) {
-  double y; func(initial_x, &y); 
+  double y;
+  (void)dim; (void)budget;
+  func(initial_x, &y);
 }
 /**
  * Finally, coco_optimize calls, depending on SOLVER_NAME, one
@@ -92,17 +94,17 @@ void my_solver(objective_function_t func, const double *initial_x, size_t dim, l
  */
 void coco_optimize(coco_problem_t *problem) { /* should at the least take budget as argument, but this is not coco_benchmark compliant */
   /* prepare, set up convenience definitions */
-  size_t dimension = coco_get_number_of_variables(problem);
-  const double * lbounds = coco_get_smallest_values_of_interest(problem);
-  const double * ubounds = coco_get_largest_values_of_interest(problem);
-  double * initial_x = coco_allocate_vector(coco_get_number_of_variables(problem));
-  const double final_target = coco_get_final_target_fvalue1(problem);
+  size_t dimension = coco_problem_get_dimension(problem);
+  const double * lbounds = coco_problem_get_smallest_values_of_interest(problem);
+  const double * ubounds = coco_problem_get_largest_values_of_interest(problem);
+  double * initial_x = coco_allocate_vector(coco_problem_get_dimension(problem));
+  const double final_target = coco_problem_get_final_target_fvalue1(problem);
   long remaining_budget; 
   
-  coco_get_initial_solution(problem, initial_x);
+  coco_problem_get_initial_solution(problem, initial_x);
   CURRENT_COCO_PROBLEM = problem; /* do not change this, it's used in objective_function */
 
-  while ((remaining_budget = MAX_BUDGET - coco_get_evaluations(problem)) > 0) {
+  while ((remaining_budget = MAX_BUDGET - coco_problem_get_evaluations(problem)) > 0) {
     /* call the solver */
     if (strcmp("random_search", SOLVER_NAME) == 0) { /* example case, no need to modify */
       random_search(dimension, objective_function_example,
@@ -131,11 +133,11 @@ int main() {  /* short example, also nice to read */
   int problem_index;
   
   for (problem_index = 0; problem_index >= 0;
-       problem_index = coco_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)) {
-    problem = coco_get_problem(SUITE_NAME, problem_index);
-    problem = coco_observe_problem(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
+       problem_index = coco_suite_get_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)) {
+    problem = coco_suite_get_problem(SUITE_NAME, problem_index);
+    problem = coco_problem_add_observer(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
     coco_optimize(problem);
-    coco_free_problem(problem);
+    coco_problem_free(problem);
   }
   printf("Done with suite '%s' (options '%s')", SUITE_NAME, SUITE_OPTIONS);
   if (NUMBER_OF_BATCHES > 1) printf(" batch %d/%d.\n", CURRENT_BATCH, NUMBER_OF_BATCHES);
@@ -144,27 +146,27 @@ int main() {  /* short example, also nice to read */
 }
 
 #elif 1
-int main() { /* longer example supporting several batches */
+int main(void) { /* longer example supporting several batches */
   coco_problem_t * problem;
-  int problem_index = coco_next_problem_index(
+  long problem_index = coco_suite_get_next_problem_index(
                         SUITE_NAME, -1, SUITE_OPTIONS); /* next(-1) == first */
   if (NUMBER_OF_BATCHES > 1)
     printf("Running only batch %d out of %d batches for suite %s\n",
            CURRENT_BATCH, NUMBER_OF_BATCHES, SUITE_NAME);
   for ( ; problem_index >= 0;
-       problem_index = coco_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)
+       problem_index = coco_suite_get_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)
       ) {
     /* here we reject indices from other batches */
     if (((problem_index - CURRENT_BATCH + 1) % NUMBER_OF_BATCHES) != 0)
       continue;
-    problem = coco_get_problem(SUITE_NAME, problem_index);
-    problem = coco_observe_problem(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
+    problem = coco_suite_get_problem(SUITE_NAME, problem_index);
+    problem = coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
     if (problem == NULL) {
-      printf("problem with index %d not found, skipped", problem_index);
+      printf("problem with index %ld not found, skipped", problem_index);
       continue;
     }
     coco_optimize(problem); /* depending on verbosity, this gives a message from the observer */
-    coco_free_problem(problem);  
+    coco_problem_free(problem);  
   }
   printf("Done with suite '%s' (options '%s')", SUITE_NAME, SUITE_OPTIONS);
   if (NUMBER_OF_BATCHES > 1) printf(" batch %d/%d.\n", CURRENT_BATCH, NUMBER_OF_BATCHES);
@@ -175,8 +177,9 @@ int main() { /* longer example supporting several batches */
 #elif 1
 /* Interface via dimension, function-ID and instance-ID. This does not translate
    directly to different languages or benchmark suites. */
-int main() {
-  int problem_index, function_id, instance_id, dimension_idx;
+int main(void) {
+  long problem_index;
+  int function_id, instance_id, dimension_idx;
   coco_problem_t * problem;
   
   /*int *functions;
@@ -186,12 +189,12 @@ int main() {
       for (function_id = 0; function_id < 24; function_id++) {
           for (instance_id = 0; instance_id < 15; instance_id++) { /* this is specific to 2009 */
               problem_index = bbob2009_encode_problem_index(function_id, instance_id, dimension_idx);
-              problem = coco_get_problem(SUITE_NAME, problem_index);
-              problem = coco_observe_problem(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
+              problem = coco_suite_get_problem(SUITE_NAME, problem_index);
+              problem = coco_problem_add_observer(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
               if (problem == NULL)
                 break;
               coco_optimize(problem);
-              coco_free_problem(problem);
+              coco_problem_free(problem);
           }
       }
     /*bbob2009_get_problem_index(functions[ifun], dimensions[idim], instances[iinst]); */

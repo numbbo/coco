@@ -29,13 +29,13 @@ static int about_equal(const double a, const double b) {
 static void usage(const char *program_name) {
   fprintf(
       stderr,
-      "COCO function test suit runner\n"
+      "COCO function test suite runner\n"
       "\n"
       "Usage:\n"
       "  %s <testcasefile>\n"
       "\n"
       "This program tests the numerical accuracy of the functions in a\n"
-      "particular COCO test suit. Its sole argument is the name of a\n"
+      "particular COCO test suite. Its sole argument is the name of a\n"
       "text file that contains the test cases. The COCO distribution contains\n"
       "(at least) the following test cases:\n"
       "\n"
@@ -46,7 +46,8 @@ static void usage(const char *program_name) {
 
 int main(int argc, char **argv) {
   int header_shown = 0, number_of_failures = 0, shown_failures = 0;
-  int number_of_testvectors = 0, number_of_testcases = 0, i, j;
+  size_t number_of_testvectors = 0, i, j;
+  int number_of_testcases = 0;
   testvector_t *testvectors = NULL;
   int previous_function_id = -1, function_id, testvector_id, ret;
   coco_problem_t *problem = NULL;
@@ -66,11 +67,11 @@ int main(int argc, char **argv) {
 
   ret = fscanf(testfile, "%127s", suit_name);
   if (ret != 1) {
-    fprintf(stderr, "Failed to read suit name from testcases file.\n");
+    fprintf(stderr, "Failed to read suite name from testcases file.\n");
     goto err;
   }
 
-  ret = fscanf(testfile, "%30i", &number_of_testvectors);
+  ret = fscanf(testfile, "%30lu", &number_of_testvectors);
   if (ret != 1) {
     fprintf(stderr,
             "Failed to read number of test vectors from testcases file.\n");
@@ -87,7 +88,7 @@ int main(int argc, char **argv) {
     for (j = 0; j < 40; ++j) {
       ret = fscanf(testfile, "%30lf", &testvectors[i].x[j]);
       if (ret != 1) {
-        fprintf(stderr, "ERROR: Failed to parse testvector %i element %i.\n",
+        fprintf(stderr, "ERROR: Failed to parse testvector %lu element %lu.\n",
                 i + 1, j + 1);
       }
     }
@@ -106,8 +107,8 @@ int main(int argc, char **argv) {
      */
     if (previous_function_id != function_id) {
       if (NULL != problem)
-        coco_free_problem(problem);
-      problem = coco_get_problem(suit_name, function_id);
+        coco_problem_free(problem);
+      problem = coco_suite_get_problem(suit_name, function_id);
       previous_function_id = function_id;
     }
     x = testvectors[testvector_id].x;
@@ -123,7 +124,7 @@ int main(int argc, char **argv) {
         fprintf(stdout,
                 "%8i %8i FAILED expected=%.8e observed=%.8e function_id=%s\n",
                 function_id, testvector_id, expected_value, y,
-                coco_get_problem_id(problem));
+                coco_problem_get_id(problem));
         fflush(stdout);
         ++shown_failures;
       } else if (shown_failures == 100) {
@@ -141,7 +142,7 @@ int main(int argc, char **argv) {
 
   /* Free any remaining allocated memory so that we pass valgrind checks. */
   if (NULL != problem)
-    coco_free_problem(problem);
+    coco_problem_free(problem);
   free(testvectors);
 
   return number_of_failures == 0 ? 0 : 1;
