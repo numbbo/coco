@@ -50,6 +50,8 @@ static const char *coco_path_separator = "/";
 /* Handle the special case of Microsoft Visual Studio 2008, which is not C89-compliant */
 #if _MSC_VER
 #include <direct.h>
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+#include <dirent.h>
 #else
 #include <dirent.h>
 /* To silence the compiler (implicit-function-declaration warning). */
@@ -225,6 +227,8 @@ void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
 int coco_create_directory(const char *path) {
 #if _MSC_VER
   return _mkdir(path);
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+  return mkdir(path);
 #else
   return mkdir(path, S_IRWXU);
 #endif
