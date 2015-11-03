@@ -2,11 +2,12 @@
 #include <stdio.h>
 #include "coco.h"
 
+#if 0 /* To silence the compiler (the code is not yet completed) */
 /**
  * Allocates memory for a matrix with ${number_of_rows} rows and ${number_of_columns} columns of strings of
  * maximal size ${max_length_of_string}.
  */
-static char ***mococo_allocate_matrix_of_strings(const size_t number_of_rows, const size_t number_of_columns,
+static char ***mo_allocate_matrix_of_strings(const size_t number_of_rows, const size_t number_of_columns,
     const size_t max_length_of_string) {
 
   char ***matrix_of_strings;
@@ -14,7 +15,7 @@ static char ***mococo_allocate_matrix_of_strings(const size_t number_of_rows, co
 
   matrix_of_strings = malloc(number_of_rows * sizeof(char**));
   if (matrix_of_strings == NULL)
-    coco_error("mococo_allocate_matrix_of_strings() failed");
+    coco_error("mo_allocate_matrix_of_strings() failed");
 
   for(i = 0; i < number_of_rows; i++) {
     matrix_of_strings[i] = malloc(number_of_columns * sizeof(char*));
@@ -30,7 +31,7 @@ static char ***mococo_allocate_matrix_of_strings(const size_t number_of_rows, co
  * Frees the memory occupied by the ${matrix_of_strings} matrix of string with ${number_of_rows} rows and
  * ${cnumber_of_columns} columns.
  */
-static void mococo_free_matrix_of_strings(char ***matrix_of_strings, const size_t number_of_rows,
+static void mo_free_matrix_of_strings(char ***matrix_of_strings, const size_t number_of_rows,
     const size_t number_of_columns) {
 
   size_t i, j;
@@ -47,7 +48,7 @@ static void mococo_free_matrix_of_strings(char ***matrix_of_strings, const size_
 /**
  * Counts and returns the number of lines in the already opened file pointed to by ${fp}.
  */
-static size_t mococo_get_file_line_number(FILE *fp) {
+static size_t mo_get_file_line_number(FILE *fp) {
 
   int ch;
   size_t number_of_lines = 0;
@@ -71,7 +72,7 @@ static size_t mococo_get_file_line_number(FILE *fp) {
 /**
  * Assumes the input file contains lines with single double values. Reads and returns those values.
  */
-static double *mococo_get_doubles_from_file(const char *filename) {
+static double *mo_get_doubles_from_file(const char *filename) {
 
   size_t i, number_of_lines;
   double *result;
@@ -80,7 +81,7 @@ static double *mococo_get_doubles_from_file(const char *filename) {
   if (fp == 0) {
     coco_error("failed to open input file %s", filename);
   }
-  number_of_lines = mococo_get_file_line_number(fp);
+  number_of_lines = mo_get_file_line_number(fp);
 
   /* Prepare the vector */
   result = coco_allocate_vector(number_of_lines);
@@ -97,7 +98,7 @@ static double *mococo_get_doubles_from_file(const char *filename) {
  * ${max_length_of_string}. Returns the strings in the form of a N x 2 matrix, where N is the number of lines
  * in the file.
  */
-static char ***mococo_get_string_pairs_from_file(const char *filename, const size_t max_length_of_string) {
+static char ***mo_get_string_pairs_from_file(const char *filename, const size_t max_length_of_string) {
 
   size_t i, number_of_lines;
   FILE *fp = fopen(filename, "r");
@@ -106,10 +107,10 @@ static char ***mococo_get_string_pairs_from_file(const char *filename, const siz
   if (fp == 0) {
     coco_error("failed to open input file %s", filename);
   }
-  number_of_lines = mococo_get_file_line_number(fp);
+  number_of_lines = mo_get_file_line_number(fp);
 
   /* Prepare the matrix */
-  matrix_of_strings = mococo_allocate_matrix_of_strings(number_of_lines, 2, max_length_of_string);
+  matrix_of_strings = mo_allocate_matrix_of_strings(number_of_lines, 2, max_length_of_string);
   for (i = 0; i < number_of_lines; i++) {
     fscanf(fp, "%s\t%[^\n]", matrix_of_strings[i][0], matrix_of_strings[i][1]);
   }
@@ -121,13 +122,13 @@ static char ***mococo_get_string_pairs_from_file(const char *filename, const siz
 /**
  * Converts string (char *) to double. Does not check for underflow or overflow, ignores any trailing characters.
  */
-static double mococo_string_to_double(const char *string) {
+static double mo_string_to_double(const char *string) {
   double result;
   char *err;
 
   result = strtod(string, &err);
   if (result == 0 && string == err) {
-    coco_error("mococo_string_to_double() failed");
+    coco_error("mo_string_to_double() failed");
   }
 
   return result;
@@ -137,7 +138,7 @@ static double mococo_string_to_double(const char *string) {
  * Scans the input matrix to find the first value that matches the given ${key} (looks for the key in ${key_column} column and
  * for the value in ${value_column} column). If the key is not found, it returns ${default_value}.
  */
-static double mococo_get_matching_double_value(const char ***matrix_of_strings, const char *key, const size_t number_of_rows,
+static double mo_get_matching_double_value(const char ***matrix_of_strings, const char *key, const size_t number_of_rows,
     const size_t key_column, const size_t value_column, double default_value) {
 
   size_t i;
@@ -146,7 +147,7 @@ static double mococo_get_matching_double_value(const char ***matrix_of_strings, 
     /* The given key matches the key in the matrix */
     if (strcmp(matrix_of_strings[i][key_column], key) == 0) {
       /* Return the value in the same row */
-      return mococo_string_to_double(matrix_of_strings[i][value_column]);
+      return mo_string_to_double(matrix_of_strings[i][value_column]);
     }
   }
 
@@ -157,13 +158,14 @@ static double mococo_get_matching_double_value(const char ***matrix_of_strings, 
 /**
  * Appends ${string} to the given file.
  */
-static void mococo_append_to_file(const char *filename, const char *string) {
+static void mo_append_to_file(const char *filename, const char *string) {
 
   FILE *fp = fopen(filename, "a");
   fprintf(fp, string);
   fprintf(fp, "\n");
   fclose(fp);
 }
+#endif
 
 /**
  * Checks the dominance relation in the unconstrained minimization case between
@@ -173,7 +175,7 @@ static void mococo_append_to_file(const char *filename, const char *string) {
  * -1 if ${objectives2} dominates ${objectives1}
  * -2 if ${objectives1} is identical to ${objectives2}
  */
-static int mococo_get_dominance(const double *objectives1, const double *objectives2, const size_t num_obj) {
+static int mo_get_dominance(const double *objectives1, const double *objectives2, const size_t num_obj) {
   /* TODO: Should we care about comparison precision? */
   size_t i;
 

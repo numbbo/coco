@@ -2,13 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include <dirent.h>
+#include <assert.h>
 
 #include "coco.h"
 #include "coco_internal.h"
 #include "coco_strdup.c"
 
-/* Figure out if we are on a sane platform or on the dominant platform. */
+/* Figure out if we are on a sane platform or on the dominant platform */
 #if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
 #include <windows.h>
 static const char *coco_path_separator = "\\";
@@ -47,6 +47,17 @@ static const char *coco_path_separator = "/";
 #error Unknown platform
 #endif
 
+/* Handle the special case of Microsoft Visual Studio 2008, which is not C89-compliant */
+#if _MSC_VER
+#include <direct.h>
+#else
+#include <dirent.h>
+/* To silence the compiler (implicit-function-declaration warning). */
+int rmdir (const char *pathname);
+int unlink (const char *filename);
+int mkdir(const char *pathname, mode_t mode);
+#endif
+
 #if defined(HAVE_GFA)
 #define S_IRWXU 0700
 #endif
@@ -54,9 +65,6 @@ static const char *coco_path_separator = "/";
 #if !defined(COCO_PATH_MAX)
 #error COCO_PATH_MAX undefined
 #endif
-
-/* To get rid of the implicit-function-declaration warning. */
-int mkdir(const char *pathname, mode_t mode);
 
 /***********************************
  * Global definitions in this file
@@ -66,7 +74,10 @@ void coco_join_path(char *path, size_t path_max_length, ...);
 int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
 void coco_create_new_path(const char *path, size_t maxlen, char *new_path);
-int coco_remove_directory(const char *path);
+int coco_create_directory(const char *path);
+/* int coco_remove_directory(const char *path); Moved to coco.h */
+int coco_remove_directory_msc(const char *path);
+int coco_remove_directory_no_msc(const char *path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
 double coco_round_double(const double a);
 double coco_max_double(const double a, const double b);
@@ -128,17 +139,17 @@ void coco_create_path(const char *path) {
     if (*p == path_sep) {
       *p = 0;
       if (!coco_path_exists(tmp)) {
-        if (0 != mkdir(tmp, S_IRWXU))
+        if (0 != coco_create_directory(tmp))
           goto error;
       }
       *p = path_sep;
     }
   }
-  if (0 != mkdir(tmp, S_IRWXU))
+  if (0 != coco_create_directory(tmp))
     goto error;
   coco_free_memory(tmp);
   return;
-  error: message = "mkdir(\"%s\") failed";
+  error: message = "coco_create_path(\"%s\") failed";
   coco_error(message, tmp);
   return; /* never reached */
 }
@@ -208,18 +219,100 @@ void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
 #endif
 
 /**
- * Removes the given directory and all its contents.
+ * Creates a directory with full privileges for the user (should work across different platforms/compilers).
+ * Returns 0 on successful completion, and -1 on error.
+ */
+int coco_create_directory(const char *path) {
+#if _MSC_VER
+  return _mkdir(path);
+#else
+  return mkdir(path, S_IRWXU);
+#endif
+}
+
+/**
+ * Removes the given directory and all its contents (should work across different platforms/compilers).
+ * Returns 0 on successful completion, and -1 on error.
  */
 int coco_remove_directory(const char *path) {
+#if _MSC_VER
+  return coco_remove_directory_msc(path);
+#else
+  return coco_remove_directory_no_msc(path);
+#endif
+}
 
+/**
+ * Removes the given directory and all its contents (when using Microsoft Visual Studio's compiler).
+ * Returns 0 on successful completion, and -1 on error.
+ */
+int coco_remove_directory_msc(const char *path) {
+#if _MSC_VER
+  WIN32_FIND_DATA find_data_file;
+  HANDLE find_handle = NULL;
+  char *buf;
+  int r = -1;
+  int r2 = -1;
+
+  buf = coco_strdupf("%s\\*.*", path);
+  /* Nothing to do if the folder does not exist */
+  if ((find_handle = FindFirstFile(buf, &find_data_file)) == INVALID_HANDLE_VALUE) {
+    coco_free_memory(buf);
+    return 0;
+  }
+  coco_free_memory(buf);
+
+  do {
+    r = 0;
+
+    /* Skip the names "." and ".." as we don't want to recurse on them */
+    if (strcmp(find_data_file.cFileName, ".") != 0 && strcmp(find_data_file.cFileName, "..") != 0) {
+      /* Build the new path using the argument path the file/folder name we just found */
+      buf = coco_strdupf("%s\\%s", path, find_data_file.cFileName);
+
+      if (find_data_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+        /* Buf is a directory, recurse on it */
+        r2 = coco_remove_directory_msc(buf);
+      } else {
+        /* Buf is a file, delete it */
+        /* Careful, DeleteFile returns 0 if it fails and nonzero otherwise! */
+        r2 = -(DeleteFile(buf) == 0);
+      }
+
+      coco_free_memory(buf);
+    }
+
+    r = r2;
+
+  } while (FindNextFile(find_handle, &find_data_file)); /* Find the next file */
+
+  FindClose(find_handle);
+
+  if (!r) {
+    /* Path is an empty directory, delete it */
+    /* Careful, RemoveDirectory returns 0 if it fails and nonzero otherwise! */
+    r = -(RemoveDirectory(path) == 0);
+  }
+
+  return r;
+#else
+  (void) path; /* To silence the compiler. */
+  return -1; /* This should never be reached */
+#endif
+}
+
+/**
+ * Removes the given directory and all its contents (when NOT using Microsoft Visual Studio's compiler).
+ * Returns 0 on successful completion, and -1 on error.
+ */
+int coco_remove_directory_no_msc(const char *path) {
+#if !_MSC_VER
   DIR *d = opendir(path);
-  size_t path_len = strlen(path);
   int r = -1;
   int r2 = -1;
   char *buf;
-  size_t len;
 
-  /* Nothing to do if the folder does not exist. */
+  /* Nothing to do if the folder does not exist */
   if (!coco_path_exists(path))
     return 0;
 
@@ -230,25 +323,22 @@ int coco_remove_directory(const char *path) {
 
     while (!r && (p = readdir(d))) {
 
-      /* Skip the names "." and ".." as we don't want to recurse on them. */
+      /* Skip the names "." and ".." as we don't want to recurse on them */
       if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, "..")) {
         continue;
       }
 
-      len = path_len + strlen(p->d_name) + 2;
-      buf = malloc(len);
-
+      buf = coco_strdupf("%s/%s", path, p->d_name);
       if (buf) {
-        snprintf(buf, len, "%s/%s", path, p->d_name);
-
-        if (coco_path_exists(buf)) { /* The buf is a directory. */
+        if (coco_path_exists(buf)) {
+          /* Buf is a directory, recurse on it */
           r2 = coco_remove_directory(buf);
-        } else { /* The buf is a file. */
+        } else {
+          /* Buf is a file, delete it */
           r2 = unlink(buf);
         }
-
-        free(buf);
       }
+      coco_free_memory(buf);
 
       r = r2;
     }
@@ -257,10 +347,15 @@ int coco_remove_directory(const char *path) {
   }
 
   if (!r) {
+    /* Path is an empty directory, delete it */
     r = rmdir(path);
   }
 
   return r;
+#else
+  (void) path; /* To silence the compiler. */
+  return -1; /* This should never be reached */
+#endif
 }
 
 double *coco_allocate_vector(const size_t number_of_elements) {
@@ -282,7 +377,7 @@ double *coco_duplicate_vector(const double *src, const size_t number_of_elements
   return dst;
 }
 
-/* some math functions which are not contained in C89 standard */
+/* Some math functions which are not contained in C89 standard */
 double coco_round_double(const double number) {
   return floor(number + 0.5);
 }
