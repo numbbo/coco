@@ -181,7 +181,7 @@ static int logger_mo_tree_update(logger_mo_t *data, logger_mo_avl_item_t *node_i
     trigger_update = 1;
     next_node = data->archive_tree->head;
   } else {
-    dominance = mococo_get_dominance(node_item->y, ((logger_mo_avl_item_t*) node->item)->y, data->number_of_objectives);
+    dominance = mo_get_dominance(node_item->y, ((logger_mo_avl_item_t*) node->item)->y, data->number_of_objectives);
     if (dominance > -1) {
       trigger_update = 1;
       next_node = node->next;
@@ -203,7 +203,7 @@ static int logger_mo_tree_update(logger_mo_t *data, logger_mo_avl_item_t *node_i
        * dominance = 0: the given node and the next node are nondominated
        * dominance = 1: the given node dominates the next node */
       node = next_node;
-      dominance = mococo_get_dominance(node_item->y, ((logger_mo_avl_item_t*) node->item)->y,
+      dominance = mo_get_dominance(node_item->y, ((logger_mo_avl_item_t*) node->item)->y,
           data->number_of_objectives);
       if (dominance == 1) {
         next_node = node->next;
