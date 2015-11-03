@@ -55,6 +55,8 @@ static void coco_archive_allocate(coco_archive_t *archive,
   }
 }
 
+/* Commented to silence the compiler.
+
 static void coco_archive_reset(coco_archive_t *archive) {
   size_t i;
 
@@ -64,7 +66,7 @@ static void coco_archive_reset(coco_archive_t *archive) {
     archive->entry[i].status = 0;
     archive->entry[i].birth = 0;
   }
-}
+}*/
 
 static void coco_archive_free(coco_archive_t *archive) {
   size_t i;
