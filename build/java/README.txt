@@ -18,3 +18,15 @@ Under build/java do:
 To run the example:
 - first, compile all the .java files (javac *.java for example)
 - then run demo.o by typing java demo
+
+
+
+
+Generating the shared library (for Windows without Cygwin, and with 32bit MinGW gcc compiler):
+Under build/java do:
+	gcc -Wl,--kill-at -I"C:\PATH_TO_YOUR_JDK\include" -I"C:\PATH_TO_YOUR_JDK\include\win32" -shared -o JNIinterface.dll JNIinterface.c
+
+You should have now a JNIinterface.dll file in this folder. Now run the example:
+- first, compile all the .java files (by typing 'javac *.java' for example)
+- then run the demo by typing 'java demo'
+
