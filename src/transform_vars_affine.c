@@ -1,4 +1,3 @@
-#include <stdbool.h>
 #include <assert.h>
 
 #include "coco.h"
