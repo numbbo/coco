@@ -232,7 +232,7 @@ def build_java():
                                'JNIinterface.c'])
     
     # 2. Windows with Cygwin (both 32-bit)
-        elif ('32' in platform.machine()):
+        elif ('32' in platform.machine()) or ('x86' in platform.machine()):
             run('build/java', ['i686-w64-mingw32-gcc', '-Wl,--kill-at', '-I', 
                                jdkpath1, '-I', jdkpath2, '-shared', '-o', 
                                'JNIinterface.dll', 'JNIinterface.c'])
