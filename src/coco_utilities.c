@@ -47,7 +47,7 @@ static const char *coco_path_separator = "/";
 #error Unknown platform
 #endif
 
-/* Handle the special case of Microsoft Visual Studio 2008, which is not C89-compliant */
+/* Handle the special case of Microsoft Visual Studio 2008 and x86_64-w64-mingw32-gcc */
 #if _MSC_VER
 #include <direct.h>
 #elif defined(__MINGW32__) || defined(__MINGW64__)
