@@ -27,7 +27,13 @@ public class demo {
         long problem_index = -1;
         long found_problems = 0;
         long addressed_problems = 0;
+        
         while (true) {
+        
+        // Limit the demo to the first 200 problems of the suite
+        if (problem_index > 200)
+        	break;
+        
         	problem_index = my_benchmark.getNextProblemIndex(problem_index);
         	if (problem_index < 0)
         		break;
