@@ -30,3 +30,13 @@ You should have now a JNIinterface.dll file in this folder. Now run the example:
 - first, compile all the .java files (by typing 'javac *.java' for example)
 - then run the demo by typing 'java demo'
 
+
+
+Generating the shared library (for Windows with Cygwin and the x86_64-w64-mingw32-gcc compiler):
+Under build/java do:
+	x86_64-w64-mingw32-gcc -D __int64="long long" -Wl,--add-stdcall-alias -I"C:\PATH_TO_YOUR_JDK\include" -I"C:\PATH_TO_YOUR_JDK\include\win32" -shared -o JNIinterface.dll JNIinterface.c
+
+You should have now a JNIinterface.dll file in this folder. Now run the example:
+- first, compile all the .java files (by typing 'javac *.java' for example)
+- then run the demo by typing 'java demo'
+
