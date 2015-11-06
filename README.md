@@ -20,6 +20,7 @@ should rather have been named make.py). It has switches for just building some l
     ./do.py build  # builds all
     ./do.py build-python
     ./do.py build-c
+    ./do.py build-java
 
 are valid commands (on a Linux or OSX shell). do.py is a neat and simplifying replacement for make.
 
