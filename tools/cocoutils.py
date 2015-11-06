@@ -139,6 +139,15 @@ def make(directory, target):
     oldwd = os.getcwd()
     try:
         os.chdir(directory)
+        # prepare makefile(s)
+        if ((('win32' in sys.platform) or ('win64' in sys.platform)) and
+            ('cygwin' not in os.environ['PATH'])):
+            # only if under Windows and without Cygwin, we need a specific
+            # Windows makefile
+            copy_file('Makefile_win_gcc.in', 'Makefile')
+        else:
+            copy_file('Makefile.in', 'Makefile')                
+        
         output = check_output(['make', target], stderr=STDOUT, env=os.environ,
                               universal_newlines=True)
     except CalledProcessError as e:

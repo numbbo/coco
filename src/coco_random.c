@@ -2,7 +2,7 @@
 
 #include "coco.h"
 
-#define NUMBBO_NORMAL_POLAR /* Use polar transformation method */
+#define COCO_NORMAL_POLAR /* Use polar transformation method */
 
 #define SHORT_LAG 273
 #define LONG_LAG 607
@@ -37,23 +37,25 @@ static void coco_random_generate(coco_random_state_t *state) {
   state->index = 0;
 }
 
-coco_random_state_t *coco_new_random(uint32_t seed) {
-  coco_random_state_t *state =
-      (coco_random_state_t *)coco_allocate_memory(sizeof(coco_random_state_t));
+coco_random_state_t *coco_random_new(uint32_t seed) {
+  coco_random_state_t *state = (coco_random_state_t *) coco_allocate_memory(sizeof(coco_random_state_t));
   size_t i;
   /* Expand seed to fill initial state array. */
   for (i = 0; i < LONG_LAG; ++i) {
-    state->x[i] = ((double)seed) / (double)((1UL << 32) - 1);
+    /* Uses uint64_t to silence the compiler ("shift count negative or too big, undefined behavior" warning) */
+    state->x[i] = ((double) seed) / (double) (((uint64_t)1UL << 32) - 1);
     /* Advance seed based on simple RNG from TAOCP */
-    seed = (uint32_t)1812433253UL * (seed ^ (seed >> 30)) + ((uint32_t)i + 1);
+    seed = (uint32_t) 1812433253UL * (seed ^ (seed >> 30)) + ((uint32_t) i + 1);
   }
   state->index = 0;
   return state;
 }
 
-void coco_free_random(coco_random_state_t *state) { coco_free_memory(state); }
+void coco_random_free(coco_random_state_t *state) {
+  coco_free_memory(state);
+}
 
-double coco_uniform_random(coco_random_state_t *state) {
+double coco_random_uniform(coco_random_state_t *state) {
   /* If we have consumed all random numbers in our archive, it is
    * time to run the actual generator for one iteration to refill
    * the state with 'LONG_LAG' new values.
@@ -63,23 +65,23 @@ double coco_uniform_random(coco_random_state_t *state) {
   return state->x[state->index++];
 }
 
-double coco_normal_random(coco_random_state_t *state) {
+double coco_random_normal(coco_random_state_t *state) {
   double normal;
-#ifdef NUMBBO_NORMAL_POLAR
-  const double u1 = coco_uniform_random(state);
-  const double u2 = coco_uniform_random(state);
+#ifdef COCO_NORMAL_POLAR
+  const double u1 = coco_random_uniform(state);
+  const double u2 = coco_random_uniform(state);
   normal = sqrt(-2 * log(u1)) * cos(2 * coco_pi * u2);
 #else
   int i;
   normal = 0.0;
   for (i = 0; i < 12; ++i) {
-    normal += coco_uniform_random(state);
+    normal += coco_random_uniform(state);
   }
   normal -= 6.0;
 #endif
   return normal;
 }
 
-/* Be hygenic (for amalgamation) and undef lags. */
+/* Be hygienic (for amalgamation) and undef lags. */
 #undef SHORT_LAG
 #undef LONG_LAG

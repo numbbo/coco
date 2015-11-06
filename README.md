@@ -1,6 +1,6 @@
 # numbbo: Numerical Black-Box Optimization Benchmarking Framework
 
-The code resembles the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
+The code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
 now rewritten fully in ANSI C with the other four languages Java, MATLAB, python, and R calling the C code.
 
 Generally, the code features an object oriented implementation, where the coco_problem_t is the most central
@@ -20,6 +20,7 @@ should rather have been named make.py). It has switches for just building some l
     ./do.py build  # builds all
     ./do.py build-python
     ./do.py build-c
+    ./do.py build-java
 
 are valid commands (on a Linux or OSX shell). do.py is a neat and simplifying replacement for make.
 
