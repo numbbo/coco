@@ -75,12 +75,17 @@ int mkdir(const char *pathname, mode_t mode);
 void coco_join_path(char *path, size_t path_max_length, ...);
 int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
-void coco_create_new_path(const char *path, size_t maxlen, char *new_path);
+/* void coco_create_new_path(const char *path, size_t maxlen, char *new_path); commented to silence the compiler */
 int coco_create_directory(const char *path);
 /* int coco_remove_directory(const char *path); Moved to coco.h */
 int coco_remove_directory_msc(const char *path);
 int coco_remove_directory_no_msc(const char *path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
+int coco_options_read_int(const char *options, const char *name, int *pointer);
+int coco_options_read_long(const char *options, const char *name, long *pointer);
+int coco_options_read_double(const char *options, const char *name, double *pointer);
+int coco_options_read_string(const char *options, const char *name, char *pointer);
+static int coco_options_read(const char *options, const char *name, const char *format, void *pointer);
 double coco_round_double(const double a);
 double coco_max_double(const double a, const double b);
 double coco_min_double(const double a, const double b);
@@ -115,6 +120,20 @@ int coco_path_exists(const char *path) {
 #elif defined(HAVE_STAT)
   struct stat buf;
   res = (!stat(path, &buf) && S_ISDIR(buf.st_mode));
+#else
+#error Ooops
+#endif
+  return res;
+}
+
+int coco_file_exists(const char *path) {
+  int res;
+#if defined(HAVE_GFA)
+  DWORD dwAttrib = GetFileAttributes(path);
+  res = (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & !FILE_ATTRIBUTE_DIRECTORY));
+#elif defined(HAVE_STAT)
+  struct stat buf;
+  res = (!stat(path, &buf) && !S_ISDIR(buf.st_mode));
 #else
 #error Ooops
 #endif
@@ -379,6 +398,85 @@ double *coco_duplicate_vector(const double *src, const size_t number_of_elements
     dst[i] = src[i];
   }
   return dst;
+}
+
+/**
+ * Reads an integer from options using the form "name1 : value1 name2: value2". Formatting requirements:
+ * - name and value need to be separated by a semicolon AND a space (spaces between name and the
+ * semicolon are optional)
+ * - the value corresponding to the given name needs to be an integer
+ * Returns the number of successful assignments.
+ */
+int coco_options_read_int(const char *options, const char *name, int *pointer) {
+  return coco_options_read(options, name, " %i", pointer);
+}
+
+/**
+ * Reads a long integer from options using the form "name1 : value1 name2: value2". Formatting requirements:
+ * - name and value need to be separated by a semicolon AND a space (spaces between name and the
+ * semicolon are optional)
+ * - the value corresponding to the given name needs to be a long integer
+ * Returns the number of successful assignments.
+ */
+int coco_options_read_long(const char *options, const char *name, long *pointer) {
+  return coco_options_read(options, name, " %lu", pointer);
+}
+
+/**
+ * Reads a double value from options using the form "name1 : value1 name2: value2". Formatting requirements:
+ * - name and value need to be separated by a semicolon AND a space (spaces between name and the
+ * semicolon are optional)
+ * - the value corresponding to the given name needs to be a double
+ * Returns the number of successful assignments.
+ */
+int coco_options_read_double(const char *options, const char *name, double *pointer) {
+  return coco_options_read(options, name, " %f", pointer);
+}
+
+/**
+ * Reads a string from options using the form "name1 : value1 name2: value2". Formatting requirements:
+ * - name and value need to be separated by a semicolon AND a space (spaces between name and the
+ * semicolon are optional)
+ * - the value corresponding to the given name needs to be a string - either a single word or multiple words
+ * in double quotes
+ * Returns the number of successful assignments.
+ */
+int coco_options_read_string(const char *options, const char *name, char *pointer) {
+
+  long i1 = coco_strfind(options, name);
+  long i2;
+
+  if (i1 < 0)
+    return 0;
+  i2 = i1 + coco_strfind(&options[i1], ":") + 1;
+  if (i2 <= i1)
+    return 0;
+
+  if (options[i2] == '\"') {
+    /* The value starts with a quote: read everything between two quotes into a string */
+    return sscanf(&options[i2], " \"%[^\"]\"", pointer);
+  } else
+    return sscanf(&options[i2], " %s", pointer);
+}
+
+/**
+ * Parse options in the form "name1 : value1 name2: value2". Formatting requirements:
+ * - name and value need to be separated by a semicolon
+ * - value needs to be a single string (no spaces allowed)
+ * Returns the number of successful assignments.
+ */
+static int coco_options_read(const char *options, const char *name, const char *format, void *pointer) {
+
+  long i1 = coco_strfind(options, name);
+  long i2;
+
+  if (i1 < 0)
+    return 0;
+  i2 = i1 + coco_strfind(&options[i1], ":") + 1;
+  if (i2 <= i1)
+    return 0;
+
+  return sscanf(&options[i2], format, pointer);
 }
 
 /* Some math functions which are not contained in C89 standard */

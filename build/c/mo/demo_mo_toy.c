@@ -16,8 +16,8 @@ static const char *SUITE_NAME       = "suite_biobj_300";
 /* static const char *SUITE_OPTIONS    = "";*/ /* e.g.: "instances:1-5; dimensions:-20" */
 /* static const char *OBSERVER_NAME = "no_observer"; / * writes no data */
 static const char *OBSERVER_NAME    = "observer_mo_toy"; /* writes data */
-static const char *OBSERVER_OPTIONS = "mo_random_search_on_suite_biobj_300_toy";
-static const char *SOLVER_NAME      = "mo_random_search"; /* for the choice in coco_optimize below */
+static const char *OBSERVER_OPTIONS = "RS_on_suite_biobj_300_toy";
+static const char *SOLVER_NAME      = "random_search"; /* for the choice in coco_optimize below */
 /* static const int NUMBER_OF_BATCHES   = 88;*/  /* use 1 for single batch :-) batches can be run independently in parallel */
 /* static int CURRENT_BATCH             = 1;*/  /* runs from 1 to NUMBER_OF_BATCHES, or any other consecutive sequence */
 
@@ -30,7 +30,7 @@ typedef void (*mo_objective_function_t) (const double *, double *);
 void mo_objective_function(const double *x, double *y) {
     coco_evaluate_function(CURRENT_COCO_PROBLEM, x, y);
 }
-void mo_random_search(mo_objective_function_t func,
+void random_search(mo_objective_function_t func,
                       size_t number_of_objectives,
                       size_t dimension,
                       const double *lower,
@@ -78,8 +78,8 @@ void coco_optimize(coco_problem_t *problem) { /* should at the least take budget
 
   while ((remaining_budget = MAX_BUDGET - coco_problem_get_evaluations(problem)) > 0) {
     /* call the solver */
-    if (strcmp("mo_random_search", SOLVER_NAME) == 0) { /* random search for bi-objective case */
-      mo_random_search(mo_objective_function,
+    if (strcmp("random_search", SOLVER_NAME) == 0) { /* random search for bi-objective case */
+      random_search(mo_objective_function,
                        coco_problem_get_number_of_objectives(problem), dimension,
                        lbounds, ubounds, remaining_budget);
     }
