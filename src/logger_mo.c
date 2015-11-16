@@ -216,40 +216,42 @@ static int logger_mo_tree_update(logger_mo_t *data, logger_mo_avl_item_t *node_i
 
 
 static void private_logger_mo_initialize(coco_problem_t *self) {
-  /* TODO: Handle existing file names!*/
   logger_mo_t *data;
 
   const char nondom_folder_name[] = "archive";
-  const char base_name[] = "problem_name";
-  const char extension[] = ".dat";
-  char path_name[COCO_PATH_MAX] = {0};
-  char file_name[COCO_PATH_MAX] = {0};
+  char *path_name;
+  char *file_name;
 
   data = coco_transformed_get_data(self);
 
-  coco_create_path(data->result_folder);
-
   if (data->log_mode != NONE) {
 
-    /* Construct the name of the file (and create the path to it) */
-    coco_join_path(path_name, sizeof(path_name), data->result_folder, nondom_folder_name, NULL);
+    /* Create the path to the file */
+    path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
+    memcpy(path_name, data->result_folder, strlen(data->result_folder) + 1);
+    coco_join_path(path_name, COCO_PATH_MAX, nondom_folder_name, NULL);
     coco_create_path(path_name);
-    /* TODO: Read base_name from the problem and use coco_strconcat() instead of strcat() */
-    strcat(file_name, self->problem_id);
-    strcat(file_name, "_");
+
+    /* Construct file name (use coco_create_unique_filename to make it unique) */
     if (data->log_mode == ALL)
-      strcat(file_name, "nondom_all");
+      file_name = coco_strdupf("%s_nondom_all.dat", self->problem_id);
     else if (data->log_mode == FINAL)
-      strcat(file_name, "nondom_final");
-    strcat(file_name, extension);
-    coco_join_path(path_name, sizeof(path_name), file_name, NULL);
+      file_name = coco_strdupf("%s_nondom_final.dat", self->problem_id);
+    coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
+    coco_create_unique_filename(&path_name);
 
     /* Open and initialize the file */
     data->nondom_file = fopen(path_name, "a");
     if (data->nondom_file == NULL) {
       coco_error("private_logger_mo_initialize() failed to open file '%s'.", path_name);
+      coco_free_memory(file_name);
+      coco_free_memory(path_name);
       return; /* Never reached */
     }
+
+    coco_free_memory(file_name);
+    coco_free_memory(path_name);
+
     if (data->include_decision_variables) {
       fprintf(data->nondom_file, "%% function evaluation | %lu objectives | %lu variables\n",
           data->number_of_objectives, data->number_of_variables);
@@ -360,6 +362,8 @@ static coco_problem_t *logger_mo(coco_problem_t *problem, const char *options) {
     coco_warning("logger_mo(): using results as the name of the result folder");
     data->result_folder = coco_strdup("results");
   }
+  /* Creates the output folder if it does not yet exist */
+  coco_create_path(data->result_folder);
 
   data->log_mode = FINAL;
   if (coco_options_read_string(options, "log_nondominated", string_value) > 0) {
