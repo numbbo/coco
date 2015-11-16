@@ -41,7 +41,7 @@ static void private_logger_target_hits_evaluate(coco_problem_t *self, const doub
   /* Add a line for each hitting level we have reached. */
   while (y[0] <= data->target_values[data->next_target_value]
       && data->next_target_value < data->number_of_target_values) {
-    fprintf(data->logfile, "%e %e %li\n", data->target_values[data->next_target_value], y[0],
+    fprintf(data->logfile, "%e %e %lu\n", data->target_values[data->next_target_value], y[0],
         data->number_of_evaluations);
     data->next_target_value++;
   }
