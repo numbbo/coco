@@ -270,7 +270,7 @@ void coco_free_memory(void *data);
  */
 char *coco_strdup(const char *string);
 
-/* TODO: Should this be here? It's needed to make the MO COCO test ... */
+/* TODO: Move this to an internal header ASAP */
 int coco_remove_directory(const char *path);
 
 /* TODO: These bbob2009... functions should probably not be in

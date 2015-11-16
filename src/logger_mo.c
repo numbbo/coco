@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 
 #include "coco.h"
@@ -11,22 +12,34 @@
 #include "mo_avl_tree.c"
 #include "mo_generics.c"
 
-/* Flags controlling the computation of indicators and logger output (set through observer options) */
-static int bla;
-
 /* Data for each indicator */
 typedef struct {
-  char *input_file_name;
-  FILE *output_file;
+  char *name;
+  FILE *log_file;
   double *target_values;
   size_t number_of_targets;
   size_t next_target;
 } logger_mo_indicator_t;
 
-/* Data needed for the multiobjective logger */
+/* Mode of logging nondominated solutions */
+typedef enum {NONE, FINAL, ALL} logger_mo_nondom_e;
+
+/* Data for the multiobjective logger */
 typedef struct {
-  char *path;
-  FILE *logfile;
+  char *result_folder;
+
+  /* File for logging nondominated solutions (either all or final) */
+  FILE *nondom_file;
+  /* File for logging indicator values at target hits */
+  FILE *log_file;
+  /* File for logging summary information on algorithm performance */
+  FILE *info_file;
+  logger_mo_nondom_e log_mode;
+
+  int include_decision_variables;
+  int compute_indicators;
+  int produce_all_data;
+
   size_t number_of_evaluations;
   size_t number_of_variables;
   size_t number_of_objectives;
@@ -35,6 +48,8 @@ typedef struct {
   avl_tree_t *archive_tree;
   /* The tree with pointers to nondominated solutions that haven't been logged yet */
   avl_tree_t *buffer_tree;
+
+  int is_initialized;
 } logger_mo_t;
 
 /* Data contained in the node's ${item} in the AVL tree */
@@ -43,11 +58,6 @@ typedef struct {
   double *y;
   size_t time_stamp;
 } logger_mo_avl_item_t;
-
-static int logger_mo_tree_update(logger_mo_t *data, logger_mo_avl_item_t *node_item);
-static void logger_mo_output_nondominated(FILE *logfile, avl_tree_t *buffer_tree, const size_t dim,
-    const size_t num_obj);
-static void logger_mo_output_tree(const avl_tree_t *tree, FILE *fp, const size_t num_obj) ;
 
 /**
  * Creates and returns the information on the solution in the form of a node's ${item} in the AVL tree.
@@ -116,52 +126,35 @@ static int compare_by_time_stamp(const logger_mo_avl_item_t *item1, const logger
   (void) userdata; /* To silence the compiler */
 }
 
-static void private_logger_mo_evaluate(coco_problem_t *self, const double *x, double *y) {
-  logger_mo_t *data;
-  logger_mo_avl_item_t *node_item;
-  int update_performed;
+/**
+ * Outputs the AVL tree to the given file. Returns the number of nodes in the tree.
+ */
+static size_t logger_mo_tree_output(FILE *file, avl_tree_t *tree, const size_t dim,
+    const size_t num_obj, const int output_x) {
 
-  data = coco_transformed_get_data(self);
+  avl_node_t *solution;
+  size_t i;
+  size_t j;
+  size_t number_of_nodes = 0;
 
-  coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
-  data->number_of_evaluations++;
-
-  /* Open logfile if it is not already open */
-  if (data->logfile == NULL) {
-    data->logfile = fopen(data->path, "w");
-    if (data->logfile == NULL) {
-      char *buf;
-      const char *error_format = "private_logger_mo_evaluate() failed to open log file '%s'.";
-      size_t buffer_size = (size_t) snprintf(NULL, 0, error_format, data->path);
-      buf = (char *) coco_allocate_memory(buffer_size);
-      snprintf(buf, buffer_size, error_format, data->path);
-      coco_error(buf);
-      coco_free_memory(buf); /* Never reached */
+  if (tree->tail) {
+    /* There is at least a solution in the tree to output */
+    solution = tree->head;
+    while (solution != NULL) {
+      fprintf(file, "%lu\t", ((logger_mo_avl_item_t*) solution->item)->time_stamp);
+      for (j = 0; j < num_obj; j++)
+        fprintf(file, "%13.10e\t", ((logger_mo_avl_item_t*) solution->item)->y[j]);
+      if (output_x) {
+        for (i = 0; i < dim; i++)
+          fprintf(file, "%13.10e\t", ((logger_mo_avl_item_t*) solution->item)->x[i]);
+      }
+      fprintf(file, "\n");
+      solution = solution->next;
+      number_of_nodes++;
     }
-    fprintf(data->logfile, "# %lu variables  |  %lu objectives  |  func eval number\n",
-        data->number_of_variables, data->number_of_objectives);
-
-    /* Initialize the AVL trees */
-    data->archive_tree = avl_tree_construct((avl_compare_t) compare_by_last_objective,
-        (avl_free_t) logger_mo_node_free);
-    data->buffer_tree = avl_tree_construct((avl_compare_t) compare_by_time_stamp, NULL);
   }
 
-  /* Update the archive with the new solution, if it is not dominated by or equal to existing solutions in the archive. */
-  node_item = logger_mo_node_create(x, y, data->number_of_evaluations, data->number_of_variables,
-      data->number_of_objectives);
-  update_performed = logger_mo_tree_update(data, node_item);
-
-  /* If the archive was updated, output the new solution to logfile */
-  if (update_performed) {
-    logger_mo_output_nondominated(data->logfile, data->buffer_tree, data->number_of_variables,
-        data->number_of_objectives);
-  }
-
-  /* TODO If the archive was updated, compute and output a bunch of indicators */
-
-  /* Flush output so that impatient users can see progress. */
-  fflush(data->logfile);
+  return number_of_nodes;
 }
 
 /**
@@ -221,84 +214,190 @@ static int logger_mo_tree_update(logger_mo_t *data, logger_mo_avl_item_t *node_i
   return trigger_update;
 }
 
-/**
- * Outputs the AVL tree to the given file.
- * TODO: This is used only for tests during coding... Should it be removed?
- */
-static void logger_mo_output_tree(const avl_tree_t *tree, FILE *fp, const size_t num_obj) {
 
-  avl_node_t *node;
-  size_t i;
+static void private_logger_mo_initialize(coco_problem_t *self) {
+  logger_mo_t *data;
 
-  node = tree->head;
+  const char nondom_folder_name[] = "archive";
+  char *path_name;
+  char *file_name;
 
-  while (node) {
-    for (i = 0; i < num_obj; i++) {
-      fprintf(fp, "%13.10e\t", ((logger_mo_avl_item_t*) node->item)->y[i]);
+  data = coco_transformed_get_data(self);
+
+  if (data->log_mode != NONE) {
+
+    /* Create the path to the file */
+    path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
+    memcpy(path_name, data->result_folder, strlen(data->result_folder) + 1);
+    coco_join_path(path_name, COCO_PATH_MAX, nondom_folder_name, NULL);
+    coco_create_path(path_name);
+
+    /* Construct file name (use coco_create_unique_filename to make it unique) */
+    if (data->log_mode == ALL)
+      file_name = coco_strdupf("%s_nondom_all.dat", self->problem_id);
+    else if (data->log_mode == FINAL)
+      file_name = coco_strdupf("%s_nondom_final.dat", self->problem_id);
+    coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
+    coco_create_unique_filename(&path_name);
+
+    /* Open and initialize the file */
+    data->nondom_file = fopen(path_name, "a");
+    if (data->nondom_file == NULL) {
+      coco_error("private_logger_mo_initialize() failed to open file '%s'.", path_name);
+      coco_free_memory(file_name);
+      coco_free_memory(path_name);
+      return; /* Never reached */
     }
-    fprintf(fp, "\n");
 
-    node = node->next;
+    coco_free_memory(file_name);
+    coco_free_memory(path_name);
+
+    if (data->include_decision_variables) {
+      fprintf(data->nondom_file, "%% function evaluation | %lu objectives | %lu variables\n",
+          data->number_of_objectives, data->number_of_variables);
+    } else {
+      fprintf(data->nondom_file, "%% function evaluation | %lu objectives \n", data->number_of_objectives);
+    }
   }
+
+  /* Initialize the AVL trees */
+  data->archive_tree = avl_tree_construct((avl_compare_t) compare_by_last_objective,
+      (avl_free_t) logger_mo_node_free);
+  data->buffer_tree = avl_tree_construct((avl_compare_t) compare_by_time_stamp, NULL);
+
+  data->is_initialized = 1;
 }
 
-/**
- * Output nondominated solutions that haven't been logged yet (pointed to by nodes of ${buffer_tree}).
- */
-static void logger_mo_output_nondominated(FILE *logfile, avl_tree_t *buffer_tree, const size_t dim,
-    const size_t num_obj) {
+static void private_logger_mo_evaluate(coco_problem_t *self, const double *x, double *y) {
+  logger_mo_t *data;
+  logger_mo_avl_item_t *node_item;
+  int update_performed;
 
-  avl_node_t *solution;
-  size_t i;
-  size_t j;
+  data = coco_transformed_get_data(self);
 
-  if (buffer_tree->tail) { /* There is at least a solution in the buffer to log */
-    /* Write out all solutions in the buffer and clean up the buffer */
-    solution = buffer_tree->head;
-    while (solution != NULL) {
-      for (i = 0; i < dim; i++)
-        fprintf(logfile, "%13.10e\t", ((logger_mo_avl_item_t*) solution->item)->x[i]);
-      for (j = 0; j < num_obj; j++)
-        fprintf(logfile, "%13.10e\t", ((logger_mo_avl_item_t*) solution->item)->y[j]);
-      fprintf(logfile, "%lu", ((logger_mo_avl_item_t*) solution->item)->time_stamp);
-      fprintf(logfile, "\n");
-      solution = solution->next;
-    }
-    avl_tree_purge(buffer_tree);
+  /* If not yet initialized, initialize it */
+  if (!data->is_initialized)
+    private_logger_mo_initialize(self);
+
+  /* Evaluate function */
+  coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
+  data->number_of_evaluations++;
+
+  /* Update the archive with the new solution, if it is not dominated by or equal to existing solutions in the archive. */
+  node_item = logger_mo_node_create(x, y, data->number_of_evaluations, data->number_of_variables,
+      data->number_of_objectives);
+  update_performed = logger_mo_tree_update(data, node_item);
+
+  /* If the archive was updated and you need to log all nondominated solutions, output the new solution to nondom_file */
+  if (update_performed && (data->log_mode == ALL)) {
+    logger_mo_tree_output(data->nondom_file, data->buffer_tree, data->number_of_variables,
+        data->number_of_objectives, data->include_decision_variables);
+    avl_tree_purge(data->buffer_tree);
   }
+
+  /* TODO If the archive was updated, compute and output a bunch of indicators */
+
+  /* Flush output so that impatient users can see progress. */
+  fflush(data->nondom_file);
 }
 
 static void private_logger_mo_free(void *stuff) {
 
+  size_t tree_size;
   logger_mo_t *data;
   assert(stuff != NULL);
   data = stuff;
 
-  if (data->path != NULL) {
-    coco_free_memory(data->path);
-    data->path = NULL;
+  /* TODO: Resort according to time stamp before output!*/
+  if (data->log_mode == FINAL) {
+    tree_size = logger_mo_tree_output(data->nondom_file, data->archive_tree, data->number_of_variables,
+        data->number_of_objectives, data->include_decision_variables);
+    printf("%lu\n", tree_size);
   }
 
-  if (data->logfile != NULL) {
-    fclose(data->logfile);
-    data->logfile = NULL;
+  if (data->result_folder != NULL) {
+    coco_free_memory(data->result_folder);
+    data->result_folder = NULL;
+  }
+
+  if (data->nondom_file != NULL) {
+    fclose(data->nondom_file);
+    data->nondom_file = NULL;
   }
 
   avl_tree_destruct(data->archive_tree);
   avl_tree_destruct(data->buffer_tree);
 }
 
-static coco_problem_t *logger_mo(coco_problem_t *inner_problem, const char *observer_options) {
+/**
+ * Sets up the multiobjective logger. Possible options:
+ * - result_folder : folder_name (folder for result output; if not given, "results" is used instead)
+ * - reference_values_file : file_name (name of the file with reference values for all indicators; optional)
+ * - log_nondominated : none (don't log nondominated solutions)
+ * - log_nondominated : final (log only the final nondominated solutions; default value)
+ * - log_nondominated : all (log every solution that is nondominated at creation time)
+ * - include_decision_variables : 0 / 1 (whether to include decision variables when logging nondominated solutions;
+ * default value is 0)
+ * - compute_indicators : 0 / 1 (whether to compute performance indicators; default value is 1)
+ * - produce_all_data: 0 / 1 (whether to produce all data; if set to 1, overwrites other options and is equivalent to
+ * setting log_nondominated to all, include_decision_variables to 1 and compute_indicators to 1; if set to 0, it
+ * does not change the values of other options; default value is 0)
+ */
+static coco_problem_t *logger_mo(coco_problem_t *problem, const char *options) {
+
   logger_mo_t *data;
   coco_problem_t *self;
+  char string_value[COCO_PATH_MAX];
 
   data = coco_allocate_memory(sizeof(*data));
+
   data->number_of_evaluations = 0;
-  data->number_of_variables = coco_problem_get_dimension(inner_problem);
-  data->number_of_objectives = coco_problem_get_number_of_objectives(inner_problem);
-  data->path = coco_strdup(observer_options);
-  data->logfile = NULL; /* Open lazily in private_logger_mo_evaluate(). */
-  self = coco_transformed_allocate(inner_problem, data, private_logger_mo_free);
+  data->number_of_variables = coco_problem_get_dimension(problem);
+  data->number_of_objectives = coco_problem_get_number_of_objectives(problem);
+
+  /* Read values from options */
+  if (coco_options_read_string(options, "result_folder", string_value) > 0) {
+    data->result_folder = coco_strdup(string_value);
+  } else {
+    coco_warning("logger_mo(): using results as the name of the result folder");
+    data->result_folder = coco_strdup("results");
+  }
+  /* Creates the output folder if it does not yet exist */
+  coco_create_path(data->result_folder);
+
+  data->log_mode = FINAL;
+  if (coco_options_read_string(options, "log_nondominated", string_value) > 0) {
+    if (strcmp(string_value, "none") == 0)
+        data->log_mode = NONE;
+    else if (strcmp(string_value, "all") == 0)
+      data->log_mode = ALL;
+  }
+
+  if (coco_options_read_int(options, "include_decision_variables", &(data->include_decision_variables)) == 0)
+    data->include_decision_variables = 0;
+
+  if (coco_options_read_int(options, "compute_indicators", &(data->compute_indicators)) == 0)
+    data->compute_indicators = 1;
+
+  if (coco_options_read_int(options, "produce_all_data", &(data->produce_all_data)) == 0)
+    data->produce_all_data = 0;
+
+  if (data->produce_all_data) {
+    data->include_decision_variables = 1;
+    data->compute_indicators = 1;
+    data->log_mode = ALL;
+  }
+
+  if ((data->log_mode == NONE) && (!data->compute_indicators)) {
+    /* No logging required, return NULL */
+    return NULL;
+  }
+
+  data->nondom_file = NULL; /* Open lazily in private_logger_mo_evaluate(). */
+  data->is_initialized = 0;
+
+  self = coco_transformed_allocate(problem, data, private_logger_mo_free);
   self->evaluate_function = private_logger_mo_evaluate;
+
   return self;
 }
