@@ -56,7 +56,7 @@ static const char *coco_path_separator = "/";
 #include <dirent.h>
 /* To silence the compiler (implicit-function-declaration warning). */
 int rmdir (const char *pathname);
-int unlink (const char *filename);
+int unlink (const char *file_name);
 int mkdir(const char *pathname, mode_t mode);
 #endif
 
@@ -75,7 +75,7 @@ int mkdir(const char *pathname, mode_t mode);
 void coco_join_path(char *path, size_t path_max_length, ...);
 int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
-/* void coco_create_new_path(const char *path, size_t maxlen, char *new_path); commented to silence the compiler */
+void coco_create_unique_filename(char **file_name);
 int coco_create_directory(const char *path);
 /* int coco_remove_directory(const char *path); Moved to coco.h */
 int coco_remove_directory_msc(const char *path);
@@ -130,7 +130,7 @@ int coco_file_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
   DWORD dwAttrib = GetFileAttributes(path);
-  res = (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & !FILE_ATTRIBUTE_DIRECTORY));
+  res = (dwAttrib != INVALID_FILE_ATTRIBUTES) && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
 #elif defined(HAVE_STAT)
   struct stat buf;
   res = (!stat(path, &buf) && !S_ISDIR(buf.st_mode));
@@ -175,69 +175,53 @@ void coco_create_path(const char *path) {
   return; /* never reached */
 }
 
-#if 0
-/** path and new_path can be the same argument. 
+/**
+ * Creates a unique file name from the given file_name. If the file_name does not yet exit, it is left as
+ * is, otherwise it is changed(!) by appending a number to it.
+ *
+ * If filename.ext already exists, filename-01.ext will be tried. If this one exists as well,
+ * filename-02.ext will be tried, and so on. If filename-99.ext exists as well, the function returns
+ * an error.
  */
-void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
-  char sep = '_';
-  size_t oldlen, len;
-  time_t now;
-  const char *snow;
-  int i, tries;
+void coco_create_unique_filename(char **file_name) {
 
-  if (!coco_path_exists(path)) {
-    coco_create_path(path);
+  int counter = 1;
+  char *str_name, *str_ending;
+  char *new_file_name;
+
+  const char delim[2] = ".";
+
+  /* Do not change the file_name if it does not yet exist */
+  if (!coco_file_exists(*file_name)) {
     return;
   }
 
-  maxlen -= 1; /* prevent failure from misinterpretation of what maxlen is */
-  new_path[maxlen] = '\0';
-  oldlen = strlen(path);
-  assert(maxlen > oldlen);
-  if (new_path != path)
-  strncpy(new_path, path, maxlen);
+  /* Split file_name to str_name and str_ending */
+  str_name = strtok(*file_name, delim);
+  str_ending = strtok(NULL, delim);
 
-  /* modify new_path name until path does not exist */
-  for (tries = 0; tries <= (int)('z' - 'a'); ++tries) {
-    /* create new name */
-    now = time(NULL);
-    snow = ctime(&now);
-    /*                 012345678901234567890123
-     * snow =         "Www Mmm dd hh:mm:ss yyyy"
-     * new_path = "oldname_Mmm_dd_hh_mm_ss_yyyy[a-z]"
-     *                    ^ oldlen
-     */
-    new_path[oldlen] = sep;
-    strncpy(&new_path[oldlen+1], &snow[4], maxlen - oldlen - 1);
-    for (i = oldlen; i < maxlen; ++i) {
-      if (new_path[i] == ' ' || new_path[i] == ':')
-      new_path[i] = sep;
-      if (new_path[i] == '\n')
-      new_path[i] = '\0';
-      if (new_path[i] == '\0')
-      break;
-    }
-    len = strlen(new_path);
-    if (len > 6) {
-      new_path[len - 5] = (char)(tries + 'a');
-      new_path[len - 4] = '\0';
+  while (counter < 99) {
+
+    if (str_ending != NULL)
+      new_file_name = coco_strdupf("%s-%02d.%s", str_name, counter, str_ending);
+    else
+      new_file_name = coco_strdupf("%s-%02d", str_name, counter);
+
+    if (!coco_file_exists(new_file_name)) {
+      coco_free_memory(*file_name);
+      *file_name = new_file_name;
+      return;
+    } else {
+      counter++;
+      coco_free_memory(new_file_name);
     }
 
-    /* try new name */
-    if (!coco_path_exists(new_path)) {
-      /* not thread safe until path is created */
-      coco_create_path(new_path);
-      tries = -1;
-      break;
-    }
   }
-  if (tries > 0) {
-    char *message = "coco_create_new_path: could not create a new path from '%s' (%d attempts)";
-    coco_warning(message, path, tries);
-    coco_error(message);
-  }
+
+  coco_free_memory(new_file_name);
+  coco_error("coco_create_unique_filename(): could not create a unique file name");
+  return; /* Never reached */
 }
-#endif
 
 /**
  * Creates a directory with full privileges for the user (should work across different platforms/compilers).

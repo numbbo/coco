@@ -250,7 +250,6 @@ static void run_performance_tests(void) {
   int combination_idx, instance_idx, dimension_idx;
   coco_problem_t *problem;
   clock_t start, end;
-  char *pointer;
 
   for (dimension_idx = 0; dimension_idx < SUITE_BIOBJ_NUMBER_OF_DIMENSIONS; dimension_idx++) {
     for (combination_idx = 0; combination_idx < SUITE_BIOBJ_NUMBER_OF_COMBINATIONS; combination_idx++) {
