@@ -16,70 +16,70 @@ from subprocess import call, check_output, STDOUT
 ## Change to the root directory of repository and add our tools/
 ## subdirectory to system wide search path for modules.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.abspath('tools'))
+sys.path.insert(0, os.path.abspath('code-experiments/tools'))
 
 from amalgamate import amalgamate
 from cocoutils import make, run, python, rscript
 from cocoutils import copy_file, copy_tree, expand_file, write_file
 from cocoutils import git_version, git_revision
 
-core_files = ['src/coco_suites.c',
-              'src/coco_random.c',
-              'src/coco_generics.c'
+core_files = ['code-experiments/src/coco_suites.c',
+              'code-experiments/src/coco_random.c',
+              'code-experiments/src/coco_generics.c'
               ]
 
 ################################################################################
 ## Examples
 def build_examples():
     build_c()
-    copy_file('build/c/coco.c', 'examples/bbob2009-c-cmaes/coco.c')
-    copy_file('build/c/coco.h', 'examples/bbob2009-c-cmaes/coco.h')
+    copy_file('code-experiments/build/c/coco.c', 'code-experiments/examples/bbob2009-c-cmaes/coco.c')
+    copy_file('code-experiments/build/c/coco.h', 'code-experiments/examples/bbob2009-c-cmaes/coco.h')
 
 #########################################################ex#######################
 ## C
 def build_c():
     global release
-    amalgamate(core_files + ['src/coco_runtime_c.c'],  'build/c/coco.c', release)
-    copy_file('src/coco.h', 'build/c/coco.h')
-    copy_file('src/bbob2009_testcases.txt', 'build/c/bbob2009_testcases.txt')
-    write_file(git_revision(), "build/c/REVISION")
-    write_file(git_version(), "build/c/VERSION")
-    make("build/c", "clean")
-    make("build/c", "all")
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/c/coco.c', release)
+    copy_file('code-experiments/src/coco.h', 'code-experiments/build/c/coco.h')
+    copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/c/bbob2009_testcases.txt')
+    write_file(git_revision(), "code-experiments/build/c/REVISION")
+    write_file(git_version(), "code-experiments/build/c/VERSION")
+    make("code-experiments/build/c", "clean")
+    make("code-experiments/build/c", "all")
 
 def test_c():
     build_c()
     try:
-        make("build/c", "clean")
-        make("build/c", "all")
-        run('build/c', ['./coco_test', 'bbob2009_testcases.txt'])
+        make("code-experiments/build/c", "clean")
+        make("code-experiments/build/c", "all")
+        run('code-experiments/build/c', ['./coco_test', 'bbob2009_testcases.txt'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
 def leak_check():
     build_c()
     os.environ['CFLAGS'] = '-g -Os'
-    make("build/c", "clean")
-    make("build/c", "all")
+    make("code-experiments/build/c", "clean")
+    make("code-experiments/build/c", "all")
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
                     './coco_test', 'bbob2009_testcases.txt']
-    run('build/c', valgrind_cmd)
+    run('code-experiments/build/c', valgrind_cmd)
     
 ## C - multiobjective case
 def build_c_mo():
     global release
-    amalgamate(core_files + ['src/coco_runtime_c.c'],  'build/c/mo/coco.c', release)
-    copy_file('src/coco.h', 'build/c/mo/coco.h')
-    write_file(git_revision(), "build/c/mo/REVISION")
-    write_file(git_version(), "build/c/mo/VERSION")
-    make("build/c/mo", "clean")
-    make("build/c/mo", "all")
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/c/mo/coco.c', release)
+    copy_file('code-experiments/src/coco.h', 'code-experiments/build/c/mo/coco.h')
+    write_file(git_revision(), "code-experiments/build/c/mo/REVISION")
+    write_file(git_version(), "code-experiments/build/c/mo/VERSION")
+    make("code-experiments/build/c/mo", "clean")
+    make("code-experiments/build/c/mo", "all")
 
 def test_c_mo():
     build_c_mo()
     try:
-        run('build/c/mo', ['./demo_mo', 'test'])
+        run('code-experiments/build/c/mo', ['./demo_mo', 'test'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
     
@@ -87,26 +87,26 @@ def test_c_mo():
 ## Python 2
 def _prep_python():
     global release
-    amalgamate(core_files + ['src/coco_runtime_c.c'],  'build/python/cython/coco.c', 
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/python/cython/coco.c', 
                release)
-    copy_file('src/coco.h', 'build/python/cython/coco.h')
-    copy_file('src/bbob2009_testcases.txt', 'build/python/bbob2009_testcases.txt')
-    expand_file('build/python/README.in', 'build/python/README',
+    copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')
+    copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
+    expand_file('code-experiments/build/python/README.in', 'code-experiments/build/python/README',
                 {'COCO_VERSION': git_version()}) # hg_version()})
-    expand_file('build/python/setup.py.in', 'build/python/setup.py',
+    expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
                 {'COCO_VERSION': git_version()}) # hg_version()})
 
 def build_python():
     _prep_python()
     ## Force distutils to use Cython
     os.environ['USE_CYTHON'] = 'true'
-    # python('build/python', ['setup.py', 'sdist'])
-    python('build/python', ['setup.py', 'install', '--user'])
+    # python('code-experiments/build/python', ['setup.py', 'sdist'])
+    python('code-experiments/build/python', ['setup.py', 'install', '--user'])
     os.environ.pop('USE_CYTHON')
 
 def run_python(script_filename):
     _prep_python()
-    python('build/python', ['setup.py', 'check', '--metadata', '--strict'])
+    python('code-experiments/build/python', ['setup.py', 'check', '--metadata', '--strict'])
     ## Now install into a temporary location, run test and cleanup
     python_temp_home = tempfile.mkdtemp(prefix="coco")
     python_temp_lib = os.path.join(python_temp_home, "lib", "python")
@@ -118,7 +118,7 @@ def run_python(script_filename):
         os.makedirs(python_temp_lib)
         os.environ['PYTHONPATH'] = python_temp_lib
         os.environ['USE_CYTHON'] = 'true'
-        python('build/python', ['setup.py', 'install', '--home', python_temp_home])
+        python('code-experiments/build/python', ['setup.py', 'install', '--home', python_temp_home])
         python('.', [script_filename])
         os.environ.pop('USE_CYTHON')
         os.environ.pop('PYTHONPATH')
@@ -129,7 +129,7 @@ def run_python(script_filename):
 
 def test_python():
     _prep_python()
-    python('build/python', ['setup.py', 'check', '--metadata', '--strict'])
+    python('code-experiments/build/python', ['setup.py', 'check', '--metadata', '--strict'])
     ## Now install into a temporary location, run test and cleanup
     python_temp_home = tempfile.mkdtemp(prefix="coco")
     python_temp_lib = os.path.join(python_temp_home, "lib", "python")
@@ -141,8 +141,8 @@ def test_python():
         os.makedirs(python_temp_lib)
         os.environ['PYTHONPATH'] = python_temp_lib
         os.environ['USE_CYTHON'] = 'true'
-        python('build/python', ['setup.py', 'install', '--home', python_temp_home])
-        python('build/python', ['coco_test.py', 'bbob2009_testcases.txt'])
+        python('code-experiments/build/python', ['setup.py', 'install', '--home', python_temp_home])
+        python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases.txt'])
         os.environ.pop('USE_CYTHON')
         os.environ.pop('PYTHONPATH')
     except subprocess.CalledProcessError:
@@ -178,40 +178,40 @@ def test_python3():
 ## R
 def build_r():
     global release
-    copy_tree('build/r/skel', 'build/r/pkg')
-    amalgamate(core_files + ['src/coco_runtime_r.c'],  'build/r/pkg/src/coco.c',
+    copy_tree('code-experiments/build/r/skel', 'code-experiments/build/r/pkg')
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_r.c'],  'code-experiments/build/r/pkg/src/coco.c',
                release)
-    copy_file('src/coco.h', 'build/r/pkg/src/coco.h')
-    expand_file('build/r/pkg/DESCRIPTION.in', 'build/r/pkg/DESCRIPTION',
-                {'COCO_VERSION': hg_version()})  # FIXME: it seems that this doesn't work, because it writes '0.0.789' instead of 0.0.789
-    rscript('build/r/', ['tools/roxygenize'])
-    rusn('build/r', ['R', 'CMD', 'build', 'pkg'])
+    copy_file('code-experiments/src/coco.h', 'code-experiments/build/r/pkg/src/coco.h')
+    expand_file('code-experiments/build/r/pkg/DESCRIPTION.in', 'code-experiments/build/r/pkg/DESCRIPTION',
+                {'COCO_VERSION': git_version()})  # FIXME: it seems that this doesn't work, because it writes '0.0.789' instead of 0.0.789
+    rscript('code-experiments/build/r/', ['code-experiments/tools/roxygenize'])
+    rusn('code-experiments/build/r', ['R', 'CMD', 'build', 'pkg'])
 
 def test_r():
     build_r()
-    run('build/r', ['R', 'CMD', 'check', 'pkg'])
+    run('code-experiments/build/r', ['R', 'CMD', 'check', 'pkg'])
     pass
 
 ################################################################################
 ## Matlab
 def build_matlab():
     global release
-    amalgamate(core_files + ['src/coco_runtime_r.c'],  'build/matlab/coco.c', release)
-    copy_file('src/coco.h', 'build/matlab/coco.h')
-    write_file(hg_revision(), "build/matlab/REVISION")
-    write_file(hg_version(), "build/matlab/VERSION")
-    run('build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_r.c'],  'code-experiments/build/matlab/coco.c', release)
+    copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
+    write_file(git_revision(), "code-experiments/build/matlab/REVISION")
+    write_file(git_version(), "code-experiments/build/matlab/VERSION")
+    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
     
 ################################################################################
 ## Java
 def build_java():
     global release
-    amalgamate(core_files + ['src/coco_runtime_c.c'],  'build/java/coco.c', release)
-    copy_file('src/coco.h', 'build/java/coco.h')
-    write_file(git_revision(), "build/java/REVISION")
-    write_file(git_version(), "build/java/VERSION")
-    run('build/java', ['javac', 'JNIinterface.java'])
-    run('build/java', ['javah', 'JNIinterface'])
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/java/coco.c', release)
+    copy_file('code-experiments/src/coco.h', 'code-experiments/build/java/coco.h')
+    write_file(git_revision(), "code-experiments/build/java/REVISION")
+    write_file(git_version(), "code-experiments/build/java/VERSION")
+    run('code-experiments/build/java', ['javac', 'JNIinterface.java'])
+    run('code-experiments/build/java', ['javah', 'JNIinterface'])
     
     # Finds the path to the headers jni.h and jni_md.h under (platform-dependent)
     # and compiles the JNIinterface library (compiler-dependent). So far, only
@@ -227,13 +227,13 @@ def build_java():
         jdkpath2 = jdkpath1 + '\\win32'
         
         if ('64' in platform.machine()):
-            run('build/java', ['x86_64-w64-mingw32-gcc', '-I', jdkpath1, '-I', 
+            run('code-experiments/build/java', ['x86_64-w64-mingw32-gcc', '-I', jdkpath1, '-I', 
                                jdkpath2, '-shared', '-o', 'JNIinterface.dll', 
                                'JNIinterface.c'])
     
     # 2. Windows with Cygwin (both 32-bit)
         elif ('32' in platform.machine()) or ('x86' in platform.machine()):
-            run('build/java', ['i686-w64-mingw32-gcc', '-Wl,--kill-at', '-I', 
+            run('code-experiments/build/java', ['i686-w64-mingw32-gcc', '-Wl,--kill-at', '-I', 
                                jdkpath1, '-I', jdkpath2, '-shared', '-o', 
                                'JNIinterface.dll', 'JNIinterface.c'])
                                
@@ -243,7 +243,7 @@ def build_java():
                                env = os.environ, universal_newlines = True)  
         jdkpath1 = jdkpath.split("bin")[0] + 'include'
         jdkpath2 = jdkpath1 + '\\win32'
-        run('build/java', ['gcc', '-Wl,--kill-at', '-I', jdkpath1, '-I', jdkpath2, 
+        run('code-experiments/build/java', ['gcc', '-Wl,--kill-at', '-I', jdkpath1, '-I', jdkpath2, 
                            '-shared', '-o', 'JNIinterface.dll', 'JNIinterface.c'])
                            
     # 4. Linux
@@ -252,26 +252,26 @@ def build_java():
                                env = os.environ, universal_newlines = True)   
         jdkpath1 = jdkpath.split("jni.h")[0]
         jdkpath2 = jdkpath1 + '/linux'
-        run('build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-c', 
+        run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-c', 
                            'JNIinterface.c'])
-        run('build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-o', 
+        run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-o', 
                            'libJNIinterface.so', '-shared', 'JNIinterface.c'])
                            
     # 5. Mac
     elif ('darwin' in sys.platform):
         jdkpath = '/System/Library/Frameworks/JavaVM.framework/Headers'
-        run('build/java', ['gcc', '-I', jdkpath, '-c', 'JNIinterface.c'])
-        run('build/java', ['gcc', '-dynamiclib', '-o', 'libJNIinterface.jnilib',
+        run('code-experiments/build/java', ['gcc', '-I', jdkpath, '-c', 'JNIinterface.c'])
+        run('code-experiments/build/java', ['gcc', '-dynamiclib', '-o', 'libJNIinterface.jnilib',
                            'JNIinterface.o'])
     
-    run('build/java', ['javac', 'Problem.java'])
-    run('build/java', ['javac', 'Benchmark.java'])
-    run('build/java', ['javac', 'demo.java'])
+    run('code-experiments/build/java', ['javac', 'Problem.java'])
+    run('code-experiments/build/java', ['javac', 'Benchmark.java'])
+    run('code-experiments/build/java', ['javac', 'demo.java'])
 
 def test_java():
     build_java()
     try:
-        run('build/java', ['java', '-Djava.library.path=.', 'demo'])    
+        run('code-experiments/build/java', ['java', '-Djava.library.path=.', 'demo'])    
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
