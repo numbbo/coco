@@ -255,10 +255,6 @@ def main(argv=None):
             if len(args) == 1 or '--omit-single' not in dict(opts):
                 rungeneric1.main(genopts
                                 + ["-o", outputdir, alg])
-                prepend_to_file(os.path.join(outputdir,
-                                'bbob_pproc_commands.tex'), 
-                                ['\\providecommand{\\algfolder}{'
-                                 + alg.replace('..' + os.sep, '').rstrip(os.sep).replace(os.sep, '/') + '/}'])
 
         if len(args) == 2:
             rungeneric2.main(genopts + ["-o", outputdir] + args)
