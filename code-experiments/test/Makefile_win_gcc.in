@@ -1,0 +1,21 @@
+LDFLAGS += -L. -lm -lcmocka
+CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow -Wno-sign-compare -Wconversion
+
+########################################################################
+## Toplevel targets
+all: test
+
+clean:
+	IF EXIST "test.o" DEL /F test.o
+	IF EXIST "test.exe" DEL /F test.exe
+
+########################################################################
+## Programs
+test: test.o 
+	${CC} ${CCFLAGS} -o test test.o ${LDFLAGS}  
+
+
+########################################################################
+## Additional dependencies
+test.o: test.c
+	${CC} -c ${CCFLAGS} -o test.o test.c 
