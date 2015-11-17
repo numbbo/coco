@@ -1,0 +1,164 @@
+bbob_pproc package random thoughts:
+04/2012: maxfevals should occur in Figure 1 also when comparing algorithms (compall/ppfigs.py)
+04/2012: the tables in many algorithm papers should not have a targets line for each function. 
+   To accomplish this, the argument function_targets_line in compall/pptables.main needs to 
+   be put in action (and tested).  
+04/2012: compall/pptables.py contains reference pointers which are the likely reason for
+  mis-referring the (1+1)-CMA-ES from 2010 to the paper of 2009. 
+04/2012: (might be solved or solved in future, when new meta-data are introduced) 
+  problem: 3 different names for one algorithm in one report: 
+  specifically, a problem is the legend in compall/ppfigs.py, 
+  which takes invariably the folder name as algorithm name, see Petrs Mail from March 26
+03/2012: The datasets in the svn for noisy and noiseless data should be separated
+03/2012: processInputArgs and findfiles should accept zipped and gzipped folders
+    import zipfile
+    def extract(zipfilepath, extractiondir):
+        zip = zipfile.ZipFile(zipfilepath)
+        zip.extractall(path=extractiondir)  # cave security extracting ../../../../something
+02/2012: the oracle best algorithm must inherit pproc.DataSet object, 
+  just as the portfolio in algportfolio.py does. Check out the portfolio code
+  for an implementation. See also next item!
+02/2012: changing class pproc.DataSet to class pproc.DataSet(object) produces an error!
+  This should be addressed before the oracle algorithm is implemented. 
+
+__init__.py: what for? Looks like a package documentation and is supposed to 
+  define all visible modules in the package. 
+run.py: main interface? is unfortunately rungeneric.py (and all over the documentation)
+post-processing raw data: how? make it clear(er) 
+Feature missing: output data that is human readable. A: use HDF5? 
+documentation
+web: unify, clean up
+class DataSet: makes sense, what attributes and methods? A: seems well documented. 
+class DataSetList: does it make sense? sort per problem
+dictAlg: what is this? Probably a dictionary of datasetlists with algorithm names as keys. 
+
+make it easier to work from the python command-line: operations such as loading and generating figures...
+
+different outputs: have to work with a template
+1 alg:
+ppfigdim: scaling figures, show ERT for different target vs dim for one algorithm
+pptable: table of bootstrap distribution of ERT for numerous functions and different dimensions
+ppecdf: ec distribution of run lengths for reaching different targets and also ecdf of function values
+pplos: figure and table of ERT log loss for given budgets
+
+2 algs:
+ppfig2: ert ratios over target function values
+pptable2: ert for different target function values
+ppscatter: scatter plot ERT1 vs ERT0
+ppecdf2: superposition of ECD of run lengths for given target function values
+
+more algs:
+ppfigs: bootstrap distribution of ert over multiple targets
+pptables: bootstrap distribution ert over multiple targets
+
+targets -> ERT
+targets -> bootstrap distribution of ERT
+targets -> run lengths
+budget -> targets -> ERT
+
+
+TODO:
+*provide individual performance tables on the web with (a) fixed targets and (b) run-length-based targets using 1e-8 as last additional target row
+*Do higher dim benchmark functions
+*Real-world functions
+*Test some other algorithms
+*Availability in other languages...
+*Interpretation of time complexity of the algorithms
+*Documentation for the comparison
+*Web server for the execution of the code (could be the experiments or the post-processing...)
+
+Rehaul v4:
+*clearer code (esp. the comparison)
+*template-independent code...
+
+Rehaul v4 (old):
+*data structure (to be discussed):
+**falignx, faligndata, evalignx, evaligndata, mFEs, finalfs... NaN in the end...
+  evals,               funvals,               maxevals, finalfunvals
+*Have a data structure by problem (a problem being in our case a function, a dimension but could be anything really).
+**ASCII File representation of DataSet
+
+Error catching:
+*IOError with pickled data. -> dealt with?
+
+Feature missing:
+*Check that the given target function values are dictionaries?
+*is the raw data provided compatible with bbob_pproc? -> simply try and run the main of bbob_pproc?
+*Java application on the web
+*template-independent stuff...
+*in the RLD figures, if some final values are 0 there is the chance that the
+line for Df/ftarget = 1 to the first final value for which it is larger than 1
+is missing.
+*Automatically generate the associated TeX file to compile...
+*rewrite the ppXXX with common script in pproc...
+*put in pproc methods to determine success and failure so as to have uniform
+data for all ppXXX modules.
+*have low-level post-processing functions that deals with arrays.
+*Deal with archive file -> no file-like object for zipfile module in python 2.5.2
+*Compute the Crafting Effort based on the comment line in the info file?
+*Readable output instead of pickle files?
+
+Misc.
+*Problem with some fonts missing for tex compilation.
+*Explicit demo post processing.
+*Update the readme from the demo folder.
+
+Profiling:
+
+
+###############################################################################
+SOLVED:
+*Provide a clean doc page that is helpful and useful -> pydoc.writedocs('.') in BBOB/code/python
+*Think about adding bbob.bib to the release.
+*Put the pydoc online.
+*Manage multiple algorithms
+*diagnose that all the trials (3) for all instance id (1..5) are there -> added instanceOfInterest and warning in run.py.
+*Write somewhere the result of the discussion about maxEvals.
+*does the maxEvalsFactor appearing in ppfigdim still makes sense? -> It does not. It's been removed
+*Make sure that anyone could produce a fig, table or data profile for every dimensions, functions they want.
+*Problem with some negative values on f-fopt on function 5!!! -> the post processing does not crash on negative values anymore.
+*When given a wrong path, nothing happens...
+*maxEvalsFactor appears in pptex and pprldistr and ppfig and have to be synchronized -> only appear in ppfigdim now.
+*Deal with data with more than one algId -> warning
+*Problem with maxEvalsFactor in pprldistr: if maxEvalsFactor is not set alright, there is a good chance one of the final value distribution graph for maxEvalsF = 10^i*D will overlap one of the graph where Deltaf changes.
+*warning: no labels for legend
+*Put a latex macro in the template to input the path to the external files.
+*Play with the fontsize (smaller titles, larger ticks).
+*Update experimentation.tex
+*New tex table format:
+  Df # ERT 10% 90% Tus
+  Df 0 median_f 10%f 90%f Tus
+*Have SP1 on the data profile graph as well? -> not needed
+*synchronize the caption of the data profiles with information from the post processing? -> legend
+*Put a separation line in the table between function evaluations and function values -> Not needed
+*Have the number of solved functions appear on the data profile graph
+*Prepare for vertical aligning!
+*make tab-only faster: it doesn't need to process everything...
+*final function value distribution.
+*generate data for the run length distrib figure, ppfig and pptex not in pproc (to make pprldistr pptex and ppfig modules self-consistent)
+*sign missing for function values in the tables!
+*PprocIndexEntry class to be implemented -> IndexEntry
+*Change mention of data profile graph to run length graph.
+*Caption of the tables is too large!
+*max. FEvals appearing in the tables is not the one set for the experiment but
+an empirical value (measured). -> OK.
+*Move the figures and make them larger. -> thx Niko
+*test runs with CMA-ES: -> Bug solved!
+**only if the target function value is negative, successful runs are actually treated as successful
+**the graphs seem to go wrong when fopt is positive, see attached pdf, f2, f3, f4, f5, f6
+**another problem is in the tables, as already f_t is not reported properly
+*Documentation: import pydoc, pydoc.writedoc(module_of_choice) -> pydoc.writedocs('.','') in BBOB/code/python
+*Short titles for the figures
+*Problem with reading the data: the last line was left unread
+*Problem with the median that was defined though it was not.
+*Problem with Gtk/gdk over ssh (import matplotlib) -> ssh -X
+*delete tex before writing in at the launch of the post processing... are the files written in again? -> They are not so the output tex files are simply overwritten.
+*last figures: not spanned over the width of the page -> put a tabular.
+*increased font size for figure -> parameter in __init__.py
+*Change ticks labels font size -> parameter in __init__.py
+*Visible Symbol for the last function value reached -> Make more visible?
+*F_t in the tables instead of f_t (cf experimentation.pdf §6.4)
+*BUG: demo.py when the toydata folder does not exist -> catch when args is empty.
+*function values in italics missing -> pproc.py has to return in arrayTab the right things.
+*Problem with demo (is not working): no possibility of shorter demo due to writeTable2. It should try and take as input a list of arrays.
+*computevalues: rename and make some varargin -> not used anymore
