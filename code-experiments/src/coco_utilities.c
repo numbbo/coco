@@ -47,7 +47,7 @@ static const char *coco_path_separator = "/";
 #error Unknown platform
 #endif
 
-/* Handle the special case of Microsoft Visual Studio 2008, which is not C89-compliant */
+/* Handle the special case of Microsoft Visual Studio 2008 and x86_64-w64-mingw32-gcc */
 #if _MSC_VER
 #include <direct.h>
 #elif defined(__MINGW32__) || defined(__MINGW64__)
@@ -56,7 +56,7 @@ static const char *coco_path_separator = "/";
 #include <dirent.h>
 /* To silence the compiler (implicit-function-declaration warning). */
 int rmdir (const char *pathname);
-int unlink (const char *filename);
+int unlink (const char *file_name);
 int mkdir(const char *pathname, mode_t mode);
 #endif
 
@@ -75,12 +75,17 @@ int mkdir(const char *pathname, mode_t mode);
 void coco_join_path(char *path, size_t path_max_length, ...);
 int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
-void coco_create_new_path(const char *path, size_t maxlen, char *new_path);
+void coco_create_unique_filename(char **file_name);
 int coco_create_directory(const char *path);
 /* int coco_remove_directory(const char *path); Moved to coco.h */
 int coco_remove_directory_msc(const char *path);
 int coco_remove_directory_no_msc(const char *path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
+int coco_options_read_int(const char *options, const char *name, int *pointer);
+int coco_options_read_long(const char *options, const char *name, long *pointer);
+int coco_options_read_double(const char *options, const char *name, double *pointer);
+int coco_options_read_string(const char *options, const char *name, char *pointer);
+static int coco_options_read(const char *options, const char *name, const char *format, void *pointer);
 double coco_round_double(const double a);
 double coco_max_double(const double a, const double b);
 double coco_min_double(const double a, const double b);
@@ -115,6 +120,20 @@ int coco_path_exists(const char *path) {
 #elif defined(HAVE_STAT)
   struct stat buf;
   res = (!stat(path, &buf) && S_ISDIR(buf.st_mode));
+#else
+#error Ooops
+#endif
+  return res;
+}
+
+int coco_file_exists(const char *path) {
+  int res;
+#if defined(HAVE_GFA)
+  DWORD dwAttrib = GetFileAttributes(path);
+  res = (dwAttrib != INVALID_FILE_ATTRIBUTES) && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
+#elif defined(HAVE_STAT)
+  struct stat buf;
+  res = (!stat(path, &buf) && !S_ISDIR(buf.st_mode));
 #else
 #error Ooops
 #endif
@@ -156,69 +175,53 @@ void coco_create_path(const char *path) {
   return; /* never reached */
 }
 
-#if 0
-/** path and new_path can be the same argument. 
+/**
+ * Creates a unique file name from the given file_name. If the file_name does not yet exit, it is left as
+ * is, otherwise it is changed(!) by appending a number to it.
+ *
+ * If filename.ext already exists, filename-01.ext will be tried. If this one exists as well,
+ * filename-02.ext will be tried, and so on. If filename-99.ext exists as well, the function returns
+ * an error.
  */
-void coco_create_new_path(const char *path, size_t maxlen, char *new_path) {
-  char sep = '_';
-  size_t oldlen, len;
-  time_t now;
-  const char *snow;
-  int i, tries;
+void coco_create_unique_filename(char **file_name) {
 
-  if (!coco_path_exists(path)) {
-    coco_create_path(path);
+  int counter = 1;
+  char *str_name, *str_ending;
+  char *new_file_name;
+
+  const char delim[2] = ".";
+
+  /* Do not change the file_name if it does not yet exist */
+  if (!coco_file_exists(*file_name)) {
     return;
   }
 
-  maxlen -= 1; /* prevent failure from misinterpretation of what maxlen is */
-  new_path[maxlen] = '\0';
-  oldlen = strlen(path);
-  assert(maxlen > oldlen);
-  if (new_path != path)
-  strncpy(new_path, path, maxlen);
+  /* Split file_name to str_name and str_ending */
+  str_name = strtok(*file_name, delim);
+  str_ending = strtok(NULL, delim);
 
-  /* modify new_path name until path does not exist */
-  for (tries = 0; tries <= (int)('z' - 'a'); ++tries) {
-    /* create new name */
-    now = time(NULL);
-    snow = ctime(&now);
-    /*                 012345678901234567890123
-     * snow =         "Www Mmm dd hh:mm:ss yyyy"
-     * new_path = "oldname_Mmm_dd_hh_mm_ss_yyyy[a-z]"
-     *                    ^ oldlen
-     */
-    new_path[oldlen] = sep;
-    strncpy(&new_path[oldlen+1], &snow[4], maxlen - oldlen - 1);
-    for (i = oldlen; i < maxlen; ++i) {
-      if (new_path[i] == ' ' || new_path[i] == ':')
-      new_path[i] = sep;
-      if (new_path[i] == '\n')
-      new_path[i] = '\0';
-      if (new_path[i] == '\0')
-      break;
-    }
-    len = strlen(new_path);
-    if (len > 6) {
-      new_path[len - 5] = (char)(tries + 'a');
-      new_path[len - 4] = '\0';
+  while (counter < 99) {
+
+    if (str_ending != NULL)
+      new_file_name = coco_strdupf("%s-%02d.%s", str_name, counter, str_ending);
+    else
+      new_file_name = coco_strdupf("%s-%02d", str_name, counter);
+
+    if (!coco_file_exists(new_file_name)) {
+      coco_free_memory(*file_name);
+      *file_name = new_file_name;
+      return;
+    } else {
+      counter++;
+      coco_free_memory(new_file_name);
     }
 
-    /* try new name */
-    if (!coco_path_exists(new_path)) {
-      /* not thread safe until path is created */
-      coco_create_path(new_path);
-      tries = -1;
-      break;
-    }
   }
-  if (tries > 0) {
-    char *message = "coco_create_new_path: could not create a new path from '%s' (%d attempts)";
-    coco_warning(message, path, tries);
-    coco_error(message);
-  }
+
+  coco_free_memory(new_file_name);
+  coco_error("coco_create_unique_filename(): could not create a unique file name");
+  return; /* Never reached */
 }
-#endif
 
 /**
  * Creates a directory with full privileges for the user (should work across different platforms/compilers).
@@ -379,6 +382,85 @@ double *coco_duplicate_vector(const double *src, const size_t number_of_elements
     dst[i] = src[i];
   }
   return dst;
+}
+
+/**
+ * Reads an integer from options using the form "name1 : value1 name2: value2". Formatting requirements:
+ * - name and value need to be separated by a semicolon AND a space (spaces between name and the
+ * semicolon are optional)
+ * - the value corresponding to the given name needs to be an integer
+ * Returns the number of successful assignments.
+ */
+int coco_options_read_int(const char *options, const char *name, int *pointer) {
+  return coco_options_read(options, name, " %i", pointer);
+}
+
+/**
+ * Reads a long integer from options using the form "name1 : value1 name2: value2". Formatting requirements:
+ * - name and value need to be separated by a semicolon AND a space (spaces between name and the
+ * semicolon are optional)
+ * - the value corresponding to the given name needs to be a long integer
+ * Returns the number of successful assignments.
+ */
+int coco_options_read_long(const char *options, const char *name, long *pointer) {
+  return coco_options_read(options, name, " %lu", pointer);
+}
+
+/**
+ * Reads a double value from options using the form "name1 : value1 name2: value2". Formatting requirements:
+ * - name and value need to be separated by a semicolon AND a space (spaces between name and the
+ * semicolon are optional)
+ * - the value corresponding to the given name needs to be a double
+ * Returns the number of successful assignments.
+ */
+int coco_options_read_double(const char *options, const char *name, double *pointer) {
+  return coco_options_read(options, name, " %f", pointer);
+}
+
+/**
+ * Reads a string from options using the form "name1 : value1 name2: value2". Formatting requirements:
+ * - name and value need to be separated by a semicolon AND a space (spaces between name and the
+ * semicolon are optional)
+ * - the value corresponding to the given name needs to be a string - either a single word or multiple words
+ * in double quotes
+ * Returns the number of successful assignments.
+ */
+int coco_options_read_string(const char *options, const char *name, char *pointer) {
+
+  long i1 = coco_strfind(options, name);
+  long i2;
+
+  if (i1 < 0)
+    return 0;
+  i2 = i1 + coco_strfind(&options[i1], ":") + 1;
+  if (i2 <= i1)
+    return 0;
+
+  if (options[i2] == '\"') {
+    /* The value starts with a quote: read everything between two quotes into a string */
+    return sscanf(&options[i2], " \"%[^\"]\"", pointer);
+  } else
+    return sscanf(&options[i2], " %s", pointer);
+}
+
+/**
+ * Parse options in the form "name1 : value1 name2: value2". Formatting requirements:
+ * - name and value need to be separated by a semicolon
+ * - value needs to be a single string (no spaces allowed)
+ * Returns the number of successful assignments.
+ */
+static int coco_options_read(const char *options, const char *name, const char *format, void *pointer) {
+
+  long i1 = coco_strfind(options, name);
+  long i2;
+
+  if (i1 < 0)
+    return 0;
+  i2 = i1 + coco_strfind(&options[i1], ":") + 1;
+  if (i2 <= i1)
+    return 0;
+
+  return sscanf(&options[i2], format, pointer);
 }
 
 /* Some math functions which are not contained in C89 standard */

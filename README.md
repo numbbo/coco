@@ -20,19 +20,20 @@ should rather have been named make.py). It has switches for just building some l
     ./do.py build  # builds all
     ./do.py build-python
     ./do.py build-c
+    ./do.py build-java
 
 are valid commands (on a Linux or OSX shell). do.py is a neat and simplifying replacement for make.
 
-o the build folder is to a large extend the output folder of the "./do.py build" command.
+o the code-experiments/build folder is to a large extend the output folder of the "./do.py build" command.
    - the demo.??? files in the build folder are the entry points to understand the usage of the code (as
      end-user). They are supposed to actually be executable (in case, after compilation, which should be
      taken care of by do.py and/or make). 
 
 o documentation and examples might not be too meaningful for the time being, even though
-  documentation/onion.py describes a (heavily) used design pattern (namely: inheritance) in a
+  code-experiments/documentation/onion.py describes a (heavily) used design pattern (namely: inheritance) in a
   comparatively understandable way (though the implementation in C naturally looks somewhat different).  
 
-o the src folder is where most of the important/interesting things happen. Many files provide
+o the code-experiments/src folder is where most of the important/interesting things happen. Many files provide
   comparatively decent documentation at the moment (the idea was to use these docs to generate a doc
   document). Generally:
   - coco.h is the public interface, in particular as used in the demo.c file, however check out
@@ -47,4 +48,15 @@ o the src folder is where most of the important/interesting things happen. Many 
   - most other files implement more or less what they say, e.g. the actual benchmark functions, 
     transformations, benchmark suites, etc
 
-o tools are a few meta-tools, mainly the amalgamate.py to merge all the C code into one file
+o code-experiments/tools are a few meta-tools, mainly the amalgamate.py to merge all the C code into one file
+
+o code-postprocessing contains the postprocessing code, written in python, with which algorithm data sets can
+  be read in and the performance of the algorithms can be displayed in terms of data profiles, ERT vs. dimension plots,
+  or simple tables.
+
+o docs should contain an updated version of the documentation
+
+o latextemplates should contain the latex templates for displaying algorithm performances in publisher conform PDFs.
+
+o data contains a few algorithm data sets used for testing.
+
