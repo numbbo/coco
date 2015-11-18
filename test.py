@@ -35,7 +35,10 @@ def build_unit_test():
         if '64' in platform.machine():
             libPath = 'code-experiments/test/unit-test/lib/win64'
         elif ('32' in platform.machine()) or ('x86' in platform.machine()):
-            libPath = 'code-experiments/test/unit-test/lib/win32'
+            if 'cygwin' in os.environ['PATH']:
+                libPath = 'code-experiments/test/unit-test/lib/win32_cygwin'
+            else:
+                libPath = 'code-experiments/test/unit-test/lib/win32_mingw'
         
     copy_file(os.path.join(libPath, 'cmocka.dll'), 'code-experiments/test/unit-test/cmocka.dll')
     copy_file(os.path.join(libPath, 'libcmocka.a'), 'code-experiments/test/unit-test/libcmocka.a')
