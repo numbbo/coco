@@ -352,7 +352,7 @@ static void private_logger_bbob2009_initialize(logger_bbob2009_t *data, coco_pro
   private_logger_bbob2009_open_dataFile(&(data->rdata_file), data->path, dataFile_path, ".rdat");
   fprintf(data->rdata_file, bbob2009_file_header_str, data->optimal_fvalue);
   /* TODO: manage duplicate filenames by either using numbers or raising an error */
-  /* The coco_create_unique_path function is available now! */
+  /* The coco_create_unique_path() function is available now! */
   data->is_initialized = 1;
 }
 

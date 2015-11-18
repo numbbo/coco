@@ -96,14 +96,14 @@ void coco_optimize(coco_problem_t *problem) { /* should at the least take budget
  */
 
 /* Added here for compilability!!!*/
-#define SUITE_BIOBJ_NUMBER_OF_COMBINATIONS 300
+#define SUITE_BIOBJ_NUMBER_OF_FUNCTIONS 300
 #define SUITE_BIOBJ_NUMBER_OF_INSTANCES 5
 #define SUITE_BIOBJ_NUMBER_OF_DIMENSIONS 5
 static long biobjective_encode_problem_index(int combination_idx, long instance_idx, int dimension_idx) {
     long problem_index;
     problem_index = instance_idx + 
                     combination_idx * SUITE_BIOBJ_NUMBER_OF_INSTANCES + 
-                    dimension_idx * (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_COMBINATIONS);
+                    dimension_idx * (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS);
     return problem_index;
 }
 

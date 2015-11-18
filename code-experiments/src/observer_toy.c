@@ -16,7 +16,7 @@ static coco_problem_t *observer_toy(coco_problem_t *problem, const char *options
 
   coco_join_path(base_path, sizeof(base_path), options, "toy_so", coco_problem_get_id(problem), NULL);
   if (coco_path_exists(base_path)) {
-    /* TODO: Handle this differently - coco_create_unique_filename() function is available now! */
+    /* TODO: Handle this differently - coco_create_unique_path() function is available now! */
     coco_error("Result directory exists.");
     return NULL; /* never reached */
   }
