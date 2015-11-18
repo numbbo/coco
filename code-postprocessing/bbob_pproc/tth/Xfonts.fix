@@ -1,0 +1,186 @@
+#!/bin/bash
+# Xfonts.fix by Ian Hutchinson 2002. Use at your own risk.
+# Makes symbol fonts available to browsers and fixes Mozilla MathML.
+# It uses chkfontpath, locate, fgrep and sed.
+if [ $# = 1 ] ; then 
+    if [ "$1." == "--remove." ]; then OK=1; fi
+    if [ "$1." == "--install." ]; then OK=1; fi
+    if [ $OK. != 1. ]; then  
+	   echo
+	   echo "Usage: $0 [--install | --remove ]"
+	   exit
+    fi
+fi
+echo
+echo This program, $0, creates aliases to the Symbol fonts
+echo to make them accessible through iso8859-1 which most browsers use.
+echo It will also fix the Mozilla MathML style sheet, preventing font problems.
+echo It should be run as root within your X server.
+echo You will be asked for verification before changes are made. 
+echo Responding with anything except "y" will skip the changes.
+echo
+read -p "Do you want to continue: [y]es [n]o: " YESNO
+if [ $YESNO. != "y." ]; then exit; fi
+
+echo "   Here are the fontspecific symbol fonts your X-system reports:"
+xlsfonts -fn *adobe*symbol*fontspecific
+echo "   Here are the symbol fonts available in iso8859-1 encoding:"
+xlsfonts -fn *adobe*symbol*iso8859-1
+if [ "$1." == "." ]; then 
+    if [ -z "`xlsfonts -fn *adobe*symbol*iso8859-1 2>/dev/null`" ]; then 
+    RESULT=1
+    else
+    RESULT=0
+    fi
+else 
+    if [ "$1." == "--remove." ]; then 
+	RESULT="0";
+	echo Forcing remove.
+    else  if [ "$1." == "--install." ]; then 
+	    RESULT="1"
+	    echo Forcing install.
+	else 
+	   echo
+	   echo "Usage: $0 [--install | --remove ]"
+	   exit
+	fi
+    fi
+fi
+if [ $RESULT != 0 ] ; then
+    if [ -f /usr/sbin/chkfontpath ] ; then
+	echo chkfontpath gives the following information
+	/usr/sbin/chkfontpath
+        FPATHS=`/usr/sbin/chkfontpath |sed -n -e "s/^[0-9]*: //" -e "/dpi$/ p" -e "/dpi$/ q"`
+# Change this to ensure that we never put the aliases in the first file if
+# it is not a dpi file, since that breaks the default font. The default font
+# appears to be the first iso-8859-1 named font in the first searched 
+# directory's fonts.alias file. ..dpi files are probably safe.
+	if [ -z "$FPATHS" ]; then
+	    FPATHS=`/usr/sbin/chkfontpath |sed -n -e "s/^[0-9]*: //" -e "s/:unscaled//" -e "/dpi$/ p" -e "/dpi$/ q"`
+	    if [ "$FPATHS" ]; then echo 'Using unscaled font reference:'; fi
+	fi
+	if [ "$FPATHS" ] ; then
+	    FALIASES=$FPATHS/fonts.alias
+	fi
+    fi
+    if [ -z "$FALIASES" ] ; then 
+	echo You have the following candidate files for the aliases:
+	locate dpi/fonts.alias
+	echo The first available is usually used.
+	FALIASES=`locate dpi/fonts.alias | sed -n -e "1 p"`
+    fi
+    if [ $FALIASES ] ; then  
+	echo I intend to use the file $FALIASES
+	read -p "Ok to proceed? [y]es [n]o: " YESNO
+	if [ $YESNO. = "y." ]; then
+#cat <<EOF
+cat >> $FALIASES <<EOF
+!___________________________SymAlias.fix_______________________________________
+! 100dpi aliases to fool Netscape into symbol support in iso8859 encoding.
+-adobe-symbol-medium-r-normal--11-80-100-100-p-61-iso8859-1 -adobe-symbol-medium-r-normal--11-80-100-100-p-61-adobe-fontspecific
+-adobe-symbol-medium-r-normal--14-100-100-100-p-85-iso8859-1 -adobe-symbol-medium-r-normal--14-100-100-100-p-85-adobe-fontspecific
+-adobe-symbol-medium-r-normal--17-120-100-100-p-95-iso8859-1 -adobe-symbol-medium-r-normal--17-120-100-100-p-95-adobe-fontspecific
+-adobe-symbol-medium-r-normal--20-140-100-100-p-107-iso8859-1 -adobe-symbol-medium-r-normal--20-140-100-100-p-107-adobe-fontspecific
+-adobe-symbol-medium-r-normal--25-180-100-100-p-142-iso8859-1 -adobe-symbol-medium-r-normal--25-180-100-100-p-142-adobe-fontspecific
+-adobe-symbol-medium-r-normal--34-240-100-100-p-191-iso8859-1 -adobe-symbol-medium-r-normal--34-240-100-100-p-191-adobe-fontspecific
+!__________________________Cut here optionally_________________________________
+! 75dpi Netscape symbol aliases.
+-adobe-symbol-medium-r-normal--10-100-75-75-p-61-iso8859-1 -adobe-symbol-medium-r-normal--10-100-75-75-p-61-adobe-fontspecific
+-adobe-symbol-medium-r-normal--12-120-75-75-p-74-iso8859-1 -adobe-symbol-medium-r-normal--12-120-75-75-p-74-adobe-fontspecific
+-adobe-symbol-medium-r-normal--14-140-75-75-p-85-iso8859-1 -adobe-symbol-medium-r-normal--14-140-75-75-p-85-adobe-fontspecific
+-adobe-symbol-medium-r-normal--18-180-75-75-p-107-iso8859-1 -adobe-symbol-medium-r-normal--18-180-75-75-p-107-adobe-fontspecific
+-adobe-symbol-medium-r-normal--24-240-75-75-p-142-iso8859-1 -adobe-symbol-medium-r-normal--24-240-75-75-p-142-adobe-fontspecific
+-adobe-symbol-medium-r-normal--8-80-75-75-p-51-iso8859-1 -adobe-symbol-medium-r-normal--8-80-75-75-p-51-adobe-fontspecific
+!___________________________SymAlias.end_______________________________________
+EOF
+	echo Appended the SymAlias section to $FALIASES
+	echo You have to execute the command killall -HUP xfs, and restart X
+	echo for any changes to have effect.
+	else
+	    echo Nothing done.
+	    exit 
+	fi
+    else
+	echo Sorry, I cannot work out where to put the aliases.
+    fi
+else
+    echo
+    echo You appear already to have some symbol fonts iso8859-1 encoded.
+    read -p "Do you want me to try to remove stale aliases? [y]es [n]o: " YESNO
+    if [ $YESNO. = "y." ]; then
+    	echo I am searching the following files
+	locate fonts.alias
+	FAL1=`locate fonts.alias`
+	FALIASES=`fgrep SymAlias $FAL1 2>/dev/null | sed -n -e "1 s/:.*$//g p"`
+	if [ $FALIASES ] ; then
+	    echo The following file  seems to contain SymAlias aliases.
+ 	    echo "       $FALIASES"
+	    cp $FALIASES $FALIASES.xfonts 
+	    sed -e "/SymAlias.fix/,/SymAlias.end/d" $FALIASES.xfonts  >$FALIASES
+	    if [ "`diff $FALIASES $FALIASES.xfonts`" ]; then
+		echo ... Some material cut. 
+                echo Old version is $FALIASES.xfonts
+		echo You have to execute the command killall -HUP xfs, and restart X
+		echo for any changes to have effect.
+
+	    else
+		echo Did not succeed in making any changes.
+	    fi
+        else
+	    echo They do not seem to contain SymAlias sections.
+	    echo If you want to install the sections use \"$0 --force\"
+	fi
+    else
+	echo If you want to add fonts to them. Edit your fonts.alias files.
+    fi
+fi
+MATHMLLIST=`locate -r "res/mathml.css$"`
+FOUND=
+for file in $MATHMLLIST DUMMY; do 
+    if [ -f $file ]; then FOUND=1; break; fi;
+done;
+if [ -z "$FOUND" ] ; then
+   if MATHMLLIST=`/bin/ls /usr/lib/mozilla*/res/mathml.css`; then 
+	FOUND=2
+   else
+	MATHMLLIST=
+   fi
+fi
+if [ "$MATHMLLIST" ] ; then
+  echo
+  echo I found the following mathml.css files:
+  echo $MATHMLLIST
+  for MATHML in $MATHMLLIST; do 
+    echo
+    UNDONE=`sed -n -e "s/Symbol, Times/Times, Symbol/ p" $MATHML`
+    if [ "$UNDONE" ]; then
+	echo I recommend putting Times before Symbol by default in $MATHML
+	echo Otherwise MathML will render incorrectly in Mozilla.
+	read -p "Would you like me to correct that now for you? [y]es [n]o: " YESNO
+	if [ $YESNO. = "y." ]; then
+	    if cp $MATHML ${MATHML%.css}.sym ; then 
+		sed -e "s/Symbol, Times/Times, Symbol/g" ${MATHML%.css}.sym >$MATHML
+		echo Saved original file as ${MATHML%.css}.sym
+		echo The changed lines are
+		echo $UNDONE
+            else
+		echo Failed: could not copy the original mathml.css file
+		echo You probably need to run this script as root or ask your sysadmin.
+	    fi
+	fi
+    else
+	if [ -f ${MATHML%.css}.sym ]; then
+	    echo Your Mozilla fonts are already fixed for file $MATHML
+            read -p "Do you want to restore the old list? [y]es [n]o: " YESNO
+	    if [ $YESNO. = "y." ]; then
+		cp ${MATHML%.css}.sym $MATHML
+	    fi
+	fi
+    fi
+  done
+else
+    echo You don''t seem to have Mozilla''s mathml.css installed.
+    echo If you install Mozilla after the aliases, then to get MathML to work,
+    echo you will have to run this script again a day later.
+fi
+echo Whatever you have done can be reversed by running this script again.
