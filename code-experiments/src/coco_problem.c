@@ -59,6 +59,7 @@ coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->best_value = coco_allocate_vector(number_of_objectives);
   problem->problem_name = NULL;
   problem->problem_id = NULL;
+  problem->index = 0;
   problem->evaluations = 0;
   problem->final_target_delta[0] = 1e-8; /* in case to be modified by the benchmark */
   problem->best_observed_fvalue[0] = DBL_MAX;
@@ -92,6 +93,7 @@ coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
 
   problem->problem_name = coco_strdup(other->problem_name);
   problem->problem_id = coco_strdup(other->problem_id);
+  problem->index = other->index;
   return problem;
 }
 
