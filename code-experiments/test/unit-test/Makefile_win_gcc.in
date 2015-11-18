@@ -3,18 +3,20 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: test
+all: unittest
 
 clean:
-	rm -f test.o test
+	IF EXIST "unittest.o" DEL /F unittest.o
+	IF EXIST "unittest.exe" DEL /F unittest.exe
 
 ########################################################################
 ## Programs
-test: test.o 
-	${CC} ${CCFLAGS} -o test test.o ${LDFLAGS}  
+unittest: unittest.o 
+	${CC} ${CCFLAGS} -o unittest unittest.o ${LDFLAGS}  
 
 
 ########################################################################
 ## Additional dependencies
-test.o: test.c
-	${CC} -c ${CCFLAGS} -o test.o test.c 
+unittest.o: unittest.c
+	${CC} -c ${CCFLAGS} -o unittest.o unittest.c 
+	

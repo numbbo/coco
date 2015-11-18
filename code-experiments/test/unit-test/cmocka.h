@@ -1402,10 +1402,13 @@ void skip(void);
  */
 void fail_msg(const char *msg, ...);
 #else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wvariadic-macros"
 #define fail_msg(msg, ...) do { \
     print_error("ERROR: " msg "\n", ##__VA_ARGS__); \
     fail(); \
 } while (0)
+#pragma GCC diagnostic pop
 #endif
 
 #ifdef DOXYGEN
@@ -1868,7 +1871,7 @@ typedef enum UnitTestFunctionType {
     UNIT_TEST_FUNCTION_TYPE_SETUP,
     UNIT_TEST_FUNCTION_TYPE_TEARDOWN,
     UNIT_TEST_FUNCTION_TYPE_GROUP_SETUP,
-    UNIT_TEST_FUNCTION_TYPE_GROUP_TEARDOWN,
+    UNIT_TEST_FUNCTION_TYPE_GROUP_TEARDOWN
 } UnitTestFunctionType;
 
 /*
@@ -2064,7 +2067,7 @@ enum cm_message_output {
     CM_OUTPUT_STDOUT,
     CM_OUTPUT_SUBUNIT,
     CM_OUTPUT_TAP,
-    CM_OUTPUT_XML,
+    CM_OUTPUT_XML
 };
 
 /**
