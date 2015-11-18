@@ -1,0 +1,122 @@
+%    If you need to process new data, a new line will be appendded to this file
+%    The line in question will have 3 fields separated by colon (:) character.
+%    The 1st field must be the exact string used as algId in the info files in
+%    your data, the 2nd the exact string for the comment. The 3rd will be
+%    a python dictionary which will be used for the plotting.
+%    If different pairs of (algId, comment lines) (1st and 2nd field) have been
+%    used for a single algorithm, only one of the corresponding dictionary (3rd
+%    field) will be used. To avoid undesired behaviour, it is best to have
+%    the exact same dictionary for each line (each pair (algId, comment lines)
+%    corresponding to a single algorithm.
+%
+%    Lines beginning with the % character will not be processed.
+%
+%    The label field in the dictionary correspond to the label used by modules
+%    pptables and ppperfprof. The color and linestyle, if specified, are used
+%    by ppperfprof. By default the label field will take the string defined as
+%    algId. This can be changed a posteriori.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+cmaes V3.30.beta:% cmaes28noikappa2 BIPOP like 24 with kappa=10, deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{}
+cmaes V3.30.beta:% cmaes26noi BIPOP like 24 with kappa=10, deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{}
+BFGS:% [-5, 5]^n, max 100 independent restarts.:{"label": "BFGS", "color": "r"}
+fminsearch:% 1e4*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1:{"label": "NELDER (Han)", "color": "c", "ls": "--"}
+fminsearch:% 1e5*dim maxfunevals 1e4 multistarts tolx=1e-11 sig0=2 sig_xopt=0.01..0.1:{"label": "NELDER (Han)", "color": "c", "ls": "--"}
+NEWUOA:% NPT=2*DIM+1, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "NEWUOA", "color": "lightgrey"}
+NEWUOA:% NPT=AVG, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "avg NEWUOA", "color": "g", "linestyle": "-."}
+NEWUOA:% NPT=(DIM+1)(DIM+2)/2, RHOBEG=10, RHOEND=1e-16, X0=[-5,5]**DIM:{"label": "full NEWUOA", "color": "lightgrey", "linestyle": "-"}
+cmaes V3.30.beta:% cmaes25 ccum=new stopstagnation, sigmaUp=10^20, maxrestartfunevals=1e7*DIM restarts=9 maxiter=100 + 50 * (N+3)^2/sqrt(popsize) no xopt sigma0=2:{"label": "BIPOP-CMA-ES", "color": "lightgrey"}
+cmaes V3.30.beta:% cmaes24noi BIPOP like 21 with deflam sigup=10^20 ccovfac=0.2 tolmedianfun sigma0=2 ccum,damps=new maxrestartfunevals=1e6*DIM restarts=9 maxiter=1000 + 500 * (N+3)^2/sqrt(popsize):{"label": "BIPOP-CMA-ES", "color": "lightgrey"}
+DEPSO:% MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "DEPSO", "color": "springgreen", "ls": "--"}
+cmaesplussel:%:{"label": "(1+1)-CMA-ES", "color": "b", "ls": "--"}
+One-Fifth Variant3:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "(1+1)-ES", "color": "m"}
+PureRandomSearchOnNoise:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "Monte Carlo", "color": "k", "ls": "--"}
+EDA-PSO:% All historical information with correlation-triggered adaptive variance scaling.:{"label": "EDA-PSO", "color": "springgreen"}
+EDA-PSO:% An EDA and PSO hybrid algorithm.:{"label": "EDA-PSO", "color": "springgreen"}
+PSO_Bounds_R:% hmin=0.2, hmax=0.8, alpha=0.05 and T=0.0001.:{"label": "PSO_Bounds", "color": "y"}
+PSO_Bounds algorithm:% A PSO algortihm with Adaptive Varying Bounds, pmin = 0.2, pmax = 0.8, alpha = 0.05, T = 0.0001.:{"label": "PSO_Bounds", "color": "y"}
+PSO:% A gbest PSO algorithm.:{"label": "PSO", "color": "y", "ls": "--", "lw": 1.8}
+DASA:% test:{"label": "DASA", "color": "sienna"}
+Cauchy EDA:% restarts up to 100, outermaxfevals 5e4*dim, inner maxfunevals 5e4*dim:{"label": "Cauchy EDA", "color": "slategray"}
+Original DIRECT:% No restarts, outermaxfevals 1e5, inner maxfunevals 1e5:{"label": "DIRECT", "color": "violet", "lw": 1.4}
+G3PCX:% restarts up to 100, outermaxfevals 5e4*dim, inner maxfunevals 5e4*dim:{"label": "G3-PCX", "color": "springgreen"}
+Line Search - fminbnd:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "LSfminbnd", "color": "steelblue"}
+Line Search - STEP:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "LSstep", "color": "teal"}
+Local Search - Rosenbrock:% restarts up to 100, outermaxfevals 1e4*dim, inner maxfunevals 1e4*dim:{"label": "Rosenbrock", "color": "peru"}
+AMaLGaM-Full-Free:% AMaLGaM-Full-Free:{"label": "AMaLGaM IDEA", "color": "tomato"}
+iAMaLGaM-Full-Free:% iAMaLGaM-Full-Free:{"label": "iAMaLGaM IDEA", "color": "tomato", "ls": "--"}
+BAYEDA:% Simple continuous BAYEDA with 0.8 selection, population=10*DIM, 2000*DIM fn evals, so 200 generations:{"label": "BayEDAcG", "color": "pink", "lw": 1.7}
+GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =8;Maxfevnr=5000;Method =simplex2:{"label": "GLOBAL", "color": "lightgrey"}
+GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=5000;Method =simplex2:{"label": "GLOBAL", "color": "lightgrey"}
+GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =bfgs:{"label": "GLOBAL", "color": "lightgrey"}
+GLOBAL:% Sample size =300;Best points nr. =2;Tolerance =9;Maxfevnr=10000;Method =simplex2:{"label": "GLOBAL", "color": "lightgrey"}
+POEMS:% no comments:{"label": "POEMS", "color": "slategray", "ls": "--", "lw": 1.6}
+Simple GA:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "simple GA", "color": "royalblue"}
+sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e4*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize), only the first restart uses mixed strategies for 1+100*N/sqrt(popsize):{"label": "IPOP-SEP-CMA-ES", "color": "b", "ls": "-.", "lw": 1.6}
+VNS_with_ECs:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "VNS (Garcia)", "color": "rosybrown"}
+NELDERDOERR:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label": "NELDER (Doe)", "color": "c"}
+SPSA2:%  maxFunevals = 5e4*DIM with 10 restarts, blocking = 10, lambda_start = 10:{"label":"adaptive SPSA", "color": "purple"}
+SPSA2:%  maxFunevals = 5e4*DIM with restarts, c0=0.1, initial lambda = 5, blocking = 10, restart changes c0:{"label":"adaptive SPSA", "color": "purple", "ls": "--"}
+SNOBFIT:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"SNOBFIT", "color": "powderblue"}
+MCS:% default parameters except for local = maxfunevals/5:{"label":"MCS", "color": "thistle", "lw": 1.7}
+MCS:% default parameters, no local search:{"label":"MCS", "color": "thistle", "lw": 1.7}
+MA2LSI_5DIMF_ssga_cmaesn05:% RatioBL=0.5,Intensity=500:{"label":"MA-LS-Chain", "color": "turquoise"}
+SPSA:% maxFuneval = 5e4*dim with 20 restarts, with blocking, A = 10% of kmax, lambda = 2, 20% of choosing a new start point/increase lambda:{"label":"SPSA","color":"purple"}
+SPSA:%  maxFuneval = 5e4*DIM with 20 restarts, blocking, change lambda in restarts, lambda_start = 1, lambda_max = 16:{"label":"SPSA","color":"purple"}
+EGSipopcma:% 10 independent restarts, EGS-CMA implementation from D.Arnold, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda:{"label":"CMA-EGS","color":"red","ls":"--"}
+EGS_ipopcma_KappaAdapt:% 10 independent restarts, EGS-CMA implementation from D.Arnold, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda, kappa adaptation (new version), each pop has size lambda:{"label":"CMA-EGS","color":"red","ls":"--"}
+SPSA:%  10 restarts with increasing lambda and decreasing step, if improvement was found then kmax = 1e3, else kmax = 1e4:{"label":"SPSAv5","color":"blue"}
+SPSA:% 10 restarts, maxFunevals = 1e4*dim:{"label":"SPSAv6","color":"green"}
+SPSA:% 10 restarts, kmax = 1e3, for improvement step kmax = 5e2, restart changes lambda and step:{"label":"SPSAv5","color":"blue"}
+ALPS:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"ALPS-GA"}
+sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e5*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize) diag=1st start, 1 + 100 * N / sqrt(lambda) iterations:{"label":"IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
+EGS_ipopcma_newCMAcoeff:% 10 independent restarts, EGS-CMA implementation from D.Arnold with new coefficients, maxFes = 1e6*dim, ipop-cma with factor 2 for increase of lambda:{"label":"EGSv2","color":"blue"}
+sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e6*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize), only the first restart uses mixed strategies for 1+100*N/sqrt(popsize):{"label":"IPOP-SEP-CMA-ES", "color": "b", "ls": "-."}
+cmaes V3.23.beta:% sigma0=2 maxfunevals=1e5*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": "--"}
+sepcmaesmod V3.23.beta:% sigma0=2 maxfunevals=1e6*DIM restarts=8 maxiter=100 + 300 * N * sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": "--"}
+bipopactivecmaes:% active CMA on BBOB-2009:{"label":"bipopactivecmaes"}
+vCMSA_1e6:% vCMSA with sigma_stop = 1e-10, all tau_*_factors = 1, initial popsize = 4, theta = 1/4, initial mutation = 1:{"label":"vCMSA_1e6"}
+(1+1)-CMA-ES:% sigma_0=2.0, ccov^-=0, sigma_stop<1e-9:{"label":"(1+1)-CMA-ES"}
+(1+1)-active-CMA-ES:% sigma_0=2.0, ccov^-=0.3/(pow(n, 1.5)+2.0), sigma_stop<1e-9:{"label":"(1+1)-aCMA-ES"}
+bipopes:% bipop without CMA on BBOB-2009, 1e4*N fevals:{"label":"BIPOP-ES", "color":"m", "ls": "--"}
+cmaes V3.41.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(N/popsize)/10:{"label":"IPOP-aCMA-ES"}
+cmaes V3.40.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": "--"}
+cmaes V3.41.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e5*N, maxiter=100 + 50 * (N + 3)^2 / sqrt(N/popsize)/10:{"label":"active-CMA-ES"}
+cmaes V3.40.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e5*N, maxiter=100 + 50 * (N + 3)^2 / sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": "--"}
+cmaes V3.40.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(N/popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": "--"}
+cmaes V3.41.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(N/popsize):{"label":"IPOP-aCMA-ES"}
+cmaes V3.41.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(N/popsize):{"label":"IPOP-aCMA-ES"}
+cmaes V3.40.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": "--"}
+cmaes V3.41.beta:% sigma0=2 restarts=9 maxiter=100 + 50 * (N + 3)^2 / sqrt(popsize):{"label":"IPOP-aCMA-ES"}
+cmaes V3.40.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(popsize):{"label":"IPOP-CMA-ES", "color": "b", "ls": "--"}
+cmaes V3.41.beta:% sigma0=2 restarts=9, ccov1 and ccovmu divided by 5, maxfunevals=1e6*N, maxiter=1000 + 500 * (N + 3)^2 / sqrt(popsize):{"label":"IPOP-aCMA-ES"}
+(1,2)CMA-ES:% (1,2)CMA-ES with restarts, non-mirrored version):{"label":"(1,2)-CMA-ES"}
+EGS:% EGS-CMA as given by Arnold, sigma = 10/6, ipop-factor 2, sigma stop if < 1e-14:{"label":"CMA-EGS (IPOP,r1)"}
+(1,2_m)CMA-ES:% (1,2)CMA-ES with restarts, mirrored version):{"label":"(1,2m)-CMA-ES"}
+(1,2_m^s)CMA-ES:% serial (1,2)CMA-ES with restarts, mirrored version):{"label":"(1,2ms)-CMA-ES"}
+(1,2^s)CMA-ES:% serial (1,2)CMA-ES with restarts, non-mirrored version):{"label":"(1,2s)-CMA-ES"}
+(1,4)CMA-ES:% (1,4)CMA-ES with restarts, non-mirrored version:{"label":"(1,4)-CMA-ES"}
+(1,4_m)CMA-ES:% (1,4)CMA-ES with restarts, mirrored version:{"label":"(1,4m)-CMA-ES"}
+(1,4_m^s)CMA-ES:% serial (1,4)CMA-ES with restarts, mirrored version:{"label":"(1,4ms)-CMA-ES"}
+(1,4^s)CMA-ES:% serial (1,4)CMA-ES with restarts, non-mirrored version:{"label":"(1,4s)-CMA-ES"}
+1p1:% (1+1)CMA:{"label":"(1+1)-CMA-ES", "color": "b", "ls": "--"}
+1p2_m^s:% serial (1+2)CMA with mirroring:{"label":"(1+2ms)-CMA-ES"}
+Artificial Bee Colony:% Colony_Size=40, Limit=20*DIM, No Bounding:{"label":"Artif Bee Colony"}
+Harmony search algorithm:% Normal parameters settings:{"label":"Harmony Search"}
+mos:% PUT MORE DETAILED INFORMATION, PARAMETER SETTINGS ETC:{"label":"CMA+DE-MOS"}
+NBC-CMA:% debug:{"label":"NBC-CMA"}
+nPOEMS:% no comments:{"label":"nPOEMS"}
+Basic RCGA:% Run from 2010.03.25 at 0:50; popsize=100, 2 Stopping criteria, maxfunevals=5e4*D:{"label":"Basic RCGA"}
+SPSA:% SPSA with lambda = 1 (1st run), lambda = 1 + 2^restart, c0 approx. standard deviation at initial point (max c0 = 10), alpha and gamma theoretical minimal, a0 calculated:{"label":"SPSA", "color": "purple"}
+PSO_Bounds with randomly selected parameters:% Parameters selected randomly from a set:{"label":"PSO_Bounds updated"}
+AUCplus-NDCG-S.5_W50:% AUCplus_on_DE_with_stGECCOset:{"label":"Adap DE (AUC)"}
+F-AUCv2_NoCut_NDCG-MAB-Adaptive_Strategy_Selection:% NDCG_C.5_D1.0_W50_stGECCO:{"label":"Adap DE (F-AUC)"}
+F-SUM_NoCut_NDCG-MAB-Adaptive_Strategy_Selection:% NDCG_C.5_D1.0_W50_stGECCO:{"label":"Adap DE (F-SUM)"}
+stRand1Bin:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"DE stRand1Bin"}
+stRand2Bin:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"DE stRand2Bin"}
+stRandToBest2Bin:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"DE stRandToBest2Bin"}
+stTargetToRand1Bin:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"DE stTargetToRand1Bin"}
+SUMplus-NDCG-S.5_W50:% SUMplus_on_DE_with_stGECCOset:{"label":"Adap DE (SUM)"}
+DE_Uniform_stGECCOset:% SimpleDE_CR1.0_F0.8_Pop100xD:{"label":"DE (Uniform)"}
+PM-AdapSS-DE:% Probability Matching with absolute average of the relative fitness improvement as Credit Assignment (see GECCO10 paper).:{"label":"PM-AdapSS-DE"}
+oPOEMS:% no comments:{"label":"oPOEMS"}
