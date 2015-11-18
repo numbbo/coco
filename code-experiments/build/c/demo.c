@@ -135,7 +135,7 @@ int main() {  /* short example, also nice to read */
   for (problem_index = 0; problem_index >= 0;
        problem_index = coco_suite_get_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)) {
     problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-    problem = coco_problem_add_observer(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
+    problem = coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
     coco_optimize(problem);
     coco_problem_free(problem);
   }
@@ -145,7 +145,7 @@ int main() {  /* short example, also nice to read */
   return 0;
 }
 
-#elif 1
+#elif 0
 int main(void) { /* longer example supporting several batches */
   coco_problem_t * problem;
   long problem_index = coco_suite_get_next_problem_index(

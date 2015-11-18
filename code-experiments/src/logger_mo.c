@@ -12,10 +12,17 @@
 #include "mo_avl_tree.c"
 #include "mo_generics.c"
 
+/* Static variables needed to know whether the logger was called for the first time */
+static size_t LOGGER_MO_CALLS = 0;
+static char LOGGER_MO_RESULT_FOLDER[COCO_PATH_MAX] = "";
+
 /* Data for each indicator */
 typedef struct {
   char *name;
+  /* File for logging indicator values at target hits */
   FILE *log_file;
+  /* File for logging summary information on algorithm performance */
+  FILE *info_file;
   double *target_values;
   size_t number_of_targets;
   size_t next_target;
@@ -30,10 +37,6 @@ typedef struct {
 
   /* File for logging nondominated solutions (either all or final) */
   FILE *nondom_file;
-  /* File for logging indicator values at target hits */
-  FILE *log_file;
-  /* File for logging summary information on algorithm performance */
-  FILE *info_file;
   logger_mo_nondom_e log_mode;
 
   int include_decision_variables;
@@ -238,7 +241,6 @@ static void private_logger_mo_initialize(coco_problem_t *self) {
     else if (data->log_mode == FINAL)
       file_name = coco_strdupf("%s_nondom_final.dat", self->problem_id);
     coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
-    coco_create_unique_filename(&path_name);
 
     /* Open and initialize the file */
     data->nondom_file = fopen(path_name, "a");
@@ -252,6 +254,7 @@ static void private_logger_mo_initialize(coco_problem_t *self) {
     coco_free_memory(file_name);
     coco_free_memory(path_name);
 
+    fprintf(data->nondom_file, "%% instance = %lu\n", self->index);
     if (data->include_decision_variables) {
       fprintf(data->nondom_file, "%% function evaluation | %lu objectives | %lu variables\n",
           data->number_of_objectives, data->number_of_variables);
@@ -301,19 +304,38 @@ static void private_logger_mo_evaluate(coco_problem_t *self, const double *x, do
   fflush(data->nondom_file);
 }
 
+static void private_logger_mo_finalize(logger_mo_t *data) {
+
+  if (data->log_mode == FINAL) {
+    /* Resort archive_tree according to time stamp and then output it */
+
+    avl_tree_t *resorted_tree;
+    avl_node_t *solution;
+    resorted_tree = avl_tree_construct((avl_compare_t) compare_by_time_stamp, NULL);
+
+    if (data->archive_tree->tail) {
+      /* There is at least a solution in the tree to output */
+      solution = data->archive_tree->head;
+      while (solution != NULL) {
+        avl_item_insert(resorted_tree, solution->item);
+        solution = solution->next;
+      }
+    }
+
+    logger_mo_tree_output(data->nondom_file, resorted_tree, data->number_of_variables,
+        data->number_of_objectives, data->include_decision_variables);
+  }
+
+}
+
 static void private_logger_mo_free(void *stuff) {
 
-  size_t tree_size;
   logger_mo_t *data;
+
   assert(stuff != NULL);
   data = stuff;
 
-  /* TODO: Resort according to time stamp before output!*/
-  if (data->log_mode == FINAL) {
-    tree_size = logger_mo_tree_output(data->nondom_file, data->archive_tree, data->number_of_variables,
-        data->number_of_objectives, data->include_decision_variables);
-    printf("%lu\n", tree_size);
-  }
+  private_logger_mo_finalize(data);
 
   if (data->result_folder != NULL) {
     coco_free_memory(data->result_folder);
@@ -332,7 +354,6 @@ static void private_logger_mo_free(void *stuff) {
 /**
  * Sets up the multiobjective logger. Possible options:
  * - result_folder : folder_name (folder for result output; if not given, "results" is used instead)
- * - reference_values_file : file_name (name of the file with reference values for all indicators; optional)
  * - log_nondominated : none (don't log nondominated solutions)
  * - log_nondominated : final (log only the final nondominated solutions; default value)
  * - log_nondominated : all (log every solution that is nondominated at creation time)
@@ -343,6 +364,9 @@ static void private_logger_mo_free(void *stuff) {
  * setting log_nondominated to all, include_decision_variables to 1 and compute_indicators to 1; if set to 0, it
  * does not change the values of other options; default value is 0)
  */
+/*
+ * TODO: Does it make sense to read all the other options every time, but only read result_folder once?
+ * */
 static coco_problem_t *logger_mo(coco_problem_t *problem, const char *options) {
 
   logger_mo_t *data;
@@ -355,15 +379,21 @@ static coco_problem_t *logger_mo(coco_problem_t *problem, const char *options) {
   data->number_of_variables = coco_problem_get_dimension(problem);
   data->number_of_objectives = coco_problem_get_number_of_objectives(problem);
 
-  /* Read values from options */
-  if (coco_options_read_string(options, "result_folder", string_value) > 0) {
-    data->result_folder = coco_strdup(string_value);
-  } else {
-    coco_warning("logger_mo(): using results as the name of the result folder");
-    data->result_folder = coco_strdup("results");
+  /* Creates a unique output folder if this is a first call to this logger */
+  if (LOGGER_MO_CALLS == 0) {
+    /* First call to the logger, create a unique output folder */
+    if (coco_options_read_string(options, "result_folder", string_value) > 0) {
+      data->result_folder = coco_strdup(string_value);
+    } else {
+      coco_warning("logger_mo(): using results as the name of the result folder");
+      data->result_folder = coco_strdup("results");
+    }
+    coco_create_unique_path(&(data->result_folder));
+    strcpy(LOGGER_MO_RESULT_FOLDER, data->result_folder);
   }
-  /* Creates the output folder if it does not yet exist */
-  coco_create_path(data->result_folder);
+  else {
+    data->result_folder = coco_strdup(LOGGER_MO_RESULT_FOLDER);
+  }
 
   data->log_mode = FINAL;
   if (coco_options_read_string(options, "log_nondominated", string_value) > 0) {
@@ -398,6 +428,8 @@ static coco_problem_t *logger_mo(coco_problem_t *problem, const char *options) {
 
   self = coco_transformed_allocate(problem, data, private_logger_mo_free);
   self->evaluate_function = private_logger_mo_evaluate;
+
+  LOGGER_MO_CALLS++;
 
   return self;
 }
