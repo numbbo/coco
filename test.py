@@ -6,11 +6,8 @@ from __future__ import print_function
 
 import sys
 import os
-import shutil
-import tempfile
 import subprocess
 import platform
-from subprocess import check_output, STDOUT
 
 ## Change to the root directory of repository and add our tools/
 ## subdirectory to system wide search path for modules.
@@ -18,8 +15,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.abspath('code-experiments/tools'))
 
 from amalgamate import amalgamate
-from cocoutils import make, run, python, rscript
-from cocoutils import copy_file, copy_tree, expand_file, write_file
+from cocoutils import make, run
+from cocoutils import copy_file, write_file
 from cocoutils import git_version, git_revision
 
 core_files = ['code-experiments/src/coco_suites.c',
@@ -29,21 +26,30 @@ core_files = ['code-experiments/src/coco_suites.c',
 
 ################################################################################
 ## Unit tests
-def build_unittest():
+def build_unit_test():
     global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/test/coco.c', release)
-    copy_file('code-experiments/test/lib/cmocka.dll', 'code-experiments/test/cmocka.dll')
-    copy_file('code-experiments/test/lib/libcmocka.a', 'code-experiments/test/libcmocka.a')
-    copy_file('code-experiments/src/coco.h', 'code-experiments/test/coco.h')
-    write_file(git_revision(), "code-experiments/test/REVISION")
-    write_file(git_version(), "code-experiments/test/VERSION")
-    make("code-experiments/test", "clean")
-    make("code-experiments/test", "all")
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/test/unit-test/coco.c', release)
 
-def test_unittest():
-    build_unittest()
+    libPath = 'code-experiments/test/unit-test/lib';
+    if ('win32' in sys.platform):
+        if '64' in platform.machine():
+            libPath = 'code-experiments/test/unit-test/lib/win64'
+        elif ('32' in platform.machine()) or ('x86' in platform.machine()):
+            libPath = 'code-experiments/test/unit-test/lib/win32'
+        
+    copy_file(os.path.join(libPath, 'cmocka.dll'), 'code-experiments/test/unit-test/cmocka.dll')
+    copy_file(os.path.join(libPath, 'libcmocka.a'), 'code-experiments/test/unit-test/libcmocka.a')
+        
+    copy_file('code-experiments/src/coco.h', 'code-experiments/test/unit-test/coco.h')
+    write_file(git_revision(), "code-experiments/test/unit-test/REVISION")
+    write_file(git_version(), "code-experiments/test/unit-test/VERSION")
+    make("code-experiments/test/unit-test", "clean")
+    make("code-experiments/test/unit-test", "all")
+
+def test_unit_test():
+    build_unit_test()
     try:
-        run('code-experiments/test', ['test'])
+        run('code-experiments/test/unit-test', ['unit_test'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
     
@@ -51,7 +57,7 @@ def test_unittest():
 ## Global
 def build():
     builders = [
-        build_unittest
+        build_unit_test
     ]
     for builder in builders:
         try:
@@ -65,7 +71,7 @@ def build():
             print("============")
 
 def test():
-    test_unittest()
+    test_unit_test()
 
 def help():
     print("""COCO framework testing tool.
