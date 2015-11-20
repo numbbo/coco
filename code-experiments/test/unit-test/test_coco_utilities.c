@@ -44,37 +44,56 @@ static void create_time_string(char **string) {
 }
 
 /*
+ * Setup for creating directory test.
+ */
+static int setup_coco_create_remove_directory(void **state) {
+
+  char *path_string;
+
+  path_string = coco_strdup("temp");
+  create_time_string(&path_string);
+
+  assert_non_null(path_string);
+
+  *state = (void*)path_string;
+
+  return 0;
+}
+
+/*
+ * Tear down for creating directory test.
+ */
+static int teardown_coco_create_remove_directory(void **state) {
+
+  coco_free_memory(*state);
+  return 0;
+}
+
+/*
  * Tests creating and removing directory.
  */
 static void test_coco_create_remove_directory(void **state) {
 
-  char *pathString;
   int exists;
-
-  pathString = coco_strdup("temp");
-  create_time_string(&pathString);
+  char *path_string = *state;
 
   /* At the beginning the path should not exist. */
-  exists = coco_path_exists(pathString);
+  exists = coco_path_exists(path_string);
   assert_false(exists);
 
-  coco_create_directory(pathString);
-  exists = coco_path_exists(pathString);
+  coco_create_directory(path_string);
+  exists = coco_path_exists(path_string);
   assert_true(exists);
 
   /* Calling it again to check the handling if the path does exist. */
-  coco_create_directory(pathString);
+  coco_create_directory(path_string);
 
-  coco_remove_directory(pathString);
-  exists = coco_path_exists(pathString);
+  coco_remove_directory(path_string);
+  exists = coco_path_exists(path_string);
   assert_false(exists);
 
   /* Calling it again to check the handling if the path does not exist. */
-  coco_remove_directory(pathString);
-
-  coco_free_memory(pathString);
-
-  (void)state; /* unused */
+  coco_remove_directory(path_string);
 }
 
 /**
@@ -119,7 +138,10 @@ static int test_all_coco_utilities(void) {
   {
       cmocka_unit_test(test_coco_max_double_min_double),
       cmocka_unit_test(test_coco_round_double),
-      cmocka_unit_test(test_coco_create_remove_directory)
+      cmocka_unit_test_setup_teardown(
+          test_coco_create_remove_directory,
+          setup_coco_create_remove_directory,
+          teardown_coco_create_remove_directory)
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);
