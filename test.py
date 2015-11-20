@@ -58,7 +58,7 @@ def build_unit_test():
 def test_unit_test():
     build_unit_test()
     try:
-        run('code-experiments/test/unit-test', ['unit_test'])
+        run('code-experiments/test/unit-test', ['./unit_test'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
     
