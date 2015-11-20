@@ -41,7 +41,6 @@ def build_unit_test():
                 libPath = 'code-experiments/test/unit-test/lib/win32_mingw'
         
     copy_file(os.path.join(libPath, 'cmocka.dll'), 'code-experiments/test/unit-test/cmocka.dll')
-    copy_file(os.path.join(libPath, 'libcmocka.a'), 'code-experiments/test/unit-test/libcmocka.a')
         
     copy_file('code-experiments/src/coco.h', 'code-experiments/test/unit-test/coco.h')
     write_file(git_revision(), "code-experiments/test/unit-test/REVISION")
