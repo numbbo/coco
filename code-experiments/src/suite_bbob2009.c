@@ -46,7 +46,7 @@
 #define SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 5
 #define SUITE_BBOB2009_NUMBER_OF_FUNCTIONS 24
 #define SUITE_BBOB2009_NUMBER_OF_DIMENSIONS 6
-static const unsigned BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up useful outside of bbob2009_decode_problem_index*/
+static const int BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up useful outside of bbob2009_decode_problem_index*/
 
 /**
  * bbob2009_decode_problem_index(problem_index, function_id, instance_id,
@@ -94,7 +94,7 @@ static const unsigned BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up u
 static void suite_bbob2009_decode_problem_index(const long problem_index,
                                                 int *function_id,
                                                 long *instance_id,
-                                                long *dimension) {
+                                                int *dimension) {
   const long high_instance_id = problem_index
       / (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS *
       SUITE_BBOB2009_NUMBER_OF_DIMENSIONS);
@@ -127,11 +127,11 @@ static long suite_bbob2009_encode_problem_index(int function_id, long instance_i
   return tmp1 + tmp2 + tmp3 + tmp4;
 }
 
-static coco_problem_t *suite_bbob2009_problem(int function_id, long dimension_, long instance_id) {
+static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, long instance_id) {
   size_t len;
   long rseed;
   coco_problem_t *problem = NULL;
-  const size_t dimension = (unsigned long) dimension_;
+  const size_t dimension = (size_t) dimension_;
 
   /* This assert is a hint for the static analyzer. */
   assert(dimension > 1);
@@ -756,14 +756,16 @@ static long suite_bbob2009_get_next_problem_index(long problem_index, const char
  */
 static coco_problem_t *suite_bbob2009(long problem_index) {
   coco_problem_t *problem;
-  int function_id;
-  long dimension, instance_id;
+  int dimension, function_id;
+  long instance_id;
 
   if (problem_index < 0)
     return NULL;
   suite_bbob2009_decode_problem_index(problem_index, &function_id, &instance_id, &dimension);
   problem = suite_bbob2009_problem(function_id, dimension, instance_id);
-  problem->index = problem_index;
+  problem->suite_dep_index = problem_index;
+  problem->suite_dep_function_id = function_id;
+  problem->suite_dep_instance_id = problem_index;
   return problem;
 }
 

@@ -97,19 +97,19 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
   }
 }
 
-coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, const char *observer_name, const char *options) {
+coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem, const char *observer_name, const char *options) {
   if (problem == NULL) {
     coco_warning("Trying to observe a NULL problem has no effect.");
     return problem;
   }
   if (0 == strcmp(observer_name, "observer_toy")) {
-    return observer_toy(problem, options);
+    return deprecated__observer_toy(problem, options);
   } else if (0 == strcmp(observer_name, "observer_bbob2009")) {
-    return observer_bbob2009(problem, options);
+    return deprecated__observer_bbob2009(problem, options);
   } else if (0 == strcmp(observer_name, "observer_mo_toy")) {
-    return observer_mo_toy(problem, options);
+    return deprecated__observer_mo_toy(problem, options);
   } else if (0 == strcmp(observer_name, "observer_mo")) {
-    return observer_mo(problem, options);
+    return deprecated__observer_mo(problem, options);
   }
 
   /* here each observer must have another entry */
@@ -165,7 +165,7 @@ void coco_suite_benchmark(const char *problem_suite,
     problem = coco_suite_get_problem(problem_suite, problem_index);
     if (NULL == problem)
       break;
-    problem = coco_problem_add_observer(problem, observer, options); /* should remain invisible to the user*/
+    problem = deprecated__coco_problem_add_observer(problem, observer, options); /* should remain invisible to the user*/
     optimizer(problem);
     /* Free problem after optimization. */
     coco_problem_free(problem);

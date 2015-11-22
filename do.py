@@ -25,7 +25,8 @@ from cocoutils import git_version, git_revision
 
 core_files = ['code-experiments/src/coco_suites.c',
               'code-experiments/src/coco_random.c',
-              'code-experiments/src/coco_generics.c'
+              'code-experiments/src/coco_generics.c',
+              'code-experiments/src/coco_observer.c'
               ]
 
 ################################################################################

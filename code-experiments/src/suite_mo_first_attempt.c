@@ -17,7 +17,8 @@
  */
 static coco_problem_t *suite_mo_first_attempt(const long problem_index) {
   coco_problem_t *problem, *problem2;
-  long dimension, instance, instance2;
+  long instance, instance2;
+  int dimension;
   int f, f2;
 
   if (problem_index < 0)
@@ -43,7 +44,7 @@ static coco_problem_t *suite_mo_first_attempt(const long problem_index) {
     coco_suite_problem_setf_name(problem, "%s + %s",
         coco_problem_get_name(problem), coco_problem_get_name(problem2));
 #endif
-    problem->index = problem_index;
+    problem->suite_dep_index = problem_index;
 
     return problem;
   } /* else if ... */
