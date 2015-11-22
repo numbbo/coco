@@ -82,7 +82,7 @@ static char ***mo_get_string_pairs_from_file(const char *filename, const size_t 
   if (file == 0) {
     coco_error("mo_get_string_pairs_from_file() failed to open file %s", filename);
   }
-  number_of_lines = mo_get_file_number_of_lnes(file);
+  number_of_lines = mo_get_number_of_lines_in_file(file);
 
   /* Prepare the matrix */
   matrix_of_strings = mo_allocate_matrix_of_strings(number_of_lines, 2, max_length_of_string);

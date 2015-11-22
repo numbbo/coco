@@ -68,9 +68,9 @@ static long suite_biobj_300_encode_problem_index(int function_id, long instance_
 static void suite_biobj_300_decode_problem_index(const long problem_index,
                                                  int *function_id,
                                                  long *instance_id,
-                                                 long *dimension_idx) {
+                                                 int *dimension_idx) {
   long rest;
-  *dimension_idx = problem_index / (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS);
+  *dimension_idx = (int) problem_index / (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS);
   rest = problem_index % (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS);
   *function_id = (int) (rest / SUITE_BIOBJ_NUMBER_OF_INSTANCES);
   *instance_id = rest % SUITE_BIOBJ_NUMBER_OF_INSTANCES;
@@ -84,8 +84,8 @@ static long suite_biobj_300_get_instance_id(const long problem_index) {
 
 
 static coco_problem_t *suite_biobj_300(const long problem_index) {
-  int function_id, function1_id, function2_id;
-  long instance_id, dimension_idx;
+  int function_id, function1_id, function2_id, dimension_idx;
+  long instance_id;
   coco_problem_t *problem1, *problem2, *problem;
 
   if (problem_index < 0)
@@ -114,11 +114,13 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
   problem2 = suite_bbob2009_problem(function2_id, BBOB2009_DIMS[dimension_idx],
       (long) SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][1]);
   problem = coco_stacked_problem_allocate(problem1, problem2);
-  problem->index = problem_index;
+  problem->suite_dep_index = problem_index;
+  problem->suite_dep_function_id = function_id;
+  problem->suite_dep_instance_id = instance_id;
 
   /* Construct the id for the suite_biobj_300 in the form "biobj_300_fxxx_DIMy" */
   coco_free_memory(problem->problem_id);
-  problem->problem_id = coco_strdupf("biobj_300_f%03d_DIM%d", function_id + 1, problem->number_of_variables);
+  problem->problem_id = coco_strdupf("biobj_300_f%03d_i%02ld_d%02d", function_id + 1, instance_id + 1, problem->number_of_variables);
 
   /* Construct the information about the problem - its "type" */
   /* TODO: Use a new field (for example problem_info) instead of problem_name to store this information */

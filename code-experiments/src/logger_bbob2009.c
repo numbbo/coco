@@ -367,8 +367,8 @@ static void private_logger_bbob2009_evaluate(coco_problem_t *self, const double 
     private_logger_bbob2009_initialize(data, inner_problem);
   }
   if (bbob2009_logger_verbosity > 2 && data->number_of_evaluations == 0) {
-    if (inner_problem->index >= 0) {
-      printf("%4ld: ", inner_problem->index);
+    if (inner_problem->suite_dep_index >= 0) {
+      printf("%4ld: ", inner_problem->suite_dep_index);
     }
     printf("on problem %s ... ", coco_problem_get_id(inner_problem));
   }

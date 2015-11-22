@@ -6,7 +6,7 @@
  * Multiobjective observer for logging all nondominated solutions found when
  * a new solution is generated and evaluated.
  */
-static coco_problem_t *observer_mo_toy(coco_problem_t *problem, const char *options) {
+static coco_problem_t *deprecated__observer_mo_toy(coco_problem_t *problem, const char *options) {
   /* Calculate target levels for first hitting times */
   static const size_t max_size_of_archive = 100000;
   char base_path[COCO_PATH_MAX] = { 0 };
@@ -26,3 +26,7 @@ static coco_problem_t *observer_mo_toy(coco_problem_t *problem, const char *opti
   return problem;
 }
 
+
+static void observer_mo_toy(coco_observer_t *self, const char *options) {
+  return;
+}

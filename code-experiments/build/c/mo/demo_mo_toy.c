@@ -126,7 +126,7 @@ int main(void) {
             problem_index, combination_idx, instance_idx, dimension_idx); */
 
         problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-        problem = coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
+        problem = deprecated__coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
 
         if (problem == NULL)
           break;
