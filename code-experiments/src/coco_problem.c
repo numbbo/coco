@@ -43,7 +43,7 @@ coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
                                       const size_t number_of_objectives,
                                       const size_t number_of_constraints) {
   coco_problem_t *problem;
-  problem = (coco_problem_t *) coco_allocate_memory(sizeof(coco_problem_t));
+  problem = (coco_problem_t *) coco_allocate_memory(sizeof(*problem));
   /* Initialize fields to sane/safe defaults */
   problem->initial_solution = NULL;
   problem->evaluate_function = NULL;

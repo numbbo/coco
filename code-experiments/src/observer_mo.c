@@ -130,7 +130,7 @@ static double observer_mo_get_reference_value(const observer_mo_data_t *self,
   for (i = 0; i < OBSERVER_MO_NUMBER_OF_INDICATORS; i++) {
     if (strcmp(OBSERVER_MO_INDICATORS[i], indicator_name) == 0) {
       reference_value = mo_get_matching_double_value(self->reference_value_matrix[i], key, self->reference_values_count,
-          1, 0, error_value);
+          0, 1, error_value);
       if (coco_doubles_almost_equal(reference_value, error_value, error_accuracy) == 0) {
         coco_error("observer_mo_get_reference_value(): could not find %s in reference file", key);
         return 0; /* Never reached */

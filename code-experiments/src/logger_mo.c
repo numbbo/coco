@@ -65,7 +65,7 @@ static logger_mo_avl_item_t* logger_mo_node_create(const double *x, const double
   size_t i;
 
   /* Allocate memory to hold the data structure logger_mo_node_t */
-  logger_mo_avl_item_t *item = (logger_mo_avl_item_t*) coco_allocate_memory(sizeof(logger_mo_avl_item_t));
+  logger_mo_avl_item_t *item = (logger_mo_avl_item_t*) coco_allocate_memory(sizeof(*item));
 
   /* Allocate memory to store the (copied) data of the new node */
   item->x = coco_allocate_vector(dim);
@@ -222,7 +222,7 @@ static logger_mo_indicator_t *logger_mo_indicator(logger_mo_t *logger,
   size_t i;
   double reference_value;
 
-  indicator = (logger_mo_indicator_t *) coco_allocate_memory(sizeof(logger_mo_indicator_t));
+  indicator = (logger_mo_indicator_t *) coco_allocate_memory(sizeof(*indicator));
   observer = logger->observer;
   observer_mo = (observer_mo_data_t *) observer->data;
 
@@ -365,24 +365,24 @@ static void logger_mo_finalize(logger_mo_t *logger) {
 
 static void logger_mo_free(void *stuff) {
 
-  logger_mo_t *data;
+  logger_mo_t *logger;
   size_t i;
 
   assert(stuff != NULL);
-  data = stuff;
+  logger = stuff;
 
-  logger_mo_finalize(data);
+  logger_mo_finalize(logger);
 
-  if (data->nondom_file != NULL) {
-    fclose(data->nondom_file);
-    data->nondom_file = NULL;
+  if (logger->nondom_file != NULL) {
+    fclose(logger->nondom_file);
+    logger->nondom_file = NULL;
   }
 
-  avl_tree_destruct(data->archive_tree);
-  avl_tree_destruct(data->buffer_tree);
+  avl_tree_destruct(logger->archive_tree);
+  avl_tree_destruct(logger->buffer_tree);
 
   for (i = 0; i < OBSERVER_MO_NUMBER_OF_INDICATORS; i++)
-    logger_mo_indicator_free(data->indicators[i]);
+    logger_mo_indicator_free(logger->indicators[i]);
 }
 
 /**
@@ -455,7 +455,7 @@ coco_problem_t *logger_mo(coco_observer_t *observer, coco_problem_t *problem) {
   /* Initialize the indicators */
   if (observer_mo->compute_indicators) {
     for (i = 0; i < OBSERVER_MO_NUMBER_OF_INDICATORS; i++)
-      logger->indicators[OBSERVER_MO_NUMBER_OF_INDICATORS] = logger_mo_indicator(logger, self, OBSERVER_MO_INDICATORS[i]);
+      logger->indicators[i] = logger_mo_indicator(logger, self, OBSERVER_MO_INDICATORS[i]);
   }
 
   return self;

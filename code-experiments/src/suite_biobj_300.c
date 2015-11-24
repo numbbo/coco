@@ -35,6 +35,7 @@ static const char SUITE_BIOBJ_300_PROBLEM_GROUP[24][30] = {
 
 /**
  * How: instance varies faster than function which is still faster than dimension
+ * (instance_id and function_id actually start from 0, not 1, as is done in the underlying bbob2009 suite)
  * 
  *  problem_index | instance | function | dimension
  * ---------------+----------+----------+-----------
