@@ -30,10 +30,10 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoSuiteGetProblem
 
 /*
  * Class:     JNIinterface
- * Method:    cocoProblemAddObserver
+ * Method:    cocoProblemAddObserverDeprecated
  * Signature: (Ljava/lang/String;JLjava/lang/String;)J
  */
-JNIEXPORT jlong JNICALL Java_JNIinterface_cocoProblemAddObserver
+JNIEXPORT jlong JNICALL Java_JNIinterface_cocoProblemAddObserverDeprecated
 (JNIEnv *jenv, jclass interface_cls, jlong jproblem, jstring jobserver, jstring joptions) {
     
     coco_problem_t *pb = NULL;
@@ -45,7 +45,7 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoProblemAddObserver
     pb = (coco_problem_t *)jproblem;
     observer = (*jenv)->GetStringUTFChars(jenv, jobserver, NULL);
     options = (*jenv)->GetStringUTFChars(jenv, joptions, NULL);
-    pb = coco_problem_add_observer(pb, observer, options);
+    pb = deprecated__coco_problem_add_observer(pb, observer, options);
     /* Free resources? */
     (*jenv)->ReleaseStringUTFChars(jenv, jobserver, observer);
     /*(*jenv)->ReleaseStringUTFChars(jenv, joptions, options);*/ /* Commented at the moment becuase options is not duplicated in logger_bbob2009() (called by coco_problem_add_observer()). Has to be enabled however */
