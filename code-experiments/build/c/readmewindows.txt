@@ -9,5 +9,3 @@ For Windows users, several options exist:
 	* install Anaconda
 	* install MinGW (make sure to install a 32bit version, even on a 64 bit machine)
 	* install gnu make (gnuwin32)
-	* rename the Makefile in this folder to something else (e.g. MakefileLinux)
-	* rename the Makefile_win_gcc into Makefile
