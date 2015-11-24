@@ -513,3 +513,43 @@ double coco_min_double(const double a, const double b) {
     return b;
   }
 }
+
+/**
+ * Returns 1 if |a - b| < accuracy and 0 otherwise
+ */
+int coco_doubles_almost_equal(const double a, const double b, const double accuracy) {
+  return ((fabs(a - b) < accuracy) == 0);
+}
+
+/* Creates and returns a string with removed characters from @{from} to @{to}.
+ * The caller is responsible for freeing the allocated memory. */
+static char *coco_remove_from_string(char *string, char *from, char *to) {
+
+  char *result, *start, *stop;
+
+  result = coco_strdup(string);
+
+  if (strcmp(from, "") == 0) {
+    /* Remove from the start */
+    start = result;
+  }
+  else
+    start = strstr(result, from);
+
+  if (strcmp(to, "") == 0) {
+    /* Remove until the end */
+    stop = result + strlen(result);
+  }
+  else
+    stop = strstr(result, to);
+
+  if ((start == NULL) || (stop == NULL) || (stop < start)) {
+    coco_error("coco_remove_from_string(): failed to remove characters between %s and %s from string %s",
+        from, to, string);
+    return NULL; /* Never reached */
+  }
+
+  memmove(start, stop, strlen(stop)+1);
+
+  return result;
+}

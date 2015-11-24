@@ -15,13 +15,6 @@
 #include "mo_generics.c"
 #include "mo_targets.c"
 
-/* Static variables needed to know whether the logger was called for the first time */
-static size_t DEPRECATED__LOGGER_MO_CALLS = 0;
-static char DEPRECATED__LOGGER_MO_RESULT_FOLDER[COCO_PATH_MAX] = "";
-
-/* Mode of logging nondominated solutions */
-typedef enum {DEPRECATED__NONE, DEPRECATED__FINAL, DEPRECATED__ALL} deprecated__logger_mo_nondom_e;
-
 /* Data for each indicator */
 typedef struct {
   /* Name of the indicator to be used in the output files */
@@ -33,7 +26,6 @@ typedef struct {
   FILE *info_file;
 
   double *target_values;
-  size_t number_of_targets;
   size_t next_target_id;
 } logger_mo_indicator_t;
 
@@ -54,8 +46,22 @@ typedef struct {
   avl_tree_t *buffer_tree;
 
   /* The indicators */
-  logger_mo_indicator_t *hypervolume;
+  logger_mo_indicator_t *indicators[OBSERVER_MO_NUMBER_OF_INDICATORS];
 } logger_mo_t;
+
+/* Data contained in the node's item in the AVL tree */
+typedef struct {
+  double *x;
+  double *y;
+  size_t time_stamp;
+} logger_mo_avl_item_t;
+
+/* Static variables needed to know whether the logger was called for the first time */
+static size_t DEPRECATED__LOGGER_MO_CALLS = 0;
+static char DEPRECATED__LOGGER_MO_RESULT_FOLDER[COCO_PATH_MAX] = "";
+
+/* Mode of logging nondominated solutions */
+typedef enum {DEPRECATED__NONE, DEPRECATED__FINAL, DEPRECATED__ALL} deprecated__logger_mo_nondom_e;
 
 /* Data for the multiobjective logger */
 typedef struct {
@@ -82,13 +88,6 @@ typedef struct {
 
   int is_initialized;
 } deprecated__logger_mo_t;
-
-/* Data contained in the node's item in the AVL tree */
-typedef struct {
-  double *x;
-  double *y;
-  size_t time_stamp;
-} logger_mo_avl_item_t;
 
 /**
  * Creates and returns the information on the solution in the form of a node's item in the AVL tree.
@@ -515,31 +514,60 @@ static int logger_mo_tree_update(logger_mo_t *logger, logger_mo_avl_item_t *node
   return trigger_update;
 }
 
-static logger_mo_indicator_t *logger_mo_indicator(char *indicator_name) {
+static logger_mo_indicator_t *logger_mo_indicator(logger_mo_t *logger,
+                                                  const coco_problem_t *problem,
+                                                  const char *indicator_name) {
 
+  coco_observer_t *observer;
+  observer_mo_data_t *observer_mo;
   logger_mo_indicator_t *indicator;
-
-  FILE *file;
-  char *file_name;
+  char *prefix, *file_name, *path_name;
+  size_t i;
+  double reference_value;
 
   indicator = (logger_mo_indicator_t *) coco_allocate_memory(sizeof(logger_mo_indicator_t));
+  observer = logger->observer;
+  observer_mo = (observer_mo_data_t *) observer->data;
 
   indicator->name = coco_strdup(indicator_name);
 
-  indicator->log_file = NULL; /* TODO! */
-  indicator->info_file = NULL; /* TODO! */
-
-  /* Store target_values (computed using reference values and LOGGER_MO_RELATIVE_TARGET_VALUES) */
-  indicator->target_values = coco_allocate_vector(LOGGER_MO_NUMBER_OF_TARGETS);
-
-  /* Open the file with reference values */
-  file_name = coco_strdupf("reference_values_%s.txt", indicator_name);
-  file = fopen(file_name, "r");
-  if (file == NULL) {
-    coco_error("logger_mo_indicator() failed to open file '%s'.", file_name);
+  /* Prepare the info file */
+  path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
+  memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
+  coco_create_path(path_name);
+  file_name = coco_strdupf("%s.info", problem->problem_name);
+  coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
+  indicator->info_file = fopen(path_name, "a");
+  if (indicator->info_file == NULL) {
+    coco_error("logger_mo_indicator() failed to open file '%s'.", path_name);
     return NULL; /* Never reached */
   }
+  coco_free_memory(file_name);
+  coco_free_memory(path_name);
 
+  /* Prepare the log file */
+  path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
+  memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
+  coco_join_path(path_name, COCO_PATH_MAX, problem->problem_name, NULL);
+  coco_create_path(path_name);
+  prefix = coco_remove_from_string(problem->problem_id, "_i", "");
+  file_name = coco_strdupf("%s.dat", prefix);
+  coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
+  indicator->log_file = fopen(path_name, "a");
+  if (indicator->log_file == NULL) {
+    coco_error("logger_mo_indicator() failed to open file '%s'.", path_name);
+    return NULL; /* Never reached */
+  }
+  coco_free_memory(prefix);
+  coco_free_memory(file_name);
+  coco_free_memory(path_name);
+
+  /* Initialize target_values (compute them using reference values and LOGGER_MO_RELATIVE_TARGET_VALUES) */
+  reference_value = observer_mo_get_reference_value(observer_mo, indicator->name, problem->problem_id);
+  indicator->target_values = coco_allocate_vector(LOGGER_MO_NUMBER_OF_TARGETS);
+  for (i = 0; i < LOGGER_MO_NUMBER_OF_TARGETS; i++) {
+    indicator->target_values[i] = reference_value - LOGGER_MO_RELATIVE_TARGET_VALUES[i];
+  }
   indicator->next_target_id = 0;
 
   return indicator;
@@ -548,9 +576,6 @@ static logger_mo_indicator_t *logger_mo_indicator(char *indicator_name) {
 static void logger_mo_indicator_free(void *stuff) {
 
   logger_mo_indicator_t *indicator;
-
-  if (stuff == NULL) /* TODO: Delete this! */
-    return;
 
   assert(stuff != NULL);
   indicator = stuff;
@@ -644,6 +669,7 @@ static void logger_mo_finalize(logger_mo_t *logger) {
 static void logger_mo_free(void *stuff) {
 
   logger_mo_t *data;
+  size_t i;
 
   assert(stuff != NULL);
   data = stuff;
@@ -658,7 +684,8 @@ static void logger_mo_free(void *stuff) {
   avl_tree_destruct(data->archive_tree);
   avl_tree_destruct(data->buffer_tree);
 
-  logger_mo_indicator_free(data->hypervolume);
+  for (i = 0; i < OBSERVER_MO_NUMBER_OF_INDICATORS; i++)
+    logger_mo_indicator_free(data->indicators[i]);
 }
 
 /**
@@ -671,6 +698,7 @@ coco_problem_t *logger_mo(coco_observer_t *observer, coco_problem_t *problem) {
   observer_mo_data_t *observer_mo;
   const char nondom_folder_name[] = "archive";
   char *path_name, *file_name, *prefix;
+  size_t i;
 
   logger = coco_allocate_memory(sizeof(*logger));
 
@@ -691,7 +719,7 @@ coco_problem_t *logger_mo(coco_observer_t *observer, coco_problem_t *problem) {
     coco_create_path(path_name);
 
     /* Construct file name */
-    prefix = coco_problem_get_id_without_instance(problem);
+    prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
     if (observer_mo->log_mode == ALL)
       file_name = coco_strdupf("%s_nondom_all.dat", prefix);
     else if (observer_mo->log_mode == FINAL)
@@ -703,8 +731,6 @@ coco_problem_t *logger_mo(coco_observer_t *observer, coco_problem_t *problem) {
     logger->nondom_file = fopen(path_name, "a");
     if (logger->nondom_file == NULL) {
       coco_error("logger_mo() failed to open file '%s'.", path_name);
-      coco_free_memory(file_name);
-      coco_free_memory(path_name);
       return NULL; /* Never reached */
     }
 
@@ -726,10 +752,14 @@ coco_problem_t *logger_mo(coco_observer_t *observer, coco_problem_t *problem) {
       (avl_free_t) logger_mo_node_free);
   logger->buffer_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_time_stamp, NULL);
 
-  logger->hypervolume = NULL; /* TODO */
-
   self = coco_transformed_allocate(problem, logger, logger_mo_free);
   self->evaluate_function = logger_mo_evaluate;
+
+  /* Initialize the indicators */
+  if (observer_mo->compute_indicators) {
+    for (i = 0; i < OBSERVER_MO_NUMBER_OF_INDICATORS; i++)
+      logger->indicators[OBSERVER_MO_NUMBER_OF_INDICATORS] = logger_mo_indicator(logger, self, OBSERVER_MO_INDICATORS[i]);
+  }
 
   return self;
 }
