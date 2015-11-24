@@ -9,7 +9,7 @@
 static coco_observer_t *coco_observer_allocate(char *output_folder, int verbosity) {
 
   coco_observer_t *observer;
-  observer = (coco_observer_t *) coco_allocate_memory(sizeof(coco_observer_t));
+  observer = (coco_observer_t *) coco_allocate_memory(sizeof(*observer));
   /* Initialize fields to sane/safe defaults */
   observer->output_folder = coco_strdup(output_folder);
   observer->verbosity = verbosity;
