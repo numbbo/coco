@@ -5,14 +5,6 @@
  *      Author: dejan
  */
 
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include "cmocka.h"
-#include "coco.c"
-#include <time.h>
-
-
 static void create_time_string(char **string) {
 
   time_t date_time;
@@ -75,7 +67,7 @@ static int teardown_coco_create_remove_directory(void **state) {
 static void test_coco_create_remove_directory(void **state) {
 
   int exists;
-  char *path_string = *state;
+  char *path_string = (char *)*state;
 
   /* At the beginning the path should not exist. */
   exists = coco_path_exists(path_string);
