@@ -30,18 +30,24 @@ def build_unit_test():
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/test/unit-test/coco.c', release)
 
-    libPath = 'code-experiments/test/unit-test/lib';
+    libraryPath = '';
+    fileName = ''
     if ('win32' in sys.platform):
+        fileName = 'cmocka.dll'
         if '64' in platform.machine():
-            libPath = 'code-experiments/test/unit-test/lib/win64'
+            libraryPath = 'code-experiments/test/unit-test/lib/win64'
         elif ('32' in platform.machine()) or ('x86' in platform.machine()):
             if 'cygwin' in os.environ['PATH']:
-                libPath = 'code-experiments/test/unit-test/lib/win32_cygwin'
+                libraryPath = 'code-experiments/test/unit-test/lib/win32_cygwin'
             else:
-                libPath = 'code-experiments/test/unit-test/lib/win32_mingw'
+                libraryPath = 'code-experiments/test/unit-test/lib/win32_mingw'
+    elif ('linux' in sys.platform):
+        libraryPath = 'code-experiments/test/unit-test/lib/linux'
+        fileName = 'libcmocka.so'
         
-    copy_file(os.path.join(libPath, 'cmocka.dll'), 'code-experiments/test/unit-test/cmocka.dll')
-    copy_file(os.path.join(libPath, 'libcmocka.a'), 'code-experiments/test/unit-test/libcmocka.a')
+    if (len(libraryPath) > 0):
+        copy_file(os.path.join(libraryPath, fileName), 
+                  os.path.join('code-experiments/test/unit-test', fileName))
         
     copy_file('code-experiments/src/coco.h', 'code-experiments/test/unit-test/coco.h')
     write_file(git_revision(), "code-experiments/test/unit-test/REVISION")
@@ -52,7 +58,7 @@ def build_unit_test():
 def test_unit_test():
     build_unit_test()
     try:
-        run('code-experiments/test/unit-test', ['unit_test'])
+        run('code-experiments/test/unit-test', ['./unit_test'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
     

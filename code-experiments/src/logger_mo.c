@@ -3,42 +3,38 @@
 #include <assert.h>
 
 #include "coco.h"
-#include "coco_archive.c"
+#include "coco_internal.h"
 
 #include "coco_utilities.c"
 #include "coco_problem.c"
 #include "coco_strdup.c"
 
+#include "observer_mo.c"
+
 #include "mo_avl_tree.c"
 #include "mo_generics.c"
+#include "mo_targets.c"
 
 /* Data for each indicator */
 typedef struct {
+  /* Name of the indicator to be used in the output files */
   char *name;
-  FILE *log_file;
-  double *target_values;
-  size_t number_of_targets;
-  size_t next_target;
-} logger_mo_indicator_t;
 
-/* Mode of logging nondominated solutions */
-typedef enum {NONE, FINAL, ALL} logger_mo_nondom_e;
-
-/* Data for the multiobjective logger */
-typedef struct {
-  char *result_folder;
-
-  /* File for logging nondominated solutions (either all or final) */
-  FILE *nondom_file;
   /* File for logging indicator values at target hits */
   FILE *log_file;
   /* File for logging summary information on algorithm performance */
   FILE *info_file;
-  logger_mo_nondom_e log_mode;
 
-  int include_decision_variables;
-  int compute_indicators;
-  int produce_all_data;
+  double *target_values;
+  size_t next_target_id;
+} logger_mo_indicator_t;
+
+/* Data for the multiobjective logger */
+typedef struct {
+  coco_observer_t *observer;
+
+  /* File for logging nondominated solutions (either all or final) */
+  FILE *nondom_file;
 
   size_t number_of_evaluations;
   size_t number_of_variables;
@@ -49,10 +45,11 @@ typedef struct {
   /* The tree with pointers to nondominated solutions that haven't been logged yet */
   avl_tree_t *buffer_tree;
 
-  int is_initialized;
+  /* The indicators */
+  logger_mo_indicator_t *indicators[OBSERVER_MO_NUMBER_OF_INDICATORS];
 } logger_mo_t;
 
-/* Data contained in the node's ${item} in the AVL tree */
+/* Data contained in the node's item in the AVL tree */
 typedef struct {
   double *x;
   double *y;
@@ -60,7 +57,7 @@ typedef struct {
 } logger_mo_avl_item_t;
 
 /**
- * Creates and returns the information on the solution in the form of a node's ${item} in the AVL tree.
+ * Creates and returns the information on the solution in the form of a node's item in the AVL tree.
  */
 static logger_mo_avl_item_t* logger_mo_node_create(const double *x, const double *y, const size_t time_stamp,
     const size_t dim, const size_t num_obj) {
@@ -68,7 +65,7 @@ static logger_mo_avl_item_t* logger_mo_node_create(const double *x, const double
   size_t i;
 
   /* Allocate memory to hold the data structure logger_mo_node_t */
-  logger_mo_avl_item_t *item = (logger_mo_avl_item_t*) coco_allocate_memory(sizeof(logger_mo_avl_item_t));
+  logger_mo_avl_item_t *item = (logger_mo_avl_item_t*) coco_allocate_memory(sizeof(*item));
 
   /* Allocate memory to store the (copied) data of the new node */
   item->x = coco_allocate_vector(dim);
@@ -84,7 +81,7 @@ static logger_mo_avl_item_t* logger_mo_node_create(const double *x, const double
 }
 
 /**
- * Frees the data of the given logger_mo_node_t.
+ * Frees the data of the given logger_mo_avl_item_t.
  */
 static void logger_mo_node_free(logger_mo_avl_item_t *item, void *userdata) {
 
@@ -97,7 +94,7 @@ static void logger_mo_node_free(logger_mo_avl_item_t *item, void *userdata) {
 /**
  * Defines the ordering of AVL tree nodes based on the value of the last objective.
  */
-static int compare_by_last_objective(const logger_mo_avl_item_t *item1, const logger_mo_avl_item_t *item2, void *userdata) {
+static int avl_tree_compare_by_last_objective(const logger_mo_avl_item_t *item1, const logger_mo_avl_item_t *item2, void *userdata) {
   /* This ordering is used by the archive_tree. */
 
   if (item1->y[1] < item2->y[1])
@@ -113,7 +110,7 @@ static int compare_by_last_objective(const logger_mo_avl_item_t *item1, const lo
 /**
  * Defines the ordering of AVL tree nodes based on the time stamp.
  */
-static int compare_by_time_stamp(const logger_mo_avl_item_t *item1, const logger_mo_avl_item_t *item2, void *userdata) {
+static int avl_tree_compare_by_time_stamp(const logger_mo_avl_item_t *item1, const logger_mo_avl_item_t *item2, void *userdata) {
   /* This ordering is used by the buffer_tree. */
 
   if (item1->time_stamp < item2->time_stamp)
@@ -162,25 +159,25 @@ static size_t logger_mo_tree_output(FILE *file, avl_tree_t *tree, const size_t d
  * nodes in the archive tree.
  * Returns 1 if the update was performed and 0 otherwise.
  */
-static int logger_mo_tree_update(logger_mo_t *data, logger_mo_avl_item_t *node_item) {
+static int logger_mo_tree_update(logger_mo_t *logger, logger_mo_avl_item_t *node_item) {
 
   avl_node_t *node, *next_node;
   int trigger_update = 0;
   int dominance;
 
-  node = avl_item_search_right(data->archive_tree, node_item, NULL);
+  node = avl_item_search_right(logger->archive_tree, node_item, NULL);
 
   if (node == NULL) { /* The given node is an extremal point */
     trigger_update = 1;
-    next_node = data->archive_tree->head;
+    next_node = logger->archive_tree->head;
   } else {
-    dominance = mo_get_dominance(node_item->y, ((logger_mo_avl_item_t*) node->item)->y, data->number_of_objectives);
+    dominance = mo_get_dominance(node_item->y, ((logger_mo_avl_item_t*) node->item)->y, logger->number_of_objectives);
     if (dominance > -1) {
       trigger_update = 1;
       next_node = node->next;
       if (dominance == 1) {
-        avl_item_delete(data->buffer_tree, node->item);
-        avl_node_delete(data->archive_tree, node);
+        avl_item_delete(logger->buffer_tree, node->item);
+        avl_node_delete(logger->archive_tree, node);
       }
     } else {
       trigger_update = 0;
@@ -197,207 +194,269 @@ static int logger_mo_tree_update(logger_mo_t *data, logger_mo_avl_item_t *node_i
        * dominance = 1: the given node dominates the next node */
       node = next_node;
       dominance = mo_get_dominance(node_item->y, ((logger_mo_avl_item_t*) node->item)->y,
-          data->number_of_objectives);
+          logger->number_of_objectives);
       if (dominance == 1) {
         next_node = node->next;
-        avl_item_delete(data->buffer_tree, node->item);
-        avl_node_delete(data->archive_tree, node);
+        avl_item_delete(logger->buffer_tree, node->item);
+        avl_node_delete(logger->archive_tree, node);
       } else {
         break;
       }
     }
 
-    avl_item_insert(data->archive_tree, node_item);
-    avl_item_insert(data->buffer_tree, node_item);
+    avl_item_insert(logger->archive_tree, node_item);
+    avl_item_insert(logger->buffer_tree, node_item);
   }
 
   return trigger_update;
 }
 
+static logger_mo_indicator_t *logger_mo_indicator(logger_mo_t *logger,
+                                                  const coco_problem_t *problem,
+                                                  const char *indicator_name) {
 
-static void private_logger_mo_initialize(coco_problem_t *self) {
-  logger_mo_t *data;
+  coco_observer_t *observer;
+  observer_mo_data_t *observer_mo;
+  logger_mo_indicator_t *indicator;
+  char *prefix, *file_name, *path_name;
+  size_t i;
+  double reference_value;
 
-  const char nondom_folder_name[] = "archive";
-  char *path_name;
-  char *file_name;
+  indicator = (logger_mo_indicator_t *) coco_allocate_memory(sizeof(*indicator));
+  observer = logger->observer;
+  observer_mo = (observer_mo_data_t *) observer->data;
 
-  data = coco_transformed_get_data(self);
+  indicator->name = coco_strdup(indicator_name);
 
-  if (data->log_mode != NONE) {
-
-    /* Create the path to the file */
-    path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
-    memcpy(path_name, data->result_folder, strlen(data->result_folder) + 1);
-    coco_join_path(path_name, COCO_PATH_MAX, nondom_folder_name, NULL);
-    coco_create_path(path_name);
-
-    /* Construct file name (use coco_create_unique_filename to make it unique) */
-    if (data->log_mode == ALL)
-      file_name = coco_strdupf("%s_nondom_all.dat", self->problem_id);
-    else if (data->log_mode == FINAL)
-      file_name = coco_strdupf("%s_nondom_final.dat", self->problem_id);
-    coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
-    coco_create_unique_filename(&path_name);
-
-    /* Open and initialize the file */
-    data->nondom_file = fopen(path_name, "a");
-    if (data->nondom_file == NULL) {
-      coco_error("private_logger_mo_initialize() failed to open file '%s'.", path_name);
-      coco_free_memory(file_name);
-      coco_free_memory(path_name);
-      return; /* Never reached */
-    }
-
-    coco_free_memory(file_name);
-    coco_free_memory(path_name);
-
-    if (data->include_decision_variables) {
-      fprintf(data->nondom_file, "%% function evaluation | %lu objectives | %lu variables\n",
-          data->number_of_objectives, data->number_of_variables);
-    } else {
-      fprintf(data->nondom_file, "%% function evaluation | %lu objectives \n", data->number_of_objectives);
-    }
+  /* Prepare the info file */
+  path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
+  memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
+  coco_create_path(path_name);
+  file_name = coco_strdupf("%s.info", problem->problem_name);
+  coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
+  indicator->info_file = fopen(path_name, "a");
+  if (indicator->info_file == NULL) {
+    coco_error("logger_mo_indicator() failed to open file '%s'.", path_name);
+    return NULL; /* Never reached */
   }
+  coco_free_memory(file_name);
+  coco_free_memory(path_name);
 
-  /* Initialize the AVL trees */
-  data->archive_tree = avl_tree_construct((avl_compare_t) compare_by_last_objective,
-      (avl_free_t) logger_mo_node_free);
-  data->buffer_tree = avl_tree_construct((avl_compare_t) compare_by_time_stamp, NULL);
+  /* Prepare the log file */
+  path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
+  memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
+  coco_join_path(path_name, COCO_PATH_MAX, problem->problem_name, NULL);
+  coco_create_path(path_name);
+  prefix = coco_remove_from_string(problem->problem_id, "_i", "");
+  file_name = coco_strdupf("%s.dat", prefix);
+  coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
+  indicator->log_file = fopen(path_name, "a");
+  if (indicator->log_file == NULL) {
+    coco_error("logger_mo_indicator() failed to open file '%s'.", path_name);
+    return NULL; /* Never reached */
+  }
+  coco_free_memory(prefix);
+  coco_free_memory(file_name);
+  coco_free_memory(path_name);
 
-  data->is_initialized = 1;
+  /* Initialize target_values (compute them using reference values and LOGGER_MO_RELATIVE_TARGET_VALUES) */
+  reference_value = observer_mo_get_reference_value(observer_mo, indicator->name, problem->problem_id);
+  indicator->target_values = coco_allocate_vector(LOGGER_MO_NUMBER_OF_TARGETS);
+  for (i = 0; i < LOGGER_MO_NUMBER_OF_TARGETS; i++) {
+    indicator->target_values[i] = reference_value - LOGGER_MO_RELATIVE_TARGET_VALUES[i];
+  }
+  indicator->next_target_id = 0;
+
+  return indicator;
 }
 
-static void private_logger_mo_evaluate(coco_problem_t *self, const double *x, double *y) {
-  logger_mo_t *data;
+static void logger_mo_indicator_free(void *stuff) {
+
+  logger_mo_indicator_t *indicator;
+
+  assert(stuff != NULL);
+  indicator = stuff;
+
+  if (indicator->name != NULL) {
+    coco_free_memory(indicator->name);
+    indicator->name = NULL;
+  }
+
+  if (indicator->log_file != NULL) {
+    fclose(indicator->log_file);
+    indicator->log_file = NULL;
+  }
+
+  if (indicator->info_file != NULL) {
+    fclose(indicator->info_file);
+    indicator->info_file = NULL;
+  }
+
+  if (indicator->target_values != NULL) {
+    coco_free_memory(indicator->target_values);
+    indicator->target_values = NULL;
+  }
+}
+
+static void logger_mo_evaluate(coco_problem_t *problem, const double *x, double *y) {
+
+  logger_mo_t *logger;
+  coco_observer_t *observer;
+  observer_mo_data_t *observer_mo;
+
   logger_mo_avl_item_t *node_item;
   int update_performed;
 
-  data = coco_transformed_get_data(self);
-
-  /* If not yet initialized, initialize it */
-  if (!data->is_initialized)
-    private_logger_mo_initialize(self);
+  logger = (logger_mo_t *) coco_transformed_get_data(problem);
+  observer = logger->observer;
+  observer_mo = (observer_mo_data_t *) observer->data;
 
   /* Evaluate function */
-  coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
-  data->number_of_evaluations++;
+  coco_evaluate_function(coco_transformed_get_inner_problem(problem), x, y);
+  logger->number_of_evaluations++;
 
   /* Update the archive with the new solution, if it is not dominated by or equal to existing solutions in the archive. */
-  node_item = logger_mo_node_create(x, y, data->number_of_evaluations, data->number_of_variables,
-      data->number_of_objectives);
-  update_performed = logger_mo_tree_update(data, node_item);
+  node_item = logger_mo_node_create(x, y, logger->number_of_evaluations, logger->number_of_variables,
+      logger->number_of_objectives);
+  update_performed = logger_mo_tree_update(logger, node_item);
 
   /* If the archive was updated and you need to log all nondominated solutions, output the new solution to nondom_file */
-  if (update_performed && (data->log_mode == ALL)) {
-    logger_mo_tree_output(data->nondom_file, data->buffer_tree, data->number_of_variables,
-        data->number_of_objectives, data->include_decision_variables);
-    avl_tree_purge(data->buffer_tree);
+  if (update_performed && (observer_mo->log_mode == ALL)) {
+    logger_mo_tree_output(logger->nondom_file, logger->buffer_tree, logger->number_of_variables,
+        logger->number_of_objectives, observer_mo->include_decision_variables);
+    avl_tree_purge(logger->buffer_tree);
   }
 
   /* TODO If the archive was updated, compute and output a bunch of indicators */
 
   /* Flush output so that impatient users can see progress. */
-  fflush(data->nondom_file);
+  fflush(logger->nondom_file);
 }
 
-static void private_logger_mo_free(void *stuff) {
+static void logger_mo_finalize(logger_mo_t *logger) {
 
-  size_t tree_size;
-  logger_mo_t *data;
+  coco_observer_t *observer;
+  observer_mo_data_t *observer_mo;
+
+  observer = logger->observer;
+  observer_mo = (observer_mo_data_t *) observer->data;
+
+  if (observer_mo->log_mode == FINAL) {
+    /* Resort archive_tree according to time stamp and then output it */
+
+    avl_tree_t *resorted_tree;
+    avl_node_t *solution;
+    resorted_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_time_stamp, NULL);
+
+    if (logger->archive_tree->tail) {
+      /* There is at least a solution in the tree to output */
+      solution = logger->archive_tree->head;
+      while (solution != NULL) {
+        avl_item_insert(resorted_tree, solution->item);
+        solution = solution->next;
+      }
+    }
+
+    logger_mo_tree_output(logger->nondom_file, resorted_tree, logger->number_of_variables,
+        logger->number_of_objectives, observer_mo->include_decision_variables);
+  }
+
+}
+
+static void logger_mo_free(void *stuff) {
+
+  logger_mo_t *logger;
+  size_t i;
+
   assert(stuff != NULL);
-  data = stuff;
+  logger = stuff;
 
-  /* TODO: Resort according to time stamp before output!*/
-  if (data->log_mode == FINAL) {
-    tree_size = logger_mo_tree_output(data->nondom_file, data->archive_tree, data->number_of_variables,
-        data->number_of_objectives, data->include_decision_variables);
-    printf("%lu\n", tree_size);
+  logger_mo_finalize(logger);
+
+  if (logger->nondom_file != NULL) {
+    fclose(logger->nondom_file);
+    logger->nondom_file = NULL;
   }
 
-  if (data->result_folder != NULL) {
-    coco_free_memory(data->result_folder);
-    data->result_folder = NULL;
-  }
+  avl_tree_destruct(logger->archive_tree);
+  avl_tree_destruct(logger->buffer_tree);
 
-  if (data->nondom_file != NULL) {
-    fclose(data->nondom_file);
-    data->nondom_file = NULL;
-  }
-
-  avl_tree_destruct(data->archive_tree);
-  avl_tree_destruct(data->buffer_tree);
+  for (i = 0; i < OBSERVER_MO_NUMBER_OF_INDICATORS; i++)
+    logger_mo_indicator_free(logger->indicators[i]);
 }
 
 /**
- * Sets up the multiobjective logger. Possible options:
- * - result_folder : folder_name (folder for result output; if not given, "results" is used instead)
- * - reference_values_file : file_name (name of the file with reference values for all indicators; optional)
- * - log_nondominated : none (don't log nondominated solutions)
- * - log_nondominated : final (log only the final nondominated solutions; default value)
- * - log_nondominated : all (log every solution that is nondominated at creation time)
- * - include_decision_variables : 0 / 1 (whether to include decision variables when logging nondominated solutions;
- * default value is 0)
- * - compute_indicators : 0 / 1 (whether to compute performance indicators; default value is 1)
- * - produce_all_data: 0 / 1 (whether to produce all data; if set to 1, overwrites other options and is equivalent to
- * setting log_nondominated to all, include_decision_variables to 1 and compute_indicators to 1; if set to 0, it
- * does not change the values of other options; default value is 0)
+ * Initializes the multiobjective logger.
  */
-static coco_problem_t *logger_mo(coco_problem_t *problem, const char *options) {
+coco_problem_t *logger_mo(coco_observer_t *observer, coco_problem_t *problem) {
 
-  logger_mo_t *data;
   coco_problem_t *self;
-  char string_value[COCO_PATH_MAX];
+  logger_mo_t *logger;
+  observer_mo_data_t *observer_mo;
+  const char nondom_folder_name[] = "archive";
+  char *path_name, *file_name, *prefix;
+  size_t i;
 
-  data = coco_allocate_memory(sizeof(*data));
+  logger = coco_allocate_memory(sizeof(*logger));
 
-  data->number_of_evaluations = 0;
-  data->number_of_variables = coco_problem_get_dimension(problem);
-  data->number_of_objectives = coco_problem_get_number_of_objectives(problem);
+  logger->observer = observer;
+  logger->number_of_evaluations = 0;
+  logger->number_of_variables = problem->number_of_variables;
+  logger->number_of_objectives = problem->number_of_objectives;
 
-  /* Read values from options */
-  if (coco_options_read_string(options, "result_folder", string_value) > 0) {
-    data->result_folder = coco_strdup(string_value);
-  } else {
-    coco_warning("logger_mo(): using results as the name of the result folder");
-    data->result_folder = coco_strdup("results");
+  observer_mo = (observer_mo_data_t *) observer->data;
+
+  /* Initialize logging of nondominated solutions */
+  if (observer_mo->log_mode != NONE) {
+
+    /* Create the path to the file */
+    path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
+    memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
+    coco_join_path(path_name, COCO_PATH_MAX, nondom_folder_name, NULL);
+    coco_create_path(path_name);
+
+    /* Construct file name */
+    prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
+    if (observer_mo->log_mode == ALL)
+      file_name = coco_strdupf("%s_nondom_all.dat", prefix);
+    else if (observer_mo->log_mode == FINAL)
+      file_name = coco_strdupf("%s_nondom_final.dat", prefix);
+    coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
+    coco_free_memory(prefix);
+
+    /* Open and initialize the file */
+    logger->nondom_file = fopen(path_name, "a");
+    if (logger->nondom_file == NULL) {
+      coco_error("logger_mo() failed to open file '%s'.", path_name);
+      return NULL; /* Never reached */
+    }
+
+    coco_free_memory(file_name);
+    coco_free_memory(path_name);
+
+    /* Output header information */
+    fprintf(logger->nondom_file, "%% instance = %ld\n", problem->suite_dep_instance_id + 1);
+    if (observer_mo->include_decision_variables) {
+      fprintf(logger->nondom_file, "%% function evaluation | %lu objectives | %lu variables\n",
+          problem->number_of_objectives, problem->number_of_variables);
+    } else {
+      fprintf(logger->nondom_file, "%% function evaluation | %lu objectives \n", problem->number_of_objectives);
+    }
   }
-  /* Creates the output folder if it does not yet exist */
-  coco_create_path(data->result_folder);
 
-  data->log_mode = FINAL;
-  if (coco_options_read_string(options, "log_nondominated", string_value) > 0) {
-    if (strcmp(string_value, "none") == 0)
-        data->log_mode = NONE;
-    else if (strcmp(string_value, "all") == 0)
-      data->log_mode = ALL;
+  /* Initialize the AVL trees */
+  logger->archive_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_last_objective,
+      (avl_free_t) logger_mo_node_free);
+  logger->buffer_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_time_stamp, NULL);
+
+  self = coco_transformed_allocate(problem, logger, logger_mo_free);
+  self->evaluate_function = logger_mo_evaluate;
+
+  /* Initialize the indicators */
+  if (observer_mo->compute_indicators) {
+    for (i = 0; i < OBSERVER_MO_NUMBER_OF_INDICATORS; i++)
+      logger->indicators[i] = logger_mo_indicator(logger, self, OBSERVER_MO_INDICATORS[i]);
   }
-
-  if (coco_options_read_int(options, "include_decision_variables", &(data->include_decision_variables)) == 0)
-    data->include_decision_variables = 0;
-
-  if (coco_options_read_int(options, "compute_indicators", &(data->compute_indicators)) == 0)
-    data->compute_indicators = 1;
-
-  if (coco_options_read_int(options, "produce_all_data", &(data->produce_all_data)) == 0)
-    data->produce_all_data = 0;
-
-  if (data->produce_all_data) {
-    data->include_decision_variables = 1;
-    data->compute_indicators = 1;
-    data->log_mode = ALL;
-  }
-
-  if ((data->log_mode == NONE) && (!data->compute_indicators)) {
-    /* No logging required, return NULL */
-    return NULL;
-  }
-
-  data->nondom_file = NULL; /* Open lazily in private_logger_mo_evaluate(). */
-  data->is_initialized = 0;
-
-  self = coco_transformed_allocate(problem, data, private_logger_mo_free);
-  self->evaluate_function = private_logger_mo_evaluate;
 
   return self;
 }

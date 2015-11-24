@@ -2,7 +2,7 @@
 #include "coco_utilities.c"
 #include "logger_target_hits.c"
 
-static coco_problem_t *observer_toy(coco_problem_t *problem, const char *options) {
+static coco_problem_t *deprecated__observer_toy(coco_problem_t *problem, const char *options) {
   size_t i;
   static const size_t number_of_targets = 20;
   double targets[20];
@@ -16,7 +16,7 @@ static coco_problem_t *observer_toy(coco_problem_t *problem, const char *options
 
   coco_join_path(base_path, sizeof(base_path), options, "toy_so", coco_problem_get_id(problem), NULL);
   if (coco_path_exists(base_path)) {
-    /* TODO: Handle this differently - coco_create_unique_filename() function is available now! */
+    /* TODO: Handle this differently - coco_create_unique_path() function is available now! */
     coco_error("Result directory exists.");
     return NULL; /* never reached */
   }
@@ -24,4 +24,8 @@ static coco_problem_t *observer_toy(coco_problem_t *problem, const char *options
   coco_join_path(filename, sizeof(filename), base_path, "first_hitting_times.txt", NULL);
   problem = logger_target_hits(problem, targets, number_of_targets, filename);
   return problem;
+}
+
+static void observer_toy(coco_observer_t *self, const char *options) {
+  return;
 }

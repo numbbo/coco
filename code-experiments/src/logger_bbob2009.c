@@ -352,7 +352,7 @@ static void private_logger_bbob2009_initialize(logger_bbob2009_t *data, coco_pro
   private_logger_bbob2009_open_dataFile(&(data->rdata_file), data->path, dataFile_path, ".rdat");
   fprintf(data->rdata_file, bbob2009_file_header_str, data->optimal_fvalue);
   /* TODO: manage duplicate filenames by either using numbers or raising an error */
-  /* The coco_create_unique_path function is available now! */
+  /* The coco_create_unique_path() function is available now! */
   data->is_initialized = 1;
 }
 
@@ -367,8 +367,8 @@ static void private_logger_bbob2009_evaluate(coco_problem_t *self, const double 
     private_logger_bbob2009_initialize(data, inner_problem);
   }
   if (bbob2009_logger_verbosity > 2 && data->number_of_evaluations == 0) {
-    if (inner_problem->index >= 0) {
-      printf("%4ld: ", inner_problem->index);
+    if (inner_problem->suite_dep_index >= 0) {
+      printf("%4ld: ", inner_problem->suite_dep_index);
     }
     printf("on problem %s ... ", coco_problem_get_id(inner_problem));
   }
