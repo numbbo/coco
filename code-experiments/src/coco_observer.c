@@ -2,7 +2,6 @@
 #include "coco_internal.h"
 
 #include "observer_bbob2009.c"
-#include "observer_mo_toy.c"
 #include "logger_mo.c"
 #include "observer_toy.c"
 
@@ -63,8 +62,6 @@ coco_observer_t *coco_observer(const char *observer_name, const char *options) {
     observer_toy(observer, options);
   } else if (0 == strcmp(observer_name, "observer_bbob2009")) {
     observer_bbob2009(observer, options);
-  } else if (0 == strcmp(observer_name, "observer_mo_toy")) {
-    observer_mo_toy(observer, options);
   } else if (0 == strcmp(observer_name, "observer_mo")) {
     observer_mo(observer, options);
   } else {
