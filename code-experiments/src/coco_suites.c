@@ -109,7 +109,8 @@ coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem, c
   } else if (0 == strcmp(observer_name, "observer_mo_toy")) {
     return deprecated__observer_mo_toy(problem, options);
   } else if (0 == strcmp(observer_name, "observer_mo")) {
-    return deprecated__observer_mo(problem, options);
+    coco_error("Deprecated way of calling the MO observer.");
+    return NULL; /* Never reached */
   }
 
   /* here each observer must have another entry */

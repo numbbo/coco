@@ -184,7 +184,11 @@ static long biobjective_encode_problem_index(int function_idx, long instance_idx
 static void run_experiments(void) {
   long problem_index;
   int combination_idx, instance_idx, dimension_idx;
+
+  coco_observer_t *observer;
   coco_problem_t *problem;
+
+  observer = coco_observer(OBSERVER_NAME, OBSERVER_OPTIONS);
 
   for (dimension_idx = 0; dimension_idx < SUITE_BIOBJ_NUMBER_OF_DIMENSIONS; dimension_idx++) {
     for (combination_idx = 0; combination_idx < SUITE_BIOBJ_NUMBER_OF_FUNCTIONS; combination_idx++) {
@@ -195,7 +199,7 @@ static void run_experiments(void) {
             problem_index, combination_idx, instance_idx, dimension_idx);
 
         problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-        problem = deprecated__coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
+        problem = coco_problem_add_observer(problem, observer);
 
         if (problem == NULL)
           break;
@@ -205,6 +209,8 @@ static void run_experiments(void) {
       }
     }
   }
+
+  coco_observer_free(observer);
 }
 
 /**
@@ -216,7 +222,11 @@ static void run_experiments(void) {
 static void run_tests(void) {
   long problem_index;
   int combination_idx, instance_idx, dimension_idx;
+
+  coco_observer_t *observer;
   coco_problem_t *problem;
+
+  observer = coco_observer(OBSERVER_NAME, OBSERVER_OPTIONS);
 
   for (dimension_idx = 0; dimension_idx < SUITE_BIOBJ_NUMBER_OF_DIMENSIONS; dimension_idx++) {
     for (combination_idx = 0; combination_idx < TEST_NUMBER_OF_COMBINATIONS; combination_idx++) {
@@ -227,7 +237,7 @@ static void run_tests(void) {
             problem_index, combination_idx, instance_idx, dimension_idx);
 
         problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-        problem = deprecated__coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
+        problem = coco_problem_add_observer(problem, observer);
 
         if (problem == NULL)
           break;
@@ -236,6 +246,8 @@ static void run_tests(void) {
       }
     }
   }
+
+  coco_observer_free(observer);
 
   printf("Removing the created directory.");
   coco_remove_directory("RS_on_suite_biobj_300");
