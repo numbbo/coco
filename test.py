@@ -45,6 +45,9 @@ def build_unit_test():
     elif ('linux' in sys.platform):
         libraryPath = 'code-experiments/test/unit-test/lib/linux'
         fileName = 'libcmocka.so'
+    elif ('darwin' in sys.platform): #Mac
+        libraryPath = 'code-experiments/test/unit-test/lib/macosx'
+        fileName = 'libcmocka.dylib'
         
     if (len(libraryPath) > 0):
         copy_file(os.path.join(libraryPath, fileName), 
