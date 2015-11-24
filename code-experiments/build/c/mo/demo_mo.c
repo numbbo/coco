@@ -12,7 +12,7 @@ static const long MAX_BUDGET = 1e3;
 static const char *SUITE_NAME = "suite_biobj_300";
 static const char *OBSERVER_NAME = "observer_mo";
 static const char *OBSERVER_OPTIONS = "result_folder: RS_on_suite_biobj_300 \
-                                       include_decision_variables: 1 \
+                                       include_decision_variables: 0 \
                                        log_nondominated: final";
 /* static const char *SOLVER_NAME = "grid_search"; */
 static const char *SOLVER_NAME = "random_search";
@@ -164,17 +164,17 @@ void coco_optimize(coco_problem_t *problem) {
 /*
  * Parameters of the multiobjective suite suite_biobj_300
  */
-#define SUITE_BIOBJ_NUMBER_OF_COMBINATIONS 300
+#define SUITE_BIOBJ_NUMBER_OF_FUNCTIONS 300
 #define SUITE_BIOBJ_NUMBER_OF_INSTANCES 5
 #define SUITE_BIOBJ_NUMBER_OF_DIMENSIONS 5
 
 /*
  * Encodes the problem index for suite_biobj_300.
  */
-static long biobjective_encode_problem_index(int combination_idx, long instance_idx, int dimension_idx) {
+static long biobjective_encode_problem_index(int function_idx, long instance_idx, int dimension_idx) {
   long problem_index;
-  problem_index = instance_idx + combination_idx * SUITE_BIOBJ_NUMBER_OF_INSTANCES
-      + dimension_idx * (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_COMBINATIONS);
+  problem_index = instance_idx + function_idx * SUITE_BIOBJ_NUMBER_OF_INSTANCES
+      + dimension_idx * (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS);
   return problem_index;
 }
 
@@ -184,10 +184,14 @@ static long biobjective_encode_problem_index(int combination_idx, long instance_
 static void run_experiments(void) {
   long problem_index;
   int combination_idx, instance_idx, dimension_idx;
+
+  coco_observer_t *observer;
   coco_problem_t *problem;
 
+  observer = coco_observer(OBSERVER_NAME, OBSERVER_OPTIONS);
+
   for (dimension_idx = 0; dimension_idx < SUITE_BIOBJ_NUMBER_OF_DIMENSIONS; dimension_idx++) {
-    for (combination_idx = 0; combination_idx < SUITE_BIOBJ_NUMBER_OF_COMBINATIONS; combination_idx++) {
+    for (combination_idx = 0; combination_idx < SUITE_BIOBJ_NUMBER_OF_FUNCTIONS; combination_idx++) {
       for (instance_idx = 0; instance_idx < SUITE_BIOBJ_NUMBER_OF_INSTANCES; instance_idx++) {
 
         problem_index = biobjective_encode_problem_index(combination_idx, instance_idx, dimension_idx);
@@ -195,7 +199,7 @@ static void run_experiments(void) {
             problem_index, combination_idx, instance_idx, dimension_idx);
 
         problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-        problem = coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
+        problem = coco_problem_add_observer(problem, observer);
 
         if (problem == NULL)
           break;
@@ -205,6 +209,8 @@ static void run_experiments(void) {
       }
     }
   }
+
+  coco_observer_free(observer);
 }
 
 /**
@@ -216,7 +222,11 @@ static void run_experiments(void) {
 static void run_tests(void) {
   long problem_index;
   int combination_idx, instance_idx, dimension_idx;
+
+  coco_observer_t *observer;
   coco_problem_t *problem;
+
+  observer = coco_observer(OBSERVER_NAME, OBSERVER_OPTIONS);
 
   for (dimension_idx = 0; dimension_idx < SUITE_BIOBJ_NUMBER_OF_DIMENSIONS; dimension_idx++) {
     for (combination_idx = 0; combination_idx < TEST_NUMBER_OF_COMBINATIONS; combination_idx++) {
@@ -227,7 +237,7 @@ static void run_tests(void) {
             problem_index, combination_idx, instance_idx, dimension_idx);
 
         problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-        problem = coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
+        problem = coco_problem_add_observer(problem, observer);
 
         if (problem == NULL)
           break;
@@ -236,6 +246,8 @@ static void run_tests(void) {
       }
     }
   }
+
+  coco_observer_free(observer);
 
   printf("Removing the created directory.");
   coco_remove_directory("RS_on_suite_biobj_300");
@@ -248,23 +260,24 @@ static void run_tests(void) {
 static void run_performance_tests(void) {
   long problem_index;
   int combination_idx, instance_idx, dimension_idx;
-  coco_problem_t *problem;
   clock_t start, end;
 
+  coco_observer_t *observer;
+  coco_problem_t *problem;
+
+  observer = coco_observer(OBSERVER_NAME, OBSERVER_OPTIONS);
+
   for (dimension_idx = 0; dimension_idx < SUITE_BIOBJ_NUMBER_OF_DIMENSIONS; dimension_idx++) {
-    for (combination_idx = 0; combination_idx < SUITE_BIOBJ_NUMBER_OF_COMBINATIONS; combination_idx++) {
+    for (combination_idx = 0; combination_idx < SUITE_BIOBJ_NUMBER_OF_FUNCTIONS; combination_idx++) {
       for (instance_idx = 0; instance_idx < SUITE_BIOBJ_NUMBER_OF_INSTANCES; instance_idx++) {
         start = clock();
 
         problem_index = biobjective_encode_problem_index(combination_idx, instance_idx, dimension_idx);
         problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-        problem = coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
+        problem = coco_problem_add_observer(problem, observer);
 
         if (problem == NULL)
           break;
-
-        printf("%s\t", coco_problem_get_id(problem));
-
         coco_optimize(problem);
         coco_problem_free(problem);
 
@@ -274,6 +287,8 @@ static void run_performance_tests(void) {
       }
     }
   }
+
+  coco_observer_free(observer);
 }
 
 /**
