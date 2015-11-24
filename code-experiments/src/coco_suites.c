@@ -6,12 +6,10 @@
 #include "coco.h"
 
 #include "observer_bbob2009.c"
-#include "observer_mo_toy.c"
 #include "observer_mo.c"
 #include "observer_toy.c"
 #include "suite_bbob2009.c"
 #include "suite_biobj_300.c"
-#include "suite_mo_first_attempt.c"
 #include "suite_toy.c"
 
 /**
@@ -87,8 +85,6 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
     return suite_toy(problem_index);
   } else if (0 == strcmp(problem_suite, "suite_bbob2009")) {
     return suite_bbob2009(problem_index);
-  } else if (0 == strcmp(problem_suite, "suite_mo_first_attempt")) {
-    return suite_mo_first_attempt(problem_index);
   } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
     return suite_biobj_300(problem_index);
   } else {
@@ -106,8 +102,6 @@ coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem, c
     return deprecated__observer_toy(problem, options);
   } else if (0 == strcmp(observer_name, "observer_bbob2009")) {
     return deprecated__observer_bbob2009(problem, options);
-  } else if (0 == strcmp(observer_name, "observer_mo_toy")) {
-    return deprecated__observer_mo_toy(problem, options);
   } else if (0 == strcmp(observer_name, "observer_mo")) {
     coco_error("Deprecated way of calling the MO observer.");
     return NULL; /* Never reached */
