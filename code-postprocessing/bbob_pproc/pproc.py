@@ -780,10 +780,8 @@ class DataSet():
         self._cut_data()
         # Compute ERT
         self.computeERTfromEvals()
-        assert all(self.evals[0][1:] == 1)
-        if not self.consistency_check(): # prints also warnings itself
-            warnings.warn("Inconsistent data found for function " + str(self.funcId) + " in %d-D (see also above)" % self.dim) 
-
+        assert all(self.evals[0][1:] == 1)        
+        
     @property
     def evals_(self):
         """Shall become ``evals`` attribute in future.
