@@ -838,8 +838,14 @@ class DataSet():
         _DataSet_complement_data(self, step, final_target)
 
     def consistency_check(self):
-        """yet a stump"""
+        """checks consistency of data set according to
+           - number of instances           
+           - instances used
+        """
         is_consistent = True
+        
+        instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))        
+        
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
             for i in set(self.instancenumbers):
@@ -857,6 +863,13 @@ class DataSet():
         elif len(self.instancenumbers) > 15:
             is_consistent = False
             warnings.warn('  more than 15 instances in ' + str(self.instancenumbers))
+        elif ((instancedict != genericsettings.instancesOfInterest2009)
+                and (instancedict != genericsettings.instancesOfInterest2010)
+                and (instancedict != genericsettings.instancesOfInterest2012)
+                and (instancedict != genericsettings.instancesOfInterest2013)
+                and (instancedict != genericsettings.instancesOfInterest2015)):
+            is_consistent = False
+            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, or 2015')
         return is_consistent
             
     def computeERTfromEvals(self):
@@ -1371,8 +1384,11 @@ class DataSetList(list):
                 print s
             self.sort()
 
+        data_consistent = True
         for ds in self:
-            ds.consistency_check()
+            data_consistent = data_consistent and ds.consistency_check()
+        if data_consistent:
+            print("  Data consistent according to test in consistency_check() in pproc.DataSet")
             
     def processIndexFile(self, indexFile, verbose=True):
         """Reads in an index (.info?) file information on the different runs."""

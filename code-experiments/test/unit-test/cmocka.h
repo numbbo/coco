@@ -37,21 +37,10 @@ int __stdcall IsDebuggerPresent();
 # endif /* _MSC_VER */
 #endif /* defined(_WIN32) || defined(_WIN64) */
 
-#if defined(__CYGWIN__)
-
 # ifndef inline
 #define inline __inline
 # endif /* inline */
 
-#endif  /* defined(__CYGWIN__) */
-
-#if defined(__MINGW32__) || defined(__MINGW64__)
-
-# ifndef inline
-#define inline __inline
-# endif /* inline */
-
-#endif  /* defined(__MINGW32__) || defined(__MINGW64__) */
 /**
  * @defgroup cmocka The CMocka API
  *

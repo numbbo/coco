@@ -76,6 +76,7 @@ void coco_join_path(char *path, size_t path_max_length, ...);
 int coco_path_exists(const char *path);
 void coco_create_path(const char *path);
 void coco_create_unique_filename(char **file_name);
+void coco_create_unique_path(char **path);
 int coco_create_directory(const char *path);
 /* int coco_remove_directory(const char *path); Moved to coco.h */
 int coco_remove_directory_msc(const char *path);
@@ -177,35 +178,25 @@ void coco_create_path(const char *path) {
 
 /**
  * Creates a unique file name from the given file_name. If the file_name does not yet exit, it is left as
- * is, otherwise it is changed(!) by appending a number to it.
+ * is, otherwise it is changed(!) by prepending a number to it.
  *
- * If filename.ext already exists, filename-01.ext will be tried. If this one exists as well,
- * filename-02.ext will be tried, and so on. If filename-99.ext exists as well, the function returns
+ * If filename.ext already exists, 01-filename.ext will be tried. If this one exists as well,
+ * 02-filename.ext will be tried, and so on. If 99-filename.ext exists as well, the function returns
  * an error.
  */
 void coco_create_unique_filename(char **file_name) {
 
   int counter = 1;
-  char *str_name, *str_ending;
   char *new_file_name;
-
-  const char delim[2] = ".";
 
   /* Do not change the file_name if it does not yet exist */
   if (!coco_file_exists(*file_name)) {
     return;
   }
 
-  /* Split file_name to str_name and str_ending */
-  str_name = strtok(*file_name, delim);
-  str_ending = strtok(NULL, delim);
-
   while (counter < 99) {
 
-    if (str_ending != NULL)
-      new_file_name = coco_strdupf("%s-%02d.%s", str_name, counter, str_ending);
-    else
-      new_file_name = coco_strdupf("%s-%02d", str_name, counter);
+    new_file_name = coco_strdupf("%02d-%s", counter, *file_name);
 
     if (!coco_file_exists(new_file_name)) {
       coco_free_memory(*file_name);
@@ -220,6 +211,45 @@ void coco_create_unique_filename(char **file_name) {
 
   coco_free_memory(new_file_name);
   coco_error("coco_create_unique_filename(): could not create a unique file name");
+  return; /* Never reached */
+}
+
+/**
+ * Creates a unique path from the given path. If the given path does not yet exit, it is left as
+ * is, otherwise it is changed(!) by appending a number to it.
+ *
+ * If path already exists, path-01 will be tried. If this one exists as well, path-02 will be tried,
+ * and so on. If path-99 exists as well, the function returns an error.
+ */
+void coco_create_unique_path(char **path) {
+
+  int counter = 1;
+  char *new_path;
+
+  /* Create the path if it does not yet exist */
+  if (!coco_path_exists(*path)) {
+    coco_create_path(*path);
+    return;
+  }
+
+  while (counter < 99) {
+
+    new_path = coco_strdupf("%s-%02d", *path, counter);
+
+    if (!coco_path_exists(new_path)) {
+      coco_free_memory(*path);
+      *path = new_path;
+      coco_create_path(*path);
+      return;
+    } else {
+      counter++;
+      coco_free_memory(new_path);
+    }
+
+  }
+
+  coco_free_memory(new_path);
+  coco_error("coco_create_unique_path(): could not create a unique path");
   return; /* Never reached */
 }
 
@@ -482,4 +512,44 @@ double coco_min_double(const double a, const double b) {
   } else {
     return b;
   }
+}
+
+/**
+ * Returns 1 if |a - b| < accuracy and 0 otherwise
+ */
+int coco_doubles_almost_equal(const double a, const double b, const double accuracy) {
+  return ((fabs(a - b) < accuracy) == 0);
+}
+
+/* Creates and returns a string with removed characters from @{from} to @{to}.
+ * The caller is responsible for freeing the allocated memory. */
+static char *coco_remove_from_string(char *string, char *from, char *to) {
+
+  char *result, *start, *stop;
+
+  result = coco_strdup(string);
+
+  if (strcmp(from, "") == 0) {
+    /* Remove from the start */
+    start = result;
+  }
+  else
+    start = strstr(result, from);
+
+  if (strcmp(to, "") == 0) {
+    /* Remove until the end */
+    stop = result + strlen(result);
+  }
+  else
+    stop = strstr(result, to);
+
+  if ((start == NULL) || (stop == NULL) || (stop < start)) {
+    coco_error("coco_remove_from_string(): failed to remove characters between %s and %s from string %s",
+        from, to, string);
+    return NULL; /* Never reached */
+  }
+
+  memmove(start, stop, strlen(stop)+1);
+
+  return result;
 }

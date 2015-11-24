@@ -19,7 +19,7 @@ cdef extern from "coco.h":
                                           const long problem_index,
                                           const char *select_options)
     void coco_problem_free(coco_problem_t *problem)
-    coco_problem_t *coco_problem_add_observer(coco_problem_t *problem,
+    coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
                                               const char *observer_name,
                                               const char *options)
     void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
@@ -95,7 +95,7 @@ cdef class Problem:
             
         """
         _observer, _options = _bstring(observer), _bstring(options)
-        self.problem = coco_problem_add_observer(self.problem, _observer, _options)
+        self.problem = deprecated__coco_problem_add_observer(self.problem, _observer, _options)
     
     def constraint(self, x):
         """return constraint values for `x`. 
