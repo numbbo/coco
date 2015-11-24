@@ -35,7 +35,7 @@ static void observer_mo_free(coco_observer_t *observer) {
   size_t i;
 
   assert(observer != NULL);
-  observer_mo = (observer_mo_data_t *) observer;
+  observer_mo = (observer_mo_data_t *) observer->data;
 
   if (observer_mo->compute_indicators != 0) {
     for (i = 0; i < OBSERVER_MO_NUMBER_OF_INDICATORS; i++) {
