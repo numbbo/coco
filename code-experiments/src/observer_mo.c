@@ -4,7 +4,6 @@
 #include "coco_utilities.c"
 #include "mo_generics.c"
 
-coco_problem_t *deprecated__logger_mo(coco_problem_t *problem, const char *options);
 coco_problem_t *logger_mo(coco_observer_t *self, coco_problem_t *problem);
 
 /* List of implemented indicators */
@@ -115,19 +114,6 @@ static void observer_mo(coco_observer_t *self, const char *options) {
   self->logger_initialize_function = logger_mo;
   self->observer_free_function = observer_mo_free;
   self->data = data;
-}
-
-/**
- * Multiobjective observer. See the multiobjective logger (function logger_mo(problem, options))
- * for more information.
- */
-static coco_problem_t *deprecated__observer_mo(coco_problem_t *problem, const char *options) {
-
-  /* The information to be logged at each step is defined in the function
-   * 'private_logger_mo_evaluate' in the file 'logger_mo.c' */
-  problem = deprecated__logger_mo(problem, options);
-
-  return problem;
 }
 
 /* Returns the reference value for indicator_name matching the given key if the key is found, and raises an
