@@ -94,8 +94,8 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
   if (SUITE_BIOBJ_300_DEFINED == 0) {
     int k = 0;
     int i, j;
-    for (i = 1; i <= 24; ++i) {
-      for (j = i; j <= 24; ++j) {
+    for (i = 0; i < 24; ++i) {
+      for (j = i; j < 24; ++j) {
         SUITE_BIOBJ_300_FUNCTION_LIST[k][0] = i;
         SUITE_BIOBJ_300_FUNCTION_LIST[k][1] = j;
         k++;
@@ -109,9 +109,9 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
   function1_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][0];
   function2_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][1];
 
-  problem1 = suite_bbob2009_problem(function1_id, BBOB2009_DIMS[dimension_idx],
+  problem1 = suite_bbob2009_problem(function1_id + 1, BBOB2009_DIMS[dimension_idx],
       (long) SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][0]);
-  problem2 = suite_bbob2009_problem(function2_id, BBOB2009_DIMS[dimension_idx],
+  problem2 = suite_bbob2009_problem(function2_id + 1, BBOB2009_DIMS[dimension_idx],
       (long) SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][1]);
   problem = coco_stacked_problem_allocate(problem1, problem2);
   problem->suite_dep_index = problem_index;
@@ -129,6 +129,10 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
     problem->problem_name = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id], SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id]);
   else
     problem->problem_name = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id], SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id]);
+  if (strstr(problem->problem_name, "biobj") != NULL) {
+    printf("%s %d %d", problem->problem_name, function1_id, function2_id);
+  }
+
 
   return problem;
 }

@@ -6,8 +6,9 @@
  * Allocates memory for a matrix with number_of_rows rows and number_of_columns columns of strings of
  * maximal size max_length_of_string.
  */
-static char ***mo_allocate_matrix_of_strings(const size_t number_of_rows, const size_t number_of_columns,
-    const size_t max_length_of_string) {
+static char ***mo_allocate_matrix_of_strings(const size_t number_of_rows,
+                                             const size_t number_of_columns,
+                                             const size_t max_length_of_string) {
 
   char ***matrix_of_strings;
   size_t i, j;
@@ -16,11 +17,11 @@ static char ***mo_allocate_matrix_of_strings(const size_t number_of_rows, const 
   if (matrix_of_strings == NULL)
     coco_error("mo_allocate_matrix_of_strings() failed");
 
-  for(i = 0; i < number_of_rows; i++) {
+  for (i = 0; i < number_of_rows; i++) {
     matrix_of_strings[i] = malloc(number_of_columns * sizeof(char*));
-      for(j = 0; j < number_of_columns; j++) {
-        matrix_of_strings[i][j] = malloc(max_length_of_string * sizeof(char));
-      }
+    for (j = 0; j < number_of_columns; j++) {
+      matrix_of_strings[i][j] = malloc(max_length_of_string * sizeof(char));
+    }
   }
 
   return matrix_of_strings;
@@ -30,16 +31,17 @@ static char ***mo_allocate_matrix_of_strings(const size_t number_of_rows, const 
  * Frees the memory occupied by the matrix_of_strings matrix of string with number_of_rows rows and
  * cnumber_of_columns columns.
  */
-static void mo_free_matrix_of_strings(char ***matrix_of_strings, const size_t number_of_rows,
-    const size_t number_of_columns) {
+static void mo_free_matrix_of_strings(char ***matrix_of_strings,
+                                      const size_t number_of_rows,
+                                      const size_t number_of_columns) {
 
   size_t i, j;
 
-  for(i = 0; i < number_of_rows; i++) {
-      for(j = 0; j < number_of_columns; j++) {
-        free(matrix_of_strings[i][j]);
-      }
-      free(matrix_of_strings[i]);
+  for (i = 0; i < number_of_rows; i++) {
+    for (j = 0; j < number_of_columns; j++) {
+      free(matrix_of_strings[i][j]);
+    }
+    free(matrix_of_strings[i]);
   }
   free(matrix_of_strings);
 }
@@ -59,8 +61,8 @@ static size_t mo_get_number_of_lines_in_file(FILE *file) {
       number_of_lines++;
   } while (ch != EOF);
   /* Add 1 if the last line doesn't end with \n */
-  if(ch != '\n' && number_of_lines != 0)
-      number_of_lines++;
+  if (ch != '\n' && number_of_lines != 0)
+    number_of_lines++;
 
   /* Return to the beginning of the file */
   rewind(file);
@@ -69,27 +71,21 @@ static size_t mo_get_number_of_lines_in_file(FILE *file) {
 }
 
 /**
- * Assumes the input file contains pairs of strings separated by tabs and that each line is of maximal length
- * max_length_of_string. Returns the strings in the form of a N x 2 matrix, where N is the number of lines
- * in the file.
+ * Assumes the input file contains number_of_lines pairs of strings separated by tabs and that each line is
+ * of maximal length max_length_of_string. Returns the strings in the form of a number_of_lines x 2 matrix.
  */
-static char ***mo_get_string_pairs_from_file(const char *filename, const size_t max_length_of_string) {
+static char ***mo_get_string_pairs_from_file(FILE *file,
+                                             const size_t number_of_lines,
+                                             const size_t max_length_of_string) {
 
-  size_t i, number_of_lines;
-  FILE *file = fopen(filename, "r");
+  size_t i;
   char ***matrix_of_strings;
-
-  if (file == 0) {
-    coco_error("mo_get_string_pairs_from_file() failed to open file %s", filename);
-  }
-  number_of_lines = mo_get_number_of_lines_in_file(file);
 
   /* Prepare the matrix */
   matrix_of_strings = mo_allocate_matrix_of_strings(number_of_lines, 2, max_length_of_string);
   for (i = 0; i < number_of_lines; i++) {
     fscanf(file, "%s\t%[^\n]", matrix_of_strings[i][0], matrix_of_strings[i][1]);
   }
-  fclose(file);
 
   return matrix_of_strings;
 }
@@ -115,8 +111,12 @@ static double mo_string_to_double(const char *string) {
  * key_column column and for the value in value_column column). If the key is not found, it returns
  * default_value.
  */
-static double mo_get_matching_double_value(const char ***matrix_of_strings, const char *key, const size_t number_of_rows,
-    const size_t key_column, const size_t value_column, double default_value) {
+static double mo_get_matching_double_value(char ***matrix_of_strings,
+                                           const char *key,
+                                           const size_t number_of_rows,
+                                           const size_t key_column,
+                                           const size_t value_column,
+                                           double default_value) {
 
   size_t i;
 
@@ -131,8 +131,6 @@ static double mo_get_matching_double_value(const char ***matrix_of_strings, cons
   /* The key was not found, therefore the default value is returned */
   return default_value;
 }
-
-/*#endif*/
 
 /**
  * Checks the dominance relation in the unconstrained minimization case between

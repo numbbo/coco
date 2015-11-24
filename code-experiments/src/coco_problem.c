@@ -404,25 +404,3 @@ void coco_problem_set_name(coco_problem_t *problem, const char *name, ...) {
   va_end(args);
 }
 
-/* Assumes the problem_id is formatted like "some_prefix_i01_d01_some_suffix". Creates and returns this
- * string without the instance number "_i01", i.e., the string in form "some_prefix_d01_some_suffix".
- * The caller is responsible for freeing the allocated memory. */
-static char *coco_problem_get_id_without_instance(coco_problem_t *problem) {
-
-  char *result, *start, *stop;
-
-  result = coco_strdup(problem->problem_id);
-
-  char str[] = "ID is a sample string remove to /0.10";
-  start = strstr(result, "_i");
-  stop = strstr(result, "_d");
-  if ((start == NULL) || (stop == NULL) || (stop < start)) {
-    coco_error("coco_problem_get_id_without_instance(): failed to find _i or _d in %s", result);
-    return NULL; /* Never reached */
-  }
-
-  memmove(start, stop, strlen(stop)+1);
-
-  return result;
-}
-
