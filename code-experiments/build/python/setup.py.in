@@ -31,7 +31,7 @@ else:
                                 sources=['cython/interface.c', 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
 setup(
-    name = 'CoCOex',
+    name = 'cocoex',
     version = "$COCO_VERSION",
     packages = ['cocoex'],
     package_dir = {'cocoex': 'python'},
