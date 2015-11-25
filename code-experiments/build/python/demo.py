@@ -57,8 +57,10 @@ def random_search(fun, lbounds, ubounds, budget):
 MAXEVALS = 1e2  # always start with something small, CAVEAT: this might be modified from input args
 solver = random_search # fmin_slsqp # cma.fmin #    
 suite_name = "suite_bbob2009"
+# suite_name = "suite_biobj_300"
 suite_options = ""  # options syntax could be: "instances:1-5; dimensions:2-20",
 observer_name = "observer_bbob2009"
+# observer_name = "observer_mo"
 observer_options = "%s_on_%s" % (solver.__name__, suite_name)  # TODO: "folder:random_search; verbosity:1"
 number_of_batches = 99  # CAVEAT: this might be modified below from input args
 current_batch = 1       # ditto
