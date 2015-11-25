@@ -404,3 +404,16 @@ void coco_problem_set_name(coco_problem_t *problem, const char *name, ...) {
   va_end(args);
 }
 
+/* Commented to silence the compiler
+static long coco_problem_get_suite_dep_index(coco_problem_t *problem) {
+  return problem->suite_dep_index;
+}
+*/
+
+static int coco_problem_get_suite_dep_function_id(coco_problem_t *problem) {
+  return problem->suite_dep_function_id;
+}
+
+static long coco_problem_get_suite_dep_instance_id(coco_problem_t *problem) {
+  return problem->suite_dep_instance_id;
+}

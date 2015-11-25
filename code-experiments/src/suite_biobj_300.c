@@ -56,16 +56,6 @@ static const char SUITE_BIOBJ_300_PROBLEM_GROUP[24][30] = {
  *           7499 |        5 |      300 |        20
  */
 
-/* Commented to silence the compiler.*/
-
-static long suite_biobj_300_encode_problem_index(int function_id, long instance_id, int dimension_idx) {
-  long problem_index;
-  problem_index = instance_id + function_id * SUITE_BIOBJ_NUMBER_OF_INSTANCES
-      + dimension_idx * (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS);
-  return problem_index;
-}
-/**/
-
 static void suite_biobj_300_decode_problem_index(const long problem_index,
                                                  int *function_id,
                                                  long *instance_id,
@@ -76,13 +66,6 @@ static void suite_biobj_300_decode_problem_index(const long problem_index,
   *function_id = (int) (rest / SUITE_BIOBJ_NUMBER_OF_INSTANCES);
   *instance_id = rest % SUITE_BIOBJ_NUMBER_OF_INSTANCES;
 }
-
-static long suite_biobj_300_get_instance_id(const long problem_index) {
-   long rest;
-   rest = problem_index % (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS);
-   return (rest % SUITE_BIOBJ_NUMBER_OF_INSTANCES);
- }
-
 
 static coco_problem_t *suite_biobj_300(const long problem_index) {
   int function_id, function1_id, function2_id, dimension_idx;
@@ -124,7 +107,7 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
   problem->problem_id = coco_strdupf("biobj_300_f%03d_i%02ld_d%02d", function_id + 1, instance_id + 1, problem->number_of_variables);
 
   /* Construct the information about the problem - its "type" */
-  /* TODO: Use a new field (for example problem_info) instead of problem_name to store this information */
+  /* TODO: Use a new field (for example problem_type) instead of problem_name to store this information */
   coco_free_memory(problem->problem_name);
   if (function1_id < function2_id)
     problem->problem_name = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id], SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id]);
@@ -133,7 +116,6 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
   if (strstr(problem->problem_name, "biobj") != NULL) {
     printf("%s %d %d", problem->problem_name, function1_id, function2_id);
   }
-
 
   return problem;
 }
