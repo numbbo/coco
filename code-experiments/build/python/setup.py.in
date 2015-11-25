@@ -35,7 +35,7 @@ if True or 'darwin' in sys.platform or 'linux' in sys.platform:
     extensions.append(Extension('cocoex.interface',
                                 sources=[interface_file, 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
-if not 'darwin' in sys.platform:
+if 'linux' in sys.platform:
     extensions.append(Extension('cocoex._interface',
                                 sources=[interface_file, 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
