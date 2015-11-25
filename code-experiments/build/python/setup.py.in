@@ -26,7 +26,7 @@ if USE_CYTHON:
     # we rename file interface.pyx to _interface.pyx to possibly avoid import error later
     # shutil.copy2('cython/interface.pyx', 'cython/_interface.pyx')
     from Cython.Distutils import build_ext
-    extensions.append(Extension('cocoex.interface',
+    extensions.append(Extension('cocoex._interface',
                                 sources=['cython/interface.pyx', 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
     cmdclass.update({'build_ext': build_ext})
@@ -34,7 +34,7 @@ else:
     print("NOTE: Using precompiled C file to build interface.")
     # if os.path.isfile('cython/interface.c'): shutil.copy2('cython/interface.c', 'cython/_interface.c')
     
-    extensions.append(Extension('cocoex.interface',
+    extensions.append(Extension('cocoex._interface',
                                 sources=['cython/interface.c', 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
 setup(
