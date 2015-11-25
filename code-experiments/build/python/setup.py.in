@@ -11,7 +11,7 @@ import numpy as np
 
 ## Use Cython if interface.c is missing.
 USE_CYTHON = not os.path.isfile('cython/interface.c') or (
-    os.path.getmtime('cython/interface.c') - 1 < os.path.getmtime('cython/interface.pyx'))
+    os.path.getmtime('cython/interface.pyx') > os.path.getmtime('cython/interface.c') + 1)
 ## Or we force its use on the command line.
 if os.getenv('USE_CYTHON') == 'true':
     USE_CYTHON = True
