@@ -101,6 +101,7 @@ def build_python():
     _prep_python()
     ## Force distutils to use Cython
     os.environ['USE_CYTHON'] = 'true'
+    run('build/python/cython', ['cython', 'interface.pyx'])
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
     python('code-experiments/build/python', ['setup.py', 'install', '--user'])
     os.environ.pop('USE_CYTHON')
