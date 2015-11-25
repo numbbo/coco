@@ -22,13 +22,13 @@ extensions = []
 if USE_CYTHON:
     print("NOTE: Using Cython to build interface.")
     from Cython.Distutils import build_ext
-    extensions.append(Extension('cocoex._interface',
+    extensions.append(Extension('cocoex.interface',
                                 sources=['cython/interface.pyx', 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
     cmdclass.update({'build_ext': build_ext})
 else:
     print("NOTE: Using precompiled C file to build interface.")
-    extensions.append(Extension('cocoex._interface',
+    extensions.append(Extension('cocoex.interface',
                                 sources=['cython/interface.c', 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
 setup(
