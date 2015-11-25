@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-import shutil
+import sys
 import setuptools
 from distutils.core import setup
 from distutils.extension import Extension
@@ -34,7 +34,8 @@ else:
 extensions.append(Extension('cocoex._interface',
                             sources=[interface_file, 'cython/coco.c'],
                             include_dirs=[np.get_include()]))
-extensions.append(Extension('cocoex.interface',
+if not 'win32' in sys.platform:
+    extensions.append(Extension('cocoex.interface',
                             sources=[interface_file, 'cython/coco.c'],
                             include_dirs=[np.get_include()]))
 
