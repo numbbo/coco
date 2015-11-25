@@ -31,11 +31,11 @@ else:
     print("NOTE: Using precompiled C file to build interface.")
     interface_file = 'cython/interface.c'
     
-if 'darwin' in sys.platform:
+if 'darwin' in sys.platform or 'linux' in sys.platform:
     extensions.append(Extension('cocoex.interface',
                                 sources=[interface_file, 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
-else:
+if not 'darwin' in sys.platform:
     extensions.append(Extension('cocoex._interface',
                                 sources=[interface_file, 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
