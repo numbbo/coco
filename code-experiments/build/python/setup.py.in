@@ -9,10 +9,11 @@ from distutils.core import setup
 from distutils.extension import Extension
 import numpy as np
 
-## Use Cython if wrapper.c is missing.
-USE_CYTHON = not os.path.isfile('coco/wrapper.c')
+## Use Cython if interface.c is missing.
+USE_CYTHON = not os.path.isfile('cython/interface.c') or (
+    os.path.getmtime('cython/interface.c') - 1 < os.path.getmtime('cython.interface.pyx'))
 ## Or we force its use on the command line.
-if not USE_CYTHON and os.getenv('USE_CYTHON', 'false') == 'true':
+if os.getenv('USE_CYTHON') == 'true':
     USE_CYTHON = True
 
 cmdclass = {}
