@@ -22,7 +22,7 @@ extensions = []
 if USE_CYTHON:
     print("NOTE: Using Cython to build interface.")
     from Cython.Distutils import build_ext
-    extensions.append(Extension('cocoex.interface',
+    extensions.append(Extension('cocoex._interface',
                                 sources=['cython/interface.pyx', 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
     cmdclass.update({'build_ext': build_ext})
