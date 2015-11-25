@@ -3,10 +3,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os, shutil
+import os
+import shutil
 import setuptools
 from distutils.core import setup
 from distutils.extension import Extension
+from Cython.Build import cythonize
 import numpy as np
 
 ## Use Cython if interface.c is missing.
@@ -41,7 +43,7 @@ setup(
     packages = ['cocoex'],
     package_dir = {'cocoex': 'python'},
     cmdclass=cmdclass,
-    ext_modules = extensions,
+    ext_modules = cythonize(extensions),
     url = 'https://github.com/numbbo/numbbo/',
     license = 'BSD',
     maintainer = 'Olaf Mersmann',
