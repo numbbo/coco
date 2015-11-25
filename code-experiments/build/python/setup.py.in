@@ -30,7 +30,8 @@ if USE_CYTHON:
     cmdclass.update({'build_ext': build_ext})
 else:
     print("NOTE: Using precompiled C file to build interface.")
-    shutil.copy2('cython/interface.c', 'cython/_interface.c')
+    if os.path.isfile('cython/interface.c'): shutil.copy2('cython/interface.c', 'cython/_interface.c')
+    
     extensions.append(Extension('cocoex._interface',
                                 sources=['cython/_interface.c', 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
