@@ -5,7 +5,7 @@ cimport numpy as np
 
 from cocoex.exceptions import InvalidProblemException, NoSuchProblemException
 
-test_assignement = 'bla'  # does this prevent import error?
+_test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Windows"
 
 # __all__ = ['Problem', 'Benchmark']
 
