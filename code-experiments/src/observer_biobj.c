@@ -4,67 +4,208 @@
 #include "coco_utilities.c"
 #include "mo_generics.c"
 
-coco_problem_t *logger_mo(coco_observer_t *self, coco_problem_t *problem);
-
-static char ***mo_allocate_matrix_of_strings(const size_t number_of_rows,
-                                             const size_t number_of_columns,
-                                             const size_t max_length_of_string);
-static void mo_free_matrix_of_strings(char ***matrix_of_strings,
-                                      const size_t number_of_rows,
-                                      const size_t number_of_columns);
-static size_t mo_get_number_of_lines_in_file(FILE *file);
-static char ***mo_get_string_pairs_from_file(FILE *file,
-                                             const size_t number_of_lines,
-                                             const size_t max_length_of_string);
-static double mo_string_to_double(const char *string);
-static double mo_get_matching_double_value(char ***matrix_of_strings,
-                                           const char *key,
-                                           const size_t number_of_rows,
-                                           const size_t key_column,
-                                           const size_t value_column,
-                                           double default_value);
 /* List of implemented indicators */
-#define OBSERVER_MO_NUMBER_OF_INDICATORS 1
-const char *OBSERVER_MO_INDICATORS[OBSERVER_MO_NUMBER_OF_INDICATORS] = { "hypervolume" };
-const size_t OBSERVER_MO_MAX_STR_LENGTH = 100;
+#define OBSERVER_BIOBJ_NUMBER_OF_INDICATORS 1
+const char *OBSERVER_BIOBJ_INDICATORS[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS] = { "hypervolume" };
+const size_t OBSERVER_BIOBJ_MAX_STR_LENGTH = 100;
 
 /* Logging nondominated solutions mode */
 typedef enum {
   NONE, FINAL, ALL
-} observer_mo_log_nondom_e;
+} observer_biobj_log_nondom_e;
 
 /* Data for the biobjective observer */
 typedef struct {
-  observer_mo_log_nondom_e log_mode;
+  observer_biobj_log_nondom_e log_mode;
 
   int include_decision_variables;
   int compute_indicators;
   int produce_all_data;
 
-  char ***reference_value_matrix[OBSERVER_MO_NUMBER_OF_INDICATORS];
+  char ***reference_value_matrix[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS];
   size_t reference_values_count;
 
-} observer_mo_t;
+} observer_biobj_t;
+
+coco_problem_t *logger_biobj(coco_observer_t *self, coco_problem_t *problem);
 
 /**
- * Frees memory for the given coco_observer_t's data field observer_mo_t.
+ * Allocates memory for a matrix with number_of_rows rows and number_of_columns columns of strings of
+ * maximal size max_length_of_string.
  */
-static void observer_mo_free(coco_observer_t *observer) {
+static char ***observer_biobj_allocate_matrix_of_strings(const size_t number_of_rows,
+                                                         const size_t number_of_columns,
+                                                         const size_t max_length_of_string) {
 
-  observer_mo_t *observer_mo;
-  size_t i;
+  char ***matrix_of_strings;
+  size_t i, j;
 
-  assert(observer != NULL);
-  observer_mo = (observer_mo_t *) observer->data;
+  matrix_of_strings = malloc(number_of_rows * sizeof(char**));
+  if (matrix_of_strings == NULL)
+    coco_error("observer_biobj_allocate_matrix_of_strings() failed");
 
-  if (observer_mo->compute_indicators != 0) {
-    for (i = 0; i < OBSERVER_MO_NUMBER_OF_INDICATORS; i++) {
-      mo_free_matrix_of_strings(observer_mo->reference_value_matrix[i], observer_mo->reference_values_count,
-          2);
+  for (i = 0; i < number_of_rows; i++) {
+    matrix_of_strings[i] = malloc(number_of_columns * sizeof(char*));
+    for (j = 0; j < number_of_columns; j++) {
+      matrix_of_strings[i][j] = malloc(max_length_of_string * sizeof(char));
     }
   }
 
-  coco_free_memory(observer_mo);
+  return matrix_of_strings;
+}
+
+/**
+ * Frees the memory occupied by the matrix_of_strings matrix of string with number_of_rows rows and
+ * cnumber_of_columns columns.
+ */
+static void observer_biobj_free_matrix_of_strings(char ***matrix_of_strings,
+                                                  const size_t number_of_rows,
+                                                  const size_t number_of_columns) {
+
+  size_t i, j;
+
+  for (i = 0; i < number_of_rows; i++) {
+    for (j = 0; j < number_of_columns; j++) {
+      free(matrix_of_strings[i][j]);
+    }
+    free(matrix_of_strings[i]);
+  }
+  free(matrix_of_strings);
+}
+
+/**
+ * Counts and returns the number of lines in the already opened file.
+ */
+static size_t observer_biobj_get_number_of_lines_in_file(FILE *file) {
+
+  int ch;
+  size_t number_of_lines = 0;
+
+  /* Count the number of lines */
+  do {
+    ch = fgetc(file);
+    if (ch == '\n')
+      number_of_lines++;
+  } while (ch != EOF);
+  /* Add 1 if the last line doesn't end with \n */
+  if (ch != '\n' && number_of_lines != 0)
+    number_of_lines++;
+
+  /* Return to the beginning of the file */
+  rewind(file);
+
+  return number_of_lines;
+}
+
+/**
+ * Assumes the input file contains number_of_lines pairs of strings separated by tabs and that each line is
+ * of maximal length max_length_of_string. Returns the strings in the form of a number_of_lines x 2 matrix.
+ */
+static char ***observer_biobj_get_string_pairs_from_file(FILE *file,
+                                                         const size_t number_of_lines,
+                                                         const size_t max_length_of_string) {
+
+  size_t i;
+  char ***matrix_of_strings;
+
+  /* Prepare the matrix */
+  matrix_of_strings = observer_biobj_allocate_matrix_of_strings(number_of_lines, 2, max_length_of_string);
+  for (i = 0; i < number_of_lines; i++) {
+    fscanf(file, "%s\t%[^\n]", matrix_of_strings[i][0], matrix_of_strings[i][1]);
+  }
+
+  return matrix_of_strings;
+}
+
+/**
+ * Converts string (char *) to double. Does not check for underflow or overflow, ignores any trailing
+ * characters.
+ */
+static double observer_biobj_string_to_double(const char *string) {
+  double result;
+  char *err;
+
+  result = strtod(string, &err);
+  if (result == 0 && string == err) {
+    coco_error("observer_biobj_string_to_double() failed");
+  }
+
+  return result;
+}
+
+/**
+ * Scans the input matrix to find the first value that matches the given key (looks for the key in
+ * key_column column and for the value in value_column column). If the key is not found, it returns
+ * default_value.
+ */
+static double observer_biobj_get_matching_double_value(char ***matrix_of_strings,
+                                                       const char *key,
+                                                       const size_t number_of_rows,
+                                                       const size_t key_column,
+                                                       const size_t value_column,
+                                                       double default_value) {
+
+  size_t i;
+
+  for (i = 0; i < number_of_rows; i++) {
+    /* The given key matches the key in the matrix */
+    if (strcmp(matrix_of_strings[i][key_column], key) == 0) {
+      /* Return the value in the same row */
+      return observer_biobj_string_to_double(matrix_of_strings[i][value_column]);
+    }
+  }
+
+  /* The key was not found, therefore the default value is returned */
+  return default_value;
+}
+
+/* Returns the reference value for indicator_name matching the given key if the key is found, and raises an
+ * error otherwise.  */
+static double observer_biobj_get_reference_value(const observer_biobj_t *self,
+                                                 const char *indicator_name,
+                                                 const char *key) {
+
+  size_t i;
+  double reference_value;
+  double error_value = -1;
+  double error_accuracy = 1e-8;
+
+  for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+    if (strcmp(OBSERVER_BIOBJ_INDICATORS[i], indicator_name) == 0) {
+      reference_value = observer_biobj_get_matching_double_value(self->reference_value_matrix[i], key,
+          self->reference_values_count, 0, 1, error_value);
+      if (coco_doubles_almost_equal(reference_value, error_value, error_accuracy) == 0) {
+        coco_error("observer_biobj_get_reference_value(): could not find %s in reference file", key);
+        return 0; /* Never reached */
+      } else
+        return reference_value;
+    }
+  }
+
+  coco_error("observer_biobj_get_reference_value(): unexpected exception");
+  return 0; /* Never reached */
+
+}
+
+/**
+ * Frees memory for the given coco_observer_t's data field observer_biobj_t.
+ */
+static void observer_biobj_free(coco_observer_t *observer) {
+
+  observer_biobj_t *observer_biobj;
+  size_t i;
+
+  assert(observer != NULL);
+  observer_biobj = (observer_biobj_t *) observer->data;
+
+  if (observer_biobj->compute_indicators != 0) {
+    for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+      observer_biobj_free_matrix_of_strings(observer_biobj->reference_value_matrix[i],
+          observer_biobj->reference_values_count, 2);
+    }
+  }
+
+  coco_free_memory(observer_biobj);
 }
 
 /**
@@ -79,9 +220,9 @@ static void observer_mo_free(coco_observer_t *observer) {
  * setting log_nondominated to all, include_decision_variables to 1 and compute_indicators to 1; if set to 0, it
  * does not change the values of other options; default value is 0)
  */
-static void observer_mo(coco_observer_t *self, const char *options) {
+static void observer_biobj(coco_observer_t *self, const char *options) {
 
-  observer_mo_t *data;
+  observer_biobj_t *data;
   char string_value[COCO_PATH_MAX];
   char *file_name;
   FILE *file;
@@ -118,181 +259,22 @@ static void observer_mo(coco_observer_t *self, const char *options) {
   }
 
   if (data->compute_indicators) {
-    for (i = 0; i < OBSERVER_MO_NUMBER_OF_INDICATORS; i++) {
+    for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
       /* Load the data from the file with reference values */
-      file_name = coco_strdupf("reference_values_%s.txt", OBSERVER_MO_INDICATORS[i]);
+      file_name = coco_strdupf("reference_values_%s.txt", OBSERVER_BIOBJ_INDICATORS[i]);
       file = fopen(file_name, "r");
       if (file == NULL) {
-        coco_error("observer_mo() failed to open file '%s'.", file_name);
+        coco_error("observer_biobj() failed to open file '%s'.", file_name);
         return; /* Never reached */
       }
-      data->reference_values_count = mo_get_number_of_lines_in_file(file);
-      data->reference_value_matrix[i] = mo_get_string_pairs_from_file(file, data->reference_values_count,
-          OBSERVER_MO_MAX_STR_LENGTH);
+      data->reference_values_count = observer_biobj_get_number_of_lines_in_file(file);
+      data->reference_value_matrix[i] = observer_biobj_get_string_pairs_from_file(file,
+          data->reference_values_count, OBSERVER_BIOBJ_MAX_STR_LENGTH);
       fclose(file);
     }
   }
 
-  self->logger_initialize_function = logger_mo;
-  self->observer_free_function = observer_mo_free;
+  self->logger_initialize_function = logger_biobj;
+  self->observer_free_function = observer_biobj_free;
   self->data = data;
-}
-
-/* Returns the reference value for indicator_name matching the given key if the key is found, and raises an
- * error otherwise.  */
-static double observer_mo_get_reference_value(const observer_mo_t *self,
-                                              const char *indicator_name,
-                                              const char *key) {
-
-  size_t i;
-  double reference_value;
-  double error_value = -1;
-  double error_accuracy = 1e-8;
-
-  for (i = 0; i < OBSERVER_MO_NUMBER_OF_INDICATORS; i++) {
-    if (strcmp(OBSERVER_MO_INDICATORS[i], indicator_name) == 0) {
-      reference_value = mo_get_matching_double_value(self->reference_value_matrix[i], key, self->reference_values_count,
-          0, 1, error_value);
-      if (coco_doubles_almost_equal(reference_value, error_value, error_accuracy) == 0) {
-        coco_error("observer_mo_get_reference_value(): could not find %s in reference file", key);
-        return 0; /* Never reached */
-      }
-      else
-        return reference_value;
-    }
-  }
-
-  coco_error("observer_mo_get_reference_value(): unexpected exception");
-  return 0; /* Never reached */
-
-}
-
-/**
- * Allocates memory for a matrix with number_of_rows rows and number_of_columns columns of strings of
- * maximal size max_length_of_string.
- */
-static char ***mo_allocate_matrix_of_strings(const size_t number_of_rows,
-                                             const size_t number_of_columns,
-                                             const size_t max_length_of_string) {
-
-  char ***matrix_of_strings;
-  size_t i, j;
-
-  matrix_of_strings = malloc(number_of_rows * sizeof(char**));
-  if (matrix_of_strings == NULL)
-    coco_error("mo_allocate_matrix_of_strings() failed");
-
-  for (i = 0; i < number_of_rows; i++) {
-    matrix_of_strings[i] = malloc(number_of_columns * sizeof(char*));
-    for (j = 0; j < number_of_columns; j++) {
-      matrix_of_strings[i][j] = malloc(max_length_of_string * sizeof(char));
-    }
-  }
-
-  return matrix_of_strings;
-}
-
-/**
- * Frees the memory occupied by the matrix_of_strings matrix of string with number_of_rows rows and
- * cnumber_of_columns columns.
- */
-static void mo_free_matrix_of_strings(char ***matrix_of_strings,
-                                      const size_t number_of_rows,
-                                      const size_t number_of_columns) {
-
-  size_t i, j;
-
-  for (i = 0; i < number_of_rows; i++) {
-    for (j = 0; j < number_of_columns; j++) {
-      free(matrix_of_strings[i][j]);
-    }
-    free(matrix_of_strings[i]);
-  }
-  free(matrix_of_strings);
-}
-
-/**
- * Counts and returns the number of lines in the already opened file.
- */
-static size_t mo_get_number_of_lines_in_file(FILE *file) {
-
-  int ch;
-  size_t number_of_lines = 0;
-
-  /* Count the number of lines */
-  do {
-    ch = fgetc(file);
-    if (ch == '\n')
-      number_of_lines++;
-  } while (ch != EOF);
-  /* Add 1 if the last line doesn't end with \n */
-  if (ch != '\n' && number_of_lines != 0)
-    number_of_lines++;
-
-  /* Return to the beginning of the file */
-  rewind(file);
-
-  return number_of_lines;
-}
-
-/**
- * Assumes the input file contains number_of_lines pairs of strings separated by tabs and that each line is
- * of maximal length max_length_of_string. Returns the strings in the form of a number_of_lines x 2 matrix.
- */
-static char ***mo_get_string_pairs_from_file(FILE *file,
-                                             const size_t number_of_lines,
-                                             const size_t max_length_of_string) {
-
-  size_t i;
-  char ***matrix_of_strings;
-
-  /* Prepare the matrix */
-  matrix_of_strings = mo_allocate_matrix_of_strings(number_of_lines, 2, max_length_of_string);
-  for (i = 0; i < number_of_lines; i++) {
-    fscanf(file, "%s\t%[^\n]", matrix_of_strings[i][0], matrix_of_strings[i][1]);
-  }
-
-  return matrix_of_strings;
-}
-
-/**
- * Converts string (char *) to double. Does not check for underflow or overflow, ignores any trailing
- * characters.
- */
-static double mo_string_to_double(const char *string) {
-  double result;
-  char *err;
-
-  result = strtod(string, &err);
-  if (result == 0 && string == err) {
-    coco_error("mo_string_to_double() failed");
-  }
-
-  return result;
-}
-
-/**
- * Scans the input matrix to find the first value that matches the given key (looks for the key in
- * key_column column and for the value in value_column column). If the key is not found, it returns
- * default_value.
- */
-static double mo_get_matching_double_value(char ***matrix_of_strings,
-                                           const char *key,
-                                           const size_t number_of_rows,
-                                           const size_t key_column,
-                                           const size_t value_column,
-                                           double default_value) {
-
-  size_t i;
-
-  for (i = 0; i < number_of_rows; i++) {
-    /* The given key matches the key in the matrix */
-    if (strcmp(matrix_of_strings[i][key_column], key) == 0) {
-      /* Return the value in the same row */
-      return mo_string_to_double(matrix_of_strings[i][value_column]);
-    }
-  }
-
-  /* The key was not found, therefore the default value is returned */
-  return default_value;
 }

@@ -10,7 +10,7 @@
  */
 static const long MAX_BUDGET = 1e3;
 static const char *SUITE_NAME = "suite_biobj_300";
-static const char *OBSERVER_NAME = "observer_mo";
+static const char *OBSERVER_NAME = "observer_biobj";
 static const char *OBSERVER_OPTIONS = "result_folder: RS_on_suite_biobj_300 \
                                        include_decision_variables: 0 \
                                        log_nondominated: final";

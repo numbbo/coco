@@ -6,8 +6,6 @@
 #include "f_rosenbrock.c"
 #include "f_sphere.c"
 
-#include "logger_target_hits.c"
-
 /**
  * Initializes the toy suite composed from 6 functions.
  * Returns the problem corresponding to the given function_index.
