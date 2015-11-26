@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
+import os, sys
 import setuptools
 from distutils.core import setup
 from distutils.extension import Extension
@@ -19,17 +19,33 @@ if os.getenv('USE_CYTHON') == 'true':
 cmdclass = {}
 extensions = []
 
+## Use Cython if interface.c is missing.
+USE_CYTHON = not os.path.isfile('cython/interface.c') or (
+    os.path.getmtime('cython/interface.pyx') > os.path.getmtime('cython/interface.c') + 1)
+## Or we force its use on the command line.
+if os.getenv('USE_CYTHON') == 'true':
+    USE_CYTHON = True
+
+cmdclass = {}
+extensions = []
+
 if USE_CYTHON:
     print("NOTE: Using Cython to build interface.")
+    # we rename file interface.pyx to _interface.pyx to possibly avoid import error later
     from Cython.Distutils import build_ext
-    extensions.append(Extension('cocoex._interface',
-                                sources=['cython/interface.pyx', 'cython/coco.c'],
-                                include_dirs=[np.get_include()]))
     cmdclass.update({'build_ext': build_ext})
+    interface_file = 'cython/interface.pyx'
 else:
     print("NOTE: Using precompiled C file to build interface.")
+    interface_file = 'cython/interface.c'
+    
+if 'darwin' in sys.platform:
+    extensions.append(Extension('cocoex.interface',
+                                sources=[interface_file, 'cython/coco.c'],
+                                include_dirs=[np.get_include()]))
+else:
     extensions.append(Extension('cocoex._interface',
-                                sources=['cython/interface.c', 'cython/coco.c'],
+                                sources=[interface_file, 'cython/coco.c'],
                                 include_dirs=[np.get_include()]))
 setup(
     name = 'cocoex',

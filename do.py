@@ -96,6 +96,8 @@ def _prep_python():
                 {'COCO_VERSION': git_version()}) # hg_version()})
     expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
                 {'COCO_VERSION': git_version()}) # hg_version()})
+    if 'darwin' in sys.platform:
+        run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
 
 def build_python():
     _prep_python()
