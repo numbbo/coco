@@ -5,6 +5,12 @@
  *      Author: dejan
  */
 
+#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
+#include "cmocka.h"
+#include "coco.h"
+
 static long __wrap_suite_bbob2009_get_next_problem_index(
     long problem_index, const char *selection_descriptor) {
 
