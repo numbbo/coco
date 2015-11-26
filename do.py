@@ -103,8 +103,6 @@ def build_python():
     _prep_python()
     ## Force distutils to use Cython
     os.environ['USE_CYTHON'] = 'true'
-    if ('darwin' in sys.platform):  # not clear why this is needed
-        run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
     python('code-experiments/build/python', ['setup.py', 'install', '--user'])
     os.environ.pop('USE_CYTHON')
@@ -146,8 +144,6 @@ def test_python():
         os.makedirs(python_temp_lib)
         os.environ['PYTHONPATH'] = python_temp_lib
         os.environ['USE_CYTHON'] = 'true'
-        if ('darwin' in sys.platform):
-            run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
         python('code-experiments/build/python', ['setup.py', 'install', '--home', python_temp_home])
         python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases.txt'])
         os.environ.pop('USE_CYTHON')
