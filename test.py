@@ -21,7 +21,8 @@ from cocoutils import git_version, git_revision
 
 core_files = ['code-experiments/src/coco_suites.c',
               'code-experiments/src/coco_random.c',
-              'code-experiments/src/coco_generics.c'
+              'code-experiments/src/coco_generics.c',
+              'code-experiments/src/coco_observer.c'
               ]
 
 ################################################################################
@@ -44,6 +45,9 @@ def build_unit_test():
     elif ('linux' in sys.platform):
         libraryPath = 'code-experiments/test/unit-test/lib/linux'
         fileName = 'libcmocka.so'
+    elif ('darwin' in sys.platform): #Mac
+        libraryPath = 'code-experiments/test/unit-test/lib/macosx'
+        fileName = 'libcmocka.dylib'
         
     if (len(libraryPath) > 0):
         copy_file(os.path.join(libraryPath, fileName), 
