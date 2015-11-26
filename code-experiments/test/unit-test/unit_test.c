@@ -22,7 +22,7 @@
 static int run_all_tests(void)
 {
   int result = test_all_coco_utilities();
-  result += test_all_coco_suites();
+  /* result += test_all_coco_suites(); */
 
   return result;
 }
