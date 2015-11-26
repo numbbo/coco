@@ -16,7 +16,7 @@ typedef enum {
   NONE, FINAL, ALL
 } observer_mo_log_nondom_e;
 
-/* Data for the multiobjective observer */
+/* Data for the biobjective observer */
 typedef struct {
   observer_mo_log_nondom_e log_mode;
 
@@ -27,15 +27,18 @@ typedef struct {
   char ***reference_value_matrix[OBSERVER_MO_NUMBER_OF_INDICATORS];
   size_t reference_values_count;
 
-} observer_mo_data_t;
+} observer_mo_t;
 
+/**
+ * Frees memory for the given coco_observer_t's data field observer_mo_t.
+ */
 static void observer_mo_free(coco_observer_t *observer) {
 
-  observer_mo_data_t *observer_mo;
+  observer_mo_t *observer_mo;
   size_t i;
 
   assert(observer != NULL);
-  observer_mo = (observer_mo_data_t *) observer->data;
+  observer_mo = (observer_mo_t *) observer->data;
 
   if (observer_mo->compute_indicators != 0) {
     for (i = 0; i < OBSERVER_MO_NUMBER_OF_INDICATORS; i++) {
@@ -43,10 +46,12 @@ static void observer_mo_free(coco_observer_t *observer) {
           2);
     }
   }
+
+  coco_free_memory(observer_mo);
 }
 
 /**
- * Initializes the multiobjective observer. Possible options:
+ * Initializes the biobjective observer. Possible options:
  * - log_nondominated : none (don't log nondominated solutions)
  * - log_nondominated : final (log only the final nondominated solutions; default value)
  * - log_nondominated : all (log every solution that is nondominated at creation time)
@@ -59,7 +64,7 @@ static void observer_mo_free(coco_observer_t *observer) {
  */
 static void observer_mo(coco_observer_t *self, const char *options) {
 
-  observer_mo_data_t *data;
+  observer_mo_t *data;
   char string_value[COCO_PATH_MAX];
   char *file_name;
   FILE *file;
@@ -118,7 +123,7 @@ static void observer_mo(coco_observer_t *self, const char *options) {
 
 /* Returns the reference value for indicator_name matching the given key if the key is found, and raises an
  * error otherwise.  */
-static double observer_mo_get_reference_value(const observer_mo_data_t *self,
+static double observer_mo_get_reference_value(const observer_mo_t *self,
                                               const char *indicator_name,
                                               const char *key) {
 

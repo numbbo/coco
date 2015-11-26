@@ -1,53 +1,52 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "numbbo.h"
-#include "../../src/bbob2009_fopt.c"
+#include "coco.h"
 
+const char file_name[200] = {"RS_on_suite_toy/test_fun_constistency.txt"};
+
+/**
+ * A random search optimizer.
+ */
 void my_optimizer(coco_problem_t *problem) {
-  static const int budget = 102; /* 100000;*/
+
+  const size_t budget = 101;
   coco_random_state_t *rng = coco_random_new(0xdeadbeef);
-  double *x = (double *)malloc(problem->number_of_parameters * sizeof(double));
-  double y;
-  FILE *fd = fopen("const_check_newC.txt", "w");
-  fputs("x[0] x[1] f(x)\n", fd);
-  for (int i = 1; i < budget; ++i) {
-    bbob2009_unif(x, problem->number_of_parameters, i);
-    for (int j = 0; j < problem->number_of_parameters; ++j) {
-      /*const double range = problem->upper_bounds[j] -
-       problem->lower_bounds[j];
-       x[j] = problem->lower_bounds[j] + coco_uniform_random(rng) * range;*/
-      x[j] = 20. * x[j] - 10.;
+  const double *lbounds = coco_problem_get_smallest_values_of_interest(problem);
+  const double *ubounds = coco_problem_get_largest_values_of_interest(problem);
+  size_t dimension = coco_problem_get_dimension(problem);
+  double *x = coco_allocate_vector(dimension);
+  double y, range;
+  size_t i, j;
+
+  FILE *fd = fopen(file_name, "a");
+
+  fprintf(fd, "%s, %s\n", coco_problem_get_id(problem), coco_problem_get_name(problem));
+  fputs("eval f(x) x[0] x[1]\n", fd);
+
+  for (i = 1; i < budget; ++i) {
+
+    for (j = 0; j < dimension; ++j) {
+      range = ubounds[j] - lbounds[j];
+      x[j] = lbounds[j] + coco_random_uniform(rng) * range;
     }
     coco_evaluate_function(problem, x, &y);
-    if (i % 1 == 0) {
-      fprintf(fd, "%.5f %.5f : %.5f\n", x[0], x[1], y);
-    }
+
+    fprintf(fd, "%5lu\t%11.5f\t%11.5f\t%11.5f\n", i, y, x[0], x[1]);
+    fflush(fd);
+
   }
-  coco_random_free(rng);
-  free(x);
+  fputs("\n", fd);
   fclose(fd);
-  printf("%s\n", problem->problem_name);
-  printf("%s\n", problem->problem_id);
+  coco_random_free(rng);
+  coco_free_memory(x);
 }
 
-int main(int argc, char **argv) {
-  coco_suite_benchmark("toy_suit", "toy_observer", "random_search", my_optimizer);
+int main(void) {
+  /* Remove any data left from previous runs */
+  coco_remove_directory("RS_on_suite_toy");
+
+  /* Run the benchmark */
+  coco_suite_benchmark("suite_toy", "observer_toy", "result_folder: RS_on_suite_toy", my_optimizer);
+  return 0;
 }
-/*
- params.funcId = ifun;
- params.DIM = dim[idx_dim];
- params.instanceId = instance;
- printf("%d-D f%d, trial: %d\n", dim[idx_dim], ifun, instance);
- fgeneric_initialize(params);
- for (i = 1; i <= 1001; i++)
- {
- unif(indiv, dim[idx_dim], i);
- for (j = 0; j < dim[idx_dim]; j++)
- indiv[j] = 20. * indiv[j] - 10.;
- fgeneric_evaluate(indiv);
- }
- fgeneric_finalize();
- printf("\tDone, elapsed time [h]: %.2f\n",
- (double)(clock()-t0)/CLOCKS_PER_SEC/60./60.);
- */
