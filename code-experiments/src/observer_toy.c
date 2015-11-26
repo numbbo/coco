@@ -1,7 +1,7 @@
 #include "coco.h"
 #include "coco_utilities.c"
 
-static coco_problem_t *logger_target_hits(coco_observer_t *observer, coco_problem_t *problem);
+static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *problem);
 
 /* Data for the toy observer */
 typedef struct {
@@ -75,7 +75,7 @@ static void observer_toy(coco_observer_t *self, const char *options) {
     data->targets[i - 1] = pow(10.0, (double) (long) (data->number_of_targets - i) - 9.0);
   }
 
-  self->logger_initialize_function = logger_target_hits;
+  self->logger_initialize_function = logger_toy;
   self->observer_free_function = observer_toy_free;
   self->data = data;
 }

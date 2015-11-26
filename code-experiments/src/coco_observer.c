@@ -2,8 +2,8 @@
 #include "coco_internal.h"
 
 #include "observer_bbob2009.c"
-#include "logger_mo.c"
-#include "observer_toy.c"
+#include "logger_biobj.c"
+#include "logger_toy.c"
 
 /**
  * Allocates memory for a coco_observer_t instance.
@@ -78,8 +78,8 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     observer_toy(observer, observer_options);
   } else if (0 == strcmp(observer_name, "observer_bbob2009")) {
     observer_bbob2009(observer, observer_options);
-  } else if (0 == strcmp(observer_name, "observer_mo")) {
-    observer_mo(observer, observer_options);
+  } else if (0 == strcmp(observer_name, "observer_biobj")) {
+    observer_biobj(observer, observer_options);
   } else {
     coco_warning("Unknown observer!");
     return NULL;

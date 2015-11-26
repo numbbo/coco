@@ -16,15 +16,15 @@ typedef struct {
   coco_observer_t *observer;
   size_t next_target;
   long number_of_evaluations;
-} logger_target_hits_t;
+} logger_toy_t;
 
 /**
  * Evaluates the function, increases the number of evaluations and outputs information based on the targets
  * that have been hit.
  */
-static void private_logger_target_hits_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void private_logger_toy_evaluate(coco_problem_t *self, const double *x, double *y) {
 
-  logger_target_hits_t *logger;
+  logger_toy_t *logger;
   observer_toy_t *observer_toy;
   double *targets;
 
@@ -47,9 +47,9 @@ static void private_logger_target_hits_evaluate(coco_problem_t *self, const doub
 /**
  * Initializes the toy logger.
  */
-static coco_problem_t *logger_target_hits(coco_observer_t *observer, coco_problem_t *problem) {
+static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *problem) {
 
-  logger_target_hits_t *logger;
+  logger_toy_t *logger;
   coco_problem_t *self;
   FILE *output_file;
 
@@ -62,6 +62,6 @@ static coco_problem_t *logger_target_hits(coco_observer_t *observer, coco_proble
   fprintf(output_file, "\n%s, %s\n", coco_problem_get_id(problem), coco_problem_get_name(problem));
 
   self = coco_transformed_allocate(problem, logger, NULL);
-  self->evaluate_function = private_logger_target_hits_evaluate;
+  self->evaluate_function = private_logger_toy_evaluate;
   return self;
 }
