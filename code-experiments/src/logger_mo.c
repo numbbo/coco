@@ -15,6 +15,11 @@
 #include "mo_generics.c"
 #include "mo_targets.c"
 
+/**
+ * This is a biobjective logger that logs the values of some indicators and can output also nondominated
+ * solutions.
+ */
+
 /* Data for each indicator */
 typedef struct {
   /* Name of the indicator to be used in the output files */
@@ -29,7 +34,7 @@ typedef struct {
   size_t next_target_id;
 } logger_mo_indicator_t;
 
-/* Data for the multiobjective logger */
+/* Data for the biobjective logger */
 typedef struct {
   coco_observer_t *observer;
 
@@ -211,12 +216,15 @@ static int logger_mo_tree_update(logger_mo_t *logger, logger_mo_avl_item_t *node
   return trigger_update;
 }
 
+/**
+ * Initializes the indicator with name indicator_name.
+ */
 static logger_mo_indicator_t *logger_mo_indicator(logger_mo_t *logger,
                                                   const coco_problem_t *problem,
                                                   const char *indicator_name) {
 
   coco_observer_t *observer;
-  observer_mo_data_t *observer_mo;
+  observer_mo_t *observer_mo;
   logger_mo_indicator_t *indicator;
   char *prefix, *file_name, *path_name;
   size_t i;
@@ -224,7 +232,7 @@ static logger_mo_indicator_t *logger_mo_indicator(logger_mo_t *logger,
 
   indicator = (logger_mo_indicator_t *) coco_allocate_memory(sizeof(*indicator));
   observer = logger->observer;
-  observer_mo = (observer_mo_data_t *) observer->data;
+  observer_mo = (observer_mo_t *) observer->data;
 
   indicator->name = coco_strdup(indicator_name);
 
@@ -270,6 +278,9 @@ static logger_mo_indicator_t *logger_mo_indicator(logger_mo_t *logger,
   return indicator;
 }
 
+/**
+ * Frees the memory of the given indicator.
+ */
 static void logger_mo_indicator_free(void *stuff) {
 
   logger_mo_indicator_t *indicator;
@@ -298,18 +309,22 @@ static void logger_mo_indicator_free(void *stuff) {
   }
 }
 
+/**
+ * Evaluates the function, increases the number of evaluations and outputs information based on observer
+ * options.
+ */
 static void logger_mo_evaluate(coco_problem_t *problem, const double *x, double *y) {
 
   logger_mo_t *logger;
   coco_observer_t *observer;
-  observer_mo_data_t *observer_mo;
+  observer_mo_t *observer_mo;
 
   logger_mo_avl_item_t *node_item;
   int update_performed;
 
   logger = (logger_mo_t *) coco_transformed_get_data(problem);
   observer = logger->observer;
-  observer_mo = (observer_mo_data_t *) observer->data;
+  observer_mo = (observer_mo_t *) observer->data;
 
   /* Evaluate function */
   coco_evaluate_function(coco_transformed_get_inner_problem(problem), x, y);
@@ -333,13 +348,16 @@ static void logger_mo_evaluate(coco_problem_t *problem, const double *x, double 
   fflush(logger->nondom_file);
 }
 
+/**
+ * Outputs the final nondominated solutions.
+ */
 static void logger_mo_finalize(logger_mo_t *logger) {
 
   coco_observer_t *observer;
-  observer_mo_data_t *observer_mo;
+  observer_mo_t *observer_mo;
 
   observer = logger->observer;
-  observer_mo = (observer_mo_data_t *) observer->data;
+  observer_mo = (observer_mo_t *) observer->data;
 
   if (observer_mo->log_mode == FINAL) {
     /* Resort archive_tree according to time stamp and then output it */
@@ -363,6 +381,9 @@ static void logger_mo_finalize(logger_mo_t *logger) {
 
 }
 
+/**
+ * Frees the memory of the given biobjective logger.
+ */
 static void logger_mo_free(void *stuff) {
 
   logger_mo_t *logger;
@@ -386,13 +407,13 @@ static void logger_mo_free(void *stuff) {
 }
 
 /**
- * Initializes the multiobjective logger.
+ * Initializes the biobjective logger.
  */
 coco_problem_t *logger_mo(coco_observer_t *observer, coco_problem_t *problem) {
 
   coco_problem_t *self;
   logger_mo_t *logger;
-  observer_mo_data_t *observer_mo;
+  observer_mo_t *observer_mo;
   const char nondom_folder_name[] = "archive";
   char *path_name, *file_name, *prefix;
   size_t i;
@@ -404,7 +425,7 @@ coco_problem_t *logger_mo(coco_observer_t *observer, coco_problem_t *problem) {
   logger->number_of_variables = problem->number_of_variables;
   logger->number_of_objectives = problem->number_of_objectives;
 
-  observer_mo = (observer_mo_data_t *) observer->data;
+  observer_mo = (observer_mo_t *) observer->data;
 
   /* Initialize logging of nondominated solutions */
   if (observer_mo->log_mode != NONE) {

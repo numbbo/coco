@@ -56,6 +56,9 @@ static const char SUITE_BIOBJ_300_PROBLEM_GROUP[24][30] = {
  *           7499 |        5 |      300 |        20
  */
 
+/**
+ * Computes the function_id, instance_id and dimension_idx from the given problem_index.
+ */
 static void suite_biobj_300_decode_problem_index(const long problem_index,
                                                  int *function_id,
                                                  long *instance_id,
@@ -67,6 +70,10 @@ static void suite_biobj_300_decode_problem_index(const long problem_index,
   *instance_id = rest % SUITE_BIOBJ_NUMBER_OF_INSTANCES;
 }
 
+/**
+ * Initializes the biobjective suite created from 300 combinations of the bbob2009 functions.
+ * Returns the problem corresponding to the given problem_index.
+ */
 static coco_problem_t *suite_biobj_300(const long problem_index) {
   int function_id, function1_id, function2_id, dimension_idx;
   long instance_id;

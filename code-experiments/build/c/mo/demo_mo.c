@@ -135,8 +135,8 @@ void coco_optimize(coco_problem_t *problem) {
 
   /* Prepare, set up convenience definitions */
   size_t dimension = coco_problem_get_dimension(problem);
-  const double * lbounds = coco_problem_get_smallest_values_of_interest(problem);
-  const double * ubounds = coco_problem_get_largest_values_of_interest(problem);
+  const double *lbounds = coco_problem_get_smallest_values_of_interest(problem);
+  const double *ubounds = coco_problem_get_largest_values_of_interest(problem);
   double * initial_x = coco_allocate_vector(coco_problem_get_dimension(problem));
   long remaining_budget;
 

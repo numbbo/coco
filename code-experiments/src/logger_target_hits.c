@@ -6,84 +6,62 @@
 #include "coco_utilities.c"
 #include "coco_problem.c"
 #include "coco_strdup.c"
+#include "observer_toy.c"
+
+/**
+ * This is a toy logger that logs the evaluation number and function value each time a target has been hit.
+ */
 
 typedef struct {
-  char *path;
-  FILE *logfile;
-  double *target_values;
-  size_t number_of_target_values;
-  size_t next_target_value;
+  coco_observer_t *observer;
+  size_t next_target;
   long number_of_evaluations;
 } logger_target_hits_t;
 
+/**
+ * Evaluates the function, increases the number of evaluations and outputs information based on the targets
+ * that have been hit.
+ */
 static void private_logger_target_hits_evaluate(coco_problem_t *self, const double *x, double *y) {
-  logger_target_hits_t *data;
-  data = coco_transformed_get_data(self);
+
+  logger_target_hits_t *logger;
+  observer_toy_t *observer_toy;
+  double *targets;
+
+  logger = coco_transformed_get_data(self);
+  observer_toy = (observer_toy_t *) logger->observer->data;
+  targets = observer_toy->targets;
 
   coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
-  data->number_of_evaluations++;
+  logger->number_of_evaluations++;
 
-  /* Open logfile if it is not already open */
-  if (data->logfile == NULL) {
-    data->logfile = fopen(data->path, "w");
-    if (data->logfile == NULL) {
-      char *buf;
-      const char *error_format = "lht_evaluate_function() failed to open log file '%s'.";
-      size_t buffer_size = (size_t) snprintf(NULL, 0, error_format, data->path);
-      buf = (char *) coco_allocate_memory(buffer_size);
-      snprintf(buf, buffer_size, error_format, data->path);
-      coco_error(buf);
-      coco_free_memory(buf); /* Never reached */
-    }
-    fputs("target_value function_value number_of_evaluations\n", data->logfile);
+  /* Add a line for each target that has been hit */
+  while (y[0] <= targets[logger->next_target] && logger->next_target < observer_toy->number_of_targets) {
+    fprintf(observer_toy->log_file, "%e\t%5ld\t%.5f\n", targets[logger->next_target], logger->number_of_evaluations, y[0]);
+    logger->next_target++;
   }
-
-  /* Add a line for each hitting level we have reached. */
-  while (y[0] <= data->target_values[data->next_target_value]
-      && data->next_target_value < data->number_of_target_values) {
-    fprintf(data->logfile, "%e %e %lu\n", data->target_values[data->next_target_value], y[0],
-        data->number_of_evaluations);
-    data->next_target_value++;
-  }
-  /* Flush output so that impatient users can see progress. */
-  fflush(data->logfile);
+  /* Flush output so that impatient users can see the progress */
+  fflush(observer_toy->log_file);
 }
 
-static void private_logger_target_hits_free(void *stuff) {
-  logger_target_hits_t *data;
-  assert(stuff != NULL);
-  data = stuff;
+/**
+ * Initializes the toy logger.
+ */
+static coco_problem_t *logger_target_hits(coco_observer_t *observer, coco_problem_t *problem) {
 
-  if (data->path != NULL) {
-    coco_free_memory(data->path);
-    data->path = NULL;
-  }
-  if (data->target_values != NULL) {
-    coco_free_memory(data->target_values);
-    data->target_values = NULL;
-  }
-  if (data->logfile != NULL) {
-    fclose(data->logfile);
-    data->logfile = NULL;
-  }
-}
-
-static coco_problem_t *logger_target_hits(coco_problem_t *inner_problem,
-                                          const double *target_values,
-                                          const size_t number_of_target_values,
-                                          const char *path) {
-  logger_target_hits_t *data;
+  logger_target_hits_t *logger;
   coco_problem_t *self;
+  FILE *output_file;
 
-  data = coco_allocate_memory(sizeof(*data));
-  data->number_of_evaluations = 0;
-  data->path = coco_strdup(path);
-  data->logfile = NULL; /* Open lazily in lht_evaluate_function(). */
-  data->target_values = coco_duplicate_vector(target_values, number_of_target_values);
-  data->number_of_target_values = number_of_target_values;
-  data->next_target_value = 0;
+  logger = coco_allocate_memory(sizeof(*logger));
+  logger->observer = observer;
+  logger->next_target = 0;
+  logger->number_of_evaluations = 0;
 
-  self = coco_transformed_allocate(inner_problem, data, private_logger_target_hits_free);
+  output_file = ((observer_toy_t *) logger->observer->data)->log_file;
+  fprintf(output_file, "\n%s, %s\n", coco_problem_get_id(problem), coco_problem_get_name(problem));
+
+  self = coco_transformed_allocate(problem, logger, NULL);
   self->evaluate_function = private_logger_target_hits_evaluate;
   return self;
 }
