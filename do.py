@@ -69,6 +69,24 @@ def test_c():
     build_c_example_tests()
     run_c_example_tests()
         
+def test_c_unit():
+    build_c()
+    # Perform unit tests
+    build_c_unit_tests()
+    run_c_unit_tests()
+        
+def test_c_integration():
+    build_c()
+    # Perform integration tests
+    build_c_integration_tests()
+    run_c_integration_tests()
+        
+def test_c_example():
+    build_c()
+    # Perform example tests
+    build_c_example_tests()
+    run_c_example_tests()
+        
 def build_c_unit_tests():
     libraryPath = '';
     fileName = ''
@@ -360,25 +378,28 @@ Usage: do.py <command> <arguments>
 
 Available commands:
 
-  build          - Build C, Python and Java modules
-  test           - Test C, Python and Java modules
-  build-c        - Build C framework
-  build-python   - Build Python modules
-  build-python2  - Build Python 2 modules
-  build-python3  - Build Python 3 modules
-  build-matlab   - Build Matlab package
-  build-java     - Build Java package
-  build-examples - Update examples to latest framework code
-  run-c          - Build and run examples from the C framework
-  run-python     - Run a Python script with installed COCO module
-                   Takes a single argument (name of Python script file)
-  test-c         - Build and run unit tests, integration tests and examples
-                   from the C framework
-  test-python    - Build and run minimal test of Python module
-  test-python2   - Build and run  minimal test of Python 2 module
-  test-python3   - Build and run  minimal test of Python 3 module
-  test-java      - Build and run  minimal test of Java package
-  leak-check     - Check for memory leaks
+  build                - Build C, Python and Java modules
+  test                 - Test C, Python and Java modules
+  build-c              - Build C framework
+  build-python         - Build Python modules
+  build-python2        - Build Python 2 modules
+  build-python3        - Build Python 3 modules
+  build-matlab         - Build Matlab package
+  build-java           - Build Java package
+  build-examples       - Update examples to latest framework code
+  run-c                - Build and run examples from the C framework
+  run-python           - Run a Python script with installed COCO module
+                         Takes a single argument (name of Python script file)
+  test-c               - Build and run unit tests, integration tests 
+                         and examples from the C framework
+  test-c-unit          - Build and run unit tests from the C framework
+  test-c-integration   - Build and run integration tests from the C framework
+  test-c-example       - Build and run examples from the C framework
+  test-python          - Build and run minimal test of Python module
+  test-python2         - Build and run  minimal test of Python 2 module
+  test-python3         - Build and run  minimal test of Python 3 module
+  test-java            - Build and run  minimal test of Java package
+  leak-check           - Check for memory leaks
 
 
 To build a release version which does not include debugging information in the 
@@ -402,6 +423,9 @@ def main(args):
     elif cmd == 'run-c': run_c()
     elif cmd == 'run-python': run_python(args[1])
     elif cmd == 'test-c': test_c()
+    elif cmd == 'test-c-unit': test_c_unit()
+    elif cmd == 'test-c-integration': test_c_integration()
+    elif cmd == 'test-c-example': test_c_example()    
     elif cmd == 'test-python': test_python()
     elif cmd == 'test-python2': test_python2()
     elif cmd == 'test-python3': test_python3()
