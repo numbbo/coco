@@ -115,6 +115,7 @@ static void suite_bbob2009_decode_problem_index(const long problem_index,
  * It helps allow easier control on instances, functions and dimensions one wants to run
  * all indices start from 0 TODO: start at 1 instead?
  */
+/* Commented to silence the compiler
 static long suite_bbob2009_encode_problem_index(int function_id, long instance_id, int dimension_idx) {
   long cycleLength = SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS
       * SUITE_BBOB2009_NUMBER_OF_DIMENSIONS;
@@ -122,10 +123,10 @@ static long suite_bbob2009_encode_problem_index(int function_id, long instance_i
   long tmp2 = function_id * SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
   long tmp3 = dimension_idx
       * (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS);
-  long tmp4 = ((long) (instance_id / SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES)) * cycleLength; /* just for safety */
+  long tmp4 = ((long) (instance_id / SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES)) * cycleLength;
 
   return tmp1 + tmp2 + tmp3 + tmp4;
-}
+} */
 
 static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, long instance_id) {
   size_t len;
@@ -670,50 +671,6 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
   return problem;
 }
 
-/* Return the bbob2009 function id of the problem or -1 if it is not a bbob2009
- * problem. */
-static int suite_bbob2009_get_function_id(const coco_problem_t *problem) {
-  static const char *bbob_prefix = "bbob2009_";
-  const char *problem_id = coco_problem_get_id(problem);
-  assert(strlen(problem_id) >= 20);
-
-  if (strncmp(bbob_prefix, problem_id, strlen(bbob_prefix)) != 0) {
-    return -1;
-  }
-
-  /* OME: Ugly hardcoded extraction. In a perfect world, we would
-   * parse the problem id by splitting on _ and then finding the 'f'
-   * field. Instead, we could out the position of the function id in
-   * the string
-   *
-   *   01234567890123456789
-   *   bbob2009_fXX_iYY_dZZ
-   */
-  return (problem_id[10] - '0') * 10 + (problem_id[11] - '0');
-}
-
-/* Return the bbob2009 instance id of the problem or -1 if it is not a bbob2009
- * problem. */
-static int suite_bbob2009_get_instance_id(const coco_problem_t *problem) {
-  static const char *bbob_prefix = "bbob2009_";
-  const char *problem_id = coco_problem_get_id(problem);
-  assert(strlen(problem_id) >= 20);
-
-  if (strncmp(bbob_prefix, problem_id, strlen(bbob_prefix)) != 0) {
-    return -1;
-  }
-
-  /* OME: Ugly hardcoded extraction. In a perfect world, we would
-   * parse the problem id by splitting on _ and then finding the 'i'
-   * field. Instead, we could out the position of the instance id in
-   * the string
-   *
-   *   01234567890123456789
-   *   bbob2009_fXX_iYY_dZZ
-   */
-  return (problem_id[14] - '0') * 10 + (problem_id[15] - '0');
-}
-
 /* TODO: specify selection_descriptor and implement
  *
  * Possible example for a descriptor: "instance:1-5, dimension:-20",
@@ -722,7 +679,7 @@ static int suite_bbob2009_get_instance_id(const coco_problem_t *problem) {
  *
  * Return successor of problem_index or first index if problem_index < 0 or -1 otherwise.
  *
- * Details: this function is not necessary unless selection is implemented. 
+ * Details: this function is not necessary unless selection is implemented.
  */
 static long suite_bbob2009_get_next_problem_index(long problem_index, const char *selection_descriptor) {
   const long first_index = 0;
@@ -740,7 +697,7 @@ static long suite_bbob2009_get_next_problem_index(long problem_index, const char
   /* TODO:
    o parse the selection_descriptor -> value bounds on funID, dimension, instance
    o increment problem_index until funID, dimension, instance match the restrictions
-   or max problem_index is succeeded. 
+   or max problem_index is succeeded.
    */
 
   coco_error("next_problem_index is yet to be implemented for specific selections");
@@ -765,7 +722,7 @@ static coco_problem_t *suite_bbob2009(long problem_index) {
   problem = suite_bbob2009_problem(function_id, dimension, instance_id);
   problem->suite_dep_index = problem_index;
   problem->suite_dep_function_id = function_id;
-  problem->suite_dep_instance_id = problem_index;
+  problem->suite_dep_instance_id = instance_id;
   return problem;
 }
 
