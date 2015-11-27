@@ -420,7 +420,7 @@ static void logger_biobj_free(void *stuff) {
 /**
  * Initializes the biobjective logger.
  */
-coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *problem) {
+static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *problem) {
 
   coco_problem_t *self;
   logger_biobj_t *logger;

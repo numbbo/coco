@@ -27,7 +27,7 @@ typedef struct {
 
 } observer_biobj_t;
 
-coco_problem_t *logger_biobj(coco_observer_t *self, coco_problem_t *problem);
+static coco_problem_t *logger_biobj(coco_observer_t *self, coco_problem_t *problem);
 
 /**
  * Allocates memory for a matrix with number_of_rows rows and number_of_columns columns of strings of
@@ -143,7 +143,7 @@ static double observer_biobj_get_matching_double_value(char ***matrix_of_strings
                                                        const size_t number_of_rows,
                                                        const size_t key_column,
                                                        const size_t value_column,
-                                                       double default_value) {
+                                                       const double default_value) {
 
   size_t i;
 

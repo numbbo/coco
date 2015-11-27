@@ -8,7 +8,7 @@
 /**
  * Allocates memory for a coco_observer_t instance.
  */
-static coco_observer_t *coco_observer_allocate(char *output_folder, int verbosity) {
+static coco_observer_t *coco_observer_allocate(const char *output_folder, const int verbosity) {
 
   coco_observer_t *observer;
   observer = (coco_observer_t *) coco_allocate_memory(sizeof(*observer));
