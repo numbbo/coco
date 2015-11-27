@@ -24,7 +24,7 @@ public class Problem {
 	}
 	
 	public void addObserver(String observer, String options) {
-		this.problem = JNIinterface.cocoProblemAddObserver(this.problem, observer, options);
+		this.problem = JNIinterface.cocoProblemAddObserverDeprecated(this.problem, observer, options);
 	}
 	
 	public void free() {

@@ -9,7 +9,7 @@ public class JNIinterface {
 	
 	/* Native methods */
 	public static native long cocoSuiteGetProblem(String problem_suit, long function_index);
-	public static native long cocoProblemAddObserver(long problem, String observer, String options);
+	public static native long cocoProblemAddObserverDeprecated(long problem, String observer, String options);
 	public static native void cocoProblemFree(long p);
 	public static native double[] cocoEvaluateFunction(Problem p, double[] x);
 	public static native int cocoProblemGetDimension(long p);

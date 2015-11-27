@@ -1,4 +1,4 @@
-## Makefile to build C demo_mo programs included with the COCO distribution
+## Makefile to build C example programs included with the COCO distribution
 ##
 ## NOTE: We have tried to make this Makefile as generic and portable
 ## as possible. However, there are many (incompatible) versions of
@@ -17,23 +17,26 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: demo_mo demo_mo_toy
+all: test_coco test_instance_extraction
 
 clean:
-	rm -f coco.o demo_mo.o demo_mo demo_mo_toy.o demo_mo_toy
+	rm -f coco.o 
+	rm -f test_coco.o test_coco  
+	rm -f test_instance_extraction.o test_instance_extraction  
 
 ########################################################################
 ## Programs
-demo_mo: demo_mo.o coco.o
-	${CC} ${CCFLAGS} -o demo_mo coco.o demo_mo.o ${LDFLAGS}
-demo_mo_toy: demo_mo_toy.o coco.o
-	${CC} ${CCFLAGS} -o demo_mo_toy coco.o demo_mo_toy.o ${LDFLAGS}
+test_coco: test_coco.o coco.o
+	${CC} ${CCFLAGS} -o test_coco coco.o test_coco.o ${LDFLAGS}  
+	
+test_instance_extraction: test_instance_extraction.o coco.o
+	${CC} ${CCFLAGS} -o test_instance_extraction coco.o test_instance_extraction.o ${LDFLAGS}  
 
 ########################################################################
 ## Additional dependencies
 coco.o: coco.h coco.c
 	${CC} -c ${CCFLAGS} -o coco.o coco.c
-demo_mo.o: coco.h coco.c demo_mo.c
-	${CC} -c ${CCFLAGS} -o demo_mo.o demo_mo.c
-demo_mo_toy.o: coco.h coco.c demo_mo_toy.c
-	${CC} -c ${CCFLAGS} -o demo_mo_toy.o demo_mo_toy.c
+test_coco.o: coco.h coco.c test_coco.c
+	${CC} -c ${CCFLAGS} -o test_coco.o test_coco.c
+test_instance_extraction.o: coco.h coco.c test_instance_extraction.c
+	${CC} -c ${CCFLAGS} -o test_instance_extraction.o test_instance_extraction.c

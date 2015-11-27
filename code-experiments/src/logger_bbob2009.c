@@ -13,14 +13,12 @@
 
 static int bbob2009_logger_verbosity = 3; /* TODO: make this an option the user can modify */
 static int bbob2009_raisedOptValWarning;
-static int suite_bbob2009_get_function_id(const coco_problem_t *problem);
-static int suite_bbob2009_get_instance_id(const coco_problem_t *problem);
 
 static const size_t bbob2009_nbpts_nbevals = 20;
 static const size_t bbob2009_nbpts_fval = 5;
 static size_t bbob2009_current_dim = 0;
 static long bbob2009_current_funId = 0;
-static int bbob2009_infoFile_firstInstance = 0;
+static long bbob2009_infoFile_firstInstance = 0;
 char bbob2009_infoFile_firstInstance_char[3];
 /* a possible solution: have a list of dims that are already in the file, if the ones we're about to log
  * is != bbob2009_current_dim and the funId is currend_funId, create a new .info file with as suffix the
@@ -62,7 +60,7 @@ typedef struct {
    * problem as a second parameter is not an option even though we need info
    * form it.*/
   int function_id; /*TODO: consider changing name*/
-  int instance_id;
+  long instance_id;
   size_t number_of_variables;
   double optimal_fvalue;
 } logger_bbob2009_t;
@@ -223,7 +221,7 @@ static void private_logger_bbob2009_openIndexFile(logger_bbob2009_t *data,
     bbob2009_infoFile_firstInstance = data->instance_id;
   }
   sprintf(function_id_char, "%d", data->function_id);
-  sprintf(bbob2009_infoFile_firstInstance_char, "%d", bbob2009_infoFile_firstInstance);
+  sprintf(bbob2009_infoFile_firstInstance_char, "%ld", bbob2009_infoFile_firstInstance);
   target_file = &(data->index_file);
   tmp_file = NULL; /* to check whether the file already exists. Don't want to use target_file */
   strncpy(file_name, indexFile_prefix, COCO_PATH_MAX - strlen(file_name) - 1);
@@ -262,7 +260,7 @@ static void private_logger_bbob2009_openIndexFile(logger_bbob2009_t *data,
             newLine = 0;
             file_path[strlen(file_path) - strlen(bbob2009_infoFile_firstInstance_char) - 7] = 0; /* truncate the instance part */
             bbob2009_infoFile_firstInstance = data->instance_id;
-            sprintf(bbob2009_infoFile_firstInstance_char, "%d", bbob2009_infoFile_firstInstance);
+            sprintf(bbob2009_infoFile_firstInstance_char, "%ld", bbob2009_infoFile_firstInstance);
             strncat(file_path, "_i", COCO_PATH_MAX - strlen(file_name) - 1);
             strncat(file_path, bbob2009_infoFile_firstInstance_char, COCO_PATH_MAX - strlen(file_name) - 1);
             strncat(file_path, ".info", COCO_PATH_MAX - strlen(file_name) - 1);
@@ -318,7 +316,7 @@ static void private_logger_bbob2009_initialize(logger_bbob2009_t *data, coco_pro
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
 
-  sprintf(tmpc_funId, "%d", suite_bbob2009_get_function_id(inner_problem));
+  sprintf(tmpc_funId, "%d", coco_problem_get_suite_dep_function_id(inner_problem));
   sprintf(tmpc_dim, "%lu", (unsigned long) inner_problem->number_of_variables);
 
   /* prepare paths and names */
@@ -337,7 +335,7 @@ static void private_logger_bbob2009_initialize(logger_bbob2009_t *data, coco_pro
 
   /* index/info file */
   private_logger_bbob2009_openIndexFile(data, data->path, indexFile_prefix, tmpc_funId, dataFile_path);
-  fprintf(data->index_file, ", %d", suite_bbob2009_get_instance_id(inner_problem));
+  fprintf(data->index_file, ", %ld", coco_problem_get_suite_dep_instance_id(inner_problem));
   /* data files */
   /* TODO: definitely improvable but works for now */
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
@@ -352,7 +350,7 @@ static void private_logger_bbob2009_initialize(logger_bbob2009_t *data, coco_pro
   private_logger_bbob2009_open_dataFile(&(data->rdata_file), data->path, dataFile_path, ".rdat");
   fprintf(data->rdata_file, bbob2009_file_header_str, data->optimal_fvalue);
   /* TODO: manage duplicate filenames by either using numbers or raising an error */
-  /* The coco_create_unique_path function is available now! */
+  /* The coco_create_unique_path() function is available now! */
   data->is_initialized = 1;
 }
 
@@ -367,8 +365,8 @@ static void private_logger_bbob2009_evaluate(coco_problem_t *self, const double 
     private_logger_bbob2009_initialize(data, inner_problem);
   }
   if (bbob2009_logger_verbosity > 2 && data->number_of_evaluations == 0) {
-    if (inner_problem->index >= 0) {
-      printf("%4ld: ", inner_problem->index);
+    if (inner_problem->suite_dep_index >= 0) {
+      printf("%4ld: ", inner_problem->suite_dep_index);
     }
     printf("on problem %s ... ", coco_problem_get_id(inner_problem));
   }
@@ -506,8 +504,8 @@ static coco_problem_t *logger_bbob2009(coco_problem_t *inner_problem, const char
    * should eventually be removed. Some fields of the bbob2009_logger struct
    * might be useless
    */
-  data->function_id = suite_bbob2009_get_function_id(inner_problem);
-  data->instance_id = suite_bbob2009_get_instance_id(inner_problem);
+  data->function_id = coco_problem_get_suite_dep_function_id(inner_problem);
+  data->instance_id = coco_problem_get_suite_dep_instance_id(inner_problem);
   data->written_last_eval = 1;
   data->last_fvalue = DBL_MAX;
   data->is_initialized = 0;

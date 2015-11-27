@@ -43,7 +43,7 @@ coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
                                       const size_t number_of_objectives,
                                       const size_t number_of_constraints) {
   coco_problem_t *problem;
-  problem = (coco_problem_t *) coco_allocate_memory(sizeof(coco_problem_t));
+  problem = (coco_problem_t *) coco_allocate_memory(sizeof(*problem));
   /* Initialize fields to sane/safe defaults */
   problem->initial_solution = NULL;
   problem->evaluate_function = NULL;
@@ -63,6 +63,9 @@ coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->final_target_delta[0] = 1e-8; /* in case to be modified by the benchmark */
   problem->best_observed_fvalue[0] = DBL_MAX;
   problem->best_observed_evaluation[0] = 0;
+  problem->suite_dep_index = 0;
+  problem->suite_dep_function_id = 0;
+  problem->suite_dep_instance_id = 0;
   problem->data = NULL;
   return problem;
 }
@@ -92,6 +95,9 @@ coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
 
   problem->problem_name = coco_strdup(other->problem_name);
   problem->problem_id = coco_strdup(other->problem_id);
+  problem->suite_dep_index = other->suite_dep_index;
+  problem->suite_dep_function_id = other->suite_dep_function_id;
+  problem->suite_dep_instance_id = other->suite_dep_instance_id;
   return problem;
 }
 
@@ -396,4 +402,18 @@ void coco_problem_set_name(coco_problem_t *problem, const char *name, ...) {
   coco_free_memory(problem->problem_name);
   problem->problem_name = coco_vstrdupf(name, args);
   va_end(args);
+}
+
+/* Commented to silence the compiler
+static long coco_problem_get_suite_dep_index(coco_problem_t *problem) {
+  return problem->suite_dep_index;
+}
+*/
+
+static int coco_problem_get_suite_dep_function_id(coco_problem_t *problem) {
+  return problem->suite_dep_function_id;
+}
+
+static long coco_problem_get_suite_dep_instance_id(coco_problem_t *problem) {
+  return problem->suite_dep_instance_id;
 }

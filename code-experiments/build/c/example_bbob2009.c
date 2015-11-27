@@ -61,7 +61,7 @@ static const char *SUITE_NAME       = "suite_bbob2009";
 static const char *SUITE_OPTIONS    = ""; /* e.g.: "instances:1-5; dimensions:-20" */
 static const char *OBSERVER_NAME    = "observer_bbob2009"; /* writes data */
 /* static const char *OBSERVER_NAME = "no_observer"; / * writes no data */
-static const char *OBSERVER_OPTIONS = "random_search_on_suite_bbob2009"; /* future: "folder:random_search; verbosity:1" */
+static const char *OBSERVER_OPTIONS = "RS_on_suite_bbob2009"; /* future: "folder:random_search; verbosity:1" */
 static const char *SOLVER_NAME      = "random_search"; /* for the choice in coco_optimize below */
 /*  static const char *SOLVER_NAME   = "my_solver"; / * for the choice in coco_optimize below */
 static const int NUMBER_OF_BATCHES   = 88;  /* use 1 for single batch :-) batches can be run independently in parallel */
@@ -127,15 +127,15 @@ int main() {
                  coco_optimize);
   return 0;
 }
-#elif 0
-int main() {  /* short example, also nice to read */
+#elif 1
+int main(void) {  /* short example, also nice to read */
   coco_problem_t *problem;
-  int problem_index;
+  long problem_index;
   
   for (problem_index = 0; problem_index >= 0;
        problem_index = coco_suite_get_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)) {
     problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-    problem = coco_problem_add_observer(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
+    problem = deprecated__coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
     coco_optimize(problem);
     coco_problem_free(problem);
   }
@@ -145,7 +145,7 @@ int main() {  /* short example, also nice to read */
   return 0;
 }
 
-#elif 1
+#elif 0
 int main(void) { /* longer example supporting several batches */
   coco_problem_t * problem;
   long problem_index = coco_suite_get_next_problem_index(
@@ -160,7 +160,7 @@ int main(void) { /* longer example supporting several batches */
     if (((problem_index - CURRENT_BATCH + 1) % NUMBER_OF_BATCHES) != 0)
       continue;
     problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-    problem = coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
+    problem = deprecated__coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
     if (problem == NULL) {
       printf("problem with index %ld not found, skipped", problem_index);
       continue;
@@ -174,12 +174,12 @@ int main(void) { /* longer example supporting several batches */
   return 0;
 }
 
-#elif 1
+#elif 0
 /* Interface via dimension, function-ID and instance-ID. This does not translate
    directly to different languages or benchmark suites. */
 int main(void) {
-  long problem_index;
-  int function_id, instance_id, dimension_idx;
+  long problem_index, instance_id;
+  int function_id, dimension_idx;
   coco_problem_t * problem;
   
   /*int *functions;
@@ -190,7 +190,7 @@ int main(void) {
           for (instance_id = 0; instance_id < 15; instance_id++) { /* this is specific to 2009 */
               problem_index = bbob2009_encode_problem_index(function_id, instance_id, dimension_idx);
               problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-              problem = coco_problem_add_observer(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
+              problem = deprecated__coco_problem_add_observer(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
               if (problem == NULL)
                 break;
               coco_optimize(problem);

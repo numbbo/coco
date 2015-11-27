@@ -6,14 +6,9 @@
 #include "f_rosenbrock.c"
 #include "f_sphere.c"
 
-#include "logger_target_hits.c"
-
 /**
- * suite_toy(function_index):
- *
- * Return the ${function_index}-th benchmark problem in the toy
- * benchmark suite. If the function index is out of bounds, return
- * NULL.
+ * Initializes the toy suite composed from 6 functions.
+ * Returns the problem corresponding to the given function_index.
  */
 static coco_problem_t *suite_toy(const long function_index) {
   static const size_t dims[] = { 2, 3, 5, 10, 20 };
@@ -39,5 +34,8 @@ static coco_problem_t *suite_toy(const long function_index) {
   } else {
     return NULL;
   }
+  problem->suite_dep_index = fid;
+  problem->suite_dep_function_id = (int) fid;
+  problem->suite_dep_instance_id = 0;
   return problem;
 }
