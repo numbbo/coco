@@ -429,6 +429,11 @@ coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *problem)
   char *path_name, *file_name, *prefix;
   size_t i;
 
+  if (problem->number_of_objectives != 2) {
+    coco_error("logger_biobj(): The biobjective logger cannot log a problem with %d objective(s)", problem->number_of_objectives);
+    return NULL; /* Never reached. */
+  }
+
   logger = coco_allocate_memory(sizeof(*logger));
 
   logger->observer = observer;

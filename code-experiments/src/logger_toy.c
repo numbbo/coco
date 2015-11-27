@@ -54,6 +54,10 @@ static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *pro
   coco_problem_t *self;
   FILE *output_file;
 
+  if (problem->number_of_objectives != 1) {
+    coco_warning("logger_toy(): The toy logger shouldn't be used to log a problem with %d objectives", problem->number_of_objectives);
+  }
+
   logger = coco_allocate_memory(sizeof(*logger));
   logger->observer = observer;
   logger->next_target = 0;
