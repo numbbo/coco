@@ -93,7 +93,6 @@ struct coco_problem {
    */
 };
 
-
 typedef void (*coco_observer_free_function_t)(coco_observer_t *self);
 typedef coco_problem_t *(*coco_logger_initialize_function_t)(coco_observer_t *self, coco_problem_t *problem);
 
@@ -101,6 +100,12 @@ typedef coco_problem_t *(*coco_logger_initialize_function_t)(coco_observer_t *se
  * Description of a COCO observer (instance)
  *
  * Fields:
+ *
+ * output_folder - Name of the output folder
+ *
+ * verbosity - Verbosity value defining the amount of output
+ *
+ * data - Void pointer that can be used to store data specific to any observer
  *
  */
 struct coco_observer {

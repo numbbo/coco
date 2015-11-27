@@ -55,8 +55,8 @@ static const char *coco_path_separator = "/";
 #else
 #include <dirent.h>
 /* To silence the compiler (implicit-function-declaration warning). */
-int rmdir (const char *pathname);
-int unlink (const char *file_name);
+int rmdir(const char *pathname);
+int unlink(const char *file_name);
 int mkdir(const char *pathname, mode_t mode);
 #endif
 
@@ -78,7 +78,7 @@ void coco_create_path(const char *path);
 void coco_create_unique_filename(char **file_name);
 void coco_create_unique_path(char **path);
 int coco_create_directory(const char *path);
-/* int coco_remove_directory(const char *path); Moved to coco.h */
+int coco_remove_directory(const char *path);
 int coco_remove_directory_msc(const char *path);
 int coco_remove_directory_no_msc(const char *path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
@@ -321,7 +321,7 @@ int coco_remove_directory_msc(const char *path) {
 
     r = r2;
 
-  } while (FindNextFile(find_handle, &find_data_file)); /* Find the next file */
+  }while (FindNextFile(find_handle, &find_data_file)); /* Find the next file */
 
   FindClose(find_handle);
 
@@ -543,15 +543,13 @@ static char *coco_remove_from_string(char *string, char *from, char *to) {
   if (strcmp(from, "") == 0) {
     /* Remove from the start */
     start = result;
-  }
-  else
+  } else
     start = strstr(result, from);
 
   if (strcmp(to, "") == 0) {
     /* Remove until the end */
     stop = result + strlen(result);
-  }
-  else
+  } else
     stop = strstr(result, to);
 
   if ((start == NULL) || (stop == NULL) || (stop < start)) {
@@ -560,7 +558,7 @@ static char *coco_remove_from_string(char *string, char *from, char *to) {
     return NULL; /* Never reached */
   }
 
-  memmove(start, stop, strlen(stop)+1);
+  memmove(start, stop, strlen(stop) + 1);
 
   return result;
 }

@@ -20,7 +20,8 @@
 #define SUITE_BIOBJ_NUMBER_OF_DIMENSIONS 5
 
 /* Mapping to the suite_bbob2009 function instances */
-static const size_t SUITE_BIOBJ_300_INSTANCE_LIST[5][2] = { { 2, 4 }, { 3, 5 }, { 7, 8 }, { 9, 10 }, { 11, 12 } };
+static const size_t SUITE_BIOBJ_300_INSTANCE_LIST[5][2] = { { 2, 4 }, { 3, 5 }, { 7, 8 }, { 9, 10 },
+    { 11, 12 } };
 /* List of 300 functions (300 is the total number of bi-objective function combinations) */
 static int SUITE_BIOBJ_300_FUNCTION_LIST[300][2];
 /* Whether the suite is defined */
@@ -111,15 +112,18 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
 
   /* Construct the id for the suite_biobj_300 in the form "biobj_300_fxxx_DIMy" */
   coco_free_memory(problem->problem_id);
-  problem->problem_id = coco_strdupf("biobj_300_f%03d_i%02ld_d%02d", function_id + 1, instance_id + 1, problem->number_of_variables);
+  problem->problem_id = coco_strdupf("biobj_300_f%03d_i%02ld_d%02d", function_id + 1, instance_id + 1,
+      problem->number_of_variables);
 
   /* Construct the information about the problem - its "type" */
   /* TODO: Use a new field (for example problem_type) instead of problem_name to store this information */
   coco_free_memory(problem->problem_name);
   if (function1_id < function2_id)
-    problem->problem_name = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id], SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id]);
+    problem->problem_name = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id],
+        SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id]);
   else
-    problem->problem_name = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id], SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id]);
+    problem->problem_name = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id],
+        SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id]);
   if (strstr(problem->problem_name, "biobj") != NULL) {
     printf("%s %d %d", problem->problem_name, function1_id, function2_id);
   }
