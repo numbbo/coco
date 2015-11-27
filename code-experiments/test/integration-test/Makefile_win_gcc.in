@@ -15,7 +15,7 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: test_coco test_instance_extraction test_biobj test_toy
+all: test_coco test_instance_extraction
 
 clean:
 	IF EXIST "coco.o" DEL /F coco.o
