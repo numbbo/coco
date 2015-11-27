@@ -25,6 +25,9 @@ typedef struct {
   char ***reference_value_matrix[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS];
   size_t reference_values_count;
 
+  /* Information on the previous logged problem */
+  int previous_function;
+
 } observer_biobj_t;
 
 static coco_problem_t *logger_biobj(coco_observer_t *self, coco_problem_t *problem);
@@ -272,6 +275,7 @@ static void observer_biobj(coco_observer_t *self, const char *options) {
           data->reference_values_count, OBSERVER_BIOBJ_MAX_STR_LENGTH);
       fclose(file);
     }
+    data->previous_function = -1;
   }
 
   self->logger_initialize_function = logger_biobj;

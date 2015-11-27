@@ -22,7 +22,7 @@
 
 /* Data for each indicator */
 typedef struct {
-  /* Name of the indicator to be used in the output files */
+  /* Name of the indicator to be used for identification and in the output */
   char *name;
 
   /* File for logging indicator values at target hits */
@@ -30,8 +30,13 @@ typedef struct {
   /* File for logging summary information on algorithm performance */
   FILE *info_file;
 
+  /* The best known indicator value for this benchmark problem */
+  double reference_value;
   double *target_values;
   size_t next_target_id;
+  /* The current overall indicator value */
+  double current_value;
+
 } logger_biobj_indicator_t;
 
 /* Data for the biobjective logger */
@@ -44,6 +49,7 @@ typedef struct {
   size_t number_of_evaluations;
   size_t number_of_variables;
   size_t number_of_objectives;
+  long suite_dep_instance_id;
 
   /* The tree keeping currently non-dominated solutions */
   avl_tree_t *archive_tree;
@@ -52,6 +58,7 @@ typedef struct {
 
   /* The indicators */
   logger_biobj_indicator_t *indicators[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS];
+
 } logger_biobj_t;
 
 /* Data contained in the node's item in the AVL tree */
@@ -59,6 +66,10 @@ typedef struct {
   double *x;
   double *y;
   size_t time_stamp;
+
+  /* The contribution of this solution to the overall indicator value */
+  double indicator_contribution[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS];
+
 } logger_biobj_avl_item_t;
 
 /**
@@ -85,6 +96,8 @@ static logger_biobj_avl_item_t* logger_biobj_node_create(const double *x,
   for (i = 0; i < num_obj; i++)
     item->y[i] = y[i];
   item->time_stamp = time_stamp;
+  for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++)
+    item->indicator_contribution[i] = 0;
   return item;
 }
 
@@ -155,10 +168,10 @@ static size_t logger_biobj_tree_output(FILE *file,
     while (solution != NULL) {
       fprintf(file, "%lu\t", ((logger_biobj_avl_item_t*) solution->item)->time_stamp);
       for (j = 0; j < num_obj; j++)
-        fprintf(file, "%13.10e\t", ((logger_biobj_avl_item_t*) solution->item)->y[j]);
+        fprintf(file, "%22.15e\t", ((logger_biobj_avl_item_t*) solution->item)->y[j]);
       if (output_x) {
         for (i = 0; i < dim; i++)
-          fprintf(file, "%13.10e\t", ((logger_biobj_avl_item_t*) solution->item)->x[i]);
+          fprintf(file, "%22.15e\t", ((logger_biobj_avl_item_t*) solution->item)->x[i]);
       }
       fprintf(file, "\n");
       solution = solution->next;
@@ -239,7 +252,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   logger_biobj_indicator_t *indicator;
   char *prefix, *file_name, *path_name;
   size_t i;
-  double reference_value;
+  int info_file_exists = 0;
 
   indicator = (logger_biobj_indicator_t *) coco_allocate_memory(sizeof(*indicator));
   observer = logger->observer;
@@ -247,12 +260,22 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
 
   indicator->name = coco_strdup(indicator_name);
 
+  /* Initialize target_values (compute them using reference values and MO_RELATIVE_TARGET_VALUES) */
+  indicator->reference_value = observer_biobj_get_reference_value(observer_biobj, indicator->name, problem->problem_id);
+  indicator->target_values = coco_allocate_vector(MO_NUMBER_OF_TARGETS);
+  for (i = 0; i < MO_NUMBER_OF_TARGETS; i++) {
+    indicator->target_values[i] = indicator->reference_value - MO_RELATIVE_TARGET_VALUES[i];
+  }
+  indicator->next_target_id = 0;
+  indicator->current_value = 0;
+
   /* Prepare the info file */
   path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
   memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
   coco_create_path(path_name);
-  file_name = coco_strdupf("%s.info", problem->problem_name);
+  file_name = coco_strdupf("%s_%s.info", problem->problem_name, indicator_name);
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
+  info_file_exists = coco_file_exists(path_name);
   indicator->info_file = fopen(path_name, "a");
   if (indicator->info_file == NULL) {
     coco_error("logger_biobj_indicator() failed to open file '%s'.", path_name);
@@ -267,7 +290,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_name, NULL);
   coco_create_path(path_name);
   prefix = coco_remove_from_string(problem->problem_id, "_i", "");
-  file_name = coco_strdupf("%s.dat", prefix);
+  file_name = coco_strdupf("%s_%s.dat", prefix, indicator_name);
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
   indicator->log_file = fopen(path_name, "a");
   if (indicator->log_file == NULL) {
@@ -275,18 +298,37 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
     return NULL; /* Never reached */
   }
   coco_free_memory(prefix);
+
+  /* Output header information to the info file */
+  if (!info_file_exists) {
+    /* Output algorithm name */
+    fprintf(indicator->info_file, "algId = '%s', indicator = '%s'\n%% %s", observer->algorithm_name,
+        indicator_name, observer->algorithm_info);
+  }
+  if (observer_biobj->previous_function != problem->suite_dep_function_id) {
+    prefix = strstr(path_name, file_name);
+    fprintf(indicator->info_file, "\nfuncId = %d, %s", problem->suite_dep_function_id + 1, prefix);
+    fprintf(indicator->info_file, "\nDIM = %lu", problem->number_of_variables);
+  }
+
   coco_free_memory(file_name);
   coco_free_memory(path_name);
 
-  /* Initialize target_values (compute them using reference values and MO_RELATIVE_TARGET_VALUES) */
-  reference_value = observer_biobj_get_reference_value(observer_biobj, indicator->name, problem->problem_id);
-  indicator->target_values = coco_allocate_vector(MO_NUMBER_OF_TARGETS);
-  for (i = 0; i < MO_NUMBER_OF_TARGETS; i++) {
-    indicator->target_values[i] = reference_value - MO_RELATIVE_TARGET_VALUES[i];
-  }
-  indicator->next_target_id = 0;
+  /* Output header information to the log file */
+  fprintf(indicator->log_file, "%%\nDIM = %lu, instId = %ld, refVal = %.15f\n", problem->number_of_variables,
+      problem->suite_dep_instance_id + 1, indicator->reference_value);
+  fprintf(indicator->log_file, "%% function evaluation | indicator value | indicator - reference value\n");
 
   return indicator;
+}
+
+/**
+ * Outputs the final information about this indicator.
+ */
+static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, logger_biobj_t *logger) {
+
+  fprintf(indicator->info_file, ", %d:%lu|%.1e", logger->suite_dep_instance_id + 1, logger->number_of_evaluations,
+      indicator->reference_value - indicator->current_value);
 }
 
 /**
@@ -366,29 +408,26 @@ static void logger_biobj_finalize(logger_biobj_t *logger) {
 
   coco_observer_t *observer;
   observer_biobj_t *observer_biobj;
+  avl_tree_t *resorted_tree;
+  avl_node_t *solution;
 
   observer = logger->observer;
   observer_biobj = (observer_biobj_t *) observer->data;
 
-  if (observer_biobj->log_mode == FINAL) {
-    /* Resort archive_tree according to time stamp and then output it */
+  /* Resort archive_tree according to time stamp and then output it */
+  resorted_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_time_stamp, NULL);
 
-    avl_tree_t *resorted_tree;
-    avl_node_t *solution;
-    resorted_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_time_stamp, NULL);
-
-    if (logger->archive_tree->tail) {
-      /* There is at least a solution in the tree to output */
-      solution = logger->archive_tree->head;
-      while (solution != NULL) {
-        avl_item_insert(resorted_tree, solution->item);
-        solution = solution->next;
-      }
+  if (logger->archive_tree->tail) {
+    /* There is at least a solution in the tree to output */
+    solution = logger->archive_tree->head;
+    while (solution != NULL) {
+      avl_item_insert(resorted_tree, solution->item);
+      solution = solution->next;
     }
-
-    logger_biobj_tree_output(logger->nondom_file, resorted_tree, logger->number_of_variables,
-        logger->number_of_objectives, observer_biobj->include_decision_variables);
   }
+
+  logger_biobj_tree_output(logger->nondom_file, resorted_tree, logger->number_of_variables,
+      logger->number_of_objectives, observer_biobj->include_decision_variables);
 
 }
 
@@ -398,12 +437,25 @@ static void logger_biobj_finalize(logger_biobj_t *logger) {
 static void logger_biobj_free(void *stuff) {
 
   logger_biobj_t *logger;
+  coco_observer_t *observer;
+  observer_biobj_t *observer_biobj;
   size_t i;
 
   assert(stuff != NULL);
   logger = stuff;
+  observer = logger->observer;
+  observer_biobj = (observer_biobj_t *) observer->data;
 
-  logger_biobj_finalize(logger);
+  if (observer_biobj->log_mode == FINAL) {
+     logger_biobj_finalize(logger);
+  }
+
+  if (observer_biobj->compute_indicators) {
+    for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+      logger_biobj_indicator_finalize(logger->indicators[i], logger);
+      logger_biobj_indicator_free(logger->indicators[i]);
+    }
+  }
 
   if (logger->nondom_file != NULL) {
     fclose(logger->nondom_file);
@@ -412,9 +464,6 @@ static void logger_biobj_free(void *stuff) {
 
   avl_tree_destruct(logger->archive_tree);
   avl_tree_destruct(logger->buffer_tree);
-
-  for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++)
-    logger_biobj_indicator_free(logger->indicators[i]);
 }
 
 /**
@@ -440,6 +489,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
   logger->number_of_evaluations = 0;
   logger->number_of_variables = problem->number_of_variables;
   logger->number_of_objectives = problem->number_of_objectives;
+  logger->suite_dep_instance_id = problem->suite_dep_instance_id;
 
   observer_biobj = (observer_biobj_t *) observer->data;
 
@@ -494,7 +544,9 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
   if (observer_biobj->compute_indicators) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++)
       logger->indicators[i] = logger_biobj_indicator(logger, self, OBSERVER_BIOBJ_INDICATORS[i]);
+    observer_biobj->previous_function = problem->suite_dep_function_id;
   }
+
 
   return self;
 }

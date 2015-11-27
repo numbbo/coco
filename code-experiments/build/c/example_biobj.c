@@ -163,8 +163,10 @@ void my_optimizer(coco_problem_t *problem) {
 
 int main(void) {
 
-  printf("Running the experiments... (it takes time, be patient)");
+  printf("Running the experiments... (it takes time, be patient)\n");
+  fflush(stdout);
   coco_suite_benchmark(SUITE_NAME, OBSERVER_NAME, OBSERVER_OPTIONS, my_optimizer);
-  printf("Done!");
+  printf("Done!\n");
+  fflush(stdout);
   return 0;
 }
