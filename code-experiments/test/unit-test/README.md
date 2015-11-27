@@ -6,5 +6,5 @@ All test files should be included in this folder. Each test file should contain 
 
 The starting file for unit testing is unit_test.c, from which all the other test files are called. When you add a new test file, you need to include it in unit_test.c and add it's central function to the function run_all_tests.
 
-
+In the root folder you can find the test.py script. You should call "python test.py build" to build the test project and "python test.py test" to run the tests.
 
