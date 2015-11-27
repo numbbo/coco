@@ -8,7 +8,7 @@
 /*
  * Parameters of the experiment
  */
-static const long MAX_BUDGET = 1e3;
+static const long MAX_BUDGET = 1e2;
 static const char *SUITE_NAME = "suite_biobj_300";
 static const char *OBSERVER_NAME = "observer_biobj";
 static const char *OBSERVER_OPTIONS = "result_folder: RS_on_suite_biobj_300 \
@@ -131,7 +131,7 @@ void grid_search(mo_objective_function_t f,
  * Prepares and executes optimization with restarts using the chosen optimization algorithm (the one
  * named SOLVER_NAME).
  */
-void coco_optimize(coco_problem_t *problem) {
+void my_optimizer(coco_problem_t *problem) {
 
   /* Prepare, set up convenience definitions */
   size_t dimension = coco_problem_get_dimension(problem);
@@ -161,149 +161,10 @@ void coco_optimize(coco_problem_t *problem) {
   coco_free_memory(initial_x);
 }
 
-/*
- * Parameters of the multiobjective suite suite_biobj_300
- */
-#define SUITE_BIOBJ_NUMBER_OF_FUNCTIONS 300
-#define SUITE_BIOBJ_NUMBER_OF_INSTANCES 5
-#define SUITE_BIOBJ_NUMBER_OF_DIMENSIONS 5
+int main(void) {
 
-/*
- * Encodes the problem index for suite_biobj_300.
- */
-static long biobjective_encode_problem_index(int function_idx, long instance_idx, int dimension_idx) {
-  long problem_index;
-  problem_index = instance_idx + function_idx * SUITE_BIOBJ_NUMBER_OF_INSTANCES
-      + dimension_idx * (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS);
-  return problem_index;
-}
-
-/**
- * Runs the experiments on the whole suite_biobj_300.
- */
-static void run_experiments(void) {
-  long problem_index;
-  int combination_idx, instance_idx, dimension_idx;
-
-  coco_observer_t *observer;
-  coco_problem_t *problem;
-
-  observer = coco_observer(OBSERVER_NAME, OBSERVER_OPTIONS);
-
-  for (dimension_idx = 0; dimension_idx < SUITE_BIOBJ_NUMBER_OF_DIMENSIONS; dimension_idx++) {
-    for (combination_idx = 0; combination_idx < SUITE_BIOBJ_NUMBER_OF_FUNCTIONS; combination_idx++) {
-      for (instance_idx = 0; instance_idx < SUITE_BIOBJ_NUMBER_OF_INSTANCES; instance_idx++) {
-
-        problem_index = biobjective_encode_problem_index(combination_idx, instance_idx, dimension_idx);
-        printf("problem_index = %ld, combination_idx = %d, instance_idx = %d, dimension_idx = %d\n",
-            problem_index, combination_idx, instance_idx, dimension_idx);
-
-        problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-        problem = coco_problem_add_observer(problem, observer);
-
-        if (problem == NULL)
-          break;
-
-        coco_optimize(problem);
-        coco_problem_free(problem);
-      }
-    }
-  }
-
-  coco_observer_free(observer);
-}
-
-/**
- * Runs the tests on suite_biobj_300 (the same as run_experiments, except a smaller number of combinations
- * is considered and the created directories are removed in the end).
- * TODO: This should probably be excluded from the final release...
- */
-#define TEST_NUMBER_OF_COMBINATIONS 5
-static void run_tests(void) {
-  long problem_index;
-  int combination_idx, instance_idx, dimension_idx;
-
-  coco_observer_t *observer;
-  coco_problem_t *problem;
-
-  observer = coco_observer(OBSERVER_NAME, OBSERVER_OPTIONS);
-
-  for (dimension_idx = 0; dimension_idx < SUITE_BIOBJ_NUMBER_OF_DIMENSIONS; dimension_idx++) {
-    for (combination_idx = 0; combination_idx < TEST_NUMBER_OF_COMBINATIONS; combination_idx++) {
-      for (instance_idx = 0; instance_idx < SUITE_BIOBJ_NUMBER_OF_INSTANCES; instance_idx++) {
-
-        problem_index = biobjective_encode_problem_index(combination_idx, instance_idx, dimension_idx);
-        printf("problem_index = %ld, combination_idx = %d, instance_idx = %d, dimension_idx = %d\n",
-            problem_index, combination_idx, instance_idx, dimension_idx);
-
-        problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-        problem = coco_problem_add_observer(problem, observer);
-
-        if (problem == NULL)
-          break;
-        coco_optimize(problem);
-        coco_problem_free(problem);
-      }
-    }
-  }
-
-  coco_observer_free(observer);
-
-  printf("Removing the created directory.");
-  coco_remove_directory("RS_on_suite_biobj_300");
-}
-
-/**
- * Runs some performance tests on suite_biobj_300.
- * TODO: This should probably be excluded from the final release...
- */
-static void run_performance_tests(void) {
-  long problem_index;
-  int combination_idx, instance_idx, dimension_idx;
-  clock_t start, end;
-
-  coco_observer_t *observer;
-  coco_problem_t *problem;
-
-  observer = coco_observer(OBSERVER_NAME, OBSERVER_OPTIONS);
-
-  for (dimension_idx = 0; dimension_idx < SUITE_BIOBJ_NUMBER_OF_DIMENSIONS; dimension_idx++) {
-    for (combination_idx = 0; combination_idx < SUITE_BIOBJ_NUMBER_OF_FUNCTIONS; combination_idx++) {
-      for (instance_idx = 0; instance_idx < SUITE_BIOBJ_NUMBER_OF_INSTANCES; instance_idx++) {
-        start = clock();
-
-        problem_index = biobjective_encode_problem_index(combination_idx, instance_idx, dimension_idx);
-        problem = coco_suite_get_problem(SUITE_NAME, problem_index);
-        problem = coco_problem_add_observer(problem, observer);
-
-        if (problem == NULL)
-          break;
-        coco_optimize(problem);
-        coco_problem_free(problem);
-
-        end = clock();
-        printf("The archiving with AVL trees took: %e seconds.\n", (double) (end - start) / 1000.0);
-        fflush(stdout);
-      }
-    }
-  }
-
-  coco_observer_free(observer);
-}
-
-/**
- * If called without command line arguments, it runs the experiments.
- * If called with "test" as the command line argument, it runs the tests.
- * If called with "performance_test" as the command line argument, it runs the performance tests.
- */
-int main(int argc, char *argv[]) {
-
-  if ((argc == 2) && (strcmp(argv[1], "test") == 0))
-    run_tests();
-  else if ((argc == 2) && (strcmp(argv[1], "performance_test") == 0))
-    run_performance_tests();
-  else
-    run_experiments();
-
+  printf("Running the experiments... (it takes time, be patient)");
+  coco_suite_benchmark(SUITE_NAME, OBSERVER_NAME, OBSERVER_OPTIONS, my_optimizer);
+  printf("Done!");
   return 0;
 }

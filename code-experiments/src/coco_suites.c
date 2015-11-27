@@ -183,7 +183,7 @@ void coco_suite_benchmark(const char *suite_name,
 
   observer = coco_observer(observer_name, observer_options);
 
-  for (problem_index = 0;; ++problem_index) {
+  while ((problem_index = coco_suite_get_next_problem_index(suite_name, problem_index, "")) >= 0) {
     problem = coco_suite_get_problem(suite_name, problem_index);
     if (NULL == problem)
       break;

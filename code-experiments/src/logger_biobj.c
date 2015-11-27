@@ -11,7 +11,7 @@
 
 #include "observer_biobj.c"
 
-#include "biobj_avl_tree.c"
+#include "logger_biobj_avl_tree.c"
 #include "mo_generics.c"
 #include "mo_targets.c"
 

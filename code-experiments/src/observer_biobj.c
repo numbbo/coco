@@ -159,7 +159,7 @@ static double observer_biobj_get_matching_double_value(char ***matrix_of_strings
   return default_value;
 }
 
-/* Returns the reference value for indicator_name matching the given key if the key is found, and raises an
+/* Returns the reference value for indicator_name matching the given key if the key is found, and raises a
  * error otherwise.  */
 static double observer_biobj_get_reference_value(const observer_biobj_t *self,
                                                  const char *indicator_name,
