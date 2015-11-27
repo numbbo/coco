@@ -105,6 +105,7 @@ def run_c_unit_tests():
 def build_c_integration_tests():   
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/integration-test/coco.c')
     copy_file('code-experiments/src/coco.h', 'code-experiments/test/integration-test/coco.h')
+    copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/test/integration-test/bbob2009_testcases.txt')
     make("code-experiments/test/integration-test", "clean")
     make("code-experiments/test/integration-test", "all")
 
@@ -157,6 +158,7 @@ def _prep_python():
                release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')
     copy_file('code-experiments/src/reference_values_hypervolume.txt', 'code-experiments/build/python/reference_values_hypervolume.txt')
+    copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
     expand_file('code-experiments/build/python/README.in', 'code-experiments/build/python/README',
                 {'COCO_VERSION': git_version()}) # hg_version()})
     expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
