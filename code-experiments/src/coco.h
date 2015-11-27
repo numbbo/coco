@@ -141,8 +141,8 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
  * loops over all indices and problems consequently. 
  */
 long coco_suite_get_next_problem_index(const char *problem_suite,
-    long problem_index,
-    const char *select_options);
+                                       long problem_index,
+                                       const char *select_options);
 
 /**
  * Number of evaluations done on problem ${self}. 
