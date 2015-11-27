@@ -8,12 +8,17 @@
 /**
  * Allocates memory for a coco_observer_t instance.
  */
-static coco_observer_t *coco_observer_allocate(const char *output_folder, const int verbosity) {
+static coco_observer_t *coco_observer_allocate(const char *output_folder,
+                                               const char *algorithm_name,
+                                               const char *algorithm_info,
+                                               const int verbosity) {
 
   coco_observer_t *observer;
   observer = (coco_observer_t *) coco_allocate_memory(sizeof(*observer));
   /* Initialize fields to sane/safe defaults */
   observer->output_folder = coco_strdup(output_folder);
+  observer->algorithm_name = coco_strdup(algorithm_name);
+  observer->algorithm_info = coco_strdup(algorithm_info);
   observer->verbosity = verbosity;
   observer->data = NULL;
   observer->observer_free_function = NULL;
@@ -32,6 +37,10 @@ void coco_observer_free(coco_observer_t *self) {
     /* Best guess at freeing all relevant structures */
     if (self->output_folder != NULL)
       coco_free_memory(self->output_folder);
+    if (self->algorithm_name != NULL)
+      coco_free_memory(self->algorithm_name);
+    if (self->algorithm_info != NULL)
+      coco_free_memory(self->algorithm_info);
     if (self->data != NULL)
       coco_free_memory(self->data);
     self->data = NULL;
@@ -42,8 +51,10 @@ void coco_observer_free(coco_observer_t *self) {
 /**
  * Initializes the observer. If observer_name is no_observer, no observer is used.
  * Possible observer_options:
- * - result_folder : name_of_the_output_folder (uses name_of_the_folder to create a unique folder; default value
+ * - result_folder : string (the name of the result_folder is used to create a unique folder; default value
  * is "results")
+ * - algorithm_name : string (to be used in logged output and plots; default value is "ALG")
+ * - algorithm_info : string (to be used in logged output; default value is "")
  * - verbosity : 0-3 (verbosity of the logger, where larger values correspond to more output; default value
  * is 0)
  * - any option specified by the specific observers
@@ -51,7 +62,7 @@ void coco_observer_free(coco_observer_t *self) {
 coco_observer_t *coco_observer(const char *observer_name, const char *observer_options) {
 
   coco_observer_t *observer;
-  char *string_value;
+  char *result_folder, *algorithm_name, *algorithm_info;
   int verbosity;
 
   if (0 == strcmp(observer_name, "no_observer")) {
@@ -61,17 +72,32 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     return NULL;
   }
 
-  string_value = (char *) coco_allocate_memory(COCO_PATH_MAX);
-  /* Read result_folder and verbosity from the observer_options and use them to initialize the observer */
-  if (coco_options_read_string(observer_options, "result_folder", string_value) == 0) {
-    strcpy(string_value, "results");
+  result_folder = (char *) coco_allocate_memory(COCO_PATH_MAX);
+  algorithm_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
+  algorithm_info = (char *) coco_allocate_memory(5 * COCO_PATH_MAX);
+  /* Read result_folder, algorithm_name, algorithm_info and verbosity from the observer_options and use
+   * them to initialize the observer */
+  if (coco_options_read_string(observer_options, "result_folder", result_folder) == 0) {
+    strcpy(result_folder, "results");
   }
-  coco_create_unique_path(&string_value);
+  coco_create_unique_path(&result_folder);
+
+  if (coco_options_read_string(observer_options, "algorithm_name", algorithm_name) == 0) {
+    strcpy(algorithm_name, "ALG");
+  }
+
+  if (coco_options_read_string(observer_options, "algorithm_info", algorithm_info) == 0) {
+    strcpy(algorithm_info, "");
+  }
 
   if (coco_options_read_int(observer_options, "verbosity", &verbosity) == 0)
     verbosity = 0;
 
-  observer = coco_observer_allocate(string_value, verbosity);
+  observer = coco_observer_allocate(result_folder, algorithm_name, algorithm_info, verbosity);
+
+  coco_free_memory(result_folder);
+  coco_free_memory(algorithm_name);
+  coco_free_memory(algorithm_info);
 
   /* Here each observer must have an entry */
   if (0 == strcmp(observer_name, "observer_toy")) {

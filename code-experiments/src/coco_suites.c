@@ -180,11 +180,14 @@ void coco_suite_benchmark(const char *suite_name,
 
   coco_observer_t *observer;
   coco_problem_t *problem;
-  int problem_index;
+  long problem_index;
 
   observer = coco_observer(observer_name, observer_options);
 
-  while ((problem_index = coco_suite_get_next_problem_index(suite_name, problem_index, "")) >= 0) {
+  for (problem_index = coco_suite_get_next_problem_index(suite_name, -1, "");
+       problem_index >= 0;
+       problem_index = coco_suite_get_next_problem_index(suite_name, problem_index, "")) {
+
     problem = coco_suite_get_problem(suite_name, problem_index);
     if (NULL == problem)
       break;
