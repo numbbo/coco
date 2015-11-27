@@ -15,7 +15,7 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: example_bbob2009 example_biobj
+all: example_bbob2009 example_biobj example_toy
 
 clean:
 	IF EXIST "coco.o" DEL /F coco.o
@@ -23,6 +23,8 @@ clean:
 	IF EXIST "example_bbob2009.exe" DEL /F example_bbob2009.exe
 	IF EXIST "example_biobj.o" DEL /F example_biobj.o
 	IF EXIST "example_biobj.exe" DEL /F example_biobj.exe
+	IF EXIST "example_toy.o" DEL /F example_toy.o
+	IF EXIST "example_toy.exe" DEL /F example_toy.exe
 
 ########################################################################
 ## Programs
@@ -32,6 +34,9 @@ example_bbob2009: example_bbob2009.o coco.o
 example_biobj: example_biobj.o coco.o
 	${CC}  ${CCFLAGS} -o example_biobj example_biobj.o coco.o ${LDFLAGS}
 
+example_toy: example_toy.o coco.o
+	${CC}  ${CCFLAGS} -o example_toy example_toy.o coco.o ${LDFLAGS}
+
 ########################################################################
 ## Additional dependencies
 coco.o: coco.h coco.c
@@ -40,3 +45,5 @@ example_bbob2009.o: coco.h coco.c example_bbob2009.c
 	${CC} -c ${CCFLAGS} -o example_bbob2009.o example_bbob2009.c
 example_biobj.o: coco.h coco.c example_biobj.c
 	${CC} -c ${CCFLAGS} -o example_biobj.o example_biobj.c
+example_toy.o: coco.h coco.c example_toy.c
+	${CC} -c ${CCFLAGS} -o example_toy.o example_toy.c

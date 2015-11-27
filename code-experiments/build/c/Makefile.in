@@ -17,10 +17,13 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: example_bbob2009 example_biobj
+all: example_bbob2009 example_biobj example_toy
 
 clean:
-	rm -f coco.o example_bbob2009.o example_bbob2009 example_biobj example_biobj.o
+	rm -f coco.o 
+	rm -f example_bbob2009.o example_bbob2009  
+	rm -f example_biobj.o example_biobj
+	rm -f example_toy.o example_toy
 
 ########################################################################
 ## Programs
@@ -30,6 +33,9 @@ example_bbob2009: example_bbob2009.o coco.o
 example_biobj: example_biobj.o coco.o
 	${CC}  ${CCFLAGS} -o example_biobj example_biobj.o coco.o ${LDFLAGS}
 
+example_toy: example_toy.o coco.o
+	${CC}  ${CCFLAGS} -o example_toy example_toy.o coco.o ${LDFLAGS}
+
 ########################################################################
 ## Additional dependencies
 coco.o: coco.h coco.c
@@ -38,3 +44,5 @@ example_bbob2009.o: coco.h coco.c example_bbob2009.c
 	${CC} -c ${CCFLAGS} -o example_bbob2009.o example_bbob2009.c
 example_biobj.o: coco.h coco.c example_biobj.c
 	${CC} -c ${CCFLAGS} -o example_biobj.o example_biobj.c
+example_toy.o: coco.h coco.c example_toy.c
+	${CC} -c ${CCFLAGS} -o example_toy.o example_toy.c
