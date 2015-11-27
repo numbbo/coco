@@ -1,4 +1,4 @@
-## Makefile to build C demo programs included with the COCO distribution
+## Makefile to build C example programs included with the COCO distribution
 ##
 ## NOTE: We have tried to make this Makefile as generic and portable
 ## as possible. However, there are many (incompatible) versions of
@@ -17,29 +17,32 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: demo coco_test bbob2009_test 
+all: example_bbob2009 example_biobj example_toy
 
 clean:
-	rm -f coco.o coco_test.o coco_test demo.o demo bbob2009_test.o bbob2009_test 
+	rm -f coco.o 
+	rm -f example_bbob2009.o example_bbob2009  
+	rm -f example_biobj.o example_biobj
+	rm -f example_toy.o example_toy
 
 ########################################################################
 ## Programs
-demo: demo.o coco.o
-	${CC} ${CCFLAGS} -o demo coco.o demo.o ${LDFLAGS}  
+example_bbob2009: example_bbob2009.o coco.o
+	${CC} ${CCFLAGS} -o example_bbob2009 coco.o example_bbob2009.o ${LDFLAGS}  
 
-coco_test: coco_test.o coco.o
-	${CC}  ${CCFLAGS} -o coco_test coco_test.o coco.o ${LDFLAGS}
+example_biobj: example_biobj.o coco.o
+	${CC}  ${CCFLAGS} -o example_biobj example_biobj.o coco.o ${LDFLAGS}
 
-bbob2009_test: bbob2009_test.o coco.o
-	${CC}  ${CCFLAGS} -o bbob2009_test bbob2009_test.o coco.o ${LDFLAGS} 
+example_toy: example_toy.o coco.o
+	${CC}  ${CCFLAGS} -o example_toy example_toy.o coco.o ${LDFLAGS}
 
 ########################################################################
 ## Additional dependencies
 coco.o: coco.h coco.c
 	${CC} -c ${CCFLAGS} -o coco.o coco.c
-demo.o: coco.h coco.c demo.c
-	${CC} -c ${CCFLAGS} -o demo.o demo.c
-coco_test.o: coco.h coco.c coco_test.c
-	${CC} -c ${CCFLAGS} -o coco_test.o coco_test.c
-bbob2009_test.o: coco.h coco.c bbob2009_test.c
-	${CC} -c ${CCFLAGS} -o bbob2009_test.o bbob2009_test.c
+example_bbob2009.o: coco.h coco.c example_bbob2009.c
+	${CC} -c ${CCFLAGS} -o example_bbob2009.o example_bbob2009.c
+example_biobj.o: coco.h coco.c example_biobj.c
+	${CC} -c ${CCFLAGS} -o example_biobj.o example_biobj.c
+example_toy.o: coco.h coco.c example_toy.c
+	${CC} -c ${CCFLAGS} -o example_toy.o example_toy.c
