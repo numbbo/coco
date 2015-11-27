@@ -10,7 +10,7 @@ LD = link.exe
 #CFLAGS = /nologo /Z7 /TP /Ox /D_CRT_SECURE_NO_WARNINGS /Dsnprintf=_snprintf
 CFLAGS = -g /nologo /Z7 /Ox /D_CRT_SECURE_NO_WARNINGS /Dsnprintf=_snprintf
 LDFLAGS = /nologo
-TARGETS = demo.exe test_bbob2009.exe
+TARGETS = example_bbob2009 example_biobj example_toy
 
 ########################################################################
 ## Toplevel targets
@@ -22,15 +22,20 @@ clean:
 ########################################################################
 ## Programs
 
-demo.exe: demo.obj coco.obj
+example_bbob2009.exe: example_bbob2009.obj coco.obj
 	$(LD) $(LDFLAGS) -out:$@ $**
 
-test_bbob2009.exe: test_bbob2009.obj coco.obj
+example_biobj.exe: example_biobj.obj coco.obj
+	$(LD) $(LDFLAGS) -out:$@ $**
+
+example_toy.exe: example_toy.obj coco.obj
 	$(LD) $(LDFLAGS) -out:$@ $**
 
 ########################################################################
 ## Additional dependencies
 
-demo.o: coco.h
+example_bbob2009.o: coco.h
 
-test_bbob2009.o: coco.h test_bbob2009.h
+example_biobj.o: coco.h
+
+example_toy.o: coco.h
