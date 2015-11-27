@@ -167,10 +167,10 @@ def _prep_python():
 def build_python():
     _prep_python()
     ## Force distutils to use Cython
-    os.environ['USE_CYTHON'] = 'true'
+    # os.environ['USE_CYTHON'] = 'true'
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
     python('code-experiments/build/python', ['setup.py', 'install', '--user'])
-    os.environ.pop('USE_CYTHON')
+    # os.environ.pop('USE_CYTHON')
 
 def run_python(script_filename):
     _prep_python()
