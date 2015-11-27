@@ -84,6 +84,6 @@ int main() {
   strncat(algorithm_id, cma.version, 200 - strlen(algorithm_id) - 1);
   cmaes_exit(&cma);
 
-  coco_suite_benchmark("suite_bbob2009", "observer_bbob2009", algorithm_id, cma_optimizer);
+  deprecated__coco_suite_benchmark("suite_bbob2009", "observer_bbob2009", algorithm_id, cma_optimizer);
   return 0;
 }
