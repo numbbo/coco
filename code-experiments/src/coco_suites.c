@@ -40,8 +40,7 @@ long coco_suite_get_next_problem_index(const char *problem_suite,
   if (0 == strcmp(problem_suite, "suite_bbob2009")) {
     /* without selection_options: last_index = 2159; */
     return suite_bbob2009_get_next_problem_index(problem_index, select_options);
-  }
-  else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
+  } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
     last_index = 7499;
   }
 
@@ -91,7 +90,9 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
   }
 }
 
-coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem, const char *observer_name, const char *options) {
+coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
+                                                      const char *observer_name,
+                                                      const char *options) {
   if (problem == NULL) {
     coco_warning("Trying to observe a NULL problem has no effect.");
     return problem;

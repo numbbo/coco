@@ -141,8 +141,8 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
  * loops over all indices and problems consequently. 
  */
 long coco_suite_get_next_problem_index(const char *problem_suite,
-                                       long problem_index,
-                                       const char *select_options);
+    long problem_index,
+    const char *select_options);
 
 /**
  * Number of evaluations done on problem ${self}. 
@@ -196,8 +196,8 @@ void coco_problem_get_initial_solution(const coco_problem_t *self, double *initi
  * observer is the empty string ("").
  */
 coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
-                                          const char *observer_name,
-                                          const char *options);
+                                                      const char *observer_name,
+                                                      const char *options);
 
 void coco_suite_benchmark(const char *problem_suite,
                           const char *observer,
@@ -205,11 +205,11 @@ void coco_suite_benchmark(const char *problem_suite,
                           coco_optimizer_t optimizer);
 
 /* shall replace the above?
-void new_coco_benchmark(const char *problem_suite,
-                        const char *problem_suite_options,
-                        const char *observer,
-                        const char *observer_options,
-                        coco_optimizer_t optimizer); */
+ void new_coco_benchmark(const char *problem_suite,
+ const char *problem_suite_options,
+ const char *observer,
+ const char *observer_options,
+ coco_optimizer_t optimizer); */
 
 coco_observer_t *coco_observer(const char *observer_name, const char *options);
 void coco_observer_free(coco_observer_t *self);
@@ -274,9 +274,6 @@ void coco_free_memory(void *data);
  * @see coco_free_memory()
  */
 char *coco_strdup(const char *string);
-
-/* TODO: Move this to an internal header ASAP */
-int coco_remove_directory(const char *path);
 
 /* TODO: These bbob2009... functions should probably not be in
  * this header.
