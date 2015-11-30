@@ -521,18 +521,28 @@ class DataSet():
     
         >>> import sys
         >>> import os
+        >>> import urllib
+        >>> import tarfile
         >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname('__file__'))))
         >>> import bbob_pproc as bb
-        >>> dslist = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info')
-        >>> dslist  # nice display in particular in IPython
-        [DataSet(BIPOP-CMA-ES on f2 2-D), DataSet(BIPOP-CMA-ES on f2 3-D), DataSet(BIPOP-CMA-ES on f2 5-D), DataSet(BIPOP-CMA-ES on f2 10-D), DataSet(BIPOP-CMA-ES on f2 20-D), DataSet(BIPOP-CMA-ES on f2 40-D)]
+        >>> infoFile = 'BBOB2009rawdata/BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info'
+        >>> if not os.path.exists(infoFile):
+        ...   dataurl = 'http://coco.lri.fr/BBOB2009/rawdata/BIPOP-CMA-ES_hansen_noiseless.tar.gz'
+        ...   filename, headers = urllib.urlretrieve(dataurl)
+        ...   print filename
+        ...   archivefile = tarfile.open(filename)
+        ...   archivefile.extractall()
+        >>> dslist = bb.load(infoFile)
+          Data consistent according to test in consistency_check() in pproc.DataSet
+        >>> print dslist  # doctest:+ELLIPSIS
+        [DataSet(cmaes V3.30.beta on f2 2-D), ..., DataSet(cmaes V3.30.beta on f2 40-D)]
         >>> type(dslist)
         <class 'bbob_pproc.pproc.DataSetList'>
         >>> len(dslist)
         6
         >>> ds = dslist[3]  # a single data set of type DataSet
         >>> ds
-        DataSet(BIPOP-CMA-ES on f2 10-D)
+        DataSet(cmaes V3.30.beta on f2 10-D)
         >>> for d in dir(ds): print d  # dir(ds) shows attributes and methods of ds
         _DataSet__parseHeader
         __doc__
@@ -598,7 +608,7 @@ class DataSet():
         >>> ds.evals[-1,(0,5,6)]  # show last row, same columns
         array([  1.00000000e-08,   5.67600000e+03,   6.26900000e+03])
         >>> ds.info()  # prints similar data more nicely formated 
-        Algorithm: BIPOP-CMA-ES
+        Algorithm: cmaes V3.30.beta
         Function ID: 2
         Dimension DIM = 10
         Number of trials: 15

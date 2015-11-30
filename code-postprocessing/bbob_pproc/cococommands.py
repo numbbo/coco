@@ -18,22 +18,32 @@ Examples:
 
     >>> import bbob_pproc as bb # load bbob_pproc
     >>> import os
+    >>> import urllib
+    >>> import tarfile
     >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname('__file__'))))
 
 * Load a data set, assign to variable :py:data:`ds`::
 
-      >>> ds = bb.load('BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info')
+    >>> infoFile = 'BBOB2009rawdata/BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info'
+    >>> if not os.path.exists(infoFile):
+    ...   dataurl = 'http://coco.lri.fr/BBOB2009/rawdata/BIPOP-CMA-ES_hansen_noiseless.tar.gz'
+    ...   filename, headers = urllib.urlretrieve(dataurl)
+    ...   print filename
+    ...   archivefile = tarfile.open(filename)
+    ...   archivefile.extractall()
+    >>> ds = bb.load(infoFile)
+      Data consistent according to test in consistency_check() in pproc.DataSet
 
 * Get some information on a :py:class:`DataSetList` instance::
 
-      >>> print ds # doctest:+ELLIPSIS
-      [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
-      >>> bb.info(ds)
-      6 data set(s)
-      Algorithm(s): BIPOP-CMA-ES
-      1 Function with ID 2
-      Dimension(s): 2, 3, 5, 10, 20, 40
-      Max evals: [762, 1537, 2428, 6346, 20678, 75010]
+    >>> print ds # doctest:+ELLIPSIS
+    [DataSet(cmaes V3.30.beta on f2 2-D), ..., DataSet(cmaes V3.30.beta on f2 40-D)]
+    >>> bb.info(ds)
+    6 data set(s)
+    Algorithm(s): cmaes V3.30.beta
+    1 Function with ID 2
+    Dimension(s): 2, 3, 5, 10, 20, 40
+    Max evals: [762, 1537, 2428, 6346, 20678, 75010]
 
 """
 
