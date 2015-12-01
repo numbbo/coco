@@ -523,15 +523,17 @@ class DataSet():
         >>> import os
         >>> import urllib
         >>> import tarfile
-        >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname('__file__'))))
+        >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+        >>> os.chdir(path)
         >>> import bbob_pproc as bb
-        >>> infoFile = 'BBOB2009rawdata/BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info'
+        >>> infoFile = 'data/BBOB2009rawdata/BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info'
         >>> if not os.path.exists(infoFile):
+        ...   os.chdir(os.path.join(path, 'data'))
         ...   dataurl = 'http://coco.lri.fr/BBOB2009/rawdata/BIPOP-CMA-ES_hansen_noiseless.tar.gz'
         ...   filename, headers = urllib.urlretrieve(dataurl)
-        ...   print filename
         ...   archivefile = tarfile.open(filename)
         ...   archivefile.extractall()
+        ...   os.chdir(path)
         >>> dslist = bb.load(infoFile)
           Data consistent according to test in consistency_check() in pproc.DataSet
         >>> print dslist  # doctest:+ELLIPSIS
