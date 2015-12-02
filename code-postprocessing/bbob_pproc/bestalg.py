@@ -468,13 +468,19 @@ def customgenerate(args = algs2009):
 
      >>> from bbob_pproc import bestalg
      >>> import os
+     >>> import urllib
+     >>> import tarfile
      >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-     >>> os.chdir(path)
-     >>> os.chdir("../../../data-archive/data/gecco-bbob-1-24/2009/data")
-     >>> bestalg.customgenerate() #doctest:+ELLIPSIS
-     Searching in ALPS ...
-     Found 144 file(s).
-       using: ALPS
+     >>> os.chdir(os.path.join(path, 'data'))
+     >>> infoFile = 'BBOB2009rawdata/ALPS_hornby_noiseless/alps_reg1/bbobexp_f2.info'
+     >>> if not os.path.exists(infoFile):
+     ...   dataurl = 'http://coco.lri.fr/BBOB2009/rawdata/ALPS_hornby_noiseless.tar.gz'
+     ...   filename, headers = urllib.urlretrieve(dataurl)
+     ...   archivefile = tarfile.open(filename)
+     ...   archivefile.extractall()
+     >>> os.chdir(os.path.join(path, 'data', 'BBOB2009rawdata'))
+     >>> bestalg.customgenerate(('ALPS_hornby_noiseless', '')) #doctest:+ELLIPSIS
+     Searching in ALPS_hornby_noiseless ...
      ...
      done with writing pickle...
      >>> os.chdir(path)
@@ -517,10 +523,10 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
        >>> import os
        >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
        >>> os.chdir(path)
-       >>> os.chdir("../../../data-archive/data/gecco-bbob-1-24/2009/data")
-       >>> bestalg.getAllContributingAlgorithmsToBest(('BIPOP-CMA-ES', 'RANDOMSEARCH')) #doctest:+ELLIPSIS
+       >>> os.chdir(os.path.join(path, "data"))
+       >>> bestalg.getAllContributingAlgorithmsToBest(('IPOP-CMA-ES', 'RANDOMSEARCH')) #doctest:+ELLIPSIS
        Generating best algorithm data from given algorithm list...
-       Searching in BIPOP-CMA-ES ...
+       Searching in IPOP-CMA-ES ...
        ...
        Found 144 file(s).
        ...
