@@ -2,6 +2,54 @@
 #include <stdio.h>
 #include "coco.h"
 
+/* A structure to hold information for the multiobjective optimization problems */
+typedef struct {
+  double *ideal_point;
+  double *reference_point;
+  double *normalization_factor;
+} mo_problem_data_t;
+
+static mo_problem_data_t *mo_problem_data_allocate(const size_t number_of_objectives) {
+
+  mo_problem_data_t *data = coco_allocate_memory(sizeof(*data));
+
+  data->ideal_point = coco_allocate_vector(number_of_objectives);
+  data->reference_point = coco_allocate_vector(number_of_objectives);
+  data->normalization_factor = coco_allocate_vector(number_of_objectives);
+
+  return data;
+}
+
+static void mo_problem_data_compute_normalization_factor(mo_problem_data_t *data, const size_t number_of_objectives) {
+  size_t i;
+
+  for (i = 0; i < number_of_objectives; i++)
+    data->normalization_factor[i] = 1 / (data->reference_point[i] - data->ideal_point[i]);
+}
+
+static void mo_problem_data_free(void *stuff) {
+
+  mo_problem_data_t *data;
+
+  assert(stuff != NULL);
+  data = stuff;
+
+  if (data->ideal_point != NULL) {
+    coco_free_memory(data->ideal_point);
+    data->ideal_point = NULL;
+  }
+
+  if (data->reference_point != NULL) {
+    coco_free_memory(data->reference_point);
+    data->reference_point = NULL;
+  }
+
+  if (data->normalization_factor != NULL) {
+    coco_free_memory(data->normalization_factor);
+    data->normalization_factor = NULL;
+  }
+}
+
 /**
  * Checks the dominance relation in the unconstrained minimization case between
  * objectives1 and objectives2 and returns:

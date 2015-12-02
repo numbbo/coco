@@ -41,7 +41,7 @@ long coco_suite_get_next_problem_index(const char *problem_suite,
     /* without selection_options: last_index = 2159; */
     return suite_bbob2009_get_next_problem_index(problem_index, select_options);
   } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
-    last_index = 7499;
+    return suite_biobj_300_get_next_problem_index(problem_index, select_options);
   }
 
   /** generic implementation:

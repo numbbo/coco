@@ -28,8 +28,11 @@ void *coco_transformed_get_data(coco_problem_t *self);
 coco_problem_t *coco_transformed_get_inner_problem(coco_problem_t *self);
 
 /* typedef coco_stacked_problem_data_t; */
+typedef void (*coco_stacked_problem_free_data_t)(void *data);
 coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1_to_be_stacked,
-                                              coco_problem_t *problem2_to_be_stacked);
+                                              coco_problem_t *problem2_to_be_stacked,
+                                              void *userdata,
+                                              coco_stacked_problem_free_data_t free_data);
 
 /***********************************/
 
@@ -142,6 +145,7 @@ static void transformed_recommend_solutions(coco_problem_t *self, const double *
 
 static void transformed_free_problem(coco_problem_t *self) {
   coco_transformed_data_t *data;
+
   assert(self != NULL);
   assert(self->data != NULL);
   data = self->data;
@@ -210,15 +214,26 @@ coco_problem_t *coco_transformed_get_inner_problem(coco_problem_t *self) {
   return ((coco_transformed_data_t *) self->data)->inner_problem;
 }
 
-/** type provided coco problem data for a stacked coco problem
+/** type provided COCO problem data for a stacked COCO problem
  */
 typedef struct {
   coco_problem_t *problem1;
   coco_problem_t *problem2;
+  char *problem_type;
+  void *data;
+  coco_stacked_problem_free_data_t free_data;
 } coco_stacked_problem_data_t;
 
+void *coco_stacked_problem_get_data(coco_problem_t *self) {
+  assert(self != NULL);
+  assert(self->data != NULL);
+  assert(((coco_stacked_problem_data_t *) self->data)->data != NULL);
+
+  return ((coco_stacked_problem_data_t *) self->data)->data;
+}
+
 static void coco_stacked_problem_evaluate(coco_problem_t *self, const double *x, double *y) {
-  coco_stacked_problem_data_t* data = (coco_stacked_problem_data_t*) self->data;
+  coco_stacked_problem_data_t* data = (coco_stacked_problem_data_t *) self->data;
 
   assert(
       coco_problem_get_number_of_objectives(self)
@@ -245,6 +260,7 @@ static void coco_stacked_problem_evaluate_constraint(coco_problem_t *self, const
 
 static void coco_stacked_problem_free(coco_problem_t *self) {
   coco_stacked_problem_data_t *data;
+
   assert(self != NULL);
   assert(self->data != NULL);
   data = self->data;
@@ -256,6 +272,18 @@ static void coco_stacked_problem_free(coco_problem_t *self) {
   if (data->problem2 != NULL) {
     coco_problem_free(data->problem2);
     data->problem2 = NULL;
+  }
+  if (data->problem_type != NULL) {
+    coco_free_memory(data->problem_type);
+    data->problem_type = NULL;
+  }
+  if (data->data != NULL) {
+    if (data->free_data != NULL) {
+      data->free_data(data->data);
+      data->free_data = NULL;
+    }
+    coco_free_memory(data->data);
+    data->data = NULL;
   }
   /* Let the generic free problem code deal with the rest of the
    * fields. For this we clear the free_problem function pointer and
@@ -277,7 +305,10 @@ static void coco_stacked_problem_free(coco_problem_t *self) {
  * Details: regions of interest must either agree or at least one
  * of them must be NULL. Best parameter becomes somewhat meaningless. 
  */
-coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1, coco_problem_t *problem2) {
+coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1,
+                                              coco_problem_t *problem2,
+                                              void *userdata,
+                                              coco_stacked_problem_free_data_t free_data) {
   const size_t number_of_variables = coco_problem_get_dimension(problem1);
   const size_t number_of_objectives = coco_problem_get_number_of_objectives(problem1)
       + coco_problem_get_number_of_objectives(problem2);
@@ -293,7 +324,7 @@ coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1, coco_pro
 
   problem = coco_problem_allocate(number_of_variables, number_of_objectives, number_of_constraints);
 
-  s = coco_strconcat(coco_problem_get_id(problem1), "_-_");
+  s = coco_strconcat(coco_problem_get_id(problem1), "__");
   problem->problem_id = coco_strconcat(s, coco_problem_get_id(problem2));
   coco_free_memory(s);
   s = coco_strconcat(coco_problem_get_name(problem1), " + ");
@@ -336,6 +367,9 @@ coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1, coco_pro
   data = coco_allocate_memory(sizeof(*data));
   data->problem1 = problem1;
   data->problem2 = problem2;
+  data->problem_type = NULL; /* To be initialized in the suite */
+  data->data = userdata;
+  data->free_data = free_data;
 
   problem->data = data;
   problem->free_problem = coco_stacked_problem_free; /* free self->data and coco_problem_free(self) */
