@@ -11,7 +11,7 @@ typedef struct {
   double *x;
 } transform_vars_scale_data_t;
 
-static void private_transform_vars_scale_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void transform_vars_scale_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   transform_vars_scale_data_t *data;
   coco_problem_t *inner_problem;
@@ -28,7 +28,7 @@ static void private_transform_vars_scale_evaluate(coco_problem_t *self, const do
   } while (0);
 }
 
-static void private_transform_vars_scale_free(void *thing) {
+static void transform_vars_scale_free(void *thing) {
   transform_vars_scale_data_t *data = thing;
   coco_free_memory(data->x);
 }
@@ -44,7 +44,7 @@ static coco_problem_t *f_transform_vars_scale(coco_problem_t *inner_problem, con
   data->factor = factor;
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_transformed_allocate(inner_problem, data, private_transform_vars_scale_free);
-  self->evaluate_function = private_transform_vars_scale_evaluate;
+  self = coco_transformed_allocate(inner_problem, data, transform_vars_scale_free);
+  self->evaluate_function = transform_vars_scale_evaluate;
   return self;
 }

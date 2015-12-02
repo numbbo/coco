@@ -12,7 +12,7 @@ typedef struct {
   double *oscillated_x;
 } transform_vars_oscillate_data_t;
 
-static void private_transform_vars_oscillate_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void transform_vars_oscillate_evaluate(coco_problem_t *self, const double *x, double *y) {
   static const double alpha = 0.1;
   double tmp, base, *oscillated_x;
   size_t i;
@@ -39,7 +39,7 @@ static void private_transform_vars_oscillate_evaluate(coco_problem_t *self, cons
   coco_evaluate_function(inner_problem, oscillated_x, y);
 }
 
-static void private_transform_vars_oscillate_free(void *thing) {
+static void transform_vars_oscillate_free(void *thing) {
   transform_vars_oscillate_data_t *data = thing;
   coco_free_memory(data->oscillated_x);
 }
@@ -53,7 +53,7 @@ static coco_problem_t *f_transform_vars_oscillate(coco_problem_t *inner_problem)
   data = coco_allocate_memory(sizeof(*data));
   data->oscillated_x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_transformed_allocate(inner_problem, data, private_transform_vars_oscillate_free);
-  self->evaluate_function = private_transform_vars_oscillate_evaluate;
+  self = coco_transformed_allocate(inner_problem, data, transform_vars_oscillate_free);
+  self->evaluate_function = transform_vars_oscillate_evaluate;
   return self;
 }

@@ -232,8 +232,9 @@ static const avl_node_t *avl_search_leftmost_equal(const avl_tree_t *tree, const
 }
 */
 
-static const avl_node_t *avl_search_rightmost_equal(const avl_tree_t *tree, const avl_node_t *node,
-    const void *item) {
+static const avl_node_t *avl_search_rightmost_equal(const avl_tree_t *tree,
+                                                    const avl_node_t *node,
+                                                    const void *item) {
   avl_compare_t cmp = tree->cmpitem;
   void *userdata = tree->userdata;
   const avl_node_t *r = node;
