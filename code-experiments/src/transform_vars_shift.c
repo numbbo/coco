@@ -24,6 +24,36 @@ static void private_transform_vars_shift_evaluate(coco_problem_t *self, const do
   assert(y[0] >= self->best_value[0]);
 }
 
+static void private_transform_vars_shift_evaluate_constraint(coco_problem_t *self, const double *x, double *y) {
+  size_t i;
+  transform_vars_shift_data_t *data;
+  coco_problem_t *inner_problem;
+
+  data = coco_transformed_get_data(self);
+  inner_problem = coco_transformed_get_inner_problem(self);
+
+  for (i = 0; i < self->number_of_variables; ++i) {
+    data->shifted_x[i] = x[i] - data->offset[i];
+  }
+  coco_evaluate_constraint(inner_problem, data->shifted_x, y);
+}
+
+static void private_transform_vars_shift_evaluate_gradient(coco_problem_t *self, 
+																			  const double *x, 
+																			  double *y) {
+  size_t i;
+  transform_vars_shift_data_t *data;
+  coco_problem_t *inner_problem;
+
+  data = coco_transformed_get_data(self);
+  inner_problem = coco_transformed_get_inner_problem(self);
+
+  for (i = 0; i < self->number_of_variables; ++i) {
+    data->shifted_x[i] = x[i] - data->offset[i];
+  }
+  coco_evaluate_gradient(inner_problem, data->shifted_x, y);
+}
+
 static void private_transform_vars_shift_free(void *thing) {
   transform_vars_shift_data_t *data = thing;
   coco_free_memory(data->shifted_x);
@@ -47,5 +77,7 @@ static coco_problem_t *f_transform_vars_shift(coco_problem_t *inner_problem,
 
   self = coco_transformed_allocate(inner_problem, data, private_transform_vars_shift_free);
   self->evaluate_function = private_transform_vars_shift_evaluate;
+  self->evaluate_constraint = private_transform_vars_shift_evaluate_constraint;
+  self->evaluate_gradient = private_transform_vars_shift_evaluate_gradient;
   return self;
 }
