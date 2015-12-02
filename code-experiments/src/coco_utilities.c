@@ -477,7 +477,7 @@ int coco_options_read_string(const char *options, const char *name, char *pointe
   if (i2 <= i1)
     return 0;
 
-  if (options[i2] == '\"') {
+  if (options[i2 + 1] == '\"') {
     /* The value starts with a quote: read everything between two quotes into a string */
     return sscanf(&options[i2], " \"%[^\"]\"", pointer);
   } else
