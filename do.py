@@ -270,7 +270,7 @@ def build_matlab():
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
-    run('code-experiments/build/matlab', ['octave', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
+    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
     
 ################################################################################
 ## Java
