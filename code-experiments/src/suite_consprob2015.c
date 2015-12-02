@@ -130,7 +130,7 @@ static coco_problem_t *suite_consprob2015_problem(int function_id, long dimensio
     
     /* Define the objective function of the problem */
     problem = sphere_problem(dimension);
-    problem = shift_variables(problem, shift, 0);
+    problem = f_transform_vars_shift(problem, shift, 0);
     
     /* Compute the gradient of the shifted objective function
      * at the origin, or, equivalently, the gradient of the original 
