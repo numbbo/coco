@@ -346,6 +346,11 @@ def test_java():
         sys.exit(-1)
 
 ################################################################################
+## Post processing
+def test_post_processing():
+    python('code-postprocessing/bbob_pproc', ['__main__.py'])
+
+################################################################################
 ## Global
 def build():
     builders = [
@@ -431,6 +436,7 @@ def main(args):
     elif cmd == 'test-python3': test_python3()
     elif cmd == 'test-java': test_java()
     elif cmd == 'leak-check': leak_check()
+    elif cmd == 'test-post-processing': test_post_processing()
     else: help()
 
 if __name__ == '__main__':
