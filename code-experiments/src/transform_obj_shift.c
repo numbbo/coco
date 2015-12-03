@@ -7,7 +7,7 @@ typedef struct {
   double offset;
 } transform_obj_shift_data_t;
 
-static void private_transform_obj_shift_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void transform_obj_shift_evaluate(coco_problem_t *self, const double *x, double *y) {
   transform_obj_shift_data_t *data;
   data = coco_transformed_get_data(self);
   coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
@@ -24,7 +24,7 @@ static coco_problem_t *f_transform_obj_shift(coco_problem_t *inner_problem, cons
   data->offset = offset;
 
   self = coco_transformed_allocate(inner_problem, data, NULL);
-  self->evaluate_function = private_transform_obj_shift_evaluate;
+  self->evaluate_function = transform_obj_shift_evaluate;
   self->best_value[0] += offset; /* FIXME: shifts only the first objective */
   return self;
 }
