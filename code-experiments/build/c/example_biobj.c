@@ -12,6 +12,8 @@ static const long MAX_BUDGET = 1e2;
 static const char *SUITE_NAME = "suite_biobj_300";
 static const char *OBSERVER_NAME = "observer_biobj";
 static const char *OBSERVER_OPTIONS = "result_folder: RS_on_suite_biobj_300 \
+                                       algorithm_name: RS \
+                                       algorithm_info: \"A simple random search algorithm\" \
                                        include_decision_variables: 0 \
                                        log_nondominated: final";
 /* static const char *SOLVER_NAME = "grid_search"; */
@@ -163,8 +165,10 @@ void my_optimizer(coco_problem_t *problem) {
 
 int main(void) {
 
-  printf("Running the experiments... (it takes time, be patient)");
+  printf("Running the experiments... (it takes time, be patient)\n");
+  fflush(stdout);
   coco_suite_benchmark(SUITE_NAME, OBSERVER_NAME, OBSERVER_OPTIONS, my_optimizer);
-  printf("Done!");
+  printf("Done!\n");
+  fflush(stdout);
   return 0;
 }

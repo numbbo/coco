@@ -9,7 +9,7 @@ typedef struct {
   coco_free_function_t old_free_problem;
 } transform_vars_shift_data_t;
 
-static void private_transform_vars_shift_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void transform_vars_shift_evaluate(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   transform_vars_shift_data_t *data;
   coco_problem_t *inner_problem;
@@ -24,7 +24,7 @@ static void private_transform_vars_shift_evaluate(coco_problem_t *self, const do
   assert(y[0] >= self->best_value[0]);
 }
 
-static void private_transform_vars_shift_free(void *thing) {
+static void transform_vars_shift_free(void *thing) {
   transform_vars_shift_data_t *data = thing;
   coco_free_memory(data->shifted_x);
   coco_free_memory(data->offset);
@@ -34,8 +34,8 @@ static void private_transform_vars_shift_free(void *thing) {
  * Shift all variables of ${inner_problem} by ${offset}.
  */
 static coco_problem_t *f_transform_vars_shift(coco_problem_t *inner_problem,
-                                        const double *offset,
-                                        const int shift_bounds) {
+                                              const double *offset,
+                                              const int shift_bounds) {
   transform_vars_shift_data_t *data;
   coco_problem_t *self;
   if (shift_bounds)
@@ -45,7 +45,7 @@ static coco_problem_t *f_transform_vars_shift(coco_problem_t *inner_problem,
   data->offset = coco_duplicate_vector(offset, inner_problem->number_of_variables);
   data->shifted_x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_transformed_allocate(inner_problem, data, private_transform_vars_shift_free);
-  self->evaluate_function = private_transform_vars_shift_evaluate;
+  self = coco_transformed_allocate(inner_problem, data, transform_vars_shift_free);
+  self->evaluate_function = transform_vars_shift_evaluate;
   return self;
 }
