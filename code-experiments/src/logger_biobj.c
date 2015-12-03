@@ -347,8 +347,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   observer_biobj_t *observer_biobj;
   logger_biobj_indicator_t *indicator;
   char *prefix, *file_name, *path_name;
-  char *problem_type = ((coco_stacked_problem_data_t *) problem->data)->problem_type;
-  size_t i;
+  char *problem_type = ((mo_problem_data_t *) coco_stacked_problem_get_data(problem))->problem_type;
   int info_file_exists = 0;
 
   indicator = (logger_biobj_indicator_t *) coco_allocate_memory(sizeof(*indicator));
