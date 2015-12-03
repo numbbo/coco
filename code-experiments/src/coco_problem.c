@@ -219,7 +219,6 @@ coco_problem_t *coco_transformed_get_inner_problem(coco_problem_t *self) {
 typedef struct {
   coco_problem_t *problem1;
   coco_problem_t *problem2;
-  char *problem_type;
   void *data;
   coco_stacked_problem_free_data_t free_data;
 } coco_stacked_problem_data_t;
@@ -272,10 +271,6 @@ static void coco_stacked_problem_free(coco_problem_t *self) {
   if (data->problem2 != NULL) {
     coco_problem_free(data->problem2);
     data->problem2 = NULL;
-  }
-  if (data->problem_type != NULL) {
-    coco_free_memory(data->problem_type);
-    data->problem_type = NULL;
   }
   if (data->data != NULL) {
     if (data->free_data != NULL) {
@@ -367,7 +362,6 @@ coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1,
   data = coco_allocate_memory(sizeof(*data));
   data->problem1 = problem1;
   data->problem2 = problem2;
-  data->problem_type = NULL; /* To be initialized in the suite */
   data->data = userdata;
   data->free_data = free_data;
 

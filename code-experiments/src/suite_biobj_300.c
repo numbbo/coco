@@ -124,6 +124,14 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
   data->reference_point[0] = data->ideal_point[0] + 2 * (nadir[0] - data->ideal_point[0]);
   data->reference_point[1] = data->ideal_point[1] + 2 * (nadir[1] - data->ideal_point[1]); */
 
+  /* Construct the information about the problem - its "type" */
+  if (function1_id < function2_id)
+    data->problem_type = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id],
+        SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id]);
+  else
+    data->problem_type = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id],
+        SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id]);
+
   mo_problem_data_compute_normalization_factor(data, 2);
   coco_free_memory(nadir);
 
@@ -140,13 +148,6 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
   problem->problem_id = coco_strdupf("biobj_300_f%03d_i%02ld_d%02d", function_id + 1, instance_id + 1,
       problem->number_of_variables);
 
-  /* Construct the information about the problem - its "type" */
-  if (function1_id < function2_id)
-    ((coco_stacked_problem_data_t *) problem->data)->problem_type = coco_strdupf("%s_%s",
-        SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id], SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id]);
-  else
-    ((coco_stacked_problem_data_t *) problem->data)->problem_type = coco_strdupf("%s_%s",
-        SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id], SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id]);
 
   return problem;
 }
