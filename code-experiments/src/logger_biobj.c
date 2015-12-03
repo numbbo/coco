@@ -492,7 +492,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
    * Note that a target is reached when the (best_value - current_value) <= relative_target_value (the
    * relative_target_value is a target for indicator difference, not indicator value!)
    */
-  if (update_performed)
+  if (update_performed && observer_biobj->compute_indicators)
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
       target_hit = 0;
       indicator = logger->indicators[i];
