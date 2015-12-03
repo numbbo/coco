@@ -7,6 +7,7 @@ typedef struct {
   double *ideal_point;
   double *reference_point;
   double *normalization_factor;
+  char *problem_type;
 } mo_problem_data_t;
 
 static mo_problem_data_t *mo_problem_data_allocate(const size_t number_of_objectives) {
@@ -16,6 +17,7 @@ static mo_problem_data_t *mo_problem_data_allocate(const size_t number_of_object
   data->ideal_point = coco_allocate_vector(number_of_objectives);
   data->reference_point = coco_allocate_vector(number_of_objectives);
   data->normalization_factor = coco_allocate_vector(number_of_objectives);
+  data->problem_type = NULL; /* To be allocated later */
 
   return data;
 }
@@ -47,6 +49,11 @@ static void mo_problem_data_free(void *stuff) {
   if (data->normalization_factor != NULL) {
     coco_free_memory(data->normalization_factor);
     data->normalization_factor = NULL;
+  }
+
+  if (data->problem_type != NULL) {
+    coco_free_memory(data->problem_type);
+    data->problem_type = NULL;
   }
 }
 
