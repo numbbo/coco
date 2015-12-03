@@ -6,7 +6,7 @@
 
 /* List of implemented indicators */
 #define OBSERVER_BIOBJ_NUMBER_OF_INDICATORS 1
-const char *OBSERVER_BIOBJ_INDICATORS[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS] = { "hypervolume" };
+const char *OBSERVER_BIOBJ_INDICATORS[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS] = { "hyp" };
 const size_t OBSERVER_BIOBJ_MAX_STR_LENGTH = 100;
 
 /* Logging nondominated solutions mode */
@@ -22,12 +22,15 @@ typedef struct {
   int compute_indicators;
   int produce_all_data;
 
-  char ***reference_value_matrix[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS];
-  size_t reference_values_count;
+  char ***best_values_matrix[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS];
+  size_t best_values_count;
+
+  /* Information on the previous logged problem */
+  int previous_function;
 
 } observer_biobj_t;
 
-coco_problem_t *logger_biobj(coco_observer_t *self, coco_problem_t *problem);
+static coco_problem_t *logger_biobj(coco_observer_t *self, coco_problem_t *problem);
 
 /**
  * Allocates memory for a matrix with number_of_rows rows and number_of_columns columns of strings of
@@ -143,7 +146,7 @@ static double observer_biobj_get_matching_double_value(char ***matrix_of_strings
                                                        const size_t number_of_rows,
                                                        const size_t key_column,
                                                        const size_t value_column,
-                                                       double default_value) {
+                                                       const double default_value) {
 
   size_t i;
 
@@ -159,30 +162,30 @@ static double observer_biobj_get_matching_double_value(char ***matrix_of_strings
   return default_value;
 }
 
-/* Returns the reference value for indicator_name matching the given key if the key is found, and raises a
+/* Returns the best known value for indicator_name matching the given key if the key is found, and raises an
  * error otherwise.  */
-static double observer_biobj_get_reference_value(const observer_biobj_t *self,
-                                                 const char *indicator_name,
-                                                 const char *key) {
+static double observer_biobj_read_best_value(const observer_biobj_t *self,
+                                             const char *indicator_name,
+                                             const char *key) {
 
   size_t i;
-  double reference_value;
+  double best_value;
   double error_value = -1;
   double error_accuracy = 1e-8;
 
   for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
     if (strcmp(OBSERVER_BIOBJ_INDICATORS[i], indicator_name) == 0) {
-      reference_value = observer_biobj_get_matching_double_value(self->reference_value_matrix[i], key,
-          self->reference_values_count, 0, 1, error_value);
-      if (coco_doubles_almost_equal(reference_value, error_value, error_accuracy) == 0) {
-        coco_error("observer_biobj_get_reference_value(): could not find %s in reference file", key);
+      best_value = observer_biobj_get_matching_double_value(self->best_values_matrix[i], key,
+          self->best_values_count, 0, 1, error_value);
+      if (coco_doubles_almost_equal(best_value, error_value, error_accuracy) == 0) {
+        coco_error("observer_biobj_read_best_value(): could not find %s in best value file", key);
         return 0; /* Never reached */
       } else
-        return reference_value;
+        return best_value;
     }
   }
 
-  coco_error("observer_biobj_get_reference_value(): unexpected exception");
+  coco_error("observer_biobj_read_best_value(): unexpected exception");
   return 0; /* Never reached */
 
 }
@@ -200,8 +203,8 @@ static void observer_biobj_free(coco_observer_t *observer) {
 
   if (observer_biobj->compute_indicators != 0) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
-      observer_biobj_free_matrix_of_strings(observer_biobj->reference_value_matrix[i],
-          observer_biobj->reference_values_count, 2);
+      observer_biobj_free_matrix_of_strings(observer_biobj->best_values_matrix[i],
+          observer_biobj->best_values_count, 2);
     }
   }
 
@@ -215,7 +218,7 @@ static void observer_biobj_free(coco_observer_t *observer) {
  * - log_nondominated : all (log every solution that is nondominated at creation time)
  * - include_decision_variables : 0 / 1 (whether to include decision variables when logging nondominated solutions;
  * default value is 0)
- * - compute_indicators : 0 / 1 (whether to compute performance indicators; default value is 1)
+ * - compute_indicators : 0 / 1 (whether to compute and output performance indicators; default value is 1)
  * - produce_all_data: 0 / 1 (whether to produce all data; if set to 1, overwrites other options and is equivalent to
  * setting log_nondominated to all, include_decision_variables to 1 and compute_indicators to 1; if set to 0, it
  * does not change the values of other options; default value is 0)
@@ -260,18 +263,19 @@ static void observer_biobj(coco_observer_t *self, const char *options) {
 
   if (data->compute_indicators) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
-      /* Load the data from the file with reference values */
-      file_name = coco_strdupf("reference_values_%s.txt", OBSERVER_BIOBJ_INDICATORS[i]);
+      /* Load the data from the file with best values */
+      file_name = coco_strdupf("best_values_%s.txt", OBSERVER_BIOBJ_INDICATORS[i]);
       file = fopen(file_name, "r");
       if (file == NULL) {
         coco_error("observer_biobj() failed to open file '%s'.", file_name);
         return; /* Never reached */
       }
-      data->reference_values_count = observer_biobj_get_number_of_lines_in_file(file);
-      data->reference_value_matrix[i] = observer_biobj_get_string_pairs_from_file(file,
-          data->reference_values_count, OBSERVER_BIOBJ_MAX_STR_LENGTH);
+      data->best_values_count = observer_biobj_get_number_of_lines_in_file(file);
+      data->best_values_matrix[i] = observer_biobj_get_string_pairs_from_file(file,
+          data->best_values_count, OBSERVER_BIOBJ_MAX_STR_LENGTH);
       fclose(file);
     }
+    data->previous_function = -1;
   }
 
   self->logger_initialize_function = logger_biobj;
