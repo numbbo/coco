@@ -10,6 +10,8 @@ This test can and should become much more sophisticated.
 import os, sys, time
 import fnmatch
 import urllib
+import shutil
+import subprocess
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -22,6 +24,22 @@ def join_path(a, *p):
     path = os.path.join(a, *p)
     return path
 
+def copy_latex_templates():
+    
+    currentFolder = os.path.dirname(os.path.realpath(__file__))
+    templateFolder = os.path.abspath(join_path(currentFolder, '..', 'latex-templates'))
+    shutil.copy(join_path(templateFolder, 'templateBBOBarticle.tex'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), currentFolder)
+    
+def run_latex_template(filename):
+
+    filePath = os.path.abspath(join_path(os.path.dirname(__file__), filename))    
+    args = ['pdflatex', filePath]
+    DEVNULL = open(os.devnull, 'wb')
+    return subprocess.call(args, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+
 def retrieve_algorithm(dataPath, year, algorithmName):
     
     algorithmFile = join_path(dataPath, algorithmName)
@@ -30,6 +48,8 @@ def retrieve_algorithm(dataPath, year, algorithmName):
         urllib.urlretrieve(dataurl, algorithmFile)
 
 def prepare_data():
+
+    print('preparing algorithm data')
 
     dataPath = os.path.abspath(join_path(os.path.dirname(__file__), 'data'))
     
@@ -101,6 +121,8 @@ if __name__ == "__main__":
         
     command = ' ' + join_path(os.path.dirname(os.path.realpath(__file__)), 'rungeneric.py ')
     
+    copy_latex_templates()
+    
     print '*** testing module bbob_pproc ***'
     t0 = time.time()
     print time.asctime()
@@ -112,12 +134,18 @@ if __name__ == "__main__":
                 join_path(data_path, 'BFGS_ros_noiseless.tar.gz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
     #assert result == 0, 'Test failed: rungeneric on many algorithms.'
+
+    #result = run_latex_template("templateBBOBmany.tex")
+    #assert not result, 'Test failed: error while generating pdf from templateBBOBmany.tex.'
     
     t0 = time.time()
     result = os.system(python + command + '--conv' + 
                 join_path(data_path, 'BFGS_ros_noiseless.tar.gz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
     #assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
+
+    #result = run_latex_template("templateBBOBarticle.tex")
+    #assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
 
     t0 = time.time()
     result = os.system(python + command + '--conv' +
@@ -126,18 +154,27 @@ if __name__ == "__main__":
     print '  subtest finished in ', time.time() - t0, ' seconds'
     #assert result == 0, 'Test failed: rungeneric on two algorithms with option --conv.'
 
+    #result = run_latex_template("templateBBOBcmp.tex")
+    #assert not result, 'Test failed: error while generating pdf from templateBBOBcmp.tex.'
+
     t0 = time.time()
     result = os.system(python + command + ' --omit-single ' +
                 join_path(data_path, 'DE-PSO_alba_noiseless.tar.gz') +
                 join_path(data_path, 'VNS_garcia_noiseless.tar.gz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
-    #assert result == 0, 'Test failed: rungeneric on two algorithms with option --omit-single.'
+    assert result == 0, 'Test failed: rungeneric on two algorithms with option --omit-single.'
+    
+    result = run_latex_template("templateBBOBcmp.tex")
+    assert not result, 'Test failed: error while generating pdf from templateBBOBcmp.tex.'
 
     t0 = time.time()
     result = os.system(python + command + ' --expensive ' +
                 join_path(data_path, 'VNS_garcia_noiseless.tar.gz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
-    #assert result == 0, 'Test failed: rungeneric on one algorithm with option --expensive.'
+    assert result == 0, 'Test failed: rungeneric on one algorithm with option --expensive.'
+    
+    result = run_latex_template("templateBBOBarticle.tex")
+    assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
 
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()
