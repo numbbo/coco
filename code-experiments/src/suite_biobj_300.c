@@ -28,7 +28,7 @@ static int SUITE_BIOBJ_300_FUNCTION_LIST[300][2];
 /* Whether the suite is defined */
 static int SUITE_BIOBJ_300_DEFINED = 0;
 /* A list of problem types */
-static const char SUITE_BIOBJ_300_PROBLEM_GROUP[24][30] = {
+static const char SUITE_BIOBJ_300_PROBLEM_TYPE[24][30] = {
     "1-separable", "1-separable", "1-separable", "1-separable", "1-separable",
     "2-moderate", "2-moderate", "2-moderate", "2-moderate",
     "3-ill-conditioned", "3-ill-conditioned", "3-ill-conditioned", "3-ill-conditioned", "3-ill-conditioned",
@@ -109,7 +109,7 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
       (long) SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][1]);
 
   /* Set the ideal and reference points*/
-  data = mo_problem_data_allocate(problem1->number_of_objectives);
+  data = mo_problem_data_allocate(2);
   data->ideal_point[0] = problem1->best_value[0];
   data->ideal_point[1] = problem2->best_value[0];
   nadir = coco_allocate_vector(2);
@@ -124,13 +124,13 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
   data->reference_point[0] = data->ideal_point[0] + 2 * (nadir[0] - data->ideal_point[0]);
   data->reference_point[1] = data->ideal_point[1] + 2 * (nadir[1] - data->ideal_point[1]); */
 
-  /* Construct the information about the problem - its "type" */
+  /* Construct the type of the problem */
   if (function1_id < function2_id)
-    data->problem_type = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id],
-        SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id]);
+    data->problem_type = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_TYPE[function1_id],
+        SUITE_BIOBJ_300_PROBLEM_TYPE[function2_id]);
   else
-    data->problem_type = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_GROUP[function2_id],
-        SUITE_BIOBJ_300_PROBLEM_GROUP[function1_id]);
+    data->problem_type = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_TYPE[function2_id],
+        SUITE_BIOBJ_300_PROBLEM_TYPE[function1_id]);
 
   mo_problem_data_compute_normalization_factor(data, 2);
   coco_free_memory(nadir);
