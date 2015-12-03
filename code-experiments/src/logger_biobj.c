@@ -486,6 +486,9 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
     logger_biobj_tree_output(logger->nondom_file, logger->buffer_tree, logger->number_of_variables,
         logger->number_of_objectives, observer_biobj->include_decision_variables);
     avl_tree_purge(logger->buffer_tree);
+
+    /* Flush output so that impatient users can see progress. */
+    fflush(logger->nondom_file);
   }
 
   /* If the archive was updated and a new target was reached for an indicator, output indicator information.
@@ -512,9 +515,6 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
 
     }
 
-
-  /* Flush output so that impatient users can see progress. */
-  fflush(logger->nondom_file);
 }
 
 /**
@@ -573,7 +573,7 @@ static void logger_biobj_free(void *stuff) {
     }
   }
 
-  if (logger->nondom_file != NULL) {
+  if ((observer_biobj->log_mode != NONE) && (logger->nondom_file != NULL)) {
     fclose(logger->nondom_file);
     logger->nondom_file = NULL;
   }
