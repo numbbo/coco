@@ -93,7 +93,7 @@ struct coco_problem {
    */
 };
 
-typedef void (*coco_observer_free_function_t)(coco_observer_t *self);
+typedef void (*coco_observer_data_free_function_t)(void *data);
 typedef coco_problem_t *(*coco_logger_initialize_function_t)(coco_observer_t *self, coco_problem_t *problem);
 
 /**
@@ -114,13 +114,14 @@ typedef coco_problem_t *(*coco_logger_initialize_function_t)(coco_observer_t *se
  */
 struct coco_observer {
 
+  int is_active;
   char *output_folder;
   char *algorithm_name;
   char *algorithm_info;
   int verbosity;
   void *data;
 
-  coco_observer_free_function_t observer_free_function;
+  coco_observer_data_free_function_t data_free_function;
   coco_logger_initialize_function_t logger_initialize_function;
 };
 
