@@ -42,7 +42,7 @@ def build_c():
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/c/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/c/coco.h')
-    copy_file('code-experiments/src/reference_values_hypervolume.txt', 'code-experiments/build/c/reference_values_hypervolume.txt')
+    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/c/best_values_hyp.txt')
     write_file(git_revision(), "code-experiments/build/c/REVISION")
     write_file(git_version(), "code-experiments/build/c/VERSION")
     make("code-experiments/build/c", "clean")
@@ -141,7 +141,7 @@ def build_c_example_tests():
     os.makedirs('code-experiments/test/example-test') 
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/example-test/coco.c')
     copy_file('code-experiments/src/coco.h', 'code-experiments/test/example-test/coco.h')
-    copy_file('code-experiments/src/reference_values_hypervolume.txt', 'code-experiments/test/example-test/reference_values_hypervolume.txt')
+    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/test/example-test/best_values_hyp.txt')
     copy_file('code-experiments/build/c/example_bbob2009.c', 'code-experiments/test/example-test/example_bbob2009.c')
     copy_file('code-experiments/build/c/example_biobj.c', 'code-experiments/test/example-test/example_biobj.c')
     copy_file('code-experiments/build/c/example_toy.c', 'code-experiments/test/example-test/example_toy.c')
@@ -175,7 +175,7 @@ def _prep_python():
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/python/cython/coco.c', 
                release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')
-    copy_file('code-experiments/src/reference_values_hypervolume.txt', 'code-experiments/build/python/reference_values_hypervolume.txt')
+    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/python/best_values_hyp.txt')
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
     expand_file('code-experiments/build/python/README.in', 'code-experiments/build/python/README',
                 {'COCO_VERSION': git_version()}) # hg_version()})
