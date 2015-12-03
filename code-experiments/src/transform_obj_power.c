@@ -8,7 +8,7 @@ typedef struct {
   double exponent;
 } transform_obj_power_data_t;
 
-static void private_transform_obj_power_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void transform_obj_power_evaluate(coco_problem_t *self, const double *x, double *y) {
   transform_obj_power_data_t *data;
   data = coco_transformed_get_data(self);
   coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
@@ -26,6 +26,6 @@ static coco_problem_t *f_transform_obj_power(coco_problem_t *inner_problem, cons
   data->exponent = exponent;
 
   self = coco_transformed_allocate(inner_problem, data, NULL);
-  self->evaluate_function = private_transform_obj_power_evaluate;
+  self->evaluate_function = transform_obj_power_evaluate;
   return self;
 }

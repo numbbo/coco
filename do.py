@@ -42,7 +42,7 @@ def build_c():
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/c/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/c/coco.h')
-    copy_file('code-experiments/src/reference_values_hypervolume.txt', 'code-experiments/build/c/reference_values_hypervolume.txt')
+    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/c/best_values_hyp.txt')
     write_file(git_revision(), "code-experiments/build/c/REVISION")
     write_file(git_version(), "code-experiments/build/c/VERSION")
     make("code-experiments/build/c", "clean")
@@ -65,6 +65,24 @@ def test_c():
     # Perform integration tests
     build_c_integration_tests()
     run_c_integration_tests()
+    # Perform example tests
+    build_c_example_tests()
+    run_c_example_tests()
+        
+def test_c_unit():
+    build_c()
+    # Perform unit tests
+    build_c_unit_tests()
+    run_c_unit_tests()
+        
+def test_c_integration():
+    build_c()
+    # Perform integration tests
+    build_c_integration_tests()
+    run_c_integration_tests()
+        
+def test_c_example():
+    build_c()
     # Perform example tests
     build_c_example_tests()
     run_c_example_tests()
@@ -123,7 +141,7 @@ def build_c_example_tests():
     os.makedirs('code-experiments/test/example-test') 
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/example-test/coco.c')
     copy_file('code-experiments/src/coco.h', 'code-experiments/test/example-test/coco.h')
-    copy_file('code-experiments/src/reference_values_hypervolume.txt', 'code-experiments/test/example-test/reference_values_hypervolume.txt')
+    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/test/example-test/best_values_hyp.txt')
     copy_file('code-experiments/build/c/example_bbob2009.c', 'code-experiments/test/example-test/example_bbob2009.c')
     copy_file('code-experiments/build/c/example_biobj.c', 'code-experiments/test/example-test/example_biobj.c')
     copy_file('code-experiments/build/c/example_toy.c', 'code-experiments/test/example-test/example_toy.c')
@@ -157,7 +175,7 @@ def _prep_python():
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/python/cython/coco.c', 
                release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')
-    copy_file('code-experiments/src/reference_values_hypervolume.txt', 'code-experiments/build/python/reference_values_hypervolume.txt')
+    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/python/best_values_hyp.txt')
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
     expand_file('code-experiments/build/python/README.in', 'code-experiments/build/python/README',
                 {'COCO_VERSION': git_version()}) # hg_version()})
@@ -328,6 +346,11 @@ def test_java():
         sys.exit(-1)
 
 ################################################################################
+## Post processing
+def test_post_processing():
+    python('code-postprocessing/bbob_pproc', ['__main__.py'])
+
+################################################################################
 ## Global
 def build():
     builders = [
@@ -360,25 +383,28 @@ Usage: do.py <command> <arguments>
 
 Available commands:
 
-  build          - Build C, Python and Java modules
-  test           - Test C, Python and Java modules
-  build-c        - Build C framework
-  build-python   - Build Python modules
-  build-python2  - Build Python 2 modules
-  build-python3  - Build Python 3 modules
-  build-matlab   - Build Matlab package
-  build-java     - Build Java package
-  build-examples - Update examples to latest framework code
-  run-c          - Build and run examples from the C framework
-  run-python     - Run a Python script with installed COCO module
-                   Takes a single argument (name of Python script file)
-  test-c         - Build and run unit tests, integration tests and examples
-                   from the C framework
-  test-python    - Build and run minimal test of Python module
-  test-python2   - Build and run  minimal test of Python 2 module
-  test-python3   - Build and run  minimal test of Python 3 module
-  test-java      - Build and run  minimal test of Java package
-  leak-check     - Check for memory leaks
+  build                - Build C, Python and Java modules
+  test                 - Test C, Python and Java modules
+  build-c              - Build C framework
+  build-python         - Build Python modules
+  build-python2        - Build Python 2 modules
+  build-python3        - Build Python 3 modules
+  build-matlab         - Build Matlab package
+  build-java           - Build Java package
+  build-examples       - Update examples to latest framework code
+  run-c                - Build and run examples from the C framework
+  run-python           - Run a Python script with installed COCO module
+                         Takes a single argument (name of Python script file)
+  test-c               - Build and run unit tests, integration tests 
+                         and examples from the C framework
+  test-c-unit          - Build and run unit tests from the C framework
+  test-c-integration   - Build and run integration tests from the C framework
+  test-c-example       - Build and run examples from the C framework
+  test-python          - Build and run minimal test of Python module
+  test-python2         - Build and run  minimal test of Python 2 module
+  test-python3         - Build and run  minimal test of Python 3 module
+  test-java            - Build and run  minimal test of Java package
+  leak-check           - Check for memory leaks
 
 
 To build a release version which does not include debugging information in the 
@@ -402,11 +428,15 @@ def main(args):
     elif cmd == 'run-c': run_c()
     elif cmd == 'run-python': run_python(args[1])
     elif cmd == 'test-c': test_c()
+    elif cmd == 'test-c-unit': test_c_unit()
+    elif cmd == 'test-c-integration': test_c_integration()
+    elif cmd == 'test-c-example': test_c_example()    
     elif cmd == 'test-python': test_python()
     elif cmd == 'test-python2': test_python2()
     elif cmd == 'test-python3': test_python3()
     elif cmd == 'test-java': test_java()
     elif cmd == 'leak-check': leak_check()
+    elif cmd == 'test-post-processing': test_post_processing()
     else: help()
 
 if __name__ == '__main__':

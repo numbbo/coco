@@ -7,7 +7,7 @@ typedef struct {
   double factor;
 } transform_obj_penalize_data_t;
 
-static void private_transform_obj_penalize_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void transform_obj_penalize_evaluate(coco_problem_t *self, const double *x, double *y) {
   transform_obj_penalize_data_t *data = coco_transformed_get_data(self);
   const double *lower_bounds = self->smallest_values_of_interest;
   const double *upper_bounds = self->largest_values_of_interest;
@@ -44,6 +44,6 @@ static coco_problem_t *f_transform_obj_penalize(coco_problem_t *inner_problem, c
   data = coco_allocate_memory(sizeof(*data));
   data->factor = factor;
   self = coco_transformed_allocate(inner_problem, data, NULL);
-  self->evaluate_function = private_transform_obj_penalize_evaluate;
+  self->evaluate_function = transform_obj_penalize_evaluate;
   return self;
 }

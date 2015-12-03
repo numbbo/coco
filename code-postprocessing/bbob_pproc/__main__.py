@@ -9,6 +9,9 @@ This test can and should become much more sophisticated.
 
 import os, sys, time
 import fnmatch
+import urllib
+import shutil
+import subprocess
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -21,6 +24,48 @@ def join_path(a, *p):
     path = os.path.join(a, *p)
     return path
 
+def copy_latex_templates():
+    
+    currentFolder = os.path.dirname(os.path.realpath(__file__))
+    templateFolder = os.path.abspath(join_path(currentFolder, '..', 'latex-templates'))
+    shutil.copy(join_path(templateFolder, 'templateBBOBarticle.tex'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), currentFolder)
+    
+def run_latex_template(filename):
+
+    filePath = os.path.abspath(join_path(os.path.dirname(__file__), filename))    
+    args = ['pdflatex', filePath]
+    DEVNULL = open(os.devnull, 'wb')
+    return subprocess.call(args, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+
+def retrieve_algorithm(dataPath, year, algorithmName):
+    
+    algorithmFile = join_path(dataPath, algorithmName)
+    if not os.path.exists(algorithmFile):
+        dataurl = 'http://coco.lri.fr/BBOB%s/rawdata/%s' % (year, algorithmName)
+        urllib.urlretrieve(dataurl, algorithmFile)
+
+def prepare_data():
+
+    print('preparing algorithm data')
+
+    dataPath = os.path.abspath(join_path(os.path.dirname(__file__), 'data'))
+    
+    # Retrieving the algorithms    
+    retrieve_algorithm(dataPath, '2010', 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz')    
+    retrieve_algorithm(dataPath, '2009', 'MCS_neumaier_noiseless.tar.gz')    
+    retrieve_algorithm(dataPath, '2009', 'NEWUOA_ros_noiseless.tar.gz')    
+    retrieve_algorithm(dataPath, '2009', 'RANDOMSEARCH_auger_noiseless.tar.gz')    
+    retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noiseless.tar.gz')    
+    retrieve_algorithm(dataPath, '2013', 'hutter2013_SMAC.tar.gz')    
+    retrieve_algorithm(dataPath, '2013', 'auger2013_lmmCMA.tar.gz')    
+    retrieve_algorithm(dataPath, '2009', 'DE-PSO_alba_noiseless.tar.gz')    
+    retrieve_algorithm(dataPath, '2009', 'VNS_garcia_noiseless.tar.gz')    
+
+    return dataPath;
+    
 def process_doctest_output(stream=None):
     """ """
     import fileinput
@@ -72,40 +117,65 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == 'wine':
         python = 'C:\\Python26\\python.exe ' # works for wine
     
-    data_path = join_path(' ..', '..', 'data-archive', 'data')
-
-    command = join_path(' bbob_pproc', 'rungeneric.py ')
+    data_path = ' ' + prepare_data()
+        
+    command = ' ' + join_path(os.path.dirname(os.path.realpath(__file__)), 'rungeneric.py ')
+    
+    copy_latex_templates()
     
     print '*** testing module bbob_pproc ***'
     t0 = time.time()
     print time.asctime()
-    os.system(python + command + # ' --omit-single ' +
-                join_path(data_path, 'gecco-bbob-1-24', '2010', 'data', 'IPOP-ACTCMA-ES ') +
-                # join_path(data_path, 'gecco-bbob-1-24', '2010', 'data', '1komma4mirser ') +
-                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'MCS ') +
-                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'NEWUOA ') +
-                # join_path(data_path, 'gecco-bbob-1-24', '2012', 'data', 'loshchilov_NIPOPaCMA_noise-free-pickle ') +
-                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'RANDOMSEARCH ') +
-                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'BFGS '))
+    result = os.system(python + command + # ' --omit-single ' +
+                join_path(data_path, 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz') +
+                join_path(data_path, 'MCS_neumaier_noiseless.tar.gz') +
+                join_path(data_path, 'NEWUOA_ros_noiseless.tar.gz') +
+                join_path(data_path, 'RANDOMSEARCH_auger_noiseless.tar.gz') +
+                join_path(data_path, 'BFGS_ros_noiseless.tar.gz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
+    #assert result == 0, 'Test failed: rungeneric on many algorithms.'
+
+    #result = run_latex_template("templateBBOBmany.tex")
+    #assert not result, 'Test failed: error while generating pdf from templateBBOBmany.tex.'
+    
     t0 = time.time()
-    os.system(python + command + '--conv' + 
-                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'BFGS'))
+    result = os.system(python + command + '--conv' + 
+                join_path(data_path, 'BFGS_ros_noiseless.tar.gz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
+    #assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
+
+    #result = run_latex_template("templateBBOBarticle.tex")
+    #assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
+
     t0 = time.time()
-    os.system(python + command + '--conv' +
-                join_path(data_path, 'gecco-bbob-1-24', '2013', 'data', 'hutter2013_SMAC.tar.gz') +
-                join_path(data_path, 'gecco-bbob-1-24', '2013', 'data', 'auger2013_lmmCMA.tar.gz'))
+    result = os.system(python + command + '--conv' +
+                join_path(data_path, 'hutter2013_SMAC.tar.gz') +
+                join_path(data_path, 'auger2013_lmmCMA.tar.gz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
+    #assert result == 0, 'Test failed: rungeneric on two algorithms with option --conv.'
+
+    #result = run_latex_template("templateBBOBcmp.tex")
+    #assert not result, 'Test failed: error while generating pdf from templateBBOBcmp.tex.'
+
     t0 = time.time()
-    os.system(python + command + ' --omit-single ' +
-                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'DE-PSO ') +
-                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'VNS '))
+    result = os.system(python + command + ' --omit-single ' +
+                join_path(data_path, 'DE-PSO_alba_noiseless.tar.gz') +
+                join_path(data_path, 'VNS_garcia_noiseless.tar.gz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
+    assert result == 0, 'Test failed: rungeneric on two algorithms with option --omit-single.'
+    
+    result = run_latex_template("templateBBOBcmp.tex")
+    assert not result, 'Test failed: error while generating pdf from templateBBOBcmp.tex.'
+
     t0 = time.time()
-    os.system(python + command + ' --expensive ' +
-                join_path(data_path, 'gecco-bbob-1-24', '2009', 'data', 'VNS '))
+    result = os.system(python + command + ' --expensive ' +
+                join_path(data_path, 'VNS_garcia_noiseless.tar.gz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
+    assert result == 0, 'Test failed: rungeneric on one algorithm with option --expensive.'
+    
+    result = run_latex_template("templateBBOBarticle.tex")
+    assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
+
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()
 
@@ -114,7 +184,6 @@ if __name__ == "__main__":
         test_count = 0
         #doctest.testmod(report=True, verbose=True)  # this is quite cool!
         # go through the py files in the bbob_pproc folder
-        os.chdir(os.path.dirname(os.path.realpath(__file__)))
         for root, dirnames, filenames in os.walk(os.path.dirname(os.path.realpath(__file__))):
           for filename in fnmatch.filter(filenames, '*.py'):
             current_failure_count, current_test_count = doctest.testfile(os.path.join(root, filename), report=True, module_relative=False)              
@@ -134,8 +203,8 @@ if __name__ == "__main__":
     # print('    more info in file _bbob_pproc_doctest_.txt)')
     print '*** done testing module bbob_pproc ***'
     
-#    if (failure_count > 0):
-#        raise ValueError('%d of %d tests failed' % (failure_count, test_count))
+    if (failure_count > 0):
+        raise ValueError('%d of %d tests failed' % (failure_count, test_count))
     
 """     
         sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
