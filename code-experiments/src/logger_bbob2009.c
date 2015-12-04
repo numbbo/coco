@@ -17,7 +17,6 @@ static int suite_bbob2009_get_function_id(const coco_problem_t *problem);
 static int suite_bbob2009_get_instance_id(const coco_problem_t *problem);
 
 /*github testing (Wassim)*/
-/* browser edition*/
 
 static const size_t bbob2009_nbpts_nbevals = 20;
 static const size_t bbob2009_nbpts_fval = 5;
