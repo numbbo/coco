@@ -16,6 +16,8 @@ static int bbob2009_raisedOptValWarning;
 static int suite_bbob2009_get_function_id(const coco_problem_t *problem);
 static int suite_bbob2009_get_instance_id(const coco_problem_t *problem);
 
+/*github testing (Wassim)*/
+
 static const size_t bbob2009_nbpts_nbevals = 20;
 static const size_t bbob2009_nbpts_fval = 5;
 static size_t bbob2009_current_dim = 0;
@@ -28,12 +30,12 @@ char bbob2009_infoFile_firstInstance_char[3];
 static const int bbob2009_number_of_dimensions = 6;
 static size_t bbob2009_dimensions_in_current_infoFile[6] = { 0, 0, 0, 0, 0, 0 }; /* TODO should use SUITE_BBOB2009_NUMBER_OF_DIMENSIONS */
 
-/* The current_... mechanism fails if several problems are open. 
+/* The current_... mechanism fails if several problems are open.
  * For the time being this should lead to an error.
  *
  * A possible solution: bbob2009_logger_is_open becomes a reference
  * counter and as long as another logger is open, always a new info
- * file is generated. 
+ * file is generated.
  */
 static int bbob2009_logger_is_open = 0; /* this could become lock-list of .info files */
 
