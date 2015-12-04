@@ -159,14 +159,12 @@ def run_c_example_tests():
         sys.exit(-1)
 
 def leak_check():
-    build_c()
+    build_c_integration_tests()
     os.environ['CFLAGS'] = '-g -Os'
-    make("code-experiments/build/c", "clean")
-    make("code-experiments/build/c", "all")
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    './coco_test', 'bbob2009_testcases.txt']
-    run('code-experiments/build/c', valgrind_cmd)
+                    './test_coco', 'bbob2009_testcases.txt']
+    run('code-experiments/test/integration-test', valgrind_cmd)
     
 ################################################################################
 ## Python 2
