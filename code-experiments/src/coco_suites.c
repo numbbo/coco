@@ -189,8 +189,10 @@ void coco_suite_benchmark(const char *suite_name,
        problem_index = coco_suite_get_next_problem_index(suite_name, problem_index, "")) {
 
     problem = coco_suite_get_problem(suite_name, problem_index);
-    if (NULL == problem)
+
+    if (problem == NULL)
       break;
+
     problem = coco_problem_add_observer(problem, observer);
     optimizer(problem);
     coco_problem_free(problem);

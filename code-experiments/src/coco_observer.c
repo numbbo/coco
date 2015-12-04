@@ -21,8 +21,9 @@ static coco_observer_t *coco_observer_allocate(const char *output_folder,
   observer->algorithm_info = coco_strdup(algorithm_info);
   observer->verbosity = verbosity;
   observer->data = NULL;
-  observer->observer_free_function = NULL;
+  observer->data_free_function = NULL;
   observer->logger_initialize_function = NULL;
+  observer->is_active = 1;
   return observer;
 }
 
@@ -30,21 +31,26 @@ static coco_observer_t *coco_observer_allocate(const char *output_folder,
  * Frees memory for the given coco_observer_t instance.
  */
 void coco_observer_free(coco_observer_t *self) {
-  assert(self != NULL);
-  if (self->observer_free_function != NULL) {
-    self->observer_free_function(self);
-  } else {
-    /* Best guess at freeing all relevant structures */
+
+  if (self != NULL) {
+    self->is_active = 0;
     if (self->output_folder != NULL)
       coco_free_memory(self->output_folder);
     if (self->algorithm_name != NULL)
       coco_free_memory(self->algorithm_name);
     if (self->algorithm_info != NULL)
       coco_free_memory(self->algorithm_info);
-    if (self->data != NULL)
+
+    if (self->data != NULL) {
+      if (self->data_free_function != NULL) {
+        self->data_free_function(self->data);
+      }
       coco_free_memory(self->data);
+    }
     self->data = NULL;
+    self->logger_initialize_function = NULL;
     coco_free_memory(self);
+    self = NULL;
   }
 }
 
@@ -120,7 +126,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
  */
 coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer) {
 
-  if (observer == NULL) {
+  if (observer->is_active == 0) {
     coco_warning("The problem is not being observed.");
     return problem;
   }
