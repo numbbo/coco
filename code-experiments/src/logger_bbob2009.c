@@ -4,7 +4,7 @@
 #include <float.h>
 #include <math.h>
 #include <errno.h>
-/*test github from browser*/
+
 #include "coco.h"
 
 #include "coco_utilities.c"
