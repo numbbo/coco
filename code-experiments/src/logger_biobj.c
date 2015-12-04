@@ -240,6 +240,16 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
     if (dominance > -1) {
       trigger_update = 1;
       next_node = node->next;
+      if (dominance == 1) {
+        /* The new point dominates the next point, remove the next point */
+        if (compute_indicators) {
+          for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+            logger->indicators[i]->current_value -= ((logger_biobj_avl_item_t*) node->item)->indicator_contribution[i];
+          }
+        }
+        avl_item_delete(logger->buffer_tree, node->item);
+        avl_node_delete(logger->archive_tree, node);
+      }
     } else {
       /* The new point is dominated, nothing more to do */
       trigger_update = 0;
@@ -479,6 +489,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
   /* Update the archive with the new solution, if it is not dominated by or equal to existing solutions in the archive */
   node_item = logger_biobj_node_create(x, y, logger->number_of_evaluations, logger->number_of_variables,
       logger->number_of_objectives);
+
   update_performed = logger_biobj_tree_update(logger, coco_transformed_get_inner_problem(problem), node_item, observer_biobj->compute_indicators);
 
   /* If the archive was updated and you need to log all nondominated solutions, output the new solution to nondom_file */

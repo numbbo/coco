@@ -30,7 +30,6 @@ static void observer_toy_free(void *stuff) {
     data->targets = NULL;
   }
 
-  coco_free_memory(data);
 }
 
 /**
