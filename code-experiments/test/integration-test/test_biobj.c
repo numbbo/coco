@@ -36,6 +36,7 @@ void my_optimizer(coco_problem_t *problem) {
 
   coco_random_free(rng);
   coco_free_memory(x);
+  coco_free_memory(y);
 }
 
 /* Each time: run the benchmark and delete the output folder */
