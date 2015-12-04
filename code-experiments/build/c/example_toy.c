@@ -6,7 +6,7 @@
 /**
  * A random search optimizer.
  */
-void my_optimizer(coco_problem_t *problem) {
+void my_random_search(coco_problem_t *problem) {
 
   const size_t budget = 101;
   coco_random_state_t *rng = coco_random_new(0xdeadbeef);
@@ -33,6 +33,6 @@ void my_optimizer(coco_problem_t *problem) {
 
 int main(void) {
   /* Run the benchmark */
-  coco_suite_benchmark("suite_toy", "observer_toy", "result_folder: RS_on_suite_toy", my_optimizer);
+  coco_suite_benchmark("suite_toy", "observer_toy", "result_folder: RS_on_suite_toy", my_random_search);
   return 0;
 }
