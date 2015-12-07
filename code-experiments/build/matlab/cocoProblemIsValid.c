@@ -7,7 +7,7 @@
 #include "coco.c"
 
 #include "mex.h"
-#include "matrix.h"
+//#include "matrix.h"
 
 /* The gateway function */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])

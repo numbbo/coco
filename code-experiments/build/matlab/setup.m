@@ -1,6 +1,32 @@
+%%%%%%%%%%%%%%%%%
+% Octave syntax %
+%%%%%%%%%%%%%%%%%
+
+%mkoctfile --mex -Dchar16_t=uint16_t cocoEvaluateFunction.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoProblemAddObserver.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoProblemFree.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoProblemGetDimension.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoProblemGetEvaluations.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoProblemGetId.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoProblemGetLargestValuesOfInterest.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoProblemGetName.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoProblemGetNumberOfObjectives.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoProblemGetSmallestValuesOfInterest.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoProblemIsValid.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoSuiteGetProblem.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoSuiteGetNextProblemIndex.c
+
+
+
+
+%%%%%%%%%%%%%%%%%
+% MATLAB syntax %
+%%%%%%%%%%%%%%%%%
+
 mex -Dchar16_t=uint16_t cocoEvaluateFunction.c
 mex -Dchar16_t=uint16_t cocoProblemAddObserver.c
 mex -Dchar16_t=uint16_t cocoProblemFree.c
+mex -Dchar16_t=uint16_t cocoObserverFree.c % to be added to Octave
 mex -Dchar16_t=uint16_t cocoProblemGetDimension.c
 mex -Dchar16_t=uint16_t cocoProblemGetEvaluations.c
 mex -Dchar16_t=uint16_t cocoProblemGetId.c
