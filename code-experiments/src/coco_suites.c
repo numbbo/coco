@@ -40,9 +40,8 @@ long coco_suite_get_next_problem_index(const char *problem_suite,
   if (0 == strcmp(problem_suite, "suite_bbob2009")) {
     /* without selection_options: last_index = 2159; */
     return suite_bbob2009_get_next_problem_index(problem_index, select_options);
-  }
-  else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
-    last_index = 7499;
+  } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
+    return suite_biobj_300_get_next_problem_index(problem_index, select_options);
   }
 
   /** generic implementation:
@@ -91,7 +90,9 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
   }
 }
 
-coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem, const char *observer_name, const char *options) {
+coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
+                                                      const char *observer_name,
+                                                      const char *options) {
   if (problem == NULL) {
     coco_warning("Trying to observe a NULL problem has no effect.");
     return problem;
@@ -179,14 +180,19 @@ void coco_suite_benchmark(const char *suite_name,
 
   coco_observer_t *observer;
   coco_problem_t *problem;
-  int problem_index;
+  long problem_index;
 
   observer = coco_observer(observer_name, observer_options);
 
-  while ((problem_index = coco_suite_get_next_problem_index(suite_name, problem_index, "")) >= 0) {
+  for (problem_index = coco_suite_get_next_problem_index(suite_name, -1, "");
+       problem_index >= 0;
+       problem_index = coco_suite_get_next_problem_index(suite_name, problem_index, "")) {
+
     problem = coco_suite_get_problem(suite_name, problem_index);
-    if (NULL == problem)
+
+    if (problem == NULL)
       break;
+
     problem = coco_problem_add_observer(problem, observer);
     optimizer(problem);
     coco_problem_free(problem);

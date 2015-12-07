@@ -13,24 +13,23 @@ typedef struct {
 /**
  * Frees memory for the given coco_observer_t's data field observer_toy_t.
  */
-static void observer_toy_free(coco_observer_t *observer) {
+static void observer_toy_free(void *stuff) {
 
-  observer_toy_t *observer_toy;
+  observer_toy_t *data;
 
-  assert(observer != NULL);
-  observer_toy = (observer_toy_t *) observer->data;
+  assert(stuff != NULL);
+  data = stuff;
 
-  if (observer_toy->log_file != NULL) {
-    fclose(observer_toy->log_file);
-    observer_toy->log_file = NULL;
+  if (data->log_file != NULL) {
+    fclose(data->log_file);
+    data->log_file = NULL;
   }
 
-  if (observer_toy->targets != NULL) {
-    coco_free_memory(observer_toy->targets);
-    observer_toy->targets = NULL;
+  if (data->targets != NULL) {
+    coco_free_memory(data->targets);
+    data->targets = NULL;
   }
 
-  coco_free_memory(observer_toy);
 }
 
 /**
@@ -76,6 +75,6 @@ static void observer_toy(coco_observer_t *self, const char *options) {
   }
 
   self->logger_initialize_function = logger_toy;
-  self->observer_free_function = observer_toy_free;
+  self->data_free_function = observer_toy_free;
   self->data = data;
 }
