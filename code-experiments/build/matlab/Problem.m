@@ -2,6 +2,7 @@ classdef Problem < handle
     
     properties
         problem
+        observer
         dimension
         number_of_objectives
         lower_bounds
@@ -27,12 +28,17 @@ classdef Problem < handle
             Pr.number_of_objectives = cocoProblemGetNumberOfObjectives(Pr.problem);
         end
         
-        function addObserver(Pr, observer, options)
-            Pr.problem = cocoProblemAddObserver(observer, Pr.problem, options);
+        function addObserver(Pr, observer_name, options)
+            [Pr.problem, Pr.observer] = cocoProblemAddObserver(observer_name, Pr.problem, options)
+            %Pr.problem = cocoProblemAddObserver(observer_name, Pr.problem, options);
         end
         
-        function free(Pr)
+        function freeProblem(Pr)
             cocoProblemFree(Pr.problem);
+        end
+        
+        function freeObserver(Pr)
+            cocoObserverFree(Pr.observer);
         end
         
         function S = id(Pr)
