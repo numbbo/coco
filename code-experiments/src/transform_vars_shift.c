@@ -38,9 +38,7 @@ static void transform_vars_shift_evaluate_constraint(coco_problem_t *self, const
   coco_evaluate_constraint(inner_problem, data->shifted_x, y);
 }
 
-static void private_transform_vars_shift_evaluate_gradient(coco_problem_t *self, 
-																			  const double *x, 
-																			  double *y) {
+static void transform_vars_shift_evaluate_gradient(coco_problem_t *self, const double *x, double *y) {
   size_t i;
   transform_vars_shift_data_t *data;
   coco_problem_t *inner_problem;
