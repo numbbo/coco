@@ -53,8 +53,10 @@ static const unsigned CONSPROB2015_DIMS[] = {2, 3, 5, 10, 20, 40};
  *dimension):
  */
 
-static void suite_consprob2015_decode_problem_index(const long problem_index, int *function_id,
-                                    long *instance_id, long *dimension) {
+static void suite_consprob2015_decode_problem_index(const long problem_index,
+                                                    int *function_id,
+                                                    long *instance_id,
+                                                    int *dimension) {
   const long high_instance_id =
       problem_index / (CONSPROB2015_NUMBER_OF_CONSECUTIVE_INSTANCES * CONSPROB2015_NUMBER_OF_FUNCTIONS *
                         CONSPROB2015_NUMBER_OF_DIMENSIONS);
@@ -85,12 +87,12 @@ static long suite_consprob2015_encode_problem_index(int function_id, long instan
     return tmp1 + tmp2 + tmp3 + tmp4;
 }
 
-static coco_problem_t *suite_consprob2015_problem(int function_id, long dimension_, long instance_id) {
+static coco_problem_t *suite_consprob2015_problem(int function_id, int dimension_, long instance_id) {
 	
   size_t len, i, j, k;
   long rseed_xopt, *rseed_cons;
   coco_problem_t *problem = NULL;
-  const size_t dimension = (unsigned long) dimension_;
+  const size_t dimension = (size_t) dimension_;
   
   /* This assert is a hint for the static analyzer. */
   assert(dimension > 1);
@@ -179,6 +181,10 @@ static coco_problem_t *suite_consprob2015_problem(int function_id, long dimensio
      * "problem_c1"
      */
     problem = coco_stacked_problem_allocate(problem, problem_c1);
+    
+    /* Transform (translations and rotations) the final constrained
+     * problem by modifying "problem"
+     */
     
   } else {
     return NULL;
@@ -289,19 +295,16 @@ static long suite_consprob2015_next_problem_index(long problem_index, const char
  */
 static coco_problem_t *suite_consprob2015(long problem_index) {
   coco_problem_t *problem;
-  int function_id;
-  long dimension, instance_id;
-  
+  int dimension, function_id;
+  long instance_id;
+
   if (problem_index < 0)
-    return NULL; 
-  
-  suite_consprob2015_decode_problem_index(problem_index, &function_id, &instance_id,
-                                 &dimension);
-  
+    return NULL;
+  suite_consprob2015_decode_problem_index(problem_index, &function_id, &instance_id, &dimension);
   problem = suite_consprob2015_problem(function_id, dimension, instance_id);
-  
-  problem->index = problem_index;
-  
+  problem->suite_dep_index = problem_index;
+  problem->suite_dep_function_id = function_id;
+  problem->suite_dep_instance_id = instance_id;
   return problem;
 }
 
