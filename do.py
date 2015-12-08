@@ -30,19 +30,14 @@ core_files = ['code-experiments/src/coco_suites.c',
               ]
 
 ################################################################################
-## Examples
-def build_examples():
-    build_c()
-    copy_file('code-experiments/build/c/coco.c', 'code-experiments/examples/bbob2009-c-cmaes/coco.c')
-    copy_file('code-experiments/build/c/coco.h', 'code-experiments/examples/bbob2009-c-cmaes/coco.h')
-
-#########################################################ex#######################
 ## C
 def build_c():
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/c/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/c/coco.h')
     copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/c/best_values_hyp.txt')
+    copy_file('code-experiments/build/c/coco.c', 'code-experiments/examples/bbob2009-c-cmaes/coco.c')
+    copy_file('code-experiments/build/c/coco.h', 'code-experiments/examples/bbob2009-c-cmaes/coco.h')
     write_file(git_revision(), "code-experiments/build/c/REVISION")
     write_file(git_version(), "code-experiments/build/c/VERSION")
     make("code-experiments/build/c", "clean")
@@ -357,7 +352,6 @@ def build():
         #build_matlab,
         build_python,
         build_java, 
-        build_examples
     ]
     for builder in builders:
         try:
@@ -390,7 +384,6 @@ Available commands:
   build-python3        - Build Python 3 modules
   build-matlab         - Build Matlab package
   build-java           - Build Java package
-  build-examples       - Update examples to latest framework code
   run-c                - Build and run examples from the C framework
   run-python           - Run a Python script with installed COCO module
                          Takes a single argument (name of Python script file)
@@ -423,7 +416,6 @@ def main(args):
     elif cmd == 'build-python3': build_python3()
     elif cmd == 'build-matlab': build_matlab()
     elif cmd == 'build-java': build_java()
-    elif cmd == 'build-examples': build_examples()
     elif cmd == 'run-c': run_c()
     elif cmd == 'run-python': run_python(args[1])
     elif cmd == 'test-c': test_c()
