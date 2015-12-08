@@ -292,6 +292,8 @@ char *coco_strdup(const char *string);
 /* int bbob2009_get_instance_id(const coco_problem_t *problem);
  */
 
+int coco_remove_directory(const char *path);
+
 #ifdef __cplusplus
 }
 #endif
