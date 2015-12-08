@@ -51,6 +51,7 @@ coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->initial_solution = NULL;
   problem->evaluate_function = NULL;
   problem->evaluate_constraint = NULL;
+  problem->evaluate_gradient = NULL;
   problem->recommend_solutions = NULL;
   problem->free_problem = NULL;
   problem->number_of_variables = number_of_variables;
@@ -81,6 +82,7 @@ coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
 
   problem->evaluate_function = other->evaluate_function;
   problem->evaluate_constraint = other->evaluate_constraint;
+  problem->evaluate_gradient = other->evaluate_gradient;
   problem->recommend_solutions = other->recommend_solutions;
   problem->free_problem = NULL;
 
@@ -131,6 +133,16 @@ static void transformed_evaluate_constraint(coco_problem_t *self, const double *
   assert(data->inner_problem != NULL);
 
   coco_evaluate_constraint(data->inner_problem, x, y);
+}
+
+static void transformed_evaluate_gradient(coco_problem_t *self, const double *x, double *y) {
+  coco_transformed_data_t *data;
+  assert(self != NULL);
+  assert(self->data != NULL);
+  data = self->data;
+  assert(data->inner_problem != NULL);
+
+  coco_evaluate_gradient(data->inner_problem, x, y);
 }
 
 static void transformed_recommend_solutions(coco_problem_t *self, const double *x, size_t number_of_solutions) {
@@ -190,8 +202,10 @@ coco_problem_t *coco_transformed_allocate(coco_problem_t *inner_problem,
   data->free_data = free_data;
 
   self = coco_problem_duplicate(inner_problem);
+  
   self->evaluate_function = transformed_evaluate_function;
   self->evaluate_constraint = transformed_evaluate_constraint;
+  self->evaluate_gradient = transformed_evaluate_gradient;
   self->recommend_solutions = transformed_recommend_solutions;
   self->free_problem = transformed_free_problem;
   self->data = data;

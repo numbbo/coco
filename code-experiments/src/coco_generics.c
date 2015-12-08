@@ -43,6 +43,13 @@ void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y) 
   self->evaluate_constraint(self, x, y);
 }
 
+void coco_evaluate_gradient(coco_problem_t *self, const double *x, double *y) {
+  /* implements a safer version of self->evaluate(self, x, y) */
+  assert(self != NULL);
+  assert(self->evaluate_gradient != NULL);
+  self->evaluate_gradient(self, x, y);
+}
+
 void coco_recommend_solutions(coco_problem_t *self, const double *x, size_t number_of_solutions) {
   assert(self != NULL);
   assert(self->recommend_solutions != NULL);
