@@ -159,6 +159,7 @@ def run_c_example_tests():
         sys.exit(-1)
 
 def leak_check():
+    build_c()
     build_c_integration_tests()
     os.environ['CFLAGS'] = '-g -Os'
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
