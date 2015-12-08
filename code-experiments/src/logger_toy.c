@@ -22,7 +22,7 @@ typedef struct {
  * Evaluates the function, increases the number of evaluations and outputs information based on the targets
  * that have been hit.
  */
-static void private_logger_toy_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void logger_toy_evaluate(coco_problem_t *self, const double *x, double *y) {
 
   logger_toy_t *logger;
   observer_toy_t *observer_toy;
@@ -37,7 +37,8 @@ static void private_logger_toy_evaluate(coco_problem_t *self, const double *x, d
 
   /* Add a line for each target that has been hit */
   while (y[0] <= targets[logger->next_target] && logger->next_target < observer_toy->number_of_targets) {
-    fprintf(observer_toy->log_file, "%e\t%5ld\t%.5f\n", targets[logger->next_target], logger->number_of_evaluations, y[0]);
+    fprintf(observer_toy->log_file, "%e\t%5ld\t%.5f\n", targets[logger->next_target],
+        logger->number_of_evaluations, y[0]);
     logger->next_target++;
   }
   /* Flush output so that impatient users can see the progress */
@@ -53,6 +54,10 @@ static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *pro
   coco_problem_t *self;
   FILE *output_file;
 
+  if (problem->number_of_objectives != 1) {
+    coco_warning("logger_toy(): The toy logger shouldn't be used to log a problem with %d objectives", problem->number_of_objectives);
+  }
+
   logger = coco_allocate_memory(sizeof(*logger));
   logger->observer = observer;
   logger->next_target = 0;
@@ -62,6 +67,6 @@ static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *pro
   fprintf(output_file, "\n%s, %s\n", coco_problem_get_id(problem), coco_problem_get_name(problem));
 
   self = coco_transformed_allocate(problem, logger, NULL);
-  self->evaluate_function = private_logger_toy_evaluate;
+  self->evaluate_function = logger_toy_evaluate;
   return self;
 }

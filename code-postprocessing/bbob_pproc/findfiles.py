@@ -16,6 +16,7 @@ import os
 import warnings
 #import zipfile
 import tarfile
+import ntpath
 
 from bbob_pproc import genericsettings
 
@@ -64,8 +65,8 @@ def get_directory(directory, extractFiles):
                 #~ (root,elem) = os.path.split(elem)
                 #~ filelist = IndexFile(root,elem,archive)
     if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
-        dirList = directory[:directory.find('.t')].split(os.sep)
-        dirname = os.sep.join(dirList[:len(dirList) - 1]) + os.sep + genericsettings.extraction_folder_prefix + dirList[-1]
+        head, tail = ntpath.split(directory[:directory.find('.t')])
+        dirname = head + os.sep + genericsettings.extraction_folder_prefix + tail
         # extract only if extracted folder does not exist yet or if it was
         # extracted earlier than last change of archive:
         if (extractFiles):        

@@ -43,7 +43,7 @@ coco_random_state_t *coco_random_new(uint32_t seed) {
   /* Expand seed to fill initial state array. */
   for (i = 0; i < LONG_LAG; ++i) {
     /* Uses uint64_t to silence the compiler ("shift count negative or too big, undefined behavior" warning) */
-    state->x[i] = ((double) seed) / (double) (((uint64_t)1UL << 32) - 1);
+    state->x[i] = ((double) seed) / (double) (((uint64_t) 1UL << 32) - 1);
     /* Advance seed based on simple RNG from TAOCP */
     seed = (uint32_t) 1812433253UL * (seed ^ (seed >> 30)) + ((uint32_t) i + 1);
   }
