@@ -78,7 +78,6 @@ void coco_create_path(const char *path);
 void coco_create_unique_filename(char **file_name);
 void coco_create_unique_path(char **path);
 int coco_create_directory(const char *path);
-int coco_remove_directory(const char *path);
 int coco_remove_directory_msc(const char *path);
 int coco_remove_directory_no_msc(const char *path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);

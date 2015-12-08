@@ -15,7 +15,7 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: test_coco test_instance_extraction
+all: test_coco test_instance_extraction test_biobj
 
 clean:
 	IF EXIST "coco.o" DEL /F coco.o
@@ -23,6 +23,8 @@ clean:
 	IF EXIST "test_coco.exe" DEL /F test_coco.exe
 	IF EXIST "test_instance_extraction.o" DEL /F test_instance_extraction.o 
 	IF EXIST "test_instance_extraction.exe" DEL /F test_instance_extraction.exe
+	IF EXIST "test_biobj.o" DEL /F test_biobj.o 
+	IF EXIST "test_biobj.exe" DEL /F test_biobj.exe
 
 ########################################################################
 ## Programs
@@ -31,6 +33,9 @@ test_coco: test_coco.o coco.o
 	
 test_instance_extraction: test_instance_extraction.o coco.o
 	${CC} ${CCFLAGS} -o test_instance_extraction coco.o test_instance_extraction.o ${LDFLAGS}  
+	
+test_biobj: test_biobj.o coco.o
+	${CC} ${CCFLAGS} -o test_biobj coco.o test_biobj.o ${LDFLAGS}  
 
 ########################################################################
 ## Additional dependencies
@@ -40,3 +45,5 @@ test_coco.o: coco.h coco.c test_coco.c
 	${CC} -c ${CCFLAGS} -o test_coco.o test_coco.c
 test_instance_extraction.o: coco.h coco.c test_instance_extraction.c
 	${CC} -c ${CCFLAGS} -o test_instance_extraction.o test_instance_extraction.c
+test_biobj.o: coco.h coco.c test_biobj.c
+	${CC} -c ${CCFLAGS} -o test_biobj.o test_biobj.c
