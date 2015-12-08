@@ -44,7 +44,7 @@ def retrieve_algorithm(dataPath, year, algorithmName):
     
     algorithmFile = join_path(dataPath, algorithmName)
     if not os.path.exists(algorithmFile):
-        dataurl = 'http://coco.lri.fr/BBOB%s/rawdata/%s' % (year, algorithmName)
+        dataurl = 'http://coco.gforge.inria.fr/data-archive/%s/%s' % (year, algorithmName)
         urllib.urlretrieve(dataurl, algorithmFile)
 
 def prepare_data():
@@ -54,15 +54,17 @@ def prepare_data():
     dataPath = os.path.abspath(join_path(os.path.dirname(__file__), 'data'))
     
     # Retrieving the algorithms    
-    retrieve_algorithm(dataPath, '2010', 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz')    
-    retrieve_algorithm(dataPath, '2009', 'MCS_neumaier_noiseless.tar.gz')    
-    retrieve_algorithm(dataPath, '2009', 'NEWUOA_ros_noiseless.tar.gz')    
-    retrieve_algorithm(dataPath, '2009', 'RANDOMSEARCH_auger_noiseless.tar.gz')    
-    retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noiseless.tar.gz')    
-    retrieve_algorithm(dataPath, '2013', 'hutter2013_SMAC.tar.gz')    
-    retrieve_algorithm(dataPath, '2013', 'auger2013_lmmCMA.tar.gz')    
-    retrieve_algorithm(dataPath, '2009', 'DE-PSO_alba_noiseless.tar.gz')    
-    retrieve_algorithm(dataPath, '2009', 'VNS_garcia_noiseless.tar.gz')    
+    # retrieve_algorithm(dataPath, '2010', 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz')
+    # [outcommented and replaced by BIPOP until 2010 data is in new format] 
+    retrieve_algorithm(dataPath, '2009', 'BIPOP-CMA-ES_hansen_noiseless.tgz')   
+    retrieve_algorithm(dataPath, '2009', 'MCS_huyer_noiseless.tgz')    
+    retrieve_algorithm(dataPath, '2009', 'NEWUOA_ros_noiseless.tgz')    
+    retrieve_algorithm(dataPath, '2009', 'RANDOMSEARCH_auger_noiseless.tgz')    
+    retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noiseless.tgz')    
+    retrieve_algorithm(dataPath, '2013', 'SMAC-BBOB_hutter_noiseless.tgz')    
+    retrieve_algorithm(dataPath, '2013', 'lmm-CMA-ES_auger_noiseless.tgz')    
+    retrieve_algorithm(dataPath, '2009', 'DE-PSO_alba_noiseless.tgz')    
+    retrieve_algorithm(dataPath, '2009', 'VNS_garcia_noiseless.tgz')    
 
     return dataPath;
     
@@ -127,40 +129,40 @@ if __name__ == "__main__":
     t0 = time.time()
     print time.asctime()
     result = os.system(python + command + # ' --omit-single ' +
-                join_path(data_path, 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz') +
-                join_path(data_path, 'MCS_neumaier_noiseless.tar.gz') +
-                join_path(data_path, 'NEWUOA_ros_noiseless.tar.gz') +
-                join_path(data_path, 'RANDOMSEARCH_auger_noiseless.tar.gz') +
-                join_path(data_path, 'BFGS_ros_noiseless.tar.gz'))
+                join_path(data_path, 'BIPOP-CMA-ES_hansen_noiseless.tgz') +
+                join_path(data_path, 'MCS_huyer_noiseless.tgz') +
+                join_path(data_path, 'NEWUOA_ros_noiseless.tgz') +
+                join_path(data_path, 'RANDOMSEARCH_auger_noiseless.tgz') +
+                join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
-    #assert result == 0, 'Test failed: rungeneric on many algorithms.'
+    assert result == 0, 'Test failed: rungeneric on many algorithms.'
 
-    #result = run_latex_template("templateBBOBmany.tex")
-    #assert not result, 'Test failed: error while generating pdf from templateBBOBmany.tex.'
+    result = run_latex_template("templateBBOBmany.tex")
+    assert not result, 'Test failed: error while generating pdf from templateBBOBmany.tex.'
     
     t0 = time.time()
     result = os.system(python + command + '--conv' + 
-                join_path(data_path, 'BFGS_ros_noiseless.tar.gz'))
+                join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
-    #assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
+    assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
 
-    #result = run_latex_template("templateBBOBarticle.tex")
-    #assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
+    result = run_latex_template("templateBBOBarticle.tex")
+    assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
 
     t0 = time.time()
     result = os.system(python + command + '--conv' +
-                join_path(data_path, 'hutter2013_SMAC.tar.gz') +
-                join_path(data_path, 'auger2013_lmmCMA.tar.gz'))
+                join_path(data_path, 'SMAC-BBOB_hutter_noiseless.tgz') +
+                join_path(data_path, 'lmm-CMA-ES_auger_noiseless.tgz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
-    #assert result == 0, 'Test failed: rungeneric on two algorithms with option --conv.'
+    assert result == 0, 'Test failed: rungeneric on two algorithms with option --conv.'
 
-    #result = run_latex_template("templateBBOBcmp.tex")
-    #assert not result, 'Test failed: error while generating pdf from templateBBOBcmp.tex.'
+    result = run_latex_template("templateBBOBcmp.tex")
+    assert not result, 'Test failed: error while generating pdf from templateBBOBcmp.tex.'
 
     t0 = time.time()
     result = os.system(python + command + ' --omit-single ' +
-                join_path(data_path, 'DE-PSO_alba_noiseless.tar.gz') +
-                join_path(data_path, 'VNS_garcia_noiseless.tar.gz'))
+                join_path(data_path, 'DE-PSO_alba_noiseless.tgz') +
+                join_path(data_path, 'VNS_garcia_noiseless.tgz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
     assert result == 0, 'Test failed: rungeneric on two algorithms with option --omit-single.'
     
@@ -169,7 +171,7 @@ if __name__ == "__main__":
 
     t0 = time.time()
     result = os.system(python + command + ' --expensive ' +
-                join_path(data_path, 'VNS_garcia_noiseless.tar.gz'))
+                join_path(data_path, 'VNS_garcia_noiseless.tgz'))
     print '  subtest finished in ', time.time() - t0, ' seconds'
     assert result == 0, 'Test failed: rungeneric on one algorithm with option --expensive.'
     
