@@ -161,6 +161,10 @@ def leak_check():
                     '--leak-check=full', '--show-reachable=yes',
                     './test_coco', 'bbob2009_testcases.txt']
     run('code-experiments/test/integration-test', valgrind_cmd)
+    valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
+                    '--leak-check=full', '--show-reachable=yes',
+                    './test_biobj', 'leak_check']
+    run('code-experiments/test/integration-test', valgrind_cmd)
     
 ################################################################################
 ## Python 2

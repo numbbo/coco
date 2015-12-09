@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "coco.h"
 
@@ -47,22 +48,30 @@ void run_once(char *observer_options) {
 
   printf("Running experiment with options %s ...", observer_options);
   fflush(stdout);
+
   coco_suite_benchmark(suite_name, observer_name, observer_options, my_optimizer);
   coco_remove_directory("biobj");
+
   printf("DONE!\n");
   fflush(stdout);
 }
 
-int main(void) {
-  run_once("result_folder: biobj produce_all_data 1");
-  run_once("result_folder: biobj log_nondominated: none  compute_indicators: 0 log_level: info");
-  run_once("result_folder: biobj log_nondominated: all   compute_indicators: 0");
-  run_once("result_folder: biobj log_nondominated: final compute_indicators: 0");
-  run_once("result_folder: biobj log_nondominated: none  compute_indicators: 1");
-  run_once("result_folder: biobj log_nondominated: all   compute_indicators: 1");
-  run_once("result_folder: biobj log_nondominated: final compute_indicators: 1");
-  run_once("result_folder: biobj log_nondominated: none  compute_indicators: 1 include_decision_variables: 1");
-  run_once("result_folder: biobj log_nondominated: all   compute_indicators: 0 include_decision_variables: 1");
-  run_once("result_folder: biobj log_nondominated: final compute_indicators: 1 include_decision_variables: 1");
+int main( int argc, char *argv[] )  {
+
+  if ((argc == 2) && (strcmp(argv[1], "leak_check") == 0)) {
+    run_once("result_folder: biobj produce_all_data 1");
+  }
+  else {
+    run_once("result_folder: biobj produce_all_data 1");
+    run_once("result_folder: biobj log_nondominated: none  compute_indicators: 0 log_level: info");
+    run_once("result_folder: biobj log_nondominated: all   compute_indicators: 0");
+    run_once("result_folder: biobj log_nondominated: final compute_indicators: 0");
+    run_once("result_folder: biobj log_nondominated: none  compute_indicators: 1");
+    run_once("result_folder: biobj log_nondominated: all   compute_indicators: 1");
+    run_once("result_folder: biobj log_nondominated: final compute_indicators: 1");
+    run_once("result_folder: biobj log_nondominated: none  compute_indicators: 1 include_decision_variables: 1");
+    run_once("result_folder: biobj log_nondominated: all   compute_indicators: 0 include_decision_variables: 1");
+    run_once("result_folder: biobj log_nondominated: final compute_indicators: 1 include_decision_variables: 1");
+  }
   return 0;
 }
