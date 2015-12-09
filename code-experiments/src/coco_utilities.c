@@ -68,6 +68,11 @@ int mkdir(const char *pathname, mode_t mode);
 #error COCO_PATH_MAX undefined
 #endif
 
+/**
+ * Initialize the logging level to COCO_WARNING.
+ */
+static coco_log_level_type_e coco_log_level = COCO_WARNING;
+
 /***********************************
  * Global definitions in this file
  * which are not in coco.h 
