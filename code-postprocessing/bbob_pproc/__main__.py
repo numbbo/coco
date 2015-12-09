@@ -63,8 +63,8 @@ def prepare_data():
     retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noiseless.tgz')    
     retrieve_algorithm(dataPath, '2013', 'SMAC-BBOB_hutter_noiseless.tgz')    
     retrieve_algorithm(dataPath, '2013', 'lmm-CMA-ES_auger_noiseless.tgz')    
-    retrieve_algorithm(dataPath, '2009', 'DE-PSO_alba_noiseless.tgz')    
-    retrieve_algorithm(dataPath, '2009', 'VNS_garcia_noiseless.tgz')    
+    retrieve_algorithm(dataPath, '2009', 'DE-PSO_garcia-nieto_noiseless.tgz')    
+    retrieve_algorithm(dataPath, '2009', 'VNS_garcia-martinez_noiseless.tgz')    
 
     return dataPath;
     
@@ -124,17 +124,18 @@ if __name__ == "__main__":
     command = ' ' + join_path(os.path.dirname(os.path.realpath(__file__)), 'rungeneric.py ')
     
     copy_latex_templates()
+    print('LaTeX templates copied.')
     
-    print '*** testing module bbob_pproc ***'
+    print('*** testing module bbob_pproc ***')
     t0 = time.time()
-    print time.asctime()
+    print(time.asctime())
     result = os.system(python + command + # ' --omit-single ' +
                 join_path(data_path, 'BIPOP-CMA-ES_hansen_noiseless.tgz') +
                 join_path(data_path, 'MCS_huyer_noiseless.tgz') +
                 join_path(data_path, 'NEWUOA_ros_noiseless.tgz') +
                 join_path(data_path, 'RANDOMSEARCH_auger_noiseless.tgz') +
                 join_path(data_path, 'BFGS_ros_noiseless.tgz'))
-    print '  subtest finished in ', time.time() - t0, ' seconds'
+    print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on many algorithms.'
 
     result = run_latex_template("templateBBOBmany.tex")
@@ -143,7 +144,7 @@ if __name__ == "__main__":
     t0 = time.time()
     result = os.system(python + command + '--conv' + 
                 join_path(data_path, 'BFGS_ros_noiseless.tgz'))
-    print '  subtest finished in ', time.time() - t0, ' seconds'
+    print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
 
     result = run_latex_template("templateBBOBarticle.tex")
@@ -153,7 +154,7 @@ if __name__ == "__main__":
     result = os.system(python + command + '--conv' +
                 join_path(data_path, 'SMAC-BBOB_hutter_noiseless.tgz') +
                 join_path(data_path, 'lmm-CMA-ES_auger_noiseless.tgz'))
-    print '  subtest finished in ', time.time() - t0, ' seconds'
+    print('**  subtest 3 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on two algorithms with option --conv.'
 
     result = run_latex_template("templateBBOBcmp.tex")
@@ -161,9 +162,9 @@ if __name__ == "__main__":
 
     t0 = time.time()
     result = os.system(python + command + ' --omit-single ' +
-                join_path(data_path, 'DE-PSO_alba_noiseless.tgz') +
-                join_path(data_path, 'VNS_garcia_noiseless.tgz'))
-    print '  subtest finished in ', time.time() - t0, ' seconds'
+                join_path(data_path, 'DE-PSO_garcia-nieto_noiseless.tgz') +
+                join_path(data_path, 'VNS_garcia-martinez_noiseless.tgz'))
+    print('**  subtest 4 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on two algorithms with option --omit-single.'
     
     result = run_latex_template("templateBBOBcmp.tex")
@@ -171,8 +172,8 @@ if __name__ == "__main__":
 
     t0 = time.time()
     result = os.system(python + command + ' --expensive ' +
-                join_path(data_path, 'VNS_garcia_noiseless.tgz'))
-    print '  subtest finished in ', time.time() - t0, ' seconds'
+                join_path(data_path, 'VNS_garcia-martinez_noiseless.tgz'))
+    print('**  subtest 5 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one algorithm with option --expensive.'
     
     result = run_latex_template("templateBBOBarticle.tex")
@@ -201,9 +202,9 @@ if __name__ == "__main__":
         finally:
             sys.stdout = stdout
         process_doctest_output(fn)
-    print 'doctest finished in ', time.time() - t0, ' seconds'
+    print('** doctest finished in ', time.time() - t0, ' seconds')
     # print('    more info in file _bbob_pproc_doctest_.txt)')
-    print '*** done testing module bbob_pproc ***'
+    print('*** done testing module bbob_pproc ***')
     
     if (failure_count > 0):
         raise ValueError('%d of %d tests failed' % (failure_count, test_count))
@@ -211,14 +212,14 @@ if __name__ == "__main__":
 """     
         sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
         import bbob_pproc as bb
-        print dir(bb)
+        print(dir(bb))
         #bb=imp.load_module("bbob_pproc",*imp.find_module("bbob_pproc"))
         #pproc=imp.load_module("pproc",*imp.find_module("pproc"))
-        #print pproc
+        #print(pproc)
         #doctest.testmod(bb.pproc,verbose=True)
         for s in dir(bb):
             if(inspect.ismodule(eval("bb."+s)) and s[:2]!="__"):
-                print "bb."+s
+                print("bb."+s)
                 doctest.testmod(eval("bb."+s),verbose=False)                    
-        print bb.__all__     
+        print(bb.__all__)     
 """     
