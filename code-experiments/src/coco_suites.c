@@ -94,7 +94,7 @@ coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
                                                       const char *observer_name,
                                                       const char *options) {
   if (problem == NULL) {
-    coco_warning("Trying to observe a NULL problem has no effect.");
+    coco_info("Trying to observe a NULL problem has no effect.");
     return problem;
   }
   if (0 == strcmp(observer_name, "observer_toy")) {
