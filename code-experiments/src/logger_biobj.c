@@ -461,6 +461,8 @@ static void logger_biobj_indicator_free(void *stuff) {
     indicator->info_file = NULL;
   }
 
+  coco_free_memory(stuff);
+
 }
 
 /**
@@ -556,6 +558,7 @@ static void logger_biobj_finalize(logger_biobj_t *logger) {
   logger_biobj_tree_output(logger->nondom_file, resorted_tree, logger->number_of_variables,
       logger->number_of_objectives, observer_biobj->include_decision_variables);
 
+  avl_tree_destruct(resorted_tree);
 }
 
 /**
