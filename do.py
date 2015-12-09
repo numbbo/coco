@@ -397,6 +397,7 @@ Available commands:
   test-python3         - Build and run  minimal test of Python 3 module
   test-java            - Build and run  minimal test of Java package
   leak-check           - Check for memory leaks
+  test-post-processing - Runs post processing tests.
 
 
 To build a release version which does not include debugging information in the 
