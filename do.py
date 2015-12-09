@@ -119,6 +119,7 @@ def build_c_integration_tests():
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/integration-test/coco.c')
     copy_file('code-experiments/src/coco.h', 'code-experiments/test/integration-test/coco.h')
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/test/integration-test/bbob2009_testcases.txt')
+    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/test/integration-test/best_values_hyp.txt')
     make("code-experiments/test/integration-test", "clean")
     make("code-experiments/test/integration-test", "all")
 
@@ -126,6 +127,7 @@ def run_c_integration_tests():
     try:
         run('code-experiments/test/integration-test', ['./test_coco', 'bbob2009_testcases.txt'])
         run('code-experiments/test/integration-test', ['./test_instance_extraction'])
+        # run('code-experiments/test/integration-test', ['./test_biobj']) commented until it can be made faster
     except subprocess.CalledProcessError:
         sys.exit(-1)
     
@@ -160,6 +162,10 @@ def leak_check():
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
                     './test_coco', 'bbob2009_testcases.txt']
+    run('code-experiments/test/integration-test', valgrind_cmd)
+    valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
+                    '--leak-check=full', '--show-reachable=yes',
+                    './test_biobj', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd)
     
 ################################################################################
