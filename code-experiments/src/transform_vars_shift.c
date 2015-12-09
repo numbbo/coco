@@ -47,5 +47,6 @@ static coco_problem_t *f_transform_vars_shift(coco_problem_t *inner_problem,
 
   self = coco_transformed_allocate(inner_problem, data, transform_vars_shift_free);
   self->evaluate_function = transform_vars_shift_evaluate;
+  coco_problem_update_best_solution(self, data->shifted_x);
   return self;
 }

@@ -46,5 +46,6 @@ static coco_problem_t *f_transform_vars_conditioning(coco_problem_t *inner_probl
   data->alpha = alpha;
   self = coco_transformed_allocate(inner_problem, data, transform_vars_conditioning_free);
   self->evaluate_function = transform_vars_conditioning_evaluate;
+  coco_problem_update_best_solution(self, data->x);
   return self;
 }
