@@ -55,5 +55,6 @@ static coco_problem_t *f_transform_vars_oscillate(coco_problem_t *inner_problem)
 
   self = coco_transformed_allocate(inner_problem, data, transform_vars_oscillate_free);
   self->evaluate_function = transform_vars_oscillate_evaluate;
+  coco_problem_update_best_solution(self, data->oscillated_x);
   return self;
 }

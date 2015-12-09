@@ -131,8 +131,12 @@ static coco_problem_t *f_bbob_step_ellipsoid(const size_t number_of_variables, c
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
-    problem->best_parameter[i] = NAN;
   }
+  /* The optimal solution to this problem is not unique! */
+  if (problem->best_parameter)
+    coco_free_memory(problem->best_parameter);
+  problem->best_parameter = NULL;
+
   /* "Calculate" best parameter value.
    *
    * OME: Dirty hack for now because I did not want to invert the
