@@ -107,8 +107,6 @@ typedef coco_problem_t *(*coco_logger_initialize_function_t)(coco_observer_t *se
  *
  * algorithm_info - Additional information on the algorithm to be used in logger output
  *
- * verbosity - Verbosity value defining the amount of output
- *
  * data - Void pointer that can be used to store data specific to any observer
  *
  */
@@ -118,7 +116,6 @@ struct coco_observer {
   char *output_folder;
   char *algorithm_name;
   char *algorithm_info;
-  int verbosity;
   void *data;
 
   coco_observer_data_free_function_t data_free_function;
