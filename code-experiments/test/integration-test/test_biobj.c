@@ -45,17 +45,17 @@ void run_once(char *observer_options) {
   char *suite_name = "suite_biobj_300";
   char *observer_name = "observer_biobj";
 
-  printf("Running experiment with options %s...", observer_options);
+  printf("Running experiment with options %s ...", observer_options);
   fflush(stdout);
   coco_suite_benchmark(suite_name, observer_name, observer_options, my_optimizer);
   coco_remove_directory("biobj");
-  printf("DONE!\n", observer_options);
+  printf("DONE!\n");
   fflush(stdout);
 }
 
 int main(void) {
   run_once("result_folder: biobj produce_all_data 1");
-  run_once("result_folder: biobj log_nondominated: none  compute_indicators: 0");
+  run_once("result_folder: biobj log_nondominated: none  compute_indicators: 0 log_level: info");
   run_once("result_folder: biobj log_nondominated: all   compute_indicators: 0");
   run_once("result_folder: biobj log_nondominated: final compute_indicators: 0");
   run_once("result_folder: biobj log_nondominated: none  compute_indicators: 1");
