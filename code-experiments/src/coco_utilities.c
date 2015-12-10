@@ -232,9 +232,9 @@ void coco_create_unique_path(char **path) {
     return;
   }
 
-  while (counter < 99) {
+  while (counter < 999) {
 
-    new_path = coco_strdupf("%s-%02d", *path, counter);
+    new_path = coco_strdupf("%s-%03d", *path, counter);
 
     if (!coco_path_exists(new_path)) {
       coco_free_memory(*path);
@@ -248,7 +248,6 @@ void coco_create_unique_path(char **path) {
 
   }
 
-  coco_free_memory(new_path);
   coco_error("coco_create_unique_path(): could not create a unique path");
   return; /* Never reached */
 }
