@@ -1,7 +1,7 @@
 MAX_EVALS = 100;
 number_of_batches = 1;
 current_batch = 1;
-observer_options = 'result_folder: RS_on_suite_biobj_300 include_decision_variables: 0 log_nondominated: final'
+observer_options = 'result_folder: RS_on_suite_biobj_300 include_decision_variables: 0 log_nondominated: final';
 my_benchmark = Benchmark('suite_biobj_300', '', 'observer_biobj', observer_options);
 problem_index = -1;
 while true
