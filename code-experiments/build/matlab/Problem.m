@@ -29,7 +29,7 @@ classdef Problem < handle
         end
         
         function addObserver(Pr, observer_name, options)
-            [Pr.problem, Pr.observer] = cocoProblemAddObserver(observer_name, Pr.problem, options)
+            [Pr.problem, Pr.observer] = cocoProblemAddObserver(observer_name, Pr.problem, options);
             %Pr.problem = cocoProblemAddObserver(observer_name, Pr.problem, options);
         end
         
