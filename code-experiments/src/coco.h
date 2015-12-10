@@ -41,6 +41,17 @@ typedef unsigned __int64 uint64_t;
 static const double coco_pi = 3.14159265358979323846;
 static const double coco_two_pi = 2.0 * 3.14159265358979323846;
 
+/**
+ * Logging level type:
+ * COCO_ERROR: only error messages are output
+ * COCO_WARNING: error and warning messages are output
+ * COCO_INFO: error, warning and info messages are output
+ * COCO_DEBUG: error, warning, info and debug messages are output
+ */
+typedef enum {
+  COCO_ERROR, COCO_WARNING, COCO_INFO, COCO_DEBUG
+} coco_log_level_type_e;
+
 struct coco_problem;
 typedef struct coco_problem coco_problem_t;
 typedef void (*coco_optimizer_t)(coco_problem_t *problem);
@@ -257,6 +268,16 @@ void coco_error(const char *message, ...);
  */
 void coco_warning(const char *message, ...);
 
+/**
+ * Function to output some information.
+ */
+void coco_info(const char *message, ...);
+
+/**
+ * Function to output detailed information that can be used for debugging.
+ */
+void coco_debug(const char *message, ...);
+
 /* Memory management routines.
  *
  * Their implementation may never fail. They either return a valid
@@ -291,6 +312,8 @@ char *coco_strdup(const char *string);
  */
 /* int bbob2009_get_instance_id(const coco_problem_t *problem);
  */
+
+int coco_remove_directory(const char *path);
 
 #ifdef __cplusplus
 }

@@ -868,13 +868,22 @@ class DataSet():
                     is_consistent = False
                     break
             if not is_consistent:
-                warnings.warn(self.pickleFile + '  double instances in ' + str(self.instancenumbers))
+                warnings.warn('  double instances in ' + 
+                                str(self.instancenumbers) + 
+                                ' (f' + str(self.funcId) + ', ' + str(self.dim)
+                                + 'D)')
         elif len(self.instancenumbers) < 15:
             is_consistent = False
-            warnings.warn('  less than 15 instances in ' + str(self.instancenumbers))
+            warnings.warn('  less than 15 instances in ' + 
+                                str(self.instancenumbers) + 
+                                ' (f' + str(self.funcId) + ', ' +
+                                str(self.dim) + 'D)')
         elif len(self.instancenumbers) > 15:
             is_consistent = False
-            warnings.warn('  more than 15 instances in ' + str(self.instancenumbers))
+            warnings.warn('  more than 15 instances in ' + 
+                                str(self.instancenumbers)+ 
+                                ' (f' + str(self.funcId) + ', ' + 
+                                str(self.dim) + 'D)')
         elif ((instancedict != genericsettings.instancesOfInterest2009)
                 and (instancedict != genericsettings.instancesOfInterest2010)
                 and (instancedict != genericsettings.instancesOfInterest2012)

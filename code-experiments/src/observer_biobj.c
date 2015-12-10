@@ -191,24 +191,23 @@ static double observer_biobj_read_best_value(const observer_biobj_t *self,
 }
 
 /**
- * Frees memory for the given coco_observer_t's data field observer_biobj_t.
+ * Frees the memory of the given biobjective observer.
  */
-static void observer_biobj_free(coco_observer_t *observer) {
+static void observer_biobj_free(void *stuff) {
 
-  observer_biobj_t *observer_biobj;
+  observer_biobj_t *data;
   size_t i;
 
-  assert(observer != NULL);
-  observer_biobj = (observer_biobj_t *) observer->data;
+  assert(stuff != NULL);
+  data = stuff;
 
-  if (observer_biobj->compute_indicators != 0) {
+  if (data->compute_indicators != 0) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
-      observer_biobj_free_matrix_of_strings(observer_biobj->best_values_matrix[i],
-          observer_biobj->best_values_count, 2);
+      observer_biobj_free_matrix_of_strings(data->best_values_matrix[i],
+          data->best_values_count, 2);
     }
   }
 
-  coco_free_memory(observer_biobj);
 }
 
 /**
@@ -256,11 +255,6 @@ static void observer_biobj(coco_observer_t *self, const char *options) {
     data->log_mode = ALL;
   }
 
-  if ((data->log_mode == NONE) && (!data->compute_indicators)) {
-    /* No logging required, return NULL */
-    return;
-  }
-
   if (data->compute_indicators) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
       /* Load the data from the file with best values */
@@ -270,6 +264,7 @@ static void observer_biobj(coco_observer_t *self, const char *options) {
         coco_error("observer_biobj() failed to open file '%s'.", file_name);
         return; /* Never reached */
       }
+      coco_free_memory(file_name);
       data->best_values_count = observer_biobj_get_number_of_lines_in_file(file);
       data->best_values_matrix[i] = observer_biobj_get_string_pairs_from_file(file,
           data->best_values_count, OBSERVER_BIOBJ_MAX_STR_LENGTH);
@@ -279,6 +274,11 @@ static void observer_biobj(coco_observer_t *self, const char *options) {
   }
 
   self->logger_initialize_function = logger_biobj;
-  self->observer_free_function = observer_biobj_free;
+  self->data_free_function = observer_biobj_free;
   self->data = data;
+
+  if ((data->log_mode == NONE) && (!data->compute_indicators)) {
+    /* No logging required */
+    self->is_active = 0;
+  }
 }

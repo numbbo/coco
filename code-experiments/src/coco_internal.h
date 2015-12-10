@@ -93,7 +93,7 @@ struct coco_problem {
    */
 };
 
-typedef void (*coco_observer_free_function_t)(coco_observer_t *self);
+typedef void (*coco_observer_data_free_function_t)(void *data);
 typedef coco_problem_t *(*coco_logger_initialize_function_t)(coco_observer_t *self, coco_problem_t *problem);
 
 /**
@@ -107,20 +107,18 @@ typedef coco_problem_t *(*coco_logger_initialize_function_t)(coco_observer_t *se
  *
  * algorithm_info - Additional information on the algorithm to be used in logger output
  *
- * verbosity - Verbosity value defining the amount of output
- *
  * data - Void pointer that can be used to store data specific to any observer
  *
  */
 struct coco_observer {
 
+  int is_active;
   char *output_folder;
   char *algorithm_name;
   char *algorithm_info;
-  int verbosity;
   void *data;
 
-  coco_observer_free_function_t observer_free_function;
+  coco_observer_data_free_function_t data_free_function;
   coco_logger_initialize_function_t logger_initialize_function;
 };
 
