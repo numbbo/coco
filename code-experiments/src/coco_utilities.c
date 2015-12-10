@@ -252,7 +252,7 @@ void coco_create_unique_path(char **path) {
 
   }
 
-  coco_error("coco_create_unique_path(): could not create a unique path");
+  coco_error("coco_create_unique_path(): could not create a unique path with name %s", *path);
   return; /* Never reached */
 }
 
