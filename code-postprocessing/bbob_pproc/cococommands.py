@@ -25,10 +25,10 @@ Examples:
 
 * Load a data set, assign to variable :py:data:`ds`::
 
-    >>> infoFile = 'data/BBOB2009rawdata/BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info'
+    >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
     >>> if not os.path.exists(infoFile):
     ...   os.chdir(os.path.join(path, 'data'))
-    ...   dataurl = 'http://coco.lri.fr/BBOB2009/rawdata/BIPOP-CMA-ES_hansen_noiseless.tar.gz'
+    ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
     ...   filename, headers = urllib.urlretrieve(dataurl)
     ...   archivefile = tarfile.open(filename)
     ...   archivefile.extractall()
@@ -39,10 +39,10 @@ Examples:
 * Get some information on a :py:class:`DataSetList` instance::
 
     >>> print ds # doctest:+ELLIPSIS
-    [DataSet(cmaes V3.30.beta on f2 2-D), ..., DataSet(cmaes V3.30.beta on f2 40-D)]
+    [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
     >>> bb.info(ds)
     6 data set(s)
-    Algorithm(s): cmaes V3.30.beta
+    Algorithm(s): BIPOP-CMA-ES
     1 Function with ID 2
     Dimension(s): 2, 3, 5, 10, 20, 40
     Max evals: [762, 1537, 2428, 6346, 20678, 75010]
