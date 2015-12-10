@@ -264,6 +264,7 @@ static void observer_biobj(coco_observer_t *self, const char *options) {
         coco_error("observer_biobj() failed to open file '%s'.", file_name);
         return; /* Never reached */
       }
+      coco_free_memory(file_name);
       data->best_values_count = observer_biobj_get_number_of_lines_in_file(file);
       data->best_values_matrix[i] = observer_biobj_get_string_pairs_from_file(file,
           data->best_values_count, OBSERVER_BIOBJ_MAX_STR_LENGTH);
