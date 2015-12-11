@@ -27,7 +27,5 @@ static coco_problem_t *f_transform_obj_power(coco_problem_t *inner_problem, cons
 
   self = coco_transformed_allocate(inner_problem, data, NULL);
   self->evaluate_function = transform_obj_power_evaluate;
-  /* Update best parameter value */
-  transform_obj_power_evaluate(self, self->best_parameter, self->best_value);
   return self;
 }
