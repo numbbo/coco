@@ -131,14 +131,21 @@ int main() {
 int main(void) {  /* short example, also nice to read */
   coco_problem_t *problem;
   long problem_index;
-  
+  static const char *observer_options_RS = "result_folder: RS_on_suite_biob2009 \
+    algorithm_name: RS \
+    algorithm_info: \"A simple random search algorithm\" \
+    ";/* list of observer options*/
+    
+  /*observer = coco_observer(observer_name, observer_options);;*/
   for (problem_index = 0; problem_index >= 0;
        problem_index = coco_suite_get_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)) {
     problem = coco_suite_get_problem(SUITE_NAME, problem_index);
     problem = deprecated__coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
+    /*problem = coco_problem_add_observer(problem, observer);*/
     coco_optimize(problem);
     coco_problem_free(problem);
   }
+  /*coco_observer_free(observer);*/
   printf("Done with suite '%s' (options '%s')", SUITE_NAME, SUITE_OPTIONS);
   if (NUMBER_OF_BATCHES > 1) printf(" batch %d/%d.\n", CURRENT_BATCH, NUMBER_OF_BATCHES);
   else printf(".\n");
