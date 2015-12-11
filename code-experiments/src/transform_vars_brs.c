@@ -54,6 +54,5 @@ static coco_problem_t *f_transform_vars_brs(coco_problem_t *inner_problem) {
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   self = coco_transformed_allocate(inner_problem, data, transform_vars_brs_free);
   self->evaluate_function = transform_vars_brs_evaluate;
-  coco_problem_update_best_solution(self, data->x);
   return self;
 }

@@ -49,6 +49,5 @@ static coco_problem_t *f_transform_vars_asymmetric(coco_problem_t *inner_problem
   data->beta = beta;
   self = coco_transformed_allocate(inner_problem, data, transform_vars_asymmetric_free);
   self->evaluate_function = transform_vars_asymmetric_evaluate;
-  coco_problem_update_best_solution(self, data->x);
   return self;
 }
