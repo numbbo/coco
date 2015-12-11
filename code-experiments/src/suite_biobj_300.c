@@ -108,13 +108,11 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
   problem2 = suite_bbob2009_problem(function2_id + 1, BBOB2009_DIMS[dimension_idx],
       (long) SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][1]);
 
-  /* Set the ideal, nadir and reference points*/
+  /* Set the ideal and reference points*/
   data = mo_problem_data_allocate(2);
   data->ideal_point[0] = problem1->best_value[0];
   data->ideal_point[1] = problem2->best_value[0];
   nadir = coco_allocate_vector(2);
-  if ((problem2->best_parameter == NULL) || (problem1->best_parameter == NULL))
-    coco_error("suite_biobj_300(): Cannot compute nadir point for a problem with unknown best solution");
   x = problem2->best_parameter;
   coco_evaluate_function(problem1, x, &nadir[0]);
   x = problem1->best_parameter;

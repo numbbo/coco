@@ -29,7 +29,6 @@ static void f_weierstrass_evaluate(coco_problem_t *self, const double *x, double
 }
 
 static coco_problem_t *f_weierstrass(const size_t number_of_variables) {
-  /* TODO: Does this function have a single optimal solution or not!? */
   size_t i, problem_id_length;
   coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
   f_weierstrass_data_t *data;

@@ -48,6 +48,5 @@ static coco_problem_t *f_transform_vars_x_hat(coco_problem_t *inner_problem, lon
 
   self = coco_transformed_allocate(inner_problem, data, transform_vars_x_hat_free);
   self->evaluate_function = transform_vars_x_hat_evaluate;
-  coco_problem_update_best_solution(self, data->x);
   return self;
 }

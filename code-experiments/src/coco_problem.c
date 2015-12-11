@@ -87,23 +87,14 @@ coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
   for (i = 0; i < problem->number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = other->smallest_values_of_interest[i];
     problem->largest_values_of_interest[i] = other->largest_values_of_interest[i];
-  }
-
-  if (other->best_parameter) {
-    for (i = 0; i < problem->number_of_variables; ++i)
+    if (other->best_parameter)
       problem->best_parameter[i] = other->best_parameter[i];
-  } else {
-    coco_free_memory(problem->best_parameter);
-    problem->best_parameter = NULL;
   }
 
-  if (other->best_value) {
-    for (i = 0; i < problem->number_of_objectives; ++i)
+  if (other->best_value)
+    for (i = 0; i < problem->number_of_objectives; ++i) {
       problem->best_value[i] = other->best_value[i];
-  } else {
-    coco_free_memory(problem->best_value);
-    problem->best_value = NULL;
-  }
+    }
 
   problem->problem_name = coco_strdup(other->problem_name);
   problem->problem_id = coco_strdup(other->problem_id);
@@ -362,7 +353,6 @@ coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1,
     if (problem->best_parameter) /* bbob2009 logger doesn't work then anymore */
       coco_free_memory(problem->best_parameter);
     problem->best_parameter = NULL;
-
     if (problem->best_value)
       coco_free_memory(problem->best_value);
     problem->best_value = NULL; /* bbob2009 logger doesn't work */
@@ -438,20 +428,4 @@ void coco_problem_set_name(coco_problem_t *problem, const char *name, ...) {
   coco_free_memory(problem->problem_name);
   problem->problem_name = coco_vstrdupf(name, args);
   va_end(args);
-}
-
-/**
- * Updates the best_parameter and best_value. If new_best_parameter is NULL, the best_value is computed
- * from the existing best_parameter.
- */
-static void coco_problem_update_best_solution(coco_problem_t *problem, double *new_best_parameter) {
-  size_t i;
-
-  if (problem->best_parameter != NULL) {
-    if (new_best_parameter != NULL) {
-      for (i = 0; i < problem->number_of_variables; ++i)
-        problem->best_parameter[i] = new_best_parameter[i];
-    }
-    coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
-  }
 }

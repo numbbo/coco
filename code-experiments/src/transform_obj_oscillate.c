@@ -27,6 +27,5 @@ static coco_problem_t *f_transform_obj_oscillate(coco_problem_t *inner_problem) 
   coco_problem_t *self;
   self = coco_transformed_allocate(inner_problem, NULL, NULL);
   self->evaluate_function = transform_obj_oscillate_evaluate;
-  coco_problem_update_best_solution(self, NULL);
   return self;
 }
