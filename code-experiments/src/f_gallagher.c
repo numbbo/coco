@@ -11,10 +11,6 @@
 #define MAX_DIM SUITE_BBOB2009_MAX_DIM
 
 static double *gallagher_peaks;
-/* To make dimension free of restrictions (and save memory for large MAX_DIM),
- * these should be allocated in bbob_gallagher_problem */
-static double gallagher_peaks21[NB_PEAKS_21 * MAX_DIM];
-static double gallagher_peaks22[NB_PEAKS_22 * MAX_DIM];
 static int f_gallagher_compare_doubles(const void *, const void *);
 
 typedef struct {
@@ -78,7 +74,7 @@ static void f_gallagher_evaluate(coco_problem_t *self, const double *x, double *
   y[0] = Ftrue;
   assert(y[0] >= self->best_value[0]);
   /* FIXME: tmx hasn't been allocated with coco_allocate... */
-  coco_free_memory(tmx);
+  free(tmx); /* before was coco_free_memory(tmx), both are equivalent */
 }
 
 static void f_gallagher_free(coco_problem_t *self) {
@@ -110,12 +106,11 @@ static coco_problem_t *f_gallagher(const size_t number_of_variables,
   assert(number_of_variables <= MAX_DIM);
   if (number_of_peaks == 101) {
     rseed = 21 + 10000 * instance_id;
-    /* FIXME: rather use coco_allocate_vector here */
-    gallagher_peaks = gallagher_peaks21;
+    gallagher_peaks = coco_allocate_vector(NB_PEAKS_21 * number_of_variables);
     maxcondition1 = sqrt(maxcondition1);
   } else {
     rseed = 22 + 10000 * instance_id;
-    gallagher_peaks = gallagher_peaks22;
+    gallagher_peaks = coco_allocate_vector(NB_PEAKS_22 * number_of_variables);
   }
 
   data = coco_allocate_memory(sizeof(*data));
@@ -210,6 +205,7 @@ static coco_problem_t *f_gallagher(const size_t number_of_variables,
   }
 
   coco_free_memory(arrCondition);
+  coco_free_memory(gallagher_peaks);
 
   /* Calculate best parameter value */
   problem->evaluate_function(problem, problem->best_parameter, problem->best_value);
