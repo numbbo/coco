@@ -105,6 +105,96 @@ coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
 }
 
 /**
+ * Allocate a problem using scalar values for smallest_value_of_interest, largest_value_of_interest
+ * and best_parameter.
+ */
+coco_problem_t *coco_problem_allocate_from_scalars(const char *problem_name,
+                                                   coco_evaluate_function_t evaluate_function,
+                                                   coco_free_function_t free_function,
+                                                   size_t number_of_variables,
+                                                   double smallest_value_of_interest,
+                                                   double largest_value_of_interest,
+                                                   double best_parameter) {
+  size_t i;
+  coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
+
+  problem->problem_name = coco_strdup(problem_name);
+  problem->number_of_variables = number_of_variables;
+  problem->number_of_objectives = 1;
+  problem->number_of_constraints = 0;
+  problem->evaluate_function = evaluate_function;
+  problem->free_problem = free_function;
+
+  for (i = 0; i < number_of_variables; ++i) {
+    problem->smallest_values_of_interest[i] = smallest_value_of_interest;
+    problem->largest_values_of_interest[i] = largest_value_of_interest;
+    problem->best_parameter[i] = best_parameter;
+  }
+  return problem;
+}
+
+/**
+ * Checks whether the given string is in the right format to be a problem_id (does not contain any
+ * non-alphanumeric characters besides - and _.).
+ */
+static int coco_problem_id_is_fine(const char *id, ...) {
+  va_list args;
+  const int reject = 0;
+  const int accept = 1;
+  const char *cp;
+  char *s;
+  int result = accept;
+
+  va_start(args, id);
+  s = coco_vstrdupf(id, args);
+  va_end(args);
+  for (cp = s; *cp != '\0'; ++cp) {
+    if (('A' <= *cp) && (*cp <= 'Z'))
+      continue;
+    if (('a' <= *cp) && (*cp <= 'z'))
+      continue;
+    if ((*cp == '_') || (*cp == '-'))
+      continue;
+    if (('0' <= *cp) && (*cp <= '9'))
+      continue;
+    result = reject;
+  }
+  coco_free_memory(s);
+  return result;
+}
+
+/**
+ * Formatted printing of a problem ID, mimicking sprintf(id, ...) while taking care of memory
+ * (de-)allocations and verifying that the id is in the correct format.
+ */
+static void coco_problem_set_id(coco_problem_t *problem, const char *id, ...) {
+  va_list args;
+
+  va_start(args, id);
+  if (problem->problem_id != NULL)
+    coco_free_memory(problem->problem_id);
+  problem->problem_id = coco_vstrdupf(id, args);
+  va_end(args);
+  if (!coco_problem_id_is_fine(problem->problem_id)) {
+    coco_error("Problem id should only contain standard chars, not like '%s'", problem->problem_id);
+  }
+}
+
+/**
+ * Formatted printing of a problem name, mimicking sprintf(name, ...) while taking care of memory
+ * (de-)allocation.
+ */
+static void coco_problem_set_name(coco_problem_t *problem, const char *name, ...) {
+  va_list args;
+
+  va_start(args, name);
+  if (problem->problem_name != NULL)
+    coco_free_memory(problem->problem_name);
+  problem->problem_name = coco_vstrdupf(name, args);
+  va_end(args);
+}
+
+/**
  * Generic data member of a transformed (or "outer") coco_problem_t.
  */
 typedef struct {
@@ -371,61 +461,3 @@ coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1,
   return problem;
 }
 
-static int coco_problem_id_is_fine(const char *id, ...) {
-  va_list args;
-  const int reject = 0;
-  const int OK = 1;
-  const char *cp;
-  char *s;
-  int result = OK;
-
-  va_start(args, id);
-  s = coco_vstrdupf(id, args);
-  va_end(args);
-  for (cp = s; *cp != '\0'; ++cp) {
-    if (('A' <= *cp) && (*cp <= 'Z'))
-      continue;
-    if (('a' <= *cp) && (*cp <= 'z'))
-      continue;
-    if ((*cp == '_') || (*cp == '-'))
-      continue;
-    if (('0' <= *cp) && (*cp <= '9'))
-      continue;
-    result = reject;
-  }
-  coco_free_memory(s);
-  return result;
-}
-
-/**
- * Formatted printing of a problem ID, mimicking
- * sprintf(coco_problem_get_id(problem), id, ...) while taking care
- * of memory (de-)allocations.
- *
- */
-void coco_problem_set_id(coco_problem_t *problem, const char *id, ...) {
-  va_list args;
-
-  va_start(args, id);
-  coco_free_memory(problem->problem_id);
-  problem->problem_id = coco_vstrdupf(id, args);
-  va_end(args);
-  if (!coco_problem_id_is_fine(problem->problem_id)) {
-    coco_error("Problem id should only contain standard chars, not like '%s'", coco_problem_get_id(problem));
-  }
-}
-
-/**
- * Formatted printing of a problem name, mimicking
- * sprintf(coco_problem_get_name(problem), name, ...) while taking care
- * of memory (de-)allocation, tentative, needs at the minimum some (more) testing.
- *
- */
-void coco_problem_set_name(coco_problem_t *problem, const char *name, ...) {
-  va_list args;
-
-  va_start(args, name);
-  coco_free_memory(problem->problem_name);
-  problem->problem_name = coco_vstrdupf(name, args);
-  va_end(args);
-}

@@ -5,7 +5,58 @@
 #include "coco.h"
 #include "coco_problem.c"
 
+static double f_linear_slope_raw(const double *x,
+                                 const size_t number_of_variables,
+                                 const double *best_parameter) {
+
+  static const double alpha = 100.0;
+  size_t i;
+  double result = 0.0;
+
+  for (i = 0; i < number_of_variables; ++i) {
+    double base, exponent, si;
+
+    base = sqrt(alpha);
+    exponent = (double) (long) i / ((double) (long) number_of_variables - 1);
+    if (best_parameter[i] > 0.0) {
+      si = pow(base, exponent);
+    } else {
+      si = -pow(base, exponent);
+    }
+    result += 5.0 * fabs(si) - si * x[i];
+  }
+
+  return result;
+}
+
 static void f_linear_slope_evaluate(coco_problem_t *self, const double *x, double *y) {
+  assert(self->number_of_objectives == 1);
+  y[0] = f_linear_slope_raw(x, self->number_of_variables, self->best_parameter);
+}
+
+static coco_problem_t *f_linear_slope(const size_t number_of_variables, const double *best_parameter) {
+
+  size_t i;
+  /* best_parameter will be overwritten below */
+  coco_problem_t *problem = coco_problem_allocate_from_scalars("linear slope function",
+      f_linear_slope_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
+  coco_problem_set_id(problem, "%s_d%04lu", "linear_slope", number_of_variables);
+
+  /* Compute best solution */
+  for (i = 0; i < number_of_variables; ++i) {
+    if (best_parameter[i] < 0.0) {
+      problem->best_parameter[i] = problem->smallest_values_of_interest[i];
+    } else {
+      problem->best_parameter[i] = problem->largest_values_of_interest[i];
+    }
+  }
+  f_linear_slope_evaluate(problem, problem->best_parameter, problem->best_value);
+  return problem;
+}
+
+/* TODO: Deprecated functions below are to be deleted when the new ones work as they should */
+
+static void deprecated__f_linear_slope_evaluate(coco_problem_t *self, const double *x, double *y) {
   static const double alpha = 100.0;
   size_t i;
   assert(self->number_of_objectives == 1);
@@ -24,7 +75,7 @@ static void f_linear_slope_evaluate(coco_problem_t *self, const double *x, doubl
   }
 }
 
-static coco_problem_t *f_linear_slope(const size_t number_of_variables, const double *best_parameter) {
+static coco_problem_t *deprecated__f_linear_slope(const size_t number_of_variables, const double *best_parameter) {
   size_t i, problem_id_length;
   coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("linear slope function");
@@ -34,7 +85,7 @@ static coco_problem_t *f_linear_slope(const size_t number_of_variables, const do
   snprintf(problem->problem_id, problem_id_length + 1, "%s_%02lu", "linear_slope",
       (long) number_of_variables);
 
-  problem->evaluate_function = f_linear_slope_evaluate;
+  problem->evaluate_function = deprecated__f_linear_slope_evaluate;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
@@ -45,6 +96,6 @@ static coco_problem_t *f_linear_slope(const size_t number_of_variables, const do
     }
   }
   /* Calculate best parameter value */
-  f_linear_slope_evaluate(problem, problem->best_parameter, problem->best_value);
+  deprecated__f_linear_slope_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }

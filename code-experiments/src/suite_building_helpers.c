@@ -172,7 +172,7 @@ static coco_problem_t *b2bob2009_raw_attractive_sector_problem(const size_t numb
   f_attractive_sector_data_t *data;
   char *problem_id = bbob2009_problem_id("attractive_sector", number_of_variables);
   coco_problem_t *problem = coco_allocate_so_problem_from_sss(problem_id, "attractive sector function",
-      f_attractive_sector_evaluate, number_of_variables, -5, 5, 0);
+      deprecated__f_attractive_sector_evaluate, number_of_variables, -5, 5, 0);
   coco_free_memory(problem_id);
   data = coco_allocate_memory(sizeof(*data));
   data->xopt = coco_duplicate_vector(xopt, number_of_variables);
