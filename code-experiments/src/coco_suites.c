@@ -82,6 +82,7 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
     return suite_toy(problem_index);
   } else if (0 == strcmp(problem_suite, "suite_bbob2009")) {
     return suite_bbob2009(problem_index);
+    /* return deprecated__suite_bbob2009(problem_index); */
   } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
     return suite_biobj_300(problem_index);
   } else {
