@@ -24,7 +24,7 @@
 static const size_t SUITE_BIOBJ_300_INSTANCE_LIST[5][2] = { { 2, 4 }, { 3, 5 }, { 7, 8 }, { 9, 10 },
     { 11, 12 } };
 /* List of 300 functions (300 is the total number of bi-objective function combinations) */
-static int SUITE_BIOBJ_300_FUNCTION_LIST[300][2];
+static size_t SUITE_BIOBJ_300_FUNCTION_LIST[300][2];
 /* Whether the suite is defined */
 static int SUITE_BIOBJ_300_DEFINED = 0;
 /* A list of problem types */
@@ -62,13 +62,13 @@ static const char SUITE_BIOBJ_300_PROBLEM_TYPE[24][30] = {
  * Computes the function_id, instance_id and dimension_idx from the given problem_index.
  */
 static void suite_biobj_300_decode_problem_index(const long problem_index,
-                                                 int *function_id,
-                                                 long *instance_id,
-                                                 int *dimension_idx) {
-  long rest;
-  *dimension_idx = (int) problem_index / (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS);
-  rest = problem_index % (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS);
-  *function_id = (int) (rest / SUITE_BIOBJ_NUMBER_OF_INSTANCES);
+                                                 size_t *function_id,
+                                                 size_t *instance_id,
+                                                 size_t *dimension_idx) {
+  size_t rest;
+  *dimension_idx =  (size_t) (problem_index / (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS));
+  rest = (size_t) (problem_index % (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS));
+  *function_id = (rest / SUITE_BIOBJ_NUMBER_OF_INSTANCES);
   *instance_id = rest % SUITE_BIOBJ_NUMBER_OF_INSTANCES;
 }
 /**
@@ -76,8 +76,8 @@ static void suite_biobj_300_decode_problem_index(const long problem_index,
  * Returns the problem corresponding to the given problem_index.
  */
 static coco_problem_t *suite_biobj_300(const long problem_index) {
-  int function_id, function1_id, function2_id, dimension_idx;
-  long instance_id;
+  size_t function_id, function1_id, function2_id, dimension_idx;
+  size_t instance_id;
   coco_problem_t *problem1, *problem2, *problem;
   mo_problem_data_t *data;
   double *x, *nadir;
@@ -86,8 +86,8 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
     return NULL;
 
   if (SUITE_BIOBJ_300_DEFINED == 0) {
-    int k = 0;
-    int i, j;
+    size_t k = 0;
+    size_t i, j;
     for (i = 0; i < 24; ++i) {
       for (j = i; j < 24; ++j) {
         SUITE_BIOBJ_300_FUNCTION_LIST[k][0] = i;
@@ -104,9 +104,9 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
   function2_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][1];
 
   problem1 = suite_bbob2009_problem(function1_id + 1, BBOB2009_DIMS[dimension_idx],
-      (long) SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][0]);
+      SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][0]);
   problem2 = suite_bbob2009_problem(function2_id + 1, BBOB2009_DIMS[dimension_idx],
-      (long) SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][1]);
+      SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][1]);
 
   /* Set the ideal and reference points*/
   data = mo_problem_data_allocate(2);
@@ -136,7 +136,7 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
   coco_free_memory(nadir);
 
   problem = coco_stacked_problem_allocate(problem1, problem2, data, mo_problem_data_free);
-  problem->suite_dep_index = problem_index;
+  problem->suite_dep_index = (size_t) problem_index;
   problem->suite_dep_function_id = function_id;
   problem->suite_dep_instance_id = instance_id;
 
@@ -159,18 +159,18 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
  */
 static long suite_biobj_300_get_next_problem_index(long problem_index, const char *selection_descriptor) {
 
-  const long first_index = 0;
-  const long last_index = 7499;
+  const size_t first_index = 0;
+  const size_t last_index = 7499;
 
-  int function_id, function1_id, function2_id, dimension_idx;
-  long instance_id;
+  size_t function_id, function1_id, function2_id, dimension_idx;
+  size_t instance_id;
 
   const int banned_functions_count = 2;
   const int banned_functions[2] = {6, 19};
   int i, is_banned;
 
   if (problem_index < 0)
-    problem_index = first_index - 1;
+    problem_index = (long) first_index - 1;
 
   if (strlen(selection_descriptor) == 0) {
     if (problem_index < last_index) {

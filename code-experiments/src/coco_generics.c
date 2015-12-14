@@ -140,11 +140,11 @@ static long coco_problem_get_suite_dep_index(coco_problem_t *problem) {
 }
 */
 
-static int coco_problem_get_suite_dep_function_id(coco_problem_t *problem) {
+static size_t coco_problem_get_suite_dep_function_id(coco_problem_t *problem) {
   return problem->suite_dep_function_id;
 }
 
-static long coco_problem_get_suite_dep_instance_id(coco_problem_t *problem) {
+static size_t coco_problem_get_suite_dep_instance_id(coco_problem_t *problem) {
   return problem->suite_dep_instance_id;
 }
 

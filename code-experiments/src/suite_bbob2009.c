@@ -46,7 +46,7 @@
 #define SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 5
 #define SUITE_BBOB2009_NUMBER_OF_FUNCTIONS 24
 #define SUITE_BBOB2009_NUMBER_OF_DIMENSIONS 6
-static const int BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up useful outside of bbob2009_decode_problem_index*/
+static const size_t BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up useful outside of bbob2009_decode_problem_index*/
 
 /**
  * bbob2009_decode_problem_index(problem_index, function_id, instance_id,
@@ -92,19 +92,19 @@ static const int BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up useful
  */
 
 static void suite_bbob2009_decode_problem_index(const long problem_index,
-                                                int *function_id,
-                                                long *instance_id,
-                                                int *dimension) {
-  const long high_instance_id = problem_index
+                                                size_t *function_id,
+                                                size_t *instance_id,
+                                                size_t *dimension) {
+  const size_t high_instance_id = (size_t) problem_index
       / (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS *
       SUITE_BBOB2009_NUMBER_OF_DIMENSIONS);
-  long low_instance_id;
-  long rest = problem_index % (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES *
+  size_t low_instance_id;
+  size_t rest = (size_t) problem_index % (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES *
   SUITE_BBOB2009_NUMBER_OF_FUNCTIONS * SUITE_BBOB2009_NUMBER_OF_DIMENSIONS);
   *dimension = BBOB2009_DIMS[rest
       / (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS)];
   rest = rest % (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS);
-  *function_id = (int) (rest / SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES + 1);
+  *function_id = (rest / SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES + 1);
   rest = rest % SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
   low_instance_id = rest + 1;
   *instance_id = low_instance_id + 5 * high_instance_id;
@@ -127,8 +127,7 @@ static long suite_bbob2009_encode_problem_index(int function_id, long instance_i
 
   return tmp1 + tmp2 + tmp3 + tmp4;
 } */
-
-static coco_problem_t *deprecated__suite_bbob2009_problem(int function_id, int dimension_, long instance_id) {
+static coco_problem_t *deprecated__suite_bbob2009_problem(size_t function_id, size_t dimension_, size_t instance_id) {
   size_t len;
   long rseed;
   coco_problem_t *problem = NULL;
@@ -169,7 +168,7 @@ static coco_problem_t *deprecated__suite_bbob2009_problem(int function_id, int d
     assert(problem_index == suite_bbob2009_encode_problem_index(function_id - 1, instance_id - 1 , dimension_idx));
   }
 #endif 
-  rseed = function_id + 10000 * instance_id;
+  rseed = (long) (function_id + 10000 * instance_id);
 
   /* Break if we are past our 15 instances. */
   if (instance_id > 15)
@@ -206,7 +205,7 @@ static coco_problem_t *deprecated__suite_bbob2009_problem(int function_id, int d
   } else if (function_id == 4) {
     unsigned i; /*to prevent warnings, changed for all i,j and k variables used to iterate over coordinates*/
     double xopt[MAX_DIM], fopt, penalty_factor = 100.0;
-    rseed = 3 + 10000 * instance_id;
+    rseed = (long) (3 + 10000 * instance_id);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension_);
     /*
@@ -510,7 +509,7 @@ static coco_problem_t *deprecated__suite_bbob2009_problem(int function_id, int d
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row, penalty_factor = 10.0;
     double **rot1, **rot2;
     /* Reuse rseed from f17. */
-    rseed = 17 + 10000 * instance_id;
+    rseed = (long) (17 + 10000 * instance_id);
 
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension_);
@@ -671,11 +670,10 @@ static coco_problem_t *deprecated__suite_bbob2009_problem(int function_id, int d
   return problem;
 }
 
-static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimension_, size_t instance_id) {
+static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimension, size_t instance_id) {
   size_t len;
   long rseed;
   coco_problem_t *problem = NULL;
-  const size_t dimension = (size_t) dimension_;
 
   /* This assert is a hint for the static analyzer. */
   assert(dimension > 1);
@@ -712,7 +710,7 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     assert(problem_index == suite_bbob2009_encode_problem_index(function_id - 1, instance_id - 1 , dimension_idx));
   }
 #endif
-  rseed = function_id + 10000 * instance_id;
+  rseed = (long) (function_id + 10000 * instance_id);
 
   /* Break if we are past our 15 instances. */
   if (instance_id > 15)
@@ -720,7 +718,7 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
 
   if (function_id == 1) {
     double xopt[MAX_DIM], fopt;
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
 
     problem = f_sphere(dimension);
@@ -729,7 +727,7 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
   } else if (function_id == 2) {
     double xopt[MAX_DIM], fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
 
     problem = f_ellipsoid(dimension);
     problem = f_transform_vars_oscillate(problem);
@@ -738,7 +736,7 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
   } else if (function_id == 3) {
     double xopt[MAX_DIM], fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
 
     problem = f_rastrigin(dimension);
     problem = f_transform_vars_conditioning(problem, 10.0);
@@ -749,9 +747,9 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
   } else if (function_id == 4) {
     unsigned i; /*to prevent warnings, changed for all i,j and k variables used to iterate over coordinates*/
     double xopt[MAX_DIM], fopt, penalty_factor = 100.0;
-    rseed = 3 + 10000 * instance_id;
+    rseed = (long) (3 + 10000 * instance_id);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
     /*
      * OME: This step is in the legacy C code but _not_ in the
      * function description.
@@ -768,7 +766,7 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     problem = f_transform_obj_penalize(problem, penalty_factor);
   } else if (function_id == 5) {
     double xopt[MAX_DIM], fopt;
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     problem = f_linear_slope(dimension, xopt);
     problem = f_transform_obj_shift(problem, fopt);
@@ -777,12 +775,12 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
     rot2 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
-    bbob2009_compute_rotation(rot2, rseed, dimension_);
+    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+    bbob2009_compute_rotation(rot2, rseed, dimension);
     for (i = 0; i < dimension; ++i) {
       b[i] = 0.0;
       current_row = M + i * dimension;
@@ -808,7 +806,7 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
   } else if (function_id == 8) {
     unsigned i;
     double xopt[MAX_DIM], minus_one[MAX_DIM], fopt, factor;
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
     for (i = 0; i < dimension; ++i) {
       minus_one[i] = -1.0;
       xopt[i] *= 0.75;
@@ -831,7 +829,7 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     double **rot1;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed, dimension_);
+    bbob2009_compute_rotation(rot1, rseed, dimension);
     /* C89 version of
      *   fmax(1.0, sqrt(dimension) / 8.0);
      * follows
@@ -857,11 +855,11 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
   } else if (function_id == 10) {
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt;
     double **rot1;
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
+    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     bbob2009_free_matrix(rot1, dimension);
 
@@ -874,10 +872,10 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt;
     double **rot1;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
+    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     bbob2009_free_matrix(rot1, dimension);
 
@@ -890,10 +888,10 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt;
     double **rot1;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed + 1000000, dimension_);
+    bbob2009_compute_xopt(xopt, rseed + 1000000, dimension);
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
+    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     bbob2009_free_matrix(rot1, dimension);
 
@@ -908,12 +906,12 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
     rot2 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
-    bbob2009_compute_rotation(rot2, rseed, dimension_);
+    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+    bbob2009_compute_rotation(rot2, rseed, dimension);
     for (i = 0; i < dimension; ++i) {
       b[i] = 0.0;
       current_row = M + i * dimension;
@@ -935,10 +933,10 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt;
     double **rot1;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
+    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     bbob2009_free_matrix(rot1, dimension);
 
@@ -951,12 +949,12 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
     rot2 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
-    bbob2009_compute_rotation(rot2, rseed, dimension_);
+    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+    bbob2009_compute_rotation(rot2, rseed, dimension);
     for (i = 0; i < dimension; ++i) {
       b[i] = 0.0;
       current_row = M + i * dimension;
@@ -987,12 +985,12 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
         / (double) dimension;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
     rot2 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
-    bbob2009_compute_rotation(rot2, rseed, dimension_);
+    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+    bbob2009_compute_rotation(rot2, rseed, dimension);
     for (i = 0; i < dimension; ++i) {
       b[i] = 0.0;
       current_row = M + i * dimension;
@@ -1022,12 +1020,12 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row, penalty_factor = 10.0;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
     rot2 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
-    bbob2009_compute_rotation(rot2, rseed, dimension_);
+    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+    bbob2009_compute_rotation(rot2, rseed, dimension);
     for (i = 0; i < dimension; ++i) {
       b[i] = 0.0;
       current_row = M + i * dimension;
@@ -1053,15 +1051,15 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row, penalty_factor = 10.0;
     double **rot1, **rot2;
     /* Reuse rseed from f17. */
-    rseed = 17 + 10000 * instance_id;
+    rseed = 17 + (long) (10000 * instance_id);
 
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
     rot2 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
-    bbob2009_compute_rotation(rot2, rseed, dimension_);
+    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+    bbob2009_compute_rotation(rot2, rseed, dimension);
     for (i = 0; i < dimension; ++i) {
       b[i] = 0.0;
       current_row = M + i * dimension;
@@ -1092,7 +1090,7 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     }
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed, dimension_);
+    bbob2009_compute_rotation(rot1, rseed, dimension);
     scales = coco_max_double(1., sqrt((double) dimension) / 8.);
     for (i = 0; i < dimension; ++i) {
       for (j = 0; j < dimension; ++j) {
@@ -1114,7 +1112,7 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row, *tmp1 = coco_allocate_vector(
         dimension), *tmp2 = coco_allocate_vector(dimension);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_unif(tmp1, dimension_, rseed);
+    bbob2009_unif(tmp1, dimension, rseed);
     for (i = 0; i < dimension; ++i) {
       xopt[i] = 0.5 * 4.2096874633;
       if (tmp1[i] - 0.5 < 0) {
@@ -1163,12 +1161,12 @@ static coco_problem_t *suite_bbob2009_problem(size_t function_id, size_t dimensi
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], *current_row, fopt, penalty_factor = 1.0;
     double **rot1, **rot2;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    bbob2009_compute_xopt(xopt, rseed, dimension_);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
 
     rot1 = bbob2009_allocate_matrix(dimension, dimension);
     rot2 = bbob2009_allocate_matrix(dimension, dimension);
-    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension_);
-    bbob2009_compute_rotation(rot2, rseed, dimension_);
+    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+    bbob2009_compute_rotation(rot2, rseed, dimension);
     for (i = 0; i < dimension; ++i) {
       b[i] = 0.0;
       current_row = M + i * dimension;
@@ -1256,14 +1254,14 @@ static long suite_bbob2009_get_next_problem_index(long problem_index, const char
  */
 static coco_problem_t *deprecated__suite_bbob2009(long problem_index) {
   coco_problem_t *problem;
-  int dimension, function_id;
-  long instance_id;
+  size_t dimension, function_id;
+  size_t instance_id;
 
   if (problem_index < 0)
     return NULL;
   suite_bbob2009_decode_problem_index(problem_index, &function_id, &instance_id, &dimension);
   problem = deprecated__suite_bbob2009_problem(function_id, dimension, instance_id);
-  problem->suite_dep_index = problem_index;
+  problem->suite_dep_index = (size_t) problem_index;
   problem->suite_dep_function_id = function_id;
   problem->suite_dep_instance_id = instance_id;
   return problem;
@@ -1271,14 +1269,14 @@ static coco_problem_t *deprecated__suite_bbob2009(long problem_index) {
 
 static coco_problem_t *suite_bbob2009(long problem_index) {
   coco_problem_t *problem;
-  int dimension, function_id;
-  long instance_id;
+  size_t dimension, function_id;
+  size_t instance_id;
 
   if (problem_index < 0)
     return NULL;
   suite_bbob2009_decode_problem_index(problem_index, &function_id, &instance_id, &dimension);
   problem = suite_bbob2009_problem(function_id, dimension, instance_id);
-  problem->suite_dep_index = problem_index;
+  problem->suite_dep_index = (size_t) problem_index;
   problem->suite_dep_function_id = function_id;
   problem->suite_dep_instance_id = instance_id;
   return problem;

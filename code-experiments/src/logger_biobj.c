@@ -50,7 +50,7 @@ typedef struct {
   size_t number_of_evaluations;
   size_t number_of_variables;
   size_t number_of_objectives;
-  long suite_dep_instance_id;
+  size_t suite_dep_instance_id;
 
   /* The tree keeping currently non-dominated solutions */
   avl_tree_t *archive_tree;
@@ -410,7 +410,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
         indicator_name, problem_type, observer->algorithm_info);
   }
   if (observer_biobj->previous_function != problem->suite_dep_function_id) {
-    fprintf(indicator->info_file, "\nfuncId = %03d, %s, ", problem->suite_dep_function_id + 1, file_name);
+    fprintf(indicator->info_file, "\nfuncId = %03lu, %s, ", problem->suite_dep_function_id + 1, file_name);
     fprintf(indicator->info_file, "DIM = %lu", problem->number_of_variables);
   }
 
@@ -675,7 +675,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++)
       logger->indicators[i] = logger_biobj_indicator(logger, problem, OBSERVER_BIOBJ_INDICATORS[i]);
 
-    observer_biobj->previous_function = problem->suite_dep_function_id;
+    observer_biobj->previous_function = (long) problem->suite_dep_function_id;
   }
 
   return self;
