@@ -26,7 +26,7 @@ typedef struct {
   size_t best_values_count;
 
   /* Information on the previous logged problem */
-  int previous_function;
+  long previous_function;
 
 } observer_biobj_t;
 

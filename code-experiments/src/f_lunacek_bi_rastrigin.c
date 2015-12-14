@@ -93,7 +93,7 @@ static void f_lunacek_bi_rastrigin_free(coco_problem_t *self) {
   coco_problem_free(self);
 }
 
-static coco_problem_t *f_lunacek_bi_rastrigin(const size_t number_of_variables, const long instance_id) {
+static coco_problem_t *f_lunacek_bi_rastrigin(const size_t number_of_variables, const size_t instance_id) {
 
   double *tmpvect;
   size_t i;
@@ -105,7 +105,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin(const size_t number_of_variables, 
       f_lunacek_bi_rastrigin_evaluate, f_lunacek_bi_rastrigin_free, number_of_variables, -5.0, 5.0, 0.0);
   coco_problem_set_id(problem, "%s_d%04lu", "lunacek_bi_rastrigin", number_of_variables);
 
-  rseed = 24 + 10000 * instance_id;
+  rseed = (long) (24 + 10000 * instance_id);
 
   data = coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
@@ -117,15 +117,15 @@ static coco_problem_t *f_lunacek_bi_rastrigin(const size_t number_of_variables, 
   data->rseed = rseed;
 
   data->fopt = bbob2009_compute_fopt(24, instance_id);
-  bbob2009_compute_xopt(data->xopt, rseed, (long) number_of_variables);
-  bbob2009_compute_rotation(data->rot1, rseed + 1000000, (long) number_of_variables);
-  bbob2009_compute_rotation(data->rot2, rseed, (long) number_of_variables);
+  bbob2009_compute_xopt(data->xopt, rseed, number_of_variables);
+  bbob2009_compute_rotation(data->rot1, rseed + 1000000, number_of_variables);
+  bbob2009_compute_rotation(data->rot2, rseed, number_of_variables);
 
   problem->data = data;
 
   /* Compute best solution */
   tmpvect = coco_allocate_vector(number_of_variables);
-  bbob2009_gauss(tmpvect, (long) number_of_variables, rseed);
+  bbob2009_gauss(tmpvect, number_of_variables, rseed);
   for (i = 0; i < number_of_variables; ++i) {
     data->xopt[i] = 0.5 * mu0;
     if (tmpvect[i] < 0.0) {
@@ -197,7 +197,7 @@ static void deprecated__f_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, co
   coco_free_memory(tmpvect);
 }
 
-static coco_problem_t *deprecated__f_lunacek_bi_rastrigin(const size_t number_of_variables, const long instance_id) {
+static coco_problem_t *deprecated__f_lunacek_bi_rastrigin(const size_t number_of_variables, const size_t instance_id) {
   double *tmpvect;
   size_t i, problem_id_length;
   long rseed;
@@ -205,7 +205,7 @@ static coco_problem_t *deprecated__f_lunacek_bi_rastrigin(const size_t number_of
   f_lunacek_bi_rastrigin_data_t *data;
   static const double mu0 = 2.5;
 
-  rseed = 24 + 10000 * instance_id;
+  rseed = (long) (24 + 10000 * instance_id);
 
   data = coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
@@ -217,9 +217,9 @@ static coco_problem_t *deprecated__f_lunacek_bi_rastrigin(const size_t number_of
   data->rseed = rseed;
 
   data->fopt = bbob2009_compute_fopt(24, instance_id);
-  bbob2009_compute_xopt(data->xopt, rseed, (long) number_of_variables);
-  bbob2009_compute_rotation(data->rot1, rseed + 1000000, (long) number_of_variables);
-  bbob2009_compute_rotation(data->rot2, rseed, (long) number_of_variables);
+  bbob2009_compute_xopt(data->xopt, rseed, number_of_variables);
+  bbob2009_compute_rotation(data->rot1, rseed + 1000000, number_of_variables);
+  bbob2009_compute_rotation(data->rot2, rseed, number_of_variables);
 
   problem = coco_problem_allocate(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("BBOB f24");
@@ -238,7 +238,7 @@ static coco_problem_t *deprecated__f_lunacek_bi_rastrigin(const size_t number_of
 
   /* Computing xopt  */
   tmpvect = coco_allocate_vector(number_of_variables);
-  bbob2009_gauss(tmpvect, (long) number_of_variables, rseed);
+  bbob2009_gauss(tmpvect, number_of_variables, rseed);
   for (i = 0; i < number_of_variables; ++i) {
     data->xopt[i] = 0.5 * mu0;
     if (tmpvect[i] < 0.0) {

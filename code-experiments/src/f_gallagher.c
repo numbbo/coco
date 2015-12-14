@@ -12,7 +12,7 @@
 static double *gallagher_peaks;
 
 typedef struct {
-  size_t rseed;
+  long rseed;
   size_t number_of_peaks;
   double *xopt;
   double **rotation, **x_local, **arr_scales;
@@ -117,7 +117,7 @@ static coco_problem_t *f_gallagher(const size_t number_of_variables,
       f_gallagher_evaluate, f_gallagher_free, number_of_variables, -5.0, 5.0, 0.0);
 
   size_t i, j, k, *rperm;
-  size_t rseed;
+  long rseed;
   /* maxcondition1 satisfies the old code and the doc but seems wrong in that it is, with very high
    * probability, not the largest condition level!!! */
     double maxcondition = 1000., maxcondition1 = 1000., *arrCondition, fitvalues[2] = { 1.1, 9.1 };
@@ -133,17 +133,17 @@ static coco_problem_t *f_gallagher(const size_t number_of_variables,
   data->arr_scales = bbob2009_allocate_matrix(number_of_peaks, number_of_variables);
 
   if (number_of_peaks == NB_PEAKS_21) {
-    rseed = 21 + 10000 * instance_id;
+    rseed = 21 + 10000 * (long) instance_id;
     gallagher_peaks = coco_allocate_vector(NB_PEAKS_21 * number_of_variables);
     maxcondition1 = sqrt(maxcondition1);
   } else if (number_of_peaks == NB_PEAKS_22) {
-    rseed = 22 + 10000 * instance_id;
+    rseed = 22 + 10000 * (long) instance_id;
     gallagher_peaks = coco_allocate_vector(NB_PEAKS_22 * number_of_variables);
   } else {
     coco_error("f_gallagher(): '%lu' is a bad number of peaks", number_of_peaks);
   }
   data->rseed = rseed;
-  bbob2009_compute_rotation(data->rotation, (long) rseed, (long) number_of_variables);
+  bbob2009_compute_rotation(data->rotation, rseed, number_of_variables);
 
   /* Construct meaningful problem_id and problem_name */
   coco_problem_set_id(problem, "%s_%lu_peaks_d%04lu", "gallagher", number_of_peaks, number_of_variables);
@@ -158,7 +158,7 @@ static coco_problem_t *f_gallagher(const size_t number_of_variables,
   }
 
   /* Initialize all the data of the inner problem */
-  bbob2009_unif(gallagher_peaks, (long) number_of_peaks - 1, (long) data->rseed);
+  bbob2009_unif(gallagher_peaks, number_of_peaks - 1, data->rseed);
   rperm = (size_t *) coco_allocate_memory((number_of_peaks - 1) * sizeof(size_t));
   for (i = 0; i < number_of_peaks - 1; ++i)
     rperm[i] = i;
@@ -178,7 +178,7 @@ static coco_problem_t *f_gallagher(const size_t number_of_variables,
 
   rperm = (size_t *) coco_allocate_memory(number_of_variables * sizeof(size_t));
   for (i = 0; i < number_of_peaks; ++i) {
-    bbob2009_unif(gallagher_peaks, (long) number_of_variables, (long) data->rseed + 1000 * (long) i);
+    bbob2009_unif(gallagher_peaks, number_of_variables, data->rseed + (long) (1000 * i));
     for (j = 0; j < number_of_variables; ++j)
       rperm[j] = j;
     qsort(rperm, number_of_variables, sizeof(size_t), f_gallagher_compare_doubles);
@@ -189,7 +189,7 @@ static coco_problem_t *f_gallagher(const size_t number_of_variables,
   }
   coco_free_memory(rperm);
 
-  bbob2009_unif(gallagher_peaks, (long) (number_of_variables * number_of_peaks), (long) data->rseed);
+  bbob2009_unif(gallagher_peaks, number_of_variables * number_of_peaks, data->rseed);
   for (i = 0; i < number_of_variables; ++i) {
     data->xopt[i] = 0.8 * (b * gallagher_peaks[i] - c);
     problem->best_parameter[i] = 0.8 * (b * gallagher_peaks[i] - c);
@@ -224,7 +224,7 @@ static double deprecated__gallagher_peaks22[NB_PEAKS_22 * DEPRECATED__MAX_DIM];
 
 typedef struct {
   long rseed;
-  unsigned int number_of_peaks;
+  size_t number_of_peaks;
   double *gallagher_peaks;
   double *xopt;
   double **rotation, **x_local, **arr_scales;
@@ -300,8 +300,8 @@ static void deprecated__f_gallagher_free(coco_problem_t *self) {
 }
 
 static coco_problem_t *deprecated__f_gallagher(const size_t number_of_variables,
-                                   const long instance_id,
-                                   const unsigned int number_of_peaks) {
+                                               const size_t instance_id,
+                                               const size_t number_of_peaks) {
   size_t i, j, k, problem_id_length, *rperm;
   long rseed;
   coco_problem_t *problem;
@@ -315,12 +315,12 @@ static coco_problem_t *deprecated__f_gallagher(const size_t number_of_variables,
 
   assert(number_of_variables <= DEPRECATED__MAX_DIM);
   if (number_of_peaks == 101) {
-    rseed = 21 + 10000 * instance_id;
+    rseed = (long) (21 + 10000 * instance_id);
     /* FIXME: rather use coco_allocate_vector here */
     gallagher_peaks = deprecated__gallagher_peaks21;
     maxcondition1 = sqrt(maxcondition1);
   } else {
-    rseed = 22 + 10000 * instance_id;
+    rseed = (long) (22 + 10000 * instance_id);
     gallagher_peaks = deprecated__gallagher_peaks22;
   }
 
@@ -332,7 +332,7 @@ static coco_problem_t *deprecated__f_gallagher(const size_t number_of_variables,
   data->rotation = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
   data->x_local = bbob2009_allocate_matrix(number_of_variables, number_of_peaks);
   data->arr_scales = bbob2009_allocate_matrix(number_of_peaks, number_of_variables);
-  bbob2009_compute_rotation(data->rotation, rseed, (long) number_of_variables);
+  bbob2009_compute_rotation(data->rotation, rseed, number_of_variables);
   problem = coco_problem_allocate(number_of_variables, 1, 0);
   /* Construct a meaningful problem id */
   if (number_of_peaks == NB_PEAKS_21) {
@@ -389,7 +389,7 @@ static coco_problem_t *deprecated__f_gallagher(const size_t number_of_variables,
 
   rperm = (size_t *) malloc(number_of_variables * sizeof(size_t));
   for (i = 0; i < number_of_peaks; ++i) {
-    bbob2009_unif(gallagher_peaks, (long) number_of_variables, data->rseed + 1000 * (long) i);
+    bbob2009_unif(gallagher_peaks, number_of_variables, data->rseed + 1000 * (long) i);
     for (j = 0; j < number_of_variables; ++j)
       rperm[j] = j;
     qsort(rperm, number_of_variables, sizeof(size_t), f_gallagher_compare_doubles);
@@ -400,7 +400,7 @@ static coco_problem_t *deprecated__f_gallagher(const size_t number_of_variables,
   }
   coco_free_memory(rperm);
 
-  bbob2009_unif(gallagher_peaks, (long) (number_of_variables * number_of_peaks), data->rseed);
+  bbob2009_unif(gallagher_peaks, number_of_variables * number_of_peaks, data->rseed);
   for (i = 0; i < number_of_variables; ++i) {
     data->xopt[i] = 0.8 * (b * gallagher_peaks[i] - c);
     problem->best_parameter[i] = 0.8 * (b * gallagher_peaks[i] - c);

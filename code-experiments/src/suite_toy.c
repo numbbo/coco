@@ -12,8 +12,8 @@
  */
 static coco_problem_t *suite_toy(const long function_index) {
   static const size_t dims[] = { 2, 3, 5, 10, 20 };
-  const long fid = function_index % 6;
-  const long did = function_index / 6;
+  const size_t fid = (size_t) function_index % 6;
+  const size_t did = (size_t) function_index / 6;
   coco_problem_t *problem;
   if (did >= 1)
     return NULL;
@@ -35,7 +35,7 @@ static coco_problem_t *suite_toy(const long function_index) {
     return NULL;
   }
   problem->suite_dep_index = fid;
-  problem->suite_dep_function_id = (int) fid;
+  problem->suite_dep_function_id = fid;
   problem->suite_dep_instance_id = 0;
   return problem;
 }

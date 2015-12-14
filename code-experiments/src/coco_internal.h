@@ -75,9 +75,9 @@ struct coco_problem {
   double best_observed_fvalue[1];
   long best_observed_evaluation[1];
   /* Fields depending on the current/parent benchmark suite */
-  long suite_dep_index;
-  int suite_dep_function_id;
-  long suite_dep_instance_id;
+  size_t suite_dep_index;
+  size_t suite_dep_function_id;
+  size_t suite_dep_instance_id;
   void *data;
   /* The prominent usecase for data is coco_transformed_data_t*, making an
    * "onion of problems", initialized in coco_transformed_allocate(...).

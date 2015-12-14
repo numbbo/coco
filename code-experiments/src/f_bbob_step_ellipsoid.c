@@ -97,9 +97,9 @@ static void f_bbob_step_ellipsoid_free(coco_problem_t *self) {
   coco_problem_free(self);
 }
 
-static coco_problem_t *f_bbob_step_ellipsoid(const size_t number_of_variables, const long instance_id) {
+static coco_problem_t *f_bbob_step_ellipsoid(const size_t number_of_variables, const size_t instance_id) {
 
-  const long rseed = 7 + 10000 * instance_id;
+  const long rseed = (long) (7 + 10000 * instance_id);
   f_bbob_step_ellipsoid_data_t *data;
   coco_problem_t *problem = coco_problem_allocate_from_scalars("step ellipsoid function",
       f_bbob_step_ellipsoid_evaluate, f_bbob_step_ellipsoid_free, number_of_variables, -5.0, 5.0, NAN);
@@ -114,9 +114,9 @@ static coco_problem_t *f_bbob_step_ellipsoid(const size_t number_of_variables, c
   data->rot2 = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
 
   data->fopt = bbob2009_compute_fopt(7, instance_id);
-  bbob2009_compute_xopt(data->xopt, rseed, (long) number_of_variables);
-  bbob2009_compute_rotation(data->rot1, rseed + 1000000, (long) number_of_variables);
-  bbob2009_compute_rotation(data->rot2, rseed, (long) number_of_variables);
+  bbob2009_compute_xopt(data->xopt, rseed, number_of_variables);
+  bbob2009_compute_rotation(data->rot1, rseed + 1000000, number_of_variables);
+  bbob2009_compute_rotation(data->rot2, rseed, number_of_variables);
 
   problem->data = data;
 
@@ -184,13 +184,13 @@ static void deprecated__f_bbob_step_ellipsoid_evaluate(coco_problem_t *self, con
   y[0] = 0.1 * coco_max_double(fabs(x1) * 1.0e-4, y[0]) + penalty + data->fopt;
 }
 
-static coco_problem_t *deprecated__f_bbob_step_ellipsoid(const size_t number_of_variables, const long instance_id) {
+static coco_problem_t *deprecated__f_bbob_step_ellipsoid(const size_t number_of_variables, const size_t instance_id) {
   size_t i, problem_id_length;
   long rseed;
   coco_problem_t *problem;
   f_bbob_step_ellipsoid_data_t *data;
 
-  rseed = 7 + 10000 * instance_id;
+  rseed = (long) (7 + 10000 * instance_id);
 
   data = coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
@@ -201,9 +201,9 @@ static coco_problem_t *deprecated__f_bbob_step_ellipsoid(const size_t number_of_
   data->rot2 = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
 
   data->fopt = bbob2009_compute_fopt(7, instance_id);
-  bbob2009_compute_xopt(data->xopt, rseed, (long) number_of_variables);
-  bbob2009_compute_rotation(data->rot1, rseed + 1000000, (long) number_of_variables);
-  bbob2009_compute_rotation(data->rot2, rseed, (long) number_of_variables);
+  bbob2009_compute_xopt(data->xopt, rseed, number_of_variables);
+  bbob2009_compute_rotation(data->rot1, rseed + 1000000, number_of_variables);
+  bbob2009_compute_rotation(data->rot2, rseed, number_of_variables);
 
   problem = coco_problem_allocate(number_of_variables, 1, 0);
   problem->problem_name = coco_strdup("BBOB f7");

@@ -17,13 +17,13 @@ static int bbob2009_raisedOptValWarning;
 static const size_t bbob2009_nbpts_nbevals = 20;
 static const size_t bbob2009_nbpts_fval = 5;
 static size_t bbob2009_current_dim = 0;
-static long bbob2009_current_funId = 0;
-static long bbob2009_infoFile_firstInstance = 0;
+static size_t bbob2009_current_funId = 0;
+static size_t bbob2009_infoFile_firstInstance = 0;
 char bbob2009_infoFile_firstInstance_char[3];
 /* a possible solution: have a list of dims that are already in the file, if the ones we're about to log
  * is != bbob2009_current_dim and the funId is currend_funId, create a new .info file with as suffix the
  * number of the first instance */
-static const int bbob2009_number_of_dimensions = 6;
+static const size_t bbob2009_number_of_dimensions = 6;
 static size_t bbob2009_dimensions_in_current_infoFile[6] = { 0, 0, 0, 0, 0, 0 }; /* TODO should use SUITE_BBOB2009_NUMBER_OF_DIMENSIONS */
 
 /* The current_... mechanism fails if several problems are open.
@@ -50,7 +50,7 @@ typedef struct {
   int idx_f_trigger; /* allows to track the index i in logging target = {10**(i/bbob2009_nbpts_fval), i \in Z} */
   int idx_t_trigger; /* allows to track the index i in logging nbevals = {int(10**(i/bbob2009_nbpts_nbevals)), i \in Z} */
   int idx_tdim_trigger; /* allows to track the index i in logging nbevals = {dim * 10**i, i \in Z} */
-  long number_of_evaluations;
+  size_t number_of_evaluations;
   double best_fvalue;
   double last_fvalue;
   short written_last_eval; /* allows writing the the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
@@ -59,8 +59,8 @@ typedef struct {
    * interface should probably be the same for all free functions so passing the
    * problem as a second parameter is not an option even though we need info
    * form it.*/
-  int function_id; /*TODO: consider changing name*/
-  long instance_id;
+  size_t function_id; /*TODO: consider changing name*/
+  size_t instance_id;
   size_t number_of_variables;
   double optimal_fvalue;
 } logger_bbob2009_t;
@@ -113,7 +113,7 @@ static void logger_bbob2009_update_t_trigger(logger_bbob2009_t *data, size_t num
  * adds a formated line to a data file
  */
 static void logger_bbob2009_write_data(FILE *target_file,
-                                       long number_of_evaluations,
+                                       size_t number_of_evaluations,
                                        double fvalue,
                                        double best_fvalue,
                                        double best_value,
@@ -220,7 +220,7 @@ static void logger_bbob2009_openIndexFile(logger_bbob2009_t *data,
   if (bbob2009_infoFile_firstInstance == 0) {
     bbob2009_infoFile_firstInstance = data->instance_id;
   }
-  sprintf(function_id_char, "%d", data->function_id);
+  sprintf(function_id_char, "%lu", data->function_id);
   sprintf(bbob2009_infoFile_firstInstance_char, "%ld", bbob2009_infoFile_firstInstance);
   target_file = &(data->index_file);
   tmp_file = NULL; /* to check whether the file already exists. Don't want to use target_file */
@@ -316,7 +316,7 @@ static void logger_bbob2009_initialize(logger_bbob2009_t *data, coco_problem_t *
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
 
-  sprintf(tmpc_funId, "%d", coco_problem_get_suite_dep_function_id(inner_problem));
+  sprintf(tmpc_funId, "%lu", coco_problem_get_suite_dep_function_id(inner_problem));
   sprintf(tmpc_dim, "%lu", (unsigned long) inner_problem->number_of_variables);
 
   /* prepare paths and names */
@@ -365,9 +365,7 @@ static void logger_bbob2009_evaluate(coco_problem_t *self, const double *x, doub
     logger_bbob2009_initialize(data, inner_problem);
   }
   if ((coco_log_level >= COCO_INFO) && data->number_of_evaluations == 0) {
-    if (inner_problem->suite_dep_index >= 0) {
-      coco_info("%4ld: ", inner_problem->suite_dep_index);
-    }
+    coco_info("%4ld: ", inner_problem->suite_dep_index);
     coco_info("on problem %s ... ", coco_problem_get_id(inner_problem));
   }
   coco_evaluate_function(inner_problem, x, y);
