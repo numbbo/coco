@@ -137,7 +137,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
  */
 coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer) {
 
-  if (observer->is_active == 0) {
+  if ((observer == NULL) || (observer->is_active == 0)) {
     coco_warning("The problem is not being observed.");
     return problem;
   }
