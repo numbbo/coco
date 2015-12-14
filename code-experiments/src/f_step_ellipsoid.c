@@ -1,5 +1,5 @@
 /*
- * f_bbob_step_ellipsoid.c
+ * f_step_ellipsoid.c
  *
  * The BBOB step ellipsoid function intertwines the variable and objective transformations in such a way
  * that it is hard to devise a composition of generic transformations to implement it. In the end one would
@@ -21,11 +21,9 @@ typedef struct {
   double *x, *xx;
   double *xopt, fopt;
   double **rot1, **rot2;
-} f_bbob_step_ellipsoid_data_t;
+} f_step_ellipsoid_data_t;
 
-static double f_bbob_step_ellipsoid_raw(const double *x,
-                                        size_t number_of_variables,
-                                        f_bbob_step_ellipsoid_data_t *data) {
+static double f_step_ellipsoid_raw(const double *x, size_t number_of_variables, f_step_ellipsoid_data_t *data) {
 
   static const double condition = 100;
   static const double alpha = 10.0;
@@ -79,13 +77,13 @@ static double f_bbob_step_ellipsoid_raw(const double *x,
   return result;
 }
 
-static void f_bbob_step_ellipsoid_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void f_step_ellipsoid_evaluate(coco_problem_t *self, const double *x, double *y) {
   assert(self->number_of_objectives == 1);
-  y[0] = f_bbob_step_ellipsoid_raw(x, self->number_of_variables, self->data);
+  y[0] = f_step_ellipsoid_raw(x, self->number_of_variables, self->data);
 }
 
-static void f_bbob_step_ellipsoid_free(coco_problem_t *self) {
-  f_bbob_step_ellipsoid_data_t *data;
+static void f_step_ellipsoid_free(coco_problem_t *self) {
+  f_step_ellipsoid_data_t *data;
   data = self->data;
   coco_free_memory(data->x);
   coco_free_memory(data->xx);
@@ -97,26 +95,31 @@ static void f_bbob_step_ellipsoid_free(coco_problem_t *self) {
   coco_problem_free(self);
 }
 
-static coco_problem_t *f_bbob_step_ellipsoid(const size_t number_of_variables, const size_t instance_id) {
+/* Note: there is no separate f_step_ellipsoid_allocate() function! */
 
-  const long rseed = (long) (7 + 10000 * instance_id);
-  f_bbob_step_ellipsoid_data_t *data;
+static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t function_id,
+                                                              const size_t dimension,
+                                                              const size_t instance_id,
+                                                              const long rseed,
+                                                              const char *problem_id_template,
+                                                              const char *problem_name_template) {
+
+  f_step_ellipsoid_data_t *data;
   coco_problem_t *problem = coco_problem_allocate_from_scalars("step ellipsoid function",
-      f_bbob_step_ellipsoid_evaluate, f_bbob_step_ellipsoid_free, number_of_variables, -5.0, 5.0, NAN);
-  coco_problem_set_id(problem, "%s_%04lu", "step_ellipsoid", number_of_variables);
+      f_step_ellipsoid_evaluate, f_step_ellipsoid_free, dimension, -5.0, 5.0, NAN);
 
   data = coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
-  data->x = coco_allocate_vector(number_of_variables);
-  data->xx = coco_allocate_vector(number_of_variables);
-  data->xopt = coco_allocate_vector(number_of_variables);
-  data->rot1 = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
-  data->rot2 = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
+  data->x = coco_allocate_vector(dimension);
+  data->xx = coco_allocate_vector(dimension);
+  data->xopt = coco_allocate_vector(dimension);
+  data->rot1 = bbob2009_allocate_matrix(dimension, dimension);
+  data->rot2 = bbob2009_allocate_matrix(dimension, dimension);
 
-  data->fopt = bbob2009_compute_fopt(7, instance_id);
-  bbob2009_compute_xopt(data->xopt, rseed, number_of_variables);
-  bbob2009_compute_rotation(data->rot1, rseed + 1000000, number_of_variables);
-  bbob2009_compute_rotation(data->rot2, rseed, number_of_variables);
+  data->fopt = bbob2009_compute_fopt(function_id, instance_id);
+  bbob2009_compute_xopt(data->xopt, rseed, dimension);
+  bbob2009_compute_rotation(data->rot1, rseed + 1000000, dimension);
+  bbob2009_compute_rotation(data->rot2, rseed, dimension);
 
   problem->data = data;
 
@@ -126,6 +129,10 @@ static coco_problem_t *f_bbob_step_ellipsoid(const size_t number_of_variables, c
    * transformations to find the best_parameter :/
    */
   problem->best_value[0] = data->fopt;
+
+  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
+  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
+
   return problem;
 }
 
@@ -136,7 +143,7 @@ static void deprecated__f_bbob_step_ellipsoid_evaluate(coco_problem_t *self, con
   static const double alpha = 10.0;
   size_t i, j;
   double penalty = 0.0, x1;
-  f_bbob_step_ellipsoid_data_t *data;
+  f_step_ellipsoid_data_t *data;
 
   assert(self->number_of_variables > 1);
   assert(self->number_of_objectives == 1);
@@ -184,11 +191,12 @@ static void deprecated__f_bbob_step_ellipsoid_evaluate(coco_problem_t *self, con
   y[0] = 0.1 * coco_max_double(fabs(x1) * 1.0e-4, y[0]) + penalty + data->fopt;
 }
 
-static coco_problem_t *deprecated__f_bbob_step_ellipsoid(const size_t number_of_variables, const size_t instance_id) {
+static coco_problem_t *deprecated__f_bbob_step_ellipsoid(const size_t number_of_variables,
+                                                         const size_t instance_id) {
   size_t i, problem_id_length;
   long rseed;
   coco_problem_t *problem;
-  f_bbob_step_ellipsoid_data_t *data;
+  f_step_ellipsoid_data_t *data;
 
   rseed = (long) (7 + 10000 * instance_id);
 
@@ -217,7 +225,7 @@ static coco_problem_t *deprecated__f_bbob_step_ellipsoid(const size_t number_of_
   problem->number_of_constraints = 0;
   problem->data = data;
   problem->evaluate_function = deprecated__f_bbob_step_ellipsoid_evaluate;
-  problem->free_problem = f_bbob_step_ellipsoid_free;
+  problem->free_problem = f_step_ellipsoid_free;
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;

@@ -4,6 +4,8 @@
 
 #include "coco.h"
 #include "coco_problem.c"
+#include "suite_bbob2009_legacy_code.c"
+#include "transform_obj_shift.c"
 
 static double f_linear_slope_raw(const double *x,
                                  const size_t number_of_variables,
@@ -34,7 +36,7 @@ static void f_linear_slope_evaluate(coco_problem_t *self, const double *x, doubl
   y[0] = f_linear_slope_raw(x, self->number_of_variables, self->best_parameter);
 }
 
-static coco_problem_t *f_linear_slope(const size_t number_of_variables, const double *best_parameter) {
+static coco_problem_t *f_linear_slope_allocate(const size_t number_of_variables, const double *best_parameter) {
 
   size_t i;
   /* best_parameter will be overwritten below */
@@ -51,6 +53,29 @@ static coco_problem_t *f_linear_slope(const size_t number_of_variables, const do
     }
   }
   f_linear_slope_evaluate(problem, problem->best_parameter, problem->best_value);
+  return problem;
+}
+
+static coco_problem_t *f_linear_slope_bbob_problem_allocate(const size_t function_id,
+                                                            const size_t dimension,
+                                                            const size_t instance_id,
+                                                            const long rseed,
+                                                            const char *problem_id_template,
+                                                            const char *problem_name_template) {
+  double *xopt, fopt;
+  coco_problem_t *problem = NULL;
+
+  xopt = coco_allocate_vector(dimension);
+  bbob2009_compute_xopt(xopt, rseed, dimension);
+  fopt = bbob2009_compute_fopt(function_id, instance_id);
+
+  problem = f_linear_slope_allocate(dimension, xopt);
+  problem = f_transform_obj_shift(problem, fopt);
+
+  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
+  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
+
+  coco_free_memory(xopt);
   return problem;
 }
 

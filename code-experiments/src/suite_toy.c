@@ -19,18 +19,18 @@ static coco_problem_t *suite_toy(const long function_index) {
     return NULL;
 
   if (fid == 0) {
-    problem = f_sphere(dims[did]);
+    problem = f_sphere_allocate(dims[did]);
   } else if (fid == 1) {
-    problem = f_ellipsoid(dims[did]);
+    problem = f_ellipsoid_allocate(dims[did]);
   } else if (fid == 2) {
-    problem = f_rastrigin(dims[did]);
+    problem = f_rastrigin_allocate(dims[did]);
   } else if (fid == 3) {
-    problem = f_bueche_rastrigin(dims[did]);
+    problem = f_bueche_rastrigin_allocate(dims[did]);
   } else if (fid == 4) {
     double xopt[20] = { 5.0 };
-    problem = f_linear_slope(dims[did], xopt);
+    problem = f_linear_slope_allocate(dims[did], xopt);
   } else if (fid == 5) {
-    problem = f_rosenbrock(dims[did]);
+    problem = f_rosenbrock_allocate(dims[did]);
   } else {
     return NULL;
   }

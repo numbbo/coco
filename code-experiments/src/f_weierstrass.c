@@ -3,8 +3,13 @@
 #include <math.h>
 
 #include "coco.h"
-
 #include "coco_problem.c"
+#include "suite_bbob2009_legacy_code.c"
+#include "transform_obj_penalize.c"
+#include "transform_obj_shift.c"
+#include "transform_vars_affine.c"
+#include "transform_vars_oscillate.c"
+#include "transform_vars_shift.c"
 
 /* Number of summands in the Weierstrass problem. */
 #define WEIERSTRASS_SUMMANDS 12
@@ -35,7 +40,7 @@ static void f_weierstrass_evaluate(coco_problem_t *self, const double *x, double
   y[0] = f_weierstrass_raw(x, self->number_of_variables, self->data);
 }
 
-static coco_problem_t *f_weierstrass(const size_t number_of_variables) {
+static coco_problem_t *f_weierstrass_allocate(const size_t number_of_variables) {
 
   f_weierstrass_data_t *data;
   size_t i;
@@ -59,6 +64,64 @@ static coco_problem_t *f_weierstrass(const size_t number_of_variables) {
     non_unique_best_value[i] = 0.0;
   f_weierstrass_evaluate(problem, non_unique_best_value, problem->best_value);
   coco_free_memory(non_unique_best_value);
+  return problem;
+}
+
+static coco_problem_t *f_weierstrass_bbob_problem_allocate(const size_t function_id,
+                                                           const size_t dimension,
+                                                           const size_t instance_id,
+                                                           const long rseed,
+                                                           const char *problem_id_template,
+                                                           const char *problem_name_template) {
+  double *xopt, fopt;
+  coco_problem_t *problem = NULL;
+  size_t i, j, k;
+  double *M = coco_allocate_vector(dimension * dimension);
+  double *b = coco_allocate_vector(dimension);
+  double *current_row, **rot1, **rot2;
+
+  const double condition = 100.0;
+  const double penalty_factor = 10.0 / (double) dimension;
+
+  xopt = coco_allocate_vector(dimension);
+  fopt = bbob2009_compute_fopt(function_id, instance_id);
+  bbob2009_compute_xopt(xopt, rseed, dimension);
+
+  rot1 = bbob2009_allocate_matrix(dimension, dimension);
+  rot2 = bbob2009_allocate_matrix(dimension, dimension);
+  bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+  bbob2009_compute_rotation(rot2, rseed, dimension);
+  for (i = 0; i < dimension; ++i) {
+    b[i] = 0.0;
+    current_row = M + i * dimension;
+    for (j = 0; j < dimension; ++j) {
+      current_row[j] = 0.0;
+      for (k = 0; k < dimension; ++k) {
+        const double base = 1.0 / sqrt(condition);
+        const double exponent = 1.0 * (int) k / ((double) (long) dimension - 1.0);
+        current_row[j] += rot1[i][k] * pow(base, exponent) * rot2[k][j];
+      }
+    }
+  }
+
+  problem = f_weierstrass_allocate(dimension);
+  problem = f_transform_obj_shift(problem, fopt);
+  problem = f_transform_vars_affine(problem, M, b, dimension);
+  problem = f_transform_vars_oscillate(problem);
+  bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
+  problem = f_transform_vars_affine(problem, M, b, dimension);
+  problem = f_transform_vars_shift(problem, xopt, 0);
+  problem = f_transform_obj_penalize(problem, penalty_factor);
+
+  bbob2009_free_matrix(rot1, dimension);
+  bbob2009_free_matrix(rot2, dimension);
+
+  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
+  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
+
+  coco_free_memory(M);
+  coco_free_memory(b);
+  coco_free_memory(xopt);
   return problem;
 }
 

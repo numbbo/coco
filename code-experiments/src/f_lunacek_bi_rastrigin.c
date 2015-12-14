@@ -5,6 +5,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 #include "suite_bbob2009_legacy_code.c"
+#include "transform_obj_shift.c"
 
 typedef struct {
   double *x_hat, *z;
@@ -86,6 +87,7 @@ static void f_lunacek_bi_rastrigin_free(coco_problem_t *self) {
   coco_free_memory(data->xopt);
   bbob2009_free_matrix(data->rot1, self->number_of_variables);
   bbob2009_free_matrix(data->rot2, self->number_of_variables);
+
   /* Let the generic free problem code deal with all of the
    * coco_problem_t fields.
    */
@@ -93,40 +95,44 @@ static void f_lunacek_bi_rastrigin_free(coco_problem_t *self) {
   coco_problem_free(self);
 }
 
-static coco_problem_t *f_lunacek_bi_rastrigin(const size_t number_of_variables, const size_t instance_id) {
+/* Note: there is no separate f_lunacek_bi_rastrigin_allocate() function! */
 
-  double *tmpvect;
-  size_t i;
-  long rseed;
-  static const double mu0 = 2.5;
+static coco_problem_t *f_lunacek_bi_rastrigin_bbob_problem_allocate(const size_t function_id,
+                                                                    const size_t dimension,
+                                                                    const size_t instance_id,
+                                                                    const long rseed,
+                                                                    const char *problem_id_template,
+                                                                    const char *problem_name_template) {
+
   f_lunacek_bi_rastrigin_data_t *data;
-  /* best_parameter will be overwritten below */
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Lunacek\'s bi-Rastrigin function",
-      f_lunacek_bi_rastrigin_evaluate, f_lunacek_bi_rastrigin_free, number_of_variables, -5.0, 5.0, 0.0);
-  coco_problem_set_id(problem, "%s_d%04lu", "lunacek_bi_rastrigin", number_of_variables);
+      f_lunacek_bi_rastrigin_evaluate, f_lunacek_bi_rastrigin_free, dimension, -5.0, 5.0, 0.0);
 
-  rseed = (long) (24 + 10000 * instance_id);
+  const double mu0 = 2.5;
+
+  double fopt, *tmpvect;
+  size_t i;
 
   data = coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
-  data->x_hat = coco_allocate_vector(number_of_variables);
-  data->z = coco_allocate_vector(number_of_variables);
-  data->xopt = coco_allocate_vector(number_of_variables);
-  data->rot1 = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
-  data->rot2 = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
+  data->x_hat = coco_allocate_vector(dimension);
+  data->z = coco_allocate_vector(dimension);
+  data->xopt = coco_allocate_vector(dimension);
+  data->rot1 = bbob2009_allocate_matrix(dimension, dimension);
+  data->rot2 = bbob2009_allocate_matrix(dimension, dimension);
   data->rseed = rseed;
 
   data->fopt = bbob2009_compute_fopt(24, instance_id);
-  bbob2009_compute_xopt(data->xopt, rseed, number_of_variables);
-  bbob2009_compute_rotation(data->rot1, rseed + 1000000, number_of_variables);
-  bbob2009_compute_rotation(data->rot2, rseed, number_of_variables);
+  bbob2009_compute_xopt(data->xopt, rseed, dimension);
+  bbob2009_compute_rotation(data->rot1, rseed + 1000000, dimension);
+  bbob2009_compute_rotation(data->rot2, rseed, dimension);
 
   problem->data = data;
 
   /* Compute best solution */
-  tmpvect = coco_allocate_vector(number_of_variables);
-  bbob2009_gauss(tmpvect, number_of_variables, rseed);
-  for (i = 0; i < number_of_variables; ++i) {
+  tmpvect = coco_allocate_vector(dimension);
+  bbob2009_gauss(tmpvect, dimension, rseed);
+  for (i = 0; i < dimension; ++i) {
     data->xopt[i] = 0.5 * mu0;
     if (tmpvect[i] < 0.0) {
       data->xopt[i] *= -1.0;
@@ -135,6 +141,12 @@ static coco_problem_t *f_lunacek_bi_rastrigin(const size_t number_of_variables, 
   }
   coco_free_memory(tmpvect);
   f_lunacek_bi_rastrigin_evaluate(problem, problem->best_parameter, problem->best_value);
+
+  fopt = bbob2009_compute_fopt(function_id, instance_id);
+  problem = f_transform_obj_shift(problem, fopt);
+
+  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
+  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
 
   return problem;
 }
