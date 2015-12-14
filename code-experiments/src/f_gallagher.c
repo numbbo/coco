@@ -5,9 +5,7 @@
 #include "coco_problem.c"
 #include "coco_utilities.c"
 #include "suite_bbob2009_legacy_code.c"
-
-#define NB_PEAKS_21 101
-#define NB_PEAKS_22 21
+#include "transform_obj_shift.c"
 
 static double *gallagher_peaks;
 
@@ -107,55 +105,57 @@ static void f_gallagher_free(coco_problem_t *self) {
   coco_free_memory(gallagher_peaks);
 }
 
-static coco_problem_t *f_gallagher(const size_t number_of_variables,
-                                   const size_t instance_id,
-                                   const size_t number_of_peaks) {
+/* Note: there is no separate f_gallagher_allocate() function! */
+
+static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function_id,
+                                                         const size_t dimension,
+                                                         const size_t instance_id,
+                                                         const long rseed,
+                                                         const size_t number_of_peaks,
+                                                         const char *problem_id_template,
+                                                         const char *problem_name_template) {
 
   f_gallagher_data_t *data;
   /* problem_name and best_parameter will be overwritten below */
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Gallagher function",
-      f_gallagher_evaluate, f_gallagher_free, number_of_variables, -5.0, 5.0, 0.0);
+      f_gallagher_evaluate, f_gallagher_free, dimension, -5.0, 5.0, 0.0);
 
+  const size_t peaks_21 = 21;
+  const size_t peaks_101 = 101;
+
+  double fopt;
   size_t i, j, k, *rperm;
-  long rseed;
+  double maxcondition = 1000.;
   /* maxcondition1 satisfies the old code and the doc but seems wrong in that it is, with very high
    * probability, not the largest condition level!!! */
-    double maxcondition = 1000., maxcondition1 = 1000., *arrCondition, fitvalues[2] = { 1.1, 9.1 };
+  double maxcondition1 = 1000.;
+  double *arrCondition;
+  double fitvalues[2] = { 1.1, 9.1 };
   /* Parameters for generating local optima. In the old code, they are different in f21 and f22 */
   double b, c;
 
   data = coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
   data->number_of_peaks = number_of_peaks;
-  data->xopt = coco_allocate_vector(number_of_variables);
-  data->rotation = bbob2009_allocate_matrix(number_of_variables, number_of_variables);
-  data->x_local = bbob2009_allocate_matrix(number_of_variables, number_of_peaks);
-  data->arr_scales = bbob2009_allocate_matrix(number_of_peaks, number_of_variables);
+  data->xopt = coco_allocate_vector(dimension);
+  data->rotation = bbob2009_allocate_matrix(dimension, dimension);
+  data->x_local = bbob2009_allocate_matrix(dimension, number_of_peaks);
+  data->arr_scales = bbob2009_allocate_matrix(number_of_peaks, dimension);
 
-  if (number_of_peaks == NB_PEAKS_21) {
-    rseed = 21 + 10000 * (long) instance_id;
-    gallagher_peaks = coco_allocate_vector(NB_PEAKS_21 * number_of_variables);
+  if (number_of_peaks == peaks_101) {
+    gallagher_peaks = coco_allocate_vector(peaks_101 * dimension);
     maxcondition1 = sqrt(maxcondition1);
-  } else if (number_of_peaks == NB_PEAKS_22) {
-    rseed = 22 + 10000 * (long) instance_id;
-    gallagher_peaks = coco_allocate_vector(NB_PEAKS_22 * number_of_variables);
+    b = 10.;
+    c = 5.;
+  } else if (number_of_peaks == peaks_21) {
+    gallagher_peaks = coco_allocate_vector(peaks_21 * dimension);
+    b = 9.8;
+    c = 4.9;
   } else {
     coco_error("f_gallagher(): '%lu' is a bad number of peaks", number_of_peaks);
   }
   data->rseed = rseed;
-  bbob2009_compute_rotation(data->rotation, rseed, number_of_variables);
-
-  /* Construct meaningful problem_id and problem_name */
-  coco_problem_set_id(problem, "%s_%lu_peaks_d%04lu", "gallagher", number_of_peaks, number_of_variables);
-  if (number_of_peaks == NB_PEAKS_21) {
-    coco_problem_set_name(problem, "Gallagher\'s Gaussian 101-me peaks function");
-    b = 10.;
-    c = 5.;
-  } else if (number_of_peaks == NB_PEAKS_22) {
-    coco_problem_set_name(problem, "Gallagher\'s Gaussian 21-hi peaks function");
-    b = 9.8;
-    c = 4.9;
-  }
+  bbob2009_compute_rotation(data->rotation, rseed, dimension);
 
   /* Initialize all the data of the inner problem */
   bbob2009_unif(gallagher_peaks, number_of_peaks - 1, data->rseed);
@@ -176,51 +176,59 @@ static coco_problem_t *f_gallagher(const size_t number_of_variables,
   }
   coco_free_memory(rperm);
 
-  rperm = (size_t *) coco_allocate_memory(number_of_variables * sizeof(size_t));
+  rperm = (size_t *) coco_allocate_memory(dimension * sizeof(size_t));
   for (i = 0; i < number_of_peaks; ++i) {
-    bbob2009_unif(gallagher_peaks, number_of_variables, data->rseed + (long) (1000 * i));
-    for (j = 0; j < number_of_variables; ++j)
+    bbob2009_unif(gallagher_peaks, dimension, data->rseed + (long) (1000 * i));
+    for (j = 0; j < dimension; ++j)
       rperm[j] = j;
-    qsort(rperm, number_of_variables, sizeof(size_t), f_gallagher_compare_doubles);
-    for (j = 0; j < number_of_variables; ++j) {
+    qsort(rperm, dimension, sizeof(size_t), f_gallagher_compare_doubles);
+    for (j = 0; j < dimension; ++j) {
       data->arr_scales[i][j] = pow(arrCondition[i],
-          ((double) rperm[j]) / ((double) (number_of_variables - 1)) - 0.5);
+          ((double) rperm[j]) / ((double) (dimension - 1)) - 0.5);
     }
   }
   coco_free_memory(rperm);
 
-  bbob2009_unif(gallagher_peaks, number_of_variables * number_of_peaks, data->rseed);
-  for (i = 0; i < number_of_variables; ++i) {
+  bbob2009_unif(gallagher_peaks, dimension * number_of_peaks, data->rseed);
+  for (i = 0; i < dimension; ++i) {
     data->xopt[i] = 0.8 * (b * gallagher_peaks[i] - c);
     problem->best_parameter[i] = 0.8 * (b * gallagher_peaks[i] - c);
     for (j = 0; j < number_of_peaks; ++j) {
       data->x_local[i][j] = 0.;
-      for (k = 0; k < number_of_variables; ++k) {
-        data->x_local[i][j] += data->rotation[i][k] * (b * gallagher_peaks[j * number_of_variables + k] - c);
+      for (k = 0; k < dimension; ++k) {
+        data->x_local[i][j] += data->rotation[i][k] * (b * gallagher_peaks[j * dimension + k] - c);
       }
       if (j == 0) {
         data->x_local[i][j] *= 0.8;
       }
     }
   }
-
   coco_free_memory(arrCondition);
 
   problem->data = data;
 
   /* Compute best solution */
   f_gallagher_evaluate(problem, problem->best_parameter, problem->best_value);
+
+  fopt = bbob2009_compute_fopt(function_id, instance_id);
+  problem = f_transform_obj_shift(problem, fopt);
+
+  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
+  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
+
   return problem;
 }
 
 /* TODO: Deprecated variables and functions below are to be deleted when the new ones work as they should */
 
+#define DEPRECATED__NB_PEAKS_21 101
+#define DEPRECATED__NB_PEAKS_22 21
 #define DEPRECATED__MAX_DIM SUITE_BBOB2009_MAX_DIM
 
 /* To make dimension free of restrictions (and save memory for large MAX_DIM),
  * these should be allocated in f_gallagher */
-static double deprecated__gallagher_peaks21[NB_PEAKS_21 * DEPRECATED__MAX_DIM];
-static double deprecated__gallagher_peaks22[NB_PEAKS_22 * DEPRECATED__MAX_DIM];
+static double deprecated__gallagher_peaks21[DEPRECATED__NB_PEAKS_21 * DEPRECATED__MAX_DIM];
+static double deprecated__gallagher_peaks22[DEPRECATED__NB_PEAKS_22 * DEPRECATED__MAX_DIM];
 
 typedef struct {
   long rseed;
@@ -335,7 +343,7 @@ static coco_problem_t *deprecated__f_gallagher(const size_t number_of_variables,
   bbob2009_compute_rotation(data->rotation, rseed, number_of_variables);
   problem = coco_problem_allocate(number_of_variables, 1, 0);
   /* Construct a meaningful problem id */
-  if (number_of_peaks == NB_PEAKS_21) {
+  if (number_of_peaks == DEPRECATED__NB_PEAKS_21) {
     problem->problem_name = coco_strdup("BBOB f21");
     problem_id_length = (size_t) snprintf(NULL, 0, "%s_%02lu", "bbob2009_f21", (long) number_of_variables);
     problem->problem_id = coco_allocate_memory(problem_id_length + 1);
@@ -343,7 +351,7 @@ static coco_problem_t *deprecated__f_gallagher(const size_t number_of_variables,
         (long) number_of_variables);
     b = 10.;
     c = 5.;
-  } else if (number_of_peaks == NB_PEAKS_22) {
+  } else if (number_of_peaks == DEPRECATED__NB_PEAKS_22) {
     problem->problem_name = coco_strdup("BBOB f22");
     problem_id_length = (size_t) snprintf(NULL, 0, "%s_%02lu", "bbob2009_f22", (long) number_of_variables);
     problem->problem_id = coco_allocate_memory(problem_id_length + 1);
@@ -423,6 +431,6 @@ static coco_problem_t *deprecated__f_gallagher(const size_t number_of_variables,
 }
 
 /* Be nice and remove defines from amalgamation */
-#undef NB_PEAKS_21
-#undef NB_PEAKS_22
+#undef DEPRECATED__NB_PEAKS_21
+#undef DEPRECATED__NB_PEAKS_22
 #undef DEPRECATED__MAX_DIM

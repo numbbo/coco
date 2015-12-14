@@ -3,6 +3,12 @@
 
 #include "coco.h"
 #include "coco_problem.c"
+#include "suite_bbob2009_legacy_code.c"
+#include "transform_obj_oscillate.c"
+#include "transform_obj_power.c"
+#include "transform_obj_shift.c"
+#include "transform_vars_affine.c"
+#include "transform_vars_shift.c"
 
 typedef struct {
   double *xopt;
@@ -38,7 +44,7 @@ static void f_attractive_sector_free(coco_problem_t *self) {
   coco_problem_free(self);
 }
 
-static coco_problem_t *f_attractive_sector(const size_t number_of_variables, const double *xopt) {
+static coco_problem_t *f_attractive_sector_allocate(const size_t number_of_variables, const double *xopt) {
 
   f_attractive_sector_data_t *data;
   coco_problem_t *problem = coco_problem_allocate_from_scalars("attractive sector function",
@@ -51,6 +57,58 @@ static coco_problem_t *f_attractive_sector(const size_t number_of_variables, con
 
   /* Compute best solution */
   f_attractive_sector_evaluate(problem, problem->best_parameter, problem->best_value);
+  return problem;
+}
+
+static coco_problem_t *f_attractive_sector_bbob_problem_allocate(const size_t function_id,
+                                                                 const size_t dimension,
+                                                                 const size_t instance_id,
+                                                                 const long rseed,
+                                                                 const char *problem_id_template,
+                                                                 const char *problem_name_template) {
+  double *xopt, fopt;
+  coco_problem_t *problem = NULL;
+  size_t i, j, k;
+  double *M = coco_allocate_vector(dimension * dimension);
+  double *b = coco_allocate_vector(dimension);
+  double *current_row, **rot1, **rot2;
+
+  xopt = coco_allocate_vector(dimension);
+  fopt = bbob2009_compute_fopt(function_id, instance_id);
+  bbob2009_compute_xopt(xopt, rseed, dimension);
+
+  /* Compute affine transformation M from two rotation matrices */
+  rot1 = bbob2009_allocate_matrix(dimension, dimension);
+  rot2 = bbob2009_allocate_matrix(dimension, dimension);
+  bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+  bbob2009_compute_rotation(rot2, rseed, dimension);
+  for (i = 0; i < dimension; ++i) {
+    b[i] = 0.0;
+    current_row = M + i * dimension;
+    for (j = 0; j < dimension; ++j) {
+      current_row[j] = 0.0;
+      for (k = 0; k < dimension; ++k) {
+        double exponent = 1.0 * (int) k / ((double) (long) dimension - 1.0);
+        current_row[j] += rot1[i][k] * pow(sqrt(10.0), exponent) * rot2[k][j];
+      }
+    }
+  }
+  bbob2009_free_matrix(rot1, dimension);
+  bbob2009_free_matrix(rot2, dimension);
+
+  problem = f_attractive_sector_allocate(dimension, xopt);
+  problem = f_transform_obj_oscillate(problem);
+  problem = f_transform_obj_power(problem, 0.9);
+  problem = f_transform_obj_shift(problem, fopt);
+  problem = f_transform_vars_affine(problem, M, b, dimension);
+  problem = f_transform_vars_shift(problem, xopt, 0);
+
+  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
+  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
+
+  coco_free_memory(M);
+  coco_free_memory(b);
+  coco_free_memory(xopt);
   return problem;
 }
 
