@@ -95,8 +95,11 @@ def build_c_unit_tests():
             else:
                 libraryPath = 'code-experiments/test/unit-test/lib/win32_mingw'
     elif ('linux' in sys.platform):
-        libraryPath = 'code-experiments/test/unit-test/lib/linux'
         fileName = 'libcmocka.so'
+        if 'Ubuntu' in platform.linux_distribution():
+            libraryPath = 'code-experiments/test/unit-test/lib/linux_ubuntu'
+        elif 'Fedora' in platform.linux_distribution():
+            libraryPath = 'code-experiments/test/unit-test/lib/linux_fedora'
     elif ('darwin' in sys.platform): #Mac
         libraryPath = 'code-experiments/test/unit-test/lib/macosx'
         fileName = 'libcmocka.dylib'
