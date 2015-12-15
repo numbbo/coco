@@ -23,15 +23,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(nrhs!=2) {
         mexErrMsgIdAndTxt("cocoEvaluateFunction:nrhs","Two inputs required.");
     }
-    /*if(nlhs!=1) {
-        mexErrMsgIdAndTxt("cocoEvaluateFunction:nlhs","One output required.");
-    }*/
-    /* make sure the first input argument is Problem */
-    /* class_name = mxGetClassName(prhs[0]);  may be replaced by mxIsClass */
-    /* if(strcmp(class_name, "Problem") != 0) {
-        mexErrMsgIdAndTxt("cocoEvaluateFunction:notProblem","Input problem must be a Problem object.");
-    } */
-    
     /* get the problem */
     ref = (long long *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
@@ -39,11 +30,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(!mxIsDouble(prhs[1])) {
         mexErrMsgIdAndTxt("cocoEvaluateFunction:notDoubleArray","Input x must be aan array of doubles.");
     }
-    /* get Problem.problem */
-    /* problem_prop = mxGetProperty(prhs[0], 0, "problem");
-    ref = (long long *)mxGetData(problem_prop);
-    problem = (coco_problem_t *)(*ref); */
-    
     /* get the x vector */
     x = mxGetPr(prhs[1]);
     /* prepare the return value */
