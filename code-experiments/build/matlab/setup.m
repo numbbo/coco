@@ -5,6 +5,8 @@
 %mkoctfile --mex -Dchar16_t=uint16_t cocoEvaluateFunction.c
 %mkoctfile --mex -Dchar16_t=uint16_t cocoProblemAddObserver.c
 %mkoctfile --mex -Dchar16_t=uint16_t cocoProblemFree.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoObserver.c
+%mkoctfile --mex -Dchar16_t=uint16_t cocoObserverFree.c
 %mkoctfile --mex -Dchar16_t=uint16_t cocoProblemGetDimension.c
 %mkoctfile --mex -Dchar16_t=uint16_t cocoProblemGetEvaluations.c
 %mkoctfile --mex -Dchar16_t=uint16_t cocoProblemGetId.c
@@ -26,7 +28,8 @@
 mex -Dchar16_t=uint16_t cocoEvaluateFunction.c
 mex -Dchar16_t=uint16_t cocoProblemAddObserver.c
 mex -Dchar16_t=uint16_t cocoProblemFree.c
-mex -Dchar16_t=uint16_t cocoObserverFree.c % to be added to Octave
+mex -Dchar16_t=uint16_t cocoObserver.c
+mex -Dchar16_t=uint16_t cocoObserverFree.c
 mex -Dchar16_t=uint16_t cocoProblemGetDimension.c
 mex -Dchar16_t=uint16_t cocoProblemGetEvaluations.c
 mex -Dchar16_t=uint16_t cocoProblemGetId.c

@@ -66,11 +66,12 @@ struct coco_problem {
   size_t number_of_constraints;
   double *smallest_values_of_interest;
   double *largest_values_of_interest;
-  double *best_value; /* means: f-value */
+  double *best_value; /* means: smallest possible f-value */
   double *best_parameter;
-  char *problem_name; /* problem is redundant but useful when searching */
-  char *problem_id; /* problem is redundant but useful when searching */
+  char *problem_name;
+  char *problem_id;
   long evaluations;
+  /* Convenience fields for output generation */
   double final_target_delta[1];
   double best_observed_fvalue[1];
   long best_observed_evaluation[1];
