@@ -516,6 +516,7 @@ static char **coco_string_split(const char *string, const char delimiter) {
 
   char **result;
   char *str_copy, *ptr, *token;
+  char str_delimiter[2];
   size_t i;
   size_t count = 1;
 
@@ -538,12 +539,15 @@ static char **coco_string_split(const char *string, const char delimiter) {
    * NOTE: strtok() ignores multiple delimiters, therefore the final number of detected substrings might be
    * lower than the count. This is OK. */
   i = 0;
-  token = strtok(str_copy, &delimiter);
+  /* A char* delimiter needs to be used, otherwise strtok() can surprise */
+  str_delimiter[0] = delimiter;
+  str_delimiter[1] = '\0';
+  token = strtok(str_copy, str_delimiter);
   while (token)
   {
       assert(i < count);
       *(result + i++) = coco_strdup(token);
-      token = strtok(NULL, &delimiter);
+      token = strtok(NULL, str_delimiter);
   }
   *(result + i) = NULL;
 
@@ -552,6 +556,21 @@ static char **coco_string_split(const char *string, const char delimiter) {
   return result;
 }
 
+static size_t coco_numbers_count(const size_t *numbers, const char *name) {
+
+  const size_t count_limit = 100;
+
+  size_t count = 0;
+  while ((count < count_limit) && (numbers[count] != 0)) {
+    count++;
+  }
+  if (count == count_limit) {
+    coco_error("coco_numbers_count(): over %lu numbers in %s", count_limit, name);
+    return 0; /* Never reached*/
+  }
+
+  return count;
+}
 /**
  * Reads ranges from a string of positive ranges separated by commas. For example: "-3,5-6,8-". Returns the
  * numbers that are defined by the ranges if min and max are used as their extremes. If the ranges with open
@@ -559,7 +578,7 @@ static char **coco_string_split(const char *string, const char delimiter) {
  * A maximum of 100 values is returned. If there is a problem with one of the ranges, the parsing stops and
  * the current result is returned. The memory of the returned object needs to be freed by the caller.
  */
-static size_t *coco_string_get_ranges(char *string, const char *name, size_t min, size_t max) {
+static size_t *coco_string_get_numbers_from_ranges(char *string, const char *name, size_t min, size_t max) {
 
   char *ptr, *dash;
   char **ranges, **numbers;

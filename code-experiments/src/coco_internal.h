@@ -122,4 +122,25 @@ struct coco_observer {
   coco_logger_initialize_function_t logger_initialize_function;
 };
 
+struct coco_suite {
+
+  char *suite_name;
+
+  size_t number_of_dimensions;
+  size_t *dimensions;
+  int current_dimension_id;
+
+  size_t number_of_functions;
+  size_t *functions;
+  int current_function_id;
+
+  size_t number_of_instances;
+  size_t *instances;
+  int current_instance_id;
+  char *default_instances;
+
+  coco_problem_t *current_problem;
+
+};
+
 #endif

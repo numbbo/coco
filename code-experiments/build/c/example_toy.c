@@ -33,6 +33,6 @@ void my_random_search(coco_problem_t *problem) {
 
 int main(void) {
   /* Run the benchmark */
-  coco_suite_benchmark("suite_toy", "observer_toy", "result_folder: RS_on_suite_toy", my_random_search);
+  deprecated__new_coco_suite_benchmark("suite_toy", "observer_toy", "result_folder: RS_on_suite_toy", my_random_search);
   return 0;
 }
