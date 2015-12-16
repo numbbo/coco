@@ -41,7 +41,7 @@ static int bbob2009_logger_is_open = 0; /* this could become lock-list of .info 
 typedef struct {
   int is_initialized;
   char *path; /* relative path to the data folder. Simply the Algname*/
-  const char * alg_name; /*the alg name, for now, temporarily the same as the path. Now in the observer */
+  const char * alg_name; /* the alg name, for now, temporarily the same as the path. Now in the observer */
   FILE *index_file; /* index file */
   FILE *fdata_file; /* function value aligned data file */
   FILE *tdata_file; /* number of function evaluations aligned data file */
