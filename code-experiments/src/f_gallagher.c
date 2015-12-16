@@ -225,11 +225,6 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function_i
 #define DEPRECATED__NB_PEAKS_22 21
 #define DEPRECATED__MAX_DIM SUITE_BBOB2009_MAX_DIM
 
-/* To make dimension free of restrictions (and save memory for large MAX_DIM),
- * these should be allocated in f_gallagher */
-static double deprecated__gallagher_peaks21[DEPRECATED__NB_PEAKS_21 * DEPRECATED__MAX_DIM];
-static double deprecated__gallagher_peaks22[DEPRECATED__NB_PEAKS_22 * DEPRECATED__MAX_DIM];
-
 typedef struct {
   long rseed;
   size_t number_of_peaks;
@@ -325,11 +320,11 @@ static coco_problem_t *deprecated__f_gallagher(const size_t number_of_variables,
   if (number_of_peaks == 101) {
     rseed = (long) (21 + 10000 * instance_id);
     /* FIXME: rather use coco_allocate_vector here */
-    gallagher_peaks = deprecated__gallagher_peaks21;
+    gallagher_peaks = coco_allocate_vector(DEPRECATED__NB_PEAKS_21 * number_of_variables);
     maxcondition1 = sqrt(maxcondition1);
   } else {
     rseed = (long) (22 + 10000 * instance_id);
-    gallagher_peaks = deprecated__gallagher_peaks22;
+    gallagher_peaks = coco_allocate_vector(DEPRECATED__NB_PEAKS_22 * number_of_variables);
   }
 
   data = coco_allocate_memory(sizeof(*data));
