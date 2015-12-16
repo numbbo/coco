@@ -181,6 +181,7 @@ void coco_suite_benchmark(const char *suite_name,
   coco_observer_t *observer;
   coco_problem_t *problem;
   long problem_index;
+  
   observer = coco_observer(observer_name, observer_options);
 
   for (problem_index = coco_suite_get_next_problem_index(suite_name, -1, "");
