@@ -11,6 +11,7 @@
 #include "coco_utilities.c"
 #include "coco_problem.c"
 #include "coco_strdup.c"
+#include "observer_bbob2009.c"
 
 static int bbob2009_raisedOptValWarning;
 
@@ -40,7 +41,7 @@ static int bbob2009_logger_is_open = 0; /* this could become lock-list of .info 
 typedef struct {
   int is_initialized;
   char *path; /* relative path to the data folder. Simply the Algname*/
-  const char * alg_name; /* the alg name, for now, temporarily the same as the path */
+  const char * alg_name; /*the alg name, for now, temporarily the same as the path. Now in the observer */
   FILE *index_file; /* index file */
   FILE *fdata_file; /* function value aligned data file */
   FILE *tdata_file; /* number of function evaluations aligned data file */
@@ -469,7 +470,7 @@ static void logger_bbob2009_free(void *stuff) {
   bbob2009_logger_is_open = 0;
 }
 
-static coco_problem_t *logger_bbob2009(coco_problem_t *inner_problem, const char *alg_name) {
+static coco_problem_t *depreciated_logger_bbob2009(coco_problem_t *inner_problem, const char *alg_name) {
   logger_bbob2009_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));
@@ -515,3 +516,54 @@ static coco_problem_t *logger_bbob2009(coco_problem_t *inner_problem, const char
   bbob2009_logger_is_open = 1;
   return self;
 }
+
+
+static coco_problem_t *logger_bbob2009(coco_observer_t *observer, coco_problem_t *problem) {
+  const char *alg_name=observer->output_folder;
+  
+  logger_bbob2009_t *data;
+  coco_problem_t *self;
+  data = coco_allocate_memory(sizeof(*data));
+  data->alg_name = coco_strdup(alg_name);
+  if (bbob2009_logger_is_open)
+  coco_error("The current bbob2009_logger (observer) must be closed before a new one is opened");
+  /* This is the name of the folder which happens to be the algName */
+  data->path = coco_strdup(alg_name);
+  data->index_file = NULL;
+  data->fdata_file = NULL;
+  data->tdata_file = NULL;
+  data->rdata_file = NULL;
+  data->number_of_variables = problem->number_of_variables;
+  if (problem->best_value == NULL) {
+    /* coco_error("Optimal f value must be defined for each problem in order for the logger to work properly"); */
+    /* Setting the value to 0 results in the assertion y>=optimal_fvalue being susceptible to failure */
+    coco_warning("undefined optimal f value. Set to 0");
+    data->optimal_fvalue = 0;
+  } else {
+    data->optimal_fvalue = *(problem->best_value);
+  }
+  bbob2009_raisedOptValWarning = 0;
+  
+  data->idx_f_trigger = INT_MAX;
+  data->idx_t_trigger = 0;
+  data->idx_tdim_trigger = 0;
+  data->f_trigger = DBL_MAX;
+  data->t_trigger = 0;
+  data->number_of_evaluations = 0;
+  data->best_solution = coco_allocate_vector(problem->number_of_variables);
+  /* TODO: the following inits are just to be in the safe side and
+   * should eventually be removed. Some fields of the bbob2009_logger struct
+   * might be useless
+   */
+  data->function_id = coco_problem_get_suite_dep_function_id(problem);
+  data->instance_id = coco_problem_get_suite_dep_instance_id(problem);
+  data->written_last_eval = 1;
+  data->last_fvalue = DBL_MAX;
+  data->is_initialized = 0;
+  
+  self = coco_transformed_allocate(problem, data, logger_bbob2009_free);
+  self->evaluate_function = logger_bbob2009_evaluate;
+  bbob2009_logger_is_open = 1;
+  return self;
+}
+
