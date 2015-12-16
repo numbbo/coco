@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
+#include <ctype.h>
 
 #include "coco.h"
 #include "coco_internal.h"
@@ -86,10 +87,10 @@ int coco_create_directory(const char *path);
 int coco_remove_directory_msc(const char *path);
 int coco_remove_directory_no_msc(const char *path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
-int coco_options_read_int(const char *options, const char *name, int *pointer);
-int coco_options_read_long(const char *options, const char *name, long *pointer);
-int coco_options_read_double(const char *options, const char *name, double *pointer);
-int coco_options_read_string(const char *options, const char *name, char *pointer);
+static int coco_options_read_int(const char *options, const char *name, int *pointer);
+static int coco_options_read_long(const char *options, const char *name, long *pointer);
+static int coco_options_read_double(const char *options, const char *name, double *pointer);
+static int coco_options_read_string(const char *options, const char *name, char *pointer);
 static int coco_options_read(const char *options, const char *name, const char *format, void *pointer);
 double coco_round_double(const double a);
 double coco_max_double(const double a, const double b);
@@ -424,7 +425,7 @@ double *coco_duplicate_vector(const double *src, const size_t number_of_elements
  * - the value corresponding to the given name needs to be an integer
  * Returns the number of successful assignments.
  */
-int coco_options_read_int(const char *options, const char *name, int *pointer) {
+static int coco_options_read_int(const char *options, const char *name, int *pointer) {
   return coco_options_read(options, name, " %i", pointer);
 }
 
@@ -435,7 +436,7 @@ int coco_options_read_int(const char *options, const char *name, int *pointer) {
  * - the value corresponding to the given name needs to be a size_t
  * Returns the number of successful assignments.
  */
-int coco_options_read_size_t(const char *options, const char *name, size_t *pointer) {
+static int coco_options_read_size_t(const char *options, const char *name, size_t *pointer) {
   return coco_options_read(options, name, " %lu", pointer);
 }
 
@@ -446,7 +447,7 @@ int coco_options_read_size_t(const char *options, const char *name, size_t *poin
  * - the value corresponding to the given name needs to be a long integer
  * Returns the number of successful assignments.
  */
-int coco_options_read_long(const char *options, const char *name, long *pointer) {
+static int coco_options_read_long(const char *options, const char *name, long *pointer) {
   return coco_options_read(options, name, " %lu", pointer);
 }
 
@@ -457,7 +458,7 @@ int coco_options_read_long(const char *options, const char *name, long *pointer)
  * - the value corresponding to the given name needs to be a double
  * Returns the number of successful assignments.
  */
-int coco_options_read_double(const char *options, const char *name, double *pointer) {
+static int coco_options_read_double(const char *options, const char *name, double *pointer) {
   return coco_options_read(options, name, " %f", pointer);
 }
 
@@ -469,7 +470,7 @@ int coco_options_read_double(const char *options, const char *name, double *poin
  * in double quotes
  * Returns the number of successful assignments.
  */
-int coco_options_read_string(const char *options, const char *name, char *pointer) {
+static int coco_options_read_string(const char *options, const char *name, char *pointer) {
 
   long i1 = coco_strfind(options, name);
   long i2;
@@ -505,6 +506,240 @@ static int coco_options_read(const char *options, const char *name, const char *
     return 0;
 
   return sscanf(&options[i2], format, pointer);
+}
+
+/**
+ * Splits a string based on the given delimiter. Returns a pointer to the resulting substrings with NULL
+ * as the last one. The memory of the result needs to be freed by the caller.
+ */
+static char **coco_string_split(const char *string, const char delimiter) {
+
+  char **result;
+  char *str_copy, *ptr, *token;
+  size_t i;
+  size_t count = 1;
+
+  str_copy = coco_strdup(string);
+
+  /* Counts the parts between delimiters */
+  ptr = str_copy;
+  while (*ptr != '\0') {
+    if (*ptr == delimiter) {
+      count++;
+    }
+    ptr++;
+  }
+  /* Makes room for an empty string that will be appended at the end */
+  count++;
+
+  result = coco_allocate_memory(count * sizeof(char*));
+
+  /* Iterates through tokens
+   * NOTE: strtok() ignores multiple delimiters, therefore the final number of detected substrings might be
+   * lower than the count. This is OK. */
+  i = 0;
+  token = strtok(str_copy, &delimiter);
+  while (token)
+  {
+      assert(i < count);
+      *(result + i++) = coco_strdup(token);
+      token = strtok(NULL, &delimiter);
+  }
+  *(result + i) = NULL;
+
+  coco_free_memory(str_copy);
+
+  return result;
+}
+
+/**
+ * Reads ranges from a string of positive ranges separated by commas. For example: "-3,5-6,8-". Returns the
+ * numbers that are defined by the ranges if min and max are used as their extremes. If the ranges with open
+ * beginning/end are not allowed, use 0 as min/max. The returned string has an appended 0 to mark its end.
+ * A maximum of 100 values is returned. If there is a problem with one of the ranges, the parsing stops and
+ * the current result is returned. The memory of the returned object needs to be freed by the caller.
+ */
+static size_t *coco_string_get_ranges(char *string, const char *name, size_t min, size_t max) {
+
+  char *ptr, *dash;
+  char **ranges, **numbers;
+  size_t i, j, count;
+  size_t num[2];
+
+  /* Don't allow ranges that are too long */
+  const size_t length_limit = 100;
+  size_t *result;
+  size_t i_result = 0;
+
+  /* Check for empty string */
+  if ((string == NULL) || (strlen(string) == 0)) {
+    coco_warning("coco_options_read_ranges(): cannot parse empty ranges");
+    return NULL;
+  }
+
+  ptr = string;
+  /* Check for disallowed characters */
+  while (*ptr != '\0') {
+    if ((*ptr != '-') && (*ptr != ',') && !isdigit((unsigned char )*ptr)) {
+      coco_warning("coco_options_read_ranges(): problem parsing '%s' - cannot parse ranges with '%c'", string,
+          *ptr);
+      return NULL;
+    } else
+      ptr++;
+  }
+
+  /* Check for incorrect boundaries */
+  if ((max > 0) && (min > max)) {
+    coco_warning("coco_options_read_ranges(): incorrect boundaries");
+    return NULL;
+  }
+
+  result = coco_allocate_memory((length_limit + 1) * sizeof(size_t));
+
+  /* Split string to ranges w.r.t commas */
+  ranges = coco_string_split(string, ',');
+
+  if (ranges) {
+    /* Go over the current range */
+    for (i = 0; *(ranges + i); i++) {
+
+      ptr = *(ranges + i);
+      /* Count the number of '-' */
+      count = 0;
+      while (*ptr != '\0') {
+        if (*ptr == '-') {
+          if (count == 0)
+            /* Remember the position of the first '-' */
+            dash = ptr;
+          count++;
+        }
+        ptr++;
+      }
+      /* Point again to the start of the range */
+      ptr = *(ranges + i);
+
+      /* Check for incorrect number of '-' */
+      if (count > 1) {
+        coco_warning("coco_options_read_ranges(): problem parsing '%s' - too many '-'s", string);
+        /* Cleanup */
+        coco_free_memory(*(ranges + i));
+        coco_free_memory(ranges);
+        if (i_result == 0) {
+          coco_free_memory(result);
+          return NULL;
+        }
+        result[i_result] = 0;
+        return result;
+      } else if (count == 0) {
+        /* Range is in the format: n (no range) */
+        num[0] = (size_t) strtol(ptr, NULL, 10);
+        num[1] = num[0];
+      } else {
+        /* Range is in one of the following formats: n-m / -n / n- / - */
+
+        /* Split current range to numbers w.r.t '-' */
+        numbers = coco_string_split(ptr, '-');
+        if (numbers) {
+          /* Read the numbers */
+          for (j = 0; *(numbers + j); j++) {
+            assert(j < 2);
+            num[j] = (size_t) strtol(*(numbers + j), NULL, 10);
+            coco_free_memory(*(numbers + j));
+          }
+        }
+        coco_free_memory(numbers);
+
+        if (j == 0) {
+          /* Range is in the format - (open ends) */
+          if ((min == 0) || (max == 0)) {
+            coco_warning("coco_options_read_ranges(): '%s' ranges cannot have an open ends; some ranges ignored", name);
+            /* Cleanup */
+            coco_free_memory(*(ranges + i));
+            coco_free_memory(ranges);
+            if (i_result == 0) {
+              coco_free_memory(result);
+              return NULL;
+            }
+            result[i_result] = 0;
+            return result;
+          }
+          num[0] = min;
+          num[1] = max;
+        } else if (j == 1) {
+          if (dash - *(ranges + i) == 0) {
+            /* Range is in the format -n */
+            if (min == 0) {
+              coco_warning("coco_options_read_ranges(): '%s' ranges cannot have an open beginning; some ranges ignored", name);
+              /* Cleanup */
+              coco_free_memory(*(ranges + i));
+              coco_free_memory(ranges);
+              if (i_result == 0) {
+                coco_free_memory(result);
+                return NULL;
+              }
+              result[i_result] = 0;
+              return result;
+            }
+            num[1] = num[0];
+            num[0] = min;
+          } else {
+            /* Range is in the format n- */
+            if (max == 0) {
+              coco_warning("coco_options_read_ranges(): '%s' ranges cannot have an open end; some ranges ignored", name);
+              /* Cleanup */
+              coco_free_memory(*(ranges + i));
+              coco_free_memory(ranges);
+              if (i_result == 0) {
+                coco_free_memory(result);
+                return NULL;
+              }
+              result[i_result] = 0;
+              return result;
+            }
+            num[1] = max;
+          }
+        }
+        /* if (j == 2), range is in the format n-m and there is nothing to do */
+      }
+
+      /* Make sure the boundaries are taken into account */
+      if ((min > 0) && (num[0] < min))
+        num[0] = min;
+      if ((max > 0) && (num[1] > max))
+        num[1] = max;
+      if (num[0] > num[1]) {
+        coco_warning("coco_options_read_ranges(): '%s' ranges not within boundaries; some ranges ignored", name);
+        /* Cleanup */
+        coco_free_memory(*(ranges + i));
+        coco_free_memory(ranges);
+        if (i_result == 0) {
+          coco_free_memory(result);
+          return NULL;
+        }
+        result[i_result] = 0;
+        return result;
+      }
+
+      /* Write in result */
+      for (j = num[0]; j <= num[1]; j++) {
+        if (i_result > length_limit - 1)
+          break;
+        result[i_result++] = j;
+      }
+    }
+
+    coco_free_memory(*(ranges + i));
+  }
+
+  coco_free_memory(ranges);
+
+  if (i_result == 0) {
+    coco_free_memory(result);
+    return NULL;
+  }
+
+  result[i_result] = 0;
+  return result;
 }
 
 /* Some math functions which are not contained in C89 standard */
