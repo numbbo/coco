@@ -127,7 +127,6 @@ int main() {
                  coco_optimize);
   return 0;
 }
-
 #elif 1
 
 int main(void) {
@@ -152,11 +151,11 @@ int main(void) {
 }
 
 
-
 #elif 0
 int main(void) {  /* short example, also nice to read */
   coco_problem_t *problem;
   long problem_index;
+
   static const char *observer_options_RS = "result_folder: RS_on_suite_biob2009 \
     algorithm_name: RS \
     algorithm_info: \"A simple random search algorithm\" \
