@@ -101,7 +101,7 @@ void coco_suite_free(coco_suite_t *suite) {
   coco_free_memory(suite);
 }
 
-coco_suite_t *coco_suite(char *suite_name, char *suite_instance, char *suite_options) {
+coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, const char *suite_options) {
 
   /* TODO: Implement these functions! */
 
@@ -114,6 +114,58 @@ coco_suite_t *coco_suite(char *suite_name, char *suite_instance, char *suite_opt
   /* TODO: Check that at least one dimension/function/instance exists! */
 
   return suite;
+}
+
+static size_t *coco_suite_parse_instance_string(coco_suite_t *suite, const char *suite_instance) {
+
+  int year = -1;
+  char *instances = NULL;
+  long year_ptr, instances_ptr;
+
+  if (suite_instance == NULL)
+    return NULL;
+
+  year_ptr = coco_strfind(suite_instance, "year");
+  instances_ptr = coco_strfind(suite_instance, "instances");
+
+  if ((year_ptr < 0) && (instances_ptr < 0))
+    return NULL;
+
+  if ((year_ptr < instances_ptr) && (year_ptr >= 0)) {
+    /* Stores the year */
+    if (coco_options_read_int(suite_instance, "year", &(year)) != 0) {
+      if (instances_ptr >= 0) {
+        instances = NULL;
+        coco_warning("coco_suite_parse_instance_string(): only the 'year' suite_instance option is taken into account, 'instances' is ignored");
+      }
+    } else {
+      year = -1;
+      coco_warning("coco_suite_parse_instance_string(): problems parsing the 'year' suite_instance option, ignored");
+    }
+  }
+  else {
+    /* Stores the instances */
+    if (coco_options_read_int(suite_instance, "instances", instances) != 0) {
+      if (year_ptr >= 0) {
+        year = -1;
+        coco_warning("coco_suite_parse_instance_string(): only the 'instances' suite_instance option is taken into account, 'year' is ignored");
+      }
+    } else {
+      instances = NULL;
+      coco_warning("coco_suite_parse_instance_string(): problems parsing the 'instance' suite_instance option, ignored");
+    }
+  }
+
+  if (year > 0)
+    return coco_suite_get_instances_matching_year(suite, year);
+
+  if (instances != NULL) {
+    return coco_options_read_ranges(instances, "instances", 1, NAN);
+  }
+
+  /* This should never happen */
+  coco_warning("coco_suite_parse_instance_string(): a problem occurred when parsing suite_instance options, ignored");
+  return NULL;
 }
 
 /**

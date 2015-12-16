@@ -292,7 +292,7 @@ static void deprecated__f_gallagher_evaluate(coco_problem_t *self, const double 
   y[0] = Ftrue;
   assert(y[0] >= self->best_value[0]);
   /* FIXME: tmx hasn't been allocated with coco_allocate... */
-  coco_free_memory(tmx);
+  free(tmx); /* before was coco_free_memory(tmx), both are equivalent */
 }
 
 static void deprecated__f_gallagher_free(coco_problem_t *self) {
@@ -424,6 +424,7 @@ static coco_problem_t *deprecated__f_gallagher(const size_t number_of_variables,
   }
 
   coco_free_memory(arrCondition);
+  coco_free_memory(gallagher_peaks);
 
   /* Calculate best parameter value */
   problem->evaluate_function(problem, problem->best_parameter, problem->best_value);

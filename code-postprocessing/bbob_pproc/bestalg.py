@@ -472,15 +472,15 @@ def customgenerate(args = algs2009):
      >>> import tarfile
      >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
      >>> os.chdir(os.path.join(path, 'data'))
-     >>> infoFile = 'BBOB2009rawdata/ALPS_hornby_noiseless/alps_reg1/bbobexp_f2.info'
+     >>> infoFile = 'ALPS/bbobexp_f2.info'
      >>> if not os.path.exists(infoFile):
-     ...   dataurl = 'http://coco.lri.fr/BBOB2009/rawdata/ALPS_hornby_noiseless.tar.gz'
+     ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/ALPS_hornby_noiseless.tgz'
      ...   filename, headers = urllib.urlretrieve(dataurl)
      ...   archivefile = tarfile.open(filename)
      ...   archivefile.extractall()
-     >>> os.chdir(os.path.join(path, 'data', 'BBOB2009rawdata'))
-     >>> bestalg.customgenerate(('ALPS_hornby_noiseless', '')) #doctest:+ELLIPSIS
-     Searching in ALPS_hornby_noiseless ...
+     >>> os.chdir(os.path.join(path, 'data'))
+     >>> bestalg.customgenerate(('ALPS', '')) #doctest:+ELLIPSIS
+     Searching in ALPS ...
      ...
      done with writing pickle...
      >>> os.chdir(path)
