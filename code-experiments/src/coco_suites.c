@@ -11,6 +11,11 @@
 #include "suite_toy.c"
 
 /**
+ * Everything in this file is deprecated.
+ * TODO: Delete file when coco_suite works as it should.
+ */
+
+/**
  * A new benchmark suite must provide a function that returns a
  * coco_problem or NULL when given an problem_index as input.
  *
@@ -28,7 +33,7 @@
 
 /** return next problem_index or -1
  */
-long coco_suite_get_next_problem_index(const char *problem_suite,
+long deprecated__coco_suite_get_next_problem_index(const char *problem_suite,
                                        long problem_index,
                                        const char *select_options) {
   coco_problem_t *problem; /* to check validity */
@@ -39,7 +44,7 @@ long coco_suite_get_next_problem_index(const char *problem_suite,
    * at least its last_index here */
   if (0 == strcmp(problem_suite, "suite_bbob2009")) {
     /* without selection_options: last_index = 2159; */
-    return suite_bbob2009_get_next_problem_index(problem_index, select_options);
+    return deprecated__suite_bbob2009_get_next_problem_index(problem_index, select_options);
   } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
     return suite_biobj_300_get_next_problem_index(problem_index, select_options);
   }
@@ -61,7 +66,7 @@ long coco_suite_get_next_problem_index(const char *problem_suite,
   }
 
   /* last resort: last_index is not known */
-  problem = coco_suite_get_problem(problem_suite, problem_index);
+  problem = deprecated__coco_suite_get_problem(problem_suite, problem_index);
   if (problem == NULL) {
     return -1;
   }
@@ -77,11 +82,11 @@ long coco_suite_get_next_problem_index(const char *problem_suite,
  * using the function ${coco_problem_free}.
  *
  */
-coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long problem_index) {
+coco_problem_t *deprecated__coco_suite_get_problem(const char *problem_suite, const long problem_index) {
   if (0 == strcmp(problem_suite, "suite_toy")) {
     return suite_toy(problem_index);
   } else if (0 == strcmp(problem_suite, "suite_bbob2009")) {
-    return suite_bbob2009(problem_index);
+    return deprecated__suite_bbob2009(problem_index);
     /* return deprecated__suite_bbob2009(problem_index); */
   } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
     return suite_biobj_300(problem_index);
@@ -129,14 +134,14 @@ coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
  * Return the first problem in benchmark ${suite} with ${id} as problem ID,
  * or NULL.
  */
-coco_problem_t *coco_suite_get_problem_by_id(const char *suite, const char *id) {
+coco_problem_t *deprecated__coco_suite_get_problem_by_id(const char *suite, const char *id) {
   const char *suite_options = "";
-  long index = coco_suite_get_next_problem_index(suite, -1, suite_options);
+  long index = deprecated__coco_suite_get_next_problem_index(suite, -1, suite_options);
   coco_problem_t *problem;
   const char *prob_id;
 
-  for (; index >= 0; coco_suite_get_next_problem_index(suite, index, suite_options)) {
-    problem = coco_suite_get_problem(suite, index);
+  for (; index >= 0; deprecated__coco_suite_get_next_problem_index(suite, index, suite_options)) {
+    problem = deprecated__coco_suite_get_problem(suite, index);
     prob_id = coco_problem_get_id(problem);
     if (strlen(prob_id) == strlen(id) && strncmp(prob_id, id, strlen(prob_id)) == 0)
       return problem;
@@ -145,7 +150,6 @@ coco_problem_t *coco_suite_get_problem_by_id(const char *suite, const char *id) 
   return NULL;
 }
 
-#if 1
 /* deprecated__coco_suite_benchmark(problem_suite, observer, options, optimizer):
  *
  * Benchmark a solver ${optimizer} with a testbed ${problem_suite}
@@ -160,7 +164,7 @@ void deprecated__coco_suite_benchmark(const char *problem_suite,
   int problem_index;
   coco_problem_t *problem;
   for (problem_index = 0;; ++problem_index) {
-    problem = coco_suite_get_problem(problem_suite, problem_index);
+    problem = deprecated__coco_suite_get_problem(problem_suite, problem_index);
     if (NULL == problem)
       break;
     problem = deprecated__coco_problem_add_observer(problem, observer, options); /* should remain invisible to the user*/
@@ -174,7 +178,7 @@ void deprecated__coco_suite_benchmark(const char *problem_suite,
  * Benchmarks a solver ${optimizer} with a testbed ${problem_suite} using the data logger ${observer_name}
  * initialized with ${observer_options} to write data.
  */
-void coco_suite_benchmark(const char *suite_name,
+void deprecated__new_coco_suite_benchmark(const char *suite_name,
                           const char *observer_name,
                           const char *observer_options,
                           coco_optimizer_t optimizer) {
@@ -185,11 +189,11 @@ void coco_suite_benchmark(const char *suite_name,
 
   observer = coco_observer(observer_name, observer_options);
 
-  for (problem_index = coco_suite_get_next_problem_index(suite_name, -1, "");
+  for (problem_index = deprecated__coco_suite_get_next_problem_index(suite_name, -1, "");
        problem_index >= 0;
-       problem_index = coco_suite_get_next_problem_index(suite_name, problem_index, "")) {
+       problem_index = deprecated__coco_suite_get_next_problem_index(suite_name, problem_index, "")) {
 
-    problem = coco_suite_get_problem(suite_name, problem_index);
+    problem = deprecated__coco_suite_get_problem(suite_name, problem_index);
 
     if (problem == NULL)
       break;
@@ -202,30 +206,3 @@ void coco_suite_benchmark(const char *suite_name,
   coco_observer_free(observer);
 }
 
-#else
-/** "improved" interface for coco_suite_benchmark: is it worth-while to have suite-options on the C-level? 
- */
-void coco_suite_benchmark(const char *problem_suite, const char *problem_suite_options,
-    const char *observer, const char *observer_options,
-    coco_optimizer_t optimizer) {
-  int problem_index;
-  int is_instance;
-  coco_problem_t *problem;
-  char buf[222]; /* TODO: this is ugly, how to improve? The new implementation of coco_warning makes this obsolete */
-  for (problem_index = -1;;) {
-    problem_index = coco_suite_get_next_problem_index(problem_suite, problem_suite_options, problem_index);
-    if (problem_index < 0)
-      break;
-    problem = coco_suite_get_problem(problem_suite, problem_index);
-    if (problem == NULL) {
-      snprintf(buf, 221, "problem index %d not found in problem suite %s (this is probably a bug)",
-          problem_index, problem_suite);
-      coco_warning(buf);
-      break;
-    }
-    problem = coco_problem_add_observer(observer, problem, observer_options); /* should remain invisible to the user*/
-    optimizer(problem);
-    coco_problem_free(problem);
-  }
-}
-#endif

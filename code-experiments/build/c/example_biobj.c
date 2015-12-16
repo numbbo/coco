@@ -135,7 +135,7 @@ int main(void) {
   printf("Running the experiments... (it takes time, be patient)\n");
   fflush(stdout);
 
-  coco_suite_benchmark(SUITE_NAME, OBSERVER_NAME, observer_options_RS, my_random_search);
+  deprecated__new_coco_suite_benchmark(SUITE_NAME, OBSERVER_NAME, observer_options_RS, my_random_search);
 
   /* coco_suite_benchmark(SUITE_NAME, OBSERVER_NAME, observer_options_GS, my_grid_search); */
 

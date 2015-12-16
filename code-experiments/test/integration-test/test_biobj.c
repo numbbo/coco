@@ -49,7 +49,7 @@ void run_once(char *observer_options) {
   printf("Running experiment with options %s ...", observer_options);
   fflush(stdout);
 
-  coco_suite_benchmark(suite_name, observer_name, observer_options, my_optimizer);
+  deprecated__new_coco_suite_benchmark(suite_name, observer_name, observer_options, my_optimizer);
   coco_remove_directory("biobj");
 
   printf("DONE!\n");

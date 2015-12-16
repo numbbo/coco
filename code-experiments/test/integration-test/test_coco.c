@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
     if (previous_function_id != function_id) {
       if (NULL != problem)
         coco_problem_free(problem);
-      problem = coco_suite_get_problem(suit_name, function_id);
+      problem = deprecated__coco_suite_get_problem(suit_name, function_id);
       previous_function_id = function_id;
     }
     x = testvectors[testvector_id].x;

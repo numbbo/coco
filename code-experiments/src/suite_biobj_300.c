@@ -7,6 +7,7 @@
 #include "coco_strdup.c"
 #include "coco_problem.c"
 #include "suite_bbob2009.c"
+#include "suite_bbob.c"
 #include "mo_generics.c"
 
 /**
