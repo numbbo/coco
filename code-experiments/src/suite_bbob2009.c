@@ -195,6 +195,9 @@ static coco_problem_t *suite_bbob_get_problem(size_t function_id, size_t dimensi
         problem_id_template, problem_name_template);
   }
 
+  problem->suite_dep_function_id = function_id;
+  problem->suite_dep_instance_id = instance_id;
+
   return problem;
 }
 
@@ -239,7 +242,7 @@ static coco_problem_t *suite_bbob2009(long problem_index) {
   if (problem_index < 0)
     return NULL;
   suite_bbob2009_decode_problem_index(problem_index, &function_id, &instance_id, &dimension);
-  problem = suite_bbob2009_problem(function_id, dimension, instance_id);
+  problem = suite_bbob_get_problem(function_id, dimension, instance_id);
   problem->suite_dep_index = (size_t) problem_index;
   problem->suite_dep_function_id = function_id;
   problem->suite_dep_instance_id = instance_id;
