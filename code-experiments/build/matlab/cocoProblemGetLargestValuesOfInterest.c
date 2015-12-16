@@ -7,7 +7,6 @@
 #include "coco.c"
 
 #include "mex.h"
-#include "matrix.h"
 
 /* The gateway function */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -16,6 +15,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     coco_problem_t *problem = NULL;
     int nb_dim;
     const double *res;
+    int i;
     double *v; /* intermediate variable that aloows to set plhs[0] */
 
     /* check for proper number of arguments */
@@ -31,7 +31,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     v = mxGetPr(plhs[0]);
     /* call coco_problem_get_largest_values_of_interest(...) */
     res = coco_problem_get_largest_values_of_interest(problem);
-    for (int i = 0; i < nb_dim; i++){
+    for (i = 0; i < nb_dim; i++){
         v[i] = res[i];
     }
 }

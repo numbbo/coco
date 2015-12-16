@@ -1,7 +1,8 @@
 MAX_EVALS = 100;
 number_of_batches = 1;
 current_batch = 1;
-my_benchmark = Benchmark('suite_bbob2009', '', 'observer_bbob2009', 'random_search');
+observer_options = 'result_folder: RS_on_suite_biobj_300 include_decision_variables: 0 log_nondominated: final';
+my_benchmark = Benchmark('suite_biobj_300', '', 'observer_biobj', observer_options);
 problem_index = -1;
 while true
     try
@@ -13,12 +14,13 @@ while true
             continue;
         end
         problem = getProblem(my_benchmark, problem_index);
-        %disp(['Optimizing ', problem.toString()]);
+        disp(['Optimizing ', problem.toString()]);
         my_optimizer(problem, problem.lower_bounds, problem.upper_bounds, MAX_EVALS);
         disp(['Done with problem ', problem.toString(), '...']);
-        free(problem);
+        freeProblem(problem);
     catch e
         disp(e.message);
         return
     end
 end
+freeObserver(problem);

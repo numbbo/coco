@@ -526,10 +526,10 @@ class DataSet():
         >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
         >>> os.chdir(path)
         >>> import bbob_pproc as bb
-        >>> infoFile = 'data/BBOB2009rawdata/BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info'
+        >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
         >>> if not os.path.exists(infoFile):
         ...   os.chdir(os.path.join(path, 'data'))
-        ...   dataurl = 'http://coco.lri.fr/BBOB2009/rawdata/BIPOP-CMA-ES_hansen_noiseless.tar.gz'
+        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
         ...   filename, headers = urllib.urlretrieve(dataurl)
         ...   archivefile = tarfile.open(filename)
         ...   archivefile.extractall()
@@ -537,14 +537,14 @@ class DataSet():
         >>> dslist = bb.load(infoFile)
           Data consistent according to test in consistency_check() in pproc.DataSet
         >>> print dslist  # doctest:+ELLIPSIS
-        [DataSet(cmaes V3.30.beta on f2 2-D), ..., DataSet(cmaes V3.30.beta on f2 40-D)]
+        [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
         >>> type(dslist)
         <class 'bbob_pproc.pproc.DataSetList'>
         >>> len(dslist)
         6
         >>> ds = dslist[3]  # a single data set of type DataSet
         >>> ds
-        DataSet(cmaes V3.30.beta on f2 10-D)
+        DataSet(BIPOP-CMA-ES on f2 10-D)
         >>> for d in dir(ds): print d  # dir(ds) shows attributes and methods of ds
         _DataSet__parseHeader
         __doc__
@@ -610,7 +610,7 @@ class DataSet():
         >>> ds.evals[-1,(0,5,6)]  # show last row, same columns
         array([  1.00000000e-08,   5.67600000e+03,   6.26900000e+03])
         >>> ds.info()  # prints similar data more nicely formated 
-        Algorithm: cmaes V3.30.beta
+        Algorithm: BIPOP-CMA-ES
         Function ID: 2
         Dimension DIM = 10
         Number of trials: 15
