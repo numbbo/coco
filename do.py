@@ -23,9 +23,10 @@ from cocoutils import make, run, python
 from cocoutils import copy_file, expand_file, write_file
 from cocoutils import git_version, git_revision
 
-core_files = ['code-experiments/src/coco_suites.c',
+core_files = ['code-experiments/src/coco_generics.c',
               'code-experiments/src/coco_random.c',
-              'code-experiments/src/coco_generics.c',
+              'code-experiments/src/coco_suite.c',
+              'code-experiments/src/coco_suites.c',
               'code-experiments/src/coco_observer.c'
               ]
 
