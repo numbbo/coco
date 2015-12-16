@@ -103,9 +103,9 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
   function1_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][0];
   function2_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][1];
 
-  problem1 = suite_bbob2009_problem(function1_id + 1, BBOB2009_DIMS[dimension_idx],
+  problem1 = suite_bbob_get_problem(function1_id + 1, BBOB2009_DIMS[dimension_idx],
       SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][0]);
-  problem2 = suite_bbob2009_problem(function2_id + 1, BBOB2009_DIMS[dimension_idx],
+  problem2 = suite_bbob_get_problem(function2_id + 1, BBOB2009_DIMS[dimension_idx],
       SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][1]);
 
   /* Set the ideal and reference points*/

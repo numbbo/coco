@@ -105,7 +105,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_bbob_problem_allocate(const size_t
                                                                     const char *problem_name_template) {
 
   f_lunacek_bi_rastrigin_data_t *data;
-  coco_problem_t *problem = coco_problem_allocate_from_scalars("Lunacek\'s bi-Rastrigin function",
+  coco_problem_t *problem = coco_problem_allocate_from_scalars("Lunacek's bi-Rastrigin function",
       f_lunacek_bi_rastrigin_evaluate, f_lunacek_bi_rastrigin_free, dimension, -5.0, 5.0, 0.0);
 
   const double mu0 = 2.5;
