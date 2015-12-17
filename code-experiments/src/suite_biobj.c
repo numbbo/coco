@@ -11,7 +11,7 @@ static coco_suite_t *suite_biobj_allocate(void) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
-  suite = coco_suite_allocate("suite_biobj", 24, 6, dimensions, "1-15");
+  suite = coco_suite_allocate("suite_biobj", 24, 6, dimensions, "instances:1-5");
 
   return suite;
 }

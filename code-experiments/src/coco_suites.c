@@ -84,7 +84,7 @@ long deprecated__coco_suite_get_next_problem_index(const char *problem_suite,
  */
 coco_problem_t *deprecated__coco_suite_get_problem(const char *problem_suite, const long problem_index) {
   if (0 == strcmp(problem_suite, "suite_toy")) {
-    return suite_toy(problem_index);
+    return deprecated__suite_toy(problem_index);
   } else if (0 == strcmp(problem_suite, "suite_bbob2009")) {
     return deprecated__suite_bbob2009(problem_index);
     /* return deprecated__suite_bbob2009(problem_index); */

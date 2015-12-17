@@ -420,8 +420,7 @@ double *coco_duplicate_vector(const double *src, const size_t number_of_elements
 
 /**
  * Reads an integer from options using the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon AND a space (spaces between name and the
- * semicolon are optional)
+ * - name and value need to be separated by a semicolon (spaces are optional)
  * - the value corresponding to the given name needs to be an integer
  * Returns the number of successful assignments.
  */
@@ -431,79 +430,146 @@ static int coco_options_read_int(const char *options, const char *name, int *poi
 
 /**
  * Reads a size_t from options using the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon AND a space (spaces between name and the
- * semicolon are optional)
+ * - name and value need to be separated by a semicolon (spaces are optional)
  * - the value corresponding to the given name needs to be a size_t
  * Returns the number of successful assignments.
  */
 static int coco_options_read_size_t(const char *options, const char *name, size_t *pointer) {
-  return coco_options_read(options, name, " %lu", pointer);
+  return coco_options_read(options, name, "%lu", pointer);
 }
 
 /**
  * Reads a long integer from options using the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon AND a space (spaces between name and the
- * semicolon are optional)
+ * - name and value need to be separated by a semicolon (spaces are optional)
  * - the value corresponding to the given name needs to be a long integer
  * Returns the number of successful assignments.
  */
 static int coco_options_read_long(const char *options, const char *name, long *pointer) {
-  return coco_options_read(options, name, " %lu", pointer);
+  return coco_options_read(options, name, "%lu", pointer);
 }
 
 /**
  * Reads a double value from options using the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon AND a space (spaces between name and the
- * semicolon are optional)
+ * - name and value need to be separated by a semicolon (spaces are optional)
  * - the value corresponding to the given name needs to be a double
  * Returns the number of successful assignments.
  */
 static int coco_options_read_double(const char *options, const char *name, double *pointer) {
-  return coco_options_read(options, name, " %f", pointer);
+  return coco_options_read(options, name, "%f", pointer);
 }
 
 /**
  * Reads a string from options using the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon AND a space (spaces between name and the
- * semicolon are optional)
+ * - name and value need to be separated by a semicolon (spaces are optional)
  * - the value corresponding to the given name needs to be a string - either a single word or multiple words
  * in double quotes
  * Returns the number of successful assignments.
  */
 static int coco_options_read_string(const char *options, const char *name, char *pointer) {
 
-  long i1 = coco_strfind(options, name);
-  long i2;
+  long i1, i2;
 
+  if ((!options) || (strlen(options) == 0))
+    return 0;
+
+  i1 = coco_strfind(options, name);
   if (i1 < 0)
     return 0;
   i2 = i1 + coco_strfind(&options[i1], ":") + 1;
-  if (i2 <= i1)
+
+  /* Remove trailing whitespaces */
+  while (isspace(options[i2]))
+    i2++;
+
+  if (i2 <= i1){
     return 0;
+  }
 
   if (options[i2 + 1] == '\"') {
     /* The value starts with a quote: read everything between two quotes into a string */
-    return sscanf(&options[i2], " \"%[^\"]\"", pointer);
+    return sscanf(&options[i2], "\"%[^\"]\"", pointer);
   } else
-    return sscanf(&options[i2], " %s", pointer);
+    return sscanf(&options[i2], "%s", pointer);
+}
+
+/* Return the smallest positive value between the two. If both are negative, return -1. */
+static long coco_min_positive(long a, long b) {
+  if ((a < 0) && (b < 0)) {
+    return -1;
+  }
+  if ((a >= 0) && (b < 0)) {
+    return a;
+  }
+  if ((a < 0) && (b >= 0)) {
+    return b;
+  }
+  if (a < b)
+    return a;
+
+  return b;
+}
+
+/**
+ * Reads (possibly delimited) values from options using the form "name1 : value1,value2,value3 name2: value4",
+ * i.e. reads all characters from the corresponding name up to the next whitespace or end of string.
+ * Formatting requirements:
+ * - name and value need to be separated by a semicolon (spaces are optional)
+ * Returns the number of successful assignments.
+ */
+static int coco_options_read_values(const char *options, const char *name, char *pointer) {
+
+  long i1, i2, i;
+
+  if ((!options) || (strlen(options) == 0))
+    return 0;
+
+  i1 = coco_strfind(options, name);
+  if (i1 < 0)
+    return 0;
+  i2 = i1 + coco_strfind(&options[i1], ":") + 1;
+
+  /* Remove trailing whitespaces */
+  while (isspace(options[i2]))
+    i2++;
+
+  if (i2 <= i1) {
+    return 0;
+  }
+
+  i = 0;
+  while (!isspace(options[i2 + i]) && (options[i2 + i] != '\0')) {
+    pointer[i] = options[i2 + i];
+    i++;
+  }
+  pointer[i] = '\0';
+  return i;
 }
 
 /**
  * Parse options in the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon
+ * - name and value need to be separated by a semicolon (spaces are optional)
  * - value needs to be a single string (no spaces allowed)
  * Returns the number of successful assignments.
  */
 static int coco_options_read(const char *options, const char *name, const char *format, void *pointer) {
 
-  long i1 = coco_strfind(options, name);
-  long i2;
+  long i1, i2;
 
+  if ((!options) || (strlen(options) == 0))
+    return 0;
+
+  i1 = coco_strfind(options, name);
   if (i1 < 0)
     return 0;
   i2 = i1 + coco_strfind(&options[i1], ":") + 1;
-  if (i2 <= i1)
+
+  /* Remove trailing whitespaces */
+  while (isspace(options[i2]))
+    i2++;
+
+  if (i2 <= i1){
     return 0;
+  }
 
   return sscanf(&options[i2], format, pointer);
 }
