@@ -76,14 +76,16 @@ static void coco_suite_filter_ids(size_t *items, const size_t number_of_items, c
   size_t count = coco_numbers_count(indices, name);
   int found;
 
-  for (i = 0; i < number_of_items; i++) {
+  for (i = 1; i <= number_of_items; i++) {
     found = 0;
     for (j = 0; j < count; j++) {
-      if (i == indices[j])
+      if (i == indices[j]) {
         found = 1;
+        break;
+      }
     }
     if (!found)
-      items[i] = 0;
+      items[i - 1] = 0;
   }
 
 }
@@ -194,6 +196,7 @@ static size_t *coco_suite_get_instance_indices(coco_suite_t *suite, const char *
   char *instances = NULL;
   char *year_string = NULL;
   long year_found, instances_found;
+  int parce_year = 1, parce_instances = 1;
   size_t *result;
 
   if (suite_instance == NULL)
@@ -205,47 +208,35 @@ static size_t *coco_suite_get_instance_indices(coco_suite_t *suite, const char *
   if ((year_found < 0) && (instances_found < 0))
     return NULL;
 
-  if ((year_found < instances_found) && (year_found >= 0)) {
-    /* Stores the year */
-    if (coco_options_read_int(suite_instance, "year", &(year)) != 0) {
-      if (instances_found >= 0) {
-        instances = NULL;
-        coco_warning("coco_suite_parse_instance_string(): only the 'year' suite_instance option is taken into account, 'instances' is ignored");
-      }
-    } else {
-      year = -1;
-      coco_warning("coco_suite_parse_instance_string(): problems parsing the 'year' suite_instance option, ignored");
+  if ((year_found > 0) && (instances_found > 0)) {
+    if (year_found < instances_found) {
+      parce_instances = 0;
+      coco_warning("coco_suite_parse_instance_string(): 'instances' suite option ignored because it follows 'year'");
     }
-  }
-  else {
-    /* Stores the instances */
-    instances = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
-    if (coco_options_read_string(suite_instance, "instances", instances) != 0) {
-      if (year_found >= 0) {
-        year = -1;
-        coco_warning("coco_suite_parse_instance_string(): only the 'instances' suite_instance option is taken into account, 'year' is ignored");
-      }
-    } else {
-      coco_free_memory(instances);
-      instances = NULL;
-      coco_warning("coco_suite_parse_instance_string(): problems parsing the 'instance' suite_instance option, ignored");
+    else {
+      parce_year = 0;
+      coco_warning("coco_suite_parse_instance_string(): 'year' suite option ignored because it follows 'instances'");
     }
   }
 
-  if (year > 0) {
-    year_string = coco_suite_get_instances_by_year(suite, year);
-    result = coco_string_get_numbers_from_ranges(year_string, "instances", 1, 0);
-    coco_free_memory(year_string);
+  if ((year_found >= 0) && (parce_year == 1)) {
+    if (coco_options_read_int(suite_instance, "year", &(year)) != 0) {
+      year_string = coco_suite_get_instances_by_year(suite, year);
+      result = coco_string_get_numbers_from_ranges(year_string, "instances", 1, 0);
+    } else {
+      coco_warning("coco_suite_parse_instance_string(): problems parsing the 'year' suite_instance option, ignored");
+    }
   }
-  else if (instances != NULL) {
-    result = coco_string_get_numbers_from_ranges(instances, "instances", 1, 0);
-    coco_free_memory(instances);
+
+  instances = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+  if ((instances_found >= 0) && (parce_instances == 1)) {
+    if (coco_options_read_values(suite_instance, "instances", instances) > 0) {
+      result = coco_string_get_numbers_from_ranges(instances, "instances", 1, 0);
+    } else {
+      coco_warning("coco_suite_parse_instance_string(): problems parsing the 'instance' suite_instance option, ignored");
+    }
   }
-  else {
-    /* This should never happen */
-    coco_warning("coco_suite_parse_instance_string(): a problem occurred when parsing suite_instance options, ignored");
-    result = NULL;
-  }
+  coco_free_memory(instances);
 
   return result;
 }
@@ -257,24 +248,27 @@ static size_t *coco_suite_get_instance_indices(coco_suite_t *suite, const char *
  */
 static int coco_suite_is_next_item_found(const size_t number_of_items, const size_t *items, int *current_item_id) {
 
-  /* Iterate through items */
+  if ((*current_item_id) != number_of_items - 1)  {
+    /* Not the last item, iterate through items */
+    do {
+      (*current_item_id)++;
+    } while (((*current_item_id) < number_of_items - 1) && (items[*current_item_id] == 0));
+
+    assert((*current_item_id) < number_of_items);
+    if (items[*current_item_id] != 0) {
+      /* Next item is found, return true */
+      return 1;
+    }
+  }
+
+  /* Next item cannot be found, move to the first good item and return false */
+  *current_item_id = -1;
   do {
     (*current_item_id)++;
   } while ((*current_item_id < number_of_items - 1) && (items[*current_item_id] == 0));
-
-  if (items[*current_item_id] != 0) {
-    /* Next item is found, return true */
-    return 1;
-  } else {
-    /* Next item cannot be found, move to the first good item and return false */
-    *current_item_id = -1;
-    do {
-      (*current_item_id)++;
-    } while ((*current_item_id < number_of_items - 1) && (items[*current_item_id] == 0));
-    if (items[*current_item_id] == 0)
-      coco_error("coco_suite_is_next_item_found(): the chosen suite has no valid (positive) items");
-    return 0;
-  }
+  if (items[*current_item_id] == 0)
+    coco_error("coco_suite_is_next_item_found(): the chosen suite has no valid (positive) items");
+  return 0;
 }
 
 /**
@@ -328,6 +322,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
   size_t *indices = NULL;
   size_t *dimensions = NULL;
   long dim_found, dim_id_found;
+  int parce_dim = 1, parce_dim_id = 1;
 
   /* Initialize the suite */
   suite = coco_suite_intialize(suite_name);
@@ -340,60 +335,70 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
   coco_suite_set_instance(suite, instances);
 
   /* Apply filter if any given by the suite_options */
-  if (coco_options_read_string(suite_options, "function_ids", option_string) > 0) {
-    indices = coco_string_get_numbers_from_ranges(option_string, "function_ids", 1, suite->number_of_functions);
-    if (indices != NULL) {
-      coco_suite_filter_ids(suite->functions, suite->number_of_functions, indices, "function_ids");
-      coco_free_memory(option_string);
-      coco_free_memory(indices);
+  if ((suite_options) && (strlen(suite_options) > 0)) {
+    option_string = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+    if (coco_options_read_values(suite_options, "function_ids", option_string) > 0) {
+      indices = coco_string_get_numbers_from_ranges(option_string, "function_ids", 1, suite->number_of_functions);
+      if (indices != NULL) {
+        coco_suite_filter_ids(suite->functions, suite->number_of_functions, indices, "function_ids");
+        coco_free_memory(indices);
+      }
     }
-  }
+    coco_free_memory(option_string);
 
-  if (coco_options_read_string(suite_options, "instance_ids", option_string) > 0) {
-    indices = coco_string_get_numbers_from_ranges(option_string, "instance_ids", 1, suite->number_of_instances);
-    if (indices != NULL) {
-      coco_suite_filter_ids(suite->instances, suite->number_of_instances, indices, "instance_ids");
-      coco_free_memory(option_string);
-      coco_free_memory(indices);
+    option_string = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+    if (coco_options_read_values(suite_options, "instance_ids", option_string) > 0) {
+      indices = coco_string_get_numbers_from_ranges(option_string, "instance_ids", 1, suite->number_of_instances);
+      if (indices != NULL) {
+        coco_suite_filter_ids(suite->instances, suite->number_of_instances, indices, "instance_ids");
+        coco_free_memory(indices);
+      }
     }
-  }
+    coco_free_memory(option_string);
 
-  dim_found = coco_strfind(suite_options, "dimensions");
-  dim_id_found = coco_strfind(suite_options, "dimension_ids");
+    dim_found = coco_strfind(suite_options, "dimensions");
+    dim_id_found = coco_strfind(suite_options, "dimension_ids");
 
-  if ((dim_found > 0) && (dim_id_found > 0)) {
-    if (dim_found < dim_id_found)
-      coco_warning("coco_suite(): 'dimension_ids' suite options ignored because it follows 'dimensions'");
-    else
-      coco_warning("coco_suite(): 'dimensions' suite options ignored because it follows 'dimension_ids'");
-  }
-
-  if ((coco_options_read_string(suite_options, "dimension_ids", option_string) > 0) && (dim_id_found < dim_found)) {
-    indices = coco_string_get_numbers_from_ranges(option_string, "dimension_ids", 1, suite->number_of_dimensions);
-    if (indices != NULL) {
-      coco_suite_filter_ids(suite->dimensions, suite->number_of_dimensions, indices, "dimension_ids");
-      coco_free_memory(option_string);
-      coco_free_memory(indices);
+    if ((dim_found > 0) && (dim_id_found > 0)) {
+      if (dim_found < dim_id_found) {
+        parce_dim_id = 0;
+        coco_warning("coco_suite(): 'dimension_ids' suite option ignored because it follows 'dimensions'");
+      }
+      else {
+        parce_dim = 0;
+        coco_warning("coco_suite(): 'dimensions' suite option ignored because it follows 'dimension_ids'");
+      }
     }
-  }
 
-  if ((coco_options_read_string(suite_options, "dimensions", option_string) > 0) && (dim_found < dim_id_found)) {
-    ptr = option_string;
-    /* Check for disallowed characters */
-    while (*ptr != '\0') {
-      if ((*ptr != ',') && !isdigit((unsigned char )*ptr)) {
-        coco_warning("coco_suite(): 'dimensions' suite options ignored because of disallowed characters");
-        return NULL;
-      } else
-        ptr++;
+    option_string = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+    if ((dim_id_found >= 0) && (parce_dim_id == 1) && (coco_options_read_values(suite_options, "dimension_ids", option_string) > 0)) {
+      indices = coco_string_get_numbers_from_ranges(option_string, "dimension_ids", 1, suite->number_of_dimensions);
+      if (indices != NULL) {
+        coco_suite_filter_ids(suite->dimensions, suite->number_of_dimensions, indices, "dimension_ids");
+        coco_free_memory(indices);
+      }
     }
-    dimensions = coco_string_get_numbers_from_ranges(option_string, "dimensions", suite->dimensions[0],
-        suite->dimensions[suite->number_of_dimensions - 1]);
-    if (dimensions != NULL) {
-      coco_suite_filter_dimensions(suite, dimensions);
-      coco_free_memory(option_string);
-      coco_free_memory(dimensions);
+    coco_free_memory(option_string);
+
+    option_string = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+    if ((dim_found >= 0) && (parce_dim == 1) && (coco_options_read_values(suite_options, "dimensions", option_string) > 0)) {
+      ptr = option_string;
+      /* Check for disallowed characters */
+      while (*ptr != '\0') {
+        if ((*ptr != ',') && !isdigit((unsigned char )*ptr)) {
+          coco_warning("coco_suite(): 'dimensions' suite option ignored because of disallowed characters");
+          return NULL;
+        } else
+          ptr++;
+      }
+      dimensions = coco_string_get_numbers_from_ranges(option_string, "dimensions", suite->dimensions[0],
+          suite->dimensions[suite->number_of_dimensions - 1]);
+      if (dimensions != NULL) {
+        coco_suite_filter_dimensions(suite, dimensions);
+        coco_free_memory(dimensions);
+      }
     }
+    coco_free_memory(option_string);
   }
 
   /* Check that there are enough dimensions, functions and instances left */
@@ -403,6 +408,11 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
     coco_error("coco_suite(): the suite does not contain at least one dimension, function and instance");
     return NULL;
   }
+
+  /* Set the starting values of the current indices in such a way, that when the instance_id is incremented,
+   * this results in a valid problem */
+  coco_suite_is_next_function_found(suite);
+  coco_suite_is_next_dimension_found(suite);
 
   return suite;
 }
@@ -433,12 +443,12 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   return coco_problem_add_observer(suite->current_problem, observer);
 }
 
-void coco_benchmark(const char *suite_name,
-                    const char *suite_instance,
-                    const char *suite_options,
-                    const char *observer_name,
-                    const char *observer_options,
-                    coco_optimizer_t optimizer) {
+void coco_run_benchmark(const char *suite_name,
+                        const char *suite_instance,
+                        const char *suite_options,
+                        const char *observer_name,
+                        const char *observer_options,
+                        coco_optimizer_t optimizer) {
 
   coco_suite_t *suite;
   coco_observer_t *observer;

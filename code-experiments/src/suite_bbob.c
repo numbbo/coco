@@ -32,7 +32,7 @@ static coco_suite_t *suite_bbob_allocate(void) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
-  suite = coco_suite_allocate("suite_bbob", 24, 6, dimensions, "1-15");
+  suite = coco_suite_allocate("suite_bbob", 24, 6, dimensions, "instances:1-15");
 
   return suite;
 }
@@ -53,8 +53,8 @@ static coco_problem_t *suite_bbob_get_problem(size_t function_id, size_t dimensi
 
   coco_problem_t *problem = NULL;
 
-  const char *problem_id_template = "bbob_f%03lu_i%02lu_d%02lu";
-  const char *problem_name_template = "BBOB f%lu instance %lu in %luD";
+  const char *problem_id_template = "suite_bbob_f%03lu_i%02lu_d%02lu";
+  const char *problem_name_template = "BBOB suite problem f%lu instance %lu in %luD";
 
   const long rseed = (long) (function_id + 10000 * instance_id);
   const long rseed_3 = (long) (3 + 10000 * instance_id);
@@ -132,6 +132,9 @@ static coco_problem_t *suite_bbob_get_problem(size_t function_id, size_t dimensi
   } else if (function_id == 24) {
     problem = f_lunacek_bi_rastrigin_bbob_problem_allocate(function_id, dimension, instance_id, rseed,
         problem_id_template, problem_name_template);
+  } else {
+    coco_error("suite_bbob_get_problem(): function with id %lu does not exist in this suite", function_id);
+    return NULL; /* Never reached */
   }
 
   problem->suite_dep_function_id = function_id;

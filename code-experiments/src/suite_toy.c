@@ -17,24 +17,56 @@ static coco_suite_t *suite_toy_allocate(void) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20 };
 
-  suite = coco_suite_allocate("suite_toy", 6, 5, dimensions, "1");
+  suite = coco_suite_allocate("suite_toy", 6, 3, dimensions, "instances:1-5");
 
   return suite;
 }
 
 static coco_problem_t *suite_toy_get_problem(size_t function_id, size_t dimension, size_t instance_id) {
 
-  if (function_id + dimension + instance_id > 0)
-    return NULL;
 
-  return NULL;
+  coco_problem_t *problem = NULL;
+
+  const char *problem_id_template = "suite_toy_f%03lu_i%02lu_d%02lu";
+  const char *problem_name_template = "Toy suite problem f%lu instance %lu in %luD";
+
+  const long rseed = (long) (function_id + 10000 * instance_id);
+  const long rseed_3 = (long) (3 + 10000 * instance_id);
+
+  if (function_id == 1) {
+    problem = f_sphere_bbob_problem_allocate(function_id, dimension, instance_id, rseed,
+        problem_id_template, problem_name_template);
+  } else if (function_id == 2) {
+    problem = f_ellipsoid_bbob_problem_allocate(function_id, dimension, instance_id, rseed,
+        problem_id_template, problem_name_template);
+  } else if (function_id == 3) {
+    problem = f_rastrigin_bbob_problem_allocate(function_id, dimension, instance_id, rseed,
+        problem_id_template, problem_name_template);
+  } else if (function_id == 4) {
+    problem = f_bueche_rastrigin_bbob_problem_allocate(function_id, dimension, instance_id, rseed_3,
+        problem_id_template, problem_name_template);
+  } else if (function_id == 5) {
+    problem = f_linear_slope_bbob_problem_allocate(function_id, dimension, instance_id, rseed,
+        problem_id_template, problem_name_template);
+  } else if (function_id == 6) {
+    problem = f_rosenbrock_bbob_problem_allocate(function_id, dimension, instance_id, rseed,
+        problem_id_template, problem_name_template);
+  } else {
+    coco_error("suite_toy_get_problem(): function with id %lu does not exist in this suite", function_id);
+    return NULL; /* Never reached */
+  }
+
+  problem->suite_dep_function_id = function_id;
+  problem->suite_dep_instance_id = instance_id;
+
+  return problem;
 }
 
 /**
  * Initializes the toy suite composed from 6 functions.
  * Returns the problem corresponding to the given function_index.
  */
-static coco_problem_t *suite_toy(const long function_index) {
+static coco_problem_t *deprecated__suite_toy(const long function_index) {
   static const size_t dims[] = { 2, 3, 5, 10, 20 };
   const size_t fid = (size_t) function_index % 6;
   const size_t did = (size_t) function_index / 6;

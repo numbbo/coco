@@ -230,6 +230,23 @@ void deprecated__new_coco_suite_benchmark(const char *suite_name,
  const char *observer_options,
  coco_optimizer_t optimizer); */
 
+coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, const char *suite_options);
+
+void coco_suite_free(coco_suite_t *suite);
+
+coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer);
+
+void coco_run_benchmark(const char *suite_name,
+                        const char *suite_instance,
+                        const char *suite_options,
+                        const char *observer_name,
+                        const char *observer_options,
+                        coco_optimizer_t optimizer);
+
+
+
+
+
 coco_observer_t *coco_observer(const char *observer_name, const char *options);
 void coco_observer_free(coco_observer_t *self);
 coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer);
