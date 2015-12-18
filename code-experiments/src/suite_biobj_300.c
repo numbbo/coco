@@ -62,7 +62,7 @@ static const char SUITE_BIOBJ_300_PROBLEM_TYPE[24][30] = {
 /**
  * Computes the function_id, instance_id and dimension_idx from the given problem_index.
  */
-static void suite_biobj_300_decode_problem_index(const long problem_index,
+static void deprecated__suite_biobj_300_decode_problem_index(const long problem_index,
                                                  size_t *function_id,
                                                  size_t *instance_id,
                                                  size_t *dimension_idx) {
@@ -76,7 +76,7 @@ static void suite_biobj_300_decode_problem_index(const long problem_index,
  * Initializes the biobjective suite created from 300 combinations of the bbob2009 functions.
  * Returns the problem corresponding to the given problem_index.
  */
-static coco_problem_t *suite_biobj_300(const long problem_index) {
+static coco_problem_t *deprecated__suite_biobj_300(const long problem_index) {
   size_t function_id, function1_id, function2_id, dimension_idx;
   size_t instance_id;
   coco_problem_t *problem1, *problem2, *problem;
@@ -99,14 +99,14 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
     SUITE_BIOBJ_300_DEFINED = 1;
   }
 
-  suite_biobj_300_decode_problem_index(problem_index, &function_id, &instance_id, &dimension_idx);
+  deprecated__suite_biobj_300_decode_problem_index(problem_index, &function_id, &instance_id, &dimension_idx);
 
   function1_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][0];
   function2_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][1];
 
-  problem1 = suite_bbob_get_problem(function1_id + 1, BBOB2009_DIMS[dimension_idx],
+  problem1 = deprecated__suite_bbob2009_problem(function1_id + 1, BBOB2009_DIMS[dimension_idx],
       SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][0]);
-  problem2 = suite_bbob_get_problem(function2_id + 1, BBOB2009_DIMS[dimension_idx],
+  problem2 = deprecated__suite_bbob2009_problem(function2_id + 1, BBOB2009_DIMS[dimension_idx],
       SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][1]);
 
   /* Set the ideal and reference points*/
@@ -158,7 +158,7 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
  * Currently skips problems with bbob209 functions f07 and f20, because they don't define a
  * best value.
  */
-static long suite_biobj_300_get_next_problem_index(long problem_index, const char *selection_descriptor) {
+static long deprecated__suite_biobj_300_get_next_problem_index(long problem_index, const char *selection_descriptor) {
 
   const size_t first_index = 0;
   const size_t last_index = 7499;
@@ -177,7 +177,7 @@ static long suite_biobj_300_get_next_problem_index(long problem_index, const cha
     if (problem_index < last_index) {
       do {
         is_banned = 0;
-        suite_biobj_300_decode_problem_index(++problem_index, &function_id, &instance_id, &dimension_idx);
+        deprecated__suite_biobj_300_decode_problem_index(++problem_index, &function_id, &instance_id, &dimension_idx);
 
         function1_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][0];
         function2_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][1];

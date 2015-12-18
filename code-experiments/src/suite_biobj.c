@@ -16,7 +16,7 @@ static coco_suite_t *suite_biobj_allocate(void) {
   return suite;
 }
 
-static char *suite_biobj_get_instances_by_year(int year) {
+static char *suite_biobj_get_instances_by_year(const int year) {
 
   if (year == 2016) {
     return "1-5";
@@ -28,9 +28,9 @@ static char *suite_biobj_get_instances_by_year(int year) {
 }
 
 static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
-                                               size_t function_idx,
-                                               size_t dimension_idx,
-                                               size_t instance_idx) {
+                                               const size_t function_idx,
+                                               const size_t dimension_idx,
+                                               const size_t instance_idx) {
 
   if (function_idx + dimension_idx + instance_idx > 0)
     return NULL;

@@ -138,7 +138,8 @@ int main(void) {
   fflush(stdout);
 
   suite = coco_suite("suite_biobj", NULL, "dimensions: 2,3,4, instance_idx: 1-3 function_idx : 2-3");
-  observer = coco_observer("observer_biobj", NULL);
+  observer = coco_observer("observer_biobj", observer_options_RS);
+  /* observer = coco_observer("observer_biobj", observer_options_GS); */
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
 

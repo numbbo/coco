@@ -46,7 +46,7 @@ long deprecated__coco_suite_get_next_problem_index(const char *problem_suite,
     /* without selection_options: last_index = 2159; */
     return deprecated__suite_bbob2009_get_next_problem_index(problem_index, select_options);
   } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
-    return suite_biobj_300_get_next_problem_index(problem_index, select_options);
+    return deprecated__suite_biobj_300_get_next_problem_index(problem_index, select_options);
   }
 
   /** generic implementation:
@@ -89,7 +89,7 @@ coco_problem_t *deprecated__coco_suite_get_problem(const char *problem_suite, co
     return deprecated__suite_bbob2009(problem_index);
     /* return deprecated__suite_bbob2009(problem_index); */
   } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
-    return suite_biobj_300(problem_index);
+    return deprecated__suite_biobj_300(problem_index);
   } else {
     coco_warning("Unknown problem suite.");
     return NULL;

@@ -37,7 +37,7 @@ static coco_suite_t *suite_bbob_allocate(void) {
   return suite;
 }
 
-static char *suite_bbob_get_instances_by_year(int year) {
+static char *suite_bbob_get_instances_by_year(const int year) {
 /* TODO: Fill in for other years! */
 
   if (year == 2009) {
@@ -50,9 +50,9 @@ static char *suite_bbob_get_instances_by_year(int year) {
 }
 
 static coco_problem_t *suite_bbob_get_problem(coco_suite_t *suite,
-                                              size_t function_idx,
-                                              size_t dimension_idx,
-                                              size_t instance_idx) {
+                                              const size_t function_idx,
+                                              const size_t dimension_idx,
+                                              const size_t instance_idx) {
 
   coco_problem_t *problem = NULL;
 
@@ -146,6 +146,7 @@ static coco_problem_t *suite_bbob_get_problem(coco_suite_t *suite,
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
+  problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
 
   return problem;
 }

@@ -108,6 +108,36 @@ static void coco_suite_filter_dimensions(coco_suite_t *suite, const size_t *dims
 
 }
 
+size_t coco_suite_get_function_from_index(coco_suite_t *suite, size_t function_idx) {
+
+  if (function_idx >= suite->number_of_functions) {
+    coco_error("coco_suite_get_function_from_index(): function index exceeding the number of functions in the suite");
+    return 0; /* Never reached*/
+  }
+
+ return suite->functions[function_idx];
+}
+
+size_t coco_suite_get_dimension_from_index(coco_suite_t *suite, size_t dimension_idx) {
+
+  if (dimension_idx >= suite->number_of_dimensions) {
+    coco_error("coco_suite_get_dimension_from_index(): dimensions index exceeding the number of dimensions in the suite");
+    return 0; /* Never reached*/
+  }
+
+ return suite->dimensions[dimension_idx];
+}
+
+size_t coco_suite_get_instance_from_index(coco_suite_t *suite, size_t instance_idx) {
+
+  if (instance_idx >= suite->number_of_instances) {
+    coco_error("coco_suite_get_instance_from_index(): instance index exceeding the number of instances in the suite");
+    return 0; /* Never reached*/
+  }
+
+ return suite->functions[instance_idx];
+}
+
 void coco_suite_free(coco_suite_t *suite) {
 
   if (suite->suite_name) {
@@ -480,3 +510,88 @@ void coco_run_benchmark(const char *suite_name,
 
 }
 
+/*
+ * General schema for encoding/decoding a suite_dep_index. Note that the index depends on the number of
+ * instances a suite is defined with (it is really a suite-instance-depended index...).
+ * Also, while functions, instances and dimensions start from 1, function_idx, instance_idx and dimension_idx
+ * as well as suite_dep_index start from 0!
+ *
+ * Showing an example with 2 dimensions (2, 3), 5 instances (6, 7, 8, 9, 10) and 2 functions (1, 2):
+ *
+ * index | instance | function | dimension
+ * ------+----------+----------+-----------
+ *     0 |        6 |        1 |         2
+ *     1 |        7 |        1 |         2
+ *     2 |        8 |        1 |         2
+ *     3 |        9 |        1 |         2
+ *     4 |       10 |        1 |         2
+ *     5 |        6 |        2 |         2
+ *     6 |        7 |        2 |         2
+ *     7 |        8 |        2 |         2
+ *     8 |        9 |        2 |         2
+ *     9 |       10 |        2 |         2
+ *    10 |        6 |        1 |         3
+ *    11 |        7 |        1 |         3
+ *    12 |        8 |        1 |         3
+ *    13 |        9 |        1 |         3
+ *    14 |       10 |        1 |         3
+ *    15 |        6 |        2 |         2
+ *    16 |        7 |        2 |         3
+ *    17 |        8 |        2 |         3
+ *    18 |        9 |        2 |         3
+ *    19 |       10 |        2 |         3
+ *
+ * index | instance_idx | function_idx | dimension_idx
+ * ------+--------------+--------------+---------------
+ *     0 |            0 |            0 |             0
+ *     1 |            1 |            0 |             0
+ *     2 |            2 |            0 |             0
+ *     3 |            3 |            0 |             0
+ *     4 |            4 |            0 |             0
+ *     5 |            0 |            1 |             0
+ *     6 |            1 |            1 |             0
+ *     7 |            2 |            1 |             0
+ *     8 |            3 |            1 |             0
+ *     9 |            4 |            1 |             0
+ *    10 |            0 |            0 |             1
+ *    11 |            1 |            0 |             1
+ *    12 |            2 |            0 |             1
+ *    13 |            3 |            0 |             1
+ *    14 |            4 |            0 |             1
+ *    15 |            0 |            1 |             1
+ *    16 |            1 |            1 |             1
+ *    17 |            2 |            1 |             1
+ *    18 |            3 |            1 |             1
+ *    19 |            4 |            1 |             1
+ *
+ */
+
+/**
+ * Computes the problem index from function_idx, dimension_idx and instance_idx of the given suite.
+ * Note that the index depends on the number of instances a suite is defined with!
+ */
+size_t coco_suite_encode_problem_index(coco_suite_t *suite,
+                                       const size_t function_idx,
+                                       const size_t dimension_idx,
+                                       const size_t instance_idx) {
+
+  return instance_idx + (function_idx * suite->number_of_instances) +
+      (dimension_idx * suite->number_of_instances * suite->number_of_functions);
+
+}
+
+/**
+ * Computes the function_idx, dimension_idx and instance_idx of the problem with index problem_index of
+ * the given suite. Note that the index depends on the number of instances a suite is defined with!
+ */
+void coco_suite_decode_problem_index(coco_suite_t *suite,
+                                     const size_t problem_index,
+                                     size_t *function_idx,
+                                     size_t *instance_idx,
+                                     size_t *dimension_idx) {
+
+  *instance_idx = problem_index % suite->number_of_instances;
+  *function_idx = (problem_index / suite->number_of_instances) % suite->number_of_functions;
+  *dimension_idx = problem_index / (suite->number_of_instances * suite->number_of_functions);
+
+}

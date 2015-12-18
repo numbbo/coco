@@ -236,16 +236,34 @@ void coco_suite_free(coco_suite_t *suite);
 
 coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer);
 
+coco_problem_t *coco_suite_get_problem(coco_suite_t *suite,
+                                       size_t function_idx,
+                                       size_t dimension_idx,
+                                       size_t instance_idx);
+
+size_t coco_suite_encode_problem_index(coco_suite_t *suite,
+                                       const size_t function_idx,
+                                       const size_t dimension_idx,
+                                       const size_t instance_idx);
+
+void coco_suite_decode_problem_index(coco_suite_t *suite,
+                                     const size_t problem_index,
+                                     size_t *function,
+                                     size_t *instance,
+                                     size_t *dimension);
+
+size_t coco_suite_get_function_from_index(coco_suite_t *suite, size_t function_idx);
+
+size_t coco_suite_get_dimension_from_index(coco_suite_t *suite, size_t dimension_idx);
+
+size_t coco_suite_get_instance_from_index(coco_suite_t *suite, size_t instance_idx);
+
 void coco_run_benchmark(const char *suite_name,
                         const char *suite_instance,
                         const char *suite_options,
                         const char *observer_name,
                         const char *observer_options,
                         coco_optimizer_t optimizer);
-
-
-
-
 
 coco_observer_t *coco_observer(const char *observer_name, const char *options);
 void coco_observer_free(coco_observer_t *self);
