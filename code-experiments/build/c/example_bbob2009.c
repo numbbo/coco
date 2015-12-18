@@ -127,11 +127,34 @@ int main() {
                  coco_optimize);
   return 0;
 }
+#elif 0
+int main(void) {
+  /* TODO: This should be updated when the new bbob observer is implemented */
+
+  coco_suite_t *suite;
+  coco_problem_t *problem;
+
+  suite = coco_suite("suite_bbob", "year: 2009", "function_ids:3-16");
+
+  while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
+
+    problem = deprecated__coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
+    coco_optimize(problem);
+
+  }
+
+  coco_suite_free(suite);
+
+  printf("Done with suite '%s' (options '%s')", SUITE_NAME, SUITE_OPTIONS);
+  if (NUMBER_OF_BATCHES > 1) printf(" batch %d/%d.\n", CURRENT_BATCH, NUMBER_OF_BATCHES);
+  else printf(".\n");
+  return 0;
+}
 #elif 1
 int main(void) {  /* short example, also nice to read */
   coco_problem_t *problem;
   long problem_index;
-  
+
   for (problem_index = 0; problem_index >= 0;
        problem_index = deprecated__coco_suite_get_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)) {
     problem = deprecated__coco_suite_get_problem(SUITE_NAME, problem_index);
