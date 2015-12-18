@@ -5,7 +5,7 @@
 
 #include "coco.h"
 
-#include "observer_bbob2009.c"
+/*#include "observer_bbob2009.c"*/
 #include "suite_bbob2009.c"
 #include "suite_biobj_300.c"
 #include "suite_toy.c"
@@ -90,6 +90,7 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
   }
 }
 
+
 coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
                                                       const char *observer_name,
                                                       const char *options) {
@@ -101,7 +102,8 @@ coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
     coco_error("Deprecated way of calling the toy observer.");
     return NULL; /* Never reached */
   } else if (0 == strcmp(observer_name, "observer_bbob2009")) {
-    return deprecated__observer_bbob2009(problem, options);
+    /*return deprecated__observer_bbob2009(problem, options); to no longer need observer_bbob2009.c*/
+    return NULL;
   } else if (0 == strcmp(observer_name, "observer_biobj")) {
     coco_error("Deprecated way of calling the MO observer.");
     return NULL; /* Never reached */

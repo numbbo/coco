@@ -1,9 +1,10 @@
 #include "coco.h"
 #include "coco_internal.h"
 
-#include "observer_bbob2009.c"
+/*#include "observer_bbob2009.c"*/
 #include "logger_biobj.c"
 #include "logger_toy.c"
+#include "logger_bbob2009.c" /* Wassim: are these includes needed?! */
 
 /**
  * Allocates memory for a coco_observer_t instance.

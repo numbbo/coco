@@ -39,6 +39,7 @@ static int bbob2009_logger_is_open = 0; /* this could become lock-list of .info 
 /* TODO: add possibility of adding a prefix to the index files */
 
 typedef struct {
+  coco_observer_t *observer;
   int is_initialized;
   char *path; /* relative path to the data folder. Simply the Algname*/
   const char * alg_name; /* the alg name, for now, temporarily the same as the path. Now in the observer */
@@ -470,6 +471,7 @@ static void logger_bbob2009_free(void *stuff) {
   bbob2009_logger_is_open = 0;
 }
 
+/* Wassim: to be removed */
 static coco_problem_t *depreciated_logger_bbob2009(coco_problem_t *inner_problem, const char *alg_name) {
   logger_bbob2009_t *data;
   coco_problem_t *self;
@@ -521,12 +523,21 @@ static coco_problem_t *depreciated_logger_bbob2009(coco_problem_t *inner_problem
 static coco_problem_t *logger_bbob2009(coco_observer_t *observer, coco_problem_t *problem) {
   const char *alg_name=observer->output_folder;
   
+  logger_bbob2009_t *logger;
   logger_bbob2009_t *data;
   coco_problem_t *self;
   data = coco_allocate_memory(sizeof(*data));
   data->alg_name = coco_strdup(alg_name);
+
+  if (problem->number_of_objectives != 1) {
+    coco_warning("logger_toy(): The toy logger shouldn't be used to log a problem with %d objectives", problem->number_of_objectives);
+  }
+  
+  logger = coco_allocate_memory(sizeof(*logger));
+  logger->observer = observer;
+  
   if (bbob2009_logger_is_open)
-  coco_error("The current bbob2009_logger (observer) must be closed before a new one is opened");
+    coco_error("The current bbob2009_logger (observer) must be closed before a new one is opened");
   /* This is the name of the folder which happens to be the algName */
   data->path = coco_strdup(alg_name);
   data->index_file = NULL;

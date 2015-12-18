@@ -133,7 +133,8 @@ int main(void) {
   
     static const char *observer_options_RS = "result_folder: RS_on_suite_bbob2009 \
     algorithm_name: RS \
-    algorithm_info: \"A simple random search algorithm\" ";
+    algorithm_info: \"A simple random search algorithm\" \
+    verbosity : 3 ";
   
     OBSERVER_NAME = "observer_bbob2009";
     SUITE_NAME = "suite_bbob2009";
