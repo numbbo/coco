@@ -42,7 +42,7 @@ typedef struct {
   coco_observer_t *observer;
   int is_initialized;
   char *path; /* relative path to the data folder. Simply the Algname*/
-  const char * alg_name; /* the alg name, for now, temporarily the same as the path. Now in the observer */
+  /*const char *alg_name; the alg name, for now, temporarily the same as the path. Wassim: Now in the observer */
   FILE *index_file; /* index file */
   FILE *fdata_file; /* function value aligned data file */
   FILE *tdata_file; /* number of function evaluations aligned data file */
@@ -293,7 +293,7 @@ static void logger_bbob2009_openIndexFile(logger_bbob2009_t *logger,
       }
 
       fprintf(*target_file, "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s'\n",
-          (int) strtol(function_id, NULL, 10), logger->number_of_variables, pow(10, -8), logger->alg_name);
+          (int) strtol(function_id, NULL, 10), logger->number_of_variables, pow(10, -8), logger->observer->algorithm_name);
       fprintf(*target_file, "%%\n");
       strncat(used_dataFile_path, "_i", COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
       strncat(used_dataFile_path, bbob2009_infoFile_firstInstance_char,
@@ -430,10 +430,10 @@ static void logger_bbob2009_free(void *stuff) {
   if ((coco_log_level >= COCO_INFO) && logger && logger->number_of_evaluations > 0) {
     coco_info("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue, logger->number_of_evaluations);
   }
-  if (logger->alg_name != NULL) {
+  /*if (logger->alg_name != NULL) { //No longer needed
     coco_free_memory((void*) logger->alg_name);
     logger->alg_name = NULL;
-  }
+  }*/
 
   if (logger->path != NULL) {
     coco_free_memory(logger->path);
@@ -480,7 +480,7 @@ static coco_problem_t *depreciated_logger_bbob2009(coco_problem_t *inner_problem
   logger_bbob2009_t *logger;
   coco_problem_t *self;
   logger = coco_allocate_memory(sizeof(*logger));
-  logger->alg_name = coco_strdup(alg_name);
+  /*logger->alg_name = coco_strdup(alg_name);*/
   if (bbob2009_logger_is_open)
     coco_error("The current bbob2009_logger (observer) must be closed before a new one is opened");
   /* This is the name of the folder which happens to be the algName */
@@ -525,15 +525,12 @@ static coco_problem_t *depreciated_logger_bbob2009(coco_problem_t *inner_problem
 
 
 static coco_problem_t *logger_bbob2009(coco_observer_t *observer, coco_problem_t *problem) {
-  const char *alg_name=observer->output_folder;
-  
   logger_bbob2009_t *logger;
   observer_bbob2009_t *observer_bbob2009;
   coco_problem_t *self;
   
   logger = coco_allocate_memory(sizeof(*logger));
   logger->observer = observer;
-  logger->alg_name = coco_strdup(alg_name);
   
   observer_bbob2009 = (observer_bbob2009_t *) observer->data;
   
@@ -544,7 +541,7 @@ static coco_problem_t *logger_bbob2009(coco_observer_t *observer, coco_problem_t
   if (bbob2009_logger_is_open)
     coco_error("The current bbob2009_logger (observer) must be closed before a new one is opened");
   /* This is the name of the folder which happens to be the algName */
-  logger->path = coco_strdup(alg_name);
+  logger->path = coco_strdup(observer->output_folder);
   logger->index_file = NULL;
   logger->fdata_file = NULL;
   logger->tdata_file = NULL;
