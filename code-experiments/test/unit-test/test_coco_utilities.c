@@ -5,6 +5,13 @@
  *      Author: dejan
  */
 
+#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
+#include "cmocka.h"
+#include "coco.h"
+#include <time.h>
+
 static void create_time_string(char **string) {
 
   time_t date_time;
