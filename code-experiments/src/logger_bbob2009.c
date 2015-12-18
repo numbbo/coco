@@ -15,8 +15,8 @@
 
 static int bbob2009_raisedOptValWarning;
 
-static const size_t bbob2009_nbpts_nbevals = 20;
-static const size_t bbob2009_nbpts_fval = 5;
+/*static const size_t bbob2009_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
+/*static const size_t bbob2009_nbpts_fval = 5;*/
 static size_t bbob2009_current_dim = 0;
 static long bbob2009_current_funId = 0;
 static long bbob2009_infoFile_firstInstance = 0;
@@ -79,27 +79,31 @@ static void logger_bbob2009_update_f_trigger(logger_bbob2009_t *logger, double f
   /* "jump" directly to the next closest (but larger) target to the
    * current fvalue from the initial target
    */
-
+  observer_bbob2009_t *observer_bbob2009;
+  observer_bbob2009 = (observer_bbob2009_t *) logger->observer->data;
+  
   if (fvalue - logger->optimal_fvalue <= 0.) {
     logger->f_trigger = -DBL_MAX;
   } else {
     if (logger->idx_f_trigger == INT_MAX) { /* first time*/
       logger->idx_f_trigger = (int) (ceil(log10(fvalue - logger->optimal_fvalue))
-          * (double) (long) bbob2009_nbpts_fval);
+          * (double) (long) observer_bbob2009->bbob2009_nbpts_fval);
     } else { /* We only call this function when we reach the current f_trigger*/
       logger->idx_f_trigger--;
     }
-    logger->f_trigger = pow(10, logger->idx_f_trigger * 1.0 / (double) (long) bbob2009_nbpts_fval);
+    logger->f_trigger = pow(10, logger->idx_f_trigger * 1.0 / (double) (long) observer_bbob2009->bbob2009_nbpts_fval);
     while (fvalue - logger->optimal_fvalue <= logger->f_trigger) {
       logger->idx_f_trigger--;
-      logger->f_trigger = pow(10, logger->idx_f_trigger * 1.0 / (double) (long) bbob2009_nbpts_fval);
+      logger->f_trigger = pow(10, logger->idx_f_trigger * 1.0 / (double) (long) observer_bbob2009->bbob2009_nbpts_fval);
     }
   }
 }
 
 static void logger_bbob2009_update_t_trigger(logger_bbob2009_t *logger, size_t number_of_variables) {
+  observer_bbob2009_t *observer_bbob2009;
+  observer_bbob2009 = (observer_bbob2009_t *) logger->observer->data;
   while (logger->number_of_evaluations
-      >= floor(pow(10, (double) logger->idx_t_trigger / (double) (long) bbob2009_nbpts_nbevals)))
+      >= floor(pow(10, (double) logger->idx_t_trigger / (double) (long) observer_bbob2009->bbob2009_nbpts_nbevals)))
     logger->idx_t_trigger++;
 
   while (logger->number_of_evaluations
@@ -107,7 +111,7 @@ static void logger_bbob2009_update_t_trigger(logger_bbob2009_t *logger, size_t n
     logger->idx_tdim_trigger++;
 
   logger->t_trigger = (long) coco_min_double(
-      floor(pow(10, (double) logger->idx_t_trigger / (double) (long) bbob2009_nbpts_nbevals)),
+      floor(pow(10, (double) logger->idx_t_trigger / (double) (long) observer_bbob2009->bbob2009_nbpts_nbevals)),
       (double) (long) number_of_variables * pow(10, (double) logger->idx_tdim_trigger));
 }
 
@@ -524,15 +528,15 @@ static coco_problem_t *logger_bbob2009(coco_observer_t *observer, coco_problem_t
   const char *alg_name=observer->output_folder;
   
   logger_bbob2009_t *logger;
-  /*logger_bbob2009_t *logger;*/
+  observer_bbob2009_t *observer_bbob2009;
   coco_problem_t *self;
   
   logger = coco_allocate_memory(sizeof(*logger));
   logger->observer = observer;
-  /*logger = coco_allocate_memory(sizeof(*logger));*/
   logger->alg_name = coco_strdup(alg_name);
   
-
+  observer_bbob2009 = (observer_bbob2009_t *) observer->data;
+  
   if (problem->number_of_objectives != 1) {
     coco_warning("logger_toy(): The toy logger shouldn't be used to log a problem with %d objectives", problem->number_of_objectives);
   }
@@ -574,6 +578,7 @@ static coco_problem_t *logger_bbob2009(coco_observer_t *observer, coco_problem_t
   logger->is_initialized = 0;
   
   self = coco_transformed_allocate(problem, logger, logger_bbob2009_free);
+  
   self->evaluate_function = logger_bbob2009_evaluate;
   bbob2009_logger_is_open = 1;
   return self;
