@@ -10,7 +10,9 @@
  */
 static coco_observer_t *coco_observer_allocate(const char *output_folder,
                                                const char *algorithm_name,
-                                               const char *algorithm_info) {
+                                               const char *algorithm_info,
+                                               const int precision_x,
+                                               const int precision_f) {
 
   coco_observer_t *observer;
   observer = (coco_observer_t *) coco_allocate_memory(sizeof(*observer));
@@ -18,6 +20,8 @@ static coco_observer_t *coco_observer_allocate(const char *output_folder,
   observer->output_folder = coco_strdup(output_folder);
   observer->algorithm_name = coco_strdup(algorithm_name);
   observer->algorithm_info = coco_strdup(algorithm_info);
+  observer->precision_x = precision_x;
+  observer->precision_f = precision_f;
   observer->data = NULL;
   observer->data_free_function = NULL;
   observer->logger_initialize_function = NULL;
@@ -63,6 +67,8 @@ void coco_observer_free(coco_observer_t *self) {
  * - log_level : warning (only error and warning messages are output; default value)
  * - log_level : info (only error, warning and info messages are output)
  * - log_level : debug (all messages are output)
+ * - precision_x : integer value (precision used when outputting variables; default value is 8)
+ * - precision_f : integer value (precision used when outputting f values; default value is 16)
  * - any option specified by the specific observers
  */
 coco_observer_t *coco_observer(const char *observer_name, const char *observer_options) {
@@ -70,6 +76,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   coco_observer_t *observer;
   char *result_folder, *algorithm_name, *algorithm_info;
   char *log_level;
+  int precision_x, precision_f;
 
   if (0 == strcmp(observer_name, "no_observer")) {
     return NULL;
@@ -96,7 +103,19 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     strcpy(algorithm_info, "");
   }
 
-  observer = coco_observer_allocate(result_folder, algorithm_name, algorithm_info);
+  precision_x = 8;
+  if (coco_options_read_int(observer_options, "precision_x", &precision_x) != 0) {
+    if ((precision_x < 1) || (precision_x > 32))
+      precision_x = 8;
+  }
+
+  precision_f = 16;
+  if (coco_options_read_int(observer_options, "precision_f", &precision_f) != 0) {
+    if ((precision_f < 1) || (precision_f > 32))
+      precision_f = 16;
+  }
+
+  observer = coco_observer_allocate(result_folder, algorithm_name, algorithm_info, precision_x, precision_f);
 
   coco_free_memory(result_folder);
   coco_free_memory(algorithm_name);
