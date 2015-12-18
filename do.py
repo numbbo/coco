@@ -13,6 +13,8 @@ import subprocess
 import platform
 from subprocess import call, check_output, STDOUT
 
+COCO_PYTHON_VERSION = "0.1.0"
+
 ## Change to the root directory of repository and add our tools/
 ## subdirectory to system wide search path for modules.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -93,9 +95,11 @@ def _prep_python():
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
     expand_file('code-experiments/build/python/README.in', 'code-experiments/build/python/README',
-                {'COCO_VERSION': git_version()}) # hg_version()})
+                {'COCO_VERSION': COCO_PYTHON_VERSION}) # hg_version()})
     expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
-                {'COCO_VERSION': git_version()}) # hg_version()})
+                {'COCO_VERSION': COCO_PYTHON_VERSION}) # hg_version()})
+    if 'darwin' in sys.platform:
+        run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
 
 def build_python():
     _prep_python()
