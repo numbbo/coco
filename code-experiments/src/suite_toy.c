@@ -23,9 +23,9 @@ static coco_suite_t *suite_toy_allocate(void) {
 }
 
 static coco_problem_t *suite_toy_get_problem(coco_suite_t *suite,
-                                             size_t function_idx,
-                                             size_t dimension_idx,
-                                             size_t instance_idx) {
+                                             const size_t function_idx,
+                                             const size_t dimension_idx,
+                                             const size_t instance_idx) {
 
 
   coco_problem_t *problem = NULL;
@@ -33,9 +33,6 @@ static coco_problem_t *suite_toy_get_problem(coco_suite_t *suite,
   const size_t function = suite->functions[function_idx];
   const size_t dimension = suite->dimensions[dimension_idx];
   const size_t instance = suite->instances[instance_idx];
-
-  const long rseed = (long) (function + 10000 * instance);
-  const long rseed_3 = (long) (3 + 10000 * instance);
 
   if (function == 1) {
     problem = f_sphere_allocate(dimension);
@@ -46,7 +43,8 @@ static coco_problem_t *suite_toy_get_problem(coco_suite_t *suite,
   } else if (function == 4) {
     problem = f_bueche_rastrigin_allocate(dimension);
   } else if (function == 5) {
-    problem = f_linear_slope_allocate(dimension);
+    double xopt[40] = { 5.0 };
+    problem = f_linear_slope_allocate(dimension, xopt);
   } else if (function == 6) {
     problem = f_rosenbrock_allocate(dimension);
   } else {
@@ -56,6 +54,7 @@ static coco_problem_t *suite_toy_get_problem(coco_suite_t *suite,
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
+  problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
 
   return problem;
 }

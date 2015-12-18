@@ -478,7 +478,7 @@ static int coco_options_read_string(const char *options, const char *name, char 
   i2 = i1 + coco_strfind(&options[i1], ":") + 1;
 
   /* Remove trailing whitespaces */
-  while (isspace(options[i2]))
+  while (isspace((unsigned char) options[i2]))
     i2++;
 
   if (i2 <= i1){
@@ -518,7 +518,8 @@ static long coco_min_positive(long a, long b) {
  */
 static int coco_options_read_values(const char *options, const char *name, char *pointer) {
 
-  long i1, i2, i;
+  long i1, i2;
+  int i;
 
   if ((!options) || (strlen(options) == 0))
     return 0;
@@ -529,7 +530,7 @@ static int coco_options_read_values(const char *options, const char *name, char 
   i2 = i1 + coco_strfind(&options[i1], ":") + 1;
 
   /* Remove trailing whitespaces */
-  while (isspace(options[i2]))
+  while (isspace((unsigned char) options[i2]))
     i2++;
 
   if (i2 <= i1) {
@@ -537,7 +538,7 @@ static int coco_options_read_values(const char *options, const char *name, char 
   }
 
   i = 0;
-  while (!isspace(options[i2 + i]) && (options[i2 + i] != '\0')) {
+  while (!isspace((unsigned char) options[i2 + i]) && (options[i2 + i] != '\0')) {
     pointer[i] = options[i2 + i];
     i++;
   }
@@ -564,7 +565,7 @@ static int coco_options_read(const char *options, const char *name, const char *
   i2 = i1 + coco_strfind(&options[i1], ":") + 1;
 
   /* Remove trailing whitespaces */
-  while (isspace(options[i2]))
+  while (isspace((unsigned char) options[i2]))
     i2++;
 
   if (i2 <= i1){
