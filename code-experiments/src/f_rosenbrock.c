@@ -73,6 +73,7 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_type(problem, "2-moderate");
 
   coco_free_memory(minus_one);
   coco_free_memory(xopt);
@@ -116,6 +117,7 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_type(problem, "2-moderate");
 
   coco_free_memory(M);
   coco_free_memory(b);

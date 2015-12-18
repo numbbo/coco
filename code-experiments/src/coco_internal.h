@@ -44,6 +44,8 @@ typedef void (*coco_free_function_t)(coco_problem_t *self);
  *   that, when not NULL, must be unique. It can for example be used
  *   to generate valid directory names under which to store results.
  *
+ * problem_type - Type of the problem. May be NULL to indicate that no type is known.
+ *
  * suite_dep_index - Index of the problem in the current/parent benchmark suite
  *
  * suite_dep_function - Problem function in the current/parent benchmark suite
@@ -68,6 +70,7 @@ struct coco_problem {
   double *best_parameter;
   char *problem_name; /* problem is redundant but useful when searching */
   char *problem_id; /* problem is redundant but useful when searching */
+  char *problem_type;
   long evaluations;
   double final_target_delta[1];
   double best_observed_fvalue[1];

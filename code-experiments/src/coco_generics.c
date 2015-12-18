@@ -67,6 +67,8 @@ void coco_problem_free(coco_problem_t *self) {
       coco_free_memory(self->problem_name);
     if (self->problem_id != NULL)
       coco_free_memory(self->problem_id);
+    if (self->problem_type != NULL)
+      coco_free_memory(self->problem_type);
     if (self->data != NULL)
       coco_free_memory(self->data);
     self->smallest_values_of_interest = NULL;
@@ -88,6 +90,12 @@ const char *coco_problem_get_id(const coco_problem_t *self) {
   assert(self != NULL);
   assert(self->problem_id != NULL);
   return self->problem_id;
+}
+
+const char *coco_problem_get_type(const coco_problem_t *self) {
+  assert(self != NULL);
+  assert(self->problem_type != NULL);
+  return self->problem_type;
 }
 
 size_t coco_problem_get_dimension(const coco_problem_t *self) {
