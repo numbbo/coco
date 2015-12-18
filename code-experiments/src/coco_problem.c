@@ -62,6 +62,7 @@ coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->best_value = coco_allocate_vector(number_of_objectives);
   problem->problem_name = NULL;
   problem->problem_id = NULL;
+  problem->problem_type = NULL;
   problem->evaluations = 0;
   problem->final_target_delta[0] = 1e-8; /* in case to be modified by the benchmark */
   problem->best_observed_fvalue[0] = DBL_MAX;
@@ -98,6 +99,7 @@ coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
 
   problem->problem_name = coco_strdup(other->problem_name);
   problem->problem_id = coco_strdup(other->problem_id);
+  problem->problem_type = coco_strdup(other->problem_type);
   problem->suite_dep_index = other->suite_dep_index;
   problem->suite_dep_function = other->suite_dep_function;
   problem->suite_dep_instance = other->suite_dep_instance;
@@ -191,6 +193,20 @@ static void coco_problem_set_name(coco_problem_t *problem, const char *name, ...
   if (problem->problem_name != NULL)
     coco_free_memory(problem->problem_name);
   problem->problem_name = coco_vstrdupf(name, args);
+  va_end(args);
+}
+
+/**
+ * Formatted printing of a problem type, mimicking sprintf(id, ...) while taking care of memory
+ * (de-)allocation.
+ */
+static void coco_problem_set_type(coco_problem_t *problem, const char *type, ...) {
+  va_list args;
+
+  va_start(args, type);
+  if (problem->problem_type != NULL)
+    coco_free_memory(problem->problem_type);
+  problem->problem_type = coco_vstrdupf(type, args);
   va_end(args);
 }
 

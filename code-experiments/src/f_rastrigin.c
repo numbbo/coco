@@ -66,6 +66,7 @@ static coco_problem_t *f_rastrigin_bbob_problem_allocate(const size_t function,
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_type(problem, "1-separable");
 
   coco_free_memory(xopt);
   return problem;
@@ -118,6 +119,7 @@ static coco_problem_t *f_rastrigin_rotated_bbob_problem_allocate(const size_t fu
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_type(problem, "4-multi-modal");
 
   coco_free_memory(M);
   coco_free_memory(b);

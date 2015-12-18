@@ -96,6 +96,7 @@ static coco_problem_t *f_katsuura_bbob_problem_allocate(const size_t function,
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_type(problem, "5-weakly-structured");
 
   coco_free_memory(M);
   coco_free_memory(b);
