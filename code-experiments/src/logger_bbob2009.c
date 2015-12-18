@@ -41,7 +41,7 @@ static int bbob2009_logger_is_open = 0; /* this could become lock-list of .info 
 typedef struct {
   coco_observer_t *observer;
   int is_initialized;
-  char *path; /* relative path to the data folder. Simply the Algname*/
+  /*char *path;// relative path to the data folder. //Wassim: now fetched from the observer */
   /*const char *alg_name; the alg name, for now, temporarily the same as the path. Wassim: Now in the observer */
   FILE *index_file; /* index file */
   FILE *fdata_file; /* function value aligned data file */
@@ -159,7 +159,7 @@ static void logger_bbob2009_error_io(FILE *path, int errnum) {
 
 /*
  calling sequence:
- _bbob2009_logger_open_dataFile(&(logger->fdata_file), logger->path, dataFile_path,
+ _bbob2009_logger_open_dataFile(&(logger->fdata_file), logger->observer->output_folder, dataFile_path,
  ".dat");
  */
 
@@ -329,7 +329,7 @@ static void logger_bbob2009_initialize(logger_bbob2009_t *logger, coco_problem_t
   strncpy(dataFile_path, "data_f", COCO_PATH_MAX);
   strncat(dataFile_path, tmpc_funId,
   COCO_PATH_MAX - strlen(dataFile_path) - 1);
-  coco_join_path(folder_path, sizeof(folder_path), logger->path, dataFile_path,
+  coco_join_path(folder_path, sizeof(folder_path), logger->observer->output_folder, dataFile_path,
   NULL);
   coco_create_path(folder_path);
   strncat(dataFile_path, "/bbobexp_f",
@@ -340,20 +340,20 @@ static void logger_bbob2009_initialize(logger_bbob2009_t *logger, coco_problem_t
   strncat(dataFile_path, tmpc_dim, COCO_PATH_MAX - strlen(dataFile_path) - 1);
 
   /* index/info file */
-  logger_bbob2009_openIndexFile(logger, logger->path, indexFile_prefix, tmpc_funId, dataFile_path);
+  logger_bbob2009_openIndexFile(logger, logger->observer->output_folder, indexFile_prefix, tmpc_funId, dataFile_path);
   fprintf(logger->index_file, ", %ld", coco_problem_get_suite_dep_instance_id(inner_problem));
   /* data files */
   /* TODO: definitely improvable but works for now */
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
   strncat(dataFile_path, bbob2009_infoFile_firstInstance_char,
   COCO_PATH_MAX - strlen(dataFile_path) - 1);
-  logger_bbob2009_open_dataFile(&(logger->fdata_file), logger->path, dataFile_path, ".dat");
+  logger_bbob2009_open_dataFile(&(logger->fdata_file), logger->observer->output_folder, dataFile_path, ".dat");
   fprintf(logger->fdata_file, bbob2009_file_header_str, logger->optimal_fvalue);
 
-  logger_bbob2009_open_dataFile(&(logger->tdata_file), logger->path, dataFile_path, ".tdat");
+  logger_bbob2009_open_dataFile(&(logger->tdata_file), logger->observer->output_folder, dataFile_path, ".tdat");
   fprintf(logger->tdata_file, bbob2009_file_header_str, logger->optimal_fvalue);
 
-  logger_bbob2009_open_dataFile(&(logger->rdata_file), logger->path, dataFile_path, ".rdat");
+  logger_bbob2009_open_dataFile(&(logger->rdata_file), logger->observer->output_folder, dataFile_path, ".rdat");
   fprintf(logger->rdata_file, bbob2009_file_header_str, logger->optimal_fvalue);
   /* TODO: manage duplicate filenames by either using numbers or raising an error */
   /* The coco_create_unique_path() function is available now! */
@@ -435,10 +435,11 @@ static void logger_bbob2009_free(void *stuff) {
     logger->alg_name = NULL;
   }*/
 
-  if (logger->path != NULL) {
+  /*if (logger->path != NULL) {
     coco_free_memory(logger->path);
     logger->path = NULL;
-  }
+  }*/
+  
   if (logger->index_file != NULL) {
     fprintf(logger->index_file, ":%ld|%.1e", logger->number_of_evaluations,
         logger->best_fvalue - logger->optimal_fvalue);
@@ -484,7 +485,7 @@ static coco_problem_t *depreciated_logger_bbob2009(coco_problem_t *inner_problem
   if (bbob2009_logger_is_open)
     coco_error("The current bbob2009_logger (observer) must be closed before a new one is opened");
   /* This is the name of the folder which happens to be the algName */
-  logger->path = coco_strdup(alg_name);
+  /*logger->path = coco_strdup(alg_name);*/
   logger->index_file = NULL;
   logger->fdata_file = NULL;
   logger->tdata_file = NULL;
@@ -541,7 +542,7 @@ static coco_problem_t *logger_bbob2009(coco_observer_t *observer, coco_problem_t
   if (bbob2009_logger_is_open)
     coco_error("The current bbob2009_logger (observer) must be closed before a new one is opened");
   /* This is the name of the folder which happens to be the algName */
-  logger->path = coco_strdup(observer->output_folder);
+  /*logger->path = coco_strdup(observer->output_folder);*/
   logger->index_file = NULL;
   logger->fdata_file = NULL;
   logger->tdata_file = NULL;
