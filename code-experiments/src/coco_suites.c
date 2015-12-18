@@ -103,6 +103,7 @@ coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
     return NULL; /* Never reached */
   } else if (0 == strcmp(observer_name, "observer_bbob2009")) {
     /*return deprecated__observer_bbob2009(problem, options); to no longer need observer_bbob2009.c*/
+    coco_error("Deprecated way of calling the bbob2009 observer.");
     return NULL;
   } else if (0 == strcmp(observer_name, "observer_biobj")) {
     coco_error("Deprecated way of calling the MO observer.");
