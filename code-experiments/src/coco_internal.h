@@ -114,6 +114,8 @@ struct coco_observer {
   char *output_folder;
   char *algorithm_name;
   char *algorithm_info;
+  int precision_x;
+  int precision_f;
   void *data;
 
   coco_observer_data_free_function_t data_free_function;
