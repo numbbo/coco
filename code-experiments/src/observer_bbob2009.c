@@ -15,7 +15,8 @@ static coco_problem_t *logger_bbob2009(coco_observer_t *observer, coco_problem_t
 
 typedef struct {
   size_t verbosity;
-  
+  size_t bbob2009_nbpts_nbevals;
+  size_t bbob2009_nbpts_fval;
 } observer_bbob2009_t;
 
 
@@ -30,7 +31,10 @@ static void observer_bbob2009_free(void *stuff) {
 }
 
 /**
- * Initializes the bbob2009 observer. Minimalistic implementation with no options yet
+ * Initializes the bbob2009 observer. Possible options:
+ * - verbosity: sets the level of verbosity, ( the default value is 2 )
+ * - bbob2009_nbpts_nbevals: nb fun eval triggers are at 10**(i/bbob2009_nbpts_nbevals) (the default value in bbob2009 is 20 )
+ * - bbob2009_nbpts_fval: f value difference to the optimal triggers are at 10**(i/bbob2009_nbpts_fval)(the default value in bbob2009 is 5 )
  */
 static void observer_bbob2009(coco_observer_t *self, const char *options) {
   
@@ -40,6 +44,12 @@ static void observer_bbob2009(coco_observer_t *self, const char *options) {
   
   if ((coco_options_read_size_t(options, "verbosity", &(data->verbosity)) == 0)) {
     data->verbosity = 2;
+  }
+  if ((coco_options_read_size_t(options, "nbpts_nbevals", &(data->bbob2009_nbpts_nbevals)) == 0)) {
+    data->bbob2009_nbpts_nbevals = 20;
+  }
+  if ((coco_options_read_size_t(options, "nbpts_fval", &(data->bbob2009_nbpts_fval)) == 0)) {
+    data->bbob2009_nbpts_fval = 5;
   }
 
   self->logger_initialize_function = logger_bbob2009;
