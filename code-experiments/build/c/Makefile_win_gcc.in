@@ -1,4 +1,4 @@
-## Makefile to build C demo programs included with the COCO distribution
+## Makefile to build C example programs included with the COCO distribution
 ## under Windows
 ##
 ## NOTE: We have tried to make this Makefile as generic and portable
@@ -11,38 +11,39 @@
 ## directly.
 
 LDFLAGS += -lm
-CCFLAGS = -g -ggdb -Wall -std=c89 -pedantic 
+CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow -Wno-sign-compare -Wconversion
 
 ########################################################################
 ## Toplevel targets
-all: demo.exe coco_test.exe bbob2009_test.exe
+all: example_bbob2009 example_biobj example_toy
 
 clean:
-	IF EXIST "bbob2009_test.o" DEL /F bbob2009_test.o 
-	IF EXIST "bbob2009_test.exe" DEL /F bbob2009_test.exe
 	IF EXIST "coco.o" DEL /F coco.o
-	IF EXIST "coco_test.o" DEL /F coco_test.o
-	IF EXIST "coco_test.exe" DEL /F coco_test.exe
-	IF EXIST "demo.o" DEL /F demo.o
-	IF EXIST "demo.exe" DEL /F demo.exe
+	IF EXIST "example_bbob2009.o" DEL /F example_bbob2009.o 
+	IF EXIST "example_bbob2009.exe" DEL /F example_bbob2009.exe
+	IF EXIST "example_biobj.o" DEL /F example_biobj.o
+	IF EXIST "example_biobj.exe" DEL /F example_biobj.exe
+	IF EXIST "example_toy.o" DEL /F example_toy.o
+	IF EXIST "example_toy.exe" DEL /F example_toy.exe
 
 ########################################################################
 ## Programs
-demo.exe: demo.o coco.o
-	${CC} ${CCFLAGS} -o demo.exe coco.o demo.o ${LDFLAGS}  
+example_bbob2009: example_bbob2009.o coco.o
+	${CC} ${CCFLAGS} -o example_bbob2009 coco.o example_bbob2009.o ${LDFLAGS}  
 
-coco_test.exe: coco_test.o coco.o
-	${CC}  ${CCFLAGS} -o coco_test.exe coco_test.o coco.o ${LDFLAGS}
+example_biobj: example_biobj.o coco.o
+	${CC}  ${CCFLAGS} -o example_biobj example_biobj.o coco.o ${LDFLAGS}
 
-bbob2009_test.exe: bbob2009_test.o coco.o
-	${CC}  ${CCFLAGS} -o bbob2009_test.exe bbob2009_test.o coco.o ${LDFLAGS} 
-
-coco_timing.exe: coco_timing.o coco.o
-	${CC}  ${CCFLAGS} -o coco_timing.exe coco_timing.o coco.o ${LDFLAGS}
+example_toy: example_toy.o coco.o
+	${CC}  ${CCFLAGS} -o example_toy example_toy.o coco.o ${LDFLAGS}
 
 ########################################################################
 ## Additional dependencies
-coco.o: coco.h
-demo.o: coco.h
-coco_test.o: coco.h
-bbob2009_test.o: coco.h
+coco.o: coco.h coco.c
+	${CC} -c ${CCFLAGS} -o coco.o coco.c
+example_bbob2009.o: coco.h coco.c example_bbob2009.c
+	${CC} -c ${CCFLAGS} -o example_bbob2009.o example_bbob2009.c
+example_biobj.o: coco.h coco.c example_biobj.c
+	${CC} -c ${CCFLAGS} -o example_biobj.o example_biobj.c
+example_toy.o: coco.h coco.c example_toy.c
+	${CC} -c ${CCFLAGS} -o example_toy.o example_toy.c

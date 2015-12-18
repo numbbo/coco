@@ -6,8 +6,6 @@
 #include "coco.h"
 
 #include "observer_bbob2009.c"
-#include "observer_mo.c"
-#include "observer_toy.c"
 #include "suite_bbob2009.c"
 #include "suite_biobj_300.c"
 #include "suite_toy.c"
@@ -42,9 +40,8 @@ long coco_suite_get_next_problem_index(const char *problem_suite,
   if (0 == strcmp(problem_suite, "suite_bbob2009")) {
     /* without selection_options: last_index = 2159; */
     return suite_bbob2009_get_next_problem_index(problem_index, select_options);
-  }
-  else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
-    last_index = 7499;
+  } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
+    return suite_biobj_300_get_next_problem_index(problem_index, select_options);
   }
 
   /** generic implementation:
@@ -93,16 +90,19 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
   }
 }
 
-coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem, const char *observer_name, const char *options) {
+coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
+                                                      const char *observer_name,
+                                                      const char *options) {
   if (problem == NULL) {
     coco_warning("Trying to observe a NULL problem has no effect.");
     return problem;
   }
   if (0 == strcmp(observer_name, "observer_toy")) {
-    return deprecated__observer_toy(problem, options);
+    coco_error("Deprecated way of calling the toy observer.");
+    return NULL; /* Never reached */
   } else if (0 == strcmp(observer_name, "observer_bbob2009")) {
     return deprecated__observer_bbob2009(problem, options);
-  } else if (0 == strcmp(observer_name, "observer_mo")) {
+  } else if (0 == strcmp(observer_name, "observer_biobj")) {
     coco_error("Deprecated way of calling the MO observer.");
     return NULL; /* Never reached */
   }
@@ -145,15 +145,17 @@ coco_problem_t *coco_suite_get_problem_by_id(const char *suite, const char *id) 
 }
 
 #if 1
-/* coco_suite_benchmark(problem_suite, observer, options, optimizer):
+/* deprecated__coco_suite_benchmark(problem_suite, observer, options, optimizer):
  *
  * Benchmark a solver ${optimizer} with a testbed ${problem_suite}
- * using the data logger ${observer} to write data. 
+ * using the data logger ${observer} to write data.
+ *
+ * Deprecated, use coco_suite_benchmark instead!
  */
-void coco_suite_benchmark(const char *problem_suite,
-                          const char *observer,
-                          const char *options,
-                          coco_optimizer_t optimizer) {
+void deprecated__coco_suite_benchmark(const char *problem_suite,
+                                      const char *observer,
+                                      const char *options,
+                                      coco_optimizer_t optimizer) {
   int problem_index;
   coco_problem_t *problem;
   for (problem_index = 0;; ++problem_index) {
@@ -165,6 +167,38 @@ void coco_suite_benchmark(const char *problem_suite,
     /* Free problem after optimization. */
     coco_problem_free(problem);
   }
+}
+
+/**
+ * Benchmarks a solver ${optimizer} with a testbed ${problem_suite} using the data logger ${observer_name}
+ * initialized with ${observer_options} to write data.
+ */
+void coco_suite_benchmark(const char *suite_name,
+                          const char *observer_name,
+                          const char *observer_options,
+                          coco_optimizer_t optimizer) {
+
+  coco_observer_t *observer;
+  coco_problem_t *problem;
+  long problem_index;
+
+  observer = coco_observer(observer_name, observer_options);
+
+  for (problem_index = coco_suite_get_next_problem_index(suite_name, -1, "");
+       problem_index >= 0;
+       problem_index = coco_suite_get_next_problem_index(suite_name, problem_index, "")) {
+
+    problem = coco_suite_get_problem(suite_name, problem_index);
+
+    if (problem == NULL)
+      break;
+
+    problem = coco_problem_add_observer(problem, observer);
+    optimizer(problem);
+    coco_problem_free(problem);
+  }
+
+  coco_observer_free(observer);
 }
 
 #else

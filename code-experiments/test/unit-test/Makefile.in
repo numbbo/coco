@@ -1,4 +1,4 @@
-LDFLAGS += -Wl,--wrap=suite_bbob2009_get_next_problem_index -L. -lm -lcmocka
+LDFLAGS += -L. -lm -lcmocka
 CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow -Wno-sign-compare -Wconversion 
 
 ########################################################################
