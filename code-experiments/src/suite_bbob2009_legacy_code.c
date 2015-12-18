@@ -195,41 +195,41 @@ static void bbob2009_compute_xopt(double *xopt, long seed, size_t DIM) {
 }
 
 /**
- * bbob2009_compute_fopt(function_id, instance_id):
+ * bbob2009_compute_fopt(function, instance):
  *
- * Randomly choose the objective offset for function ${function_id}
- * and instance ${instance_id}.
+ * Randomly choose the objective offset for function ${function}
+ * and instance ${instance}.
  */
-static double bbob2009_compute_fopt(size_t function_id, size_t instance_id) {
+static double bbob2009_compute_fopt(size_t function, size_t instance) {
   long rseed, rrseed;
   double gval, gval2;
 
-  if (function_id == 4)
+  if (function == 4)
     rseed = 3;
-  else if (function_id == 18)
+  else if (function == 18)
     rseed = 17;
-  else if (function_id == 101 || function_id == 102 || function_id == 103 || function_id == 107
-      || function_id == 108 || function_id == 109)
+  else if (function == 101 || function == 102 || function == 103 || function == 107
+      || function == 108 || function == 109)
     rseed = 1;
-  else if (function_id == 104 || function_id == 105 || function_id == 106 || function_id == 110
-      || function_id == 111 || function_id == 112)
+  else if (function == 104 || function == 105 || function == 106 || function == 110
+      || function == 111 || function == 112)
     rseed = 8;
-  else if (function_id == 113 || function_id == 114 || function_id == 115)
+  else if (function == 113 || function == 114 || function == 115)
     rseed = 7;
-  else if (function_id == 116 || function_id == 117 || function_id == 118)
+  else if (function == 116 || function == 117 || function == 118)
     rseed = 10;
-  else if (function_id == 119 || function_id == 120 || function_id == 121)
+  else if (function == 119 || function == 120 || function == 121)
     rseed = 14;
-  else if (function_id == 122 || function_id == 123 || function_id == 124)
+  else if (function == 122 || function == 123 || function == 124)
     rseed = 17;
-  else if (function_id == 125 || function_id == 126 || function_id == 127)
+  else if (function == 125 || function == 126 || function == 127)
     rseed = 19;
-  else if (function_id == 128 || function_id == 129 || function_id == 130)
+  else if (function == 128 || function == 129 || function == 130)
     rseed = 21;
   else
-    rseed = (long) function_id;
+    rseed = (long) function;
 
-  rrseed = rseed + (long) (10000 * instance_id);
+  rrseed = rseed + (long) (10000 * instance);
   bbob2009_gauss(&gval, 1, rrseed);
   bbob2009_gauss(&gval2, 1, rrseed + 1);
   return bbob2009_fmin(1000., bbob2009_fmax(-1000., bbob2009_round(100. * 100. * gval / gval2) / 100.));

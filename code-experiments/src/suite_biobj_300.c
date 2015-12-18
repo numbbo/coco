@@ -138,15 +138,15 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
 
   problem = coco_stacked_problem_allocate(problem1, problem2, data, mo_problem_data_free);
   problem->suite_dep_index = (size_t) problem_index;
-  problem->suite_dep_function_id = function_id;
-  problem->suite_dep_instance_id = instance_id;
+  problem->suite_dep_function = function_id;
+  problem->suite_dep_instance = instance_id;
 
   coco_free_memory(problem->problem_name);
   problem->problem_name = coco_strdup(problem->problem_id);
 
   /* Construct the id for the suite_biobj_300 in the form "biobj_300_fxxx_DIMy" */
   coco_free_memory(problem->problem_id);
-  problem->problem_id = coco_strdupf("biobj_300_f%03d_i%02ld_d%02d", function_id + 1, instance_id + 1,
+  problem->problem_id = coco_strdupf("biobj_300_f%03d_i%02ld_d%02d", function_id, instance_id,
       problem->number_of_variables);
 
 

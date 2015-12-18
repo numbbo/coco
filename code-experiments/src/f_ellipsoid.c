@@ -40,9 +40,9 @@ static coco_problem_t *f_ellipsoid_allocate(const size_t number_of_variables) {
   return problem;
 }
 
-static coco_problem_t *f_ellipsoid_bbob_problem_allocate(const size_t function_id,
+static coco_problem_t *f_ellipsoid_bbob_problem_allocate(const size_t function,
                                                          const size_t dimension,
-                                                         const size_t instance_id,
+                                                         const size_t instance,
                                                          const long rseed,
                                                          const char *problem_id_template,
                                                          const char *problem_name_template) {
@@ -50,7 +50,7 @@ static coco_problem_t *f_ellipsoid_bbob_problem_allocate(const size_t function_i
   coco_problem_t *problem = NULL;
 
   xopt = coco_allocate_vector(dimension);
-  fopt = bbob2009_compute_fopt(function_id, instance_id);
+  fopt = bbob2009_compute_fopt(function, instance);
   bbob2009_compute_xopt(xopt, rseed, dimension);
 
   problem = f_ellipsoid_allocate(dimension);
@@ -58,19 +58,19 @@ static coco_problem_t *f_ellipsoid_bbob_problem_allocate(const size_t function_i
   problem = f_transform_vars_shift(problem, xopt, 0);
   problem = f_transform_obj_shift(problem, fopt);
 
-  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
-  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
 
   coco_free_memory(xopt);
   return problem;
 }
 
-static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t function_id,
-                                                                      const size_t dimension,
-                                                                      const size_t instance_id,
-                                                                      const long rseed,
-                                                                      const char *problem_id_template,
-                                                                      const char *problem_name_template) {
+static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t function,
+                                                                 const size_t dimension,
+                                                                 const size_t instance,
+                                                                 const long rseed,
+                                                                 const char *problem_id_template,
+                                                                 const char *problem_name_template) {
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
 
@@ -80,7 +80,7 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
 
   xopt = coco_allocate_vector(dimension);
   bbob2009_compute_xopt(xopt, rseed, dimension);
-  fopt = bbob2009_compute_fopt(function_id, instance_id);
+  fopt = bbob2009_compute_fopt(function, instance);
 
   rot1 = bbob2009_allocate_matrix(dimension, dimension);
   bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
@@ -93,8 +93,8 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
   problem = f_transform_vars_shift(problem, xopt, 0);
   problem = f_transform_obj_shift(problem, fopt);
 
-  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
-  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
 
   coco_free_memory(M);
   coco_free_memory(b);

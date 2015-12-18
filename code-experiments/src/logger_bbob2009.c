@@ -316,7 +316,7 @@ static void logger_bbob2009_initialize(logger_bbob2009_t *data, coco_problem_t *
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
 
-  sprintf(tmpc_funId, "%lu", coco_problem_get_suite_dep_function_id(inner_problem));
+  sprintf(tmpc_funId, "%lu", coco_problem_get_suite_dep_function(inner_problem));
   sprintf(tmpc_dim, "%lu", (unsigned long) inner_problem->number_of_variables);
 
   /* prepare paths and names */
@@ -335,7 +335,7 @@ static void logger_bbob2009_initialize(logger_bbob2009_t *data, coco_problem_t *
 
   /* index/info file */
   logger_bbob2009_openIndexFile(data, data->path, indexFile_prefix, tmpc_funId, dataFile_path);
-  fprintf(data->index_file, ", %ld", coco_problem_get_suite_dep_instance_id(inner_problem));
+  fprintf(data->index_file, ", %ld", coco_problem_get_suite_dep_instance(inner_problem));
   /* data files */
   /* TODO: definitely improvable but works for now */
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
@@ -502,8 +502,8 @@ static coco_problem_t *logger_bbob2009(coco_problem_t *inner_problem, const char
    * should eventually be removed. Some fields of the bbob2009_logger struct
    * might be useless
    */
-  data->function_id = coco_problem_get_suite_dep_function_id(inner_problem);
-  data->instance_id = coco_problem_get_suite_dep_instance_id(inner_problem);
+  data->function_id = coco_problem_get_suite_dep_function(inner_problem);
+  data->instance_id = coco_problem_get_suite_dep_instance(inner_problem);
   data->written_last_eval = 1;
   data->last_fvalue = DBL_MAX;
   data->is_initialized = 0;

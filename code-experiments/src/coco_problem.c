@@ -67,8 +67,8 @@ coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->best_observed_fvalue[0] = DBL_MAX;
   problem->best_observed_evaluation[0] = 0;
   problem->suite_dep_index = 0;
-  problem->suite_dep_function_id = 0;
-  problem->suite_dep_instance_id = 0;
+  problem->suite_dep_function = 0;
+  problem->suite_dep_instance = 0;
   problem->data = NULL;
   return problem;
 }
@@ -99,8 +99,8 @@ coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
   problem->problem_name = coco_strdup(other->problem_name);
   problem->problem_id = coco_strdup(other->problem_id);
   problem->suite_dep_index = other->suite_dep_index;
-  problem->suite_dep_function_id = other->suite_dep_function_id;
-  problem->suite_dep_instance_id = other->suite_dep_instance_id;
+  problem->suite_dep_function = other->suite_dep_function;
+  problem->suite_dep_instance = other->suite_dep_instance;
   return problem;
 }
 

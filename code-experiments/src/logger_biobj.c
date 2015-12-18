@@ -50,7 +50,7 @@ typedef struct {
   size_t number_of_evaluations;
   size_t number_of_variables;
   size_t number_of_objectives;
-  size_t suite_dep_instance_id;
+  size_t suite_dep_instance;
 
   /* The tree keeping currently non-dominated solutions */
   avl_tree_t *archive_tree;
@@ -409,8 +409,8 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
     fprintf(indicator->info_file, "algId = '%s', indicator = '%s', folder = %s\n%% %s", observer->algorithm_name,
         indicator_name, problem_type, observer->algorithm_info);
   }
-  if (observer_biobj->previous_function != problem->suite_dep_function_id) {
-    fprintf(indicator->info_file, "\nfuncId = %03lu, %s, ", problem->suite_dep_function_id + 1, file_name);
+  if (observer_biobj->previous_function != problem->suite_dep_function) {
+    fprintf(indicator->info_file, "\nfuncId = %03lu, %s, ", problem->suite_dep_function, file_name);
     fprintf(indicator->info_file, "DIM = %lu", problem->number_of_variables);
   }
 
@@ -421,7 +421,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   /* Output header information to the log file */
   fprintf(indicator->log_file, "%%\n%% index = %ld, name = %s\n", problem->suite_dep_index, problem->problem_name);
   fprintf(indicator->log_file, "DIM = %lu, instId = %ld, bestVal = %.15f\n", problem->number_of_variables,
-      problem->suite_dep_instance_id + 1, indicator->best_value);
+      problem->suite_dep_instance + 1, indicator->best_value);
   fprintf(indicator->log_file, "%% function evaluation | indicator value | target value\n");
 
   return indicator;
@@ -432,7 +432,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
  */
 static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, logger_biobj_t *logger) {
 
-  fprintf(indicator->info_file, ", %ld:%lu|%+.1e", logger->suite_dep_instance_id + 1, logger->number_of_evaluations,
+  fprintf(indicator->info_file, ", %ld:%lu|%+.1e", logger->suite_dep_instance, logger->number_of_evaluations,
       indicator->best_value - indicator->current_value);
 }
 
@@ -619,7 +619,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
   logger->number_of_evaluations = 0;
   logger->number_of_variables = problem->number_of_variables;
   logger->number_of_objectives = problem->number_of_objectives;
-  logger->suite_dep_instance_id = problem->suite_dep_instance_id;
+  logger->suite_dep_instance = problem->suite_dep_instance;
 
   observer_biobj = (observer_biobj_t *) observer->data;
 
@@ -652,7 +652,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
     coco_free_memory(path_name);
 
     /* Output header information */
-    fprintf(logger->nondom_file, "%% instance = %ld\n", problem->suite_dep_instance_id + 1);
+    fprintf(logger->nondom_file, "%% instance = %ld\n", problem->suite_dep_instance + 1);
     if (observer_biobj->include_decision_variables) {
       fprintf(logger->nondom_file, "%% function evaluation | %lu objectives | %lu variables\n",
           problem->number_of_objectives, problem->number_of_variables);
@@ -675,7 +675,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++)
       logger->indicators[i] = logger_biobj_indicator(logger, problem, OBSERVER_BIOBJ_INDICATORS[i]);
 
-    observer_biobj->previous_function = (long) problem->suite_dep_function_id;
+    observer_biobj->previous_function = (long) problem->suite_dep_function;
   }
 
   return self;

@@ -97,9 +97,9 @@ static void f_step_ellipsoid_free(coco_problem_t *self) {
 
 /* Note: there is no separate f_step_ellipsoid_allocate() function! */
 
-static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t function_id,
+static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t function,
                                                               const size_t dimension,
-                                                              const size_t instance_id,
+                                                              const size_t instance,
                                                               const long rseed,
                                                               const char *problem_id_template,
                                                               const char *problem_name_template) {
@@ -116,7 +116,7 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
   data->rot1 = bbob2009_allocate_matrix(dimension, dimension);
   data->rot2 = bbob2009_allocate_matrix(dimension, dimension);
 
-  data->fopt = bbob2009_compute_fopt(function_id, instance_id);
+  data->fopt = bbob2009_compute_fopt(function, instance);
   bbob2009_compute_xopt(data->xopt, rseed, dimension);
   bbob2009_compute_rotation(data->rot1, rseed + 1000000, dimension);
   bbob2009_compute_rotation(data->rot2, rseed, dimension);
@@ -130,8 +130,8 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
    */
   problem->best_value[0] = data->fopt;
 
-  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
-  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
 
   return problem;
 }

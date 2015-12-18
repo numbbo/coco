@@ -39,9 +39,9 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 
   suite->default_instances = coco_strdup(default_instances);
 
-  suite->current_dimension_id = -1;
-  suite->current_function_id = -1;
-  suite->current_instance_id = -1;
+  suite->current_dimension_idx = -1;
+  suite->current_function_idx = -1;
+  suite->current_instance_idx = -1;
 
   suite->current_problem = NULL;
 
@@ -170,18 +170,18 @@ static char *coco_suite_get_instances_by_year(coco_suite_t *suite, const int yea
 }
 
 coco_problem_t *coco_suite_get_problem(coco_suite_t *suite,
-                                       size_t function,
-                                       size_t dimension,
-                                       size_t instance) {
+                                       size_t function_idx,
+                                       size_t dimension_idx,
+                                       size_t instance_idx) {
 
   coco_problem_t *problem;
 
   if (strcmp(suite->suite_name, "suite_toy") == 0) {
-    problem = suite_toy_get_problem(function, dimension, instance);
+    problem = suite_toy_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "suite_bbob") == 0) {
-    problem = suite_bbob_get_problem(function, dimension, instance);
+    problem = suite_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "suite_biobj") == 0) {
-    problem = suite_biobj_get_problem(function, dimension, instance);
+    problem = suite_biobj_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
     coco_error("coco_suite_get_problem(): unknown problem suite");
     return NULL;
@@ -246,7 +246,7 @@ static size_t *coco_suite_get_instance_indices(coco_suite_t *suite, const char *
  * If such an item is found, current_item_id points to this item and the method returns 1. If such an
  * item cannot be found, current_item_id points to the first positive item and the method returns 0.
  */
-static int coco_suite_is_next_item_found(const size_t number_of_items, const size_t *items, int *current_item_id) {
+static int coco_suite_is_next_item_found(const size_t number_of_items, const size_t *items, long *current_item_id) {
 
   if ((*current_item_id) != number_of_items - 1)  {
     /* Not the last item, iterate through items */
@@ -272,45 +272,45 @@ static int coco_suite_is_next_item_found(const size_t number_of_items, const siz
 }
 
 /**
- * Iterates through the instances of the given suite from the current_instance_id position on in search for
- * the next positive instance. If such an instance is found, current_instance_id points to this instance and
- * the method returns 1. If such an instance cannot be found, current_instance_id points to the first
+ * Iterates through the instances of the given suite from the current_instance_idx position on in search for
+ * the next positive instance. If such an instance is found, current_instance_idx points to this instance and
+ * the method returns 1. If such an instance cannot be found, current_instance_idx points to the first
  * positive instance and the method returns 0.
  */
 static int coco_suite_is_next_instance_found(coco_suite_t *suite) {
 
   return coco_suite_is_next_item_found(suite->number_of_instances, suite->instances,
-      &suite->current_instance_id);
+      &suite->current_instance_idx);
 }
 
 /**
- * Iterates through the functions of the given suite from the current_function_id position on in search for
- * the next positive function. If such a function is found, current_function_id points to this function and
- * the method returns 1. If such a function cannot be found, current_function_id points to the first
- * positive function, current_instance_id points to the first positive instance and the method returns 0.
+ * Iterates through the functions of the given suite from the current_function_idx position on in search for
+ * the next positive function. If such a function is found, current_function_idx points to this function and
+ * the method returns 1. If such a function cannot be found, current_function_idx points to the first
+ * positive function, current_instance_idx points to the first positive instance and the method returns 0.
  */
 static int coco_suite_is_next_function_found(coco_suite_t *suite) {
 
   int result = coco_suite_is_next_item_found(suite->number_of_functions, suite->functions,
-      &suite->current_function_id);
+      &suite->current_function_idx);
   if (!result) {
     /* Reset the instances */
-    suite->current_instance_id = -1;
+    suite->current_instance_idx = -1;
     coco_suite_is_next_instance_found(suite);
   }
   return result;
 }
 
 /**
- * Iterates through the dimensions of the given suite from the current_dimension_id position on in search for
- * the next positive dimension. If such a dimension is found, current_dimension_id points to this dimension
- * and the method returns 1. If such a dimension cannot be found, current_dimension_id points to the first
+ * Iterates through the dimensions of the given suite from the current_dimension_idx position on in search for
+ * the next positive dimension. If such a dimension is found, current_dimension_idx points to this dimension
+ * and the method returns 1. If such a dimension cannot be found, current_dimension_idx points to the first
  * positive dimension and the method returns 0.
  */
 static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
 
   return coco_suite_is_next_item_found(suite->number_of_dimensions, suite->dimensions,
-      &suite->current_dimension_id);
+      &suite->current_dimension_idx);
 }
 
 coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, const char *suite_options) {
@@ -321,8 +321,8 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
   char *ptr;
   size_t *indices = NULL;
   size_t *dimensions = NULL;
-  long dim_found, dim_id_found;
-  int parce_dim = 1, parce_dim_id = 1;
+  long dim_found, dim_idx_found;
+  int parce_dim = 1, parce_dim_idx = 1;
 
   /* Initialize the suite */
   suite = coco_suite_intialize(suite_name);
@@ -337,44 +337,44 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
   /* Apply filter if any given by the suite_options */
   if ((suite_options) && (strlen(suite_options) > 0)) {
     option_string = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
-    if (coco_options_read_values(suite_options, "function_ids", option_string) > 0) {
-      indices = coco_string_get_numbers_from_ranges(option_string, "function_ids", 1, suite->number_of_functions);
+    if (coco_options_read_values(suite_options, "function_idx", option_string) > 0) {
+      indices = coco_string_get_numbers_from_ranges(option_string, "function_idx", 1, suite->number_of_functions);
       if (indices != NULL) {
-        coco_suite_filter_ids(suite->functions, suite->number_of_functions, indices, "function_ids");
+        coco_suite_filter_ids(suite->functions, suite->number_of_functions, indices, "function_idx");
         coco_free_memory(indices);
       }
     }
     coco_free_memory(option_string);
 
     option_string = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
-    if (coco_options_read_values(suite_options, "instance_ids", option_string) > 0) {
-      indices = coco_string_get_numbers_from_ranges(option_string, "instance_ids", 1, suite->number_of_instances);
+    if (coco_options_read_values(suite_options, "instance_idx", option_string) > 0) {
+      indices = coco_string_get_numbers_from_ranges(option_string, "instance_idx", 1, suite->number_of_instances);
       if (indices != NULL) {
-        coco_suite_filter_ids(suite->instances, suite->number_of_instances, indices, "instance_ids");
+        coco_suite_filter_ids(suite->instances, suite->number_of_instances, indices, "instance_idx");
         coco_free_memory(indices);
       }
     }
     coco_free_memory(option_string);
 
     dim_found = coco_strfind(suite_options, "dimensions");
-    dim_id_found = coco_strfind(suite_options, "dimension_ids");
+    dim_idx_found = coco_strfind(suite_options, "dimension_idx");
 
-    if ((dim_found > 0) && (dim_id_found > 0)) {
-      if (dim_found < dim_id_found) {
-        parce_dim_id = 0;
-        coco_warning("coco_suite(): 'dimension_ids' suite option ignored because it follows 'dimensions'");
+    if ((dim_found > 0) && (dim_idx_found > 0)) {
+      if (dim_found < dim_idx_found) {
+        parce_dim_idx = 0;
+        coco_warning("coco_suite(): 'dimension_idx' suite option ignored because it follows 'dimensions'");
       }
       else {
         parce_dim = 0;
-        coco_warning("coco_suite(): 'dimensions' suite option ignored because it follows 'dimension_ids'");
+        coco_warning("coco_suite(): 'dimensions' suite option ignored because it follows 'dimension_idx'");
       }
     }
 
     option_string = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
-    if ((dim_id_found >= 0) && (parce_dim_id == 1) && (coco_options_read_values(suite_options, "dimension_ids", option_string) > 0)) {
-      indices = coco_string_get_numbers_from_ranges(option_string, "dimension_ids", 1, suite->number_of_dimensions);
+    if ((dim_idx_found >= 0) && (parce_dim_idx == 1) && (coco_options_read_values(suite_options, "dimension_idx", option_string) > 0)) {
+      indices = coco_string_get_numbers_from_ranges(option_string, "dimension_idx", 1, suite->number_of_dimensions);
       if (indices != NULL) {
-        coco_suite_filter_ids(suite->dimensions, suite->number_of_dimensions, indices, "dimension_ids");
+        coco_suite_filter_ids(suite->dimensions, suite->number_of_dimensions, indices, "dimension_idx");
         coco_free_memory(indices);
       }
     }
@@ -409,7 +409,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
     return NULL;
   }
 
-  /* Set the starting values of the current indices in such a way, that when the instance_id is incremented,
+  /* Set the starting values of the current indices in such a way, that when the instance_idx is incremented,
    * this results in a valid problem */
   coco_suite_is_next_function_found(suite);
   coco_suite_is_next_dimension_found(suite);
@@ -424,23 +424,35 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
  */
 coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer) {
 
-  size_t function, dimension, instance;
+  size_t function_idx;
+  size_t dimension_idx;
+  size_t instance_idx;
+  coco_problem_t *problem;
 
+  /* Iterate through the suite by instances, then functions and lastly dimensions in search for the next
+   * problem. Note that these functions set the values of suite fields current_instance_idx,
+   * current_function_idx and current_dimension_idx. */
   if (!coco_suite_is_next_instance_found(suite)
       && !coco_suite_is_next_function_found(suite)
       && !coco_suite_is_next_dimension_found(suite))
     return NULL;
 
-  function = suite->functions[suite->current_function_id];
-  dimension = suite->dimensions[suite->current_dimension_id];
-  instance = suite->instances[suite->current_instance_id];
-
   if (suite->current_problem)
     coco_problem_free(suite->current_problem);
 
-  suite->current_problem = coco_suite_get_problem(suite, function, dimension, instance);
+  assert(suite->current_function_idx >= 0);
+  assert(suite->current_dimension_idx >= 0);
+  assert(suite->current_instance_idx >= 0);
 
-  return coco_problem_add_observer(suite->current_problem, observer);
+  function_idx = (size_t) suite->current_function_idx;
+  dimension_idx = (size_t) suite->current_dimension_idx;
+  instance_idx = (size_t) suite->current_instance_idx;
+
+  problem = coco_suite_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  problem = coco_problem_add_observer(problem, observer);
+  suite->current_problem = problem;
+
+  return problem;
 }
 
 void coco_run_benchmark(const char *suite_name,
@@ -467,3 +479,4 @@ void coco_run_benchmark(const char *suite_name,
   coco_suite_free(suite);
 
 }
+

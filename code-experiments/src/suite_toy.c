@@ -17,47 +17,45 @@ static coco_suite_t *suite_toy_allocate(void) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20 };
 
-  suite = coco_suite_allocate("suite_toy", 6, 3, dimensions, "instances:1-5");
+  suite = coco_suite_allocate("suite_toy", 6, 3, dimensions, "instances:1");
 
   return suite;
 }
 
-static coco_problem_t *suite_toy_get_problem(size_t function_id, size_t dimension, size_t instance_id) {
+static coco_problem_t *suite_toy_get_problem(coco_suite_t *suite,
+                                             size_t function_idx,
+                                             size_t dimension_idx,
+                                             size_t instance_idx) {
 
 
   coco_problem_t *problem = NULL;
 
-  const char *problem_id_template = "suite_toy_f%03lu_i%02lu_d%02lu";
-  const char *problem_name_template = "Toy suite problem f%lu instance %lu in %luD";
+  const size_t function = suite->functions[function_idx];
+  const size_t dimension = suite->dimensions[dimension_idx];
+  const size_t instance = suite->instances[instance_idx];
 
-  const long rseed = (long) (function_id + 10000 * instance_id);
-  const long rseed_3 = (long) (3 + 10000 * instance_id);
+  const long rseed = (long) (function + 10000 * instance);
+  const long rseed_3 = (long) (3 + 10000 * instance);
 
-  if (function_id == 1) {
-    problem = f_sphere_bbob_problem_allocate(function_id, dimension, instance_id, rseed,
-        problem_id_template, problem_name_template);
-  } else if (function_id == 2) {
-    problem = f_ellipsoid_bbob_problem_allocate(function_id, dimension, instance_id, rseed,
-        problem_id_template, problem_name_template);
-  } else if (function_id == 3) {
-    problem = f_rastrigin_bbob_problem_allocate(function_id, dimension, instance_id, rseed,
-        problem_id_template, problem_name_template);
-  } else if (function_id == 4) {
-    problem = f_bueche_rastrigin_bbob_problem_allocate(function_id, dimension, instance_id, rseed_3,
-        problem_id_template, problem_name_template);
-  } else if (function_id == 5) {
-    problem = f_linear_slope_bbob_problem_allocate(function_id, dimension, instance_id, rseed,
-        problem_id_template, problem_name_template);
-  } else if (function_id == 6) {
-    problem = f_rosenbrock_bbob_problem_allocate(function_id, dimension, instance_id, rseed,
-        problem_id_template, problem_name_template);
+  if (function == 1) {
+    problem = f_sphere_allocate(dimension);
+  } else if (function == 2) {
+    problem = f_ellipsoid_allocate(dimension);
+  } else if (function == 3) {
+    problem = f_rastrigin_allocate(dimension);
+  } else if (function == 4) {
+    problem = f_bueche_rastrigin_allocate(dimension);
+  } else if (function == 5) {
+    problem = f_linear_slope_allocate(dimension);
+  } else if (function == 6) {
+    problem = f_rosenbrock_allocate(dimension);
   } else {
-    coco_error("suite_toy_get_problem(): function with id %lu does not exist in this suite", function_id);
+    coco_error("suite_toy_get_problem(): function %lu does not exist in this suite", function);
     return NULL; /* Never reached */
   }
 
-  problem->suite_dep_function_id = function_id;
-  problem->suite_dep_instance_id = instance_id;
+  problem->suite_dep_function = function;
+  problem->suite_dep_instance = instance;
 
   return problem;
 }
@@ -91,7 +89,7 @@ static coco_problem_t *deprecated__suite_toy(const long function_index) {
     return NULL;
   }
   problem->suite_dep_index = fid;
-  problem->suite_dep_function_id = fid;
-  problem->suite_dep_instance_id = 0;
+  problem->suite_dep_function = fid;
+  problem->suite_dep_instance = 0;
   return problem;
 }
