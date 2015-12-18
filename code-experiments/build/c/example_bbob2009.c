@@ -61,7 +61,7 @@ static const char *SUITE_NAME       = "suite_bbob2009";
 /*static const char *SUITE_OPTIONS    = "";  e.g.: "instances:1-5; dimensions:-20" */
 static const char *OBSERVER_NAME    = "observer_bbob2009"; /* writes data */
 /* static const char *OBSERVER_NAME = "no_observer"; / * writes no data */
-/*static const char *OBSERVER_OPTIONS = "RS_on_suite_bbob2009"; future: "folder:random_search; verbosity:1" */
+/*static const char *OBSERVER_OPTIONS = "RS_on_suite_bbob2009"; future: "folder:random_search; " */
 static const char *SOLVER_NAME      = "random_search"; /* for the choice in coco_optimize below */
 /*  static const char *SOLVER_NAME   = "my_solver"; / * for the choice in coco_optimize below */
 /* static const int NUMBER_OF_BATCHES   = 88;   use 1 for single batch :-) batches can be run independently in parallel */
@@ -133,8 +133,7 @@ int main(void) {
   
     static const char *observer_options_RS = "result_folder: RS_on_suite_bbob2009 \
     algorithm_name: RS \
-    algorithm_info: \"A simple random search algorithm\" \
-    verbosity : 3 ";
+    algorithm_info: \"A simple random search algorithm\"";
   
     OBSERVER_NAME = "observer_bbob2009";
     SUITE_NAME = "suite_bbob2009";
