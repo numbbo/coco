@@ -27,9 +27,12 @@ static char *suite_biobj_get_instances_by_year(int year) {
   }
 }
 
-static coco_problem_t *suite_biobj_get_problem(size_t function_id, size_t dimension, size_t instance_id) {
+static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
+                                               size_t function_idx,
+                                               size_t dimension_idx,
+                                               size_t instance_idx) {
 
-  if (function_id + dimension + instance_id > 0)
+  if (function_idx + dimension_idx + instance_idx > 0)
     return NULL;
 
   return NULL;

@@ -38,7 +38,7 @@ int main(void) {
   coco_observer_t *observer;
   coco_problem_t *problem;
 
-  suite = coco_suite("suite_toy", NULL, "dimensions: 2,3, instance_ids:1-3, function_ids : 5-");
+  suite = coco_suite("suite_toy", NULL, "dimensions: 2,3");
   observer = coco_observer("observer_toy", NULL);
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {

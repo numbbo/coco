@@ -41,9 +41,9 @@ static coco_problem_t *f_bueche_rastrigin_allocate(const size_t number_of_variab
   return problem;
 }
 
-static coco_problem_t *f_bueche_rastrigin_bbob_problem_allocate(const size_t function_id,
+static coco_problem_t *f_bueche_rastrigin_bbob_problem_allocate(const size_t function,
                                                                 const size_t dimension,
-                                                                const size_t instance_id,
+                                                                const size_t instance,
                                                                 const long rseed,
                                                                 const char *problem_id_template,
                                                                 const char *problem_name_template) {
@@ -54,7 +54,7 @@ static coco_problem_t *f_bueche_rastrigin_bbob_problem_allocate(const size_t fun
   size_t i;
 
   xopt = coco_allocate_vector(dimension);
-  fopt = bbob2009_compute_fopt(function_id, instance_id);
+  fopt = bbob2009_compute_fopt(function, instance);
   bbob2009_compute_xopt(xopt, rseed, dimension);
 
   /* OME: This step is in the legacy C code but _not_ in the function description. */
@@ -69,8 +69,8 @@ static coco_problem_t *f_bueche_rastrigin_bbob_problem_allocate(const size_t fun
   problem = f_transform_obj_shift(problem, fopt);
   problem = f_transform_obj_penalize(problem, penalty_factor);
 
-  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
-  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
 
   coco_free_memory(xopt);
   return problem;

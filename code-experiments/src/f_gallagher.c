@@ -107,9 +107,9 @@ static void f_gallagher_free(coco_problem_t *self) {
 
 /* Note: there is no separate f_gallagher_allocate() function! */
 
-static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function_id,
+static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
                                                          const size_t dimension,
-                                                         const size_t instance_id,
+                                                         const size_t instance,
                                                          const long rseed,
                                                          const size_t number_of_peaks,
                                                          const char *problem_id_template,
@@ -210,11 +210,11 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function_i
   /* Compute best solution */
   f_gallagher_evaluate(problem, problem->best_parameter, problem->best_value);
 
-  fopt = bbob2009_compute_fopt(function_id, instance_id);
+  fopt = bbob2009_compute_fopt(function, instance);
   problem = f_transform_obj_shift(problem, fopt);
 
-  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
-  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
 
   return problem;
 }

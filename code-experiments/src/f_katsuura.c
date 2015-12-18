@@ -49,9 +49,9 @@ static coco_problem_t *f_katsuura_allocate(const size_t number_of_variables) {
   f_katsuura_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }
-static coco_problem_t *f_katsuura_bbob_problem_allocate(const size_t function_id,
+static coco_problem_t *f_katsuura_bbob_problem_allocate(const size_t function,
                                                         const size_t dimension,
-                                                        const size_t instance_id,
+                                                        const size_t instance,
                                                         const long rseed,
                                                         const char *problem_id_template,
                                                         const char *problem_name_template) {
@@ -65,7 +65,7 @@ static coco_problem_t *f_katsuura_bbob_problem_allocate(const size_t function_id
   const double penalty_factor = 1.0;
 
   xopt = coco_allocate_vector(dimension);
-  fopt = bbob2009_compute_fopt(function_id, instance_id);
+  fopt = bbob2009_compute_fopt(function, instance);
   bbob2009_compute_xopt(xopt, rseed, dimension);
 
   rot1 = bbob2009_allocate_matrix(dimension, dimension);
@@ -94,8 +94,8 @@ static coco_problem_t *f_katsuura_bbob_problem_allocate(const size_t function_id
   bbob2009_free_matrix(rot1, dimension);
   bbob2009_free_matrix(rot2, dimension);
 
-  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
-  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
 
   coco_free_memory(M);
   coco_free_memory(b);

@@ -46,11 +46,9 @@ typedef void (*coco_free_function_t)(coco_problem_t *self);
  *
  * suite_dep_index - Index of the problem in the current/parent benchmark suite
  *
- * suite_dep_function_id - Id of the problem function in the current/parent
- * benchmark suite
+ * suite_dep_function - Problem function in the current/parent benchmark suite
  *
- * suite_dep_instance_id - Id of the problem instance the current/parent
- * benchmark suite
+ * suite_dep_instanced - Problem instance the current/parent benchmark suite
  *
  * data - Void pointer that can be used to store problem specific data
  *   needed by any of the methods.
@@ -76,8 +74,8 @@ struct coco_problem {
   long best_observed_evaluation[1];
   /* Fields depending on the current/parent benchmark suite */
   size_t suite_dep_index;
-  size_t suite_dep_function_id;
-  size_t suite_dep_instance_id;
+  size_t suite_dep_function;
+  size_t suite_dep_instance;
   void *data;
   /* The prominent usecase for data is coco_transformed_data_t*, making an
    * "onion of problems", initialized in coco_transformed_allocate(...).
@@ -128,15 +126,15 @@ struct coco_suite {
 
   size_t number_of_dimensions;
   size_t *dimensions;
-  int current_dimension_id;
+  long current_dimension_idx;
 
   size_t number_of_functions;
   size_t *functions;
-  int current_function_id;
+  long current_function_idx;
 
   size_t number_of_instances;
   size_t *instances;
-  int current_instance_id;
+  long current_instance_idx;
   char *default_instances;
 
   coco_problem_t *current_problem;

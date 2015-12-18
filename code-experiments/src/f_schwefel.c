@@ -58,9 +58,9 @@ static coco_problem_t *f_schwefel_allocate(const size_t number_of_variables) {
   return problem;
 }
 
-static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function_id,
+static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
                                                         const size_t dimension,
-                                                        const size_t instance_id,
+                                                        const size_t instance,
                                                         const long rseed,
                                                         const char *problem_id_template,
                                                         const char *problem_name_template) {
@@ -78,7 +78,7 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function_id
   double *tmp2 = coco_allocate_vector(dimension);
 
   xopt = coco_allocate_vector(dimension);
-  fopt = bbob2009_compute_fopt(function_id, instance_id);
+  fopt = bbob2009_compute_fopt(function, instance);
   bbob2009_unif(tmp1, dimension, rseed);
   for (i = 0; i < dimension; ++i) {
     xopt[i] = 0.5 * 4.2096874633;
@@ -114,8 +114,8 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function_id
   problem = f_transform_vars_scale(problem, 2);
   problem = f_transform_vars_x_hat(problem, rseed);
 
-  coco_problem_set_id(problem, problem_id_template, function_id, instance_id, dimension);
-  coco_problem_set_name(problem, problem_name_template, function_id, instance_id, dimension);
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
 
   coco_free_memory(M);
   coco_free_memory(b);
