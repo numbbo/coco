@@ -44,13 +44,13 @@ typedef void (*coco_free_function_t)(coco_problem_t *self);
  *   that, when not NULL, must be unique. It can for example be used
  *   to generate valid directory names under which to store results.
  *
+ * problem_type - Type of the problem. May be NULL to indicate that no type is known.
+ *
  * suite_dep_index - Index of the problem in the current/parent benchmark suite
  *
- * suite_dep_function_id - Id of the problem function in the current/parent
- * benchmark suite
+ * suite_dep_function - Problem function in the current/parent benchmark suite
  *
- * suite_dep_instance_id - Id of the problem instance the current/parent
- * benchmark suite
+ * suite_dep_instanced - Problem instance the current/parent benchmark suite
  *
  * data - Void pointer that can be used to store problem specific data
  *   needed by any of the methods.
@@ -70,15 +70,16 @@ struct coco_problem {
   double *best_parameter;
   char *problem_name;
   char *problem_id;
+  char *problem_type;
   long evaluations;
   /* Convenience fields for output generation */
   double final_target_delta[1];
   double best_observed_fvalue[1];
   long best_observed_evaluation[1];
   /* Fields depending on the current/parent benchmark suite */
-  long suite_dep_index;
-  int suite_dep_function_id;
-  long suite_dep_instance_id;
+  size_t suite_dep_index;
+  size_t suite_dep_function;
+  size_t suite_dep_instance;
   void *data;
   /* The prominent usecase for data is coco_transformed_data_t*, making an
    * "onion of problems", initialized in coco_transformed_allocate(...).
@@ -117,10 +118,33 @@ struct coco_observer {
   char *output_folder;
   char *algorithm_name;
   char *algorithm_info;
+  int precision_x;
+  int precision_f;
   void *data;
 
   coco_observer_data_free_function_t data_free_function;
   coco_logger_initialize_function_t logger_initialize_function;
+};
+
+struct coco_suite {
+
+  char *suite_name;
+
+  size_t number_of_dimensions;
+  size_t *dimensions;
+  long current_dimension_idx;
+
+  size_t number_of_functions;
+  size_t *functions;
+  long current_function_idx;
+
+  size_t number_of_instances;
+  size_t *instances;
+  long current_instance_idx;
+  char *default_instances;
+
+  coco_problem_t *current_problem;
+
 };
 
 #endif
