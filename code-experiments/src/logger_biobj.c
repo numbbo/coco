@@ -51,8 +51,6 @@ typedef struct {
 
   /* Whether to log the decision variables */
   int log_vars;
-  int precision_x;
-  int precision_f;
 
   size_t number_of_evaluations;
   size_t number_of_variables;
@@ -435,7 +433,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   /* Output header information to the log file */
   fprintf(indicator->log_file, "%%\n%% index = %ld, name = %s\n", problem->suite_dep_index, problem->problem_name);
   fprintf(indicator->log_file, "%% DIM = %lu, instId = %ld, bestVal = %.*e\n", problem->number_of_variables,
-      problem->suite_dep_instance, logger->precision_f, indicator->best_value);
+      problem->suite_dep_instance, observer->precision_f, indicator->best_value);
   fprintf(indicator->log_file, "%% function evaluation | indicator value | target value\n");
 
   return indicator;
@@ -486,6 +484,7 @@ static void logger_biobj_indicator_free(void *stuff) {
 static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, double *y) {
 
   logger_biobj_t *logger;
+  coco_observer_t *observer;
 
   logger_biobj_avl_item_t *node_item;
   logger_biobj_indicator_t *indicator;
@@ -493,6 +492,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
   size_t i;
 
   logger = (logger_biobj_t *) coco_transformed_get_data(problem);
+  observer = logger->observer;
 
   /* Evaluate function */
   coco_evaluate_function(coco_transformed_get_inner_problem(problem), x, y);
@@ -507,7 +507,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
   /* If the archive was updated and you need to log all nondominated solutions, output the new solution to nondom_file */
   if (update_performed && (logger->log_nondom_mode == ALL)) {
     logger_biobj_tree_output(logger->nondom_file, logger->buffer_tree, logger->number_of_variables,
-        logger->number_of_objectives, logger->log_vars, logger->precision_x, logger->precision_f);
+        logger->number_of_objectives, logger->log_vars, observer->precision_x, observer->precision_f);
     avl_tree_purge(logger->buffer_tree);
 
     /* Flush output so that impatient users can see progress. */
@@ -533,8 +533,8 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
           break;
       }
       if (target_hit)
-        fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-            indicator->best_value - indicator->current_value, logger->precision_f,
+        fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, observer->precision_f,
+            indicator->best_value - indicator->current_value, observer->precision_f,
             MO_RELATIVE_TARGET_VALUES[indicator->next_target_id - 1]);
 
     }
@@ -546,8 +546,11 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
  */
 static void logger_biobj_finalize(logger_biobj_t *logger) {
 
+  coco_observer_t *observer;
   avl_tree_t *resorted_tree;
   avl_node_t *solution;
+
+  observer = logger->observer;
 
   /* Resort archive_tree according to time stamp and then output it */
   resorted_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_time_stamp, NULL);
@@ -562,7 +565,7 @@ static void logger_biobj_finalize(logger_biobj_t *logger) {
   }
 
   logger_biobj_tree_output(logger->nondom_file, resorted_tree, logger->number_of_variables,
-      logger->number_of_objectives, logger->log_vars, logger->precision_x, logger->precision_f);
+      logger->number_of_objectives, logger->log_vars, observer->precision_x, observer->precision_f);
 
   avl_tree_destruct(resorted_tree);
 }
@@ -633,11 +636,9 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
   logger->suite_dep_instance = problem->suite_dep_instance;
 
   observer_biobj = (observer_biobj_t *) observer->data;
-  /* Copy two values from both observers that you might need even if they don't exist any more */
+  /* Copy two values from the observer_biobj that you might need even if the observer does not exist any more */
   logger->log_nondom_mode = observer_biobj->log_nondom_mode;
   logger->compute_indicators = observer_biobj->compute_indicators;
-  logger->precision_x = observer->precision_x;
-  logger->precision_f = observer->precision_f;
 
   if (((observer_biobj->log_vars_mode == LOW_DIM) && (problem->number_of_variables > 5))
       || (observer_biobj->log_vars_mode == NEVER))
