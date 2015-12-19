@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stddef.h>
 
 #include "coco.h"
 #include "coco_internal.h"
