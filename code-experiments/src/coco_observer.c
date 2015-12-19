@@ -140,7 +140,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   /* Here each observer must have an entry */
   if (0 == strcmp(observer_name, "observer_toy")) {
     observer_toy(observer, observer_options);
-  } else if (0 == strcmp(observer_name, "observer_bbob2009")) {
+  } else if (0 == strcmp(observer_name, "observer_bbob")) {
     observer_bbob2009(observer, observer_options);
   } else if (0 == strcmp(observer_name, "observer_biobj")) {
     observer_biobj(observer, observer_options);
