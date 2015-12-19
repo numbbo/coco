@@ -32,7 +32,7 @@ static coco_problem_t *f_different_powers_allocate(const size_t number_of_variab
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("different powers function",
       f_different_powers_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
-  coco_problem_set_id(problem, "%s_d%04lu", "different_powers", number_of_variables);
+  coco_problem_set_id(problem, "%s_d%02lu", "different_powers", number_of_variables);
 
   /* Compute best solution */
   f_different_powers_evaluate(problem, problem->best_parameter, problem->best_value);

@@ -49,7 +49,7 @@ static coco_problem_t *f_attractive_sector_allocate(const size_t number_of_varia
   f_attractive_sector_data_t *data;
   coco_problem_t *problem = coco_problem_allocate_from_scalars("attractive sector function",
       f_attractive_sector_evaluate, f_attractive_sector_free, number_of_variables, -5.0, 5.0, 0.0);
-  coco_problem_set_id(problem, "%s_d%04lu", "attractive_sector", number_of_variables);
+  coco_problem_set_id(problem, "%s_d%02lu", "attractive_sector", number_of_variables);
 
   data = coco_allocate_memory(sizeof(*data));
   data->xopt = coco_duplicate_vector(xopt, number_of_variables);

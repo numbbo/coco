@@ -36,7 +36,7 @@ static coco_problem_t *f_rastrigin_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Rastrigin function",
       f_rastrigin_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
-  coco_problem_set_id(problem, "%s_d%04lu", "rastrigin", number_of_variables);
+  coco_problem_set_id(problem, "%s_d%02lu", "rastrigin", number_of_variables);
 
   /* Compute best solution */
   f_rastrigin_evaluate(problem, problem->best_parameter, problem->best_value);

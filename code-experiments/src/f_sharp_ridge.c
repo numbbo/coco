@@ -34,7 +34,7 @@ static coco_problem_t *f_sharp_ridge_allocate(const size_t number_of_variables) 
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("sharp ridge function",
       f_sharp_ridge_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
-  coco_problem_set_id(problem, "%s_d%04lu", "sharp_ridge", number_of_variables);
+  coco_problem_set_id(problem, "%s_d%02lu", "sharp_ridge", number_of_variables);
 
   /* Compute best solution */
   f_sharp_ridge_evaluate(problem, problem->best_parameter, problem->best_value);

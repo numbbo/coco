@@ -47,7 +47,7 @@ static coco_problem_t *f_schwefel_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Schwefel function",
       f_schwefel_evaluate, NULL, number_of_variables, -5.0, 5.0, NAN);
-  coco_problem_set_id(problem, "%s_d%04lu", "schwefel", number_of_variables);
+  coco_problem_set_id(problem, "%s_d%02lu", "schwefel", number_of_variables);
 
   /* Compute best solution
    *
