@@ -680,7 +680,8 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
       if (count > 1) {
         coco_warning("coco_options_read_ranges(): problem parsing '%s' - too many '-'s", string);
         /* Cleanup */
-        coco_free_memory(*(ranges + i));
+        for (j = 0; *(ranges + j); j++)
+          coco_free_memory(*(ranges + j));
         coco_free_memory(ranges);
         if (i_result == 0) {
           coco_free_memory(result);
@@ -712,7 +713,8 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
           if ((min == 0) || (max == 0)) {
             coco_warning("coco_options_read_ranges(): '%s' ranges cannot have an open ends; some ranges ignored", name);
             /* Cleanup */
-            coco_free_memory(*(ranges + i));
+            for (j = 0; *(ranges + j); j++)
+              coco_free_memory(*(ranges + j));
             coco_free_memory(ranges);
             if (i_result == 0) {
               coco_free_memory(result);
@@ -729,7 +731,8 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
             if (min == 0) {
               coco_warning("coco_options_read_ranges(): '%s' ranges cannot have an open beginning; some ranges ignored", name);
               /* Cleanup */
-              coco_free_memory(*(ranges + i));
+              for (j = 0; *(ranges + j); j++)
+                coco_free_memory(*(ranges + j));
               coco_free_memory(ranges);
               if (i_result == 0) {
                 coco_free_memory(result);
@@ -745,7 +748,8 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
             if (max == 0) {
               coco_warning("coco_options_read_ranges(): '%s' ranges cannot have an open end; some ranges ignored", name);
               /* Cleanup */
-              coco_free_memory(*(ranges + i));
+              for (j = 0; *(ranges + j); j++)
+                coco_free_memory(*(ranges + j));
               coco_free_memory(ranges);
               if (i_result == 0) {
                 coco_free_memory(result);
@@ -768,7 +772,8 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
       if (num[0] > num[1]) {
         coco_warning("coco_options_read_ranges(): '%s' ranges not within boundaries; some ranges ignored", name);
         /* Cleanup */
-        coco_free_memory(*(ranges + i));
+        for (j = 0; *(ranges + j); j++)
+          coco_free_memory(*(ranges + j));
         coco_free_memory(ranges);
         if (i_result == 0) {
           coco_free_memory(result);
@@ -784,9 +789,9 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
           break;
         result[i_result++] = j;
       }
-    }
 
-    coco_free_memory(*(ranges + i));
+      coco_free_memory(*(ranges + i));
+    }
   }
 
   coco_free_memory(ranges);
