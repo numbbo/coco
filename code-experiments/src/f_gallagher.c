@@ -102,7 +102,10 @@ static void f_gallagher_free(coco_problem_t *self) {
   self->free_problem = NULL;
   coco_problem_free(self);
 
-  coco_free_memory(gallagher_peaks);
+  if (gallagher_peaks != NULL) {
+    coco_free_memory(gallagher_peaks);
+    gallagher_peaks = NULL;
+  }
 }
 
 /* Note: there is no separate f_gallagher_allocate() function! */
@@ -143,11 +146,15 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   data->arr_scales = bbob2009_allocate_matrix(number_of_peaks, dimension);
 
   if (number_of_peaks == peaks_101) {
+    if (gallagher_peaks != NULL)
+      coco_free_memory(gallagher_peaks);
     gallagher_peaks = coco_allocate_vector(peaks_101 * dimension);
     maxcondition1 = sqrt(maxcondition1);
     b = 10.;
     c = 5.;
   } else if (number_of_peaks == peaks_21) {
+    if (gallagher_peaks != NULL)
+      coco_free_memory(gallagher_peaks);
     gallagher_peaks = coco_allocate_vector(peaks_21 * dimension);
     b = 9.8;
     c = 4.9;

@@ -49,19 +49,16 @@ static char *suite_bbob_get_instances_by_year(const int year) {
   }
 }
 
-static coco_problem_t *suite_bbob_get_problem(coco_suite_t *suite,
-                                              const size_t function_idx,
-                                              const size_t dimension_idx,
-                                              const size_t instance_idx) {
-
+/**
+ * Creates and returns a BBOB suite problem without needing the actual suite.
+ */
+static coco_problem_t *get_bbob_problem(const size_t function,
+                                        const size_t dimension,
+                                        const size_t instance) {
   coco_problem_t *problem = NULL;
 
   const char *problem_id_template = "suite_bbob_f%03lu_i%02lu_d%02lu";
   const char *problem_name_template = "BBOB suite problem f%lu instance %lu in %luD";
-
-  const size_t function = suite->functions[function_idx];
-  const size_t dimension = suite->dimensions[dimension_idx];
-  const size_t instance = suite->instances[instance_idx];
 
   const long rseed = (long) (function + 10000 * instance);
   const long rseed_3 = (long) (3 + 10000 * instance);
@@ -140,9 +137,25 @@ static coco_problem_t *suite_bbob_get_problem(coco_suite_t *suite,
     problem = f_lunacek_bi_rastrigin_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else {
-    coco_error("suite_bbob_get_problem(): function %lu does not exist in this suite", function);
+    coco_error("get_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD", function, instance, dimension);
     return NULL; /* Never reached */
   }
+
+  return problem;
+}
+
+static coco_problem_t *suite_bbob_get_problem(coco_suite_t *suite,
+                                              const size_t function_idx,
+                                              const size_t dimension_idx,
+                                              const size_t instance_idx) {
+
+  coco_problem_t *problem = NULL;
+
+  const size_t function = suite->functions[function_idx];
+  const size_t dimension = suite->dimensions[dimension_idx];
+  const size_t instance = suite->instances[instance_idx];
+
+  problem = get_bbob_problem(function, dimension, instance);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;

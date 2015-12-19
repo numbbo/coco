@@ -8,8 +8,6 @@
 /**
  * TODO: Add instructions on how to implement a new suite!
  * TODO: Add asserts regarding input values!
- * TODO: Write getters!
- * TODO: Implement encode/decode problem_index functions!
  */
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
@@ -39,10 +37,10 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 
   suite->default_instances = coco_strdup(default_instances);
 
+  /* To be set when iterating through the suite */
   suite->current_dimension_idx = -1;
   suite->current_function_idx = -1;
   suite->current_instance_idx = -1;
-
   suite->current_problem = NULL;
 
   /* To be set in coco_suite_set_instance() */
@@ -140,29 +138,33 @@ size_t coco_suite_get_instance_from_index(coco_suite_t *suite, size_t instance_i
 
 void coco_suite_free(coco_suite_t *suite) {
 
-  if (suite->suite_name) {
-    coco_free_memory(suite->suite_name);
-    suite->suite_name = NULL;
-  }
-  if (suite->dimensions) {
-    coco_free_memory(suite->dimensions);
-    suite->dimensions = NULL;
-  }
-  if (suite->functions) {
-    coco_free_memory(suite->functions);
-    suite->functions = NULL;
-  }
-  if (suite->instances) {
-    coco_free_memory(suite->instances);
-    suite->instances = NULL;
-  }
+  if (suite != NULL) {
 
-  if (suite->current_problem) {
-    coco_problem_free(suite->current_problem);
-    suite->current_problem = NULL;
-  }
+    if (suite->suite_name) {
+      coco_free_memory(suite->suite_name);
+      suite->suite_name = NULL;
+    }
+    if (suite->dimensions) {
+      coco_free_memory(suite->dimensions);
+      suite->dimensions = NULL;
+    }
+    if (suite->functions) {
+      coco_free_memory(suite->functions);
+      suite->functions = NULL;
+    }
+    if (suite->instances) {
+      coco_free_memory(suite->instances);
+      suite->instances = NULL;
+    }
 
-  coco_free_memory(suite);
+    if (suite->current_problem) {
+      coco_problem_free(suite->current_problem);
+      suite->current_problem = NULL;
+    }
+
+    coco_free_memory(suite);
+    suite = NULL;
+  }
 }
 
 static coco_suite_t *coco_suite_intialize(const char *suite_name) {
