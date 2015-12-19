@@ -7,6 +7,7 @@
 #include "coco_strdup.c"
 #include "coco_problem.c"
 #include "suite_bbob2009.c"
+#include "suite_bbob.c"
 #include "mo_generics.c"
 
 /**
@@ -24,7 +25,7 @@
 static const size_t SUITE_BIOBJ_300_INSTANCE_LIST[5][2] = { { 2, 4 }, { 3, 5 }, { 7, 8 }, { 9, 10 },
     { 11, 12 } };
 /* List of 300 functions (300 is the total number of bi-objective function combinations) */
-static int SUITE_BIOBJ_300_FUNCTION_LIST[300][2];
+static size_t SUITE_BIOBJ_300_FUNCTION_LIST[300][2];
 /* Whether the suite is defined */
 static int SUITE_BIOBJ_300_DEFINED = 0;
 /* A list of problem types */
@@ -61,33 +62,31 @@ static const char SUITE_BIOBJ_300_PROBLEM_TYPE[24][30] = {
 /**
  * Computes the function_id, instance_id and dimension_idx from the given problem_index.
  */
-static void suite_biobj_300_decode_problem_index(const long problem_index,
-                                                 int *function_id,
-                                                 long *instance_id,
-                                                 int *dimension_idx) {
-  long rest;
-  *dimension_idx = (int) problem_index / (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS);
-  rest = problem_index % (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS);
-  *function_id = (int) (rest / SUITE_BIOBJ_NUMBER_OF_INSTANCES);
+static void deprecated__suite_biobj_300_decode_problem_index(const long problem_index,
+                                                 size_t *function_id,
+                                                 size_t *instance_id,
+                                                 size_t *dimension_idx) {
+  size_t rest;
+  *dimension_idx =  (size_t) (problem_index / (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS));
+  rest = (size_t) (problem_index % (SUITE_BIOBJ_NUMBER_OF_INSTANCES * SUITE_BIOBJ_NUMBER_OF_FUNCTIONS));
+  *function_id = (rest / SUITE_BIOBJ_NUMBER_OF_INSTANCES);
   *instance_id = rest % SUITE_BIOBJ_NUMBER_OF_INSTANCES;
 }
 /**
  * Initializes the biobjective suite created from 300 combinations of the bbob2009 functions.
  * Returns the problem corresponding to the given problem_index.
  */
-static coco_problem_t *suite_biobj_300(const long problem_index) {
-  int function_id, function1_id, function2_id, dimension_idx;
-  long instance_id;
+static coco_problem_t *deprecated__suite_biobj_300(const long problem_index) {
+  size_t function_id, function1_id, function2_id, dimension_idx;
+  size_t instance_id;
   coco_problem_t *problem1, *problem2, *problem;
-  mo_problem_data_t *data;
-  double *x, *nadir;
 
   if (problem_index < 0)
     return NULL;
 
   if (SUITE_BIOBJ_300_DEFINED == 0) {
-    int k = 0;
-    int i, j;
+    size_t k = 0;
+    size_t i, j;
     for (i = 0; i < 24; ++i) {
       for (j = i; j < 24; ++j) {
         SUITE_BIOBJ_300_FUNCTION_LIST[k][0] = i;
@@ -98,56 +97,36 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
     SUITE_BIOBJ_300_DEFINED = 1;
   }
 
-  suite_biobj_300_decode_problem_index(problem_index, &function_id, &instance_id, &dimension_idx);
+  deprecated__suite_biobj_300_decode_problem_index(problem_index, &function_id, &instance_id, &dimension_idx);
 
   function1_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][0];
   function2_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][1];
 
-  problem1 = suite_bbob2009_problem(function1_id + 1, BBOB2009_DIMS[dimension_idx],
-      (long) SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][0]);
-  problem2 = suite_bbob2009_problem(function2_id + 1, BBOB2009_DIMS[dimension_idx],
-      (long) SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][1]);
+  problem1 = deprecated__suite_bbob2009_problem(function1_id + 1, BBOB2009_DIMS[dimension_idx],
+      SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][0]);
+  problem2 = deprecated__suite_bbob2009_problem(function2_id + 1, BBOB2009_DIMS[dimension_idx],
+      SUITE_BIOBJ_300_INSTANCE_LIST[instance_id][1]);
 
-  /* Set the ideal and reference points*/
-  data = mo_problem_data_allocate(2);
-  data->ideal_point[0] = problem1->best_value[0];
-  data->ideal_point[1] = problem2->best_value[0];
-  nadir = coco_allocate_vector(2);
-  x = problem2->best_parameter;
-  coco_evaluate_function(problem1, x, &nadir[0]);
-  x = problem1->best_parameter;
-  coco_evaluate_function(problem2, x, &nadir[1]);
-  data->reference_point[0] = nadir[0];
-  data->reference_point[1] = nadir[1];
-
-  /* ATTENTION! Changing the reference point affects the best values as well!
-  data->reference_point[0] = data->ideal_point[0] + 2 * (nadir[0] - data->ideal_point[0]);
-  data->reference_point[1] = data->ideal_point[1] + 2 * (nadir[1] - data->ideal_point[1]); */
+  problem = NULL;
 
   /* Construct the type of the problem */
   if (function1_id < function2_id)
-    data->problem_type = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_TYPE[function1_id],
-        SUITE_BIOBJ_300_PROBLEM_TYPE[function2_id]);
+    problem->problem_type = coco_strdupf("%s_%s", problem1->problem_type, problem2->problem_type);
   else
-    data->problem_type = coco_strdupf("%s_%s", SUITE_BIOBJ_300_PROBLEM_TYPE[function2_id],
-        SUITE_BIOBJ_300_PROBLEM_TYPE[function1_id]);
+    problem->problem_type = coco_strdupf("%s_%s", problem2->problem_type, problem1->problem_type);
 
-  mo_problem_data_compute_normalization_factor(data, 2);
-  coco_free_memory(nadir);
-
-  problem = coco_stacked_problem_allocate(problem1, problem2, data, mo_problem_data_free);
-  problem->suite_dep_index = problem_index;
-  problem->suite_dep_function_id = function_id;
-  problem->suite_dep_instance_id = instance_id;
+  problem = coco_stacked_problem_allocate(problem1, problem2);
+  problem->suite_dep_index = (size_t) problem_index;
+  problem->suite_dep_function = function_id;
+  problem->suite_dep_instance = instance_id;
 
   coco_free_memory(problem->problem_name);
   problem->problem_name = coco_strdup(problem->problem_id);
 
   /* Construct the id for the suite_biobj_300 in the form "biobj_300_fxxx_DIMy" */
   coco_free_memory(problem->problem_id);
-  problem->problem_id = coco_strdupf("biobj_300_f%03d_i%02ld_d%02d", function_id + 1, instance_id + 1,
+  problem->problem_id = coco_strdupf("biobj_300_f%03d_i%02ld_d%02d", function_id, instance_id,
       problem->number_of_variables);
-
 
   return problem;
 }
@@ -157,26 +136,26 @@ static coco_problem_t *suite_biobj_300(const long problem_index) {
  * Currently skips problems with bbob209 functions f07 and f20, because they don't define a
  * best value.
  */
-static long suite_biobj_300_get_next_problem_index(long problem_index, const char *selection_descriptor) {
+static long deprecated__suite_biobj_300_get_next_problem_index(long problem_index, const char *selection_descriptor) {
 
-  const long first_index = 0;
-  const long last_index = 7499;
+  const size_t first_index = 0;
+  const size_t last_index = 7499;
 
-  int function_id, function1_id, function2_id, dimension_idx;
-  long instance_id;
+  size_t function_id, function1_id, function2_id, dimension_idx;
+  size_t instance_id;
 
   const int banned_functions_count = 2;
   const int banned_functions[2] = {6, 19};
   int i, is_banned;
 
   if (problem_index < 0)
-    problem_index = first_index - 1;
+    problem_index = (long) first_index - 1;
 
   if (strlen(selection_descriptor) == 0) {
     if (problem_index < last_index) {
       do {
         is_banned = 0;
-        suite_biobj_300_decode_problem_index(++problem_index, &function_id, &instance_id, &dimension_idx);
+        deprecated__suite_biobj_300_decode_problem_index(++problem_index, &function_id, &instance_id, &dimension_idx);
 
         function1_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][0];
         function2_id = SUITE_BIOBJ_300_FUNCTION_LIST[function_id][1];

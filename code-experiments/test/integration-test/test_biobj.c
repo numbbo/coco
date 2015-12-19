@@ -5,8 +5,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "coco.h"
+
+void wait (unsigned int secs) {
+    time_t retTime = time(0) + secs;
+    while (time(0) < retTime);
+}
 
 /**
  * A random search optimizer.
@@ -43,14 +49,27 @@ void my_optimizer(coco_problem_t *problem) {
 /* Each time: run the benchmark and delete the output folder */
 void run_once(char *observer_options) {
 
-  char *suite_name = "suite_biobj_300";
-  char *observer_name = "observer_biobj";
+  coco_suite_t *suite;
+  coco_observer_t *observer;
+  coco_problem_t *problem;
 
   printf("Running experiment with options %s ...", observer_options);
   fflush(stdout);
 
-  coco_suite_benchmark(suite_name, observer_name, observer_options, my_optimizer);
+  suite = coco_suite("suite_biobj", NULL, "dimensions: 2 functions: 5-10 instances: 2-3");
+  observer = coco_observer("observer_biobj", observer_options);
+
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
+
+    my_optimizer(problem);
+
+  }
+
+  coco_observer_free(observer);
+  coco_suite_free(suite);
+
   coco_remove_directory("biobj");
+  wait(2); /* So that the directory removal is surely finished */
 
   printf("DONE!\n");
   fflush(stdout);
@@ -69,9 +88,9 @@ int main( int argc, char *argv[] )  {
     run_once("result_folder: biobj log_nondominated: none  compute_indicators: 1");
     run_once("result_folder: biobj log_nondominated: all   compute_indicators: 1");
     run_once("result_folder: biobj log_nondominated: final compute_indicators: 1");
-    run_once("result_folder: biobj log_nondominated: none  compute_indicators: 1 include_decision_variables: 1");
-    run_once("result_folder: biobj log_nondominated: all   compute_indicators: 0 include_decision_variables: 1");
-    run_once("result_folder: biobj log_nondominated: final compute_indicators: 1 include_decision_variables: 1");
+    run_once("result_folder: biobj log_nondominated: none  compute_indicators: 1 log_decision_variables: all");
+    run_once("result_folder: biobj log_nondominated: all   compute_indicators: 0 log_decision_variables: none");
+    run_once("result_folder: biobj log_nondominated: final compute_indicators: 1 log_decision_variables: low_dim");
   }
   return 0;
 }

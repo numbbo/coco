@@ -7,7 +7,6 @@ typedef struct {
   double *ideal_point;
   double *reference_point;
   double *normalization_factor;
-  char *problem_type;
 } mo_problem_data_t;
 
 static mo_problem_data_t *mo_problem_data_allocate(const size_t number_of_objectives) {
@@ -17,16 +16,23 @@ static mo_problem_data_t *mo_problem_data_allocate(const size_t number_of_object
   data->ideal_point = coco_allocate_vector(number_of_objectives);
   data->reference_point = coco_allocate_vector(number_of_objectives);
   data->normalization_factor = coco_allocate_vector(number_of_objectives);
-  data->problem_type = NULL; /* To be allocated later */
 
   return data;
 }
 
 static void mo_problem_data_compute_normalization_factor(mo_problem_data_t *data, const size_t number_of_objectives) {
   size_t i;
+  double diff;
 
-  for (i = 0; i < number_of_objectives; i++)
-    data->normalization_factor[i] = 1 / (data->reference_point[i] - data->ideal_point[i]);
+  for (i = 0; i < number_of_objectives; i++) {
+    diff = data->reference_point[i] - data->ideal_point[i];
+    if (diff == 0) {
+      coco_warning("mo_problem_data_compute_normalization_factor(): ideal and reference points too close!");
+      diff = 1.0;
+    }
+    else
+      data->normalization_factor[i] = 1.0 / diff;
+  }
 }
 
 static void mo_problem_data_free(void *stuff) {
@@ -51,10 +57,6 @@ static void mo_problem_data_free(void *stuff) {
     data->normalization_factor = NULL;
   }
 
-  if (data->problem_type != NULL) {
-    coco_free_memory(data->problem_type);
-    data->problem_type = NULL;
-  }
 }
 
 /**
