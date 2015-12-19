@@ -485,28 +485,11 @@ static int coco_options_read_string(const char *options, const char *name, char 
     return 0;
   }
 
-  if (options[i2 + 1] == '\"') {
+  if (options[i2] == '\"') {
     /* The value starts with a quote: read everything between two quotes into a string */
     return sscanf(&options[i2], "\"%[^\"]\"", pointer);
   } else
     return sscanf(&options[i2], "%s", pointer);
-}
-
-/* Return the smallest positive value between the two. If both are negative, return -1. */
-static long coco_min_positive(long a, long b) {
-  if ((a < 0) && (b < 0)) {
-    return -1;
-  }
-  if ((a >= 0) && (b < 0)) {
-    return a;
-  }
-  if ((a < 0) && (b >= 0)) {
-    return b;
-  }
-  if (a < b)
-    return a;
-
-  return b;
 }
 
 /**

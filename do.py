@@ -128,7 +128,7 @@ def run_c_integration_tests():
     try:
         run('code-experiments/test/integration-test', ['./test_coco', 'bbob2009_testcases.txt'])
         run('code-experiments/test/integration-test', ['./test_instance_extraction'])
-        # run('code-experiments/test/integration-test', ['./test_biobj']) commented until it can be made faster
+        run('code-experiments/test/integration-test', ['./test_biobj'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
     

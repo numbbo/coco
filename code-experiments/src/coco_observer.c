@@ -48,8 +48,9 @@ void coco_observer_free(coco_observer_t *self) {
         self->data_free_function(self->data);
       }
       coco_free_memory(self->data);
+      self->data = NULL;
     }
-    self->data = NULL;
+
     self->logger_initialize_function = NULL;
     coco_free_memory(self);
     self = NULL;

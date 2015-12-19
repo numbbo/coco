@@ -116,19 +116,19 @@ void my_grid_search(coco_problem_t *problem) {
 
 int main(void) {
 
-  const char *observer_options_GS = "result_folder: GS_on_suite_biobj_300 \
+  const char *observer_options_GS = "result_folder: GS_on_suite_biobj \
                                      algorithm_name: GS \
                                      algorithm_info: \"A simple grid search algorithm\" \
-                                     include_decision_variables: 1 \
+                                     log_decision_variables: low_dim \
                                      compute_indicators: 1 \
-                                     log_nondominated: final";
+                                     log_nondominated: all";
 
-  const char *observer_options_RS = "result_folder: RS_on_suite_biobj_300 \
+  const char *observer_options_RS = "result_folder: RS_on_suite_biobj \
                                      algorithm_name: RS \
                                      algorithm_info: \"A simple random search algorithm\" \
-                                     include_decision_variables: 1 \
+                                     log_decision_variables: low_dim \
                                      compute_indicators: 1 \
-                                     log_nondominated: final";
+                                     log_nondominated: all";
 
   coco_suite_t *suite;
   coco_observer_t *observer;
@@ -137,7 +137,7 @@ int main(void) {
   printf("Running the experiments... (it takes time, be patient)\n");
   fflush(stdout);
 
-  suite = coco_suite("suite_biobj", NULL, "dimensions: 2,3,4, instance_idx: 1-3 function_idx : 2-3");
+  suite = coco_suite("suite_biobj", NULL, "dimensions: 2,10 instance_idx: 1");
   observer = coco_observer("observer_biobj", observer_options_RS);
   /* observer = coco_observer("observer_biobj", observer_options_GS); */
 
