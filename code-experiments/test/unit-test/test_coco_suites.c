@@ -31,7 +31,7 @@ static void test_coco_suite_get_next_problem_index(void **state) {
   expect_string(__wrap_suite_bbob2009_get_next_problem_index, problem_index, -1);
   will_return(__wrap_suite_bbob2009_get_next_problem_index, 2);
 
-  prob_index = deprecated__coco_suite_get_next_problem_index("suite_bbob2009", -1, NULL);
+  prob_index = deprecated__coco_suite_get_next_problem_index("suite_bbob", -1, NULL);
 
   assert_true(prob_index == 2);
 

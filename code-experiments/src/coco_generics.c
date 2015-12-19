@@ -144,16 +144,16 @@ void coco_problem_get_initial_solution(const coco_problem_t *self, double *initi
 }
 
 /* Commented to silence the compiler */
-static size_t coco_problem_get_suite_dep_index(coco_problem_t *problem) {
+size_t coco_problem_get_suite_dep_index(coco_problem_t *problem) {
   return problem->suite_dep_index;
 }
 
 
-static size_t coco_problem_get_suite_dep_function(coco_problem_t *problem) {
+size_t coco_problem_get_suite_dep_function(coco_problem_t *problem) {
   return problem->suite_dep_function;
 }
 
-static size_t coco_problem_get_suite_dep_instance(coco_problem_t *problem) {
+size_t coco_problem_get_suite_dep_instance(coco_problem_t *problem) {
   return problem->suite_dep_instance;
 }
 

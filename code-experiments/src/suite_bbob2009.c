@@ -95,8 +95,7 @@ static const size_t BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up use
  * The quickest way to decode this is using integer division and
  * remainders.
  */
-
-static void deprecated__suite_bbob2009_decode_problem_index(const long problem_index,
+void deprecated__suite_bbob2009_decode_problem_index(const long problem_index,
                                                 size_t *function_id,
                                                 size_t *instance_id,
                                                 size_t *dimension) {

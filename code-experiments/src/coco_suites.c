@@ -42,10 +42,10 @@ long deprecated__coco_suite_get_next_problem_index(const char *problem_suite,
   /* code specific to known benchmark suites */
   /* for efficiency reasons, each test suite should define
    * at least its last_index here */
-  if (0 == strcmp(problem_suite, "suite_bbob2009")) {
+  if (0 == strcmp(problem_suite, "suite_bbob")) {
     /* without selection_options: last_index = 2159; */
     return deprecated__suite_bbob2009_get_next_problem_index(problem_index, select_options);
-  } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
+  } else if (0 == strcmp(problem_suite, "suite_biobj")) {
     return deprecated__suite_biobj_300_get_next_problem_index(problem_index, select_options);
   }
 
@@ -85,10 +85,10 @@ long deprecated__coco_suite_get_next_problem_index(const char *problem_suite,
 coco_problem_t *deprecated__coco_suite_get_problem(const char *problem_suite, const long problem_index) {
   if (0 == strcmp(problem_suite, "suite_toy")) {
     return deprecated__suite_toy(problem_index);
-  } else if (0 == strcmp(problem_suite, "suite_bbob2009")) {
+  } else if (0 == strcmp(problem_suite, "suite_bbob")) {
     return deprecated__suite_bbob2009(problem_index);
     /* return deprecated__suite_bbob2009(problem_index); */
-  } else if (0 == strcmp(problem_suite, "suite_biobj_300")) {
+  } else if (0 == strcmp(problem_suite, "suite_biobj")) {
     return deprecated__suite_biobj_300(problem_index);
   } else {
     coco_warning("Unknown problem suite.");
@@ -107,7 +107,7 @@ coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
   if (0 == strcmp(observer_name, "observer_toy")) {
     coco_error("Deprecated way of calling the toy observer.");
     return NULL; /* Never reached */
-  } else if (0 == strcmp(observer_name, "observer_bbob2009")) {
+  } else if (0 == strcmp(observer_name, "observer_bbob")) {
     /*return deprecated__observer_bbob2009(problem, options); to no longer need observer_bbob2009.c*/
     coco_error("Deprecated way of calling the bbob2009 observer.");
     return NULL;

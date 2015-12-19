@@ -106,7 +106,7 @@ static void coco_suite_filter_dimensions(coco_suite_t *suite, const size_t *dims
 
 }
 
-size_t coco_suite_get_function_from_index(coco_suite_t *suite, size_t function_idx) {
+size_t coco_suite_get_function_from_function_index(coco_suite_t *suite, size_t function_idx) {
 
   if (function_idx >= suite->number_of_functions) {
     coco_error("coco_suite_get_function_from_index(): function index exceeding the number of functions in the suite");
@@ -116,7 +116,7 @@ size_t coco_suite_get_function_from_index(coco_suite_t *suite, size_t function_i
  return suite->functions[function_idx];
 }
 
-size_t coco_suite_get_dimension_from_index(coco_suite_t *suite, size_t dimension_idx) {
+size_t coco_suite_get_dimension_from_dimension_index(coco_suite_t *suite, size_t dimension_idx) {
 
   if (dimension_idx >= suite->number_of_dimensions) {
     coco_error("coco_suite_get_dimension_from_index(): dimensions index exceeding the number of dimensions in the suite");
@@ -126,7 +126,7 @@ size_t coco_suite_get_dimension_from_index(coco_suite_t *suite, size_t dimension
  return suite->dimensions[dimension_idx];
 }
 
-size_t coco_suite_get_instance_from_index(coco_suite_t *suite, size_t instance_idx) {
+size_t coco_suite_get_instance_from_instance_index(coco_suite_t *suite, size_t instance_idx) {
 
   if (instance_idx >= suite->number_of_instances) {
     coco_error("coco_suite_get_instance_from_index(): instance index exceeding the number of instances in the suite");
@@ -201,10 +201,10 @@ static char *coco_suite_get_instances_by_year(coco_suite_t *suite, const int yea
   return year_string;
 }
 
-coco_problem_t *coco_suite_get_problem(coco_suite_t *suite,
-                                       size_t function_idx,
-                                       size_t dimension_idx,
-                                       size_t instance_idx) {
+static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
+                                                           size_t function_idx,
+                                                           size_t dimension_idx,
+                                                           size_t instance_idx) {
 
   coco_problem_t *problem;
 
@@ -220,6 +220,18 @@ coco_problem_t *coco_suite_get_problem(coco_suite_t *suite,
   }
 
   return problem;
+}
+
+coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, size_t problem_index) {
+
+  size_t function_idx, instance_idx, dimension_idx;
+  coco_suite_decode_problem_index(suite, problem_index, &function_idx, &dimension_idx, &instance_idx);
+
+  return coco_suite_get_problem_from_indices(suite, function_idx, dimension_idx, instance_idx);
+}
+
+size_t coco_suite_get_number_of_problems(coco_suite_t *suite) {
+  return (suite->number_of_instances * suite->number_of_functions * suite->number_of_dimensions);
 }
 
 static size_t *coco_suite_get_instance_indices(coco_suite_t *suite, const char *suite_instance) {
@@ -480,7 +492,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   dimension_idx = (size_t) suite->current_dimension_idx;
   instance_idx = (size_t) suite->current_instance_idx;
 
-  problem = coco_suite_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  problem = coco_suite_get_problem_from_indices(suite, function_idx, dimension_idx, instance_idx);
   problem = coco_problem_add_observer(problem, observer);
   suite->current_problem = problem;
 
@@ -589,8 +601,16 @@ size_t coco_suite_encode_problem_index(coco_suite_t *suite,
 void coco_suite_decode_problem_index(coco_suite_t *suite,
                                      const size_t problem_index,
                                      size_t *function_idx,
-                                     size_t *instance_idx,
-                                     size_t *dimension_idx) {
+                                     size_t *dimension_idx,
+                                     size_t *instance_idx) {
+
+  if (problem_index > (suite->number_of_instances * suite->number_of_functions * suite->number_of_dimensions) - 1) {
+    coco_warning("coco_suite_decode_problem_index(): problem_index too large");
+    function_idx = 0;
+    instance_idx = 0;
+    dimension_idx = 0;
+    return;
+  }
 
   *instance_idx = problem_index % suite->number_of_instances;
   *function_idx = (problem_index / suite->number_of_instances) % suite->number_of_functions;
