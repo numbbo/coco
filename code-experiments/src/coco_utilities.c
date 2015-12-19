@@ -564,7 +564,7 @@ static int coco_options_read(const char *options, const char *name, const char *
  */
 static char **coco_string_split(const char *string, const char delimiter) {
 
-  char **result;
+  char **result = NULL;
   char *str_copy, *ptr, *token;
   char str_delimiter[2];
   size_t i;
@@ -637,7 +637,7 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
 
   /* Don't allow ranges that are too long */
   const size_t length_limit = 100;
-  size_t *result;
+  size_t *result = NULL;
   size_t i_result = 0;
 
   /* Check for empty string */

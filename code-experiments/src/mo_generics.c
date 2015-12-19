@@ -11,7 +11,9 @@ typedef struct {
 
 static mo_problem_data_t *mo_problem_data_allocate(const size_t number_of_objectives) {
 
-  mo_problem_data_t *data = coco_allocate_memory(sizeof(*data));
+  mo_problem_data_t *data = NULL;
+
+  data = coco_allocate_memory(sizeof(*data));
 
   data->ideal_point = coco_allocate_vector(number_of_objectives);
   data->reference_point = coco_allocate_vector(number_of_objectives);
