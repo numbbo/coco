@@ -596,6 +596,7 @@ static char **coco_string_split(const char *string, const char delimiter) {
   while (token)
   {
       assert(i < count);
+      *(result + i++) = NULL;
       *(result + i++) = coco_strdup(token);
       token = strtok(NULL, str_delimiter);
   }
