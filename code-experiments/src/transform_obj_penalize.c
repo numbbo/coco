@@ -45,5 +45,7 @@ static coco_problem_t *f_transform_obj_penalize(coco_problem_t *inner_problem, c
   data->factor = factor;
   self = coco_transformed_allocate(inner_problem, data, NULL);
   self->evaluate_function = transform_obj_penalize_evaluate;
+  /* Update best parameter value */
+  transform_obj_penalize_evaluate(self, self->best_parameter, self->best_value);
   return self;
 }

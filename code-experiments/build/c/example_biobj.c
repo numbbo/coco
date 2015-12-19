@@ -12,8 +12,6 @@
  * Parameters of the experiment
  */
 static const size_t MAX_BUDGET = 1e2;
-static const char *SUITE_NAME = "suite_biobj_300";
-static const char *OBSERVER_NAME = "observer_biobj";
 
 /**
  * A random search optimizer
@@ -118,26 +116,40 @@ void my_grid_search(coco_problem_t *problem) {
 
 int main(void) {
 
-  /*static const char *observer_options_GS = "result_folder: GS_on_suite_biobj_300 \
-                                            algorithm_name: GS \
-                                            algorithm_info: \"A simple grid search algorithm\" \
-                                            include_decision_variables: 1 \
-                                            compute_indicators: 1 \
-                                            log_nondominated: final";*/
+  const char *observer_options_GS = "result_folder: GS_on_suite_biobj \
+                                     algorithm_name: GS \
+                                     algorithm_info: \"A simple grid search algorithm\" \
+                                     log_decision_variables: low_dim \
+                                     compute_indicators: 1 \
+                                     log_nondominated: all";
 
-  static const char *observer_options_RS = "result_folder: RS_on_suite_biobj_300 \
-                                            algorithm_name: RS \
-                                            algorithm_info: \"A simple random search algorithm\" \
-                                            include_decision_variables: 1 \
-                                            compute_indicators: 1 \
-                                            log_nondominated: final";
+  const char *observer_options_RS = "result_folder: RS_on_suite_biobj \
+                                     algorithm_name: RS \
+                                     algorithm_info: \"A simple random search algorithm\" \
+                                     log_decision_variables: low_dim \
+                                     compute_indicators: 1 \
+                                     log_nondominated: all";
+
+  coco_suite_t *suite;
+  coco_observer_t *observer;
+  coco_problem_t *problem;
 
   printf("Running the experiments... (it takes time, be patient)\n");
   fflush(stdout);
 
-  coco_suite_benchmark(SUITE_NAME, OBSERVER_NAME, observer_options_RS, my_random_search);
+  suite = coco_suite("suite_biobj", NULL, "dimensions: 2,10 instance_idx: 1");
+  observer = coco_observer("observer_biobj", observer_options_RS);
+  /* observer = coco_observer("observer_biobj", observer_options_GS); */
 
-  /* coco_suite_benchmark(SUITE_NAME, OBSERVER_NAME, observer_options_GS, my_grid_search); */
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
+
+    my_random_search(problem);
+    /* my_grid_search(problem); */
+
+  }
+
+  coco_observer_free(observer);
+  coco_suite_free(suite);
 
   printf("Done!\n");
   fflush(stdout);

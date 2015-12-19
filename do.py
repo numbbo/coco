@@ -23,9 +23,10 @@ from cocoutils import make, run, python
 from cocoutils import copy_file, expand_file, write_file
 from cocoutils import git_version, git_revision
 
-core_files = ['code-experiments/src/coco_suites.c',
+core_files = ['code-experiments/src/coco_generics.c',
               'code-experiments/src/coco_random.c',
-              'code-experiments/src/coco_generics.c',
+              'code-experiments/src/coco_suite.c',
+              'code-experiments/src/coco_suites.c',
               'code-experiments/src/coco_observer.c'
               ]
 
@@ -130,7 +131,7 @@ def run_c_integration_tests():
     try:
         run('code-experiments/test/integration-test', ['./test_coco', 'bbob2009_testcases.txt'])
         run('code-experiments/test/integration-test', ['./test_instance_extraction'])
-        # run('code-experiments/test/integration-test', ['./test_biobj']) commented until it can be made faster
+        run('code-experiments/test/integration-test', ['./test_biobj'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
     
