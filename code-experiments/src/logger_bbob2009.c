@@ -18,8 +18,8 @@ static int bbob2009_raisedOptValWarning;
 /*static const size_t bbob2009_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
 /*static const size_t bbob2009_nbpts_fval = 5;*/
 static size_t bbob2009_current_dim = 0;
-static long bbob2009_current_funId = 0;
-static long bbob2009_infoFile_firstInstance = 0;
+static size_t bbob2009_current_funId = 0;
+static size_t bbob2009_infoFile_firstInstance = 0;
 char bbob2009_infoFile_firstInstance_char[3];
 /* a possible solution: have a list of dims that are already in the file, if the ones we're about to log
  * is != bbob2009_current_dim and the funId is currend_funId, create a new .info file with as suffix the
@@ -61,8 +61,8 @@ typedef struct {
    * interface should probably be the same for all free functions so passing the
    * problem as a second parameter is not an option even though we need info
    * form it.*/
-  int function_id; /*TODO: consider changing name*/
-  long instance_id;
+  size_t function_id; /*TODO: consider changing name*/
+  size_t instance_id;
   size_t number_of_variables;
   double optimal_fvalue;
 } logger_bbob2009_t;
@@ -226,7 +226,7 @@ static void logger_bbob2009_openIndexFile(logger_bbob2009_t *logger,
   if (bbob2009_infoFile_firstInstance == 0) {
     bbob2009_infoFile_firstInstance = logger->instance_id;
   }
-  sprintf(function_id_char, "%d", logger->function_id);
+  sprintf(function_id_char, "%lu", logger->function_id);
   sprintf(bbob2009_infoFile_firstInstance_char, "%ld", bbob2009_infoFile_firstInstance);
   target_file = &(logger->index_file);
   tmp_file = NULL; /* to check whether the file already exists. Don't want to use target_file */
@@ -322,7 +322,7 @@ static void logger_bbob2009_initialize(logger_bbob2009_t *logger, coco_problem_t
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
 
-  sprintf(tmpc_funId, "%d", coco_problem_get_suite_dep_function_id(inner_problem));
+  sprintf(tmpc_funId, "%lu", coco_problem_get_suite_dep_function(inner_problem));
   sprintf(tmpc_dim, "%lu", (unsigned long) inner_problem->number_of_variables);
 
   /* prepare paths and names */
@@ -341,7 +341,7 @@ static void logger_bbob2009_initialize(logger_bbob2009_t *logger, coco_problem_t
 
   /* index/info file */
   logger_bbob2009_openIndexFile(logger, logger->observer->output_folder, indexFile_prefix, tmpc_funId, dataFile_path);
-  fprintf(logger->index_file, ", %ld", coco_problem_get_suite_dep_instance_id(inner_problem));
+  fprintf(logger->index_file, ", %ld", coco_problem_get_suite_dep_instance(inner_problem));
   /* data files */
   /* TODO: definitely improvable but works for now */
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
@@ -371,9 +371,7 @@ static void logger_bbob2009_evaluate(coco_problem_t *self, const double *x, doub
     logger_bbob2009_initialize(logger, inner_problem);
   }
   if ((coco_log_level >= COCO_INFO) && logger->number_of_evaluations == 0) {
-    if (inner_problem->suite_dep_index >= 0) {
-      coco_info("%4ld: ", inner_problem->suite_dep_index);
-    }
+    coco_info("%4ld: ", inner_problem->suite_dep_index);
     coco_info("on problem %s ... ", coco_problem_get_id(inner_problem));
   }
   coco_evaluate_function(inner_problem, x, y);
@@ -512,8 +510,8 @@ static coco_problem_t *depreciated_logger_bbob2009(coco_problem_t *inner_problem
    * should eventually be removed. Some fields of the bbob2009_logger struct
    * might be useless
    */
-  logger->function_id = coco_problem_get_suite_dep_function_id(inner_problem);
-  logger->instance_id = coco_problem_get_suite_dep_instance_id(inner_problem);
+  logger->function_id = coco_problem_get_suite_dep_function(inner_problem);
+  logger->instance_id = coco_problem_get_suite_dep_instance(inner_problem);
   logger->written_last_eval = 1;
   logger->last_fvalue = DBL_MAX;
   logger->is_initialized = 0;
@@ -569,8 +567,8 @@ static coco_problem_t *logger_bbob2009(coco_observer_t *observer, coco_problem_t
    * should eventually be removed. Some fields of the bbob2009_logger struct
    * might be useless
    */
-  logger->function_id = coco_problem_get_suite_dep_function_id(problem);
-  logger->instance_id = coco_problem_get_suite_dep_instance_id(problem);
+  logger->function_id = coco_problem_get_suite_dep_function(problem);
+  logger->instance_id = coco_problem_get_suite_dep_instance(problem);
   logger->written_last_eval = 1;
   logger->last_fvalue = DBL_MAX;
   logger->is_initialized = 0;

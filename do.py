@@ -23,9 +23,10 @@ from cocoutils import make, run, python
 from cocoutils import copy_file, expand_file, write_file
 from cocoutils import git_version, git_revision
 
-core_files = ['code-experiments/src/coco_suites.c',
+core_files = ['code-experiments/src/coco_generics.c',
               'code-experiments/src/coco_random.c',
-              'code-experiments/src/coco_generics.c',
+              'code-experiments/src/coco_suite.c',
+              'code-experiments/src/coco_suites.c',
               'code-experiments/src/coco_observer.c'
               ]
 
@@ -46,7 +47,7 @@ def build_c():
 def run_c():
     build_c()
     try:
-        run('code-experiments/build/c', ['./example_bbob2009'])
+        run('code-experiments/build/c', ['./example_bbob'])
         run('code-experiments/build/c', ['./example_biobj'])
         run('code-experiments/build/c', ['./example_toy'])
     except subprocess.CalledProcessError:
@@ -130,7 +131,7 @@ def run_c_integration_tests():
     try:
         run('code-experiments/test/integration-test', ['./test_coco', 'bbob2009_testcases.txt'])
         run('code-experiments/test/integration-test', ['./test_instance_extraction'])
-        # run('code-experiments/test/integration-test', ['./test_biobj']) commented until it can be made faster
+        run('code-experiments/test/integration-test', ['./test_biobj'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
     
@@ -142,7 +143,7 @@ def build_c_example_tests():
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/example-test/coco.c')
     copy_file('code-experiments/src/coco.h', 'code-experiments/test/example-test/coco.h')
     copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/test/example-test/best_values_hyp.txt')
-    copy_file('code-experiments/build/c/example_bbob2009.c', 'code-experiments/test/example-test/example_bbob2009.c')
+    copy_file('code-experiments/build/c/example_bbob.c', 'code-experiments/test/example-test/example_bbob.c')
     copy_file('code-experiments/build/c/example_biobj.c', 'code-experiments/test/example-test/example_biobj.c')
     copy_file('code-experiments/build/c/example_toy.c', 'code-experiments/test/example-test/example_toy.c')
     copy_file('code-experiments/build/c/Makefile.in', 'code-experiments/test/example-test/Makefile.in')
@@ -152,7 +153,7 @@ def build_c_example_tests():
         
 def run_c_example_tests():
     try:
-        run('code-experiments/test/example-test', ['./example_bbob2009'])
+        run('code-experiments/test/example-test', ['./example_bbob'])
         run('code-experiments/test/example-test', ['./example_biobj'])
         run('code-experiments/test/example-test', ['./example_toy'])
     except subprocess.CalledProcessError:

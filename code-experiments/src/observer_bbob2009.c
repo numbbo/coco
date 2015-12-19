@@ -18,17 +18,6 @@ typedef struct {
   size_t bbob2009_nbpts_fval;
 } observer_bbob2009_t;
 
-
-
-static void observer_bbob2009_free(void *stuff) {
-  
-  observer_bbob2009_t *data;
-  
-  assert(stuff != NULL);
-  data = stuff;
-  
-}
-
 /**
  * Initializes the bbob2009 observer. Possible options:
  * - bbob2009_nbpts_nbevals: nb fun eval triggers are at 10**(i/bbob2009_nbpts_nbevals) (the default value in bbob2009 is 20 )
@@ -48,6 +37,6 @@ static void observer_bbob2009(coco_observer_t *self, const char *options) {
   }
 
   self->logger_initialize_function = logger_bbob2009;
-  self->data_free_function = observer_bbob2009_free;
+  self->data_free_function = NULL;
   self->data = data;
 }
