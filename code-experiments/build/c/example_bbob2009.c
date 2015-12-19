@@ -1,259 +1,152 @@
+/*
+ * An example of benchmarking the bbob COCO suite. Two algorithms are implemented: random search
+ * and grid search. Only random search is run by default.
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "coco.h"
 
-/* Timing of random_search on a MacBook Pro (2014) [s]: 
-    evals=       [ 1e2, 1e3, 1e4, 2e4, 4e4  ],  # on about 2e3 problems
-    verbose=     [  2,  10,   80, 152, 299, ],
-    quiet=       [  2,   9,   78,           ],
-    no_observer= [  1,   7,   73, 146, 291  ],
-    old_code =   [ -1, -1,    65, ]
-    
-    ==> 7.5e-3s/eval ~ 1e-2s / eval ~ 10s / 1e3evals ~ 2h / 1e6evals ~ 90d / 1e9evals
- */ 
-static coco_problem_t *CURRENT_COCO_PROBLEM; /* used in objective_function */
+/*
+ * Parameters of the experiment
+ */
+static const size_t MAX_BUDGET = 1e2;
 
-/**************************************************
- * Example objective function interface and solver,
- * no need to modify 
- **************************************************/
-typedef double (*objective_function_example_t) (const double *);
-double objective_function_example(const double *x) {
-    double y;
-    coco_evaluate_function(CURRENT_COCO_PROBLEM, x, &y);
-    return y;
-}
-void random_search(size_t dimension,
-                   objective_function_example_t fun,
-                   const double *lower,
-                   const double *upper,
-                   long budget,
-                   double final_target) {
-  coco_random_state_t *rng = coco_random_new(0xdeadbeef); /* use coco fcts for convenience */
+/**
+ * A random search optimizer
+ */
+void my_random_search(coco_problem_t *problem) {
+
+  coco_random_state_t *rng = coco_random_new(0xdeadbeef);
+  const double *lbounds = coco_problem_get_smallest_values_of_interest(problem);
+  const double *ubounds = coco_problem_get_largest_values_of_interest(problem);
+  size_t dimension = coco_problem_get_dimension(problem);
+  size_t number_of_objectives = coco_problem_get_number_of_objectives(problem);
   double *x = coco_allocate_vector(dimension);
-  double y;
-  long i;
+  double *y = coco_allocate_vector(number_of_objectives);
+  double range;
+  size_t i, j;
 
-  for (i = 0; i < budget; ++i) {
-    size_t j;
+  for (i = 0; i < MAX_BUDGET; ++i) {
+
+    /* Construct x as a random point between the lower and upper bounds */
     for (j = 0; j < dimension; ++j) {
-      x[j] = lower[j] + coco_random_uniform(rng) * (upper[j] - lower[j]);
+      range = ubounds[j] - lbounds[j];
+      x[j] = lbounds[j] + coco_random_uniform(rng) * range;
     }
-    y = fun(x);
-     /* To be of any real use, we would need to retain the best x-value here.
-      * For benchmarking purpose the implementation suffices, as the
-      * observer takes care of bookkeeping. 
-      */
-    if (y <= final_target)
-      break;
+
+    /* Call COCO's evaluate function where all the logging is performed */
+    coco_evaluate_function(problem, x, y);
+
   }
+
   coco_random_free(rng);
   coco_free_memory(x);
+  coco_free_memory(y);
 }
 
-/**************************************************
- *   Set up the experiment                    
- **************************************************/
-static const long MAX_BUDGET = 1e2;  /* work on small budgets first */
-static const char *SUITE_NAME       = "suite_bbob2009";
-/*static const char *SUITE_OPTIONS    = "";  e.g.: "instances:1-5; dimensions:-20" */
-static const char *OBSERVER_NAME    = "observer_bbob2009"; /* writes data */
-/* static const char *OBSERVER_NAME = "no_observer"; / * writes no data */
-/*static const char *OBSERVER_OPTIONS = "RS_on_suite_bbob2009"; future: "folder:random_search; " */
-static const char *SOLVER_NAME      = "random_search"; /* for the choice in coco_optimize below */
-/*  static const char *SOLVER_NAME   = "my_solver"; / * for the choice in coco_optimize below */
-/* static const int NUMBER_OF_BATCHES   = 88;   use 1 for single batch :-) batches can be run independently in parallel */
-/* static int CURRENT_BATCH             = 1;   runs from 1 to NUMBER_OF_BATCHES, or any other consecutive sequence */
+/**
+ * A grid search optimizer. If MAX_BUDGET is not enough to cover even the smallest possible grid, only the
+ * first MAX_BUDGET nodes of the grid are evaluated.
+ */
+void my_grid_search(coco_problem_t *problem) {
 
-/**************************************************
- *  Objective function interface to solver,
- *  needs to be adapted       
- **************************************************/
-/**
- * Definition of the objective function, which must
- * probably be adapted to the solver used. 
- */
-/* MODIFY this to work with the solver to be benchmarked */
-typedef void (*objective_function_t) (const double *, double *);
-void objective_function(const double *x, double *y) {
-  /* MODIFY/REWRITE this function to work with the typedef two lines above */
-  coco_evaluate_function(CURRENT_COCO_PROBLEM, x, y); /* this call writes objective_function(x) in y */
-}
-/* Minimal solver definition only to avoid compile/link errors/warnings below for my_solver */
-void my_solver(objective_function_t func, const double *initial_x, size_t dim, long budget) {
-  double y;
-  (void)dim; (void)budget;
-  func(initial_x, &y);
-}
-/**
- * Finally, coco_optimize calls, depending on SOLVER_NAME, one
- * of the defined optimizers (e.g. random_search, my_solver, ...),
- * using the respective matching objective function. 
- */
-void coco_optimize(coco_problem_t *problem) { /* should at the least take budget as argument, but this is not coco_benchmark compliant */
-  /* prepare, set up convenience definitions */
+  const double *lbounds = coco_problem_get_smallest_values_of_interest(problem);
+  const double *ubounds = coco_problem_get_largest_values_of_interest(problem);
   size_t dimension = coco_problem_get_dimension(problem);
-  const double * lbounds = coco_problem_get_smallest_values_of_interest(problem);
-  const double * ubounds = coco_problem_get_largest_values_of_interest(problem);
-  double * initial_x = coco_allocate_vector(coco_problem_get_dimension(problem));
-  const double final_target = coco_problem_get_final_target_fvalue1(problem);
-  long remaining_budget; 
-  
-  coco_problem_get_initial_solution(problem, initial_x);
-  CURRENT_COCO_PROBLEM = problem; /* do not change this, it's used in objective_function */
+  size_t number_of_objectives = coco_problem_get_number_of_objectives(problem);
+  double *x = coco_allocate_vector(dimension);
+  double *y = coco_allocate_vector(number_of_objectives);
+  long *nodes = coco_allocate_memory(sizeof(long) * dimension);
+  double *grid_step = coco_allocate_vector(dimension);
+  size_t i, j;
+  size_t evaluations = 0;
 
-  while ((remaining_budget = MAX_BUDGET - coco_problem_get_evaluations(problem)) > 0) {
-    /* call the solver */
-    if (strcmp("random_search", SOLVER_NAME) == 0) { /* example case, no need to modify */
-      random_search(dimension, objective_function_example,
-                    lbounds, ubounds, remaining_budget, final_target);
-    } else if (strcmp("my_solver", SOLVER_NAME) == 0) {
-      /* MODIFY this call according to objective_function_t and solver's needs */
-      my_solver(objective_function, /* MODIFY my_solver to your_solver ... */
-                initial_x, dimension, remaining_budget); 
+  long max_nodes = (long) floor(pow((double) MAX_BUDGET, 1.0 / (double) dimension)) - 1;
+
+  /* Take care of the borderline case */
+  if (max_nodes < 1) max_nodes = 1;
+
+  /* Initialization */
+  for (j = 0; j < dimension; j++) {
+    nodes[j] = 0;
+    grid_step[j] = (ubounds[j] - lbounds[j]) / (double) max_nodes;
+  }
+
+  while (evaluations < MAX_BUDGET) {
+
+    /* Construct x and evaluate it */
+    for (j = 0; j < dimension; j++) {
+      x[j] = lbounds[j] + grid_step[j] * (double) nodes[j];
+    }
+
+    /* Call COCO's evaluate function where all the logging is performed */
+    coco_evaluate_function(problem, x, y);
+    evaluations++;
+
+    /* Inside the grid, move to the next node */
+    if (nodes[0] < max_nodes) {
+      nodes[0]++;
+    }
+
+    /* At an outside node of the grid, move to the next level */
+    else if (max_nodes > 0) {
+      for (j = 1; j < dimension; j++) {
+        if (nodes[j] < max_nodes) {
+          nodes[j]++;
+          for (i = 0; i < j; i++)
+            nodes[i] = 0;
+          break;
+        }
+      }
+
+      /* At the end of the grid, exit */
+      if ((j == dimension) && (nodes[j - 1] == max_nodes))
+        break;
     }
   }
-  coco_free_memory(initial_x);
+
+  coco_free_memory(x);
+  coco_free_memory(y);
+  coco_free_memory(nodes);
+  coco_free_memory(grid_step);
 }
 
-/**************************************************
- *   run the experiment                       
- **************************************************/
-#if 0
-int main() {
-  coco_benchmark(SUITE_NAME, OBSERVER_NAME, OBSERVER_OPTIONS,
-                 coco_optimize);
-  return 0;
-}
-#elif 0
+
 int main(void) {
-  /* TODO: This should be updated when the new bbob observer is implemented */
+
+  const char *observer_options_GS = "result_folder: GS_on_suite_bbob \
+                                     algorithm_name: GS \
+                                     algorithm_info: \"A simple grid search algorithm\"";
+
+  const char *observer_options_RS = "result_folder: RS_on_suite_bbob \
+                                     algorithm_name: RS \
+                                     algorithm_info: \"A simple random search algorithm\"";
 
   coco_suite_t *suite;
+  coco_observer_t *observer;
   coco_problem_t *problem;
 
-  suite = coco_suite("suite_bbob", "year: 2009", "function_ids:3-16");
+  printf("Running the experiments... (it takes time, be patient)\n");
+  fflush(stdout);
 
-  while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
+  suite = coco_suite("suite_bbob", NULL, "dimensions: 2,3,5,10,20 instance_idx: 1");
+  observer = coco_observer("observer_bbob", observer_options_RS);
+  /* observer = coco_observer("observer_biobj", observer_options_GS); */
 
-    problem = deprecated__coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
-    coco_optimize(problem);
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
+
+    my_random_search(problem);
+    /* my_grid_search(problem); */
 
   }
 
+  coco_observer_free(observer);
   coco_suite_free(suite);
 
-  printf("Done with suite '%s' (options '%s')", SUITE_NAME, SUITE_OPTIONS);
-  if (NUMBER_OF_BATCHES > 1) printf(" batch %d/%d.\n", CURRENT_BATCH, NUMBER_OF_BATCHES);
-  else printf(".\n");
+  printf("Done!\n");
+  fflush(stdout);
+
   return 0;
 }
-#elif 1
-
-int main(void) {
-  
-    static const char *observer_options_RS = "result_folder: RS_on_suite_bbob2009 \
-    algorithm_name: RS \
-    algorithm_info: \"A simple random search algorithm\"";
-  
-    OBSERVER_NAME = "observer_bbob2009";
-    SUITE_NAME = "suite_bbob2009";
-  
-  
-    printf("Running the experiments... (it takes time, be patient)\n");
-    fflush(stdout);
-  
-    coco_suite_benchmark(SUITE_NAME, OBSERVER_NAME, observer_options_RS, coco_optimize);
-  
-    printf("Done!\n");
-    fflush(stdout);
-    
-    return 0;
-}
-
-
-#elif 0
-int main(void) {  /* short example, also nice to read */
-  coco_problem_t *problem;
-  long problem_index;
-
-  static const char *observer_options_RS = "result_folder: RS_on_suite_biob2009 \
-    algorithm_name: RS \
-    algorithm_info: \"A simple random search algorithm\" \
-    ";/* list of observer options*/
-    
-  /*observer = coco_observer(observer_name, observer_options);;*/
-  for (problem_index = 0; problem_index >= 0;
-       problem_index = deprecated__coco_suite_get_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)) {
-    problem = deprecated__coco_suite_get_problem(SUITE_NAME, problem_index);
-    problem = deprecated__coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
-    /*problem = coco_problem_add_observer(problem, observer);*/
-    coco_optimize(problem);
-    coco_problem_free(problem);
-  }
-  /*coco_observer_free(observer);*/
-  printf("Done with suite '%s' (options '%s')", SUITE_NAME, SUITE_OPTIONS);
-  if (NUMBER_OF_BATCHES > 1) printf(" batch %d/%d.\n", CURRENT_BATCH, NUMBER_OF_BATCHES);
-  else printf(".\n");
-  return 0;
-}
-
-#elif 0
-int main(void) { /* longer example supporting several batches */
-  coco_problem_t * problem;
-  long problem_index = deprecated__coco_suite_get_next_problem_index(
-                        SUITE_NAME, -1, SUITE_OPTIONS); /* next(-1) == first */
-  if (NUMBER_OF_BATCHES > 1)
-    printf("Running only batch %d out of %d batches for suite %s\n",
-           CURRENT_BATCH, NUMBER_OF_BATCHES, SUITE_NAME);
-  for ( ; problem_index >= 0;
-       problem_index = deprecated__coco_suite_get_next_problem_index(SUITE_NAME, problem_index, SUITE_OPTIONS)
-      ) {
-    /* here we reject indices from other batches */
-    if (((problem_index - CURRENT_BATCH + 1) % NUMBER_OF_BATCHES) != 0)
-      continue;
-    problem = deprecated__coco_suite_get_problem(SUITE_NAME, problem_index);
-    problem = deprecated__coco_problem_add_observer(problem, OBSERVER_NAME, OBSERVER_OPTIONS);
-    if (problem == NULL) {
-      printf("problem with index %ld not found, skipped", problem_index);
-      continue;
-    }
-    coco_optimize(problem); /* depending on verbosity, this gives a message from the observer */
-    coco_problem_free(problem);  
-  }
-  printf("Done with suite '%s' (options '%s')", SUITE_NAME, SUITE_OPTIONS);
-  if (NUMBER_OF_BATCHES > 1) printf(" batch %d/%d.\n", CURRENT_BATCH, NUMBER_OF_BATCHES);
-  else printf(".\n");
-  return 0;
-}
-
-#elif 0
-/* Interface via dimension, function-ID and instance-ID. This does not translate
-   directly to different languages or benchmark suites. */
-int main(void) {
-  long problem_index, instance_id;
-  int function_id, dimension_idx;
-  coco_problem_t * problem;
-  
-  /*int *functions;
-  int dimensions[] = {2,3,5,10,20,40};
-  int *instances;*/
-  for (dimension_idx = 0; dimension_idx < 6; dimension_idx++) {/*TODO: find way of using the constants in bbob200_suite*/
-      for (function_id = 0; function_id < 24; function_id++) {
-          for (instance_id = 0; instance_id < 15; instance_id++) { /* this is specific to 2009 */
-              problem_index = bbob2009_encode_problem_index(function_id, instance_id, dimension_idx);
-              problem = deprecated__coco_suite_get_problem(SUITE_NAME, problem_index);
-              problem = deprecated__coco_problem_add_observer(OBSERVER_NAME, problem, OBSERVER_OPTIONS);
-              if (problem == NULL)
-                break;
-              coco_optimize(problem);
-              coco_problem_free(problem);
-          }
-      }
-    /*bbob2009_get_problem_index(functions[ifun], dimensions[idim], instances[iinst]); */
-  }
-  return 0;
-}
-#endif
