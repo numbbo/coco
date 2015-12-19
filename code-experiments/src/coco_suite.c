@@ -35,6 +35,7 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
     suite->functions[i] = i + 1;
   }
 
+  suite->default_instances = NULL;
   suite->default_instances = coco_strdup(default_instances);
 
   /* To be set when iterating through the suite */
