@@ -439,16 +439,6 @@ static int coco_options_read_size_t(const char *options, const char *name, size_
 }
 
 /**
- * Reads a long integer from options using the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon (spaces are optional)
- * - the value corresponding to the given name needs to be a long integer
- * Returns the number of successful assignments.
- */
-static int coco_options_read_long(const char *options, const char *name, long *pointer) {
-  return coco_options_read(options, name, "%lu", pointer);
-}
-
-/**
  * Reads a double value from options using the form "name1 : value1 name2: value2". Formatting requirements:
  * - name and value need to be separated by a semicolon (spaces are optional)
  * - the value corresponding to the given name needs to be a double
