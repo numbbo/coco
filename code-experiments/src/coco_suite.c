@@ -156,6 +156,10 @@ void coco_suite_free(coco_suite_t *suite) {
       coco_free_memory(suite->instances);
       suite->instances = NULL;
     }
+    if (suite->default_instances) {
+      coco_free_memory(suite->default_instances);
+      suite->default_instances = NULL;
+    }
 
     if (suite->current_problem) {
       coco_problem_free(suite->current_problem);
@@ -377,6 +381,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
   else
     instances = coco_suite_get_instance_indices(suite, suite_instance);
   coco_suite_set_instance(suite, instances);
+  coco_free_memory(instances);
 
   /* Apply filter if any given by the suite_options */
   if ((suite_options) && (strlen(suite_options) > 0)) {
