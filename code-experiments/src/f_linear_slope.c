@@ -42,7 +42,7 @@ static coco_problem_t *f_linear_slope_allocate(const size_t number_of_variables,
   /* best_parameter will be overwritten below */
   coco_problem_t *problem = coco_problem_allocate_from_scalars("linear slope function",
       f_linear_slope_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
-  coco_problem_set_id(problem, "%s_d%04lu", "linear_slope", number_of_variables);
+  coco_problem_set_id(problem, "%s_d%02lu", "linear_slope", number_of_variables);
 
   /* Compute best solution */
   for (i = 0; i < number_of_variables; ++i) {
