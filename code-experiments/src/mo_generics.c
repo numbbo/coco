@@ -57,6 +57,8 @@ static void mo_problem_data_free(void *stuff) {
     data->normalization_factor = NULL;
   }
 
+  coco_free_memory(data);
+
 }
 
 /**
