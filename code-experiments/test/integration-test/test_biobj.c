@@ -5,8 +5,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "coco.h"
+
+void wait (unsigned int secs) {
+    time_t retTime = time(0) + secs;
+    while (time(0) < retTime);
+}
 
 /**
  * A random search optimizer.
@@ -63,6 +69,7 @@ void run_once(char *observer_options) {
   coco_suite_free(suite);
 
   coco_remove_directory("biobj");
+  wait(2); /* So that the directory removal is surely finished */
 
   printf("DONE!\n");
   fflush(stdout);
