@@ -30,9 +30,7 @@ coco_problem_t *coco_transformed_get_inner_problem(coco_problem_t *self);
 /* typedef coco_stacked_problem_data_t; */
 typedef void (*coco_stacked_problem_free_data_t)(void *data);
 coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1_to_be_stacked,
-                                              coco_problem_t *problem2_to_be_stacked,
-                                              void *userdata,
-                                              coco_stacked_problem_free_data_t free_data);
+                                              coco_problem_t *problem2_to_be_stacked);
 
 /***********************************/
 
@@ -62,13 +60,14 @@ coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->best_value = coco_allocate_vector(number_of_objectives);
   problem->problem_name = NULL;
   problem->problem_id = NULL;
+  problem->problem_type = NULL;
   problem->evaluations = 0;
   problem->final_target_delta[0] = 1e-8; /* in case to be modified by the benchmark */
   problem->best_observed_fvalue[0] = DBL_MAX;
   problem->best_observed_evaluation[0] = 0;
   problem->suite_dep_index = 0;
-  problem->suite_dep_function_id = 0;
-  problem->suite_dep_instance_id = 0;
+  problem->suite_dep_function = 0;
+  problem->suite_dep_instance = 0;
   problem->data = NULL;
   return problem;
 }
@@ -98,10 +97,115 @@ coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
 
   problem->problem_name = coco_strdup(other->problem_name);
   problem->problem_id = coco_strdup(other->problem_id);
+  problem->problem_type = coco_strdup(other->problem_type);
   problem->suite_dep_index = other->suite_dep_index;
-  problem->suite_dep_function_id = other->suite_dep_function_id;
-  problem->suite_dep_instance_id = other->suite_dep_instance_id;
+  problem->suite_dep_function = other->suite_dep_function;
+  problem->suite_dep_instance = other->suite_dep_instance;
   return problem;
+}
+
+/**
+ * Allocate a problem using scalar values for smallest_value_of_interest, largest_value_of_interest
+ * and best_parameter.
+ */
+coco_problem_t *coco_problem_allocate_from_scalars(const char *problem_name,
+                                                   coco_evaluate_function_t evaluate_function,
+                                                   coco_free_function_t free_function,
+                                                   size_t number_of_variables,
+                                                   double smallest_value_of_interest,
+                                                   double largest_value_of_interest,
+                                                   double best_parameter) {
+  size_t i;
+  coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
+
+  problem->problem_name = coco_strdup(problem_name);
+  problem->number_of_variables = number_of_variables;
+  problem->number_of_objectives = 1;
+  problem->number_of_constraints = 0;
+  problem->evaluate_function = evaluate_function;
+  problem->free_problem = free_function;
+
+  for (i = 0; i < number_of_variables; ++i) {
+    problem->smallest_values_of_interest[i] = smallest_value_of_interest;
+    problem->largest_values_of_interest[i] = largest_value_of_interest;
+    problem->best_parameter[i] = best_parameter;
+  }
+  return problem;
+}
+
+/**
+ * Checks whether the given string is in the right format to be a problem_id (does not contain any
+ * non-alphanumeric characters besides - and _.).
+ */
+static int coco_problem_id_is_fine(const char *id, ...) {
+  va_list args;
+  const int reject = 0;
+  const int accept = 1;
+  const char *cp;
+  char *s;
+  int result = accept;
+
+  va_start(args, id);
+  s = coco_vstrdupf(id, args);
+  va_end(args);
+  for (cp = s; *cp != '\0'; ++cp) {
+    if (('A' <= *cp) && (*cp <= 'Z'))
+      continue;
+    if (('a' <= *cp) && (*cp <= 'z'))
+      continue;
+    if ((*cp == '_') || (*cp == '-'))
+      continue;
+    if (('0' <= *cp) && (*cp <= '9'))
+      continue;
+    result = reject;
+  }
+  coco_free_memory(s);
+  return result;
+}
+
+/**
+ * Formatted printing of a problem ID, mimicking sprintf(id, ...) while taking care of memory
+ * (de-)allocations and verifying that the id is in the correct format.
+ */
+static void coco_problem_set_id(coco_problem_t *problem, const char *id, ...) {
+  va_list args;
+
+  va_start(args, id);
+  if (problem->problem_id != NULL)
+    coco_free_memory(problem->problem_id);
+  problem->problem_id = coco_vstrdupf(id, args);
+  va_end(args);
+  if (!coco_problem_id_is_fine(problem->problem_id)) {
+    coco_error("Problem id should only contain standard chars, not like '%s'", problem->problem_id);
+  }
+}
+
+/**
+ * Formatted printing of a problem name, mimicking sprintf(name, ...) while taking care of memory
+ * (de-)allocation.
+ */
+static void coco_problem_set_name(coco_problem_t *problem, const char *name, ...) {
+  va_list args;
+
+  va_start(args, name);
+  if (problem->problem_name != NULL)
+    coco_free_memory(problem->problem_name);
+  problem->problem_name = coco_vstrdupf(name, args);
+  va_end(args);
+}
+
+/**
+ * Formatted printing of a problem type, mimicking sprintf(id, ...) while taking care of memory
+ * (de-)allocation.
+ */
+static void coco_problem_set_type(coco_problem_t *problem, const char *type, ...) {
+  va_list args;
+
+  va_start(args, type);
+  if (problem->problem_type != NULL)
+    coco_free_memory(problem->problem_type);
+  problem->problem_type = coco_vstrdupf(type, args);
+  va_end(args);
 }
 
 /**
@@ -219,17 +323,7 @@ coco_problem_t *coco_transformed_get_inner_problem(coco_problem_t *self) {
 typedef struct {
   coco_problem_t *problem1;
   coco_problem_t *problem2;
-  void *data;
-  coco_stacked_problem_free_data_t free_data;
 } coco_stacked_problem_data_t;
-
-void *coco_stacked_problem_get_data(coco_problem_t *self) {
-  assert(self != NULL);
-  assert(self->data != NULL);
-  assert(((coco_stacked_problem_data_t *) self->data)->data != NULL);
-
-  return ((coco_stacked_problem_data_t *) self->data)->data;
-}
 
 static void coco_stacked_problem_evaluate(coco_problem_t *self, const double *x, double *y) {
   coco_stacked_problem_data_t* data = (coco_stacked_problem_data_t *) self->data;
@@ -272,14 +366,6 @@ static void coco_stacked_problem_free(coco_problem_t *self) {
     coco_problem_free(data->problem2);
     data->problem2 = NULL;
   }
-  if (data->data != NULL) {
-    if (data->free_data != NULL) {
-      data->free_data(data->data);
-      data->free_data = NULL;
-    }
-    coco_free_memory(data->data);
-    data->data = NULL;
-  }
   /* Let the generic free problem code deal with the rest of the
    * fields. For this we clear the free_problem function pointer and
    * recall the generic function.
@@ -301,9 +387,8 @@ static void coco_stacked_problem_free(coco_problem_t *self) {
  * of them must be NULL. Best parameter becomes somewhat meaningless. 
  */
 coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1,
-                                              coco_problem_t *problem2,
-                                              void *userdata,
-                                              coco_stacked_problem_free_data_t free_data) {
+                                              coco_problem_t *problem2) {
+
   const size_t number_of_variables = coco_problem_get_dimension(problem1);
   const size_t number_of_objectives = coco_problem_get_number_of_objectives(problem1)
       + coco_problem_get_number_of_objectives(problem2);
@@ -362,8 +447,6 @@ coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1,
   data = coco_allocate_memory(sizeof(*data));
   data->problem1 = problem1;
   data->problem2 = problem2;
-  data->data = userdata;
-  data->free_data = free_data;
 
   problem->data = data;
   problem->free_problem = coco_stacked_problem_free; /* free self->data and coco_problem_free(self) */
@@ -371,61 +454,3 @@ coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1,
   return problem;
 }
 
-static int coco_problem_id_is_fine(const char *id, ...) {
-  va_list args;
-  const int reject = 0;
-  const int OK = 1;
-  const char *cp;
-  char *s;
-  int result = OK;
-
-  va_start(args, id);
-  s = coco_vstrdupf(id, args);
-  va_end(args);
-  for (cp = s; *cp != '\0'; ++cp) {
-    if (('A' <= *cp) && (*cp <= 'Z'))
-      continue;
-    if (('a' <= *cp) && (*cp <= 'z'))
-      continue;
-    if ((*cp == '_') || (*cp == '-'))
-      continue;
-    if (('0' <= *cp) && (*cp <= '9'))
-      continue;
-    result = reject;
-  }
-  coco_free_memory(s);
-  return result;
-}
-
-/**
- * Formatted printing of a problem ID, mimicking
- * sprintf(coco_problem_get_id(problem), id, ...) while taking care
- * of memory (de-)allocations.
- *
- */
-void coco_problem_set_id(coco_problem_t *problem, const char *id, ...) {
-  va_list args;
-
-  va_start(args, id);
-  coco_free_memory(problem->problem_id);
-  problem->problem_id = coco_vstrdupf(id, args);
-  va_end(args);
-  if (!coco_problem_id_is_fine(problem->problem_id)) {
-    coco_error("Problem id should only contain standard chars, not like '%s'", coco_problem_get_id(problem));
-  }
-}
-
-/**
- * Formatted printing of a problem name, mimicking
- * sprintf(coco_problem_get_name(problem), name, ...) while taking care
- * of memory (de-)allocation, tentative, needs at the minimum some (more) testing.
- *
- */
-void coco_problem_set_name(coco_problem_t *problem, const char *name, ...) {
-  va_list args;
-
-  va_start(args, name);
-  coco_free_memory(problem->problem_name);
-  problem->problem_name = coco_vstrdupf(name, args);
-  va_end(args);
-}

@@ -99,6 +99,9 @@ long coco_strfind(const char *base, const char *seq) {
   const size_t last_first_idx = strlen(base) - strlen(seq);
   size_t i, j;
 
+  if (strlen(base) < strlen(seq))
+    return -1;
+
   for (i = 0; i <= last_first_idx; ++i) {
     if (base[i] == seq[0]) {
       for (j = 0; j < strlen_seq; ++j) {
