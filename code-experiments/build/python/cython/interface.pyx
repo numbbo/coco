@@ -15,9 +15,9 @@ np.import_array()
 cdef extern from "coco.h":
     ctypedef struct coco_problem_t:
         pass
-    coco_problem_t *coco_suite_get_problem(const char *problem_suite,
+    coco_problem_t *deprecated__coco_suite_get_problem(const char *problem_suite,
                                            const long problem_index)
-    int coco_suite_get_next_problem_index(const char *problem_suite, 
+    int deprecated__coco_suite_get_next_problem_index(const char *problem_suite, 
                                           const long problem_index,
                                           const char *select_options)
     void coco_problem_free(coco_problem_t *problem)
@@ -71,7 +71,7 @@ cdef class Problem:
         self.problem_index = problem_index
         # Implicit type conversion via passing safe, 
         # see http://docs.cython.org/src/userguide/language_basics.html
-        self.problem = coco_suite_get_problem(_problem_suite, problem_index)
+        self.problem = deprecated__coco_suite_get_problem(_problem_suite, problem_index)
         if self.problem is NULL:
             raise NoSuchProblemException(problem_suite, problem_index)
         self._number_of_variables = coco_problem_get_dimension(self.problem)
@@ -433,7 +433,7 @@ cdef class Benchmark:
                 
         See also `problem_indices` for the nicer design pattern. 
         """
-        return coco_suite_get_next_problem_index(self.problem_suite, problem_index, 
+        return deprecated__coco_suite_get_next_problem_index(self.problem_suite, problem_index, 
                                        self.problem_suite_options)
     @property
     def problem_indices(self):

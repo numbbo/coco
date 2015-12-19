@@ -23,7 +23,7 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoSuiteGetProblem
     if (interface_cls == NULL)
         printf("Null interface_cls found\n");
     problem_suite = (*jenv)->GetStringUTFChars(jenv, jproblem_suite, NULL);
-    pb = coco_suite_get_problem(problem_suite, jfunction_index);
+    pb = deprecated__coco_suite_get_problem(problem_suite, jfunction_index);
     (*jenv)->ReleaseStringUTFChars(jenv, jproblem_suite, problem_suite);
     return (jlong)pb;
 }
@@ -309,7 +309,7 @@ JNIEXPORT jlong JNICALL Java_JNIinterface_cocoSuiteGetNextProblemIndex
         printf("Null interface_cls found\n");
     problem_suite = (*jenv)->GetStringUTFChars(jenv, jproblem_suite, NULL);
     select_options = (*jenv)->GetStringUTFChars(jenv, jselect_options, NULL);
-    res = coco_suite_get_next_problem_index(problem_suite, problem_index, select_options);
+    res = deprecated__coco_suite_get_next_problem_index(problem_suite, problem_index, select_options);
     /* Free resources */
     (*jenv)->ReleaseStringUTFChars(jenv, jproblem_suite, problem_suite);
     (*jenv)->ReleaseStringUTFChars(jenv, jselect_options, select_options);
