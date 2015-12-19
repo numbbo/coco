@@ -55,8 +55,12 @@ typedef enum {
 struct coco_problem;
 typedef struct coco_problem coco_problem_t;
 typedef void (*coco_optimizer_t)(coco_problem_t *problem);
+
 struct coco_observer;
 typedef struct coco_observer coco_observer_t;
+
+struct coco_suite;
+typedef struct coco_suite coco_suite_t;
 
 /**
  * Evaluate the COCO problem represented by ${self} with the
@@ -135,7 +139,7 @@ size_t coco_problem_get_number_of_constraints(const coco_problem_t *self);
  * Get the ${problem_index}-th problem of the ${problem_suit} test
  * suite.
  */
-coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long problem_index);
+coco_problem_t *deprecated__coco_suite_get_problem(const char *problem_suite, const long problem_index);
 
 /**
  * Return the successor index of ${problem_index} in ${problem_suit},
@@ -151,7 +155,7 @@ coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long pro
  * 
  * loops over all indices and problems consequently. 
  */
-long coco_suite_get_next_problem_index(const char *problem_suite,
+long deprecated__coco_suite_get_next_problem_index(const char *problem_suite,
                                        long problem_index,
                                        const char *select_options);
 
@@ -210,17 +214,60 @@ coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
                                                       const char *observer_name,
                                                       const char *options);
 
-void coco_suite_benchmark(const char *problem_suite,
+void deprecated__coco_suite_benchmark(const char *problem_suite,
                           const char *observer,
                           const char *observer_options,
                           coco_optimizer_t optimizer);
 
+void deprecated__new_coco_suite_benchmark(const char *suite_name,
+                          const char *observer_name,
+                          const char *observer_options,
+                          coco_optimizer_t optimizer);
+
+void deprecated__suite_bbob2009_decode_problem_index(const long problem_index,
+                                                size_t *function_id,
+                                                size_t *instance_id,
+                                                size_t *dimension);
 /* shall replace the above?
  void new_coco_benchmark(const char *problem_suite,
  const char *problem_suite_options,
  const char *observer,
  const char *observer_options,
  coco_optimizer_t optimizer); */
+
+coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, const char *suite_options);
+
+void coco_suite_free(coco_suite_t *suite);
+
+coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer);
+
+coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, size_t problem_index);
+
+size_t coco_suite_encode_problem_index(coco_suite_t *suite,
+                                       const size_t function_idx,
+                                       const size_t dimension_idx,
+                                       const size_t instance_idx);
+
+void coco_suite_decode_problem_index(coco_suite_t *suite,
+                                     const size_t problem_index,
+                                     size_t *function,
+                                     size_t *instance,
+                                     size_t *dimension);
+
+size_t coco_suite_get_number_of_problems(coco_suite_t *suite);
+
+size_t coco_suite_get_function_from_function_index(coco_suite_t *suite, size_t function_idx);
+
+size_t coco_suite_get_dimension_from_dimension_index(coco_suite_t *suite, size_t dimension_idx);
+
+size_t coco_suite_get_instance_from_instance_index(coco_suite_t *suite, size_t instance_idx);
+
+void coco_run_benchmark(const char *suite_name,
+                        const char *suite_instance,
+                        const char *suite_options,
+                        const char *observer_name,
+                        const char *observer_options,
+                        coco_optimizer_t optimizer);
 
 coco_observer_t *coco_observer(const char *observer_name, const char *options);
 void coco_observer_free(coco_observer_t *self);

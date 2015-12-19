@@ -17,7 +17,7 @@ static void transform_vars_x_hat_evaluate(coco_problem_t *self, const double *x,
   data = coco_transformed_get_data(self);
   inner_problem = coco_transformed_get_inner_problem(self);
   do {
-    bbob2009_unif(data->x, (long) self->number_of_variables, data->seed);
+    bbob2009_unif(data->x, self->number_of_variables, data->seed);
 
     for (i = 0; i < self->number_of_variables; ++i) {
       if (data->x[i] - 0.5 < 0.0) {
