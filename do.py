@@ -47,7 +47,7 @@ def build_c():
 def run_c():
     build_c()
     try:
-        run('code-experiments/build/c', ['./example_bbob2009'])
+        run('code-experiments/build/c', ['./example_bbob'])
         run('code-experiments/build/c', ['./example_biobj'])
         run('code-experiments/build/c', ['./example_toy'])
     except subprocess.CalledProcessError:
@@ -143,7 +143,7 @@ def build_c_example_tests():
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/example-test/coco.c')
     copy_file('code-experiments/src/coco.h', 'code-experiments/test/example-test/coco.h')
     copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/test/example-test/best_values_hyp.txt')
-    copy_file('code-experiments/build/c/example_bbob2009.c', 'code-experiments/test/example-test/example_bbob2009.c')
+    copy_file('code-experiments/build/c/example_bbob.c', 'code-experiments/test/example-test/example_bbob.c')
     copy_file('code-experiments/build/c/example_biobj.c', 'code-experiments/test/example-test/example_biobj.c')
     copy_file('code-experiments/build/c/example_toy.c', 'code-experiments/test/example-test/example_toy.c')
     copy_file('code-experiments/build/c/Makefile.in', 'code-experiments/test/example-test/Makefile.in')
@@ -153,7 +153,7 @@ def build_c_example_tests():
         
 def run_c_example_tests():
     try:
-        run('code-experiments/test/example-test', ['./example_bbob2009'])
+        run('code-experiments/test/example-test', ['./example_bbob'])
         run('code-experiments/test/example-test', ['./example_biobj'])
         run('code-experiments/test/example-test', ['./example_toy'])
     except subprocess.CalledProcessError:

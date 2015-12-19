@@ -88,7 +88,6 @@ int coco_remove_directory_msc(const char *path);
 int coco_remove_directory_no_msc(const char *path);
 double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
 static int coco_options_read_int(const char *options, const char *name, int *pointer);
-static int coco_options_read_long(const char *options, const char *name, long *pointer);
 static int coco_options_read_double(const char *options, const char *name, double *pointer);
 static int coco_options_read_string(const char *options, const char *name, char *pointer);
 static int coco_options_read(const char *options, const char *name, const char *format, void *pointer);
