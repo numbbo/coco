@@ -105,6 +105,7 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
                                                               const char *problem_name_template) {
 
   f_step_ellipsoid_data_t *data;
+  size_t i;
   coco_problem_t *problem = coco_problem_allocate_from_scalars("step ellipsoid function",
       f_step_ellipsoid_evaluate, f_step_ellipsoid_free, dimension, -5.0, 5.0, NAN);
 
@@ -122,12 +123,15 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
   bbob2009_compute_rotation(data->rot2, rseed, dimension);
 
   problem->data = data;
-
+  
   /* Compute best solution
    *
    * OME: Dirty hack for now because I did not want to invert the
    * transformations to find the best_parameter :/
    */
+  for (i = 0; i < problem->number_of_variables; i++) {
+      problem->best_parameter[i] = data->xopt[i];
+  }
   problem->best_value[0] = data->fopt;
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
@@ -230,7 +234,7 @@ static coco_problem_t *deprecated__f_bbob_step_ellipsoid(const size_t number_of_
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
-    problem->best_parameter[i] = NAN;
+    problem->best_parameter[i] = data->xopt[i]; /* besfore was: problem->best_parameter[i] = NAN; */
   }
   /* "Calculate" best parameter value.
    *
