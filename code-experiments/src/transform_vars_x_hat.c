@@ -36,11 +36,12 @@ static void transform_vars_x_hat_free(void *thing) {
 }
 
 /**
- * Multiply the x-vector by the vector 2 * 1+-.
+ * Multiply the x-vector by the vector 1+-.
  */
 static coco_problem_t *f_transform_vars_x_hat(coco_problem_t *inner_problem, long seed) {
   transform_vars_x_hat_data_t *data;
   coco_problem_t *self;
+  size_t i;
 
   data = coco_allocate_memory(sizeof(*data));
   data->seed = seed;
@@ -48,5 +49,14 @@ static coco_problem_t *f_transform_vars_x_hat(coco_problem_t *inner_problem, lon
 
   self = coco_transformed_allocate(inner_problem, data, transform_vars_x_hat_free);
   self->evaluate_function = transform_vars_x_hat_evaluate;
+  /* Dirty way of setting the best parameter of the transformed f_schwefel... */
+  bbob2009_unif(data->x, self->number_of_variables, data->seed);
+  for (i = 0; i < self->number_of_variables; ++i) {
+      if (data->x[i] - 0.5 < 0.0) {
+          self->best_parameter[i] = -0.5 * 4.2096874633;
+      } else {
+          self->best_parameter[i] = 0.5 * 4.2096874633;
+      }
+  }
   return self;
 }

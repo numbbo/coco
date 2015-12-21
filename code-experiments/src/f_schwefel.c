@@ -46,15 +46,11 @@ static void f_schwefel_evaluate(coco_problem_t *self, const double *x, double *y
 static coco_problem_t *f_schwefel_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Schwefel function",
-      f_schwefel_evaluate, NULL, number_of_variables, -5.0, 5.0, NAN);
+      f_schwefel_evaluate, NULL, number_of_variables, -5.0, 5.0, 420.96874633);
   coco_problem_set_id(problem, "%s_d%02lu", "schwefel", number_of_variables);
 
-  /* Compute best solution
-   *
-   * OME: Hard code optimal value for now...
-   * TODO: best_parameter is known, it needs to be saved instead of NAN!!!
-   */
-  problem->best_value[0] = 0.0;
+  /* Compute best solution: best_parameter[i] = 200 * fabs(xopt[i]) */
+  f_schwefel_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }
 
@@ -166,13 +162,9 @@ static coco_problem_t *deprecated__f_schwefel(const size_t number_of_variables) 
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = -5.0;
     problem->largest_values_of_interest[i] = 5.0;
-    problem->best_parameter[i] = NAN;
+    problem->best_parameter[i] = 420.96874633;
   }
-  /* "Calculate" best parameter value
-   *
-   * OME: Hard code optimal value for now...
-   */
-  problem->best_value[0] = 0.0;
-
+  /* Calculate best parameter value */
+  deprecated__f_schwefel_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }
