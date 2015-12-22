@@ -19,7 +19,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(nrhs!=1) {
         mexErrMsgIdAndTxt("cocoObserverFree:nrhs","One input required.");
     }
-    /* get the problem */
+    /* get the observer */
     ref = (long long *)mxGetData(prhs[0]);
     observer = (coco_observer_t *)(*ref);
     /* call coco_observer_free() */

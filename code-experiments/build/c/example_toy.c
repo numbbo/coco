@@ -33,6 +33,22 @@ void my_random_search(coco_problem_t *problem) {
 
 int main(void) {
   /* Run the benchmark */
-  coco_suite_benchmark("suite_toy", "observer_toy", "result_folder: RS_on_suite_toy", my_random_search);
+
+  coco_suite_t *suite;
+  coco_observer_t *observer;
+  coco_problem_t *problem;
+
+  suite = coco_suite("suite_toy", NULL, "dimensions: 2,3");
+  observer = coco_observer("observer_toy", NULL);
+
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
+
+    my_random_search(problem);
+
+  }
+
+  coco_observer_free(observer);
+  coco_suite_free(suite);
+
   return 0;
 }
