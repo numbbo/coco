@@ -7,7 +7,6 @@
 #include "coco_utilities.c"
 
 #include "f_attractive_sector.c"
-#include "f_bbob_step_ellipsoid.c"
 #include "f_bent_cigar.c"
 #include "f_bueche_rastrigin.c"
 #include "f_different_powers.c"
@@ -25,8 +24,9 @@
 #include "f_schwefel.c"
 #include "f_sharp_ridge.c"
 #include "f_sphere.c"
-
+#include "f_step_ellipsoid.c"
 #include "f_weierstrass.c"
+
 #include "suite_bbob2009_legacy_code.c"
 #include "transform_obj_oscillate.c"
 #include "transform_obj_penalize.c"
@@ -42,11 +42,16 @@
 #include "transform_vars_x_hat.c"
 #include "transform_vars_z_hat.c"
 
+/**
+ * Everything in this file is deprecated.
+ * TODO: Delete file when suite_bbob works as it should.
+ */
+
 #define MAX_DIM SUITE_BBOB2009_MAX_DIM
 #define SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES 5
 #define SUITE_BBOB2009_NUMBER_OF_FUNCTIONS 24
 #define SUITE_BBOB2009_NUMBER_OF_DIMENSIONS 6
-static const int BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up useful outside of bbob2009_decode_problem_index*/
+static const size_t BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up useful outside of bbob2009_decode_problem_index*/
 
 /**
  * bbob2009_decode_problem_index(problem_index, function_id, instance_id,
@@ -66,7 +71,7 @@ static const int BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up useful
  *       not what we want _now_, as the instances change in each
  *       workshop. We should have provide-problem-instance-indices
  *       methods to be able to run useful subsets of instances.
- * 
+ *
  * This gives us:
  *
  * problem_index | function_id | instance_id | dimension
@@ -90,24 +95,55 @@ static const int BBOB2009_DIMS[] = { 2, 3, 5, 10, 20, 40 };/*might end up useful
  * The quickest way to decode this is using integer division and
  * remainders.
  */
-
-static void suite_bbob2009_decode_problem_index(const long problem_index,
-                                                int *function_id,
-                                                long *instance_id,
-                                                int *dimension) {
-  const long high_instance_id = problem_index
+void deprecated__suite_bbob2009_decode_problem_index(const long problem_index,
+                                                size_t *function_id,
+                                                size_t *instance_id,
+                                                size_t *dimension) {
+  const size_t high_instance_id = (size_t) problem_index
       / (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS *
       SUITE_BBOB2009_NUMBER_OF_DIMENSIONS);
-  long low_instance_id;
-  long rest = problem_index % (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES *
+  size_t low_instance_id;
+  size_t rest = (size_t) problem_index % (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES *
   SUITE_BBOB2009_NUMBER_OF_FUNCTIONS * SUITE_BBOB2009_NUMBER_OF_DIMENSIONS);
   *dimension = BBOB2009_DIMS[rest
       / (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS)];
   rest = rest % (SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES * SUITE_BBOB2009_NUMBER_OF_FUNCTIONS);
-  *function_id = (int) (rest / SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES + 1);
+  *function_id = (rest / SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES + 1);
   rest = rest % SUITE_BBOB2009_NUMBER_OF_CONSECUTIVE_INSTANCES;
   low_instance_id = rest + 1;
   *instance_id = low_instance_id + 5 * high_instance_id;
+}
+/* TODO: specify selection_descriptor and implement
+ *
+ * Possible example for a descriptor: "instance:1-5, dimension:-20",
+ * where instances are relative numbers (w.r.t. to the instances in
+ * test bed), dimensions are absolute.
+ *
+ * Return successor of problem_index or first index if problem_index < 0 or -1 otherwise.
+ *
+ * Details: this function is not necessary unless selection is implemented.
+ */
+static long deprecated__suite_bbob2009_get_next_problem_index(long problem_index, const char *selection_descriptor) {
+  const long first_index = 0;
+  const long last_index = 2159;
+
+  if (problem_index < 0)
+    problem_index = first_index - 1;
+
+  if (strlen(selection_descriptor) == 0) {
+    if (problem_index < last_index)
+      return problem_index + 1;
+    return -1;
+  }
+
+  /* TODO:
+   o parse the selection_descriptor -> value bounds on funID, dimension, instance
+   o increment problem_index until funID, dimension, instance match the restrictions
+   or max problem_index is succeeded.
+   */
+
+  coco_error("next_problem_index is yet to be implemented for specific selections");
+  return -1;
 }
 
 /* Encodes a triplet of (function_id, instance_id, dimension_idx) into a problem_index
@@ -127,8 +163,7 @@ static long suite_bbob2009_encode_problem_index(int function_id, long instance_i
 
   return tmp1 + tmp2 + tmp3 + tmp4;
 } */
-
-static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, long instance_id) {
+static coco_problem_t *deprecated__suite_bbob2009_problem(size_t function_id, size_t dimension_, size_t instance_id) {
   size_t len;
   long rseed;
   coco_problem_t *problem = NULL;
@@ -138,7 +173,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
   assert(dimension > 1);
   if (dimension > MAX_DIM)
     coco_error("bbob2009_suite currently supports dimension up to %lu (%lu given)",
-    MAX_DIM, dimension);
+        MAX_DIM, dimension);
 
 #if 0
   { /* to be removed */
@@ -168,8 +203,8 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     }
     assert(problem_index == suite_bbob2009_encode_problem_index(function_id - 1, instance_id - 1 , dimension_idx));
   }
-#endif 
-  rseed = function_id + 10000 * instance_id;
+#endif
+  rseed = (long) (function_id + 10000 * instance_id);
 
   /* Break if we are past our 15 instances. */
   if (instance_id > 15)
@@ -180,7 +215,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     bbob2009_compute_xopt(xopt, rseed, dimension_);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
 
-    problem = f_sphere(dimension);
+    problem = deprecated__f_sphere(dimension);
     problem = f_transform_vars_shift(problem, xopt, 0);
     problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 2) {
@@ -188,7 +223,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension_);
 
-    problem = f_ellipsoid(dimension);
+    problem = deprecated__f_ellipsoid(dimension);
     problem = f_transform_vars_oscillate(problem);
     problem = f_transform_vars_shift(problem, xopt, 0);
     problem = f_transform_obj_shift(problem, fopt);
@@ -197,7 +232,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension_);
 
-    problem = f_rastrigin(dimension);
+    problem = f_rastrigin_allocate(dimension);
     problem = f_transform_vars_conditioning(problem, 10.0);
     problem = f_transform_vars_asymmetric(problem, 0.2);
     problem = f_transform_vars_oscillate(problem);
@@ -206,7 +241,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
   } else if (function_id == 4) {
     unsigned i; /*to prevent warnings, changed for all i,j and k variables used to iterate over coordinates*/
     double xopt[MAX_DIM], fopt, penalty_factor = 100.0;
-    rseed = 3 + 10000 * instance_id;
+    rseed = (long) (3 + 10000 * instance_id);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension_);
     /*
@@ -217,7 +252,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
       xopt[i] = fabs(xopt[i]);
     }
 
-    problem = f_bueche_rastrigin(dimension);
+    problem = deprecated__f_bueche_rastrigin(dimension);
     problem = f_transform_vars_brs(problem);
     problem = f_transform_vars_oscillate(problem);
     problem = f_transform_vars_shift(problem, xopt, 0);
@@ -227,7 +262,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     double xopt[MAX_DIM], fopt;
     bbob2009_compute_xopt(xopt, rseed, dimension_);
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    problem = f_linear_slope(dimension, xopt);
+    problem = deprecated__f_linear_slope(dimension, xopt);
     problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 6) {
     unsigned i, j, k;
@@ -254,14 +289,14 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
 
-    problem = f_attractive_sector(dimension, xopt);
+    problem = deprecated__f_attractive_sector(dimension, xopt);
     problem = f_transform_obj_oscillate(problem);
     problem = f_transform_obj_power(problem, 0.9);
     problem = f_transform_obj_shift(problem, fopt);
     problem = f_transform_vars_affine(problem, M, b, dimension);
     problem = f_transform_vars_shift(problem, xopt, 0);
   } else if (function_id == 7) {
-    problem = f_bbob_step_ellipsoid(dimension, instance_id);
+    problem = deprecated__f_bbob_step_ellipsoid(dimension, instance_id);
   } else if (function_id == 8) {
     unsigned i;
     double xopt[MAX_DIM], minus_one[MAX_DIM], fopt, factor;
@@ -277,7 +312,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
      */
     factor = coco_max_double(1.0, sqrt((double) dimension) / 8.0);
 
-    problem = f_rosenbrock(dimension);
+    problem = deprecated__f_rosenbrock(dimension);
     problem = f_transform_vars_shift(problem, minus_one, 0);
     problem = f_transform_vars_scale(problem, factor);
     problem = f_transform_vars_shift(problem, xopt, 0);
@@ -308,7 +343,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     }
     bbob2009_free_matrix(rot1, dimension);
 
-    problem = f_rosenbrock(dimension);
+    problem = deprecated__f_rosenbrock(dimension);
     problem = f_transform_vars_affine(problem, M, b, dimension);
     problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 10) {
@@ -322,7 +357,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     bbob2009_free_matrix(rot1, dimension);
 
-    problem = f_ellipsoid(dimension);
+    problem = deprecated__f_ellipsoid(dimension);
     problem = f_transform_vars_oscillate(problem);
     problem = f_transform_vars_affine(problem, M, b, dimension);
     problem = f_transform_vars_shift(problem, xopt, 0);
@@ -338,7 +373,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     bbob2009_free_matrix(rot1, dimension);
 
-    problem = f_discus(dimension);
+    problem = deprecated__f_discus(dimension);
     problem = f_transform_vars_oscillate(problem);
     problem = f_transform_vars_affine(problem, M, b, dimension);
     problem = f_transform_vars_shift(problem, xopt, 0);
@@ -354,7 +389,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     bbob2009_free_matrix(rot1, dimension);
 
-    problem = f_bent_cigar(dimension);
+    problem = deprecated__f_bent_cigar(dimension);
     problem = f_transform_obj_shift(problem, fopt);
     problem = f_transform_vars_affine(problem, M, b, dimension);
     problem = f_transform_vars_asymmetric(problem, 0.5);
@@ -384,7 +419,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     }
     bbob2009_free_matrix(rot1, dimension);
     bbob2009_free_matrix(rot2, dimension);
-    problem = f_sharp_ridge(dimension);
+    problem = deprecated__f_sharp_ridge(dimension);
     problem = f_transform_obj_shift(problem, fopt);
     problem = f_transform_vars_affine(problem, M, b, dimension);
     problem = f_transform_vars_shift(problem, xopt, 0);
@@ -399,7 +434,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
     bbob2009_free_matrix(rot1, dimension);
 
-    problem = f_different_powers(dimension);
+    problem = deprecated__f_different_powers(dimension);
     problem = f_transform_obj_shift(problem, fopt);
     problem = f_transform_vars_affine(problem, M, b, dimension);
     problem = f_transform_vars_shift(problem, xopt, 0);
@@ -426,7 +461,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
       }
     }
 
-    problem = f_rastrigin(dimension);
+    problem = deprecated__f_rastrigin(dimension);
     problem = f_transform_obj_shift(problem, fopt);
     problem = f_transform_vars_affine(problem, M, b, dimension);
     problem = f_transform_vars_asymmetric(problem, 0.2);
@@ -463,7 +498,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
       }
     }
 
-    problem = f_weierstrass(dimension);
+    problem = deprecated__f_weierstrass(dimension);
     problem = f_transform_obj_shift(problem, fopt);
     problem = f_transform_vars_affine(problem, M, b, dimension);
     problem = f_transform_vars_oscillate(problem);
@@ -494,7 +529,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
       }
     }
 
-    problem = f_schaffers(dimension);
+    problem = deprecated__f_schaffers(dimension);
     problem = f_transform_obj_shift(problem, fopt);
     problem = f_transform_vars_affine(problem, M, b, dimension);
     problem = f_transform_vars_asymmetric(problem, 0.5);
@@ -510,7 +545,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
     double M[MAX_DIM * MAX_DIM], b[MAX_DIM], xopt[MAX_DIM], fopt, *current_row, penalty_factor = 10.0;
     double **rot1, **rot2;
     /* Reuse rseed from f17. */
-    rseed = 17 + 10000 * instance_id;
+    rseed = (long) (17 + 10000 * instance_id);
 
     fopt = bbob2009_compute_fopt(function_id, instance_id);
     bbob2009_compute_xopt(xopt, rseed, dimension_);
@@ -528,7 +563,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
       }
     }
 
-    problem = f_schaffers(dimension);
+    problem = deprecated__f_schaffers(dimension);
     problem = f_transform_obj_shift(problem, fopt);
     problem = f_transform_vars_affine(problem, M, b, dimension);
     problem = f_transform_vars_asymmetric(problem, 0.5);
@@ -557,7 +592,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
       }
     }
 
-    problem = f_griewank_rosenbrock(dimension);
+    problem = deprecated__f_griewank_rosenbrock(dimension);
     problem = f_transform_obj_shift(problem, fopt);
     problem = f_transform_vars_shift(problem, shift, 0);
     bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
@@ -594,7 +629,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
       tmp1[i] = -2 * fabs(xopt[i]);
       tmp2[i] = 2 * fabs(xopt[i]);
     }
-    problem = f_schwefel(dimension);
+    problem = deprecated__f_schwefel(dimension);
     problem = f_transform_obj_shift(problem, fopt);
     problem = f_transform_vars_scale(problem, 100);
     problem = f_transform_vars_shift(problem, tmp1, 0);
@@ -608,12 +643,12 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
   } else if (function_id == 21) {
     double fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    problem = f_gallagher(dimension, instance_id, 101);
+    problem = deprecated__f_gallagher(dimension, instance_id, 101);
     problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 22) {
     double fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    problem = f_gallagher(dimension, instance_id, 21);
+    problem = deprecated__f_gallagher(dimension, instance_id, 21);
     problem = f_transform_obj_shift(problem, fopt);
   } else if (function_id == 23) {
     unsigned i, j, k;
@@ -637,7 +672,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
         }
       }
     }
-    problem = f_katsuura(dimension);
+    problem = deprecated__f_katsuura(dimension);
     problem = f_transform_obj_shift(problem, fopt);
     problem = f_transform_vars_affine(problem, M, b, dimension);
     problem = f_transform_vars_shift(problem, xopt, 0);
@@ -648,7 +683,7 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
   } else if (function_id == 24) {
     double fopt;
     fopt = bbob2009_compute_fopt(function_id, instance_id);
-    problem = f_lunacek_bi_rastrigin(dimension, instance_id);
+    problem = deprecated__f_lunacek_bi_rastrigin(dimension, instance_id);
     problem = f_transform_obj_shift(problem, fopt);
   } else {
     return NULL;
@@ -671,39 +706,6 @@ static coco_problem_t *suite_bbob2009_problem(int function_id, int dimension_, l
   return problem;
 }
 
-/* TODO: specify selection_descriptor and implement
- *
- * Possible example for a descriptor: "instance:1-5, dimension:-20",
- * where instances are relative numbers (w.r.t. to the instances in
- * test bed), dimensions are absolute.
- *
- * Return successor of problem_index or first index if problem_index < 0 or -1 otherwise.
- *
- * Details: this function is not necessary unless selection is implemented.
- */
-static long suite_bbob2009_get_next_problem_index(long problem_index, const char *selection_descriptor) {
-  const long first_index = 0;
-  const long last_index = 2159;
-
-  if (problem_index < 0)
-    problem_index = first_index - 1;
-
-  if (strlen(selection_descriptor) == 0) {
-    if (problem_index < last_index)
-      return problem_index + 1;
-    return -1;
-  }
-
-  /* TODO:
-   o parse the selection_descriptor -> value bounds on funID, dimension, instance
-   o increment problem_index until funID, dimension, instance match the restrictions
-   or max problem_index is succeeded.
-   */
-
-  coco_error("next_problem_index is yet to be implemented for specific selections");
-  return -1;
-}
-
 /**
  * suite_bbob2009(problem_index):
  *
@@ -711,20 +713,21 @@ static long suite_bbob2009_get_next_problem_index(long problem_index, const char
  * benchmark suite. If the function index is out of bounds, return
  * NULL.
  */
-static coco_problem_t *suite_bbob2009(long problem_index) {
+static coco_problem_t *deprecated__suite_bbob2009(long problem_index) {
   coco_problem_t *problem;
-  int dimension, function_id;
-  long instance_id;
+  size_t dimension, function_id;
+  size_t instance_id;
 
   if (problem_index < 0)
     return NULL;
-  suite_bbob2009_decode_problem_index(problem_index, &function_id, &instance_id, &dimension);
-  problem = suite_bbob2009_problem(function_id, dimension, instance_id);
-  problem->suite_dep_index = problem_index;
-  problem->suite_dep_function_id = function_id;
-  problem->suite_dep_instance_id = instance_id;
+  deprecated__suite_bbob2009_decode_problem_index(problem_index, &function_id, &instance_id, &dimension);
+  problem = deprecated__suite_bbob2009_problem(function_id, dimension, instance_id);
+  problem->suite_dep_index = (size_t) problem_index;
+  problem->suite_dep_function = function_id;
+  problem->suite_dep_instance = instance_id;
   return problem;
 }
+
 
 /* Undefine constants */
 #undef MAX_DIM

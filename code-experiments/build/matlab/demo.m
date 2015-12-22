@@ -1,26 +1,23 @@
 MAX_EVALS = 100;
-number_of_batches = 1;
-current_batch = 1;
-observer_options = 'result_folder: RS_on_suite_biobj_300 include_decision_variables: 0 log_nondominated: final';
-my_benchmark = Benchmark('suite_biobj_300', '', 'observer_biobj', observer_options);
-problem_index = -1;
+suite_name = 'suite_biobj';
+suite_instance = '';
+suite_options = 'dimensions: 2,10 instance_idx: 1';
+observer_name = 'observer_biobj';
+observer_options = ['result_folder: RS_on_suite_biobj \',...
+                    'algorithm_name: RS \',...
+                    'algorithm_info: "A simple random search algorithm" \',...
+                    'log_decision_variables: low_dim \',...
+                    'compute_indicators: log_nondominated: all'];
+suite = cocoSuite(suite_name, suite_instance, suite_options);
+observer = cocoObserver(observer_name, observer_options);
 while true
-    try
-        problem_index = getNextProblemIndex(my_benchmark, problem_index);
-        if (problem_index < 0)
-            break;
-        end
-        if (mod(problem_index + current_batch - 1, number_of_batches)~= 0)
-            continue;
-        end
-        problem = getProblem(my_benchmark, problem_index);
-        disp(['Optimizing ', problem.toString()]);
-        my_optimizer(problem, problem.lower_bounds, problem.upper_bounds, MAX_EVALS);
-        disp(['Done with problem ', problem.toString(), '...']);
-        freeProblem(problem);
-    catch e
-        disp(e.message);
-        return
+    problem = cocoSuiteGetNextProblem(suite, observer);
+    if (~cocoProblemIsValid(problem))
+        break;
     end
+    disp(['Optimizing ', cocoProblemGetId(problem)]);
+    my_optimizer(problem, cocoProblemGetSmallestValuesOfInterest(problem), cocoProblemGetLargestValuesOfInterest(problem), MAX_EVALS);
+    disp(['Done with problem ', cocoProblemGetId(problem), '...']);
 end
-freeObserver(problem);
+cocoObserverFree(observer);
+cocoSuiteFree(suite);
