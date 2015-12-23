@@ -60,7 +60,7 @@ number_of_batches = 99  # CAVEAT: this might be modified below from input args
 current_batch = 1       # ditto
 
 #################################################
-# interface
+# interface: add an optimizer here
 #################################################
 def coco_optimize(fun, budget=MAXEVALS):
     """fun is a callable, to be optimized by global variable `solver`"""
@@ -99,19 +99,23 @@ def coco_optimize(fun, budget=MAXEVALS):
 #################################################
 def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=number_of_batches):
     print("Benchmarking solver %s, %s" % (str(solver), time.asctime(), ))
+    suite = Suite(suite_name, suite_instance, suite_options)
+    observer = Observer(observer_name, observer_options)
     t0 = time.clock()
-    if 11 < 3:
-        # simple Pythonic use case without observer (so a little bit useless)
+    if 11 < 3:  # crashes due to memory allocation/free in next_problem() of coco_suite.c
+        # simple Pythonic use case
         print('Pythonic usecase ...'); sys.stdout.flush()
         found_problems, addressed_problems = 0, 0
-        for problem in Suite(suite_name, suite_instance, suite_options):
+        for problem in suite:
             found_problems += 1
-            print(found_problems)
             # use problem only under some conditions, mainly for testing
             if 11 < 3 and not ('f11' in problem.id and 'i03' in problem.id):
                 continue
+            observer.observe(problem)
             coco_optimize(problem, MAXEVALS)
+            # problem.free()
             addressed_problems += 1
+            # print(found_problems, addressed_problems); sys.stdout.flush()
         print("%s done (%d of %d problems benchmarked), %s (%f s)." 
                 % (suite_name, addressed_problems, found_problems,
                    time.asctime(), (time.clock()-t0)/60**0))
@@ -119,13 +123,11 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
     elif 1 < 3:
         # usecase with batches and observer
         print('Batch usecase ...'); sys.stdout.flush()
-        suite = Suite(suite_name, suite_instance, suite_options)
-        obs = Observer(observer_name, observer_options)
         addressed_problems = []
         for problem_index, id in enumerate(suite.ids):
             if (problem_index + current_batch - 1) % number_of_batches:
                 continue
-            problem = suite.next_problem(obs)
+            problem = suite.next_problem(observer)
             # print("%4d: " % problem_index, end="")
             coco_optimize(problem, MAXEVALS)
             addressed_problems += [problem_index]

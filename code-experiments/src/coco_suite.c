@@ -486,8 +486,9 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
       && !coco_suite_is_next_dimension_found(suite))
     return NULL;
 
-  if (suite->current_problem)
+  if (suite->current_problem) {
     coco_problem_free(suite->current_problem);
+  }
 
   assert(suite->current_function_idx >= 0);
   assert(suite->current_dimension_idx >= 0);
