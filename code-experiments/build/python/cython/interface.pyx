@@ -40,6 +40,7 @@ cdef extern from "coco.h":
     coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, 
                              const char *suite_options)
     void coco_suite_free(coco_suite_t *suite)
+    size_t coco_problem_get_suite_dep_index(coco_problem_t *)
     
     void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
@@ -101,7 +102,7 @@ cdef class Suite:
             _current_observer = NULL
         self._current_problem = coco_suite_get_next_problem(self.suite, 
                                                             _current_observer)
-        self.current_problem = Problem_init(self._current_problem, None, False)
+        self.current_problem = Problem_init(self._current_problem, False)
         return self.current_problem
     def get_problem(self, id):
         """`get_problem(self, id)` return an unobserved problem by id or id=index. 
@@ -111,7 +112,7 @@ cdef class Suite:
             1 / (id == int(id))  # int(id) might raise an exception
         except:
             id = self._ids.index(id)
-        return Problem_init(coco_suite_get_problem(self.suite, id), id)
+        return Problem_init(coco_suite_get_problem(self.suite, id))
     
     def free(self):
         if self.suite:
@@ -192,17 +193,14 @@ cdef class Observer:
             coco_observer_free(self._observer)
             self._observer = NULL
 
-cdef Problem_init(coco_problem_t* problem, index=None, free=True):
+cdef Problem_init(coco_problem_t* problem, free=True):
     """`Problem` class instance initialization wrapper passing 
     a `problem_t*` C-variable to `__init__`. 
     
     This is necessary because __cinit__ cannot be defined as cdef, only as def. 
     """
     res = Problem()
-    res.problem_index = index
-    res.do_free = free
-    res._initialize(problem, index)
-    return res
+    return res._initialize(problem, free)
 cdef class Problem:
     cdef coco_problem_t* problem
     cdef np.ndarray y  # argument for coco_evaluate
@@ -215,7 +213,7 @@ cdef class Problem:
     cdef size_t _number_of_objectives
     cdef size_t _number_of_constraints
     cdef problem_suite  # for the record
-    cdef problem_index  # for the record, this is not public but used in index property
+    cdef _problem_index  # for the record, this is not public but used in index property
     cdef do_free
     cdef initialized
     def __cinit__(self):
@@ -225,12 +223,18 @@ cdef class Problem:
         observer.update_current_observer_global()
         assert self.problem
         self.problem = coco_problem_add_observer(self.problem, _current_observer);
-    cdef _initialize(self, coco_problem_t* problem, index=None):
+        
+    @property
+    def problem_index(self):
+        return self._problem_index
+        
+    cdef _initialize(self, coco_problem_t* problem, free=True):
         if problem != NULL:
             self.free()  # TODO: might not work anyway, so rather remove/raise exception?
             assert self.problem == NULL
             self.problem = problem
-        self.problem_index = index
+        self._problem_index = coco_problem_get_suite_dep_index(self.problem)
+        self.do_free = free
         # _problem_suite = _bstring(problem_suite)
         # self.problem_suite = _problem_suite
         # self.problem_index = -1  # coco_problem_get_index
@@ -253,6 +257,7 @@ cdef class Problem:
             if coco_problem_get_largest_values_of_interest(self.problem) is not NULL:
                 self._upper_bounds[i] = coco_problem_get_largest_values_of_interest(self.problem)[i]
         self.initialized = True
+        return self
     def constraint(self, x):
         """return constraint values for `x`. 
         
@@ -338,8 +343,8 @@ cdef class Problem:
     def free(self):
         """Free the given test problem. 
         
-        Not strictly necessary (unless for the observer), but it will  
-        ensure that all files associated with the problem are closed as
+        Not strictly necessary (unless, possibly, for the observer). `free`  
+        ensures that all files associated with the problem are closed as
         soon as possible and any memory is freed. After free()ing the
         problem, all other operations are invalid and will raise an
         exception.
@@ -352,9 +357,8 @@ cdef class Problem:
         # see http://docs.cython.org/src/userguide/special_methods.html
         # TODO: this let the problem_free() call(s) in coco_suite_t crash  
         # checking problem_index is a hack trying to prevent the crash      
-        if self.do_free and self.problem is not NULL:
-            coco_problem_free(self.problem)
-            self.problem = NULL
+        if self.do_free:
+            self.free()
 
     # def __call__(self, np.ndarray[double, ndim=1, mode="c"] x):
     def __call__(self, x):
