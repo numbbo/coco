@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""Usage from a system shell::
+"""use cases for `cocoex` which can be used as templates.
+
+Usage from a system shell::
 
     [python] ./example.py 100 1 20
     
@@ -51,7 +53,7 @@ MAXEVALS = 1e2  # always start with something small, CAVEAT: this might be modif
 solver = random_search # fmin_slsqp # cma.fmin #    
 suite_name = "suite_bbob"
 suite_name = "suite_biobj"
-suite_instance = ""  # syntax see TODO
+suite_instance = ""  # syntax see C code TODO
 suite_options = ""
 observer_name = "observer_bbob"
 observer_name = "observer_biobj"
