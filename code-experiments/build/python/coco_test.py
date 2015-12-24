@@ -4,7 +4,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from cocoex import Problem
+from cocoex import Suite
 from cocoex.utilities import about_equal
 import numpy as np
 import sys
@@ -29,6 +29,8 @@ def process_test_cases(fd, suite_name, test_vectors):
     number_of_testcases = 0
     number_of_failures = 0
     previous_problem_index = None
+    suite = Suite(suite_name, "", "")
+    print("Testing suite", suite_name)
     for test_case in fd:
         number_of_testcases += 1
 
@@ -44,7 +46,7 @@ def process_test_cases(fd, suite_name, test_vectors):
         ## We cache the problem instances because creating an instance
         ## can be expensive depending on the transformation.
         if deprecated_problem_index != previous_problem_index:
-            problem = Problem(suite_name, deprecated_problem_index)
+            problem = suite.get_problem(int(problem_index))
             previous_problem_index = deprecated_problem_index
         test_vector = test_vectors[test_vector_id]
         y = problem(test_vector[:problem.number_of_variables])
