@@ -17,7 +17,7 @@ Under build/java do:
 
 To run the example:
 - first, compile all the .java files (javac *.java for example)
-- then run demo.o by typing java demo
+- then type "java demo" to run the demo
 
 
 
