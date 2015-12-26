@@ -1,22 +1,25 @@
 #!/usr/bin/env python
-"""use cases for `cocoex` which can be used as templates.
+"""Use cases for `cocoex` which can be used as templates.
 
 Usage from a system shell::
 
-    [python] ./example.py 100 1 20
-    
+    [python] ./example_experiment.py 100 1 20
+
 runs the first of 20 batches with maximal budget of 100 f-evaluations.
 
-Usage from a python shell:: 
+Usage from a python shell::
 
-    >>> import example
-    >>> example.main(100, 1, 99)
-    
-does the same from 99 batches. 
+    >>> import example_experiment as example
+    >>> example.main(100, 1, 1)
+    Benchmarking solver '<function random_search' with MAXEVALS=100, ...
+    Batch usecase ...
+    suite_biobj done (1650 of 1650 problems benchmarked), ...
 
+does the same but runs the "first" of one single batch.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
-import sys, time
+import sys
+import time
 import numpy as np  # "pip install numpy" installs numpy
 from cocoex import Suite, Observer
 
@@ -31,7 +34,7 @@ except NameError: pass
 # prepare (the most basic example solver)
 #################################################
 def random_search(fun, lbounds, ubounds, budget):
-    """Efficient implementation of uniform random search between `lbounds` and `ubounds`. """
+    """Efficient implementation of uniform random search between `lbounds` and `ubounds`."""
     lbounds, ubounds = np.array(lbounds), np.array(ubounds)
     dim, x_min, f_min = len(lbounds), (lbounds + ubounds) / 2, None
     max_chunk_size = 1 + 4e4 / dim
@@ -58,7 +61,7 @@ suite_options = ""
 observer_name = "observer_bbob"
 observer_name = "observer_biobj"
 observer_options = "result_folder: %s_on_%s" % (solver.__name__, suite_name) 
-number_of_batches = 99  # CAVEAT: this might be modified below from input args
+number_of_batches = 1  # CAVEAT: this can be modified below from input args
 current_batch = 1       # ditto
 
 #################################################
@@ -100,7 +103,7 @@ def coco_optimize(fun, budget=MAXEVALS):
 # run 
 #################################################
 def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=number_of_batches):
-    print("Benchmarking solver %s, %s" % (str(solver), time.asctime(), ))
+    print("Benchmarking solver '%s' with MAXEVALS=%d, %s" % (' '.join(str(solver).split()[:2]), MAXEVALS, time.asctime(), ))
     suite = Suite(suite_name, suite_instance, suite_options)
     observer = Observer(observer_name, observer_options)
     t0 = time.clock()
@@ -140,6 +143,9 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
+        if sys.argv[1] in ["--help", "-h"]:
+            print(__doc__)
+            exit(0)
         MAXEVALS = float(sys.argv[1])
     if len(sys.argv) > 2:
         current_batch = int(sys.argv[2])
