@@ -82,6 +82,7 @@ cdef class Suite:
     >>> import cocoex as co
     >>> suite = co.Suite("suite_bbob", "", "")
     >>> f = suite.next_problem()
+    >>> assert f.number_of_objectives == 1
     >>> print("f([1,2]) = %.11f" % f([1,2]))
     f([1,2]) = 90.00369408000
     
@@ -91,6 +92,7 @@ cdef class Suite:
     >>> observer = co.Observer("observer_biobj", "")
     >>> for f in suite:
     >>>     observer.observer(f)
+    >>>     assert f.number_of_objectives == 2
     >>>     # run run run using f
     
     In this example, an observer was added to produce output data for the
@@ -114,7 +116,7 @@ cdef class Suite:
     >>> for fun in suite:
     ...     observer.observe(fun)
     ...     solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
-    >>> # data should be now in "random_search_on_bbob2009" folder 
+    >>> # data should be now in "random_search_on_bbob2009" folder
     >>>
     >>> # Exactly the same using another looping technique:
     >>> for id in suite.ids:
@@ -122,8 +124,15 @@ cdef class Suite:
     ...     solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
     ...     fun.free()  # this is absolutely necessary here
     
-    See module attribute `cocoex.known_suite_names` for known suite names and file
-    `example_experiment.py` for a full example use case.
+    See module attribute `cocoex.known_suite_names` for known suite names::
+    
+    >>> import cocoex as ex
+    >>> for suite_name in ex.known_suite_names:
+    >>>     suite = ex.Suite(suite_name, "", "")
+    >>>     for f in suite:
+    >>>         assert f.dimension in suite.dimensions
+    
+    See file `example_experiment.py` for a full example use case.
     
     """
     cdef coco_suite_t* suite  # AKA _self
@@ -137,7 +146,9 @@ cdef class Suite:
     cdef _indices
     cdef _names
     cdef _dimensions
+    cdef _number_of_objectives
     cdef initialized
+
     def __cinit__(self, suite_name, suite_instance, suite_options):
         cdef np.npy_intp shape[1]  # probably completely useless
         self._name = _bstring(suite_name)
@@ -161,6 +172,7 @@ cdef class Suite:
         self._indices = []
         self._names = []
         self._dimensions = []
+        self._number_of_objectives = []
         try:
             suite = coco_suite(self._name, self.instance, self.options)
         except:
@@ -175,6 +187,7 @@ cdef class Suite:
             self._ids.append(coco_problem_get_id(p))
             self._names.append(coco_problem_get_name(p))
             self._dimensions.append(coco_problem_get_dimension(p))
+            self._number_of_objectives.append(coco_problem_get_number_of_objectives(p))
         coco_suite_free(suite)
         self.suite = coco_suite(self._name, self.instance, self.options)
         self.initialized = True
@@ -234,7 +247,7 @@ cdef class Suite:
                                 True, self._name).add_observer(observer)
         except:
             raise NoSuchProblemException(self.name, str(id))
-    
+
     def free(self):
         """free underlying C structures"""
         self.__dealloc__()
@@ -287,6 +300,10 @@ cdef class Suite:
         """list of problem dimensions occuring at least once in this `Suite`"""
         return sorted(set(self._dimensions))
     @property
+    def number_of_objectives(self):
+        """list of number of objectives occuring at for on problem in this `Suite`"""
+        return sorted(set(self._number_of_obectives))
+    @property
     def ids(self):
         """list of all problem IDs.
 
@@ -308,8 +325,8 @@ cdef class Suite:
         """name of this suite as used to instantiate the suite via `Suite(name, ...)`"""
         return self._name
 
-    def __repr___(self):
-        return '<Suite("%r", "%r", "%r")>'  % (self.name, self.instance, self.options)
+    def __repr__(self):
+        return 'Suite(%r, %r, %r)'  % (self.name, self.instance, self.options)  # angled brackets
     def __str__(self):
         return 'Suite("%s", "%s", "%s") with %d problems'  % (self.name, self.instance, self.options, len(self))
     def __len__(self):
@@ -344,6 +361,7 @@ cdef class Observer:
     cdef bytes _name
     cdef bytes _options
     cdef _state
+
     def __cinit__(self, name, options):
         self._name = _bstring(name)
         self._options = _bstring(options)
@@ -355,9 +373,9 @@ cdef class Observer:
         for purely technical reasons"""
         global _current_observer
         _current_observer = self._observer
-        
+
     def observe(self, problem):
-        """`observe(problem)` let `self` observe the `problem` by calling 
+        """`observe(problem)` let `self` observe the `problem` by calling
         `problem.add_observer(self)`.
 
         The typical observer records data to be used in the COCO post-processing
@@ -365,15 +383,18 @@ cdef class Observer:
 
         >>> import cocoex as co
         >>> suite = co.Suite("suite_bbob", "", "")
+        >>> assert len(suite) == 2160
         >>> f = suite.get_problem(33)
+        >>> assert f.id.endswith('f003_i04_d02')
         >>> observer = co.Observer("observer_bbob", "").observe(f)
         >>> # work work work with f
+        >>> f.free()
 
         """
         self._update_current_observer_global()
         # problem.problem = coco_problem_add_observer(problem.problem, self._observer)
         # cannot be done here, because problem.problem is not recognized as C variable here
-        problem.add_observer(self)  
+        problem.add_observer(self)
         return self
         
     @property
@@ -524,7 +545,6 @@ cdef class Problem:
         """Number of variables this problem instance expects as input."""
         def __get__(self):
             return self._number_of_variables
-
     @property
     def number_of_objectives(self):
         "number of objectives, if equal to 1, call returns a scalar"
@@ -634,8 +654,8 @@ cdef class Problem:
     def __repr__(self):
         if self.problem is not NULL:
             return "<%s(), id=%r>" % (
-                    repr(self.__class__).split()[1][1:-2], 
-                    # self.problem_suite, self.problem_index, 
+                    repr(self.__class__).split()[1][1:-2],
+                    # self.problem_suite, self.problem_index,
                     self.id)
         else:
             return "<finalized/invalid problem>"

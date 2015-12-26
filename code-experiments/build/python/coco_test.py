@@ -4,6 +4,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import doctest
+import cocoex as ex
 from cocoex import Suite
 from cocoex.utilities import about_equal
 import numpy as np
@@ -66,9 +68,17 @@ def process_testfile(testfile):
         test_vectors = read_test_vectors(fd)
         process_test_cases(fd, test_suite, test_vectors)
 
+def testmod(module):
+    doctest.testmod(module, optionflags=doctest.ELLIPSIS, raise_on_error=True)
+    
 def main(args):
     for arg in args:
         process_testfile(arg)
 
 if __name__ == '__main__':
+    interface = ex.interface if hasattr(ex, 'interface') else ex._interface
+    testmod(interface)
+    import example_experiment
+    testmod(example_experiment)
+    example_experiment.main()
     main(sys.argv[1:])
