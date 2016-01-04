@@ -4,12 +4,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
+import sys
+import shutil
 import doctest
+import numpy as np
 import cocoex as ex
 from cocoex import Suite
 from cocoex.utilities import about_equal
-import numpy as np
-import sys
+import example_experiment
+
+default_testcases = ["bbob2009_testcases.txt"]
 
 def read_test_vectors(fd):
     """
@@ -69,16 +74,52 @@ def process_testfile(testfile):
         process_test_cases(fd, test_suite, test_vectors)
 
 def testmod(module):
-    doctest.testmod(module, optionflags=doctest.ELLIPSIS, raise_on_error=True)
-    
+    """`doctest`s `testmod` method with `raise_on_error=True` setting"""
+    print("  doctest of %s" % str(module))
+    doctest.testmod(module,  # optionflags=doctest.ELLIPSIS,
+                    raise_on_error=True)
+
+def run_doctests():
+    """Run doctests on "all" modules.
+
+    To include this in a unittest enviroment,
+    see https://docs.python.org/2/library/doctest.html#unittest-api
+    """
+    interface = ex.interface if hasattr(ex, 'interface') else ex._interface
+    testmod(ex)
+    if not sys.version.startswith('3'):
+        print("  CAVEAT: doctest OF cocoex.interface IS, FOR SOME REASON, " +
+              "INEFFECTIVE IN PYTHON 2 ")
+    testmod(interface)
+    testmod(example_experiment)
+
+def _clean_up(start_matches, protected):
+    """permanently remove entries in the current folder which begin with any of
+    `start_matches`, where `""` matches any string, and which are not in
+    `protected`.
+
+    CAVEAT: use with care, as with `"", ""` as arguments this deletes all folder
+    entries like `rm *` does. """
+    if not protected and "" in start_matches:
+        raise ValueError(
+            '_clean_up([..., "", ...], []) is not permitted, resembles "rm *"')
+    for d in os.listdir('.'):
+        if d not in protected:
+            for name in start_matches:
+                if d.startswith(name):
+                    shutil.rmtree(d)
+                    break
+
+
 def main(args):
-    for arg in args:
-        process_testfile(arg)
+    list_before = os.listdir('.')
+    print('Running doctests...'), sys.stdout.flush()
+    run_doctests()
+    print('doctests done.\nRunning example_experiment:'), sys.stdout.flush()
+    example_experiment.main()
+    for arg in args if args else default_testcases:
+        process_testfile(arg) if args or os.path.isfile(arg) else None
+    _clean_up(["random_search_on_suite_biobj", "results"], list_before)
 
 if __name__ == '__main__':
-    interface = ex.interface if hasattr(ex, 'interface') else ex._interface
-    testmod(interface)
-    import example_experiment
-    testmod(example_experiment)
-    example_experiment.main()
     main(sys.argv[1:])
