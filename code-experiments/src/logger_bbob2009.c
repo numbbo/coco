@@ -19,7 +19,7 @@ static int bbob2009_raisedOptValWarning;
 /*static const size_t bbob2009_nbpts_fval = 5;*/
 static size_t bbob2009_current_dim = 0;
 static size_t bbob2009_current_funId = 0;
-static size_t bbob2009_infoFile_firstInstance = 0;
+static size_t bbob2009_infoFile_firstInstance = -1;
 char bbob2009_infoFile_firstInstance_char[3];
 /* a possible solution: have a list of dims that are already in the file, if the ones we're about to log
  * is != bbob2009_current_dim and the funId is currend_funId, create a new .info file with as suffix the
@@ -223,7 +223,7 @@ static void logger_bbob2009_openIndexFile(logger_bbob2009_t *logger,
   FILE **target_file;
   FILE *tmp_file;
   strncpy(used_dataFile_path, dataFile_path, COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
-  if (bbob2009_infoFile_firstInstance == 0) {
+  if (bbob2009_infoFile_firstInstance == -1) {
     bbob2009_infoFile_firstInstance = logger->instance_id;
   }
   sprintf(function_id_char, "%lu", logger->function_id);
@@ -569,6 +569,7 @@ static coco_problem_t *logger_bbob2009(coco_observer_t *observer, coco_problem_t
    */
   logger->function_id = coco_problem_get_suite_dep_function(problem);
   logger->instance_id = coco_problem_get_suite_dep_instance(problem);
+
   logger->written_last_eval = 1;
   logger->last_fvalue = DBL_MAX;
   logger->is_initialized = 0;
