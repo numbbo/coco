@@ -8,6 +8,7 @@
 
 #include "coco.h"
 
+#include "../../src/coco_internal.h" /* For testing purposes */
 /*
  * Parameters of the experiment
  */
@@ -138,6 +139,7 @@ int main(void) {
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
 
     my_random_search(problem);
+    /*printf("f%d d%d i%d\n",problem->suite_dep_function, problem->number_of_variables,problem->suite_dep_instance);*/
     /* my_grid_search(problem); */
 
   }
