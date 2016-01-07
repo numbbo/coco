@@ -6,8 +6,8 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build
-HTMLBUILDDIR  = ../../../bbob-biobj-functions
-PDF           = ../bbob-biobj-functions.pdf
+HTMLBUILDDIR  = ../../../bbob-biobj-functions-doc
+PDF           = bbob-biobj-functions.pdf
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
@@ -132,8 +132,8 @@ latexpdf:
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 	@echo "Running LaTeX files through pdflatex..."
 	$(MAKE) -C $(BUILDDIR)/latex all-pdf
-	cp $(BUILDDIR)/latex/*.pdf $(PDF)
-	@echo "pdflatex finished; see $(PDF)."
+	cp $(BUILDDIR)/latex/$(PDF) ../$(PDF)
+	@echo "pdflatex finished; see ../$(PDF)."
 
 latexpdfja:
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
