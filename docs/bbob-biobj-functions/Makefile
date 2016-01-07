@@ -6,10 +6,8 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build
-HTMLBUILDDIR  = ../../../dokutesting
-# should become at some point: HTMLBUILDDIR      = ../../../bobbob-functions
-PDF           = ../bobbob-functions.pdf
-FIGS          = source/figs
+HTMLBUILDDIR  = ../../../bbob-biobj-functions
+PDF           = ../bbob-biobj-functions.pdf
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
@@ -28,6 +26,7 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  html       to make standalone HTML files"
+	@echo "  html-topublish to make standalone HTML files in the repository bbob-biobj-functions"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
 	@echo "  singlehtml to make a single large HTML file"
 	@echo "  pickle     to make pickle files"
@@ -56,8 +55,12 @@ clean:
 	rm -rf $(BUILDDIR)/*
 
 html:
+	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	@echo
+	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+
+html-topublish:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(HTMLBUILDDIR)
-	cp $(FIGS) $(HTMLBUILDDIR)
 	@echo
 	@echo "Build finished. The HTML pages are in $(HTMLBUILDDIR)."
 
