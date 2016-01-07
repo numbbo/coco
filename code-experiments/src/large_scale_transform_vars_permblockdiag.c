@@ -5,7 +5,7 @@
 
 typedef struct {
   double *B, *x;
-  size_t *P1, *P2, *block_sizes;/*permutation matrices, P1 for the columns of M and P2 for its rows*/
+  size_t *P1, *P2, *block_sizes, nb_blocks;/*permutation matrices, P1 for the columns of M and P2 for its rows*/
 } ls_transform_vars_permblockdiag_t;
 
 static void transform_vars_affine_evaluate(coco_problem_t *self, const double *x, double *y) {
@@ -31,13 +31,13 @@ static void transform_vars_affine_free(void *thing) {
   coco_free_memory(data->M);
   coco_free_memory(data->P1);
   coco_free_memory(data->P1);
+  coco_free_memory(data->block_sizes);
   coco_free_memory(data->x);
 }
 
 /*
  * Apply a double permuted orthogonal block-diagonal transfromation matrix to the search space
  *
- *   x |-> Mx + b
  *
  * The matrix M is stored in row-major format.
  */
