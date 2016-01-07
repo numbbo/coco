@@ -6,6 +6,8 @@
 Welcome to biobj-functions's documentation!
 ===========================================
 
+Test text
+
 Contents:
 
 .. toctree::
@@ -18,9 +20,9 @@ Contents:
    tutorial
 
 .. figure:: _figs/examplefigure_all.png
-   :scale: 50
+   :scale: 20
 
-   Data profile of the 31 algorithms, submitted to BBOB-2009 on the single-objective noiseless BBOB testbed (all 24 functions with target values in {100, … , 1e-8} in dimension 10).
+   Data profile of the 31 algorithms, submitted to BBOB-2009 on the single-objective noiseless BBOB testbed (all 24 functions with target values in {100, â€¦ , 1e-8} in dimension 10).
    The cross indicates the maximum number of function evaluations. A decline in steepness right after the cross (e.g. for IPOP-SEP-CMA-ES) indicates that the maximum number of function evaluations should have been chosen larger. A steep increase right after the cross (e.g. for simple GA) indicates that a restart should have been invoked earlier.
 
 Proposed Structure:
