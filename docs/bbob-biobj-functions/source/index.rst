@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to biobj-functions's documentation!
-===========================================
+Welcome to the documentation of the bbob-biobj functions!
+=========================================================
 
 Test text
 
@@ -19,7 +19,7 @@ Contents:
    test-functions
    tutorial
 
-.. figure:: _figs/examplefigure_all
+.. figure:: _figs/examplefigure_all.png
    :scale: 20
 
    Data profile of the 31 algorithms, submitted to BBOB-2009 on the single-objective noiseless BBOB testbed (all 24 functions with target values in {100, … , 1e-8} in dimension 10).
