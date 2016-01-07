@@ -22,15 +22,6 @@ cdef extern from "coco.h":
         pass
     ctypedef struct coco_suite_t: 
         pass
-    coco_problem_t *deprecated__coco_suite_get_problem(const char *problem_suite,
-                                           const long problem_index)
-    int deprecated__coco_suite_get_next_problem_index(const char *problem_suite, 
-                                          const long problem_index,
-                                          const char *select_options)
-
-    coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
-                                              const char *observer_name,
-                                              const char *options)
 
     void coco_problem_free(coco_problem_t *problem)
     coco_observer_t *coco_observer(const char *observer_name, const char *options)
@@ -385,7 +376,7 @@ cdef class Suite:
         return list(self._ids)
     @property
     def indices(self):
-        """list of all problem indices, depreciated.
+        """list of all problem indices, deprecated.
         
         These values are (only) used to call the underlying C structures.
         Indices used in the Python interface run between 0 and `len(self)`.
