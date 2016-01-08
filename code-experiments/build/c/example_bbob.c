@@ -116,11 +116,11 @@ void my_grid_search(coco_problem_t *problem) {
 
 int main(void) {
 
-  const char *observer_options_GS = "result_folder: GS_on_suite_bbob \
+  const char *observer_options_GS = "result_folder: GS_on_bbob \
                                      algorithm_name: GS \
                                      algorithm_info: \"A simple grid search algorithm\"";
 
-  const char *observer_options_RS = "result_folder: RS_on_suite_bbob \
+  const char *observer_options_RS = "result_folder: RS_on_bbob \
                                      algorithm_name: RS \
                                      algorithm_info: \"A simple random search algorithm\"";
 
@@ -131,9 +131,9 @@ int main(void) {
   printf("Running the experiments... (it takes time, be patient)\n");
   fflush(stdout);
 
-  suite = coco_suite("suite_bbob", NULL, "dimensions: 2,3,5,10,20 instance_idx: 1");
-  observer = coco_observer("observer_bbob", observer_options_RS);
-  /* observer = coco_observer("observer_biobj", observer_options_GS); */
+  suite = coco_suite("bbob", NULL, "dimensions: 2,3,5,10,20 instance_idx: 1");
+  observer = coco_observer("bbob", observer_options_RS);
+  /* observer = coco_observer("bbob", observer_options_GS); */
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
 

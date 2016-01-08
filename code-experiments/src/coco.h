@@ -343,6 +343,12 @@ void coco_free_memory(void *data);
  */
 char *coco_strdup(const char *string);
 
+/**
+ * Formatted string duplication. Optional arguments are
+ * used like in sprintf.
+ */
+char *coco_strdupf(const char *str, ...);
+
 /* TODO: These bbob2009... functions should probably not be in
  * this header.
  */

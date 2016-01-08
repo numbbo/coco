@@ -88,8 +88,8 @@ cdef class Suite:
 
     Sweeping through all problems is as simple as::
 
-    >>> suite = co.Suite("suite_biobj", "", "")
-    >>> observer = co.Observer("observer_biobj", "")
+    >>> suite = co.Suite("bbob-biobj", "", "")
+    >>> observer = co.Observer("bbob-biobj", "")
     >>> for fun in suite:
     ...     if fun.index == 0:
     ...         print("Number of objectives %d, %d, %d" %
@@ -116,8 +116,8 @@ cdef class Suite:
     ...     return candidates[np.argmin([f(x) for x in candidates])]
     ...
     >>> solver = random_search
-    >>> suite = Suite("suite_bbob", "year:2009", "")
-    >>> observer = Observer("observer_bbob",
+    >>> suite = Suite("bbob", "year:2009", "")
+    >>> observer = Observer("bbob",
     ...              "result_folder: %s_on_%s" % (solver.__name__, "bbob2009"))
     >>> for fun in suite:
     ...     print('Current problem index = %d' % fun.index)
@@ -478,7 +478,7 @@ cdef class Observer:
         >>> f = suite.get_problem(33)
         >>> assert isinstance(f, Problem)
         >>> assert f.id.endswith('f003_i04_d02')
-        >>> observer = co.Observer("observer_bbob", "").observe(f)
+        >>> observer = co.Observer("bbob", "").observe(f)
         >>> # work work work with f
         >>> f.free()
 

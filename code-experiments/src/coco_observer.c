@@ -138,11 +138,11 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   coco_free_memory(log_level);
 
   /* Here each observer must have an entry */
-  if (0 == strcmp(observer_name, "observer_toy")) {
+  if (0 == strcmp(observer_name, "toy")) {
     observer_toy(observer, observer_options);
-  } else if (0 == strcmp(observer_name, "observer_bbob")) {
+  } else if (0 == strcmp(observer_name, "bbob")) {
     observer_bbob2009(observer, observer_options);
-  } else if (0 == strcmp(observer_name, "observer_biobj")) {
+  } else if (0 == strcmp(observer_name, "bbob-biobj")) {
     observer_biobj(observer, observer_options);
   } else {
     coco_warning("Unknown observer!");

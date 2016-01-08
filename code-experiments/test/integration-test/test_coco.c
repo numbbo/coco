@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
     }
   }
 
-  suite = coco_suite("suite_bbob", NULL, NULL);
+  suite = coco_suite("bbob", NULL, NULL);
 
   while (1) {
     double expected_value, *x, y;

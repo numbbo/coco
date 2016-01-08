@@ -179,7 +179,7 @@ static long deprecated__suite_biobj_300_get_next_problem_index(long problem_inde
    or max problem_index is succeeded.
    */
 
-  coco_error("suite_biobj_300_get_next_problem_index(): specific selections not yet implemented");
+  coco_error("deprecated__suite_biobj_300_get_next_problem_index(): specific selections not yet implemented");
   return -1; /* Never reached */
 }
 
