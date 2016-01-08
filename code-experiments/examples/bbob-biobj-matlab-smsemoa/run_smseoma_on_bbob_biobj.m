@@ -1,3 +1,9 @@
+% Runs the SMS-EMOA on the bbob-biobj test suite.
+%
+% Note that the whole experiment, as defined below, takes about
+% 14 minutes on an Intel Core2 Duo T9600 machine with 2.8GHz and
+% 4GB of memory.
+
 MAX_EVALS = 1000;
 suite_name = 'suite_biobj';
 suite_instance = '';
