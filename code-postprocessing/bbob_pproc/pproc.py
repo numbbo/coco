@@ -643,11 +643,16 @@ class DataSet():
 
     # Private attribute used for the parsing of info files.
     _attributes = {'funcId': ('funcId', int), 
+                   'function': ('funcId', int), 
                    'DIM': ('dim', int),
+                   'dim': ('dim', int),
                    'Precision': ('precision', float), 
                    'Fopt': ('fopt', float),
                    'targetFuncValue': ('targetFuncValue', float),
-                   'algId': ('algId', str)}
+                   'indicator': ('indicator', str),
+                   'folder': ('folder', str),
+                   'algId': ('algId', str),
+                   'algorithm': ('algId', str)}
 
     def __init__(self, header, comment, data, indexfile, verbose=True):
         """Instantiate a DataSet.
@@ -666,6 +671,8 @@ class DataSet():
         # Extract information from the header line.
         self._extra_attr = []
         self.__parseHeader(header)
+        # In biobjective case we have some header info in the data line.
+        self.__parseHeader(data) 
 
         # Read in second line of entry (comment line). The information
         # is only stored if the line starts with "%", else it is ignored.
@@ -702,7 +709,16 @@ class DataSet():
                 filename = filename.replace('\\', os.sep)
                 #Linux data to Windows processing
                 filename = filename.replace('/', os.sep)
+                
+                folder = getattr(self, 'folder', '')
+                if folder:
+                    filename = os.path.join(folder, filename)
+                    
                 self.dataFiles.append(filename)
+            elif '=' in elem: 
+                # It means header info in data line (biobjective). 
+                # We just skip the element.
+                continue
             else:
                 if not ':' in elem:
                     # if elem does not have ':' it means the run was not
@@ -1422,19 +1438,22 @@ class DataSetList(list):
             # Read all data sets within one index file.
             nbLine = 1
             data_file_names = []
+            header = ''
             while True:
                 try:
-                    header = f.next()
-                    while not header.strip(): # remove blank lines
+                    if 'indicator' not in header:
                         header = f.next()
-                        nbLine += 1
-                    comment = f.next()
-                    if not comment.startswith('%'):
-                        warnings.warn('Entry in file %s at line %d is faulty: '
-                                      % (indexFile, nbLine) +
-                                      'it will be skipped.')
-                        nbLine += 2
-                        continue
+                        while not header.strip(): # remove blank lines
+                            header = f.next()
+                            nbLine += 1
+                        comment = f.next()
+                        if not comment.startswith('%'):
+                            warnings.warn('Entry in file %s at line %d is faulty: '
+                                          % (indexFile, nbLine) +
+                                          'it will be skipped.')
+                            nbLine += 2
+                            continue
+
                     data = f.next()  # this is the filename of the data file!?
                     data_file_names.append(data)
                     nbLine += 3
