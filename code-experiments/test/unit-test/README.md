@@ -1,3 +1,12 @@
+# Compiling the library
+
+If none of the compiled cmocka libraries works on your computer you need to compile it by yourself. 
+
+You can follow this instructions http://zhuyong.me/blog/2014/03/19/c-code-unit-testing-using-cmocka/ but you should download the latest version of cmocka library files from: https://cmocka.org/files/1.0/
+
+Then add the compiled library to the 'lib' folder (create a new subfolder in 'lib' and copy the library to it) and update the build_c_unit_tests() in the do.py so that the correct library is copied to the unit-test folder.
+
+
 # Unit-testing instructions
 
 We use the following naming convention for unit test files: you add a prefix "test_" to the name of the file that you are testing (e.g. coco_utilities.c -> test_coco_utilities.c). 
