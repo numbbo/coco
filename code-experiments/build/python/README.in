@@ -2,3 +2,7 @@ numbbo framework $COCO_VERSION
 ==============================
 
 To be written...
+
+
+Installation:
+- In order to run the Coco experiments in python, you might need to install cython.
