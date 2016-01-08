@@ -176,6 +176,9 @@ def leak_check():
 ## Python 2
 def _prep_python():
     global release
+    def simple_version():  # python installations might not like git-like version "numbers"
+        return "0.1.0"
+    # git_version = simple_version  # outcomment if needed
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/python/cython/coco.c', 
                release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')

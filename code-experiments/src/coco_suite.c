@@ -486,8 +486,9 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
       && !coco_suite_is_next_dimension_found(suite))
     return NULL;
 
-  if (suite->current_problem)
+  if (suite->current_problem) {
     coco_problem_free(suite->current_problem);
+  }
 
   assert(suite->current_function_idx >= 0);
   assert(suite->current_dimension_idx >= 0);
@@ -498,7 +499,8 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   instance_idx = (size_t) suite->current_instance_idx;
 
   problem = coco_suite_get_problem_from_indices(suite, function_idx, dimension_idx, instance_idx);
-  problem = coco_problem_add_observer(problem, observer);
+  if (observer != NULL)
+    problem = coco_problem_add_observer(problem, observer);
   suite->current_problem = problem;
 
   return problem;
