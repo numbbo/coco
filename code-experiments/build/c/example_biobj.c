@@ -137,7 +137,7 @@ int main(void) {
   printf("Running the experiments... (it takes time, be patient)\n");
   fflush(stdout);
 
-  suite = coco_suite("bbob-biobj", NULL, "dimensions: 2,3,10 instance_idx: 1-4");
+  suite = coco_suite("bbob-biobj", NULL, "dimensions: 2,3,5,10,20 instance_idx: 1,2");
   observer = coco_observer("bbob-biobj", observer_options_RS);
   /* observer = coco_observer("bbob-biobj", observer_options_GS); */
 
