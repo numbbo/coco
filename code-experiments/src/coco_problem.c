@@ -328,6 +328,13 @@ typedef struct {
 static void coco_stacked_problem_evaluate(coco_problem_t *self, const double *x, double *y) {
   coco_stacked_problem_data_t* data = (coco_stacked_problem_data_t *) self->data;
 
+  if (coco_problem_get_number_of_objectives(self)
+      != coco_problem_get_number_of_objectives(data->problem1)
+          + coco_problem_get_number_of_objectives(data->problem2)) {
+    coco_error("\n%lu != %lu + %lu\n", coco_problem_get_number_of_objectives(self),
+        coco_problem_get_number_of_objectives(data->problem1), coco_problem_get_number_of_objectives(data->problem2));
+  }
+
   assert(
       coco_problem_get_number_of_objectives(self)
           == coco_problem_get_number_of_objectives(data->problem1)
