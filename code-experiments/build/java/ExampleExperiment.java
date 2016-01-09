@@ -78,7 +78,7 @@ public class ExampleExperiment {
 				myRandomSearch(problem);	
 			}
 			
-			benchmark.finalize();
+			//benchmark.finalize();
 			
 		} catch (Exception e) {
 			System.err.println(e.toString());
