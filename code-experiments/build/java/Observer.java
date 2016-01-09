@@ -1,7 +1,7 @@
 public class Observer {
 	
-	long pointer; // Pointer to the coco_observer_t object
-	String name;
+	private long pointer; // Pointer to the coco_observer_t object
+	private String name;
 
 	/** 
 	 * Constructs the observer from observerName and observerOptions.
@@ -33,6 +33,10 @@ public class Observer {
 		}
 	}
 
+	public long getPointer() {
+		return this.pointer;
+	}
+	
 	public String getName() {
 		return this.name;
 	}
