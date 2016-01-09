@@ -4,19 +4,19 @@
  */
 public class Problem {
 
-	long pointer; // Pointer to the coco_problem_t object
+	private long pointer; // Pointer to the coco_problem_t object
 	
-	int dimension;
-	int number_of_objectives;
-	int number_of_constraints;
+	private int dimension;
+	private int number_of_objectives;
+	private int number_of_constraints;
 	
-	double[] lower_bounds;
-	double[] upper_bounds;
+	private double[] lower_bounds;
+	private double[] upper_bounds;
 	
-	String id;
-	String name;
+	private String id;
+	private String name;
 	
-	long index;
+	private long index;
 
 	/**
 	 * Constructs the problem from the pointer.
@@ -64,6 +64,10 @@ public class Problem {
 	}
 
 	// Getters
+	public long getPointer() {
+		return this.pointer;
+	}
+	
 	public int getDimension() {
 		return this.dimension;
 	}
