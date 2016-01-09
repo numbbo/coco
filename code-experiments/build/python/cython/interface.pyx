@@ -7,7 +7,7 @@ cimport numpy as np
 
 from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
 
-known_suite_names = ["suite_bbob", "suite_biobj"]
+known_suite_names = ["bbob", "bbob-biobj"]
 
 # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
 # __all__ = ['Problem', 'Benchmark']
@@ -71,7 +71,7 @@ cdef class Suite:
     and passed to the respective C code (see `coco.h`).
 
     >>> import cocoex as co
-    >>> suite = co.Suite("suite_bbob", "", "")
+    >>> suite = co.Suite("bbob", "", "")
     >>> f = suite.next_problem()
     >>> assert f.number_of_objectives == 1
     >>> print("f([1,2]) = %.11f" % f([1,2]))
@@ -248,7 +248,7 @@ cdef class Suite:
         All values between zero and `len(self) - 1` are valid index values::
 
         >>> import cocoex as ex
-        >>> suite = ex.Suite("suite_biobj", "", "")
+        >>> suite = ex.Suite("bbob-biobj", "", "")
         >>> for index in range(len(suite)):
         ...     problem = suite.get_problem(index)
         ...     # work work work using problem
@@ -298,15 +298,15 @@ cdef class Suite:
         returned.
 
         >>> import cocoex as co
-        >>> s = co.Suite("suite_bbob", "", "")
+        >>> s = co.Suite("bbob", "", "")
         >>> s.find_problem_ids("f001", "d10", "i01")
-        ['suite_bbob_f001_i01_d10']
+        ['bbob_f001_i01_d10']
 
         We can sweep through all instances of the ellipsoidal function f10
         in 20-D of the BBOB suite like this::
 
         >>> import cocoex as ex
-        >>> suite = ex.Suite("suite_bbob", "", "")
+        >>> suite = ex.Suite("bbob", "", "")
         >>> ids = suite.find_problem_ids("f010", "d20")
         >>> used_indices = []
         >>> for p in suite:
@@ -339,7 +339,7 @@ cdef class Suite:
         usually matches `current_index` one-to-one, use::
 
         >>> import cocoex as ex
-        >>> suite = ex.Suite("suite_bbob", "", "")
+        >>> suite = ex.Suite("bbob", "", "")
         >>> suite.indices[suite.current_index]  # raises an exception, as current_index is None
         Traceback (most recent call last):
           . . .
@@ -464,7 +464,7 @@ cdef class Observer:
         afterwards.
 
         >>> import cocoex as co
-        >>> suite = co.Suite("suite_bbob", "", "")
+        >>> suite = co.Suite("bbob", "", "")
         >>> assert len(suite) == 2160
         >>> f = suite.get_problem(33)
         >>> assert isinstance(f, Problem)
