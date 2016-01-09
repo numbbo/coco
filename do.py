@@ -26,7 +26,6 @@ from cocoutils import git_version, git_revision
 core_files = ['code-experiments/src/coco_generics.c',
               'code-experiments/src/coco_random.c',
               'code-experiments/src/coco_suite.c',
-              'code-experiments/src/coco_suites.c',
               'code-experiments/src/coco_observer.c'
               ]
 
@@ -309,13 +308,14 @@ def build_java():
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/java/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/java/coco.h')
+    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/java/best_values_hyp.txt')
     write_file(git_revision(), "code-experiments/build/java/REVISION")
     write_file(git_version(), "code-experiments/build/java/VERSION")
-    run('code-experiments/build/java', ['javac', 'JNIinterface.java'])
-    run('code-experiments/build/java', ['javah', 'JNIinterface'])
+    run('code-experiments/build/java', ['javac', 'CocoJNI.java'])
+    run('code-experiments/build/java', ['javah', 'CocoJNI'])
     
     # Finds the path to the headers jni.h and jni_md.h (platform-dependent)
-    # and compiles the JNIinterface library (compiler-dependent). So far, only
+    # and compiles the CocoJNI library (compiler-dependent). So far, only
     # the following cases are covered:
     
     # 1. Windows with Cygwin (both 64-bit)
@@ -329,14 +329,14 @@ def build_java():
         
         if ('64' in platform.machine()):
             run('code-experiments/build/java', ['x86_64-w64-mingw32-gcc', '-I', jdkpath1, '-I', 
-                               jdkpath2, '-shared', '-o', 'JNIinterface.dll', 
-                               'JNIinterface.c'])
+                               jdkpath2, '-shared', '-o', 'CocoJNI.dll', 
+                               'CocoJNI.c'])
     
     # 2. Windows with Cygwin (both 32-bit)
         elif ('32' in platform.machine()) or ('x86' in platform.machine()):
             run('code-experiments/build/java', ['i686-w64-mingw32-gcc', '-Wl,--kill-at', '-I', 
                                jdkpath1, '-I', jdkpath2, '-shared', '-o', 
-                               'JNIinterface.dll', 'JNIinterface.c'])
+                               'CocoJNI.dll', 'CocoJNI.c'])
                                
     # 3. Windows without Cygwin
     elif ('win32' in sys.platform) and ('cygwin' not in os.environ['PATH']):
@@ -345,7 +345,7 @@ def build_java():
         jdkpath1 = jdkpath.split("bin")[0] + 'include'
         jdkpath2 = jdkpath1 + '\\win32'
         run('code-experiments/build/java', ['gcc', '-Wl,--kill-at', '-I', jdkpath1, '-I', jdkpath2, 
-                           '-shared', '-o', 'JNIinterface.dll', 'JNIinterface.c'])
+                           '-shared', '-o', 'CocoJNI.dll', 'CocoJNI.c'])
                            
     # 4. Linux
     elif ('linux' in sys.platform):
@@ -354,25 +354,27 @@ def build_java():
         jdkpath1 = jdkpath.split("jni.h")[0]
         jdkpath2 = jdkpath1 + '/linux'
         run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-c', 
-                           'JNIinterface.c'])
+                           'CocoJNI.c'])
         run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-o', 
-                           'libJNIinterface.so', '-shared', 'JNIinterface.c'])
+                           'libCocoJNI.so', '-shared', 'CocoJNI.c'])
                            
     # 5. Mac
     elif ('darwin' in sys.platform):
         jdkpath = '/System/Library/Frameworks/JavaVM.framework/Headers'
-        run('code-experiments/build/java', ['gcc', '-I', jdkpath, '-c', 'JNIinterface.c'])
-        run('code-experiments/build/java', ['gcc', '-dynamiclib', '-o', 'libJNIinterface.jnilib',
-                           'JNIinterface.o'])
+        run('code-experiments/build/java', ['gcc', '-I', jdkpath, '-c', 'CocoJNI.c'])
+        run('code-experiments/build/java', ['gcc', '-dynamiclib', '-o', 'libCocoJNI.jnilib',
+                           'CocoJNI.o'])
     
     run('code-experiments/build/java', ['javac', 'Problem.java'])
     run('code-experiments/build/java', ['javac', 'Benchmark.java'])
-    run('code-experiments/build/java', ['javac', 'demo.java'])
+    run('code-experiments/build/java', ['javac', 'Observer.java'])
+    run('code-experiments/build/java', ['javac', 'Suite.java'])
+    run('code-experiments/build/java', ['javac', 'ExampleExperiment.java'])
 
 def test_java():
     build_java()
     try:
-        run('code-experiments/build/java', ['java', '-Djava.library.path=.', 'demo'])    
+        run('code-experiments/build/java', ['java', '-Djava.library.path=.', 'ExampleExperiment'])    
     except subprocess.CalledProcessError:
         sys.exit(-1)
 

@@ -13,7 +13,7 @@ Usage from a python shell::
     >>> example.main(100, 1, 1)  # doctest: +ELLIPSIS
     Benchmarking solver '<function random_search' with MAXEVALS=100, ...
     Batch usecase ...
-    suite_biobj done (1650 of 1650 problems benchmarked), ...
+    bbob-biobj done (1650 of 1650 problems benchmarked), ...
 
 does the same but runs the "first" of one single batch.
 """
@@ -54,12 +54,12 @@ def random_search(fun, lbounds, ubounds, budget):
 #################################################
 MAXEVALS = 1e2  # always start with something small, CAVEAT: this might be modified from input args
 solver = random_search # fmin_slsqp # cma.fmin #    
-suite_name = "suite_bbob"
-suite_name = "suite_biobj"
+suite_name = "bbob"
+suite_name = "bbob-biobj"
 suite_instance = ""  # syntax see C code TODO
 suite_options = ""
-observer_name = "observer_bbob"
-observer_name = "observer_biobj"
+observer_name = "bbob"
+observer_name = "bbob-biobj"
 observer_options = "result_folder: %s_on_%s" % (solver.__name__, suite_name) 
 number_of_batches = 1  # CAVEAT: this can be modified below from input args
 current_batch = 1       # ditto

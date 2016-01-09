@@ -136,30 +136,6 @@ size_t coco_problem_get_number_of_objectives(const coco_problem_t *self);
 size_t coco_problem_get_number_of_constraints(const coco_problem_t *self);
 
 /**
- * Get the ${problem_index}-th problem of the ${problem_suit} test
- * suite.
- */
-coco_problem_t *deprecated__coco_suite_get_problem(const char *problem_suite, const long problem_index);
-
-/**
- * Return the successor index of ${problem_index} in ${problem_suit},
- * or the first index if ${problem_index} < 0,
- * or -1 otherwise (no successor problem is available).
- *
- * int index = -1;
- * while (-1 < (index = coco_suite_get_next_problem_index(suite, index, ""))) {
- *   coco_problem_t *problem = coco_suite_get_problem(suite, index); 
- *   ...
- *   coco_problem_free(problem);
- * }
- * 
- * loops over all indices and problems consequently. 
- */
-long deprecated__coco_suite_get_next_problem_index(const char *problem_suite,
-                                       long problem_index,
-                                       const char *select_options);
-
-/**
  * Number of evaluations done on problem ${self}. 
  * Tentative and yet versatile. 
  */
@@ -184,6 +160,8 @@ double coco_problem_get_final_target_fvalue1(const coco_problem_t *self);
 const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *self);
 const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *self);
 
+size_t coco_problem_get_suite_dep_index(coco_problem_t *self);
+
 /**
  * Return an initial solution, i.e. a feasible variable setting, to the
  * problem.
@@ -195,45 +173,6 @@ const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *
  *coco_problem_get_largest_values_of_interest()
  */
 void coco_problem_get_initial_solution(const coco_problem_t *self, double *initial_solution);
-
-/**
- * Add the observer named ${observer_name} to ${problem}. An
- * observer is a wrapper around a coco_problem_t. This allows the
- * observer to see all interactions between the algorithm and the
- * optimization problem.
- *
- * ${options} is a string that can be used to pass options to an
- * observer. The format is observer dependent.
- *
- * @note There is a special observer names "no_observer" which simply
- * returns the original problem. This is largely to simplify the
- * interface design for interpreted languages. A short hand for this
- * observer is the empty string ("").
- */
-coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
-                                                      const char *observer_name,
-                                                      const char *options);
-
-void deprecated__coco_suite_benchmark(const char *problem_suite,
-                          const char *observer,
-                          const char *observer_options,
-                          coco_optimizer_t optimizer);
-
-void deprecated__new_coco_suite_benchmark(const char *suite_name,
-                          const char *observer_name,
-                          const char *observer_options,
-                          coco_optimizer_t optimizer);
-
-void deprecated__suite_bbob2009_decode_problem_index(const long problem_index,
-                                                size_t *function_id,
-                                                size_t *instance_id,
-                                                size_t *dimension);
-/* shall replace the above?
- void new_coco_benchmark(const char *problem_suite,
- const char *problem_suite_options,
- const char *observer,
- const char *observer_options,
- coco_optimizer_t optimizer); */
 
 coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, const char *suite_options);
 
@@ -343,22 +282,11 @@ void coco_free_memory(void *data);
  */
 char *coco_strdup(const char *string);
 
-/* TODO: These bbob2009... functions should probably not be in
- * this header.
- */
-/* but they are necessary for Builder fbsd9-amd64-test-gcc at
- * http://numbbo.p-value.net/buildbot/builders/fbsd9-amd64-test-gcc
- * (not for the others) */
 /**
- * Return the function ID of a BBOB 2009 problem or -1.
+ * Formatted string duplication. Optional arguments are
+ * used like in sprintf.
  */
-/* int bbob2009_get_function_id(const coco_problem_t *problem);
- */
-/**
- * Return the function ID of a BBOB 2009 problem or -1.
- */
-/* int bbob2009_get_instance_id(const coco_problem_t *problem);
- */
+char *coco_strdupf(const char *str, ...);
 
 int coco_remove_directory(const char *path);
 
