@@ -1,62 +1,51 @@
+/**
+ * The benchmark contains a suite and an observer and is able to return the next problem. 
+ */
 public class Benchmark {
-	String problem_suite;
-	String problem_suite_options;
-	String observer;
-	String observer_options;
-	int len;
-	int dimensions;
-	int objectives;
-	long current_problem_index;
 	
-	/* Constructor */
-	public Benchmark(String problem_suite, String problem_suite_options, String observer, String observer_options) {
-		super();
-		this.problem_suite = problem_suite;
-		this.problem_suite_options = problem_suite_options;
+	private Suite suite;
+	private Observer observer;
+	
+	/** 
+	 * Constructor 
+	 */
+	public Benchmark(Suite suite, Observer observer) {
+		this.suite = suite;
 		this.observer = observer;
-		this.observer_options = observer_options;
-		this.len = 0;
-		this.dimensions = 0;
-		this.objectives = 0;
-		this.current_problem_index = -1;
 	}
 	
-	public Problem getProblemUnobserved(long problem_index) throws NoSuchProblemException {
-		Problem problem = null;
-		try {
-			problem = new Problem(this.problem_suite, problem_index);
-		} catch (NoSuchProblemException e) {
-			System.out.println("Benchmark.getProblemUnobserved: " + e);
-			throw e;
+	/**
+	 * Function that returns the next problem in the suite. When it comes to the end of the suite, 
+	 * it returns null.
+	 * @return the next problem in the suite or null when there is no next problem  
+	 * @throws Exception 
+	 */
+	public Problem getNextProblem() throws Exception {
+		
+		try {		
+			long problemPointer = CocoJNI.cocoGetNextProblem(suite.getPointer(), observer.getPointer());
+			
+			if (problemPointer == 0)
+				return null;
+			
+			return new Problem(problemPointer);
+		} catch (Exception e) {
+			throw new Exception("Fetching of next problem failed.\n" + e.toString());
 		}
-		return problem;
 	}
 	
-	public Problem getProblem(long problem_index) throws NoSuchProblemException {
-		Problem problem = null;
-		try {
-			problem = getProblemUnobserved(problem_index);
-			problem.addObserver(this.observer, this.observer_options);
-		} catch (NoSuchProblemException e) {
-			System.out.println("Benchmark.getProblem: " + e);
-			throw e;
+	/**
+	 * Finalizes the observer and suite. This method needs to be explicitly called in order to log 
+	 * the last results.
+	 * @throws Exception 
+	 */
+	public void finalizeBenchmark() throws Exception {
+		
+		try {		
+			observer.finalizeObserver();
+			suite.finalizeSuite();
+		} catch (Exception e) {
+			throw new Exception("Benchmark finalization failed.\n" + e.toString());
 		}
-		return problem;
-	}
-	
-	public long getNextProblemIndex(long problem_index) {
-		return JNIinterface.cocoSuiteGetNextProblemIndex(this.problem_suite, problem_index, this.problem_suite_options);
-	}
-	
-	public Problem nextProblem() throws NoSuchProblemException {
-		Problem problem = null;
-		try {
-			this.current_problem_index = getNextProblemIndex(this.current_problem_index);
-			problem = getProblem(this.current_problem_index);
-		} catch (NoSuchProblemException e) {
-			System.out.println("Benchmark.nextProblem: " + e);
-			throw e;
-		}
-		return problem;
 	}
 }
