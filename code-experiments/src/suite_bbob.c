@@ -32,7 +32,7 @@ static coco_suite_t *suite_bbob_allocate(void) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
-  suite = coco_suite_allocate("suite_bbob", 24, 6, dimensions, "instances:1-15");
+  suite = coco_suite_allocate("bbob", 24, 6, dimensions, "instances:1-15");
 
   return suite;
 }
@@ -57,7 +57,7 @@ static coco_problem_t *get_bbob_problem(const size_t function,
                                         const size_t instance) {
   coco_problem_t *problem = NULL;
 
-  const char *problem_id_template = "suite_bbob_f%03lu_i%02lu_d%02lu";
+  const char *problem_id_template = "bbob_f%03lu_i%02lu_d%02lu";
   const char *problem_name_template = "BBOB suite problem f%lu instance %lu in %luD";
 
   const long rseed = (long) (function + 10000 * instance);

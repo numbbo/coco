@@ -1,0 +1,45 @@
+public class Observer {
+	
+	long pointer; // Pointer to the coco_observer_t object
+	String name;
+
+	/** 
+	 * Constructs the observer from observerName and observerOptions.
+	 * TODO: Copy explanation of options from the C code. 
+	 * @param observerName
+	 * @param observerOptions
+	 * @throws Exception
+	 */
+	public Observer(String observerName, String observerOptions) throws Exception {
+
+		super();
+		try {
+			this.pointer = CocoJNI.cocoGetObserver(observerName, observerOptions);
+			this.name = observerName;
+		} catch (Exception e) {
+			throw new Exception("Observer constructor failed.\n" + e.toString());
+		}
+	}
+
+	/**
+	 * Finalizes the observer.
+	 * @throws Exception 
+	 */
+	public void finalize() throws Exception {
+		try {
+			CocoJNI.cocoFinalizeObserver(this.pointer);
+		} catch (Exception e) {
+			throw new Exception("Observer finalization failed.\n" + e.toString());
+		}
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	/* toString method */
+	@Override
+	public String toString() {
+		return getName();
+	}
+}
