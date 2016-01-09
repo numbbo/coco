@@ -39,11 +39,11 @@ public class Benchmark {
 	 * the last results.
 	 * @throws Exception 
 	 */
-	public void finalize() throws Exception {
+	public void finalizeBenchmark() throws Exception {
 		
 		try {		
-			observer.finalize();
-			suite.finalize();
+			observer.finalizeObserver();
+			suite.finalizeSuite();
 		} catch (Exception e) {
 			throw new Exception("Benchmark finalization failed.\n" + e.toString());
 		}

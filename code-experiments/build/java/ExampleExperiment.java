@@ -48,7 +48,7 @@ public class ExampleExperiment {
 				myRandomSearch(problem);	
 			}
 			
-			benchmark.finalize();
+			benchmark.finalizeBenchmark();
 			
 		} catch (Exception e) {
 			System.err.println(e.toString());
@@ -78,7 +78,7 @@ public class ExampleExperiment {
 				myRandomSearch(problem);	
 			}
 			
-			//benchmark.finalize();
+			benchmark.finalizeBenchmark();
 			
 		} catch (Exception e) {
 			System.err.println(e.toString());
