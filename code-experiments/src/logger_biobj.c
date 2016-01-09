@@ -420,7 +420,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   /* Output header information to the info file */
   if (!info_file_exists) {
     /* Output algorithm name */
-    fprintf(indicator->info_file, "algorithm = '%s', indicator = '%s', folder = %s\n%% %s", observer->algorithm_name,
+    fprintf(indicator->info_file, "algorithm = '%s', indicator = '%s', folder = '%s'\n%% %s", observer->algorithm_name,
         indicator_name, problem->problem_type, observer->algorithm_info);
   }
   if (observer_biobj->previous_function != problem->suite_dep_function) {
@@ -449,6 +449,7 @@ static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator,
 
   fprintf(indicator->info_file, ", %ld:%lu|%+.1e", logger->suite_dep_instance, logger->number_of_evaluations,
       indicator->best_value - indicator->current_value);
+  fflush(indicator->info_file);
 }
 
 /**
