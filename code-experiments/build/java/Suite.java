@@ -1,7 +1,7 @@
 public class Suite {
 	
-	long pointer; // Pointer to the coco_suite_t object
-	String name;
+	private long pointer; // Pointer to the coco_suite_t object
+	private String name;
 
 	/**
 	 * Constructs the suite from the given suiteName, suiteInstance and suiteOptions.
@@ -34,6 +34,10 @@ public class Suite {
 		}
 	}
 
+	public long getPointer() {
+		return this.pointer;
+	}
+	
 	public String getName() {
 		return this.name;
 	}
