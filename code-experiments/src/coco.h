@@ -160,6 +160,8 @@ double coco_problem_get_final_target_fvalue1(const coco_problem_t *self);
 const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *self);
 const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *self);
 
+size_t coco_problem_get_suite_dep_index(coco_problem_t *self);
+
 /**
  * Return an initial solution, i.e. a feasible variable setting, to the
  * problem.
