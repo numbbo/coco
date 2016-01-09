@@ -1,60 +1,104 @@
-// TODO: Important: find a way to check if a problem is NULL, i.e. is (coco_problem_t *)this.problem is NULL
+/**
+ * The problem contains some basic properties of the coco_problem_t structure that can be accessed
+ * through its getter functions.
+ */
 public class Problem {
-	long problem; // stores the pointer to the C coco_problem_t structure  
-	int dim;
+
+	long pointer; // Pointer to the coco_problem_t object
+	
+	int dimension;
 	int number_of_objectives;
-	public double[] lower_bounds;
-	public double[] upper_bounds;
-	String problem_suite;
-	long function_index; // AKA problem_index
+	int number_of_constraints;
 	
-	/* Constructor */
-	public Problem(String problem_suite, long function_index) throws NoSuchProblemException {
+	double[] lower_bounds;
+	double[] upper_bounds;
+	
+	String id;
+	String name;
+	
+	long index;
+
+	/**
+	 * Constructs the problem from the pointer.
+	 * @param pointer pointer to the coco_problem_t object
+	 * @throws Exception
+	 */
+	public Problem(long pointer) throws Exception {
+
 		super();
-		this.problem = JNIinterface.cocoSuiteGetProblem(problem_suite, function_index);
-		if (!JNIinterface.cocoProblemIsValid(this.problem)){
-			throw new NoSuchProblemException(problem_suite, function_index);
+		try {		
+			this.dimension = CocoJNI.cocoProblemGetDimension(pointer);
+			this.number_of_objectives = CocoJNI.cocoProblemGetNumberOfObjectives(pointer);
+			this.number_of_constraints = CocoJNI.cocoProblemGetNumberOfConstraints(pointer);
+			
+			this.lower_bounds = CocoJNI.cocoProblemGetSmallestValuesOfInterest(pointer);
+			this.upper_bounds = CocoJNI.cocoProblemGetLargestValuesOfInterest(pointer);
+			
+			this.id = CocoJNI.cocoProblemGetId(pointer);
+			this.name = CocoJNI.cocoProblemGetName(pointer);
+			
+			this.index = CocoJNI.cocoProblemGetIndex(pointer);
+			
+			this.pointer = pointer;
+		} catch (Exception e) {
+			throw new Exception("Problem constructor failed.\n" + e.toString());
 		}
-		this.problem_suite = problem_suite;
-		this.function_index = function_index;
-		this.lower_bounds = JNIinterface.cocoProblemGetSmallestValuesOfInterest(this.problem);
-		this.upper_bounds = JNIinterface.cocoProblemGetLargestValuesOfInterest(this.problem);
-		this.dim = JNIinterface.cocoProblemGetDimension(this.problem);
-		this.number_of_objectives = JNIinterface.cocoProblemGetNumberOfObjectives(this.problem);
 	}
 	
-	public void addObserver(String observer, String options) {
-		this.problem = JNIinterface.cocoProblemAddObserverDeprecated(this.problem, observer, options);
+	/**
+	 * Evaluates the function in point x and returns the result as an array of doubles. 
+	 * @param x
+	 * @return the result of the function evaluation in point x
+	 */
+	public double[] evaluateFunction(double[] x) {
+		return CocoJNI.cocoEvaluateFunction(this.pointer, x);
+	}
+
+	/**
+	 * Evaluates the constraint in point x and returns the result as an array of doubles. 
+	 * @param x
+	 * @return the result of the constraint evaluation in point x
+	 */
+	public double[] evaluateConstraint(double[] x) {
+		return CocoJNI.cocoEvaluateConstraint(this.pointer, x);
+	}
+
+	// Getters
+	public int getDimension() {
+		return this.dimension;
 	}
 	
-	public void free() {
-		// check this.problem != NULL
-		JNIinterface.cocoProblemFree(this.problem);
+	public int getNumberOfObjectives() {
+		return this.number_of_objectives;
 	}
 	
-	// Methods or attributes? Can these values change after the constructor is called?
-	public String id() {
-		// check this.problem != NULL
-		return JNIinterface.cocoProblemGetId(this.problem);
+	public int getNumberOfConstraints() {
+		return this.number_of_constraints;
 	}
 	
-	public String name() {
-		// check this.problem != NULL
-		return JNIinterface.cocoProblemGetName(this.problem);
+	public double getSmallestValueOfInterest(int index) {
+		return this.lower_bounds[index];
 	}
 	
-	public int evaluations() {
-		return JNIinterface.cocoProblemGetEvaluations(this.problem);
+	public double getLargestValueOfInterest(int index) {
+		return this.upper_bounds[index];
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+	
+	public long getIndex() {
+		return this.index;
 	}
 	
 	/* toString method */
 	@Override
-	public String toString() {
-        String pb_id = JNIinterface.cocoProblemGetId(this.problem);
-        if (pb_id != null) {
-            return pb_id;
-        }
-		else
-			return "finalized/invalid problem";
+	public String toString() {		
+		return this.getId();
 	}
 }

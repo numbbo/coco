@@ -33,10 +33,10 @@ int test_instance_extraction(char *suite_name) {
 
 int main(void) {
 
-  if (test_instance_extraction("suite_bbob") != 0)
+  if (test_instance_extraction("bbob") != 0)
     return 1;
 
-  if (test_instance_extraction("suite_biobj") != 0)
+  if (test_instance_extraction("bbob-biobj") != 0)
     return 1;
 
   return 0;

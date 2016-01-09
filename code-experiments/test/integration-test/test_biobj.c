@@ -56,8 +56,8 @@ void run_once(char *observer_options) {
   printf("Running experiment with options %s ...", observer_options);
   fflush(stdout);
 
-  suite = coco_suite("suite_biobj", NULL, "dimensions: 2 functions: 5-10 instances: 2-3");
-  observer = coco_observer("observer_biobj", observer_options);
+  suite = coco_suite("bbob-biobj", NULL, "dimensions: 2 functions: 5-10 instances: 2-3");
+  observer = coco_observer("bbob-biobj", observer_options);
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
 

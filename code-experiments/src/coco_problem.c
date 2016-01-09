@@ -435,12 +435,12 @@ coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1,
     if (largest != NULL)
       problem->largest_values_of_interest[i] = largest[i];
 
-    if (problem->best_parameter) /* bbob2009 logger doesn't work then anymore */
+    if (problem->best_parameter) /* logger_bbob doesn't work then anymore */
       coco_free_memory(problem->best_parameter);
     problem->best_parameter = NULL;
     if (problem->best_value)
       coco_free_memory(problem->best_value);
-    problem->best_value = NULL; /* bbob2009 logger doesn't work */
+    problem->best_value = NULL; /* logger_bbob doesn't work */
   }
 
   /* setup data holder */
