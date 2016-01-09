@@ -26,7 +26,7 @@ public class Suite {
 	 * Finalizes the suite.
 	 * @throws Exception 
 	 */
-	public void finalize() throws Exception {
+	public void finalizeSuite() throws Exception {
 		try {
 			CocoJNI.cocoFinalizeSuite(this.pointer);
 		} catch (Exception e) {

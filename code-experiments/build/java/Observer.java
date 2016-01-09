@@ -25,7 +25,7 @@ public class Observer {
 	 * Finalizes the observer.
 	 * @throws Exception 
 	 */
-	public void finalize() throws Exception {
+	public void finalizeObserver() throws Exception {
 		try {
 			CocoJNI.cocoFinalizeObserver(this.pointer);
 		} catch (Exception e) {
