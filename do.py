@@ -12,6 +12,7 @@ import subprocess
 import platform
 import time
 from subprocess import check_output, STDOUT
+import glob
 
 ## Change to the root directory of repository and add our tools/
 ## subdirectory to system wide search path for modules.
@@ -26,7 +27,6 @@ from cocoutils import git_version, git_revision
 core_files = ['code-experiments/src/coco_generics.c',
               'code-experiments/src/coco_random.c',
               'code-experiments/src/coco_suite.c',
-              'code-experiments/src/coco_suites.c',
               'code-experiments/src/coco_observer.c'
               ]
 
@@ -176,9 +176,6 @@ def leak_check():
 ## Python 2
 def _prep_python():
     global release
-    def simple_version():  # python installations might not like git-like version "numbers"
-        return "0.1.0"
-    # git_version = simple_version  # outcomment if needed
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/python/cython/coco.c', 
                release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')
@@ -272,6 +269,8 @@ def test_python3():
 ################################################################################
 ## Matlab
 def build_matlab():
+    """Builds MATLAB example in build/matlab/ but not the one in examples/."""
+    
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/matlab/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
@@ -279,20 +278,100 @@ def build_matlab():
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
     run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
+
     
+def run_matlab():
+    # remove the mex files for a clean compilation first
+    for filename in glob.glob('code-experiments/build/matlab/*.mex*') :
+        os.remove( filename )
+    # amalgamate, copy, and build
+    build_matlab()
+    wait_for_compilation_to_finish('./code-experiments/build/matlab/cocoProblemIsValid')
+    # run after compilation finished
+    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'exampleexperiment, exit'])
+
+    
+def is_compiled(filenameprefix):
+    """Returns true iff a file 'filenameprefix.mex*' exists."""
+    
+    # get all files with the given prefix
+    files = glob.glob(filenameprefix + '.*')
+    # return true iff one of the files contains 'mex'
+    ret = False
+    for f in files:
+        if '.mex' in f:
+            ret = True
+    return ret
+
+
+def wait_for_compilation_to_finish(filenameprefix):
+    """Waits until filenameprefix.c is compiled into a mex file.
+    
+    Needed because under Windows, a MATLAB call is typically non-blocking
+    and thus, the experiments would be started before the compilation is over.
+    """
+    
+    print('Wait for compilation to finish', end=''),
+    while not is_compiled(filenameprefix):
+        time.sleep(2)
+        print('.', end='')
+
+
+def build_matlab_sms():
+    global release
+    # amalgamate and copy files
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.c', release)
+    copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
+    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/matlab/best_values_hyp.txt')
+    write_file(git_revision(), "code-experiments/examples/bbob-biobj-matlab-smsemoa/REVISION")
+    write_file(git_version(), "code-experiments/examples/bbob-biobj-matlab-smsemoa/VERSION")
+    copy_file('code-experiments/build/matlab/cocoEvaluateFunction.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoEvaluateFunction.c')
+    copy_file('code-experiments/build/matlab/cocoObserver.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoObserver.c')
+    copy_file('code-experiments/build/matlab/cocoObserverFree.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoObserverFree.c')
+    copy_file('code-experiments/build/matlab/cocoProblemAddObserver.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/ProblemAddObserver.c')
+    copy_file('code-experiments/build/matlab/cocoProblemFree.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemFree.c')
+    copy_file('code-experiments/build/matlab/cocoProblemGetDimension.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemgetDimension.c')
+    copy_file('code-experiments/build/matlab/cocoProblemGetEvaluations.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetEvaluations.c')
+    copy_file('code-experiments/build/matlab/cocoProblemGetId.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetId.c')
+    copy_file('code-experiments/build/matlab/cocoProblemGetLargestValuesOfInterest.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetLargestValuesOfInterest.c')
+    copy_file('code-experiments/build/matlab/cocoProblemGetName.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetName.c')
+    copy_file('code-experiments/build/matlab/cocoProblemGetNumberOfObjectives.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetNumberOfObjectives.c')
+    copy_file('code-experiments/build/matlab/cocoProblemGetSmallestValuesOfInterest.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetSmallestValuesOfInterest.c')
+    copy_file('code-experiments/build/matlab/cocoProblemIsValid.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemIsValid.c')
+    copy_file('code-experiments/build/matlab/cocoSuite.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuite.c')
+    copy_file('code-experiments/build/matlab/cocoSuiteFree.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteFree.c')
+    copy_file('code-experiments/build/matlab/cocoSuiteGetNextProblem.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteGetNextProblem.c')
+    copy_file('code-experiments/build/matlab/cocoSuiteGetNextProblemIndex.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteGetNextProblemIndex.c')
+    copy_file('code-experiments/build/matlab/cocoSuiteGetProblem.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteGetProblem.c')
+    # compile
+    run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
+
+
+def run_matlab_sms():
+    # remove the mex files for a clean compilation first
+    for filename in glob.glob('code-experiments/examples/bbob-biobj-matlab-smsemoa/*.mex*') :
+        os.remove( filename )
+    # amalgamate, copy, and build
+    build_matlab_sms()
+    wait_for_compilation_to_finish('./code-experiments/examples/bbob-biobj-matlab-smsemoa/paretofront')
+    # run after compilation finished
+    run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'run_smseoma_on_bbob_biobj, exit'])
+
+
 ################################################################################
 ## Java
 def build_java():
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/java/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/java/coco.h')
+    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/java/best_values_hyp.txt')
     write_file(git_revision(), "code-experiments/build/java/REVISION")
     write_file(git_version(), "code-experiments/build/java/VERSION")
-    run('code-experiments/build/java', ['javac', 'JNIinterface.java'])
-    run('code-experiments/build/java', ['javah', 'JNIinterface'])
+    run('code-experiments/build/java', ['javac', 'CocoJNI.java'])
+    run('code-experiments/build/java', ['javah', 'CocoJNI'])
     
     # Finds the path to the headers jni.h and jni_md.h (platform-dependent)
-    # and compiles the JNIinterface library (compiler-dependent). So far, only
+    # and compiles the CocoJNI library (compiler-dependent). So far, only
     # the following cases are covered:
     
     # 1. Windows with Cygwin (both 64-bit)
@@ -306,14 +385,14 @@ def build_java():
         
         if ('64' in platform.machine()):
             run('code-experiments/build/java', ['x86_64-w64-mingw32-gcc', '-I', jdkpath1, '-I', 
-                               jdkpath2, '-shared', '-o', 'JNIinterface.dll', 
-                               'JNIinterface.c'])
+                               jdkpath2, '-shared', '-o', 'CocoJNI.dll', 
+                               'CocoJNI.c'])
     
     # 2. Windows with Cygwin (both 32-bit)
         elif ('32' in platform.machine()) or ('x86' in platform.machine()):
             run('code-experiments/build/java', ['i686-w64-mingw32-gcc', '-Wl,--kill-at', '-I', 
                                jdkpath1, '-I', jdkpath2, '-shared', '-o', 
-                               'JNIinterface.dll', 'JNIinterface.c'])
+                               'CocoJNI.dll', 'CocoJNI.c'])
                                
     # 3. Windows without Cygwin
     elif ('win32' in sys.platform) and ('cygwin' not in os.environ['PATH']):
@@ -322,7 +401,7 @@ def build_java():
         jdkpath1 = jdkpath.split("bin")[0] + 'include'
         jdkpath2 = jdkpath1 + '\\win32'
         run('code-experiments/build/java', ['gcc', '-Wl,--kill-at', '-I', jdkpath1, '-I', jdkpath2, 
-                           '-shared', '-o', 'JNIinterface.dll', 'JNIinterface.c'])
+                           '-shared', '-o', 'CocoJNI.dll', 'CocoJNI.c'])
                            
     # 4. Linux
     elif ('linux' in sys.platform):
@@ -331,25 +410,27 @@ def build_java():
         jdkpath1 = jdkpath.split("jni.h")[0]
         jdkpath2 = jdkpath1 + '/linux'
         run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-c', 
-                           'JNIinterface.c'])
+                           'CocoJNI.c'])
         run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-o', 
-                           'libJNIinterface.so', '-shared', 'JNIinterface.c'])
+                           'libCocoJNI.so', '-shared', 'CocoJNI.c'])
                            
     # 5. Mac
     elif ('darwin' in sys.platform):
         jdkpath = '/System/Library/Frameworks/JavaVM.framework/Headers'
-        run('code-experiments/build/java', ['gcc', '-I', jdkpath, '-c', 'JNIinterface.c'])
-        run('code-experiments/build/java', ['gcc', '-dynamiclib', '-o', 'libJNIinterface.jnilib',
-                           'JNIinterface.o'])
+        run('code-experiments/build/java', ['gcc', '-I', jdkpath, '-c', 'CocoJNI.c'])
+        run('code-experiments/build/java', ['gcc', '-dynamiclib', '-o', 'libCocoJNI.jnilib',
+                           'CocoJNI.o'])
     
     run('code-experiments/build/java', ['javac', 'Problem.java'])
     run('code-experiments/build/java', ['javac', 'Benchmark.java'])
-    run('code-experiments/build/java', ['javac', 'demo.java'])
+    run('code-experiments/build/java', ['javac', 'Observer.java'])
+    run('code-experiments/build/java', ['javac', 'Suite.java'])
+    run('code-experiments/build/java', ['javac', 'ExampleExperiment.java'])
 
 def test_java():
     build_java()
     try:
-        run('code-experiments/build/java', ['java', '-Djava.library.path=.', 'demo'])    
+        run('code-experiments/build/java', ['java', '-Djava.library.path=.', 'ExampleExperiment'])    
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -397,19 +478,22 @@ Available commands:
   build-python2        - Build Python 2 modules
   build-python3        - Build Python 3 modules
   build-matlab         - Build Matlab package
+  build-matlab-sms     - Build SMS-EMOA example in Matlab
   build-java           - Build Java package
   run-c                - Build and run examples from the C framework
   run-python           - Run a Python script with installed COCO module
                          Takes a single argument (name of Python script file)
+  run-matlab           - Build and run MATLAB exampleexperiment
+  run-matlab-sms       - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
   test-c               - Build and run unit tests, integration tests 
                          and examples from the C framework
   test-c-unit          - Build and run unit tests from the C framework
   test-c-integration   - Build and run integration tests from the C framework
   test-c-example       - Build and run examples from the C framework
   test-python          - Build and run minimal test of Python module
-  test-python2         - Build and run  minimal test of Python 2 module
-  test-python3         - Build and run  minimal test of Python 3 module
-  test-java            - Build and run  minimal test of Java package
+  test-python2         - Build and run minimal test of Python 2 module
+  test-python3         - Build and run minimal test of Python 3 module
+  test-java            - Build and run minimal test of Java package
   leak-check           - Check for memory leaks
   test-post-processing - Runs post processing tests.
 
@@ -430,9 +514,12 @@ def main(args):
     elif cmd == 'build-python2': build_python2()
     elif cmd == 'build-python3': build_python3()
     elif cmd == 'build-matlab': build_matlab()
+    elif cmd == 'build-matlab-sms': build_matlab_sms()
     elif cmd == 'build-java': build_java()
     elif cmd == 'run-c': run_c()
     elif cmd == 'run-python': run_python(args[1])
+    elif cmd == 'run-matlab': run_matlab()
+    elif cmd == 'run-matlab-sms': run_matlab_sms()
     elif cmd == 'test-c': test_c()
     elif cmd == 'test-c-unit': test_c_unit()
     elif cmd == 'test-c-integration': test_c_integration()

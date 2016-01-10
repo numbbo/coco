@@ -408,7 +408,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
   coco_create_path(path_name);
-  prefix = coco_remove_from_string(problem->problem_id, "_i", "");
+  prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
   file_name = coco_strdupf("%s_%s.dat", prefix, indicator_name);
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
   indicator->log_file = fopen(path_name, "a");
@@ -420,12 +420,13 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   /* Output header information to the info file */
   if (!info_file_exists) {
     /* Output algorithm name */
-    fprintf(indicator->info_file, "algId = '%s', indicator = '%s', folder = %s\n%% %s", observer->algorithm_name,
+    fprintf(indicator->info_file, "algorithm = '%s', indicator = '%s', folder = '%s'\n%% %s", observer->algorithm_name,
         indicator_name, problem->problem_type, observer->algorithm_info);
   }
   if (observer_biobj->previous_function != problem->suite_dep_function) {
-    fprintf(indicator->info_file, "\nfuncId = %03lu, %s, ", problem->suite_dep_function, file_name);
-    fprintf(indicator->info_file, "DIM = %lu", problem->number_of_variables);
+    fprintf(indicator->info_file, "\nfunction = %02lu, ", problem->suite_dep_function);
+    fprintf(indicator->info_file, "dim = %lu, ", problem->number_of_variables);
+    fprintf(indicator->info_file, "%s", file_name);
   }
 
   coco_free_memory(prefix);
@@ -434,8 +435,8 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
 
   /* Output header information to the log file */
   fprintf(indicator->log_file, "%%\n%% index = %ld, name = %s\n", problem->suite_dep_index, problem->problem_name);
-  fprintf(indicator->log_file, "%% DIM = %lu, instId = %ld, bestVal = %.*e\n", problem->number_of_variables,
-      problem->suite_dep_instance, logger->precision_f, indicator->best_value);
+  fprintf(indicator->log_file, "%% instance = %ld, reference value = %.*e\n", problem->suite_dep_instance,
+      logger->precision_f, indicator->best_value);
   fprintf(indicator->log_file, "%% function evaluation | indicator value | target value\n");
 
   return indicator;
@@ -448,6 +449,7 @@ static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator,
 
   fprintf(indicator->info_file, ", %ld:%lu|%+.1e", logger->suite_dep_instance, logger->number_of_evaluations,
       indicator->best_value - indicator->current_value);
+  fflush(indicator->info_file);
 }
 
 /**
@@ -514,11 +516,11 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
     fflush(logger->nondom_file);
   }
 
-  /* If the archive was updated and a new target was reached for an indicator, output indicator information.
-   * Note that a target is reached when the (best_value - current_value) <= relative_target_value (the
-   * relative_target_value is a target for indicator difference, not indicator value!)
+  /* If the archive was updated and a new target was reached for an indicator or if this is the first evaluation,
+   * output indicator information. Note that a target is reached when the (best_value - current_value) <=
+   * relative_target_value (the relative_target_value is a target for indicator difference, not indicator value!)
    */
-  if (update_performed && logger->compute_indicators)
+  if (logger->compute_indicators && (update_performed || (logger->number_of_evaluations == 1))) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
       target_hit = 0;
       indicator = logger->indicators[i];
@@ -532,13 +534,18 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
         else
           break;
       }
-      if (target_hit)
+      if (target_hit) {
         fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
             indicator->best_value - indicator->current_value, logger->precision_f,
             MO_RELATIVE_TARGET_VALUES[indicator->next_target_id - 1]);
-
+      }
+      else if (logger->number_of_evaluations == 1) {
+        fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
+            indicator->best_value - indicator->current_value, logger->precision_f,
+            MO_RELATIVE_TARGET_VALUES[indicator->next_target_id]);
+      }
     }
-
+  }
 }
 
 /**

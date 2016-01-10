@@ -35,7 +35,7 @@ static void test_coco_suite_encode_problem_index(void **state) {
   size_t index;
   size_t function_idx = 13, dimension_idx = 0, instance_idx = 10;
 
-  suite = coco_suite("suite_bbob", NULL, NULL);
+  suite = coco_suite("bbob", NULL, NULL);
 
   expect_value(__wrap_coco_suite_encode_problem_index, function_idx, 13);
   expect_value(__wrap_coco_suite_encode_problem_index, dimension_idx, 0);

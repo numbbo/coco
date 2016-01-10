@@ -101,31 +101,31 @@ const char *coco_problem_get_type(const coco_problem_t *self) {
 
 size_t coco_problem_get_dimension(const coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->problem_id != NULL);
+  assert(self->number_of_variables > 0);
   return self->number_of_variables;
 }
 
 size_t coco_problem_get_number_of_objectives(const coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->problem_id != NULL);
+  assert(self->number_of_objectives > 0);
   return self->number_of_objectives;
 }
 
 size_t coco_problem_get_number_of_constraints(const coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->problem_id != NULL);
+  assert(self->number_of_constraints >= 0);
   return self->number_of_constraints;
 }
 
 const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->problem_id != NULL);
+  assert(self->smallest_values_of_interest != NULL);
   return self->smallest_values_of_interest;
 }
 
 const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->problem_id != NULL);
+  assert(self->largest_values_of_interest != NULL);
   return self->largest_values_of_interest;
 }
 
@@ -143,17 +143,21 @@ void coco_problem_get_initial_solution(const coco_problem_t *self, double *initi
   }
 }
 
-/* Commented to silence the compiler */
-size_t coco_problem_get_suite_dep_index(coco_problem_t *problem) {
-  return problem->suite_dep_index;
+size_t coco_problem_get_suite_dep_index(coco_problem_t *self) {
+  assert(self != NULL);
+  assert(self->suite_dep_index >= 0);
+  return self->suite_dep_index;
 }
 
-
-size_t coco_problem_get_suite_dep_function(coco_problem_t *problem) {
-  return problem->suite_dep_function;
+size_t coco_problem_get_suite_dep_function(coco_problem_t *self) {
+  assert(self != NULL);
+  assert(self->suite_dep_function > 0);
+  return self->suite_dep_function;
 }
 
-size_t coco_problem_get_suite_dep_instance(coco_problem_t *problem) {
-  return problem->suite_dep_instance;
+size_t coco_problem_get_suite_dep_instance(coco_problem_t *self) {
+  assert(self != NULL);
+  assert(self->suite_dep_instance > 0);
+  return self->suite_dep_instance;
 }
 
