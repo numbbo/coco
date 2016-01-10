@@ -12,6 +12,7 @@ import subprocess
 import platform
 import time
 from subprocess import check_output, STDOUT
+import glob
 
 ## Change to the root directory of repository and add our tools/
 ## subdirectory to system wide search path for modules.
@@ -268,6 +269,8 @@ def test_python3():
 ################################################################################
 ## Matlab
 def build_matlab():
+    """Builds MATLAB example in build/matlab/ but not the one in examples/."""
+    
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/matlab/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
@@ -275,14 +278,53 @@ def build_matlab():
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
     run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
-    # Prepare also the example with SMS-EMOA.
-    # Note that in order to actually run SMS-EMOA, setup.m in
-    # code-experiments/examples/biobj-matlab-smsemoa/ has to be run afterwards.
-    # The reason for not including it in here is the additional compilation of
-    # C++ code which is needed for the SMS-EMOA but not for all algorithms.
-    copy_file('code-experiments/build/matlab/coco.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.c')
-    copy_file('code-experiments/src/coco.h', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.h')
-    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/best_values_hyp.txt')
+
+    
+def run_matlab():
+    # remove the mex files for a clean compilation first
+    for filename in glob.glob('code-experiments/build/matlab/*.mex*') :
+        os.remove( filename )
+    # amalgamate, copy, and build
+    build_matlab()
+    wait_for_compilation_to_finish('./code-experiments/build/matlab/cocoProblemIsValid')
+    # run after compilation finished
+    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'exampleexperiment, exit'])
+
+    
+def is_compiled(filenameprefix):
+    """Returns true iff a file 'filenameprefix.mex*' exists."""
+    
+    # get all files with the given prefix
+    files = glob.glob(filenameprefix + '.*')
+    # return true iff one of the files contains 'mex'
+    ret = False
+    for f in files:
+        if '.mex' in f:
+            ret = True
+    return ret
+
+
+def wait_for_compilation_to_finish(filenameprefix):
+    """Waits until filenameprefix.c is compiled into a mex file.
+    
+    Needed because under Windows, a MATLAB call is typically non-blocking
+    and thus, the experiments would be started before the compilation is over.
+    """
+    
+    print('Wait for compilation to finish', end=''),
+    while not is_compiled(filenameprefix):
+        time.sleep(2)
+        print('.', end='')
+
+
+def build_matlab_sms():
+    global release
+    # amalgamate and copy files
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.c', release)
+    copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
+    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/matlab/best_values_hyp.txt')
+    write_file(git_revision(), "code-experiments/examples/bbob-biobj-matlab-smsemoa/REVISION")
+    write_file(git_version(), "code-experiments/examples/bbob-biobj-matlab-smsemoa/VERSION")
     copy_file('code-experiments/build/matlab/cocoEvaluateFunction.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoEvaluateFunction.c')
     copy_file('code-experiments/build/matlab/cocoObserver.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoObserver.c')
     copy_file('code-experiments/build/matlab/cocoObserverFree.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoObserverFree.c')
@@ -301,7 +343,21 @@ def build_matlab():
     copy_file('code-experiments/build/matlab/cocoSuiteGetNextProblem.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteGetNextProblem.c')
     copy_file('code-experiments/build/matlab/cocoSuiteGetNextProblemIndex.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteGetNextProblemIndex.c')
     copy_file('code-experiments/build/matlab/cocoSuiteGetProblem.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteGetProblem.c')
-    
+    # compile
+    run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
+
+
+def run_matlab_sms():
+    # remove the mex files for a clean compilation first
+    for filename in glob.glob('code-experiments/examples/bbob-biobj-matlab-smsemoa/*.mex*') :
+        os.remove( filename )
+    # amalgamate, copy, and build
+    build_matlab_sms()
+    wait_for_compilation_to_finish('./code-experiments/examples/bbob-biobj-matlab-smsemoa/paretofront')
+    # run after compilation finished
+    run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'run_smseoma_on_bbob_biobj, exit'])
+
+
 ################################################################################
 ## Java
 def build_java():
@@ -422,19 +478,22 @@ Available commands:
   build-python2        - Build Python 2 modules
   build-python3        - Build Python 3 modules
   build-matlab         - Build Matlab package
+  build-matlab-sms     - Build SMS-EMOA example in Matlab
   build-java           - Build Java package
   run-c                - Build and run examples from the C framework
   run-python           - Run a Python script with installed COCO module
                          Takes a single argument (name of Python script file)
+  run-matlab           - Build and run MATLAB exampleexperiment
+  run-matlab-sms       - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
   test-c               - Build and run unit tests, integration tests 
                          and examples from the C framework
   test-c-unit          - Build and run unit tests from the C framework
   test-c-integration   - Build and run integration tests from the C framework
   test-c-example       - Build and run examples from the C framework
   test-python          - Build and run minimal test of Python module
-  test-python2         - Build and run  minimal test of Python 2 module
-  test-python3         - Build and run  minimal test of Python 3 module
-  test-java            - Build and run  minimal test of Java package
+  test-python2         - Build and run minimal test of Python 2 module
+  test-python3         - Build and run minimal test of Python 3 module
+  test-java            - Build and run minimal test of Java package
   leak-check           - Check for memory leaks
   test-post-processing - Runs post processing tests.
 
@@ -455,9 +514,12 @@ def main(args):
     elif cmd == 'build-python2': build_python2()
     elif cmd == 'build-python3': build_python3()
     elif cmd == 'build-matlab': build_matlab()
+    elif cmd == 'build-matlab-sms': build_matlab_sms()
     elif cmd == 'build-java': build_java()
     elif cmd == 'run-c': run_c()
     elif cmd == 'run-python': run_python(args[1])
+    elif cmd == 'run-matlab': run_matlab()
+    elif cmd == 'run-matlab-sms': run_matlab_sms()
     elif cmd == 'test-c': test_c()
     elif cmd == 'test-c-unit': test_c_unit()
     elif cmd == 'test-c-integration': test_c_integration()
