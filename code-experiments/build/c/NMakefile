@@ -10,7 +10,7 @@ LD = link.exe
 #CFLAGS = /nologo /Z7 /TP /Ox /D_CRT_SECURE_NO_WARNINGS /Dsnprintf=_snprintf
 CFLAGS = -g /nologo /Z7 /Ox /D_CRT_SECURE_NO_WARNINGS /Dsnprintf=_snprintf
 LDFLAGS = /nologo
-TARGETS = example_bbob example_biobj example_toy
+TARGETS = example_experiment
 
 ########################################################################
 ## Toplevel targets
@@ -34,8 +34,4 @@ example_toy.exe: example_toy.obj coco.obj
 ########################################################################
 ## Additional dependencies
 
-example_bbob.o: coco.h
-
-example_biobj.o: coco.h
-
-example_toy.o: coco.h
+example_experiment.o: coco.h
