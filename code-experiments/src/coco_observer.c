@@ -69,7 +69,7 @@ void coco_observer_free(coco_observer_t *self) {
  * - log_level : info (only error, warning and info messages are output)
  * - log_level : debug (all messages are output)
  * - precision_x : integer value (precision used when outputting variables; default value is 8)
- * - precision_f : integer value (precision used when outputting f values; default value is 16)
+ * - precision_f : integer value (precision used when outputting f values; default value is 15)
  * - any option specified by the specific observers
  */
 coco_observer_t *coco_observer(const char *observer_name, const char *observer_options) {
@@ -110,10 +110,10 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
       precision_x = 8;
   }
 
-  precision_f = 16;
+  precision_f = 15;
   if (coco_options_read_int(observer_options, "precision_f", &precision_f) != 0) {
     if ((precision_f < 1) || (precision_f > 32))
-      precision_f = 16;
+      precision_f = 15;
   }
 
   observer = coco_observer_allocate(result_folder, algorithm_name, algorithm_info, precision_x, precision_f);
