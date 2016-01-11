@@ -145,14 +145,8 @@ static void logger_bbob_write_data(FILE *target_file,
  * Error when trying to create the file "path"
  */
 static void logger_bbob_error_io(FILE *path, int errnum) {
-  char *buf;
   const char *error_format = "Error opening file: %s\n ";
-  /* "bbob_logger_prepare() failed to open log file '%s'.";*/
-  size_t buffer_size = (size_t) snprintf(NULL, 0, error_format, path); /* to silence warning */
-  buf = (char *) coco_allocate_memory(buffer_size);
-  snprintf(buf, buffer_size, error_format, strerror(errnum), path);
-  coco_error(buf);
-  coco_free_memory(buf);
+  coco_error(error_format, strerror(errnum), path);
 }
 
 /**
@@ -482,13 +476,10 @@ static void logger_bbob_free(void *stuff) {
 
 static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *problem) {
   logger_bbob_t *logger;
-  observer_bbob_t *observer_bbob;
   coco_problem_t *self;
 
   logger = coco_allocate_memory(sizeof(*logger));
   logger->observer = observer;
-
-  observer_bbob = (observer_bbob_t *) observer->data;
 
   if (problem->number_of_objectives != 1) {
     coco_warning("logger_toy(): The toy logger shouldn't be used to log a problem with %d objectives",

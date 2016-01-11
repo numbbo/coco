@@ -113,7 +113,6 @@ size_t coco_problem_get_number_of_objectives(const coco_problem_t *self) {
 
 size_t coco_problem_get_number_of_constraints(const coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->number_of_constraints >= 0);
   return self->number_of_constraints;
 }
 
@@ -145,7 +144,6 @@ void coco_problem_get_initial_solution(const coco_problem_t *self, double *initi
 
 size_t coco_problem_get_suite_dep_index(coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->suite_dep_index >= 0);
   return self->suite_dep_index;
 }
 
