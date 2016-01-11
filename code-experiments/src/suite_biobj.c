@@ -12,7 +12,7 @@ static coco_suite_t *suite_biobj_allocate(void) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
-  suite = coco_suite_allocate("suite_biobj", 55, 6, dimensions, "instances:1-5");
+  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "instances:1-5");
 
   return suite;
 }
@@ -71,7 +71,7 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
 
   /* Use the standard stacked problem_id as problem_name and construct a new suite-specific problem_id */
   coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "biobj_f%03d_i%02ld_d%02d", function, instance, dimension);
+  coco_problem_set_id(problem, "bbob-biobj_f%02d_i%02ld_d%02d", function, instance, dimension);
 
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem1->problem_type, problem2->problem_type);

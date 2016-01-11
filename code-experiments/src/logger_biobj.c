@@ -15,8 +15,6 @@
 #include "mo_generics.c"
 #include "mo_targets.c"
 
-#define READ_BEST_VALUES_FROM_FILE 0
-
 /**
  * This is a biobjective logger that logs the values of some indicators and can output also nondominated
  * solutions.
@@ -380,11 +378,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
 
   indicator->name = coco_strdup(indicator_name);
 
-#if READ_BEST_VALUES_FROM_FILE /* TODO: Remove these lines when you know the best values can be read from the file... */
   indicator->best_value = observer_biobj_read_best_value(observer_biobj, indicator->name, problem->problem_id);
-#else
-  indicator->best_value = 1;
-#endif
   indicator->next_target_id = 0;
   indicator->current_value = 0;
 
@@ -408,7 +402,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
   coco_create_path(path_name);
-  prefix = coco_remove_from_string(problem->problem_id, "_i", "");
+  prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
   file_name = coco_strdupf("%s_%s.dat", prefix, indicator_name);
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
   indicator->log_file = fopen(path_name, "a");
@@ -420,12 +414,13 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   /* Output header information to the info file */
   if (!info_file_exists) {
     /* Output algorithm name */
-    fprintf(indicator->info_file, "algId = '%s', indicator = '%s', folder = %s\n%% %s", observer->algorithm_name,
+    fprintf(indicator->info_file, "algorithm = '%s', indicator = '%s', folder = '%s'\n%% %s", observer->algorithm_name,
         indicator_name, problem->problem_type, observer->algorithm_info);
   }
   if (observer_biobj->previous_function != problem->suite_dep_function) {
-    fprintf(indicator->info_file, "\nfuncId = %03lu, %s, ", problem->suite_dep_function, file_name);
-    fprintf(indicator->info_file, "DIM = %lu", problem->number_of_variables);
+    fprintf(indicator->info_file, "\nfunction = %02lu, ", problem->suite_dep_function);
+    fprintf(indicator->info_file, "dim = %lu, ", problem->number_of_variables);
+    fprintf(indicator->info_file, "%s", file_name);
   }
 
   coco_free_memory(prefix);
@@ -434,9 +429,9 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
 
   /* Output header information to the log file */
   fprintf(indicator->log_file, "%%\n%% index = %ld, name = %s\n", problem->suite_dep_index, problem->problem_name);
-  fprintf(indicator->log_file, "%% DIM = %lu, instId = %ld, bestVal = %.*e\n", problem->number_of_variables,
-      problem->suite_dep_instance, logger->precision_f, indicator->best_value);
-  fprintf(indicator->log_file, "%% function evaluation | indicator value | target value\n");
+  fprintf(indicator->log_file, "%% instance = %ld, reference value = %.*e\n", problem->suite_dep_instance,
+      logger->precision_f, indicator->best_value);
+  fprintf(indicator->log_file, "%% function evaluation | indicator value | target hit\n");
 
   return indicator;
 }
@@ -446,8 +441,9 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
  */
 static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, logger_biobj_t *logger) {
 
-  fprintf(indicator->info_file, ", %ld:%lu|%+.1e", logger->suite_dep_instance, logger->number_of_evaluations,
+  fprintf(indicator->info_file, ", %ld:%lu|%.1e", logger->suite_dep_instance, logger->number_of_evaluations,
       indicator->best_value - indicator->current_value);
+  fflush(indicator->info_file);
 }
 
 /**
@@ -514,11 +510,11 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
     fflush(logger->nondom_file);
   }
 
-  /* If the archive was updated and a new target was reached for an indicator, output indicator information.
-   * Note that a target is reached when the (best_value - current_value) <= relative_target_value (the
-   * relative_target_value is a target for indicator difference, not indicator value!)
+  /* If the archive was updated and a new target was reached for an indicator or if this is the first evaluation,
+   * output indicator information. Note that a target is reached when the (best_value - current_value) <=
+   * relative_target_value (the relative_target_value is a target for indicator difference, not indicator value!)
    */
-  if (update_performed && logger->compute_indicators)
+  if (logger->compute_indicators && (update_performed || (logger->number_of_evaluations == 1))) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
       target_hit = 0;
       indicator = logger->indicators[i];
@@ -532,13 +528,20 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
         else
           break;
       }
-      if (target_hit)
+      if (target_hit) {
         fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
             indicator->best_value - indicator->current_value, logger->precision_f,
             MO_RELATIVE_TARGET_VALUES[indicator->next_target_id - 1]);
-
+      }
+      /* The first evaluation is always output (even if no target was hit) */
+      else if (logger->number_of_evaluations == 1) {
+        fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
+            indicator->best_value - indicator->current_value, logger->precision_f,
+            coco_max_double(MO_RELATIVE_TARGET_VALUES[indicator->next_target_id],
+                indicator->best_value - indicator->current_value));
+      }
     }
-
+  }
 }
 
 /**
@@ -707,23 +710,23 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
   /* Set the ideal and reference points*/
   logger->problem_data->ideal_point[0] = stacked_problem->problem1->best_value[0];
   logger->problem_data->ideal_point[1] = stacked_problem->problem2->best_value[0];
-  /* nadir = coco_allocate_vector(problem->number_of_objectives); TODO: Uncomment this when the best_parameters are computed correctly!
+  nadir = coco_allocate_vector(problem->number_of_objectives);
   x = stacked_problem->problem2->best_parameter;
   coco_evaluate_function(stacked_problem->problem1, x, &nadir[0]);
   x = stacked_problem->problem1->best_parameter;
   coco_evaluate_function(stacked_problem->problem2, x, &nadir[1]);
   logger->problem_data->reference_point[0] = nadir[0];
   logger->problem_data->reference_point[1] = nadir[1];
-  coco_free_memory(nadir);*/
-  logger->problem_data->reference_point[0] = logger->problem_data->ideal_point[0] + 100; /* Quick hack to avoid failures */
-  logger->problem_data->reference_point[1] = logger->problem_data->ideal_point[1] + 100;
+  coco_free_memory(nadir);
+
   mo_problem_data_compute_normalization_factor(logger->problem_data, problem->number_of_objectives);
 
-  /* ATTENTION! Changing the reference point affects all computed hypervolumes!
-  logger->problem_data->reference_point[0] = logger->problem_data->ideal_point[0]
-      + 2 * (nadir[0] - logger->problem_data->ideal_point[0]);
-  logger->problem_data->reference_point[1] = logger->problem_data->ideal_point[1]
-      + 2 * (nadir[1] - logger->problem_data->ideal_point[1]); */
+  /* Output the ideal and reference points to stdout in debug output mode */
+  coco_debug("%s\t%+.*e\t%+.*e\t%+.*e\t%+.*e", problem->problem_id,
+             logger->precision_f, logger->problem_data->ideal_point[0],
+             logger->precision_f, logger->problem_data->ideal_point[1],
+             logger->precision_f, logger->problem_data->reference_point[0],
+             logger->precision_f, logger->problem_data->reference_point[1]);
 
   return self;
 }
