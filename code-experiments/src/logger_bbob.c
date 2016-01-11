@@ -14,22 +14,12 @@
 #include "observer_bbob.c"
 
 static int bbob_raisedOptValWarning;
-
-<<<<<<< HEAD:code-experiments/src/logger_bbob2009.c
-/*static const size_t bbob2009_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
-/*static const size_t bbob2009_nbpts_fval = 5;*/
-static size_t bbob2009_current_dim = 0;
-static size_t bbob2009_current_funId = 0;
-static size_t bbob2009_infoFile_firstInstance = -1;
-char bbob2009_infoFile_firstInstance_char[3];
-=======
 /*static const size_t bbob_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
 /*static const size_t bbob_nbpts_fval = 5;*/
 static size_t bbob_current_dim = 0;
 static size_t bbob_current_funId = 0;
 static size_t bbob_infoFile_firstInstance = 0;
 char bbob_infoFile_firstInstance_char[3];
->>>>>>> 113ec11f1009af1ecf9849a0ea165519c97301bb:code-experiments/src/logger_bbob.c
 /* a possible solution: have a list of dims that are already in the file, if the ones we're about to log
  * is != bbob_current_dim and the funId is currend_funId, create a new .info file with as suffix the
  * number of the first instance */
@@ -154,14 +144,8 @@ static void logger_bbob_write_data(FILE *target_file,
  * Error when trying to create the file "path"
  */
 static void logger_bbob_error_io(FILE *path, int errnum) {
-  char *buf;
   const char *error_format = "Error opening file: %s\n ";
-  /* "bbob_logger_prepare() failed to open log file '%s'.";*/
-  size_t buffer_size = (size_t) snprintf(NULL, 0, error_format, path); /* to silence warning */
-  buf = (char *) coco_allocate_memory(buffer_size);
-  snprintf(buf, buffer_size, error_format, strerror(errnum), path);
-  coco_error(buf);
-  coco_free_memory(buf);
+  coco_error(error_format, strerror(errnum), path);
 }
 
 /**
@@ -235,13 +219,8 @@ static void logger_bbob_openIndexFile(logger_bbob_t *logger,
   FILE **target_file;
   FILE *tmp_file;
   strncpy(used_dataFile_path, dataFile_path, COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
-<<<<<<< HEAD:code-experiments/src/logger_bbob2009.c
-  if (bbob2009_infoFile_firstInstance == -1) {
-    bbob2009_infoFile_firstInstance = logger->instance_id;
-=======
   if (bbob_infoFile_firstInstance == 0) {
     bbob_infoFile_firstInstance = logger->instance_id;
->>>>>>> 113ec11f1009af1ecf9849a0ea165519c97301bb:code-experiments/src/logger_bbob.c
   }
   sprintf(function_id_char, "%lu", logger->function_id);
   sprintf(bbob_infoFile_firstInstance_char, "%ld", bbob_infoFile_firstInstance);
@@ -496,13 +475,10 @@ static void logger_bbob_free(void *stuff) {
 
 static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *problem) {
   logger_bbob_t *logger;
-  observer_bbob_t *observer_bbob;
   coco_problem_t *self;
 
   logger = coco_allocate_memory(sizeof(*logger));
   logger->observer = observer;
-
-  observer_bbob = (observer_bbob_t *) observer->data;
 
   if (problem->number_of_objectives != 1) {
     coco_warning("logger_toy(): The toy logger shouldn't be used to log a problem with %d objectives",
