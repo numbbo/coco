@@ -39,7 +39,7 @@ public class ExampleExperiment {
 					+ "algorithm_name: GS "
 					+ "algorithm_info: \"A simple grid search algorithm\" ";
 
-			Suite suite = new Suite("bbob", "", "dimensions: 2,3,5,10,20 instance_idx: 1");
+			Suite suite = new Suite("bbob", "year: 2009", "dimensions: 2,3,5,10,20 instance_idx: 1");
 			Observer observer = new Observer("bbob", observer_options);
 			Benchmark benchmark = new Benchmark(suite, observer);
 			Problem problem;
