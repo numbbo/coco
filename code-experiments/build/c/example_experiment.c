@@ -117,7 +117,7 @@ void my_grid_search(coco_problem_t *problem) {
 /**
  * A simple example of benchmarking an optimization algorithm on the bbob suite with instances from 2009.
  */
-void example_bbob() {
+void example_bbob(void) {
 
   /* Some options of the bbob observer. See documentation for other options. */
   const char *observer_options = "result_folder: RS_on_bbob \
@@ -143,7 +143,7 @@ void example_bbob() {
 /**
  * A simple example of benchmarking an optimization algorithm on the biobjective suite.
  */
-void example_biobj() {
+void example_biobj(void) {
 
   /* Some options of the biobjective observer. See documentation for other options. */
   const char *observer_options = "result_folder: RS_on_bbob-biobj \
@@ -171,7 +171,7 @@ void example_biobj() {
 /**
  * A simple example of benchmarking an optimization algorithm on the toy suite.
  */
-void example_toy() {
+void example_toy(void) {
 
   /* Some options of the toy observer. See documentation for other options. */
   const char *observer_options = "result_folder: RS_on_toy \
