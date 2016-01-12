@@ -654,6 +654,9 @@ class DataSet():
                    'algId': ('algId', str),
                    'algorithm': ('algId', str)}
 
+    def isBiobjective(self):
+        return hasattr(self, 'indicator')
+    
     def __init__(self, header, comment, data, indexfile, verbose=True):
         """Instantiate a DataSet.
 
@@ -762,21 +765,22 @@ class DataSet():
             self.maxevals = maxevals
             self.finalfunvals = finalfunvals
 
-        dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
-                         for i in self.dataFiles)
-        data = VMultiReader(split(dataFiles))
-        if verbose:
-            print ("Processing %s: %d/%d trials found."
-                   % (dataFiles, len(data), len(self.instancenumbers)))
-        (adata, maxevals, finalfunvals) = alignData(data)
-        self.funvals = adata
-        try:
-            for i in range(len(maxevals)):
-                self.maxevals[i] = max(maxevals[i], self.maxevals[i])
-                self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
-        except AttributeError:
-            self.maxevals = maxevals
-            self.finalfunvals = finalfunvals
+        if not self.isBiobjective():        
+            dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
+                             for i in self.dataFiles)
+            data = VMultiReader(split(dataFiles))
+            if verbose:
+                print ("Processing %s: %d/%d trials found."
+                       % (dataFiles, len(data), len(self.instancenumbers)))
+            (adata, maxevals, finalfunvals) = alignData(data)
+            self.funvals = adata
+            try:
+                for i in range(len(maxevals)):
+                    self.maxevals[i] = max(maxevals[i], self.maxevals[i])
+                    self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
+            except AttributeError:
+                self.maxevals = maxevals
+                self.finalfunvals = finalfunvals
         #TODO: take for maxevals the max for each trial, for finalfunvals the min...
 
         #extensions = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
@@ -838,7 +842,7 @@ class DataSet():
         if isinstance(genericsettings.current_testbed, genericsettings.GECCOBBOBTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
-            while i > 1 and self.evals[i-1][0] <= self.precision:
+            while i > 1 and not self.isBiobjective() and self.evals[i-1][0] <= self.precision:
                 i -= 1
             i += 1
             if i < Ndata:
@@ -852,8 +856,8 @@ class DataSet():
                     self.ert = self.ert[:i]
                 except AttributeError:
                     pass
-            assert self.evals.shape[0] == 1 or self.evals[-2][0] > self.precision
-            if self.evals[-1][0] < self.precision: 
+            assert self.evals.shape[0] == 1 or self.isBiobjective() or self.evals[-2][0] > self.precision
+            if not self.isBiobjective() and self.evals[-1][0] < self.precision: 
                 self.evals[-1][0] = np.max((self.precision / 1.001, self.evals[-1, 0])) 
                 # warnings.warn('exact final precision was not recorded, next lower value set close to final precision')
                 # print '*** warning: final precision was not recorded'
@@ -930,7 +934,7 @@ class DataSet():
         res = (self.__class__ is other.__class__ and
                self.funcId == other.funcId and
                self.dim == other.dim and
-               self.precision == other.precision and
+               (self.isBiobjective() or self.precision == other.precision) and
                self.algId == other.algId and
                self.comment == other.comment)
         if hasattr(self, '_extra_attr'): # Backward compatibility
@@ -966,7 +970,8 @@ class DataSet():
         sinfo += '\nFunction ID: ' + str(self.funcId)
         sinfo += '\nDimension DIM = ' + str(self.dim)
         sinfo += '\nNumber of trials: ' + str(self.nbRuns())
-        sinfo += '\nFinal target Df: ' + str(self.precision)
+        if not self.isBiobjective():        
+            sinfo += '\nFinal target Df: ' + str(self.precision)
         # sinfo += '\nmin / max number of evals: '  + str(int(min(self.evals[0]))) + ' / '  + str(int(max(self.maxevals)))
         sinfo += '\nmin / max number of evals per trial: '  + str(int(min(self.maxevals))) + ' / '  + str(int(max(self.maxevals)))
         sinfo += '\n   evals/DIM:  best     15%     50%     85%     max |  ERT/DIM  nsucc'
@@ -1001,7 +1006,7 @@ class DataSet():
         
         """
         if final_target is None:
-            final_target = self.precision
+            final_target = self.precision if not self.isBiobjective() else 1e-8
         res = np.array(self.maxevals, copy=True) if not maximal_evaluations_only_to_last_target else np.nanmax(self.evals, 0)
         final_evals = self.detEvals([final_target])[0]
         idx = np.isfinite(final_evals)
