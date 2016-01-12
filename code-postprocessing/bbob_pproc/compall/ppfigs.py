@@ -7,7 +7,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
-from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings, htmldesc
+from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings, htmldesc, ppfigparam
 from ..ppfig import saveFigure
 from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 
@@ -79,22 +79,6 @@ show_algorithms = []
 fontsize = 10.0
 legend = False
 
-#Get benchmark short infos.
-infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
-try:
-    funInfos = {}
-    f = open(infofile,'r')
-    for line in f:
-        if len(line) == 0 or line.startswith('%') or line.isspace() :
-            continue
-        funcId, funcInfo = line[0:-1].split(None,1)
-        funInfos[int(funcId)] = funcId + ' ' + funcInfo
-    f.close()
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    print 'Could not find file', infofile, \
-          'Titles in figures will not be displayed.'
-          
 def scaling_figure_caption(target):
     # need to be used in rungenericmany.py!?
     assert len(target) == 1
@@ -329,7 +313,7 @@ def generateData(dataSet, target):
     res[3] = numpy.max(dataSet.maxevals)
     return res
 
-def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', verbose=True):
+def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', verbose=True):
     """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
     
     One function and one target per figure.
@@ -347,6 +331,8 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outpu
     if len(target) != 1:
         raise ValueError('only a single target can be managed in ppfigs, ' + str(len(target)) + ' targets were given')
     
+    funInfos = ppfigparam.read_fun_infos(isBiobjective)    
+
     dictFunc = pproc.dictAlgByFun(dictAlg)
     if sortedAlgs is None:
         sortedAlgs = sorted(dictAlg.keys())
@@ -459,7 +445,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outpu
                             ystar.append(ert/dim)
 
             plt.plot(xstar, ystar, 'k*', markerfacecolor=None, markeredgewidth=2, markersize=0.5*styles[0]['markersize'])
-        if funInfos:
+        if f in funInfos.keys():
             plt.gca().set_title(funInfos[f])
 
         isLegend = False
@@ -530,7 +516,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outpu
 
         handles.append(tmp)
 
-        if funInfos:
+        if f in funInfos.keys():
             plt.gca().set_title(funInfos[f])
 
         beautify(rightlegend=legend)

@@ -56,7 +56,7 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 from pdb import set_trace
-from . import genericsettings, toolsstats, bestalg, pproc, ppfig
+from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam
 
 values_of_interest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # to rename!?
 xlim_max = None
@@ -121,11 +121,6 @@ scaling_figure_caption_rlbased = caption_part_one + r"""%
 dimensions = genericsettings.dimensions_to_display
 functions_with_legend = (1, 24, 101, 130)
 
-# Get benchmark short infos.
-funInfos = {}
-isBenchmarkinfosFound = True
-infofile = os.path.join(os.path.split(__file__)[0], 'benchmarkshortinfos.txt')
-
 def scaling_figure_caption():
     if genericsettings.runlength_based_targets:
         return scaling_figure_caption_rlbased.replace('values_of_interest', 
@@ -133,22 +128,6 @@ def scaling_figure_caption():
     else:
         return scaling_figure_caption_fixed.replace('values_of_interest', 
                                         ', '.join(values_of_interest.loglabels()))
-
-def read_fun_infos():
-    try:
-        f = open(infofile, 'r')
-        for line in f:
-            if len(line) == 0 or line.startswith('%') or line.isspace() :
-                continue
-            funcId, funcInfo = line[0:-1].split(None, 1)
-            funInfos[int(funcId)] = funcId + ' ' + funcInfo
-        f.close()
-        return funInfos
-    except IOError, (errno, strerror):
-        print "I/O error(%s): %s" % (errno, strerror)
-        isBenchmarkinfosFound = False
-        print 'Could not find file', infofile, \
-              'Titles in figures will not be displayed.'
 
 def beautify(axesLabel=True):
     """Customize figure presentation.
@@ -544,6 +523,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
                                 values_of_interest = values_of_interest)
     ppfig.copy_js_files(outputdir)
     
+    funInfos = ppfigparam.read_fun_infos(any(ds.isBiobjective() for ds in dsList))    
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)
@@ -551,7 +531,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
                  _valuesOfInterest.short_info, fontsize=14)
         if func in functions_with_legend:
             plt.legend(loc="best")
-        if isBenchmarkinfosFound:
+        if func in funInfos.keys():
             # print(plt.rcParams['axes.titlesize'])
             # print(plt.rcParams['font.size'])
             plt.gca().set_title(funInfos[func], fontsize=24)  # 24 is global font.size
@@ -566,5 +546,3 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
                         '" (in ppfigdim.py:551)')
 
         plt.close()
-
-funInfos = read_fun_infos()

@@ -383,8 +383,13 @@ def main(argv=None):
             for ng, tmpdictng in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
                 for d, tmpdictdim in dictDim.iteritems():
-                    pptables.main(tmpdictdim, sortedAlgs,
-                                  outputdir, genericsettings.verbose)
+                    pptables.main(
+                        tmpdictdim, 
+                        sortedAlgs,
+                        any(ds.isBiobjective() for ds in dsList),
+                        outputdir, 
+                        genericsettings.verbose)
+                        
             print "Comparison tables done."
 
         global ftarget  # not nice
@@ -397,8 +402,13 @@ def main(argv=None):
             plt.rc('pdf', fonttype = 42)
             if genericsettings.runlength_based_targets:
                 ftarget = pproc.RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
-            ppfigs.main(dictAlg, genericsettings.many_algorithm_file_name, sortedAlgs, ftarget,
-                        outputdir, genericsettings.verbose)
+            ppfigs.main(dictAlg, 
+                        genericsettings.many_algorithm_file_name, 
+                        any(ds.isBiobjective() for ds in dsList),
+                        sortedAlgs, 
+                        ftarget,
+                        outputdir, 
+                        genericsettings.verbose)
             plt.rcdefaults()
             print "Scaling figures done."
 

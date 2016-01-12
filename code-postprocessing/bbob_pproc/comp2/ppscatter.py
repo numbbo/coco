@@ -39,7 +39,7 @@ try:
 except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
-from bbob_pproc import genericsettings, htmldesc
+from bbob_pproc import genericsettings, htmldesc, ppfigparam
 from ..ppfig import saveFigure, save_single_functions_html, AlgorithmCount
 from .. import toolsdivers
 from .. import pproc
@@ -77,23 +77,6 @@ caption_finish = r"""Markers on the upper or right edge indicate that the respec
     10:$\circ$,
     20:{\color{red}$\Box$}, 
     40:{\color{magenta}$\Diamond$}. """
-
-#Get benchmark short infos.
-funInfos = {}
-infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
-
-try:
-    f = open(infofile,'r')
-    for line in f:
-        if len(line) == 0 or line.startswith('%') or line.isspace() :
-            continue
-        funcId, funcInfo = line[0:-1].split(None,1)
-        funInfos[int(funcId)] = funcId + ' ' + funcInfo
-    f.close()
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    print 'Could not find file', infofile, \
-          'Titles in figures will not be displayed.'
 
 def figure_caption():
     if isinstance(targets, pproc.RunlengthBasedTargetValues):
@@ -180,6 +163,8 @@ def main(dsList0, dsList1, outputdir, verbose=True):
         linewidth = linewidth_rld_based
     else:
         linewidth = linewidth_default
+
+    funInfos = ppfigparam.read_fun_infos(any(ds.isBiobjective() for ds in dsList0))    
 
     for f in funcs:
         dictDim0 = dictFunc0[f].dictByDim()
@@ -361,10 +346,8 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             #plt.axvline(entry0.mMaxEvals(), ls='--', color=colors[i])
             #plt.axhline(entry1.mMaxEvals(), ls='--', color=colors[i])
 
-        try:
+        if f in funInfos.keys():        
             plt.ylabel(funInfos[f])
-        except IndexError:
-            pass
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
         saveFigure(filename, verbose=verbose)

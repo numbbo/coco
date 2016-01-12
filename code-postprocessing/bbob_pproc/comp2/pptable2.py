@@ -25,11 +25,6 @@ targetsOfInterest = pproc.TargetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))
 targetf = 1e-8 # value for determining the success ratio
 samplesize = genericsettings.simulated_runlength_bootstrap_sample_size 
 
-#Get benchmark short infos: put this part in a function?
-funInfos = {}
-isBenchmarkinfosFound = False
-
-
 table_caption_one = r"""%
     Expected running time (ERT in number of function 
     evaluations) divided by the respective best ERT measured during BBOB-2009 in
@@ -58,23 +53,6 @@ table_caption_rest = r"""%
     """
 table_caption = table_caption_one + table_caption_two1 + table_caption_rest
 table_caption_expensive = table_caption_one + table_caption_two2 + table_caption_rest
-
-infofile = os.path.join(os.path.split(__file__)[0], '..',
-                        'benchmarkshortinfos.txt')
-
-try:
-    f = open(infofile,'r')
-    for line in f:
-        if len(line) == 0 or line.startswith('%') or line.isspace() :
-            continue
-        funcId, funcInfo = line[0:-1].split(None,1)
-        funInfos[int(funcId)] = funcId + ' ' + funcInfo
-    f.close()
-    isBenchmarkinfosFound = True
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    print 'Could not find file', infofile, \
-          'Titles in scaling figures will not be displayed.'
 
 def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     """One table per dimension, modified to fit in 1 page per table."""

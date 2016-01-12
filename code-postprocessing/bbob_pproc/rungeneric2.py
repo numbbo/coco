@@ -574,8 +574,13 @@ def main(argv=None):
             plt.rc('pdf', fonttype = 42)
             if genericsettings.runlength_based_targets:
                 ftarget = RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
-            ppfigs.main(dictAlg, genericsettings.two_algorithm_file_name, sortedAlgs, ftarget,
-                        outputdir, genericsettings.verbose)
+            ppfigs.main(dictAlg, 
+                        genericsettings.two_algorithm_file_name, 
+                        any(ds.isBiobjective() for ds in dsList),
+                        sortedAlgs, 
+                        ftarget,
+                        outputdir, 
+                        genericsettings.verbose)
             plt.rcdefaults()
             print "Scaling figures done."
 
