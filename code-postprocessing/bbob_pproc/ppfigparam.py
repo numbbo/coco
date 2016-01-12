@@ -212,7 +212,7 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
     
     """
 
-    funInfos = read_fun_infos(any(ds.isBiobjective() for ds in dsList))
+    funInfos = read_fun_infos(dsList.isBiobjective())
 
     # TODO check input parameter param
     for func, dictfunc in dsList.dictByFunc().iteritems():

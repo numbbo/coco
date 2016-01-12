@@ -1608,8 +1608,30 @@ class DataSetList(list):
 
         return sorted
 
-    def dictByFuncGroup(self):
-        """Returns a dictionary of instances of this class by function groups.
+    def isBiobjective(self):
+        return any(i.isBiobjective() for i in self)
+        
+    def dictByFuncGroupBiobjective(self):
+        """Returns a dictionary of instances of this class by function groups
+        for bi-objective case.
+
+        The output dictionary has function group names as keys and the
+        corresponding slices as values. 
+
+        """
+        sorted = {} 
+        for i in self:
+            key = getattr(i, 'folder', '')
+            if key:
+                sorted.setdefault(key, DataSetList()).append(i)
+            else:
+                warnings.warn('Unknown group name.')
+
+        return sorted
+
+    def dictByFuncGroupSingleObjective(self):
+        """Returns a dictionary of instances of this class by function groups
+        for single objective case.
 
         The output dictionary has function group names as keys and the
         corresponding slices as values. Current groups are based on the
@@ -1638,6 +1660,18 @@ class DataSetList(list):
                 warnings.warn('Unknown function id.')
 
         return sorted
+
+    def dictByFuncGroup(self):
+        """Returns a dictionary of instances of this class by function groups.
+
+        The output dictionary has function group names as keys and the
+        corresponding slices as values.  
+
+        """
+        if self.isBiobjective():
+            return self.dictByFuncGroupBiobjective()
+        else:
+            return self.dictByFuncGroupSingleObjective()
 
     def dictByParam(self, param):
         """Returns a dictionary of DataSetList by parameter values.

@@ -523,7 +523,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
                                 values_of_interest = values_of_interest)
     ppfig.copy_js_files(outputdir)
     
-    funInfos = ppfigparam.read_fun_infos(any(ds.isBiobjective() for ds in dsList))    
+    funInfos = ppfigparam.read_fun_infos(dsList.isBiobjective())    
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)
