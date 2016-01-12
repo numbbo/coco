@@ -79,3 +79,12 @@ Additional requirements for running an algorithm in a specific language:
 * MATLAB: at least MATLAB 2008, for details, see code-experiments/build/matlab/README
 
 Unfortunately, we cannot guarantee that the software runs on any combination of operating system and software. However, we tested it (in part) on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP, 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions etc. In particular, we continuously test the code through the open source automation server Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit Windows 7 machine with cygwin.
+
+# Links and Further Documentation
+* Downloading this repository: via the above "Download ZIP" button or by typing 'git clone https://github.com/numbbo/numbbo.git'
+* The BBOB workshop series, which uses the NumBBO/Coco framework extensively, can be tracked at http://numbbo.github.io/workshops/
+* Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software by registering at http://coco.gforge.inria.fr/register
+* More detailed documentation of the existing benchmark suites can be found here:
+  * for **bbob** at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf and http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
+  * for **bbob-biobj** at http://numbbo.github.io/bbob-biobj-experiments-doc and http://numbbo.github.io/bbob-biobj-functions-doc
+* Online documentation of the NumBBO/Coco API is available at http://numbbo.github.io/COCOdoc and http://numbbo.github.io/COCOdoc/C in particular
