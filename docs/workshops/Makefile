@@ -6,8 +6,8 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build
-HTMLBUILDDIR  = ../../../bbob-biobj-functions-doc
-PDF           = bbob-biobj-functions.pdf
+HTMLBUILDDIR  = ../../../workshops
+PDF           = bbobworkshopseries.pdf
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
@@ -25,31 +25,31 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
-	@echo "  html       to make standalone HTML files"
+	@echo "  html           to make standalone HTML files"
 	@echo "  html-topublish to make standalone HTML files in the repository bbob-biobj-functions"
-	@echo "  latexpdf   to make LaTeX files and pdf in ../"
-	@echo "  dirhtml    to make HTML files named index.html in directories"
-	@echo "  singlehtml to make a single large HTML file"
-	@echo "  pickle     to make pickle files"
-	@echo "  json       to make JSON files"
-	@echo "  htmlhelp   to make HTML files and a HTML help project"
-	@echo "  qthelp     to make HTML files and a qthelp project"
-	@echo "  applehelp  to make an Apple Help Book"
-	@echo "  devhelp    to make HTML files and a Devhelp project"
-	@echo "  epub       to make an epub"
-	@echo "  latex      to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
-	@echo "  latexpdfja to make LaTeX files and run them through platex/dvipdfmx"
-	@echo "  text       to make text files"
-	@echo "  man        to make manual pages"
-	@echo "  texinfo    to make Texinfo files"
-	@echo "  info       to make Texinfo files and run them through makeinfo"
-	@echo "  gettext    to make PO message catalogs"
-	@echo "  changes    to make an overview of all changed/added/deprecated items"
-	@echo "  xml        to make Docutils-native XML files"
-	@echo "  pseudoxml  to make pseudoxml-XML files for display purposes"
-	@echo "  linkcheck  to check all external links for integrity"
-	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
-	@echo "  coverage   to run coverage check of the documentation (if enabled)"
+	@echo "  latexpdf       to make LaTeX files and pdf in ../"
+	@echo "  dirhtml        to make HTML files named index.html in directories"
+	@echo "  singlehtml     to make a single large HTML file"
+	@echo "  pickle         to make pickle files"
+	@echo "  json           to make JSON files"
+	@echo "  htmlhelp       to make HTML files and a HTML help project"
+	@echo "  qthelp         to make HTML files and a qthelp project"
+	@echo "  applehelp      to make an Apple Help Book"
+	@echo "  devhelp        to make HTML files and a Devhelp project"
+	@echo "  epub           to make an epub"
+	@echo "  latex          to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
+	@echo "  latexpdfja     to make LaTeX files and run them through platex/dvipdfmx"
+	@echo "  text           to make text files"
+	@echo "  man            to make manual pages"
+	@echo "  texinfo        to make Texinfo files"
+	@echo "  info           to make Texinfo files and run them through makeinfo"
+	@echo "  gettext        to make PO message catalogs"
+	@echo "  changes        to make an overview of all changed/added/deprecated items"
+	@echo "  xml            to make Docutils-native XML files"
+	@echo "  pseudoxml      to make pseudoxml-XML files for display purposes"
+	@echo "  linkcheck      to check all external links for integrity"
+	@echo "  doctest        to run all doctests embedded in the documentation (if enabled)"
+	@echo "  coverage       to run coverage check of the documentation (if enabled)"
 
 clean:
 	rm -rf $(BUILDDIR)/*
@@ -63,7 +63,7 @@ html-topublish:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(HTMLBUILDDIR)
 	@echo
 	@echo "Build finished. The HTML pages are in $(HTMLBUILDDIR)."
-
+	
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
 	@echo
@@ -95,9 +95,9 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/biobj-functions.qhcp"
+	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/BBOBworkshopseries.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/biobj-functions.qhc"
+	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/BBOBworkshopseries.qhc"
 
 applehelp:
 	$(SPHINXBUILD) -b applehelp $(ALLSPHINXOPTS) $(BUILDDIR)/applehelp
@@ -112,8 +112,8 @@ devhelp:
 	@echo
 	@echo "Build finished."
 	@echo "To view the help file:"
-	@echo "# mkdir -p $$HOME/.local/share/devhelp/biobj-functions"
-	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/biobj-functions"
+	@echo "# mkdir -p $$HOME/.local/share/devhelp/BBOBworkshopseries"
+	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/BBOBworkshopseries"
 	@echo "# devhelp"
 
 epub:
