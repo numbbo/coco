@@ -72,12 +72,16 @@ coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   return problem;
 }
 
+/**
+ * Creates a duplicate of the 'other' for all fields except for data, which points to NULL.
+ */
 coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
   size_t i;
   coco_problem_t *problem;
   problem = coco_problem_allocate(other->number_of_variables, other->number_of_objectives,
       other->number_of_constraints);
 
+  problem->initial_solution = other->initial_solution;
   problem->evaluate_function = other->evaluate_function;
   problem->evaluate_constraint = other->evaluate_constraint;
   problem->recommend_solutions = other->recommend_solutions;
@@ -98,9 +102,18 @@ coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
   problem->problem_name = coco_strdup(other->problem_name);
   problem->problem_id = coco_strdup(other->problem_id);
   problem->problem_type = coco_strdup(other->problem_type);
+
+  problem->evaluations = other->evaluations;
+  problem->final_target_delta[0] = other->final_target_delta[0];
+  problem->best_observed_fvalue[0] = other->best_observed_fvalue[0];
+  problem->best_observed_evaluation[0] = other->best_observed_evaluation[0];
+
   problem->suite_dep_index = other->suite_dep_index;
   problem->suite_dep_function = other->suite_dep_function;
   problem->suite_dep_instance = other->suite_dep_instance;
+
+  problem->data = NULL;
+
   return problem;
 }
 
