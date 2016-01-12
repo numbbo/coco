@@ -418,7 +418,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
         indicator_name, problem->problem_type, observer->algorithm_info);
   }
   if (observer_biobj->previous_function != problem->suite_dep_function) {
-    fprintf(indicator->info_file, "\nfunction = %02lu, ", problem->suite_dep_function);
+    fprintf(indicator->info_file, "\nfunction = %2lu, ", problem->suite_dep_function);
     fprintf(indicator->info_file, "dim = %lu, ", problem->number_of_variables);
     fprintf(indicator->info_file, "%s", file_name);
   }
