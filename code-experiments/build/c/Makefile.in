@@ -17,32 +17,20 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: example_bbob example_biobj example_toy
+all: example_experiment
 
 clean:
 	rm -f coco.o 
-	rm -f example_bbob.o example_bbob 
-	rm -f example_biobj.o example_biobj
-	rm -f example_toy.o example_toy
+	rm -f example_experiment.o example_experiment 
 
 ########################################################################
 ## Programs
-example_bbob: example_bbob.o coco.o
-	${CC} ${CCFLAGS} -o example_bbob coco.o example_bbob.o ${LDFLAGS}  
-
-example_biobj: example_biobj.o coco.o
-	${CC}  ${CCFLAGS} -o example_biobj example_biobj.o coco.o ${LDFLAGS}
-
-example_toy: example_toy.o coco.o
-	${CC}  ${CCFLAGS} -o example_toy example_toy.o coco.o ${LDFLAGS}
+example_experiment: example_experiment.o coco.o
+	${CC} ${CCFLAGS} -o example_experiment coco.o example_experiment.o ${LDFLAGS}  
 
 ########################################################################
 ## Additional dependencies
 coco.o: coco.h coco.c
 	${CC} -c ${CCFLAGS} -o coco.o coco.c
-example_bbob.o: coco.h coco.c example_bbob.c
-	${CC} -c ${CCFLAGS} -o example_bbob.o example_bbob.c
-example_biobj.o: coco.h coco.c example_biobj.c
-	${CC} -c ${CCFLAGS} -o example_biobj.o example_biobj.c
-example_toy.o: coco.h coco.c example_toy.c
-	${CC} -c ${CCFLAGS} -o example_toy.o example_toy.c
+example_experiment.o: coco.h coco.c example_experiment.c
+	${CC} -c ${CCFLAGS} -o example_experiment.o example_experiment.c

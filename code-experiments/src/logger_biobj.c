@@ -33,6 +33,8 @@ typedef struct {
   /* The best known indicator value for this benchmark problem */
   double best_value;
   size_t next_target_id;
+  /* Whether the target was hit in the latest evaluation */
+  int target_hit;
   /* The current overall indicator value */
   double current_value;
 
@@ -380,6 +382,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
 
   indicator->best_value = observer_biobj_read_best_value(observer_biobj, indicator->name, problem->problem_id);
   indicator->next_target_id = 0;
+  indicator->target_hit = 0;
   indicator->current_value = 0;
 
   /* Prepare the info file */
@@ -418,7 +421,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
         indicator_name, problem->problem_type, observer->algorithm_info);
   }
   if (observer_biobj->previous_function != problem->suite_dep_function) {
-    fprintf(indicator->info_file, "\nfunction = %02lu, ", problem->suite_dep_function);
+    fprintf(indicator->info_file, "\nfunction = %2lu, ", problem->suite_dep_function);
     fprintf(indicator->info_file, "dim = %lu, ", problem->number_of_variables);
     fprintf(indicator->info_file, "%s", file_name);
   }
@@ -441,6 +444,18 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
  */
 static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, logger_biobj_t *logger) {
 
+  int target_index = indicator->next_target_id - 1;
+  if (target_index < 0)
+    target_index = 0;
+
+  /* Log the last evaluation in the dat file if it didn't hit a target */
+  if (!indicator->target_hit) {
+    fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
+        indicator->best_value - indicator->current_value, logger->precision_f,
+        MO_RELATIVE_TARGET_VALUES[target_index]);
+  }
+
+  /* Log the information in the info file */
   fprintf(indicator->info_file, ", %ld:%lu|%.1e", logger->suite_dep_instance, logger->number_of_evaluations,
       indicator->best_value - indicator->current_value);
   fflush(indicator->info_file);
@@ -485,7 +500,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
 
   logger_biobj_avl_item_t *node_item;
   logger_biobj_indicator_t *indicator;
-  int update_performed, target_hit;
+  int update_performed;
   size_t i;
 
   logger = (logger_biobj_t *) coco_transformed_get_data(problem);
@@ -516,19 +531,19 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
    */
   if (logger->compute_indicators && (update_performed || (logger->number_of_evaluations == 1))) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
-      target_hit = 0;
       indicator = logger->indicators[i];
+      indicator->target_hit = 0;
       while ((indicator->next_target_id < MO_NUMBER_OF_TARGETS)
           && (node_item->indicator_contribution[i] > 0)
           && (indicator->best_value - indicator->current_value <= MO_RELATIVE_TARGET_VALUES[indicator->next_target_id])) {
         /* A target was hit */
-        target_hit = 1;
+        indicator->target_hit = 1;
         if (indicator->next_target_id + 1 < MO_NUMBER_OF_TARGETS)
           indicator->next_target_id++;
         else
           break;
       }
-      if (target_hit) {
+      if (indicator->target_hit) {
         fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
             indicator->best_value - indicator->current_value, logger->precision_f,
             MO_RELATIVE_TARGET_VALUES[indicator->next_target_id - 1]);
