@@ -94,3 +94,18 @@ static int mo_get_dominance(const double *objectives1, const double *objectives2
     return -2;
   }
 }
+
+/**
+ * Computes and returns the Euclidean norm of two dim-dimensional points first and second.
+ */
+static double mo_get_norm(const double *first, const double *second, const size_t dim) {
+
+  size_t i;
+  double norm = 0;
+
+  for (i = 0; i < dim; i++) {
+    norm += pow(first[i] - second[i], 2);
+  }
+
+  return sqrt(norm);
+}
