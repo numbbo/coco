@@ -422,7 +422,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   }
   if (observer_biobj->previous_function != problem->suite_dep_function) {
     fprintf(indicator->info_file, "\nfunction = %2lu, ", problem->suite_dep_function);
-    fprintf(indicator->info_file, "dim = %lu, ", problem->number_of_variables);
+    fprintf(indicator->info_file, "dim = %2lu, ", problem->number_of_variables);
     fprintf(indicator->info_file, "%s", file_name);
   }
 
@@ -444,9 +444,9 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
  */
 static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, logger_biobj_t *logger) {
 
-  int target_index = indicator->next_target_id - 1;
-  if (target_index < 0)
-    target_index = 0;
+  int target_index = 0;
+  if (indicator->next_target_id > 0)
+    target_index = (int) indicator->next_target_id - 1;
 
   /* Log the last evaluation in the dat file if it didn't hit a target */
   if (!indicator->target_hit) {
@@ -635,6 +635,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
   const char nondom_folder_name[] = "archive";
   char *path_name, *file_name, *prefix;
   size_t i;
+  double norm;
 
   if (problem->number_of_objectives != 2) {
     coco_error("logger_biobj(): The biobjective logger cannot log a problem with %d objective(s)", problem->number_of_objectives);
@@ -736,12 +737,31 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
 
   mo_problem_data_compute_normalization_factor(logger->problem_data, problem->number_of_objectives);
 
-  /* Output the ideal and reference points to stdout in debug output mode */
-  coco_debug("%s\t%+.*e\t%+.*e\t%+.*e\t%+.*e", problem->problem_id,
-             logger->precision_f, logger->problem_data->ideal_point[0],
-             logger->precision_f, logger->problem_data->ideal_point[1],
-             logger->precision_f, logger->problem_data->reference_point[0],
-             logger->precision_f, logger->problem_data->reference_point[1]);
+  /* Some additional checks that should be performed only in debug mode */
+  if (coco_log_level >= COCO_DEBUG) {
+
+    /* Output the ideal and reference points */
+    coco_debug("%s\t%+.*e\t%+.*e\t%+.*e\t%+.*e", problem->problem_id,
+               logger->precision_f, logger->problem_data->ideal_point[0],
+               logger->precision_f, logger->problem_data->ideal_point[1],
+               logger->precision_f, logger->problem_data->reference_point[0],
+               logger->precision_f, logger->problem_data->reference_point[1]);
+
+    /* Check whether the ideal and reference points are closer than 1e-4 in the objective space */
+    norm = mo_get_norm(logger->problem_data->ideal_point, logger->problem_data->reference_point, 2);
+    if (norm < 1e-4) {
+      coco_warning("The ideal and reference points of %s are close in the objective space\nnorm = %.*e",
+          problem->problem_id, logger->precision_f, norm);
+    }
+
+    /* Check whether the extreme optimal points are closer than 1e-4 in the decision space */
+    norm = mo_get_norm(stacked_problem->problem1->best_parameter, stacked_problem->problem2->best_parameter,
+        problem->number_of_variables);
+    if (norm < 1e-4) {
+      coco_warning("The extreme optimal points of %s are close in the decision space\nnorm = %.*e",
+          problem->problem_id, logger->precision_f, norm);
+    }
+  }
 
   return self;
 }

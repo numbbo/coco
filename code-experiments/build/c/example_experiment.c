@@ -9,9 +9,9 @@
 #include "coco.h"
 
 /*
- * Parameters of the experiment
+ * The max budget for optimization algorithms should be set to dim * BUDGET
  */
-static const size_t MAX_BUDGET = 1e2;
+static const size_t BUDGET = 10;
 
 /**
  * A random search algorithm that can be used for single- as well as multi-objective optimization.
@@ -28,7 +28,9 @@ void my_random_search(coco_problem_t *problem) {
   double range;
   size_t i, j;
 
-  for (i = 0; i < MAX_BUDGET; ++i) {
+  long max_budget = dimension * BUDGET;
+
+  for (i = 0; i < max_budget; ++i) {
 
     /* Construct x as a random point between the lower and upper bounds */
     for (j = 0; j < dimension; ++j) {
@@ -64,7 +66,9 @@ void my_grid_search(coco_problem_t *problem) {
   size_t i, j;
   size_t evaluations = 0;
 
-  long max_nodes = (long) floor(pow((double) MAX_BUDGET, 1.0 / (double) dimension)) - 1;
+  long max_budget = dimension * BUDGET;
+
+  long max_nodes = (long) floor(pow((double) max_budget, 1.0 / (double) dimension)) - 1;
 
   /* Take care of the borderline case */
   if (max_nodes < 1) max_nodes = 1;
@@ -75,7 +79,7 @@ void my_grid_search(coco_problem_t *problem) {
     grid_step[j] = (ubounds[j] - lbounds[j]) / (double) max_nodes;
   }
 
-  while (evaluations < MAX_BUDGET) {
+  while (evaluations < max_budget) {
 
     /* Construct x and evaluate it */
     for (j = 0; j < dimension; j++) {
