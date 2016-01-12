@@ -164,7 +164,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
     else:
         linewidth = linewidth_default
 
-    funInfos = ppfigparam.read_fun_infos(any(ds.isBiobjective() for ds in dsList0))    
+    funInfos = ppfigparam.read_fun_infos(dsList0.isBiobjective())    
 
     for f in funcs:
         dictDim0 = dictFunc0[f].dictByDim()

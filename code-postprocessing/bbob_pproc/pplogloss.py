@@ -27,7 +27,7 @@ from matplotlib import mlab as mlab
 
 from bbob_pproc import toolsstats, bestalg, genericsettings
 from bbob_pproc.pptex import writeFEvals2
-from bbob_pproc.ppfig import saveFigure
+from bbob_pproc.ppfig import saveFigure, consecutiveNumbers
 
 """
 ERT loss ratio of an algorithm A for comparison to BBOB-best2009. This works
@@ -825,7 +825,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
         plt.axvline(x=np.log10(max(i.mMaxEvals()/d for i in dsdim)), color='k')
         funcs = set(i.funcId for i in dsdim)
         if len(funcs) > 1:
-            text = 'f%d-%d' %(min(funcs), max(funcs))
+            text = 'f%s' % consecutiveNumbers(sorted(funcs))
         else:
             text = 'f%d' %(funcs.pop())
         plt.text(0.5, 0.93, text, horizontalalignment="center",

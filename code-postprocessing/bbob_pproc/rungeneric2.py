@@ -576,7 +576,7 @@ def main(argv=None):
                 ftarget = RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
             ppfigs.main(dictAlg, 
                         genericsettings.two_algorithm_file_name, 
-                        any(ds.isBiobjective() for ds in dsList),
+                        dsList.isBiobjective(),
                         sortedAlgs, 
                         ftarget,
                         outputdir, 
