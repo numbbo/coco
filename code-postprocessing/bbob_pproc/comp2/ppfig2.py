@@ -22,7 +22,7 @@ except ImportError:
 
 import numpy as np 
 
-from bbob_pproc import toolsstats, readalign, pproc
+from bbob_pproc import toolsstats, readalign, ppfigparam
 from bbob_pproc.toolsstats import ranksumtest
 from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
 #try:
@@ -59,26 +59,6 @@ xmax = 1000
 functions_with_legend = (1, 24, 101, 130)
 
 dimension_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
-
-#Get benchmark short infos.
-funInfos = {}
-isBenchmarkinfosFound = True
-infofile = os.path.join(os.path.split(__file__)[0], '..', 
-                        'benchmarkshortinfos.txt')
-
-try:
-    f = open(infofile,'r')
-    for line in f:
-        if len(line) == 0 or line.startswith('%') or line.isspace() :
-            continue
-        funcId, funcInfo = line[0:-1].split(None,1)
-        funInfos[int(funcId)] = funcId + ' ' + funcInfo
-    f.close()
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    isBenchmarkinfosFound = False
-    print 'Could not find file', infofile, \
-          'Titles in scaling figures will not be displayed.'
 
 def _generateData(entry0, entry1, fthresh=None, downsampling=None):
 
@@ -281,17 +261,14 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
     
     # minfvalue = pproc.TargetValues.cast(minfvalue)
 
+    funInfos = ppfigparam.read_fun_infos(any(ds.isBiobjective() for ds in dsList0))    
+
     dictFun0 = dsList0.dictByFunc()
     dictFun1 = dsList1.dictByFunc()
 
     for func in set.intersection(set(dictFun0), set(dictFun1)):
         dictDim0 = dictFun0[func].dictByDim()
         dictDim1 = dictFun1[func].dictByDim()
-
-        if isBenchmarkinfosFound:
-            title = funInfos[func]
-        else:
-            title = ''
 
         filename = os.path.join(outputdir,'ppfig2_f%03d' % (func))
 
@@ -441,7 +418,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             #         color=styles[i]['color'], markeredgecolor=styles[i]['color'],
             #         markerfacecolor=styles[i]['color'], markersize=4*linewidth)
 
-        if isBenchmarkinfosFound:
+        if func in funInfos.keys():
             plt.title(funInfos[func])
 
         if func in functions_with_legend:

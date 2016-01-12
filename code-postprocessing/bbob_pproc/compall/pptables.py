@@ -8,7 +8,7 @@ import os, sys
 from pdb import set_trace
 import warnings
 import numpy
-from bbob_pproc import genericsettings, bestalg, toolsstats, pproc
+from bbob_pproc import genericsettings, bestalg, toolsstats, pproc, ppfigparam
 from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from bbob_pproc.toolsstats import significancetest, significance_all_best_vs_other
 from bbob_pproc.pproc import DataSetList
@@ -58,21 +58,6 @@ with_table_heading = False  # in case the page is long enough
 
 allmintarget = {}
 allmedtarget = {}
-
-infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
-try:
-    funInfos = {}
-    f = open(infofile, 'r')
-    for line in f:
-        if len(line) == 0 or line.startswith('%') or line.isspace() :
-            continue
-        funcId, funcInfo = line[0:-1].split(None,1)
-        funInfos[int(funcId)] = funcId + ' ' + funcInfo
-    f.close()
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    print 'Could not find file', infofile, \
-          'Titles in figures will not be displayed.'
 
 significance_vs_others_symbol = r"\star"
 significance_vs_others_symbol_html = r"&#9733;"
@@ -232,7 +217,7 @@ def getTopIndicesOfColumns(table, maxRank=None):
     return ranked
 
 # TODO: function_headings argument need to be tested, default should be changed according to templates
-def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line=True):  # [1, 13, 101]
+def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, function_targets_line=True):  # [1, 13, 101]
     """Generate one table per func with results of multiple algorithms."""
     """Difference with the first version:
 
@@ -263,6 +248,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                 dictData.setdefault((d, f), {})[n] = tmpdictfun[f]
 
     nbtests = len(dictData)
+
+    funInfos = ppfigparam.read_fun_infos(isBiobjective)    
 
     for df in dictData:
         # Generate one table per df
@@ -370,7 +357,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
 
         # Generate header lines
         if with_table_heading:
-            header = funInfos[df[1]] if funInfos else 'f%d' % df[1]
+            header = funInfos[df[1]] if df[1] in funInfos.keys() else 'f%d' % df[1]
             table.append([r'\multicolumn{%d}{@{\,}c@{\,}}{{\textbf{%s}}}'
                           % (2 * len(targets) + 2, header)])
             extraeol.append('')
