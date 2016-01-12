@@ -1,8 +1,11 @@
 import java.util.Random;
 
 public class ExampleExperiment {
-	
-	public static final int MAX_BUDGET = 100;
+
+	/**
+	 * The max budget for optimization algorithms should be set to dim * BUDGET
+	 */
+	public static final int BUDGET = 10;
 	public static final long RANDOM_SEED = 123456;
 
 	/** 
@@ -14,9 +17,12 @@ public class ExampleExperiment {
 		Random r = new Random(RANDOM_SEED);
 		double[] x = new double[(int) problem.getDimension()];
 		double[] y = new double[(int) problem.getNumberOfObjectives()];
+		int dim = problem.getDimension();
 		double range;
 		
-		for (int i = 0; i < MAX_BUDGET; i++) {
+		long max_budget = dim * BUDGET;
+		
+		for (int i = 0; i < max_budget; i++) {
 			for (int j = 0; j < problem.getDimension(); j++) {
 				range = problem.getLargestValueOfInterest(j) - problem.getSmallestValueOfInterest(j);
 				x[j] = problem.getSmallestValueOfInterest(j) + range * r.nextDouble();
