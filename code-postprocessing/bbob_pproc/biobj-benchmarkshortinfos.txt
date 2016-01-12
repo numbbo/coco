@@ -1,0 +1,55 @@
+1 Sphere/Sphere
+2 Sphere/Ellipsoid separable
+3 Sphere/Attractive sector
+4 Sphere/Rosenbrock original
+5 Sphere/Sharp ridge
+6 Sphere/Sum of different powers
+7 Sphere/Rastrigin
+8 Sphere/Schaffer F7, condition 10
+9 Sphere/Schwefel x*sin(x)
+10 Sphere/Gallagher 101 peaks
+11 Ellipsoid separable/Ellipsoid separable
+12 Ellipsoid separable/Attractive sector
+13 Ellipsoid separable/Rosenbrock original
+14 Ellipsoid separable/Sharp ridge
+15 Ellipsoid separable/Sum of different powers
+16 Ellipsoid separable/Rastrigin
+17 Ellipsoid separable/Schaffer F7, condition 10
+18 Ellipsoid separable/Schwefel x*sin(x)
+19 Ellipsoid separable/Gallagher 101 peaks
+20 Attractive sector/Attractive sector
+21 Attractive sector/Rosenbrock original
+22 Attractive sector/Sharp ridge
+23 Attractive sector/Sum of different powers
+24 Attractive sector/Rastrigin
+25 Attractive sector/Schaffer F7, condition 10
+26 Attractive sector/Schwefel x*sin(x)
+27 Attractive sector/Gallagher 101 peaks
+28 Rosenbrock original/Rosenbrock original
+29 Rosenbrock original/Sharp ridge
+30 Rosenbrock original/Sum of different powers
+31 Rosenbrock original/Rastrigin
+32 Rosenbrock original/Schaffer F7, condition 10
+33 Rosenbrock original/Schwefel x*sin(x)
+34 Rosenbrock original/Gallagher 101 peaks
+35 Sharp ridge/Sharp ridge
+36 Sharp ridge/Sum of different powers
+37 Sharp ridge/Rastrigin
+38 Sharp ridge/Schaffer F7, condition 10
+39 Sharp ridge/Schwefel x*sin(x)
+40 Sharp ridge/Gallagher 101 peaks
+41 Sum of different powers/Sum of different powers
+42 Sum of different powers/Rastrigin
+43 Sum of different powers/Schaffer F7, condition 10
+44 Sum of different powers/Schwefel x*sin(x)
+45 Sum of different powers/Gallagher 101 peaks
+46 Rastrigin/Rastrigin
+47 Rastrigin/Schaffer F7, condition 10
+48 Rastrigin/Schwefel x*sin(x)
+49 Rastrigin/Gallagher 101 peaks
+50 Schaffer F7, condition 10/Schaffer F7, condition 10
+51 Schaffer F7, condition 10/Schwefel x*sin(x)
+52 Schaffer F7, condition 10/Gallagher 101 peaks
+53 Schwefel x*sin(x)/Schwefel x*sin(x)
+54 Schwefel x*sin(x)/Gallagher 101 peaks
+55 Gallagher 101 peaks/Gallagher 101 peaks
