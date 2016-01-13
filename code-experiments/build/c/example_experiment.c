@@ -160,7 +160,7 @@ void example_biobj(void) {
   coco_observer_t *observer;
   coco_problem_t *problem;
 
-  suite = coco_suite("bbob-biobj", NULL, "dimensions: 2,3,5,10,20 instance_idx: 1,2");
+  suite = coco_suite("bbob-biobj", NULL, "dimensions: 2,3,5,10,20 instance_idx: 1-10");
   observer = coco_observer("bbob-biobj", observer_options);
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
@@ -208,17 +208,17 @@ int main(void) {
 
   example_bbob();
 
-  printf("First example done!\n");
+  printf("First example on bbob suite done!\n");
   fflush(stdout);
 
   example_biobj();
 
-  printf("Second example done!\n");
+  printf("Second example bbob-biobj suite done!\n");
   fflush(stdout);
 
   example_toy();
 
-  printf("Third example done!\n");
+  printf("Third example on toy suite done!\n");
   fflush(stdout);
 
   return 0;
