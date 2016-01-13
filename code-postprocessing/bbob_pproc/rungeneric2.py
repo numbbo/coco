@@ -225,7 +225,7 @@ def main(argv=None):
         # from bbob_pproc import bbob2010 as inset # input settings
         if genericsettings.inputsettings == "color":
             from bbob_pproc import genericsettings as inset # input settings
-            config.config()
+            config.config(False)
         elif genericsettings.inputsettings == "grayscale": # probably very much obsolete
             from bbob_pproc import grayscalesettings as inset # input settings
         elif genericsettings.inputsettings == "black-white": # probably very much obsolete
@@ -307,7 +307,7 @@ def main(argv=None):
         config.target_values(genericsettings.isExpensive, {1: min([max([val/dim for dim, val in dict_max_fun_evals1.iteritems()]), 
                                                    max([val/dim for dim, val in dict_max_fun_evals2.iteritems()])]
                                                   )})
-        config.config()
+        config.config(dsList[0].isBiobjective())
         
         ######################### Post-processing #############################
         if genericsettings.isFig or genericsettings.isRLDistr or genericsettings.isTab or genericsettings.isScatter:
@@ -474,7 +474,7 @@ def main(argv=None):
 
         if genericsettings.isScatter:
             if genericsettings.runlength_based_targets:
-                ppscatter.targets = ppscatter.runlength_based_targets
+                ppscatter.targets = pproc.RunlengthBasedTargetValues(np.logspace(numpy.log10(0.5), numpy.log10(50), 8), dsList[0].isBiobjective())
             ppscatter.main(dsList1, dsList0, outputdir,
                            verbose=genericsettings.verbose)
             prepend_to_file(os.path.join(outputdir,
@@ -576,7 +576,9 @@ def main(argv=None):
             plt.rc("legend", fontsize=20)
             plt.rc('pdf', fonttype = 42)
             if genericsettings.runlength_based_targets:
-                ftarget = RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
+                reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
+                ftarget = RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
+                                                     reference_data = reference_data)
             ppfigs.main(dictAlg, 
                         genericsettings.two_algorithm_file_name, 
                         dsList[0].isBiobjective(),

@@ -47,7 +47,7 @@ from BBOB-2009 for df = 1e-8.
     figure()
     bb.ppfigdim.plot(ds)
     bb.ppfigdim.beautify()
-    bb.ppfigdim.plot_previous_algorithms(2) # plot BBOB 2009 best algorithm on fun 2
+    bb.ppfigdim.plot_previous_algorithms(2, False) # plot BBOB 2009 best algorithm on fun 2
 
 """
 from __future__ import absolute_import
@@ -466,17 +466,17 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
         # if later the ylim[0] becomes >> 1, this might be a problem
     return res
 
-def plot_previous_algorithms(func, target=values_of_interest):  # lambda x: [1e-8]):
+def plot_previous_algorithms(func, isBiobjective, target=values_of_interest):  # lambda x: [1e-8]):
     """Add graph of the BBOB-2009 virtual best algorithm using the
     last, most difficult target in ``target``."""
     target = pproc.TargetValues.cast(target)
 
-    if not bestalg.bestalgentries2009:
-        bestalg.loadBBOB2009()
+    bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+
     bestalgdata = []
     for d in dimensions:
         try:
-            entry = bestalg.bestalgentries2009[(d, func)]
+            entry = bestalgentries[(d, func)]
             tmp = entry.detERT([target((func, d))[-1]])[0]
             if not np.isinf(tmp):
                 bestalgdata.append(tmp / d)
@@ -512,8 +512,8 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     # plt.rc("legend", fontsize=20)
 
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
-    if not bestalg.bestalgentries2009:
-        bestalg.loadBBOB2009()
+
+    bestalg.loadBestAlgorithm(dsList.isBiobjective())
 
     dictFunc = dsList.dictByFunc()
 
@@ -535,7 +535,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             # print(plt.rcParams['axes.titlesize'])
             # print(plt.rcParams['font.size'])
             plt.gca().set_title(funInfos[func], fontsize=24)  # 24 is global font.size
-        plot_previous_algorithms(func, _valuesOfInterest)
+        plot_previous_algorithms(func, dsList.isBiobjective(), _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         with warnings.catch_warnings(record=True) as ws:
             ppfig.saveFigure(filename, verbose=verbose)

@@ -409,15 +409,14 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, target=ftarget
             #             verticalalignment='bottom',
             #             horizontalalignment='center')
 
-        if not bestalg.bestalgentries2009:
-            bestalg.loadBBOB2009()
+        bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
 
         bestalgdata = []
-        dimbestalg = list(df[0] for df in bestalg.bestalgentries2009 if df[1] == f)
+        dimbestalg = list(df[0] for df in bestalgentries if df[1] == f)
         dimbestalg.sort()
         dimbestalg2 = []
         for d in dimbestalg:
-            entry = bestalg.bestalgentries2009[(d, f)]
+            entry = bestalgentries[(d, f)]
             tmp = entry.detERT(target((f, d)))[0]
             if numpy.isfinite(tmp):
                 bestalgdata.append(float(tmp)/d)

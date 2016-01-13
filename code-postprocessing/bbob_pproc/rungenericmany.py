@@ -218,7 +218,7 @@ def main(argv=None):
         # TODO: conditional imports are NOT the way to go here
         if genericsettings.inputsettings == "color":
             from bbob_pproc import config, genericsettings as inset # input settings
-            config.config()
+            config.config(False)
         elif genericsettings.inputsettings == "grayscale":
             # this settings strategy (by proving different settings files) is problematic, 
             # because it means copy-paste of the settings
@@ -291,7 +291,7 @@ def main(argv=None):
         # set target values
         from bbob_pproc import config
         config.target_values(genericsettings.isExpensive, dict_max_fun_evals)
-        config.config()
+        config.config(dsList[0].isBiobjective())
 
 
         for i in dsList:
@@ -324,7 +324,7 @@ def main(argv=None):
             ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
-            config.config()
+            config.config(dsList[0].isBiobjective())
             # ECDFs per noise groups
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictAlg in dictNoi.iteritems():
@@ -404,7 +404,9 @@ def main(argv=None):
             plt.rc("legend", fontsize=20)
             plt.rc('pdf', fonttype = 42)
             if genericsettings.runlength_based_targets:
-                ftarget = pproc.RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
+                reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
+                ftarget = pproc.RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
+                                                           reference_data = reference_data)
             ppfigs.main(dictAlg, 
                         genericsettings.many_algorithm_file_name, 
                         dsList[0].isBiobjective(),

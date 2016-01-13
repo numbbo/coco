@@ -73,8 +73,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         info = '_' + info
 
     dims = set.intersection(set(dictDim0.keys()), set(dictDim1.keys()))
-    if not bestalg.bestalgentries2009:
-        bestalg.loadBBOB2009()
+    bestalgentries = bestalg.loadBestAlgorithm(dsList0.isBiobjective())
     
     header = []
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
@@ -111,7 +110,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             targets = targetsOfInterest((f, d))
             targetf = targets[-1]
             
-            bestalgentry = bestalg.bestalgentries2009[(d, f)]
+            bestalgentry = bestalgentries[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
             curlineHtml = ['<th><b>f<sub>%d</sub></b></th>\n' % f]
             bestalgdata = bestalgentry.detERT(targets)
