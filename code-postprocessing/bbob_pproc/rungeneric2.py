@@ -252,6 +252,9 @@ def main(argv=None):
  
         if not dsList:
             sys.exit()
+        
+        if (any(ds.isBiobjective() for ds in dsList) and any(not ds.isBiobjective() for ds in dsList)):
+            sys.exit()
 
         for i in dictAlg:
             if genericsettings.isNoisy and not genericsettings.isNoiseFree:
@@ -576,7 +579,7 @@ def main(argv=None):
                 ftarget = RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
             ppfigs.main(dictAlg, 
                         genericsettings.two_algorithm_file_name, 
-                        dsList.isBiobjective(),
+                        dsList[0].isBiobjective(),
                         sortedAlgs, 
                         ftarget,
                         outputdir, 

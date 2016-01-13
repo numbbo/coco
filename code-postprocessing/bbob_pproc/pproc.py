@@ -583,6 +583,7 @@ class DataSet():
         indexFiles
         info
         instancenumbers
+        isBiobjective
         isFinalized
         mMaxEvals
         max_eval
@@ -751,11 +752,11 @@ class DataSet():
         # put into variable dataFiles the files where to look for data
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
-        data = HMultiReader(split(dataFiles))
+        data = HMultiReader(split(dataFiles), self.isBiobjective())
         if verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
-        (adata, maxevals, finalfunvals) = alignData(data)
+        (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
         self.evals = adata
         try:
             for i in range(len(maxevals)):
@@ -768,11 +769,11 @@ class DataSet():
         if not self.isBiobjective():        
             dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
                              for i in self.dataFiles)
-            data = VMultiReader(split(dataFiles))
+            data = VMultiReader(split(dataFiles), self.isBiobjective())
             if verbose:
                 print ("Processing %s: %d/%d trials found."
                        % (dataFiles, len(data), len(self.instancenumbers)))
-            (adata, maxevals, finalfunvals) = alignData(data)
+            (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
             self.funvals = adata
             try:
                 for i in range(len(maxevals)):
@@ -1509,7 +1510,7 @@ class DataSetList(list):
                     i.indexFiles.extend(o.indexFiles)
                     i.funvals = alignArrayData(VArrayMultiReader([i.funvals, o.funvals]))
                     i.finalfunvals = numpy.r_[i.finalfunvals, o.finalfunvals]
-                    i.evals = alignArrayData(HArrayMultiReader([i.evals, o.evals]))
+                    i.evals = alignArrayData(HArrayMultiReader([i.evals, o.evals], self.isBiobjective()))
                     i.maxevals = numpy.r_[i.maxevals, o.maxevals]
                     i.computeERTfromEvals()
                     if getattr(i, 'pickleFile', False):
