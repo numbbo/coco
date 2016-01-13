@@ -42,22 +42,24 @@ refcolor = 'wheat'
 dimsBBOB = (2, 3, 5, 10, 20, 40)
 
 #Get benchmark short infos.
-funInfos = {}
-isBenchmarkinfosFound = True
-infofile = os.path.join(os.path.split(__file__)[0], 'benchmarkshortinfos.txt')
-try:
-    f = open(infofile,'r')
-    for line in f:
-        if len(line) == 0 or line.startswith('%') or line.isspace() :
-            continue
-        funcId, funcInfo = line[0:-1].split(None,1)
-        funInfos[int(funcId)] = funcId + ' ' + funcInfo
-    f.close()
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    isBenchmarkinfosFound = False
-    print 'Could not find file', infofile, \
-          'Function names will not be displayed.'
+def read_fun_infos(isBiobjective):
+    try:
+        funInfos = {}
+        
+        filename = 'biobj-benchmarkshortinfos.txt' if isBiobjective else 'benchmarkshortinfos.txt'        
+        infofile = os.path.join(os.path.split(__file__)[0], filename)
+        f = open(infofile, 'r')
+        for line in f:
+            if len(line) == 0 or line.startswith('%') or line.isspace() :
+                continue
+            funcId, funcInfo = line[0:-1].split(None, 1)
+            funInfos[int(funcId)] = funcId + ' ' + funcInfo
+        f.close()
+        return funInfos
+    except IOError, (errno, strerror):
+        print "I/O error(%s): %s" % (errno, strerror)
+        print 'Could not find file', infofile, \
+              'Titles in figures will not be displayed.'
 
 def beautify():
     """Customize figure presentation."""
@@ -210,6 +212,8 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
     
     """
 
+    funInfos = read_fun_infos(dsList.isBiobjective())
+
     # TODO check input parameter param
     for func, dictfunc in dsList.dictByFunc().iteritems():
         filename = os.path.join(outputdir,'ppfigparam_%s_f%03d' % (param[0], func))
@@ -256,7 +260,8 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
 
         if func in (1, 24, 101, 130):
             plt.legend(loc="best")
-        if isBenchmarkinfosFound:
+        
+        if func in funInfos.keys():
             a.set_title(funInfos[func])
 
         saveFigure(filename, verbose=verbose)
