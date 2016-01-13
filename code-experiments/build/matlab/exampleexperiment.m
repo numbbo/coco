@@ -2,7 +2,7 @@
 % the single-objective, noiseless 'bbob' suite and on the biobjective
 % 'bbob-biobj' suite.
 
-MAX_EVALS = 100;
+BUDGET = 10; % algorithm runs for BUDGET*dimension funevals
 suiteAndObserver_names = {'bbob', 'bbob-biobj'};
 suite_instance = '';
 
@@ -34,7 +34,8 @@ for i = 1:length(suiteAndObserver_names)
             break;
         end
         disp(['Optimizing ', cocoProblemGetId(problem)]);
-        my_optimizer(problem, cocoProblemGetSmallestValuesOfInterest(problem), cocoProblemGetLargestValuesOfInterest(problem), MAX_EVALS);
+        dimension = cocoProblemGetDimension(problem);
+        my_optimizer(problem, cocoProblemGetSmallestValuesOfInterest(problem), cocoProblemGetLargestValuesOfInterest(problem), BUDGET*dimension);
         disp(['Done with problem ', cocoProblemGetId(problem), '...']);
     end
     cocoObserverFree(observer);
