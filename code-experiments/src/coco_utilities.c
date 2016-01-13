@@ -1,3 +1,5 @@
+#include "coco_platform.h"
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,66 +10,6 @@
 #include "coco.h"
 #include "coco_internal.h"
 #include "coco_strdup.c"
-
-/* Figure out if we are on a sane platform or on the dominant platform */
-#if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
-#include <windows.h>
-static const char *coco_path_separator = "\\";
-#define COCO_PATH_MAX MAX_PATH
-#define HAVE_GFA 1
-#elif defined(__gnu_linux__)
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <linux/limits.h>
-static const char *coco_path_separator = "/";
-#define HAVE_STAT 1
-#define COCO_PATH_MAX PATH_MAX
-#elif defined(__APPLE__)
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/syslimits.h>
-static const char *coco_path_separator = "/";
-#define HAVE_STAT 1
-#define COCO_PATH_MAX PATH_MAX
-#elif defined(__FreeBSD__)
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <limits.h>
-static const char *coco_path_separator = "/";
-#define HAVE_STAT 1
-#define COCO_PATH_MAX PATH_MAX
-#elif (defined(__sun) || defined(sun)) && (defined(__SVR4) || defined(__svr4__))
-/* Solaris */
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <limits.h>
-static const char *coco_path_separator = "/";
-#define HAVE_STAT 1
-#define COCO_PATH_MAX PATH_MAX
-#else
-#error Unknown platform
-#endif
-
-/* Handle the special case of Microsoft Visual Studio 2008 and x86_64-w64-mingw32-gcc */
-#if _MSC_VER
-#include <direct.h>
-#elif defined(__MINGW32__) || defined(__MINGW64__)
-#include <dirent.h>
-#else
-#include <dirent.h>
-/* To silence the compiler (implicit-function-declaration warning). */
-int rmdir(const char *pathname);
-int unlink(const char *file_name);
-int mkdir(const char *pathname, mode_t mode);
-#endif
-
-#if defined(HAVE_GFA)
-#define S_IRWXU 0700
-#endif
-
-#if !defined(COCO_PATH_MAX)
-#error COCO_PATH_MAX undefined
-#endif
 
 /**
  * Initialize the logging level to COCO_WARNING.
