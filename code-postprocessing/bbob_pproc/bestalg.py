@@ -142,7 +142,7 @@ class BestAlgSet():
         # Align ERT
         erts = list(np.transpose(np.vstack([dictAlg[i].target, dictAlg[i].ert]))
                     for i in sortedAlgs)
-        res = readalign.alignArrayData(readalign.HArrayMultiReader(erts))
+        res = readalign.alignArrayData(readalign.HArrayMultiReader(erts, False))
 
         resalgs = []
         reserts = []

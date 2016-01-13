@@ -271,6 +271,9 @@ def main(argv=None):
         if not dsList:
             sys.exit()
 
+        if (any(ds.isBiobjective() for ds in dsList) and any(not ds.isBiobjective() for ds in dsList)):
+            sys.exit()
+
         for i in dictAlg:
             if genericsettings.isNoisy and not genericsettings.isNoiseFree:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('nzall', DataSetList())
@@ -386,7 +389,7 @@ def main(argv=None):
                     pptables.main(
                         tmpdictdim, 
                         sortedAlgs,
-                        dsList.isBiobjective(),
+                        dsList[0].isBiobjective(),
                         outputdir, 
                         genericsettings.verbose)
                         
@@ -404,7 +407,7 @@ def main(argv=None):
                 ftarget = pproc.RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
             ppfigs.main(dictAlg, 
                         genericsettings.many_algorithm_file_name, 
-                        dsList.isBiobjective(),
+                        dsList[0].isBiobjective(),
                         sortedAlgs, 
                         ftarget,
                         outputdir, 

@@ -67,7 +67,8 @@ def _generateData(entry0, entry1, fthresh=None, downsampling=None):
         """
 
         res = readalign.alignArrayData(readalign.HArrayMultiReader([i0.evals,
-                                                                    i1.evals]))
+                                                                    i1.evals],
+                                                                    i0.isBiobjective()))
         idx = 1 + i0.nbRuns()
         data0 = res[:, np.r_[0, 1:idx]]
         data1 = res[:, np.r_[0, idx:idx+i1.nbRuns()]]
