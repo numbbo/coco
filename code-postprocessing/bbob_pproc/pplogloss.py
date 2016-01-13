@@ -195,14 +195,14 @@ def generateData(dsList, evals, CrE_A):
     D = set(i.dim for i in dsList).pop() # should have only one element
     #if D == 3:
        #set_trace()
-    if not bestalg.bestalgentries2009:
-        bestalg.loadBBOB2009()
+
+    bestalgentries = bestalg.loadBestAlgorithm(dsList.isBiobjective())
 
     for fun, tmpdsList in dsList.dictByFunc().iteritems():
         assert len(tmpdsList) == 1
         entry = tmpdsList[0]
 
-        bestalgentry = bestalg.bestalgentries2009[(D, fun)]
+        bestalgentry = bestalgentries[(D, fun)]
 
         #ERT_A
         f_A = detf(entry, evals)

@@ -46,7 +46,7 @@ from .. import pproc
 
 dimensions = (2, 3, 5, 10, 20, 40)
 fixed_targets = pproc.TargetValues(np.logspace(-8, 2, 46))
-runlength_based_targets = pproc.RunlengthBasedTargetValues(np.logspace(numpy.log10(0.5), numpy.log10(50), 8))
+#runlength_based_targets = pproc.RunlengthBasedTargetValues(np.logspace(numpy.log10(0.5), numpy.log10(50), 8))
 # runlength_based_targets = pproc.RunlengthBasedTargetValues([0.5, 1, 3, 10, 50])
 targets = fixed_targets  # default
 

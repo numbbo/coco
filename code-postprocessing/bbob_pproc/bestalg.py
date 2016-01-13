@@ -37,6 +37,7 @@ bestalgentries2009 = {}
 bestalgentries2010 = {}
 bestalgentries2012 = {}
 bestalgentriesever = {}
+bestbiobjalgentries2016 = {}
 
 algs2009 = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
 "BIPOP-CMA-ES", "CMA-ESPLUSSEL", "DASA", "DE-PSO", "DIRECT", "EDA-PSO",
@@ -188,11 +189,12 @@ class BestAlgSet():
         setalgs = set(resalgs)
         dictFunValsNoFail = {}
         for alg in setalgs:
-            for curline in dictAlg[alg].funvals:
-                if (curline[1:] == dictAlg[alg].finalfunvals).any():
-                    # only works because the funvals are monotonous
-                    break
-            dictFunValsNoFail[alg] = curline.copy()
+            if not dictAlg[alg].isBiobjective():
+                for curline in dictAlg[alg].funvals:
+                    if (curline[1:] == dictAlg[alg].finalfunvals).any():
+                        # only works because the funvals are monotonous
+                        break
+                dictFunValsNoFail[alg] = curline.copy()
 
         self.evals = resDataSet
         # evals is not a np array but a list of arrays because they may not
@@ -440,6 +442,45 @@ def loadBBOBever():
     bestalgentriesever = pickle.load(fid)
     fid.close()
     print " done."
+
+def loadBestBiobj2016():
+    """Assigns :py:data:`bestbiobjalgentries2016`.
+
+    This function is needed to set the global variable
+    :py:data:`bestbiobjalgentries2016`. It unpickles file 
+    :file:`bestbiobjalgentries2016.pickle.gz`
+
+    :py:data:`bestbiobjalgentries2016` is a dictionary accessed by providing
+    a tuple :py:data:`(dimension, function)`. This returns an instance
+    of :py:class:`BestAlgSet`.
+
+    """
+    global bestbiobjalgentries2016
+    # global statement necessary to change the variable bestalg.bestbiobjalgentries2016
+
+    print "Loading best bi-objective algorithm data from BBOB-2016...",  
+    sys.stdout.flush()
+
+    bestalgfilepath = os.path.split(__file__)[0]
+    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle')
+    fid = open(picklefilename, 'r')
+#    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle.gz')
+#    fid = gzip.open(picklefilename, 'r')
+    bestbiobjalgentries2016 = pickle.load(fid)
+    fid.close()
+    print_done()
+
+def loadBestAlgorithm(isBioobjective):
+    """Loads the best single or bi objective algorithm. """
+    
+    if isBioobjective:
+        if not bestbiobjalgentries2016:
+            loadBestBiobj2016()
+        return bestbiobjalgentries2016
+    else:
+        if not bestalgentries2009:
+            loadBBOB2009()
+        return bestalgentries2009
 
 def usage():
     print __doc__  # same as: sys.modules[__name__].__doc__, was: main.__doc__

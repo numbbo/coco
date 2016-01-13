@@ -234,8 +234,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
     # TODO: method is long, terrible to read, split if possible
 
-    if not bestalg.bestalgentries2009:
-        bestalg.loadBBOB2009()
+    bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
 
     # Sort data per dimension and function
     dictData = {}
@@ -258,7 +257,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         targetf = targets[-1]
         
         # best 2009
-        refalgentry = bestalg.bestalgentries2009[df]
+        refalgentry = bestalgentries[df]
         refalgert = refalgentry.detERT(targets)
         refalgevals = (refalgentry.detEvals((targetf, ))[0][0])
         refalgnbruns = len(refalgevals)

@@ -252,7 +252,7 @@ class RunlengthBasedTargetValues(TargetValues):
         if force_different_targets_factor < 1:
             force_different_targets_factor **= -1 
         # TODO: known_names collects only bestalg stuff, while also algorithm data can be used (see def initialize below) 
-        self.known_names = ['bestGECCO2009', 'bestGECCOever'] # TODO: best-ever is not a time-invariant thing and therefore ambiguous
+        self.known_names = ['bestGECCO2009', 'bestGECCOever', 'bestBiobj2016'] # TODO: best-ever is not a time-invariant thing and therefore ambiguous
         self._short_info = "budget-based targets"
         self.run_lengths = sorted(run_lengths)
         self.smallest_target = smallest_target
@@ -280,6 +280,10 @@ class RunlengthBasedTargetValues(TargetValues):
                 from bbob_pproc import bestalg
                 bestalg.loadBBOBever() # this is an absurd interface
                 self.reference_data = bestalg.bestalgentriesever
+            elif self.reference_data == 'bestBiobj2016':
+                from bbob_pproc import bestalg
+                bestalg.loadBestBiobj2016() # this is an absurd interface
+                self.reference_data = bestalg.bestbiobjalgentries2016
             else:
                 ValueError('reference algorithm name')
         elif type(self.reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
@@ -1600,7 +1604,7 @@ class DataSetList(list):
         """Returns a dictionary splitting noisy and non-noisy entries."""
         sorted = {}
         for i in self:
-            if i.funcId in range(1, 25):
+            if i.funcId in range(1, 56):
                 sorted.setdefault('noiselessall', DataSetList()).append(i)
             elif i.funcId in range(101, 131):
                 sorted.setdefault('nzall', DataSetList()).append(i)
