@@ -164,8 +164,8 @@ cdef class Suite:
     def __cinit__(self, suite_name, suite_instance, suite_options):
         cdef np.npy_intp shape[1]  # probably completely useless
         self._name = _bstring(suite_name)
-        self._instance = _bstring(suite_instance)
-        self._options = _bstring(suite_options)
+        self._instance = _bstring(suite_instance if suite_instance is not None else "")
+        self._options = _bstring(suite_options if suite_options is not None else "")
         self._current_problem = NULL
         self.current_problem_ = None
         self._current_index = None
@@ -446,7 +446,7 @@ cdef class Observer:
 
     def __cinit__(self, name, options):
         self._name = _bstring(name)
-        self._options = _bstring(options)
+        self._options = _bstring(options if options is not None else "")
         self._observer = coco_observer(self._name, self._options)
         self._state = 'initialized'
 
