@@ -91,8 +91,6 @@ def coco_optimize(solver, fun, budget):
 #################################################
 # set up
 #################################################
-budget_multiplier = 2  # times dimension, always start with something small,
-                       # CAVEAT: this might be modified from input args
 solver = random_search # fmin_slsqp # cma.fmin #
 suite_name = "bbob-biobj"
 # suite_name = "bbob"
@@ -108,8 +106,10 @@ if suite_name == "bbob-biobj":
         'log_decision_variables: low_dim ' +
         ' compute_indicators: log_nondominated: all ')
 
-number_of_batches = 1  # CAVEAT: this can be modified below from input args
-current_batch = 1       # ditto
+# CAVEAT: this might be modified from input args
+budget_multiplier = 10  # times dimension, always start with something small
+number_of_batches = 1   # allows to run everything several batches
+current_batch = 1       # 1..number_of_batches
 
 #################################################
 # run
