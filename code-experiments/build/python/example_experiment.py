@@ -3,17 +3,16 @@
 
 Usage from a system shell::
 
-    [python] ./example_experiment.py 100 1 20
+    [python] ./example_experiment.py 3 1 20
 
-runs the first of 20 batches with maximal budget of 100 f-evaluations.
+runs the first of 20 batches with maximal budget
+of 3 * dimension f-evaluations.
 
 Usage from a python shell::
 
     >>> import example_experiment as example
-    >>> example.main(100, 1, 1)  # doctest: +ELLIPSIS
-    Benchmarking solver '<function random_search' with MAXEVALS=100, ...
-    Batch usecase ...
-    bbob-biobj done (1650 of 1650 problems benchmarked), ...
+    >>> example.main(3, 1, 1)  # doctest: +ELLIPSIS
+    Benchmarking solver...
 
 does the same but runs the "first" of one single batch.
 """
@@ -43,73 +42,89 @@ def random_search(fun, lbounds, ubounds, budget):
         # about five times faster than "for k in range(budget):..."
         X = lbounds + (ubounds - lbounds) * np.random.rand(chunk, dim)
         F = [fun(x) for x in X]
-        index = np.argmin(F)
-        if f_min is None or F[index] < f_min:
-            x_min, f_min = X[index], F[index]
+        if fun.number_of_objectives == 1:
+            index = np.argmin(F)
+            if f_min is None or F[index] < f_min:
+                x_min, f_min = X[index], F[index]
         budget -= chunk
     return x_min
-    
-#################################################
-# set up
-#################################################
-MAXEVALS = 1e2  # always start with something small, CAVEAT: this might be modified from input args
-solver = random_search # fmin_slsqp # cma.fmin #    
-suite_name = "bbob"
-suite_name = "bbob-biobj"
-suite_instance = ""  # syntax see C code TODO
-suite_options = ""
-observer_name = "bbob"
-observer_name = "bbob-biobj"
-observer_options = "result_folder: %s_on_%s" % (solver.__name__, suite_name) 
-number_of_batches = 1  # CAVEAT: this can be modified below from input args
-current_batch = 1       # ditto
 
 #################################################
 # interface: add an optimizer here
 #################################################
-def coco_optimize(fun, budget=MAXEVALS):
-    """fun is a callable, to be optimized by global variable `solver`"""
+def coco_optimize(solver, fun, budget):
+    """`fun` is a callable, to be optimized by `solver`.
+
+    The `solver` is called repeatedly with different initial solutions
+    until the budget is exhausted.
+    """
     range_ = fun.upper_bounds - fun.lower_bounds
     center = fun.lower_bounds + range_ / 2
     dim = len(fun.lower_bounds)
 
     runs = 0
     while budget > fun.evaluations:
-        # print("%f %f" % (fun.best_observed_fvalue1, fun.final_target_fvalue1))
-        if fun.best_observed_fvalue1 < fun.final_target_fvalue1:
-            break
+        runs += 1
         remaining_budget = budget - fun.evaluations
-        x0 = center + (fun.evaluations > 0) * 0.9 * range_ * (np.random.rand(dim) - 0.5)
+        x0 = center + (fun.evaluations > 0) * 0.8 * range_ * (np.random.rand(dim) - 0.5)
 
-        global solver 
         if solver.__name__ in ("random_search", ):
             solver(fun, fun.lower_bounds, fun.upper_bounds,
                     remaining_budget)
         elif solver.__name__ == 'fmin' and solver.func_globals['__name__'] == 'cma':
             # x0 = "%f + %f * np.rand(%d)" % (center[0], range_[0], dim)  # for bbob
-            solver(fun, x0, 0.2, restarts=8,
-                   options=dict(scaling=range_, maxfevals=remaining_budget, verbose=-9))
+            solver(fun, x0, 0.2 * range_, restarts=8,
+                   options=dict(scaling=range_, maxfevals=remaining_budget,
+                                verbose=-9))
         elif solver.__name__ == 'fmin_slsqp':
             solver(fun, x0, iter=1 + remaining_budget / dim, iprint=-1)
-        # IMPLEMENT HERE the call to given solver
+        # IMPLEMENT HERE the call to new solver
         # elif ...:
         else:
             print("no entry for solver %s" % str(solver.__name__))
-        runs += 1
+
+        if fun.best_observed_fvalue1 < fun.final_target_fvalue1:
+            break
     if runs > 1:
         print("%d runs, " % runs, end="")
 
 #################################################
-# run 
+# set up
 #################################################
-def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=number_of_batches):
-    print("Benchmarking solver '%s' with MAXEVALS=%d, %s" % (' '.join(str(solver).split()[:2]), MAXEVALS, time.asctime(), ))
+budget_multiplier = 2  # times dimension, always start with something small,
+                       # CAVEAT: this might be modified from input args
+solver = random_search # fmin_slsqp # cma.fmin #
+suite_name = "bbob-biobj"
+# suite_name = "bbob"
+suite_instance = ""  # 'dimensions: 2,3,5,10,20 instance_idx: 1-5'
+suite_options = ""
+observer_name = suite_name
+observer_options = (
+    'result_folder: %s_on_%s ' % (solver.__name__, suite_name) +
+    ' algorithm_name: %s ' % solver.__name__ +
+    ' algorithm_info: "A simple random search algorithm" ')
+if suite_name == "bbob-biobj":
+    observer_options += (
+        'log_decision_variables: low_dim ' +
+        ' compute_indicators: log_nondominated: all ')
+
+number_of_batches = 1  # CAVEAT: this can be modified below from input args
+current_batch = 1       # ditto
+
+#################################################
+# run
+#################################################
+def main(budget_multiplier=budget_multiplier,
+         current_batch=current_batch,
+         number_of_batches=number_of_batches):
+    print("Benchmarking solver '%s' with budget=%d * dimension, %s"
+          % (' '.join(str(solver).split()[:2]), budget_multiplier, time.asctime(), ))
     suite = Suite(suite_name, suite_instance, suite_options)
     observer = Observer(observer_name, observer_options)
     t0 = time.clock()
-    if 11 < 3:  # crashes due to memory allocation/free in next_problem() of coco_suite.c
+    if 1 < 3:
         # simple Pythonic use case
-        print('Pythonic usecase ...'); sys.stdout.flush()
+        print('Simple usecase ...'); sys.stdout.flush()
         found_problems, addressed_problems = 0, 0
         for problem in suite:
             found_problems += 1
@@ -117,26 +132,26 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
             if 11 < 3 and not ('f11' in problem.id and 'i03' in problem.id):
                 continue
             observer.observe(problem)
-            coco_optimize(problem, MAXEVALS)
-            # problem.free()
+            coco_optimize(solver, problem, budget_multiplier * problem.dimension)
             addressed_problems += 1
             # print(found_problems, addressed_problems); sys.stdout.flush()
-        print("%s done (%d of %d problems benchmarked), %s (%f s)." 
-                % (suite_name, addressed_problems, found_problems,
-                   time.asctime(), (time.clock()-t0)/60**0))
-    
+        print("%s done (%d of %d problems benchmarked), %s (%.2f min)."
+              % (suite_name, addressed_problems, found_problems,
+                 time.asctime(), (time.clock()-t0)/60**1))
+
     elif 1 < 3:
-        # usecase with batches and observer
+        # usecase with batches
         print('Batch usecase ...'); sys.stdout.flush()
         addressed_problems = []
-        for problem_index, id in enumerate(suite.ids):
+        for problem_index, problem_id in enumerate(suite.ids):
             if (problem_index + current_batch - 1) % number_of_batches:
                 continue
-            problem = suite.next_problem(observer)
             # print("%4d: " % problem_index, end="")
-            coco_optimize(problem, MAXEVALS)
-            addressed_problems += [problem_index]
-        print("%s done (%d of %d problems benchmarked%s), %s (%f min)." % 
+            problem = suite.get_problem(problem_index, observer)
+            coco_optimize(solver, problem, budget_multiplier * problem.dimension)
+            problem.free()
+            addressed_problems += [problem_id]
+        print("%s done (%d of %d problems benchmarked%s), %s (%.2f min)." %
                (suite_name, len(addressed_problems), len(suite),
                  ((" in batch %d of %d" % (current_batch, number_of_batches))
                    if number_of_batches > 1 else ""), time.asctime(), (time.clock()-t0)/60))
@@ -146,9 +161,9 @@ if __name__ == '__main__':
         if sys.argv[1] in ["--help", "-h"]:
             print(__doc__)
             exit(0)
-        MAXEVALS = float(sys.argv[1])
+        budget_multiplier = float(sys.argv[1])
     if len(sys.argv) > 2:
         current_batch = int(sys.argv[2])
     if len(sys.argv) > 3:
         number_of_batches = int(sys.argv[3])
-    main(MAXEVALS, current_batch, number_of_batches)
+    main(budget_multiplier, current_batch, number_of_batches)
