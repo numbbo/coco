@@ -192,8 +192,8 @@ def _prep_python():
                 {'COCO_VERSION': git_version()}) # hg_version()})
     expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
                 {'COCO_VERSION': git_version()}) # hg_version()})
-    if 'darwin' in sys.platform:
-        run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
+    # if 'darwin' in sys.platform:  # a hack to force cythoning
+    #     run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
 
 def build_python():
     _prep_python()
@@ -543,7 +543,8 @@ def main(args):
     elif cmd == 'run-java': run_java()
     elif cmd == 'run-matlab': run_matlab()
     elif cmd == 'run-matlab-sms': run_matlab_sms()
-    elif cmd == 'run-python': run_python('.', args[1])
+    elif cmd == 'run-python': run_python('.', args[1] if len(args) > 1 else
+                        os.path.join('code-experiments', 'build', 'python', 'example_experiment.py'))
     elif cmd == 'test-c': test_c()
     elif cmd == 'test-c-unit': test_c_unit()
     elif cmd == 'test-c-integration': test_c_integration()
