@@ -92,8 +92,10 @@ static coco_problem_t *get_bbob_problem(const size_t function,
     problem = f_rosenbrock_rotated_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else if (function == 10) {
-    problem = f_ellipsoid_rotated_bbob_problem_allocate(function, dimension, instance, rseed,
-        problem_id_template, problem_name_template);
+/*    problem = f_ellipsoid_rotated_bbob_problem_allocate(function, dimension, instance, rseed,
+        problem_id_template, problem_name_template);*/
+    problem = f_ellipsoid_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                        problem_id_template, problem_name_template);
   } else if (function == 11) {
     problem = f_discus_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
@@ -136,7 +138,11 @@ static coco_problem_t *get_bbob_problem(const size_t function,
   } else if (function == 24) {
     problem = f_lunacek_bi_rastrigin_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
-  } else {
+  } else if (function == 25) {
+    problem = f_lunacek_bi_rastrigin_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                           problem_id_template, problem_name_template);
+  }
+    else {
     coco_error("get_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD", function, instance, dimension);
     return NULL; /* Never reached */
   }

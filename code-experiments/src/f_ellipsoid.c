@@ -8,6 +8,7 @@
 #include "transform_vars_affine.c"
 #include "transform_vars_shift.c"
 #include "transform_obj_shift.c"
+#include "large_scale_transform_vars_permblockdiag.c"
 
 static double f_ellipsoid_raw(const double *x, const size_t number_of_variables) {
 
@@ -74,32 +75,97 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
                                                                  const char *problem_name_template) {
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
-
+  
   double *M = coco_allocate_vector(dimension * dimension);
   double *b = coco_allocate_vector(dimension);
   double **rot1;
-
+  
   xopt = coco_allocate_vector(dimension);
   bbob2009_compute_xopt(xopt, rseed, dimension);
   fopt = bbob2009_compute_fopt(function, instance);
-
+  
   rot1 = bbob2009_allocate_matrix(dimension, dimension);
   bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
   bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
   bbob2009_free_matrix(rot1, dimension);
-
+  
   problem = f_ellipsoid_allocate(dimension);
   problem = f_transform_vars_oscillate(problem);
   problem = f_transform_vars_affine(problem, M, b, dimension);
   problem = f_transform_vars_shift(problem, xopt, 0);
   problem = f_transform_obj_shift(problem, fopt);
-
+  
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "3-ill-conditioned");
-
+  
   coco_free_memory(M);
   coco_free_memory(b);
   coco_free_memory(xopt);
   return problem;
 }
+
+
+
+static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const size_t function,
+                                                                 const size_t dimension,
+                                                                 const size_t instance,
+                                                                 const long rseed,
+                                                                 const char *problem_id_template,
+                                                                 const char *problem_name_template) {
+  /*double *xopt, fopt;*/
+  coco_problem_t *problem = NULL;
+  double **B;/*/*tmp*/
+  size_t *P1 = (size_t *)coco_allocate_memory(dimension * sizeof(size_t));/*TODO: implement a allocate_size_t_vector*/
+  size_t *P2 = (size_t *)coco_allocate_memory(dimension * sizeof(size_t));
+  /*double *b = coco_allocate_vector(dimension);*/
+  size_t *block_sizes;
+  size_t nb_blocks;
+  size_t swap_range;
+  size_t nb_swaps;
+  int i, j;
+
+  /* tentative */
+  swap_range = dimension / 3;
+  nb_swaps = dimension;
+  size_t block_size = 4;
+  nb_blocks = dimension / block_size;
+  block_sizes = (size_t *)coco_allocate_memory(nb_blocks * sizeof(size_t));
+  for (i = 0; i < nb_blocks; i++) {
+    block_sizes[i] = block_size;
+  }
+
+  printf("in f_elli\n");
+  printf("dimension:%zu, nb_swaps:%zu, swap_range:%zu, block_size:%zu\n", dimension, nb_swaps, swap_range, block_size);
+  /*xopt = coco_allocate_vector(dimension);*/
+  /*bbob2009_compute_xopt(xopt, rseed, dimension);*/
+  /*fopt = bbob2009_compute_fopt(function, instance);*/
+
+  B = ls_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
+  ls_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
+
+  ls_compute_truncated_uniform_swap_permutation(P1, rseed + 1000000, dimension, nb_swaps, swap_range);
+  ls_compute_truncated_uniform_swap_permutation(P2, rseed + 2000000, dimension, nb_swaps, swap_range);
+
+  
+  problem = f_ellipsoid_allocate(dimension);
+  /*problem = f_transform_vars_oscillate(problem);*/
+  problem = f_ls_transform_vars_permblockdiag(problem, B, P1, P2, dimension, block_sizes, nb_blocks);
+  /*problem = f_transform_vars_shift(problem, xopt, 0);*/
+  /*problem = f_transform_obj_shift(problem, fopt);*/
+
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_type(problem, "large_scale_block_rotated");/*TODO: no large scale prefix*/
+
+  ls_free_block_matrix(B, dimension);
+  coco_free_memory(P1);
+  coco_free_memory(P2);
+  coco_free_memory(block_sizes);
+  printf("out f_elli\n");
+  return problem;
+}
+
+
+
+
