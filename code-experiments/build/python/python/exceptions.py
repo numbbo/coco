@@ -10,6 +10,9 @@ class NoSuchProblemException(Exception):
     def __repr__(self):
         s = "NoSuchProblemException('{suite}', {id})"
         return s.format(suite=self.suite, id=self.function_id)
+    
+class NoSuchSuiteException(Exception):
+    pass
 
 class InvalidProblemException(Exception):
     def __init__(self):

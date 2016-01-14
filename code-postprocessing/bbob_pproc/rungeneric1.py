@@ -250,7 +250,7 @@ def main(argv=None):
         
         if 11 < 3:
             from bbob_pproc import config  # input settings
-            config.config()
+            config.config(False)
             import imp
             # import testbedsettings as testbedsettings # input settings
             try:
@@ -299,7 +299,7 @@ def main(argv=None):
         
         from bbob_pproc import config
         config.target_values(genericsettings.isExpensive, dict_max_fun_evals)
-        config.config()
+        config.config(dsList.isBiobjective())
 
         if (genericsettings.verbose):
             for i in dsList:

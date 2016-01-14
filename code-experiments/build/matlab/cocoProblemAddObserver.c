@@ -7,29 +7,29 @@
 #include "coco.c"
 
 #include "mex.h"
-#include "matrix.h"
 
 /* The gateway function */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    char *observer;
     coco_problem_t *problem;
-    char *options;
-    long long *ref;
+    coco_observer_t *observer;
+    long long *ref, *ref2;
 
     /* check for proper number of arguments */
-    if(nrhs!=3) {
-        mexErrMsgIdAndTxt("cocoProblemAddObserver:nrhs","Three inputs required.");
+    if(nrhs!=2) {
+        mexErrMsgIdAndTxt("cocoProblemAddObserver:nrhs","Two inputs required.");
     }
-    /* get the observer */
-    observer = mxArrayToString(prhs[0]);
     /* get the problem */
-    ref = (long long *)mxGetData(prhs[1]);
+    ref = (long long *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
-    /* get the options */
-    options = mxArrayToString(prhs[2]);
-    /* call deprecated__coco_problem_add_observer() */
-    problem = deprecated__coco_problem_add_observer(problem, observer, options);
+    /* get the observer */
+    ref2 = (long long *)mxGetData(prhs[1]);
+    observer = (coco_observer_t *)(*ref2);
+    
+    /* call coco_problem_add_observer() */
+    
+    problem = coco_problem_add_observer(problem, observer);
+    
     /* prepare the return value */
     plhs[0] = mxCreateNumericMatrix(1, 1 ,mxINT64_CLASS, mxREAL);
     ref = (long long *)mxGetData(plhs[0]);
