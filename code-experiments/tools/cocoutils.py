@@ -66,6 +66,7 @@ def run(directory, args):
         os.chdir(directory)
         output = check_output(args, stderr=STDOUT, env=os.environ, 
                               universal_newlines=True)
+        # print(output)
     except CalledProcessError as e:
         print("ERROR: return value=%i" % e.returncode)
         print(e.output)
@@ -89,6 +90,7 @@ def python(directory, args, env=None):
         os.chdir(directory)
         output = check_output(full_command, stderr=STDOUT, env=os.environ,
                               universal_newlines=True)
+        # print(output)
     except CalledProcessError as e:
         print("ERROR: return value=%i" % e.returncode)
         print(e.output)
