@@ -27,11 +27,10 @@ void my_random_search(coco_problem_t *problem) {
   double *y = coco_allocate_vector(number_of_objectives);
   double range;
   size_t i, j;
-  
+
   long max_budget = dimension * BUDGET;
-  
+
   for (i = 0; i < max_budget; ++i) {
-    
     /* Construct x as a random point between the lower and upper bounds */
     for (j = 0; j < dimension; ++j) {
       range = ubounds[j] - lbounds[j];
@@ -65,11 +64,11 @@ void my_grid_search(coco_problem_t *problem) {
   double *grid_step = coco_allocate_vector(dimension);
   size_t i, j;
   size_t evaluations = 0;
-  
+
   long max_budget = dimension * BUDGET;
-  
+
   long max_nodes = (long) floor(pow((double) max_budget, 1.0 / (double) dimension)) - 1;
-  
+
   /* Take care of the borderline case */
   if (max_nodes < 1) max_nodes = 1;
   
@@ -78,9 +77,8 @@ void my_grid_search(coco_problem_t *problem) {
     nodes[j] = 0;
     grid_step[j] = (ubounds[j] - lbounds[j]) / (double) max_nodes;
   }
-  
+
   while (evaluations < max_budget) {
-    
     /* Construct x and evaluate it */
     for (j = 0; j < dimension; j++) {
       x[j] = lbounds[j] + grid_step[j] * (double) nodes[j];
@@ -122,7 +120,6 @@ void my_grid_search(coco_problem_t *problem) {
  * A simple example of benchmarking an optimization algorithm on the bbob suite with instances from 2009.
  */
 void example_bbob(void) {
-  
   /* Some options of the bbob observer. See documentation for other options. */
   const char *observer_options = "result_folder: RS_on_bbob \
   algorithm_name: RS \
@@ -148,18 +145,16 @@ void example_bbob(void) {
  * A simple example of benchmarking an optimization algorithm on the biobjective suite.
  */
 void example_biobj(void) {
-  
   /* Some options of the biobjective observer. See documentation for other options. */
   const char *observer_options = "result_folder: RS_on_bbob-biobj \
-  algorithm_name: RS \
-  algorithm_info: \"A simple random search algorithm\" \
-  compute_indicators: 1 \
-  log_nondominated: all";
-  
+                                  algorithm_name: RS \
+                                  algorithm_info: \"A simple random search algorithm\" \
+                                  compute_indicators: 1 \
+                                  log_nondominated: all";
+
   coco_suite_t *suite;
   coco_observer_t *observer;
   coco_problem_t *problem;
-  
   suite = coco_suite("bbob-biobj", NULL, "dimensions: 2,3,5,10,20 instance_idx: 1-10");
   observer = coco_observer("bbob-biobj", observer_options);
   
@@ -176,7 +171,6 @@ void example_biobj(void) {
  * A simple example of benchmarking an optimization algorithm on the toy suite.
  */
 void example_toy(void) {
-  
   /* Some options of the toy observer. See documentation for other options. */
   const char *observer_options = "result_folder: RS_on_toy \
   algorithm_name: RS \
@@ -207,13 +201,14 @@ int main(void) {
   fflush(stdout);
   
   example_bbob();
-  
   printf("First example on bbob suite done!\n");
   /*
+  printf("First example on bbob suite done!\n");
+
   fflush(stdout);
   
   example_biobj();
-  
+
   printf("Second example bbob-biobj suite done!\n");
   fflush(stdout);
   

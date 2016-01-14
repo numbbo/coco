@@ -1,8 +1,11 @@
 import java.util.Random;
 
 public class ExampleExperiment {
-	
-	public static final int MAX_BUDGET = 100;
+
+	/**
+	 * The max budget for optimization algorithms should be set to dim * BUDGET
+	 */
+	public static final int BUDGET = 10;
 	public static final long RANDOM_SEED = 123456;
 
 	/** 
@@ -14,9 +17,12 @@ public class ExampleExperiment {
 		Random r = new Random(RANDOM_SEED);
 		double[] x = new double[(int) problem.getDimension()];
 		double[] y = new double[(int) problem.getNumberOfObjectives()];
+		int dim = problem.getDimension();
 		double range;
 		
-		for (int i = 0; i < MAX_BUDGET; i++) {
+		long max_budget = dim * BUDGET;
+		
+		for (int i = 0; i < max_budget; i++) {
 			for (int j = 0; j < problem.getDimension(); j++) {
 				range = problem.getLargestValueOfInterest(j) - problem.getSmallestValueOfInterest(j);
 				x[j] = problem.getSmallestValueOfInterest(j) + range * r.nextDouble();
@@ -35,11 +41,11 @@ public class ExampleExperiment {
 		try {
 
 			final String observer_options = 
-					  "result_folder: GS_on_bbob " 
-					+ "algorithm_name: GS "
-					+ "algorithm_info: \"A simple grid search algorithm\" ";
+					  "result_folder: RS_on_bbob " 
+					+ "algorithm_name: RS "
+					+ "algorithm_info: \"A simple random search algorithm\" ";
 
-			Suite suite = new Suite("bbob", "year: 2009", "dimensions: 2,3,5,10,20 instance_idx: 1");
+			Suite suite = new Suite("bbob", "year: 2009", "dimensions: 2,3,5,10,20 instance_idx: 1,2");
 			Observer observer = new Observer("bbob", observer_options);
 			Benchmark benchmark = new Benchmark(suite, observer);
 			Problem problem;
@@ -62,14 +68,14 @@ public class ExampleExperiment {
 		try {
 
 			final String observer_options = 
-					  "result_folder: GS_on_bbob-biobj " 
-					+ "algorithm_name: GS "
-					+ "algorithm_info: \"A simple grid search algorithm\" "
+					  "result_folder: RS_on_bbob-biobj " 
+					+ "algorithm_name: RS "
+					+ "algorithm_info: \"A simple random search algorithm\" "
 					+ "log_decision_variables: low_dim "
 					+ "compute_indicators: 1 "
 					+ "log_nondominated: all";
 
-			Suite suite = new Suite("bbob-biobj", "", "dimensions: 2,3,5,10,20 instance_idx: 1-5");
+			Suite suite = new Suite("bbob-biobj", "", "dimensions: 2,3,5,10,20 instance_idx: 1-10");
 			Observer observer = new Observer("bbob-biobj", observer_options);
 			Benchmark benchmark = new Benchmark(suite, observer);
 			Problem problem;
@@ -92,12 +98,12 @@ public class ExampleExperiment {
 		
 		exampleBBOB();
 
-		System.out.println("First example done!");
+		System.out.println("First example on bbob suite done!");
 		System.out.flush();
 		
 		exampleBBOBbiobj();
 
-		System.out.println("Second example done!");
+		System.out.println("Second example on bbob-biobj suite done!");
 		System.out.flush();
 
 		return;
