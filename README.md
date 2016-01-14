@@ -84,18 +84,22 @@ Unfortunately, we cannot guarantee that the software runs on any combination of 
 # Typical Workflow
 * download the NumBBO/Coco code by clicking on the *Download ZIP* link on the top right of the main NumBBO github page
 * run once
-    ```python
+
+    ```
     python do.py run-YOURFAVORITELANGUAGE
     ```
+
 to build and test the example experiment code for the language of your choice (`YOURFAVORITELANGUAGE` can thereby be any of `python`, `c`, `java`, or `matlab`).
-* If the example experiment runs, you can start connecting your favorite algorithm to Coco. The probably easiest is to replace the random search in the example experiment within the `code-experiments/build/YOURFAVORITELANGUAGE` folder by the call to your algorithm. To this end, you can move the `code-experiments/build/YOURFAVORITELANGUAGE` folder wherever you want without the need to build/compile the NumBBO/Coco part a second time. Another entry point for your own experiments can be the more complicated algorithms CMA-ES (for the single-objective suites) and SMS-EMOA (for the multiobjective case) in the `code-experiments/examples folder`. Do not forget in any case to update the result folder, and the algorithm name and info in the experiment.
+* If the example experiment runs, you can start connecting your favorite algorithm to Coco. The probably easiest is to replace the random search in the example experiment within the `code-experiments/build/YOURFAVORITELANGUAGE` folder by the call to your algorithm. To this end, you can move the `code-experiments/build/YOURFAVORITELANGUAGE` folder wherever you want without the need to build/compile the NumBBO/Coco part a second time. Another entry point for your own experiments can be the more complicated algorithms CMA-ES (for the single-objective suites) and SMS-EMOA (for the multiobjective case) in the `code-experiments/examples` folder. Do not forget, in any case, to update the result folder and the algorithm name and info in the experiment.
 * Now you can run your favorite algorithm on the `bbob-biobj` (for a multi-objective algorithm) or on the `bbob` suite (for a single-objective algorithm). Output is automatically generated in the specified result folder.
 * Postprocess your data from the results folder by typing
+
     ```
-    python rungeneric.py YOURRESULTFOLDER'
+    python rungeneric.py YOURRESULTFOLDER
     ```
-within the `code-postprocessing/bbob_pproc` folder (or running the `rungeneric.py` script from where your results lie). A folder named `ppdata` by default will be generated (the folder name can be changed by the `o FOLDERNAME` option). Note that you can also compare more than one algorithm by specifying more algorithm result folders, separated by blanks.
-* Within the postprocessing's output folder, you will find pdfs of all kinds of plots (e.g. data profiles). For the single-objective `bbob` suite, they can be used to produce a summary pdf via LaTeX. The corresponding templates in ACM format can be found in the `code-postprocessing/latex-templates` folder. LaTeX templates for the multi-objective `bbob-bibj` suite will follow in a later release. A basic html output is also available in the result folder of the postprocessing (file `templateBBOBarticle.html`).
+
+within the `code-postprocessing/bbob_pproc` folder (or running the `rungeneric.py` script from where your results lie). A folder named `ppdata` by default will be generated (the folder name can be changed by the `-o FOLDERNAME` option). Note that you can also compare more than one algorithm by specifying more algorithm result folders, separated by blanks.
+* Within the postprocessing's output folder, you will find pdfs of all kinds of plots (e.g. data profiles). For the single-objective `bbob` suite, they can be used to produce a summary pdf via LaTeX. The corresponding templates in ACM format can be found in the `code-postprocessing/latex-templates` folder. LaTeX templates for the multi-objective `bbob-biobj` suite will follow in a later release. A basic html output is also available in the result folder of the postprocessing (file `templateBBOBarticle.html`).
 * Once your algorithm runs well, increase the budget in your experiment script and follow the above steps successively until you are happy.
 * If you detect bugs or other issues, please let us know by opening an issue in our issue tracker at https://github.com/numbbo/numbbo/issues.
 
