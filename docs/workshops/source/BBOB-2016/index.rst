@@ -77,5 +77,5 @@ Important Dates
 * 20/07/2016 or 21/07/2016 workshop
 
 Organizers:
-Anne Auger, Dimo Brockhoff, Nikolaus Hansen, Dejan Tusar, Tea Tusa, and
+Anne Auger, Dimo Brockhoff, Nikolaus Hansen, Dejan Tusar, Tea Tusar, and
 Tobias Wagner
