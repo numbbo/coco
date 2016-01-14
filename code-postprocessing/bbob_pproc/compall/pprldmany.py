@@ -455,7 +455,7 @@ def all_single_functions(dictAlg, sortedAlgs=None, outputdir='.',
                        info=('f%03d_%02dD' % (fg, d)),
                        verbose=verbose)
 
-def main(dictAlg, order=None, outputdir='.', info='default',
+def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
          dimension=None, verbose=True):
     """Generates a figure showing the performance of algorithms.
 
@@ -550,9 +550,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
         if displaybest2009:
             #set_trace()
-            if not bestalg.bestalgentries2009:
-                bestalg.loadBBOB2009()
-            bestalgentry = bestalg.bestalgentries2009[(dim, f)]
+            bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+            bestalgentry = bestalgentries[(dim, f)]
             bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
             # print bestalgevals
             for j in range(len(bestalgevals[0])):
