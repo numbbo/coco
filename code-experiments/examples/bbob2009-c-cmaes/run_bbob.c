@@ -78,12 +78,29 @@ void cma_optimizer(coco_problem_t *problem) {
 int main() {
   char algorithm_id[200] = "c-cmaes-v";
 
+  coco_suite_t *suite;
+  coco_observer_t *observer;
+  coco_problem_t *problem;
+  char *observer_options;
+
   /* Extract cmaes library version. */
   cmaes_t cma;
   cmaes_init(&cma, 1, NULL, NULL, 0, 100, "no");
   strncat(algorithm_id, cma.version, 200 - strlen(algorithm_id) - 1);
   cmaes_exit(&cma);
 
-  deprecated__coco_suite_benchmark("suite_bbob2009", "observer_bbob2009", algorithm_id, cma_optimizer);
+  observer_options = coco_strdupf("algorithm_name: ", algorithm_id);
+
+  suite = coco_suite("bbob", "year: 2009", NULL);
+  observer = coco_observer("bbob", observer_options);
+
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
+    cma_optimizer(problem);
+  }
+
+  coco_observer_free(observer);
+  coco_suite_free(suite);
+  coco_free_memory(observer_options);
+
   return 0;
 }

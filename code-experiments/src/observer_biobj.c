@@ -14,11 +14,16 @@ typedef enum {
   NONE, FINAL, ALL
 } observer_biobj_log_nondom_e;
 
+/* Logging variables mode */
+typedef enum {
+  NEVER, LOW_DIM, ALWAYS
+} observer_biobj_log_vars_e;
+
 /* Data for the biobjective observer */
 typedef struct {
-  observer_biobj_log_nondom_e log_mode;
+  observer_biobj_log_nondom_e log_nondom_mode;
+  observer_biobj_log_vars_e log_vars_mode;
 
-  int include_decision_variables;
   int compute_indicators;
   int produce_all_data;
 
@@ -26,7 +31,7 @@ typedef struct {
   size_t best_values_count;
 
   /* Information on the previous logged problem */
-  int previous_function;
+  long previous_function;
 
 } observer_biobj_t;
 
@@ -162,7 +167,8 @@ static double observer_biobj_get_matching_double_value(char ***matrix_of_strings
   return default_value;
 }
 
-/* Returns the best known value for indicator_name matching the given key if the key is found, and raises an
+/**
+ * Returns the best known value for indicator_name matching the given key if the key is found, and raises an
  * error otherwise.  */
 static double observer_biobj_read_best_value(const observer_biobj_t *self,
                                              const char *indicator_name,
@@ -191,24 +197,23 @@ static double observer_biobj_read_best_value(const observer_biobj_t *self,
 }
 
 /**
- * Frees memory for the given coco_observer_t's data field observer_biobj_t.
+ * Frees the memory of the given biobjective observer.
  */
-static void observer_biobj_free(coco_observer_t *observer) {
+static void observer_biobj_free(void *stuff) {
 
-  observer_biobj_t *observer_biobj;
+  observer_biobj_t *data;
   size_t i;
 
-  assert(observer != NULL);
-  observer_biobj = (observer_biobj_t *) observer->data;
+  assert(stuff != NULL);
+  data = stuff;
 
-  if (observer_biobj->compute_indicators != 0) {
+  if (data->compute_indicators != 0) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
-      observer_biobj_free_matrix_of_strings(observer_biobj->best_values_matrix[i],
-          observer_biobj->best_values_count, 2);
+      observer_biobj_free_matrix_of_strings(data->best_values_matrix[i],
+          data->best_values_count, 2);
     }
   }
 
-  coco_free_memory(observer_biobj);
 }
 
 /**
@@ -216,11 +221,12 @@ static void observer_biobj_free(coco_observer_t *observer) {
  * - log_nondominated : none (don't log nondominated solutions)
  * - log_nondominated : final (log only the final nondominated solutions; default value)
  * - log_nondominated : all (log every solution that is nondominated at creation time)
- * - include_decision_variables : 0 / 1 (whether to include decision variables when logging nondominated solutions;
- * default value is 0)
+ * - log_decision_variables : none (don't output decision variables)
+ * - log_decision_variables : log_dim (output decision variables only for dimensions lower or equal to 5; default value)
+ * - log_decision_variables : all (output all decision variables)
  * - compute_indicators : 0 / 1 (whether to compute and output performance indicators; default value is 1)
  * - produce_all_data: 0 / 1 (whether to produce all data; if set to 1, overwrites other options and is equivalent to
- * setting log_nondominated to all, include_decision_variables to 1 and compute_indicators to 1; if set to 0, it
+ * setting log_nondominated to all, log_decision_variables to log_dim and compute_indicators to 1; if set to 0, it
  * does not change the values of other options; default value is 0)
  */
 static void observer_biobj(coco_observer_t *self, const char *options) {
@@ -233,16 +239,21 @@ static void observer_biobj(coco_observer_t *self, const char *options) {
 
   data = coco_allocate_memory(sizeof(*data));
 
-  data->log_mode = FINAL;
+  data->log_nondom_mode = FINAL;
   if (coco_options_read_string(options, "log_nondominated", string_value) > 0) {
     if (strcmp(string_value, "none") == 0)
-      data->log_mode = NONE;
+      data->log_nondom_mode = NONE;
     else if (strcmp(string_value, "all") == 0)
-      data->log_mode = ALL;
+      data->log_nondom_mode = ALL;
   }
 
-  if (coco_options_read_int(options, "include_decision_variables", &(data->include_decision_variables)) == 0)
-    data->include_decision_variables = 0;
+  data->log_vars_mode = LOW_DIM;
+  if (coco_options_read_string(options, "log_decision_variables", string_value) > 0) {
+    if (strcmp(string_value, "none") == 0)
+      data->log_vars_mode = NEVER;
+    else if (strcmp(string_value, "all") == 0)
+      data->log_vars_mode = ALWAYS;
+  }
 
   if (coco_options_read_int(options, "compute_indicators", &(data->compute_indicators)) == 0)
     data->compute_indicators = 1;
@@ -251,14 +262,9 @@ static void observer_biobj(coco_observer_t *self, const char *options) {
     data->produce_all_data = 0;
 
   if (data->produce_all_data) {
-    data->include_decision_variables = 1;
+    data->log_vars_mode = LOW_DIM;
     data->compute_indicators = 1;
-    data->log_mode = ALL;
-  }
-
-  if ((data->log_mode == NONE) && (!data->compute_indicators)) {
-    /* No logging required, return NULL */
-    return;
+    data->log_nondom_mode = ALL;
   }
 
   if (data->compute_indicators) {
@@ -270,6 +276,7 @@ static void observer_biobj(coco_observer_t *self, const char *options) {
         coco_error("observer_biobj() failed to open file '%s'.", file_name);
         return; /* Never reached */
       }
+      coco_free_memory(file_name);
       data->best_values_count = observer_biobj_get_number_of_lines_in_file(file);
       data->best_values_matrix[i] = observer_biobj_get_string_pairs_from_file(file,
           data->best_values_count, OBSERVER_BIOBJ_MAX_STR_LENGTH);
@@ -279,6 +286,11 @@ static void observer_biobj(coco_observer_t *self, const char *options) {
   }
 
   self->logger_initialize_function = logger_biobj;
-  self->observer_free_function = observer_biobj_free;
+  self->data_free_function = observer_biobj_free;
   self->data = data;
+
+  if ((data->log_nondom_mode == NONE) && (!data->compute_indicators)) {
+    /* No logging required */
+    self->is_active = 0;
+  }
 }

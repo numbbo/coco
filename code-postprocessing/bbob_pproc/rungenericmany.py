@@ -218,7 +218,7 @@ def main(argv=None):
         # TODO: conditional imports are NOT the way to go here
         if genericsettings.inputsettings == "color":
             from bbob_pproc import config, genericsettings as inset # input settings
-            config.config()
+            config.config(False)
         elif genericsettings.inputsettings == "grayscale":
             # this settings strategy (by proving different settings files) is problematic, 
             # because it means copy-paste of the settings
@@ -271,6 +271,9 @@ def main(argv=None):
         if not dsList:
             sys.exit()
 
+        if (any(ds.isBiobjective() for ds in dsList) and any(not ds.isBiobjective() for ds in dsList)):
+            sys.exit()
+
         for i in dictAlg:
             if genericsettings.isNoisy and not genericsettings.isNoiseFree:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('nzall', DataSetList())
@@ -288,7 +291,7 @@ def main(argv=None):
         # set target values
         from bbob_pproc import config
         config.target_values(genericsettings.isExpensive, dict_max_fun_evals)
-        config.config()
+        config.config(dsList[0].isBiobjective())
 
 
         for i in dsList:
@@ -321,7 +324,7 @@ def main(argv=None):
             ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
-            config.config()
+            config.config(dsList[0].isBiobjective())
             # ECDFs per noise groups
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictAlg in dictNoi.iteritems():
@@ -331,6 +334,7 @@ def main(argv=None):
                     # from . import config
                     # config.config()
                     pprldmany.main(entries, # pass expensive flag here? 
+                                   dsList[0].isBiobjective(),
                                    order=sortedAlgs,
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, ng)),
@@ -341,6 +345,7 @@ def main(argv=None):
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
                     pprldmany.main(entries,
+                                   dsList[0].isBiobjective(),
                                    order=sortedAlgs,
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, fg)),
@@ -356,8 +361,9 @@ def main(argv=None):
                         dictDim = pproc.dictAlgByDim(tmpdictAlg)
                         for d, entries in dictDim.iteritems():
                             single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
-                                                     'pprldmany-single-functions'
-                                                     # + os.sep + ('f%03d' % fg)
+                                                     'pprldmany-single-functions',
+                                                     # + os.sep + ('f%03d' % fg),
+                                                     dsList[0].isBiobjective()
                                                      )
                             if not os.path.exists(single_fct_output_dir):
                                 os.makedirs(single_fct_output_dir)
@@ -383,8 +389,13 @@ def main(argv=None):
             for ng, tmpdictng in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
                 for d, tmpdictdim in dictDim.iteritems():
-                    pptables.main(tmpdictdim, sortedAlgs,
-                                  outputdir, genericsettings.verbose)
+                    pptables.main(
+                        tmpdictdim, 
+                        sortedAlgs,
+                        dsList[0].isBiobjective(),
+                        outputdir, 
+                        genericsettings.verbose)
+                        
             print "Comparison tables done."
 
         global ftarget  # not nice
@@ -396,9 +407,16 @@ def main(argv=None):
             plt.rc("legend", fontsize=20)
             plt.rc('pdf', fonttype = 42)
             if genericsettings.runlength_based_targets:
-                ftarget = pproc.RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
-            ppfigs.main(dictAlg, genericsettings.many_algorithm_file_name, sortedAlgs, ftarget,
-                        outputdir, genericsettings.verbose)
+                reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
+                ftarget = pproc.RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
+                                                           reference_data = reference_data)
+            ppfigs.main(dictAlg, 
+                        genericsettings.many_algorithm_file_name, 
+                        dsList[0].isBiobjective(),
+                        sortedAlgs, 
+                        ftarget,
+                        outputdir, 
+                        genericsettings.verbose)
             plt.rcdefaults()
             print "Scaling figures done."
 
