@@ -334,6 +334,7 @@ def main(argv=None):
                     # from . import config
                     # config.config()
                     pprldmany.main(entries, # pass expensive flag here? 
+                                   dsList[0].isBiobjective(),
                                    order=sortedAlgs,
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, ng)),
@@ -344,6 +345,7 @@ def main(argv=None):
                 dictDim = pproc.dictAlgByDim(tmpdictAlg)
                 for d, entries in dictDim.iteritems():
                     pprldmany.main(entries,
+                                   dsList[0].isBiobjective(),
                                    order=sortedAlgs,
                                    outputdir=outputdir,
                                    info=('%02dD_%s' % (d, fg)),
@@ -359,8 +361,9 @@ def main(argv=None):
                         dictDim = pproc.dictAlgByDim(tmpdictAlg)
                         for d, entries in dictDim.iteritems():
                             single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
-                                                     'pprldmany-single-functions'
-                                                     # + os.sep + ('f%03d' % fg)
+                                                     'pprldmany-single-functions',
+                                                     # + os.sep + ('f%03d' % fg),
+                                                     dsList[0].isBiobjective()
                                                      )
                             if not os.path.exists(single_fct_output_dir):
                                 os.makedirs(single_fct_output_dir)
