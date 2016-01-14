@@ -328,15 +328,13 @@ def build_matlab_sms():
     global release
     # amalgamate and copy files
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.c', release)
-    copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
-    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/matlab/best_values_hyp.txt')
+    copy_file('code-experiments/src/coco.h', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.h')
+    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/best_values_hyp.txt')
     write_file(git_revision(), "code-experiments/examples/bbob-biobj-matlab-smsemoa/REVISION")
     write_file(git_version(), "code-experiments/examples/bbob-biobj-matlab-smsemoa/VERSION")
     copy_file('code-experiments/build/matlab/cocoEvaluateFunction.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoEvaluateFunction.c')
     copy_file('code-experiments/build/matlab/cocoObserver.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoObserver.c')
     copy_file('code-experiments/build/matlab/cocoObserverFree.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoObserverFree.c')
-    copy_file('code-experiments/build/matlab/cocoProblemAddObserver.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemAddObserver.c')
-    copy_file('code-experiments/build/matlab/cocoProblemFree.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemFree.c')
     copy_file('code-experiments/build/matlab/cocoProblemGetDimension.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemgetDimension.c')
     copy_file('code-experiments/build/matlab/cocoProblemGetEvaluations.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetEvaluations.c')
     copy_file('code-experiments/build/matlab/cocoProblemGetId.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetId.c')
@@ -348,8 +346,6 @@ def build_matlab_sms():
     copy_file('code-experiments/build/matlab/cocoSuite.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuite.c')
     copy_file('code-experiments/build/matlab/cocoSuiteFree.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteFree.c')
     copy_file('code-experiments/build/matlab/cocoSuiteGetNextProblem.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteGetNextProblem.c')
-    copy_file('code-experiments/build/matlab/cocoSuiteGetNextProblemIndex.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteGetNextProblemIndex.c')
-    copy_file('code-experiments/build/matlab/cocoSuiteGetProblem.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteGetProblem.c')
     # compile
     run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
 
