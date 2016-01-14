@@ -335,7 +335,7 @@ def build_matlab_sms():
     copy_file('code-experiments/build/matlab/cocoEvaluateFunction.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoEvaluateFunction.c')
     copy_file('code-experiments/build/matlab/cocoObserver.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoObserver.c')
     copy_file('code-experiments/build/matlab/cocoObserverFree.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoObserverFree.c')
-    copy_file('code-experiments/build/matlab/cocoProblemAddObserver.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/ProblemAddObserver.c')
+    copy_file('code-experiments/build/matlab/cocoProblemAddObserver.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemAddObserver.c')
     copy_file('code-experiments/build/matlab/cocoProblemFree.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemFree.c')
     copy_file('code-experiments/build/matlab/cocoProblemGetDimension.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemgetDimension.c')
     copy_file('code-experiments/build/matlab/cocoProblemGetEvaluations.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetEvaluations.c')
@@ -353,7 +353,6 @@ def build_matlab_sms():
     # compile
     run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
 
-
 def run_matlab_sms():
     # remove the mex files for a clean compilation first
     for filename in glob.glob('code-experiments/examples/bbob-biobj-matlab-smsemoa/*.mex*') :
@@ -362,7 +361,7 @@ def run_matlab_sms():
     build_matlab_sms()
     wait_for_compilation_to_finish('./code-experiments/examples/bbob-biobj-matlab-smsemoa/paretofront')
     # run after compilation finished
-    run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'run_smseoma_on_bbob_biobj, exit'])
+    run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'run_smsemoa_on_bbob_biobj, exit'])
 
 
 ################################################################################
