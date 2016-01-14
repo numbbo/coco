@@ -664,7 +664,7 @@ def significancetest(entry0, entry1, targets):
             idx[idx == False] += tmp[idx == False] > FE_umin
             # was not a bool before: idx = np.isnan(tmp) + (tmp > FE_umin)
             tmp[idx == False] = np.power(tmp[idx == False], -1.)
-            if idx.any():
+            if idx.any() and len(fvalues) > 0: # len(fvalues) > 0 is added until we fix the bi-objective case
                 tmp[idx] = -fvalues[j][idx]  # larger data is better
             curdata.append(tmp)
 
