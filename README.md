@@ -1,12 +1,7 @@
-# numbbo: Numerical Black-Box Optimization Benchmarking Framework 
+# numbbo: Implementation of Comparing Continuous Optimizer, COCO, in the Numerical Black-Box Optimization Benchmarking Framework 
 
-The code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
-now rewritten fully in ANSI C with the other three languages Java, MATLAB, and python calling the C code.
-
-Generally, the code features an object oriented implementation, where the coco_problem_t is the most central
-data structure / object. coco.h, demo.c and coco_internal.h are probably the best pointers to start with
-(but see also below). coco_problem_t defines a benchmark function instance (in a given dimension), and is 
-called via coco_evaluate_function.
+This code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
+now rewritten fully in ANSI C with the other three languages Java, MATLAB, and Python calling the C code.
 
 # Building the Code
 Building, running, and testing of the code is done by merging/amalgamation of all C-code into a single C file, coco.c
@@ -105,6 +100,11 @@ within the `code-postprocessing/bbob_pproc` folder (or running the `rungeneric.p
 * Once your algorithm runs well, increase the budget in your experiment script and follow the above steps successively until you are happy.
 * If you detect bugs or other issues, please let us know by opening an issue in our issue tracker at https://github.com/numbbo/numbbo/issues.
 
+Details
+=======
+Generally, the code features an object oriented implementation, where the `coco_problem_t` is the most central
+data structure / object. `coco.h`, `example_experiment.c` and `coco_internal.h` are probably the best pointers to start with
+_to investigate the code_ (but see also below). `coco_problem_t` defines a benchmark function instance (in a given dimension), and is called via `coco_evaluate_function`.
 
 # Links and Further Documentation
 * Downloading this repository via the above "Download ZIP" button or by typing 'git clone https://github.com/numbbo/numbbo.git' or by typing https://github.com/numbbo/numbbo/archive/master.zip in your browser's address line
