@@ -129,7 +129,7 @@ void example_bbob(void) {
   coco_observer_t *observer;
   coco_problem_t *problem;
   
-  suite = coco_suite("bbob", "year: 2009", "dimensions: 20 instance_idx: 1");
+  suite = coco_suite("bbob", "year: 2009", "dimensions: 5 instance_idx: 1");
   observer = coco_observer("bbob", observer_options);
   
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
