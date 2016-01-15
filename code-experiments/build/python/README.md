@@ -20,28 +20,22 @@ the following is lacking:
 - A C compiler, like `gcc`, which is invoked by `make`. 
 
 
-Getting Started
----------------
+# Getting Started
 
 In a system shell:
 
-0. Download [COCO framework](https://github.com/numbbo/numbbo) from github by
+0. Download the [COCO framework](https://github.com/numbbo/numbbo) from github by
   clicking [here](https://github.com/numbbo/numbbo/archive/development.zip), 
   **CAVEAT: this code is still under development**, and unzip the `zip` file. 
 
-1. cd into the `numbbo` (framework root) folder, where the file `do.py` resides. 
+1. cd into the `numbbo` (framework root) folder, where the file `do.py` lies. 
 
 2. Type, i.e. execute,
   ```
-    python do.py build-python
+    python do.py run-python
   ```  
-  which will build and (locally) install the `cocoex` Python module.[^1]
-  
-  Type, i.e. execute,
-  ```
-    python code-experiments/build/python/example_experiment.py
-  ```
-  to see whether this runs fine.[^2] 
+  which will build, install (locally) and test the `cocoex` Python module. 
+  Part of the tests is running `code-experiments/build/python/example_experiment.py`.[^1] 
 
 3. Copy (and rename) `example_experiment.py` to a place (and name) of
 your choice. Modify this file to include the solver of your choice (instead of
@@ -68,17 +62,18 @@ Details
 
 ______________________
 
-^1: you will see something like the following:
+^1: you will see something like this:
 ```
     AML	['code-experiments/src/coco_generics.c', 'code-experiments/src/coco_random.c', 'code-experiments/src/coco_suite.c', 'code-experiments/src/coco_observer.c', 'code-experiments/src/coco_runtime_c.c'] -> code-experiments/build/python/cython/coco.c
     COPY	code-experiments/src/coco.h -> code-experiments/build/python/cython/coco.h
-    COPY	code-experiments/src/best_values_hyp.txt -> code-experiments/build/python/best_values_hyp.txt
     COPY	code-experiments/src/bbob2009_testcases.txt -> code-experiments/build/python/bbob2009_testcases.txt
-    EXPAND	code-experiments/build/python/README.in to code-experiments/build/python/README
+    EXPAND	code-experiments/build/python/README.md to code-experiments/build/python/README.txt
     EXPAND	code-experiments/build/python/setup.py.in to code-experiments/build/python/setup.py
     PYTHON	setup.py install --user in code-experiments/build/python
+    RUN	python coco_test.py in code-experiments/build/python
+    RUN	python example_experiment.py in code-experiments/build/python
 ```
-^2: you will see something like:
+^2: you will see something like this:
 ```
     Benchmarking solver '<function random_search' with budget=10 * dimension, Fri Jan 15 18:23:35 2016
     Simple usecase ...
