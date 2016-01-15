@@ -213,7 +213,7 @@ static void logger_bbob_openIndexFile(logger_bbob_t *logger,
                                       const char *dataFile_path) {
   /* to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
   char used_dataFile_path[COCO_PATH_MAX] = { 0 };
-  int errnum, newLine; /* newLine is at 1 if we need a new line in the info file */
+  int errnum, newLine = 0; /* newLine is at 1 if we need a new line in the info file */
   char function_id_char[3]; /* TODO: consider adding them to logger */
   char file_name[COCO_PATH_MAX] = { 0 };
   char file_path[COCO_PATH_MAX] = { 0 };
