@@ -65,8 +65,8 @@ void coco_observer_free(coco_observer_t *self) {
  * - algorithm_name : string (to be used in logged output and plots; default value is "ALG")
  * - algorithm_info : string (to be used in logged output; default value is "")
  * - log_level : error (only error messages are output)
- * - log_level : warning (only error and warning messages are output; default value)
- * - log_level : info (only error, warning and info messages are output)
+ * - log_level : warning (only error and warning messages are output)
+ * - log_level : info (only error, warning and info messages are output; default value)
  * - log_level : debug (all messages are output)
  * - precision_x : integer value (precision used when outputting variables; default value is 8)
  * - precision_f : integer value (precision used when outputting f values; default value is 15)
@@ -95,6 +95,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     strcpy(result_folder, "results");
   }
   coco_create_unique_path(&result_folder);
+  coco_info("Results will be output to folder %s", result_folder);
 
   if (coco_options_read_string(observer_options, "algorithm_name", algorithm_name) == 0) {
     strcpy(algorithm_name, "ALG");
