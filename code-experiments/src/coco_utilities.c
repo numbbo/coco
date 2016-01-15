@@ -9,7 +9,7 @@
 
 #include "coco.h"
 #include "coco_internal.h"
-#include "coco_strdup.c"
+#include "coco_string.c"
 
 /**
  * Initialize the logging level to COCO_INFO.
@@ -540,14 +540,12 @@ static char **coco_string_split(const char *string, const char delimiter) {
 
 static size_t coco_numbers_count(const size_t *numbers, const char *name) {
 
-  const size_t count_limit = 100;
-
   size_t count = 0;
-  while ((count < count_limit) && (numbers[count] != 0)) {
+  while ((count < COCO_MAX_INSTANCES) && (numbers[count] != 0)) {
     count++;
   }
-  if (count == count_limit) {
-    coco_error("coco_numbers_count(): over %lu numbers in %s", count_limit, name);
+  if (count == COCO_MAX_INSTANCES) {
+    coco_error("coco_numbers_count(): over %lu numbers in %s", COCO_MAX_INSTANCES, name);
     return 0; /* Never reached*/
   }
 
@@ -558,8 +556,9 @@ static size_t coco_numbers_count(const size_t *numbers, const char *name) {
  * Reads ranges from a string of positive ranges separated by commas. For example: "-3,5-6,8-". Returns the
  * numbers that are defined by the ranges if min and max are used as their extremes. If the ranges with open
  * beginning/end are not allowed, use 0 as min/max. The returned string has an appended 0 to mark its end.
- * A maximum of 100 values is returned. If there is a problem with one of the ranges, the parsing stops and
- * the current result is returned. The memory of the returned object needs to be freed by the caller.
+ * A maximum of COCO_MAX_INSTANCES values is returned. If there is a problem with one of the ranges, the
+ * parsing stops and the current result is returned. The memory of the returned object needs to be freed by
+ * the caller.
  */
 static size_t *coco_string_get_numbers_from_ranges(char *string, const char *name, size_t min, size_t max) {
 
@@ -568,8 +567,6 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
   size_t i, j, count;
   size_t num[2];
 
-  /* Don't allow ranges that are too long */
-  const size_t length_limit = 100;
   size_t *result;
   size_t i_result = 0;
 
@@ -596,7 +593,7 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
     return NULL;
   }
 
-  result = coco_allocate_memory((length_limit + 1) * sizeof(size_t));
+  result = coco_allocate_memory((COCO_MAX_INSTANCES + 1) * sizeof(size_t));
 
   /* Split string to ranges w.r.t commas */
   ranges = coco_string_split(string, ',');
@@ -734,7 +731,7 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
 
       /* Write in result */
       for (j = num[0]; j <= num[1]; j++) {
-        if (i_result > length_limit - 1)
+        if (i_result > COCO_MAX_INSTANCES - 1)
           break;
         result[i_result++] = j;
       }
