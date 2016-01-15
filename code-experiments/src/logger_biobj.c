@@ -543,7 +543,6 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
       indicator = logger->indicators[i];
       indicator->target_hit = 0;
       while ((indicator->next_target_id < MO_NUMBER_OF_TARGETS)
-          && (node_item->indicator_contribution[i] > 0)
           && (indicator->best_value - indicator->current_value <= MO_RELATIVE_TARGET_VALUES[indicator->next_target_id])) {
         /* A target was hit */
         indicator->target_hit = 1;
