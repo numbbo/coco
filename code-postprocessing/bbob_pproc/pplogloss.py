@@ -825,9 +825,9 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
         plt.axvline(x=np.log10(max(i.mMaxEvals()/d for i in dsdim)), color='k')
         funcs = set(i.funcId for i in dsdim)
         if len(funcs) > 1:
-            text = 'f%s' % consecutiveNumbers(sorted(funcs))
+            text = consecutiveNumbers(sorted(funcs), 'f')
         else:
-            text = 'f%d' %(funcs.pop())
+            text = 'f%d' % (funcs.pop())
         plt.text(0.5, 0.93, text, horizontalalignment="center",
                  transform=plt.gca().transAxes)
         beautify()
