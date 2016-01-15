@@ -562,7 +562,7 @@ static size_t coco_numbers_count(const size_t *numbers, const char *name) {
  */
 static size_t *coco_string_get_numbers_from_ranges(char *string, const char *name, size_t min, size_t max) {
 
-  char *ptr, *dash;
+  char *ptr, *dash = NULL;
   char **ranges, **numbers;
   size_t i, j, count;
   size_t num[2];
@@ -641,6 +641,7 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
 
         /* Split current range to numbers w.r.t '-' */
         numbers = coco_string_split(ptr, '-');
+        j = 0;
         if (numbers) {
           /* Read the numbers */
           for (j = 0; *(numbers + j); j++) {
@@ -708,10 +709,14 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
       }
 
       /* Make sure the boundaries are taken into account */
-      if ((min > 0) && (num[0] < min))
+      if ((min > 0) && (num[0] < min)) {
         num[0] = min;
-      if ((max > 0) && (num[1] > max))
+        coco_warning("coco_options_read_ranges(): '%s' ranges adjusted to be >= %lu", name, min);
+      }
+      if ((max > 0) && (num[1] > max)) {
         num[1] = max;
+        coco_warning("coco_options_read_ranges(): '%s' ranges adjusted to be <= %lu", name, max);
+      }
       if (num[0] > num[1]) {
         coco_warning("coco_options_read_ranges(): '%s' ranges not within boundaries; some ranges ignored", name);
         /* Cleanup */

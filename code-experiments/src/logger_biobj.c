@@ -633,7 +633,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
   coco_stacked_problem_data_t* stacked_problem;
   double *x, *nadir;
   const char nondom_folder_name[] = "archive";
-  char *path_name, *file_name, *prefix;
+  char *path_name, *file_name = NULL, *prefix;
   size_t i;
   double norm;
 
