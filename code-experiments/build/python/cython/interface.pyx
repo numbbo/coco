@@ -7,7 +7,7 @@ cimport numpy as np
 
 from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
 
-known_suite_names = ["bbob", "bbob-biobj"]
+known_suite_names = [b"bbob", b"bbob-biobj"]
 
 # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
 # __all__ = ['Problem', 'Benchmark']
@@ -185,17 +185,19 @@ cdef class Suite:
         self._names = []
         self._dimensions = []
         self._number_of_objectives = []
-        if self._name not in known_suite_names:
-            raise ValueError("""Unkown suite name "%s".
+        if str(self._name) not in [str(n) for n in known_suite_names]:
+            raise NoSuchSuiteException("""Unkown benchmark suite name "%s".
 Known suite names are %s.
-If this was not a typo, add the desired name to `known_suite_names`::
+If "%s" was not a typo, you can add the desired name to `known_suite_names`::
 
-        import cocoex as ex
-        ex.known_suite_names.append("my_name")
-        suite = ex.Suite("my_name", ...)
+        >> import cocoex as ex
+        >> ex.known_suite_names.append(b"my_name")  # must be a byte string
+        >> suite = ex.Suite("my_name", "", "")
+        COCO FATAL ERROR: coco_suite(): unknow problem suite
 
-You might also report back the missing name to https://github.com/numbbo/numbbo/issues
-""" % (self._name, str(known_suite_names)))
+This will crash Python, if the suite "my_name" does in fact not exist. You might
+also report back a missing name to https://github.com/numbbo/numbbo/issues
+""" % (self._name, str(known_suite_names), self._name))
         try:
             suite = coco_suite(self._name, self._instance, self._options)
         except:
@@ -326,7 +328,7 @@ You might also report back the missing name to https://github.com/numbbo/numbbo/
         ...         used_indices.append(p.index)
         >>> print(used_indices)
         [1575, 1576, 1577, 1578, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1587, 1588, 1589]
-        
+
         """
         res = []
         for idx, id in enumerate(self._ids):
