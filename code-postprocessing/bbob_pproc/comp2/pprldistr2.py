@@ -375,7 +375,7 @@ def main(dsList0, dsList1, dim, targetsOfInterest=None,
     beautify(handles)
 
     funcs = set(dsList0.dictByFunc().keys()) & set(dsList1.dictByFunc().keys())
-    text = 'f%s' % consecutiveNumbers(sorted(funcs))
+    text = consecutiveNumbers(sorted(funcs), 'f')
     if len(dsList0.dictByDim().keys()) == len(dsList1.dictByDim().keys()) == 1: 
         text += ',%d-D' % dsList0.dictByDim().keys()[0]
 

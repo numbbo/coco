@@ -650,7 +650,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     #beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
     beautify()
 
-    text = 'f%s' % (ppfig.consecutiveNumbers(sorted(dictFunc.keys())))
+    text = ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f')
     text += ',%d-D' % dim  # TODO: this is strange when different dimensions are plotted
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes)
