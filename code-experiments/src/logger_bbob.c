@@ -10,7 +10,7 @@
 #include "coco_generics.c"
 #include "coco_utilities.c"
 #include "coco_problem.c"
-#include "coco_strdup.c"
+#include "coco_string.c"
 #include "observer_bbob.c"
 
 static int bbob_raisedOptValWarning;

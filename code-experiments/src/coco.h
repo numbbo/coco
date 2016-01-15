@@ -31,6 +31,9 @@ typedef unsigned __int64 uint64_t;
 static const double coco_pi = 3.14159265358979323846;
 static const double coco_two_pi = 2.0 * 3.14159265358979323846;
 
+/* Allow for not more than 1000 instances */
+#define COCO_MAX_INSTANCES 1000
+
 /** Logging level type.
  *
  * Possible values:

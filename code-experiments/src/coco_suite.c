@@ -276,7 +276,7 @@ static size_t *coco_suite_get_instance_indices(coco_suite_t *suite, const char *
     }
   }
 
-  instances = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+  instances = coco_allocate_memory(COCO_MAX_INSTANCES * sizeof(char));
   if ((instances_found >= 0) && (parce_instances == 1)) {
     if (coco_options_read_values(suite_instance, "instances", instances) > 0) {
       result = coco_string_get_numbers_from_ranges(instances, "instances", 1, 0);

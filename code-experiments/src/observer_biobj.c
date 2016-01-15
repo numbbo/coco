@@ -7,7 +7,6 @@
 /* List of implemented indicators */
 #define OBSERVER_BIOBJ_NUMBER_OF_INDICATORS 1
 const char *OBSERVER_BIOBJ_INDICATORS[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS] = { "hyp" };
-const size_t OBSERVER_BIOBJ_MAX_STR_LENGTH = 100;
 
 /* Logging nondominated solutions mode */
 typedef enum {

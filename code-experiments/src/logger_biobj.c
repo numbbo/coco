@@ -7,8 +7,7 @@
 
 #include "coco_utilities.c"
 #include "coco_problem.c"
-#include "coco_strdup.c"
-
+#include "coco_string.c"
 #include "observer_biobj.c"
 
 #include "logger_biobj_avl_tree.c"
