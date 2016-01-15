@@ -66,17 +66,19 @@ you can start the corresponding example experiments scripts in code-experiments/
 # Requirements and Installation
 Minimal requirements (running an algorithm in C):
 * git
-* Python 2.7 (or Python 3) with numpy and matplotlib
+* Python (2.7 $\leq$ version $<$ 3.0) with numpy and matplotlib
 * a C compiler, such as gcc
 * GNU make
 * LaTeX
 
-For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Under Windows, two main toolchains can be installed: 1) Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 2) with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
+For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that python 3 is explicitly not supported yet for the postprocessing part of NumBBO/Coco!
+
+Under Windows, two main toolchains can be installed: 1) Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 2) with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
 
 Additional requirements for running an algorithm in a specific language:
 * Java: none, but see code-experiments/build/java/README.txt for details on the compilation
 * Python: cython (http://docs.cython.org/src/quickstart/install.html), see code-experiments/build/python/README for details
-* MATLAB: at least MATLAB 2008, for details, see code-experiments/build/matlab/README
+* MATLAB: at least MATLAB 2008, for details, see code-experiments/build/matlab/README.txt
 
 Unfortunately, we cannot guarantee that the software runs on any combination of operating system and software. However, we tested it (in part) on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP, 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions etc. In particular, we continuously test the code through the open source automation server Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit Windows 7 machine with cygwin.
 
