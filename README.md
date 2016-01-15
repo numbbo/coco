@@ -100,6 +100,8 @@ within the `code-postprocessing/bbob_pproc` folder (or running the `rungeneric.p
 * Once your algorithm runs well, increase the budget in your experiment script and follow the above steps successively until you are happy.
 * If you detect bugs or other issues, please let us know by opening an issue in our issue tracker at https://github.com/numbbo/numbbo/issues.
 
+# Known Issues
+
 Details
 =======
 Generally, the code features an object oriented implementation, where the `coco_problem_t` is the most central
