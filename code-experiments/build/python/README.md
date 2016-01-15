@@ -1,5 +1,5 @@
-COCO/NumBBO framework $COCO_VERSION
-===================================
+COCO/NumBBO Framework in Python (Experimental Part)
+===================================================
 
 Prerequisites
 -------------
