@@ -185,6 +185,17 @@ cdef class Suite:
         self._names = []
         self._dimensions = []
         self._number_of_objectives = []
+        if self._name not in known_suite_names:
+            raise ValueError("""Unkown suite name "%s".
+Known suite names are %s.
+If this was not a typo, add the desired name to `known_suite_names`::
+
+        import cocoex as ex
+        ex.known_suite_names.append("my_name")
+        suite = ex.Suite("my_name", ...)
+
+You might also report back the missing name to https://github.com/numbbo/numbbo/issues
+""" % (self._name, str(known_suite_names)))
         try:
             suite = coco_suite(self._name, self._instance, self._options)
         except:
