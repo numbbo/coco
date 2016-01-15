@@ -1,12 +1,7 @@
-# numbbo: Numerical Black-Box Optimization Benchmarking Framework 
+# numbbo: Implementation of Comparing Continuous Optimizer, COCO, in the Numerical Black-Box Optimization Benchmarking Framework 
 
-The code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
-now rewritten fully in ANSI C with the other three languages Java, MATLAB, and python calling the C code.
-
-Generally, the code features an object oriented implementation, where the coco_problem_t is the most central
-data structure / object. coco.h, demo.c and coco_internal.h are probably the best pointers to start with
-(but see also below). coco_problem_t defines a benchmark function instance (in a given dimension), and is 
-called via coco_evaluate_function.
+This code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
+now rewritten fully in ANSI C with the other three languages Java, MATLAB, and Python calling the C code.
 
 # Building the Code
 Building, running, and testing of the code is done by merging/amalgamation of all C-code into a single C file, coco.c
@@ -66,17 +61,19 @@ you can start the corresponding example experiments scripts in code-experiments/
 # Requirements and Installation
 Minimal requirements (running an algorithm in C):
 * git
-* Python 2.7 (or Python 3) with numpy and matplotlib
+* Python (2.7 $\leq$ version $<$ 3.0) with `setuptools`, `numpy` and `matplotlib`
 * a C compiler, such as gcc
 * GNU make
 * LaTeX
 
-For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Under Windows, two main toolchains can be installed: 1) Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 2) with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
+For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that python 3 is explicitly not supported yet for the postprocessing part of NumBBO/Coco!
+
+Under Windows, two main toolchains can be installed: 1) Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 2) with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
 
 Additional requirements for running an algorithm in a specific language:
 * Java: none, but see code-experiments/build/java/README.txt for details on the compilation
 * Python: cython (http://docs.cython.org/src/quickstart/install.html), see code-experiments/build/python/README for details
-* MATLAB: at least MATLAB 2008, for details, see code-experiments/build/matlab/README
+* MATLAB: at least MATLAB 2008, for details, see code-experiments/build/matlab/README.txt
 
 Unfortunately, we cannot guarantee that the software runs on any combination of operating system and software. However, we tested it (in part) on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP, 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions etc. In particular, we continuously test the code through the open source automation server Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit Windows 7 machine with cygwin.
 
@@ -103,6 +100,13 @@ within the `code-postprocessing/bbob_pproc` folder (or running the `rungeneric.p
 * Once your algorithm runs well, increase the budget in your experiment script and follow the above steps successively until you are happy.
 * If you detect bugs or other issues, please let us know by opening an issue in our issue tracker at https://github.com/numbbo/numbbo/issues.
 
+# Known Issues
+
+Details
+=======
+Generally, the code features an object oriented implementation, where the `coco_problem_t` is the most central
+data structure / object. `coco.h`, `example_experiment.c` and `coco_internal.h` are probably the best pointers to start with
+_to investigate the code_ (but see also below). `coco_problem_t` defines a benchmark function instance (in a given dimension), and is called via `coco_evaluate_function`.
 
 # Links and Further Documentation
 * Downloading this repository via the above "Download ZIP" button or by typing 'git clone https://github.com/numbbo/numbbo.git' or by typing https://github.com/numbbo/numbbo/archive/master.zip in your browser's address line
