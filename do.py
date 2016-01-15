@@ -11,7 +11,7 @@ import tempfile
 import subprocess
 import platform
 import time
-from subprocess import check_output, STDOUT
+from subprocess import STDOUT
 import glob
 
 ## Change to the root directory of repository and add our tools/
@@ -20,7 +20,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.abspath('code-experiments/tools'))
 
 from amalgamate import amalgamate
-from cocoutils import make, run, python
+from cocoutils import make, run, python, check_output
 from cocoutils import copy_file, expand_file, write_file
 from cocoutils import git_version, git_revision
 
@@ -520,7 +520,9 @@ Available commands:
   run-java             - Build and run example experiment in Java
   run-matlab           - Build and run example experiment in MATLAB
   run-matlab-sms       - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
-  run-python           - Run a Python script with installed COCO module
+  run-python           - Build and install COCO module and run tests and
+                         example experiment in Python, "no-tests" omits tests
+  run-local-python     - Run a Python script with installed COCO module
                          Takes a single argument (name of Python script file)
   
   test-c               - Build and run unit tests, integration tests 
@@ -558,7 +560,8 @@ def main(args):
     elif cmd == 'run-java': run_java()
     elif cmd == 'run-matlab': run_matlab()
     elif cmd == 'run-matlab-sms': run_matlab_sms()
-    elif cmd == 'run-python': run_python(eval(args[1])) if len(args) > 1 else run_python()
+    elif cmd == 'run-python':
+        run_python(False) if len(args) > 1 and args[1] == 'no-tests' else run_python()
     elif cmd == 'test-c': test_c()
     elif cmd == 'test-c-unit': test_c_unit()
     elif cmd == 'test-c-integration': test_c_integration()
