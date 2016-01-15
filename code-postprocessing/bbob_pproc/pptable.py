@@ -97,8 +97,11 @@ table_caption_rlbased = table_caption_one + table_caption_two2 + table_caption_r
 
 
 def _treat(ds):
+
+    bestalgentries = bestalg.loadBestAlgorithm(ds.isBiobjective())
+
     # Rec array: http://docs.scipy.org/doc/numpy/user/basics.rec.html
-    bestentry = bestalg.bestalgentries2009[(ds.dim, ds.funcId)]
+    bestentry = bestalgentries[(ds.dim, ds.funcId)]
     bestert = bestentry.detERT(targets)
     bestevals, bestalgs = bestentry.detEvals(targets)
     bestfinaldata = bestentry.detEvals([finaltarget])[0][0]
@@ -160,8 +163,8 @@ def main2(dsList, dimsOfInterest, outputdir='.', info='', verbose=True):
         # insert a separator between the default file name and the additional
         # information string.
     
-    if not bestalg.bestalgentries2009:
-        bestalg.loadBBOB2009()
+    bestalg.loadBestAlgorithm(dsList.isBiobjective())
+
     for d, dsdim in dsList.dictByDim().iteritems():
         res = []
         for f, dsfun in sorted(dsdim.dictByFunc().iteritems()):
@@ -199,8 +202,8 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         # insert a separator between the default file name and the additional
         # information string.
 
-    if not bestalg.bestalgentries2009:
-        bestalg.loadBBOB2009()
+    bestalgentries = bestalg.loadBestAlgorithm(dsList.isBiobjective())
+    
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
         header = [r'\#FEs/D']
         headerHtml = ['<thead>\n<tr>\n<th>#FEs/D</th>\n']
@@ -232,7 +235,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         tableHtml.append('<tbody>\n')
         for f in sorted(funcs):
             tableHtml.append('<tr>\n')
-            bestalgentry = bestalg.bestalgentries2009[(d, f)]
+            bestalgentry = bestalgentries[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
             curlineHtml = ['<th><b>f<sub>%d</sub></b></th>\n' % f]
             bestalgdata = bestalgentry.detERT(targetsOfInterest((f,d)))

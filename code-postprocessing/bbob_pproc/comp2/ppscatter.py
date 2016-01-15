@@ -39,14 +39,14 @@ try:
 except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
-from bbob_pproc import genericsettings, htmldesc
+from bbob_pproc import genericsettings, htmldesc, ppfigparam
 from ..ppfig import saveFigure, save_single_functions_html, AlgorithmCount
 from .. import toolsdivers
 from .. import pproc
 
 dimensions = (2, 3, 5, 10, 20, 40)
 fixed_targets = pproc.TargetValues(np.logspace(-8, 2, 46))
-runlength_based_targets = pproc.RunlengthBasedTargetValues(np.logspace(numpy.log10(0.5), numpy.log10(50), 8))
+#runlength_based_targets = pproc.RunlengthBasedTargetValues(np.logspace(numpy.log10(0.5), numpy.log10(50), 8))
 # runlength_based_targets = pproc.RunlengthBasedTargetValues([0.5, 1, 3, 10, 50])
 targets = fixed_targets  # default
 
@@ -77,23 +77,6 @@ caption_finish = r"""Markers on the upper or right edge indicate that the respec
     10:$\circ$,
     20:{\color{red}$\Box$}, 
     40:{\color{magenta}$\Diamond$}. """
-
-#Get benchmark short infos.
-funInfos = {}
-infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
-
-try:
-    f = open(infofile,'r')
-    for line in f:
-        if len(line) == 0 or line.startswith('%') or line.isspace() :
-            continue
-        funcId, funcInfo = line[0:-1].split(None,1)
-        funInfos[int(funcId)] = funcId + ' ' + funcInfo
-    f.close()
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    print 'Could not find file', infofile, \
-          'Titles in figures will not be displayed.'
 
 def figure_caption():
     if isinstance(targets, pproc.RunlengthBasedTargetValues):
@@ -180,6 +163,8 @@ def main(dsList0, dsList1, outputdir, verbose=True):
         linewidth = linewidth_rld_based
     else:
         linewidth = linewidth_default
+
+    funInfos = ppfigparam.read_fun_infos(dsList0.isBiobjective())    
 
     for f in funcs:
         dictDim0 = dictFunc0[f].dictByDim()
@@ -361,10 +346,8 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             #plt.axvline(entry0.mMaxEvals(), ls='--', color=colors[i])
             #plt.axhline(entry1.mMaxEvals(), ls='--', color=colors[i])
 
-        try:
+        if f in funInfos.keys():        
             plt.ylabel(funInfos[f])
-        except IndexError:
-            pass
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
         saveFigure(filename, verbose=verbose)

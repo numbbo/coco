@@ -154,7 +154,7 @@ void example_biobj(void) {
                                   algorithm_name: RS \
                                   algorithm_info: \"A simple random search algorithm\" \
                                   compute_indicators: 1 \
-                                  log_nondominated: final";
+                                  log_nondominated: all";
 
   coco_suite_t *suite;
   coco_observer_t *observer;

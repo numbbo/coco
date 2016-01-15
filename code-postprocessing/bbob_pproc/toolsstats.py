@@ -567,7 +567,7 @@ def significancetest(entry0, entry1, targets):
     # one of the entry is an instance of BestAlgDataSet
     for entry in (entry0, entry1):
         tmp = entry.detEvals(targets)
-        if not entry.__dict__.has_key('funvals'):  # this looks like a terrible hack
+        if not entry.__dict__.has_key('funvals') and not entry.__dict__.has_key('indicator'):  # this looks like a terrible hack
             isBestAlg = True
             # for i, j in enumerate(tmp[0]):
                 # if np.isnan(j).all():
@@ -617,12 +617,13 @@ def significancetest(entry0, entry1, targets):
                             FE_umin = np.inf
                         # Determine the function values for FE_umin
                         tmpfvalues = np.array([np.inf] * entry.nbRuns())
-                        for curline in entry.funvals:
-                            # only works because the funvals are monotonous
-                            if curline[0] > FE_umin:
-                                break
-                            prevline = curline[1:]
-                        tmpfvalues = prevline.copy()
+                        if not entry.isBiobjective():                        
+                            for curline in entry.funvals:
+                                # only works because the funvals are monotonous
+                                if curline[0] > FE_umin:
+                                    break
+                                prevline = curline[1:]
+                            tmpfvalues = prevline.copy()
                         # tmpfvalues = entry.finalfunvals
                         # if (tmpfvalues != entry.finalfunvals).any():
                             # set_trace()
@@ -646,12 +647,13 @@ def significancetest(entry0, entry1, targets):
                     fvalues = []
                     for j, entry in enumerate((entry0, entry1)):
                         prevline = np.array([np.inf] * entry.nbRuns())
-                        for curline in entry.funvals:
-                            # only works because the funvals are monotonous
-                            if curline[0] > FE_umin:
-                                break
-                            prevline = curline[1:]
-                        fvalues.append(prevline)
+                        if not entry.isBiobjective():                        
+                            for curline in entry.funvals:
+                                # only works because the funvals are monotonous
+                                if curline[0] > FE_umin:
+                                    break
+                                prevline = curline[1:]
+                            fvalues.append(prevline)
 
         # 2. 3. 4. Collect data for the significance test:
         curdata = []  # current data 
@@ -662,7 +664,7 @@ def significancetest(entry0, entry1, targets):
             idx[idx == False] += tmp[idx == False] > FE_umin
             # was not a bool before: idx = np.isnan(tmp) + (tmp > FE_umin)
             tmp[idx == False] = np.power(tmp[idx == False], -1.)
-            if idx.any():
+            if idx.any() and len(fvalues) > 0: # len(fvalues) > 0 is added until we fix the bi-objective case
                 tmp[idx] = -fvalues[j][idx]  # larger data is better
             curdata.append(tmp)
 
