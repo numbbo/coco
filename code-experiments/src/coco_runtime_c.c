@@ -15,7 +15,7 @@
 void coco_error(const char *message, ...) {
   va_list args;
 
-  fprintf(stderr, "FATAL ERROR: ");
+  fprintf(stderr, "COCO FATAL ERROR: ");
   va_start(args, message);
   vfprintf(stderr, message, args);
   va_end(args);
@@ -27,7 +27,7 @@ void coco_warning(const char *message, ...) {
   va_list args;
 
   if (coco_log_level >= COCO_WARNING) {
-    fprintf(stderr, "WARNING: ");
+    fprintf(stderr, "COCO WARNING: ");
     va_start(args, message);
     vfprintf(stderr, message, args);
     va_end(args);
@@ -39,7 +39,7 @@ void coco_info(const char *message, ...) {
   va_list args;
 
   if (coco_log_level >= COCO_INFO) {
-    fprintf(stdout, "INFO: ");
+    fprintf(stdout, "COCO INFO: ");
     va_start(args, message);
     vfprintf(stdout, message, args);
     va_end(args);
@@ -51,7 +51,7 @@ void coco_debug(const char *message, ...) {
   va_list args;
 
   if (coco_log_level >= COCO_DEBUG) {
-    fprintf(stdout, "DEBUG: ");
+    fprintf(stdout, "COCO DEBUG: ");
     va_start(args, message);
     vfprintf(stdout, message, args);
     va_end(args);
