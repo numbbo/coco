@@ -61,7 +61,7 @@ you can start the corresponding example experiments scripts in code-experiments/
 # Requirements and Installation
 Minimal requirements (running an algorithm in C):
 * git
-* Python (2.7 $\leq$ version $<$ 3.0) with numpy and matplotlib
+* Python (2.7 $\leq$ version $<$ 3.0) with `setuptools`, `numpy` and `matplotlib`
 * a C compiler, such as gcc
 * GNU make
 * LaTeX
