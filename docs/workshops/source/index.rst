@@ -13,17 +13,19 @@ the performance of numerical black-box optimization algorithms. The former is re
 Optimizers platform (Coco).
 
 So far, six workshops have been held (in 2009, 2010, 2012, 2013, and 2015 at GECCO and 2015 at CEC). The next workshop
-is planned for GECCO 2016 with a new focus on multi-objective problems (with two objectives as a first step).
+is going to take place at GECCO 2016 with a :ref:`new focus on multi-objective problems <bbob2016page>` (with two
+objectives as a first step).
 
 Generally, three benchmark suites are available:
 
-* `bbob`: 24 noiseless functions
-* `bbob-noisy`: 30 noisy functions
-* `bbob-biobj`: 55 noiseless, bi-objective functions, generated from instances of the bbob suite
+* ``bbob`` containing 24 noiseless functions
+* ``bbob-noisy`` containing 30 noisy functions
+* ``bbob-biobj`` containing 55 noiseless, bi-objective functions, generated from instances of the ``bbob`` suite
 
-Note that due to the rewriting of the Coco platform, only the `bbob` and `bbob-biobj` are available in the new code, available at http://github.com/numbbo/numbbo while for the noisy test suite, the old code at http://coco.gforge.inria.fr/doku.php?id=downloads has to be used.
+Note that due to the rewriting of the Coco platform, only the ``bbob`` and ``bbob-biobj`` are available in the new code, available at http://github.com/numbbo/numbbo while for the noisy test suite, the old code at http://coco.gforge.inria.fr/doku.php?id=downloads has to be used.
 
 Contents:
+.........
 
 .. toctree::
    :maxdepth: 2
@@ -33,10 +35,13 @@ Contents:
 
 
 
+.. `new focus on multi-objective problems`_ BBOB-2016/index.html
+
+
+
 .. Indices and tables
    ==================
 
    * :ref:`genindex`
    * :ref:`modindex`
    * :ref:`search`
-
