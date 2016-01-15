@@ -553,6 +553,7 @@ static size_t coco_numbers_count(const size_t *numbers, const char *name) {
 
   return count;
 }
+
 /**
  * Reads ranges from a string of positive ranges separated by commas. For example: "-3,5-6,8-". Returns the
  * numbers that are defined by the ranges if min and max are used as their extremes. If the ranges with open
