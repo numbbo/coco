@@ -22,26 +22,25 @@ the following is lacking:
 
 # Getting Started
 
+Download the [COCO framework code](https://github.com/numbbo/numbbo) from github by clicking [here](https://github.com/numbbo/numbbo/archive/development.zip), 
+**CAVEAT: this code is still under development**, and unzip the `zip` file. 
+
 In a system shell:
 
-0. Download the [COCO framework](https://github.com/numbbo/numbbo) from github by
-  clicking [here](https://github.com/numbbo/numbbo/archive/development.zip), 
-  **CAVEAT: this code is still under development**, and unzip the `zip` file. 
+0. cd into the `numbbo` (framework root) folder, where the file `do.py` lies. 
 
-1. cd into the `numbbo` (framework root) folder, where the file `do.py` lies. 
-
-2. Type, i.e. execute,
+1. Type, i.e. execute,
   ```
     python do.py run-python
   ```  
   which will build, install (locally) and test the `cocoex` Python module. 
   Part of the tests is running `code-experiments/build/python/example_experiment.py`.[^1] 
 
-3. Copy (and rename) `example_experiment.py` to a place (and name) of
+2. Copy (and rename) `example_experiment.py` to a place (and name) of
 your choice. Modify this file to include the solver of your choice (instead of
 `random_search`) to the benchmarking framework.
 
-4. Execute the modified file either from a system shell like 
+3. Execute the modified file either from a system shell like 
   ```
       python example_experiment_or_new_name.py
   ```
