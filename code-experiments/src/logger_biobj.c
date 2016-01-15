@@ -389,7 +389,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
 
   indicator->name = coco_strdup(indicator_name);
 
-  indicator->best_value = observer_biobj_read_best_value(observer_biobj, indicator->name, problem->problem_id);
+  indicator->best_value = suite_biobj_get_best_value(indicator->name, problem->problem_id);
   indicator->next_target_id = 0;
   indicator->target_hit = 0;
   indicator->current_value = 0;
