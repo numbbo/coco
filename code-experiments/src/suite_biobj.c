@@ -46,8 +46,8 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   const size_t dimension = suite->dimensions[dimension_idx];
   const size_t instance = suite->instances[instance_idx];
 
-  if (instance_idx > num_instances) {
-    coco_error("suite_biobj_get_problem(): the number of instances is limited to %lu", num_instances);
+  if (instance_idx >= num_instances) {
+    coco_error("suite_biobj_get_problem(): instances beyond %lu don't exist yet in this suite", num_instances);
     return NULL; /* Never reached */
   }
 
