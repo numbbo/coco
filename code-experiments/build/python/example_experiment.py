@@ -18,7 +18,7 @@ Usage from a python shell::
 does the same but runs the "first" of one single batch.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
-import sys
+import os, sys
 import time
 import numpy as np  # "pip install numpy" installs numpy
 from cocoex import Suite, Observer
@@ -147,7 +147,7 @@ suite_instance = ""  # 'dimensions: 2,3,5,10,20 instance_idx: 1-5'
 suite_options = ""
 observer_name = suite_name
 observer_options = (
-    'result_folder: %s_on_%s ' % (SOLVER.__name__, suite_name) +
+    'result_folder: ' + os.path.join('exdata', '%s_on_%s ' % (SOLVER.__name__, suite_name)) +
     ' algorithm_name: %s ' % SOLVER.__name__ +
     ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
 if suite_name == "bbob-biobj":

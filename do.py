@@ -11,7 +11,7 @@ import tempfile
 import subprocess
 import platform
 import time
-from subprocess import check_output, STDOUT
+from subprocess import STDOUT
 import glob
 
 ## Change to the root directory of repository and add our tools/
@@ -20,7 +20,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.abspath('code-experiments/tools'))
 
 from amalgamate import amalgamate
-from cocoutils import make, run, python
+from cocoutils import make, run, python, check_output
 from cocoutils import copy_file, expand_file, write_file
 from cocoutils import git_version, git_revision
 
@@ -37,7 +37,6 @@ def build_c():
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/c/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/c/coco.h')
-    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/c/best_values_hyp.txt')
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/examples/bbob2009-c-cmaes/coco.c')
     copy_file('code-experiments/build/c/coco.h', 'code-experiments/examples/bbob2009-c-cmaes/coco.h')
     write_file(git_revision(), "code-experiments/build/c/REVISION")
@@ -130,7 +129,6 @@ def build_c_integration_tests():
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/integration-test/coco.c')
     copy_file('code-experiments/src/coco.h', 'code-experiments/test/integration-test/coco.h')
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/test/integration-test/bbob2009_testcases.txt')
-    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/test/integration-test/best_values_hyp.txt')
     make("code-experiments/test/integration-test", "clean")
     make("code-experiments/test/integration-test", "all")
 
@@ -151,7 +149,6 @@ def build_c_example_tests():
     os.makedirs('code-experiments/test/example-test') 
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/example-test/coco.c')
     copy_file('code-experiments/src/coco.h', 'code-experiments/test/example-test/coco.h')
-    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/test/example-test/best_values_hyp.txt')
     copy_file('code-experiments/build/c/example_experiment.c', 'code-experiments/test/example-test/example_experiment.c')
     copy_file('code-experiments/build/c/Makefile.in', 'code-experiments/test/example-test/Makefile.in')
     copy_file('code-experiments/build/c/Makefile_win_gcc.in', 'code-experiments/test/example-test/Makefile_win_gcc.in')
@@ -186,9 +183,8 @@ def _prep_python():
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/python/cython/coco.c', 
                release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')
-    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/python/best_values_hyp.txt')
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
-    expand_file('code-experiments/build/python/README.in', 'code-experiments/build/python/README',
+    expand_file('code-experiments/build/python/README.md', 'code-experiments/build/python/README.txt',
                 {'COCO_VERSION': git_version()}) # hg_version()})
     expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
                 {'COCO_VERSION': git_version()}) # hg_version()})
@@ -203,7 +199,23 @@ def build_python():
     python('code-experiments/build/python', ['setup.py', 'install', '--user'])
     # os.environ.pop('USE_CYTHON')
 
-def run_python(directory, script_filename):
+def run_python(test=True):
+    """ Builds and installs the Python module `cocoex` and runs the
+    `example_experiment.py` as a simple test case. """
+    build_python()
+    try:
+        if test:
+            run(os.path.join('code-experiments', 'build', 'python'), ['python', 'coco_test.py'])
+        run(os.path.join('code-experiments', 'build', 'python'),
+            ['python', 'example_experiment.py'])
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
+
+def run_local_python(directory, script_filename=
+                     os.path.join('code-experiments', 'build', 'python',
+                                  'example_experiment.py')):
+    """run a python script after building and installing `cocoex` in a new
+    environment."""
     _prep_python()
     python('code-experiments/build/python', ['setup.py', 'check', '--metadata', '--strict'])
     ## Now install into a temporary location, run test and cleanup
@@ -281,7 +293,6 @@ def build_matlab():
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/matlab/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
-    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/matlab/best_values_hyp.txt')
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
     run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
@@ -329,7 +340,6 @@ def build_matlab_sms():
     # amalgamate and copy files
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.h')
-    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/best_values_hyp.txt')
     write_file(git_revision(), "code-experiments/examples/bbob-biobj-matlab-smsemoa/REVISION")
     write_file(git_version(), "code-experiments/examples/bbob-biobj-matlab-smsemoa/VERSION")
     copy_file('code-experiments/build/matlab/cocoEvaluateFunction.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoEvaluateFunction.c')
@@ -367,7 +377,6 @@ def build_java():
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/java/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/java/coco.h')
-    copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/java/best_values_hyp.txt')
     write_file(git_revision(), "code-experiments/build/java/REVISION")
     write_file(git_version(), "code-experiments/build/java/VERSION")
     run('code-experiments/build/java', ['javac', 'CocoJNI.java'])
@@ -474,7 +483,7 @@ def build():
 def run_all():
     run_c()
     run_java()
-    run_python('code-experiments/build/python', 'example_experiment.py')
+    run_python()
     
 def test():
     test_c()
@@ -504,7 +513,9 @@ Available commands:
   run-java             - Build and run example experiment in Java
   run-matlab           - Build and run example experiment in MATLAB
   run-matlab-sms       - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
-  run-python           - Run a Python script with installed COCO module
+  run-python           - Build and install COCO module and run tests and
+                         example experiment in Python, "no-tests" omits tests
+  run-local-python     - Run a Python script with installed COCO module
                          Takes a single argument (name of Python script file)
   
   test-c               - Build and run unit tests, integration tests 
@@ -523,7 +534,6 @@ Available commands:
 To build a release version which does not include debugging information in the 
 amalgamations set the environment variable COCO_RELEASE to 'true'.
 """)
-
 def main(args):
     if len(args) < 1:
         help()
@@ -543,8 +553,8 @@ def main(args):
     elif cmd == 'run-java': run_java()
     elif cmd == 'run-matlab': run_matlab()
     elif cmd == 'run-matlab-sms': run_matlab_sms()
-    elif cmd == 'run-python': run_python('.', args[1] if len(args) > 1 else
-                        os.path.join('code-experiments', 'build', 'python', 'example_experiment.py'))
+    elif cmd == 'run-python':
+        run_python(False) if len(args) > 1 and args[1] == 'no-tests' else run_python()
     elif cmd == 'test-c': test_c()
     elif cmd == 'test-c-unit': test_c_unit()
     elif cmd == 'test-c-integration': test_c_integration()
