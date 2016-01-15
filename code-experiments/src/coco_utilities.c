@@ -12,9 +12,9 @@
 #include "coco_strdup.c"
 
 /**
- * Initialize the logging level to COCO_WARNING.
+ * Initialize the logging level to COCO_INFO.
  */
-static coco_log_level_type_e coco_log_level = COCO_WARNING;
+static coco_log_level_type_e coco_log_level = COCO_INFO;
 
 /***********************************
  * Global definitions in this file
