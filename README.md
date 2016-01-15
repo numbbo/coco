@@ -1,7 +1,7 @@
-# numbbo: Numerical Black-Box Optimization Benchmarking Framework 
+# numbbo: Comparing Continous Optimizer, COCO, in the Numerical Black-Box Optimization Benchmarking Framework 
 
-The code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
-now rewritten fully in ANSI C with the other three languages Java, MATLAB, and python calling the C code.
+This code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
+now rewritten fully in ANSI C with the other three languages Java, MATLAB, and Python calling the C code.
 
 # Building the Code
 Building, running, and testing of the code is done by merging/amalgamation of all C-code into a single C file, coco.c
