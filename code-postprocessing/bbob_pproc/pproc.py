@@ -1603,13 +1603,14 @@ class DataSetList(list):
     def dictByNoise(self):
         """Returns a dictionary splitting noisy and non-noisy entries."""
         sorted = {}
-        for i in self:
-            if i.funcId in range(1, 56):
-                sorted.setdefault('noiselessall', DataSetList()).append(i)
-            elif i.funcId in range(101, 131):
-                sorted.setdefault('nzall', DataSetList()).append(i)
-            else:
-                warnings.warn('Unknown function id.')
+        if not self.isBiobjective():
+            for i in self:
+                if i.funcId in range(1, 56):
+                    sorted.setdefault('noiselessall', DataSetList()).append(i)
+                elif i.funcId in range(101, 131):
+                    sorted.setdefault('nzall', DataSetList()).append(i)
+                else:
+                    warnings.warn('Unknown function id.')
 
         return sorted
 
