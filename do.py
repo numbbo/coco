@@ -188,7 +188,7 @@ def _prep_python():
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')
     copy_file('code-experiments/src/best_values_hyp.txt', 'code-experiments/build/python/best_values_hyp.txt')
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
-    expand_file('code-experiments/build/python/README.in', 'code-experiments/build/python/README',
+    expand_file('code-experiments/build/python/README.md', 'code-experiments/build/python/README.txt',
                 {'COCO_VERSION': git_version()}) # hg_version()})
     expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
                 {'COCO_VERSION': git_version()}) # hg_version()})
@@ -203,7 +203,23 @@ def build_python():
     python('code-experiments/build/python', ['setup.py', 'install', '--user'])
     # os.environ.pop('USE_CYTHON')
 
-def run_python(directory, script_filename):
+def run_python(test=True):
+    """ Builds and installs the Python module `cocoex` and runs the
+    `example_experiment.py` as a simple test case. """
+    build_python()
+    try:
+        if test:
+            run(os.path.join('code-experiments', 'build', 'python'), ['python', 'coco_test.py'])
+        run(os.path.join('code-experiments', 'build', 'python'),
+            ['python', 'example_experiment.py'])
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
+
+def run_local_python(directory, script_filename=
+                     os.path.join('code-experiments', 'build', 'python',
+                                  'example_experiment.py')):
+    """run a python script after building and installing `cocoex` in a new
+    environment."""
     _prep_python()
     python('code-experiments/build/python', ['setup.py', 'check', '--metadata', '--strict'])
     ## Now install into a temporary location, run test and cleanup
@@ -474,7 +490,7 @@ def build():
 def run_all():
     run_c()
     run_java()
-    run_python('code-experiments/build/python', 'example_experiment.py')
+    run_python()
     
 def test():
     test_c()
@@ -523,7 +539,6 @@ Available commands:
 To build a release version which does not include debugging information in the 
 amalgamations set the environment variable COCO_RELEASE to 'true'.
 """)
-
 def main(args):
     if len(args) < 1:
         help()
@@ -543,8 +558,7 @@ def main(args):
     elif cmd == 'run-java': run_java()
     elif cmd == 'run-matlab': run_matlab()
     elif cmd == 'run-matlab-sms': run_matlab_sms()
-    elif cmd == 'run-python': run_python('.', args[1] if len(args) > 1 else
-                        os.path.join('code-experiments', 'build', 'python', 'example_experiment.py'))
+    elif cmd == 'run-python': run_python(eval(args[1])) if len(args) > 1 else run_python()
     elif cmd == 'test-c': test_c()
     elif cmd == 'test-c-unit': test_c_unit()
     elif cmd == 'test-c-integration': test_c_integration()
