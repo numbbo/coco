@@ -1,5 +1,6 @@
 #include "coco.h"
 #include "suite_bbob.c"
+#include "suite_biobj_best_values_hyp.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
@@ -79,3 +80,37 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   return problem;
 }
 
+
+/**
+ * Returns the best known value for indicator_name matching the given key if the key is found, and raises an
+ * error otherwise.  */
+static double suite_biobj_get_best_value(const char *indicator_name, const char *key) {
+
+  size_t i, count;
+  double best_value = 0;
+  char *curr_key;
+
+  if (strcmp(indicator_name, "hyp") == 0) {
+
+    curr_key = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+    count = sizeof(suite_biobj_best_values_hyp) / sizeof(char *);
+    for (i = 0; i < count; i++) {
+      sscanf(suite_biobj_best_values_hyp[i], "%s %lf", curr_key, &best_value);
+      if (strcmp(curr_key, key) == 0) {
+        coco_free_memory(curr_key);
+        return best_value;
+      }
+    }
+
+    coco_free_memory(curr_key);
+    coco_error("suite_biobj_get_best_value(): could not find best value of %s", key);
+    return 0; /* Never reached */
+
+  } else {
+    coco_error("suite_biobj_get_best_value(): indicator %s not supported", indicator_name);
+    return 0; /* Never reached */
+  }
+
+  coco_error("suite_biobj_get_best_value(): unexpected exception");
+  return 0; /* Never reached */
+}
