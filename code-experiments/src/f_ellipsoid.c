@@ -128,15 +128,13 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   /* tentative */
   swap_range = dimension / 3;
   nb_swaps = dimension;
-  size_t block_size = 4;
+  size_t block_size = 2;
   nb_blocks = dimension / block_size;
   block_sizes = (size_t *)coco_allocate_memory(nb_blocks * sizeof(size_t));
   for (i = 0; i < nb_blocks; i++) {
-    block_sizes[i] = block_size;
+    block_sizes[i] = 3 - i;//block_size;
   }
 
-  printf("in f_elli\n");
-  printf("dimension:%zu, nb_swaps:%zu, swap_range:%zu, block_size:%zu\n", dimension, nb_swaps, swap_range, block_size);
   /*xopt = coco_allocate_vector(dimension);*/
   /*bbob2009_compute_xopt(xopt, rseed, dimension);*/
   /*fopt = bbob2009_compute_fopt(function, instance);*/
@@ -162,7 +160,6 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   coco_free_memory(P1);
   coco_free_memory(P2);
   coco_free_memory(block_sizes);
-  printf("out f_elli\n");
   return problem;
 }
 
