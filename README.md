@@ -66,25 +66,51 @@ you can start the corresponding example experiments scripts in code-experiments/
 # Requirements and Installation
 Minimal requirements (running an algorithm in C):
 * git
-* Python 2.7 (or Python 3) with numpy and matplotlib
+* Python (2.7 $\leq$ version $<$ 3.0) with numpy and matplotlib
 * a C compiler, such as gcc
 * GNU make
 * LaTeX
 
-For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Under Windows, two main toolchains can be installed: 1) Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 2) with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
+For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that python 3 is explicitly not supported yet for the postprocessing part of NumBBO/Coco!
+
+Under Windows, two main toolchains can be installed: 1) Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 2) with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
 
 Additional requirements for running an algorithm in a specific language:
 * Java: none, but see code-experiments/build/java/README.txt for details on the compilation
 * Python: cython (http://docs.cython.org/src/quickstart/install.html), see code-experiments/build/python/README for details
-* MATLAB: at least MATLAB 2008, for details, see code-experiments/build/matlab/README
+* MATLAB: at least MATLAB 2008, for details, see code-experiments/build/matlab/README.txt
 
 Unfortunately, we cannot guarantee that the software runs on any combination of operating system and software. However, we tested it (in part) on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP, 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions etc. In particular, we continuously test the code through the open source automation server Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit Windows 7 machine with cygwin.
 
+
+# Typical Workflow
+* download the NumBBO/Coco code by clicking on the *Download ZIP* link on the top right of the main NumBBO github page
+* run once
+
+    ```
+    python do.py run-YOURFAVORITELANGUAGE
+    ```
+
+to build and test the example experiment code for the language of your choice (`YOURFAVORITELANGUAGE` can thereby be any of `python`, `c`, `java`, or `matlab`).
+* If the example experiment runs, you can start connecting your favorite algorithm to Coco. The probably easiest is to replace the random search in the example experiment within the `code-experiments/build/YOURFAVORITELANGUAGE` folder by the call to your algorithm. To this end, you can move the `code-experiments/build/YOURFAVORITELANGUAGE` folder wherever you want without the need to build/compile the NumBBO/Coco part a second time. Another entry point for your own experiments can be the more complicated algorithms CMA-ES (for the single-objective suites) and SMS-EMOA (for the multiobjective case) in the `code-experiments/examples` folder. Do not forget, in any case, to update the result folder and the algorithm name and info in the experiment.
+* Now you can run your favorite algorithm on the `bbob-biobj` (for a multi-objective algorithm) or on the `bbob` suite (for a single-objective algorithm). Output is automatically generated in the specified result folder.
+* Postprocess your data from the results folder by typing
+
+    ```
+    python rungeneric.py YOURRESULTFOLDER
+    ```
+
+within the `code-postprocessing/bbob_pproc` folder (or running the `rungeneric.py` script from where your results lie). A folder named `ppdata` by default will be generated (the folder name can be changed by the `-o FOLDERNAME` option). Note that you can also compare more than one algorithm by specifying more algorithm result folders, separated by blanks.
+* Within the postprocessing's output folder, you will find pdfs of all kinds of plots (e.g. data profiles). For the single-objective `bbob` suite, they can be used to produce a summary pdf via LaTeX. The corresponding templates in ACM format can be found in the `code-postprocessing/latex-templates` folder. LaTeX templates for the multi-objective `bbob-biobj` suite will follow in a later release. A basic html output is also available in the result folder of the postprocessing (file `templateBBOBarticle.html`).
+* Once your algorithm runs well, increase the budget in your experiment script and follow the above steps successively until you are happy.
+* If you detect bugs or other issues, please let us know by opening an issue in our issue tracker at https://github.com/numbbo/numbbo/issues.
+
+
 # Links and Further Documentation
-* Downloading this repository: via the above "Download ZIP" button or by typing 'git clone https://github.com/numbbo/numbbo.git'
+* Downloading this repository via the above "Download ZIP" button or by typing 'git clone https://github.com/numbbo/numbbo.git' or by typing https://github.com/numbbo/numbbo/archive/master.zip in your browser's address line
 * The BBOB workshop series, which uses the NumBBO/Coco framework extensively, can be tracked at http://numbbo.github.io/workshops/
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software by registering at http://coco.gforge.inria.fr/register
 * More detailed documentation of the existing benchmark suites can be found here:
   * for **bbob** at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf and http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
-  * for **bbob-biobj** at http://numbbo.github.io/bbob-biobj-experiments-doc and http://numbbo.github.io/bbob-biobj-functions-doc
-* Online documentation of the NumBBO/Coco API is available at http://numbbo.github.io/COCOdoc and http://numbbo.github.io/COCOdoc/C in particular
+  * for the **bbob-biobj** functions at http://numbbo.github.io/bbob-biobj-functions-doc
+* Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at http://numbbo.github.io/COCOdoc/C
