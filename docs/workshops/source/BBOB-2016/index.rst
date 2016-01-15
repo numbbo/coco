@@ -1,3 +1,5 @@
+.. _bbob2016page:
+
 GECCO Workshop on Real-Parameter Black-Box Optimization Benchmarking (BBOB 2016) - focus on multi-objective problems
 ==========================================================================================================================
 
@@ -35,7 +37,7 @@ an extension of the Coco platform towards a *multi-objective testbed*
 previous BBOB workshops.
 
 The remaining tasks for participants are therefore: run your favorite
-multiobjective black-box optimizer (old or new) by using the wrappers
+multi-objective black-box optimizer (old or new) by using the wrappers
 provided and run the post-processing procedure (provided as well) that
 will generate automatically all the material for a workshop paper
 (LaTeX templates are provided). A description of the algorithm and the
