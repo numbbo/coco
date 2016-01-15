@@ -399,8 +399,9 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
     plt.setp(res[0], marker='', label='')
     return res
 
-def consecutiveNumbers(data):
+def consecutiveNumbers(data, prefix = ''):
     """Groups a sequence of integers into ranges of consecutive numbers.
+    If the prefix is set then the it's placed before each number.
 
     Example::
       >>> import os
@@ -408,6 +409,8 @@ def consecutiveNumbers(data):
       >>> import bbob_pproc as bb
       >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9])
       '0-2, 4, 5, 7-9'
+      >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9], 'f')
+      'f0-f2, f4, f5, f7-f9'
 
     Range of consecutive numbers is at least 3 (therefore [4, 5] is
     represented as "4, 5").
@@ -415,7 +418,7 @@ def consecutiveNumbers(data):
     res = []
     tmp = groupByRange(data)
     for i in tmp:
-        tmpstring = list(str(j) for j in i)
+        tmpstring = list(prefix + str(j) for j in i)
         if len(i) <= 2 : # This means length of ranges are at least 3
             res.append(', '.join(tmpstring))
         else:
