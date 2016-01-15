@@ -13,13 +13,15 @@ the performance of numerical black-box optimization algorithms. The former is re
 Optimizers platform (Coco).
 
 So far, six workshops have been held (in 2009, 2010, 2012, 2013, and 2015 at GECCO and 2015 at CEC). The next workshop
-is planned for GECCO 2016 with a new focus on bi-objective problems.
+is planned for GECCO 2016 with a new focus on multi-objective problems (with two objectives as a first step).
 
 Generally, three benchmark suites are available:
 
-* bbob: 24 noiseless functions
-* bbob-noisy: 30 noisy functions
-* bbob-biobj: 55 noiseless, bi-objective functions, generated from instances of the bbob suite
+* `bbob`: 24 noiseless functions
+* `bbob-noisy`: 30 noisy functions
+* `bbob-biobj`: 55 noiseless, bi-objective functions, generated from instances of the bbob suite
+
+Note that due to the rewriting of the Coco platform, only the `bbob` and `bbob-biobj` are available in the new code, available at http://github.com/numbbo/numbbo while for the noisy test suite, the old code at http://coco.gforge.inria.fr/doku.php?id=downloads has to be used.
 
 Contents:
 
