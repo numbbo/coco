@@ -10,7 +10,7 @@
 #include "coco_generics.c"
 #include "coco_utilities.c"
 #include "coco_problem.c"
-#include "coco_strdup.c"
+#include "coco_string.c"
 #include "observer_bbob.c"
 
 static int bbob_raisedOptValWarning;
@@ -369,9 +369,9 @@ static void logger_bbob_evaluate(coco_problem_t *self, const double *x, double *
   if (!logger->is_initialized) {
     logger_bbob_initialize(logger, inner_problem);
   }
-  if ((coco_log_level >= COCO_INFO) && logger->number_of_evaluations == 0) {
-    coco_info("%4ld: ", inner_problem->suite_dep_index);
-    coco_info("on problem %s ... ", coco_problem_get_id(inner_problem));
+  if ((coco_log_level >= COCO_DEBUG) && logger->number_of_evaluations == 0) {
+    coco_debug("%4ld: ", inner_problem->suite_dep_index);
+    coco_debug("on problem %s ... ", coco_problem_get_id(inner_problem));
   }
   coco_evaluate_function(inner_problem, x, y);
   logger->last_fvalue = y[0];
@@ -424,8 +424,8 @@ static void logger_bbob_free(void *stuff) {
    */
   logger_bbob_t *logger = stuff;
 
-  if ((coco_log_level >= COCO_INFO) && logger && logger->number_of_evaluations > 0) {
-    coco_info("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,
+  if ((coco_log_level >= COCO_DEBUG) && logger && logger->number_of_evaluations > 0) {
+    coco_debug("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,
         logger->number_of_evaluations);
   }
   /*if (logger->alg_name != NULL) { //No longer needed

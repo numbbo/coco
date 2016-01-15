@@ -7,8 +7,7 @@
 
 #include "coco_utilities.c"
 #include "coco_problem.c"
-#include "coco_strdup.c"
-
+#include "coco_string.c"
 #include "observer_biobj.c"
 
 #include "logger_biobj_avl_tree.c"
@@ -389,7 +388,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
 
   indicator->name = coco_strdup(indicator_name);
 
-  indicator->best_value = observer_biobj_read_best_value(observer_biobj, indicator->name, problem->problem_id);
+  indicator->best_value = suite_biobj_get_best_value(indicator->name, problem->problem_id);
   indicator->next_target_id = 0;
   indicator->target_hit = 0;
   indicator->current_value = 0;
@@ -543,7 +542,6 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
       indicator = logger->indicators[i];
       indicator->target_hit = 0;
       while ((indicator->next_target_id < MO_NUMBER_OF_TARGETS)
-          && (node_item->indicator_contribution[i] > 0)
           && (indicator->best_value - indicator->current_value <= MO_RELATIVE_TARGET_VALUES[indicator->next_target_id])) {
         /* A target was hit */
         indicator->target_hit = 1;
