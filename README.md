@@ -113,8 +113,8 @@ are valid commands code-experiments/build/LANGUAGE/.
 * howtos contains a few text files with internal howtos.
 
 
-Known Issues
-------------
+Known Issues / Trouble-Shooting
+-------------------------------
 ### Python
 
 #### `setuptools` is not installed
