@@ -3,8 +3,8 @@ numbbo/coco: Comparing Continuous Optimizers
 
 This code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
 now rewritten fully in ANSI C with the other languages calling the C code. Languages currently available 
-are C, Java, MATLAB, and Python. Languages available in near future are C++, Octave. Contributions to link 
-further languages are more than welcome.
+are C, Java, MATLAB, and Python. Languages available in near future are C++ and Octave. Contributions to 
+link further languages are more than welcome.
 
 Requirements
 ------------
@@ -13,9 +13,11 @@ Minimal requirements:
 * a C compiler, such as gcc
 * GNU make
 
-For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that Python 3 is not supported yet for the postprocessing part of NumBBO/Coco!
+For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that Python 3 is not supported yet for the post-processing part of NumBBO/CoCO!
 
-Under Windows, two main toolchains can be installed: 1) Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 2) with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
+Under Windows, two main toolchains can be installed: 
+1) Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 
+2) with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
 
 Additional requirements for running an algorithm in a specific language:
 * Java: none, but see [here](./code-experiments/build/java/README.txt) for details on the compilation
@@ -102,9 +104,9 @@ are valid commands code-experiments/build/LANGUAGE/.
 
 Known Issues
 ------------
-## Python
+### Python
 
-### `setuptools` is not installed
+#### `setuptools` is not installed
 If you see something like this
 ```
 PYTHON  setup.py install --user in code-experiments/build/python
@@ -141,7 +143,7 @@ _to investigate the code_ (but see also below). `coco_problem_t` defines a bench
 
 - Building, running, and testing of the code is done by merging/amalgamation of all C-code into a single C file, `coco.c`, and `coco.h`. (by calling `do.py`, see above). Like this it becomes very simple to include/use the code in different projects.
 
-- Cython (http://docs.cython.org/src/quickstart/install.html) is used to compile the C interface in `build/python/interface.pyx`, whereas `setup.py` uses the compiled `interface.c`, if `interface.pyx` has not changed. 
+- [Cython](http://docs.cython.org/src/quickstart/install.html) is used to compile the C interface in `build/python/interface.pyx`. The Python module installation file `setup.py` uses the compiled `interface.c`, if `interface.pyx` has not changed. 
 
 
 Links and Further Documentation
