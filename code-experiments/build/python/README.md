@@ -33,8 +33,8 @@ In a system shell:
   ```
     python do.py run-python
   ```  
-  which will build, install (locally) and test the `cocoex` Python module. 
-  Part of the tests is running `code-experiments/build/python/example_experiment.py`.[^1] 
+  which will build, install (locally) and test the `cocoex` Python module, and run 
+  `python code-experiments/build/python/example_experiment.py`.[^1] 
 
 2. Copy (and rename) `example_experiment.py` to a place (and name) of
 your choice. Modify this file to include the solver of your choice (instead of
