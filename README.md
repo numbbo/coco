@@ -8,12 +8,15 @@ link further languages are more than welcome.
 
 Requirements
 ------------
-Minimal requirements:
-* Python 2.6 or 2.7 with `setuptools`, `numpy` and `matplotlib` installed
-* a C compiler, such as gcc
-* GNU make
+Minimal requirements are
+* For a machine run experiments 
+  - Python >=2.6 with `setuptools` installed
+  - a C compiler, such as gcc
+  - make, such as GNU make
+* for a machine to run the post-processing
+  - Python 2.6 or 2.7 with `numpy` and `matplotlib` installed
 
-For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that Python 3 is not supported yet for the post-processing part of NumBBO/CoCO!
+For Python (running the post-processing), we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that Python 3 is not supported yet for the post-processing part of NumBBO/CoCO!
 
 Under Windows, two alternative compile toolchains can be installed: 
 
