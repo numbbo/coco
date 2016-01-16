@@ -74,13 +74,26 @@ def hg_version():
 def hg_revision():
     return hg(['id', '-i'])
 
-def git_version():
-    """Return somewhat readible version number from git"""
-    return git(['describe', '--tags'])
+def git_version(pep440=True):
+    """Return somewhat readible version number from git, like
+    '0.0-6015-ga0a3769' if not pep440 else '0.0.6015'"""
+    try:
+        if pep440:
+            return '.'.join(git(['describe', '--tags']).split('-')[:2])
+        else:
+            return git(['describe', '--tags'])
+    except:
+        print('git version call failed')
+        return ''
 
 def git_revision():
-    """Return unreadible git revision identifier"""
-    return git(['rev-parse', 'HEAD'])
+    """Return unreadible git revision identifier, like
+    a0a3769da32436c27df84d1b9b0915447aebf4d0"""
+    try:
+        return git(['rev-parse', 'HEAD'])
+    except:
+        print('git revision call failed')
+        return ""
 
 def run(directory, args):
     print("RUN\t%s in %s" % (" ".join(args), directory))

@@ -184,8 +184,7 @@ def _prep_python():
                release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
-    expand_file('code-experiments/build/python/README.md', 'code-experiments/build/python/README.txt',
-                {'COCO_VERSION': git_version()}) # hg_version()})
+    copy_file('code-experiments/build/python/README.md', 'code-experiments/build/python/README.txt')
     expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
                 {'COCO_VERSION': git_version()}) # hg_version()})
     # if 'darwin' in sys.platform:  # a hack to force cythoning
@@ -211,7 +210,7 @@ def run_python(test=True):
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
-def run_local_python(directory, script_filename=
+def run_sandbox_python(directory, script_filename=
                      os.path.join('code-experiments', 'build', 'python',
                                   'example_experiment.py')):
     """run a python script after building and installing `cocoex` in a new
@@ -337,25 +336,33 @@ def wait_for_compilation_to_finish(filenameprefix):
 
 def build_matlab_sms():
     global release
+    join = os.path.join
+    source_folder = join('code-experiments', 'build', 'matlab')
+    destination_folder = join('code-experiments', 'examples',
+                              'bbob-biobj-matlab-smsemoa')
     # amalgamate and copy files
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.c', release)
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
+               join(destination_folder, 'coco.c'), release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.h')
-    write_file(git_revision(), "code-experiments/examples/bbob-biobj-matlab-smsemoa/REVISION")
-    write_file(git_version(), "code-experiments/examples/bbob-biobj-matlab-smsemoa/VERSION")
-    copy_file('code-experiments/build/matlab/cocoEvaluateFunction.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoEvaluateFunction.c')
-    copy_file('code-experiments/build/matlab/cocoObserver.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoObserver.c')
-    copy_file('code-experiments/build/matlab/cocoObserverFree.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoObserverFree.c')
-    copy_file('code-experiments/build/matlab/cocoProblemGetDimension.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemgetDimension.c')
-    copy_file('code-experiments/build/matlab/cocoProblemGetEvaluations.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetEvaluations.c')
-    copy_file('code-experiments/build/matlab/cocoProblemGetId.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetId.c')
-    copy_file('code-experiments/build/matlab/cocoProblemGetLargestValuesOfInterest.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetLargestValuesOfInterest.c')
-    copy_file('code-experiments/build/matlab/cocoProblemGetName.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetName.c')
-    copy_file('code-experiments/build/matlab/cocoProblemGetNumberOfObjectives.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetNumberOfObjectives.c')
-    copy_file('code-experiments/build/matlab/cocoProblemGetSmallestValuesOfInterest.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemGetSmallestValuesOfInterest.c')
-    copy_file('code-experiments/build/matlab/cocoProblemIsValid.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoProblemIsValid.c')
-    copy_file('code-experiments/build/matlab/cocoSuite.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuite.c')
-    copy_file('code-experiments/build/matlab/cocoSuiteFree.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteFree.c')
-    copy_file('code-experiments/build/matlab/cocoSuiteGetNextProblem.c', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/cocoSuiteGetNextProblem.c')
+    write_file(git_revision(), join(destination_folder, "REVISION"))
+    write_file(git_version(), join(destination_folder, "VERSION"))
+    files = ['cocoEvaluateFunction.c',
+             'cocoObserver.c',
+             'cocoObserverFree.c',
+             'cocoProblemGetDimension.c',
+             'cocoProblemGetEvaluations.c',
+             'cocoProblemGetId.c',
+             'cocoProblemGetLargestValuesOfInterest.c',
+             'cocoProblemGetName.c',
+             'cocoProblemGetNumberOfObjectives.c',
+             'cocoProblemGetSmallestValuesOfInterest.c',
+             'cocoProblemIsValid.c',
+             'cocoSuite.c',
+             'cocoSuiteFree.c',
+             'cocoSuiteGetNextProblem.c']
+    for file in files:
+        copy_file(join(source_folder, file),
+                  join(destination_folder, file))
     # compile
     run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
 
@@ -513,9 +520,9 @@ Available commands:
   run-java             - Build and run example experiment in Java
   run-matlab           - Build and run example experiment in MATLAB
   run-matlab-sms       - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
-  run-python           - Build and install COCO module and run tests and
+  run-python           - Build and install COCO module and run tests and the
                          example experiment in Python, "no-tests" omits tests
-  run-local-python     - Run a Python script with installed COCO module
+  run-sandbox-python   - Run a Python script with installed COCO module
                          Takes a single argument (name of Python script file)
   
   test-c               - Build and run unit tests, integration tests 
