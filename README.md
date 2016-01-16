@@ -15,17 +15,19 @@ Minimal requirements:
 
 For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that Python 3 is not supported yet for the post-processing part of NumBBO/CoCO!
 
-Under Windows, two main toolchains can be installed: 
+Under Windows, two alternative compile toolchains can be installed: 
 
-1) Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 
-2) with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
+1. [Cygwin](https://www.cygwin.com/) which comes with gcc and make, available in 32- and 64-bit versions.  
+2. MinGW's gcc (http://www.mingw.org/) and GNU make (http://gnuwin32.sourceforge.net/packages/make.htm). MinGW only comes in 32-bit, but also runs on 64-bit machines. 
+
+For using `git` under Windows, we recommend installing [TortoiseGit](https://tortoisegit.org/).
 
 Additional requirements for running an algorithm in a specific language:
 * Java: none, but see [here](./code-experiments/build/java/README.txt) for details on the compilation
 * Python: none, see [here](./code-experiments/build/python/README.txt) for details on the installation
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.txt)
 
-Unfortunately, we cannot guarantee that the software runs on any combination of operating system and software. However, we tested it (in part) on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP, 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions etc. In particular, we continuously test the code through the open source automation server Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit Windows 7 machine with cygwin.
+We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP, 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions etc. Naturally, we cannot guarantee that the framework runs on any combination of operating system and software installed. 
 
 Getting Started
 ---------------
@@ -136,6 +138,7 @@ subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i
 ```
 or `easy_install setuptools` should do the job. 
 
+
 Details
 -------
 - The C code features an object oriented implementation, where the `coco_problem_t` is the most central
@@ -145,6 +148,8 @@ _to investigate the code_ (but see also below). `coco_problem_t` defines a bench
 - Building, running, and testing of the code is done by merging/amalgamation of all C-code into a single C file, `coco.c`, and `coco.h`. (by calling `do.py`, see above). Like this it becomes very simple to include/use the code in different projects.
 
 - [Cython](http://docs.cython.org/src/quickstart/install.html) is used to compile the C interface in `build/python/interface.pyx`. The Python module installation file `setup.py` uses the compiled `interface.c`, if `interface.pyx` has not changed. 
+
+- IWe continuously test the code through the open source automation server Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit Windows 7 machine with cygwin.
 
 
 Links and Further Documentation
