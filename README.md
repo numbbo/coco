@@ -133,7 +133,7 @@ subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i
 or `easy_install setuptools` should do the job. 
 
 Details
-=======
+-------
 - The C code features an object oriented implementation, where the `coco_problem_t` is the most central
 data structure / object. `coco.h`, `example_experiment.c` and `coco_internal.h` are probably the best pointers to start with
 _to investigate the code_ (but see also below). `coco_problem_t` defines a benchmark function instance (in a given dimension), and is called via `coco_evaluate_function`.
@@ -143,7 +143,8 @@ _to investigate the code_ (but see also below). `coco_problem_t` defines a bench
 - Cython (http://docs.cython.org/src/quickstart/install.html) is used to compile the C interface in `build/python/interface.pyx`, whereas `setup.py` uses the compiled `interface.c`, if `interface.pyx` has not changed. 
 
 
-# Links and Further Documentation
+Links and Further Documentation
+-------------------------------
 * Downloading this repository via the above "Download ZIP" button or by typing 
   `git clone https://github.com/numbbo/numbbo.git` or by typing https://github.com/numbbo/numbbo/archive/master.zip 
   in your browser's address line
