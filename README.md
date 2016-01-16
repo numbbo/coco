@@ -3,7 +3,8 @@ numbbo/coco: Comparing Continuous Optimizers
 
 This code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
 now rewritten fully in ANSI C with the other languages calling the C code. Languages currently available 
-are Java, MATLAB, and Python. Languages available in near future are C++, Octave, and possibly R. 
+are C, Java, MATLAB, and Python. Languages available in near future are C++, Octave. Contributions to link 
+further languages are more than welcome.
 
 Requirements
 ------------
