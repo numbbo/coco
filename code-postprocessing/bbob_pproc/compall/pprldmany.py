@@ -548,6 +548,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 dictData.setdefault(alg, []).extend(x)
                 dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
 
+        displaybest2009 = not isBiobjective #disabled until we find the bug
         if displaybest2009:
             #set_trace()
             bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
