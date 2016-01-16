@@ -8,17 +8,17 @@ link further languages are more than welcome.
 
 Requirements
 ------------
-* For a machine running experiments 
-  - Python >=2.6 with `setuptools` installed
-  - a C compiler, such as gcc
+1. For a machine running experiments 
+  - A `C` compiler, such as gcc
   - make, such as GNU make
-* For a machine running the post-processing
+  - Python >=2.6 with `setuptools` installed
+2. For a machine running the post-processing
   - Python 2.6 or 2.7 with `numpy` and `matplotlib` installed
 
 For Python (running the post-processing), we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that Python 3 is not yet supported for the post-processing part of NumBBO/CoCO!
 
 ### Windows Specifics
-Under Windows, two alternative compile toolchains can be installed: 
+Under Windows, two alternative compile toolchains can be used: 
 
 1. [Cygwin](https://www.cygwin.com/) which comes with gcc and make, available in 32- and 64-bit versions.  
 2. MinGW's gcc (http://www.mingw.org/) and GNU make (http://gnuwin32.sourceforge.net/packages/make.htm). MinGW only comes in 32-bit, but also runs on 64-bit machines. 
@@ -26,7 +26,8 @@ Under Windows, two alternative compile toolchains can be installed:
 For using `git` under Windows (optional), we recommend installing [TortoiseGit](https://tortoisegit.org/).
 
 ### Language Specifics
-Additional requirements for running an algorithm in a specific language:
+Additional requirements for running an algorithm in a specific language.
+
 * Java: none, but see [here](./code-experiments/build/java/README.txt) for details on the compilation
 * Python: none, see [here](./code-experiments/build/python/README.txt) for details on the installation
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.txt)
@@ -36,25 +37,25 @@ We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
 
 Getting Started
 ---------------
-Download the [COCO framework code](https://github.com/numbbo/numbbo) from github by clicking [here](https://github.com/numbbo/numbbo/archive/development.zip), 
+Download the [COCO framework code](https://github.com/numbbo/numbbo) from github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip), 
 **CAVEAT: this code is still under development**, and unzip the `zip` file. 
 
 In a system shell:
 
 0. cd into the `numbbo` (framework root) folder, where the file `do.py` lies. 
 
-1. Type, i.e. execute, one of the following commands once,
+1. Type, i.e. execute, one of the following commands once
   ```
     python do.py run-c
     python do.py run-java
     python do.py run-matlab
     python do.py run-python
   ```  
-  depending which language should be used to run the experiments. `run-*` will build the 
-  respective code and run the example experiment once. The build result and an example
+  depending which language is used to run the experiments. `run-*` will build the 
+  respective code and run the example experiment once. The build result and the example
   experiment code can be found under `code-experiments/build/*`. 
   
-* If the example experiment runs, you can start connecting your favorite algorithm to Coco. The probably easiest is to copy the `code-experiments/build/YOURFAVORITELANGUAGE` folder and replace the random search optimizer in the example experiment file by your algorithm (the details vary). Another entry point for your own experiments can be the more complicated algorithms CMA-ES (for the single-objective suites) and SMS-EMOA (for the multiobjective case) in the `code-experiments/examples` folder. Do not forget, in any case, to update the output (observers) result folder and the algorithm name and info in the experiment file.
+* If the example experiment runs, connect your favorite algorithm to Coco. Copy the `code-experiments/build/YOURFAVORITELANGUAGE` folder to another location and replace the random search optimizer in the example experiment file by your algorithm (the details vary, see respective the read-me's). Another entry point for your own experiments can be the more complicated algorithms CMA-ES (for the single-objective suites) and SMS-EMOA (for the multiobjective case) in the `code-experiments/examples` folder. Do not forget, in any case, to update the output (observers) result folder and the algorithm name and info in the experiment file.
 * Now you can run your favorite algorithm on the `bbob-biobj` (for a multi-objective algorithm) or on the `bbob` suite (for a single-objective algorithm). Output is automatically generated in the specified result folder.
 * Postprocess your data from the results folder by typing
 
