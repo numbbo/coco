@@ -1,4 +1,4 @@
-The `build` folder contains ready to use builds after running
+This `build` folder contains ready to use builds after running
 ```
     python do.py build-...
 ```
