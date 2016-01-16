@@ -1,11 +1,32 @@
-# numbbo: Implementation of Comparing Continuous Optimizer, COCO, in the Numerical Black-Box Optimization Benchmarking Framework 
+numbbo/coco: Comparing Continuous Optimizer
+===========================================
 
 This code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
-now rewritten fully in ANSI C with the other three languages Java, MATLAB, and Python calling the C code.
+now rewritten fully in ANSI C with the other languages calling the C code. Languages currently available 
+are Java, MATLAB, and Python. Languages available in near future are C++, Octave, and possibly R. 
 
-# Building the Code
-Building, running, and testing of the code is done by merging/amalgamation of all C-code into a single C file, coco.c
-(by calling do.py, see below). Like this it becomes very simple to include/use the code in different projects.
+# Getting Started
+
+Download the [COCO framework code](https://github.com/numbbo/numbbo) from github by clicking [here](https://github.com/numbbo/numbbo/archive/development.zip), 
+**CAVEAT: this code is still under development**, and unzip the `zip` file. 
+
+In a system shell:
+
+0. cd into the `numbbo` (framework root) folder, where the file `do.py` lies. 
+
+1. Type, i.e. execute, one of the following commands once,
+  ```
+    python do.py run-c
+    python do.py run-java
+    python do.py run-matlab
+    python do.py run-python
+  ```  
+  depending which language should be used to run the experiments. `run-*` will build the 
+  respective code and run the example experiment once. 
+  
+  `cocoex` Python module. 
+  Part of the tests is running `code-experiments/build/python/example_experiment.py`.[^1] 
+
 
 # Description by Folder
 
@@ -100,7 +121,38 @@ within the `code-postprocessing/bbob_pproc` folder (or running the `rungeneric.p
 * Once your algorithm runs well, increase the budget in your experiment script and follow the above steps successively until you are happy.
 * If you detect bugs or other issues, please let us know by opening an issue in our issue tracker at https://github.com/numbbo/numbbo/issues.
 
-# Known Issues
+Known Issues
+============
+## Python
+
+### `setuptools` is not installed
+If you see something like this
+```
+PYTHON  setup.py install --user in code-experiments/build/python
+ERROR: return value=1
+Traceback (most recent call last):
+ File "setup.py", line 8, in <module>
+   import setuptools
+ImportError: No module named setuptools
+
+Traceback (most recent call last):
+ File "do.py", line 562, in <module>
+   main(sys.argv[1:])
+ File "do.py", line 539, in main
+   elif cmd == 'build-python': build_python()
+ File "do.py", line 203, in build_python
+   python('code-experiments/build/python', ['setup.py', 'install', '--user'])
+ File "/vol2/twagner/numbbo/code-experiments/tools/cocoutils.py", line 92, in p                                         ython
+   universal_newlines=True)
+ File "/usr/local/lib/python2.7/subprocess.py", line 575, in check_output
+   raise CalledProcessError(retcode, cmd, output=output)
+subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i                                        nstall', '--user']' returned non-zero exit status 1
+```
+`setuptools` needs to be installed: 
+```
+    pip install setuptools
+```
+or `easy_install setuptools` should do the job. 
 
 Details
 =======
@@ -108,8 +160,14 @@ Generally, the code features an object oriented implementation, where the `coco_
 data structure / object. `coco.h`, `example_experiment.c` and `coco_internal.h` are probably the best pointers to start with
 _to investigate the code_ (but see also below). `coco_problem_t` defines a benchmark function instance (in a given dimension), and is called via `coco_evaluate_function`.
 
+Building, running, and testing of the code is done by merging/amalgamation of all C-code into a single C file, `coco.c`
+(by calling `do.py`, see above). Like this it becomes very simple to include/use the code in different projects.
+
+
 # Links and Further Documentation
-* Downloading this repository via the above "Download ZIP" button or by typing 'git clone https://github.com/numbbo/numbbo.git' or by typing https://github.com/numbbo/numbbo/archive/master.zip in your browser's address line
+* Downloading this repository via the above "Download ZIP" button or by typing 
+  `git clone https://github.com/numbbo/numbbo.git` or by typing https://github.com/numbbo/numbbo/archive/master.zip 
+  in your browser's address line
 * The BBOB workshop series, which uses the NumBBO/Coco framework extensively, can be tracked at http://numbbo.github.io/workshops/
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software by registering at http://coco.gforge.inria.fr/register
 * More detailed documentation of the existing benchmark suites can be found here:
