@@ -8,7 +8,7 @@ The simplest way to check the prerequisits is to go directly to [_Getting Starte
 below and give it a try. Then act upon failure, as in this case probably one of
 the following is lacking: 
 
-- Python is installed (version >=2.7). If this is not the case, check out
+- Python is installed (version >=2.6). If this is not the case, check out
   [Anaconda](https://www.continuum.io), as this provides additionally all
   Python packages necessary to run the COCO postprocessing as well as the
   ipython shell. The postprocessing needs currently Python 2.7. 
