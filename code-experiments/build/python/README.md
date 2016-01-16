@@ -11,7 +11,7 @@ the following is lacking:
 - Python is installed (version >=2.6). If this is not the case, check out
   [Anaconda](https://www.continuum.io), as this provides additionally all
   Python packages necessary to run the COCO postprocessing as well as the
-  ipython shell. The postprocessing needs currently Python 2.7. 
+  ipython shell. The postprocessing needs currently Python < 3.0, i.e. 2.6 or 2.7.
 
 - `make` is installed and works with one of the MakeFiles provided in folder
   `code-experiments/build/c`. You might type `make` within the `build/c` folder
