@@ -16,9 +16,9 @@ known_suite_names = [b"bbob", b"bbob-biobj"]
 np.import_array()
 
 cdef extern from "coco.h":
-    ctypedef struct coco_problem_t: 
+    ctypedef struct coco_problem_t:
         pass
-    ctypedef struct coco_observer_t: 
+    ctypedef struct coco_observer_t:
         pass
     ctypedef struct coco_suite_t: 
         pass
