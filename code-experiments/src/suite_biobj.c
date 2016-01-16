@@ -230,6 +230,11 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
         }
       }
     }
+    /* Clean up */
+    if (problem) {
+      coco_stacked_problem_free(problem);
+      problem = NULL;
+    }
 
     if (break_search) {
       /* The search was broken, continue with next instance2 */
