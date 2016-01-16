@@ -8,28 +8,30 @@ link further languages are more than welcome.
 
 Requirements
 ------------
-Minimal requirements are
-* For a machine run experiments 
+* For a machine running experiments 
   - Python >=2.6 with `setuptools` installed
   - a C compiler, such as gcc
   - make, such as GNU make
-* for a machine to run the post-processing
+* For a machine running the post-processing
   - Python 2.6 or 2.7 with `numpy` and `matplotlib` installed
 
-For Python (running the post-processing), we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that Python 3 is not supported yet for the post-processing part of NumBBO/CoCO!
+For Python (running the post-processing), we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that Python 3 is not yet supported for the post-processing part of NumBBO/CoCO!
 
+### Windows Specifics
 Under Windows, two alternative compile toolchains can be installed: 
 
 1. [Cygwin](https://www.cygwin.com/) which comes with gcc and make, available in 32- and 64-bit versions.  
 2. MinGW's gcc (http://www.mingw.org/) and GNU make (http://gnuwin32.sourceforge.net/packages/make.htm). MinGW only comes in 32-bit, but also runs on 64-bit machines. 
 
-For using `git` under Windows, we recommend installing [TortoiseGit](https://tortoisegit.org/).
+For using `git` under Windows (optional), we recommend installing [TortoiseGit](https://tortoisegit.org/).
 
+### Language Specifics
 Additional requirements for running an algorithm in a specific language:
 * Java: none, but see [here](./code-experiments/build/java/README.txt) for details on the compilation
 * Python: none, see [here](./code-experiments/build/python/README.txt) for details on the installation
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.txt)
 
+### Guaranties
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP, 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions etc. Naturally, we cannot guarantee that the framework runs on any combination of operating system and software installed. 
 
 Getting Started
