@@ -58,9 +58,6 @@ typedef struct {
   size_t number_of_objectives;
   size_t suite_dep_instance;
 
-  /* Additional information on the problem */
-  mo_problem_data_t *problem_data;
-
   /* The tree keeping currently non-dominated solutions */
   avl_tree_t *archive_tree;
   /* The tree with pointers to nondominated solutions that haven't been logged yet */
@@ -130,14 +127,14 @@ static void logger_biobj_node_free(logger_biobj_avl_item_t *item, void *userdata
  * Checks if the given node is smaller than the reference point, and stores this information in the node's
  * item->within_ROI field.
  */
-static void logger_biobj_check_if_within_ROI(logger_biobj_t *logger, coco_problem_t *problem, avl_node_t *node) {
+static void logger_biobj_check_if_within_ROI(coco_problem_t *problem, avl_node_t *node) {
 
   logger_biobj_avl_item_t *node_item = (logger_biobj_avl_item_t *) node->item;
   size_t i;
 
   node_item->within_ROI = 1;
   for (i = 0; i < problem->number_of_objectives; i++)
-    if (node_item->y[i] > logger->problem_data->reference_point[i]) {
+    if (node_item->y[i] > problem->nadir_value[i]) {
       node_item->within_ROI = 0;
       break;
     }
@@ -295,7 +292,7 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
     avl_item_insert(logger->buffer_tree, node_item);
 
     if (logger->compute_indicators) {
-      logger_biobj_check_if_within_ROI(logger, problem, new_node);
+      logger_biobj_check_if_within_ROI(problem, new_node);
       if (node_item->within_ROI) {
         /* Compute indicator value for new node and update the indicator value of the affected nodes */
         logger_biobj_avl_item_t *next_item, *previous_item;
@@ -307,9 +304,9 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
               logger->indicators[i]->current_value -= next_item->indicator_contribution[i];
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
                 next_item->indicator_contribution[i] = (node_item->y[0] - next_item->y[0])
-                    * logger->problem_data->normalization_factor[0]
-                    * (logger->problem_data->reference_point[1] - next_item->y[1])
-                    * logger->problem_data->normalization_factor[1];
+                    / (problem->nadir_value[0] - problem->best_value[0])
+                    * (problem->nadir_value[1] - next_item->y[1])
+                    / (problem->nadir_value[1] - problem->best_value[1]);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -327,9 +324,9 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
             for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
                 node_item->indicator_contribution[i] = (previous_item->y[0] - node_item->y[0])
-                    * logger->problem_data->normalization_factor[0]
-                    * (logger->problem_data->reference_point[1] - node_item->y[1])
-                    * logger->problem_data->normalization_factor[1];
+                    / (problem->nadir_value[0] - problem->best_value[0])
+                    * (problem->nadir_value[1] - node_item->y[1])
+                    / (problem->nadir_value[1] - problem->best_value[1]);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -347,10 +344,10 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
           /* Previous item does not exist or is out of ROI, use reference point instead */
           for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
             if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
-              node_item->indicator_contribution[i] = (logger->problem_data->reference_point[0]
-                  - node_item->y[0]) * logger->problem_data->normalization_factor[0]
-                  * (logger->problem_data->reference_point[1] - node_item->y[1])
-                  * logger->problem_data->normalization_factor[1];
+              node_item->indicator_contribution[i] = (problem->nadir_value[0] - node_item->y[0])
+                  / (problem->nadir_value[0] - problem->best_value[0])
+                  * (problem->nadir_value[1] - node_item->y[1])
+                  / (problem->nadir_value[1] - problem->best_value[1]);
             } else {
               coco_error(
                   "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -619,11 +616,6 @@ static void logger_biobj_free(void *stuff) {
     logger->nondom_file = NULL;
   }
 
-  if (logger->problem_data != NULL) {
-    mo_problem_data_free(logger->problem_data);
-    logger->problem_data = NULL;
-  }
-
   avl_tree_destruct(logger->archive_tree);
   avl_tree_destruct(logger->buffer_tree);
 
@@ -637,12 +629,9 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
   coco_problem_t *self;
   logger_biobj_t *logger;
   observer_biobj_t *observer_biobj;
-  coco_stacked_problem_data_t* stacked_problem;
-  double *x, *nadir;
   const char nondom_folder_name[] = "archive";
   char *path_name, *file_name = NULL, *prefix;
   size_t i;
-  double norm;
 
   if (problem->number_of_objectives != 2) {
     coco_error("logger_biobj(): The biobjective logger cannot log a problem with %d objective(s)", problem->number_of_objectives);
@@ -724,50 +713,6 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
       logger->indicators[i] = logger_biobj_indicator(logger, problem, OBSERVER_BIOBJ_INDICATORS[i]);
 
     observer_biobj->previous_function = (long) problem->suite_dep_function;
-  }
-
-  /* Compute the ideal and reference points */
-  stacked_problem = (coco_stacked_problem_data_t *) problem->data;
-  logger->problem_data = mo_problem_data_allocate(problem->number_of_objectives);
-
-  /* Set the ideal and reference points*/
-  logger->problem_data->ideal_point[0] = stacked_problem->problem1->best_value[0];
-  logger->problem_data->ideal_point[1] = stacked_problem->problem2->best_value[0];
-  nadir = coco_allocate_vector(problem->number_of_objectives);
-  x = stacked_problem->problem2->best_parameter;
-  coco_evaluate_function(stacked_problem->problem1, x, &nadir[0]);
-  x = stacked_problem->problem1->best_parameter;
-  coco_evaluate_function(stacked_problem->problem2, x, &nadir[1]);
-  logger->problem_data->reference_point[0] = nadir[0];
-  logger->problem_data->reference_point[1] = nadir[1];
-  coco_free_memory(nadir);
-
-  mo_problem_data_compute_normalization_factor(logger->problem_data, problem->number_of_objectives);
-
-  /* Some additional checks that should be performed only in debug mode */
-  if (coco_log_level >= COCO_DEBUG) {
-
-    /* Output the ideal and reference points */
-    coco_debug("%s\t%+.*e\t%+.*e\t%+.*e\t%+.*e", problem->problem_id,
-               logger->precision_f, logger->problem_data->ideal_point[0],
-               logger->precision_f, logger->problem_data->ideal_point[1],
-               logger->precision_f, logger->problem_data->reference_point[0],
-               logger->precision_f, logger->problem_data->reference_point[1]);
-
-    /* Check whether the ideal and reference points are closer than 1e-4 in the objective space */
-    norm = mo_get_norm(logger->problem_data->ideal_point, logger->problem_data->reference_point, 2);
-    if (norm < 1e-4) {
-      coco_warning("The ideal and reference points of %s are close in the objective space\nnorm = %.*e",
-          problem->problem_id, logger->precision_f, norm);
-    }
-
-    /* Check whether the extreme optimal points are closer than 1e-4 in the decision space */
-    norm = mo_get_norm(stacked_problem->problem1->best_parameter, stacked_problem->problem2->best_parameter,
-        problem->number_of_variables);
-    if (norm < 1e-4) {
-      coco_warning("The extreme optimal points of %s are close in the decision space\nnorm = %.*e",
-          problem->problem_id, logger->precision_f, norm);
-    }
   }
 
   return self;
