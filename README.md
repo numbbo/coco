@@ -55,18 +55,21 @@ In a system shell:
   respective code and run the example experiment once. The build result and the example
   experiment code can be found under `code-experiments/build/*`. 
   
-* If the example experiment runs, connect your favorite algorithm to Coco. Copy the `code-experiments/build/YOURFAVORITELANGUAGE` folder to another location and replace the random search optimizer in the example experiment file by your algorithm (the details vary, see respective the read-me's). Another entry point for your own experiments can be the more complicated algorithms CMA-ES (for the single-objective suites) and SMS-EMOA (for the multiobjective case) in the `code-experiments/examples` folder. Do not forget, in any case, to update the output (observers) result folder and the algorithm name and info in the experiment file.
-* Now you can run your favorite algorithm on the `bbob-biobj` (for a multi-objective algorithm) or on the `bbob` suite (for a single-objective algorithm). Output is automatically generated in the specified result folder.
-* Postprocess your data from the results folder by typing
+3. If the example experiment runs, connect your favorite algorithm to Coco. Copy the `code-experiments/build/YOURFAVORITELANGUAGE` folder to another location and replace the random search optimizer in the example experiment file by your algorithm (the details vary, see respective the read-me's). Another entry point for your own experiments can be the more complicated algorithms CMA-ES (for the single-objective suites) and SMS-EMOA (for the multiobjective case) in the `code-experiments/examples` folder. Do not forget, in any case, to update the output (observers) result folder and the algorithm name and info in the experiment file.
+4. Now you can run your favorite algorithm on the `bbob-biobj` (for a multi-objective algorithm) or on the `bbob` suite (for a single-objective algorithm). Output is automatically generated in the specified result folder.
+5. Postprocess your data from the results folder by typing
 
     ```
     python code-postprocessing/bbob_pproc/rungeneric.py YOURRESULTFOLDER
     ```
 
 A folder named `ppdata` by default will be generated (the folder name can be changed by the `-o FOLDERNAME` option). Note that you can also compare more than one algorithm by specifying more algorithm result folders, separated by blanks.
-* Within the postprocessing's output folder, you will find pdfs of all kinds of plots (e.g. data profiles). For the single-objective `bbob` suite, they can be used to produce a summary pdf via LaTeX. The corresponding templates in ACM format can be found in the `code-postprocessing/latex-templates` folder. LaTeX templates for the multi-objective `bbob-biobj` suite will follow in a later release. A basic html output is also available in the result folder of the postprocessing (file `templateBBOBarticle.html`).
-* Once your algorithm runs well, increase the budget in your experiment script and follow the above steps successively until you are happy.
-* If you detect bugs or other issues, please let us know by opening an issue in our issue tracker at https://github.com/numbbo/numbbo/issues.
+
+  Within the postprocessing's output folder, you will find pdfs of all kinds of plots (e.g. data profiles). For the single-objective `bbob` suite, they can be used to produce a summary pdf via LaTeX. The corresponding templates in ACM format can be found in the `code-postprocessing/latex-templates` folder. LaTeX templates for the multi-objective `bbob-biobj` suite will follow in a later release. A basic html output is also available in the result folder of the postprocessing (file `templateBBOBarticle.html`).
+
+6. Once your algorithm runs well, increase the budget in your experiment script and follow the above steps successively until you are happy.
+
+If you detect bugs or other issues, please let us know by opening an issue in our issue tracker at https://github.com/numbbo/numbbo/issues.
 
 ## Description by Folder
 
