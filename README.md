@@ -40,9 +40,8 @@ Getting Started
 Download the [COCO framework code](https://github.com/numbbo/numbbo) from github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip), 
 **CAVEAT: this code is still under development**, and unzip the `zip` file. 
 
-In a system shell:
-
-0. cd into the `numbbo` (framework root) folder, where the file `do.py` lies. 
+0. In a system shell, `cd` into the `numbbo` (framework root) folder, where the 
+   file `do.py` lies. 
 
 1. Type, i.e. execute, one of the following commands once
   ```
@@ -56,7 +55,9 @@ In a system shell:
   experiment code can be found under `code-experiments/build/*`. 
   
 3. If the example experiment runs, connect your favorite algorithm to Coco. Copy the `code-experiments/build/YOURFAVORITELANGUAGE` folder to another location and replace the random search optimizer in the example experiment file by your algorithm (the details vary, see respective the read-me's). Another entry point for your own experiments can be the more complicated algorithms CMA-ES (for the single-objective suites) and SMS-EMOA (for the multiobjective case) in the `code-experiments/examples` folder. Do not forget, in any case, to update the output (observers) result folder and the algorithm name and info in the experiment file.
+
 4. Now you can run your favorite algorithm on the `bbob-biobj` (for a multi-objective algorithm) or on the `bbob` suite (for a single-objective algorithm). Output is automatically generated in the specified result folder.
+
 5. Postprocess your data from the results folder by typing
 
     ```
