@@ -33,7 +33,7 @@ Additional requirements for running an algorithm in a specific language.
 * Python: none, see [here](./code-experiments/build/python/README.txt) for details on the installation
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.txt)
 
-### Guaranties
+### Guaranties (None)
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions
 etc. Naturally, we cannot guarantee that the framework runs on any combination
