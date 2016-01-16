@@ -15,7 +15,8 @@ Requirements
 2. For a machine running the post-processing
   - Python 2.6 or 2.7 with `numpy` and `matplotlib` installed
 
-For Python (running the post-processing), we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that Python 3 is not yet supported for the post-processing part of NumBBO/CoCO!
+For Python (running the post-processing), we recommend to install the [Anaconda library](https://www.continuum.io/downloads). Please note that Python 3 is not 
+yet supported for the post-processing part of NumBBO/CoCO!
 
 ### Windows Specifics
 Under Windows, two alternative compile toolchains can be used: 
@@ -37,13 +38,11 @@ We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
 
 Getting Started
 ---------------
-Download the [COCO framework code](https://github.com/numbbo/numbbo) from github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip), 
+**Download** the [COCO framework code](https://github.com/numbbo/numbbo) from github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip), 
 **CAVEAT: this code is still under development**, and unzip the `zip` file. 
 
-0. In a system shell, `cd` into the `numbbo` (framework root) folder, where the 
-   file `do.py` lies. 
-
-1. Type, i.e. execute, one of the following commands once
+1. In a system shell, **`cd` into** the `numbbo` (framework root) folder, where the 
+   file `do.py` lies. Type, i.e. **execute**, one of the following commands once
   ```
     python do.py run-c
     python do.py run-java
@@ -54,7 +53,7 @@ Download the [COCO framework code](https://github.com/numbbo/numbbo) from github
   respective code and run the example experiment once. The build result and the example
   experiment code can be found under `code-experiments/build/*`. 
   
-3. If the example experiment runs, connect your favorite algorithm to Coco: copy the `code-experiments/build/YOUR-FAVORITE-LANGUAGE` folder to another location and replace the call to the random search optimizer in the example experiment file by a call to your algorithm (the details vary, see respective the read-me's). Another entry point for your own experiments can be the `code-experiments/examples` folder. In any case, update the output (observer options) result_folder and the algorithm_name and info in the experiment file.
+3. If the example experiment runs, **connect** your favorite algorithm to Coco: copy the `code-experiments/build/YOUR-FAVORITE-LANGUAGE` folder to another location and replace the call to the random search optimizer in the example experiment file by a call to your algorithm (the details vary, see respective the read-me's). Another entry point for your own experiments can be the `code-experiments/examples` folder. In any case, update the output (observer options) result_folder and the algorithm_name and info in the experiment file.
 
 4. Now you can run your favorite algorithm on the `bbob-biobj` (for multi-objective algorithms) or on the `bbob` suite (for single-objective algorithms). Output is automatically generated in the specified result folder.
 
