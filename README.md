@@ -8,7 +8,7 @@ are Java, MATLAB, and Python. Languages available in near future are C++, Octave
 ## Requirements and Installation
 Minimal requirements (running an algorithm in C):
 * git
-* Python 2.6 or 2.7 <!--- with `setuptools`, `numpy` and `matplotlib`-->
+* Python 2.6 or 2.7 with `setuptools`, `numpy` and `matplotlib` installed
 * a C compiler, such as gcc
 * GNU make
 * LaTeX
