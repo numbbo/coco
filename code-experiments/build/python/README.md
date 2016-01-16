@@ -20,7 +20,7 @@ the following is lacking:
 - A C compiler, like `gcc`, which is invoked by `make`. 
 
 
-# Getting Started
+#Getting Started
 
 Download the [COCO framework code](https://github.com/numbbo/numbbo) from github by clicking [here](https://github.com/numbbo/numbbo/archive/development.zip), 
 **CAVEAT: this code is still under development**, and unzip the `zip` file. 
