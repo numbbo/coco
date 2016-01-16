@@ -1,31 +1,72 @@
-# numbbo: Implementation of Comparing Continuous Optimizer, COCO, in the Numerical Black-Box Optimization Benchmarking Framework 
+numbbo/coco: Comparing Continuous Optimizers
+============================================
 
 This code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
-now rewritten fully in ANSI C with the other three languages Java, MATLAB, and Python calling the C code.
+now rewritten fully in ANSI C with the other languages calling the C code. Languages currently available 
+are Java, MATLAB, and Python. Languages available in near future are C++, Octave, and possibly R. 
 
-# Building the Code
-Building, running, and testing of the code is done by merging/amalgamation of all C-code into a single C file, coco.c
-(by calling do.py, see below). Like this it becomes very simple to include/use the code in different projects.
+Requirements
+------------
+Minimal requirements:
+* Python 2.6 or 2.7 with `setuptools`, `numpy` and `matplotlib` installed
+* a C compiler, such as gcc
+* GNU make
 
-# Description by Folder
+For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that Python 3 is not supported yet for the postprocessing part of NumBBO/Coco!
 
-* the do.py file in the root folder is a tool to build the entire distribution (like a make file, maybe it should rather have been named make.py). It has switches for just building some languages etc, e.g.
+Under Windows, two main toolchains can be installed: 1) Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 2) with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
 
-    python ./do.py build  # builds all
-    python ./do.py build-python
+Additional requirements for running an algorithm in a specific language:
+* Java: none, but see [here](./code-experiments/build/java/README.txt) for details on the compilation
+* Python: none, see [here](./code-experiments/build/python/README.txt) for details on the installation
+* MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.txt)
+
+Unfortunately, we cannot guarantee that the software runs on any combination of operating system and software. However, we tested it (in part) on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP, 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions etc. In particular, we continuously test the code through the open source automation server Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit Windows 7 machine with cygwin.
+
+Getting Started
+---------------
+Download the [COCO framework code](https://github.com/numbbo/numbbo) from github by clicking [here](https://github.com/numbbo/numbbo/archive/development.zip), 
+**CAVEAT: this code is still under development**, and unzip the `zip` file. 
+
+In a system shell:
+
+0. cd into the `numbbo` (framework root) folder, where the file `do.py` lies. 
+
+1. Type, i.e. execute, one of the following commands once,
+  ```
+    python do.py run-c
+    python do.py run-java
+    python do.py run-matlab
+    python do.py run-python
+  ```  
+  depending which language should be used to run the experiments. `run-*` will build the 
+  respective code and run the example experiment once. The build result and an example
+  experiment code can be found under `code-experiments/build/*`. 
+  
+* If the example experiment runs, you can start connecting your favorite algorithm to Coco. The probably easiest is to copy the `code-experiments/build/YOURFAVORITELANGUAGE` folder and replace the random search optimizer in the example experiment file by your algorithm (the details vary). Another entry point for your own experiments can be the more complicated algorithms CMA-ES (for the single-objective suites) and SMS-EMOA (for the multiobjective case) in the `code-experiments/examples` folder. Do not forget, in any case, to update the output (observers) result folder and the algorithm name and info in the experiment file.
+* Now you can run your favorite algorithm on the `bbob-biobj` (for a multi-objective algorithm) or on the `bbob` suite (for a single-objective algorithm). Output is automatically generated in the specified result folder.
+* Postprocess your data from the results folder by typing
+
+    ```
+    python code-postprocessing/bbob_pproc/rungeneric.py YOURRESULTFOLDER
+    ```
+
+A folder named `ppdata` by default will be generated (the folder name can be changed by the `-o FOLDERNAME` option). Note that you can also compare more than one algorithm by specifying more algorithm result folders, separated by blanks.
+* Within the postprocessing's output folder, you will find pdfs of all kinds of plots (e.g. data profiles). For the single-objective `bbob` suite, they can be used to produce a summary pdf via LaTeX. The corresponding templates in ACM format can be found in the `code-postprocessing/latex-templates` folder. LaTeX templates for the multi-objective `bbob-biobj` suite will follow in a later release. A basic html output is also available in the result folder of the postprocessing (file `templateBBOBarticle.html`).
+* Once your algorithm runs well, increase the budget in your experiment script and follow the above steps successively until you are happy.
+* If you detect bugs or other issues, please let us know by opening an issue in our issue tracker at https://github.com/numbbo/numbbo/issues.
+
+## Description by Folder
+
+* the `do.py` file in the root folder is a tool to build the entire distribution. `do.py` is a neat and simplifying replacement for make. It has switches for just building some languages etc, e.g.
+
     python ./do.py build-c
     python ./do.py build-java
     python ./do.py build-matlab
+    python ./do.py build-python
+    python ./do.py build  # builds all
 
-are valid commands (on a Linux or OSX shell, you can omit the leading 'python' if you wish). Our do.py is a neat and simplifying replacement for make. It can also run the experiments directly, e.g., by typing
-
-    python ./do.py run # runs all
-    python ./do.py run-python
-    python ./do.py run-c
-    python ./do.py run-java
-    python ./do.py run-matlab
-
-you can start the corresponding example experiments scripts in code-experiments/build/LANGUAGE/.
+are valid commands code-experiments/build/LANGUAGE/.
 
 * the code-experiments/build folder is to a large extend the output folder of the "./do.py build" command.
    - the exampleexperiment.??? files in the build folder are the entry points to understand the usage of the code (as end-user). They are supposed to actually be executable (in case, after compilation, which should be taken care of by do.py and/or make) and run typically random search on (some of) the provided benchmark suites.
@@ -58,58 +99,55 @@ you can start the corresponding example experiments scripts in code-experiments/
 * howtos contains a few text files with internal howtos.
 
 
-# Requirements and Installation
-Minimal requirements (running an algorithm in C):
-* git
-* Python (2.7 $\leq$ version $<$ 3.0) with `setuptools`, `numpy` and `matplotlib`
-* a C compiler, such as gcc
-* GNU make
-* LaTeX
+Known Issues
+------------
+## Python
 
-For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that python 3 is explicitly not supported yet for the postprocessing part of NumBBO/Coco!
+### `setuptools` is not installed
+If you see something like this
+```
+PYTHON  setup.py install --user in code-experiments/build/python
+ERROR: return value=1
+Traceback (most recent call last):
+ File "setup.py", line 8, in <module>
+   import setuptools
+ImportError: No module named setuptools
 
-Under Windows, two main toolchains can be installed: 1) Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 2) with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
-
-Additional requirements for running an algorithm in a specific language:
-* Java: none, but see code-experiments/build/java/README.txt for details on the compilation
-* Python: cython (http://docs.cython.org/src/quickstart/install.html), see code-experiments/build/python/README for details
-* MATLAB: at least MATLAB 2008, for details, see code-experiments/build/matlab/README.txt
-
-Unfortunately, we cannot guarantee that the software runs on any combination of operating system and software. However, we tested it (in part) on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP, 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions etc. In particular, we continuously test the code through the open source automation server Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit Windows 7 machine with cygwin.
-
-
-# Typical Workflow
-* download the NumBBO/Coco code by clicking on the *Download ZIP* link on the top right of the main NumBBO github page
-* run once
-
-    ```
-    python do.py run-YOURFAVORITELANGUAGE
-    ```
-
-to build and test the example experiment code for the language of your choice (`YOURFAVORITELANGUAGE` can thereby be any of `python`, `c`, `java`, or `matlab`).
-* If the example experiment runs, you can start connecting your favorite algorithm to Coco. The probably easiest is to replace the random search in the example experiment within the `code-experiments/build/YOURFAVORITELANGUAGE` folder by the call to your algorithm. To this end, you can move the `code-experiments/build/YOURFAVORITELANGUAGE` folder wherever you want without the need to build/compile the NumBBO/Coco part a second time. Another entry point for your own experiments can be the more complicated algorithms CMA-ES (for the single-objective suites) and SMS-EMOA (for the multiobjective case) in the `code-experiments/examples` folder. Do not forget, in any case, to update the result folder and the algorithm name and info in the experiment.
-* Now you can run your favorite algorithm on the `bbob-biobj` (for a multi-objective algorithm) or on the `bbob` suite (for a single-objective algorithm). Output is automatically generated in the specified result folder.
-* Postprocess your data from the results folder by typing
-
-    ```
-    python rungeneric.py YOURRESULTFOLDER
-    ```
-
-within the `code-postprocessing/bbob_pproc` folder (or running the `rungeneric.py` script from where your results lie). A folder named `ppdata` by default will be generated (the folder name can be changed by the `-o FOLDERNAME` option). Note that you can also compare more than one algorithm by specifying more algorithm result folders, separated by blanks.
-* Within the postprocessing's output folder, you will find pdfs of all kinds of plots (e.g. data profiles). For the single-objective `bbob` suite, they can be used to produce a summary pdf via LaTeX. The corresponding templates in ACM format can be found in the `code-postprocessing/latex-templates` folder. LaTeX templates for the multi-objective `bbob-biobj` suite will follow in a later release. A basic html output is also available in the result folder of the postprocessing (file `templateBBOBarticle.html`).
-* Once your algorithm runs well, increase the budget in your experiment script and follow the above steps successively until you are happy.
-* If you detect bugs or other issues, please let us know by opening an issue in our issue tracker at https://github.com/numbbo/numbbo/issues.
-
-# Known Issues
+Traceback (most recent call last):
+ File "do.py", line 562, in <module>
+   main(sys.argv[1:])
+ File "do.py", line 539, in main
+   elif cmd == 'build-python': build_python()
+ File "do.py", line 203, in build_python
+   python('code-experiments/build/python', ['setup.py', 'install', '--user'])
+ File "/vol2/twagner/numbbo/code-experiments/tools/cocoutils.py", line 92, in p                                         ython
+   universal_newlines=True)
+ File "/usr/local/lib/python2.7/subprocess.py", line 575, in check_output
+   raise CalledProcessError(retcode, cmd, output=output)
+subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i                                        nstall', '--user']' returned non-zero exit status 1
+```
+`setuptools` needs to be installed: 
+```
+    pip install setuptools
+```
+or `easy_install setuptools` should do the job. 
 
 Details
-=======
-Generally, the code features an object oriented implementation, where the `coco_problem_t` is the most central
+-------
+- The C code features an object oriented implementation, where the `coco_problem_t` is the most central
 data structure / object. `coco.h`, `example_experiment.c` and `coco_internal.h` are probably the best pointers to start with
 _to investigate the code_ (but see also below). `coco_problem_t` defines a benchmark function instance (in a given dimension), and is called via `coco_evaluate_function`.
 
-# Links and Further Documentation
-* Downloading this repository via the above "Download ZIP" button or by typing 'git clone https://github.com/numbbo/numbbo.git' or by typing https://github.com/numbbo/numbbo/archive/master.zip in your browser's address line
+- Building, running, and testing of the code is done by merging/amalgamation of all C-code into a single C file, `coco.c`, and `coco.h`. (by calling `do.py`, see above). Like this it becomes very simple to include/use the code in different projects.
+
+- Cython (http://docs.cython.org/src/quickstart/install.html) is used to compile the C interface in `build/python/interface.pyx`, whereas `setup.py` uses the compiled `interface.c`, if `interface.pyx` has not changed. 
+
+
+Links and Further Documentation
+-------------------------------
+* Downloading this repository via the above "Download ZIP" button or by typing 
+  `git clone https://github.com/numbbo/numbbo.git` or by typing https://github.com/numbbo/numbbo/archive/master.zip 
+  in your browser's address line
 * The BBOB workshop series, which uses the NumBBO/Coco framework extensively, can be tracked at http://numbbo.github.io/workshops/
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software by registering at http://coco.gforge.inria.fr/register
 * More detailed documentation of the existing benchmark suites can be found here:

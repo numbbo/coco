@@ -184,8 +184,7 @@ def _prep_python():
                release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
-    expand_file('code-experiments/build/python/README.md', 'code-experiments/build/python/README.txt',
-                {'COCO_VERSION': git_version()}) # hg_version()})
+    copy_file('code-experiments/build/python/README.md', 'code-experiments/build/python/README.txt')
     expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
                 {'COCO_VERSION': git_version()}) # hg_version()})
     # if 'darwin' in sys.platform:  # a hack to force cythoning
