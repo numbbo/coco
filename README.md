@@ -100,7 +100,7 @@ are valid commands code-experiments/build/LANGUAGE/.
 
 
 Known Issues
-============
+------------
 ## Python
 
 ### `setuptools` is not installed
