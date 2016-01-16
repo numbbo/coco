@@ -54,9 +54,9 @@ Download the [COCO framework code](https://github.com/numbbo/numbbo) from github
   respective code and run the example experiment once. The build result and the example
   experiment code can be found under `code-experiments/build/*`. 
   
-3. If the example experiment runs, connect your favorite algorithm to Coco. Copy the `code-experiments/build/YOURFAVORITELANGUAGE` folder to another location and replace the random search optimizer in the example experiment file by your algorithm (the details vary, see respective the read-me's). Another entry point for your own experiments can be the more complicated algorithms CMA-ES (for the single-objective suites) and SMS-EMOA (for the multiobjective case) in the `code-experiments/examples` folder. Do not forget, in any case, to update the output (observers) result folder and the algorithm name and info in the experiment file.
+3. If the example experiment runs, connect your favorite algorithm to Coco: copy the `code-experiments/build/YOUR-FAVORITE-LANGUAGE` folder to another location and replace the call to the random search optimizer in the example experiment file by a call to your algorithm (the details vary, see respective the read-me's). Another entry point for your own experiments can be the `code-experiments/examples` folder. In any case, update the output (observer options) result_folder and the algorithm_name and info in the experiment file.
 
-4. Now you can run your favorite algorithm on the `bbob-biobj` (for a multi-objective algorithm) or on the `bbob` suite (for a single-objective algorithm). Output is automatically generated in the specified result folder.
+4. Now you can run your favorite algorithm on the `bbob-biobj` (for multi-objective algorithms) or on the `bbob` suite (for single-objective algorithms). Output is automatically generated in the specified result folder.
 
 5. Postprocess your data from the results folder by typing
 
