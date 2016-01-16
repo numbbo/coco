@@ -16,8 +16,9 @@ Minimal requirements:
 For Python, we recommend to install the Anaconda library (https://www.continuum.io/downloads). Please note that Python 3 is not supported yet for the post-processing part of NumBBO/CoCO!
 
 Under Windows, two main toolchains can be installed: 
-1. Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 
-2. with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
+
+1) Via Cygwin (https://www.cygwin.com/) which comes with gcc and make or 
+2) with MinGW's gcc (http://www.mingw.org/) and GNU make for Windows (http://gnuwin32.sourceforge.net/packages/make.htm). While the former is available in 32- and 64-bit versions, the latter only comes in 32-bit, but also runs on 64-bit machines. For using git under Windows, we recommend installing TortoiseGit in addition (https://tortoisegit.org/).
 
 Additional requirements for running an algorithm in a specific language:
 * Java: none, but see [here](./code-experiments/build/java/README.txt) for details on the compilation
