@@ -12,14 +12,14 @@ overall conducted function evaluations in case the smallest target
 function value (1e-8) was not reached.
 
 """
-
+from __future__ import absolute_import
 import os
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
 from pdb import set_trace
-from bbob_pproc import toolsstats, bestalg
-from bbob_pproc.ppfig import saveFigure, groupByRange
+from . import toolsstats, bestalg
+from .ppfig import saveFigure, groupByRange
 
 __all__ = ['beautify', 'plot', 'main']
 

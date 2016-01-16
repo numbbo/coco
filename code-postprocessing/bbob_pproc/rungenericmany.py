@@ -32,12 +32,12 @@ if __name__ == "__main__":
     import matplotlib
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
-from bbob_pproc import genericsettings, ppfig
-from bbob_pproc import dataoutput, pproc, pptex
-from bbob_pproc.pproc import DataSetList, processInputArgs
-from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname1, str_to_latex
-from bbob_pproc.compall import pprldmany, pptables, ppfigs
-from bbob_pproc import ppconverrorbars
+from . import genericsettings, ppfig
+from . import dataoutput, pproc, pptex
+from .pproc import DataSetList, processInputArgs
+from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex
+from .compall import pprldmany, pptables, ppfigs
+from . import ppconverrorbars
 
 import matplotlib.pyplot as plt
 

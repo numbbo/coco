@@ -39,15 +39,15 @@ if __name__ == "__main__":
     # matplotlib.use('pdf')
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
-from bbob_pproc import pproc
-from bbob_pproc import genericsettings, config
-from bbob_pproc import pprldistr
-from bbob_pproc import htmldesc
-from bbob_pproc.pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
-from bbob_pproc.toolsdivers import prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
-from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
-from bbob_pproc.compall import ppfigs, pprldmany
-from bbob_pproc import ppconverrorbars
+from . import pproc
+from . import genericsettings, config
+from . import pprldistr
+from . import htmldesc
+from .pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
+from .toolsdivers import prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
+from .comp2 import ppfig2, pprldistr2, pptable2, ppscatter
+from .compall import ppfigs, pprldmany
+from . import ppconverrorbars
 import matplotlib.pyplot as plt
 
 __all__ = ['main']

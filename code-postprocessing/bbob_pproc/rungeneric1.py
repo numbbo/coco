@@ -28,11 +28,11 @@ if __name__ == "__main__":
     import matplotlib
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
-from bbob_pproc import genericsettings, pptable, pprldistr, ppfigdim, pplogloss, findfiles
-from bbob_pproc.pproc import DataSetList
-from bbob_pproc.toolsdivers import print_done, prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
-from bbob_pproc import ppconverrorbars
-from bbob_pproc.compall import pprldmany
+from . import genericsettings, pptable, pprldistr, ppfigdim, pplogloss, findfiles
+from .pproc import DataSetList
+from .toolsdivers import print_done, prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
+from . import ppconverrorbars
+from .compall import pprldmany
 
 import matplotlib.pyplot as plt
 
@@ -238,11 +238,11 @@ def main(argv=None):
 
         # from bbob_pproc import bbob2010 as inset # input settings
         if genericsettings.inputsettings == "color":
-            from bbob_pproc import genericsettings as inset  # input settings
+            from . import genericsettings as inset  # input settings
         elif genericsettings.inputsettings == "grayscale":
-            from bbob_pproc import grayscalesettings as inset  # input settings
+            from . import grayscalesettings as inset  # input settings
         elif genericsettings.inputsettings == "black-white":
-            from bbob_pproc import bwsettings as inset  # input settings
+            from . import bwsettings as inset  # input settings
         else:
             txt = ('Settings: %s is not an appropriate ' % genericsettings.inputsettings
                    + 'argument for input flag "--settings".')
@@ -297,7 +297,7 @@ def main(argv=None):
         for ds in dsList:
             dict_max_fun_evals[ds.dim] = np.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
         
-        from bbob_pproc import config
+        from . import config
         config.target_values(genericsettings.isExpensive, dict_max_fun_evals)
         config.config(dsList.isBiobjective())
 
