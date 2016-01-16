@@ -90,7 +90,8 @@ github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip),
   postprocessing (file `templateBBOBarticle.html`).
 
 6. Once your algorithm runs well, **increase the budget** in your experiment
-  script and follow the above steps successively until you are happy.
+  script, if necessary implement independent restarts, and follow the above 
+  steps successively until you are happy.
 
 If you detect bugs or other issues, please let us know by opening an issue in
 our issue tracker at https://github.com/numbbo/numbbo/issues.
