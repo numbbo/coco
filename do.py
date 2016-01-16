@@ -13,6 +13,7 @@ import platform
 import time
 from subprocess import STDOUT
 import glob
+from os.path import join
 
 ## Change to the root directory of repository and add our tools/
 ## subdirectory to system wide search path for modules.
@@ -178,6 +179,13 @@ def leak_check():
     
 ################################################################################
 ## Python 2
+def install_postprocessing():
+    global release
+    expand_file(join('code-postprocessing', 'setup.py.in'),
+                join('code-postprocessing', 'setup.py'),
+                {'COCO_VERSION': git_version()})
+    python('code-postprocessing', ['setup.py', 'install', '--user'])
+    
 def _prep_python():
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/python/cython/coco.c', 
@@ -515,6 +523,7 @@ Available commands:
   build-python         - Build Python modules
   build-python2        - Build Python 2 modules
   build-python3        - Build Python 3 modules
+  install-postprocessing - Install postprocessing (user-locally)
   
   run-c                - Build and run example experiment in C 
   run-java             - Build and run example experiment in Java
@@ -556,6 +565,7 @@ def main(args):
     elif cmd == 'build-python': build_python()
     elif cmd == 'build-python2': build_python2()
     elif cmd == 'build-python3': build_python3()
+    elif cmd == 'install-postprocessing': install_postprocessing()
     elif cmd == 'run-c': run_c()
     elif cmd == 'run-java': run_java()
     elif cmd == 'run-matlab': run_matlab()
