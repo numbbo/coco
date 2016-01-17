@@ -192,6 +192,32 @@ void example_toy(void) {
   
 }
 
+
+/**
+ * A simple example of benchmarking an optimization algorithm on the large scale suite
+ */
+void example_largescale(void) {
+  /* Some options of the bbob observer. See documentation for other options. */
+  const char *observer_options = "result_folder: RS_on_bbob \
+algorithm_name: RS \
+algorithm_info: \"A simple random search algorithm\"";
+  
+  coco_suite_t *suite;
+  coco_observer_t *observer;
+  coco_problem_t *problem;
+  
+  suite = coco_suite("bbob-largescale", NULL, "dimensions: 10 instance_idx: 1");
+  observer = coco_observer("bbob", observer_options);
+
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
+    my_random_search(problem);
+  }
+  
+  coco_observer_free(observer);
+  coco_suite_free(suite);
+  
+}
+
 /**
  * The main method calls all three
  */
@@ -199,10 +225,14 @@ int main(void) {
   
   printf("Running the experiments... (it takes time, be patient)\n");
   fflush(stdout);
+  example_largescale();
+  printf("First example on largescale suite done!\n");
   
+  
+  /*
   example_bbob();
   printf("First example on bbob suite done!\n");
-  /*
+  
   printf("First example on bbob suite done!\n");
 
   fflush(stdout);

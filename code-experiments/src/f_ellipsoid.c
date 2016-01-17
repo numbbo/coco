@@ -113,7 +113,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
                                                                  const long rseed,
                                                                  const char *problem_id_template,
                                                                  const char *problem_name_template) {
-  /*double *xopt, fopt;*/
+  double *xopt, fopt;
   coco_problem_t *problem = NULL;
   double **B;/*/*tmp*/
   size_t *P1 = (size_t *)coco_allocate_memory(dimension * sizeof(size_t));/*TODO: implement a allocate_size_t_vector*/
@@ -124,21 +124,22 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   size_t swap_range;
   size_t nb_swaps;
   int i, j;
-
+  
   /* tentative */
   swap_range = dimension / 3;
   nb_swaps = dimension;
-  size_t block_size = 2;
+  size_t block_size = dimension / 4;
   nb_blocks = dimension / block_size;
   block_sizes = (size_t *)coco_allocate_memory(nb_blocks * sizeof(size_t));
   for (i = 0; i < nb_blocks; i++) {
-    block_sizes[i] = 3 - i;//block_size;
+    block_sizes[i] = block_size;
   }
-
-  /*xopt = coco_allocate_vector(dimension);*/
-  /*bbob2009_compute_xopt(xopt, rseed, dimension);*/
-  /*fopt = bbob2009_compute_fopt(function, instance);*/
-
+  printf("f%zu n%zu i%zu bs%zu\n", function, dimension, instance, block_size);
+  
+  xopt = coco_allocate_vector(dimension);
+  bbob2009_compute_xopt(xopt, rseed, dimension);
+  fopt = bbob2009_compute_fopt(function, instance);
+  
   B = ls_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
   ls_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
 
@@ -147,10 +148,10 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
 
   
   problem = f_ellipsoid_allocate(dimension);
-  /*problem = f_transform_vars_oscillate(problem);*/
+  problem = f_transform_vars_oscillate(problem);
   problem = f_ls_transform_vars_permblockdiag(problem, B, P1, P2, dimension, block_sizes, nb_blocks);
-  /*problem = f_transform_vars_shift(problem, xopt, 0);*/
-  /*problem = f_transform_obj_shift(problem, fopt);*/
+  problem = f_transform_vars_shift(problem, xopt, 0);
+  problem = f_transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);

@@ -619,7 +619,6 @@ static size_t coco_numbers_count(const size_t *numbers, const char *name) {
  * the current result is returned. The memory of the returned object needs to be freed by the caller.
  */
 static size_t *coco_string_get_numbers_from_ranges(char *string, const char *name, size_t min, size_t max) {
-
   char *ptr, *dash;
   char **ranges, **numbers;
   size_t i, j, count;
