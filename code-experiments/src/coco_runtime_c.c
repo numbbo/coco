@@ -44,6 +44,7 @@ void coco_info(const char *message, ...) {
     vfprintf(stdout, message, args);
     va_end(args);
     fprintf(stdout, "\n");
+    fflush(stdout);
   }
 }
 
@@ -56,6 +57,7 @@ void coco_debug(const char *message, ...) {
     vfprintf(stdout, message, args);
     va_end(args);
     fprintf(stdout, "\n");
+    fflush(stdout);
   }
 }
 

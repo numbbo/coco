@@ -2,65 +2,6 @@
 #include <stdio.h>
 #include "coco.h"
 
-/* A structure to hold information for the multiobjective optimization problems */
-typedef struct {
-  double *ideal_point;
-  double *reference_point;
-  double *normalization_factor;
-} mo_problem_data_t;
-
-static mo_problem_data_t *mo_problem_data_allocate(const size_t number_of_objectives) {
-
-  mo_problem_data_t *data = coco_allocate_memory(sizeof(*data));
-
-  data->ideal_point = coco_allocate_vector(number_of_objectives);
-  data->reference_point = coco_allocate_vector(number_of_objectives);
-  data->normalization_factor = coco_allocate_vector(number_of_objectives);
-
-  return data;
-}
-
-static void mo_problem_data_compute_normalization_factor(mo_problem_data_t *data, const size_t number_of_objectives) {
-  size_t i;
-  double diff;
-
-  for (i = 0; i < number_of_objectives; i++) {
-    diff = data->reference_point[i] - data->ideal_point[i];
-    if (diff == 0) {
-      coco_warning("mo_problem_data_compute_normalization_factor(): ideal and reference points too close!");
-      diff = 1.0;
-    }
-    else
-      data->normalization_factor[i] = 1.0 / diff;
-  }
-}
-
-static void mo_problem_data_free(void *stuff) {
-
-  mo_problem_data_t *data;
-
-  assert(stuff != NULL);
-  data = stuff;
-
-  if (data->ideal_point != NULL) {
-    coco_free_memory(data->ideal_point);
-    data->ideal_point = NULL;
-  }
-
-  if (data->reference_point != NULL) {
-    coco_free_memory(data->reference_point);
-    data->reference_point = NULL;
-  }
-
-  if (data->normalization_factor != NULL) {
-    coco_free_memory(data->normalization_factor);
-    data->normalization_factor = NULL;
-  }
-
-  coco_free_memory(data);
-
-}
-
 /**
  * Checks the dominance relation in the unconstrained minimization case between
  * objectives1 and objectives2 and returns:
@@ -108,4 +49,35 @@ static double mo_get_norm(const double *first, const double *second, const size_
   }
 
   return sqrt(norm);
+}
+
+/**
+ * Computes and returns the minimal normalized distance from the point y to the ROI assuming the point is
+ * dominated by the ideal point and the dimension equals 2.
+ */
+static double mo_get_distance_to_ROI(const double *y,
+                                     const double *ideal,
+                                     const double *nadir,
+                                     const size_t dimension) {
+
+  double distance = 0;
+
+  assert(dimension == 2);
+  assert(mo_get_dominance(ideal, y, 2) == 1);
+
+  /* y is weakly dominated by the nadir point */
+  if (mo_get_dominance(y, nadir, 2) <= -1) {
+    distance = mo_get_norm(y, nadir, 2);
+  }
+  else if (y[0] < nadir[0])
+    distance = y[1] - nadir[1];
+  else if (y[1] < nadir[1])
+    distance = y[0] - nadir[0];
+  else {
+    coco_error("mo_get_distance_to_ROI(): unexpected exception");
+    return 0; /* Never reached */
+  }
+
+  return distance / ((nadir[1] - ideal[1]) * (nadir[0] - ideal[0]));
+
 }
