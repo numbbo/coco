@@ -129,7 +129,7 @@ void example_bbob(void) {
   coco_observer_t *observer;
   coco_problem_t *problem;
   
-  suite = coco_suite("bbob", "year: 2009", "dimensions: 2,3,5,10,20 instance_idx: 1-10");
+  suite = coco_suite("bbob", "year: 2009", "dimensions: 2,3,5,10,20");
   observer = coco_observer("bbob", observer_options);
   
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
@@ -225,14 +225,13 @@ int main(void) {
   
   printf("Running the experiments... (it takes time, be patient)\n");
   fflush(stdout);
-  //example_largescale();
-  printf("First example on largescale suite done!\n");
-  
+  /*
+  example_largescale();
+  printf("Zeroth example on largescale suite done!\n");
+  */
   
   
   example_bbob();
-  printf("First example on bbob suite done!\n");
-  
   printf("First example on bbob suite done!\n");
 
   fflush(stdout);
