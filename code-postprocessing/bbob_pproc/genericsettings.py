@@ -277,61 +277,6 @@ class Testbed(object):
                 except ValueError:
                     continue  # ignore annotations
 
-GECCOBBOB_benchmarkshortinfos = """1 Sphere
-2 Ellipsoid separable
-3 Rastrigin separable
-4 Skew Rastrigin-Bueche separ
-5 Linear slope
-6 Attractive sector
-7 Step-ellipsoid
-8 Rosenbrock original
-9 Rosenbrock rotated
-10 Ellipsoid
-11 Discus
-12 Bent cigar
-13 Sharp ridge
-14 Sum of different powers
-15 Rastrigin
-16 Weierstrass
-17 Schaffer F7, condition 10
-18 Schaffer F7, condition 1000
-19 Griewank-Rosenbrock F8F2
-20 Schwefel x*sin(x)
-21 Gallagher 101 peaks
-22 Gallagher 21 peaks
-23 Katsuuras
-24 Lunacek bi-Rastrigin
-101 Sphere moderate Gauss
-102 Sphere moderate unif
-103 Sphere moderate Cauchy
-104 Rosenbrock moderate Gauss
-105 Rosenbrock moderate unif
-106 Rosenbrock moderate Cauchy
-107 Sphere Gauss
-108 Sphere unif
-109 Sphere Cauchy
-110 Rosenbrock Gauss
-111 Rosenbrock unif
-112 Rosenbrock Cauchy
-113 Step-ellipsoid Gauss
-114 Step-ellipsoid unif
-115 Step-ellipsoid Cauchy
-116 Ellipsoid Gauss
-117 Ellipsoid unif
-118 Ellipsoid Cauchy
-119 Sum of diff powers Gauss
-120 Sum of diff powers unif
-121 Sum of diff powers Cauchy
-122 Schaffer F7 Gauss
-123 Schaffer F7 unif
-124 Schaffer F7 Cauchy
-125 Griewank-Rosenbrock Gauss
-126 Griewank-Rosenbrock unif
-127 Griewank-Rosenbrock Cauchy
-128 Gallagher Gauss
-129 Gallagher unif
-130 Gallagher Cauchy
-"""
 class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
     """
@@ -339,10 +284,10 @@ class GECCOBBOBTestbed(Testbed):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
         # only the short info, how to deal with both infos? 
-        # self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'  # 'benchmarkshortinfos.txt'
+        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'  # 'benchmarkshortinfos.txt'
         self.short_names = {}
         try:
-            info_list = GECCOBBOB_benchmarkshortinfos.split('\n')
+            info_list = open(os.path.join(os.path.dirname(__file__), 'benchmarkshortinfos.txt'), 'r').read().split('\n')
             info_dict = {}
             for info in info_list:
                 key_val = info.split(' ', 1)
@@ -351,7 +296,7 @@ class GECCOBBOBTestbed(Testbed):
             self.short_names = info_dict
         except:
             warnings.warn('benchmark infos not found')
-    
+
 class GECCOBBOBNoisefreeTestbed(GECCOBBOBTestbed):
     __doc__ = GECCOBBOBTestbed.__doc__
 
