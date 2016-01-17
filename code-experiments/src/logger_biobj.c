@@ -19,12 +19,6 @@
  * solutions.
  */
 
-/* A set of numbers from which the evaluations that should always be logged are computed. For example, if
- * logger_biobj_always_log[3] = {1, 2, 5}, the logger will always output evaluations
- * 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
- */
-static const size_t logger_biobj_always_log[3] = {1, 2, 5};
-
 /* Data for each indicator */
 typedef struct {
   /* Name of the indicator to be used for identification and in the output */
@@ -509,31 +503,6 @@ static void logger_biobj_indicator_free(void *stuff) {
 }
 
 /**
- * Returns true if the number_of_evaluations corresponds to a number that should always be logged and false
- * otherwise (computed from logger_biobj_always_log). For example, if logger_biobj_always_log = {1, 2, 5},
- * return true for 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
- */
-static int logger_biobj_log_evaluation(size_t number_of_evaluations, size_t dimension) {
-
-  size_t i;
-  double j = 0, factor = 10;
-  size_t count = sizeof(logger_biobj_always_log) / sizeof(size_t);
-
-  if (number_of_evaluations == 1)
-    return 1;
-
-  while ((size_t) pow(factor, j) * dimension <= number_of_evaluations) {
-    for (i = 0; i < count; i++) {
-      if (number_of_evaluations == (size_t) pow(factor, j) * dimension * logger_biobj_always_log[i])
-        return 1;
-    }
-    j++;
-  }
-
-  return 0;
-}
-
-/**
  * Evaluates the function, increases the number of evaluations and outputs information based on observer
  * options.
  */
@@ -625,7 +594,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
             indicator->overall_value, logger->precision_f,
             MO_RELATIVE_TARGET_VALUES[indicator->next_target_id - 1]);
       }
-      else if (logger_biobj_log_evaluation(logger->number_of_evaluations, problem->number_of_variables)) {
+      else if (coco_observer_evaluation_to_log(logger->number_of_evaluations, problem->number_of_variables)) {
         size_t target_index = 0;
         if (indicator->next_target_id > 0)
           target_index = indicator->next_target_id - 1;
