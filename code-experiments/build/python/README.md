@@ -1,4 +1,4 @@
-COCO/NumBBO Framework in Python (Experimental Part)
+NumBBO/CoCO Framework in Python (Experimental Part)
 ===================================================
 
 Prerequisites
@@ -23,13 +23,13 @@ the following is lacking:
 Getting Started
 ---------------
 
-Download the [COCO framework](https://github.com/numbbo/numbbo) code 
-from github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip), 
+Download the [COCO framework](https://github.com/numbbo/coco) code 
+from github by clicking [here](https://github.com/numbbo/coco/archive/master.zip), 
 **CAVEAT: this code is still under development**, and unzip the `zip` file. 
 
 In a system shell:
 
-0. cd into the `numbbo` (framework root) folder, where the file `do.py` lies. 
+0. cd into the `coco` (framework root) folder, where the file `do.py` lies. 
 
 1. Type, i.e. execute,
   ```
