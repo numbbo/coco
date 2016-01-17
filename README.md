@@ -59,14 +59,18 @@ github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip),
   
 3. If the example experiment runs, **connect** your favorite algorithm
   to Coco: copy the `code-experiments/build/YOUR-FAVORITE-LANGUAGE` folder to
-  another location. Teplace the call to the random search optimizer in the
-  example experiment file by a call to your algorithm (the details vary, see
-  respective the read-me's for 
+  another location. Replace the call to the random search optimizer in the
+  example experiment file by a call to your algorithm (the details vary), see
+  respective the read-me's and example experiment files:
 
-  - [C](https://github.com/numbbo/coco/blob/master/coco-experiments/build/c/README.txt)
-  - [Java](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/README.txt)
-  - [Matlab](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/README.txt)
-  - [Python](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/README.md)
+  - `C` [read me](https://github.com/numbbo/coco/blob/master/coco-experiments/build/c/README.txt) 
+    and [example experiment](https://github.com/numbbo/coco/blob/development/code-experiments/build/c/example_experiment.c)
+  - `Java` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/README.txt)
+    and [example experiment](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/ExampleExperiment.java)
+  - `Matlab` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/README.txt)
+    and [example experiment](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/exampleexperiment.m) 
+  - `Python` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/README.md)
+    and [example experiment`](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/example_experiment.py)
 
   Another entry point for your own experiments can be
   the `code-experiments/examples` folder. In any case, update the output
