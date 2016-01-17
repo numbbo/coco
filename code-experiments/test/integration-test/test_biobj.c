@@ -9,7 +9,7 @@
 
 #include "coco.h"
 
-static void wait (unsigned int secs) {
+static void wait_in_seconds(unsigned int secs) {
     time_t retTime = time(0) + secs;
     while (time(0) < retTime);
 }
@@ -69,7 +69,7 @@ void run_once(char *observer_options) {
   coco_suite_free(suite);
 
   coco_remove_directory("biobj");
-  wait(2); /* So that the directory removal is surely finished */
+  wait_in_seconds(2); /* So that the directory removal is surely finished */
 
   printf("DONE!\n");
   fflush(stdout);
