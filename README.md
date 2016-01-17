@@ -59,9 +59,16 @@ github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip),
   
 3. If the example experiment runs, **connect** your favorite algorithm
   to Coco: copy the `code-experiments/build/YOUR-FAVORITE-LANGUAGE` folder to
-  another location and replace the call to the random search optimizer in the
+  another location. Teplace the call to the random search optimizer in the
   example experiment file by a call to your algorithm (the details vary, see
-  respective the read-me's). Another entry point for your own experiments can be
+  respective the read-me's for 
+
+  - [C](https://github.com/numbbo/coco/blob/master/coco-experiments/build/c/README.txt)
+  - [Java](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/README.txt)
+  - [Matlab](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/README.txt)
+  - [Python](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/README.md)
+
+  Another entry point for your own experiments can be
   the `code-experiments/examples` folder. In any case, update the output
   (observer options) result_folder and the algorithm_name and info in the
   experiment file.
