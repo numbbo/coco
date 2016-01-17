@@ -51,7 +51,7 @@ setup(
     cmdclass=cmdclass,
     # ext_modules = cythonize(extensions),
     ext_modules = extensions,
-    url = 'https://github.com/numbbo/numbbo/',
+    url = 'https://github.com/numbbo/coco/',
     license = 'BSD',
     maintainer = 'Olaf Mersmann',
     maintainer_email = 'olafm@p-value.net',
