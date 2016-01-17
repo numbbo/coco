@@ -10,11 +10,12 @@
 #include <stdarg.h>
 
 #include "coco.h"
+#include "coco_utilities.c"
 
 void coco_error(const char *message, ...) {
   va_list args;
 
-  fprintf(stderr, "FATAL ERROR: ");
+  fprintf(stderr, "COCO FATAL ERROR: ");
   va_start(args, message);
   vfprintf(stderr, message, args);
   va_end(args);
@@ -25,11 +26,39 @@ void coco_error(const char *message, ...) {
 void coco_warning(const char *message, ...) {
   va_list args;
 
-  fprintf(stderr, "WARNING: ");
-  va_start(args, message);
-  vfprintf(stderr, message, args);
-  va_end(args);
-  fprintf(stderr, "\n");
+  if (coco_log_level >= COCO_WARNING) {
+    fprintf(stderr, "COCO WARNING: ");
+    va_start(args, message);
+    vfprintf(stderr, message, args);
+    va_end(args);
+    fprintf(stderr, "\n");
+  }
+}
+
+void coco_info(const char *message, ...) {
+  va_list args;
+
+  if (coco_log_level >= COCO_INFO) {
+    fprintf(stdout, "COCO INFO: ");
+    va_start(args, message);
+    vfprintf(stdout, message, args);
+    va_end(args);
+    fprintf(stdout, "\n");
+    fflush(stdout);
+  }
+}
+
+void coco_debug(const char *message, ...) {
+  va_list args;
+
+  if (coco_log_level >= COCO_DEBUG) {
+    fprintf(stdout, "COCO DEBUG: ");
+    va_start(args, message);
+    vfprintf(stdout, message, args);
+    va_end(args);
+    fprintf(stdout, "\n");
+    fflush(stdout);
+  }
 }
 
 void *coco_allocate_memory(const size_t size) {

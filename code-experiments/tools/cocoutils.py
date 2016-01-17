@@ -5,11 +5,34 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import sys
 import os
 from shutil import copyfile, copytree, rmtree
-from subprocess import CalledProcessError, check_output, call, STDOUT
+from subprocess import CalledProcessError, call, STDOUT
+
+try:
+    from subprocess import check_output
+except ImportError:
+    import subprocess
+    def check_output(*popenargs, **kwargs):
+        r"""Run command with arguments and return its output as a byte string.
+        Backported from Python 2.7 as it's implemented as pure python on stdlib.
+        >>> check_output(['/usr/bin/python', '--version'])
+        Python 2.6.2
+        """
+        process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
+        output, unused_err = process.communicate()
+        retcode = process.poll()
+        if retcode:
+            cmd = kwargs.get("args")
+            if cmd is None:
+                cmd = popenargs[0]
+            error = subprocess.CalledProcessError(retcode, cmd)
+            error.output = output
+            raise error
+        return output
 
 def hg(args):
     """Run a Mercurial command and return its output.
@@ -51,13 +74,26 @@ def hg_version():
 def hg_revision():
     return hg(['id', '-i'])
 
-def git_version():
-    """Return somewhat readible version number from git"""
-    return git(['describe', '--tags'])
+def git_version(pep440=True):
+    """Return somewhat readible version number from git, like
+    '0.0-6015-ga0a3769' if not pep440 else '0.0.6015'"""
+    try:
+        if pep440:
+            return '.'.join(git(['describe', '--tags']).split('-')[:2])
+        else:
+            return git(['describe', '--tags'])
+    except:
+        print('git version call failed')
+        return ''
 
 def git_revision():
-    """Return unreadible git revision identifier"""
-    return git(['rev-parse', 'HEAD'])
+    """Return unreadible git revision identifier, like
+    a0a3769da32436c27df84d1b9b0915447aebf4d0"""
+    try:
+        return git(['rev-parse', 'HEAD'])
+    except:
+        print('git revision call failed')
+        return ""
 
 def run(directory, args):
     print("RUN\t%s in %s" % (" ".join(args), directory))
@@ -66,6 +102,7 @@ def run(directory, args):
         os.chdir(directory)
         output = check_output(args, stderr=STDOUT, env=os.environ, 
                               universal_newlines=True)
+        # print(output)
     except CalledProcessError as e:
         print("ERROR: return value=%i" % e.returncode)
         print(e.output)
@@ -89,6 +126,7 @@ def python(directory, args, env=None):
         os.chdir(directory)
         output = check_output(full_command, stderr=STDOUT, env=os.environ,
                               universal_newlines=True)
+        # print(output)
     except CalledProcessError as e:
         print("ERROR: return value=%i" % e.returncode)
         print(e.output)

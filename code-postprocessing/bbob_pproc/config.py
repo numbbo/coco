@@ -45,7 +45,7 @@ def target_values(is_expensive, dict_max_fun_evals={}, runlength_limit=1e3):
             genericsettings.runlength_based_targets = False
             
             
-def config():
+def config(isBiobjective):
     """called from a high level, e.g. rungeneric, to configure the lower level 
     modules via modifying parameter settings. 
     """
@@ -53,9 +53,12 @@ def config():
     if genericsettings.runlength_based_targets in (True, 1):
         print 'Using bestGECCO2009 based target values: now for each function the target ' + \
               'values differ, but the "level of difficulty" is "the same". '
+        
+        reference_data = 'bestBiobj2016' if isBiobjective else 'bestGECCO2009'                
         # pprldmany: 
         if 1 < 3:  # not yet functional, captions need to be adjusted and the bug reported by Ilya sorted out
             pprldmany.target_values = pproc.RunlengthBasedTargetValues(np.logspace(np.log10(0.5), np.log10(50), 31),
+                                                                       reference_data = reference_data,
                                                                        smallest_target=1e-8 * 10**0.000,
                                                                        force_different_targets_factor=1,
                                                                        unique_target_values=True)
@@ -64,9 +67,11 @@ def config():
             
         # genericsettings (to be used in rungeneric2 while calling pprldistr.comp(...)):    
         genericsettings.rldValsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_single_rldistr, 
-                                                                          force_different_targets_factor=10**-0.2)
+                                                                             reference_data = reference_data,
+                                                                             force_different_targets_factor=10**-0.2)
         # pprldistr:
         pprldistr.single_target_values = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_single_rldistr, 
+                                                                          reference_data = reference_data,
                                                                           force_different_targets_factor=10**-0.2)
         pprldistr.runlen_xlimits_max = genericsettings.maxevals_fix_display / 2 if genericsettings.maxevals_fix_display else None # can be None
         pprldistr.runlen_xlimits_min = 10**-0.3  # can be None
@@ -74,6 +79,7 @@ def config():
         ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_scaling_figs,
                                                                        # [10**i for i in [2.0, 1.5, 1.0, 0.5, 0.1, -0.3]],
                                                                        # [10**i for i in [1.7, 1, 0.3, -0.3]]
+                                                                       reference_data = reference_data,
                                                                        force_different_targets_factor=10**-0.2)
         ppfigdim.xlim_max = genericsettings.maxevals_fix_display
         if ppfigdim.xlim_max:
@@ -90,15 +96,18 @@ def config():
         # pptable:
         pptable.table_caption=pptable.table_caption_rlbased
         pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
+                                                                     reference_data = reference_data,
                                                                      force_different_targets_factor=10**-0.2)
         
         # pptable2:
         pptable2.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
-                                                                     force_different_targets_factor=10**-0.2)
+                                                                      reference_data = reference_data,
+                                                                      force_different_targets_factor=10**-0.2)
         
         # pptables (for rungenericmany):
         pptables.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
-                                                                     force_different_targets_factor=10**-0.2)
+                                                                      reference_data = reference_data,
+                                                                      force_different_targets_factor=10**-0.2)
 
         ppscatter.markersize = 16
 

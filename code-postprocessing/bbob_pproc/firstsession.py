@@ -27,13 +27,13 @@ ion() # may be needed for figures to be shown when executing the script
 import bbob_pproc as bb
 
 # Collect and unarchive data (~20MB)
-dataurl = 'http://coco.lri.fr/BBOB2009/rawdata/BIPOP-CMA-ES_hansen_noiseless.tar.gz'
+dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
 filename, headers = urllib.urlretrieve(dataurl)
 archivefile = tarfile.open(filename)
 archivefile.extractall()
 
 # Display some information
-ds = bb.load('BBOB2009rawdata/BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info')
+ds = bb.load('BIPOP-CMA-ES/bbobexp_f2.info')
 print ds
 
 # Collect and unarchive data (3.4MB)
@@ -45,7 +45,7 @@ archivefile.extractall()
 # Load a pickle file
 ds = bb.load('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_20.pickle')
 # Load a folder
-ds = bb.load('BBOB2009rawdata/BIPOP-CMA-ES_hansen_noiseless')
+ds = bb.load('BIPOP-CMA-ES')
 
 # Load data using a wildcard
 import glob
