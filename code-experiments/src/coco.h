@@ -1,10 +1,8 @@
-/*
- * Public CoCO/NumBBO experiments interface
- *
- * All public functions, constants and variables are defined in this
- * file. It is the authoritative reference, if any function deviates
- * from the documented behavior it is considered a bug.
+/**
+ * All public functions, constants and variables are defined in this file. It is the authoritative
+ * reference, if any function deviates from the documented behavior it is considered a bug.
  */
+ 
 #ifndef __COCO_H__
 #define __COCO_H__
 
@@ -12,40 +10,71 @@
 extern "C" {
 #endif
 
+/* Definitions of some 32 and 64-bit types (used by the random number generator) */
 #ifdef _MSC_VER
-
 typedef __int32 int32_t;
 typedef unsigned __int32 uint32_t;
 typedef __int64 int64_t;
 typedef unsigned __int64 uint64_t;
-
 #else
 #include <stdint.h>
 #endif
-#include <math.h> /* For NAN among other things */
 
+/* Include definition for NAN among other things */
+#include <math.h>
 #ifndef NAN
+/** @note To be used only if undefined by the included headers */
 #define NAN 8.8888e88
 #endif
 
-#ifdef _MSC_VER
-/* To silence the Visual Studio compiler (C4996 warnings in the python build). */
-#pragma warning(disable:4996)
-/* To be able to use the snprintf() function. */
-#define snprintf _snprintf
-#endif
-
-/**
- * Our very own pi constant. Simplifies the case, when the value of pi changes.
- */
+/* COCO's own pi constant. Simplifies the case, when the value of pi changes. */
 static const double coco_pi = 3.14159265358979323846;
 static const double coco_two_pi = 2.0 * 3.14159265358979323846;
+
+/* Allow for not more than 1000 instances */
+#define COCO_MAX_INSTANCES 1000
+
+/** Logging level type.
+ *
+ * Possible values:
+ * COCO_ERROR: only error messages are output
+ * COCO_WARNING: error and warning messages are output
+ * COCO_INFO: error, warning and info messages are output
+ * COCO_DEBUG: error, warning, info and debug messages are output
+ */
+typedef enum {
+  COCO_ERROR, COCO_WARNING, COCO_INFO, COCO_DEBUG
+} coco_log_level_type_e;
+
+/**
+ * Function to signal a fatal error.
+ */
+void coco_error(const char *message, ...);
+
+/**
+ * Function to warn about error conditions.
+ */
+void coco_warning(const char *message, ...);
+
+/**
+ * Function to output some information.
+ */
+void coco_info(const char *message, ...);
+
+/**
+ * Function to output detailed information that can be used for debugging.
+ */
+void coco_debug(const char *message, ...);
 
 struct coco_problem;
 typedef struct coco_problem coco_problem_t;
 typedef void (*coco_optimizer_t)(coco_problem_t *problem);
+
 struct coco_observer;
 typedef struct coco_observer coco_observer_t;
+
+struct coco_suite;
+typedef struct coco_suite coco_suite_t;
 
 /**
  * Evaluate the COCO problem represented by ${self} with the
@@ -121,30 +150,6 @@ size_t coco_problem_get_number_of_objectives(const coco_problem_t *self);
 size_t coco_problem_get_number_of_constraints(const coco_problem_t *self);
 
 /**
- * Get the ${problem_index}-th problem of the ${problem_suit} test
- * suite.
- */
-coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long problem_index);
-
-/**
- * Return the successor index of ${problem_index} in ${problem_suit},
- * or the first index if ${problem_index} < 0,
- * or -1 otherwise (no successor problem is available).
- *
- * int index = -1;
- * while (-1 < (index = coco_suite_get_next_problem_index(suite, index, ""))) {
- *   coco_problem_t *problem = coco_suite_get_problem(suite, index); 
- *   ...
- *   coco_problem_free(problem);
- * }
- * 
- * loops over all indices and problems consequently. 
- */
-long coco_suite_get_next_problem_index(const char *problem_suite,
-                                       long problem_index,
-                                       const char *select_options);
-
-/**
  * Number of evaluations done on problem ${self}. 
  * Tentative and yet versatile. 
  */
@@ -169,6 +174,8 @@ double coco_problem_get_final_target_fvalue1(const coco_problem_t *self);
 const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *self);
 const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *self);
 
+size_t coco_problem_get_suite_dep_index(coco_problem_t *self);
+
 /**
  * Return an initial solution, i.e. a feasible variable setting, to the
  * problem.
@@ -181,35 +188,39 @@ const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *
  */
 void coco_problem_get_initial_solution(const coco_problem_t *self, double *initial_solution);
 
-/**
- * Add the observer named ${observer_name} to ${problem}. An
- * observer is a wrapper around a coco_problem_t. This allows the
- * observer to see all interactions between the algorithm and the
- * optimization problem.
- *
- * ${options} is a string that can be used to pass options to an
- * observer. The format is observer dependent.
- *
- * @note There is a special observer names "no_observer" which simply
- * returns the original problem. This is largely to simplify the
- * interface design for interpreted languages. A short hand for this
- * observer is the empty string ("").
- */
-coco_problem_t *deprecated__coco_problem_add_observer(coco_problem_t *problem,
-                                                      const char *observer_name,
-                                                      const char *options);
+coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, const char *suite_options);
 
-void coco_suite_benchmark(const char *problem_suite,
-                          const char *observer,
-                          const char *observer_options,
-                          coco_optimizer_t optimizer);
+void coco_suite_free(coco_suite_t *suite);
 
-/* shall replace the above?
- void new_coco_benchmark(const char *problem_suite,
- const char *problem_suite_options,
- const char *observer,
- const char *observer_options,
- coco_optimizer_t optimizer); */
+coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer);
+
+coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, size_t problem_index);
+
+size_t coco_suite_encode_problem_index(coco_suite_t *suite,
+                                       const size_t function_idx,
+                                       const size_t dimension_idx,
+                                       const size_t instance_idx);
+
+void coco_suite_decode_problem_index(coco_suite_t *suite,
+                                     const size_t problem_index,
+                                     size_t *function,
+                                     size_t *instance,
+                                     size_t *dimension);
+
+size_t coco_suite_get_number_of_problems(coco_suite_t *suite);
+
+size_t coco_suite_get_function_from_function_index(coco_suite_t *suite, size_t function_idx);
+
+size_t coco_suite_get_dimension_from_dimension_index(coco_suite_t *suite, size_t dimension_idx);
+
+size_t coco_suite_get_instance_from_instance_index(coco_suite_t *suite, size_t instance_idx);
+
+void coco_run_benchmark(const char *suite_name,
+                        const char *suite_instance,
+                        const char *suite_options,
+                        const char *observer_name,
+                        const char *observer_options,
+                        coco_optimizer_t optimizer);
 
 coco_observer_t *coco_observer(const char *observer_name, const char *options);
 void coco_observer_free(coco_observer_t *self);
@@ -247,16 +258,6 @@ double coco_random_uniform(coco_random_state_t *state);
  */
 double coco_random_normal(coco_random_state_t *state);
 
-/**
- * Function to signal a fatal error conditions.
- */
-void coco_error(const char *message, ...);
-
-/**
- * Function to warn about error conditions.
- */
-void coco_warning(const char *message, ...);
-
 /* Memory management routines.
  *
  * Their implementation may never fail. They either return a valid
@@ -275,22 +276,11 @@ void coco_free_memory(void *data);
  */
 char *coco_strdup(const char *string);
 
-/* TODO: These bbob2009... functions should probably not be in
- * this header.
- */
-/* but they are necessary for Builder fbsd9-amd64-test-gcc at
- * http://numbbo.p-value.net/buildbot/builders/fbsd9-amd64-test-gcc
- * (not for the others) */
 /**
- * Return the function ID of a BBOB 2009 problem or -1.
+ * Formatted string duplication. Optional arguments are
+ * used like in sprintf.
  */
-/* int bbob2009_get_function_id(const coco_problem_t *problem);
- */
-/**
- * Return the function ID of a BBOB 2009 problem or -1.
- */
-/* int bbob2009_get_instance_id(const coco_problem_t *problem);
- */
+char *coco_strdupf(const char *str, ...);
 
 int coco_remove_directory(const char *path);
 

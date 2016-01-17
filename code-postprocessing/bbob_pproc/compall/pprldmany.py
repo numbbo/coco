@@ -455,7 +455,7 @@ def all_single_functions(dictAlg, sortedAlgs=None, outputdir='.',
                        info=('f%03d_%02dD' % (fg, d)),
                        verbose=verbose)
 
-def main(dictAlg, order=None, outputdir='.', info='default',
+def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
          dimension=None, verbose=True):
     """Generates a figure showing the performance of algorithms.
 
@@ -548,11 +548,11 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 dictData.setdefault(alg, []).extend(x)
                 dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
 
+        displaybest2009 = not isBiobjective #disabled until we find the bug
         if displaybest2009:
             #set_trace()
-            if not bestalg.bestalgentries2009:
-                bestalg.loadBBOB2009()
-            bestalgentry = bestalg.bestalgentries2009[(dim, f)]
+            bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+            bestalgentry = bestalgentries[(dim, f)]
             bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
             # print bestalgevals
             for j in range(len(bestalgevals[0])):
@@ -651,7 +651,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     #beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
     beautify()
 
-    text = 'f%s' % (ppfig.consecutiveNumbers(sorted(dictFunc.keys())))
+    text = ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f')
     text += ',%d-D' % dim  # TODO: this is strange when different dimensions are plotted
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes)
