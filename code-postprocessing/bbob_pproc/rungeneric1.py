@@ -17,16 +17,23 @@ Help:
 
 from __future__ import absolute_import
 
-import os, sys, warnings, getopt, numpy as np
+import os, sys
 from pdb import set_trace
+import matplotlib
 
-# Add the path to bbob_pproc
 if __name__ == "__main__":
-    # os.path.split is system independent
-    (filepath, filename) = os.path.split(sys.argv[0])
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-    import matplotlib
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
+    filepath = os.path.split(sys.argv[0])[0]
+    # Add the path to bbob_pproc/.. folder
+    sys.path.append(os.path.join(filepath, os.path.pardir))
+    try:
+        import bbob_pproc as cocopp
+    except ImportError:
+        import cocopp
+    res = cocopp.rungeneric1.main(sys.argv[1:])
+    sys.exit(res)
+
+import warnings, getopt, numpy as np
 
 from . import genericsettings, pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from .pproc import DataSetList
