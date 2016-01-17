@@ -1,4 +1,4 @@
-The COCO/NumBBO experiments interface {#mainpage}
+The COCO/NumBBO experiments interface
 =====================================
 
 <a href="https://github.com/numbbo/coco">COCO (COmparing Continuous Optimisers)</a> is a platform 
