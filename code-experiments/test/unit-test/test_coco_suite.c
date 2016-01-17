@@ -1,15 +1,12 @@
-/*
- * test_coco_suites.c
- *
- *  Created on: 22 nov. 2015
- *      Author: dejan
- */
-
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
 #include "cmocka.h"
 #include "coco.h"
+
+#if 0
+
+/* This is how wrapping would look like if it worked */
 
 static size_t __wrap_coco_suite_encode_problem_index(coco_suite_t *suite,
                                                      const size_t function_idx,
@@ -29,7 +26,7 @@ static size_t __wrap_coco_suite_encode_problem_index(coco_suite_t *suite,
 /**
  * Tests the function coco_suite_get_next_problem_index.
  */
-static void test_coco_suite_encode_problem_index(void **state) {
+static void test_coco_suite_encode_problem_index_with_wrapping(void **state) {
 
   coco_suite_t *suite;
   size_t index;
@@ -46,6 +43,24 @@ static void test_coco_suite_encode_problem_index(void **state) {
 
   assert_true(index == 205);
 
+  coco_suite_free(suite);
+
+  (void)state; /* unused */
+}
+#endif
+
+
+/**
+ * Tests the function coco_suite_get_next_problem_index.
+ */
+static void test_coco_suite_encode_problem_index(void **state) {
+
+  coco_suite_t *suite;
+  size_t index;
+
+  suite = coco_suite("bbob", NULL, NULL);
+  index = coco_suite_encode_problem_index(suite, 13, 0, 10);
+  assert_true(index == 205);
   coco_suite_free(suite);
 
   (void)state; /* unused */
