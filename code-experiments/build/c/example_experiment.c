@@ -28,7 +28,7 @@ void my_random_search(coco_problem_t *problem) {
   double range;
   size_t i, j;
 
-  long max_budget = dimension * BUDGET;
+  size_t max_budget = dimension * BUDGET;
 
   for (i = 0; i < max_budget; ++i) {
     /* Construct x as a random point between the lower and upper bounds */
@@ -65,7 +65,7 @@ void my_grid_search(coco_problem_t *problem) {
   size_t i, j;
   size_t evaluations = 0;
 
-  long max_budget = dimension * BUDGET;
+  size_t max_budget = dimension * BUDGET;
 
   long max_nodes = (long) floor(pow((double) max_budget, 1.0 / (double) dimension)) - 1;
 

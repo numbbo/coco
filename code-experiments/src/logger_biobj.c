@@ -7,8 +7,7 @@
 
 #include "coco_utilities.c"
 #include "coco_problem.c"
-#include "coco_strdup.c"
-
+#include "coco_string.c"
 #include "observer_biobj.c"
 
 #include "logger_biobj_avl_tree.c"
@@ -235,6 +234,7 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
   int trigger_update = 0;
   int dominance;
   size_t i;
+  int previous_unavailable = 0;
 
   /* Find the first point that is not worse than the new point (NULL if such point does not exist) */
   node = avl_item_search_right(logger->archive_tree, node_item, NULL);
@@ -320,6 +320,7 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
           }
         }
 
+        previous_unavailable = 0;
         if (new_node->prev != NULL) {
           previous_item = (logger_biobj_avl_item_t*) new_node->prev->item;
           if (previous_item->within_ROI) {
@@ -336,21 +337,28 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
               }
             }
           } else {
-            /* Previous item does not exist or is out of ROI, use reference point instead */
-            for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
-              if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
-                node_item->indicator_contribution[i] = (logger->problem_data->reference_point[0]
-                    - node_item->y[0]) * logger->problem_data->normalization_factor[0]
-                    * (logger->problem_data->reference_point[1] - node_item->y[1])
-                    * logger->problem_data->normalization_factor[1];
-              } else {
-                coco_error(
-                    "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
-                    logger->indicators[i]->name);
-              }
+            previous_unavailable = 1;
+          }
+        } else {
+          previous_unavailable = 1;
+        }
+
+        if (previous_unavailable) {
+          /* Previous item does not exist or is out of ROI, use reference point instead */
+          for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+            if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
+              node_item->indicator_contribution[i] = (logger->problem_data->reference_point[0]
+                  - node_item->y[0]) * logger->problem_data->normalization_factor[0]
+                  * (logger->problem_data->reference_point[1] - node_item->y[1])
+                  * logger->problem_data->normalization_factor[1];
+            } else {
+              coco_error(
+                  "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
+                  logger->indicators[i]->name);
             }
           }
         }
+
         for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
           logger->indicators[i]->current_value += node_item->indicator_contribution[i];
         }
@@ -380,7 +388,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
 
   indicator->name = coco_strdup(indicator_name);
 
-  indicator->best_value = observer_biobj_read_best_value(observer_biobj, indicator->name, problem->problem_id);
+  indicator->best_value = suite_biobj_get_best_value(indicator->name, problem->problem_id);
   indicator->next_target_id = 0;
   indicator->target_hit = 0;
   indicator->current_value = 0;
@@ -534,7 +542,6 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
       indicator = logger->indicators[i];
       indicator->target_hit = 0;
       while ((indicator->next_target_id < MO_NUMBER_OF_TARGETS)
-          && (node_item->indicator_contribution[i] > 0)
           && (indicator->best_value - indicator->current_value <= MO_RELATIVE_TARGET_VALUES[indicator->next_target_id])) {
         /* A target was hit */
         indicator->target_hit = 1;
@@ -633,7 +640,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
   coco_stacked_problem_data_t* stacked_problem;
   double *x, *nadir;
   const char nondom_folder_name[] = "archive";
-  char *path_name, *file_name, *prefix;
+  char *path_name, *file_name = NULL, *prefix;
   size_t i;
   double norm;
 
