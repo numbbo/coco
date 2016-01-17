@@ -23,17 +23,14 @@ static void ls_transform_vars_permblockdiag_evaluate(coco_problem_t *self, const
   data = coco_transformed_get_data(self);
   inner_problem = coco_transformed_get_inner_problem(self);
   
-  
   for (i = 0; i < inner_problem->number_of_variables; ++i) {
     current_blocksize = data->block_size_map[data->P2[i]];/*the block_size is that of the permuted line*/
     first_non_zero_ind = data->first_non_zero_map[data->P2[i]];
     data->x[i] = 0;
     /*compute data->x[i] = < B[P2[i]] , x[P1] >  */
-    
     for (j = first_non_zero_ind; j < first_non_zero_ind + current_blocksize; ++j) {/*blocksize[P2[i]]*/
       data->x[i] += data->B[data->P2[i]][j] * x[data->P1[j]];
     }
-    
   }
   coco_evaluate_function(inner_problem, data->x, y);
 }
