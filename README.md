@@ -209,6 +209,19 @@ subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i
 or `easy_install setuptools` should do the job. 
 
 
+
+#### Python crashes under Ubuntu Linux
+At the moment, we experience some problems with the installation of the python module of Coco under Ubuntu linux (see https://github.com/numbbo/coco/issues/317). We are working on a fix.
+
+
+### Matlab
+
+#### `build-matlab` crashes under Linux
+Also the Matlab wrapper does not always work under linux with the current code: an issue is filed for the Ubuntu operating system at https://github.com/numbbo/coco/issues/318
+#### SMA-EMOA example does not compile under Mac 
+With the more complex SMS-EMOA example, also an issue is known under Mac (https://github.com/numbbo/coco/issues/308). The problem is related to the compilation of the external C++ hypervolume calculation in hv.cpp. This issue is less critical as the example experiment runs under all Mac OSX machines with Matlab, that we tried.
+
+
 Details
 -------
 - The C code features an object oriented implementation, where the
