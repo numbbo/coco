@@ -37,7 +37,8 @@ Additional requirements for running an algorithm in a specific language.
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions
 etc. Naturally, we cannot guarantee that the framework runs on any combination
-of operating system and software installed. 
+of operating system and software installed. In case you experience some incompatibilies,
+we will be happy if you can document them in detail on our [issue tracker](https://github.com/numbbo/coco/issues). 
 
 Getting Started
 ---------------
@@ -241,7 +242,7 @@ Details
   installation file `setup.py` uses the compiled `interface.c`, if
   `interface.pyx` has not changed. 
 
-- IWe continuously test the code through the open source automation server
+- We continuously test the code through the open source automation server
   Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit
   Windows 7 machine with cygwin.
 
