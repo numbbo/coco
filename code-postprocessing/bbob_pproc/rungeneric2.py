@@ -21,6 +21,7 @@ import getopt
 from pdb import set_trace
 import numpy
 import numpy as np
+import matplotlib
 
 ftarget = 1e-8  # used for ppfigs.main 
 ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
@@ -28,16 +29,18 @@ target_runlength = 10 # used for ppfigs.main
 
 # genericsettings.summarized_target_function_values[0] might be another option
 
-# Add the path to bbob_pproc
 if __name__ == "__main__":
-    # append path without trailing '/bbob_pproc', using os.sep fails in mingw32
-    #sys.path.append(filepath.replace('\\', '/').rsplit('/', 1)[0])
-    (filepath, filename) = os.path.split(sys.argv[0])
-    #Test system independent method:
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-    import matplotlib
     # matplotlib.use('pdf')
-    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
+    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
+    filepath = os.path.split(sys.argv[0])[0]
+    # Add the path to bbob_pproc/.. folder
+    sys.path.append(os.path.join(filepath, os.path.pardir))
+    try:
+        import bbob_pproc as cocopp
+    except ImportError:
+        import cocopp
+    res = cocopp.rungeneric2.main(sys.argv[1:])
+    sys.exit(res)
 
 from . import pproc
 from . import genericsettings, config

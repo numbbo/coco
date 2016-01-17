@@ -38,11 +38,11 @@ Current documentations and their repositories:
 - sources in docs/bbob-biobj-functions are written into numbbo/bbob-biobj-functions-doc repository
 - sources in docs/bbob-biobj-experiments are written into numbbo/bbob-biobj-experiments-doc repository
 - sources in docs/workshops are written into numbbo/workshops repository
-- sources in docs/coco-documentation are written into numbbo/COCOdoc repository [see also below, because this documentation is partly build from the source code]
+- sources in docs/coco-documentation are written into numbbo/coco-doc repository [see also below, because this documentation is partly build from the source code]
 
 
 HowTo: Edit and Publish the COCO documentation
 ----------------------------------------------
 In addition to the reStructuredText which explains the general functioning of the COCO platform in docs/coco-documentation/ (which is translated into html via Sphinx as described above), parts of the COCO documentation are automatically extracted from the source code.
 
-The C code in code-experiments/src/ for example is translated into html in the C/ subfolder of the gh-pages branch of the numbbo/COCOdoc github repository with the help of the doxygen tool (www.doxygen.org/). After installing doxygen, and having a clone of the gh-pages branch of the numbbo/COCOdoc github repository in the same folder than your numbbo/numbbo checkout, you can create the html output in this directory by simply typing 'doxygen' in the docs/coco-documentation/C/ folder of the numbbo/numbbo github repository. Afterwards, commit and push of this repository will again update the web page directly as described above.
+The C code in code-experiments/src/ for example is translated into html in the C/ subfolder of the gh-pages branch of the numbbo/coco-doc github repository with the help of the doxygen tool (www.doxygen.org/). After installing doxygen, and having a clone of the gh-pages branch of the numbbo/coco-doc github repository in the same folder than your numbbo/numbbo checkout, you can create the html output in this directory by simply typing 'doxygen' in the docs/coco-documentation/C/ folder of the numbbo/numbbo github repository. Afterwards, commit and push of this repository will again update the web page directly as described above.

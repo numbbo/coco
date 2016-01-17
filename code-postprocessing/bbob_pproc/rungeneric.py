@@ -22,9 +22,12 @@ import tarfile
 from pdb import set_trace
 import warnings
 import numpy
+import matplotlib
 # numpy.seterr(all='raise')
 
 if __name__ == "__main__":
+    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
+    matplotlib.rc('pdf', fonttype = 42)
     # add ".." to the Python search path, import the module to which
     # this script belongs to and call the main of this script from imported
     # module. Like this all relative imports will work smoothly.
@@ -39,10 +42,6 @@ if __name__ == "__main__":
 
 from . import genericsettings, rungeneric1, rungeneric2, rungenericmany
 from .toolsdivers import prepend_to_file, truncate_latex_command_file, print_done
-    
-import matplotlib
-matplotlib.use('Agg') # To avoid window popup and use without X forwarding
-matplotlib.rc('pdf', fonttype = 42)
 
 __all__ = ['main']
 
