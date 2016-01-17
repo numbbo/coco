@@ -599,11 +599,11 @@ def comp(dsList0, dsList1, targets, isStoringXMax = False,
         funcs = set(i.funcId for i in dictdim0[d]) | set(i.funcId for i in dictdim1[d])
         text = consecutiveNumbers(sorted(funcs), 'f')
 
-        if not isinstance(targets, pproc.RunlengthBasedTargetValues):
-            plot_previous_algorithms(d, funcs)
-
-        else:
-            plotRLB_previous_algorithms(d, funcs)
+        if not dsList0.isBiobjective():
+            if not isinstance(targets, pproc.RunlengthBasedTargetValues):
+                plot_previous_algorithms(d, funcs)
+            else:
+                plotRLB_previous_algorithms(d, funcs)
 
         # plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim0[d]), ls='--', color='k')
         # plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim1[d]), color='k')
@@ -813,7 +813,7 @@ def main(dsList, isStoringXMax = False, outputdir = '',
 
         funcs = list(i.funcId for i in dictdim)
         text = '{%s}, %d-D' % (consecutiveNumbers(sorted(funcs), 'f'), d)
-        if(1):
+        if not dsList.isBiobjective():
      #   try:
 
             if not isinstance(targets, pproc.RunlengthBasedTargetValues):
