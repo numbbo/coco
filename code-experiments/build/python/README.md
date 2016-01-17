@@ -23,7 +23,8 @@ the following is lacking:
 Getting Started
 ---------------
 
-Download the [COCO framework code](https://github.com/numbbo/numbbo) from github by clicking [here](https://github.com/numbbo/numbbo/archive/development.zip), 
+Download the [COCO framework](https://github.com/numbbo/numbbo) code 
+from github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip), 
 **CAVEAT: this code is still under development**, and unzip the `zip` file. 
 
 In a system shell:
