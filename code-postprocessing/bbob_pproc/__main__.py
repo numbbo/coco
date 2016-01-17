@@ -17,6 +17,9 @@ import subprocess
 if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     sys.path.append(os.path.join(filepath, os.path.pardir))
+    import rungeneric
+else:
+    from . import rungeneric
 
 import doctest
 
@@ -68,7 +71,7 @@ def prepare_data(run_all_tests):
         retrieve_algorithm(dataPath, '2009', 'DE-PSO_garcia-nieto_noiseless.tgz')    
         retrieve_algorithm(dataPath, '2009', 'VNS_garcia-martinez_noiseless.tgz')    
 
-    return dataPath;
+    return dataPath
     
 def process_doctest_output(stream=None):
     """ """
@@ -229,6 +232,16 @@ def main(args):
         print(bb.__all__)     
 """     
 
-if __name__ == "__main__": 
-    main(sys.argv[1:])
-    
+if __name__ == "__main__":
+    args = sys.argv[1:] if len(sys.argv) else []
+    if len(args) == 0:
+        print("WARNING: this tests the post-processing, this will change in future (use -h for help)")
+        main(args)
+    elif args[0] == '-t' or args[0].startswith('--t'):
+        main(args)
+    elif args[0] == 'all':
+        print("WARNING: this tests the post-processing and doesn't run anything else")
+        main(args)
+    else:
+        rungeneric.main(args)
+
