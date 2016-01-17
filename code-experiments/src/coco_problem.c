@@ -34,6 +34,40 @@ coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1_to_be_sta
 
 /***********************************/
 
+void coco_problem_free(coco_problem_t *self) {
+  assert(self != NULL);
+  if (self->free_problem != NULL) {
+    self->free_problem(self);
+  } else {
+    /* Best guess at freeing all relevant structures */
+    if (self->smallest_values_of_interest != NULL)
+      coco_free_memory(self->smallest_values_of_interest);
+    if (self->largest_values_of_interest != NULL)
+      coco_free_memory(self->largest_values_of_interest);
+    if (self->best_parameter != NULL)
+      coco_free_memory(self->best_parameter);
+    if (self->best_value != NULL)
+      coco_free_memory(self->best_value);
+    if (self->nadir_value != NULL)
+      coco_free_memory(self->nadir_value);
+    if (self->problem_name != NULL)
+      coco_free_memory(self->problem_name);
+    if (self->problem_id != NULL)
+      coco_free_memory(self->problem_id);
+    if (self->problem_type != NULL)
+      coco_free_memory(self->problem_type);
+    if (self->data != NULL)
+      coco_free_memory(self->data);
+    self->smallest_values_of_interest = NULL;
+    self->largest_values_of_interest = NULL;
+    self->best_parameter = NULL;
+    self->best_value = NULL;
+    self->nadir_value = NULL;
+    self->data = NULL;
+    coco_free_memory(self);
+  }
+}
+
 /**
  * coco_problem_allocate(number_of_variables):
  *
@@ -58,6 +92,10 @@ coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->largest_values_of_interest = coco_allocate_vector(number_of_variables);
   problem->best_parameter = coco_allocate_vector(number_of_variables);
   problem->best_value = coco_allocate_vector(number_of_objectives);
+  if (number_of_objectives > 1)
+    problem->nadir_value = coco_allocate_vector(number_of_objectives);
+  else
+    problem->nadir_value = NULL;
   problem->problem_name = NULL;
   problem->problem_id = NULL;
   problem->problem_type = NULL;
@@ -97,6 +135,11 @@ coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
   if (other->best_value)
     for (i = 0; i < problem->number_of_objectives; ++i) {
       problem->best_value[i] = other->best_value[i];
+    }
+
+  if (other->nadir_value)
+    for (i = 0; i < problem->number_of_objectives; ++i) {
+      problem->nadir_value[i] = other->nadir_value[i];
     }
 
   problem->problem_name = coco_strdup(other->problem_name);
@@ -451,10 +494,15 @@ coco_problem_t *coco_stacked_problem_allocate(coco_problem_t *problem1,
     if (problem->best_parameter) /* logger_bbob doesn't work then anymore */
       coco_free_memory(problem->best_parameter);
     problem->best_parameter = NULL;
-    if (problem->best_value)
-      coco_free_memory(problem->best_value);
-    problem->best_value = NULL; /* logger_bbob doesn't work */
   }
+
+  /* Compute the ideal and nadir values */
+  assert(problem->best_value);
+  assert(problem->nadir_value);
+  problem->best_value[0] = problem1->best_value[0];
+  problem->best_value[1] = problem2->best_value[0];
+  coco_evaluate_function(problem1, problem2->best_parameter, &problem->nadir_value[0]);
+  coco_evaluate_function(problem2, problem1->best_parameter, &problem->nadir_value[1]);
 
   /* setup data holder */
   data = coco_allocate_memory(sizeof(*data));
