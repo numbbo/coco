@@ -129,7 +129,7 @@ are valid commands code-experiments/build/LANGUAGE/.
 * the code-experiments/src folder is where most of the important/interesting
   things happen. Many files provide comparatively decent documentation at the
   moment which are translated via doxygen into a more readable web page at
-  numbbo.github.io/COCOdoc/C/. Generally:
+  numbbo.github.io/coco-doc/C/. Generally:
   - coco.h is the public interface, in particular as used in the demo.c file, however check out https://code.google.com/p/numbbo/issues/detail?id=98
   - coco_internal.h provides the type definition of coco_problem_t
   - coco_suite.c is code that deals with an entire benchmark suite (i.e. a set of functions, eg. sweeping through them etc...)
@@ -237,4 +237,4 @@ Links and Further Documentation
   - for the "**BBOB**" testbed at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
   - for the **bbob-biobj** functions at http://numbbo.github.io/bbob-biobj-functions-doc
-* Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at http://numbbo.github.io/COCOdoc/C
+* Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at http://numbbo.github.io/coco-doc/C
