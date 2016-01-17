@@ -28,7 +28,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     problem = (coco_problem_t *)(*ref);
     /* make sure the second input argument is array of doubles */
     if(!mxIsDouble(prhs[1])) {
-        mexErrMsgIdAndTxt("cocoEvaluateFunction:notDoubleArray","Input x must be aan array of doubles.");
+        mexErrMsgIdAndTxt("cocoEvaluateFunction:notDoubleArray","Input x must be an array of doubles.");
     }
     /* get the x vector */
     x = mxGetPr(prhs[1]);
