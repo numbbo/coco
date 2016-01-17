@@ -212,7 +212,7 @@ static void logger_bbob_openIndexFile(logger_bbob_t *logger,
                                       const char *dataFile_path) {
   /* to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
   char used_dataFile_path[COCO_PATH_MAX] = { 0 };
-  int errnum, newLine = 0; /* newLine is at 1 if we need a new line in the info file */
+  int errnum, newLine = -1; /* newLine is at 1 if we need a new line in the info file */
   char function_id_char[3]; /* TODO: consider adding them to logger */
   char file_name[COCO_PATH_MAX] = { 0 };
   char file_path[COCO_PATH_MAX] = { 0 };
@@ -235,8 +235,9 @@ static void logger_bbob_openIndexFile(logger_bbob_t *logger,
   coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
   if (*target_file == NULL) {
     tmp_file = fopen(file_path, "r"); /* to check for existence */
-    if ((tmp_file) &&(bbob_current_dim == logger->number_of_variables)
-        && (bbob_current_funId == logger->function_id)) { /* new instance of current funId and current dim */
+    if ((tmp_file) && (bbob_current_dim == logger->number_of_variables)
+        && (bbob_current_funId == logger->function_id)) {
+        /* new instance of current funId and current dim */
       newLine = 0;
       *target_file = fopen(file_path, "a+");
       if (*target_file == NULL) {
@@ -274,17 +275,21 @@ static void logger_bbob_openIndexFile(logger_bbob_t *logger,
           }
           bbob_dimensions_in_current_infoFile[i] = logger->number_of_variables;
         }
+      } else {
+        if ( bbob_current_funId != logger->function_id ) {
+          /*new function in the same file */
+          newLine = 1;
+        }
       }
       *target_file = fopen(file_path, "a+"); /* in any case, we append */
       if (*target_file == NULL) {
         errnum = errno;
         logger_bbob_error_io(*target_file, errnum);
       }
-      if (tmp_file) { /* File already exists, new dim so just a new line. ALso, close the tmp_file */
+      if (tmp_file) { /* File already exists, new dim so just a new line. Also, close the tmp_file */
         if (newLine) {
           fprintf(*target_file, "\n");
         }
-
         fclose(tmp_file);
       }
 
