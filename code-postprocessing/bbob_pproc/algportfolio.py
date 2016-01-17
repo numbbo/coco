@@ -157,7 +157,7 @@ class DataSet(pp.DataSet):
                 tmpfunvals.append(ds.funvals[:, np.r_[0, corresp[j][i]+1]].copy())
             maxevals.append(np.sum(tmpmaxevals))
             finalfunvals.append(min(tmpfinalfunvals))
-            tmpevals = ra.alignArrayData(ra.HArrayMultiReader(tmpevals))
+            tmpevals = ra.alignArrayData(ra.HArrayMultiReader(tmpevals, dslist.isBiobjective()))
             tmpres = []
             for j in tmpevals:
                 tmp = []
@@ -176,7 +176,7 @@ class DataSet(pp.DataSet):
             funvals.append(np.column_stack((tmpfunvals[:, 0], tmpres)))
         self.maxevals = np.array(maxevals)
         self.finalfunvals = np.array(finalfunvals)
-        self.evals = ra.alignArrayData(ra.HArrayMultiReader(evals))
+        self.evals = ra.alignArrayData(ra.HArrayMultiReader(evals, dslist[0].isBiobjective()))
         self.funvals = ra.alignArrayData(ra.VArrayMultiReader(funvals))
         self.computeERTfromEvals()
 

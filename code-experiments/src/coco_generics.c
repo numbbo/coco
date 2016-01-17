@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stddef.h>
 
 #include "coco.h"
 #include "coco_internal.h"
@@ -49,35 +50,6 @@ void coco_recommend_solutions(coco_problem_t *self, const double *x, size_t numb
   self->recommend_solutions(self, x, number_of_solutions);
 }
 
-void coco_problem_free(coco_problem_t *self) {
-  assert(self != NULL);
-  if (self->free_problem != NULL) {
-    self->free_problem(self);
-  } else {
-    /* Best guess at freeing all relevant structures */
-    if (self->smallest_values_of_interest != NULL)
-      coco_free_memory(self->smallest_values_of_interest);
-    if (self->largest_values_of_interest != NULL)
-      coco_free_memory(self->largest_values_of_interest);
-    if (self->best_parameter != NULL)
-      coco_free_memory(self->best_parameter);
-    if (self->best_value != NULL)
-      coco_free_memory(self->best_value);
-    if (self->problem_name != NULL)
-      coco_free_memory(self->problem_name);
-    if (self->problem_id != NULL)
-      coco_free_memory(self->problem_id);
-    if (self->data != NULL)
-      coco_free_memory(self->data);
-    self->smallest_values_of_interest = NULL;
-    self->largest_values_of_interest = NULL;
-    self->best_parameter = NULL;
-    self->best_value = NULL;
-    self->data = NULL;
-    coco_free_memory(self);
-  }
-}
-
 const char *coco_problem_get_name(const coco_problem_t *self) {
   assert(self != NULL);
   assert(self->problem_name != NULL);
@@ -90,33 +62,38 @@ const char *coco_problem_get_id(const coco_problem_t *self) {
   return self->problem_id;
 }
 
+const char *coco_problem_get_type(const coco_problem_t *self) {
+  assert(self != NULL);
+  assert(self->problem_type != NULL);
+  return self->problem_type;
+}
+
 size_t coco_problem_get_dimension(const coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->problem_id != NULL);
+  assert(self->number_of_variables > 0);
   return self->number_of_variables;
 }
 
 size_t coco_problem_get_number_of_objectives(const coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->problem_id != NULL);
+  assert(self->number_of_objectives > 0);
   return self->number_of_objectives;
 }
 
 size_t coco_problem_get_number_of_constraints(const coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->problem_id != NULL);
   return self->number_of_constraints;
 }
 
 const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->problem_id != NULL);
+  assert(self->smallest_values_of_interest != NULL);
   return self->smallest_values_of_interest;
 }
 
 const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *self) {
   assert(self != NULL);
-  assert(self->problem_id != NULL);
+  assert(self->largest_values_of_interest != NULL);
   return self->largest_values_of_interest;
 }
 
@@ -134,17 +111,20 @@ void coco_problem_get_initial_solution(const coco_problem_t *self, double *initi
   }
 }
 
-/* Commented to silence the compiler
-static long coco_problem_get_suite_dep_index(coco_problem_t *problem) {
-  return problem->suite_dep_index;
-}
-*/
-
-static int coco_problem_get_suite_dep_function_id(coco_problem_t *problem) {
-  return problem->suite_dep_function_id;
+size_t coco_problem_get_suite_dep_index(coco_problem_t *self) {
+  assert(self != NULL);
+  return self->suite_dep_index;
 }
 
-static long coco_problem_get_suite_dep_instance_id(coco_problem_t *problem) {
-  return problem->suite_dep_instance_id;
+size_t coco_problem_get_suite_dep_function(coco_problem_t *self) {
+  assert(self != NULL);
+  assert(self->suite_dep_function > 0);
+  return self->suite_dep_function;
+}
+
+size_t coco_problem_get_suite_dep_instance(coco_problem_t *self) {
+  assert(self != NULL);
+  assert(self->suite_dep_instance > 0);
+  return self->suite_dep_instance;
 }
 

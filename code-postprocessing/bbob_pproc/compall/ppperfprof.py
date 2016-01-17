@@ -45,7 +45,7 @@ import matplotlib.pyplot as plt
 from bbob_pproc import genericsettings, toolsstats, bestalg
 from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
 from bbob_pproc.pprldistr import plotECDF, beautifyECDF
-from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
+from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers, logxticks
 from bbob_pproc.pptex import writeLabels, numtotext
 from bbob_pproc.compall.pprldmany import plotLegend
 
