@@ -22,7 +22,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
     /* get the suite */
     ref = (long long *)mxGetData(prhs[0]);
-    suite = (coco_problem_t *)(*ref);
+    suite = (coco_suite_t *)(*ref);
     /* get the observer */
     ref2 = (long long *)mxGetData(prhs[1]);
     observer = (coco_observer_t *)(*ref2);
