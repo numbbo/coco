@@ -1,7 +1,7 @@
 The COCO/NumBBO experiments interface {#mainpage}
 =====================================
 
-<a href="https://github.com/numbbo/numbbo">COCO (COmparing Continuous Optimisers)</a> is a platform 
+<a href="https://github.com/numbbo/coco">COCO (COmparing Continuous Optimisers)</a> is a platform 
 for systematic and sound comparisons of real-parameter global optimisers mainly developed within the 
 <a href="http://numbbo.gforge.inria.fr/doku.php">NumBBO project</a>. COCO provides benchmark function 
 testbeds, experimentation templates which are easy to parallelize, and tools for processing and 
@@ -19,7 +19,7 @@ as the basic reference for:
 
 ### Pointers to the source code and other documentation
 
-The actual source code of COCO can be found at http://github.com/numbbo/numbbo
+The actual source code of COCO can be found at http://github.com/numbbo/coco
 
 More information about the biobjective test suite (bbob-biobj) can be found at
 http://numbbo.github.io/bbob-biobj-functions-doc

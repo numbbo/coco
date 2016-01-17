@@ -67,7 +67,7 @@ registering at http://coco.gforge.inria.fr/register
 Supporting material
 -------------------
 Code for the benchmark functions and for running the experiments is
-provided in C, Java, Matlab, and Python: https://github.com/numbbo/numbbo
+provided in C, Java, Matlab, and Python: https://github.com/numbbo/coco
 
 For the noisy BBOB testbed, we refer to the old code for the time
 being: http://coco.gforge.inria.fr/doku.php?id=downloads
