@@ -123,12 +123,13 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   size_t nb_blocks;
   size_t swap_range;
   size_t nb_swaps;
-  int i, j;
+  size_t block_size;
+  int i;
   
   /* tentative */
   swap_range = dimension / 3;
   nb_swaps = dimension;
-  size_t block_size = dimension / 4;
+  block_size = dimension / 4;
   nb_blocks = dimension / block_size;
   block_sizes = (size_t *)coco_allocate_memory(nb_blocks * sizeof(size_t));
   for (i = 0; i < nb_blocks; i++) {
@@ -142,7 +143,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   
   B = ls_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
   ls_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
-
+  
   ls_compute_truncated_uniform_swap_permutation(P1, rseed + 1000000, dimension, nb_swaps, swap_range);
   ls_compute_truncated_uniform_swap_permutation(P2, rseed + 2000000, dimension, nb_swaps, swap_range);
 
