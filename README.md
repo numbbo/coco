@@ -41,11 +41,11 @@ of operating system and software installed.
 
 Getting Started
 ---------------
-**Download** the [COCO framework code](https://github.com/numbbo/numbbo) from
-github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip), 
+**Download** the [COCO framework code](https://github.com/numbbo/coco) from
+github by clicking [here](https://github.com/numbbo/coco/archive/master.zip), 
 **CAVEAT: this code is still under development**, and unzip the `zip` file. 
 
-1. In a system shell, **`cd` into** the `numbbo` (framework root) folder, where the 
+1. In a system shell, **`cd` into** the `coco` (framework root) folder, where the 
    file `do.py` lies. Type, i.e. **execute**, one of the following commands once
   ```
     python do.py run-c
@@ -94,7 +94,7 @@ github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip),
   the above steps successively until you are happy.
 
 If you detect bugs or other issues, please let us know by opening an issue in
-our issue tracker at https://github.com/numbbo/numbbo/issues.
+our issue tracker at https://github.com/numbbo/coco/issues.
 
 ## Description by Folder
 
@@ -124,26 +124,27 @@ are valid commands code-experiments/build/LANGUAGE/.
   (though the implementation in C naturally looks somewhat different). In the
   future, documentation will be contained mainly in the docs/ subfolder with the
   source code extracted automatically into pdfs in this folder and to web pages
-  under the numbbo.github.io/ domain.
+  under the numbbo.github.io domain.
 
-* the code-experiments/src folder is where most of the important/interesting
+* the `code-experiments/src` folder is where most of the important/interesting
   things happen. Many files provide comparatively decent documentation at the
-  moment which are translated via doxygen into a more readable web page at
-  numbbo.github.io/coco-doc/C/. Generally:
-  - coco.h is the public interface, in particular as used in the demo.c file, however check out https://code.google.com/p/numbbo/issues/detail?id=98
+  moment which are translated via doxygen into a more readable web page
+  [here](numbbo.github.io/coco-doc/C). Generally:
+  - `coco.h` is the public interface, in particular as used in the 
+    `example_experiment.c` file, however check out https://code.google.com/p/numbbo/issues/detail?id=98
   - coco_internal.h provides the type definition of coco_problem_t
   - coco_suite.c is code that deals with an entire benchmark suite (i.e. a set of functions, eg. sweeping through them etc...)
-  - coco_generics.c is somewhat generic code, e.g. defining a function call via coco_evaluate_function etc
-  - coco_problem.c is the implementation of the coco_problem_t type/object (allocation etc).
+  - `coco_generics.c` is somewhat generic code, e.g. defining a function call via coco_evaluate_function etc
+  - `coco_problem.c` is the implementation of the coco_problem_t type/object (allocation etc).
   - observer / logger files implement data logging (as wrappers around a coco
     problem inheriting thereby all properties of a coco problem)
   - most other files implement more or less what they say, e.g. the actual
     benchmark functions, transformations, benchmark suites, etc.
   - currently, three benchmark suites and corresponding logging facilities are implemented:
-    * bbob: standard single-objective BBOB benchmark suite with 24 noiseless, scalable test functions
-    * bbob-biobj: a bi-objective benchmark suite, combining 10 selected
+    * `bbob`: standard single-objective BBOB benchmark suite with 24 noiseless, scalable test functions
+    * `bbob-biobj`: a bi-objective benchmark suite, combining 10 selected
       functions from the bbob suite, resulting in 55 noiseless functions
-    * toy: a simple, probably easier-to-understand example for reading and testing
+    * `toy`: a simple, probably easier-to-understand example for reading and testing
 
 * code-experiments/tools are a few meta-tools, mainly the amalgamate.py to merge all the C code into one file
 
