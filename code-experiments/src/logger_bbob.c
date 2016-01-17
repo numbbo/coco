@@ -212,7 +212,7 @@ static void logger_bbob_openIndexFile(logger_bbob_t *logger,
                                       const char *dataFile_path) {
   /* to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
   char used_dataFile_path[COCO_PATH_MAX] = { 0 };
-  int errnum, newLine = -1; /* newLine is at 1 if we need a new line in the info file */
+  int errnum, newLine; /* newLine is at 1 if we need a new line in the info file */
   char function_id_char[3]; /* TODO: consider adding them to logger */
   char file_name[COCO_PATH_MAX] = { 0 };
   char file_path[COCO_PATH_MAX] = { 0 };
@@ -522,7 +522,6 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *pr
    */
   logger->function_id = coco_problem_get_suite_dep_function(problem);
   logger->instance_id = coco_problem_get_suite_dep_instance(problem);
-
   logger->written_last_eval = 1;
   logger->last_fvalue = DBL_MAX;
   logger->is_initialized = 0;
