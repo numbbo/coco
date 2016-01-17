@@ -45,7 +45,7 @@ Getting Started
 github by clicking [here](https://github.com/numbbo/coco/archive/master.zip), 
 **CAVEAT: this code is still under development**, and unzip the `zip` file. 
 
-1. In a system shell, **`cd` into** the `coco` (framework root) folder, where the 
+1. In a system shell, **`cd` into** the `numbbo` (framework root) folder, where the 
    file `do.py` lies. Type, i.e. **execute**, one of the following commands once
   ```
     python do.py run-c
@@ -59,9 +59,20 @@ github by clicking [here](https://github.com/numbbo/coco/archive/master.zip),
   
 3. If the example experiment runs, **connect** your favorite algorithm
   to Coco: copy the `code-experiments/build/YOUR-FAVORITE-LANGUAGE` folder to
-  another location and replace the call to the random search optimizer in the
-  example experiment file by a call to your algorithm (the details vary, see
-  respective the read-me's). Another entry point for your own experiments can be
+  another location. Replace the call to the random search optimizer in the
+  example experiment file by a call to your algorithm (the details vary), see
+  respective the read-me's and example experiment files:
+
+  - `C` [read me](https://github.com/numbbo/coco/blob/master/coco-experiments/build/c/README.txt) 
+    and [example experiment](https://github.com/numbbo/coco/blob/development/code-experiments/build/c/example_experiment.c)
+  - `Java` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/README.txt)
+    and [example experiment](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/ExampleExperiment.java)
+  - `Matlab` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/README.txt)
+    and [example experiment](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/exampleexperiment.m) 
+  - `Python` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/README.md)
+    and [example experiment`](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/example_experiment.py)
+
+  Another entry point for your own experiments can be
   the `code-experiments/examples` folder. In any case, update the output
   (observer options) result_folder and the algorithm_name and info in the
   experiment file.
@@ -124,27 +135,26 @@ are valid commands code-experiments/build/LANGUAGE/.
   (though the implementation in C naturally looks somewhat different). In the
   future, documentation will be contained mainly in the docs/ subfolder with the
   source code extracted automatically into pdfs in this folder and to web pages
-  under the numbbo.github.io domain.
+  under the numbbo.github.io/ domain.
 
-* the `code-experiments/src` folder is where most of the important/interesting
+* the code-experiments/src folder is where most of the important/interesting
   things happen. Many files provide comparatively decent documentation at the
-  moment which are translated via doxygen into a more readable web page
-  [here](numbbo.github.io/coco-doc/C). Generally:
-  - `coco.h` is the public interface, in particular as used in the 
-    `example_experiment.c` file, however check out https://code.google.com/p/numbbo/issues/detail?id=98
+  moment which are translated via doxygen into a more readable web page at
+  numbbo.github.io/coco-doc/C/. Generally:
+  - coco.h is the public interface, in particular as used in the demo.c file, however check out https://code.google.com/p/numbbo/issues/detail?id=98
   - coco_internal.h provides the type definition of coco_problem_t
   - coco_suite.c is code that deals with an entire benchmark suite (i.e. a set of functions, eg. sweeping through them etc...)
-  - `coco_generics.c` is somewhat generic code, e.g. defining a function call via coco_evaluate_function etc
-  - `coco_problem.c` is the implementation of the coco_problem_t type/object (allocation etc).
+  - coco_generics.c is somewhat generic code, e.g. defining a function call via coco_evaluate_function etc
+  - coco_problem.c is the implementation of the coco_problem_t type/object (allocation etc).
   - observer / logger files implement data logging (as wrappers around a coco
     problem inheriting thereby all properties of a coco problem)
   - most other files implement more or less what they say, e.g. the actual
     benchmark functions, transformations, benchmark suites, etc.
   - currently, three benchmark suites and corresponding logging facilities are implemented:
-    * `bbob`: standard single-objective BBOB benchmark suite with 24 noiseless, scalable test functions
-    * `bbob-biobj`: a bi-objective benchmark suite, combining 10 selected
+    * bbob: standard single-objective BBOB benchmark suite with 24 noiseless, scalable test functions
+    * bbob-biobj: a bi-objective benchmark suite, combining 10 selected
       functions from the bbob suite, resulting in 55 noiseless functions
-    * `toy`: a simple, probably easier-to-understand example for reading and testing
+    * toy: a simple, probably easier-to-understand example for reading and testing
 
 * code-experiments/tools are a few meta-tools, mainly the amalgamate.py to merge all the C code into one file
 
@@ -227,8 +237,8 @@ Links and Further Documentation
 -------------------------------
 * Downloading this repository 
   - via the above "Download ZIP" button or 
-  - by typing `git clone https://github.com/numbbo/numbbo.git` or 
-  - via https://github.com/numbbo/numbbo/archive/master.zip in your browser
+  - by typing `git clone https://github.com/numbbo/coco.git` or 
+  - via https://github.com/numbbo/coco/archive/master.zip in your browser
 * The _BBOB workshop series_, which uses the
   NumBBO/Coco framework extensively, can be tracked at 
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
