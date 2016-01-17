@@ -19,6 +19,12 @@
  * solutions.
  */
 
+/* A set of numbers from which the evaluations that should always be logged are computed. For example, if
+ * logger_biobj_always_log[3] = {1, 2, 5}, the logger will always output evaluations
+ * 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
+ */
+static const size_t logger_biobj_always_log[3] = {1, 2, 5};
+
 /* Data for each indicator */
 typedef struct {
   /* Name of the indicator to be used for identification and in the output */
@@ -34,8 +40,14 @@ typedef struct {
   size_t next_target_id;
   /* Whether the target was hit in the latest evaluation */
   int target_hit;
-  /* The current overall indicator value */
+  /* The current indicator value */
   double current_value;
+  /* Additional penalty */
+  double additional_penalty;
+  /* The overall value of the indicator tested for target hits */
+  double overall_value;
+
+  size_t next_output_evaluation_num;
 
 } logger_biobj_indicator_t;
 
@@ -389,6 +401,8 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   indicator->next_target_id = 0;
   indicator->target_hit = 0;
   indicator->current_value = 0;
+  indicator->additional_penalty = 0;
+  indicator->overall_value = 0;
 
   /* Prepare the info file */
   path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
@@ -449,20 +463,19 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
  */
 static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, logger_biobj_t *logger) {
 
-  int target_index = 0;
+  size_t target_index = 0;
   if (indicator->next_target_id > 0)
-    target_index = (int) indicator->next_target_id - 1;
+    target_index = indicator->next_target_id - 1;
 
-  /* Log the last evaluation in the dat file if it didn't hit a target */
+  /* Log the last evaluation in the dat file if wasn't already logged */
   if (!indicator->target_hit) {
     fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-        indicator->best_value - indicator->current_value, logger->precision_f,
-        MO_RELATIVE_TARGET_VALUES[target_index]);
+        indicator->overall_value, logger->precision_f, MO_RELATIVE_TARGET_VALUES[target_index]);
   }
 
   /* Log the information in the info file */
   fprintf(indicator->info_file, ", %ld:%lu|%.1e", logger->suite_dep_instance, logger->number_of_evaluations,
-      indicator->best_value - indicator->current_value);
+      indicator->overall_value);
   fflush(indicator->info_file);
 }
 
@@ -496,6 +509,31 @@ static void logger_biobj_indicator_free(void *stuff) {
 }
 
 /**
+ * Returns true if the number_of_evaluations corresponds to a number that should always be logged and false
+ * otherwise (computed from logger_biobj_always_log). For example, if logger_biobj_always_log = {1, 2, 5},
+ * return true for 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
+ */
+static int logger_biobj_log_evaluation(size_t number_of_evaluations, size_t dimension) {
+
+  size_t i;
+  double j = 0, factor = 10;
+  size_t count = sizeof(logger_biobj_always_log) / sizeof(size_t);
+
+  if (number_of_evaluations == 1)
+    return 1;
+
+  while ((size_t) pow(factor, j) * dimension <= number_of_evaluations) {
+    for (i = 0; i < count; i++) {
+      if (number_of_evaluations == (size_t) pow(factor, j) * dimension * logger_biobj_always_log[i])
+        return 1;
+    }
+    j++;
+  }
+
+  return 0;
+}
+
+/**
  * Evaluates the function, increases the number of evaluations and outputs information based on observer
  * options.
  */
@@ -505,6 +543,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
 
   logger_biobj_avl_item_t *node_item;
   logger_biobj_indicator_t *indicator;
+  avl_node_t *solution;
   int update_performed;
   size_t i;
 
@@ -534,31 +573,67 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
    * output indicator information. Note that a target is reached when the (best_value - current_value) <=
    * relative_target_value (the relative_target_value is a target for indicator difference, not indicator value!)
    */
-  if (logger->compute_indicators && (update_performed || (logger->number_of_evaluations == 1))) {
+  /* Log the evaluation */
+  if (logger->compute_indicators) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+
       indicator = logger->indicators[i];
       indicator->target_hit = 0;
-      while ((indicator->next_target_id < MO_NUMBER_OF_TARGETS)
-          && (indicator->best_value - indicator->current_value <= MO_RELATIVE_TARGET_VALUES[indicator->next_target_id])) {
-        /* A target was hit */
-        indicator->target_hit = 1;
-        if (indicator->next_target_id + 1 < MO_NUMBER_OF_TARGETS)
-          indicator->next_target_id++;
-        else
-          break;
+
+      /* If the update was performed, update the overall indicator value */
+      if (update_performed) {
+        /* Compute the overall_value of an indicator */
+        if (strcmp(indicator->name, "hyp") == 0) {
+          if (indicator->current_value == 0) {
+            /* The additional penalty for hypervolume is the minimal distance from the nondominated set to the ROI */
+            indicator->additional_penalty = DBL_MAX;
+            if (logger->archive_tree->tail) {
+              solution = logger->archive_tree->head;
+              while (solution != NULL) {
+                double distance = mo_get_distance_to_ROI(((logger_biobj_avl_item_t*) solution->item)->y,
+                    problem->best_value, problem->nadir_value, problem->number_of_objectives);
+                indicator->additional_penalty = coco_min_double(indicator->additional_penalty, distance);
+                solution = solution->next;
+              }
+            }
+            assert(indicator->additional_penalty >= 0);
+          } else {
+            indicator->additional_penalty = 0;
+          }
+          indicator->overall_value = indicator->best_value - indicator->current_value
+              + indicator->additional_penalty;
+        } else {
+          coco_error("logger_biobj_evaluate(): Indicator computation not implemented yet for indicator %s",
+              indicator->name);
+        }
+
+        /* Check whether a target was hit */
+        while ((indicator->next_target_id < MO_NUMBER_OF_TARGETS)
+            && (indicator->overall_value <= MO_RELATIVE_TARGET_VALUES[indicator->next_target_id])) {
+          /* A target was hit */
+          indicator->target_hit = 1;
+          if (indicator->next_target_id + 1 < MO_NUMBER_OF_TARGETS)
+            indicator->next_target_id++;
+          else
+            break;
+        }
       }
+
+      /* Log the evaluation if a target was hit or the evaluation number matches a predefined value */
       if (indicator->target_hit) {
         fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-            indicator->best_value - indicator->current_value, logger->precision_f,
+            indicator->overall_value, logger->precision_f,
             MO_RELATIVE_TARGET_VALUES[indicator->next_target_id - 1]);
       }
-      /* The first evaluation is always output (even if no target was hit) */
-      else if (logger->number_of_evaluations == 1) {
+      else if (logger_biobj_log_evaluation(logger->number_of_evaluations, problem->number_of_variables)) {
+        size_t target_index = 0;
+        if (indicator->next_target_id > 0)
+          target_index = indicator->next_target_id - 1;
         fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-            indicator->best_value - indicator->current_value, logger->precision_f,
-            coco_max_double(MO_RELATIVE_TARGET_VALUES[indicator->next_target_id],
-                indicator->best_value - indicator->current_value));
+            indicator->overall_value, logger->precision_f, MO_RELATIVE_TARGET_VALUES[target_index]);
+        indicator->target_hit = 1;
       }
+
     }
   }
 }

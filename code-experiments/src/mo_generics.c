@@ -50,3 +50,34 @@ static double mo_get_norm(const double *first, const double *second, const size_
 
   return sqrt(norm);
 }
+
+/**
+ * Computes and returns the minimal normalized distance from the point y to the ROI assuming the point is
+ * dominated by the ideal point and the dimension equals 2.
+ */
+static double mo_get_distance_to_ROI(const double *y,
+                                     const double *ideal,
+                                     const double *nadir,
+                                     const size_t dimension) {
+
+  double distance = 0;
+
+  assert(dimension == 2);
+  assert(mo_get_dominance(ideal, y, 2) == 1);
+
+  /* y is weakly dominated by the nadir point */
+  if (mo_get_dominance(y, nadir, 2) <= -1) {
+    distance = mo_get_norm(y, nadir, 2);
+  }
+  else if (y[0] < nadir[0])
+    distance = y[1] - nadir[1];
+  else if (y[1] < nadir[1])
+    distance = y[0] - nadir[0];
+  else {
+    coco_error("mo_get_distance_to_ROI(): unexpected exception");
+    return 0; /* Never reached */
+  }
+
+  return distance / ((nadir[1] - ideal[1]) * (nadir[0] - ideal[0]));
+
+}
