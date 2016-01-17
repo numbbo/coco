@@ -41,8 +41,8 @@ of operating system and software installed.
 
 Getting Started
 ---------------
-**Download** the [COCO framework code](https://github.com/numbbo/numbbo) from
-github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip), 
+**Download** the [COCO framework code](https://github.com/numbbo/coco) from
+github by clicking [here](https://github.com/numbbo/coco/archive/master.zip), 
 **CAVEAT: this code is still under development**, and unzip the `zip` file. 
 
 1. In a system shell, **`cd` into** the `numbbo` (framework root) folder, where the 
@@ -94,7 +94,7 @@ github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip),
   the above steps successively until you are happy.
 
 If you detect bugs or other issues, please let us know by opening an issue in
-our issue tracker at https://github.com/numbbo/numbbo/issues.
+our issue tracker at https://github.com/numbbo/coco/issues.
 
 ## Description by Folder
 
@@ -226,8 +226,8 @@ Links and Further Documentation
 -------------------------------
 * Downloading this repository 
   - via the above "Download ZIP" button or 
-  - by typing `git clone https://github.com/numbbo/numbbo.git` or 
-  - via https://github.com/numbbo/numbbo/archive/master.zip in your browser
+  - by typing `git clone https://github.com/numbbo/coco.git` or 
+  - via https://github.com/numbbo/coco/archive/master.zip in your browser
 * The _BBOB workshop series_, which uses the
   NumBBO/Coco framework extensively, can be tracked at 
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
