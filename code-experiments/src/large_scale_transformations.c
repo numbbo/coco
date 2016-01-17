@@ -131,7 +131,7 @@ static void ls_compute_blockrotation(double **B, long seed, size_t n, size_t *bl
 /*
  * makes a copy of a block_matrix
  */
-static double **ls_copy_block_matrix(double **B, const size_t dimension, const size_t *block_sizes, const size_t nb_blocks) {
+static double **ls_copy_block_matrix(const double **B, const size_t dimension, const size_t *block_sizes, const size_t nb_blocks) {
   double **dest;
   size_t i, j, idx_blocksize, current_blocksize, next_bs_change;
   
@@ -191,7 +191,7 @@ long ls_rand_int(long lower_bound, long upper_bound, long seed){
   double rand_01[1]; /* bbob2009_unif seems to produce non uniform values! */
   long range;
   range = upper_bound - lower_bound + 1;
-  coco_random_state_t *rng = coco_random_new(seed);
+  /*coco_random_state_t *rng = coco_random_new(seed);TODO: use new RNG*/
 
   bbob2009_unif(rand_01, 1, seed);
   
