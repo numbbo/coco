@@ -116,9 +116,9 @@ static avl_node_t *avl_node_insert_after(avl_tree_t *avltree, avl_node_t *node, 
 #define CALC_DEPTH(n)  ((unsigned char)((L_DEPTH(n) > R_DEPTH(n) ? L_DEPTH(n) : R_DEPTH(n)) + 1))
 #endif
 
-const avl_node_t avl_node_0 = { 0 };
-const avl_tree_t avl_tree_0 = { 0 };
-const avl_allocator_t avl_allocator_0 = { 0 };
+const avl_node_t avl_node_0 = { 0, 0, 0, 0, 0, 0, 0, 0 };
+const avl_tree_t avl_tree_0 = { 0, 0, 0, 0, 0, 0, 0 };
+const avl_allocator_t avl_allocator_0 = { 0, 0 };
 
 #define avl_const_node(x) ((avl_node_t *)(x))
 #define avl_const_item(x) ((void *)(x))
