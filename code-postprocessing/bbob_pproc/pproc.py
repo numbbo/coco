@@ -252,7 +252,7 @@ class RunlengthBasedTargetValues(TargetValues):
         if force_different_targets_factor < 1:
             force_different_targets_factor **= -1 
         # TODO: known_names collects only bestalg stuff, while also algorithm data can be used (see def initialize below) 
-        self.known_names = ['bestGECCO2009', 'bestGECCOever'] # TODO: best-ever is not a time-invariant thing and therefore ambiguous
+        self.known_names = ['bestGECCO2009', 'bestGECCOever', 'bestBiobj2016'] # TODO: best-ever is not a time-invariant thing and therefore ambiguous
         self._short_info = "budget-based targets"
         self.run_lengths = sorted(run_lengths)
         self.smallest_target = smallest_target
@@ -280,6 +280,10 @@ class RunlengthBasedTargetValues(TargetValues):
                 from bbob_pproc import bestalg
                 bestalg.loadBBOBever() # this is an absurd interface
                 self.reference_data = bestalg.bestalgentriesever
+            elif self.reference_data == 'bestBiobj2016':
+                from bbob_pproc import bestalg
+                bestalg.loadBestBiobj2016() # this is an absurd interface
+                self.reference_data = bestalg.bestbiobjalgentries2016
             else:
                 ValueError('reference algorithm name')
         elif type(self.reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
@@ -526,10 +530,10 @@ class DataSet():
         >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
         >>> os.chdir(path)
         >>> import bbob_pproc as bb
-        >>> infoFile = 'data/BBOB2009rawdata/BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info'
+        >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
         >>> if not os.path.exists(infoFile):
         ...   os.chdir(os.path.join(path, 'data'))
-        ...   dataurl = 'http://coco.lri.fr/BBOB2009/rawdata/BIPOP-CMA-ES_hansen_noiseless.tar.gz'
+        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
         ...   filename, headers = urllib.urlretrieve(dataurl)
         ...   archivefile = tarfile.open(filename)
         ...   archivefile.extractall()
@@ -537,14 +541,14 @@ class DataSet():
         >>> dslist = bb.load(infoFile)
           Data consistent according to test in consistency_check() in pproc.DataSet
         >>> print dslist  # doctest:+ELLIPSIS
-        [DataSet(cmaes V3.30.beta on f2 2-D), ..., DataSet(cmaes V3.30.beta on f2 40-D)]
+        [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
         >>> type(dslist)
         <class 'bbob_pproc.pproc.DataSetList'>
         >>> len(dslist)
         6
         >>> ds = dslist[3]  # a single data set of type DataSet
         >>> ds
-        DataSet(cmaes V3.30.beta on f2 10-D)
+        DataSet(BIPOP-CMA-ES on f2 10-D)
         >>> for d in dir(ds): print d  # dir(ds) shows attributes and methods of ds
         _DataSet__parseHeader
         __doc__
@@ -583,6 +587,7 @@ class DataSet():
         indexFiles
         info
         instancenumbers
+        isBiobjective
         isFinalized
         mMaxEvals
         max_eval
@@ -610,7 +615,7 @@ class DataSet():
         >>> ds.evals[-1,(0,5,6)]  # show last row, same columns
         array([  1.00000000e-08,   5.67600000e+03,   6.26900000e+03])
         >>> ds.info()  # prints similar data more nicely formated 
-        Algorithm: cmaes V3.30.beta
+        Algorithm: BIPOP-CMA-ES
         Function ID: 2
         Dimension DIM = 10
         Number of trials: 15
@@ -643,12 +648,20 @@ class DataSet():
 
     # Private attribute used for the parsing of info files.
     _attributes = {'funcId': ('funcId', int), 
+                   'function': ('funcId', int), 
                    'DIM': ('dim', int),
+                   'dim': ('dim', int),
                    'Precision': ('precision', float), 
                    'Fopt': ('fopt', float),
                    'targetFuncValue': ('targetFuncValue', float),
-                   'algId': ('algId', str)}
+                   'indicator': ('indicator', str),
+                   'folder': ('folder', str),
+                   'algId': ('algId', str),
+                   'algorithm': ('algId', str)}
 
+    def isBiobjective(self):
+        return hasattr(self, 'indicator')
+    
     def __init__(self, header, comment, data, indexfile, verbose=True):
         """Instantiate a DataSet.
 
@@ -666,6 +679,8 @@ class DataSet():
         # Extract information from the header line.
         self._extra_attr = []
         self.__parseHeader(header)
+        # In biobjective case we have some header info in the data line.
+        self.__parseHeader(data) 
 
         # Read in second line of entry (comment line). The information
         # is only stored if the line starts with "%", else it is ignored.
@@ -702,7 +717,16 @@ class DataSet():
                 filename = filename.replace('\\', os.sep)
                 #Linux data to Windows processing
                 filename = filename.replace('/', os.sep)
+                
+                folder = getattr(self, 'folder', '')
+                if folder:
+                    filename = os.path.join(folder, filename)
+                    
                 self.dataFiles.append(filename)
+            elif '=' in elem: 
+                # It means header info in data line (biobjective). 
+                # We just skip the element.
+                continue
             else:
                 if not ':' in elem:
                     # if elem does not have ':' it means the run was not
@@ -732,11 +756,11 @@ class DataSet():
         # put into variable dataFiles the files where to look for data
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
-        data = HMultiReader(split(dataFiles))
+        data = HMultiReader(split(dataFiles), self.isBiobjective())
         if verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
-        (adata, maxevals, finalfunvals) = alignData(data)
+        (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
         self.evals = adata
         try:
             for i in range(len(maxevals)):
@@ -746,21 +770,22 @@ class DataSet():
             self.maxevals = maxevals
             self.finalfunvals = finalfunvals
 
-        dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
-                         for i in self.dataFiles)
-        data = VMultiReader(split(dataFiles))
-        if verbose:
-            print ("Processing %s: %d/%d trials found."
-                   % (dataFiles, len(data), len(self.instancenumbers)))
-        (adata, maxevals, finalfunvals) = alignData(data)
-        self.funvals = adata
-        try:
-            for i in range(len(maxevals)):
-                self.maxevals[i] = max(maxevals[i], self.maxevals[i])
-                self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
-        except AttributeError:
-            self.maxevals = maxevals
-            self.finalfunvals = finalfunvals
+        if not self.isBiobjective():        
+            dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
+                             for i in self.dataFiles)
+            data = VMultiReader(split(dataFiles), self.isBiobjective())
+            if verbose:
+                print ("Processing %s: %d/%d trials found."
+                       % (dataFiles, len(data), len(self.instancenumbers)))
+            (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
+            self.funvals = adata
+            try:
+                for i in range(len(maxevals)):
+                    self.maxevals[i] = max(maxevals[i], self.maxevals[i])
+                    self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
+            except AttributeError:
+                self.maxevals = maxevals
+                self.finalfunvals = finalfunvals
         #TODO: take for maxevals the max for each trial, for finalfunvals the min...
 
         #extensions = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
@@ -822,7 +847,7 @@ class DataSet():
         if isinstance(genericsettings.current_testbed, genericsettings.GECCOBBOBTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
-            while i > 1 and self.evals[i-1][0] <= self.precision:
+            while i > 1 and not self.isBiobjective() and self.evals[i-1][0] <= self.precision:
                 i -= 1
             i += 1
             if i < Ndata:
@@ -836,8 +861,8 @@ class DataSet():
                     self.ert = self.ert[:i]
                 except AttributeError:
                     pass
-            assert self.evals.shape[0] == 1 or self.evals[-2][0] > self.precision
-            if self.evals[-1][0] < self.precision: 
+            assert self.evals.shape[0] == 1 or self.isBiobjective() or self.evals[-2][0] > self.precision
+            if not self.isBiobjective() and self.evals[-1][0] < self.precision: 
                 self.evals[-1][0] = np.max((self.precision / 1.001, self.evals[-1, 0])) 
                 # warnings.warn('exact final precision was not recorded, next lower value set close to final precision')
                 # print '*** warning: final precision was not recorded'
@@ -914,7 +939,7 @@ class DataSet():
         res = (self.__class__ is other.__class__ and
                self.funcId == other.funcId and
                self.dim == other.dim and
-               self.precision == other.precision and
+               (self.isBiobjective() or self.precision == other.precision) and
                self.algId == other.algId and
                self.comment == other.comment)
         if hasattr(self, '_extra_attr'): # Backward compatibility
@@ -950,7 +975,8 @@ class DataSet():
         sinfo += '\nFunction ID: ' + str(self.funcId)
         sinfo += '\nDimension DIM = ' + str(self.dim)
         sinfo += '\nNumber of trials: ' + str(self.nbRuns())
-        sinfo += '\nFinal target Df: ' + str(self.precision)
+        if not self.isBiobjective():        
+            sinfo += '\nFinal target Df: ' + str(self.precision)
         # sinfo += '\nmin / max number of evals: '  + str(int(min(self.evals[0]))) + ' / '  + str(int(max(self.maxevals)))
         sinfo += '\nmin / max number of evals per trial: '  + str(int(min(self.maxevals))) + ' / '  + str(int(max(self.maxevals)))
         sinfo += '\n   evals/DIM:  best     15%     50%     85%     max |  ERT/DIM  nsucc'
@@ -985,7 +1011,7 @@ class DataSet():
         
         """
         if final_target is None:
-            final_target = self.precision
+            final_target = self.precision if not self.isBiobjective() else 1e-8
         res = np.array(self.maxevals, copy=True) if not maximal_evaluations_only_to_last_target else np.nanmax(self.evals, 0)
         final_evals = self.detEvals([final_target])[0]
         idx = np.isfinite(final_evals)
@@ -1422,19 +1448,22 @@ class DataSetList(list):
             # Read all data sets within one index file.
             nbLine = 1
             data_file_names = []
+            header = ''
             while True:
                 try:
-                    header = f.next()
-                    while not header.strip(): # remove blank lines
+                    if 'indicator' not in header:
                         header = f.next()
-                        nbLine += 1
-                    comment = f.next()
-                    if not comment.startswith('%'):
-                        warnings.warn('Entry in file %s at line %d is faulty: '
-                                      % (indexFile, nbLine) +
-                                      'it will be skipped.')
-                        nbLine += 2
-                        continue
+                        while not header.strip(): # remove blank lines
+                            header = f.next()
+                            nbLine += 1
+                        comment = f.next()
+                        if not comment.startswith('%'):
+                            warnings.warn('Entry in file %s at line %d is faulty: '
+                                          % (indexFile, nbLine) +
+                                          'it will be skipped.')
+                            nbLine += 2
+                            continue
+
                     data = f.next()  # this is the filename of the data file!?
                     data_file_names.append(data)
                     nbLine += 3
@@ -1485,7 +1514,7 @@ class DataSetList(list):
                     i.indexFiles.extend(o.indexFiles)
                     i.funvals = alignArrayData(VArrayMultiReader([i.funvals, o.funvals]))
                     i.finalfunvals = numpy.r_[i.finalfunvals, o.finalfunvals]
-                    i.evals = alignArrayData(HArrayMultiReader([i.evals, o.evals]))
+                    i.evals = alignArrayData(HArrayMultiReader([i.evals, o.evals], self.isBiobjective()))
                     i.maxevals = numpy.r_[i.maxevals, o.maxevals]
                     i.computeERTfromEvals()
                     if getattr(i, 'pickleFile', False):
@@ -1574,18 +1603,41 @@ class DataSetList(list):
     def dictByNoise(self):
         """Returns a dictionary splitting noisy and non-noisy entries."""
         sorted = {}
-        for i in self:
-            if i.funcId in range(1, 25):
-                sorted.setdefault('noiselessall', DataSetList()).append(i)
-            elif i.funcId in range(101, 131):
-                sorted.setdefault('nzall', DataSetList()).append(i)
-            else:
-                warnings.warn('Unknown function id.')
+        if not self.isBiobjective():
+            for i in self:
+                if i.funcId in range(1, 56):
+                    sorted.setdefault('noiselessall', DataSetList()).append(i)
+                elif i.funcId in range(101, 131):
+                    sorted.setdefault('nzall', DataSetList()).append(i)
+                else:
+                    warnings.warn('Unknown function id.')
 
         return sorted
 
-    def dictByFuncGroup(self):
-        """Returns a dictionary of instances of this class by function groups.
+    def isBiobjective(self):
+        return any(i.isBiobjective() for i in self)
+        
+    def dictByFuncGroupBiobjective(self):
+        """Returns a dictionary of instances of this class by function groups
+        for bi-objective case.
+
+        The output dictionary has function group names as keys and the
+        corresponding slices as values. 
+
+        """
+        sorted = {} 
+        for i in self:
+            key = getattr(i, 'folder', '')
+            if key:
+                sorted.setdefault(key, DataSetList()).append(i)
+            else:
+                warnings.warn('Unknown group name.')
+
+        return sorted
+
+    def dictByFuncGroupSingleObjective(self):
+        """Returns a dictionary of instances of this class by function groups
+        for single objective case.
 
         The output dictionary has function group names as keys and the
         corresponding slices as values. Current groups are based on the
@@ -1614,6 +1666,18 @@ class DataSetList(list):
                 warnings.warn('Unknown function id.')
 
         return sorted
+
+    def dictByFuncGroup(self):
+        """Returns a dictionary of instances of this class by function groups.
+
+        The output dictionary has function group names as keys and the
+        corresponding slices as values.  
+
+        """
+        if self.isBiobjective():
+            return self.dictByFuncGroupBiobjective()
+        else:
+            return self.dictByFuncGroupSingleObjective()
 
     def dictByParam(self, param):
         """Returns a dictionary of DataSetList by parameter values.

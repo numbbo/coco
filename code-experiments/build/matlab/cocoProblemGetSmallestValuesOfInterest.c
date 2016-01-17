@@ -7,14 +7,13 @@
 #include "coco.c"
 
 #include "mex.h"
-#include "matrix.h"
 
 /* The gateway function */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     long long *ref;
     coco_problem_t *problem = NULL;
-    int nb_dim;
+    int nb_dim, i;
     const double *res;
     double *v; /* intermediate variable that aloows to set plhs[0] */
 
@@ -30,7 +29,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     v = mxGetPr(plhs[0]);
     /* call coco_problem_get_smallest_values_of_interest(...) */
     res = coco_problem_get_smallest_values_of_interest(problem);
-    for (int i = 0; i < nb_dim; i++){
+    for (i = 0; i < nb_dim; i++){
         v[i] = res[i];
     }
 }

@@ -506,6 +506,9 @@ def plotFVDistr(dsList, budget, min_f = 1e-8, **plotArgs):
     x = []
     nn = 0
     for ds in dsList:
+        if ds.isBiobjective():
+            continue;
+            
         for i, fvals in enumerate(ds.funvals):
             if fvals[0] > budget * ds.dim:
                 assert i > 0, 'first entry ' + str(fvals[0]) + 'was smaller than maximal budget ' + str(budget * ds.dim)
@@ -519,8 +522,11 @@ def plotFVDistr(dsList, budget, min_f = 1e-8, **plotArgs):
             NotImplementedError('related function vals with respective budget (e.g. ERT(val)) see pplogloss.generateData()')
         x.extend(vals)
         nn += ds.nbRuns()
-    res = plotECDF(x, nn, **plotArgs)
-    return res
+    
+    if nn > 0:
+        return plotECDF(x, nn, **plotArgs)
+    else:
+        return None
 
 def comp(dsList0, dsList1, targets, isStoringXMax = False,
          outputdir = '', info = 'default', verbose = True):
@@ -591,7 +597,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax = False,
                      markerfacecolor = 'none')
 
         funcs = set(i.funcId for i in dictdim0[d]) | set(i.funcId for i in dictdim1[d])
-        text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
+        text = consecutiveNumbers(sorted(funcs), 'f')
 
         if not isinstance(targets, pproc.RunlengthBasedTargetValues):
             plot_previous_algorithms(d, funcs)
@@ -666,7 +672,7 @@ def plot(dsList, targets = single_target_values, **plotArgs):
         res.extend(tmp)
     res.append(plt.axvline(x = maxEvalsFactor, color = 'k', **plotArgs))
     funcs = list(i.funcId for i in dsList)
-    text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
+    text = consecutiveNumbers(sorted(funcs), 'f')
     res.append(plt.text(0.5, 0.98, text, horizontalalignment = "center",
                         verticalalignment = "top", transform = plt.gca().transAxes))
 
@@ -674,14 +680,18 @@ def plot(dsList, targets = single_target_values, **plotArgs):
     for j in [range(len(targets))[-1]]:
         tmpplotArgs = dict(plotArgs, **rldStyles[j % len(rldStyles)])
         tmp = plotFVDistr(dsList, evalfmax, lambda fun_dim: targets(fun_dim)[j], **tmpplotArgs)
-        res.extend(tmp)
+        if tmp:
+            res.extend(tmp)
+            
     tmp = np.floor(np.log10(evalfmax))
     # coloring right to left:
     maxEvalsF = np.power(10, np.arange(0, tmp))
     for j in range(len(maxEvalsF)):
         tmpplotArgs = dict(plotArgs, **rldUnsuccStyles[j % len(rldUnsuccStyles)])
         tmp = plotFVDistr(dsList, maxEvalsF[j], lambda fun_dim: targets(fun_dim)[-1], **tmpplotArgs)
-        res.extend(tmp)
+        if tmp:        
+            res.extend(tmp)
+            
     res.append(plt.text(0.98, 0.02, text, horizontalalignment = "right",
                         transform = plt.gca().transAxes))
     return res
@@ -802,8 +812,7 @@ def main(dsList, isStoringXMax = False, outputdir = '',
                         ** rldStyles[j % len(rldStyles)])
 
         funcs = list(i.funcId for i in dictdim)
-        text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
-        text += ',%d-D' % d
+        text = '{%s}, %d-D' % (consecutiveNumbers(sorted(funcs), 'f'), d)
         if(1):
      #   try:
 
@@ -835,6 +844,10 @@ def main(dsList, isStoringXMax = False, outputdir = '',
         saveFigure(filename, verbose = verbose)
         plt.close(fig)
 
+        for ds in dictdim:
+            if ds.isBiobjective():
+                return
+        
         # second figure: Function Value Distribution
         filename = os.path.join(outputdir, 'ppfvdistr_%02dD_%s' % (d, info))
         fig = plt.figure()

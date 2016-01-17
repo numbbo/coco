@@ -38,6 +38,7 @@ static coco_problem_t *f_transform_vars_shift(coco_problem_t *inner_problem,
                                               const int shift_bounds) {
   transform_vars_shift_data_t *data;
   coco_problem_t *self;
+  size_t i;
   if (shift_bounds)
     coco_error("shift_bounds not implemented.");
 
@@ -47,5 +48,9 @@ static coco_problem_t *f_transform_vars_shift(coco_problem_t *inner_problem,
 
   self = coco_transformed_allocate(inner_problem, data, transform_vars_shift_free);
   self->evaluate_function = transform_vars_shift_evaluate;
+  /* Compute best parameter */
+  for (i = 0; i < self->number_of_variables; i++) {
+      self->best_parameter[i] += data->offset[i];
+  }
   return self;
 }
