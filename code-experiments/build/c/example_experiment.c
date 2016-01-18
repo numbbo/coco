@@ -11,7 +11,7 @@
 /*
  * The max budget for optimization algorithms should be set to dim * BUDGET
  */
-static const size_t BUDGET = 10;
+static const size_t BUDGET = 1;
 
 /**
  * A random search algorithm that can be used for single- as well as multi-objective optimization.
@@ -203,8 +203,8 @@ algorithm_info: \"A simple random search algorithm\"";
   coco_suite_t *suite;
   coco_observer_t *observer;
   coco_problem_t *problem;
-  
-  suite = coco_suite("bbob-largescale", NULL, "dimensions: 40,80,160,320,640 instance_idx: 1,2");
+  /*40,80,160,320,640,1280*/
+  suite = coco_suite("bbob-largescale", NULL, "dimensions: 40,80,160,320,640,1280 instance_idx: 1");
   observer = coco_observer("bbob", observer_options);
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {

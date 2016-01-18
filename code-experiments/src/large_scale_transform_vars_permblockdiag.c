@@ -29,9 +29,13 @@ static void ls_transform_vars_permblockdiag_evaluate(coco_problem_t *self, const
     data->x[i] = 0;
     /*compute data->x[i] = < B[P2[i]] , x[P1] >  */
     for (j = first_non_zero_ind; j < first_non_zero_ind + current_blocksize; ++j) {/*blocksize[P2[i]]*/
-      data->x[i] += data->B[data->P2[i]][j] * x[data->P1[j]];
+      data->x[i] += data->B[data->P2[i]][j - first_non_zero_ind] * x[data->P1[j]];/*all B lines start at 0*/
     }
+    if (data->x[i] > 100 || data->x[i] < -100 || 1) {
+    }
+
   }
+
   coco_evaluate_function(inner_problem, data->x, y);
 }
 
