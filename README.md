@@ -37,12 +37,13 @@ Additional requirements for running an algorithm in a specific language.
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions
 etc. Naturally, we cannot guarantee that the framework runs on any combination
-of operating system and software installed. 
+of operating system and software installed. In case you experience some incompatibilies,
+we will be happy if you can document them in detail on our [issue tracker](https://github.com/numbbo/coco/issues). 
 
 Getting Started
 ---------------
-**Download** the [COCO framework code](https://github.com/numbbo/numbbo) from
-github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip), 
+**Download** the [COCO framework code](https://github.com/numbbo/coco) from
+github by clicking [here](https://github.com/numbbo/coco/archive/master.zip), 
 **CAVEAT: this code is still under development**, and unzip the `zip` file. 
 
 1. In a system shell, **`cd` into** the `numbbo` (framework root) folder, where the 
@@ -59,9 +60,20 @@ github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip),
   
 3. If the example experiment runs, **connect** your favorite algorithm
   to Coco: copy the `code-experiments/build/YOUR-FAVORITE-LANGUAGE` folder to
-  another location and replace the call to the random search optimizer in the
-  example experiment file by a call to your algorithm (the details vary, see
-  respective the read-me's). Another entry point for your own experiments can be
+  another location. Replace the call to the random search optimizer in the
+  example experiment file by a call to your algorithm (the details vary), see
+  respective the read-me's and example experiment files:
+
+  - `C` [read me](https://github.com/numbbo/coco/blob/master/coco-experiments/build/c/README.txt) 
+    and [example experiment](https://github.com/numbbo/coco/blob/development/code-experiments/build/c/example_experiment.c)
+  - `Java` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/README.txt)
+    and [example experiment](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/ExampleExperiment.java)
+  - `Matlab` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/README.txt)
+    and [example experiment](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/exampleexperiment.m) 
+  - `Python` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/README.md)
+    and [example experiment`](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/example_experiment.py)
+
+  Another entry point for your own experiments can be
   the `code-experiments/examples` folder. In any case, update the output
   (observer options) result_folder and the algorithm_name and info in the
   experiment file.
@@ -94,7 +106,7 @@ github by clicking [here](https://github.com/numbbo/numbbo/archive/master.zip),
   the above steps successively until you are happy.
 
 If you detect bugs or other issues, please let us know by opening an issue in
-our issue tracker at https://github.com/numbbo/numbbo/issues.
+our issue tracker at https://github.com/numbbo/coco/issues.
 
 ## Description by Folder
 
@@ -129,7 +141,7 @@ are valid commands code-experiments/build/LANGUAGE/.
 * the code-experiments/src folder is where most of the important/interesting
   things happen. Many files provide comparatively decent documentation at the
   moment which are translated via doxygen into a more readable web page at
-  numbbo.github.io/COCOdoc/C/. Generally:
+  numbbo.github.io/coco-doc/C/. Generally:
   - coco.h is the public interface, in particular as used in the demo.c file, however check out https://code.google.com/p/numbbo/issues/detail?id=98
   - coco_internal.h provides the type definition of coco_problem_t
   - coco_suite.c is code that deals with an entire benchmark suite (i.e. a set of functions, eg. sweeping through them etc...)
@@ -198,6 +210,19 @@ subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i
 or `easy_install setuptools` should do the job. 
 
 
+
+#### Python crashes under Ubuntu Linux
+At the moment, we experience some problems with the installation of the python module of Coco under Ubuntu linux (see https://github.com/numbbo/coco/issues/317). We are working on a fix.
+
+
+### Matlab
+
+#### `build-matlab` crashes under Linux
+Also the Matlab wrapper does not always work under linux with the current code: an issue is filed for the Ubuntu operating system at https://github.com/numbbo/coco/issues/318
+#### SMA-EMOA example does not compile under Mac 
+With the more complex SMS-EMOA example, also an issue is known under Mac (https://github.com/numbbo/coco/issues/308). The problem is related to the compilation of the external C++ hypervolume calculation in hv.cpp. This issue is less critical as the example experiment runs under all Mac OSX machines with Matlab, that we tried.
+
+
 Details
 -------
 - The C code features an object oriented implementation, where the
@@ -217,7 +242,7 @@ Details
   installation file `setup.py` uses the compiled `interface.c`, if
   `interface.pyx` has not changed. 
 
-- IWe continuously test the code through the open source automation server
+- We continuously test the code through the open source automation server
   Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit
   Windows 7 machine with cygwin.
 
@@ -226,8 +251,8 @@ Links and Further Documentation
 -------------------------------
 * Downloading this repository 
   - via the above "Download ZIP" button or 
-  - by typing `git clone https://github.com/numbbo/numbbo.git` or 
-  - via https://github.com/numbbo/numbbo/archive/master.zip in your browser
+  - by typing `git clone https://github.com/numbbo/coco.git` or 
+  - via https://github.com/numbbo/coco/archive/master.zip in your browser
 * The _BBOB workshop series_, which uses the
   NumBBO/Coco framework extensively, can be tracked at 
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
@@ -237,4 +262,4 @@ Links and Further Documentation
   - for the "**BBOB**" testbed at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
   - for the **bbob-biobj** functions at http://numbbo.github.io/bbob-biobj-functions-doc
-* Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at http://numbbo.github.io/COCOdoc/C
+* Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at http://numbbo.github.io/coco-doc/C

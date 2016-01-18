@@ -25,8 +25,8 @@ Getting Started
 
 In a system shell:
 
-0. Download [COCO framework](https://github.com/numbbo/numbbo) from github by
-  clicking [here](https://github.com/numbbo/numbbo/archive/development.zip), 
+0. Download [COCO framework](https://github.com/numbbo/coco) from github by
+  clicking [here](https://github.com/numbbo/coco/archive/development.zip), 
   **CAVEAT: this code is still under development**, and unzip the `zip` file. 
 
 1. cd into the `numbbo` (framework root) folder, where the file `do.py` resides. 
