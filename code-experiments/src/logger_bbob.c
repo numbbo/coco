@@ -325,6 +325,7 @@ static void logger_bbob_initialize(logger_bbob_t *logger, coco_problem_t *inner_
   assert(inner_problem->problem_id != NULL);
 
   sprintf(tmpc_funId, "%lu", coco_problem_get_suite_dep_function(inner_problem));
+  
   sprintf(tmpc_dim, "%lu", (unsigned long) inner_problem->number_of_variables);
 
   /* prepare paths and names */

@@ -11,8 +11,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 static coco_suite_t *suite_largescale_allocate(void) {
   
   coco_suite_t *suite;
-  const size_t dimensions[] = { 2, 3, 5, 10, 16, 40 };
-  suite = coco_suite_allocate("bbob-largescale", 1, 6, dimensions, "instances:1-15");
+  const size_t dimensions[] = { 8, 16, 32, 64, 128, 256,512,1024};
+  suite = coco_suite_allocate("bbob-largescale", 1, 8, dimensions, "instances:1-15");
   return suite;
 }
 
