@@ -39,7 +39,7 @@ try:
 except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
-from bbob_pproc import genericsettings, htmldesc, ppfigparam
+from .. import genericsettings, htmldesc, ppfigparam
 from ..ppfig import saveFigure, save_single_functions_html, AlgorithmCount
 from .. import toolsdivers
 from .. import pproc

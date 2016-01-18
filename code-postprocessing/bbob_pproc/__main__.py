@@ -13,10 +13,31 @@ import urllib
 import shutil
 import subprocess
 
-# Add the path to bbob_pproc
 if __name__ == "__main__":
-    (filepath, filename) = os.path.split(sys.argv[0])
-    sys.path.append(os.path.join(filepath, os.path.pardir))
+    """import bbob_pproc/cocopp as module and run tests or rungeneric.main"""
+    filepath = os.path.split(sys.argv[0])[0]
+    sys.path.append(os.path.join(os.getcwd(), filepath))  # needed from the shell
+    sys.path.append(os.path.join(filepath, os.path.pardir))  # needed in do.py
+    try:
+        import bbob_pproc as cocopp
+    except ImportError:
+        # raise  # outcomment to diagnose the reason
+        import cocopp
+    # run either this main here as cocopp._main or rungeneric.main
+    args = sys.argv[1:] if len(sys.argv) else []
+    if len(args) == 0:
+        print("WARNING: this tests the post-processing, this will change in future (use -h for help)")
+        cocopp._main(args)
+    elif args[0] == '-t' or args[0].startswith('--t'):
+        args.pop(0)
+        cocopp._main(args)
+    elif args[0] == 'all':
+        print("WARNING: this tests the post-processing and doesn't run anything else")
+        cocopp._main(args)
+    else:
+        cocopp.rungeneric.main(args)
+else:
+    from . import rungeneric
 
 import doctest
 
@@ -68,7 +89,7 @@ def prepare_data(run_all_tests):
         retrieve_algorithm(dataPath, '2009', 'DE-PSO_garcia-nieto_noiseless.tgz')    
         retrieve_algorithm(dataPath, '2009', 'VNS_garcia-martinez_noiseless.tgz')    
 
-    return dataPath;
+    return dataPath
     
 def process_doctest_output(stream=None):
     """ """
@@ -228,7 +249,3 @@ def main(args):
                 doctest.testmod(eval("bb."+s),verbose=False)                    
         print(bb.__all__)     
 """     
-
-if __name__ == "__main__": 
-    main(sys.argv[1:])
-    

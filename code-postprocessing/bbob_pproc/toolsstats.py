@@ -3,9 +3,10 @@
 
 """Bootstrapping and statistics routines."""
 
+from __future__ import absolute_import
 import warnings
 import numpy as np
-from bbob_pproc import genericsettings
+from . import genericsettings
 from pdb import set_trace
 
 
