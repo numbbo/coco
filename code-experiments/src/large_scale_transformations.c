@@ -291,7 +291,7 @@ size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
   size_t block_size;
   int i;
   
-  block_size = (size_t) fmin(dimension / 4, 100);
+  block_size = (size_t) bbob2009_fmin(dimension / 4, 100);
   *nb_blocks = dimension / block_size + ((dimension % block_size) > 0);
   block_sizes = (size_t *)coco_allocate_memory(*nb_blocks * sizeof(size_t));
   for (i = 0; i < *nb_blocks - 1; i++) {
