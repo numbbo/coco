@@ -52,7 +52,7 @@ static void ls_transform_vars_permblockdiag_free(void *thing) {
  * The matrix M is stored in row-major format.
  */
 static coco_problem_t *f_ls_transform_vars_permblockdiag(coco_problem_t *inner_problem,
-                                               const double **B,
+                                               const double *const *B,
                                                const size_t *P1,
                                                const size_t *P2,
                                                const size_t number_of_variables,

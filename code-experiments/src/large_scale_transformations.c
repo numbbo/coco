@@ -131,7 +131,7 @@ static void ls_compute_blockrotation(double **B, long seed, size_t n, size_t *bl
 /*
  * makes a copy of a block_matrix
  */
-static double **ls_copy_block_matrix(const double **B, const size_t dimension, const size_t *block_sizes, const size_t nb_blocks) {
+static double **ls_copy_block_matrix(const double *const *B, const size_t dimension, const size_t *block_sizes, const size_t nb_blocks) {
   double **dest;
   size_t i, j, idx_blocksize, current_blocksize, next_bs_change;
   
@@ -210,11 +210,14 @@ long ls_rand_int(long lower_bound, long upper_bound, long seed){
  * generates a random permutation resulting from nb_swaps truncated uniform swaps of range swap_range
  * missing paramteters: dynamic_not_static pool, seems empirically irrelevant
  * for now so dynamic is implemented (simple since no need for tracking indices
+ * if swap_range is the largest possible size_t value ( (size_t) -1 ), a random uniform permutation is generated
  */
 static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, size_t n, size_t nb_swaps, size_t swap_range) {
   long i, idx_swap;
   size_t lower_bound, upper_bound, first_swap_var, second_swap_var, tmp;
   size_t *idx_order;
+  
+
   random_data = coco_allocate_vector(n);
   bbob2009_unif(random_data, n, seed);
   idx_order = (size_t *) coco_allocate_memory(n * sizeof(size_t));;
@@ -222,32 +225,40 @@ static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, 
     P[i] = (size_t) i;
     idx_order[i] = (size_t) i;
   }
-  qsort(idx_order, n, sizeof(size_t), f_compare_doubles_for_random_permutation);
-  for (idx_swap = 0; idx_swap < nb_swaps; idx_swap++) {
-    first_swap_var = idx_order[idx_swap];
-    if (first_swap_var < swap_range) {
-      lower_bound = 0;
-    }
-    else{
-      lower_bound = first_swap_var - swap_range;
-    }
-    if (first_swap_var + swap_range > n - 1) {
-      upper_bound = n - 1;
-    }
-    else{
-      upper_bound = first_swap_var + swap_range;
-    }
-
-    second_swap_var = (size_t) ls_rand_int((long) lower_bound, (long) upper_bound, 0);
-    while (first_swap_var == second_swap_var) {
-      second_swap_var = (size_t) ls_rand_int((long) lower_bound, (long) upper_bound, 0);
-    }
-    /* swap*/
-    tmp = P[first_swap_var];
-    P[first_swap_var] = P[second_swap_var];
-    P[second_swap_var] = tmp;
-  }
   
+  if (swap_range > 0) {
+    qsort(idx_order, n, sizeof(size_t), f_compare_doubles_for_random_permutation);
+    for (idx_swap = 0; idx_swap < nb_swaps; idx_swap++) {
+      first_swap_var = idx_order[idx_swap];
+      if (first_swap_var < swap_range) {
+        lower_bound = 0;
+      }
+      else{
+        lower_bound = first_swap_var - swap_range;
+      }
+      if (first_swap_var + swap_range > n - 1) {
+        upper_bound = n - 1;
+      }
+      else{
+        upper_bound = first_swap_var + swap_range;
+      }
+
+      second_swap_var = (size_t) ls_rand_int((long) lower_bound, (long) upper_bound, 0);
+      while (first_swap_var == second_swap_var) {
+        second_swap_var = (size_t) ls_rand_int((long) lower_bound, (long) upper_bound, 0);
+      }
+      /* swap*/
+      tmp = P[first_swap_var];
+      P[first_swap_var] = P[second_swap_var];
+      P[second_swap_var] = tmp;
+    }
+  } else {
+    if ( swap_range == (size_t) -1) {
+      /* generate random permutation instead */
+      ls_compute_random_permutation(P, seed, n);
+    }
+    
+  }
   
 }
 
