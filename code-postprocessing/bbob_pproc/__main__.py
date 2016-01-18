@@ -13,11 +13,27 @@ import urllib
 import shutil
 import subprocess
 
-# Add the path to bbob_pproc
 if __name__ == "__main__":
-    (filepath, filename) = os.path.split(sys.argv[0])
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-    import rungeneric
+    filepath = os.path.split(sys.argv[0])[0]
+    sys.path.append(os.path.join(os.getcwd(), filepath))  # needed from the shell
+    sys.path.append(os.path.join(filepath, os.path.pardir))  # needed in do.py
+    try:
+        import bbob_pproc as cocopp
+    except ImportError:
+        raise
+        import cocopp
+    args = sys.argv[1:] if len(sys.argv) else []
+    if len(args) == 0:
+        print("WARNING: this tests the post-processing, this will change in future (use -h for help)")
+        cocopp._main(args)
+    elif args[0] == '-t' or args[0].startswith('--t'):
+        args.pop(0)
+        cocopp._main(args)
+    elif args[0] == 'all':
+        print("WARNING: this tests the post-processing and doesn't run anything else")
+        cocopp._main(args)
+    else:
+        cocopp.rungeneric.main(args)
 else:
     from . import rungeneric
 
@@ -231,17 +247,3 @@ def main(args):
                 doctest.testmod(eval("bb."+s),verbose=False)                    
         print(bb.__all__)     
 """     
-
-if __name__ == "__main__":
-    args = sys.argv[1:] if len(sys.argv) else []
-    if len(args) == 0:
-        print("WARNING: this tests the post-processing, this will change in future (use -h for help)")
-        main(args)
-    elif args[0] == '-t' or args[0].startswith('--t'):
-        main(args)
-    elif args[0] == 'all':
-        print("WARNING: this tests the post-processing and doesn't run anything else")
-        main(args)
-    else:
-        rungeneric.main(args)
-
