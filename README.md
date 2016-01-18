@@ -30,7 +30,7 @@ For using `git` under Windows (optional), we recommend installing [TortoiseGit](
 Additional requirements for running an algorithm in a specific language.
 
 * Java: none, but see [here](./code-experiments/build/java/README.txt) for details on the compilation
-* Python: none, see [here](./code-experiments/build/python/README.txt) for details on the installation
+* Python: none, see [here](./code-experiments/build/python/README.md) for details on the installation
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.txt)
 
 ### Guaranties (None)
@@ -57,6 +57,12 @@ github by clicking [here](https://github.com/numbbo/coco/archive/master.zip),
   depending which language is used to run the experiments. `run-*` will build the 
   respective code and run the example experiment once. The build result and the example
   experiment code can be found under `code-experiments/build/*`. 
+  
+2. On the computer where experiment data shall be post-processed, run
+  ```
+    python do.py install-postprocessing
+  ```
+  to (user-locally) install the post-processing. 
   
 3. If the example experiment runs, **connect** your favorite algorithm
   to Coco: copy the `code-experiments/build/YOUR-FAVORITE-LANGUAGE` folder to
@@ -85,7 +91,7 @@ github by clicking [here](https://github.com/numbbo/coco/archive/master.zip),
 5. **Postprocess** your data from the results folder by typing
 
     ```
-    python code-postprocessing/bbob_pproc/rungeneric.py YOURRESULTFOLDER
+    python -m cocopp YOURRESULTFOLDER
     ```
 
   A folder named `ppdata` by default will be generated (the folder name can be
