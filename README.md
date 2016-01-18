@@ -219,8 +219,50 @@ At the moment, we experience some problems with the installation of the python m
 
 #### `build-matlab` crashes under Linux
 Also the Matlab wrapper does not always work under linux with the current code: an issue is filed for the Ubuntu operating system at https://github.com/numbbo/coco/issues/318
+### Path to matlab
+If you see something like this when running ``python do.py build-matlab``
+```
+AML	['code-experiments/src/coco_generics.c', 'code-experiments/src/coco_random.c', 'code-experiments/src/coco_suite.c', 'code-experiments/src/coco_suites.c', 'code-experiments/src/coco_observer.c', 'code-experiments/src/coco_runtime_c.c'] -> code-experiments/build/matlab/coco.c
+COPY	code-experiments/src/coco.h -> code-experiments/build/matlab/coco.h
+COPY	code-experiments/src/best_values_hyp.txt -> code-experiments/build/matlab/best_values_hyp.txt
+WRITE	code-experiments/build/matlab/REVISION
+WRITE	code-experiments/build/matlab/VERSION
+RUN	matlab -nodisplay -nosplash -r setup, exit in code-experiments/build/matlab
+Traceback (most recent call last):
+  File "do.py", line 447, in <module>
+    main(sys.argv[1:])
+  File "do.py", line 429, in main
+    elif cmd == 'build-matlab': build_matlab()
+  File "do.py", line 278, in build_matlab
+    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
+  File "/Users/auger/workviasvn/newcoco/numbbo/code-experiments/tools/cocoutils.py", line 68, in run
+    universal_newlines=True)
+  File "//anaconda/lib/python2.7/subprocess.py", line 566, in check_output
+    process = Popen(stdout=PIPE, *popenargs, **kwargs)
+  File "//anaconda/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "//anaconda/lib/python2.7/subprocess.py", line 1335, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+```
+It might be because your system does not know the ``matlab`` command. To fix this you should edit the file ``/etc/paths`` and add the path to the ``matlab`` bin file. For instance the ``etc/paths`` should look like something like this
+```
+/usr/local/bin
+/usr/bin
+/bin
+/usr/sbin
+/sbin
+/Applications/MATLAB_R2012a.app/bin/
+```
+
 #### SMA-EMOA example does not compile under Mac 
-With the more complex SMS-EMOA example, also an issue is known under Mac (https://github.com/numbbo/coco/issues/308). The problem is related to the compilation of the external C++ hypervolume calculation in hv.cpp. This issue is less critical as the example experiment runs under all Mac OSX machines with Matlab, that we tried.
+With the more complex SMS-EMOA example. The problem is related to the compilation of the external C++ hypervolume calculation in hv.cpp. 
+
+A fix for this issue consists in adding to the files "hv.cpp" and "paretofront.c"  
+`#define char16_t UINT16_T`
+just before the line:
+`#include "mex.h"`
+
 
 
 Details
