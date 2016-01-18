@@ -228,6 +228,7 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
                                                            size_t instance_idx) {
 
   coco_problem_t *problem;
+
   if (strcmp(suite->suite_name, "toy") == 0) {
     problem = suite_toy_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob") == 0) {
@@ -495,7 +496,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   size_t dimension_idx;
   size_t instance_idx;
   coco_problem_t *problem;
-  
+
   /* Iterate through the suite by instances, then functions and lastly dimensions in search for the next
    * problem. Note that these functions set the values of suite fields current_instance_idx,
    * current_function_idx and current_dimension_idx. */
@@ -507,7 +508,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   if (suite->current_problem) {
     coco_problem_free(suite->current_problem);
   }
-  
+
   assert(suite->current_function_idx >= 0);
   assert(suite->current_dimension_idx >= 0);
   assert(suite->current_instance_idx >= 0);
