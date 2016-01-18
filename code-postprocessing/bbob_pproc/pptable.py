@@ -25,9 +25,9 @@ from __future__ import absolute_import
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from bbob_pproc import genericsettings, bestalg, toolsstats, pproc
-from bbob_pproc.pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
-from bbob_pproc.toolsstats import significancetest
+from . import genericsettings, bestalg, toolsstats, pproc
+from .pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
+from .toolsstats import significancetest
 
 from pdb import set_trace
 

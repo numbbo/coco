@@ -196,7 +196,7 @@ If "%s" was not a typo, you can add the desired name to `known_suite_names`::
         COCO FATAL ERROR: coco_suite(): unknow problem suite
 
 This will crash Python, if the suite "my_name" does in fact not exist. You might
-also report back a missing name to https://github.com/numbbo/numbbo/issues
+also report back a missing name to https://github.com/numbbo/coco/issues
 """ % (self._name, str(known_suite_names), self._name))
         try:
             suite = coco_suite(self._name, self._instance, self._options)

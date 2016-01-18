@@ -1,10 +1,3 @@
-/*
- * test_coco_utilities.c
- *
- *  Created on: 18 nov. 2015
- *      Author: dejan
- */
-
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>

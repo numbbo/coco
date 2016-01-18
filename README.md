@@ -37,7 +37,8 @@ Additional requirements for running an algorithm in a specific language.
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions
 etc. Naturally, we cannot guarantee that the framework runs on any combination
-of operating system and software installed. 
+of operating system and software installed. In case you experience some incompatibilies,
+we will be happy if you can document them in detail on our [issue tracker](https://github.com/numbbo/coco/issues). 
 
 Getting Started
 ---------------
@@ -209,6 +210,61 @@ subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i
 or `easy_install setuptools` should do the job. 
 
 
+
+#### Python crashes under Ubuntu Linux
+At the moment, we experience some problems with the installation of the python module of Coco under Ubuntu linux (see https://github.com/numbbo/coco/issues/317). We are working on a fix.
+
+
+### Matlab
+
+#### `build-matlab` crashes under Linux
+Also the Matlab wrapper does not always work under linux with the current code: an issue is filed for the Ubuntu operating system at https://github.com/numbbo/coco/issues/318
+### Path to matlab
+If you see something like this when running ``python do.py build-matlab``
+```
+AML	['code-experiments/src/coco_generics.c', 'code-experiments/src/coco_random.c', 'code-experiments/src/coco_suite.c', 'code-experiments/src/coco_suites.c', 'code-experiments/src/coco_observer.c', 'code-experiments/src/coco_runtime_c.c'] -> code-experiments/build/matlab/coco.c
+COPY	code-experiments/src/coco.h -> code-experiments/build/matlab/coco.h
+COPY	code-experiments/src/best_values_hyp.txt -> code-experiments/build/matlab/best_values_hyp.txt
+WRITE	code-experiments/build/matlab/REVISION
+WRITE	code-experiments/build/matlab/VERSION
+RUN	matlab -nodisplay -nosplash -r setup, exit in code-experiments/build/matlab
+Traceback (most recent call last):
+  File "do.py", line 447, in <module>
+    main(sys.argv[1:])
+  File "do.py", line 429, in main
+    elif cmd == 'build-matlab': build_matlab()
+  File "do.py", line 278, in build_matlab
+    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
+  File "/Users/auger/workviasvn/newcoco/numbbo/code-experiments/tools/cocoutils.py", line 68, in run
+    universal_newlines=True)
+  File "//anaconda/lib/python2.7/subprocess.py", line 566, in check_output
+    process = Popen(stdout=PIPE, *popenargs, **kwargs)
+  File "//anaconda/lib/python2.7/subprocess.py", line 710, in __init__
+    errread, errwrite)
+  File "//anaconda/lib/python2.7/subprocess.py", line 1335, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+```
+It might be because your system does not know the ``matlab`` command. To fix this you should edit the file ``/etc/paths`` and add the path to the ``matlab`` bin file. For instance the ``etc/paths`` should look like something like this
+```
+/usr/local/bin
+/usr/bin
+/bin
+/usr/sbin
+/sbin
+/Applications/MATLAB_R2012a.app/bin/
+```
+
+#### SMA-EMOA example does not compile under Mac 
+With the more complex SMS-EMOA example. The problem is related to the compilation of the external C++ hypervolume calculation in hv.cpp. 
+
+A fix for this issue consists in adding to the files "hv.cpp" and "paretofront.c"  
+`#define char16_t UINT16_T`
+just before the line:
+`#include "mex.h"`
+
+
+
 Details
 -------
 - The C code features an object oriented implementation, where the
@@ -228,7 +284,7 @@ Details
   installation file `setup.py` uses the compiled `interface.c`, if
   `interface.pyx` has not changed. 
 
-- IWe continuously test the code through the open source automation server
+- We continuously test the code through the open source automation server
   Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit
   Windows 7 machine with cygwin.
 
