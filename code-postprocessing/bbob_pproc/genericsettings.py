@@ -296,7 +296,7 @@ class GECCOBBOBTestbed(Testbed):
             self.short_names = info_dict
         except:
             warnings.warn('benchmark infos not found')
-    
+
 class GECCOBBOBNoisefreeTestbed(GECCOBBOBTestbed):
     __doc__ = GECCOBBOBTestbed.__doc__
 

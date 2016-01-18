@@ -6,10 +6,10 @@
 This module creates a tex file with all the descriptions of the images and tables.
 
 """
-
+from __future__ import absolute_import
 import os
 
-from bbob_pproc import genericsettings
+from . import genericsettings
 
 # Initialization
 

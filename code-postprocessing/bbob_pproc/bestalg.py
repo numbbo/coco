@@ -29,9 +29,9 @@ from pdb import set_trace
 import warnings
 import numpy as np
 
-from bbob_pproc import genericsettings, readalign, pproc
-from bbob_pproc.toolsdivers import print_done
-from bbob_pproc import toolsstats
+from . import genericsettings, readalign, pproc
+from .toolsdivers import print_done
+from . import toolsstats
 
 bestalgentries2009 = {}
 bestalgentries2010 = {}
