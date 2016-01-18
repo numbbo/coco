@@ -186,6 +186,8 @@ Known Issues / Trouble-Shooting
 #### `setuptools` is not installed
 If you see something like this
 ```
+$ python do.py run-python  # or build-python
+[...]
 PYTHON  setup.py install --user in code-experiments/build/python
 ERROR: return value=1
 Traceback (most recent call last):
@@ -206,16 +208,27 @@ Traceback (most recent call last):
    raise CalledProcessError(retcode, cmd, output=output)
 subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i                                        nstall', '--user']' returned non-zero exit status 1
 ```
-`setuptools` needs to be installed: 
+then `setuptools` needs to be installed: 
 ```
     pip install setuptools
 ```
 or `easy_install setuptools` should do the job. 
 
-
-
-#### Python crashes under Ubuntu Linux
-At the moment, we experience some problems with the installation of the python module of Coco under Ubuntu linux (see https://github.com/numbbo/coco/issues/317). We are working on a fix.
+#### Compilation During Install of `cocoex` Fails (under Linux) 
+If you see something like this:
+``` 
+$ python do.py run-python  # or build-python
+[...]
+cython/interface.c -o build/temp.linux-i686-2.6/cython/interface.o
+cython/interface.c:4:20: error: Python.h: file not found
+cython/interface.c:6:6: error: #error Python headers needed to compile C extensions, please install development version of Python.
+error: command 'gcc' failed with exit status 1
+```
+Under Linux
+```
+  sudo apt-get install python-dev
+```
+should do the trick. 
 
 
 ### Matlab
@@ -294,11 +307,7 @@ Details
 
 Links and Further Documentation
 -------------------------------
-* Downloading this repository 
-  - via the above "Download ZIP" button or 
-  - by typing `git clone https://github.com/numbbo/coco.git` or 
-  - via https://github.com/numbbo/coco/archive/master.zip in your browser
-* The _BBOB workshop series_, which uses the
+* The [_BBOB workshop series_](http://numbbo.github.io/workshops), which uses the
   NumBBO/Coco framework extensively, can be tracked at 
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
@@ -307,4 +316,9 @@ Links and Further Documentation
   - for the "**BBOB**" testbed at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
   - for the **bbob-biobj** functions at http://numbbo.github.io/bbob-biobj-functions-doc
-* Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at http://numbbo.github.io/coco-doc/C
+* Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
+  http://numbbo.github.io/coco-doc/C
+* Downloading this repository 
+  - via the above "Download ZIP" button or 
+  - by typing `git clone https://github.com/numbbo/coco.git` or 
+  - via https://github.com/numbbo/coco/archive/master.zip in your browser
