@@ -1,6 +1,38 @@
 #include "coco.h"
 #include "coco_internal.h"
 
+/**
+ * A set of numbers from which the evaluations that should always be logged are computed. For example, if
+ * logger_biobj_always_log[3] = {1, 2, 5}, the logger will always output evaluations
+ * 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
+ */
+static const size_t coco_observer_always_log[3] = {1, 2, 5};
+
+/**
+ * Returns true if the number_of_evaluations corresponds to a number that should always be logged and false
+ * otherwise (computed from coco_observer_always_log). For example, if coco_observer_always_log = {1, 2, 5},
+ * return true for 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
+ */
+static int coco_observer_evaluation_to_log(size_t number_of_evaluations, size_t dimension) {
+
+  size_t i;
+  double j = 0, factor = 10;
+  size_t count = sizeof(coco_observer_always_log) / sizeof(size_t);
+
+  if (number_of_evaluations == 1)
+    return 1;
+
+  while ((size_t) pow(factor, j) * dimension <= number_of_evaluations) {
+    for (i = 0; i < count; i++) {
+      if (number_of_evaluations == (size_t) pow(factor, j) * dimension * coco_observer_always_log[i])
+        return 1;
+    }
+    j++;
+  }
+
+  return 0;
+}
+
 #include "logger_bbob.c"
 #include "logger_biobj.c"
 #include "logger_toy.c"
@@ -65,8 +97,8 @@ void coco_observer_free(coco_observer_t *self) {
  * - algorithm_name : string (to be used in logged output and plots; default value is "ALG")
  * - algorithm_info : string (to be used in logged output; default value is "")
  * - log_level : error (only error messages are output)
- * - log_level : warning (only error and warning messages are output; default value)
- * - log_level : info (only error, warning and info messages are output)
+ * - log_level : warning (only error and warning messages are output)
+ * - log_level : info (only error, warning and info messages are output; default value)
  * - log_level : debug (all messages are output)
  * - precision_x : integer value (precision used when outputting variables; default value is 8)
  * - precision_f : integer value (precision used when outputting f values; default value is 15)
@@ -95,6 +127,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     strcpy(result_folder, "results");
   }
   coco_create_unique_path(&result_folder);
+  coco_info("Results will be output to folder %s", result_folder);
 
   if (coco_options_read_string(observer_options, "algorithm_name", algorithm_name) == 0) {
     strcpy(algorithm_name, "ALG");

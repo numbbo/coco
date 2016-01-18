@@ -11,7 +11,7 @@
 /* The gateway function */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    long long *ref;
+    mwSize *ref;
     mxArray *problem_prop;
     coco_problem_t *problem = NULL;
     /* const char *class_name = NULL; */
@@ -24,11 +24,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgIdAndTxt("cocoEvaluateFunction:nrhs","Two inputs required.");
     }
     /* get the problem */
-    ref = (long long *)mxGetData(prhs[0]);
+    ref = (mwSize *) mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
     /* make sure the second input argument is array of doubles */
     if(!mxIsDouble(prhs[1])) {
-        mexErrMsgIdAndTxt("cocoEvaluateFunction:notDoubleArray","Input x must be aan array of doubles.");
+        mexErrMsgIdAndTxt("cocoEvaluateFunction:notDoubleArray","Input x must be an array of doubles.");
     }
     /* get the x vector */
     x = mxGetPr(prhs[1]);

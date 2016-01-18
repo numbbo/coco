@@ -28,6 +28,8 @@ from .cococommands import *
 
 from .rungeneric import main as main
 
+from .__main__ import main as _main
+
 __all__  = ['comp2', 'compall', 'main', 'ppfigdim', 'pplogloss', 'pprldistr',
             'pproc', 'ppsingle', 'pptable', 'rungeneric', 'rungeneric1',
             'rungeneric2', 'rungenericmany', 'algportfolio', 'pptex',

@@ -7,8 +7,7 @@
 
 #include "coco_utilities.c"
 #include "coco_problem.c"
-#include "coco_strdup.c"
-
+#include "coco_string.c"
 #include "observer_biobj.c"
 
 #include "logger_biobj_avl_tree.c"
@@ -35,8 +34,14 @@ typedef struct {
   size_t next_target_id;
   /* Whether the target was hit in the latest evaluation */
   int target_hit;
-  /* The current overall indicator value */
+  /* The current indicator value */
   double current_value;
+  /* Additional penalty */
+  double additional_penalty;
+  /* The overall value of the indicator tested for target hits */
+  double overall_value;
+
+  size_t next_output_evaluation_num;
 
 } logger_biobj_indicator_t;
 
@@ -58,9 +63,6 @@ typedef struct {
   size_t number_of_variables;
   size_t number_of_objectives;
   size_t suite_dep_instance;
-
-  /* Additional information on the problem */
-  mo_problem_data_t *problem_data;
 
   /* The tree keeping currently non-dominated solutions */
   avl_tree_t *archive_tree;
@@ -131,14 +133,14 @@ static void logger_biobj_node_free(logger_biobj_avl_item_t *item, void *userdata
  * Checks if the given node is smaller than the reference point, and stores this information in the node's
  * item->within_ROI field.
  */
-static void logger_biobj_check_if_within_ROI(logger_biobj_t *logger, coco_problem_t *problem, avl_node_t *node) {
+static void logger_biobj_check_if_within_ROI(coco_problem_t *problem, avl_node_t *node) {
 
   logger_biobj_avl_item_t *node_item = (logger_biobj_avl_item_t *) node->item;
   size_t i;
 
   node_item->within_ROI = 1;
   for (i = 0; i < problem->number_of_objectives; i++)
-    if (node_item->y[i] > logger->problem_data->reference_point[i]) {
+    if (node_item->y[i] > problem->nadir_value[i]) {
       node_item->within_ROI = 0;
       break;
     }
@@ -235,6 +237,7 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
   int trigger_update = 0;
   int dominance;
   size_t i;
+  int previous_unavailable = 0;
 
   /* Find the first point that is not worse than the new point (NULL if such point does not exist) */
   node = avl_item_search_right(logger->archive_tree, node_item, NULL);
@@ -295,7 +298,7 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
     avl_item_insert(logger->buffer_tree, node_item);
 
     if (logger->compute_indicators) {
-      logger_biobj_check_if_within_ROI(logger, problem, new_node);
+      logger_biobj_check_if_within_ROI(problem, new_node);
       if (node_item->within_ROI) {
         /* Compute indicator value for new node and update the indicator value of the affected nodes */
         logger_biobj_avl_item_t *next_item, *previous_item;
@@ -307,9 +310,9 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
               logger->indicators[i]->current_value -= next_item->indicator_contribution[i];
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
                 next_item->indicator_contribution[i] = (node_item->y[0] - next_item->y[0])
-                    * logger->problem_data->normalization_factor[0]
-                    * (logger->problem_data->reference_point[1] - next_item->y[1])
-                    * logger->problem_data->normalization_factor[1];
+                    / (problem->nadir_value[0] - problem->best_value[0])
+                    * (problem->nadir_value[1] - next_item->y[1])
+                    / (problem->nadir_value[1] - problem->best_value[1]);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -320,15 +323,16 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
           }
         }
 
+        previous_unavailable = 0;
         if (new_node->prev != NULL) {
           previous_item = (logger_biobj_avl_item_t*) new_node->prev->item;
           if (previous_item->within_ROI) {
             for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
                 node_item->indicator_contribution[i] = (previous_item->y[0] - node_item->y[0])
-                    * logger->problem_data->normalization_factor[0]
-                    * (logger->problem_data->reference_point[1] - node_item->y[1])
-                    * logger->problem_data->normalization_factor[1];
+                    / (problem->nadir_value[0] - problem->best_value[0])
+                    * (problem->nadir_value[1] - node_item->y[1])
+                    / (problem->nadir_value[1] - problem->best_value[1]);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -336,21 +340,28 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
               }
             }
           } else {
-            /* Previous item does not exist or is out of ROI, use reference point instead */
-            for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
-              if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
-                node_item->indicator_contribution[i] = (logger->problem_data->reference_point[0]
-                    - node_item->y[0]) * logger->problem_data->normalization_factor[0]
-                    * (logger->problem_data->reference_point[1] - node_item->y[1])
-                    * logger->problem_data->normalization_factor[1];
-              } else {
-                coco_error(
-                    "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
-                    logger->indicators[i]->name);
-              }
+            previous_unavailable = 1;
+          }
+        } else {
+          previous_unavailable = 1;
+        }
+
+        if (previous_unavailable) {
+          /* Previous item does not exist or is out of ROI, use reference point instead */
+          for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+            if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
+              node_item->indicator_contribution[i] = (problem->nadir_value[0] - node_item->y[0])
+                  / (problem->nadir_value[0] - problem->best_value[0])
+                  * (problem->nadir_value[1] - node_item->y[1])
+                  / (problem->nadir_value[1] - problem->best_value[1]);
+            } else {
+              coco_error(
+                  "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
+                  logger->indicators[i]->name);
             }
           }
         }
+
         for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
           logger->indicators[i]->current_value += node_item->indicator_contribution[i];
         }
@@ -380,10 +391,12 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
 
   indicator->name = coco_strdup(indicator_name);
 
-  indicator->best_value = observer_biobj_read_best_value(observer_biobj, indicator->name, problem->problem_id);
+  indicator->best_value = suite_biobj_get_best_value(indicator->name, problem->problem_id);
   indicator->next_target_id = 0;
   indicator->target_hit = 0;
   indicator->current_value = 0;
+  indicator->additional_penalty = 0;
+  indicator->overall_value = 0;
 
   /* Prepare the info file */
   path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
@@ -444,20 +457,19 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
  */
 static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, logger_biobj_t *logger) {
 
-  int target_index = 0;
+  size_t target_index = 0;
   if (indicator->next_target_id > 0)
-    target_index = (int) indicator->next_target_id - 1;
+    target_index = indicator->next_target_id - 1;
 
-  /* Log the last evaluation in the dat file if it didn't hit a target */
+  /* Log the last evaluation in the dat file if wasn't already logged */
   if (!indicator->target_hit) {
     fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-        indicator->best_value - indicator->current_value, logger->precision_f,
-        MO_RELATIVE_TARGET_VALUES[target_index]);
+        indicator->overall_value, logger->precision_f, MO_RELATIVE_TARGET_VALUES[target_index]);
   }
 
   /* Log the information in the info file */
   fprintf(indicator->info_file, ", %ld:%lu|%.1e", logger->suite_dep_instance, logger->number_of_evaluations,
-      indicator->best_value - indicator->current_value);
+      indicator->overall_value);
   fflush(indicator->info_file);
 }
 
@@ -500,6 +512,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
 
   logger_biobj_avl_item_t *node_item;
   logger_biobj_indicator_t *indicator;
+  avl_node_t *solution;
   int update_performed;
   size_t i;
 
@@ -529,32 +542,67 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
    * output indicator information. Note that a target is reached when the (best_value - current_value) <=
    * relative_target_value (the relative_target_value is a target for indicator difference, not indicator value!)
    */
-  if (logger->compute_indicators && (update_performed || (logger->number_of_evaluations == 1))) {
+  /* Log the evaluation */
+  if (logger->compute_indicators) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+
       indicator = logger->indicators[i];
       indicator->target_hit = 0;
-      while ((indicator->next_target_id < MO_NUMBER_OF_TARGETS)
-          && (node_item->indicator_contribution[i] > 0)
-          && (indicator->best_value - indicator->current_value <= MO_RELATIVE_TARGET_VALUES[indicator->next_target_id])) {
-        /* A target was hit */
-        indicator->target_hit = 1;
-        if (indicator->next_target_id + 1 < MO_NUMBER_OF_TARGETS)
-          indicator->next_target_id++;
-        else
-          break;
+
+      /* If the update was performed, update the overall indicator value */
+      if (update_performed) {
+        /* Compute the overall_value of an indicator */
+        if (strcmp(indicator->name, "hyp") == 0) {
+          if (indicator->current_value == 0) {
+            /* The additional penalty for hypervolume is the minimal distance from the nondominated set to the ROI */
+            indicator->additional_penalty = DBL_MAX;
+            if (logger->archive_tree->tail) {
+              solution = logger->archive_tree->head;
+              while (solution != NULL) {
+                double distance = mo_get_distance_to_ROI(((logger_biobj_avl_item_t*) solution->item)->y,
+                    problem->best_value, problem->nadir_value, problem->number_of_objectives);
+                indicator->additional_penalty = coco_min_double(indicator->additional_penalty, distance);
+                solution = solution->next;
+              }
+            }
+            assert(indicator->additional_penalty >= 0);
+          } else {
+            indicator->additional_penalty = 0;
+          }
+          indicator->overall_value = indicator->best_value - indicator->current_value
+              + indicator->additional_penalty;
+        } else {
+          coco_error("logger_biobj_evaluate(): Indicator computation not implemented yet for indicator %s",
+              indicator->name);
+        }
+
+        /* Check whether a target was hit */
+        while ((indicator->next_target_id < MO_NUMBER_OF_TARGETS)
+            && (indicator->overall_value <= MO_RELATIVE_TARGET_VALUES[indicator->next_target_id])) {
+          /* A target was hit */
+          indicator->target_hit = 1;
+          if (indicator->next_target_id + 1 < MO_NUMBER_OF_TARGETS)
+            indicator->next_target_id++;
+          else
+            break;
+        }
       }
+
+      /* Log the evaluation if a target was hit or the evaluation number matches a predefined value */
       if (indicator->target_hit) {
         fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-            indicator->best_value - indicator->current_value, logger->precision_f,
+            indicator->overall_value, logger->precision_f,
             MO_RELATIVE_TARGET_VALUES[indicator->next_target_id - 1]);
       }
-      /* The first evaluation is always output (even if no target was hit) */
-      else if (logger->number_of_evaluations == 1) {
+      else if (coco_observer_evaluation_to_log(logger->number_of_evaluations, problem->number_of_variables)) {
+        size_t target_index = 0;
+        if (indicator->next_target_id > 0)
+          target_index = indicator->next_target_id - 1;
         fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-            indicator->best_value - indicator->current_value, logger->precision_f,
-            coco_max_double(MO_RELATIVE_TARGET_VALUES[indicator->next_target_id],
-                indicator->best_value - indicator->current_value));
+            indicator->overall_value, logger->precision_f, MO_RELATIVE_TARGET_VALUES[target_index]);
+        indicator->target_hit = 1;
       }
+
     }
   }
 }
@@ -612,11 +660,6 @@ static void logger_biobj_free(void *stuff) {
     logger->nondom_file = NULL;
   }
 
-  if (logger->problem_data != NULL) {
-    mo_problem_data_free(logger->problem_data);
-    logger->problem_data = NULL;
-  }
-
   avl_tree_destruct(logger->archive_tree);
   avl_tree_destruct(logger->buffer_tree);
 
@@ -630,12 +673,9 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
   coco_problem_t *self;
   logger_biobj_t *logger;
   observer_biobj_t *observer_biobj;
-  coco_stacked_problem_data_t* stacked_problem;
-  double *x, *nadir;
   const char nondom_folder_name[] = "archive";
-  char *path_name, *file_name, *prefix;
+  char *path_name, *file_name = NULL, *prefix;
   size_t i;
-  double norm;
 
   if (problem->number_of_objectives != 2) {
     coco_error("logger_biobj(): The biobjective logger cannot log a problem with %d objective(s)", problem->number_of_objectives);
@@ -717,50 +757,6 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
       logger->indicators[i] = logger_biobj_indicator(logger, problem, OBSERVER_BIOBJ_INDICATORS[i]);
 
     observer_biobj->previous_function = (long) problem->suite_dep_function;
-  }
-
-  /* Compute the ideal and reference points */
-  stacked_problem = (coco_stacked_problem_data_t *) problem->data;
-  logger->problem_data = mo_problem_data_allocate(problem->number_of_objectives);
-
-  /* Set the ideal and reference points*/
-  logger->problem_data->ideal_point[0] = stacked_problem->problem1->best_value[0];
-  logger->problem_data->ideal_point[1] = stacked_problem->problem2->best_value[0];
-  nadir = coco_allocate_vector(problem->number_of_objectives);
-  x = stacked_problem->problem2->best_parameter;
-  coco_evaluate_function(stacked_problem->problem1, x, &nadir[0]);
-  x = stacked_problem->problem1->best_parameter;
-  coco_evaluate_function(stacked_problem->problem2, x, &nadir[1]);
-  logger->problem_data->reference_point[0] = nadir[0];
-  logger->problem_data->reference_point[1] = nadir[1];
-  coco_free_memory(nadir);
-
-  mo_problem_data_compute_normalization_factor(logger->problem_data, problem->number_of_objectives);
-
-  /* Some additional checks that should be performed only in debug mode */
-  if (coco_log_level >= COCO_DEBUG) {
-
-    /* Output the ideal and reference points */
-    coco_debug("%s\t%+.*e\t%+.*e\t%+.*e\t%+.*e", problem->problem_id,
-               logger->precision_f, logger->problem_data->ideal_point[0],
-               logger->precision_f, logger->problem_data->ideal_point[1],
-               logger->precision_f, logger->problem_data->reference_point[0],
-               logger->precision_f, logger->problem_data->reference_point[1]);
-
-    /* Check whether the ideal and reference points are closer than 1e-4 in the objective space */
-    norm = mo_get_norm(logger->problem_data->ideal_point, logger->problem_data->reference_point, 2);
-    if (norm < 1e-4) {
-      coco_warning("The ideal and reference points of %s are close in the objective space\nnorm = %.*e",
-          problem->problem_id, logger->precision_f, norm);
-    }
-
-    /* Check whether the extreme optimal points are closer than 1e-4 in the decision space */
-    norm = mo_get_norm(stacked_problem->problem1->best_parameter, stacked_problem->problem2->best_parameter,
-        problem->number_of_variables);
-    if (norm < 1e-4) {
-      coco_warning("The extreme optimal points of %s are close in the decision space\nnorm = %.*e",
-          problem->problem_id, logger->precision_f, norm);
-    }
   }
 
   return self;

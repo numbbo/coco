@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import os
+import sys
+import setuptools
+from distutils.core import setup
+
+_name = 'bbob_pproc'  # package name, should change to cocopp, however pickle files fail
+setup(
+    name = _name,
+    version = "$COCO_VERSION",
+    packages = [_name, _name + '.comp2', _name + '.compall'],
+    package_dir = {_name: 'bbob_pproc'},
+    package_data={_name: ['*enchmarkshortinfos.txt',
+                          '*enchmarkinfos.txt',
+                          'best*algentries*.pickle.gz',
+                          'pprldistr2009*.pickle.gz',
+                          'js/*', 'tth/*']},
+    url = 'https://github.com/numbbo/coco',
+    license = 'BSD',
+    maintainer = 'Dejan Tusar',
+    maintainer_email = 'dejan.tusar@inria.fr',
+    # author = ['Nikolaus Hansen', 'Raymond Ros', 'Dejan Tusar'],
+    description = 'Benchmarking framework for all types of black-box optimization algorithms, postprocessing. ',
+    long_description = '...',
+    # install_requires = ['numpy>=1.7'],
+    classifiers = [
+        'Development Status :: 4 - Beta',
+        'Environment :: ??',
+        'Intended Audience :: ??',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Topic :: ??'
+    ]
+)
