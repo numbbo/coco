@@ -123,19 +123,12 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   size_t nb_blocks;
   size_t swap_range;
   size_t nb_swaps;
-  size_t block_size;
-  int i;
   
-  /* tentative */
-  swap_range = dimension / 3;
-  nb_swaps = dimension;
-  block_size = dimension / 4;
-  nb_blocks = dimension / block_size;
-  block_sizes = (size_t *)coco_allocate_memory(nb_blocks * sizeof(size_t));
-  for (i = 0; i < nb_blocks; i++) {
-    block_sizes[i] = block_size;
-  }
-  printf("f:%zu  n:%zu  i:%zu  bs:%zu  sR:%zu\n", function, dimension, instance, block_size, swap_range);
+  block_sizes = ls_get_block_sizes(&nb_blocks, dimension);
+  swap_range = ls_get_swap_range(dimension);
+  nb_swaps = ls_get_nb_swaps(dimension);
+
+  printf("f:%zu  n:%zu  i:%zu  bs:[%zu,...,%zu,%zu]  sR:%zu\n", function, dimension, instance, block_sizes[0], block_sizes[0],block_sizes[nb_blocks-1], swap_range);
   
   xopt = coco_allocate_vector(dimension);
   bbob2009_compute_xopt(xopt, rseed, dimension);
