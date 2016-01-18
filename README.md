@@ -91,9 +91,10 @@ github by clicking [here](https://github.com/numbbo/coco/archive/master.zip),
 5. **Postprocess** your data from the results folder by typing
 
     ```
-    python -m cocopp YOURRESULTFOLDER
+    python -m bbob_pproc YOURRESULTFOLDER
     ```
 
+  The name `bbob_pproc` will become `cocopp` in future. 
   A folder named `ppdata` by default will be generated (the folder name can be
   changed by the `-o FOLDERNAME` option). Note that you can also compare more
   than one algorithm by specifying more algorithm result folders, separated by
@@ -118,15 +119,11 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 
 * the `do.py` file in the root folder is a tool to build the entire
   distribution. `do.py` is a neat and simplifying replacement for make. It has
-  switches for just building some languages etc, e.g.
-
-    python ./do.py build-c
-    python ./do.py build-java
-    python ./do.py build-matlab
-    python ./do.py build-python
-    python ./do.py build  # builds all
-
-are valid commands code-experiments/build/LANGUAGE/.
+  switches for just building some languages etc, type
+  ```
+    python do.py
+  ```
+  to see a list of all available commandes. 
 
 * the code-experiments/build folder is to a large extend the output folder of
   the `./do.py build` command.
