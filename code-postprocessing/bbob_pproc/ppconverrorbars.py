@@ -28,10 +28,10 @@ if __name__ == "__main__":
     import matplotlib
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
-from bbob_pproc import genericsettings, pproc
-from bbob_pproc.pproc import DataSetList
-from bbob_pproc.ppfig import saveFigure, save_single_functions_html
-from bbob_pproc.toolsstats import prctile
+from . import genericsettings, pproc
+from .pproc import DataSetList
+from .ppfig import saveFigure, save_single_functions_html
+from .toolsstats import prctile
     
 import matplotlib.pyplot as plt
 

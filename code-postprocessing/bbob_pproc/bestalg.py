@@ -29,9 +29,9 @@ from pdb import set_trace
 import warnings
 import numpy as np
 
-from bbob_pproc import genericsettings, readalign, pproc
-from bbob_pproc.toolsdivers import print_done
-from bbob_pproc import toolsstats
+from . import genericsettings, readalign, pproc
+from .toolsdivers import print_done
+from . import toolsstats
 
 bestalgentries2009 = {}
 bestalgentries2010 = {}
@@ -348,7 +348,7 @@ def loadBBOB2009(force=False):
     # global statement necessary to change the variable bestalg.bestalgentries2009
 
     if not force and bestalgentries2009:
-        return 
+        return
     
     print "Loading best algorithm data from BBOB-2009...",
     sys.stdout.flush()
@@ -360,7 +360,12 @@ def loadBBOB2009(force=False):
 
     picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
     fid = gzip.open(picklefilename, 'r')
-    bestalgentries2009 = pickle.load(fid)
+    try:
+        bestalgentries2009 = pickle.load(fid)
+    except:
+        warnings.warn("no best algorithm loaded")
+        # raise  # outcomment to diagnose
+        bestalgentries2009 = None
     fid.close()
     print_done()
 
@@ -462,10 +467,8 @@ def loadBestBiobj2016():
     sys.stdout.flush()
 
     bestalgfilepath = os.path.split(__file__)[0]
-    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle')
-    fid = open(picklefilename, 'r')
-#    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle.gz')
-#    fid = gzip.open(picklefilename, 'r')
+    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle.gz')
+    fid = gzip.open(picklefilename, 'r')
     bestbiobjalgentries2016 = pickle.load(fid)
     fid.close()
     print_done()

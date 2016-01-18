@@ -21,23 +21,30 @@ import tarfile
 from pdb import set_trace
 import warnings
 import numpy
+import matplotlib
 
 ftarget = 1e-8
 target_runlength = 10 # used for ppfigs.main
 
-# Add the path to bbob_pproc
 if __name__ == "__main__":
-    (filepath, filename) = os.path.split(sys.argv[0])
+    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
+    # matplotlib.use('pdf')
+    filepath = os.path.split(sys.argv[0])[0]
+    # Add the path to bbob_pproc/.. folder
     sys.path.append(os.path.join(filepath, os.path.pardir))
-    import matplotlib
-    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
+    try:
+        import bbob_pproc as cocopp
+    except ImportError:
+        import cocopp
+    res = cocopp.rungenericmany.main(sys.argv[1:])
+    sys.exit(res)
 
-from bbob_pproc import genericsettings, ppfig
-from bbob_pproc import dataoutput, pproc, pptex
-from bbob_pproc.pproc import DataSetList, processInputArgs
-from bbob_pproc.toolsdivers import prepend_to_file, strip_pathname1, str_to_latex
-from bbob_pproc.compall import pprldmany, pptables, ppfigs
-from bbob_pproc import ppconverrorbars
+from . import genericsettings, ppfig
+from . import dataoutput, pproc, pptex
+from .pproc import DataSetList, processInputArgs
+from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex
+from .compall import pprldmany, pptables, ppfigs
+from . import ppconverrorbars
 
 import matplotlib.pyplot as plt
 

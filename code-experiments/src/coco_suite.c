@@ -48,6 +48,10 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
   suite->number_of_instances = 0;
   suite->instances = NULL;
 
+  /* To be set in particular suites if needed */
+  suite->data = NULL;
+  suite->data_free_function = NULL;
+
   return suite;
 }
 
@@ -165,6 +169,14 @@ void coco_suite_free(coco_suite_t *suite) {
     if (suite->current_problem) {
       coco_problem_free(suite->current_problem);
       suite->current_problem = NULL;
+    }
+
+    if (suite->data != NULL) {
+      if (suite->data_free_function != NULL) {
+        suite->data_free_function(suite->data);
+      }
+      coco_free_memory(suite->data);
+      suite->data = NULL;
     }
 
     coco_free_memory(suite);

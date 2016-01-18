@@ -50,37 +50,6 @@ void coco_recommend_solutions(coco_problem_t *self, const double *x, size_t numb
   self->recommend_solutions(self, x, number_of_solutions);
 }
 
-void coco_problem_free(coco_problem_t *self) {
-  assert(self != NULL);
-  if (self->free_problem != NULL) {
-    self->free_problem(self);
-  } else {
-    /* Best guess at freeing all relevant structures */
-    if (self->smallest_values_of_interest != NULL)
-      coco_free_memory(self->smallest_values_of_interest);
-    if (self->largest_values_of_interest != NULL)
-      coco_free_memory(self->largest_values_of_interest);
-    if (self->best_parameter != NULL)
-      coco_free_memory(self->best_parameter);
-    if (self->best_value != NULL)
-      coco_free_memory(self->best_value);
-    if (self->problem_name != NULL)
-      coco_free_memory(self->problem_name);
-    if (self->problem_id != NULL)
-      coco_free_memory(self->problem_id);
-    if (self->problem_type != NULL)
-      coco_free_memory(self->problem_type);
-    if (self->data != NULL)
-      coco_free_memory(self->data);
-    self->smallest_values_of_interest = NULL;
-    self->largest_values_of_interest = NULL;
-    self->best_parameter = NULL;
-    self->best_value = NULL;
-    self->data = NULL;
-    coco_free_memory(self);
-  }
-}
-
 const char *coco_problem_get_name(const coco_problem_t *self) {
   assert(self != NULL);
   assert(self->problem_name != NULL);

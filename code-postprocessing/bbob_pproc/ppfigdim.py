@@ -534,7 +534,9 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         if func in funInfos.keys():
             # print(plt.rcParams['axes.titlesize'])
             # print(plt.rcParams['font.size'])
-            plt.gca().set_title(funInfos[func], fontsize=24)  # 24 is global font.size
+            funcName = funInfos[func]
+            fontSize = 24 - max(0, 4 * ((len(funcName) - 35) / 5))
+            plt.gca().set_title(funcName, fontsize=fontSize)  # 24 is global font.size
         plot_previous_algorithms(func, dsList.isBiobjective(), _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         with warnings.catch_warnings(record=True) as ws:
