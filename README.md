@@ -186,6 +186,8 @@ Known Issues / Trouble-Shooting
 #### `setuptools` is not installed
 If you see something like this
 ```
+$ python do.py run-python  # or build-python
+[...]
 PYTHON  setup.py install --user in code-experiments/build/python
 ERROR: return value=1
 Traceback (most recent call last):
@@ -206,16 +208,25 @@ Traceback (most recent call last):
    raise CalledProcessError(retcode, cmd, output=output)
 subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i                                        nstall', '--user']' returned non-zero exit status 1
 ```
-`setuptools` needs to be installed: 
+then `setuptools` needs to be installed: 
 ```
     pip install setuptools
 ```
 or `easy_install setuptools` should do the job. 
 
+#### Compilation During Install of `cocoex` Fails (under Linux) 
 
-
-#### Python crashes under Ubuntu Linux
-At the moment, we experience some problems with the installation of the python module of Coco under Ubuntu linux (see https://github.com/numbbo/coco/issues/317). We are working on a fix.
+``` 
+cython/interface.c -o build/temp.linux-i686-2.6/cython/interface.o
+cython/interface.c:4:20: error: Python.h: file not found
+cython/interface.c:6:6: error: #error Python headers needed to compile C extensions, please install development version of Python.
+error: command 'gcc' failed with exit status 1
+```
+Under Linux
+```
+  sudo apt-get install python-dev
+```
+should do the trick. 
 
 
 ### Matlab
