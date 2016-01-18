@@ -31,6 +31,7 @@ void my_random_search(coco_problem_t *problem) {
   size_t max_budget = dimension * BUDGET;
 
   for (i = 0; i < max_budget; ++i) {
+
     /* Construct x as a random point between the lower and upper bounds */
     for (j = 0; j < dimension; ++j) {
       range = ubounds[j] - lbounds[j];
@@ -39,7 +40,7 @@ void my_random_search(coco_problem_t *problem) {
 
     /* Call COCO's evaluate function where all the logging is performed */
     coco_evaluate_function(problem, x, y);
-    
+
   }
 
   coco_random_free(rng);
@@ -71,7 +72,7 @@ void my_grid_search(coco_problem_t *problem) {
 
   /* Take care of the borderline case */
   if (max_nodes < 1) max_nodes = 1;
-  
+
   /* Initialization */
   for (j = 0; j < dimension; j++) {
     nodes[j] = 0;
@@ -79,6 +80,7 @@ void my_grid_search(coco_problem_t *problem) {
   }
 
   while (evaluations < max_budget) {
+
     /* Construct x and evaluate it */
     for (j = 0; j < dimension; j++) {
       x[j] = lbounds[j] + grid_step[j] * (double) nodes[j];
