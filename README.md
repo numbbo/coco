@@ -221,7 +221,7 @@ At the moment, we experience some problems with the installation of the python m
 ### Matlab
 
 #### `build-matlab` crashes under Linux
-Also the Matlab wrapper does not always work under linux with the current code: an issue is filed for the Ubuntu operating system at https://github.com/numbbo/coco/issues/318
+The Matlab wrapper does not always work under Linux with the current code: an issue is filed for the Ubuntu operating system at https://github.com/numbbo/coco/issues/318
 ### Path to matlab
 If you see something like this when running ``python do.py build-matlab``
 ```
