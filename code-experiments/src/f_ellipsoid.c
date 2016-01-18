@@ -79,26 +79,26 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
   double *M = coco_allocate_vector(dimension * dimension);
   double *b = coco_allocate_vector(dimension);
   double **rot1;
-  
+
   xopt = coco_allocate_vector(dimension);
   bbob2009_compute_xopt(xopt, rseed, dimension);
   fopt = bbob2009_compute_fopt(function, instance);
-  
+
   rot1 = bbob2009_allocate_matrix(dimension, dimension);
   bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
   bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
   bbob2009_free_matrix(rot1, dimension);
-  
+
   problem = f_ellipsoid_allocate(dimension);
   problem = f_transform_vars_oscillate(problem);
   problem = f_transform_vars_affine(problem, M, b, dimension);
   problem = f_transform_vars_shift(problem, xopt, 0);
   problem = f_transform_obj_shift(problem, fopt);
-  
+
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "3-ill-conditioned");
-  
+
   coco_free_memory(M);
   coco_free_memory(b);
   coco_free_memory(xopt);

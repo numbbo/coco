@@ -78,6 +78,7 @@ static coco_problem_t *get_bbob_problem(const size_t function,
   const long rseed = (long) (function + 10000 * instance);
   const long rseed_3 = (long) (3 + 10000 * instance);
   const long rseed_17 = (long) (17 + 10000 * instance);
+
   if (function == 1) {
     problem = f_sphere_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);

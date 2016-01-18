@@ -17,7 +17,7 @@ static const size_t BUDGET = 2;
  * A random search algorithm that can be used for single- as well as multi-objective optimization.
  */
 void my_random_search(coco_problem_t *problem) {
-  
+
   coco_random_state_t *rng = coco_random_new(0xdeadbeef);
   const double *lbounds = coco_problem_get_smallest_values_of_interest(problem);
   const double *ubounds = coco_problem_get_largest_values_of_interest(problem);
@@ -36,12 +36,12 @@ void my_random_search(coco_problem_t *problem) {
       range = ubounds[j] - lbounds[j];
       x[j] = lbounds[j] + coco_random_uniform(rng) * range;
     }
-    
+
     /* Call COCO's evaluate function where all the logging is performed */
     coco_evaluate_function(problem, x, y);
     
   }
-  
+
   coco_random_free(rng);
   coco_free_memory(x);
   coco_free_memory(y);
@@ -53,7 +53,7 @@ void my_random_search(coco_problem_t *problem) {
  * nodes of the grid are evaluated.
  */
 void my_grid_search(coco_problem_t *problem) {
-  
+
   const double *lbounds = coco_problem_get_smallest_values_of_interest(problem);
   const double *ubounds = coco_problem_get_largest_values_of_interest(problem);
   size_t dimension = coco_problem_get_dimension(problem);
@@ -83,16 +83,16 @@ void my_grid_search(coco_problem_t *problem) {
     for (j = 0; j < dimension; j++) {
       x[j] = lbounds[j] + grid_step[j] * (double) nodes[j];
     }
-    
+
     /* Call COCO's evaluate function where all the logging is performed */
     coco_evaluate_function(problem, x, y);
     evaluations++;
-    
+
     /* Inside the grid, move to the next node */
     if (nodes[0] < max_nodes) {
       nodes[0]++;
     }
-    
+
     /* At an outside node of the grid, move to the next level */
     else if (max_nodes > 0) {
       for (j = 1; j < dimension; j++) {
@@ -103,13 +103,13 @@ void my_grid_search(coco_problem_t *problem) {
           break;
         }
       }
-      
+
       /* At the end of the grid, exit */
       if ((j == dimension) && (nodes[j - 1] == max_nodes))
         break;
     }
   }
-  
+
   coco_free_memory(x);
   coco_free_memory(y);
   coco_free_memory(nodes);
@@ -132,14 +132,14 @@ void example_bbob(void) {
 
   suite = coco_suite("bbob", "year: 2016", "dimensions: 2,3,5,10,20,40");
   observer = coco_observer("bbob", observer_options);
-  
+
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
     my_random_search(problem);
   }
-  
+
   coco_observer_free(observer);
   coco_suite_free(suite);
-  
+
 }
 
 /**
@@ -158,11 +158,11 @@ void example_biobj(void) {
 
   suite = coco_suite("bbob-biobj", "year: 2016", "dimensions: 2,3,5,10,20,40");
   observer = coco_observer("bbob-biobj", observer_options);
-  
+
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
     my_random_search(problem);
   }
-  
+
   coco_observer_free(observer);
   coco_suite_free(suite);
   
@@ -219,6 +219,9 @@ algorithm_info: \"A simple random search algorithm\"";
   
 }
 
+/*
+ * The main method calls all four
+ */
 int main(void) {
 
   printf("Running the example experiment... (it takes time, be patient)\n");
