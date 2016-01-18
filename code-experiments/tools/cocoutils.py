@@ -76,7 +76,7 @@ def hg_revision():
 
 def git_version(pep440=True):
     """Return somewhat readible version number from git, like
-    '0.0-6015-ga0a3769' if not pep440 else '0.0.6015'"""
+    '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'"""
     try:
         if pep440:
             return '.'.join(git(['describe', '--tags']).split('-')[:2])
