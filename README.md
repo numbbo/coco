@@ -30,7 +30,7 @@ For using `git` under Windows (optional), we recommend installing [TortoiseGit](
 Additional requirements for running an algorithm in a specific language.
 
 * Java: none, but see [here](./code-experiments/build/java/README.txt) for details on the compilation
-* Python: none, see [here](./code-experiments/build/python/README.txt) for details on the installation
+* Python: none, see [here](./code-experiments/build/python/README.md) for details on the installation
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.txt)
 
 ### Guaranties (None)
@@ -57,6 +57,12 @@ github by clicking [here](https://github.com/numbbo/coco/archive/master.zip),
   depending which language is used to run the experiments. `run-*` will build the 
   respective code and run the example experiment once. The build result and the example
   experiment code can be found under `code-experiments/build/*`. 
+  
+2. On the computer where experiment data shall be post-processed, run
+  ```
+    python do.py install-postprocessing
+  ```
+  to (user-locally) install the post-processing. 
   
 3. If the example experiment runs, **connect** your favorite algorithm
   to Coco: copy the `code-experiments/build/YOUR-FAVORITE-LANGUAGE` folder to
@@ -85,9 +91,10 @@ github by clicking [here](https://github.com/numbbo/coco/archive/master.zip),
 5. **Postprocess** your data from the results folder by typing
 
     ```
-    python code-postprocessing/bbob_pproc/rungeneric.py YOURRESULTFOLDER
+    python -m bbob_pproc YOURRESULTFOLDER
     ```
 
+  The name `bbob_pproc` will become `cocopp` in future. 
   A folder named `ppdata` by default will be generated (the folder name can be
   changed by the `-o FOLDERNAME` option). Note that you can also compare more
   than one algorithm by specifying more algorithm result folders, separated by
@@ -112,15 +119,11 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 
 * the `do.py` file in the root folder is a tool to build the entire
   distribution. `do.py` is a neat and simplifying replacement for make. It has
-  switches for just building some languages etc, e.g.
-
-    python ./do.py build-c
-    python ./do.py build-java
-    python ./do.py build-matlab
-    python ./do.py build-python
-    python ./do.py build  # builds all
-
-are valid commands code-experiments/build/LANGUAGE/.
+  switches for just building some languages etc, type
+  ```
+    python do.py
+  ```
+  to see a list of all available commandes. 
 
 * the code-experiments/build folder is to a large extend the output folder of
   the `./do.py build` command.
@@ -218,7 +221,7 @@ At the moment, we experience some problems with the installation of the python m
 ### Matlab
 
 #### `build-matlab` crashes under Linux
-Also the Matlab wrapper does not always work under linux with the current code: an issue is filed for the Ubuntu operating system at https://github.com/numbbo/coco/issues/318
+The Matlab wrapper does not always work under Linux with the current code: an issue is filed for the Ubuntu operating system at https://github.com/numbbo/coco/issues/318
 ### Path to matlab
 If you see something like this when running ``python do.py build-matlab``
 ```
