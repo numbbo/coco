@@ -28,6 +28,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     observer = coco_observer(observer_name, observer_options);
     /* prepare the return value */
     plhs[0] = mxCreateNumericMatrix(1, 1 ,mxINT64_CLASS, mxREAL);
-    //res = (long long *)mxGetData(plhs[0]);
+    res = (mwSize *)mxGetData(plhs[0]);
     *res = (mwSize)observer;
 }
