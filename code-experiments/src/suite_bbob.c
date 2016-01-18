@@ -43,6 +43,21 @@ static char *suite_bbob_get_instances_by_year(const int year) {
   if (year == 2009) {
     return "1-5,1-5,1-5";
   }
+  else if (year == 2010) {
+    return "1-15";
+  }
+  else if (year == 2012) {
+    return "1-5,21-30";
+  }
+  else if (year == 2013) {
+    return "1-5,31-40";
+  }
+  else if (year == 2015) {
+    return "1-5,41-50";
+  }
+  else if (year == 2016) {
+    return "1-5,51-60";
+  }
   else {
     coco_error("suite_bbob_get_instances_by_year(): year %d not defined for suite_bbob", year);
     return NULL;
