@@ -148,14 +148,12 @@ void example_biobj(void) {
   /* Some options of the biobjective observer. See documentation for other options. */
   const char *observer_options = "result_folder: RS_on_bbob-biobj \
                                   algorithm_name: RS \
-                                  algorithm_info: \"A simple random search algorithm\" \
-                                  compute_indicators: 1 \
-                                  log_nondominated: all";
+                                  algorithm_info: \"A simple random search algorithm\"";
 
   coco_suite_t *suite;
   coco_observer_t *observer;
   coco_problem_t *problem;
-  suite = coco_suite("bbob-biobj", NULL, "dimensions: 2,3,5,10,20 instance_idx: 1-10");
+  suite = coco_suite("bbob-biobj", "year: 2016", "dimensions: 2,3,5,10,20");
   observer = coco_observer("bbob-biobj", observer_options);
   
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
