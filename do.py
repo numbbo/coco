@@ -332,6 +332,7 @@ def wait_for_compilation_to_finish(filenameprefix):
     while not is_compiled(filenameprefix):
         time.sleep(2)
         print('.', end='')
+    print(' ')
 
 
 def build_matlab_sms():
