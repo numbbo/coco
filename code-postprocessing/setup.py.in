@@ -8,7 +8,7 @@ import sys
 import setuptools
 from distutils.core import setup
 
-_name = 'cocopp'  # package name, should change to cocopp
+_name = 'bbob_pproc'  # package name, should change to cocopp, however pickle files fail
 setup(
     name = _name,
     version = "$COCO_VERSION",
