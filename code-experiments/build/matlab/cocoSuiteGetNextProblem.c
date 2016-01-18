@@ -14,7 +14,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     coco_suite_t *suite;
     coco_observer_t *observer;
     coco_problem_t *problem;
-    mwSize *ref, *ref2;
+    size_t *ref, *ref2;
     
     /* check for proper number of arguments */
     if(nrhs!=2) {
@@ -34,6 +34,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     
     /* prepare the return value */
     plhs[0] = mxCreateNumericMatrix(1, 1 ,mxINT64_CLASS, mxREAL);
-    ref = (mwSize *)mxGetData(plhs[0]);
-    *ref = (mwSize)problem;
+    ref = (size_t *)mxGetData(plhs[0]);
+    *ref = (size_t)problem;
 }
