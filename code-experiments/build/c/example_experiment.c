@@ -126,13 +126,14 @@ void example_bbob(void) {
   /* Some options of the bbob observer. See documentation for other options. */
   const char *observer_options = "result_folder: RS_on_bbob \
                                   algorithm_name: RS \
-                                  algorithm_info: \"A simple random search algorithm\"";
+                                  algorithm_info: \"A simple random search algorithm\" \
+                                  log_level: info";
 
   coco_suite_t *suite;
   coco_observer_t *observer;
   coco_problem_t *problem;
 
-  suite = coco_suite("bbob", "year: 2009", "dimensions: 2,3,5,10,20 instance_idx: 1,2");
+  suite = coco_suite("bbob", "year: 2016", "dimensions: 2,3,5,10,20,40");
   observer = coco_observer("bbob", observer_options);
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
@@ -153,14 +154,13 @@ void example_biobj(void) {
   const char *observer_options = "result_folder: RS_on_bbob-biobj \
                                   algorithm_name: RS \
                                   algorithm_info: \"A simple random search algorithm\" \
-                                  compute_indicators: 1 \
-                                  log_nondominated: all";
+                                  log_level: info";
 
   coco_suite_t *suite;
   coco_observer_t *observer;
   coco_problem_t *problem;
 
-  suite = coco_suite("bbob-biobj", NULL, "dimensions: 2,3,5,10,20 instance_idx: 1-10");
+  suite = coco_suite("bbob-biobj", "year: 2016", "dimensions: 2,3,5,10,20,40");
   observer = coco_observer("bbob-biobj", observer_options);
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
@@ -169,57 +169,23 @@ void example_biobj(void) {
 
   coco_observer_free(observer);
   coco_suite_free(suite);
-
+  
 }
 
-/**
- * A simple example of benchmarking an optimization algorithm on the toy suite.
- */
-void example_toy(void) {
-
-  /* Some options of the toy observer. See documentation for other options. */
-  const char *observer_options = "result_folder: RS_on_toy \
-                                  algorithm_name: RS \
-                                  algorithm_info: \"A simple random search algorithm\"";
-
-  coco_suite_t *suite;
-  coco_observer_t *observer;
-  coco_problem_t *problem;
-
-  suite = coco_suite("toy", NULL, NULL);
-  observer = coco_observer("toy", observer_options);
-
-  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
-    my_random_search(problem);
-  }
-
-  coco_observer_free(observer);
-  coco_suite_free(suite);
-
-}
-
-/**
+/*
  * The main method calls all three
  */
 int main(void) {
 
-  printf("Running the experiments... (it takes time, be patient)\n");
+  printf("Running the example experiment... (it takes time, be patient)\n");
   fflush(stdout);
-
-  example_bbob();
-
-  printf("First example on bbob suite done!\n");
-  fflush(stdout);
-
+  
   example_biobj();
 
-  printf("Second example bbob-biobj suite done!\n");
+  printf("Done!\n");
+
   fflush(stdout);
-
-  example_toy();
-
-  printf("Third example on toy suite done!\n");
-  fflush(stdout);
-
   return 0;
 }
+
+
