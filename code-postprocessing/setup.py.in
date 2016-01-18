@@ -8,18 +8,18 @@ import sys
 import setuptools
 from distutils.core import setup
 
-_name = 'bbob_pproc'  # package name, should change to cocopp
+_name = 'bbob_pproc'  # package name, should change to cocopp, however pickle files fail
 setup(
     name = _name,
     version = "$COCO_VERSION",
-    packages = [_name, _name + 'comp2', _name + 'compall'],
+    packages = [_name, _name + '.comp2', _name + '.compall'],
     package_dir = {_name: 'bbob_pproc'},
     package_data={_name: ['*enchmarkshortinfos.txt',
                           '*enchmarkinfos.txt',
                           'best*algentries*.pickle.gz',
                           'pprldistr2009*.pickle.gz',
                           'js/*', 'tth/*']},
-    url = 'https://github.com/numbbo/numbbo/',
+    url = 'https://github.com/numbbo/coco',
     license = 'BSD',
     maintainer = 'Dejan Tusar',
     maintainer_email = 'dejan.tusar@inria.fr',

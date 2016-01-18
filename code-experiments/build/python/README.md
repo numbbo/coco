@@ -4,7 +4,7 @@ NumBBO/CoCO Framework in Python (Experimental Part)
 Prerequisites
 -------------
 
-The simplest way to check the prerequisits is to go directly to [_Getting Started_](#Getting Started)
+The simplest way to check the prerequisits is to go directly to [_Getting Started_](#Getting-Started)
 below and give it a try. Then act upon failure, as in this case probably one of
 the following is lacking: 
 

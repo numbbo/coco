@@ -156,7 +156,7 @@ if suite_name == "bbob-biobj":
         ' compute_indicators: log_nondominated: all ')
 
 # CAVEAT: this might be modified from input args
-budget_multiplier = 10  # times dimension, always start with something small
+budget_multiplier = 2  # times dimension, always start with something small
 number_of_batches = 1   # allows to run everything several batches
 current_batch = 1       # 1..number_of_batches
 ##############################################################################

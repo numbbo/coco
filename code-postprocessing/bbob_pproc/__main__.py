@@ -14,14 +14,16 @@ import shutil
 import subprocess
 
 if __name__ == "__main__":
+    """import bbob_pproc/cocopp as module and run tests or rungeneric.main"""
     filepath = os.path.split(sys.argv[0])[0]
     sys.path.append(os.path.join(os.getcwd(), filepath))  # needed from the shell
     sys.path.append(os.path.join(filepath, os.path.pardir))  # needed in do.py
     try:
         import bbob_pproc as cocopp
     except ImportError:
-        raise
+        # raise  # outcomment to diagnose the reason
         import cocopp
+    # run either this main here as cocopp._main or rungeneric.main
     args = sys.argv[1:] if len(sys.argv) else []
     if len(args) == 0:
         print("WARNING: this tests the post-processing, this will change in future (use -h for help)")
