@@ -10,7 +10,12 @@ static const size_t suite_biobj_instances[][3] = {
     { 2, 3, 5 },
     { 3, 7, 8 },
     { 4, 9, 10 },
-    { 5, 11, 12 }
+    { 5, 11, 12 },
+    { 6, 13, 14 },
+    { 7, 15, 16 },
+    { 8, 17, 18 },
+    { 9, 19, 21 },
+    { 10, 21, 22 }
 };
 
 /* Data for the biobjective suite */
