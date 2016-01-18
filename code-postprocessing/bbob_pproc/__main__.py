@@ -12,9 +12,12 @@ import fnmatch
 import urllib
 import shutil
 import subprocess
+import doctest
 
-if __name__ == "__main__":
+# depreciated, to be removed, see end of file
+if 11 < 3 and __name__ == "__main__":
     """import bbob_pproc/cocopp as module and run tests or rungeneric.main"""
+    args = sys.argv[1:] if len(sys.argv) else []
     filepath = os.path.split(sys.argv[0])[0]
     sys.path.append(os.path.join(os.getcwd(), filepath))  # needed from the shell
     sys.path.append(os.path.join(filepath, os.path.pardir))  # needed in do.py
@@ -24,7 +27,6 @@ if __name__ == "__main__":
         # raise  # outcomment to diagnose the reason
         import cocopp
     # run either this main here as cocopp._main or rungeneric.main
-    args = sys.argv[1:] if len(sys.argv) else []
     if len(args) == 0:
         print("WARNING: this tests the post-processing, this will change in future (use -h for help)")
         cocopp._main(args)
@@ -36,44 +38,37 @@ if __name__ == "__main__":
         cocopp._main(args)
     else:
         cocopp.rungeneric.main(args)
-else:
-    from . import rungeneric
-
-import doctest
 
 def join_path(a, *p):
     path = os.path.join(a, *p)
     return path
 
 def copy_latex_templates():
-    
     currentFolder = os.path.dirname(os.path.realpath(__file__))
     templateFolder = os.path.abspath(join_path(currentFolder, '..', 'latex-templates'))
+    # templateFolder = os.path.abspath('latex-templates')
     shutil.copy(join_path(templateFolder, 'templateBBOBarticle.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), currentFolder)
-    
-def run_latex_template(filename):
 
-    filePath = os.path.abspath(join_path(os.path.dirname(__file__), filename))    
+def run_latex_template(filename):
+    filePath = os.path.abspath(join_path(os.path.dirname(__file__), filename))
     args = ['pdflatex', filePath]
     DEVNULL = open(os.devnull, 'wb')
     return subprocess.call(args, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
 
 def retrieve_algorithm(dataPath, year, algorithmName):
-    
     algorithmFile = join_path(dataPath, algorithmName)
     if not os.path.exists(algorithmFile):
         dataurl = 'http://coco.gforge.inria.fr/data-archive/%s/%s' % (year, algorithmName)
         urllib.urlretrieve(dataurl, algorithmFile)
 
 def prepare_data(run_all_tests):
-
     print('preparing algorithm data')
 
     dataPath = os.path.abspath(join_path(os.path.dirname(__file__), 'data'))
-    
+
     # Retrieving the algorithms    
     # retrieve_algorithm(dataPath, '2010', 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz')
     # [outcommented and replaced by BIPOP until 2010 data is in new format] 
@@ -90,7 +85,7 @@ def prepare_data(run_all_tests):
         retrieve_algorithm(dataPath, '2009', 'VNS_garcia-martinez_noiseless.tgz')    
 
     return dataPath
-    
+
 def process_doctest_output(stream=None):
     """ """
     import fileinput
@@ -129,7 +124,7 @@ def process_doctest_output(stream=None):
             s1 += line + ''
         if state == 2:
             s2 += line + ''
-    
+
 def main(args):
     """these tests are executed when ``python bbob_pproc`` is called.  
 
@@ -234,8 +229,8 @@ def main(args):
     
     if (failure_count > 0):
         raise ValueError('%d of %d tests failed' % (failure_count, test_count))
-    
-"""     
+
+"""
         sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
         import bbob_pproc as bb
         print(dir(bb))
@@ -248,4 +243,31 @@ def main(args):
                 print("bb."+s)
                 doctest.testmod(eval("bb."+s),verbose=False)                    
         print(bb.__all__)     
-"""     
+"""
+
+if __name__ == "__main__":
+    """run either tests or rungeneric.main"""
+    args = sys.argv[1:] if len(sys.argv) else []
+    filepath = os.path.split(sys.argv[0])[0]
+    # sys.path.append(os.path.join(os.getcwd(), filepath))  # doesn't help, tests from shell fail
+    sys.path.append(os.path.join(filepath, os.path.pardir))  # needed in do.py
+    # run either this main or rungeneric.main
+    if len(args) == 0:
+        print("WARNING: this tests the post-processing, this will change in future (use -h for help)")
+        main(args)
+    elif args[0] == '-t' or args[0].startswith('--t'):
+        args.pop(0)
+        main(args)
+    elif args[0] == 'all':
+        print("WARNING: this tests the post-processing and doesn't run anything else")
+        main(args)
+    else:
+        try:
+            from . import rungeneric
+        except:
+            print('===================================================')
+            print('=== TRY "python -m ..." instead of "python ..." ===')
+            print('===================================================')
+            raise
+        rungeneric.main(args)
+        
