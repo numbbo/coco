@@ -11,7 +11,7 @@
 /* The gateway function */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    mwSize *ref;
+    size_t *ref;
     mxArray *problem_prop;
     coco_problem_t *problem = NULL;
     /* const char *class_name = NULL; */
@@ -34,7 +34,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     x = mxGetPr(prhs[1]);
     /* prepare the return value */
     nb_objectives = coco_problem_get_number_of_objectives(problem);
-    plhs[0] = mxCreateDoubleMatrix(1, (mwSize)nb_objectives, mxREAL);
+    plhs[0] = mxCreateDoubleMatrix(1, (size_t)nb_objectives, mxREAL);
     y = mxGetPr(plhs[0]);
     /* call coco_evaluate_function(...) */
     coco_evaluate_function(problem, x, y);
