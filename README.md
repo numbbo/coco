@@ -215,8 +215,10 @@ then `setuptools` needs to be installed:
 or `easy_install setuptools` should do the job. 
 
 #### Compilation During Install of `cocoex` Fails (under Linux) 
-
+If you see something like this:
 ``` 
+$ python do.py run-python  # or build-python
+[...]
 cython/interface.c -o build/temp.linux-i686-2.6/cython/interface.o
 cython/interface.c:4:20: error: Python.h: file not found
 cython/interface.c:6:6: error: #error Python headers needed to compile C extensions, please install development version of Python.
