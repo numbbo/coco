@@ -22,19 +22,26 @@ import tarfile
 from pdb import set_trace
 import warnings
 import numpy
+import matplotlib
 # numpy.seterr(all='raise')
 
-# Add the path to bbob_pproc
 if __name__ == "__main__":
-    (filepath, filename) = os.path.split(sys.argv[0])
-    #Test system independent method:
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-    import matplotlib
-    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
+    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
     matplotlib.rc('pdf', fonttype = 42)
+    # add ".." to the Python search path, import the module to which
+    # this script belongs to and call the main of this script from imported
+    # module. Like this all relative imports will work smoothly.
+    (filepath, filename) = os.path.split(sys.argv[0])
+    sys.path.append(os.path.join(filepath, os.path.pardir))
+    try:
+        import bbob_pproc as cocopp
+    except ImportError:
+        import cocopp
+    res = cocopp.rungeneric.main(sys.argv[1:])
+    sys.exit(res)
 
-    from bbob_pproc import genericsettings, rungeneric1, rungeneric2, rungenericmany
-    from bbob_pproc.toolsdivers import prepend_to_file, truncate_latex_command_file, print_done
+from . import genericsettings, rungeneric1, rungeneric2, rungenericmany
+from .toolsdivers import prepend_to_file, truncate_latex_command_file, print_done
 
 __all__ = ['main']
 

@@ -46,12 +46,12 @@ import warnings
 from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
-from bbob_pproc import toolsstats, bestalg, genericsettings
-from bbob_pproc import pproc as pp # import dictAlgByDim, dictAlgByFun 
-from bbob_pproc import toolsdivers  # strip_pathname, str_to_latex
-from bbob_pproc import pprldistr # plotECDF, beautifyECDF
-from bbob_pproc import ppfig  # consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
-from bbob_pproc import pptex  # numtotex
+from .. import toolsstats, bestalg, genericsettings
+from .. import pproc as pp # import dictAlgByDim, dictAlgByFun 
+from .. import toolsdivers  # strip_pathname, str_to_latex
+from .. import pprldistr # plotECDF, beautifyECDF
+from .. import ppfig  # consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
+from .. import pptex  # numtotex
 
 displaybest2009 = True
 target_values = pp.TargetValues(10**np.arange(2, -8, -0.2)) # possibly changed in config

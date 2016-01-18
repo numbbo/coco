@@ -8,12 +8,12 @@ import os, sys
 from pdb import set_trace
 import warnings
 import numpy
-from bbob_pproc import genericsettings, bestalg, toolsstats, pproc, ppfigparam
-from bbob_pproc.pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
-from bbob_pproc.toolsstats import significancetest, significance_all_best_vs_other
-from bbob_pproc.pproc import DataSetList
-from bbob_pproc.toolsdivers import prepend_to_file, str_to_latex, strip_pathname1
-from bbob_pproc.pplogloss import detf
+from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam
+from ..pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
+from ..toolsstats import significancetest, significance_all_best_vs_other
+from ..pproc import DataSetList
+from ..toolsdivers import prepend_to_file, str_to_latex, strip_pathname1
+from ..pplogloss import detf
 #import bbob_pproc.pproc as pproc
 
 """
