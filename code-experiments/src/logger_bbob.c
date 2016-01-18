@@ -333,7 +333,7 @@ static void logger_bbob_initialize(logger_bbob_t *logger, coco_problem_t *inner_
 
   sprintf(tmpc_funId, "%lu", coco_problem_get_suite_dep_function(inner_problem));
   sprintf(tmpc_dim, "%lu", (unsigned long) inner_problem->number_of_variables);
-  
+
   /* prepare paths and names */
   strncpy(dataFile_path, "data_f", COCO_PATH_MAX);
   strncat(dataFile_path, tmpc_funId,

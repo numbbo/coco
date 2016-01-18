@@ -75,7 +75,7 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
                                                                  const char *problem_name_template) {
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
-  
+
   double *M = coco_allocate_vector(dimension * dimension);
   double *b = coco_allocate_vector(dimension);
   double **rot1;
