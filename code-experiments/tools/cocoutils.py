@@ -55,35 +55,30 @@ def git(args):
     full_command = ['git']
     full_command.extend(args)
     try:
-        output = check_output(full_command, env=os.environ, universal_newlines=True)
+        output = check_output(full_command, env=os.environ,
+                              stderr=STDOUT, universal_newlines=True)
         output = output.rstrip()
     except CalledProcessError as e:
-        print('Failed to execute git.')
+        # print('Failed to execute "%s"' % str(full_command))
         raise
     return output
 
 def is_dirty():
     """Return True if the current working copy has uncommited changes."""
+    raise NotImplementedError()
     return hg(['hg', 'id', '-i'])[-1] == '+'
-
-def hg_version():
-    """ Derive the current version number from the latest tag and the
-    number of (local) commits since the tagged revision. """
-    return hg(['log', '-r', '.', '--template', '{latesttag}.{latesttagdistance}'])
-
-def hg_revision():
-    return hg(['id', '-i'])
 
 def git_version(pep440=True):
     """Return somewhat readible version number from git, like
     '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'"""
     try:
+        res = git(['describe', '--tags'])
         if pep440:
-            return '.'.join(git(['describe', '--tags']).split('-')[:2])
+            return '.'.join(res.split('-')[:2])
         else:
-            return git(['describe', '--tags'])
+            return res
     except:
-        print('git version call failed')
+        # print('git version call failed')
         return ''
 
 def git_revision():
@@ -92,7 +87,7 @@ def git_revision():
     try:
         return git(['rev-parse', 'HEAD'])
     except:
-        print('git revision call failed')
+        # print('git revision call failed')
         return ""
 
 def run(directory, args):
