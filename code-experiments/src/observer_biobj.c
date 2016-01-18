@@ -57,8 +57,8 @@ static void observer_biobj(coco_observer_t *self, const char *options) {
   if (coco_options_read_string(options, "log_nondominated", string_value) > 0) {
     if (strcmp(string_value, "none") == 0)
       data->log_nondom_mode = NONE;
-    else if (strcmp(string_value, "all") == 0)
-      data->log_nondom_mode = ALL;
+    else if (strcmp(string_value, "final") == 0)
+      data->log_nondom_mode = FINAL;
   }
 
   data->log_vars_mode = LOW_DIM;
