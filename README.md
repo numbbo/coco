@@ -37,7 +37,8 @@ Additional requirements for running an algorithm in a specific language.
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions
 etc. Naturally, we cannot guarantee that the framework runs on any combination
-of operating system and software installed. 
+of operating system and software installed. In case you experience some incompatibilies,
+we will be happy if you can document them in detail on our [issue tracker](https://github.com/numbbo/coco/issues). 
 
 Getting Started
 ---------------
@@ -209,6 +210,19 @@ subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i
 or `easy_install setuptools` should do the job. 
 
 
+
+#### Python crashes under Ubuntu Linux
+At the moment, we experience some problems with the installation of the python module of Coco under Ubuntu linux (see https://github.com/numbbo/coco/issues/317). We are working on a fix.
+
+
+### Matlab
+
+#### `build-matlab` crashes under Linux
+Also the Matlab wrapper does not always work under linux with the current code: an issue is filed for the Ubuntu operating system at https://github.com/numbbo/coco/issues/318
+#### SMA-EMOA example does not compile under Mac 
+With the more complex SMS-EMOA example, also an issue is known under Mac (https://github.com/numbbo/coco/issues/308). The problem is related to the compilation of the external C++ hypervolume calculation in hv.cpp. This issue is less critical as the example experiment runs under all Mac OSX machines with Matlab, that we tried.
+
+
 Details
 -------
 - The C code features an object oriented implementation, where the
@@ -228,7 +242,7 @@ Details
   installation file `setup.py` uses the compiled `interface.c`, if
   `interface.pyx` has not changed. 
 
-- IWe continuously test the code through the open source automation server
+- We continuously test the code through the open source automation server
   Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit
   Windows 7 machine with cygwin.
 

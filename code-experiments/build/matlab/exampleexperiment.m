@@ -9,10 +9,10 @@ suite_instance = '';
 
 for i = 1:length(suiteAndObserver_names)
     suite_name = suiteAndObserver_names{i};
-    disp(['Running random search on the ', suite_name, 'suite...']);
+    disp(['Running random search on the ', suite_name, ' suite...']);
     
     % dimension 40 is optional:
-    suite_options = 'dimensions: 2,3,5,10,20 instance_idx: 1-5';
+    suite_options = 'dimensions: 2,3,5,10,20,40 instance_idx: 1-5';
     observer_name = suite_name;
     switch suite_name
         case 'bbob'
