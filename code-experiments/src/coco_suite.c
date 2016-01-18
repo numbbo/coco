@@ -47,6 +47,10 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
   suite->number_of_instances = 0;
   suite->instances = NULL;
 
+  /* To be set in particular suites if needed */
+  suite->data = NULL;
+  suite->data_free_function = NULL;
+
   return suite;
 }
 
@@ -166,6 +170,14 @@ void coco_suite_free(coco_suite_t *suite) {
       suite->current_problem = NULL;
     }
 
+    if (suite->data != NULL) {
+      if (suite->data_free_function != NULL) {
+        suite->data_free_function(suite->data);
+      }
+      coco_free_memory(suite->data);
+      suite->data = NULL;
+    }
+
     coco_free_memory(suite);
     suite = NULL;
   }
@@ -228,7 +240,7 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
 
 coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, size_t problem_index) {
 
-  size_t function_idx, instance_idx, dimension_idx;
+  size_t function_idx = 0, instance_idx = 0, dimension_idx = 0;
   coco_suite_decode_problem_index(suite, problem_index, &function_idx, &dimension_idx, &instance_idx);
 
   return coco_suite_get_problem_from_indices(suite, function_idx, dimension_idx, instance_idx);
@@ -245,7 +257,7 @@ static size_t *coco_suite_get_instance_indices(coco_suite_t *suite, const char *
   char *year_string = NULL;
   long year_found, instances_found;
   int parce_year = 1, parce_instances = 1;
-  size_t *result;
+  size_t *result = NULL;
 
   if (suite_instance == NULL)
     return NULL;
@@ -276,7 +288,7 @@ static size_t *coco_suite_get_instance_indices(coco_suite_t *suite, const char *
     }
   }
 
-  instances = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+  instances = coco_allocate_memory(COCO_MAX_INSTANCES * sizeof(char));
   if ((instances_found >= 0) && (parce_instances == 1)) {
     if (coco_options_read_values(suite_instance, "instances", instances) > 0) {
       result = coco_string_get_numbers_from_ranges(instances, "instances", 1, 0);

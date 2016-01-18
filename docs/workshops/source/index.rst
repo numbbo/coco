@@ -22,7 +22,7 @@ Generally, three benchmark suites are available:
 * ``bbob-noisy`` containing 30 noisy functions
 * ``bbob-biobj`` containing 55 noiseless, bi-objective functions, generated from instances of the ``bbob`` suite
 
-Note that due to the rewriting of the Coco platform, only the ``bbob`` and ``bbob-biobj`` are available in the new code, available at http://github.com/numbbo/numbbo while for the noisy test suite, the old code at http://coco.gforge.inria.fr/doku.php?id=downloads has to be used.
+Note that due to the rewriting of the Coco platform, only the ``bbob`` and ``bbob-biobj`` are available in the new code, available at http://github.com/numbbo/coco while for the noisy test suite, the old code at http://coco.gforge.inria.fr/doku.php?id=downloads has to be used.
 
 Contents:
 .........

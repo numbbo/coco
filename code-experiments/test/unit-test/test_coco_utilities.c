@@ -1,10 +1,3 @@
-/*
- * test_coco_utilities.c
- *
- *  Created on: 18 nov. 2015
- *      Author: dejan
- */
-
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
@@ -223,8 +216,9 @@ static void test_coco_string_get_numbers_from_ranges(void **state) {
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
-  result = coco_string_get_numbers_from_ranges("1-", "name", 1, 120);
-  assert_true(result[100] == 0);
+  result = coco_string_get_numbers_from_ranges("1-", "name", 1, 1200);
+  assert_true(result[1000] == 0);
+  assert_true(result[999] != 0);
   coco_free_memory(result);
 
   result = coco_string_get_numbers_from_ranges("1-2,1-", "name", 0, 0);

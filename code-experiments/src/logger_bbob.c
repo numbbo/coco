@@ -10,11 +10,10 @@
 #include "coco_generics.c"
 #include "coco_utilities.c"
 #include "coco_problem.c"
-#include "coco_strdup.c"
+#include "coco_string.c"
 #include "observer_bbob.c"
 
 static int bbob_raisedOptValWarning;
-
 /*static const size_t bbob_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
 /*static const size_t bbob_nbpts_fval = 5;*/
 static size_t bbob_current_dim = 0;
@@ -236,8 +235,9 @@ static void logger_bbob_openIndexFile(logger_bbob_t *logger,
   coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
   if (*target_file == NULL) {
     tmp_file = fopen(file_path, "r"); /* to check for existence */
-    if ((tmp_file) &&(bbob_current_dim == logger->number_of_variables)
-        && (bbob_current_funId == logger->function_id)) { /* new instance of current funId and current dim */
+    if ((tmp_file) && (bbob_current_dim == logger->number_of_variables)
+        && (bbob_current_funId == logger->function_id)) {
+        /* new instance of current funId and current dim */
       newLine = 0;
       *target_file = fopen(file_path, "a+");
       if (*target_file == NULL) {
@@ -275,17 +275,21 @@ static void logger_bbob_openIndexFile(logger_bbob_t *logger,
           }
           bbob_dimensions_in_current_infoFile[i] = logger->number_of_variables;
         }
+      } else {
+        if ( bbob_current_funId != logger->function_id ) {
+          /*new function in the same file */
+          newLine = 1;
+        }
       }
       *target_file = fopen(file_path, "a+"); /* in any case, we append */
       if (*target_file == NULL) {
         errnum = errno;
         logger_bbob_error_io(*target_file, errnum);
       }
-      if (tmp_file) { /* File already exists, new dim so just a new line. ALso, close the tmp_file */
+      if (tmp_file) { /* File already exists, new dim so just a new line. Also, close the tmp_file */
         if (newLine) {
           fprintf(*target_file, "\n");
         }
-
         fclose(tmp_file);
       }
 
@@ -369,9 +373,9 @@ static void logger_bbob_evaluate(coco_problem_t *self, const double *x, double *
   if (!logger->is_initialized) {
     logger_bbob_initialize(logger, inner_problem);
   }
-  if ((coco_log_level >= COCO_INFO) && logger->number_of_evaluations == 0) {
-    coco_info("%4ld: ", inner_problem->suite_dep_index);
-    coco_info("on problem %s ... ", coco_problem_get_id(inner_problem));
+  if ((coco_log_level >= COCO_DEBUG) && logger->number_of_evaluations == 0) {
+    coco_debug("%4ld: ", inner_problem->suite_dep_index);
+    coco_debug("on problem %s ... ", coco_problem_get_id(inner_problem));
   }
   coco_evaluate_function(inner_problem, x, y);
   logger->last_fvalue = y[0];
@@ -424,8 +428,8 @@ static void logger_bbob_free(void *stuff) {
    */
   logger_bbob_t *logger = stuff;
 
-  if ((coco_log_level >= COCO_INFO) && logger && logger->number_of_evaluations > 0) {
-    coco_info("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,
+  if ((coco_log_level >= COCO_DEBUG) && logger && logger->number_of_evaluations > 0) {
+    coco_debug("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,
         logger->number_of_evaluations);
   }
   /*if (logger->alg_name != NULL) { //No longer needed

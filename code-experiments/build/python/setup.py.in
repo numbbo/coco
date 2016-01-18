@@ -8,9 +8,12 @@ import sys
 import setuptools
 from distutils.core import setup
 from distutils.extension import Extension
-from Cython.Build import cythonize
 import numpy as np
-
+try:
+    from Cython.Build import cythonize
+except:
+    def cythonize(x): return m
+    
 ## Use Cython if interface.c is missing.
 USE_CYTHON = not os.path.isfile('cython/interface.c') or (
     os.path.getmtime('cython/interface.pyx') > os.path.getmtime('cython/interface.c') + 1)
@@ -46,8 +49,9 @@ setup(
     packages = ['cocoex'],
     package_dir = {'cocoex': 'python'},
     cmdclass=cmdclass,
-    ext_modules = cythonize(extensions),
-    url = 'https://github.com/numbbo/numbbo/',
+    # ext_modules = cythonize(extensions),
+    ext_modules = extensions,
+    url = 'https://github.com/numbbo/coco/',
     license = 'BSD',
     maintainer = 'Olaf Mersmann',
     maintainer_email = 'olafm@p-value.net',
