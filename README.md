@@ -294,11 +294,7 @@ Details
 
 Links and Further Documentation
 -------------------------------
-* Downloading this repository 
-  - via the above "Download ZIP" button or 
-  - by typing `git clone https://github.com/numbbo/coco.git` or 
-  - via https://github.com/numbbo/coco/archive/master.zip in your browser
-* The _BBOB workshop series_, which uses the
+* The [_BBOB workshop series_](http://numbbo.github.io/workshops), which uses the
   NumBBO/Coco framework extensively, can be tracked at 
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
@@ -307,4 +303,9 @@ Links and Further Documentation
   - for the "**BBOB**" testbed at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
   - for the **bbob-biobj** functions at http://numbbo.github.io/bbob-biobj-functions-doc
-* Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at http://numbbo.github.io/coco-doc/C
+* Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
+  http://numbbo.github.io/coco-doc/C
+* Downloading this repository 
+  - via the above "Download ZIP" button or 
+  - by typing `git clone https://github.com/numbbo/coco.git` or 
+  - via https://github.com/numbbo/coco/archive/master.zip in your browser
