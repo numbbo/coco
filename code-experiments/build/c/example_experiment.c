@@ -204,7 +204,7 @@ algorithm_info: \"A simple random search algorithm\"";
   coco_observer_t *observer;
   coco_problem_t *problem;
   
-  suite = coco_suite("bbob-largescale", NULL, "dimensions: 16,32,64,128,256 instance_idx: 1");
+  suite = coco_suite("bbob-largescale", NULL, "dimensions: 40,80,160,320,640 instance_idx: 1,2");
   observer = coco_observer("bbob", observer_options);
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
