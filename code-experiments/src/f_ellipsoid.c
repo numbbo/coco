@@ -8,7 +8,7 @@
 #include "transform_vars_affine.c"
 #include "transform_vars_shift.c"
 #include "transform_obj_shift.c"
-#include "large_scale_transform_vars_permblockdiag.c"
+#include "transform_vars_permblockdiag.c"
 
 static double f_ellipsoid_raw(const double *x, const size_t number_of_variables) {
 
