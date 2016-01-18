@@ -72,11 +72,12 @@ static void ls_free_block_matrix(double **matrix, const size_t n) {
  */
 static void ls_compute_blockrotation(double **B, long seed, size_t n, size_t *block_sizes, size_t nb_blocks) {
   double prod;
-  double *gvect;
+  /*double *gvect;*/
   double **current_block;
   size_t i, j, k; /* Loop over pairs of column vectors. */
   size_t idx_block, current_blocksize,cumsum_prev_block_sizes, sum_block_sizes;
   size_t nb_entries, current_gvect_pos;
+  coco_random_state_t *rng = coco_random_new((uint32_t) seed);
   
   nb_entries = 0;
   sum_block_sizes = 0;
@@ -85,15 +86,20 @@ static void ls_compute_blockrotation(double **B, long seed, size_t n, size_t *bl
     nb_entries += block_sizes[i] * block_sizes[i];
   }
   assert(sum_block_sizes == n);
-  gvect = coco_allocate_vector(nb_entries);
+  /*gvect = coco_allocate_vector(nb_entries);*/
   
-  bbob2009_gauss(gvect, nb_entries, seed);
+  /*bbob2009_gauss(gvect, nb_entries, seed);*/
   current_gvect_pos = 0;
   cumsum_prev_block_sizes = 0;/* shift in rows to account for the previous blocks */
   for (idx_block = 0; idx_block < nb_blocks; idx_block++) {
     current_blocksize = block_sizes[idx_block];
     current_block = bbob2009_allocate_matrix(current_blocksize, current_blocksize);
-    bbob2009_reshape(current_block, &gvect[current_gvect_pos], current_blocksize, current_blocksize);
+    /*bbob2009_reshape(current_block, &gvect[current_gvect_pos], current_blocksize, current_blocksize);*/
+    for (i = 0; i < current_blocksize; i++) {
+      for (j = 0; j < current_blocksize; j++) {
+        current_block[i][j] = coco_random_normal(rng);
+      }
+    }
     
     for (i = 0; i < current_blocksize; i++) {
       for (j = 0; j < i; j++) {
@@ -122,10 +128,11 @@ static void ls_compute_blockrotation(double **B, long seed, size_t n, size_t *bl
     }
     
     cumsum_prev_block_sizes+=current_blocksize;
-    current_gvect_pos += current_blocksize * current_blocksize;
+    /*current_gvect_pos += current_blocksize * current_blocksize;*/
     ls_free_block_matrix(current_block, current_blocksize);
   }
-  coco_free_memory(gvect);
+  /*coco_free_memory(gvect);*/
+  coco_random_free(rng);
 }
 
 /*
@@ -172,13 +179,14 @@ static int f_compare_doubles_for_random_permutation(const void *a, const void *b
  */
 static void ls_compute_random_permutation(size_t *P, long seed, size_t n) {
   long i;
+  coco_random_state_t *rng = coco_random_new((uint32_t) seed);
   random_data = coco_allocate_vector(n);
-  bbob2009_unif(random_data, n, seed);
   for (i = 0; i < n; i++){
     P[i] = (size_t) i;
+    random_data[i] = coco_random_uniform(rng);
   }
   qsort(P, n, sizeof(size_t), f_compare_doubles_for_random_permutation);
-  
+  coco_random_free(rng);
 }
 
 
@@ -187,21 +195,11 @@ static void ls_compute_random_permutation(size_t *P, long seed, size_t n) {
  * bbob2009_unif is used to generate the uniform floating number in [0,1] instead of rand()/(1 + RAND_MAX)
  * use size_t as return type and force positive values instead?
  */
-long ls_rand_int(long lower_bound, long upper_bound, long seed){
-  double rand_01[1]; /* bbob2009_unif seems to produce non uniform values! */
+long ls_rand_int(long lower_bound, long upper_bound,   coco_random_state_t *rng){
   long range;
   range = upper_bound - lower_bound + 1;
-  /*coco_random_state_t *rng = coco_random_new(seed);TODO: use new RNG*/
-
-  bbob2009_unif(rand_01, 1, seed);
   
-  if (seed>0) {
-    srand((unsigned int)seed);/*tmp*//*to be removed when alternative is fixed*/
-    /*only reset seed when separate experiments, when seed=0, srand must have been called elsewhere */
-  }
-  /*return (rand() % range) + lower_bound;*/
-  return (long)((((double) rand()) / RAND_MAX) * range + lower_bound);
-  /*return ((long) (rand_01[0] * range)) + lower_bound; *//*TODO: find out why this is biased towards smallest value*/
+  return (long)(((double) coco_random_uniform(rng)) * range + lower_bound);
 }
 
 
@@ -216,17 +214,19 @@ static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, 
   long i, idx_swap;
   size_t lower_bound, upper_bound, first_swap_var, second_swap_var, tmp;
   size_t *idx_order;
-  
+  coco_random_state_t *rng = coco_random_new((uint32_t) seed);
 
   random_data = coco_allocate_vector(n);
-  bbob2009_unif(random_data, n, seed);
   idx_order = (size_t *) coco_allocate_memory(n * sizeof(size_t));;
   for (i = 0; i < n; i++){
     P[i] = (size_t) i;
     idx_order[i] = (size_t) i;
+    random_data[i] = coco_random_uniform(rng);
   }
   
   if (swap_range > 0) {
+    /*sort the random data in random_data and arange idx_order accordingly*/
+    /*did not use ls_compute_random_permutation to only use the seed once*/
     qsort(idx_order, n, sizeof(size_t), f_compare_doubles_for_random_permutation);
     for (idx_swap = 0; idx_swap < nb_swaps; idx_swap++) {
       first_swap_var = idx_order[idx_swap];
@@ -243,9 +243,9 @@ static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, 
         upper_bound = first_swap_var + swap_range;
       }
 
-      second_swap_var = (size_t) ls_rand_int((long) lower_bound, (long) upper_bound, 0);
+      second_swap_var = (size_t) ls_rand_int((long) lower_bound, (long) upper_bound, rng);
       while (first_swap_var == second_swap_var) {
-        second_swap_var = (size_t) ls_rand_int((long) lower_bound, (long) upper_bound, 0);
+        second_swap_var = (size_t) ls_rand_int((long) lower_bound, (long) upper_bound, rng);
       }
       /* swap*/
       tmp = P[first_swap_var];
@@ -259,7 +259,7 @@ static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, 
     }
     
   }
-  
+  coco_random_free(rng);
 }
 
 
