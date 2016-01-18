@@ -13,14 +13,14 @@
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     coco_observer_t *observer;
-    long long *ref;
+    mwSize *ref;
     
     /* check for proper number of arguments */
     if(nrhs!=1) {
         mexErrMsgIdAndTxt("cocoObserverFree:nrhs","One input required.");
     }
     /* get the observer */
-    ref = (long long *)mxGetData(prhs[0]);
+    ref = (mwSize *)mxGetData(prhs[0]);
     observer = (coco_observer_t *)(*ref);
     /* call coco_observer_free() */
     coco_observer_free(observer);
