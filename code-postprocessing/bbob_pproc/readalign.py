@@ -204,6 +204,10 @@ class HMultiReader(MultiReader):
         if currentValue == 0:
             return True
 
+        for i in self:
+            while i.nextLine[self.idx] > currentValue and not i.isNearlyFinished:
+                i.next();
+                
         return not any(i.nextLine[self.idx] <= currentValue for i in self)
 
     def getInitialValue(self):
