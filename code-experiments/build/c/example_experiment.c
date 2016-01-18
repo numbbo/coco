@@ -169,21 +169,81 @@ void example_biobj(void) {
 
   coco_observer_free(observer);
   coco_suite_free(suite);
-
+  
 }
 
 /**
- * The main method calls all three
+ * A simple example of benchmarking an optimization algorithm on the toy suite.
+ */
+void example_toy(void) {
+  /* Some options of the toy observer. See documentation for other options. */
+  const char *observer_options = "result_folder: RS_on_toy \
+  algorithm_name: RS \
+  algorithm_info: \"A simple random search algorithm\"";
+  
+  coco_suite_t *suite;
+  coco_observer_t *observer;
+  coco_problem_t *problem;
+  
+  suite = coco_suite("toy", NULL, NULL);
+  observer = coco_observer("toy", observer_options);
+  
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
+    my_random_search(problem);
+  }
+  
+  coco_observer_free(observer);
+  coco_suite_free(suite);
+  
+}
+
+
+/**
+ * A simple example of benchmarking an optimization algorithm on the large scale suite
+ */
+void example_largescale(void) {
+  /* Some options of the bbob observer. See documentation for other options. */
+  const char *observer_options = "result_folder: RS_on_bbob \
+algorithm_name: RS \
+algorithm_info: \"A simple random search algorithm\"";
+  
+  coco_suite_t *suite;
+  coco_observer_t *observer;
+  coco_problem_t *problem;
+  /*40,80,160,320,640,1280*/
+  suite = coco_suite("bbob-largescale", NULL, "dimensions: 40,80,160,320,640,1280 instance_idx: 1");
+  observer = coco_observer("bbob", observer_options);
+
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
+    my_random_search(problem);
+  }
+  
+  coco_observer_free(observer);
+  coco_suite_free(suite);
+  
+}
+
+/*
+ * The main method calls all four
  */
 int main(void) {
 
   printf("Running the example experiment... (it takes time, be patient)\n");
   fflush(stdout);
 
+  example_largescale();
+  printf("Zeroth example on largescale suite done!\n");
+  
+  /*
+  fflush(stdout);
+  
   example_biobj();
 
   printf("Done!\n");
-  fflush(stdout);
 
+  fflush(stdout);
+  */
   return 0;
 }
+
+
