@@ -10,7 +10,7 @@ import os, sys, time
 import numpy as np
 import warnings
 
-from bbob_pproc import genericsettings
+from . import genericsettings
 
 def print_done(message='  done'):
     """prints a message with time stamp"""
