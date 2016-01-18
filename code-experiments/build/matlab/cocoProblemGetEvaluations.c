@@ -11,7 +11,7 @@
 /* The gateway function */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    long long *ref;
+    mwSize *ref;
     coco_problem_t *problem = NULL;
     const mwSize dims[2] = {1, 1};
     int *res;
@@ -21,7 +21,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgIdAndTxt("cocoProblemGetEvaluations:nrhs","One input required.");
     }
     /* get the problem */
-    ref = (long long *)mxGetData(prhs[0]);
+    ref = (mwSize *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
     /* prepare the return value */
     plhs[0] = mxCreateNumericArray(2, dims, mxINT32_CLASS, mxREAL);
