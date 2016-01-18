@@ -5,9 +5,9 @@
 #include "coco.h"
 
 /**
- * Tests the function logger_biobj_log_evaluation.
+ * Tests the function coco_observer_evaluation_to_log.
  */
-static void test_logger_biobj_log_evaluation(void **state) {
+static void test_coco_observer_evaluation_to_log(void **state) {
 
   size_t dimensions[6] = { 2, 3, 5, 10, 20, 40 };
   size_t evals, i, dim;
@@ -16,7 +16,7 @@ static void test_logger_biobj_log_evaluation(void **state) {
   for (i = 0; i < 6; i++) {
     dim = dimensions[i];
     for (evals = 1; evals < 1500; evals++) {
-      result = logger_biobj_log_evaluation(evals, dim);
+      result = coco_observer_evaluation_to_log(evals, dim);
       if ((evals == 1) || (evals == dim) || (evals == 2 * dim) || (evals == 5 * dim))
         assert(result);
       else if ((evals == 10 * dim) || (evals == 20 * dim) || (evals == 50 * dim))
@@ -31,10 +31,10 @@ static void test_logger_biobj_log_evaluation(void **state) {
   (void)state; /* unused */
 }
 
-static int test_all_logger_biobj(void) {
+static int test_all_coco_observer(void) {
 
   const struct CMUnitTest tests[] = {
-      cmocka_unit_test(test_logger_biobj_log_evaluation)
+      cmocka_unit_test(test_coco_observer_evaluation_to_log)
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);
