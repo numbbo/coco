@@ -282,4 +282,43 @@ size_t *coco_duplicate_size_t_vector(const size_t *src, const size_t number_of_e
 }
 
 
+/*
+ * returns the list of block_sizes and sets nb_blocks to its correct value
+ * TODO: update with chosen parameter setting
+ */
+size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
+  size_t *block_sizes;
+  size_t block_size;
+  int i;
+  
+  block_size = (size_t) fmin(dimension / 4, 100);
+  *nb_blocks = dimension / block_size + ((dimension % block_size) > 0);
+  block_sizes = (size_t *)coco_allocate_memory(*nb_blocks * sizeof(size_t));
+  for (i = 0; i < *nb_blocks - 1; i++) {
+    block_sizes[i] = block_size;
+  }
+  block_sizes[*nb_blocks - 1] = dimension - (*nb_blocks - 1) * block_size; /*add rest*/
+  return block_sizes;
+}
+
+
+/*
+ * return the swap_range corresponding to the problem
+ * TODO: update with chosen parameter setting
+ */
+size_t ls_get_swap_range(size_t dimension){
+  return dimension / 3;
+}
+
+
+/*
+ * return the number of swaps corresponding to the problem
+ * TODO: update with chosen parameter setting
+ */
+size_t ls_get_nb_swaps(size_t dimension){
+  return dimension;
+}
+
+
+
 
