@@ -317,17 +317,23 @@ static void logger_bbob_initialize(logger_bbob_t *logger, coco_problem_t *inner_
    */
   char dataFile_path[COCO_PATH_MAX] = { 0 }; /* relative path to the .dat file from where the .info file is */
   char folder_path[COCO_PATH_MAX] = { 0 };
-  char tmpc_funId[3]; /* serves to extract the function id as a char *. There should be a better way of doing this! */
-  char tmpc_dim[3]; /* serves to extract the dimension as a char *. There should be a better way of doing this! */
+  char *tmpc_funId; /* serves to extract the function id as a char *. There should be a better way of doing this! */
+  char *tmpc_dim; /* serves to extract the dimension as a char *. There should be a better way of doing this! */
   char indexFile_prefix[10] = "bbobexp"; /* TODO (minor): make the prefix bbobexp a parameter that the user can modify */
+  size_t str_length_funId, str_length_dim;
+  
+  str_length_funId = (size_t) fmax(1, ceil(log10(coco_problem_get_suite_dep_function(inner_problem))));
+  str_length_dim = (size_t) fmax(1, ceil(log10(inner_problem->number_of_variables)));
+  tmpc_funId = (char *) coco_allocate_memory(str_length_funId *  sizeof(char));
+  tmpc_dim = (char *) coco_allocate_memory(str_length_dim *  sizeof(char));
+
   assert(logger != NULL);
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
 
   sprintf(tmpc_funId, "%lu", coco_problem_get_suite_dep_function(inner_problem));
-  
   sprintf(tmpc_dim, "%lu", (unsigned long) inner_problem->number_of_variables);
-
+  
   /* prepare paths and names */
   strncpy(dataFile_path, "data_f", COCO_PATH_MAX);
   strncat(dataFile_path, tmpc_funId,
@@ -362,6 +368,8 @@ static void logger_bbob_initialize(logger_bbob_t *logger, coco_problem_t *inner_
   /* TODO: manage duplicate filenames by either using numbers or raising an error */
   /* The coco_create_unique_path() function is available now! */
   logger->is_initialized = 1;
+  coco_free_memory(tmpc_dim);
+  coco_free_memory(tmpc_funId);
 }
 
 /**
