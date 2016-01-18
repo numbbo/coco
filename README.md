@@ -59,7 +59,7 @@ github by clicking [here](https://github.com/numbbo/coco/archive/master.zip),
   
 2. On the computer where experiment data shall be post-processed, run
   ```
-    python install-postprocessing
+    python do.py install-postprocessing
   ```
   to (user-locally) install the post-processing. 
   
