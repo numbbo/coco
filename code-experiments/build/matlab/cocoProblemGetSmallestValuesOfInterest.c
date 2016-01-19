@@ -11,7 +11,7 @@
 /* The gateway function */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    mwSize *ref;
+    size_t *ref;
     coco_problem_t *problem = NULL;
     int nb_dim, i;
     const double *res;
@@ -22,7 +22,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgIdAndTxt("cocoProblemGetSmallestValuesOfInterest:nrhs","One input required.");
     }
     /* get the problem */
-    ref = (mwSize *)mxGetData(prhs[0]);
+    ref = (size_t *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
     nb_dim = coco_problem_get_dimension(problem);
     plhs[0] = mxCreateDoubleMatrix(1, (mwSize)nb_dim, mxREAL);
