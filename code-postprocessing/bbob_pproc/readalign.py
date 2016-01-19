@@ -204,8 +204,10 @@ class HMultiReader(MultiReader):
         if currentValue == 0:
             return True
 
+        # It can be more than one line for the previous alignment value.
+        # We iterate until we find a better value or to the end of the lines.
         for i in self:
-            while i.nextLine[self.idx] > currentValue and not i.isNearlyFinished:
+            while i.nextLine[self.idx] > currentValue and not i.isFinished:
                 i.next();
                 
         return not any(i.nextLine[self.idx] <= currentValue for i in self)
