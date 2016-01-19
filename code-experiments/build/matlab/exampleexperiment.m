@@ -2,7 +2,7 @@
 % the biobjective 'bbob-biobj' suite.
 % 
 % An example experiment on the single-objective 'bbob' suite can be started
-% by renaming the suite_name in line 9.
+% by renaming the suite_name below.
 
 more on; % to get immediate output in Octave
 
