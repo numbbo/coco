@@ -36,8 +36,9 @@ At this point we assume that the ``example_experiment`` in C is running on your 
 need any assistance). The best way to create your own benchmark experiment is to copy that example and
 make the changes you need to include your optimizer. 
 
-Benchmarking the algorithm ``my_optimizer`` on the ``bbob-biobj`` suite with default parameters is  
-invoked in the following way:
+Benchmarking the algorithm ``my_optimizer`` on the ``bbob-biobj`` suite with default parameters 
+(see below for explanation of the [suite parameters](#suite-parameters) and 
+[observer parameters](#observer-parameters)) is invoked in the following way:
 
     coco_suite_t *suite;
     coco_observer_t *observer;
@@ -61,13 +62,14 @@ this benchmarking procedure remains the same whether we are dealing with single-
 or multi-objective problems and algorithms. To perform benchmarking on a different suite and with a 
 different observer, just replace ``"bbob-biobj"`` with the name of the desired suite and observer. 
 
-The optimizer should be run until ``dimension BUDGET`` number of evaluations have been reached. 
-The ``BUDGET`` is conservatively set as
+The optimizer should be run until ``dimension * BUDGET`` number of evaluations have been reached. 
+In the ``example_experiment``, the ``BUDGET`` is conservatively set using
 
-    static const size_t BUDGET = 10;
+    static const size_t BUDGET = 2;
 
-in the ``example_experiment``. Increase it gradually to see how it effects the running time of the
-benchmark. 
+so that the experiment runs quickly. You need to increase the budget for your real benchmarking
+experiments, but do so gradually (you might want to test ``BUDGET = 1e2`` before you use any larger
+values) to see how it effects the running time of the benchmark. 
 
 In the above example, the suite and observer are called without additional parameters (the empty 
 strings ``""`` are used), which means that their default values apply. These can be changed by 
@@ -83,29 +85,30 @@ values up to n), ``n-`` (meaning all values from n on) and even ``-`` (meaning a
 values); or by simply listing the values separated by commas (as in ``2,3,5``). No spaces are 
 allowed in the definition of a range or list of values. 
 
-### Suite parameters
+### Suite parameters <a name="suite-parameters"></a>
 
 The suite contains a collection of problems constructed by a Cartesian product of the suite's 
 optimization  functions, dimensions and instances. The functions and dimensions are defined by the 
 suite name, while the instances are defined with the ``suite_instance`` parameter. The suite can be 
-thinned by filtering of  functions, dimensions and instances through the ``suite_options`` parameter. 
+filtered by specifying functions, dimensions and instances through the ``suite_options`` parameter. 
 
 Possible keys and values for ``suite_instance`` are:
 - either ``"year: YEAR"``, where ``YEAR`` is usually the year of the corresponding [BBOB 
 workshop](http://numbbo.github.io/workshops) defining the instances used in that year's benchmark,
-- or ``"instances: RANGE"``, where ``RANGE`` is a range of instances you wish to include in the suite 
-(from 1 on; see above for range syntax).
+- or ``"instances: VALUES"``, where ``VALUES`` is a list or a range of instances you wish to include 
+in the suite (starting from 1).
 
 If both ``year`` and ``instances`` appear in the ``suite_instance`` string, only the first one is 
 taken into account. If no ``suite_instance`` is given, it defaults to the year of the current BBOB 
 workshop. 
 
 Possible keys and values for ``suite_options`` are:
-- ``dimensions: LIST``, where ``LIST`` is the list of dimensions to keep in the suite, 
-- ``function_idx: RANGE``, where ``RANGE`` is a range or list of function indexes (starting from 1) to 
-keep in the suite, and
-- ``instance_idx: RANGE``, where ``RANGE`` is a range or list of instance indexes (starting from 1) to 
-keep in the suite. 
+- ``dimensions: LIST``, where ``LIST`` is the list of dimensions to keep in the suite (range-style
+syntax is not allowed here), 
+- ``function_idx: VALUES``, where ``VALUES`` is a list or a range of function indexes (starting 
+from 1) to keep in the suite, and
+- ``instance_idx: VALUES``, where ``VALUES`` is a list or a range of instance indexes (starting 
+from 1) to keep in the suite. 
 
 For example, the call:
 
@@ -122,7 +125,7 @@ See [biobjective test suite](http://numbbo.github.io/bbob-biobj-functions-doc) a
 [bbob test sute](http://numbbo.github.io/bbob-functions-doc) for more detailed information on the two 
 currently supported suites.
 
-### Observer parameters
+### Observer parameters <a name="observer-parameters"></a>
 
 The observer controls the logging that is performed within the benchmark. Some observer parameters are 
 general, while others are specific to the chosen observer. 
@@ -168,8 +171,47 @@ set to ``1``, it overwrites some other options and is equivalent to setting ``lo
 ``all``, ``log_decision_variables`` to ``log_dim`` and ``compute_indicators`` to ``1``. If set to 
 ``0``, it does not change the values of the other options. The default value is 0.
 
-You can also run the benchmark without any observer, which produces no output, by invoking either ``""`` 
-or ``"no_observer"`` in place of the observer name. 
+You can also run the benchmark without any observer, which produces no output, by invoking either 
+``""`` or ``"no_observer"`` in place of the observer name. 
+
+### Problem evaluation <a name="problem-evaluation"></a>
+
+In order to evaluate the problem, call the function:
+
+    void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y);
+
+It will evaluate the problem function in point ``x`` and save the result in ``y``.
+
+In order to evaluate the constraints of the problem, call the function:
+
+    void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y);
+
+It will evaluate the problem constraints in point ``x`` and save the result in ``y``. Note: while this
+functionality is provided, the framework does not yet include problems with constraints.
+
+### Problem properties <a name="problem-properties"></a>
+
+To learn more about the problem, you can access its properties in the following way:
+
+    /* Returns the number of variables i.e. dimension of the problem */
+    size_t coco_problem_get_dimension(const coco_problem_t *problem);
+
+    /* Returns a vector of size 'dimension' with lower bounds of the region of interest in 
+     * the decision space. */
+    const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *problem);
+
+    /* Returns a vector of size 'dimension' with upper bounds of the region of interest in 
+     * the decision space. */
+    const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem);
+
+    /* Returns the number of objectives of the problem */
+    size_t coco_problem_get_number_of_objectives(const coco_problem_t *problem);
+
+    /* Returns the number of evaluations done on the problem */
+    size_t coco_problem_get_evaluations(coco_problem_t *problem);
+
+See the ``coco.h`` file for more information on these and other functions you can use to interface 
+COCO problem and other COCO structures. 
 
 ## How to write new test functions and combine them into test suites
 

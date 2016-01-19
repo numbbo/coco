@@ -1,3 +1,5 @@
+#include <time.h>
+
 #include "coco.h"
 #include "coco_internal.h"
 
@@ -194,8 +196,7 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_bbob_allocate();
   } else if (strcmp(suite_name, "bbob-biobj") == 0) {
     suite = suite_biobj_allocate();
-  }
-    else if (strcmp(suite_name, "bbob-largescale") == 0) {
+  } else if (strcmp(suite_name, "bbob-largescale") == 0) {
     suite = suite_largescale_allocate();
   }
   else {
@@ -497,6 +498,8 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   size_t instance_idx;
   coco_problem_t *problem;
 
+  size_t previous_function = 0;
+
   /* Iterate through the suite by instances, then functions and lastly dimensions in search for the next
    * problem. Note that these functions set the values of suite fields current_instance_idx,
    * current_function_idx and current_dimension_idx. */
@@ -506,6 +509,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
     return NULL;
 
   if (suite->current_problem) {
+    previous_function = coco_problem_get_suite_dep_function(suite->current_problem);
     coco_problem_free(suite->current_problem);
   }
 
@@ -521,6 +525,18 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   if (observer != NULL)
     problem = coco_problem_add_observer(problem, observer);
   suite->current_problem = problem;
+
+  if (coco_problem_get_suite_dep_function(suite->current_problem) != previous_function) {
+    time_t timer;
+    char time_string[30];
+    struct tm* tm_info;
+    time(&timer);
+    tm_info = localtime(&timer);
+    strftime(time_string, 30, "%H:%M:%S %d-%m-%Y", tm_info);
+    coco_info("Processing problems f%02lu_i*_d%02lu at %s",
+        coco_problem_get_suite_dep_function(suite->current_problem),
+        coco_problem_get_dimension(suite->current_problem), time_string);
+  }
 
   return problem;
 }
