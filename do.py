@@ -388,6 +388,29 @@ def run_matlab_sms():
 
 
 ################################################################################
+## Octave
+def build_octave():
+    """Builds example in build/matlab/ with GNU Octave but not the one in examples/."""
+    
+    global release
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/matlab/coco.c', release)
+    copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
+    write_file(git_revision(), "code-experiments/build/matlab/REVISION")
+    write_file(git_version(), "code-experiments/build/matlab/VERSION")
+    run('code-experiments/build/matlab', ['octave', '--no-gui', 'setup.m'])
+
+    
+def run_octave():
+    # remove the mex files for a clean compilation first
+    print('CLEAN\t mex files from code-experiments/build/matlab/')
+    for filename in glob.glob('code-experiments/build/matlab/*.mex*') :
+        os.remove( filename )
+    # amalgamate, copy, and build
+    build_octave()
+    run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
+
+
+################################################################################
 ## Java
 def build_java():
     """ Builds the example experiment in Java """
@@ -523,6 +546,7 @@ Available commands:
   build-java           - Build Java module
   build-matlab         - Build Matlab module
   build-matlab-sms     - Build SMS-EMOA example in Matlab
+  build-octave         - Build Matlab module in Octave
   build-python         - Build Python modules
   build-python2        - Build Python 2 modules
   build-python3        - Build Python 3 modules
@@ -532,6 +556,7 @@ Available commands:
   run-java             - Build and run example experiment in Java
   run-matlab           - Build and run example experiment in MATLAB
   run-matlab-sms       - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
+  run-octave           - Build and run example experiment in Octave
   run-python           - Build and install COCO module and run tests and the
                          example experiment in Python, "no-tests" omits tests
   run-sandbox-python   - Run a Python script with installed COCO module
@@ -565,6 +590,7 @@ def main(args):
     elif cmd == 'build-java': build_java()
     elif cmd == 'build-matlab': build_matlab()
     elif cmd == 'build-matlab-sms': build_matlab_sms()
+    elif cmd == 'build-octave': build_octave()    
     elif cmd == 'build-python': build_python()
     elif cmd == 'build-python2': build_python2()
     elif cmd == 'build-python3': build_python3()
@@ -573,6 +599,7 @@ def main(args):
     elif cmd == 'run-java': run_java()
     elif cmd == 'run-matlab': run_matlab()
     elif cmd == 'run-matlab-sms': run_matlab_sms()
+    elif cmd == 'run-octave': run_octave()    
     elif cmd == 'run-python':
         run_python(False) if len(args) > 1 and args[1] == 'no-tests' else run_python()
     elif cmd == 'test-c': test_c()
