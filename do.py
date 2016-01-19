@@ -410,9 +410,6 @@ def run_octave():
     build_octave()
     run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
 
-start cmd.exe @cmd /k "Command"
-
-
 
 ################################################################################
 ## Java
