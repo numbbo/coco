@@ -32,15 +32,29 @@ except NameError: pass
 
 
 class PrintShortInfo(object):
-    """print minimal info during benchmarking,
-    to be called right before a problem used to call the solver. """
+    """print minimal info during benchmarking, after initialization
+    to be called right before the solver is called with the respective
+    problem.
+    
+    Example output:
+    
+        Tue 22h39:02, d=2, running: f01 f02 f03 f04 f05 f06 f07 f08 f09 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 f24 f25 f26 f27 f28 f29 f30 f31 f32 f33 f34 f35 f36 f37 f38 f39 f40 f41 f42 f43 f44 f45 f46 f47 f48 f49 f50 f51 f52 f53 f54 f55 done
+        Tue 22h39:03, d=3, running: f01 f02 f03 f04 f05 f06 f07 f08 f09 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 f24 f25 f26 f27 f28 f29 f30 f31 f32 f33 f34 f35 f36 f37 f38 f39 f40 f41 f42 f43 f44 f45 f46 f47 f48 f49 f50 f51 f52 f53 f54 f55 done
+        Tue 22h39:03, d=5, running: f01 f02 f03 f04 f05 f06 f07 f08 f09 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 f24 f25 f26 f27 f28 f29 f30 f31 f32 f33 f34 f35 f36 f37 f38 f39 f40 f41 f42 f43 f44 f45 f46 f47 f48 f49 f50 f51 f52 f53 f54 f55 done
+        Tue 22h39:04, d=10, running: f01 f02 f03 f04 f05 f06 f07 f08 f09 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 f24 f25 f26 f27 f28 f29 f30 f31 f32 f33 f34 f35 f36 f37 f38 f39 f40 f41 f42 f43 f44 f45 f46 f47 f48 f49 f50 f51 f52 f53 f54 f55 done
+        Tue 22h39:04, d=20, running: f01 f02 f03 f04 f05 f06 f07 f08 f09 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 f24 f25 f26 f27 f28 f29 f30 f31 f32 f33 f34 f35 f36 f37 f38 f39 f40 f41 f42 f43 f44 f45 f46 f47 f48 f49 f50 f51 f52 f53 f54 f55 done
+        Tue 22h39:05, d=40, running: f01 f02 f03 f04 f05 f06 f07 f08 f09 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 f24 f25 f26 f27 f28 f29 f30 f31 f32 f33 f34 f35 f36 f37 f38 f39 f40 f41 f42 f43 f44 f45 f46 f47 f48 f49 f50 f51 f52 f53 f54 f55 done
+
+    """
     def __init__(self):
-        self.f_current = 0
-        self.d_current = 0
+        self.f_current = 0  # function id (not problem id)
+        self.d_current = 0  # dimension
     def __call__(self, problem):
+        """uses `problem.id` and `problem.dimension` to decide what to print.
+        """
         f, d = "f" + problem.id.split('_f')[1].split('_')[0], problem.dimension
         if d != self.d_current:
-            print('%s%s,d=%d,running: ' % ('done\n' if self.d_current else '',
+            print('%s%s, d=%d, running: ' % ('done\n' if self.d_current else '',
                                            self.short_time_stap(), d), end="")
             self.d_current = d
         if f != self.f_current:
@@ -48,7 +62,10 @@ class PrintShortInfo(object):
             self.f_current = f
         sys.stdout.flush()
     def short_time_stap(self):
-        return 'h'.join(time.asctime().split()[3].split(':')[:2])
+        l = time.asctime().split()
+        d = l[0]
+        h, m, s = l[3].split(':')
+        return d + ' ' + h + 'h' + m + ':' + s
     
 # ===============================================
 # prepare (the most basic example solver)
@@ -186,10 +203,11 @@ current_batch = 1       # 1..number_of_batches
 def main(budget_multiplier=budget_multiplier,
          current_batch=current_batch,
          number_of_batches=number_of_batches):
-    print("Benchmarking solver '%s' with budget=%d * dimension, %s"
-          % (' '.join(str(SOLVER).split()[:2]), budget_multiplier, time.asctime(), ))
+    print("Benchmarking solver '%s' with budget=%d * dimension"
+          % (' '.join(str(SOLVER).split()[:2]), budget_multiplier), end='')
     observer = Observer(observer_name, observer_options)
     suite = Suite(suite_name, suite_instance, suite_options)
+    print(" on suite %s, %s" % (suite.name, time.asctime()))
     t0 = time.clock()
     if 1 < 3:
         print('Simple usecase ...'); sys.stdout.flush()
