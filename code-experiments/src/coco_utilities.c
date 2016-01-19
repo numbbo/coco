@@ -212,8 +212,9 @@ int coco_create_directory(const char *path) {
 }
 
 /**
- * Removes the given directory and all its contents (should work across different platforms/compilers).
- * Returns 0 on successful completion, and -1 on error.
+ * The method should work across different platforms/compilers.
+ * @path The path to the directory
+ * @return 0 on successful completion, and -1 on error.
  */
 int coco_remove_directory(const char *path) {
 #if _MSC_VER
