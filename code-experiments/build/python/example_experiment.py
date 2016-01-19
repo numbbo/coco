@@ -30,6 +30,26 @@ except: pass
 try: range = xrange  # let range always be an iterator
 except NameError: pass
 
+
+class PrintShortInfo(object):
+    """print minimal info during benchmarking,
+    to be called right before a problem used to call the solver. """
+    def __init__(self):
+        self.f_current = 0
+        self.d_current = 0
+    def __call__(self, problem):
+        f, d = "f" + problem.id.split('_f')[1].split('_')[0], problem.dimension
+        if d != self.d_current:
+            print('%s%s,d=%d,running: ' % ('done\n' if self.d_current else '',
+                                           self.short_time_stap(), d), end="")
+            self.d_current = d
+        if f != self.f_current:
+            print(f, end=' ')
+            self.f_current = f
+        sys.stdout.flush()
+    def short_time_stap(self):
+        return 'h'.join(time.asctime().split()[3].split(':')[:2])
+    
 # ===============================================
 # prepare (the most basic example solver)
 # ===============================================
@@ -58,16 +78,17 @@ def simple_loop(solver, suite, observer, budget_multiplier):
     max budget `budge_multipier * dimension`.
     """
     found_problems, addressed_problems = 0, 0
+    print_short_info = PrintShortInfo()
     for problem in suite:
         found_problems += 1
         # use problem only under some conditions, mainly for testing
         if 11 < 3 and not ('f11' in problem.id and 'i03' in problem.id):
             continue
         observer.observe(problem)
+        print_short_info(problem)
         coco_optimize(solver, problem, budget_multiplier * problem.dimension)
         addressed_problems += 1
-        # print(found_problems, addressed_problems); sys.stdout.flush()
-    print("%s done (%d of %d problems benchmarked)"
+    print("done\n%s done (%d of %d problems benchmarked)"
           % (suite_name, addressed_problems, found_problems), end="")
 
 
@@ -140,20 +161,18 @@ def coco_optimize(solver, fun, budget):
 # set up: CHANGE HERE SOLVER AND FURTHER SETTINGS AS DESIRED
 # ===============================================
 ######################### CHANGE HERE ########################################
-SOLVER = random_search # my_solver # fmin_slsqp # cma.fmin #
+SOLVER = random_search
+#SOLVER = my_solver # fmin_slsqp # cma.fmin #
 suite_name = "bbob-biobj"
 # suite_name = "bbob"
 suite_instance = ""  # 'dimensions: 2,3,5,10,20 instance_idx: 1-5'
 suite_options = ""
 observer_name = suite_name
 observer_options = (
-    'result_folder: ' + os.path.join('exdata', '%s_on_%s ' % (SOLVER.__name__, suite_name)) +
+    ' result_folder: ' + os.path.join('exdata', '%s_on_%s ' % (SOLVER.__name__, suite_name)) +
+    ' log_level: warning ' +
     ' algorithm_name: %s ' % SOLVER.__name__ +
     ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
-if suite_name == "bbob-biobj":
-    observer_options += (
-        'log_decision_variables: low_dim ' +
-        ' compute_indicators: log_nondominated: all ')
 
 # CAVEAT: this might be modified from input args
 budget_multiplier = 2  # times dimension, always start with something small
@@ -169,15 +188,13 @@ def main(budget_multiplier=budget_multiplier,
          number_of_batches=number_of_batches):
     print("Benchmarking solver '%s' with budget=%d * dimension, %s"
           % (' '.join(str(SOLVER).split()[:2]), budget_multiplier, time.asctime(), ))
-    suite = Suite(suite_name, suite_instance, suite_options)
     observer = Observer(observer_name, observer_options)
+    suite = Suite(suite_name, suite_instance, suite_options)
     t0 = time.clock()
     if 1 < 3:
-        # simple use case
         print('Simple usecase ...'); sys.stdout.flush()
         simple_loop(SOLVER, suite, observer, budget_multiplier)
     elif 1 < 3:
-        # usecase with batches
         print('Batch usecase ...'); sys.stdout.flush()
         batch_loop(SOLVER, suite, observer, budget_multiplier,
                    current_batch, number_of_batches)

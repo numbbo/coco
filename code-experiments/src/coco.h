@@ -1,6 +1,9 @@
 /**
- * All public functions, constants and variables are defined in this file. It is the authoritative
- * reference, if any function deviates from the documented behavior it is considered a bug.
+ * @file coco.h
+ * @brief All public COCO functions, constants and variables are defined in this file.
+ *
+ * It is the authoritative reference, if any function deviates from the documented behavior it is considered
+ * a bug.
  */
  
 #ifndef __COCO_H__
@@ -23,58 +26,143 @@ typedef unsigned __int64 uint64_t;
 /* Include definition for NAN among other things */
 #include <math.h>
 #ifndef NAN
-/** @note To be used only if undefined by the included headers */
+/** @brief To be used only if undefined by the included headers */
 #define NAN 8.8888e88
 #endif
 
-/* COCO's own pi constant. Simplifies the case, when the value of pi changes. */
+/**
+ * @brief COCO's own pi constant.
+ *
+ * Simplifies the case, when the value of pi changes. */
 static const double coco_pi = 3.14159265358979323846;
 static const double coco_two_pi = 2.0 * 3.14159265358979323846;
 
-/* Allow for not more than 1000 instances */
+/** @brief The maximum number of different instances in a suite. */
 #define COCO_MAX_INSTANCES 1000
 
-/** Logging level type.
- *
- * Possible values:
- * COCO_ERROR: only error messages are output
- * COCO_WARNING: error and warning messages are output
- * COCO_INFO: error, warning and info messages are output
- * COCO_DEBUG: error, warning, info and debug messages are output
- */
+/***********************************************************************************************************/
+
+/** @brief Logging level type. */
 typedef enum {
-  COCO_ERROR, COCO_WARNING, COCO_INFO, COCO_DEBUG
+  COCO_ERROR,     /**< @brief only error messages are output */
+  COCO_WARNING,   /**< @brief error and warning messages are output */
+  COCO_INFO,      /**< @brief error, warning and info messages are output */
+  COCO_DEBUG      /**< @brief error, warning, info and debug messages are output */
 } coco_log_level_type_e;
 
 /**
- * Function to signal a fatal error.
+ * @brief Function to signal a fatal error.
  */
 void coco_error(const char *message, ...);
 
 /**
- * Function to warn about error conditions.
+ * @brief Function to warn about error conditions.
  */
 void coco_warning(const char *message, ...);
 
 /**
- * Function to output some information.
+ * @brief Function to output some information.
  */
 void coco_info(const char *message, ...);
 
 /**
- * Function to output detailed information that can be used for debugging.
+ * @brief Function to output detailed information usually used for debugging.
  */
 void coco_debug(const char *message, ...);
 
+/***********************************************************************************************************/
+
+/** @brief Structure containing a COCO problem. */
 struct coco_problem;
+
+/**
+ * @brief The COCO problem type.
+ *
+ * See coco_problem for more information on its fields. */
 typedef struct coco_problem coco_problem_t;
+
+/**
+ * @brief The COCO optimizer type.
+ *
+ * This is a template for optimizers - functions, which take a COCO problem as input and don't return any
+ * value. If such a function exists, it can be used in the coco_run_benchmark function to run the benchmark.
+ */
 typedef void (*coco_optimizer_t)(coco_problem_t *problem);
 
+/** @brief Structure containing a COCO suite. */
+struct coco_suite;
+
+/**
+ * @brief The COCO suite type.
+ *
+ * See coco_suite for more information on its fields. */
+typedef struct coco_suite coco_suite_t;
+
+/** @brief Structure containing a COCO observer. */
 struct coco_observer;
+
+/**
+ * @brief The COCO observer type.
+ *
+ * See coco_observer for more information on its fields. */
 typedef struct coco_observer coco_observer_t;
 
-struct coco_suite;
-typedef struct coco_suite coco_suite_t;
+/** @brief Structure containing a COCO random state. */
+struct coco_random_state;
+
+/**
+ * @brief The COCO random state type.
+ *
+ * See coco_random_state for more information on its fields. */
+typedef struct coco_random_state coco_random_state_t;
+
+/***********************************************************************************************************/
+
+/**
+ * @brief Constructs a COCO suite.
+ *
+ * Currently, four suites are supported:
+ * - "bbob" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
+ * single-objective functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
+ * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/bbob-biobj-functions-doc">bi-objective
+ * functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
+ * - "bbob-largescale" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
+ * single-objective functions</a> in 6 large dimensions (40, 80, 160, 320, 640, 1280)
+ * - "toy" contains 6 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
+ * single-objective functions</a> in 5 dimensions (2, 3, 5, 10, 20)
+ *
+ * @param suite_name A string containing the name of the suite. Currently supported suite names are "bbob",
+ * "bbob-biobj", "bbob-largescale" and "toy"
+ *
+ */
+coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, const char *suite_options);
+
+void coco_suite_free(coco_suite_t *suite);
+
+coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer);
+
+coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, size_t problem_index);
+
+size_t coco_suite_encode_problem_index(coco_suite_t *suite,
+                                       const size_t function_idx,
+                                       const size_t dimension_idx,
+                                       const size_t instance_idx);
+
+void coco_suite_decode_problem_index(coco_suite_t *suite,
+                                     const size_t problem_index,
+                                     size_t *function,
+                                     size_t *instance,
+                                     size_t *dimension);
+
+size_t coco_suite_get_number_of_problems(coco_suite_t *suite);
+
+size_t coco_suite_get_function_from_function_index(coco_suite_t *suite, size_t function_idx);
+
+size_t coco_suite_get_dimension_from_dimension_index(coco_suite_t *suite, size_t dimension_idx);
+
+size_t coco_suite_get_instance_from_instance_index(coco_suite_t *suite, size_t instance_idx);
+
+/***********************************************************************************************************/
 
 /**
  * Evaluate the COCO problem represented by ${self} with the
@@ -102,6 +190,8 @@ void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y);
  * if coco_problem_get_number_of_objectives(self) is larger than 1. 
  */
 void coco_recommend_solutions(coco_problem_t *self, const double *x, size_t number_of_solutions);
+
+/***********************************************************************************************************/
 
 /**
  * Free the COCO problem represented by ${self}.
@@ -153,7 +243,7 @@ size_t coco_problem_get_number_of_constraints(const coco_problem_t *self);
  * Number of evaluations done on problem ${self}. 
  * Tentative and yet versatile. 
  */
-long coco_problem_get_evaluations(coco_problem_t *self);
+size_t coco_problem_get_evaluations(coco_problem_t *self);
 double coco_problem_get_best_observed_fvalue1(const coco_problem_t *self);
 
 /**
@@ -188,33 +278,6 @@ size_t coco_problem_get_suite_dep_index(coco_problem_t *self);
  */
 void coco_problem_get_initial_solution(const coco_problem_t *self, double *initial_solution);
 
-coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, const char *suite_options);
-
-void coco_suite_free(coco_suite_t *suite);
-
-coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer);
-
-coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, size_t problem_index);
-
-size_t coco_suite_encode_problem_index(coco_suite_t *suite,
-                                       const size_t function_idx,
-                                       const size_t dimension_idx,
-                                       const size_t instance_idx);
-
-void coco_suite_decode_problem_index(coco_suite_t *suite,
-                                     const size_t problem_index,
-                                     size_t *function,
-                                     size_t *instance,
-                                     size_t *dimension);
-
-size_t coco_suite_get_number_of_problems(coco_suite_t *suite);
-
-size_t coco_suite_get_function_from_function_index(coco_suite_t *suite, size_t function_idx);
-
-size_t coco_suite_get_dimension_from_dimension_index(coco_suite_t *suite, size_t dimension_idx);
-
-size_t coco_suite_get_instance_from_instance_index(coco_suite_t *suite, size_t instance_idx);
-
 void coco_run_benchmark(const char *suite_name,
                         const char *suite_instance,
                         const char *suite_options,
@@ -225,7 +288,7 @@ void coco_run_benchmark(const char *suite_name,
 coco_observer_t *coco_observer(const char *observer_name, const char *options);
 void coco_observer_free(coco_observer_t *self);
 coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer);
-/**************************************************************************
+/***********************************************************************************************************
  * Random number generator
  */
 

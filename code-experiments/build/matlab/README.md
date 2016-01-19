@@ -1,5 +1,5 @@
-NumBBO/CoCO Framework in Matlab (Experimental Part)
-===================================================
+NumBBO/CoCO Framework in Matlab and Octave (Experimental Part)
+==============================================================
 
 Prerequisites
 -------------
@@ -35,7 +35,10 @@ In a system shell:
     python do.py run-matlab
   ```  
   which will build and run a simple
-  `python code-experiments/build/matlab/exampleexperiment.m`.
+  `python code-experiments/build/matlab/exampleexperiment.m`. For running in Octave, replace the call by
+  ```
+    python do.py run-octave
+  ```
 
 2. Copy (and rename) `exampleexperiment.m` to a place (and name) of
   your choice. Modify this file to include the solver of your choice (instead of
@@ -49,7 +52,7 @@ In a system shell:
   ```
       >>> example_experiment_new_name
   ```
-See [here](../../../README.md) for the next steps. 
+See [here](../../../README.md) for the next steps. When running Octave, replace `matlab` by `octave`.
 
 
 Details and Known Issues
@@ -65,7 +68,9 @@ Details and Known Issues
   ```
   right before the #include "mex.h" lines of the corresponding C files. This holds
   especially for the more complicated example in ../../examples/bbob-biobj-matlab-smsemoa/.
-
+- When running with GNU Octave under Windows, you might experience that the Windows command window is closed on exit
+  of Octave. To solve this issue, find the `octave.bat` file in your Octave installation folder and remove the `exit`
+  in the last line.
 
 Tested Environments
 -------------------
@@ -75,4 +80,5 @@ and compiler. However, compilation has been tested successfully under
    - Windows 7 with MATLAB 2014a and Visual Studio Professional.
    - Windows 10 with MATLAB 2008a and MinGW
    - Windows XP with MATLAB 2008b and MinGW
+   - Windows 7 with GNU Octave 4.0.0
   
