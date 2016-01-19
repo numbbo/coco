@@ -2,9 +2,14 @@ numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
 This code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
-now rewritten fully in ANSI C with the other languages calling the C code. Languages currently available 
-are C, Java, MATLAB, and Python. Languages available in near future are C++ and Octave. Contributions to 
-link further languages are more than welcome.
+now rewritten fully in ANSI C with the other languages calling the C code. As the name suggests,
+the code provides a platform to benchmark and compare continuous optimizers, AKA non-linear 
+solvers for numerical optimization. Languages currently available are C, Java, MATLAB, and Python. 
+Languages available in near future are C++ and Octave. Contributions to link further languages are 
+more than welcome.
+
+See [here](http://numbbo.github.io/workshops) and further links below to learn more about the idea 
+behind CoCO.
 
 Requirements
 ------------
@@ -43,9 +48,13 @@ we will be happy if you can document them in detail on our [issue tracker](https
 Getting Started
 ---------------
 **Download** the [COCO framework code](https://github.com/numbbo/coco) from
-github by clicking [here](https://github.com/numbbo/coco/archive/master.zip), 
-**CAVEAT: this code is still under development**, and unzip the `zip` file. The latest official releases can be furthermore
-found [here](https://github.com/numbbo/coco/releases).
+github, 
+- either by clicking [here](https://github.com/numbbo/coco/archive/master.zip) and unzip the `zip` file, 
+- or by typing `git clone https://github.com/numbbo/coco.git` (preferred, as it 
+  allows to remain up-to-date easily, but needs git to be installed). 
+
+**CAVEAT: this code is still under development**. The latest official releases can be furthermore
+found [here](https://github.com/numbbo/coco/releases) and corresponds to the master branch.
 
 1. In a system shell, **`cd` into** the `coco-*` (framework root) folder, where the 
    file `do.py` lies. Type, i.e. **execute**, one of the following commands once
