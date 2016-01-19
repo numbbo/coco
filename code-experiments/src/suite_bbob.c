@@ -32,13 +32,13 @@ static coco_suite_t *suite_bbob_allocate(void) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
-  suite = coco_suite_allocate("bbob", 24, 6, dimensions, "instances:1-15");
+  /* IMPORTANT: Make sure to change the default instance for every new workshop! */
+  suite = coco_suite_allocate("bbob", 24, 6, dimensions, "instances:1-5,51-60");
 
   return suite;
 }
 
 static char *suite_bbob_get_instances_by_year(const int year) {
-/* TODO: Fill in for other years! */
 
   if (year == 2009) {
     return "1-5,1-5,1-5";
