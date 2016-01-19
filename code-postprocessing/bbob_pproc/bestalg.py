@@ -510,24 +510,22 @@ def customgenerate(args = algs2009):
     This method is called from the python command line from a directory
     containing all necessary data folders::
 
-     >>> from bbob_pproc import bestalg
-     >>> import os
-     >>> import urllib
-     >>> import tarfile
-     >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-     >>> os.chdir(os.path.join(path, 'data'))
-     >>> infoFile = 'ALPS/bbobexp_f2.info'
-     >>> if not os.path.exists(infoFile):
-     ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/ALPS_hornby_noiseless.tgz'
-     ...   filename, headers = urllib.urlretrieve(dataurl)
-     ...   archivefile = tarfile.open(filename)
-     ...   archivefile.extractall()
-     >>> os.chdir(os.path.join(path, 'data'))
-     >>> bestalg.customgenerate(('ALPS', '')) #doctest:+ELLIPSIS
-     Searching in ALPS ...
-     ...
-     done with writing pickle...
-     >>> os.chdir(path)
+    >>> from bbob_pproc import bestalg
+    >>> import os
+    >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+    >>> os.chdir(os.path.join(path, 'data'))
+    >>> infoFile = 'ALPS/bbobexp_f2.info'
+    >>> if not os.path.exists(infoFile):
+    ...     import urllib
+    ...     import tarfile
+    ...     dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/ALPS_hornby_noiseless.tgz'
+    ...     filename, headers = urllib.urlretrieve(dataurl)
+    ...     archivefile = tarfile.open(filename)
+    ...     archivefile.extractall()
+    >>> os.chdir(os.path.join(path, 'data'))
+    >>> bestalg.customgenerate(('ALPS', '')) # doctest: +ELLIPSIS
+    Searching in...
+    >>> os.chdir(path)
 
     """
 
@@ -559,25 +557,20 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
        respect to the number of target/function pairs where each algorithm is
        best). Only target/function pairs are taken into account where the target
        is in between target_lb and target_ub.
-    
        This method should be called from the python command line from a directory
        containing all necessary data folders::
 
-       >>> from bbob_pproc import bestalg
-       >>> import os
-       >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-       >>> os.chdir(path)
-       >>> os.chdir(os.path.join(path, "data"))
-       >>> bestalg.getAllContributingAlgorithmsToBest(('IPOP-CMA-ES', 'RANDOMSEARCH')) #doctest:+ELLIPSIS
-       Generating best algorithm data from given algorithm list...
-       Searching in IPOP-CMA-ES ...
-       ...
-       Found 144 file(s).
-       ...
-       >>> os.chdir(path)
-       
+        >>> from bbob_pproc import bestalg
+        >>> import os
+        >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+        >>> os.chdir(path)
+        >>> os.chdir(os.path.join(path, "data"))
+        >>> bestalg.getAllContributingAlgorithmsToBest(('IPOP-CMA-ES', 'RANDOMSEARCH')) # doctest:+ELLIPSIS
+        Generating best algorithm data...
+        >>> os.chdir(path)
+
     """
-    
+
     print "Generating best algorithm data from given algorithm list...\n",  
     customgenerate(algnamelist)
     
