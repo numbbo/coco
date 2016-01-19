@@ -113,6 +113,12 @@ static void coco_suite_filter_dimensions(coco_suite_t *suite, const size_t *dims
 
 }
 
+/**
+ * @param suite The given suite.
+ * @param function_idx The index of the function in question (starting from 0).
+ * @return The function number in position function_idx in the suite. If the function has been filtered out
+ * through suite_options in the coco_suite function, the result is 0.
+ */
 size_t coco_suite_get_function_from_function_index(coco_suite_t *suite, size_t function_idx) {
 
   if (function_idx >= suite->number_of_functions) {
@@ -123,6 +129,12 @@ size_t coco_suite_get_function_from_function_index(coco_suite_t *suite, size_t f
  return suite->functions[function_idx];
 }
 
+/**
+ * @param suite The given suite.
+ * @param dimension_idx The index of the dimension in question (starting from 0).
+ * @return The dimension number in position dimension_idx in the suite. If the dimension has been filtered out
+ * through suite_options in the coco_suite function, the result is 0.
+ */
 size_t coco_suite_get_dimension_from_dimension_index(coco_suite_t *suite, size_t dimension_idx) {
 
   if (dimension_idx >= suite->number_of_dimensions) {
@@ -133,6 +145,12 @@ size_t coco_suite_get_dimension_from_dimension_index(coco_suite_t *suite, size_t
  return suite->dimensions[dimension_idx];
 }
 
+/**
+ * @param suite The given suite.
+ * @param instance_idx The index of the instance in question (starting from 0).
+ * @return The instance number in position instance_idx in the suite. If the instance has been filtered out
+ * through suite_options in the coco_suite function, the result is 0.
+ */
 size_t coco_suite_get_instance_from_instance_index(coco_suite_t *suite, size_t instance_idx) {
 
   if (instance_idx >= suite->number_of_instances) {
@@ -246,6 +264,13 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
   return problem;
 }
 
+/**
+ * Note that the problem_index depends on the number of instances a suite is defined with.
+ *
+ * @param suite The given suite.
+ * @param problem_index The index of the problem to be returned.
+ * @return The problem of the suite defined by problem_index.
+ */
 coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, size_t problem_index) {
 
   size_t function_idx = 0, instance_idx = 0, dimension_idx = 0;
@@ -254,6 +279,14 @@ coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, size_t problem_index
   return coco_suite_get_problem_from_indices(suite, function_idx, dimension_idx, instance_idx);
 }
 
+/**
+ * The number of problems in the suite is computed as a product of the number of instances, number of
+ * functions and number of dimensions and therefore doesn't account for any filtering done through the
+ * suite_options parameter of the coco_suite function.
+ *
+ * @param suite The given suite.
+ * @return The number of problems in the suite.
+ */
 size_t coco_suite_get_number_of_problems(coco_suite_t *suite) {
   return (suite->number_of_instances * suite->number_of_functions * suite->number_of_dimensions);
 }
@@ -381,6 +414,38 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
       &suite->current_dimension_idx);
 }
 
+/**
+ * Currently, four suites are supported:
+ * - "bbob" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
+ * single-objective functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
+ * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/bbob-biobj-functions-doc">bi-objective
+ * functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
+ * - "bbob-largescale" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
+ * single-objective functions</a> in 6 large dimensions (40, 80, 160, 320, 640, 1280)
+ * - "toy" contains 6 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
+ * single-objective functions</a> in 5 dimensions (2, 3, 5, 10, 20)
+ *
+ * Only the suite_name parameter needs to be non-empty. The suite_instance and suite_options can be "" or
+ * NULL. In this case, default values are taken (default instances of a suite are those used in the last year
+ * and the suite is not filtered by default).
+ *
+ * @param suite_name A string containing the name of the suite. Currently supported suite names are "bbob",
+ * "bbob-biobj", "bbob-largescale" and "toy".
+ * @param suite_instance A string used for defining the suite instances. Two ways are supported:
+ * - "year: YEAR", where YEAR is the year of the BBOB workshop, includes the instances (to be) used in that
+ * year's workshop;
+ * - "instances: VALUES", where VALUES are instance numbers from 1 on written as a comma-separated list or a
+ * range m-n.
+ * @param suite_options A string of pairs "key: value" used to filter the suite (especially useful for
+ * parallelizing the experiments). Supported options:
+ * - "dimensions: LIST", where LIST is the list of dimensions to keep in the suite (range-style syntax is
+ * not allowed here),
+ * - "function_idx: VALUES", where VALUES is a list or a range of function indexes (starting from 1) to keep
+ * in the suite, and
+ * - "instance_idx: VALUES", where VALUES is a list or a range of instance indexes (starting from 1) to keep
+ * in the suite.
+ * @return The constructed suite object.
+ */
 coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, const char *suite_options) {
 
   coco_suite_t *suite;
@@ -487,9 +552,14 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
 }
 
 /**
- * Returns next problem of the suite by iterating first through available instances, then functions and
- * lastly dimensions. The problem is wrapped with the observer's logger. If there is no next problem,
- * returns NULL.
+ * Iterates through the suite first by instances, then by functions and finally by dimensions.
+ * The instances/functions/dimensions that have been filtered out using the suite_options of the coco_suite
+ * function are skipped. The returned problem is wrapped with the observer. If the observer is NULL, the
+ * returned problem is unobserved.
+ *
+ * @param suite The given suite.
+ * @param observer The observer used to wrap the problem. If NULL, the problem is returned unobserved.
+ * @returns The next problem of the suite or NULL if there is no next problem left.
  */
 coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer) {
 
@@ -526,6 +596,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
     problem = coco_problem_add_observer(problem, observer);
   suite->current_problem = problem;
 
+  /* Output some information TODO: make this shorter! */
   if (coco_problem_get_suite_dep_function(suite->current_problem) != previous_function) {
     time_t timer;
     char time_string[30];
@@ -541,6 +612,23 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   return problem;
 }
 
+/**
+ * Constructs a suite and observer given their options and runs the optimizer on all the problems in the
+ * suite.
+ *
+ * @param suite_name A string containing the name of the suite. See suite_name in the coco_suite function for
+ * possible values.
+ * @param suite_instance A string used for defining the suite instances. See suite_instance in the coco_suite
+ * function for possible values ("" and NULL result in default suite instances).
+ * @param suite_options A string of pairs "key: value" used to filter the suite. See suite_options in the
+ * coco_suite function for possible values ("" and NULL result in a non-filtered suite).
+ * @param observer_name A string containing the name of the observer. See observer_name in the coco_observer
+ * function for possible values ("", "no_observer" and NULL result in not using an observer).
+ * @param observer_options A string of pairs "key: value" used to pass the options to the observer. See
+ * observer_options in the coco_observer function for possible values ("" and NULL result in default observer
+ * options).
+ * @param optimizer An optimization algorithm to be run on each problem in the suite.
+ */
 void coco_run_benchmark(const char *suite_name,
                         const char *suite_instance,
                         const char *suite_options,
@@ -566,65 +654,14 @@ void coco_run_benchmark(const char *suite_name,
 
 }
 
-/*
- * General schema for encoding/decoding a suite_dep_index. Note that the index depends on the number of
- * instances a suite is defined with (it is really a suite-instance-depended index...).
- * Also, while functions, instances and dimensions start from 1, function_idx, instance_idx and dimension_idx
- * as well as suite_dep_index start from 0!
- *
- * Showing an example with 2 dimensions (2, 3), 5 instances (6, 7, 8, 9, 10) and 2 functions (1, 2):
- *
- * index | instance | function | dimension
- * ------+----------+----------+-----------
- *     0 |        6 |        1 |         2
- *     1 |        7 |        1 |         2
- *     2 |        8 |        1 |         2
- *     3 |        9 |        1 |         2
- *     4 |       10 |        1 |         2
- *     5 |        6 |        2 |         2
- *     6 |        7 |        2 |         2
- *     7 |        8 |        2 |         2
- *     8 |        9 |        2 |         2
- *     9 |       10 |        2 |         2
- *    10 |        6 |        1 |         3
- *    11 |        7 |        1 |         3
- *    12 |        8 |        1 |         3
- *    13 |        9 |        1 |         3
- *    14 |       10 |        1 |         3
- *    15 |        6 |        2 |         2
- *    16 |        7 |        2 |         3
- *    17 |        8 |        2 |         3
- *    18 |        9 |        2 |         3
- *    19 |       10 |        2 |         3
- *
- * index | instance_idx | function_idx | dimension_idx
- * ------+--------------+--------------+---------------
- *     0 |            0 |            0 |             0
- *     1 |            1 |            0 |             0
- *     2 |            2 |            0 |             0
- *     3 |            3 |            0 |             0
- *     4 |            4 |            0 |             0
- *     5 |            0 |            1 |             0
- *     6 |            1 |            1 |             0
- *     7 |            2 |            1 |             0
- *     8 |            3 |            1 |             0
- *     9 |            4 |            1 |             0
- *    10 |            0 |            0 |             1
- *    11 |            1 |            0 |             1
- *    12 |            2 |            0 |             1
- *    13 |            3 |            0 |             1
- *    14 |            4 |            0 |             1
- *    15 |            0 |            1 |             1
- *    16 |            1 |            1 |             1
- *    17 |            2 |            1 |             1
- *    18 |            3 |            1 |             1
- *    19 |            4 |            1 |             1
- *
- */
+/* See coco.h for more information on encoding and decoding problem index */
 
 /**
- * Computes the problem index from function_idx, dimension_idx and instance_idx of the given suite.
- * Note that the index depends on the number of instances a suite is defined with!
+ * @param suite The suite.
+ * @param function_idx Index of the function (starting with 0).
+ * @param dimension_idx Index of the dimension (starting with 0).
+ * @param instance_idx Index of the insatnce (starting with 0).
+ * @return The problem index in the suite computed from function_idx, dimension_idx and instance_idx.
  */
 size_t coco_suite_encode_problem_index(coco_suite_t *suite,
                                        const size_t function_idx,
@@ -637,8 +674,11 @@ size_t coco_suite_encode_problem_index(coco_suite_t *suite,
 }
 
 /**
- * Computes the function_idx, dimension_idx and instance_idx of the problem with index problem_index of
- * the given suite. Note that the index depends on the number of instances a suite is defined with!
+ * @param suite The suite.
+ * @param problem_index Index of the problem in the suite (starting with 0).
+ * @param function_idx Pointer to the index of the function, which is set by this function.
+ * @param dimension_idx Pointer to the index of the dimension, which is set by this function.
+ * @param instance_idx Pointer to the index of the instance, which is set by this function.
  */
 void coco_suite_decode_problem_index(coco_suite_t *suite,
                                      const size_t problem_index,
