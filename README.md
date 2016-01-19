@@ -8,8 +8,7 @@ solvers for numerical optimization. Languages currently available are C, Java, M
 Languages available in near future are C++ and Octave. Contributions to link further languages are 
 more than welcome.
 
-See [here](http://numbbo.github.io/workshops) and further links below to learn more about the idea 
-behind CoCO.
+See [here](http://numbbo.github.io/workshops) and [here](http://coco.gforge.inria.fr/) and further links below to learn more about the ideas behind CoCO.
 
 Requirements
 ------------
