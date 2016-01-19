@@ -11,7 +11,7 @@
 /*
  * The max budget for optimization algorithms should be set to dim * BUDGET
  */
-static const size_t BUDGET = 2;
+static const size_t BUDGET = 10;
 
 /**
  * A random search algorithm that can be used for single- as well as multi-objective optimization.
@@ -169,21 +169,23 @@ void example_biobj(void) {
 
   coco_observer_free(observer);
   coco_suite_free(suite);
-
+  
 }
 
-/**
+/*
  * The main method calls all three
  */
 int main(void) {
 
   printf("Running the example experiment... (it takes time, be patient)\n");
   fflush(stdout);
-
+  
   example_biobj();
 
   printf("Done!\n");
-  fflush(stdout);
 
+  fflush(stdout);
   return 0;
 }
+
+

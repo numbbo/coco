@@ -6,6 +6,7 @@
 #include "suite_bbob.c"
 #include "suite_biobj.c"
 #include "suite_toy.c"
+#include "suite_largescale.c"
 
 /**
  * TODO: Add instructions on how to implement a new suite!
@@ -195,7 +196,11 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_bbob_allocate();
   } else if (strcmp(suite_name, "bbob-biobj") == 0) {
     suite = suite_biobj_allocate();
-  } else {
+  }
+    else if (strcmp(suite_name, "bbob-largescale") == 0) {
+    suite = suite_largescale_allocate();
+  }
+  else {
     coco_error("coco_suite(): unknown problem suite");
     return NULL;
   }
@@ -232,6 +237,8 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-biobj") == 0) {
     problem = suite_biobj_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "bbob-largescale") == 0) {
+    problem = suite_largescale_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
     coco_error("coco_suite_get_problem(): unknown problem suite");
     return NULL;

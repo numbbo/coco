@@ -184,6 +184,7 @@ def install_postprocessing():
     expand_file(join('code-postprocessing', 'setup.py.in'),
                 join('code-postprocessing', 'setup.py'),
                 {'COCO_VERSION': git_version()})
+    # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/bbob_pproc/latex-templates')
     python('code-postprocessing', ['setup.py', 'install', '--user'])
     
 def _prep_python():
@@ -475,6 +476,7 @@ def test_java():
 ## Post processing
 def test_post_processing():
     python('code-postprocessing/bbob_pproc', ['__main__.py'])
+    # python('code-postprocessing', ['-m', 'bbob_pproc'])
 
 ################################################################################
 ## Global
