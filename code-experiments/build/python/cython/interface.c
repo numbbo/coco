@@ -1562,7 +1562,7 @@ static char __pyx_k_Format_string_allocated_too_shor[] = "Format string allocate
 static char __pyx_k_Non_native_byte_order_not_suppor[] = "Non-native byte order not supported";
 static char __pyx_k_Number_of_variables_this_problem[] = "Number of variables this problem instance expects as input.";
 static char __pyx_k_Suite_has_been_finalized_free_ed[] = "Suite has been finalized/free'ed";
-static char __pyx_k_Unkown_benchmark_suite_name_s_Kn[] = "Unkown benchmark suite name \"%s\".\nKnown suite names are %s.\nIf \"%s\" was not a typo, you can add the desired name to `known_suite_names`::\n\n        >> import cocoex as ex\n        >> ex.known_suite_names.append(b\"my_name\")  # must be a byte string\n        >> suite = ex.Suite(\"my_name\", \"\", \"\")\n        COCO FATAL ERROR: coco_suite(): unknow problem suite\n\nThis will crash Python, if the suite \"my_name\" does in fact not exist. You might\nalso report back a missing name to https://github.com/numbbo/numbbo/issues\n";
+static char __pyx_k_Unkown_benchmark_suite_name_s_Kn[] = "Unkown benchmark suite name \"%s\".\nKnown suite names are %s.\nIf \"%s\" was not a typo, you can add the desired name to `known_suite_names`::\n\n        >> import cocoex as ex\n        >> ex.known_suite_names.append(b\"my_name\")  # must be a byte string\n        >> suite = ex.Suite(\"my_name\", \"\", \"\")\n        COCO FATAL ERROR: coco_suite(): unknow problem suite\n\nThis will crash Python, if the suite \"my_name\" does in fact not exist. You might\nalso report back a missing name to https://github.com/numbbo/coco/issues\n";
 static char __pyx_k_in_Problem__initialize_problem_p[] = "in Problem._initialize(problem,...): problem is NULL";
 static char __pyx_k_index_in_the_enumerator_of_all_p[] = "index in the enumerator of all problems in this suite.\n\n        Details: To get the index in the underlying C implementation, which\n        usually matches `current_index` one-to-one, use::\n\n        >>> import cocoex as ex\n        >>> suite = ex.Suite(\"bbob\", \"\", \"\")\n        >>> suite.indices[suite.current_index]  # raises an exception, as current_index is None\n        Traceback (most recent call last):\n          . . .\n          File \"<doctest cocoex.interface.__test__.Suite.current_index (line 301)[2]>\", line 1, in <module>\n            suite.indices[suite.current_index]  # raises an exception, as current_index is None\n        TypeError: list indices must be integers, not NoneType\n        >>> suite.next_problem().id[-17:].lower()\n        'bbob_f001_i01_d02'\n        >>> suite.current_index, suite.indices[suite.current_index]\n        (0, 0)\n\n        ";
 static char __pyx_k_ndarray_is_not_Fortran_contiguou[] = "ndarray is not Fortran contiguous";
@@ -2404,7 +2404,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
 
     /* "cython/interface.pyx":200
  * This will crash Python, if the suite "my_name" does in fact not exist. You might
- * also report back a missing name to https://github.com/numbbo/numbbo/issues
+ * also report back a missing name to https://github.com/numbbo/coco/issues
  * """ % (self._name, str(known_suite_names), self._name))             # <<<<<<<<<<<<<<
  *         try:
  *             suite = coco_suite(self._name, self._instance, self._options)
@@ -2473,7 +2473,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
   }
 
   /* "cython/interface.pyx":201
- * also report back a missing name to https://github.com/numbbo/numbbo/issues
+ * also report back a missing name to https://github.com/numbbo/coco/issues
  * """ % (self._name, str(known_suite_names), self._name))
  *         try:             # <<<<<<<<<<<<<<
  *             suite = coco_suite(self._name, self._instance, self._options)
@@ -2499,7 +2499,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
       __pyx_v_suite = coco_suite(__pyx_t_13, __pyx_t_14, __pyx_t_15);
 
       /* "cython/interface.pyx":201
- * also report back a missing name to https://github.com/numbbo/numbbo/issues
+ * also report back a missing name to https://github.com/numbbo/coco/issues
  * """ % (self._name, str(known_suite_names), self._name))
  *         try:             # <<<<<<<<<<<<<<
  *             suite = coco_suite(self._name, self._instance, self._options)
@@ -2575,7 +2575,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
     __pyx_L9_except_error:;
 
     /* "cython/interface.pyx":201
- * also report back a missing name to https://github.com/numbbo/numbbo/issues
+ * also report back a missing name to https://github.com/numbbo/coco/issues
  * """ % (self._name, str(known_suite_names), self._name))
  *         try:             # <<<<<<<<<<<<<<
  *             suite = coco_suite(self._name, self._instance, self._options)
