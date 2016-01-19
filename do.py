@@ -499,6 +499,7 @@ def test_java():
 ################################################################################
 ## Post processing
 def test_post_processing():
+    install_postprocessing()
     python('code-postprocessing/bbob_pproc', ['__main__.py'])
     # python('code-postprocessing', ['-m', 'bbob_pproc'])
 
