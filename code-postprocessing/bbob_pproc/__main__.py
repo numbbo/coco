@@ -249,7 +249,7 @@ if __name__ == "__main__":
     """run either tests or rungeneric.main"""
     args = sys.argv[1:] if len(sys.argv) else []
     filepath = os.path.split(sys.argv[0])[0]
-    # sys.path.append(os.path.join(os.getcwd(), filepath))  # doesn't help, tests from shell fail
+    # sys.path.append(os.path.join(os.getcwd(), filepath))  # tests from shell fail, but why?
     sys.path.append(os.path.join(filepath, os.path.pardir))  # needed in do.py
     # run either this main or rungeneric.main
     if len(args) == 0:
