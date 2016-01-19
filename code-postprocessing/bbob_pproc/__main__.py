@@ -13,6 +13,11 @@ import urllib
 import shutil
 import subprocess
 import doctest
+try:
+    from . import rungeneric
+    is_module = True
+except:
+    is_module = False
 
 # depreciated, to be removed, see end of file
 if 11 < 3 and __name__ == "__main__":
@@ -253,8 +258,11 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))  # needed in do.py
     # run either this main or rungeneric.main
     if len(args) == 0:
-        print("WARNING: this tests the post-processing, this will change in future (use -h for help)")
-        main(args)
+        if is_module:
+            rungeneric.main(args)  # just prints help
+        else:
+            print("WARNING: this tests the post-processing, this might change in future (use -h for help)")
+            main(args)
     elif args[0] == '-t' or args[0].startswith('--t'):
         args.pop(0)
         main(args)
@@ -262,12 +270,6 @@ if __name__ == "__main__":
         print("WARNING: this tests the post-processing and doesn't run anything else")
         main(args)
     else:
-        try:
-            from . import rungeneric
-        except:
-            print('===================================================')
-            print('=== TRY "python -m ..." instead of "python ..." ===')
-            print('===================================================')
-            raise
+        if not is_module:
+            raise ValueError('try calling "python -m ..." instead of "python ..."')
         rungeneric.main(args)
-        

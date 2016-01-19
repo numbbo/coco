@@ -25,7 +25,7 @@ import numpy
 import matplotlib
 # numpy.seterr(all='raise')
 
-if __name__ == "__main__":
+if 11 < 3 and __name__ == "__main__":
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
     matplotlib.rc('pdf', fonttype = 42)
     # add ".." to the Python search path, import the module to which
@@ -78,7 +78,19 @@ def usage():
 def main(argv=None):
     r"""Main routine for post-processing data from COCO.
 
-    Depending on the number of data path input arguments, this routine will:
+    Synopsis::
+
+        python -m bbob_pproc [data_folder [more_data_folders]]
+
+    For this call to work, the path to this package must be in python
+    search path, that is,
+
+    * it can be in the current working directory, or
+    * the path to the package was appended to the Python path, or
+    * the package was installed (which essentially copies the package
+      to a location which is in the path)
+
+    This routine will:
 
     * call sub-routine :py:func:`bbob_pproc.rungeneric1.main` for each
       input argument; each input argument will be used as output
@@ -87,8 +99,8 @@ def main(argv=None):
       (2 input arguments) or :py:func:`bbob_pproc.rungenericmany.main`
       (more than 2) for the input arguments altogether.
 
-    The output figures and tables written by default to the output folder 
-    :file:`ppdata` are used in the following provided LaTeX templates:
+    The output figures and tables written by default to the output folder
+    :file:`ppdata` are used in the provided LaTeX templates:
 
     * :file:`*article.tex` and :file:`*1*.tex`
       for results with a **single** algorithm
@@ -99,9 +111,9 @@ def main(argv=None):
     The templates with `noisy` mentioned in the filename have to be used
       for the noisy testbed, the others for the noise-less one.
 
-    These latex templates need to be copied in the current working directory 
+    These latex templates need to be copied in the current working directory
     and possibly edited so that the LaTeX commands ``\bbobdatapath`` and
-    ``\algfolder`` point to the correct output folders of the post-processing. 
+    ``\algfolder`` point to the correct output folders of the post-processing.
     Compiling the template file with LaTeX should then produce a document.
 
     Keyword arguments:
@@ -126,65 +138,63 @@ def main(argv=None):
 
             changes the default output directory (:file:`ppdata`) to
             :file:`OUTPUTDIR`.
-        
+
         --omit-single
-        
+
             omit calling :py:func:`bbob_pproc.rungeneric1.main`, if
             more than one data path argument is provided. 
-            
+
         --rld-single-fcts
-        
+
             generate also runlength distribution figures for each
             single function. Works only if more than two algorithms are given. 
             These figures are not (yet) used in the LaTeX templates. 
-            
+
         --input-path=INPUTPATH
-        
+
             all folder/file arguments are prepended with the given value
             which must be a valid path. 
-            
+
         --in-a-hurry
-        
+
             takes values between 0 (default) and 1000, fast processing that 
             does not write eps files and uses a small number of bootstrap samples
-            
+
         --svg
-            
-            generate also the svg figures which are used in html files 
+
+            generate also the svg figures which are used in html files
 
     Exceptions raised:
-    
+
     *Usage* -- Gives back a usage message.
 
     Examples:
 
-    * Calling the rungeneric.py interface from the command line::
-
-        $ python bbob_pproc/rungeneric.py -v AMALGAM BIPOP-CMA-ES
-
-    * Loading this package and calling the main from the command line
-      (requires that the path to this package is in python search path)::
+    Printing out this help message::
 
         $ python -m bbob_pproc.rungeneric -h
 
-      This will print out this help message.
+    Post-processing two algorithms in verbose mode::
 
-    * From the python interpreter (requires that the path to this
-      package is in python search path)::
+        $ python -m bbob_pproc -v AMALGAM BIPOP-CMA-ES
 
-        >> import bbob_pproc as bb
-        >> bb.rungeneric.main('-o outputfolder folder1 folder2'.split())
+    From the python interpreter::
+
+        >> import bbob_pproc as pp
+        >> pp.main('-o outputfolder folder1 folder2')
 
       This will execute the post-processing on the data found in
       :file:`folder1` and :file:`folder2`. The ``-o`` option changes the
       output folder from the default :file:`ppdata` to
-      :file:`outputfolder`.
+      :file:`outputfolder`. The arguments can also be presented as
+      a list of strings.
 
     """
 
     if argv is None:
         argv = sys.argv[1:]
-
+    if not isinstance(argv, list) and str(argv) == argv:  # get rid of .split in python shell
+        argv = argv.split()
     try:
         try:
             opts, args = getopt.getopt(argv, genericsettings.shortoptlist, genericsettings.longoptlist +
@@ -250,7 +260,7 @@ def main(argv=None):
             os.makedirs(outputdir)
             if genericsettings.verbose:
                 print 'Folder %s was created.' % (outputdir)
-        
+
         truncate_latex_command_file(os.path.join(outputdir,
                                                  'bbob_pproc_commands.tex'))
 
@@ -270,7 +280,7 @@ def main(argv=None):
 
         open(os.path.join(outputdir,
                           'bbob_pproc_commands.tex'), 'a').close() 
-        
+
         print_done()
 
     #TODO prevent loading the data every time...
@@ -282,6 +292,6 @@ def main(argv=None):
 
 if __name__ == "__main__":
     res = main()
-    if genericsettings.test: 
+    if genericsettings.test:
         print res
-    sys.exit(res)
+    # sys.exit(res)
