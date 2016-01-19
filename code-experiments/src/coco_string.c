@@ -4,11 +4,11 @@
 
 #include "coco.h"
 
-char *coco_strdup(const char *string);
+static char *coco_strdup(const char *string);
 char *coco_strdupf(const char *str, ...);
-char *coco_vstrdupf(const char *str, va_list args);
-char *coco_strconcat(const char *s1, const char *s2);
-long coco_strfind(const char *base, const char *seq);
+static char *coco_vstrdupf(const char *str, va_list args);
+static char *coco_strconcat(const char *s1, const char *s2);
+static long coco_strfind(const char *base, const char *seq);
 
 /**
  * coco_strdup(string):
@@ -17,7 +17,7 @@ long coco_strfind(const char *base, const char *seq);
  * it. The caller is responsible for free()ing the memory allocated
  * using coco_free_memory().
  */
-char *coco_strdup(const char *string) {
+static char *coco_strdup(const char *string) {
   size_t len;
   char *duplicate;
   if (string == NULL)
@@ -28,8 +28,7 @@ char *coco_strdup(const char *string) {
   return duplicate;
 }
 /**
- * Formatted string duplication. Optional arguments are
- * used like in sprintf. 
+ * Optional arguments are used like in sprintf.
  */
 char *coco_strdupf(const char *str, ...) {
   va_list args;
@@ -45,7 +44,7 @@ char *coco_strdupf(const char *str, ...) {
 /**
  * va_list version of formatted string duplication coco_strdupf()
  */
-char *coco_vstrdupf(const char *str, va_list args) {
+static char *coco_vstrdupf(const char *str, va_list args) {
   static char buf[coco_vstrdupf_buflen];
   long written;
   /* apparently args can only be used once, therefore
@@ -79,7 +78,7 @@ char *coco_vstrdupf(const char *str, va_list args) {
  * The caller is responsible for free()ing the memory allocated
  * using coco_free_memory().
  */
-char *coco_strconcat(const char *s1, const char *s2) {
+static char *coco_strconcat(const char *s1, const char *s2) {
   size_t len1 = strlen(s1);
   size_t len2 = strlen(s2);
   char *s = (char *) coco_allocate_memory(len1 + len2 + 1);
@@ -94,7 +93,7 @@ char *coco_strconcat(const char *s1, const char *s2) {
  *
  * If there is an equivalent standard C function, this can/should be removed. 
  */
-long coco_strfind(const char *base, const char *seq) {
+static long coco_strfind(const char *base, const char *seq) {
   const size_t strlen_seq = strlen(seq);
   const size_t last_first_idx = strlen(base) - strlen(seq);
   size_t i, j;
