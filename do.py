@@ -18,7 +18,7 @@ from os.path import join
 ## Change to the root directory of repository and add our tools/
 ## subdirectory to system wide search path for modules.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.abspath('code-experiments/tools'))
+sys.path.insert(0, os.path.abspath(join('code-experiments', 'tools')))
 
 from amalgamate import amalgamate
 from cocoutils import make, run, python, check_output

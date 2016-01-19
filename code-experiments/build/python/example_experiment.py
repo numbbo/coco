@@ -140,19 +140,20 @@ def coco_optimize(solver, fun, budget):
 # set up: CHANGE HERE SOLVER AND FURTHER SETTINGS AS DESIRED
 # ===============================================
 ######################### CHANGE HERE ########################################
-SOLVER = random_search # my_solver # fmin_slsqp # cma.fmin #
+SOLVER = random_search
+#SOLVER = my_solver # fmin_slsqp # cma.fmin #
 suite_name = "bbob-biobj"
 # suite_name = "bbob"
 suite_instance = ""  # 'dimensions: 2,3,5,10,20 instance_idx: 1-5'
 suite_options = ""
 observer_name = suite_name
 observer_options = (
-    'result_folder: ' + os.path.join('exdata', '%s_on_%s ' % (SOLVER.__name__, suite_name)) +
+    ' result_folder: ' + os.path.join('exdata', '%s_on_%s ' % (SOLVER.__name__, suite_name)) +
     ' algorithm_name: %s ' % SOLVER.__name__ +
     ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
 if suite_name == "bbob-biobj":
     observer_options += (
-        'log_decision_variables: low_dim ' +
+        ' log_decision_variables: low_dim ' +
         ' compute_indicators: log_nondominated: all ')
 
 # CAVEAT: this might be modified from input args
@@ -173,11 +174,9 @@ def main(budget_multiplier=budget_multiplier,
     observer = Observer(observer_name, observer_options)
     t0 = time.clock()
     if 1 < 3:
-        # simple use case
         print('Simple usecase ...'); sys.stdout.flush()
         simple_loop(SOLVER, suite, observer, budget_multiplier)
     elif 1 < 3:
-        # usecase with batches
         print('Batch usecase ...'); sys.stdout.flush()
         batch_loop(SOLVER, suite, observer, budget_multiplier,
                    current_batch, number_of_batches)
