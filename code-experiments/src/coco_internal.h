@@ -72,11 +72,11 @@ struct coco_problem {
   char *problem_name;
   char *problem_id;
   char *problem_type;
-  long evaluations;
+  size_t evaluations;
   /* Convenience fields for output generation */
   double final_target_delta[1];
   double best_observed_fvalue[1];
-  long best_observed_evaluation[1];
+  size_t best_observed_evaluation[1];
   /* Fields depending on the current/parent benchmark suite */
   size_t suite_dep_index;
   size_t suite_dep_function;
