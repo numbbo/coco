@@ -13,8 +13,8 @@ Requirements
   - make, such as GNU make
   - Python >=2.6 with `setuptools` installed
 2. For a machine running the post-processing
-  - Python 2.6 or 2.7 with `numpy`  >=1.7 and `matplotlib` installed. We recommend to install 
-    the [Anaconda library](https://www.continuum.io/downloads). Please note that 
+  - Python 2.6 or 2.7 with `numpy` (preferably >=1.7) and `matplotlib` installed. 
+    We recommend to install the [Anaconda library](https://www.continuum.io/downloads). 
     Python 3 is not yet supported with the post-processing part of NumBBO/CoCO!
 
 ### Windows Specifics
@@ -287,6 +287,15 @@ A fix for this issue consists in adding to the files "hv.cpp" and "paretofront.c
 just before the line:
 `#include "mex.h"`
 
+### Octave
+
+#### Command Window Closes Unexpectedly Under Windows
+If it happens that the command window, from which the `python do.py run-octave` is run, closes unexpectely under Windows, you might want to change the general way, Octave is called. Find your `octave.bat` file, which is in your Octave installation folder (typically something like `C:\Octave\Octave-4.0.0\` and remove or outcomment the last line, saying
+```
+Rem   Close the batch file's cmd.exe window
+exit
+```
+We think already about a way to solve this issue directly in the `do.py` but it has low priority for the moment.
 
 
 Details
