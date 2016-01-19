@@ -287,6 +287,15 @@ A fix for this issue consists in adding to the files "hv.cpp" and "paretofront.c
 just before the line:
 `#include "mex.h"`
 
+### Octave
+
+#### Command Window Closes Unexpectedly Under Windows
+If it happens that the command window, from which the `python do.py run-octave` is run, closes unexpectely under Windows, you might want to change the general way, Octave is called. Find your `octave.bat` file, which is in your Octave installation folder (typically something like `C:\Octave\Octave-4.0.0\` and remove or outcomment the last line, saying
+```
+Rem   Close the batch file's cmd.exe window
+exit
+```
+We think already about a way to solve this issue directly in the `do.py` but it has low priority for the moment.
 
 
 Details
