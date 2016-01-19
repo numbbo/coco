@@ -11,7 +11,7 @@
 /*
  * The max budget for optimization algorithms should be set to dim * BUDGET
  */
-static const size_t BUDGET = 10;
+static const size_t BUDGET = 2;
 
 /**
  * A random search algorithm that can be used for single- as well as multi-objective optimization.

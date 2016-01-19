@@ -377,6 +377,7 @@ def build_matlab_sms():
     run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
 
 def run_matlab_sms():
+    print('CLEAN\t mex files from code-experiments/build/matlab/')
     # remove the mex files for a clean compilation first
     for filename in glob.glob('code-experiments/examples/bbob-biobj-matlab-smsemoa/*.mex*') :
         os.remove( filename )
