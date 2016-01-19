@@ -196,8 +196,7 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_bbob_allocate();
   } else if (strcmp(suite_name, "bbob-biobj") == 0) {
     suite = suite_biobj_allocate();
-  }
-    else if (strcmp(suite_name, "bbob-largescale") == 0) {
+  } else if (strcmp(suite_name, "bbob-largescale") == 0) {
     suite = suite_largescale_allocate();
   }
   else {
