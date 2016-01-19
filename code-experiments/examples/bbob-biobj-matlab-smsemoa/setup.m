@@ -41,7 +41,7 @@ tocompilecoco = {'cocoSuite.c', ...
 
 for i = 1:length(tocompilecoco)
     fprintf('compiling %s...', tocompilecoco{i});
-    mex('-largeArrayDims', '-Dchar16_t=uint16_t', tocompilecoco{i});
+    mex('-Dchar16_t=uint16_t', tocompilecoco{i});
     fprintf('Done\n');
 end
 
