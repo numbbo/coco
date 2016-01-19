@@ -20,12 +20,13 @@ except:
     is_module = False
 
 # depreciated, to be removed, see end of file
-if 11 < 3 and __name__ == "__main__":
+if 11 < 3 and __name__ == "__main__" and not is_module:
     """import bbob_pproc/cocopp as module and run tests or rungeneric.main"""
     args = sys.argv[1:] if len(sys.argv) else []
     filepath = os.path.split(sys.argv[0])[0]
     sys.path.append(os.path.join(os.getcwd(), filepath))  # needed from the shell
     sys.path.append(os.path.join(filepath, os.path.pardir))  # needed in do.py
+
     try:
         import bbob_pproc as cocopp
     except ImportError:
@@ -140,19 +141,21 @@ def main(args):
 
     run_all_tests = len(args) == 1 and args[0] == 'all'
 
-    python = 'python '  # how to call python 
+    python = 'python -m '  # how to call python 
     if len(sys.argv) > 1 and sys.argv[1] == 'wine':
         python = 'C:\\Python26\\python.exe ' # works for wine
     
     data_path = ' ' + prepare_data(run_all_tests)
         
-    command = ' ' + join_path(os.path.dirname(os.path.realpath(__file__)), 'rungeneric.py ')
+    command = ' bbob_pproc ' # + join_path(os.path.dirname(os.path.realpath(__file__)), 'rungeneric.py ')
     
     copy_latex_templates()
     print('LaTeX templates copied.')
     
     print('*** testing module bbob_pproc ***')
     t0 = time.time()
+    print(python + command + '--conv' + 
+                join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     result = os.system(python + command + '--conv' + 
                 join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
@@ -215,9 +218,12 @@ def main(args):
         # go through the py files in the bbob_pproc folder
         for root, dirnames, filenames in os.walk(os.path.dirname(os.path.realpath(__file__))):
           for filename in fnmatch.filter(filenames, '*.py'):
-            current_failure_count, current_test_count = doctest.testfile(os.path.join(root, filename), report=True, module_relative=False)              
+            current_failure_count, current_test_count = doctest.testfile(
+                os.path.join(root, filename), report=True, module_relative=False)              
             failure_count += current_failure_count
             test_count += current_test_count
+            if current_failure_count:
+                print('doctest file "%s" failed' % os.path.join(root, filename))
     else:
         stdout = sys.stdout
         fn = '_bbob_pproc_doctest_.txt'
@@ -265,7 +271,7 @@ if __name__ == "__main__":
             main(args)
     elif args[0] == '-t' or args[0].startswith('--t'):
         args.pop(0)
-        main(args)
+        main(args)  # is not likely to work
     elif args[0] == 'all':
         print("WARNING: this tests the post-processing and doesn't run anything else")
         main(args)
