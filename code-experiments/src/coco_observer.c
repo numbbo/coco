@@ -61,48 +61,60 @@ static coco_observer_t *coco_observer_allocate(const char *output_folder,
   return observer;
 }
 
-/**
- * Frees memory for the given coco_observer_t instance.
- */
-void coco_observer_free(coco_observer_t *self) {
+void coco_observer_free(coco_observer_t *observer) {
 
-  if (self != NULL) {
-    self->is_active = 0;
-    if (self->output_folder != NULL)
-      coco_free_memory(self->output_folder);
-    if (self->algorithm_name != NULL)
-      coco_free_memory(self->algorithm_name);
-    if (self->algorithm_info != NULL)
-      coco_free_memory(self->algorithm_info);
+  if (observer != NULL) {
+    observer->is_active = 0;
+    if (observer->output_folder != NULL)
+      coco_free_memory(observer->output_folder);
+    if (observer->algorithm_name != NULL)
+      coco_free_memory(observer->algorithm_name);
+    if (observer->algorithm_info != NULL)
+      coco_free_memory(observer->algorithm_info);
 
-    if (self->data != NULL) {
-      if (self->data_free_function != NULL) {
-        self->data_free_function(self->data);
+    if (observer->data != NULL) {
+      if (observer->data_free_function != NULL) {
+        observer->data_free_function(observer->data);
       }
-      coco_free_memory(self->data);
-      self->data = NULL;
+      coco_free_memory(observer->data);
+      observer->data = NULL;
     }
 
-    self->logger_initialize_function = NULL;
-    coco_free_memory(self);
-    self = NULL;
+    observer->logger_initialize_function = NULL;
+    coco_free_memory(observer);
+    observer = NULL;
   }
 }
 
 /**
- * Initializes the observer. If observer_name is no_observer, no observer is used.
- * Possible observer_options:
- * - result_folder : string (the name of the result_folder is used to create a unique folder; default value
- * is "results")
- * - algorithm_name : string (to be used in logged output and plots; default value is "ALG")
- * - algorithm_info : string (to be used in logged output; default value is "")
- * - log_level : error (only error messages are output)
- * - log_level : warning (only error and warning messages are output)
- * - log_level : info (only error, warning and info messages are output; default value)
- * - log_level : debug (all messages are output)
- * - precision_x : integer value (precision used when outputting variables; default value is 8)
- * - precision_f : integer value (precision used when outputting f values; default value is 15)
- * - any option specified by the specific observers
+ * Currently, three observers are supported:
+ * - "bbob" is the observer for single-objective (both noisy and noiseless) problems with known optima, which
+ * creates *.info, *.dat, *.tdat and *.rdat files and logs the distance to the optimum.
+ * - "bbob-biobj" is the observer for bi-objective problems, which creates *.info and *.dat files for the
+ * given indicators, as well as an archive folder with *.dat files containing nondominated solutions.
+ * - "toy" is a simple observer that logs when a target has been hit.
+ *
+ * @param observer_name A string containing the name of the observer. Currently supported observer names are
+ * "bbob", "bbob-biobj", "toy". "no_observer", "" or NULL return NULL.
+ * @param observer_options A string of pairs "key: value" used to pass the options to the observer. Some
+ * observer options are general, while others are specific to some observers. Here we list only the general
+ * options, see observer_bbob, observer_biobj and observer_toy for options of the specific observers.
+ * - "result_folder: NAME" determines the output folder. If the folder with the given name already exists,
+ * first NAME_001 will be tried, then NAME_002 and so on. The default value is "results".
+ * - "algorithm_name: NAME", where NAME is a short name of the algorithm that will be used in plots (no
+ * spaces are allowed). The default value is "ALG".
+ * - "algorithm_info: STRING" stores the description of the algorithm. If it contains spaces, it must be
+ * surrounded by double quotes. The default value is "" (no description).
+ * - "log_level: STRING" denotes the level of information given to the user through the standard output and
+ * error stream (this is independent from the logging done in the files). STRING can take on the values
+ * error (only error messages are output), warning (only error and warning messages are output), info (only
+ * error, warning and info messages are output) and debug (all messages are output). The default value is
+ * info.
+ * - "precision_x: VALUE" defines the precision used when outputting variables and corresponds to the number
+ * of digits to be printed after the decimal point. The default value is 8.
+ * - precision_f: VALUE defines the precision used when outputting f values and corresponds to the number of
+ * digits to be printed after the decimal point. The default value is 15.
+ * @return The constructed observer object or NULL if observer_name equals NULL, "" or "no_observer".
  */
 coco_observer_t *coco_observer(const char *observer_name, const char *observer_options) {
 
@@ -185,8 +197,13 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
 }
 
 /**
- * Adds the observer to the problem if the observer is not NULL (invokes initialization of the
- * corresponding logger).
+ * Wraps the observer around the problem if the observer is not NULL and invokes initialization of the
+ * corresponding logger.
+ *
+ * @param problem The given COCO problem.
+ * @param observer The COCO observer that will wrap the problem.
+ * @returns The observed problem in the form of a new COCO problem instance or the same problem if the
+ * observer is NULL.
  */
 coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer) {
 
