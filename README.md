@@ -13,8 +13,8 @@ Requirements
   - make, such as GNU make
   - Python >=2.6 with `setuptools` installed
 2. For a machine running the post-processing
-  - Python 2.6 or 2.7 with `numpy`  >=1.7 and `matplotlib` installed. We recommend to install 
-    the [Anaconda library](https://www.continuum.io/downloads). Please note that 
+  - Python 2.6 or 2.7 with `numpy` (preferably >=1.7) and `matplotlib` installed. 
+    We recommend to install the [Anaconda library](https://www.continuum.io/downloads). 
     Python 3 is not yet supported with the post-processing part of NumBBO/CoCO!
 
 ### Windows Specifics
