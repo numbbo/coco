@@ -10151,13 +10151,14 @@ static int __pyx_pf_6cocoex_9interface_7Problem_13_upper_bounds_4__del__(struct 
  *             pass
  * 
  * def set_log_level(level):             # <<<<<<<<<<<<<<
- *     cdef bytes _level = _bstring(level)
- *     coco_set_log_level(_level)
+ *     """`level` values (increasing verbosity): 'error', 'warning', 'info', 'debug'.
+ *     """
  */
 
 /* Python wrapper */
 static PyObject *__pyx_pw_6cocoex_9interface_1set_log_level(PyObject *__pyx_self, PyObject *__pyx_v_level); /*proto*/
-static PyMethodDef __pyx_mdef_6cocoex_9interface_1set_log_level = {"set_log_level", (PyCFunction)__pyx_pw_6cocoex_9interface_1set_log_level, METH_O, 0};
+static char __pyx_doc_6cocoex_9interface_set_log_level[] = "`level` values (increasing verbosity): 'error', 'warning', 'info', 'debug'.\n    ";
+static PyMethodDef __pyx_mdef_6cocoex_9interface_1set_log_level = {"set_log_level", (PyCFunction)__pyx_pw_6cocoex_9interface_1set_log_level, METH_O, __pyx_doc_6cocoex_9interface_set_log_level};
 static PyObject *__pyx_pw_6cocoex_9interface_1set_log_level(PyObject *__pyx_self, PyObject *__pyx_v_level) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -10180,38 +10181,41 @@ static PyObject *__pyx_pf_6cocoex_9interface_set_log_level(CYTHON_UNUSED PyObjec
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("set_log_level", 0);
 
-  /* "cython/interface.pyx":784
- * 
- * def set_log_level(level):
+  /* "cython/interface.pyx":786
+ *     """`level` values (increasing verbosity): 'error', 'warning', 'info', 'debug'.
+ *     """
  *     cdef bytes _level = _bstring(level)             # <<<<<<<<<<<<<<
- *     coco_set_log_level(_level)
+ *     return coco_set_log_level(_level)
  * 
  */
-  __pyx_t_1 = __pyx_f_6cocoex_9interface__bstring(__pyx_v_level); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 784; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_6cocoex_9interface__bstring(__pyx_v_level); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 786; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v__level = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":785
- * def set_log_level(level):
+  /* "cython/interface.pyx":787
+ *     """
  *     cdef bytes _level = _bstring(level)
- *     coco_set_log_level(_level)             # <<<<<<<<<<<<<<
+ *     return coco_set_log_level(_level)             # <<<<<<<<<<<<<<
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_AsString(__pyx_v__level); if (unlikely((!__pyx_t_2) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 785; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  coco_set_log_level(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_2 = __Pyx_PyObject_AsString(__pyx_v__level); if (unlikely((!__pyx_t_2) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 787; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_void_to_None(coco_set_log_level(__pyx_t_2)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 787; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
 
   /* "cython/interface.pyx":783
  *             pass
  * 
  * def set_log_level(level):             # <<<<<<<<<<<<<<
- *     cdef bytes _level = _bstring(level)
- *     coco_set_log_level(_level)
+ *     """`level` values (increasing verbosity): 'error', 'warning', 'info', 'debug'.
+ *     """
  */
 
   /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_AddTraceback("cocoex.interface.set_log_level", __pyx_clineno, __pyx_lineno, __pyx_filename);
@@ -13412,8 +13416,8 @@ static int __Pyx_InitCachedConstants(void) {
  *             pass
  * 
  * def set_log_level(level):             # <<<<<<<<<<<<<<
- *     cdef bytes _level = _bstring(level)
- *     coco_set_log_level(_level)
+ *     """`level` values (increasing verbosity): 'error', 'warning', 'info', 'debug'.
+ *     """
  */
   __pyx_tuple__16 = PyTuple_Pack(2, __pyx_n_s_level, __pyx_n_s_level_2); if (unlikely(!__pyx_tuple__16)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 783; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__16);
@@ -14458,8 +14462,8 @@ PyMODINIT_FUNC PyInit_interface(void)
  *             pass
  * 
  * def set_log_level(level):             # <<<<<<<<<<<<<<
- *     cdef bytes _level = _bstring(level)
- *     coco_set_log_level(_level)
+ *     """`level` values (increasing verbosity): 'error', 'warning', 'info', 'debug'.
+ *     """
  */
   __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_6cocoex_9interface_1set_log_level, NULL, __pyx_n_s_cocoex_interface); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 783; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);

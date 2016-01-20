@@ -781,6 +781,8 @@ cdef class Problem:
             pass
 
 def set_log_level(level):
+    """`level` values (increasing verbosity): 'error', 'warning', 'info', 'debug'.
+    """
     cdef bytes _level = _bstring(level)
-    coco_set_log_level(_level)
+    return coco_set_log_level(_level)
 
