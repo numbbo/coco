@@ -31,9 +31,10 @@ Under Windows, two alternative compile toolchains can be used:
 For using `git` under Windows (optional), we recommend installing [TortoiseGit](https://tortoisegit.org/).
 
 ### Language Specifics
-Additional requirements for running an algorithm in a specific language.
+_Additional_ requirements for running an algorithm in a specific language.
 
-* Java: none, but see [here](./code-experiments/build/java/README.txt) for details on the compilation
+* Java: `javac` and `javah` must be callable (in the system path), see 
+  [here](./code-experiments/build/java/README.txt) for details on the compilation. 
 * Python: none, see [here](./code-experiments/build/python/README.md) for details on the installation
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.txt)
 
@@ -198,55 +199,28 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 
 Known Issues / Trouble-Shooting
 -------------------------------
-### Python
-
-#### `setuptools` is not installed
-If you see something like this
+### Java
+#### `javah` not found
+If you see something like this when running `python do.py run-java` or `build-java`
+under Linux
 ```
-$ python do.py run-python  # or build-python
-[...]
-PYTHON  setup.py install --user in code-experiments/build/python
-ERROR: return value=1
+COPY    code-experiments/src/coco.h -> code-experiments/build/java/coco.h
+WRITE   code-experiments/build/java/REVISION
+WRITE   code-experiments/build/java/VERSION
+RUN     javac CocoJNI.java in code-experiments/build/java
+RUN     javah CocoJNI in code-experiments/build/java
 Traceback (most recent call last):
- File "setup.py", line 8, in <module>
-   import setuptools
-ImportError: No module named setuptools
-
-Traceback (most recent call last):
- File "do.py", line 562, in <module>
-   main(sys.argv[1:])
- File "do.py", line 539, in main
-   elif cmd == 'build-python': build_python()
- File "do.py", line 203, in build_python
-   python('code-experiments/build/python', ['setup.py', 'install', '--user'])
- File "/vol2/twagner/numbbo/code-experiments/tools/cocoutils.py", line 92, in p                                         ython
-   universal_newlines=True)
- File "/usr/local/lib/python2.7/subprocess.py", line 575, in check_output
-   raise CalledProcessError(retcode, cmd, output=output)
-subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i                                        nstall', '--user']' returned non-zero exit status 1
+  File "do.py", line 590, in <module>
+    main(sys.argv[1:])
+  File "do.py", line 563, in main
+    elif cmd == 'build-java': build_java()
+  File "do.py", line 437, in build_java
+    env = os.environ, universal_newlines = True)
+  File "/..../code-experiments/tools/cocoutils.py", line 34, in check_output
+    raise error
+subprocess.CalledProcessError: Command '['locate', 'jni.h']' returned non-zero exit status 1
 ```
-then `setuptools` needs to be installed: 
-```
-    pip install setuptools
-```
-or `easy_install setuptools` should do the job. 
-
-#### Compilation During Install of `cocoex` Fails (under Linux) 
-If you see something like this:
-``` 
-$ python do.py run-python  # or build-python
-[...]
-cython/interface.c -o build/temp.linux-i686-2.6/cython/interface.o
-cython/interface.c:4:20: error: Python.h: file not found
-cython/interface.c:6:6: error: #error Python headers needed to compile C extensions, please install development version of Python.
-error: command 'gcc' failed with exit status 1
-```
-Under Linux
-```
-  sudo apt-get install python-dev
-```
-should do the trick. 
-
+check out [this](http://stackoverflow.com/questions/13526701/javah-missing-after-jdk-install-linux) and possibly [this](https://github.com/numbbo/coco/issues/416) for a solution. 
 
 ### Matlab
 
@@ -305,6 +279,55 @@ Rem   Close the batch file's cmd.exe window
 exit
 ```
 We think already about a way to solve this issue directly in the `do.py` but it has low priority for the moment.
+
+### Python
+
+#### `setuptools` is not installed
+If you see something like this
+```
+$ python do.py run-python  # or build-python
+[...]
+PYTHON  setup.py install --user in code-experiments/build/python
+ERROR: return value=1
+Traceback (most recent call last):
+ File "setup.py", line 8, in <module>
+   import setuptools
+ImportError: No module named setuptools
+
+Traceback (most recent call last):
+ File "do.py", line 562, in <module>
+   main(sys.argv[1:])
+ File "do.py", line 539, in main
+   elif cmd == 'build-python': build_python()
+ File "do.py", line 203, in build_python
+   python('code-experiments/build/python', ['setup.py', 'install', '--user'])
+ File "/vol2/twagner/numbbo/code-experiments/tools/cocoutils.py", line 92, in p                                         ython
+   universal_newlines=True)
+ File "/usr/local/lib/python2.7/subprocess.py", line 575, in check_output
+   raise CalledProcessError(retcode, cmd, output=output)
+subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i                                        nstall', '--user']' returned non-zero exit status 1
+```
+then `setuptools` needs to be installed: 
+```
+    pip install setuptools
+```
+or `easy_install setuptools` should do the job. 
+
+#### Compilation During Install of `cocoex` Fails (under Linux) 
+If you see something like this:
+``` 
+$ python do.py run-python  # or build-python
+[...]
+cython/interface.c -o build/temp.linux-i686-2.6/cython/interface.o
+cython/interface.c:4:20: error: Python.h: file not found
+cython/interface.c:6:6: error: #error Python headers needed to compile C extensions, please install development version of Python.
+error: command 'gcc' failed with exit status 1
+```
+Under Linux
+```
+  sudo apt-get install python-dev
+```
+should do the trick. 
 
 
 Details
