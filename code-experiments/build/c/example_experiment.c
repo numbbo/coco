@@ -171,11 +171,11 @@ void example_biobj(void) {
 }
 
 /*
- * The main method calls only the biobjective example experiment
+ * The main method calls the basic bbob-biobj experiment (random search)
  */
 int main(void) {
 
-  printf("Running the example experiment... (it takes time, be patient)\n");
+  printf("Running the example experiment... (might take time, be patient)\n");
   fflush(stdout);
   
   /* Change the log level to "warning" to get less output */
