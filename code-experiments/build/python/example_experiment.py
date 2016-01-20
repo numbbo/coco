@@ -21,7 +21,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os, sys
 import time
 import numpy as np  # "pip install numpy" installs numpy
-from cocoex import Suite, Observer
+import cocoex
+from cocoex import Suite, Observer, set_log_level
+set_log_level('warning')
+verbose = 1  # 
 
 try: import cma  # cma.fmin is a solver option, "pip install cma" installs cma
 except: pass
@@ -31,7 +34,7 @@ try: range = xrange  # let range always be an iterator
 except NameError: pass
 
 
-class PrintShortInfo(object):
+class ShortInfo(object):
     """print minimal info during benchmarking.
     
     After initialization, to be called right before the solver is called with
@@ -54,14 +57,16 @@ class PrintShortInfo(object):
         """uses `problem.id` and `problem.dimension` to decide what to print.
         """
         f = "f" + problem.id.lower().split('_f')[1].split('_')[0]
+        res = ""
         if problem.dimension != self.d_current:
-            print('%s%s, d=%d, running: ' % ('done\n\n' if self.d_current else '',
-                        self.short_time_stap(), problem.dimension), end="")
+            res += '%s%s, d=%d, running: ' % ('done\n\n' if self.d_current else '',
+                        self.short_time_stap(), problem.dimension)
             self.d_current = problem.dimension
         if f != self.f_current:
-            print('%s' % f, end='')
+            res += '%s' % f
             self.f_current = f
-        sys.stdout.flush()
+        # print(res); sys.stdout.flush()
+        return res
     def short_time_stap(self):
         l = time.asctime().split()
         d = l[0]
@@ -97,16 +102,16 @@ def simple_loop(solver, suite, observer, budget_multiplier):
     max budget `budge_multipier * dimension`.
     """
     found_problems, addressed_problems = 0, 0
-    print_short_info = PrintShortInfo()
+    short_info = ShortInfo()
     for problem in suite:
         found_problems += 1
         # use problem only under some conditions, mainly for testing
         if 11 < 3 and not ('f11' in problem.id and 'i03' in problem.id):
             continue
         observer.observe(problem)
-        print_short_info(problem)
+        print(short_info(problem), end="") if verbose else None
         coco_optimize(solver, problem, budget_multiplier * problem.dimension)
-        print(".", end="")
+        print(".", end="") if verbose else None
         addressed_problems += 1
     print("done\n%s done (%d of %d problems benchmarked)"
           % (suite_name, addressed_problems, found_problems), end="")
@@ -121,14 +126,14 @@ def batch_loop(solver, suite, observer, budget_multiplier,
     `problem_index + current_batch` modulo `number_of_batches` equals to one.
     """
     addressed_problems = []
-    print_short_info = PrintShortInfo()
+    short_info = ShortInfo()
     for problem_index, problem_id in enumerate(suite.ids):
         if (problem_index + current_batch - 1) % number_of_batches:
             continue
         problem = suite.get_problem(problem_index, observer)
-        print_short_info(problem)
+        print(short_info(problem), end="") if verbose else None
         coco_optimize(solver, problem, budget_multiplier * problem.dimension)
-        print(".", end="")
+        print(".", end="") if verbose else None
         problem.free()
         addressed_problems += [problem_id]
     print("%s done (%d of %d problems benchmarked%s)" %
@@ -193,7 +198,6 @@ suite_options = ""
 observer_name = suite_name
 observer_options = (
     ' result_folder: ' + os.path.join('exdata', '%s_on_%s ' % (SOLVER.__name__, suite_name)) +
-    ' log_level: warning ' +
     ' algorithm_name: %s ' % SOLVER.__name__ +
     ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
 
