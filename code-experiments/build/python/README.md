@@ -50,7 +50,7 @@ See _Getting Started_ [here](../../../README.md#Getting-Started) for the first s
       >>> import example_experiment_new_name as ee
       >>> ee.main()
   ```
-See [here](../../../README.md) for the remaining steps to investate the resulting data.
+See [here](../../../README.md#Getting-Started-pp) for the remaining steps to investate the resulting data.
 
 
 Details
