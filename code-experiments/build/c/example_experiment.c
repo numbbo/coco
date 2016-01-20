@@ -126,8 +126,7 @@ void example_bbob(void) {
   /* Some options of the bbob observer. See documentation for other options. */
   const char *observer_options = "result_folder: RS_on_bbob \
                                   algorithm_name: RS \
-                                  algorithm_info: \"A simple random search algorithm\" \
-                                  log_level: info";
+                                  algorithm_info: \"A simple random search algorithm\"";
 
   coco_suite_t *suite;
   coco_observer_t *observer;
@@ -153,8 +152,7 @@ void example_biobj(void) {
   /* Some options of the biobjective observer. See documentation for other options. */
   const char *observer_options = "result_folder: RS_on_bbob-biobj \
                                   algorithm_name: RS \
-                                  algorithm_info: \"A simple random search algorithm\" \
-                                  log_level: info";
+                                  algorithm_info: \"A simple random search algorithm\"";
 
   coco_suite_t *suite;
   coco_observer_t *observer;
@@ -180,6 +178,9 @@ int main(void) {
   printf("Running the example experiment... (it takes time, be patient)\n");
   fflush(stdout);
   
+  /* Change the log level to "warning" to get less output */
+  coco_set_log_level("info");
+
   example_biobj();
 
   printf("Done!\n");
