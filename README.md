@@ -99,8 +99,8 @@ Getting Started
     and [example experiment`](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/example_experiment.py)
 
   Another entry point for your own experiments can be
-  the `code-experiments/examples` folder. In any case, update the output
-  (observer options) result_folder and the algorithm_name and info in the
+  the `code-experiments/examples` folder. In any case, **update** the output
+  result_folder and the algorithm_name and -info in the observer options in the
   experiment file.
 
 5. Now you can **run** your favorite algorithm on the `bbob-biobj` (for
