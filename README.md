@@ -46,7 +46,8 @@ etc. Naturally, we cannot guarantee that the framework runs on any combination
 of operating system and software installed. In case you experience some incompatibilies,
 we will be happy if you can document them in detail on our [issue tracker](https://github.com/numbbo/coco/issues). 
 
-Getting Started  <a name="Getting-Started"></a>
+
+ Getting Started <a name="Getting-Started"></a>
 ---------------
 0. Check out the _Requirements_ above.
 
@@ -74,8 +75,8 @@ Getting Started  <a name="Getting-Started"></a>
   ```  
   depending on which language is used to run the experiments. `run-*` will build the 
   respective code and run the example experiment once. The build result and the example
-  experiment code can be found under `code-experiments/build/*` (under `matlab` for both, 
-  Matlab and Octave). 
+  experiment code can be found under `code-experiments/build/<language>` (`<language>=matlab` 
+  for Octave). 
   
 3. On the computer where experiment data shall be post-processed, run
   ```
