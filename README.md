@@ -16,6 +16,7 @@ Requirements
   - A `C` compiler, such as gcc
   - make, such as GNU make
   - Python >=2.6 with `setuptools` installed
+  - optional: `git`
 2. For a machine running the post-processing
   - Python 2.6 or 2.7 with `numpy` (preferably >=1.7) and `matplotlib` installed. 
     We recommend to install the [Anaconda library](https://www.continuum.io/downloads). 
@@ -47,16 +48,22 @@ we will be happy if you can document them in detail on our [issue tracker](https
 
 Getting Started
 ---------------
-**Download** the [COCO framework code](https://github.com/numbbo/coco) from
-github, 
-- either by clicking [here](https://github.com/numbbo/coco/archive/master.zip) and unzip the `zip` file, 
-- or by typing `git clone https://github.com/numbbo/coco.git` (preferred, as it 
-  allows to remain up-to-date easily, but needs git to be installed). 
+0. Check out the _Requirements_ above.
 
-**CAVEAT: this code is still under development**. The latest official releases can be furthermore
-found [here](https://github.com/numbbo/coco/releases) and corresponds to the master branch.
+1. **Download** the [COCO framework code](https://github.com/numbbo/coco) from
+[github](https://github.com), 
 
-1. In a system shell, **`cd` into** the `coco-*` (framework root) folder, where the file
+  - either by clicking [here](https://github.com/numbbo/coco/archive/master.zip) and unzip the 
+    `zip` file, 
+  - or by typing `git clone https://github.com/numbbo/coco.git`, preferred, as it 
+    allows to remain up-to-date easily (but needs `git` to be installed). After 
+    cloning, `git pull` keeps the code up-to-date with the latest release. 
+
+  **CAVEAT: this code is still under heavy development**. The record of official releases can 
+  be found [here](https://github.com/numbbo/coco/releases). The latest release corresponds 
+  to the [master branch](https://github.com/numbbo/coco/tree/master) as liked above. 
+
+2. In a system shell, **`cd` into** the `coco-*` (framework root) folder, where the file
    `do.py` can be found. Type, i.e. **execute**, one of the following commands once
   ```
     python do.py run-c
@@ -70,13 +77,13 @@ found [here](https://github.com/numbbo/coco/releases) and corresponds to the mas
   experiment code can be found under `code-experiments/build/*` (under `matlab` for both, 
   Matlab and Octave). 
   
-2. On the computer where experiment data shall be post-processed, run
+3. On the computer where experiment data shall be post-processed, run
   ```
     python do.py install-postprocessing
   ```
   to (user-locally) install the post-processing. 
   
-3. If the example experiment runs, **connect** your favorite algorithm
+4. If the example experiment runs, **connect** your favorite algorithm
   to Coco: copy the `code-experiments/build/YOUR-FAVORITE-LANGUAGE` folder to
   another location. Replace the call to the random search optimizer in the
   example experiment file by a call to your algorithm (the details vary), see
@@ -96,12 +103,12 @@ found [here](https://github.com/numbbo/coco/releases) and corresponds to the mas
   (observer options) result_folder and the algorithm_name and info in the
   experiment file.
 
-4. Now you can **run** your favorite algorithm on the `bbob-biobj` (for
+5. Now you can **run** your favorite algorithm on the `bbob-biobj` (for
   multi-objective algorithms) or on the `bbob` suite (for single-objective
   algorithms). Output is automatically generated in the specified data 
   `result_folder`.
 
-5. **Postprocess** that data from the results folder by typing
+6. **Postprocess** that data from the results folder by typing
 
     ```
     python -m bbob_pproc YOURDATAFOLDER [MORE_FOLDERS]
@@ -128,7 +135,7 @@ found [here](https://github.com/numbbo/coco/releases) and corresponds to the mas
   html output is also available in the result folder of the postprocessing
   (file `templateBBOBarticle.html`).
 
-6. Once your algorithm runs well, **increase the budget** in your experiment
+7. Once your algorithm runs well, **increase the budget** in your experiment
   script, if necessary implement randomized independent restarts, and follow 
   the above steps successively until you are happy.
 
