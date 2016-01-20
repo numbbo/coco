@@ -82,7 +82,7 @@ int main( int argc, char *argv[] )  {
   }
   else {
     run_once("result_folder: biobj produce_all_data 1");
-    run_once("result_folder: biobj log_nondominated: none  compute_indicators: 0 log_level: info");
+    run_once("result_folder: biobj log_nondominated: none  compute_indicators: 0");
     run_once("result_folder: biobj log_nondominated: all   compute_indicators: 0");
     run_once("result_folder: biobj log_nondominated: final compute_indicators: 0");
     run_once("result_folder: biobj log_nondominated: none  compute_indicators: 1");

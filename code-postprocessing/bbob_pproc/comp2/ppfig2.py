@@ -22,9 +22,9 @@ except ImportError:
 
 import numpy as np 
 
-from bbob_pproc import toolsstats, readalign, ppfigparam
-from bbob_pproc.toolsstats import ranksumtest
-from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
+from .. import toolsstats, readalign, ppfigparam
+from ..toolsstats import ranksumtest
+from ..ppfig import saveFigure, plotUnifLogXMarkers
 #try:
     #supersede this module own ranksumtest method
     #from scipy.stats import ranksumtest as ranksumtest

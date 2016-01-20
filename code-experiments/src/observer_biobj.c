@@ -36,8 +36,8 @@ static coco_problem_t *logger_biobj(coco_observer_t *self, coco_problem_t *probl
 /**
  * Initializes the biobjective observer. Possible options:
  * - log_nondominated : none (don't log nondominated solutions)
- * - log_nondominated : final (log only the final nondominated solutions; default value)
- * - log_nondominated : all (log every solution that is nondominated at creation time)
+ * - log_nondominated : final (log only the final nondominated solutions)
+ * - log_nondominated : all (log every solution that is nondominated at creation time; default value)
  * - log_decision_variables : none (don't output decision variables)
  * - log_decision_variables : log_dim (output decision variables only for dimensions lower or equal to 5; default value)
  * - log_decision_variables : all (output all decision variables)
@@ -53,12 +53,12 @@ static void observer_biobj(coco_observer_t *self, const char *options) {
 
   data = coco_allocate_memory(sizeof(*data));
 
-  data->log_nondom_mode = FINAL;
+  data->log_nondom_mode = ALL;
   if (coco_options_read_string(options, "log_nondominated", string_value) > 0) {
     if (strcmp(string_value, "none") == 0)
       data->log_nondom_mode = NONE;
-    else if (strcmp(string_value, "all") == 0)
-      data->log_nondom_mode = ALL;
+    else if (strcmp(string_value, "final") == 0)
+      data->log_nondom_mode = FINAL;
   }
 
   data->log_vars_mode = LOW_DIM;

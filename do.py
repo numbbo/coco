@@ -13,11 +13,12 @@ import platform
 import time
 from subprocess import STDOUT
 import glob
+from os.path import join
 
 ## Change to the root directory of repository and add our tools/
 ## subdirectory to system wide search path for modules.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.abspath('code-experiments/tools'))
+sys.path.insert(0, os.path.abspath(join('code-experiments', 'tools')))
 
 from amalgamate import amalgamate
 from cocoutils import make, run, python, check_output
@@ -178,6 +179,14 @@ def leak_check():
     
 ################################################################################
 ## Python 2
+def install_postprocessing():
+    global release
+    expand_file(join('code-postprocessing', 'setup.py.in'),
+                join('code-postprocessing', 'setup.py'),
+                {'COCO_VERSION': git_version()})
+    # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/bbob_pproc/latex-templates')
+    python('code-postprocessing', ['setup.py', 'install', '--user'])
+    
 def _prep_python():
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/python/cython/coco.c', 
@@ -332,6 +341,7 @@ def wait_for_compilation_to_finish(filenameprefix):
     while not is_compiled(filenameprefix):
         time.sleep(2)
         print('.', end='')
+    print(' ')
 
 
 def build_matlab_sms():
@@ -367,6 +377,7 @@ def build_matlab_sms():
     run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
 
 def run_matlab_sms():
+    print('CLEAN\t mex files from code-experiments/build/matlab/')
     # remove the mex files for a clean compilation first
     for filename in glob.glob('code-experiments/examples/bbob-biobj-matlab-smsemoa/*.mex*') :
         os.remove( filename )
@@ -375,6 +386,29 @@ def run_matlab_sms():
     wait_for_compilation_to_finish('./code-experiments/examples/bbob-biobj-matlab-smsemoa/paretofront')
     # run after compilation finished
     run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'run_smsemoa_on_bbob_biobj, exit'])
+
+
+################################################################################
+## Octave
+def build_octave():
+    """Builds example in build/matlab/ with GNU Octave but not the one in examples/."""
+    
+    global release
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/matlab/coco.c', release)
+    copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
+    write_file(git_revision(), "code-experiments/build/matlab/REVISION")
+    write_file(git_version(), "code-experiments/build/matlab/VERSION")
+    run('code-experiments/build/matlab', ['octave', '--no-gui', 'setup.m'])
+
+    
+def run_octave():
+    # remove the mex files for a clean compilation first
+    print('CLEAN\t mex files from code-experiments/build/matlab/')
+    for filename in glob.glob('code-experiments/build/matlab/*.mex*') :
+        os.remove( filename )
+    # amalgamate, copy, and build
+    build_octave()
+    run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
 
 
 ################################################################################
@@ -464,8 +498,10 @@ def test_java():
 
 ################################################################################
 ## Post processing
-def test_post_processing():
+def test_postprocessing():
+    install_postprocessing()
     python('code-postprocessing/bbob_pproc', ['__main__.py'])
+    # python('code-postprocessing', ['-m', 'bbob_pproc'])
 
 ################################################################################
 ## Global
@@ -502,26 +538,42 @@ def help():
 
 Usage: do.py <command> <arguments>
 
-Available commands:
+If you want to get going as quickly as possible do once
 
-  build                - Build C, Java and Python modules
-  run                  - Run example experiments in C, Java and Python
-  test                 - Test C, Java and Python modules
-  
+   python do.py run-<your-language>
+
+and
+
+    python do.py install-postprocessing
+
+and you are all set.
+
+Available commands for users:
+
   build-c              - Build C module
   build-java           - Build Java module
   build-matlab         - Build Matlab module
   build-matlab-sms     - Build SMS-EMOA example in Matlab
+  build-octave         - Build Matlab module in Octave
   build-python         - Build Python modules
   build-python2        - Build Python 2 modules
   build-python3        - Build Python 3 modules
-  
-  run-c                - Build and run example experiment in C 
+  install-postprocessing - Install postprocessing (user-locally)
+
+  run-c                - Build and run example experiment in C
   run-java             - Build and run example experiment in Java
   run-matlab           - Build and run example experiment in MATLAB
   run-matlab-sms       - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
+  run-octave           - Build and run example experiment in Octave
   run-python           - Build and install COCO module and run tests and the
                          example experiment in Python, "no-tests" omits tests
+
+Available commands for developers:
+
+  build                - Build C, Java and Python modules
+  run                  - Run example experiments in C, Java and Python
+  test                 - Test C, Java and Python modules
+
   run-sandbox-python   - Run a Python script with installed COCO module
                          Takes a single argument (name of Python script file)
   
@@ -534,7 +586,7 @@ Available commands:
   test-python          - Build and run minimal test of Python module
   test-python2         - Build and run minimal test of Python 2 module
   test-python3         - Build and run minimal test of Python 3 module
-  test-post-processing - Runs post processing tests.
+  test-postprocessing  - Runs post-processing tests.
   leak-check           - Check for memory leaks in C
 
 
@@ -553,13 +605,16 @@ def main(args):
     elif cmd == 'build-java': build_java()
     elif cmd == 'build-matlab': build_matlab()
     elif cmd == 'build-matlab-sms': build_matlab_sms()
+    elif cmd == 'build-octave': build_octave()    
     elif cmd == 'build-python': build_python()
     elif cmd == 'build-python2': build_python2()
     elif cmd == 'build-python3': build_python3()
+    elif cmd == 'install-postprocessing': install_postprocessing()
     elif cmd == 'run-c': run_c()
     elif cmd == 'run-java': run_java()
     elif cmd == 'run-matlab': run_matlab()
     elif cmd == 'run-matlab-sms': run_matlab_sms()
+    elif cmd == 'run-octave': run_octave()    
     elif cmd == 'run-python':
         run_python(False) if len(args) > 1 and args[1] == 'no-tests' else run_python()
     elif cmd == 'test-c': test_c()
@@ -570,7 +625,7 @@ def main(args):
     elif cmd == 'test-python': test_python()
     elif cmd == 'test-python2': test_python2()
     elif cmd == 'test-python3': test_python3()
-    elif cmd == 'test-post-processing': test_post_processing()
+    elif cmd == 'test-postprocessing': test_postprocessing()
     elif cmd == 'leak-check': leak_check()
     else: help()
 

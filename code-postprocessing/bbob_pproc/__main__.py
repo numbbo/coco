@@ -12,47 +12,71 @@ import fnmatch
 import urllib
 import shutil
 import subprocess
-
-# Add the path to bbob_pproc
-if __name__ == "__main__":
-    (filepath, filename) = os.path.split(sys.argv[0])
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-
 import doctest
+try:
+    from . import rungeneric
+    is_module = True
+except:
+    is_module = False
+import matplotlib  # just to make sure the following is actually done first
+matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
+
+# depreciated, to be removed, see end of file
+if 11 < 3 and __name__ == "__main__" and not is_module:
+    """import bbob_pproc/cocopp as module and run tests or rungeneric.main"""
+    args = sys.argv[1:] if len(sys.argv) else []
+    filepath = os.path.split(sys.argv[0])[0]
+    sys.path.append(os.path.join(os.getcwd(), filepath))  # needed from the shell
+    sys.path.append(os.path.join(filepath, os.path.pardir))  # needed in do.py
+
+    try:
+        import bbob_pproc as cocopp
+    except ImportError:
+        # raise  # outcomment to diagnose the reason
+        import cocopp
+    # run either this main here as cocopp._main or rungeneric.main
+    if len(args) == 0:
+        print("WARNING: this tests the post-processing, this will change in future (use -h for help)")
+        cocopp._main(args)
+    elif args[0] == '-t' or args[0].startswith('--t'):
+        args.pop(0)
+        cocopp._main(args)
+    elif args[0] == 'all':
+        print("WARNING: this tests the post-processing and doesn't run anything else")
+        cocopp._main(args)
+    else:
+        cocopp.rungeneric.main(args)
 
 def join_path(a, *p):
     path = os.path.join(a, *p)
     return path
 
 def copy_latex_templates():
-    
     currentFolder = os.path.dirname(os.path.realpath(__file__))
     templateFolder = os.path.abspath(join_path(currentFolder, '..', 'latex-templates'))
+    # templateFolder = os.path.abspath('latex-templates')
     shutil.copy(join_path(templateFolder, 'templateBBOBarticle.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), currentFolder)
-    
-def run_latex_template(filename):
 
-    filePath = os.path.abspath(join_path(os.path.dirname(__file__), filename))    
+def run_latex_template(filename):
+    filePath = os.path.abspath(join_path(os.path.dirname(__file__), filename))
     args = ['pdflatex', filePath]
     DEVNULL = open(os.devnull, 'wb')
     return subprocess.call(args, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
 
 def retrieve_algorithm(dataPath, year, algorithmName):
-    
     algorithmFile = join_path(dataPath, algorithmName)
     if not os.path.exists(algorithmFile):
         dataurl = 'http://coco.gforge.inria.fr/data-archive/%s/%s' % (year, algorithmName)
         urllib.urlretrieve(dataurl, algorithmFile)
 
 def prepare_data(run_all_tests):
-
     print('preparing algorithm data')
 
     dataPath = os.path.abspath(join_path(os.path.dirname(__file__), 'data'))
-    
+
     # Retrieving the algorithms    
     # retrieve_algorithm(dataPath, '2010', 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz')
     # [outcommented and replaced by BIPOP until 2010 data is in new format] 
@@ -68,8 +92,8 @@ def prepare_data(run_all_tests):
         retrieve_algorithm(dataPath, '2009', 'DE-PSO_garcia-nieto_noiseless.tgz')    
         retrieve_algorithm(dataPath, '2009', 'VNS_garcia-martinez_noiseless.tgz')    
 
-    return dataPath;
-    
+    return dataPath
+
 def process_doctest_output(stream=None):
     """ """
     import fileinput
@@ -108,7 +132,7 @@ def process_doctest_output(stream=None):
             s1 += line + ''
         if state == 2:
             s2 += line + ''
-    
+
 def main(args):
     """these tests are executed when ``python bbob_pproc`` is called.  
 
@@ -119,19 +143,21 @@ def main(args):
 
     run_all_tests = len(args) == 1 and args[0] == 'all'
 
-    python = 'python '  # how to call python 
+    python = 'python -m '  # how to call python 
     if len(sys.argv) > 1 and sys.argv[1] == 'wine':
         python = 'C:\\Python26\\python.exe ' # works for wine
     
     data_path = ' ' + prepare_data(run_all_tests)
         
-    command = ' ' + join_path(os.path.dirname(os.path.realpath(__file__)), 'rungeneric.py ')
+    command = ' bbob_pproc ' # + join_path(os.path.dirname(os.path.realpath(__file__)), 'rungeneric.py ')
     
     copy_latex_templates()
     print('LaTeX templates copied.')
     
     print('*** testing module bbob_pproc ***')
     t0 = time.time()
+    print(python + command + '--conv' + 
+                join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     result = os.system(python + command + '--conv' + 
                 join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
@@ -194,9 +220,12 @@ def main(args):
         # go through the py files in the bbob_pproc folder
         for root, dirnames, filenames in os.walk(os.path.dirname(os.path.realpath(__file__))):
           for filename in fnmatch.filter(filenames, '*.py'):
-            current_failure_count, current_test_count = doctest.testfile(os.path.join(root, filename), report=True, module_relative=False)              
+            current_failure_count, current_test_count = doctest.testfile(
+                os.path.join(root, filename), report=True, module_relative=False)              
             failure_count += current_failure_count
             test_count += current_test_count
+            if current_failure_count:
+                print('doctest file "%s" failed' % os.path.join(root, filename))
     else:
         stdout = sys.stdout
         fn = '_bbob_pproc_doctest_.txt'
@@ -213,8 +242,8 @@ def main(args):
     
     if (failure_count > 0):
         raise ValueError('%d of %d tests failed' % (failure_count, test_count))
-    
-"""     
+
+"""
         sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
         import bbob_pproc as bb
         print(dir(bb))
@@ -227,8 +256,28 @@ def main(args):
                 print("bb."+s)
                 doctest.testmod(eval("bb."+s),verbose=False)                    
         print(bb.__all__)     
-"""     
+"""
 
-if __name__ == "__main__": 
-    main(sys.argv[1:])
-    
+if __name__ == "__main__":
+    """run either tests or rungeneric.main"""
+    args = sys.argv[1:] if len(sys.argv) else []
+    filepath = os.path.split(sys.argv[0])[0]
+    # sys.path.append(os.path.join(os.getcwd(), filepath))  # tests from shell fail, but why?
+    sys.path.append(os.path.join(filepath, os.path.pardir))  # needed in do.py
+    # run either this main or rungeneric.main
+    if len(args) == 0:
+        if is_module:
+            rungeneric.main(args)  # just prints help
+        else:
+            print("WARNING: this tests the post-processing, this might change in future (use -h for help)")
+            main(args)
+    elif args[0] == '-t' or args[0].startswith('--t'):
+        args.pop(0)
+        main(args)  # is not likely to work
+    elif args[0] == 'all':
+        print("WARNING: this tests the post-processing and doesn't run anything else")
+        main(args)
+    else:
+        if not is_module:
+            raise ValueError('try calling "python -m ..." instead of "python ..."')
+        rungeneric.main(args)

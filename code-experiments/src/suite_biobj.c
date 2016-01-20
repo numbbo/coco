@@ -10,7 +10,12 @@ static const size_t suite_biobj_instances[][3] = {
     { 2, 3, 5 },
     { 3, 7, 8 },
     { 4, 9, 10 },
-    { 5, 11, 12 }
+    { 5, 11, 12 },
+    { 6, 13, 14 },
+    { 7, 15, 16 },
+    { 8, 17, 18 },
+    { 9, 19, 21 },
+    { 10, 21, 22 }
 };
 
 /* Data for the biobjective suite */
@@ -28,14 +33,23 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
                                          const char *default_instances);
-
-static coco_suite_t *suite_biobj_allocate(void);
 static void suite_biobj_free(void *stuff);
 static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
                                            const size_t instance,
                                            const size_t instance1,
                                            const size_t num_bbob_functions,
                                            const size_t *bbob_functions);
+
+static coco_suite_t *suite_biobj_allocate(void) {
+
+  coco_suite_t *suite;
+  const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
+
+  /* IMPORTANT: Make sure to change the default instance for every new workshop! */
+  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "instances:1-10");
+
+  return suite;
+}
 
 static char *suite_biobj_get_instances_by_year(const int year) {
 
@@ -46,16 +60,6 @@ static char *suite_biobj_get_instances_by_year(const int year) {
     coco_error("suite_biobj_get_instances_by_year(): year %d not defined for suite_biobj", year);
     return NULL;
   }
-}
-
-static coco_suite_t *suite_biobj_allocate(void) {
-
-  coco_suite_t *suite;
-  const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
-
-  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "instances:1-10");
-
-  return suite;
 }
 
 static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,

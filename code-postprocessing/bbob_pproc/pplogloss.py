@@ -25,9 +25,9 @@ except ImportError:
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from matplotlib import mlab as mlab
 
-from bbob_pproc import toolsstats, bestalg, genericsettings
-from bbob_pproc.pptex import writeFEvals2
-from bbob_pproc.ppfig import saveFigure, consecutiveNumbers
+from . import toolsstats, bestalg, genericsettings
+from .pptex import writeFEvals2
+from .ppfig import saveFigure, consecutiveNumbers
 
 """
 ERT loss ratio of an algorithm A for comparison to BBOB-best2009. This works

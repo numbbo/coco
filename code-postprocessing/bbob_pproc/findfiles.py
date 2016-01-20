@@ -11,14 +11,14 @@ This module can be called from the shell, it will recursively look for
   Found ... file(s)!
 
 """
-
+from __future__ import absolute_import
 import os
 import warnings
 #import zipfile
 import tarfile
 import ntpath
 
-from bbob_pproc import genericsettings
+from . import genericsettings
 
 # Initialization
 

@@ -52,7 +52,7 @@ typedef struct {
   int idx_f_trigger; /* allows to track the index i in logging target = {10**(i/bbob_nbpts_fval), i \in Z} */
   int idx_t_trigger; /* allows to track the index i in logging nbevals = {int(10**(i/bbob_nbpts_nbevals)), i \in Z} */
   int idx_tdim_trigger; /* allows to track the index i in logging nbevals = {dim * 10**i, i \in Z} */
-  long number_of_evaluations;
+  size_t number_of_evaluations;
   double best_fvalue;
   double last_fvalue;
   short written_last_eval; /* allows writing the the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
@@ -120,7 +120,7 @@ static void logger_bbob_update_t_trigger(logger_bbob_t *logger, size_t number_of
  * adds a formated line to a data file
  */
 static void logger_bbob_write_data(FILE *target_file,
-                                   long number_of_evaluations,
+                                   size_t number_of_evaluations,
                                    double fvalue,
                                    double best_fvalue,
                                    double best_value,
@@ -317,9 +317,16 @@ static void logger_bbob_initialize(logger_bbob_t *logger, coco_problem_t *inner_
    */
   char dataFile_path[COCO_PATH_MAX] = { 0 }; /* relative path to the .dat file from where the .info file is */
   char folder_path[COCO_PATH_MAX] = { 0 };
-  char tmpc_funId[3]; /* serves to extract the function id as a char *. There should be a better way of doing this! */
-  char tmpc_dim[3]; /* serves to extract the dimension as a char *. There should be a better way of doing this! */
+  char *tmpc_funId; /* serves to extract the function id as a char *. There should be a better way of doing this! */
+  char *tmpc_dim; /* serves to extract the dimension as a char *. There should be a better way of doing this! */
   char indexFile_prefix[10] = "bbobexp"; /* TODO (minor): make the prefix bbobexp a parameter that the user can modify */
+  size_t str_length_funId, str_length_dim;
+  
+  str_length_funId = (size_t) bbob2009_fmax(1, ceil(log10(coco_problem_get_suite_dep_function(inner_problem))));
+  str_length_dim = (size_t) bbob2009_fmax(1, ceil(log10(inner_problem->number_of_variables)));
+  tmpc_funId = (char *) coco_allocate_memory(str_length_funId *  sizeof(char));
+  tmpc_dim = (char *) coco_allocate_memory(str_length_dim *  sizeof(char));
+
   assert(logger != NULL);
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
@@ -358,9 +365,9 @@ static void logger_bbob_initialize(logger_bbob_t *logger, coco_problem_t *inner_
 
   logger_bbob_open_dataFile(&(logger->rdata_file), logger->observer->output_folder, dataFile_path, ".rdat");
   fprintf(logger->rdata_file, bbob_file_header_str, logger->optimal_fvalue);
-  /* TODO: manage duplicate filenames by either using numbers or raising an error */
-  /* The coco_create_unique_path() function is available now! */
   logger->is_initialized = 1;
+  coco_free_memory(tmpc_dim);
+  coco_free_memory(tmpc_funId);
 }
 
 /**
@@ -403,12 +410,19 @@ static void logger_bbob_evaluate(coco_problem_t *self, const double *x, double *
     logger_bbob_update_f_trigger(logger, y[0]);
   }
 
-  /* Add a line in the .tdat file each time an fevals trigger is reached. */
+  /* Add a line in the .tdat file each time an fevals trigger is reached.*/
   if (logger->number_of_evaluations >= logger->t_trigger) {
     logger->written_last_eval = 1;
     logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
         logger->optimal_fvalue, x, self->number_of_variables);
     logger_bbob_update_t_trigger(logger, self->number_of_variables);
+  } else {
+    /* Add a line in the .tdat file each time a dimension-depended trigger is reached.*/
+    if ((coco_observer_evaluation_to_log(logger->number_of_evaluations, self->number_of_variables))) {
+      logger->written_last_eval = 1;
+      logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
+                             logger->optimal_fvalue, x, self->number_of_variables);
+    }
   }
 
   /* Flush output so that impatient users can see progress. */
@@ -432,16 +446,6 @@ static void logger_bbob_free(void *stuff) {
     coco_debug("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,
         logger->number_of_evaluations);
   }
-  /*if (logger->alg_name != NULL) { //No longer needed
-   coco_free_memory((void*) logger->alg_name);
-   logger->alg_name = NULL;
-   }*/
-
-  /*if (logger->path != NULL) {
-   coco_free_memory(logger->path);
-   logger->path = NULL;
-   }*/
-
   if (logger->index_file != NULL) {
     fprintf(logger->index_file, ":%ld|%.1e", logger->number_of_evaluations,
         logger->best_fvalue - logger->optimal_fvalue);

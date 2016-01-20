@@ -11,9 +11,9 @@
 /* The gateway function */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    long long *ref;
+    size_t *ref;
     coco_problem_t *problem = NULL;
-    const mwSize dims[2] = {1, 1};
+    const size_t dims[2] = {1, 1};
     int *res;
 
     /* check for proper number of arguments */
@@ -21,7 +21,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgIdAndTxt("cocoProblemGetDimension:nrhs","One input required.");
     }
     /* get the problem */
-    ref = (long long *)mxGetData(prhs[0]);
+    ref = (size_t *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
     /* prepare the return value */
     plhs[0] = mxCreateNumericArray(2, dims, mxINT32_CLASS, mxREAL);
