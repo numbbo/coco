@@ -33,8 +33,7 @@ For using `git` under Windows (optional), we recommend installing [TortoiseGit](
 ### Language Specifics
 _Additional_ requirements for running an algorithm in a specific language.
 
-* Java: `javac` and `javah` must be callable (in the system path), see 
-  [here](./code-experiments/build/java/README.txt) for details on the compilation. 
+* Java: `javac` and `javah` must be callable (i.e. in the system path). 
 * Python: none, see [here](./code-experiments/build/python/README.md) for details on the installation
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.txt)
 
