@@ -498,7 +498,7 @@ def test_java():
 
 ################################################################################
 ## Post processing
-def test_post_processing():
+def test_postprocessing():
     install_postprocessing()
     python('code-postprocessing/bbob_pproc', ['__main__.py'])
     # python('code-postprocessing', ['-m', 'bbob_pproc'])
@@ -538,12 +538,18 @@ def help():
 
 Usage: do.py <command> <arguments>
 
-Available commands:
+If you want to get going as quickly as possible do once
 
-  build                - Build C, Java and Python modules
-  run                  - Run example experiments in C, Java and Python
-  test                 - Test C, Java and Python modules
-  
+   python do.py run-<your-language>
+
+and
+
+    python do.py install-postprocessing
+
+and you are all set.
+
+Available commands for users:
+
   build-c              - Build C module
   build-java           - Build Java module
   build-matlab         - Build Matlab module
@@ -553,14 +559,21 @@ Available commands:
   build-python2        - Build Python 2 modules
   build-python3        - Build Python 3 modules
   install-postprocessing - Install postprocessing (user-locally)
-  
-  run-c                - Build and run example experiment in C 
+
+  run-c                - Build and run example experiment in C
   run-java             - Build and run example experiment in Java
   run-matlab           - Build and run example experiment in MATLAB
   run-matlab-sms       - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
   run-octave           - Build and run example experiment in Octave
   run-python           - Build and install COCO module and run tests and the
                          example experiment in Python, "no-tests" omits tests
+
+Available commands for developers:
+
+  build                - Build C, Java and Python modules
+  run                  - Run example experiments in C, Java and Python
+  test                 - Test C, Java and Python modules
+
   run-sandbox-python   - Run a Python script with installed COCO module
                          Takes a single argument (name of Python script file)
   
@@ -573,7 +586,7 @@ Available commands:
   test-python          - Build and run minimal test of Python module
   test-python2         - Build and run minimal test of Python 2 module
   test-python3         - Build and run minimal test of Python 3 module
-  test-post-processing - Runs post processing tests.
+  test-postprocessing  - Runs post-processing tests.
   leak-check           - Check for memory leaks in C
 
 
@@ -612,7 +625,7 @@ def main(args):
     elif cmd == 'test-python': test_python()
     elif cmd == 'test-python2': test_python2()
     elif cmd == 'test-python3': test_python3()
-    elif cmd == 'test-post-processing': test_post_processing()
+    elif cmd == 'test-postprocessing': test_postprocessing()
     elif cmd == 'leak-check': leak_check()
     else: help()
 
