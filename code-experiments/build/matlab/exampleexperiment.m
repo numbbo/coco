@@ -16,21 +16,20 @@ observer_options = sprintf("result_folder: RS_on_%s \
                             log_level: info", suite_name);
        
 
-disp(['Running random search on the ', suite_name, ' suite...']);
-    
 % dimension 40 is optional:
 suite = cocoSuite(suite_name, "year: 2016", "dimensions: 2,3,5,10,20,40");
 observer = cocoObserver(observer_name, observer_options);
 
+disp(['Running random search on the ', suite_name, ' suite...']);
 while true
     problem = cocoSuiteGetNextProblem(suite, observer);
     if (~cocoProblemIsValid(problem))
         break;
     end
-    disp(['Optimizing ', cocoProblemGetId(problem)]);
     dimension = cocoProblemGetDimension(problem);
-    my_optimizer(problem, cocoProblemGetSmallestValuesOfInterest(problem), cocoProblemGetLargestValuesOfInterest(problem), BUDGET*dimension);
-    disp(['Done with problem ', cocoProblemGetId(problem), '...']);
+    my_optimizer(problem, cocoProblemGetSmallestValuesOfInterest(problem), ...
+                 cocoProblemGetLargestValuesOfInterest(problem), BUDGET*dimension);
 end
+disp(['Done with ', suite_name, ' suite.']);
 cocoObserverFree(observer);
 cocoSuiteFree(suite);
