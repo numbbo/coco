@@ -36,8 +36,8 @@ _Additional_ requirements for running an algorithm in a specific language.
 
 * Java: any Java Development Kit (JDK), such that `javac` and `javah` are callable 
   (i.e. in the system path). 
-* Python: none additionally. Python is a general requirement to build the code. 
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.txt)
+* Octave: needs to be installed.
 
 ### Guaranties (None)
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
