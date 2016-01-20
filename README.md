@@ -33,7 +33,8 @@ For using `git` under Windows (optional), we recommend installing [TortoiseGit](
 ### Language Specifics
 Additional requirements for running an algorithm in a specific language.
 
-* Java: none, but see [here](./code-experiments/build/java/README.txt) for details on the compilation
+* Java: `javac` and `javah` must be callable (in the system path), see 
+  [here](./code-experiments/build/java/README.txt) for details on the compilation. 
 * Python: none, see [here](./code-experiments/build/python/README.md) for details on the installation
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.txt)
 
@@ -198,6 +199,29 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 
 Known Issues / Trouble-Shooting
 -------------------------------
+### Java
+#### `javah` not found
+If you see something like this when running `python do.py run-java` or `build-java`
+under Linux
+```
+COPY    code-experiments/src/coco.h -> code-experiments/build/java/coco.h
+WRITE   code-experiments/build/java/REVISION
+WRITE   code-experiments/build/java/VERSION
+RUN     javac CocoJNI.java in code-experiments/build/java
+RUN     javah CocoJNI in code-experiments/build/java
+Traceback (most recent call last):
+  File "do.py", line 590, in <module>
+    main(sys.argv[1:])
+  File "do.py", line 563, in main
+    elif cmd == 'build-java': build_java()
+  File "do.py", line 437, in build_java
+    env = os.environ, universal_newlines = True)
+  File "/..../code-experiments/tools/cocoutils.py", line 34, in check_output
+    raise error
+subprocess.CalledProcessError: Command '['locate', 'jni.h']' returned non-zero exit status 1
+```
+check out [this](http://stackoverflow.com/questions/13526701/javah-missing-after-jdk-install-linux) and possibly [this](https://github.com/numbbo/coco/issues/416) for a solution. 
+
 ### Python
 
 #### `setuptools` is not installed
