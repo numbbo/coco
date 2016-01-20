@@ -22,7 +22,7 @@ the following is lacking:
 Getting Started
 ---------------
 
-See [here](../../../README.md#Getting-Started) for the first steps. Then
+See _Getting Started_ [here](../../../README.md#Getting-Started) for the first steps. Then
 
 - Copy (and rename) `code-experiments/build/matlab` to a place (and name) of
   your choice. Modify this file to include the solver of your choice (instead of
@@ -41,7 +41,7 @@ See [here](../../../README.md#Getting-Started) for the first steps. Then
       >>> example_experiment_new_name
   ```
   
-See [here](../../../README.md) for the next steps to investate the resulting data.
+See [here](../../../README.md) for the remaining steps to investate the resulting data.
 
 
 Details and Known Issues
