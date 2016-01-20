@@ -214,7 +214,7 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 Known Issues / Trouble-Shooting <a name="Known-Issues"></a>
 -------------------------------
 ### Java
-#### `javah` not found
+#### `javah` call fails
 If you see something like this when running `python do.py run-java` or `build-java`
 under Linux
 ```
