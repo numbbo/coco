@@ -24,22 +24,32 @@
 %%%%%%%%%%%%%%%%%
 % MATLAB syntax %
 %%%%%%%%%%%%%%%%%
+tocompilecoco = {'cocoSuite.c', ...
+                 'cocoSuiteFree.c', ...
+                 'cocoSuiteGetNextProblem.c', ...
+                 'cocoEvaluateFunction.c', ...
+                 'cocoObserver.c', ...
+                 'cocoObserverFree.c', ...
+                 'cocoProblemGetDimension.c', ...
+                 'cocoProblemGetEvaluations.c', ...
+                 'cocoProblemGetId.c', ...
+                 'cocoProblemGetLargestValuesOfInterest.c', ...
+                 'cocoProblemGetName.c', ...
+                 'cocoProblemGetNumberOfObjectives.c', ...
+                 'cocoProblemGetSmallestValuesOfInterest.c', ...
+                 'cocoProblemIsValid.c'};
 
-mex -Dchar16_t=uint16_t cocoEvaluateFunction.c
-mex -Dchar16_t=uint16_t cocoSuite.c
-mex -Dchar16_t=uint16_t cocoSuiteFree.c
-mex -Dchar16_t=uint16_t cocoObserver.c
-mex -Dchar16_t=uint16_t cocoObserverFree.c
-mex -Dchar16_t=uint16_t cocoSuiteGetNextProblem.c
-mex -Dchar16_t=uint16_t cocoProblemGetDimension.c
-mex -Dchar16_t=uint16_t cocoProblemGetEvaluations.c
-mex -Dchar16_t=uint16_t cocoProblemGetId.c
-mex -Dchar16_t=uint16_t cocoProblemGetLargestValuesOfInterest.c
-mex -Dchar16_t=uint16_t cocoProblemGetName.c
-mex -Dchar16_t=uint16_t cocoProblemGetNumberOfObjectives.c
-mex -Dchar16_t=uint16_t cocoProblemGetSmallestValuesOfInterest.c
-mex -Dchar16_t=uint16_t cocoProblemIsValid.c
+for i = 1:length(tocompilecoco)
+    fprintf('compiling %s...', tocompilecoco{i});
+    mex('-Dchar16_t=uint16_t', tocompilecoco{i});
+    fprintf('Done\n');
+end
 
 
+fprintf('compiling Hypervolume.cpp...');
 mex -I. hv.cpp Hypervolume.cpp
+fprintf('Done\n');
+
+fprintf('compiling paretofront.c...');
 mex paretofront.c
+fprintf('Done\n');

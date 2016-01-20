@@ -11,11 +11,6 @@
 #include "coco_internal.h"
 #include "coco_string.c"
 
-/**
- * Initialize the logging level to COCO_INFO.
- */
-static coco_log_level_type_e coco_log_level = COCO_INFO;
-
 /***********************************
  * Global definitions in this file
  * which are not in coco.h 
@@ -212,8 +207,9 @@ int coco_create_directory(const char *path) {
 }
 
 /**
- * Removes the given directory and all its contents (should work across different platforms/compilers).
- * Returns 0 on successful completion, and -1 on error.
+ * The method should work across different platforms/compilers.
+ * @path The path to the directory
+ * @return 0 on successful completion, and -1 on error.
  */
 int coco_remove_directory(const char *path) {
 #if _MSC_VER

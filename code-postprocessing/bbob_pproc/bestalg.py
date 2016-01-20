@@ -29,9 +29,9 @@ from pdb import set_trace
 import warnings
 import numpy as np
 
-from bbob_pproc import genericsettings, readalign, pproc
-from bbob_pproc.toolsdivers import print_done
-from bbob_pproc import toolsstats
+from . import genericsettings, readalign, pproc
+from .toolsdivers import print_done
+from . import toolsstats
 
 bestalgentries2009 = {}
 bestalgentries2010 = {}
@@ -348,7 +348,7 @@ def loadBBOB2009(force=False):
     # global statement necessary to change the variable bestalg.bestalgentries2009
 
     if not force and bestalgentries2009:
-        return 
+        return
     
     print "Loading best algorithm data from BBOB-2009...",
     sys.stdout.flush()
@@ -360,7 +360,12 @@ def loadBBOB2009(force=False):
 
     picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
     fid = gzip.open(picklefilename, 'r')
-    bestalgentries2009 = pickle.load(fid)
+    try:
+        bestalgentries2009 = pickle.load(fid)
+    except:
+        warnings.warn("no best algorithm loaded")
+        # raise  # outcomment to diagnose
+        bestalgentries2009 = None
     fid.close()
     print_done()
 
@@ -462,10 +467,8 @@ def loadBestBiobj2016():
     sys.stdout.flush()
 
     bestalgfilepath = os.path.split(__file__)[0]
-    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle')
-    fid = open(picklefilename, 'r')
-#    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle.gz')
-#    fid = gzip.open(picklefilename, 'r')
+    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle.gz')
+    fid = gzip.open(picklefilename, 'r')
     bestbiobjalgentries2016 = pickle.load(fid)
     fid.close()
     print_done()
@@ -507,24 +510,22 @@ def customgenerate(args = algs2009):
     This method is called from the python command line from a directory
     containing all necessary data folders::
 
-     >>> from bbob_pproc import bestalg
-     >>> import os
-     >>> import urllib
-     >>> import tarfile
-     >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-     >>> os.chdir(os.path.join(path, 'data'))
-     >>> infoFile = 'ALPS/bbobexp_f2.info'
-     >>> if not os.path.exists(infoFile):
-     ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/ALPS_hornby_noiseless.tgz'
-     ...   filename, headers = urllib.urlretrieve(dataurl)
-     ...   archivefile = tarfile.open(filename)
-     ...   archivefile.extractall()
-     >>> os.chdir(os.path.join(path, 'data'))
-     >>> bestalg.customgenerate(('ALPS', '')) #doctest:+ELLIPSIS
-     Searching in ALPS ...
-     ...
-     done with writing pickle...
-     >>> os.chdir(path)
+    >>> from bbob_pproc import bestalg
+    >>> import os
+    >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+    >>> os.chdir(os.path.join(path, 'data'))
+    >>> infoFile = 'ALPS/bbobexp_f2.info'
+    >>> if not os.path.exists(infoFile):
+    ...     import urllib
+    ...     import tarfile
+    ...     dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/ALPS_hornby_noiseless.tgz'
+    ...     filename, headers = urllib.urlretrieve(dataurl)
+    ...     archivefile = tarfile.open(filename)
+    ...     archivefile.extractall()
+    >>> os.chdir(os.path.join(path, 'data'))
+    >>> bestalg.customgenerate(('ALPS', '')) # doctest: +ELLIPSIS
+    Searching in...
+    >>> os.chdir(path)
 
     """
 
@@ -556,25 +557,20 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
        respect to the number of target/function pairs where each algorithm is
        best). Only target/function pairs are taken into account where the target
        is in between target_lb and target_ub.
-    
        This method should be called from the python command line from a directory
        containing all necessary data folders::
 
-       >>> from bbob_pproc import bestalg
-       >>> import os
-       >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-       >>> os.chdir(path)
-       >>> os.chdir(os.path.join(path, "data"))
-       >>> bestalg.getAllContributingAlgorithmsToBest(('IPOP-CMA-ES', 'RANDOMSEARCH')) #doctest:+ELLIPSIS
-       Generating best algorithm data from given algorithm list...
-       Searching in IPOP-CMA-ES ...
-       ...
-       Found 144 file(s).
-       ...
-       >>> os.chdir(path)
-       
+        >>> from bbob_pproc import bestalg
+        >>> import os
+        >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+        >>> os.chdir(path)
+        >>> os.chdir(os.path.join(path, "data"))
+        >>> bestalg.getAllContributingAlgorithmsToBest(('IPOP-CMA-ES', 'RANDOMSEARCH')) # doctest:+ELLIPSIS
+        Generating best algorithm data...
+        >>> os.chdir(path)
+
     """
-    
+
     print "Generating best algorithm data from given algorithm list...\n",  
     customgenerate(algnamelist)
     
