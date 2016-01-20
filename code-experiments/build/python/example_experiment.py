@@ -32,9 +32,10 @@ except NameError: pass
 
 
 class PrintShortInfo(object):
-    """print minimal info during benchmarking, after initialization
-    to be called right before the solver is called with the respective
-    problem.
+    """print minimal info during benchmarking.
+    
+    After initialization, to be called right before the solver is called with
+    the respective problem.
     
     Example output:
     
@@ -52,18 +53,19 @@ class PrintShortInfo(object):
     def __call__(self, problem):
         """uses `problem.id` and `problem.dimension` to decide what to print.
         """
-        f, d = "f" + problem.id.split('_f')[1].split('_')[0], problem.dimension
-        if d != self.d_current:
-            print('%s%s, d=%d, running: ' % ('done\n' if self.d_current else '',
-                                           self.short_time_stap(), d), end="")
-            self.d_current = d
+        f = "f" + problem.id.lower().split('_f')[1].split('_')[0]
+        if problem.dimension != self.d_current:
+            print('%s%s, d=%d, running: ' % ('done\n\n' if self.d_current else '',
+                        self.short_time_stap(), problem.dimension), end="")
+            self.d_current = problem.dimension
         if f != self.f_current:
-            print(f, end=' ')
+            print(' %s' % f, end='')
             self.f_current = f
         sys.stdout.flush()
     def short_time_stap(self):
         l = time.asctime().split()
         d = l[0]
+        d = l[1] + l[2]
         h, m, s = l[3].split(':')
         return d + ' ' + h + 'h' + m + ':' + s
     
@@ -104,6 +106,7 @@ def simple_loop(solver, suite, observer, budget_multiplier):
         observer.observe(problem)
         print_short_info(problem)
         coco_optimize(solver, problem, budget_multiplier * problem.dimension)
+        print(".", end="")
         addressed_problems += 1
     print("done\n%s done (%d of %d problems benchmarked)"
           % (suite_name, addressed_problems, found_problems), end="")
@@ -118,12 +121,14 @@ def batch_loop(solver, suite, observer, budget_multiplier,
     `problem_index + current_batch` modulo `number_of_batches` equals to one.
     """
     addressed_problems = []
+    print_short_info = PrintShortInfo()
     for problem_index, problem_id in enumerate(suite.ids):
         if (problem_index + current_batch - 1) % number_of_batches:
             continue
-        # print("%4d: " % problem_index, end="")
         problem = suite.get_problem(problem_index, observer)
+        print_short_info(problem)
         coco_optimize(solver, problem, budget_multiplier * problem.dimension)
+        print(".", end="")
         problem.free()
         addressed_problems += [problem_id]
     print("%s done (%d of %d problems benchmarked%s)" %
@@ -148,7 +153,8 @@ def coco_optimize(solver, fun, budget):
     while budget > fun.evaluations:
         runs += 1
         remaining_budget = budget - fun.evaluations
-        x0 = center + (fun.evaluations > 0) * 0.8 * range_ * (np.random.rand(dim) - 0.5)
+        x0 = center if fun.evaluations == 0 else \
+             center + 0.8 * range_ * (np.random.rand(dim) - 0.5)
 
         if solver.__name__ in ("random_search", ):
             solver(fun, fun.lower_bounds, fun.upper_bounds,
@@ -163,7 +169,7 @@ def coco_optimize(solver, fun, budget):
 ############################ ADD HERE ########################################
         # ### IMPLEMENT HERE THE CALL TO ANOTHER SOLVER/OPTIMIZER ###
         # elif True:
-        #     CALL MY SOLVER
+        #     CALL MY SOLVER, interfaces vary
 ##############################################################################
         else:
             print("no entry for solver %s" % str(solver.__name__))
@@ -191,10 +197,11 @@ observer_options = (
     ' algorithm_name: %s ' % SOLVER.__name__ +
     ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
 
+######################### CHANGE HERE ########################################
 # CAVEAT: this might be modified from input args
-budget_multiplier = 2  # times dimension, always start with something small
-number_of_batches = 1   # allows to run everything several batches
-current_batch = 1       # 1..number_of_batches
+budget_multiplier = 2  # times dimension ### INCREASE THE MULTIPLIER WHEN THE DATA CHAIN IS STABLE ###
+number_of_batches = 1  # allows to run everything in several batches
+current_batch = 1      # 1..number_of_batches
 ##############################################################################
 
 # ===============================================
