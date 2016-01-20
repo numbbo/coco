@@ -95,8 +95,8 @@ filtered by specifying functions, dimensions and instances through the ``suite_o
 Possible keys and values for ``suite_instance`` are:
 - either ``"year: YEAR"``, where ``YEAR`` is usually the year of the corresponding [BBOB 
 workshop](http://numbbo.github.io/workshops) defining the instances used in that year's benchmark,
-- or ``"instances: VALUES"``, where ``VALUES`` is a list or a range of instances you wish to include 
-in the suite (starting from 1).
+- or ``"instances: VALUES"``, where ``VALUES`` is a list or a range ``m-n`` of instances you wish 
+to include in the suite (starting from 1).
 
 If both ``year`` and ``instances`` appear in the ``suite_instance`` string, only the first one is 
 taken into account. If no ``suite_instance`` is given, it defaults to the year of the current BBOB 
