@@ -2344,6 +2344,7 @@ table th[class*="col-"] {
 .table > tbody > tr.active > th,
 .table > tfoot > tr.active > th {
   background-color: #f5f5f5;
+  white-space: normal;
 }
 .table-hover > tbody > tr > td.active:hover,
 .table-hover > tbody > tr > th.active:hover,
