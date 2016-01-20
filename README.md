@@ -93,14 +93,14 @@ Otherwise we will be happy if you can document them in detail on the
   example experiment file by a call to your algorithm (the details vary), see
   respective the read-me's and example experiment files:
 
-  - `C` [read me](https://github.com/numbbo/coco/blob/master/coco-experiments/build/c/README.txt) 
-    and [example experiment](https://github.com/numbbo/coco/blob/development/code-experiments/build/c/example_experiment.c)
-  - `Java` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/README.txt)
-    and [example experiment](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/ExampleExperiment.java)
-  - `Matlab/Octave` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/README.txt)
-    and [example experiment](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/exampleexperiment.m) 
-  - `Python` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/README.md)
-    and [example experiment`](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/example_experiment.py)
+  - `C` [read me](./coco-experiments/build/c/README.txt) 
+    and [example experiment](./code-experiments/build/c/example_experiment.c)
+  - `Java` [read me](./code-experiments/build/java/README.txt)
+    and [example experiment](./code-experiments/build/java/ExampleExperiment.java)
+  - `Matlab/Octave` [read me](./code-experiments/build/matlab/README.md)
+    and [example experiment](./code-experiments/build/matlab/exampleexperiment.m) 
+  - `Python` [read me](./code-experiments/build/python/README.md)
+    and [example experiment`](./code-experiments/build/python/example_experiment.py)
 
   Another entry point for your own experiments can be
   the `code-experiments/examples` folder. In any case, **update** the output
@@ -214,7 +214,7 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 Known Issues / Trouble-Shooting <a name="Known-Issues"></a>
 -------------------------------
 ### Java
-#### `javah` not found
+#### `javah` call fails
 If you see something like this when running `python do.py run-java` or `build-java`
 under Linux
 ```
