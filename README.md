@@ -10,7 +10,7 @@ more than welcome.
 
 See [here](http://numbbo.github.io/workshops) and [here](http://coco.gforge.inria.fr/) and further links below to learn more about the ideas behind CoCO.
 
-Requirements
+Requirements  <a name="Requirements"></a>
 ------------
 1. For a machine running experiments 
   - A `C` compiler, such as gcc
