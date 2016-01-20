@@ -56,8 +56,8 @@ github,
 **CAVEAT: this code is still under development**. The latest official releases can be furthermore
 found [here](https://github.com/numbbo/coco/releases) and corresponds to the master branch.
 
-1. In a system shell, **`cd` into** the `coco-*` (framework root) folder, where the 
-   file `do.py` lies. Type, i.e. **execute**, one of the following commands once
+1. In a system shell, **`cd` into** the `coco-*` (framework root) folder, where the file
+   `do.py` can be found. Type, i.e. **execute**, one of the following commands once
   ```
     python do.py run-c
     python do.py run-java
