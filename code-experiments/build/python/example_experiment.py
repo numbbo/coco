@@ -59,7 +59,7 @@ class PrintShortInfo(object):
                         self.short_time_stap(), problem.dimension), end="")
             self.d_current = problem.dimension
         if f != self.f_current:
-            print(' %s' % f, end='')
+            print('%s' % f, end='')
             self.f_current = f
         sys.stdout.flush()
     def short_time_stap(self):
