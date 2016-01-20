@@ -24,8 +24,8 @@ Generally, three benchmark suites are available:
 
 Note that due to the rewriting of the Coco platform, only the ``bbob`` and ``bbob-biobj`` are available in the new code, available at http://github.com/numbbo/coco while for the noisy test suite, the old code at http://coco.gforge.inria.fr/doku.php?id=downloads has to be used.
 
-Contents:
-.........
+Table of Contents:
+..................
 
 .. toctree::
    :maxdepth: 2
