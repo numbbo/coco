@@ -404,24 +404,29 @@ void coco_free_memory(void *data);
  */
 /**@{*/
 /**
- * @brief Function to signal a fatal error.
+ * @brief Signals a fatal error.
  */
 void coco_error(const char *message, ...);
 
 /**
- * @brief Function to warn about error conditions.
+ * @brief Warns about error conditions.
  */
 void coco_warning(const char *message, ...);
 
 /**
- * @brief Function to output some information.
+ * @brief Outputs some information.
  */
 void coco_info(const char *message, ...);
 
 /**
- * @brief Function to output detailed information usually used for debugging.
+ * @brief Outputs detailed information usually used for debugging.
  */
 void coco_debug(const char *message, ...);
+
+/**
+ * @brief Changes the current log level to the given value.
+ */
+void coco_set_log_level(const char *level);
 /**@}*/
 
 /***********************************************************************************************************/
