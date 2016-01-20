@@ -18,6 +18,8 @@ try:
     is_module = True
 except:
     is_module = False
+import matplotlib  # just to make sure the following is actually done first
+matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
 # depreciated, to be removed, see end of file
 if 11 < 3 and __name__ == "__main__" and not is_module:
