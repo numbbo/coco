@@ -62,11 +62,13 @@ found [here](https://github.com/numbbo/coco/releases) and corresponds to the mas
     python do.py run-c
     python do.py run-java
     python do.py run-matlab
+    python do.py run-octave
     python do.py run-python
   ```  
   depending on which language is used to run the experiments. `run-*` will build the 
   respective code and run the example experiment once. The build result and the example
-  experiment code can be found under `code-experiments/build/*`. 
+  experiment code can be found under `code-experiments/build/*` (under `matlab` for both, 
+  Matlab and Octave). 
   
 2. On the computer where experiment data shall be post-processed, run
   ```
@@ -84,7 +86,7 @@ found [here](https://github.com/numbbo/coco/releases) and corresponds to the mas
     and [example experiment](https://github.com/numbbo/coco/blob/development/code-experiments/build/c/example_experiment.c)
   - `Java` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/README.txt)
     and [example experiment](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/ExampleExperiment.java)
-  - `Matlab` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/README.txt)
+  - `Matlab/Octave` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/README.txt)
     and [example experiment](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/exampleexperiment.m) 
   - `Python` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/README.md)
     and [example experiment`](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/example_experiment.py)
