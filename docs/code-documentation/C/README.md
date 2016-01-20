@@ -137,11 +137,6 @@ exists, first NAME_001 will be tried, then NAME_002 and so on. The default value
 (no spaces are allowed). The default value is "ALG".
 - ``algorithm_info: STRING`` stores the description of the algorithm. If it contains spaces, it must be 
 surrounded by double quotes. The default value is "" (no description).
-- ``log_level: STRING`` denotes the level of information given to the user through the standard output 
-and error stream (this is independent from the logging done in the files). ``STRING`` can take 
-on the values ``error`` (only error messages are output), ``warning`` (only error and warning messages 
-are output),  ``info`` (only error, warning and info messages are output) and ``debug`` (all messages 
-are output). The default value is info. 
 - ``precision_x: VALUE`` defines the precision used when outputting variables and corresponds to the 
 number of digits to be printed after the decimal point. The default value is 8.
 - ``precision_f: VALUE`` defines the precision used when outputting f values and corresponds to the 

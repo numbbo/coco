@@ -105,11 +105,6 @@ void coco_observer_free(coco_observer_t *observer) {
  * spaces are allowed). The default value is "ALG".
  * - "algorithm_info: STRING" stores the description of the algorithm. If it contains spaces, it must be
  * surrounded by double quotes. The default value is "" (no description).
- * - "log_level: STRING" denotes the level of information given to the user through the standard output and
- * error stream (this is independent from the logging done in the files). STRING can take on the values
- * error (only error messages are output), warning (only error and warning messages are output), info (only
- * error, warning and info messages are output) and debug (all messages are output). The default value is
- * info.
  * - "precision_x: VALUE" defines the precision used when outputting variables and corresponds to the number
  * of digits to be printed after the decimal point. The default value is 8.
  * - precision_f: VALUE defines the precision used when outputting f values and corresponds to the number of
@@ -120,7 +115,6 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
 
   coco_observer_t *observer;
   char *result_folder, *algorithm_name, *algorithm_info;
-  char *log_level;
   int precision_x, precision_f;
 
   if (0 == strcmp(observer_name, "no_observer")) {
@@ -166,20 +160,6 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   coco_free_memory(result_folder);
   coco_free_memory(algorithm_name);
   coco_free_memory(algorithm_info);
-
-  /* Update the coco_log_level */
-  log_level = (char *) coco_allocate_memory(COCO_PATH_MAX);
-  if (coco_options_read_string(observer_options, "log_level", log_level) > 0) {
-    if (strcmp(log_level, "error") == 0)
-      coco_log_level = COCO_ERROR;
-    else if (strcmp(log_level, "warning") == 0)
-      coco_log_level = COCO_WARNING;
-    else if (strcmp(log_level, "info") == 0)
-      coco_log_level = COCO_INFO;
-    else if (strcmp(log_level, "debug") == 0)
-      coco_log_level = COCO_DEBUG;
-  }
-  coco_free_memory(log_level);
 
   /* Here each observer must have an entry */
   if (0 == strcmp(observer_name, "toy")) {
