@@ -171,7 +171,7 @@ void example_biobj(void) {
 }
 
 /*
- * The main method calls all three
+ * The main method calls only the biobjective example experiment
  */
 int main(void) {
 
