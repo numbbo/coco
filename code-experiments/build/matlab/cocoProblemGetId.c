@@ -11,7 +11,7 @@
 /* The gateway function */
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    long long *ref;
+    size_t *ref;
     coco_problem_t *pb = NULL;
     const char *res;
 
@@ -20,7 +20,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgIdAndTxt("cocoProblemGetId:nrhs","One input required.");
     }
     /* get the problem */
-    ref = (long long *)mxGetData(prhs[0]);
+    ref = (size_t *)mxGetData(prhs[0]);
     pb = (coco_problem_t *)(*ref);
     /* call coco_problem_get_id(...) */
     res = coco_problem_get_id(pb);

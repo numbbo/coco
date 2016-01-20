@@ -2110,7 +2110,13 @@ def parseinfo(s):
     for elem0, elem1 in p.findall(s):
         if elem1.startswith('\'') and elem1.endswith('\''): # HACK
             elem1 = ('\'' + re.sub(r'(?<!\\)(\')', r'\\\1', elem1[1:-1]) + '\'')
-        elem1 = ast.literal_eval(elem1)
+        try:
+            elem1 = ast.literal_eval(elem1)
+        except:
+            if sys.version.startswith("2.6"):  # doesn't like trailing '\n'
+                elem1 = ast.literal_eval(elem1.strip())  # can be default anyway?
+            else:
+                raise
         res.append((elem0, elem1))  # TODO: what are elem0 and elem1?
     return res
 

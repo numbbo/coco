@@ -6,7 +6,25 @@
 Welcome to the documentation of the bbob-biobj functions!
 =========================================================
 
-Contents:
+The ``bbob-biobj`` test suite contains 55 bi-objective functions in continuous domain which are derived from combining
+functions of the well-known single-objective noiseless ``bbob`` test suite. It will be used as the main test suite of
+the upcoming :ref:`BBOB-2016 workshop <http:\\numbbo.github.io/workshops/BBOB-2016/>` at GECCO. Besides giving the actual
+:ref:`function definitions <test-functions>` and presenting their (known) properties, this documentation also aims at
+summarizing the state-of-the-art in multi-objective black-box benchmarking, at giving the rational behind our approach,
+and at providing a simple tutorial on how to use these functions for actual benchmarking within the Coco framework.
+
+Please note that, for the time being, this documentation is under development and might not contain all final data.
+
+.. figure:: _figs/examples-bbob-biobj.png
+   :scale: 60
+
+   Example plots of the Pareto front approximation, found by NSGA-II on selected ``bbob-biobj`` functions. In blue the
+   non-dominated points at the end of different independent runs, in red the points that are non-dominated over all runs.
+
+
+
+Table of Contents:
+------------------
 
 .. toctree::
    :maxdepth: 2
@@ -14,32 +32,16 @@ Contents:
    introduction
    state-of-the-art
    our-approach
-   test-functions
+   functions/index
    tutorial
 
-.. figure:: _figs/examplefigure_all.png
-   :scale: 50
 
-   Data profile of the 31 algorithms, submitted to BBOB-2009 on the single-objective noiseless BBOB testbed (all 24 functions with target values in {100, … , 1e-8} in dimension 10).
-   The cross indicates the maximum number of function evaluations. A decline in steepness right after the cross (e.g. for IPOP-SEP-CMA-ES) indicates that the maximum number of function evaluations should have been chosen larger. A steep increase right after the cross (e.g. for simple GA) indicates that a restart should have been invoked earlier.
-
-Proposed Structure:
--------------------
-- state of the art in MO benchmarking, description of testbeds, drawbacks such as distance-based parameters
-- our approach: combining well-known single-objective functions, designed to represent typical difficulties of real-world problems, idea of instances
-- choice of the functions: 300 problems too much, therefore two per BBOB function group, some functions not taken because of multiple optima or because the data produced is too high, instance choices (one single id, how to come up with two instances such that the optima are not too close to each other)
-- the proposed test functions and their properties
-   - ideal and nadir point known
-   - plot Pareto set and Pareto front of archive
-   - random points in objective space
-   - cuts through the search space?
-- short tutorial on how to use the Coco implementation
 
 
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
