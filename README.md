@@ -46,7 +46,7 @@ etc. Naturally, we cannot guarantee that the framework runs on any combination
 of operating system and software installed. In case you experience some incompatibilies,
 we will be happy if you can document them in detail on our [issue tracker](https://github.com/numbbo/coco/issues). 
 
-Getting Started
+\subsection Getting Started
 ---------------
 0. Check out the _Requirements_ above.
 
