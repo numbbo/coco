@@ -44,7 +44,9 @@ We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions
 etc. Naturally, we cannot guarantee that the framework runs on any combination
 of operating system and software installed. In case you experience some incompatibilies,
-we will be happy if you can document them in detail on our [issue tracker](https://github.com/numbbo/coco/issues). 
+check out the [_Known Issues / Trouble Shooting_ Section below](#Known-Issues). 
+Otherwise we will be happy if you can document them in detail on the 
+[issue tracker](https://github.com/numbbo/coco/issues). 
 
 
  Getting Started <a name="Getting-Started"></a>
@@ -208,7 +210,7 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 * howtos contains a few text files with internal howtos.
 
 
-Known Issues / Trouble-Shooting
+Known Issues / Trouble-Shooting <a name="Known-Issues"></a>
 -------------------------------
 ### Java
 #### `javah` not found
