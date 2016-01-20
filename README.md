@@ -63,8 +63,8 @@ Getting Started
   be found [here](https://github.com/numbbo/coco/releases). The latest release corresponds 
   to the [master branch](https://github.com/numbbo/coco/tree/master) as liked above. 
 
-2. In a system shell, **`cd` into** the `coco-*` (framework root) folder, where the file
-   `do.py` can be found. Type, i.e. **execute**, one of the following commands once
+2. In a system shell, **`cd` into** the `coco` or `coco-<version>` folder (framework root), 
+  where the file `do.py` can be found. Type, i.e. **execute**, one of the following commands once
   ```
     python do.py run-c
     python do.py run-java
