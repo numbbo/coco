@@ -8,9 +8,10 @@ solvers for numerical optimization. Languages currently available are C, Java, M
 Support for C++ is expected to be available in the near future. Contributions to link further languages are 
 more than welcome.
 
-See [here](http://numbbo.github.io/workshops) and [here](http://coco.gforge.inria.fr/) and further links below to learn more about the ideas behind CoCO.
+See [here](http://numbbo.github.io/workshops) and [here](http://coco.gforge.inria.fr/) and 
+[further links](#Further-Links) below to learn more about the ideas behind CoCO.
 
-Requirements
+Requirements  <a name="Requirements"></a>
 ------------
 1. For a machine running experiments 
   - A `C` compiler, such as gcc
@@ -44,11 +45,14 @@ We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
 7, 10) in various combinations of 32-bit and 64-bit compilers, python versions
 etc. Naturally, we cannot guarantee that the framework runs on any combination
 of operating system and software installed. In case you experience some incompatibilies,
-we will be happy if you can document them in detail on our [issue tracker](https://github.com/numbbo/coco/issues). 
+check out the [_Known Issues / Trouble Shooting_ Section](#Known-Issues) below. 
+Otherwise we will be happy if you can document them in detail on the 
+[issue tracker](https://github.com/numbbo/coco/issues). 
 
-Getting Started  <a name="Getting-Started"></a>
+
+ Getting Started <a name="Getting-Started"></a>
 ---------------
-0. Check out the _Requirements_ above.
+0. Check out the [_Requirements_](#Requirements) above.
 
 1. **Download** the [COCO framework code](https://github.com/numbbo/coco) from
 [github](https://github.com), 
@@ -74,8 +78,8 @@ Getting Started  <a name="Getting-Started"></a>
   ```  
   depending on which language is used to run the experiments. `run-*` will build the 
   respective code and run the example experiment once. The build result and the example
-  experiment code can be found under `code-experiments/build/*` (under `matlab` for both, 
-  Matlab and Octave). 
+  experiment code can be found under `code-experiments/build/<language>` (`<language>=matlab` 
+  for Octave). 
   
 3. On the computer where experiment data shall be post-processed, run
   ```
@@ -108,7 +112,8 @@ Getting Started  <a name="Getting-Started"></a>
   algorithms). Output is automatically generated in the specified data 
   `result_folder`.
 
-6. **Postprocess** that data from the results folder by typing
+  <a name="Getting-Started-pp"></a>
+6.  **Postprocess** that data from the results folder by typing
 
     ```
     python -m bbob_pproc YOURDATAFOLDER [MORE_FOLDERS]
@@ -206,7 +211,7 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 * howtos contains a few text files with internal howtos.
 
 
-Known Issues / Trouble-Shooting
+Known Issues / Trouble-Shooting <a name="Known-Issues"></a>
 -------------------------------
 ### Java
 #### `javah` not found
@@ -344,7 +349,7 @@ Details
 - The C code features an object oriented implementation, where the
   `coco_problem_t` is the most central data structure / object. `coco.h`,
   `example_experiment.c` and `coco_internal.h` are probably the best pointers to
-  start __to investigate the code__ (but see also below). `coco_problem_t`
+  start __to investigate the code__ (but see also ). `coco_problem_t`
   defines a benchmark function instance (in a given dimension), and is called
   via `coco_evaluate_function`.
 
@@ -363,7 +368,7 @@ Details
   Windows 7 machine with cygwin.
 
 
-Links and Further Documentation
+Further Links and Documentation <a name="Further-Links"></a>
 -------------------------------
 * The [_BBOB workshop series_](http://numbbo.github.io/workshops), which uses the
   NumBBO/Coco framework extensively, can be tracked at 
