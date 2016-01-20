@@ -24,6 +24,9 @@ from __future__ import absolute_import
 
 import sys
 
+import matplotlib  # just to make sure the following is actually done first
+matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
+
 from .cococommands import *
 
 from .rungeneric import main as main
