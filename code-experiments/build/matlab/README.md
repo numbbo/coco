@@ -41,7 +41,7 @@ See _Getting Started_ [here](../../../README.md#Getting-Started) for the first s
       >>> example_experiment_new_name
   ```
   
-See [here](../../../README.md) for the remaining steps to investate the resulting data.
+See [here](../../../README.md#Getting-Started-pp) for the remaining steps to investate the resulting data.
 
 
 Details and Known Issues
