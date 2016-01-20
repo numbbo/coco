@@ -41,7 +41,7 @@ tocompilecoco = {'cocoSuite.c', ...
                  'cocoProblemIsValid.c'};
 
 for i = 1:length(tocompilecoco)
-    printf('compiling %s...', tocompilecoco{i});
+    %printf('compiling %s...', tocompilecoco{i});
     mex('-Dchar16_t=uint16_t', tocompilecoco{i});
-    printf('Done\n');
+    %printf('Done\n');
 end
