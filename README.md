@@ -108,7 +108,8 @@ Getting Started  <a name="Getting-Started"></a>
   algorithms). Output is automatically generated in the specified data 
   `result_folder`.
 
-6. **Postprocess** that data from the results folder by typing
+  <a name="Getting-Started-pp"></a>
+6.  **Postprocess** that data from the results folder by typing
 
     ```
     python -m bbob_pproc YOURDATAFOLDER [MORE_FOLDERS]
