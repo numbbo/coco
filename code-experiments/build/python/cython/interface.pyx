@@ -23,7 +23,8 @@ cdef extern from "coco.h":
     ctypedef struct coco_suite_t: 
         pass
 
-    void coco_problem_free(coco_problem_t *problem)
+    void coco_set_log_level(const char *level)
+    
     coco_observer_t *coco_observer(const char *observer_name, const char *options)
     void coco_observer_free(coco_observer_t *self)
     coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, 
@@ -32,6 +33,7 @@ cdef extern from "coco.h":
     coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, 
                              const char *suite_options)
     void coco_suite_free(coco_suite_t *suite)
+    void coco_problem_free(coco_problem_t *problem)
 
     void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
@@ -777,3 +779,10 @@ cdef class Problem:
             self.free()
         except:
             pass
+
+def set_log_level(level):
+    """`level` values (increasing verbosity): 'error', 'warning', 'info', 'debug'.
+    """
+    cdef bytes _level = _bstring(level)
+    return coco_set_log_level(_level)
+

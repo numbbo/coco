@@ -40,9 +40,11 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 
   suite->default_instances = coco_strdup(default_instances);
 
-  /* To be set when iterating through the suite */
+  /* Will be set to the first valid dimension index before the constructor ends */
   suite->current_dimension_idx = -1;
+  /* Will be set to the first valid function index before the constructor ends  */
   suite->current_function_idx = -1;
+
   suite->current_instance_idx = -1;
   suite->current_problem = NULL;
 
@@ -554,8 +556,8 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
 /**
  * Iterates through the suite first by instances, then by functions and finally by dimensions.
  * The instances/functions/dimensions that have been filtered out using the suite_options of the coco_suite
- * function are skipped. The returned problem is wrapped with the observer. If the observer is NULL, the
- * returned problem is unobserved.
+ * function are skipped. Outputs some information regarding the current place in the iteration. The returned
+ * problem is wrapped with the observer. If the observer is NULL, the returned problem is unobserved.
  *
  * @param suite The given suite.
  * @param observer The observer used to wrap the problem. If NULL, the problem is returned unobserved.
@@ -568,18 +570,21 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   size_t instance_idx;
   coco_problem_t *problem;
 
-  size_t previous_function = 0;
+  long previous_function_idx = suite->current_function_idx;
+  long previous_dimension_idx = suite->current_dimension_idx;
+  long previous_instance_idx = suite->current_instance_idx;
 
   /* Iterate through the suite by instances, then functions and lastly dimensions in search for the next
    * problem. Note that these functions set the values of suite fields current_instance_idx,
    * current_function_idx and current_dimension_idx. */
   if (!coco_suite_is_next_instance_found(suite)
       && !coco_suite_is_next_function_found(suite)
-      && !coco_suite_is_next_dimension_found(suite))
+      && !coco_suite_is_next_dimension_found(suite)) {
+    coco_info_partial("done\n");
     return NULL;
+  }
 
   if (suite->current_problem) {
-    previous_function = coco_problem_get_suite_dep_function(suite->current_problem);
     coco_problem_free(suite->current_problem);
   }
 
@@ -596,17 +601,30 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
     problem = coco_problem_add_observer(problem, observer);
   suite->current_problem = problem;
 
-  /* Output some information TODO: make this shorter! */
-  if (coco_problem_get_suite_dep_function(suite->current_problem) != previous_function) {
+  /* Output information regarding the current place in the iteration */
+  if (((long) dimension_idx != previous_dimension_idx)
+      || ((dimension_idx == 0) && (previous_instance_idx < 0))) {
+    /* A new dimension started */
     time_t timer;
     char time_string[30];
     struct tm* tm_info;
     time(&timer);
     tm_info = localtime(&timer);
-    strftime(time_string, 30, "%H:%M:%S %d-%m-%Y", tm_info);
-    coco_info("Processing problems f%02lu_i*_d%02lu at %s",
-        coco_problem_get_suite_dep_function(suite->current_problem),
-        coco_problem_get_dimension(suite->current_problem), time_string);
+    strftime(time_string, 30, "%d.%m.%y %H:%M:%S", tm_info);
+    if (dimension_idx > 0)
+      coco_info_partial("done\n");
+    else
+      coco_info_partial("\n");
+    coco_info_partial("COCO INFO: %s, d=%lu, running: ", time_string, suite->dimensions[dimension_idx]);
+  }
+  if (((long) function_idx != previous_function_idx)
+      || ((dimension_idx == 0) && (previous_instance_idx < 0))){
+    /* A new function started */
+    coco_info_partial("f%02lu", suite->functions[function_idx]);
+  }
+  if ((long) instance_idx != previous_instance_idx) {
+    /* A new iteration started */
+    coco_info_partial(".", suite->instances[instance_idx]);
   }
 
   return problem;
