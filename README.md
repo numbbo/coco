@@ -35,7 +35,7 @@ For using `git` under Windows (optional), we recommend installing [TortoiseGit](
 ### Language Specifics
 _Additional_ requirements for running an algorithm in a specific language.
 
-* Java: any Java Development Kit (JDK), such that `javac` and `javah` are callable 
+* Java: any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
   (i.e. in the system path). 
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
 * Octave: tested with Octave 4.0.0 but older versions might work. Make sure `octave` can be called from
