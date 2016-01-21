@@ -11,11 +11,6 @@
 #include "coco_internal.h"
 #include "coco_string.c"
 
-/**
- * Initialize the logging level to COCO_INFO.
- */
-static coco_log_level_type_e coco_log_level = COCO_INFO;
-
 /***********************************
  * Global definitions in this file
  * which are not in coco.h 

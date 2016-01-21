@@ -22,37 +22,27 @@ the following is lacking:
 Getting Started
 ---------------
 
-Download the [COCO framework](https://github.com/numbbo/coco) code 
-from github by clicking [here](https://github.com/numbbo/coco/archive/master.zip), 
-**CAVEAT: this code is still under development**, and unzip the `zip` file. 
+See _Getting Started_ [here](../../../README.md#Getting-Started) for the first steps. Then
 
-In a system shell:
+- Copy (and rename) the folder `code-experiments/build/matlab` to a place (and name)
+  of your choice. Modify the [`exampleexperiment.m`](./code-experiments/build/matlab/exampleexperiment.m`) 
+  file to include the solver of your choice (instead of random
+  search in `my_optimizer`).
 
-0. cd into the `coco` (framework root) folder, where the file `do.py` lies. 
-
-1. Type, i.e. execute,
-  ```
-    python do.py run-matlab
-  ```  
-  which will build and run a simple
-  `python code-experiments/build/matlab/exampleexperiment.m`. For running in Octave, replace the call by
-  ```
-    python do.py run-octave
-  ```
-
-2. Copy (and rename) `exampleexperiment.m` to a place (and name) of
-  your choice. Modify this file to include the solver of your choice (instead of
-  the random search in `my_optimizer`) to the benchmarking framework.
-
-3. Execute the modified file either from a system shell like 
+- Execute the modified file either from a system shell like 
   ```
       matlab exampleexperiment_new_name.m
   ```
-  or in the matlab shell like
+  or
+  ```
+      octave exampleexperiment_new_name.m
+  ```
+  or in the Matlab/Octave shell like
   ```
       >>> example_experiment_new_name
   ```
-See [here](../../../README.md) for the next steps. When running Octave, replace `matlab` by `octave`.
+  
+See [here](../../../README.md#Getting-Started-pp) for the remaining steps to investate the resulting data.
 
 
 Details and Known Issues

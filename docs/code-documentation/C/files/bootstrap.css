@@ -2257,7 +2257,9 @@ th {
 }
 .table {
   width: 100%;
-  max-width: 100%;
+  max-width: none;
+  table-layout: fixed;
+  word-wrap: break-word;
   margin-bottom: 20px;
 }
 .table > thead > tr > th,
@@ -2342,6 +2344,7 @@ table th[class*="col-"] {
 .table > tbody > tr.active > th,
 .table > tfoot > tr.active > th {
   background-color: #f5f5f5;
+  white-space: normal;
 }
 .table-hover > tbody > tr > td.active:hover,
 .table-hover > tbody > tr > th.active:hover,

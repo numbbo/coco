@@ -76,7 +76,7 @@ static void ls_compute_blockrotation(double **B, long seed, size_t n, size_t *bl
   double **current_block;
   size_t i, j, k; /* Loop over pairs of column vectors. */
   size_t idx_block, current_blocksize,cumsum_prev_block_sizes, sum_block_sizes;
-  size_t nb_entries, current_gvect_pos;
+  size_t nb_entries;
   coco_random_state_t *rng = coco_random_new((uint32_t) seed);
   
   nb_entries = 0;
@@ -86,15 +86,11 @@ static void ls_compute_blockrotation(double **B, long seed, size_t n, size_t *bl
     nb_entries += block_sizes[i] * block_sizes[i];
   }
   assert(sum_block_sizes == n);
-  /*gvect = coco_allocate_vector(nb_entries);*/
   
-  /*bbob2009_gauss(gvect, nb_entries, seed);*/
-  current_gvect_pos = 0;
   cumsum_prev_block_sizes = 0;/* shift in rows to account for the previous blocks */
   for (idx_block = 0; idx_block < nb_blocks; idx_block++) {
     current_blocksize = block_sizes[idx_block];
     current_block = bbob2009_allocate_matrix(current_blocksize, current_blocksize);
-    /*bbob2009_reshape(current_block, &gvect[current_gvect_pos], current_blocksize, current_blocksize);*/
     for (i = 0; i < current_blocksize; i++) {
       for (j = 0; j < current_blocksize; j++) {
         current_block[i][j] = coco_random_normal(rng);
@@ -192,14 +188,11 @@ static void ls_compute_random_permutation(size_t *P, long seed, size_t n) {
 
 /*
  * returns a uniformly distributed integer between lower_bound and upper_bound using seed.
- * bbob2009_unif is used to generate the uniform floating number in [0,1] instead of rand()/(1 + RAND_MAX)
- * use size_t as return type and force positive values instead?
  */
-long ls_rand_int(long lower_bound, long upper_bound,   coco_random_state_t *rng){
+long ls_rand_int(long lower_bound, long upper_bound, coco_random_state_t *rng){
   long range;
   range = upper_bound - lower_bound + 1;
-  
-  return (long)(((double) coco_random_uniform(rng)) * range + lower_bound);
+  return ((long)(coco_random_uniform(rng) * (double) range)) + lower_bound;
 }
 
 
@@ -291,7 +284,7 @@ size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
   size_t block_size;
   int i;
   
-  block_size = (size_t) bbob2009_fmin(dimension / 4, 100);
+  block_size = (size_t) bbob2009_fmin((double)dimension / 4, 100);
   *nb_blocks = dimension / block_size + ((dimension % block_size) > 0);
   block_sizes = (size_t *)coco_allocate_memory(*nb_blocks * sizeof(size_t));
   for (i = 0; i < *nb_blocks - 1; i++) {

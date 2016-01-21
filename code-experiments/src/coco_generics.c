@@ -13,7 +13,7 @@
  * @param problem The given COCO problem.
  * @param x The decision vector.
  * @param y The objective vector that is the result of the evaluation (in single-objective problems only the
- * first vector item is used).
+ * first vector item is being set).
  */
 void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y) {
   /* implements a safer version of self->evaluate(self, x, y) */
@@ -152,6 +152,8 @@ const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *
 /**
  * If a special method for setting an initial solution to the problem does not exist, the center of the
  * problem's region of interest is the initial solution.
+ * @param problem The given COCO problem.
+ * @param initial_solution The pointer to the initial solution being set by this method.
  */
 void coco_problem_get_initial_solution(const coco_problem_t *problem, double *initial_solution) {
   assert(problem != NULL);
