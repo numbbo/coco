@@ -29,7 +29,7 @@ static coco_log_level_type_e coco_log_level = COCO_INFO;
  *
  * @return The previous coco_log_level value.
  */
-char *coco_set_log_level(const char *log_level) {
+const char *coco_set_log_level(const char *log_level) {
 
   coco_log_level_type_e previous_log_level = coco_log_level;
 
