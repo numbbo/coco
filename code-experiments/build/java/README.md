@@ -31,6 +31,7 @@ Files:
 
 Generating the shared library (for Linux and OSX; tested on a Mac OS X version 10.9.5):
 Under build/java do:
+
 	gcc -I/System/Library/Frameworks/JavaVM.framework/Headers -c CocoJNI.c
 	gcc -dynamiclib -o libCocoJNI.jnilib CocoJNI.o
 
@@ -42,6 +43,7 @@ To run the example:
 
 Generating the shared library (for Windows without Cygwin and with 32bit MinGW gcc compiler):
 Under build/java do:
+
 	gcc -Wl,--kill-at -I"C:\PATH_TO_YOUR_JDK\include" -I"C:\PATH_TO_YOUR_JDK\include\win32" -shared -o CocoJNI.dll CocoJNI.c
 
 You should have now a CocoJNI.dll file in this folder. Now run the example:
@@ -52,6 +54,7 @@ You should have now a CocoJNI.dll file in this folder. Now run the example:
 
 Generating the shared library (for Windows with Cygwin and the x86_64-w64-mingw32-gcc compiler):
 Under build/java do:
+
 	x86_64-w64-mingw32-gcc -D __int64="long long" -Wl,--add-stdcall-alias -I"C:\PATH_TO_YOUR_JDK\include" -I"C:\PATH_TO_YOUR_JDK\include\win32" -shared -o CocoJNI.dll CocoJNI.c
 
 You should have now a CocoJNI.dll file in this folder. Now run the example:
