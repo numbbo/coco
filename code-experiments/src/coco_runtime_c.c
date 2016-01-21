@@ -12,10 +12,37 @@
 #include "coco.h"
 #include "coco_utilities.c"
 
+/**
+ * Initialize the logging level to COCO_INFO.
+ */
+static coco_log_level_type_e coco_log_level = COCO_INFO;
+
+/**
+ * @param log_level Denotes the level of information given to the user through the standard output and
+ * error streams. Can take on the values:
+ * - "error" (only error messages are output),
+ * - "warning" (only error and warning messages are output),
+ * - "info" (only error, warning and info messages are output) and
+ * - "debug" (all messages are output).
+ *
+ * The default value is info.
+ */
+void coco_set_log_level(const char *log_level) {
+
+  if (strcmp(log_level, "error") == 0)
+    coco_log_level = COCO_ERROR;
+  else if (strcmp(log_level, "warning") == 0)
+    coco_log_level = COCO_WARNING;
+  else if (strcmp(log_level, "info") == 0)
+    coco_log_level = COCO_INFO;
+  else if (strcmp(log_level, "debug") == 0)
+    coco_log_level = COCO_DEBUG;
+}
+
 void coco_error(const char *message, ...) {
   va_list args;
 
-  fprintf(stderr, "FATAL ERROR: ");
+  fprintf(stderr, "COCO FATAL ERROR: ");
   va_start(args, message);
   vfprintf(stderr, message, args);
   va_end(args);
@@ -27,7 +54,7 @@ void coco_warning(const char *message, ...) {
   va_list args;
 
   if (coco_log_level >= COCO_WARNING) {
-    fprintf(stderr, "WARNING: ");
+    fprintf(stderr, "COCO WARNING: ");
     va_start(args, message);
     vfprintf(stderr, message, args);
     va_end(args);
@@ -39,11 +66,27 @@ void coco_info(const char *message, ...) {
   va_list args;
 
   if (coco_log_level >= COCO_INFO) {
-    fprintf(stdout, "INFO: ");
+    fprintf(stdout, "COCO INFO: ");
     va_start(args, message);
     vfprintf(stdout, message, args);
     va_end(args);
     fprintf(stdout, "\n");
+    fflush(stdout);
+  }
+}
+
+/**
+ * A function similar to coco_info that prints only the given message without any prefix and without
+ * adding a new line.
+ */
+static void coco_info_partial(const char *message, ...) {
+  va_list args;
+
+  if (coco_log_level >= COCO_INFO) {
+    va_start(args, message);
+    vfprintf(stdout, message, args);
+    va_end(args);
+    fflush(stdout);
   }
 }
 
@@ -51,11 +94,12 @@ void coco_debug(const char *message, ...) {
   va_list args;
 
   if (coco_log_level >= COCO_DEBUG) {
-    fprintf(stdout, "DEBUG: ");
+    fprintf(stdout, "COCO DEBUG: ");
     va_start(args, message);
     vfprintf(stdout, message, args);
     va_end(args);
     fprintf(stdout, "\n");
+    fflush(stdout);
   }
 }
 

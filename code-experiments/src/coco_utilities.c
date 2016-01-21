@@ -1,3 +1,5 @@
+#include "coco_platform.h"
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -7,72 +9,7 @@
 
 #include "coco.h"
 #include "coco_internal.h"
-#include "coco_strdup.c"
-
-/* Figure out if we are on a sane platform or on the dominant platform */
-#if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
-#include <windows.h>
-static const char *coco_path_separator = "\\";
-#define COCO_PATH_MAX MAX_PATH
-#define HAVE_GFA 1
-#elif defined(__gnu_linux__)
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <linux/limits.h>
-static const char *coco_path_separator = "/";
-#define HAVE_STAT 1
-#define COCO_PATH_MAX PATH_MAX
-#elif defined(__APPLE__)
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/syslimits.h>
-static const char *coco_path_separator = "/";
-#define HAVE_STAT 1
-#define COCO_PATH_MAX PATH_MAX
-#elif defined(__FreeBSD__)
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <limits.h>
-static const char *coco_path_separator = "/";
-#define HAVE_STAT 1
-#define COCO_PATH_MAX PATH_MAX
-#elif (defined(__sun) || defined(sun)) && (defined(__SVR4) || defined(__svr4__))
-/* Solaris */
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <limits.h>
-static const char *coco_path_separator = "/";
-#define HAVE_STAT 1
-#define COCO_PATH_MAX PATH_MAX
-#else
-#error Unknown platform
-#endif
-
-/* Handle the special case of Microsoft Visual Studio 2008 and x86_64-w64-mingw32-gcc */
-#if _MSC_VER
-#include <direct.h>
-#elif defined(__MINGW32__) || defined(__MINGW64__)
-#include <dirent.h>
-#else
-#include <dirent.h>
-/* To silence the compiler (implicit-function-declaration warning). */
-int rmdir(const char *pathname);
-int unlink(const char *file_name);
-int mkdir(const char *pathname, mode_t mode);
-#endif
-
-#if defined(HAVE_GFA)
-#define S_IRWXU 0700
-#endif
-
-#if !defined(COCO_PATH_MAX)
-#error COCO_PATH_MAX undefined
-#endif
-
-/**
- * Initialize the logging level to COCO_WARNING.
- */
-static coco_log_level_type_e coco_log_level = COCO_WARNING;
+#include "coco_string.c"
 
 /***********************************
  * Global definitions in this file
@@ -270,8 +207,9 @@ int coco_create_directory(const char *path) {
 }
 
 /**
- * Removes the given directory and all its contents (should work across different platforms/compilers).
- * Returns 0 on successful completion, and -1 on error.
+ * The method should work across different platforms/compilers.
+ * @path The path to the directory
+ * @return 0 on successful completion, and -1 on error.
  */
 int coco_remove_directory(const char *path) {
 #if _MSC_VER
@@ -598,35 +536,33 @@ static char **coco_string_split(const char *string, const char delimiter) {
 
 static size_t coco_numbers_count(const size_t *numbers, const char *name) {
 
-  const size_t count_limit = 100;
-
   size_t count = 0;
-  while ((count < count_limit) && (numbers[count] != 0)) {
+  while ((count < COCO_MAX_INSTANCES) && (numbers[count] != 0)) {
     count++;
   }
-  if (count == count_limit) {
-    coco_error("coco_numbers_count(): over %lu numbers in %s", count_limit, name);
+  if (count == COCO_MAX_INSTANCES) {
+    coco_error("coco_numbers_count(): over %lu numbers in %s", COCO_MAX_INSTANCES, name);
     return 0; /* Never reached*/
   }
 
   return count;
 }
+
 /**
  * Reads ranges from a string of positive ranges separated by commas. For example: "-3,5-6,8-". Returns the
  * numbers that are defined by the ranges if min and max are used as their extremes. If the ranges with open
  * beginning/end are not allowed, use 0 as min/max. The returned string has an appended 0 to mark its end.
- * A maximum of 100 values is returned. If there is a problem with one of the ranges, the parsing stops and
- * the current result is returned. The memory of the returned object needs to be freed by the caller.
+ * A maximum of COCO_MAX_INSTANCES values is returned. If there is a problem with one of the ranges, the
+ * parsing stops and the current result is returned. The memory of the returned object needs to be freed by
+ * the caller.
  */
 static size_t *coco_string_get_numbers_from_ranges(char *string, const char *name, size_t min, size_t max) {
 
-  char *ptr, *dash;
+  char *ptr, *dash = NULL;
   char **ranges, **numbers;
   size_t i, j, count;
   size_t num[2];
 
-  /* Don't allow ranges that are too long */
-  const size_t length_limit = 100;
   size_t *result;
   size_t i_result = 0;
 
@@ -653,7 +589,7 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
     return NULL;
   }
 
-  result = coco_allocate_memory((length_limit + 1) * sizeof(size_t));
+  result = coco_allocate_memory((COCO_MAX_INSTANCES + 1) * sizeof(size_t));
 
   /* Split string to ranges w.r.t commas */
   ranges = coco_string_split(string, ',');
@@ -699,6 +635,7 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
 
         /* Split current range to numbers w.r.t '-' */
         numbers = coco_string_split(ptr, '-');
+        j = 0;
         if (numbers) {
           /* Read the numbers */
           for (j = 0; *(numbers + j); j++) {
@@ -766,10 +703,14 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
       }
 
       /* Make sure the boundaries are taken into account */
-      if ((min > 0) && (num[0] < min))
+      if ((min > 0) && (num[0] < min)) {
         num[0] = min;
-      if ((max > 0) && (num[1] > max))
+        coco_warning("coco_options_read_ranges(): '%s' ranges adjusted to be >= %lu", name, min);
+      }
+      if ((max > 0) && (num[1] > max)) {
         num[1] = max;
+        coco_warning("coco_options_read_ranges(): '%s' ranges adjusted to be <= %lu", name, max);
+      }
       if (num[0] > num[1]) {
         coco_warning("coco_options_read_ranges(): '%s' ranges not within boundaries; some ranges ignored", name);
         /* Cleanup */
@@ -786,7 +727,7 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
 
       /* Write in result */
       for (j = num[0]; j <= num[1]; j++) {
-        if (i_result > length_limit - 1)
+        if (i_result > COCO_MAX_INSTANCES - 1)
           break;
         result[i_result++] = j;
       }

@@ -7,7 +7,7 @@ cimport numpy as np
 
 from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
 
-known_suite_names = ["bbob", "bbob-biobj"]
+known_suite_names = [b"bbob", b"bbob-biobj"]
 
 # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
 # __all__ = ['Problem', 'Benchmark']
@@ -16,14 +16,15 @@ known_suite_names = ["bbob", "bbob-biobj"]
 np.import_array()
 
 cdef extern from "coco.h":
-    ctypedef struct coco_problem_t: 
+    ctypedef struct coco_problem_t:
         pass
-    ctypedef struct coco_observer_t: 
+    ctypedef struct coco_observer_t:
         pass
     ctypedef struct coco_suite_t: 
         pass
 
-    void coco_problem_free(coco_problem_t *problem)
+    void coco_set_log_level(const char *level)
+    
     coco_observer_t *coco_observer(const char *observer_name, const char *options)
     void coco_observer_free(coco_observer_t *self)
     coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, 
@@ -32,6 +33,7 @@ cdef extern from "coco.h":
     coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, 
                              const char *suite_options)
     void coco_suite_free(coco_suite_t *suite)
+    void coco_problem_free(coco_problem_t *problem)
 
     void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
@@ -185,6 +187,19 @@ cdef class Suite:
         self._names = []
         self._dimensions = []
         self._number_of_objectives = []
+        if str(self._name) not in [str(n) for n in known_suite_names]:
+            raise NoSuchSuiteException("""Unkown benchmark suite name "%s".
+Known suite names are %s.
+If "%s" was not a typo, you can add the desired name to `known_suite_names`::
+
+        >> import cocoex as ex
+        >> ex.known_suite_names.append(b"my_name")  # must be a byte string
+        >> suite = ex.Suite("my_name", "", "")
+        COCO FATAL ERROR: coco_suite(): unknow problem suite
+
+This will crash Python, if the suite "my_name" does in fact not exist. You might
+also report back a missing name to https://github.com/numbbo/coco/issues
+""" % (self._name, str(known_suite_names), self._name))
         try:
             suite = coco_suite(self._name, self._instance, self._options)
         except:
@@ -315,7 +330,7 @@ cdef class Suite:
         ...         used_indices.append(p.index)
         >>> print(used_indices)
         [1575, 1576, 1577, 1578, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1587, 1588, 1589]
-        
+
         """
         res = []
         for idx, id in enumerate(self._ids):
@@ -764,3 +779,10 @@ cdef class Problem:
             self.free()
         except:
             pass
+
+def set_log_level(level):
+    """`level` values (increasing verbosity): 'error', 'warning', 'info', 'debug'.
+    """
+    cdef bytes _level = _bstring(level)
+    return coco_set_log_level(_level)
+

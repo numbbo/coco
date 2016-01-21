@@ -9,7 +9,7 @@
 
 #include "coco.h"
 
-void wait (unsigned int secs) {
+static void wait_in_seconds(unsigned int secs) {
     time_t retTime = time(0) + secs;
     while (time(0) < retTime);
 }
@@ -69,7 +69,7 @@ void run_once(char *observer_options) {
   coco_suite_free(suite);
 
   coco_remove_directory("biobj");
-  wait(2); /* So that the directory removal is surely finished */
+  wait_in_seconds(2); /* So that the directory removal is surely finished */
 
   printf("DONE!\n");
   fflush(stdout);
@@ -82,7 +82,7 @@ int main( int argc, char *argv[] )  {
   }
   else {
     run_once("result_folder: biobj produce_all_data 1");
-    run_once("result_folder: biobj log_nondominated: none  compute_indicators: 0 log_level: info");
+    run_once("result_folder: biobj log_nondominated: none  compute_indicators: 0");
     run_once("result_folder: biobj log_nondominated: all   compute_indicators: 0");
     run_once("result_folder: biobj log_nondominated: final compute_indicators: 0");
     run_once("result_folder: biobj log_nondominated: none  compute_indicators: 1");

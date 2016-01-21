@@ -7,5 +7,6 @@ In principle, users shall download the latest release from the master branch of 
 2) update version and release numbers in C documentation (coco.h) for producing web documentation 
 3) publish the new documentation by running 'make html-topublish' in all docs/* folders and pushing the created html files, see also the documentation.howto
 4) publish the Coco C documentation through doxygen by following the instructions in the documentation.howto
-5) clean and test the development branch
-6) merge the cleaned and tested development branch into the master branch and tag it
+5) check that README.md is up-to-date
+6) clean and test the development branch
+7) merge the cleaned and tested development branch into the master branch and tag it

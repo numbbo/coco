@@ -8,8 +8,8 @@ from __future__ import absolute_import
 import os
 import numpy
 import matplotlib.pyplot as plt
-from bbob_pproc import toolsstats, pproc
-from bbob_pproc.ppfig import saveFigure, consecutiveNumbers, plotUnifLogXMarkers
+from .. import toolsstats, pproc
+from ..ppfig import saveFigure, consecutiveNumbers, plotUnifLogXMarkers
 from pdb import set_trace
 
 #__all__ = []
@@ -375,7 +375,7 @@ def main(dsList0, dsList1, dim, targetsOfInterest=None,
     beautify(handles)
 
     funcs = set(dsList0.dictByFunc().keys()) & set(dsList1.dictByFunc().keys())
-    text = 'f%s' % consecutiveNumbers(sorted(funcs))
+    text = consecutiveNumbers(sorted(funcs), 'f')
     if len(dsList0.dictByDim().keys()) == len(dsList1.dictByDim().keys()) == 1: 
         text += ',%d-D' % dsList0.dictByDim().keys()[0]
 

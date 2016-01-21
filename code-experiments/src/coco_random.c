@@ -65,6 +65,11 @@ double coco_random_uniform(coco_random_state_t *state) {
   return state->x[state->index++];
 }
 
+/**
+ * Instead of using the (expensive) polar method, we may cheat and abuse the central limit theorem. The sum
+ * of 12 uniform random values has mean 6, variance 1 and is approximately normal. Subtract 6 and you get
+ * an approximately N(0, 1) random number.
+ */
 double coco_random_normal(coco_random_state_t *state) {
   double normal;
 #ifdef COCO_NORMAL_POLAR

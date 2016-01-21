@@ -15,7 +15,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     char *suite_instance;
     char *suite_options;
     coco_suite_t *suite = NULL;
-    long long *res;
+    size_t *res;
     
     /* check for proper number of arguments */
     if(nrhs!=3) {
@@ -31,6 +31,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     suite = coco_suite(suite_name, suite_instance, suite_options);
     /* prepare the return value */
     plhs[0] = mxCreateNumericMatrix(1, 1 ,mxINT64_CLASS, mxREAL);
-    res = (long long *)mxGetData(plhs[0]);
-    *res = (long long)suite;
+    res = (size_t *)mxGetData(plhs[0]);
+    *res = (size_t)suite;
 }
