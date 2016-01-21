@@ -10,7 +10,7 @@ more on; % to get immediate output in Octave
 BUDGET = 2; % algorithm runs for BUDGET*dimension funevals
 suite_name = 'bbob-biobj'; % works for 'bbob' as well
 observer_name = suite_name; 
-observer_options = sprintf("result_folder: RS_on_%s \
+observer_options = sprintf("result_folder: exdata/RS_on_%s \
                             algorithm_name: RS \
                             algorithm_info: \"A simple random search algorithm\" \
                             log_level: info", suite_name);
