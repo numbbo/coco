@@ -60,7 +60,7 @@ Details and Known Issues
   especially for the more complicated example in ../../examples/bbob-biobj-matlab-smsemoa/.
 - When running with GNU Octave under Windows, you might experience that the Windows command window is closed on exit
   of Octave. To solve this issue, find the `octave.bat` file in your Octave installation folder and remove the `exit`
-  in the last line.
+  in the last line or change it to `Rem exit`.
 
 Tested Environments
 -------------------
