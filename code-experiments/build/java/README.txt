@@ -1,6 +1,21 @@
+If you have setup every with `python do.py run-java`, type:
+
+    javac *java
+    
+to (re-)compile the experiment and 
+
+    java ExampleExperiment
+
+to run it. Then change `ExampleExperiment.java` as needed.  
+
+
+DETAILS
+=======
+
 *****************************************************
 *          Content of build/java directory          *
 *****************************************************
+
 
 build/java: contains necessary source files to generate the shared library for calling coco C funtions and an example of testing a java optimizer on the coco benchmark
 
