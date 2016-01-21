@@ -24,10 +24,14 @@ static coco_log_level_type_e coco_log_level = COCO_INFO;
  * - "warning" (only error and warning messages are output),
  * - "info" (only error, warning and info messages are output) and
  * - "debug" (all messages are output).
- *
+ * - "" does not set a new value
  * The default value is info.
+ *
+ * @return The previous coco_log_level value.
  */
-void coco_set_log_level(const char *log_level) {
+char *coco_set_log_level(const char *log_level) {
+
+  coco_log_level_type_e previous_log_level = coco_log_level;
 
   if (strcmp(log_level, "error") == 0)
     coco_log_level = COCO_ERROR;
@@ -37,6 +41,24 @@ void coco_set_log_level(const char *log_level) {
     coco_log_level = COCO_INFO;
   else if (strcmp(log_level, "debug") == 0)
     coco_log_level = COCO_DEBUG;
+  else if (strcmp(log_level, "") == 0) {
+    /* Do nothing */
+  } else {
+    coco_warning("coco_set_log_level(): unknown level %s", log_level);
+  }
+
+  if (previous_log_level == COCO_ERROR)
+    return "error";
+  else if (previous_log_level == COCO_WARNING)
+    return "warning";
+  else if (previous_log_level == COCO_INFO)
+    return "info";
+  else if (previous_log_level == COCO_DEBUG)
+    return "debug";
+  else {
+    coco_error("coco_set_log_level(): unknown previous log level");
+    return "";
+  }
 }
 
 void coco_error(const char *message, ...) {
