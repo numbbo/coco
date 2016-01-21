@@ -23,7 +23,7 @@ cdef extern from "coco.h":
     ctypedef struct coco_suite_t: 
         pass
 
-    char* coco_set_log_level(const char *level)
+    const char* coco_set_log_level(const char *level)
     
     coco_observer_t *coco_observer(const char *observer_name, const char *options)
     void coco_observer_free(coco_observer_t *self)
