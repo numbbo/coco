@@ -1603,13 +1603,14 @@ class DataSetList(list):
     def dictByNoise(self):
         """Returns a dictionary splitting noisy and non-noisy entries."""
         sorted = {}
-        for i in self:
-            if i.funcId in range(1, 56):
-                sorted.setdefault('noiselessall', DataSetList()).append(i)
-            elif i.funcId in range(101, 131):
-                sorted.setdefault('nzall', DataSetList()).append(i)
-            else:
-                warnings.warn('Unknown function id.')
+        if not self.isBiobjective():
+            for i in self:
+                if i.funcId in range(1, 56):
+                    sorted.setdefault('noiselessall', DataSetList()).append(i)
+                elif i.funcId in range(101, 131):
+                    sorted.setdefault('nzall', DataSetList()).append(i)
+                else:
+                    warnings.warn('Unknown function id.')
 
         return sorted
 
@@ -2109,7 +2110,13 @@ def parseinfo(s):
     for elem0, elem1 in p.findall(s):
         if elem1.startswith('\'') and elem1.endswith('\''): # HACK
             elem1 = ('\'' + re.sub(r'(?<!\\)(\')', r'\\\1', elem1[1:-1]) + '\'')
-        elem1 = ast.literal_eval(elem1)
+        try:
+            elem1 = ast.literal_eval(elem1)
+        except:
+            if sys.version.startswith("2.6"):  # doesn't like trailing '\n'
+                elem1 = ast.literal_eval(elem1.strip())  # can be default anyway?
+            else:
+                raise
         res.append((elem0, elem1))  # TODO: what are elem0 and elem1?
     return res
 

@@ -17,6 +17,29 @@
 
 /*
  * Class:     CocoJNI
+ * Method:    cocoSetLogLevel
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_CocoJNI_cocoSetLogLevel
+(JNIEnv *jenv, jclass interface_cls, jstring jlog_level) {
+
+  const char *log_level;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoGetObserver\n");
+  }
+
+  log_level = (*jenv)->GetStringUTFChars(jenv, jlog_level, NULL);
+
+  coco_set_log_level(log_level);
+
+  return;
+}
+
+/*
+ * Class:     CocoJNI
  * Method:    cocoGetObserver
  * Signature: (Ljava/lang/String;Ljava/lang/String;)J
  */

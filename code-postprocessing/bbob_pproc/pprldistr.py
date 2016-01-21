@@ -48,9 +48,9 @@ import numpy as np
 import pickle, gzip
 import matplotlib.pyplot as plt
 from pdb import set_trace
-from bbob_pproc import toolsstats, genericsettings, pproc
-from bbob_pproc.ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
-from bbob_pproc.pptex import color_to_latex, marker_to_latex
+from . import toolsstats, genericsettings, pproc
+from .ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
+from .pptex import color_to_latex, marker_to_latex
 
 single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)]
@@ -597,13 +597,13 @@ def comp(dsList0, dsList1, targets, isStoringXMax = False,
                      markerfacecolor = 'none')
 
         funcs = set(i.funcId for i in dictdim0[d]) | set(i.funcId for i in dictdim1[d])
-        text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
+        text = consecutiveNumbers(sorted(funcs), 'f')
 
-        if not isinstance(targets, pproc.RunlengthBasedTargetValues):
-            plot_previous_algorithms(d, funcs)
-
-        else:
-            plotRLB_previous_algorithms(d, funcs)
+        if not dsList0.isBiobjective():
+            if not isinstance(targets, pproc.RunlengthBasedTargetValues):
+                plot_previous_algorithms(d, funcs)
+            else:
+                plotRLB_previous_algorithms(d, funcs)
 
         # plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim0[d]), ls='--', color='k')
         # plt.axvline(max(i.mMaxEvals()/i.dim for i in dictdim1[d]), color='k')
@@ -672,7 +672,7 @@ def plot(dsList, targets = single_target_values, **plotArgs):
         res.extend(tmp)
     res.append(plt.axvline(x = maxEvalsFactor, color = 'k', **plotArgs))
     funcs = list(i.funcId for i in dsList)
-    text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
+    text = consecutiveNumbers(sorted(funcs), 'f')
     res.append(plt.text(0.5, 0.98, text, horizontalalignment = "center",
                         verticalalignment = "top", transform = plt.gca().transAxes))
 
@@ -812,9 +812,8 @@ def main(dsList, isStoringXMax = False, outputdir = '',
                         ** rldStyles[j % len(rldStyles)])
 
         funcs = list(i.funcId for i in dictdim)
-        text = 'f%s' % (consecutiveNumbers(sorted(funcs)))
-        text += ',%d-D' % d
-        if(1):
+        text = '{%s}, %d-D' % (consecutiveNumbers(sorted(funcs), 'f'), d)
+        if not dsList.isBiobjective():
      #   try:
 
             if not isinstance(targets, pproc.RunlengthBasedTargetValues):

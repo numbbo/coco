@@ -36,7 +36,7 @@ def process_test_cases(fd, suite_name, test_vectors):
     number_of_testcases = 0
     number_of_failures = 0
     previous_problem_index = None
-    suite = Suite(suite_name, "", "")
+    suite = Suite(suite_name, "instances:1-15", "")
     print("Testing suite", suite_name)
     for test_case in fd:
         number_of_testcases += 1

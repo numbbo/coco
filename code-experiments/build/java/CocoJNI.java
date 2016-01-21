@@ -9,6 +9,7 @@ public class CocoJNI {
 	}
 
 	/* Native methods */
+	public static native void cocoSetLogLevel(String logLevel);
 	
 	// Observer
 	public static native long cocoGetObserver(String observerName, String observerOptions);

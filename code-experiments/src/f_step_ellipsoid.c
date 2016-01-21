@@ -8,8 +8,6 @@
  *
  * TODO: It would be nice to have a generic step ellipsoid function to complement this one.
  */
-#include "coco_platform.h"
-
 #include <assert.h>
 
 #include "coco.h"
@@ -107,7 +105,7 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
   f_step_ellipsoid_data_t *data;
   size_t i;
   coco_problem_t *problem = coco_problem_allocate_from_scalars("step ellipsoid function",
-      f_step_ellipsoid_evaluate, f_step_ellipsoid_free, dimension, -5.0, 5.0, NAN);
+      f_step_ellipsoid_evaluate, f_step_ellipsoid_free, dimension, -5.0, 5.0, 0);
 
   data = coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
