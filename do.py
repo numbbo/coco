@@ -597,7 +597,7 @@ def main(args):
     if len(args) < 1:
         help()
         sys.exit(0)
-    cmd = args[0].replace('_', '-')
+    cmd = args[0].replace('_', '-').lower()
     if cmd == 'build': build()
     elif cmd == 'run': run_all()
     elif cmd == 'test': test()
