@@ -4,7 +4,7 @@ type:
 
     javac *java
     
-to (re-)compile the experiment and 
+to (re-)compile the example experiment and 
 
     java ExampleExperiment
 
