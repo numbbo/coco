@@ -1,4 +1,6 @@
-If you have setup every with `python do.py run-java`, type:
+If you have setup every with `python do.py run-java`, 
+see [here](https://github.com/numbbo/coco/blob/master/README.md), 
+type:
 
     javac *java
     
@@ -12,9 +14,7 @@ to run it. Then change `ExampleExperiment.java` as needed.
 DETAILS
 =======
 
-*****************************************************
-*          Content of build/java directory          *
-*****************************************************
+## Content of build/java directory
 
 
 build/java: contains necessary source files to generate the shared library for calling coco C funtions and an example of testing a java optimizer on the coco benchmark
@@ -26,6 +26,8 @@ Files:
 - ExampleExperiment.java: defines an optimizer and tests it on the coco benchmark
 
 *****************************************************
+
+## Compilation without `python do.py`
 
 Generating the shared library (for Linux and OSX; tested on a Mac OS X version 10.9.5):
 Under build/java do:
