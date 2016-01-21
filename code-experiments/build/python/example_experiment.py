@@ -141,10 +141,12 @@ def batch_loop(solver, suite, observer, budget_multiplier,
         print_flush(".") if verbose else None
         problem.free()
         addressed_problems += [problem_id]
-    print("%s done (%d of %d problems benchmarked%s)" %
+    print(" done\n%s done (%d of %d problems benchmarked%s)" %
            (suite_name, len(addressed_problems), len(suite),
              ((" in batch %d of %d" % (current_batch, number_of_batches))
                if number_of_batches > 1 else "")), end="")
+    if number_of_batches > 1:
+        print("\nMAKE SURE TO RUN ALL BATCHES.", end="")
 
 #===============================================
 # interface: ADD AN OPTIMIZER BELOW
@@ -209,7 +211,7 @@ observer_options = (
 ######################### CHANGE HERE ########################################
 # CAVEAT: this might be modified from input args
 budget_multiplier = 2  # times dimension ### INCREASE THE MULTIPLIER WHEN THE DATA CHAIN IS STABLE ###
-number_of_batches = 1  # allows to run everything in several batches
+number_of_batches = 10  # allows to run everything in several batches
 current_batch = 1      # 1..number_of_batches
 ##############################################################################
 
@@ -225,11 +227,11 @@ def main(budget_multiplier=budget_multiplier,
     suite = Suite(suite_name, suite_instance, suite_options)
     print(" on suite %s, %s" % (suite.name, time.asctime()))
     t0 = time.clock()
-    if 1 < 3:
-        print_flush('Simple usecase ...\n')
+    if 11 < 3:
         simple_loop(SOLVER, suite, observer, budget_multiplier)
     elif 1 < 3:
-        print_flush('Batch usecase ...\n')
+        print_flush('Batch usecase, make sure you run *all* %d batches.\n' %
+                    number_of_batches) if number_of_batches > 1 else None
         batch_loop(SOLVER, suite, observer, budget_multiplier,
                    current_batch, number_of_batches)
     print(", %s (%.2f min)." % (time.asctime(), (time.clock()-t0)/60**1))
