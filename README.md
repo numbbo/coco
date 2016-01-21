@@ -98,7 +98,7 @@ Otherwise we will be happy if you can document them in detail on the
 
   - `C` [read me](./coco-experiments/build/c/README.txt) 
     and [example experiment](./code-experiments/build/c/example_experiment.c)
-  - `Java` [read me](./code-experiments/build/java/README.txt)
+  - `Java` [read me](./code-experiments/build/java/README.md)
     and [example experiment](./code-experiments/build/java/ExampleExperiment.java)
   - `Matlab/Octave` [read me](./code-experiments/build/matlab/README.md)
     and [example experiment](./code-experiments/build/matlab/exampleexperiment.m) 
