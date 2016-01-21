@@ -1,12 +1,12 @@
 numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
-This code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
-now rewritten fully in ANSI C with the other languages calling the C code. As the name suggests,
+This code reimplements the original Comparing Continous Optimizer platform, now 
+rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
 the code provides a platform to benchmark and compare continuous optimizers, AKA non-linear 
-solvers for numerical optimization. Languages currently available are C, Java, MATLAB/Octave, and Python. 
-Support for C++ is expected to be available in the near future. Contributions to link further languages are 
-more than welcome.
+solvers for numerical optimization. Languages currently available are `C`, `Java`, 
+`MATLAB/Octave`, and `Python`. Support for `C++` is expected to be available in the near 
+future. Contributions to link further languages (including `C++`) are more than welcome.
 
 See [here](http://numbbo.github.io/workshops) and [here](http://coco.gforge.inria.fr/) and 
 [further links](#Further-Links) below to learn more about the ideas behind CoCO.
@@ -93,14 +93,14 @@ Otherwise we will be happy if you can document them in detail on the
   example experiment file by a call to your algorithm (the details vary), see
   respective the read-me's and example experiment files:
 
-  - `C` [read me](https://github.com/numbbo/coco/blob/master/coco-experiments/build/c/README.txt) 
-    and [example experiment](https://github.com/numbbo/coco/blob/development/code-experiments/build/c/example_experiment.c)
-  - `Java` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/README.txt)
-    and [example experiment](https://github.com/numbbo/coco/blob/master/code-experiments/build/java/ExampleExperiment.java)
-  - `Matlab/Octave` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/README.txt)
-    and [example experiment](https://github.com/numbbo/coco/blob/master/code-experiments/build/matlab/exampleexperiment.m) 
-  - `Python` [read me](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/README.md)
-    and [example experiment`](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/example_experiment.py)
+  - `C` [read me](./coco-experiments/build/c/README.txt) 
+    and [example experiment](./code-experiments/build/c/example_experiment.c)
+  - `Java` [read me](./code-experiments/build/java/README.txt)
+    and [example experiment](./code-experiments/build/java/ExampleExperiment.java)
+  - `Matlab/Octave` [read me](./code-experiments/build/matlab/README.md)
+    and [example experiment](./code-experiments/build/matlab/exampleexperiment.m) 
+  - `Python` [read me](./code-experiments/build/python/README.md)
+    and [example experiment`](./code-experiments/build/python/example_experiment.py)
 
   Another entry point for your own experiments can be
   the `code-experiments/examples` folder. In any case, **update** the output
@@ -214,7 +214,7 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 Known Issues / Trouble-Shooting <a name="Known-Issues"></a>
 -------------------------------
 ### Java
-#### `javah` not found
+#### `javah` call fails
 If you see something like this when running `python do.py run-java` or `build-java`
 under Linux
 ```
@@ -376,9 +376,9 @@ Further Links and Documentation <a name="Further-Links"></a>
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
   by registering at http://coco.gforge.inria.fr/register
 * More detailed documentation of the existing benchmark suites can be found here:
-  - for the "**BBOB**" testbed at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
+  - for the **`BBOB`** problem suite at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
-  - for the **bbob-biobj** functions at http://numbbo.github.io/bbob-biobj-functions-doc
+  - for the **`bbob-biobj`** problem suite at http://numbbo.github.io/bbob-biobj-functions-doc
 * Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
   http://numbbo.github.io/coco-doc/C
 * Downloading this repository 

@@ -24,9 +24,10 @@ Getting Started
 
 See _Getting Started_ [here](../../../README.md#Getting-Started) for the first steps. Then
 
-- Copy (and rename) `code-experiments/build/matlab` to a place (and name) of
-  your choice. Modify this file to include the solver of your choice (instead of
-  the random search in `my_optimizer`) to the benchmarking framework.
+- Copy (and rename) the folder `code-experiments/build/matlab` to a place (and name)
+  of your choice. Modify the [`exampleexperiment.m`](./code-experiments/build/matlab/exampleexperiment.m`) 
+  file to include the solver of your choice (instead of random
+  search in `my_optimizer`).
 
 - Execute the modified file either from a system shell like 
   ```
