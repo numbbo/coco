@@ -66,7 +66,7 @@ static double f_lunacek_bi_rastrigin_raw(const double *x,
     sum2 += (data->x_hat[i] - mu1) * (data->x_hat[i] - mu1);
     sum3 += cos(2 * coco_pi * data->z[i]);
   }
-  result = coco_min_double(sum1, d * (double) number_of_variables + s * sum2)
+  result = coco_double_min(sum1, d * (double) number_of_variables + s * sum2)
       + 10. * ((double) number_of_variables - sum3) + 1e4 * penalty;
   coco_free_memory(tmpvect);
 

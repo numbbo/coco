@@ -50,9 +50,9 @@ static double f_step_ellipsoid_raw(const double *x, size_t number_of_variables, 
 
   for (i = 0; i < number_of_variables; ++i) {
     if (fabs(data->x[i]) > 0.5)
-      data->x[i] = coco_round_double(data->x[i]);
+      data->x[i] = coco_double_round(data->x[i]);
     else
-      data->x[i] = coco_round_double(alpha * data->x[i]) / alpha;
+      data->x[i] = coco_double_round(alpha * data->x[i]) / alpha;
   }
 
   for (i = 0; i < number_of_variables; ++i) {
@@ -70,7 +70,7 @@ static double f_step_ellipsoid_raw(const double *x, size_t number_of_variables, 
     result += pow(condition, exponent) * data->xx[i] * data->xx[i];
     ;
   }
-  result = 0.1 * coco_max_double(fabs(x1) * 1.0e-4, result) + penalty + data->fopt;
+  result = 0.1 * coco_double_max(fabs(x1) * 1.0e-4, result) + penalty + data->fopt;
 
   return result;
 }

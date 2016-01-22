@@ -110,7 +110,7 @@ static void logger_bbob_update_t_trigger(logger_bbob_t *logger, size_t number_of
       >= (double) (long) number_of_variables * pow(10, (double) logger->idx_tdim_trigger))
     logger->idx_tdim_trigger++;
 
-  logger->t_trigger = (long) coco_min_double(
+  logger->t_trigger = (long) coco_double_min(
       floor(pow(10, (double) logger->idx_t_trigger / (double) (long) observer_bbob->bbob_nbpts_nbevals)),
       (double) (long) number_of_variables * pow(10, (double) logger->idx_tdim_trigger));
 }
@@ -339,7 +339,7 @@ static void logger_bbob_initialize(logger_bbob_t *logger, coco_problem_t *inner_
   COCO_PATH_MAX - strlen(dataFile_path) - 1);
   coco_join_path(folder_path, sizeof(folder_path), logger->observer->output_folder, dataFile_path,
   NULL);
-  coco_create_path(folder_path);
+  coco_create_directory(folder_path);
   strncat(dataFile_path, "/bbobexp_f",
   COCO_PATH_MAX - strlen(dataFile_path) - 1);
   strncat(dataFile_path, tmpc_funId,
