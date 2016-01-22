@@ -15,7 +15,7 @@ typedef struct {
   double *xopt;
   double **rotation, **x_local, **arr_scales;
   double *peak_values;
-  coco_free_function_t old_free_problem;
+  coco_problem_free_function_t old_free_problem;
 } f_gallagher_data_t;
 
 /**
@@ -30,6 +30,7 @@ static int f_gallagher_compare_doubles(const void *a, const void *b) {
   else
     return 0;
 }
+
 static double f_gallagher_raw(const double *x, const size_t number_of_variables, f_gallagher_data_t *data) {
   size_t i, j; /* Loop over dim */
   double *tmx;
@@ -85,22 +86,22 @@ static double f_gallagher_raw(const double *x, const size_t number_of_variables,
   return result;
 }
 
-static void f_gallagher_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_gallagher_raw(x, self->number_of_variables, self->data);
-  assert(y[0] >= self->best_value[0]);
+static void f_gallagher_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_gallagher_raw(x, problem->number_of_variables, problem->data);
+  assert(y[0] >= problem->best_value[0]);
 }
 
-static void f_gallagher_free(coco_problem_t *self) {
+static void f_gallagher_free(coco_problem_t *problem) {
   f_gallagher_data_t *data;
-  data = self->data;
+  data = problem->data;
   coco_free_memory(data->xopt);
   coco_free_memory(data->peak_values);
-  bbob2009_free_matrix(data->rotation, self->number_of_variables);
-  bbob2009_free_matrix(data->x_local, self->number_of_variables);
+  bbob2009_free_matrix(data->rotation, problem->number_of_variables);
+  bbob2009_free_matrix(data->x_local, problem->number_of_variables);
   bbob2009_free_matrix(data->arr_scales, data->number_of_peaks);
-  self->free_problem = NULL;
-  coco_problem_free(self);
+  problem->problem_free_function = NULL;
+  coco_problem_free(problem);
 
   if (gallagher_peaks != NULL) {
     coco_free_memory(gallagher_peaks);
@@ -166,7 +167,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
 
   /* Initialize all the data of the inner problem */
   bbob2009_unif(gallagher_peaks, number_of_peaks - 1, data->rseed);
-  rperm = (size_t *) coco_allocate_memory((number_of_peaks - 1) * sizeof(size_t));
+  rperm = coco_allocate_vector_size_t(number_of_peaks - 1);
   for (i = 0; i < number_of_peaks - 1; ++i)
     rperm[i] = i;
   qsort(rperm, number_of_peaks - 1, sizeof(size_t), f_gallagher_compare_doubles);
@@ -183,7 +184,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   }
   coco_free_memory(rperm);
 
-  rperm = (size_t *) coco_allocate_memory(dimension * sizeof(size_t));
+  rperm = coco_allocate_vector_size_t(dimension);
   for (i = 0; i < number_of_peaks; ++i) {
     bbob2009_unif(gallagher_peaks, dimension, data->rseed + (long) (1000 * i));
     for (j = 0; j < dimension; ++j)

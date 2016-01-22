@@ -22,17 +22,17 @@ typedef struct {
  * Evaluates the function, increases the number of evaluations and outputs information based on the targets
  * that have been hit.
  */
-static void logger_toy_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void logger_toy_evaluate(coco_problem_t *problem, const double *x, double *y) {
 
   logger_toy_t *logger;
   observer_toy_t *observer_toy;
   double *targets;
 
-  logger = coco_transformed_get_data(self);
+  logger = coco_problem_transformed_get_data(problem);
   observer_toy = (observer_toy_t *) logger->observer->data;
   targets = observer_toy->targets;
 
-  coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
+  coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
   logger->number_of_evaluations++;
 
   /* Add a line for each target that has been hit */
@@ -48,25 +48,25 @@ static void logger_toy_evaluate(coco_problem_t *self, const double *x, double *y
 /**
  * Initializes the toy logger.
  */
-static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *problem) {
+static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inner_problem) {
 
-  logger_toy_t *logger;
-  coco_problem_t *self;
+  logger_toy_t *logger_toy;
+  coco_problem_t *problem;
   FILE *output_file;
 
-  if (problem->number_of_objectives != 1) {
-    coco_warning("logger_toy(): The toy logger shouldn't be used to log a problem with %d objectives", problem->number_of_objectives);
+  if (inner_problem->number_of_objectives != 1) {
+    coco_warning("logger_toy(): The toy logger shouldn't be used to log a problem with %d objectives", inner_problem->number_of_objectives);
   }
 
-  logger = coco_allocate_memory(sizeof(*logger));
-  logger->observer = observer;
-  logger->next_target = 0;
-  logger->number_of_evaluations = 0;
+  logger_toy = coco_allocate_memory(sizeof(*logger_toy));
+  logger_toy->observer = observer;
+  logger_toy->next_target = 0;
+  logger_toy->number_of_evaluations = 0;
 
-  output_file = ((observer_toy_t *) logger->observer->data)->log_file;
-  fprintf(output_file, "\n%s, %s\n", coco_problem_get_id(problem), coco_problem_get_name(problem));
+  output_file = ((observer_toy_t *) logger_toy->observer->data)->log_file;
+  fprintf(output_file, "\n%s, %s\n", coco_problem_get_id(inner_problem), coco_problem_get_name(inner_problem));
 
-  self = coco_transformed_allocate(problem, logger, NULL);
-  self->evaluate_function = logger_toy_evaluate;
-  return self;
+  problem = coco_problem_transformed_allocate(inner_problem, logger_toy, NULL);
+  problem->evaluate_function = logger_toy_evaluate;
+  return problem;
 }

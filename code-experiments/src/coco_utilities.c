@@ -1,3 +1,10 @@
+/**
+ * @file coco_utilities.c
+ * @brief Definitions of miscellaneous functions used throughout the COCO framework.
+ *
+ * @note Most of the file/directory manipulation functions depend on the operating system.
+ */
+
 #include "coco_platform.h"
 
 #include <stdarg.h>
@@ -11,28 +18,60 @@
 #include "coco_internal.h"
 #include "coco_string.c"
 
-/***********************************
- * Global definitions in this file
- * which are not in coco.h 
- ***********************************/
-void coco_join_path(char *path, size_t path_max_length, ...);
-int coco_path_exists(const char *path);
-void coco_create_path(const char *path);
-void coco_create_unique_filename(char **file_name);
-void coco_create_unique_path(char **path);
-int coco_create_directory(const char *path);
-int coco_remove_directory_msc(const char *path);
-int coco_remove_directory_no_msc(const char *path);
-double *coco_duplicate_vector(const double *src, const size_t number_of_elements);
-static int coco_options_read_int(const char *options, const char *name, int *pointer);
-static int coco_options_read_string(const char *options, const char *name, char *pointer);
-static int coco_options_read(const char *options, const char *name, const char *format, void *pointer);
-double coco_round_double(const double a);
-double coco_max_double(const double a, const double b);
-double coco_min_double(const double a, const double b);
-/***********************************/
+/***********************************************************************************************************/
 
-void coco_join_path(char *path, size_t path_max_length, ...) {
+/**
+ * Initialize the logging level to COCO_INFO.
+ */
+static coco_log_level_type_e coco_log_level = COCO_INFO;
+
+/**
+ * @param log_level Denotes the level of information given to the user through the standard output and
+ * error streams. Can take on the values:
+ * - "error" (only error messages are output),
+ * - "warning" (only error and warning messages are output),
+ * - "info" (only error, warning and info messages are output) and
+ * - "debug" (all messages are output).
+ * - "" does not set a new value
+ * The default value is info.
+ *
+ * @return The previous coco_log_level value as an immutable string.
+ */
+const char *coco_set_log_level(const char *log_level) {
+
+  coco_log_level_type_e previous_log_level = coco_log_level;
+
+  if (strcmp(log_level, "error") == 0)
+    coco_log_level = COCO_ERROR;
+  else if (strcmp(log_level, "warning") == 0)
+    coco_log_level = COCO_WARNING;
+  else if (strcmp(log_level, "info") == 0)
+    coco_log_level = COCO_INFO;
+  else if (strcmp(log_level, "debug") == 0)
+    coco_log_level = COCO_DEBUG;
+  else if (strcmp(log_level, "") == 0) {
+    /* Do nothing */
+  } else {
+    coco_warning("coco_set_log_level(): unknown level %s", log_level);
+  }
+
+  if (previous_log_level == COCO_ERROR)
+    return "error";
+  else if (previous_log_level == COCO_WARNING)
+    return "warning";
+  else if (previous_log_level == COCO_INFO)
+    return "info";
+  else if (previous_log_level == COCO_DEBUG)
+    return "debug";
+  else {
+    coco_error("coco_set_log_level(): unknown previous log level");
+    return "";
+  }
+}
+
+/***********************************************************************************************************/
+
+static void coco_join_path(char *path, size_t path_max_length, ...) {
   const size_t path_separator_length = strlen(coco_path_separator);
   va_list args;
   char *path_component;
@@ -53,7 +92,7 @@ void coco_join_path(char *path, size_t path_max_length, ...) {
   va_end(args);
 }
 
-int coco_path_exists(const char *path) {
+static int coco_path_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
   DWORD dwAttrib = GetFileAttributes(path);
@@ -67,7 +106,7 @@ int coco_path_exists(const char *path) {
   return res;
 }
 
-int coco_file_exists(const char *path) {
+static int coco_file_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
   DWORD dwAttrib = GetFileAttributes(path);
@@ -81,7 +120,21 @@ int coco_file_exists(const char *path) {
   return res;
 }
 
-void coco_create_path(const char *path) {
+/**
+ * Creates a directory with full privileges for the user (should work across different platforms/compilers).
+ * Returns 0 on successful completion, and -1 on error.
+ */
+static int coco_create_directory(const char *path) {
+#if _MSC_VER
+  return _mkdir(path);
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+  return mkdir(path);
+#else
+  return mkdir(path, S_IRWXU);
+#endif
+}
+
+static void coco_create_path(const char *path) {
   /* current version should now work with Windows, Linux, and Mac */
   char *tmp = NULL;
   char *message;
@@ -124,7 +177,7 @@ void coco_create_path(const char *path) {
  * 02-filename.ext will be tried, and so on. If 99-filename.ext exists as well, the function returns
  * an error.
  */
-void coco_create_unique_filename(char **file_name) {
+static void coco_create_unique_filename(char **file_name) {
 
   int counter = 1;
   char *new_file_name;
@@ -161,7 +214,7 @@ void coco_create_unique_filename(char **file_name) {
  * If path already exists, path-01 will be tried. If this one exists as well, path-02 will be tried,
  * and so on. If path-99 exists as well, the function returns an error.
  */
-void coco_create_unique_path(char **path) {
+static void coco_create_unique_path(char **path) {
 
   int counter = 1;
   char *new_path;
@@ -193,37 +246,10 @@ void coco_create_unique_path(char **path) {
 }
 
 /**
- * Creates a directory with full privileges for the user (should work across different platforms/compilers).
- * Returns 0 on successful completion, and -1 on error.
- */
-int coco_create_directory(const char *path) {
-#if _MSC_VER
-  return _mkdir(path);
-#elif defined(__MINGW32__) || defined(__MINGW64__)
-  return mkdir(path);
-#else
-  return mkdir(path, S_IRWXU);
-#endif
-}
-
-/**
- * The method should work across different platforms/compilers.
- * @path The path to the directory
- * @return 0 on successful completion, and -1 on error.
- */
-int coco_remove_directory(const char *path) {
-#if _MSC_VER
-  return coco_remove_directory_msc(path);
-#else
-  return coco_remove_directory_no_msc(path);
-#endif
-}
-
-/**
  * Removes the given directory and all its contents (when using Microsoft Visual Studio's compiler).
  * Returns 0 on successful completion, and -1 on error.
  */
-int coco_remove_directory_msc(const char *path) {
+static int coco_remove_directory_msc(const char *path) {
 #if _MSC_VER
   WIN32_FIND_DATA find_data_file;
   HANDLE find_handle = NULL;
@@ -282,7 +308,7 @@ int coco_remove_directory_msc(const char *path) {
  * Removes the given directory and all its contents (when NOT using Microsoft Visual Studio's compiler).
  * Returns 0 on successful completion, and -1 on error.
  */
-int coco_remove_directory_no_msc(const char *path) {
+static int coco_remove_directory_no_msc(const char *path) {
 #if !_MSC_VER
   DIR *d = opendir(path);
   int r = -1;
@@ -335,12 +361,37 @@ int coco_remove_directory_no_msc(const char *path) {
 #endif
 }
 
+/**
+ * The method should work across different platforms/compilers.
+ * @path The path to the directory
+ * @return 0 on successful completion, and -1 on error.
+ */
+int coco_remove_directory(const char *path) {
+#if _MSC_VER
+  return coco_remove_directory_msc(path);
+#else
+  return coco_remove_directory_no_msc(path);
+#endif
+}
+
+/***********************************************************************************************************/
+
 double *coco_allocate_vector(const size_t number_of_elements) {
   const size_t block_size = number_of_elements * sizeof(double);
   return (double *) coco_allocate_memory(block_size);
 }
 
-double *coco_duplicate_vector(const double *src, const size_t number_of_elements) {
+static size_t *coco_allocate_vector_size_t(const size_t number_of_elements) {
+  const size_t block_size = number_of_elements * sizeof(size_t);
+  return (size_t *) coco_allocate_memory(block_size);
+}
+
+static char *coco_allocate_string(const size_t number_of_elements) {
+  const size_t block_size = number_of_elements * sizeof(char);
+  return (char *) coco_allocate_memory(block_size);
+}
+
+static double *coco_duplicate_vector(const double *src, const size_t number_of_elements) {
   size_t i;
   double *dst;
 
@@ -352,6 +403,37 @@ double *coco_duplicate_vector(const double *src, const size_t number_of_elements
     dst[i] = src[i];
   }
   return dst;
+}
+
+/***********************************************************************************************************/
+
+/**
+ * Parse options in the form "name1 : value1 name2: value2". Formatting requirements:
+ * - name and value need to be separated by a semicolon (spaces are optional)
+ * - value needs to be a single string (no spaces allowed)
+ * Returns the number of successful assignments.
+ */
+static int coco_options_read(const char *options, const char *name, const char *format, void *pointer) {
+
+  long i1, i2;
+
+  if ((!options) || (strlen(options) == 0))
+    return 0;
+
+  i1 = coco_strfind(options, name);
+  if (i1 < 0)
+    return 0;
+  i2 = i1 + coco_strfind(&options[i1], ":") + 1;
+
+  /* Remove trailing whitespaces */
+  while (isspace((unsigned char) options[i2]))
+    i2++;
+
+  if (i2 <= i1){
+    return 0;
+  }
+
+  return sscanf(&options[i2], format, pointer);
 }
 
 /**
@@ -457,83 +539,6 @@ static int coco_options_read_values(const char *options, const char *name, char 
   return i;
 }
 
-/**
- * Parse options in the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon (spaces are optional)
- * - value needs to be a single string (no spaces allowed)
- * Returns the number of successful assignments.
- */
-static int coco_options_read(const char *options, const char *name, const char *format, void *pointer) {
-
-  long i1, i2;
-
-  if ((!options) || (strlen(options) == 0))
-    return 0;
-
-  i1 = coco_strfind(options, name);
-  if (i1 < 0)
-    return 0;
-  i2 = i1 + coco_strfind(&options[i1], ":") + 1;
-
-  /* Remove trailing whitespaces */
-  while (isspace((unsigned char) options[i2]))
-    i2++;
-
-  if (i2 <= i1){
-    return 0;
-  }
-
-  return sscanf(&options[i2], format, pointer);
-}
-
-/**
- * Splits a string based on the given delimiter. Returns a pointer to the resulting substrings with NULL
- * as the last one. The memory of the result needs to be freed by the caller.
- */
-static char **coco_string_split(const char *string, const char delimiter) {
-
-  char **result;
-  char *str_copy, *ptr, *token;
-  char str_delimiter[2];
-  size_t i;
-  size_t count = 1;
-
-  str_copy = coco_strdup(string);
-
-  /* Counts the parts between delimiters */
-  ptr = str_copy;
-  while (*ptr != '\0') {
-    if (*ptr == delimiter) {
-      count++;
-    }
-    ptr++;
-  }
-  /* Makes room for an empty string that will be appended at the end */
-  count++;
-
-  result = coco_allocate_memory(count * sizeof(char*));
-
-  /* Iterates through tokens
-   * NOTE: strtok() ignores multiple delimiters, therefore the final number of detected substrings might be
-   * lower than the count. This is OK. */
-  i = 0;
-  /* A char* delimiter needs to be used, otherwise strtok() can surprise */
-  str_delimiter[0] = delimiter;
-  str_delimiter[1] = '\0';
-  token = strtok(str_copy, str_delimiter);
-  while (token)
-  {
-      assert(i < count);
-      *(result + i++) = coco_strdup(token);
-      token = strtok(NULL, str_delimiter);
-  }
-  *(result + i) = NULL;
-
-  coco_free_memory(str_copy);
-
-  return result;
-}
-
 static size_t coco_numbers_count(const size_t *numbers, const char *name) {
 
   size_t count = 0;
@@ -589,7 +594,7 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
     return NULL;
   }
 
-  result = coco_allocate_memory((COCO_MAX_INSTANCES + 1) * sizeof(size_t));
+  result = coco_allocate_vector_size_t(COCO_MAX_INSTANCES + 1);
 
   /* Split string to ranges w.r.t commas */
   ranges = coco_string_split(string, ',');
@@ -748,12 +753,14 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
   return result;
 }
 
+/***********************************************************************************************************/
+
 /* Some math functions which are not contained in C89 standard */
-double coco_round_double(const double number) {
+static double coco_double_round(const double number) {
   return floor(number + 0.5);
 }
 
-double coco_max_double(const double a, const double b) {
+static double coco_double_max(const double a, const double b) {
   if (a >= b) {
     return a;
   } else {
@@ -761,7 +768,7 @@ double coco_max_double(const double a, const double b) {
   }
 }
 
-double coco_min_double(const double a, const double b) {
+static double coco_double_min(const double a, const double b) {
   if (a <= b) {
     return a;
   } else {
@@ -772,37 +779,8 @@ double coco_min_double(const double a, const double b) {
 /**
  * Returns 1 if |a - b| < accuracy and 0 otherwise
  */
-int coco_doubles_almost_equal(const double a, const double b, const double accuracy) {
+static int coco_double_almost_equal(const double a, const double b, const double accuracy) {
   return ((fabs(a - b) < accuracy) == 0);
 }
 
-/* Creates and returns a string with removed characters from @{from} to @{to}.
- * The caller is responsible for freeing the allocated memory. */
-static char *coco_remove_from_string(char *string, char *from, char *to) {
-
-  char *result, *start, *stop;
-
-  result = coco_strdup(string);
-
-  if (strcmp(from, "") == 0) {
-    /* Remove from the start */
-    start = result;
-  } else
-    start = strstr(result, from);
-
-  if (strcmp(to, "") == 0) {
-    /* Remove until the end */
-    stop = result + strlen(result);
-  } else
-    stop = strstr(result, to);
-
-  if ((start == NULL) || (stop == NULL) || (stop < start)) {
-    coco_error("coco_remove_from_string(): failed to remove characters between %s and %s from string %s",
-        from, to, string);
-    return NULL; /* Never reached */
-  }
-
-  memmove(start, stop, strlen(stop) + 1);
-
-  return result;
-}
+/***********************************************************************************************************/

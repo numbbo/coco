@@ -27,9 +27,9 @@ static double f_rosenbrock_raw(const double *x, const size_t number_of_variables
   return result;
 }
 
-static void f_rosenbrock_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_rosenbrock_raw(x, self->number_of_variables);
+static void f_rosenbrock_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_rosenbrock_raw(x, problem->number_of_variables);
 }
 
 static coco_problem_t *f_rosenbrock_allocate(const size_t number_of_variables) {

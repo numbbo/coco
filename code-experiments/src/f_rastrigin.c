@@ -27,9 +27,9 @@ static double f_rastrigin_raw(const double *x, const size_t number_of_variables)
   return result;
 }
 
-static void f_rastrigin_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_rastrigin_raw(x, self->number_of_variables);
+static void f_rastrigin_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_rastrigin_raw(x, problem->number_of_variables);
 }
 
 static coco_problem_t *f_rastrigin_allocate(const size_t number_of_variables) {

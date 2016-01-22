@@ -37,44 +37,44 @@ static void observer_toy_free(void *stuff) {
  * - file_name : name_of_the_output_file (name of the output file; default value is "first_hitting_times.txt")
  * - number_of_targets : 1-100 (number of targets; default value is 20)
  */
-static void observer_toy(coco_observer_t *self, const char *options) {
+static void observer_toy(coco_observer_t *observer, const char *options) {
 
-  observer_toy_t *data;
+  observer_toy_t *observer_toy;
   char *string_value;
   char *file_name;
   size_t i;
 
-  data = coco_allocate_memory(sizeof(*data));
+  observer_toy = coco_allocate_memory(sizeof(*observer_toy));
 
   /* Read file_name and number_of_targets from the options and use them to initialize the observer */
-  string_value = (char *) coco_allocate_memory(COCO_PATH_MAX);
+  string_value = coco_allocate_string(COCO_PATH_MAX);
   if (coco_options_read_string(options, "file_name", string_value) == 0) {
     strcpy(string_value, "first_hitting_times.txt");
   }
-  if ((coco_options_read_size_t(options, "number_of_targets", &data->number_of_targets) == 0)
-      || (data->number_of_targets < 1) || (data->number_of_targets > 100)) {
-    data->number_of_targets = 20;
+  if ((coco_options_read_size_t(options, "number_of_targets", &observer_toy->number_of_targets) == 0)
+      || (observer_toy->number_of_targets < 1) || (observer_toy->number_of_targets > 100)) {
+    observer_toy->number_of_targets = 20;
   }
 
   /* Open log_file */
-  file_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
-  memcpy(file_name, self->output_folder, strlen(self->output_folder) + 1);
+  file_name = coco_allocate_string(COCO_PATH_MAX);
+  memcpy(file_name, observer->output_folder, strlen(observer->output_folder) + 1);
   coco_create_path(file_name);
   coco_join_path(file_name, COCO_PATH_MAX, string_value, NULL);
 
-  data->log_file = fopen(file_name, "a");
-  if (data->log_file == NULL) {
+  observer_toy->log_file = fopen(file_name, "a");
+  if (observer_toy->log_file == NULL) {
     coco_error("observer_toy(): failed to open file %s.", file_name);
     return; /* Never reached */
   }
 
   /* Compute targets */
-  data->targets = coco_allocate_vector(data->number_of_targets);
-  for (i = data->number_of_targets; i > 0; --i) {
-    data->targets[i - 1] = pow(10.0, (double) (long) (data->number_of_targets - i) - 9.0);
+  observer_toy->targets = coco_allocate_vector(observer_toy->number_of_targets);
+  for (i = observer_toy->number_of_targets; i > 0; --i) {
+    observer_toy->targets[i - 1] = pow(10.0, (double) (long) (observer_toy->number_of_targets - i) - 9.0);
   }
 
-  self->logger_initialize_function = logger_toy;
-  self->data_free_function = observer_toy_free;
-  self->data = data;
+  observer->logger_initialize_function = logger_toy;
+  observer->data_free_function = observer_toy_free;
+  observer->data = observer_toy;
 }

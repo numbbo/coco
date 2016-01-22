@@ -7,21 +7,19 @@ typedef struct {
   double *M, *b, *x;
 } transform_vars_affine_data_t;
 
-static void transform_vars_affine_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void transform_vars_affine_evaluate(coco_problem_t *problem, const double *x, double *y) {
   size_t i, j;
   transform_vars_affine_data_t *data;
   coco_problem_t *inner_problem;
 
-  data = coco_transformed_get_data(self);
-  inner_problem = coco_transformed_get_inner_problem(self);
+  data = coco_problem_transformed_get_data(problem);
+  inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
   for (i = 0; i < inner_problem->number_of_variables; ++i) {
-    /* data->M has self->number_of_variables columns and
-     * problem->inner_problem->number_of_variables rows.
-     */
-    const double *current_row = data->M + i * self->number_of_variables;
+    /* data->M has problem->number_of_variables columns and inner_problem->number_of_variables rows. */
+    const double *current_row = data->M + i * problem->number_of_variables;
     data->x[i] = data->b[i];
-    for (j = 0; j < self->number_of_variables; ++j) {
+    for (j = 0; j < problem->number_of_variables; ++j) {
       data->x[i] += x[j] * current_row[j];
     }
   }
@@ -52,7 +50,7 @@ static coco_problem_t *f_transform_vars_affine(coco_problem_t *inner_problem,
                                                const double *M,
                                                const double *b,
                                                const size_t number_of_variables) {
-  coco_problem_t *self;
+  coco_problem_t *problem;
   transform_vars_affine_data_t *data;
   size_t entries_in_M;
 
@@ -62,7 +60,7 @@ static coco_problem_t *f_transform_vars_affine(coco_problem_t *inner_problem,
   data->b = coco_duplicate_vector(b, inner_problem->number_of_variables);
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  self = coco_transformed_allocate(inner_problem, data, transform_vars_affine_free);
-  self->evaluate_function = transform_vars_affine_evaluate;
-  return self;
+  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_affine_free);
+  problem->evaluate_function = transform_vars_affine_evaluate;
+  return problem;
 }

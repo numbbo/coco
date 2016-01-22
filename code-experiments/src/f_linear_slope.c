@@ -31,9 +31,9 @@ static double f_linear_slope_raw(const double *x,
   return result;
 }
 
-static void f_linear_slope_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_linear_slope_raw(x, self->number_of_variables, self->best_parameter);
+static void f_linear_slope_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_linear_slope_raw(x, problem->number_of_variables, problem->best_parameter);
 }
 
 static coco_problem_t *f_linear_slope_allocate(const size_t number_of_variables, const double *best_parameter) {

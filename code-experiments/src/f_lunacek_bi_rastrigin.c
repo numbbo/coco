@@ -11,7 +11,7 @@ typedef struct {
   double *xopt, fopt;
   double **rot1, **rot2;
   long rseed;
-  coco_free_function_t old_free_problem;
+  coco_problem_free_function_t old_free_problem;
 } f_lunacek_bi_rastrigin_data_t;
 
 static double f_lunacek_bi_rastrigin_raw(const double *x,
@@ -73,25 +73,25 @@ static double f_lunacek_bi_rastrigin_raw(const double *x,
   return result;
 }
 
-static void f_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_lunacek_bi_rastrigin_raw(x, self->number_of_variables, self->data);
+static void f_lunacek_bi_rastrigin_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_lunacek_bi_rastrigin_raw(x, problem->number_of_variables, problem->data);
 }
 
-static void f_lunacek_bi_rastrigin_free(coco_problem_t *self) {
+static void f_lunacek_bi_rastrigin_free(coco_problem_t *problem) {
   f_lunacek_bi_rastrigin_data_t *data;
-  data = self->data;
+  data = problem->data;
   coco_free_memory(data->x_hat);
   coco_free_memory(data->z);
   coco_free_memory(data->xopt);
-  bbob2009_free_matrix(data->rot1, self->number_of_variables);
-  bbob2009_free_matrix(data->rot2, self->number_of_variables);
+  bbob2009_free_matrix(data->rot1, problem->number_of_variables);
+  bbob2009_free_matrix(data->rot2, problem->number_of_variables);
 
   /* Let the generic free problem code deal with all of the
    * coco_problem_t fields.
    */
-  self->free_problem = NULL;
-  coco_problem_free(self);
+  problem->problem_free_function = NULL;
+  coco_problem_free(problem);
 }
 
 /* Note: there is no separate f_lunacek_bi_rastrigin_allocate() function! */

@@ -31,17 +31,17 @@ static double f_attractive_sector_raw(const double *x,
   return result;
 }
 
-static void f_attractive_sector_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_attractive_sector_raw(x, self->number_of_variables, self->data);
+static void f_attractive_sector_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_attractive_sector_raw(x, problem->number_of_variables, problem->data);
 }
 
-static void f_attractive_sector_free(coco_problem_t *self) {
+static void f_attractive_sector_free(coco_problem_t *problem) {
   f_attractive_sector_data_t *data;
-  data = self->data;
+  data = problem->data;
   coco_free_memory(data->xopt);
-  self->free_problem = NULL;
-  coco_problem_free(self);
+  problem->problem_free_function = NULL;
+  coco_problem_free(problem);
 }
 
 static coco_problem_t *f_attractive_sector_allocate(const size_t number_of_variables, const double *xopt) {

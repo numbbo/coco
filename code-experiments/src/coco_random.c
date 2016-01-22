@@ -38,7 +38,7 @@ static void coco_random_generate(coco_random_state_t *state) {
 }
 
 coco_random_state_t *coco_random_new(uint32_t seed) {
-  coco_random_state_t *state = (coco_random_state_t *) coco_allocate_memory(sizeof(coco_random_state_t));
+  coco_random_state_t *state = (coco_random_state_t *) coco_allocate_memory(sizeof(*state));
   size_t i;
   /* Expand seed to fill initial state array. */
   for (i = 0; i < LONG_LAG; ++i) {

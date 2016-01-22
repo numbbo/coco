@@ -1,4 +1,4 @@
-#include "coco_generics.c"
+#include "coco_problem.c"
 #include "f_bueche_rastrigin.c"
 #include "f_ellipsoid.c"
 #include "f_linear_slope.c"
