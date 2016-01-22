@@ -10,7 +10,9 @@ observer_name = 'bbob-biobj';
 observer_options = ['result_folder: SMSEMOA_on_bbob-biobj \',...
                     'algorithm_name: SMS-EMOA \',...
                     'algorithm_info: "SMS-EMOA without restarts" \', ...
-                    'log_level: info'];             
+                    'log_level: info'];      
+             
+                 
                 
 suite = cocoSuite(suite_name, suite_instance, suite_options);
 observer = cocoObserver(observer_name, observer_options);
