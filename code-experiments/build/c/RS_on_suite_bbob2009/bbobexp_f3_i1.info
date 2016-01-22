@@ -1,0 +1,13 @@
+funcId = 3, DIM = 2, Precision = 1.000e-08, algId = 'RS'
+%
+data_f3/bbobexp_f3_DIM2_i1.dat, 1:100|3.8e+00, 2:100|1.5e+01, 3:100|9.2e+00, 4:100|7.0e+00, 5:100|6.4e+00funcId = 3, DIM = 3, Precision = 1.000e-08, algId = 'RS'
+%
+data_f3/bbobexp_f3_DIM3_i1.dat, 1:100|2.3e+01, 2:100|2.2e+01, 3:100|1.6e+01, 4:100|2.9e+01, 5:100|3.5e+01funcId = 3, DIM = 5, Precision = 1.000e-08, algId = 'RS'
+%
+data_f3/bbobexp_f3_DIM5_i1.dat, 1:100|5.0e+01, 2:100|8.1e+01, 3:100|7.2e+01, 4:100|5.0e+01, 5:100|3.7e+01funcId = 3, DIM = 10, Precision = 1.000e-08, algId = 'RS'
+%
+data_f3/bbobexp_f3_DIM10_i1.dat, 1:100|2.4e+02, 2:100|1.4e+02, 3:100|2.4e+02, 4:100|2.2e+02, 5:100|2.3e+02funcId = 3, DIM = 20, Precision = 1.000e-08, algId = 'RS'
+%
+data_f3/bbobexp_f3_DIM20_i1.dat, 1:100|9.5e+02, 2:100|7.3e+02, 3:100|7.7e+02, 4:100|6.8e+02, 5:100|6.6e+02funcId = 3, DIM = 40, Precision = 1.000e-08, algId = 'RS'
+%
+data_f3/bbobexp_f3_DIM40_i1.dat, 1:100|2.3e+03, 2:100|2.3e+03, 3:100|2.1e+03, 4:100|1.5e+03, 5:100|2.3e+03

@@ -1,0 +1,13 @@
+funcId = 23, DIM = 2, Precision = 1.000e-08, algId = 'RS'
+%
+data_f23/bbobexp_f23_DIM2_i6.dat, 6:100|4.4e+00, 7:100|4.9e+00, 8:100|3.9e+00, 9:100|3.6e+00, 10:100|3.7e+00funcId = 23, DIM = 3, Precision = 1.000e-08, algId = 'RS'
+%
+data_f23/bbobexp_f23_DIM3_i6.dat, 6:100|4.5e+00, 7:100|3.5e+00, 8:100|8.4e-01, 9:100|1.7e+00, 10:100|2.9e+00funcId = 23, DIM = 5, Precision = 1.000e-08, algId = 'RS'
+%
+data_f23/bbobexp_f23_DIM5_i6.dat, 6:100|2.6e+00, 7:100|3.1e+00, 8:100|3.2e+00, 9:100|3.8e+00, 10:100|2.8e+00funcId = 23, DIM = 10, Precision = 1.000e-08, algId = 'RS'
+%
+data_f23/bbobexp_f23_DIM10_i6.dat, 6:100|3.5e+00, 7:100|2.1e+00, 8:100|1.8e+00, 9:100|4.2e+00, 10:100|2.7e+00funcId = 23, DIM = 20, Precision = 1.000e-08, algId = 'RS'
+%
+data_f23/bbobexp_f23_DIM20_i6.dat, 6:100|5.6e+00, 7:100|6.5e+00, 8:100|6.4e+00, 9:100|5.6e+00, 10:100|3.7e+00funcId = 23, DIM = 40, Precision = 1.000e-08, algId = 'RS'
+%
+data_f23/bbobexp_f23_DIM40_i6.dat, 6:100|7.5e+00, 7:100|8.7e+00, 8:100|7.8e+00, 9:100|7.3e+00, 10:100|7.3e+00
