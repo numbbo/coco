@@ -89,14 +89,12 @@ def systeminfo():
     print 'Numpy %s' % numpy.__version__
     import matplotlib
     print 'Matplotlib %s' % matplotlib.__version__
-    import bbob_pproc
-    print 'bbob_pproc %s' % bbob_pproc.__version__
+    try:
+        from . import __version__ as version
+    except:
+        from bbob_pproc import __version__ as version
+    print 'bbob_pproc %s' % version
 
-
-#def examples():
-#    """Execute example script from examples.py"""
-#
-#    from bbob_pproc import examples
 
 #def plot(dsList):
 #    """Generate some plots given a DataSetList instance."""

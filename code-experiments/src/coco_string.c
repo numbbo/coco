@@ -4,12 +4,6 @@
 
 #include "coco.h"
 
-static char *coco_strdup(const char *string);
-char *coco_strdupf(const char *str, ...);
-static char *coco_vstrdupf(const char *str, va_list args);
-static char *coco_strconcat(const char *s1, const char *s2);
-static long coco_strfind(const char *base, const char *seq);
-
 /**
  * coco_strdup(string):
  *
@@ -117,3 +111,86 @@ static long coco_strfind(const char *base, const char *seq) {
   }
   return -1;
 }
+
+
+/**
+ * Splits a string based on the given delimiter. Returns a pointer to the resulting substrings with NULL
+ * as the last one. The memory of the result needs to be freed by the caller.
+ */
+static char **coco_string_split(const char *string, const char delimiter) {
+
+  char **result;
+  char *str_copy, *ptr, *token;
+  char str_delimiter[2];
+  size_t i;
+  size_t count = 1;
+
+  str_copy = coco_strdup(string);
+
+  /* Counts the parts between delimiters */
+  ptr = str_copy;
+  while (*ptr != '\0') {
+    if (*ptr == delimiter) {
+      count++;
+    }
+    ptr++;
+  }
+  /* Makes room for an empty string that will be appended at the end */
+  count++;
+
+  result = coco_allocate_memory(count * sizeof(char*));
+
+  /* Iterates through tokens
+   * NOTE: strtok() ignores multiple delimiters, therefore the final number of detected substrings might be
+   * lower than the count. This is OK. */
+  i = 0;
+  /* A char* delimiter needs to be used, otherwise strtok() can surprise */
+  str_delimiter[0] = delimiter;
+  str_delimiter[1] = '\0';
+  token = strtok(str_copy, str_delimiter);
+  while (token)
+  {
+      assert(i < count);
+      *(result + i++) = coco_strdup(token);
+      token = strtok(NULL, str_delimiter);
+  }
+  *(result + i) = NULL;
+
+  coco_free_memory(str_copy);
+
+  return result;
+}
+
+
+
+/* Creates and returns a string with removed characters from @{from} to @{to}.
+ * The caller is responsible for freeing the allocated memory. */
+static char *coco_remove_from_string(char *string, char *from, char *to) {
+
+  char *result, *start, *stop;
+
+  result = coco_strdup(string);
+
+  if (strcmp(from, "") == 0) {
+    /* Remove from the start */
+    start = result;
+  } else
+    start = strstr(result, from);
+
+  if (strcmp(to, "") == 0) {
+    /* Remove until the end */
+    stop = result + strlen(result);
+  } else
+    stop = strstr(result, to);
+
+  if ((start == NULL) || (stop == NULL) || (stop < start)) {
+    coco_error("coco_remove_from_string(): failed to remove characters between %s and %s from string %s",
+        from, to, string);
+    return NULL; /* Never reached */
+  }
+
+  memmove(start, stop, strlen(stop) + 1);
+
+  return result;
+}
+
