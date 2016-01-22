@@ -1,12 +1,12 @@
 numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
-This code reimplements the original Comparing Continous Optimizer platform (http://coco.gforge.inria.fr/),
-now rewritten fully in ANSI C with the other languages calling the C code. As the name suggests,
+This code reimplements the original Comparing Continous Optimizer platform, now 
+rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
 the code provides a platform to benchmark and compare continuous optimizers, AKA non-linear 
-solvers for numerical optimization. Languages currently available are C, Java, MATLAB/Octave, and Python. 
-Support for C++ is expected to be available in the near future. Contributions to link further languages are 
-more than welcome.
+solvers for numerical optimization. Languages currently available are `C`, `Java`, 
+`MATLAB/Octave`, and `Python`. Support for `C++` is expected to be available in the near 
+future. Contributions to link further languages (including `C++`) are more than welcome.
 
 See [here](http://numbbo.github.io/workshops) and [here](http://coco.gforge.inria.fr/) and 
 [further links](#Further-Links) below to learn more about the ideas behind CoCO.
@@ -35,10 +35,11 @@ For using `git` under Windows (optional), we recommend installing [TortoiseGit](
 ### Language Specifics
 _Additional_ requirements for running an algorithm in a specific language.
 
-* Java: any Java Development Kit (JDK), such that `javac` and `javah` are callable 
+* Java: any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
   (i.e. in the system path). 
-* MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.txt)
-* Octave: needs to be installed.
+* MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
+* Octave: tested with Octave 4.0.0 but older versions might work. Make sure `octave` can be called from
+  the shell without closing the shell on exit, for details, see [here](./code-experiments/build/matlab/README.md)
 
 ### Guaranties (None)
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
@@ -76,36 +77,42 @@ Otherwise we will be happy if you can document them in detail on the
     python do.py run-octave
     python do.py run-python
   ```  
-  depending on which language is used to run the experiments. `run-*` will build the 
+  depending on which language shall be used to run the experiments. `run-*` will build the 
   respective code and run the example experiment once. The build result and the example
   experiment code can be found under `code-experiments/build/<language>` (`<language>=matlab` 
-  for Octave). 
+  for Octave). `python do.py` lists all available commands. 
   
 3. On the computer where experiment data shall be post-processed, run
   ```
     python do.py install-postprocessing
   ```
-  to (user-locally) install the post-processing. 
+  to (user-locally) install the post-processing. From here on, `do.py` has done
+  its job and is only needed again for updating the builds to a new release.
   
-4. If the example experiment runs, **connect** your favorite algorithm
-  to Coco: copy the `code-experiments/build/YOUR-FAVORITE-LANGUAGE` folder to
-  another location. Replace the call to the random search optimizer in the
-  example experiment file by a call to your algorithm (the details vary), see
-  respective the read-me's and example experiment files:
+  
+4. **Copy** the folder `code-experiments/build/YOUR-FAVORITE-LANGUAGE` and
+  its content to another location. In Python it is sufficient to copy the 
+  file `example_experiment.py`. Run the example experiment (it already is
+  compiled, in case). As the details vary, see the respective read-me's 
+  and/or example experiment files:
 
   - `C` [read me](./coco-experiments/build/c/README.txt) 
     and [example experiment](./code-experiments/build/c/example_experiment.c)
-  - `Java` [read me](./code-experiments/build/java/README.txt)
+  - `Java` [read me](./code-experiments/build/java/README.md)
     and [example experiment](./code-experiments/build/java/ExampleExperiment.java)
   - `Matlab/Octave` [read me](./code-experiments/build/matlab/README.md)
     and [example experiment](./code-experiments/build/matlab/exampleexperiment.m) 
   - `Python` [read me](./code-experiments/build/python/README.md)
     and [example experiment`](./code-experiments/build/python/example_experiment.py)
 
-  Another entry point for your own experiments can be
-  the `code-experiments/examples` folder. In any case, **update** the output
-  result_folder and the algorithm_name and -info in the observer options in the
-  experiment file.
+  If the example experiment runs, **connect** your favorite algorithm
+  to Coco: replace the call to the random search optimizer in the
+  example experiment file by a call to your algorithm (see above).
+  **Update** the output `result_folder`, the `algorithm_name` and `algorithm_info` 
+  of the observer options in the example experiment file.
+
+  Another entry point for your own experiments can be the `code-experiments/examples`
+  folder. 
 
 5. Now you can **run** your favorite algorithm on the `bbob-biobj` (for
   multi-objective algorithms) or on the `bbob` suite (for single-objective
@@ -113,7 +120,7 @@ Otherwise we will be happy if you can document them in detail on the
   `result_folder`.
 
   <a name="Getting-Started-pp"></a>
-6.  **Postprocess** that data from the results folder by typing
+6.  **Postprocess** the data from the results folder by typing
 
     ```
     python -m bbob_pproc YOURDATAFOLDER [MORE_FOLDERS]
@@ -122,12 +129,12 @@ Otherwise we will be happy if you can document them in detail on the
   The name `bbob_pproc` will become `cocopp` in future. Any subfolder in the
   folder arguments will be searched for logged data. That is, experiments from
   different batches can be in different folders collected under a single "root" 
-  folder. We can also compare more than one algorithm by specifying
+  `YOURDATAFOLDER` folder. We can also compare more than one algorithm by specifying
   several data result folders generated by different algorithms.
   
-  A folder named `ppdata` by default will be generated (the folder name can be
-  changed by the `-o FOLDERNAME` option), which contains all output from the 
-  post-processing. 
+  A folder, `ppdata` by default, will be generated, which contains all output from 
+  the post-processing. Data are overwritten, it is therefore useful to change the 
+  output folder name with the `-o FOLDERNAME` option.
 
   Within the postprocessing's output folder, you will find pdfs of all kinds
   of plots (e.g. data profiles). With the `--svg` option, figures for the
@@ -359,9 +366,10 @@ Details
   different projects.
 
 - [Cython](http://docs.cython.org/src/quickstart/install.html) is used to
-  compile the C interface in `build/python/interface.pyx`. The Python module
-  installation file `setup.py` uses the compiled `interface.c`, if
-  `interface.pyx` has not changed. 
+  compile the C to Python interface in `build/python/interface.pyx`. The Python
+  module installation file `setup.py` uses the compiled `interface.c`, if
+  `interface.pyx` has not changed. For this reason, Cython is not a requirement
+  for the end-user.
 
 - We continuously test the code through the open source automation server
   Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit
@@ -376,9 +384,9 @@ Further Links and Documentation <a name="Further-Links"></a>
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
   by registering at http://coco.gforge.inria.fr/register
 * More detailed documentation of the existing benchmark suites can be found here:
-  - for the "**BBOB**" testbed at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
+  - for the **`BBOB`** problem suite at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
-  - for the **bbob-biobj** functions at http://numbbo.github.io/bbob-biobj-functions-doc
+  - for the **`bbob-biobj`** problem suite at http://numbbo.github.io/bbob-biobj-functions-doc
 * Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
   http://numbbo.github.io/coco-doc/C
 * Downloading this repository 

@@ -465,7 +465,7 @@ def build_java():
         run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-c', 
                            'CocoJNI.c'])
         run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-o', 
-                           'libCocoJNI.so', '-shared', 'CocoJNI.c'])
+                           'libCocoJNI.so', '-fPIC', '-shared', 'CocoJNI.c'])
                            
     # 5. Mac
     elif ('darwin' in sys.platform):
@@ -502,6 +502,9 @@ def test_postprocessing():
     install_postprocessing()
     python('code-postprocessing/bbob_pproc', ['__main__.py'])
     # python('code-postprocessing', ['-m', 'bbob_pproc'])
+    if 11 < 3:  # provisorial test fo biobj data
+        run_c()
+        python('code-experiments/build/c', ['-m', 'bbob_pproc', 'random_search_on_bbob-biobj'])
 
 ################################################################################
 ## Global
@@ -597,7 +600,7 @@ def main(args):
     if len(args) < 1:
         help()
         sys.exit(0)
-    cmd = args[0].replace('_', '-')
+    cmd = args[0].replace('_', '-').lower()
     if cmd == 'build': build()
     elif cmd == 'run': run_all()
     elif cmd == 'test': test()
