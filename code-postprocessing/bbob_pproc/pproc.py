@@ -29,7 +29,7 @@ from pdb import set_trace
 import numpy, numpy as np
 import matplotlib.pyplot as plt
 from . import genericsettings, findfiles, toolsstats, toolsdivers
-from .readalign import split, alignData, HMultiReader, VMultiReader
+from .readalign import split, alignData, HMultiReader, VMultiReader, VMultiReaderNew
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers
 
@@ -776,8 +776,10 @@ class DataSet():
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
             dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                              for i in self.dataFiles)
+            data = VMultiReaderNew(split(dataFiles), self.isBiobjective())
+        else:
+            data = VMultiReader(split(dataFiles), self.isBiobjective())
 
-        data = VMultiReader(split(dataFiles), self.isBiobjective())
         if verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
