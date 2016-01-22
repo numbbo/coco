@@ -16,6 +16,7 @@ setup(
     package_dir = {_name: 'bbob_pproc'},
     package_data={_name: ['*enchmarkshortinfos.txt',
                           '*enchmarkinfos.txt',
+													'best*algentries*.pickle',
                           'best*algentries*.pickle.gz',
                           'pprldistr2009*.pickle.gz',
                           'js/*', 'tth/*']},
