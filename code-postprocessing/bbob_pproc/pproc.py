@@ -770,22 +770,26 @@ class DataSet():
             self.maxevals = maxevals
             self.finalfunvals = finalfunvals
 
-        if not self.isBiobjective():        
-            dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
+        dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
+                         for i in self.dataFiles)
+                             
+        if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
+            dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                              for i in self.dataFiles)
-            data = VMultiReader(split(dataFiles), self.isBiobjective())
-            if verbose:
-                print ("Processing %s: %d/%d trials found."
-                       % (dataFiles, len(data), len(self.instancenumbers)))
-            (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
-            self.funvals = adata
-            try:
-                for i in range(len(maxevals)):
-                    self.maxevals[i] = max(maxevals[i], self.maxevals[i])
-                    self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
-            except AttributeError:
-                self.maxevals = maxevals
-                self.finalfunvals = finalfunvals
+
+        data = VMultiReader(split(dataFiles), self.isBiobjective())
+        if verbose:
+            print ("Processing %s: %d/%d trials found."
+                   % (dataFiles, len(data), len(self.instancenumbers)))
+        (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
+        self.funvals = adata
+        try:
+            for i in range(len(maxevals)):
+                self.maxevals[i] = max(maxevals[i], self.maxevals[i])
+                self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
+        except AttributeError:
+            self.maxevals = maxevals
+            self.finalfunvals = finalfunvals
         #TODO: take for maxevals the max for each trial, for finalfunvals the min...
 
         #extensions = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
