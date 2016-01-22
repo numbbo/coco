@@ -21,18 +21,6 @@ static char *coco_strdup(const char *string) {
   memcpy(duplicate, string, len + 1);
   return duplicate;
 }
-/**
- * Optional arguments are used like in sprintf.
- */
-char *coco_strdupf(const char *str, ...) {
-  va_list args;
-  char *s;
-
-  va_start(args, str);
-  s = coco_vstrdupf(str, args);
-  va_end(args);
-  return s;
-}
 
 #define coco_vstrdupf_buflen 444
 /**
@@ -64,6 +52,19 @@ static char *coco_vstrdupf(const char *str, va_list args) {
   return coco_strdup(buf);
 }
 #undef coco_vstrdupf_buflen
+
+/**
+ * Optional arguments are used like in sprintf.
+ */
+char *coco_strdupf(const char *str, ...) {
+  va_list args;
+  char *s;
+
+  va_start(args, str);
+  s = coco_vstrdupf(str, args);
+  va_end(args);
+  return s;
+}
 
 /**
  * coco_strconcat(string1, string2):

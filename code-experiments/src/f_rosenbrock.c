@@ -63,7 +63,7 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
     xopt[i] *= 0.75;
   }
   fopt = bbob2009_compute_fopt(function, instance);
-  factor = coco_max_double(1.0, sqrt((double) dimension) / 8.0);
+  factor = coco_double_max(1.0, sqrt((double) dimension) / 8.0);
 
   problem = f_rosenbrock_allocate(dimension);
   problem = f_transform_vars_shift(problem, minus_one, 0);
@@ -98,7 +98,7 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
   rot1 = bbob2009_allocate_matrix(dimension, dimension);
   bbob2009_compute_rotation(rot1, rseed, dimension);
 
-  factor = coco_max_double(1.0, sqrt((double) dimension) / 8.0);
+  factor = coco_double_max(1.0, sqrt((double) dimension) / 8.0);
   /* Compute affine transformation */
   for (row = 0; row < dimension; ++row) {
     current_row = M + row * dimension;

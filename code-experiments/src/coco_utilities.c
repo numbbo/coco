@@ -1,8 +1,6 @@
 /**
  * @file coco_utilities.c
  * @brief Definitions of miscellaneous functions used throughout the COCO framework.
- *
- * @note Most of the file/directory manipulation functions depend on the operating system.
  */
 
 #include "coco_platform.h"
@@ -71,6 +69,25 @@ const char *coco_set_log_level(const char *log_level) {
 
 /***********************************************************************************************************/
 
+/**
+ * @name Methods regarding file, directory and path manipulations
+ */
+/**@{*/
+/**
+ * @brief Creates a platform-dependent path from the given strings.
+ *
+ * @note The last argument must be NULL.
+ * @note The first parameter must be able to accommodate path_max_length characters and the length
+ * of the joined path must not exceed path_max_length characters.
+ * @note Should work cross-platform.
+ *
+ * Usage examples:
+ * - coco_join_path(base_path, 100, folder1, folder2, folder3, NULL) creates base_path/folder1/folder2/folder3
+ * - coco_join_path(base_path, 100, folder1, file_name, NULL) creates base_path/folder1/file_name
+ * @param path The base path; it's also where the joined path is stored to.
+ * @param path_max_length The maximum length of the path.
+ * @param ... Additional strings, must end with NULL
+ */
 static void coco_join_path(char *path, size_t path_max_length, ...) {
   const size_t path_separator_length = strlen(coco_path_separator);
   va_list args;
@@ -92,7 +109,15 @@ static void coco_join_path(char *path, size_t path_max_length, ...) {
   va_end(args);
 }
 
-static int coco_path_exists(const char *path) {
+/**
+ * @brief Checks if the given directory exists.
+ *
+ * @note Should work cross-platform.
+ *
+ * @param path The given path.
+ * @return 1 if the path exists and corresponds to a directory and 0 otherwise.
+ */
+static int coco_directory_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
   DWORD dwAttrib = GetFileAttributes(path);
@@ -106,6 +131,14 @@ static int coco_path_exists(const char *path) {
   return res;
 }
 
+/**
+ * @brief Checks if the given file exists.
+ *
+ * @note Should work cross-platform.
+ *
+ * @param path The given path.
+ * @return 1 if the path exists and corresponds to a file and 0 otherwise.
+ */
 static int coco_file_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
@@ -121,10 +154,12 @@ static int coco_file_exists(const char *path) {
 }
 
 /**
- * Creates a directory with full privileges for the user (should work across different platforms/compilers).
- * Returns 0 on successful completion, and -1 on error.
+ * @brief Calls the right mkdir() method (depending on the platform).
+ *
+ * @param path The directory path.
+ * @return 0 on successful completion, and -1 on error.
  */
-static int coco_create_directory(const char *path) {
+static int coco_mkdir(const char *path) {
 #if _MSC_VER
   return _mkdir(path);
 #elif defined(__MINGW32__) || defined(__MINGW64__)
@@ -134,16 +169,21 @@ static int coco_create_directory(const char *path) {
 #endif
 }
 
-static void coco_create_path(const char *path) {
-  /* current version should now work with Windows, Linux, and Mac */
+/**
+ * @brief Creates a directory with full privileges for the user.
+ *
+ * @note Should work cross-platform.
+ *
+ * @param path The directory path.
+ */
+static void coco_create_directory(const char *path) {
   char *tmp = NULL;
-  char *message;
   char *p;
   size_t len = strlen(path);
   char path_sep = coco_path_separator[0];
 
   /* Nothing to do if the path exists. */
-  if (coco_path_exists(path))
+  if (coco_directory_exists(path))
     return;
 
   tmp = coco_strdup(path);
@@ -153,28 +193,27 @@ static void coco_create_path(const char *path) {
   for (p = tmp + 1; *p; p++) {
     if (*p == path_sep) {
       *p = 0;
-      if (!coco_path_exists(tmp)) {
-        if (0 != coco_create_directory(tmp))
-          goto error;
+      if (!coco_directory_exists(tmp)) {
+        if (0 != coco_mkdir(tmp))
+          coco_error("coco_create_path(): failed creating %s", tmp);
       }
       *p = path_sep;
     }
   }
-  if (0 != coco_create_directory(tmp))
-    goto error;
+  if (0 != coco_mkdir(tmp))
+    coco_error("coco_create_path(): failed creating %s", tmp);
   coco_free_memory(tmp);
   return;
-  error: message = "coco_create_path(\"%s\") failed";
-  coco_error(message, tmp);
-  return; /* never reached */
 }
 
+/* Commented to silence the compiler (unused function warning) */
+#if 0
 /**
- * Creates a unique file name from the given file_name. If the file_name does not yet exit, it is left as
- * is, otherwise it is changed(!) by prepending a number to it.
+ * @brief Creates a unique file name from the given file_name.
  *
- * If filename.ext already exists, 01-filename.ext will be tried. If this one exists as well,
- * 02-filename.ext will be tried, and so on. If 99-filename.ext exists as well, the function returns
+ * If the file_name does not yet exit, it is left as is, otherwise it is changed(!) by prepending a number
+ * to it. If filename.ext already exists, 01-filename.ext will be tried. If this one exists as well,
+ * 02-filename.ext will be tried, and so on. If 99-filename.ext exists as well, the function throws
  * an error.
  */
 static void coco_create_unique_filename(char **file_name) {
@@ -206,22 +245,23 @@ static void coco_create_unique_filename(char **file_name) {
   coco_error("coco_create_unique_filename(): could not create a unique file name");
   return; /* Never reached */
 }
+#endif
 
 /**
- * Creates a unique path from the given path. If the given path does not yet exit, it is left as
- * is, otherwise it is changed(!) by appending a number to it.
+ * @brief Creates a unique directory from the given path.
  *
- * If path already exists, path-01 will be tried. If this one exists as well, path-02 will be tried,
- * and so on. If path-99 exists as well, the function returns an error.
+ * If the given path does not yet exit, it is left as is, otherwise it is changed(!) by appending a number
+ * to it. If path already exists, path-01 will be tried. If this one exists as well, path-02 will be tried,
+ * and so on. If path-99 exists as well, the function throws an error.
  */
-static void coco_create_unique_path(char **path) {
+static void coco_create_unique_directory(char **path) {
 
   int counter = 1;
   char *new_path;
 
   /* Create the path if it does not yet exist */
-  if (!coco_path_exists(*path)) {
-    coco_create_path(*path);
+  if (!coco_directory_exists(*path)) {
+    coco_create_directory(*path);
     return;
   }
 
@@ -229,10 +269,10 @@ static void coco_create_unique_path(char **path) {
 
     new_path = coco_strdupf("%s-%03d", *path, counter);
 
-    if (!coco_path_exists(new_path)) {
+    if (!coco_directory_exists(new_path)) {
       coco_free_memory(*path);
       *path = new_path;
-      coco_create_path(*path);
+      coco_create_directory(*path);
       return;
     } else {
       counter++;
@@ -246,10 +286,11 @@ static void coco_create_unique_path(char **path) {
 }
 
 /**
- * Removes the given directory and all its contents (when using Microsoft Visual Studio's compiler).
- * Returns 0 on successful completion, and -1 on error.
+ * The method should work across different platforms/compilers.
+ * @path The path to the directory
+ * @return 0 on successful completion, and -1 on error.
  */
-static int coco_remove_directory_msc(const char *path) {
+int coco_remove_directory(const char *path) {
 #if _MSC_VER
   WIN32_FIND_DATA find_data_file;
   HANDLE find_handle = NULL;
@@ -299,17 +340,6 @@ static int coco_remove_directory_msc(const char *path) {
 
   return r;
 #else
-  (void) path; /* To silence the compiler. */
-  return -1; /* This should never be reached */
-#endif
-}
-
-/**
- * Removes the given directory and all its contents (when NOT using Microsoft Visual Studio's compiler).
- * Returns 0 on successful completion, and -1 on error.
- */
-static int coco_remove_directory_no_msc(const char *path) {
-#if !_MSC_VER
   DIR *d = opendir(path);
   int r = -1;
   int r2 = -1;
@@ -333,7 +363,7 @@ static int coco_remove_directory_no_msc(const char *path) {
 
       buf = coco_strdupf("%s/%s", path, p->d_name);
       if (buf) {
-        if (coco_path_exists(buf)) {
+        if (coco_directory_exists(buf)) {
           /* Buf is a directory, recurse on it */
           r2 = coco_remove_directory(buf);
         } else {
@@ -355,27 +385,16 @@ static int coco_remove_directory_no_msc(const char *path) {
   }
 
   return r;
-#else
-  (void) path; /* To silence the compiler. */
-  return -1; /* This should never be reached */
 #endif
 }
-
-/**
- * The method should work across different platforms/compilers.
- * @path The path to the directory
- * @return 0 on successful completion, and -1 on error.
- */
-int coco_remove_directory(const char *path) {
-#if _MSC_VER
-  return coco_remove_directory_msc(path);
-#else
-  return coco_remove_directory_no_msc(path);
-#endif
-}
+/**@}*/
 
 /***********************************************************************************************************/
 
+/**
+ * @name Methods regarding memory allocations
+ */
+/**@{*/
 double *coco_allocate_vector(const size_t number_of_elements) {
   const size_t block_size = number_of_elements * sizeof(double);
   return (double *) coco_allocate_memory(block_size);
@@ -404,9 +423,14 @@ static double *coco_duplicate_vector(const double *src, const size_t number_of_e
   }
   return dst;
 }
+/**@}*/
 
 /***********************************************************************************************************/
 
+/**
+ * @name Methods regarding options reading
+ */
+/**@{*/
 /**
  * Parse options in the form "name1 : value1 name2: value2". Formatting requirements:
  * - name and value need to be separated by a semicolon (spaces are optional)
@@ -538,6 +562,7 @@ static int coco_options_read_values(const char *options, const char *name, char 
   pointer[i] = '\0';
   return i;
 }
+/**@}*/
 
 static size_t coco_numbers_count(const size_t *numbers, const char *name) {
 
@@ -755,6 +780,11 @@ static size_t *coco_string_get_numbers_from_ranges(char *string, const char *nam
 
 /***********************************************************************************************************/
 
+/**
+ * @name Methods implementing functions on double values
+ */
+/**@{*/
+
 /* Some math functions which are not contained in C89 standard */
 static double coco_double_round(const double number) {
   return floor(number + 0.5);
@@ -776,11 +806,15 @@ static double coco_double_min(const double a, const double b) {
   }
 }
 
+/* Commented to silence the compiler (unused function warning) */
+#if 0
 /**
  * Returns 1 if |a - b| < accuracy and 0 otherwise
  */
 static int coco_double_almost_equal(const double a, const double b, const double accuracy) {
   return ((fabs(a - b) < accuracy) == 0);
 }
+#endif
+/**@}*/
 
 /***********************************************************************************************************/

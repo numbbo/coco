@@ -66,7 +66,7 @@ static coco_problem_t *f_griewank_rosenbrock_bbob_problem_allocate(const size_t 
 
   rot1 = bbob2009_allocate_matrix(dimension, dimension);
   bbob2009_compute_rotation(rot1, rseed, dimension);
-  scales = coco_max_double(1., sqrt((double) dimension) / 8.);
+  scales = coco_double_max(1., sqrt((double) dimension) / 8.);
   for (i = 0; i < dimension; ++i) {
     for (j = 0; j < dimension; ++j) {
       rot1[i][j] *= scales;

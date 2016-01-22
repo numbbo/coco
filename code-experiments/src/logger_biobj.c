@@ -401,7 +401,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   /* Prepare the info file */
   path_name = coco_allocate_string(COCO_PATH_MAX);
   memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
-  coco_create_path(path_name);
+  coco_create_directory(path_name);
   file_name = coco_strdupf("%s_%s.info", problem->problem_type, indicator_name);
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
   info_file_exists = coco_file_exists(path_name);
@@ -417,7 +417,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   path_name = coco_allocate_string(COCO_PATH_MAX);
   memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
-  coco_create_path(path_name);
+  coco_create_directory(path_name);
   prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
   file_name = coco_strdupf("%s_%s.dat", prefix, indicator_name);
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
@@ -561,7 +561,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
               while (solution != NULL) {
                 double distance = mo_get_distance_to_ROI(((logger_biobj_avl_item_t*) solution->item)->y,
                     problem->best_value, problem->nadir_value, problem->number_of_objectives);
-                indicator->additional_penalty = coco_min_double(indicator->additional_penalty, distance);
+                indicator->additional_penalty = coco_double_min(indicator->additional_penalty, distance);
                 solution = solution->next;
               }
             }
@@ -711,7 +711,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
     path_name = coco_allocate_string(COCO_PATH_MAX);
     memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
     coco_join_path(path_name, COCO_PATH_MAX, nondom_folder_name, NULL);
-    coco_create_path(path_name);
+    coco_create_directory(path_name);
 
     /* Construct file name */
     prefix = coco_remove_from_string(inner_problem->problem_id, "_i", "_d");

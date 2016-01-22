@@ -23,7 +23,7 @@ static double f_katsuura_raw(const double *x, const size_t number_of_variables) 
     tmp = 0;
     for (j = 1; j < 33; ++j) {
       tmp2 = pow(2., (double) j);
-      tmp += fabs(tmp2 * x[i] - coco_round_double(tmp2 * x[i])) / tmp2;
+      tmp += fabs(tmp2 * x[i] - coco_double_round(tmp2 * x[i])) / tmp2;
     }
     tmp = 1.0 + ((double) (long) i + 1) * tmp;
     result *= tmp;

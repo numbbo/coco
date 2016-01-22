@@ -66,7 +66,7 @@ static double f_gallagher_raw(const double *x, const size_t number_of_variables,
       tmp2 += data->arr_scales[i][j] * tmp * tmp;
     }
     tmp2 = data->peak_values[i] * exp(fac * tmp2);
-    f = coco_max_double(f, tmp2);
+    f = coco_double_max(f, tmp2);
   }
 
   f = 10. - f;
