@@ -388,7 +388,7 @@ static int coco_options_read_double(const char *options, const char *name, doubl
 
 /**
  * Reads a string from options using the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon (spaces are optional)
+ * - name and value need to be separated by a colon (spaces are optional)
  * - the value corresponding to the given name needs to be a string - either a single word or multiple words
  * in double quotes
  * Returns the number of successful assignments.
