@@ -156,6 +156,45 @@ class VMultiReader(MultiReader):
     def isFinished(self):
         return all(i.isFinished for i in self)
 
+    def getInitialValue(self):
+        for i in self:
+            i.next()
+        res = self.currentValues()
+        return min(res)
+
+    def newCurrentValue(self):
+        res = self.nextValues()
+        if res:
+            return min(self.nextValues())
+        else:
+            return None
+
+    def align(self, currentValue):
+        for i in self:
+            while not i.isFinished:
+                if i.nextLine[self.idx] > currentValue:
+                    break
+                i.next()
+        return numpy.insert(self.currentLine(), 0, currentValue)
+        
+class VMultiReaderNew(MultiReader):
+    """List of data arrays to be aligned vertically.
+
+    Aligned vertically means, all number of function evaluations are the
+    closest from below or equal to the alignment number of function
+    evaluations.
+
+    """
+
+    idx = idxEvals # the alignment value is the number of function evaluations.
+
+    def __init__(self, data, isBiobjective):
+        super(VMultiReaderNew, self).__init__(data, isBiobjective)
+        self.idxData = idxFBi if isBiobjective else idxFSingle # the data of concern are the function values.
+
+    def isFinished(self):
+        return all(i.isFinished for i in self)
+
     def getAlignedValues(self, selectedValues):
         
         res = selectedValues()
@@ -176,38 +215,10 @@ class VMultiReader(MultiReader):
         
         return self.getAlignedValues(self.currentValues)
         
-#        res = self.currentValues()
-#        # iterate until you find the same evaluation number in all functions
-#        while res and min(res) < max(res):
-#            index = res.index(min(res))
-#            self[index].next()            
-#            res = self.currentValues()
-#        
-#        if res and len(res) == len(self):
-#            return min(res)
-#        else:
-#            return None
-
     def newCurrentValue(self):
 
         return self.getAlignedValues(self.nextValues)
         
-#        res = self.nextValues()
-        # iterate until you find the same evaluation number in all functions
-#        while res and min(res) < max(res) and len(res) == len(self):
-#            index = res.index(min(res))
-#            i = self[index]
-#            i.next()
-#            if not i.isFinished:
-#                res[index] = i.nextLine[self.idx]
-#            else:
-#                del res[index]
-#            
-#        if res and len(res) == len(self):
-#            return min(res)
-#        else:
-#            return None
-
     def align(self, currentValue):
         for i in self:
             while not i.isFinished:
@@ -325,6 +336,13 @@ class ArrayMultiReader(MultiReader):
         return numpy.hstack(res)
 
 class VArrayMultiReader(ArrayMultiReader, VMultiReader):
+    """Wrapper class of *aligned* data arrays to be aligned vertically."""
+
+    def __init__(self, data):
+        ArrayMultiReader.__init__(self, data)
+        #TODO: Should this use super?
+
+class VArrayMultiReaderNew(ArrayMultiReader, VMultiReader):
     """Wrapper class of *aligned* data arrays to be aligned vertically."""
 
     def __init__(self, data):
