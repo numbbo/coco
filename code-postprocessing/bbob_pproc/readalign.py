@@ -156,18 +156,57 @@ class VMultiReader(MultiReader):
     def isFinished(self):
         return all(i.isFinished for i in self)
 
+    def getAlignedValues(self, selectedValues):
+        
+        res = selectedValues()
+        # iterate until you find the same evaluation number in all functions
+        while res and min(res) < max(res) and len(res) == len(self):
+            index = res.index(min(res))
+            self[index].next()            
+            res = selectedValues()
+        
+        if res and len(res) == len(self):
+            return min(res)
+        else:
+            return None
+        
     def getInitialValue(self):
         for i in self:
             i.next()
-        res = self.currentValues()
-        return min(res)
+        
+        return self.getAlignedValues(self.currentValues)
+        
+#        res = self.currentValues()
+#        # iterate until you find the same evaluation number in all functions
+#        while res and min(res) < max(res):
+#            index = res.index(min(res))
+#            self[index].next()            
+#            res = self.currentValues()
+#        
+#        if res and len(res) == len(self):
+#            return min(res)
+#        else:
+#            return None
 
     def newCurrentValue(self):
-        res = self.nextValues()
-        if res:
-            return min(self.nextValues())
-        else:
-            return None
+
+        return self.getAlignedValues(self.nextValues)
+        
+#        res = self.nextValues()
+        # iterate until you find the same evaluation number in all functions
+#        while res and min(res) < max(res) and len(res) == len(self):
+#            index = res.index(min(res))
+#            i = self[index]
+#            i.next()
+#            if not i.isFinished:
+#                res[index] = i.nextLine[self.idx]
+#            else:
+#                del res[index]
+#            
+#        if res and len(res) == len(self):
+#            return min(res)
+#        else:
+#            return None
 
     def align(self, currentValue):
         for i in self:
@@ -322,7 +361,7 @@ def alignData(data, isBiobjective):
     if data.isFinished():
         res.append(data.align(currentValue))
 
-    while not data.isFinished():
+    while not data.isFinished() and currentValue:
         res.append(data.align(currentValue))
         currentValue = data.newCurrentValue()
 
