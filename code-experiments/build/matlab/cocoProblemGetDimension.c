@@ -13,7 +13,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     size_t *ref;
     coco_problem_t *problem = NULL;
-    const mwSize dims[2] = {1, 1};
+    const size_t dims[2] = {1, 1};
     int *res;
 
     /* check for proper number of arguments */

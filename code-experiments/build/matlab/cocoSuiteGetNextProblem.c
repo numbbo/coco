@@ -22,10 +22,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
     
     /* get the suite */
-    ref = (size_t *)mxGetData(prhs[0]);
+    ref = (mwSize *)mxGetData(prhs[0]);
     suite = (coco_suite_t *)(*ref);
     /* get the observer */
-    ref2 = (size_t *)mxGetData(prhs[1]);
+    ref2 = (mwSize *)mxGetData(prhs[1]);
     observer = (coco_observer_t *)(*ref2);
     
     /* call coco_suite_get_next_problem() */

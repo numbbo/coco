@@ -9,7 +9,7 @@ more on; % to get immediate output in Octave
 
 BUDGET = 2; % algorithm runs for BUDGET*dimension funevals
 suite_name = 'bbob-biobj'; % works for 'bbob' as well
-observer_name = suite_name;
+observer_name = suite_name; 
 
 observer_options = strcat('result_folder: RS_on_', ...
                     suite_name, ...
