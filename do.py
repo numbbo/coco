@@ -504,7 +504,8 @@ def test_postprocessing():
     # python('code-postprocessing', ['-m', 'bbob_pproc'])
     if 11 < 3:  # provisorial test fo biobj data
         run_c()
-        python('code-experiments/build/c', ['-m', 'bbob_pproc', 'random_search_on_bbob-biobj'])
+        python('code-experiments/build/c', ['-m', 'bbob_pproc',
+                                            'random_search_on_bbob-biobj'])
 
 ################################################################################
 ## Global
