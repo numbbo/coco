@@ -465,7 +465,7 @@ def build_java():
         run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-c', 
                            'CocoJNI.c'])
         run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-o', 
-                           'libCocoJNI.so', '-shared', 'CocoJNI.c'])
+                           'libCocoJNI.so', '-fPIC', '-shared', 'CocoJNI.c'])
                            
     # 5. Mac
     elif ('darwin' in sys.platform):
