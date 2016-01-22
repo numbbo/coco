@@ -114,11 +114,11 @@ static void test_coco_round_double(void **state) {
 
   double input_value = 5.4;
 
-  double round_value = coco_round_double(input_value);
+  double round_value = coco_double_round(input_value);
   assert_true(round_value == 5);
 
   input_value = 5.5;
-  round_value = coco_round_double(input_value);
+  round_value = coco_double_round(input_value);
   assert_true(round_value == 6);
 
   (void)state; /* unused */

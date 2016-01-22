@@ -23,7 +23,7 @@ cdef extern from "coco.h":
     ctypedef struct coco_suite_t: 
         pass
 
-    void coco_set_log_level(const char *level)
+    const char* coco_set_log_level(const char *level)
     
     coco_observer_t *coco_observer(const char *observer_name, const char *options)
     void coco_observer_free(coco_observer_t *self)
@@ -180,6 +180,8 @@ cdef class Suite:
         cdef np.npy_intp shape[1]  # probably completely useless
         cdef coco_suite_t* suite
         cdef coco_problem_t* p
+        cdef bytes _old_level
+        
         if self.initialized:
             self.reset()
         self._ids = []
@@ -207,7 +209,9 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         if suite == NULL:
             raise NoSuchSuiteException("No suite with name '%s' found" % self._name)
         while True:
+            old_level = log_level('warning')
             p = coco_suite_get_next_problem(suite, NULL)
+            log_level(old_level)
             if not p:
                 break
             self._indices.append(coco_problem_get_suite_dep_index(p))
@@ -780,9 +784,13 @@ cdef class Problem:
         except:
             pass
 
-def set_log_level(level):
-    """`level` values (increasing verbosity): 'error', 'warning', 'info', 'debug'.
+def log_level(level=None):
+    """`log_level(level=None)` return current log level and
+    set new log level if `level is not None and level`.
+    
+    `level` must be 'error' or 'warning' or 'info' or 'debug', listed
+    with increasing verbosity, or '' which doesn't change anything.
     """
-    cdef bytes _level = _bstring(level)
+    cdef bytes _level = _bstring(level if level is not None else "")
     return coco_set_log_level(_level)
 
