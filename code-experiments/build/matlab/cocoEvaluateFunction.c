@@ -24,7 +24,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgIdAndTxt("cocoEvaluateFunction:nrhs","Two inputs required.");
     }
     /* get the problem */
-    ref = (mwSize *) mxGetData(prhs[0]);
+    ref = (size_t *) mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
     /* make sure the second input argument is array of doubles */
     if(!mxIsDouble(prhs[1])) {
