@@ -15,13 +15,13 @@ typedef struct {
   size_t *first_non_zero_map; /* maps a row to the index of its first non zero element */
 } ls_transform_vars_permblockdiag_t;
 
-static void ls_transform_vars_permblockdiag_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void ls_transform_vars_permblockdiag_evaluate(coco_problem_t *problem, const double *x, double *y) {
   size_t i, j, current_blocksize, first_non_zero_ind;
   ls_transform_vars_permblockdiag_t *data;
   coco_problem_t *inner_problem;
   
-  data = coco_transformed_get_data(self);
-  inner_problem = coco_transformed_get_inner_problem(self);
+  data = coco_problem_transformed_get_data(problem);
+  inner_problem = coco_problem_transformed_get_inner_problem(problem);
   
   for (i = 0; i < inner_problem->number_of_variables; ++i) {
     current_blocksize = data->block_size_map[data->P2[i]];/*the block_size is that of the permuted line*/
@@ -62,7 +62,7 @@ static coco_problem_t *f_ls_transform_vars_permblockdiag(coco_problem_t *inner_p
                                                          const size_t number_of_variables,
                                                          const size_t *block_sizes,
                                                          const size_t nb_blocks) {
-  coco_problem_t *self;
+  coco_problem_t *problem;
   ls_transform_vars_permblockdiag_t *data;
   size_t entries_in_M, idx_blocksize, next_bs_change, current_blocksize;
   int i;
@@ -78,8 +78,8 @@ static coco_problem_t *f_ls_transform_vars_permblockdiag(coco_problem_t *inner_p
   data->P2 = coco_duplicate_size_t_vector(P2, inner_problem->number_of_variables);
   data->block_sizes = coco_duplicate_size_t_vector(block_sizes, nb_blocks);
   data->nb_blocks = nb_blocks;
-  data->block_size_map = (size_t *)coco_allocate_memory(number_of_variables * sizeof(size_t));
-  data->first_non_zero_map = (size_t *)coco_allocate_memory(number_of_variables * sizeof(size_t));
+  data->block_size_map = coco_allocate_vector_size_t(number_of_variables);
+  data->first_non_zero_map = coco_allocate_vector_size_t(number_of_variables);
   
   idx_blocksize = 0;
   next_bs_change = block_sizes[idx_blocksize];
@@ -93,9 +93,9 @@ static coco_problem_t *f_ls_transform_vars_permblockdiag(coco_problem_t *inner_p
     data->first_non_zero_map[i] = next_bs_change - current_blocksize;/* next_bs_change serves also as a cumsum for blocksizes*/
   }
   
-  self = coco_transformed_allocate(inner_problem, data, ls_transform_vars_permblockdiag_free);
-  self->evaluate_function = ls_transform_vars_permblockdiag_evaluate;
-  return self;
+  problem = coco_problem_transformed_allocate(inner_problem, data, ls_transform_vars_permblockdiag_free);
+  problem->evaluate_function = ls_transform_vars_permblockdiag_evaluate;
+  return problem;
 }
 
 

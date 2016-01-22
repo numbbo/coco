@@ -124,9 +124,9 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     return NULL;
   }
 
-  result_folder = (char *) coco_allocate_memory(COCO_PATH_MAX);
-  algorithm_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
-  algorithm_info = (char *) coco_allocate_memory(5 * COCO_PATH_MAX);
+  result_folder = coco_allocate_string(COCO_PATH_MAX);
+  algorithm_name = coco_allocate_string(COCO_PATH_MAX);
+  algorithm_info = coco_allocate_string(5 * COCO_PATH_MAX);
   /* Read result_folder, algorithm_name and algorithm_info from the observer_options and use
    * them to initialize the observer */
   if (coco_options_read_string(observer_options, "result_folder", result_folder) == 0) {

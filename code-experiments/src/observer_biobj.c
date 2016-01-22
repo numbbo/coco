@@ -31,7 +31,7 @@ typedef struct {
 
 } observer_biobj_t;
 
-static coco_problem_t *logger_biobj(coco_observer_t *self, coco_problem_t *problem);
+static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *problem);
 
 /**
  * Initializes the biobjective observer. Possible options:
@@ -46,51 +46,51 @@ static coco_problem_t *logger_biobj(coco_observer_t *self, coco_problem_t *probl
  * setting log_nondominated to all, log_decision_variables to log_dim and compute_indicators to 1; if set to 0, it
  * does not change the values of other options; default value is 0)
  */
-static void observer_biobj(coco_observer_t *self, const char *options) {
+static void observer_biobj(coco_observer_t *observer, const char *options) {
 
-  observer_biobj_t *data;
+  observer_biobj_t *observer_biobj;
   char string_value[COCO_PATH_MAX];
 
-  data = coco_allocate_memory(sizeof(*data));
+  observer_biobj = coco_allocate_memory(sizeof(*observer_biobj));
 
-  data->log_nondom_mode = ALL;
+  observer_biobj->log_nondom_mode = ALL;
   if (coco_options_read_string(options, "log_nondominated", string_value) > 0) {
     if (strcmp(string_value, "none") == 0)
-      data->log_nondom_mode = NONE;
+      observer_biobj->log_nondom_mode = NONE;
     else if (strcmp(string_value, "final") == 0)
-      data->log_nondom_mode = FINAL;
+      observer_biobj->log_nondom_mode = FINAL;
   }
 
-  data->log_vars_mode = LOW_DIM;
+  observer_biobj->log_vars_mode = LOW_DIM;
   if (coco_options_read_string(options, "log_decision_variables", string_value) > 0) {
     if (strcmp(string_value, "none") == 0)
-      data->log_vars_mode = NEVER;
+      observer_biobj->log_vars_mode = NEVER;
     else if (strcmp(string_value, "all") == 0)
-      data->log_vars_mode = ALWAYS;
+      observer_biobj->log_vars_mode = ALWAYS;
   }
 
-  if (coco_options_read_int(options, "compute_indicators", &(data->compute_indicators)) == 0)
-    data->compute_indicators = 1;
+  if (coco_options_read_int(options, "compute_indicators", &(observer_biobj->compute_indicators)) == 0)
+    observer_biobj->compute_indicators = 1;
 
-  if (coco_options_read_int(options, "produce_all_data", &(data->produce_all_data)) == 0)
-    data->produce_all_data = 0;
+  if (coco_options_read_int(options, "produce_all_data", &(observer_biobj->produce_all_data)) == 0)
+    observer_biobj->produce_all_data = 0;
 
-  if (data->produce_all_data) {
-    data->log_vars_mode = LOW_DIM;
-    data->compute_indicators = 1;
-    data->log_nondom_mode = ALL;
+  if (observer_biobj->produce_all_data) {
+    observer_biobj->log_vars_mode = LOW_DIM;
+    observer_biobj->compute_indicators = 1;
+    observer_biobj->log_nondom_mode = ALL;
   }
 
-  if (data->compute_indicators) {
-    data->previous_function = -1;
+  if (observer_biobj->compute_indicators) {
+    observer_biobj->previous_function = -1;
   }
 
-  self->logger_initialize_function = logger_biobj;
-  self->data_free_function = NULL;
-  self->data = data;
+  observer->logger_initialize_function = logger_biobj;
+  observer->data_free_function = NULL;
+  observer->data = observer_biobj;
 
-  if ((data->log_nondom_mode == NONE) && (!data->compute_indicators)) {
+  if ((observer_biobj->log_nondom_mode == NONE) && (!observer_biobj->compute_indicators)) {
     /* No logging required */
-    self->is_active = 0;
+    observer->is_active = 0;
   }
 }

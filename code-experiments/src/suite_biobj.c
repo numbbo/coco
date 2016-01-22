@@ -146,7 +146,7 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   problem1 = get_bbob_problem(bbob_functions[function1_idx], dimension, instance1);
   problem2 = get_bbob_problem(bbob_functions[function2_idx], dimension, instance2);
 
-  problem = coco_stacked_problem_allocate(problem1, problem2);
+  problem = coco_problem_stacked_allocate(problem1, problem2);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
@@ -206,10 +206,10 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
           problem1 = get_bbob_problem(function1, dimension, instance1);
           problem2 = get_bbob_problem(function2, dimension, instance2);
           if (problem) {
-            coco_stacked_problem_free(problem);
+            coco_problem_stacked_free(problem);
             problem = NULL;
           }
-          problem = coco_stacked_problem_allocate(problem1, problem2);
+          problem = coco_problem_stacked_allocate(problem1, problem2);
 
           /* Check whether the ideal and reference points are too close in the objective space */
           norm = mo_get_norm(problem->best_value, problem->nadir_value, 2);
@@ -236,7 +236,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
     }
     /* Clean up */
     if (problem) {
-      coco_stacked_problem_free(problem);
+      coco_problem_stacked_free(problem);
       problem = NULL;
     }
 
@@ -303,7 +303,7 @@ static double suite_biobj_get_best_value(const char *indicator_name, const char 
 
   if (strcmp(indicator_name, "hyp") == 0) {
 
-    curr_key = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+    curr_key = coco_allocate_string(COCO_PATH_MAX);
     count = sizeof(suite_biobj_best_values_hyp) / sizeof(char *);
     for (i = 0; i < count; i++) {
       sscanf(suite_biobj_best_values_hyp[i], "%s %lf", curr_key, &best_value);

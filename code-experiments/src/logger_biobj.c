@@ -399,7 +399,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   indicator->overall_value = 0;
 
   /* Prepare the info file */
-  path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
+  path_name = coco_allocate_string(COCO_PATH_MAX);
   memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
   coco_create_path(path_name);
   file_name = coco_strdupf("%s_%s.info", problem->problem_type, indicator_name);
@@ -414,7 +414,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   coco_free_memory(path_name);
 
   /* Prepare the log file */
-  path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
+  path_name = coco_allocate_string(COCO_PATH_MAX);
   memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
   coco_create_path(path_name);
@@ -516,17 +516,17 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
   int update_performed;
   size_t i;
 
-  logger = (logger_biobj_t *) coco_transformed_get_data(problem);
+  logger = (logger_biobj_t *) coco_problem_transformed_get_data(problem);
 
   /* Evaluate function */
-  coco_evaluate_function(coco_transformed_get_inner_problem(problem), x, y);
+  coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
   logger->number_of_evaluations++;
 
   /* Update the archive with the new solution, if it is not dominated by or equal to existing solutions in the archive */
   node_item = logger_biobj_node_create(x, y, logger->number_of_evaluations, logger->number_of_variables,
       logger->number_of_objectives);
 
-  update_performed = logger_biobj_tree_update(logger, coco_transformed_get_inner_problem(problem), node_item);
+  update_performed = logger_biobj_tree_update(logger, coco_problem_transformed_get_inner_problem(problem), node_item);
 
   /* If the archive was updated and you need to log all nondominated solutions, output the new solution to nondom_file */
   if (update_performed && (logger->log_nondom_mode == ALL)) {
@@ -668,96 +668,96 @@ static void logger_biobj_free(void *stuff) {
 /**
  * Initializes the biobjective logger.
  */
-static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *problem) {
+static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *inner_problem) {
 
-  coco_problem_t *self;
-  logger_biobj_t *logger;
+  coco_problem_t *problem;
+  logger_biobj_t *logger_biobj;
   observer_biobj_t *observer_biobj;
   const char nondom_folder_name[] = "archive";
   char *path_name, *file_name = NULL, *prefix;
   size_t i;
 
-  if (problem->number_of_objectives != 2) {
-    coco_error("logger_biobj(): The biobjective logger cannot log a problem with %d objective(s)", problem->number_of_objectives);
+  if (inner_problem->number_of_objectives != 2) {
+    coco_error("logger_biobj(): The biobjective logger cannot log a problem with %d objective(s)", inner_problem->number_of_objectives);
     return NULL; /* Never reached. */
   }
 
-  logger = coco_allocate_memory(sizeof(*logger));
+  logger_biobj = coco_allocate_memory(sizeof(*logger_biobj));
 
-  logger->observer = observer;
+  logger_biobj->observer = observer;
 
-  logger->number_of_evaluations = 0;
-  logger->number_of_variables = problem->number_of_variables;
-  logger->number_of_objectives = problem->number_of_objectives;
-  logger->suite_dep_instance = problem->suite_dep_instance;
+  logger_biobj->number_of_evaluations = 0;
+  logger_biobj->number_of_variables = inner_problem->number_of_variables;
+  logger_biobj->number_of_objectives = inner_problem->number_of_objectives;
+  logger_biobj->suite_dep_instance = inner_problem->suite_dep_instance;
 
   observer_biobj = (observer_biobj_t *) observer->data;
   /* Copy values from the observes that you might need even if they do not exist any more */
-  logger->log_nondom_mode = observer_biobj->log_nondom_mode;
-  logger->compute_indicators = observer_biobj->compute_indicators;
-  logger->precision_x = observer->precision_x;
-  logger->precision_f = observer->precision_f;
+  logger_biobj->log_nondom_mode = observer_biobj->log_nondom_mode;
+  logger_biobj->compute_indicators = observer_biobj->compute_indicators;
+  logger_biobj->precision_x = observer->precision_x;
+  logger_biobj->precision_f = observer->precision_f;
 
-  if (((observer_biobj->log_vars_mode == LOW_DIM) && (problem->number_of_variables > 5))
+  if (((observer_biobj->log_vars_mode == LOW_DIM) && (inner_problem->number_of_variables > 5))
       || (observer_biobj->log_vars_mode == NEVER))
-    logger->log_vars = 0;
+    logger_biobj->log_vars = 0;
   else
-    logger->log_vars = 1;
+    logger_biobj->log_vars = 1;
 
   /* Initialize logging of nondominated solutions */
-  if (logger->log_nondom_mode != NONE) {
+  if (logger_biobj->log_nondom_mode != NONE) {
 
     /* Create the path to the file */
-    path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
+    path_name = coco_allocate_string(COCO_PATH_MAX);
     memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
     coco_join_path(path_name, COCO_PATH_MAX, nondom_folder_name, NULL);
     coco_create_path(path_name);
 
     /* Construct file name */
-    prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
-    if (logger->log_nondom_mode == ALL)
+    prefix = coco_remove_from_string(inner_problem->problem_id, "_i", "_d");
+    if (logger_biobj->log_nondom_mode == ALL)
       file_name = coco_strdupf("%s_nondom_all.dat", prefix);
-    else if (logger->log_nondom_mode == FINAL)
+    else if (logger_biobj->log_nondom_mode == FINAL)
       file_name = coco_strdupf("%s_nondom_final.dat", prefix);
     coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
-    if (logger->log_nondom_mode != NONE)
+    if (logger_biobj->log_nondom_mode != NONE)
       coco_free_memory(file_name);
     coco_free_memory(prefix);
 
     /* Open and initialize the file */
-    logger->nondom_file = fopen(path_name, "a");
-    if (logger->nondom_file == NULL) {
+    logger_biobj->nondom_file = fopen(path_name, "a");
+    if (logger_biobj->nondom_file == NULL) {
       coco_error("logger_biobj() failed to open file '%s'.", path_name);
       return NULL; /* Never reached */
     }
     coco_free_memory(path_name);
 
     /* Output header information */
-    fprintf(logger->nondom_file, "%% instance = %ld, name = %s\n", problem->suite_dep_instance, problem->problem_name);
-    if (logger->log_vars) {
-      fprintf(logger->nondom_file, "%% function evaluation | %lu objectives | %lu variables\n",
-          problem->number_of_objectives, problem->number_of_variables);
+    fprintf(logger_biobj->nondom_file, "%% instance = %ld, name = %s\n", inner_problem->suite_dep_instance, inner_problem->problem_name);
+    if (logger_biobj->log_vars) {
+      fprintf(logger_biobj->nondom_file, "%% function evaluation | %lu objectives | %lu variables\n",
+          inner_problem->number_of_objectives, inner_problem->number_of_variables);
     } else {
-      fprintf(logger->nondom_file, "%% function evaluation | %lu objectives \n",
-          problem->number_of_objectives);
+      fprintf(logger_biobj->nondom_file, "%% function evaluation | %lu objectives \n",
+          inner_problem->number_of_objectives);
     }
   }
 
   /* Initialize the AVL trees */
-  logger->archive_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_last_objective,
+  logger_biobj->archive_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_last_objective,
       (avl_free_t) logger_biobj_node_free);
-  logger->buffer_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_time_stamp, NULL);
+  logger_biobj->buffer_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_time_stamp, NULL);
 
-  self = coco_transformed_allocate(problem, logger, logger_biobj_free);
-  self->evaluate_function = logger_biobj_evaluate;
+  problem = coco_problem_transformed_allocate(inner_problem, logger_biobj, logger_biobj_free);
+  problem->evaluate_function = logger_biobj_evaluate;
 
   /* Initialize the indicators */
-  if (logger->compute_indicators) {
+  if (logger_biobj->compute_indicators) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++)
-      logger->indicators[i] = logger_biobj_indicator(logger, problem, OBSERVER_BIOBJ_INDICATORS[i]);
+      logger_biobj->indicators[i] = logger_biobj_indicator(logger_biobj, inner_problem, OBSERVER_BIOBJ_INDICATORS[i]);
 
-    observer_biobj->previous_function = (long) problem->suite_dep_function;
+    observer_biobj->previous_function = (long) inner_problem->suite_dep_function;
   }
 
-  return self;
+  return problem;
 }

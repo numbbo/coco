@@ -27,13 +27,13 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
   suite->suite_name = coco_strdup(suite_name);
 
   suite->number_of_dimensions = number_of_dimensions;
-  suite->dimensions = coco_allocate_memory(suite->number_of_dimensions * sizeof(size_t));
+  suite->dimensions = coco_allocate_vector_size_t(suite->number_of_dimensions);
   for (i = 0; i < suite->number_of_dimensions; i++) {
     suite->dimensions[i] = dimensions[i];
   }
 
   suite->number_of_functions = number_of_functions;
-  suite->functions = coco_allocate_memory(suite->number_of_functions * sizeof(size_t));
+  suite->functions = coco_allocate_vector_size_t(suite->number_of_functions);
   for (i = 0; i < suite->number_of_functions; i++) {
     suite->functions[i] = i + 1;
   }
@@ -70,7 +70,7 @@ static void coco_suite_set_instance(coco_suite_t *suite,
   }
 
   suite->number_of_instances = coco_numbers_count(instance_numbers, "suite instance numbers");
-  suite->instances = coco_allocate_memory(suite->number_of_instances * sizeof(size_t));
+  suite->instances = coco_allocate_vector_size_t(suite->number_of_instances);
   for (i = 0; i < suite->number_of_instances; i++) {
     suite->instances[i] = instance_numbers[i];
   }
@@ -331,7 +331,7 @@ static size_t *coco_suite_get_instance_indices(coco_suite_t *suite, const char *
     }
   }
 
-  instances = coco_allocate_memory(COCO_MAX_INSTANCES * sizeof(char));
+  instances = coco_allocate_string(COCO_MAX_INSTANCES);
   if ((instances_found >= 0) && (parce_instances == 1)) {
     if (coco_options_read_values(suite_instance, "instances", instances) > 0) {
       result = coco_string_get_numbers_from_ranges(instances, "instances", 1, 0);
@@ -472,7 +472,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
 
   /* Apply filter if any given by the suite_options */
   if ((suite_options) && (strlen(suite_options) > 0)) {
-    option_string = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+    option_string = coco_allocate_string(COCO_PATH_MAX);
     if (coco_options_read_values(suite_options, "function_idx", option_string) > 0) {
       indices = coco_string_get_numbers_from_ranges(option_string, "function_idx", 1, suite->number_of_functions);
       if (indices != NULL) {
@@ -482,7 +482,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
     }
     coco_free_memory(option_string);
 
-    option_string = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+    option_string = coco_allocate_string(COCO_PATH_MAX);
     if (coco_options_read_values(suite_options, "instance_idx", option_string) > 0) {
       indices = coco_string_get_numbers_from_ranges(option_string, "instance_idx", 1, suite->number_of_instances);
       if (indices != NULL) {
@@ -506,7 +506,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
       }
     }
 
-    option_string = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+    option_string = coco_allocate_string(COCO_PATH_MAX);
     if ((dim_idx_found >= 0) && (parce_dim_idx == 1) && (coco_options_read_values(suite_options, "dimension_idx", option_string) > 0)) {
       indices = coco_string_get_numbers_from_ranges(option_string, "dimension_idx", 1, suite->number_of_dimensions);
       if (indices != NULL) {
@@ -516,7 +516,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
     }
     coco_free_memory(option_string);
 
-    option_string = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+    option_string = coco_allocate_string(COCO_PATH_MAX);
     if ((dim_found >= 0) && (parce_dim == 1) && (coco_options_read_values(suite_options, "dimensions", option_string) > 0)) {
       ptr = option_string;
       /* Check for disallowed characters */

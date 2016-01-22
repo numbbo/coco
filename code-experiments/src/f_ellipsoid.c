@@ -25,9 +25,9 @@ static double f_ellipsoid_raw(const double *x, const size_t number_of_variables)
   return result;
 }
 
-static void f_ellipsoid_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_ellipsoid_raw(x, self->number_of_variables);
+static void f_ellipsoid_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_ellipsoid_raw(x, problem->number_of_variables);
 }
 
 static coco_problem_t *f_ellipsoid_allocate(const size_t number_of_variables) {
@@ -106,17 +106,17 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
 }
 
 static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const size_t function,
-                                                                 const size_t dimension,
-                                                                 const size_t instance,
-                                                                 const long rseed,
-                                                                 const char *problem_id_template,
-                                                                 const char *problem_name_template) {
+                                                                       const size_t dimension,
+                                                                       const size_t instance,
+                                                                       const long rseed,
+                                                                       const char *problem_id_template,
+                                                                       const char *problem_name_template) {
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
   double **B;
   const double *const *B_copy;
-  size_t *P1 = (size_t *)coco_allocate_memory(dimension * sizeof(size_t));/*TODO: implement a allocate_size_t_vector*/
-  size_t *P2 = (size_t *)coco_allocate_memory(dimension * sizeof(size_t));
+  size_t *P1 = coco_allocate_vector_size_t(dimension);
+  size_t *P2 = coco_allocate_vector_size_t(dimension);
   size_t *block_sizes;
   size_t nb_blocks;
   size_t swap_range;
@@ -133,7 +133,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   fopt = bbob2009_compute_fopt(function, instance);
   
   B = ls_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
-  B_copy = (const double *const *)B;/*TODO: silences the warning, not sure if it prenvents the modification of B at all levels*/
+  B_copy = (const double *const *)B;/*TODO: silences the warning, not sure if it prevents the modification of B at all levels*/
 
   ls_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
   ls_compute_truncated_uniform_swap_permutation(P1, rseed + 2000000, dimension, nb_swaps, swap_range);

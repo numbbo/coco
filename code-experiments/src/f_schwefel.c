@@ -4,7 +4,6 @@
 
 #include "coco.h"
 #include "coco_problem.c"
-#include "coco_generics.c"
 #include "suite_bbob_legacy_code.c"
 #include "transform_obj_shift.c"
 #include "transform_vars_scale.c"
@@ -37,10 +36,10 @@ static double f_schwefel_raw(const double *x, const size_t number_of_variables) 
   return result;
 }
 
-static void f_schwefel_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_schwefel_raw(x, self->number_of_variables);
-  assert(y[0] >= self->best_value[0]);
+static void f_schwefel_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_schwefel_raw(x, problem->number_of_variables);
+  assert(y[0] >= problem->best_value[0]);
 }
 
 static coco_problem_t *f_schwefel_allocate(const size_t number_of_variables) {
