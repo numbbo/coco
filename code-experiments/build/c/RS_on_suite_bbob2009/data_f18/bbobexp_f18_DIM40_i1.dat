@@ -1,0 +1,21 @@
+% function evaluation | noise-free fitness - Fopt (-1.694000000000e+01) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...
+1 +2.391010549e+02 +2.391010549e+02 +2.221610549e+02 +2.221610549e+02
+4 +1.028137280e+02 +1.028137280e+02 +8.587372796e+01 +8.587372796e+01
+10 +8.427948918e+01 +8.427948918e+01 +6.733948918e+01 +6.733948918e+01
+54 +4.793002547e+01 +4.793002547e+01 +3.099002547e+01 +3.099002547e+01
+% function evaluation | noise-free fitness - Fopt (1.881000000000e+01) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...
+1 +5.193064390e+02 +5.193064390e+02 +5.381164390e+02 +5.381164390e+02
+2 +2.348238363e+02 +2.348238363e+02 +2.536338363e+02 +2.536338363e+02
+6 +1.565284008e+02 +1.565284008e+02 +1.753384008e+02 +1.753384008e+02
+38 +9.286342411e+01 +9.286342411e+01 +1.116734241e+02 +1.116734241e+02
+% function evaluation | noise-free fitness - Fopt (2.731500000000e+02) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...
+1 +1.201941607e+02 +1.201941607e+02 +3.933441607e+02 +3.933441607e+02
+9 +9.994020643e+01 +9.994020643e+01 +3.730902064e+02 +3.730902064e+02
+% function evaluation | noise-free fitness - Fopt (3.718000000000e+01) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...
+1 +2.627596058e+02 +2.627596058e+02 +2.999396058e+02 +2.999396058e+02
+3 +1.719963473e+02 +1.719963473e+02 +2.091763473e+02 +2.091763473e+02
+5 +9.994451685e+01 +9.994451685e+01 +1.371245169e+02 +1.371245169e+02
+% function evaluation | noise-free fitness - Fopt (-1.479000000000e+02) | best noise-free fitness - Fopt | measured fitness | best measured fitness | x1 | x2...
+1 +1.710227823e+02 +1.710227823e+02 +2.312278229e+01 +2.312278229e+01
+4 +1.149121278e+02 +1.149121278e+02 -3.298787224e+01 -3.298787224e+01
+23 +9.935408295e+01 +9.935408295e+01 -4.854591705e+01 -4.854591705e+01

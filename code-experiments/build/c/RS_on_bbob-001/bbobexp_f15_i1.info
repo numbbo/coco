@@ -1,0 +1,15 @@
+funcId = 15, DIM = 2, Precision = 1.000e-08, algId = 'RS'
+%
+data_f15/bbobexp_f15_DIM2_i1.dat, 1:20|4.1e+00, 2:20|1.9e+01
+funcId = 15, DIM = 3, Precision = 1.000e-08, algId = 'RS'
+%
+data_f15/bbobexp_f15_DIM3_i1.dat, 1:30|5.1e+01, 2:30|5.8e+01
+funcId = 15, DIM = 5, Precision = 1.000e-08, algId = 'RS'
+%
+data_f15/bbobexp_f15_DIM5_i1.dat, 1:50|1.7e+02, 2:50|6.8e+01
+funcId = 15, DIM = 10, Precision = 1.000e-08, algId = 'RS'
+%
+data_f15/bbobexp_f15_DIM10_i1.dat, 1:100|2.3e+02, 2:100|1.8e+02
+funcId = 15, DIM = 20, Precision = 1.000e-08, algId = 'RS'
+%
+data_f15/bbobexp_f15_DIM20_i1.dat, 1:200|7.1e+02, 2:200|8.0e+02
