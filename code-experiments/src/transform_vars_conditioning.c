@@ -28,6 +28,7 @@ static void transform_vars_conditioning_evaluate(coco_problem_t *self, const dou
         * x[i];
   }
   coco_evaluate_function(inner_problem, data->x, y);
+  assert(y[0] + 1e-13 >= self->best_value[0]);
 }
 
 static void transform_vars_conditioning_free(void *thing) {
