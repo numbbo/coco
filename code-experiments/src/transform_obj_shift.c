@@ -15,6 +15,7 @@ static void transform_obj_shift_evaluate(coco_problem_t *self, const double *x, 
   for (i = 0; i < self->number_of_objectives; i++) {
       y[i] += data->offset;
   }
+  assert(y[0] + 1e-13 >= self->best_value[0]);
 }
 
 /**
