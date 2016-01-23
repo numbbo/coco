@@ -40,7 +40,7 @@ static double f_schwefel_raw(const double *x, const size_t number_of_variables) 
 static void f_schwefel_evaluate(coco_problem_t *self, const double *x, double *y) {
   assert(self->number_of_objectives == 1);
   y[0] = f_schwefel_raw(x, self->number_of_variables);
-  assert(y[0] >= self->best_value[0]);
+  assert(y[0] + 1e-13 >= self->best_value[0]);
 }
 
 static coco_problem_t *f_schwefel_allocate(const size_t number_of_variables) {
