@@ -19,6 +19,7 @@ static void transform_obj_oscillate_evaluate(coco_problem_t *self, const double 
           }
       }
   }
+  assert(y[0] + 1e-13 >= self->best_value[0]);
 }
 
 /**

@@ -29,6 +29,7 @@ static void transform_obj_penalize_evaluate(coco_problem_t *self, const double *
   for (i = 0; i < self->number_of_objectives; ++i) {
     y[i] += data->factor * penalty;
   }
+  assert(y[0] + 1e-13 >= self->best_value[0]);
 }
 
 /**
