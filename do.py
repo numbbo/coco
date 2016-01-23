@@ -183,7 +183,7 @@ def install_postprocessing():
     global release
     expand_file(join('code-postprocessing', 'setup.py.in'),
                 join('code-postprocessing', 'setup.py'),
-                {'COCO_VERSION': git_version()})
+                {'COCO_VERSION': git_version(pep440=True)})
     # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/bbob_pproc/latex-templates')
     python('code-postprocessing', ['setup.py', 'install', '--user'])
     
@@ -195,7 +195,7 @@ def _prep_python():
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
     copy_file('code-experiments/build/python/README.md', 'code-experiments/build/python/README.txt')
     expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
-                {'COCO_VERSION': git_version()}) # hg_version()})
+                {'COCO_VERSION': git_version(pep440=True)}) # hg_version()})
     # if 'darwin' in sys.platform:  # a hack to force cythoning
     #     run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
 
