@@ -119,7 +119,7 @@ def main(args):
     example_experiment.main()
     for arg in args if args else default_testcases:
         process_testfile(arg) if args or os.path.isfile(arg) else None
-    _clean_up(["random_search_on_bbob-biobj", "results"], list_before)
+    _clean_up(["random_search_on_bbob", "results"], list_before)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
