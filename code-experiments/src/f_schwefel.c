@@ -77,7 +77,7 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
   fopt = bbob2009_compute_fopt(function, instance);
   bbob2009_unif(tmp1, dimension, rseed);
   for (i = 0; i < dimension; ++i) {
-    xopt[i] = 0.5 * 4.2096874633;
+    xopt[i] = 0.5 * 4.2096874637;
     if (tmp1[i] - 0.5 < 0) {
       xopt[i] *= -1;
     }
