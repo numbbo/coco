@@ -467,8 +467,10 @@ def loadBestBiobj2016():
     sys.stdout.flush()
 
     bestalgfilepath = os.path.split(__file__)[0]
-    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle.gz')
-    fid = gzip.open(picklefilename, 'r')
+    #picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle.gz')
+    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle')
+    #fid = gzip.open(picklefilename, 'r')
+    fid = open(picklefilename, 'r')
     bestbiobjalgentries2016 = pickle.load(fid)
     fid.close()
     print_done()
