@@ -391,10 +391,11 @@ def run_matlab_sms():
 ################################################################################
 ## Octave
 def build_octave():
-    """Builds example in build/matlab/ with GNU Octave but not the one in examples/."""
+    """Builds example in build/matlab/ with GNU Octave."""
     
     global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/matlab/coco.c', release)
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
+               'code-experiments/build/matlab/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
@@ -404,8 +405,8 @@ def build_octave():
 def run_octave():
     # remove the mex files for a clean compilation first
     print('CLEAN\t mex files from code-experiments/build/matlab/')
-    for filename in glob.glob('code-experiments/build/matlab/*.mex*') :
-        os.remove( filename )
+    for filename in glob.glob('code-experiments/build/matlab/*.mex*'):
+        os.remove(filename)
     # amalgamate, copy, and build
     build_octave()
     run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
