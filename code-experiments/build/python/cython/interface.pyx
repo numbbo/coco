@@ -360,11 +360,11 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         >>> print(used_indices)
         [1575, 1576, 1577, 1578, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1587, 1588, 1589]
 
-        A desired problem can also be indexed out when inializing the suite::
+        A desired problem can also be filtered out during creation::
 
         >>> import cocoex as ex
-        >>> f9 = Suite("bbob", "",
-        ...            "dimensions:20 function_idx:9 instance_idx:1")[0]
+        >>> f9 = ex.Suite("bbob", "",
+        ...               "function_idx:9 dimensions:20 instance_idx:1-5")[0]
         >>> print(f9.id)
         bbob_f009_i01_d20
 
