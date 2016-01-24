@@ -73,8 +73,8 @@ cdef class Suite:
     Input arguments to `Suite` are `name: str`, `instance: str`, `options: str`,
     and passed to the respective C code (see `coco.h`).
 
-    >>> import cocoex as co
-    >>> suite = co.Suite("bbob", "", "")
+    >>> import cocoex as ex
+    >>> suite = ex.Suite("bbob", "", "")
     >>> f = suite.next_problem()
     >>> assert f.number_of_objectives == 1
     >>> print("f([1,2]) = %.11f" % f([1,2]))
@@ -82,8 +82,9 @@ cdef class Suite:
 
     Sweeping through all problems is as simple as::
 
-    >>> suite = co.Suite("bbob-biobj", "", "")
-    >>> observer = co.Observer("bbob-biobj", "exdata-doctest")
+    >>> import cocoex as ex
+    >>> suite = ex.Suite("bbob-biobj", "", "")
+    >>> observer = ex.Observer("bbob-biobj", "exdata-doctest")
     >>> for fun in suite:
     ...     if fun.index == 0:
     ...         print("Number of objectives %d, %d, %d" %
@@ -334,8 +335,8 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         If `get_problem is True`, the problem for the first matching ID is
         returned.
 
-        >>> import cocoex as co
-        >>> s = co.Suite("bbob", "", "")
+        >>> import cocoex as ex
+        >>> s = ex.Suite("bbob", "", "")
         >>> s.ids("f001", "d10", "i01")
         ['bbob_f001_i01_d10']
 
@@ -498,13 +499,13 @@ cdef class Observer:
         The typical observer records data to be used in the COCO post-processing
         afterwards.
 
-        >>> import cocoex as co
-        >>> suite = co.Suite("bbob", "", "")
+        >>> import cocoex as ex
+        >>> suite = ex.Suite("bbob", "", "")
         >>> assert len(suite) == 2160
         >>> f = suite.get_problem(33)
         >>> assert isinstance(f, Problem)
         >>> assert f.id.endswith('f003_i04_d02')
-        >>> observer = co.Observer("bbob", "").observe(f)
+        >>> observer = ex.Observer("bbob", "").observe(f)
         >>> # work work work with f
         >>> f.free()
 
