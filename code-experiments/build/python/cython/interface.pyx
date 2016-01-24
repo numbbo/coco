@@ -325,9 +325,15 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         if self.suite:
             coco_suite_free(self.suite)
 
+    def find_problem_ids(self, *args, **kwargs):
+        """has been renamed to `ids`"""
+        raise NotImplementedError(
+            "`find_problem_ids()` has been renamed to `ids()`")
+
+
     def ids(self, *id_snippets, get_problem=False, verbose=False):
         """`ids(*id_snippets, get_problem=False, verbose=False)`
-        returns all problem IDs that contain all of the `id_snippets`.
+        return all problem IDs that contain all of the `id_snippets`.
 
         An ID can be used for indexing, that is, when calling the method
         `get_problem(id)`.
@@ -353,14 +359,15 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         ...         used_indices.append(p.index)
         >>> print(used_indices)
         [1575, 1576, 1577, 1578, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1587, 1588, 1589]
-        
+
         A desired problem can also be indexed out when inializing the suite::
-        
+
         >>> import cocoex as ex
-        >>> f9 = Suite("bbob", "", "dimensions:20 function_idx:9 instance_idx:1")[0]
+        >>> f9 = Suite("bbob", "",
+        ...            "dimensions:20 function_idx:9 instance_idx:1")[0]
         >>> print(f9.id)
         bbob_f009_i01_d20
-        
+
         """
         res = []
         for idx, id in enumerate(self._ids):
