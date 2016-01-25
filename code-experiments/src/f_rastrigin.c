@@ -30,6 +30,7 @@ static double f_rastrigin_raw(const double *x, const size_t number_of_variables)
 static void f_rastrigin_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
   y[0] = f_rastrigin_raw(x, problem->number_of_variables);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
 static coco_problem_t *f_rastrigin_allocate(const size_t number_of_variables) {
