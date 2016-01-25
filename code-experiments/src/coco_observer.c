@@ -130,7 +130,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   /* Read result_folder, algorithm_name and algorithm_info from the observer_options and use
    * them to initialize the observer */
   if (coco_options_read_string(observer_options, "result_folder", result_folder) == 0) {
-    strcpy(result_folder, "results");
+    strcpy(result_folder, "exdata-default");
   }
   coco_create_unique_path(&result_folder);
   coco_info("Results will be output to folder %s", result_folder);

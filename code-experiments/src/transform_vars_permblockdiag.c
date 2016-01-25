@@ -37,6 +37,7 @@ static void ls_transform_vars_permblockdiag_evaluate(coco_problem_t *self, const
   }
   
   coco_evaluate_function(inner_problem, data->x, y);
+  assert(y[0] + 1e-13 >= self->best_value[0]);
 }
 
 static void ls_transform_vars_permblockdiag_free(void *thing) {
