@@ -847,7 +847,8 @@ class DataSet():
         """attributes `target`, `evals`, and `ert` are truncated to target values not 
         much smaller than defined in attribute `precision` (typically ``1e-8``). 
         Attribute `maxevals` is recomputed for columns that reach the final target
-        precision. 
+        precision. Note that in the bi-objective case the attribute `precision`
+        does not exist.
         
         """
         if isinstance(genericsettings.current_testbed, genericsettings.GECCOBBOBTestbed):
@@ -1609,6 +1610,9 @@ class DataSetList(list):
     def dictByNoise(self):
         """Returns a dictionary splitting noisy and non-noisy entries."""
         sorted = {}
+        
+        # For bi-objective case we are not showing the noiselessall graph because 
+        # it is always equal to all graph.
         if not self.isBiobjective():
             for i in self:
                 if i.funcId in range(1, 56):
