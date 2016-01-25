@@ -1,3 +1,8 @@
+/**
+ * @file coco_string.c
+ * @brief Definitions of functions that manipulate strings.
+ */
+
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
@@ -5,11 +10,9 @@
 #include "coco.h"
 
 /**
- * coco_strdup(string):
+ * @brief Creates a duplicate copy of string and returns a pointer to it.
  *
- * Create a duplicate copy of ${string} and return a pointer to
- * it. The caller is responsible for free()ing the memory allocated
- * using coco_free_memory().
+ * The caller is responsible for freeing the allocated memory using coco_free_memory().
  */
 static char *coco_strdup(const char *string) {
   size_t len;
@@ -22,9 +25,15 @@ static char *coco_strdup(const char *string) {
   return duplicate;
 }
 
-#define coco_vstrdupf_buflen 444
 /**
- * va_list version of formatted string duplication coco_strdupf()
+ * @brief The length of the buffer used in the coco_vstrdupf function.
+ *
+ * @note This should be handled differently!
+ */
+#define coco_vstrdupf_buflen 444
+
+/**
+ * @brief Formatted string duplication, with va_list arguments.
  */
 static char *coco_vstrdupf(const char *str, va_list args) {
   static char buf[coco_vstrdupf_buflen];
@@ -51,6 +60,7 @@ static char *coco_vstrdupf(const char *str, va_list args) {
     coco_error("coco_vstrdupf(): A suspiciously long string is tried to being duplicated '%s'", buf);
   return coco_strdup(buf);
 }
+
 #undef coco_vstrdupf_buflen
 
 /**
@@ -67,11 +77,9 @@ char *coco_strdupf(const char *str, ...) {
 }
 
 /**
- * coco_strconcat(string1, string2):
+ * @brief Returns a concatenate copy of string1 + string2.
  *
- * Return a concatenate copy of ${string1} + ${string2}. 
- * The caller is responsible for free()ing the memory allocated
- * using coco_free_memory().
+ * The caller is responsible for freeing the allocated memory using coco_free_memory().
  */
 static char *coco_strconcat(const char *s1, const char *s2) {
   size_t len1 = strlen(s1);
@@ -84,9 +92,9 @@ static char *coco_strconcat(const char *s1, const char *s2) {
 }
 
 /**
- * return first index where ${seq} occurs in ${base}, -1 if it doesn't.
+ * @brief Returns the first index where seq occurs in base and -1 if it doesn't.
  *
- * If there is an equivalent standard C function, this can/should be removed. 
+ * @note If there is an equivalent standard C function, this can/should be removed.
  */
 static long coco_strfind(const char *base, const char *seq) {
   const size_t strlen_seq = strlen(seq);
@@ -113,10 +121,11 @@ static long coco_strfind(const char *base, const char *seq) {
   return -1;
 }
 
-
 /**
- * Splits a string based on the given delimiter. Returns a pointer to the resulting substrings with NULL
- * as the last one. The memory of the result needs to be freed by the caller.
+ * @brief Splits a string based on the given delimiter.
+ *
+ * Returns a pointer to the resulting substrings with NULL as the last one.
+ * The caller is responsible for freeing the allocated memory using coco_free_memory().
  */
 static char **coco_string_split(const char *string, const char delimiter) {
 
@@ -162,10 +171,11 @@ static char **coco_string_split(const char *string, const char delimiter) {
   return result;
 }
 
-
-
-/* Creates and returns a string with removed characters from @{from} to @{to}.
- * The caller is responsible for freeing the allocated memory. */
+/**
+ * @brief Creates and returns a string with removed characters between from and to.
+ *
+ * The caller is responsible for freeing the allocated memory using coco_free_memory().
+ */
 static char *coco_remove_from_string(char *string, char *from, char *to) {
 
   char *result, *start, *stop;

@@ -38,9 +38,6 @@ static const double coco_pi = 3.14159265358979323846;
 static const double coco_two_pi = 2.0 * 3.14159265358979323846;
 /**@}*/
 
-/** @brief The maximum number of different instances in a suite. */
-#define COCO_MAX_INSTANCES 1000
-
 /***********************************************************************************************************/
 
 /** @brief Logging level type. */

@@ -1,6 +1,6 @@
 /**
  * @file coco_internal.h
- * @brief All internal COCO structures and typedefs are defined in this file.
+ * @brief Definitions of internal COCO structures and typedefs.
  *
  * These are used throughout the COCO code base but should not be used by any external code.
  */

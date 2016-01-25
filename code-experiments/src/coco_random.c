@@ -1,3 +1,11 @@
+/**
+ * @file coco_random.c
+ * @brief Definitions of functions regarding COCO random numbers.
+ *
+ * @note This file contains non-C89-standard types (such as uint32_t and uint64_t), which should
+ * eventually be fixed.
+ */
+
 #include <math.h>
 
 #include "coco.h"
@@ -7,18 +15,19 @@
 #define SHORT_LAG 273
 #define LONG_LAG 607
 
+/**
+ * @brief A structure containing the state of the random generator.
+ */
 struct coco_random_state {
   double x[LONG_LAG];
   size_t index;
 };
 
 /**
- * coco_random_generate(state):
+ * @brief A lagged Fibonacci random number generator.
  *
- * This is a lagged Fibonacci generator that is nice because it is
- * reasonably small and directly generates double values. The chosen
- * lags (607 and 273) lead to a generator with a period in excess of
- * 2^607-1.
+ * This generator is nice because it is reasonably small and directly generates double values. The chosen
+ * lags (607 and 273) lead to a generator with a period in excess of 2^607-1.
  */
 static void coco_random_generate(coco_random_state_t *state) {
   size_t i;
@@ -56,10 +65,8 @@ void coco_random_free(coco_random_state_t *state) {
 }
 
 double coco_random_uniform(coco_random_state_t *state) {
-  /* If we have consumed all random numbers in our archive, it is
-   * time to run the actual generator for one iteration to refill
-   * the state with 'LONG_LAG' new values.
-   */
+  /* If we have consumed all random numbers in our archive, it is time to run the actual generator for one
+   * iteration to refill the state with 'LONG_LAG' new values. */
   if (state->index >= LONG_LAG)
     coco_random_generate(state);
   return state->x[state->index++];

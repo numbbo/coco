@@ -19,7 +19,7 @@
 /***********************************************************************************************************/
 
 /**
- * Initialize the logging level to COCO_INFO.
+ * @brief Initializes the logging level to COCO_INFO.
  */
 static coco_log_level_type_e coco_log_level = COCO_INFO;
 
@@ -115,6 +115,7 @@ static void coco_join_path(char *path, size_t path_max_length, ...) {
  * @note Should work cross-platform.
  *
  * @param path The given path.
+ *
  * @return 1 if the path exists and corresponds to a directory and 0 otherwise.
  */
 static int coco_directory_exists(const char *path) {
@@ -137,6 +138,7 @@ static int coco_directory_exists(const char *path) {
  * @note Should work cross-platform.
  *
  * @param path The given path.
+ *
  * @return 1 if the path exists and corresponds to a file and 0 otherwise.
  */
 static int coco_file_exists(const char *path) {
@@ -157,6 +159,7 @@ static int coco_file_exists(const char *path) {
  * @brief Calls the right mkdir() method (depending on the platform).
  *
  * @param path The directory path.
+ *
  * @return 0 on successful completion, and -1 on error.
  */
 static int coco_mkdir(const char *path) {
@@ -287,7 +290,9 @@ static void coco_create_unique_directory(char **path) {
 
 /**
  * The method should work across different platforms/compilers.
+ *
  * @path The path to the directory
+ *
  * @return 0 on successful completion, and -1 on error.
  */
 int coco_remove_directory(const char *path) {
@@ -316,7 +321,7 @@ int coco_remove_directory(const char *path) {
 
       if (find_data_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
         /* Buf is a directory, recurse on it */
-        r2 = coco_remove_directory_msc(buf);
+        r2 = coco_remove_directory(buf);
       } else {
         /* Buf is a file, delete it */
         /* Careful, DeleteFile returns 0 if it fails and nonzero otherwise! */
@@ -400,6 +405,10 @@ double *coco_allocate_vector(const size_t number_of_elements) {
   return (double *) coco_allocate_memory(block_size);
 }
 
+/**
+ * @brief Safe memory allocation for a vector with size_t elements that either succeeds or triggers a
+ * coco_error.
+ */
 static size_t *coco_allocate_vector_size_t(const size_t number_of_elements) {
   const size_t block_size = number_of_elements * sizeof(size_t);
   return (size_t *) coco_allocate_memory(block_size);
@@ -428,14 +437,17 @@ static double *coco_duplicate_vector(const double *src, const size_t number_of_e
 /***********************************************************************************************************/
 
 /**
- * @name Methods regarding options reading
+ * @name Methods regarding reading options from a string
  */
 /**@{*/
 /**
- * Parse options in the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon (spaces are optional)
+ * @brief Parses options in the form "name1: value1 name2: value2".
+ *
+ * Formatting requirements:
+ * - name and value need to be separated by a colon (spaces are optional)
  * - value needs to be a single string (no spaces allowed)
- * Returns the number of successful assignments.
+ *
+ * @return The number of successful assignments.
  */
 static int coco_options_read(const char *options, const char *name, const char *format, void *pointer) {
 
@@ -461,43 +473,56 @@ static int coco_options_read(const char *options, const char *name, const char *
 }
 
 /**
- * Reads an integer from options using the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon (spaces are optional)
+ * @brief Reads an integer from options using the form "name1: value1 name2: value2".
+ *
+ * Formatting requirements:
+ * - name and value need to be separated by a colon (spaces are optional)
  * - the value corresponding to the given name needs to be an integer
- * Returns the number of successful assignments.
+ *
+ * @return The number of successful assignments.
  */
 static int coco_options_read_int(const char *options, const char *name, int *pointer) {
   return coco_options_read(options, name, " %i", pointer);
 }
 
 /**
- * Reads a size_t from options using the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon (spaces are optional)
+ * @brief Reads a size_t from options using the form "name1: value1 name2: value2".
+ *
+ * Formatting requirements:
+ * - name and value need to be separated by a colon (spaces are optional)
  * - the value corresponding to the given name needs to be a size_t
- * Returns the number of successful assignments.
+ *
+ * @return The number of successful assignments.
  */
 static int coco_options_read_size_t(const char *options, const char *name, size_t *pointer) {
   return coco_options_read(options, name, "%lu", pointer);
 }
 
+/* Commented to silence the compiler */
+#if 0
 /**
- * Reads a double value from options using the form "name1 : value1 name2: value2". Formatting requirements:
- * - name and value need to be separated by a semicolon (spaces are optional)
+ * @brief Reads a double value from options using the form "name1: value1 name2: value2".
+ *
+ * Formatting requirements:
+ * - name and value need to be separated by a colon (spaces are optional)
  * - the value corresponding to the given name needs to be a double
- * Returns the number of successful assignments.
+ *
+ * @return The number of successful assignments.
  */
-/* Commented to silence the compiler
 static int coco_options_read_double(const char *options, const char *name, double *pointer) {
   return coco_options_read(options, name, "%f", pointer);
 }
-*/
+#endif
 
 /**
- * Reads a string from options using the form "name1 : value1 name2: value2". Formatting requirements:
+ * @brief Reads a string from options using the form "name1: value1 name2: value2".
+ *
+ * Formatting requirements:
  * - name and value need to be separated by a colon (spaces are optional)
  * - the value corresponding to the given name needs to be a string - either a single word or multiple words
  * in double quotes
- * Returns the number of successful assignments.
+ *
+ * @return The number of successful assignments.
  */
 static int coco_options_read_string(const char *options, const char *name, char *pointer) {
 
@@ -511,7 +536,7 @@ static int coco_options_read_string(const char *options, const char *name, char 
     return 0;
   i2 = i1 + coco_strfind(&options[i1], ":") + 1;
 
-  /* Remove trailing whitespaces */
+  /* Remove trailing white spaces */
   while (isspace((unsigned char) options[i2]))
     i2++;
 
@@ -527,11 +552,13 @@ static int coco_options_read_string(const char *options, const char *name, char 
 }
 
 /**
- * Reads (possibly delimited) values from options using the form "name1 : value1,value2,value3 name2: value4",
+ * @brief Reads (possibly delimited) values from options using the form "name1: value1,value2,value3 name2: value4",
  * i.e. reads all characters from the corresponding name up to the next whitespace or end of string.
+ *
  * Formatting requirements:
- * - name and value need to be separated by a semicolon (spaces are optional)
- * Returns the number of successful assignments.
+ * - name and value need to be separated by a colon (spaces are optional)
+ *
+ * @return The number of successful assignments.
  */
 static int coco_options_read_values(const char *options, const char *name, char *pointer) {
 
@@ -546,7 +573,7 @@ static int coco_options_read_values(const char *options, const char *name, char 
     return 0;
   i2 = i1 + coco_strfind(&options[i1], ":") + 1;
 
-  /* Remove trailing whitespaces */
+  /* Remove trailing white spaces */
   while (isspace((unsigned char) options[i2]))
     i2++;
 
@@ -564,232 +591,23 @@ static int coco_options_read_values(const char *options, const char *name, char 
 }
 /**@}*/
 
-static size_t coco_numbers_count(const size_t *numbers, const char *name) {
-
-  size_t count = 0;
-  while ((count < COCO_MAX_INSTANCES) && (numbers[count] != 0)) {
-    count++;
-  }
-  if (count == COCO_MAX_INSTANCES) {
-    coco_error("coco_numbers_count(): over %lu numbers in %s", COCO_MAX_INSTANCES, name);
-    return 0; /* Never reached*/
-  }
-
-  return count;
-}
-
-/**
- * Reads ranges from a string of positive ranges separated by commas. For example: "-3,5-6,8-". Returns the
- * numbers that are defined by the ranges if min and max are used as their extremes. If the ranges with open
- * beginning/end are not allowed, use 0 as min/max. The returned string has an appended 0 to mark its end.
- * A maximum of COCO_MAX_INSTANCES values is returned. If there is a problem with one of the ranges, the
- * parsing stops and the current result is returned. The memory of the returned object needs to be freed by
- * the caller.
- */
-static size_t *coco_string_get_numbers_from_ranges(char *string, const char *name, size_t min, size_t max) {
-
-  char *ptr, *dash = NULL;
-  char **ranges, **numbers;
-  size_t i, j, count;
-  size_t num[2];
-
-  size_t *result;
-  size_t i_result = 0;
-
-  /* Check for empty string */
-  if ((string == NULL) || (strlen(string) == 0)) {
-    coco_warning("coco_options_read_ranges(): cannot parse empty ranges");
-    return NULL;
-  }
-
-  ptr = string;
-  /* Check for disallowed characters */
-  while (*ptr != '\0') {
-    if ((*ptr != '-') && (*ptr != ',') && !isdigit((unsigned char )*ptr)) {
-      coco_warning("coco_options_read_ranges(): problem parsing '%s' - cannot parse ranges with '%c'", string,
-          *ptr);
-      return NULL;
-    } else
-      ptr++;
-  }
-
-  /* Check for incorrect boundaries */
-  if ((max > 0) && (min > max)) {
-    coco_warning("coco_options_read_ranges(): incorrect boundaries");
-    return NULL;
-  }
-
-  result = coco_allocate_vector_size_t(COCO_MAX_INSTANCES + 1);
-
-  /* Split string to ranges w.r.t commas */
-  ranges = coco_string_split(string, ',');
-
-  if (ranges) {
-    /* Go over the current range */
-    for (i = 0; *(ranges + i); i++) {
-
-      ptr = *(ranges + i);
-      /* Count the number of '-' */
-      count = 0;
-      while (*ptr != '\0') {
-        if (*ptr == '-') {
-          if (count == 0)
-            /* Remember the position of the first '-' */
-            dash = ptr;
-          count++;
-        }
-        ptr++;
-      }
-      /* Point again to the start of the range */
-      ptr = *(ranges + i);
-
-      /* Check for incorrect number of '-' */
-      if (count > 1) {
-        coco_warning("coco_options_read_ranges(): problem parsing '%s' - too many '-'s", string);
-        /* Cleanup */
-        for (j = i; *(ranges + j); j++)
-          coco_free_memory(*(ranges + j));
-        coco_free_memory(ranges);
-        if (i_result == 0) {
-          coco_free_memory(result);
-          return NULL;
-        }
-        result[i_result] = 0;
-        return result;
-      } else if (count == 0) {
-        /* Range is in the format: n (no range) */
-        num[0] = (size_t) strtol(ptr, NULL, 10);
-        num[1] = num[0];
-      } else {
-        /* Range is in one of the following formats: n-m / -n / n- / - */
-
-        /* Split current range to numbers w.r.t '-' */
-        numbers = coco_string_split(ptr, '-');
-        j = 0;
-        if (numbers) {
-          /* Read the numbers */
-          for (j = 0; *(numbers + j); j++) {
-            assert(j < 2);
-            num[j] = (size_t) strtol(*(numbers + j), NULL, 10);
-            coco_free_memory(*(numbers + j));
-          }
-        }
-        coco_free_memory(numbers);
-
-        if (j == 0) {
-          /* Range is in the format - (open ends) */
-          if ((min == 0) || (max == 0)) {
-            coco_warning("coco_options_read_ranges(): '%s' ranges cannot have an open ends; some ranges ignored", name);
-            /* Cleanup */
-            for (j = i; *(ranges + j); j++)
-              coco_free_memory(*(ranges + j));
-            coco_free_memory(ranges);
-            if (i_result == 0) {
-              coco_free_memory(result);
-              return NULL;
-            }
-            result[i_result] = 0;
-            return result;
-          }
-          num[0] = min;
-          num[1] = max;
-        } else if (j == 1) {
-          if (dash - *(ranges + i) == 0) {
-            /* Range is in the format -n */
-            if (min == 0) {
-              coco_warning("coco_options_read_ranges(): '%s' ranges cannot have an open beginning; some ranges ignored", name);
-              /* Cleanup */
-              for (j = i; *(ranges + j); j++)
-                coco_free_memory(*(ranges + j));
-              coco_free_memory(ranges);
-              if (i_result == 0) {
-                coco_free_memory(result);
-                return NULL;
-              }
-              result[i_result] = 0;
-              return result;
-            }
-            num[1] = num[0];
-            num[0] = min;
-          } else {
-            /* Range is in the format n- */
-            if (max == 0) {
-              coco_warning("coco_options_read_ranges(): '%s' ranges cannot have an open end; some ranges ignored", name);
-              /* Cleanup */
-              for (j = i; *(ranges + j); j++)
-                coco_free_memory(*(ranges + j));
-              coco_free_memory(ranges);
-              if (i_result == 0) {
-                coco_free_memory(result);
-                return NULL;
-              }
-              result[i_result] = 0;
-              return result;
-            }
-            num[1] = max;
-          }
-        }
-        /* if (j == 2), range is in the format n-m and there is nothing to do */
-      }
-
-      /* Make sure the boundaries are taken into account */
-      if ((min > 0) && (num[0] < min)) {
-        num[0] = min;
-        coco_warning("coco_options_read_ranges(): '%s' ranges adjusted to be >= %lu", name, min);
-      }
-      if ((max > 0) && (num[1] > max)) {
-        num[1] = max;
-        coco_warning("coco_options_read_ranges(): '%s' ranges adjusted to be <= %lu", name, max);
-      }
-      if (num[0] > num[1]) {
-        coco_warning("coco_options_read_ranges(): '%s' ranges not within boundaries; some ranges ignored", name);
-        /* Cleanup */
-        for (j = i; *(ranges + j); j++)
-          coco_free_memory(*(ranges + j));
-        coco_free_memory(ranges);
-        if (i_result == 0) {
-          coco_free_memory(result);
-          return NULL;
-        }
-        result[i_result] = 0;
-        return result;
-      }
-
-      /* Write in result */
-      for (j = num[0]; j <= num[1]; j++) {
-        if (i_result > COCO_MAX_INSTANCES - 1)
-          break;
-        result[i_result++] = j;
-      }
-
-      coco_free_memory(*(ranges + i));
-      *(ranges + i) = NULL;
-    }
-  }
-
-  coco_free_memory(ranges);
-
-  if (i_result == 0) {
-    coco_free_memory(result);
-    return NULL;
-  }
-
-  result[i_result] = 0;
-  return result;
-}
-
 /***********************************************************************************************************/
 
 /**
- * @name Methods implementing functions on double values
+ * @name Methods implementing functions on double values not contained in C89 standard
  */
 /**@{*/
 
-/* Some math functions which are not contained in C89 standard */
+/**
+ * @brief Rounds the given double to the nearest integer.
+ */
 static double coco_double_round(const double number) {
   return floor(number + 0.5);
 }
 
+/**
+ * @brief Returns the maximum of a and b.
+ */
 static double coco_double_max(const double a, const double b) {
   if (a >= b) {
     return a;
@@ -798,6 +616,9 @@ static double coco_double_max(const double a, const double b) {
   }
 }
 
+/**
+ * @brief Returns the minimum of a and b.
+ */
 static double coco_double_min(const double a, const double b) {
   if (a <= b) {
     return a;
@@ -809,7 +630,7 @@ static double coco_double_min(const double a, const double b) {
 /* Commented to silence the compiler (unused function warning) */
 #if 0
 /**
- * Returns 1 if |a - b| < accuracy and 0 otherwise
+ * @brief  Returns 1 if |a - b| < accuracy and 0 otherwise.
  */
 static int coco_double_almost_equal(const double a, const double b, const double accuracy) {
   return ((fabs(a - b) < accuracy) == 0);

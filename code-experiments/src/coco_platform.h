@@ -1,5 +1,6 @@
 /**
- * Automatic platform-dependent configuration of the COCO framework
+ * @file coco_platform.h
+ * @brief Automatic platform-dependent configuration of the COCO framework.
  *
  * Some platforms and standard conforming compilers require extra defines or includes to provide some
  * functionality.
@@ -8,6 +9,7 @@
  * know when a system header is included for the first time in the amalgamation, all internal files
  * that need these definitions should include this file before any system headers.
  */
+
 #ifndef __COCO_PLATFORM__ 
 #define __COCO_PLATFORM__
 
