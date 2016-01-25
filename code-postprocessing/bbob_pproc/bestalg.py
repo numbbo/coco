@@ -462,6 +462,9 @@ def loadBestBiobj2016():
     global bestbiobjalgentries2016
     # global statement necessary to change the variable bestalg.bestbiobjalgentries2016
 
+    if bestbiobjalgentries2016:
+        return
+
     print "Loading best bi-objective algorithm data from BBOB-2016...",  
     sys.stdout.flush()
 
