@@ -24,7 +24,7 @@ static void transform_vars_scale_evaluate(coco_problem_t *problem, const double 
       data->x[i] = factor * x[i];
     }
     coco_evaluate_function(inner_problem, data->x, y);
-    assert(y[0] >= problem->best_value[0]);
+    assert(y[0] + 1e-13 >= problem->best_value[0]);
   } while (0);
 }
 

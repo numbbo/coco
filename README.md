@@ -245,9 +245,7 @@ check out [this](http://stackoverflow.com/questions/13526701/javah-missing-after
 
 ### Matlab
 
-#### `build-matlab` crashes under Linux
-The Matlab wrapper does not always work under Linux with the current code: an issue is filed for the Ubuntu operating system at https://github.com/numbbo/coco/issues/318
-### Path to matlab
+#### Path to matlab
 If you see something like this when running ``python do.py build-matlab``
 ```
 AML	['code-experiments/src/coco_generics.c', 'code-experiments/src/coco_random.c', 'code-experiments/src/coco_suite.c', 'code-experiments/src/coco_suites.c', 'code-experiments/src/coco_observer.c', 'code-experiments/src/coco_runtime_c.c'] -> code-experiments/build/matlab/coco.c
@@ -273,7 +271,7 @@ Traceback (most recent call last):
     raise child_exception
 OSError: [Errno 2] No such file or directory
 ```
-It might be because your system does not know the ``matlab`` command. To fix this you should edit the file ``/etc/paths`` and add the path to the ``matlab`` bin file. For instance the ``etc/paths`` should look like something like this
+It might be because your system does not know the ``matlab`` command. To fix this, you should edit the file ``/etc/paths`` and add the path to the ``matlab`` bin file (Linux/Mac) or add the path to the folder where the `matlab.exe` lies to your Windows path. For instance, the ``etc/paths`` should look like something like this
 ```
 /usr/local/bin
 /usr/bin
@@ -290,6 +288,23 @@ A fix for this issue consists in adding to the files "hv.cpp" and "paretofront.c
 `#define char16_t UINT16_T`
 just before the line:
 `#include "mex.h"`
+
+#### Access to mex files denied
+If it happens that you get some `Access is denied` errors during `python do.py build-matlab` or `python do.py run-matlab` like this one
+```
+C:\Users\dimo\Desktop\numbbo-brockho>python do.py run-matlab
+Traceback (most recent call last):
+  File "do.py", line 649, in <module>
+    main(sys.argv[1:])
+  File "do.py", line 630, in main
+    elif cmd == 'run-matlab': run_matlab()
+  File "do.py", line 312, in run_matlab
+    os.remove( filename )
+WindowsError: [Error 5] Access is denied: 'code-experiments/build/matlab\\cocoEv
+aluateFunction.mexw32'
+```
+a reason can be that a previously opened Matlab window still has some file handles open. Simply close all Matlab windows (and all running Matlab processes if there is any) before to run the `do.py` command again.
+
 
 ### Octave
 
