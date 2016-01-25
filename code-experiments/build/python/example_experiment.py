@@ -22,9 +22,8 @@ import os, sys
 import time
 import numpy as np  # "pip install numpy" installs numpy
 import cocoex
-from cocoex import Suite, Observer, set_log_level
-set_log_level('warning')
-verbose = 1  # 
+from cocoex import Suite, Observer, log_level
+verbose = 1
 
 try: import cma  # cma.fmin is a solver option, "pip install cma" installs cma
 except: pass
@@ -142,10 +141,12 @@ def batch_loop(solver, suite, observer, budget_multiplier,
         print_flush(".") if verbose else None
         problem.free()
         addressed_problems += [problem_id]
-    print("%s done (%d of %d problems benchmarked%s)" %
+    print(" done\n%s done (%d of %d problems benchmarked%s)" %
            (suite_name, len(addressed_problems), len(suite),
              ((" in batch %d of %d" % (current_batch, number_of_batches))
                if number_of_batches > 1 else "")), end="")
+    if number_of_batches > 1:
+        print("\n    MAKE SURE TO RUN ALL BATCHES", end="")
 
 #===============================================
 # interface: ADD AN OPTIMIZER BELOW
@@ -220,17 +221,18 @@ current_batch = 1      # 1..number_of_batches
 def main(budget_multiplier=budget_multiplier,
          current_batch=current_batch,
          number_of_batches=number_of_batches):
-    print("Benchmarking solver '%s' with budget=%d * dimension"
-          % (' '.join(str(SOLVER).split()[:2]), budget_multiplier), end='')
     observer = Observer(observer_name, observer_options)
     suite = Suite(suite_name, suite_instance, suite_options)
-    print(" on suite %s, %s" % (suite.name, time.asctime()))
+    print("Benchmarking solver '%s' with budget=%d*dimension on %s suite, %s"
+          % (' '.join(str(SOLVER).split()[:2]), budget_multiplier,
+             suite.name, time.asctime()))
     t0 = time.clock()
-    if 1 < 3:
-        print_flush('Simple usecase ...\n')
+    if 11 < 3:
         simple_loop(SOLVER, suite, observer, budget_multiplier)
     elif 1 < 3:
-        print_flush('Batch usecase ...\n')
+        if number_of_batches > 1:
+            print_flush('Batch usecase, make sure you run *all* %d batches.\n' %
+                        number_of_batches)
         batch_loop(SOLVER, suite, observer, budget_multiplier,
                    current_batch, number_of_batches)
     print(", %s (%.2f min)." % (time.asctime(), (time.clock()-t0)/60**1))

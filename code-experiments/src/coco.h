@@ -424,9 +424,9 @@ void coco_info(const char *message, ...);
 void coco_debug(const char *message, ...);
 
 /**
- * @brief Changes the current log level to the given value.
+ * @brief Sets the COCO log level to the given value and returns the previous value of the log level.
  */
-void coco_set_log_level(const char *level);
+const char *coco_set_log_level(const char *level);
 /**@}*/
 
 /***********************************************************************************************************/
