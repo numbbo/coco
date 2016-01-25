@@ -6,16 +6,16 @@
 
 /* List of implemented indicators */
 #define OBSERVER_BIOBJ_NUMBER_OF_INDICATORS 1
-const char *OBSERVER_BIOBJ_INDICATORS[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS] = { "hyp" };
+const char *observer_biobj_indicators[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS] = { "hyp" };
 
 /* Logging nondominated solutions mode */
 typedef enum {
-  NONE, FINAL, ALL
+  LOG_NONDOM_NONE, LOG_NONDOM_FINAL, LOG_NONDOM_ALL
 } observer_biobj_log_nondom_e;
 
 /* Logging variables mode */
 typedef enum {
-  NEVER, LOW_DIM, ALWAYS
+  LOG_VARS_NEVER, LOG_VARS_LOW_DIM, LOG_VARS_ALWAYS
 } observer_biobj_log_vars_e;
 
 /* Data for the biobjective observer */
@@ -53,20 +53,20 @@ static void observer_biobj(coco_observer_t *observer, const char *options) {
 
   observer_biobj = coco_allocate_memory(sizeof(*observer_biobj));
 
-  observer_biobj->log_nondom_mode = ALL;
+  observer_biobj->log_nondom_mode = LOG_NONDOM_ALL;
   if (coco_options_read_string(options, "log_nondominated", string_value) > 0) {
     if (strcmp(string_value, "none") == 0)
-      observer_biobj->log_nondom_mode = NONE;
+      observer_biobj->log_nondom_mode = LOG_NONDOM_NONE;
     else if (strcmp(string_value, "final") == 0)
-      observer_biobj->log_nondom_mode = FINAL;
+      observer_biobj->log_nondom_mode = LOG_NONDOM_FINAL;
   }
 
-  observer_biobj->log_vars_mode = LOW_DIM;
+  observer_biobj->log_vars_mode = LOG_VARS_LOW_DIM;
   if (coco_options_read_string(options, "log_decision_variables", string_value) > 0) {
     if (strcmp(string_value, "none") == 0)
-      observer_biobj->log_vars_mode = NEVER;
+      observer_biobj->log_vars_mode = LOG_VARS_NEVER;
     else if (strcmp(string_value, "all") == 0)
-      observer_biobj->log_vars_mode = ALWAYS;
+      observer_biobj->log_vars_mode = LOG_VARS_ALWAYS;
   }
 
   if (coco_options_read_int(options, "compute_indicators", &(observer_biobj->compute_indicators)) == 0)
@@ -76,9 +76,9 @@ static void observer_biobj(coco_observer_t *observer, const char *options) {
     observer_biobj->produce_all_data = 0;
 
   if (observer_biobj->produce_all_data) {
-    observer_biobj->log_vars_mode = LOW_DIM;
+    observer_biobj->log_vars_mode = LOG_VARS_LOW_DIM;
     observer_biobj->compute_indicators = 1;
-    observer_biobj->log_nondom_mode = ALL;
+    observer_biobj->log_nondom_mode = LOG_NONDOM_ALL;
   }
 
   if (observer_biobj->compute_indicators) {
@@ -89,7 +89,7 @@ static void observer_biobj(coco_observer_t *observer, const char *options) {
   observer->data_free_function = NULL;
   observer->data = observer_biobj;
 
-  if ((observer_biobj->log_nondom_mode == NONE) && (!observer_biobj->compute_indicators)) {
+  if ((observer_biobj->log_nondom_mode == LOG_NONDOM_NONE) && (!observer_biobj->compute_indicators)) {
     /* No logging required */
     observer->is_active = 0;
   }

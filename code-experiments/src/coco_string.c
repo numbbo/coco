@@ -30,13 +30,13 @@ static char *coco_strdup(const char *string) {
  *
  * @note This should be handled differently!
  */
-#define coco_vstrdupf_buflen 444
+#define COCO_VSTRDUPF_BUFLEN 444
 
 /**
  * @brief Formatted string duplication, with va_list arguments.
  */
 static char *coco_vstrdupf(const char *str, va_list args) {
-  static char buf[coco_vstrdupf_buflen];
+  static char buf[COCO_VSTRDUPF_BUFLEN];
   long written;
   /* apparently args can only be used once, therefore
    * len = vsnprintf(NULL, 0, str, args) to find out the
@@ -45,23 +45,23 @@ static char *coco_vstrdupf(const char *str, va_list args) {
    * never appear anyway, so this is rather a non-issue. */
 
 #if 0
-  written = vsnprintf(buf, coco_vstrdupf_buflen - 2, str, args);
+  written = vsnprintf(buf, COCO_VSTRDUPF_BUFLEN - 2, str, args);
   if (written < 0)
   coco_error("coco_vstrdupf(): vsnprintf failed on '%s'", str);
 #else /* less safe alternative, if vsnprintf is not available */
-  assert(strlen(str) < coco_vstrdupf_buflen / 2 - 2);
-  if (strlen(str) >= coco_vstrdupf_buflen / 2 - 2)
+  assert(strlen(str) < COCO_VSTRDUPF_BUFLEN / 2 - 2);
+  if (strlen(str) >= COCO_VSTRDUPF_BUFLEN / 2 - 2)
     coco_error("coco_vstrdupf(): string is too long");
   written = vsprintf(buf, str, args);
   if (written < 0)
     coco_error("coco_vstrdupf(): vsprintf failed on '%s'", str);
 #endif
-  if (written > coco_vstrdupf_buflen - 3)
+  if (written > COCO_VSTRDUPF_BUFLEN - 3)
     coco_error("coco_vstrdupf(): A suspiciously long string is tried to being duplicated '%s'", buf);
   return coco_strdup(buf);
 }
 
-#undef coco_vstrdupf_buflen
+#undef COCO_VSTRDUPF_BUFLEN
 
 /**
  * Optional arguments are used like in sprintf.
