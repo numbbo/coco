@@ -21,7 +21,7 @@ static void transform_vars_shift_evaluate(coco_problem_t *self, const double *x,
     data->shifted_x[i] = x[i] - data->offset[i];
   }
   coco_evaluate_function(inner_problem, data->shifted_x, y);
-  assert(y[0] >= self->best_value[0]);
+  assert(y[0] + 1e-13 >= self->best_value[0]);
 }
 
 static void transform_vars_shift_free(void *thing) {
