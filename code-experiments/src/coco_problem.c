@@ -87,8 +87,8 @@ void coco_recommend_solution(coco_problem_t *problem, const double *x) {
  * ${number_of_variables}.
  */
 static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
-                                      const size_t number_of_objectives,
-                                      const size_t number_of_constraints) {
+                                             const size_t number_of_objectives,
+                                             const size_t number_of_constraints) {
   coco_problem_t *problem;
   problem = (coco_problem_t *) coco_allocate_memory(sizeof(*problem));
   /* Initialize fields to sane/safe defaults */
@@ -177,12 +177,12 @@ static coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
  * and best_parameter.
  */
 static coco_problem_t *coco_problem_allocate_from_scalars(const char *problem_name,
-                                                   coco_evaluate_function_t evaluate_function,
-                                                   coco_problem_free_function_t problem_free_function,
-                                                   size_t number_of_variables,
-                                                   double smallest_value_of_interest,
-                                                   double largest_value_of_interest,
-                                                   double best_parameter) {
+                                                          coco_evaluate_function_t evaluate_function,
+                                                          coco_problem_free_function_t problem_free_function,
+                                                          size_t number_of_variables,
+                                                          double smallest_value_of_interest,
+                                                          double largest_value_of_interest,
+                                                          double best_parameter) {
   size_t i;
   coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
 
@@ -269,7 +269,7 @@ static int coco_problem_id_is_fine(const char *id, ...) {
 }
 
 /**
- * @brief Sets the problem_id using formatted printing (as in sprintf).
+ * @brief Sets the problem_id using formatted printing (as in printf).
  *
  * Takes care of memory (de-)allocation and verifies that the problem_id is in the correct format.
  */
@@ -287,7 +287,7 @@ static void coco_problem_set_id(coco_problem_t *problem, const char *id, ...) {
 }
 
 /**
- * @brief Sets the problem_name using formatted printing (as in sprintf).
+ * @brief Sets the problem_name using formatted printing (as in printf).
  *
  * Takes care of memory (de-)allocation.
  */
@@ -302,7 +302,7 @@ static void coco_problem_set_name(coco_problem_t *problem, const char *name, ...
 }
 
 /**
- * @brief Sets the problem_type using formatted printing (as in sprintf).
+ * @brief Sets the problem_type using formatted printing (as in printf).
  *
  * Takes care of memory (de-)allocation.
  */

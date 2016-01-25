@@ -346,7 +346,7 @@ int coco_remove_directory(const char *path) {
   char *buf;
 
   /* Nothing to do if the folder does not exist */
-  if (!coco_path_exists(path))
+  if (!coco_directory_exists(path))
     return 0;
 
   if (d) {
