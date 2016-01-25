@@ -33,7 +33,7 @@ static void transform_vars_shift_free(void *thing) {
 /*
  * Shift all variables of ${inner_problem} by ${offset}.
  */
-static coco_problem_t *f_transform_vars_shift(coco_problem_t *inner_problem,
+static coco_problem_t *transform_vars_shift(coco_problem_t *inner_problem,
                                               const double *offset,
                                               const int shift_bounds) {
   transform_vars_shift_data_t *data;

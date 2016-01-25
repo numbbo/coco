@@ -48,7 +48,7 @@ static void transform_vars_oscillate_free(void *thing) {
 /**
  * Perform monotone oscillation transformation on input variables.
  */
-static coco_problem_t *f_transform_vars_oscillate(coco_problem_t *inner_problem) {
+static coco_problem_t *transform_vars_oscillate(coco_problem_t *inner_problem) {
   transform_vars_oscillate_data_t *data;
   coco_problem_t *problem;
   data = coco_allocate_memory(sizeof(*data));

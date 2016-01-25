@@ -59,11 +59,11 @@ static coco_problem_t *f_rastrigin_bbob_problem_allocate(const size_t function,
   bbob2009_compute_xopt(xopt, rseed, dimension);
 
   problem = f_rastrigin_allocate(dimension);
-  problem = f_transform_vars_conditioning(problem, 10.0);
-  problem = f_transform_vars_asymmetric(problem, 0.2);
-  problem = f_transform_vars_oscillate(problem);
-  problem = f_transform_vars_shift(problem, xopt, 0);
-  problem = f_transform_obj_shift(problem, fopt);
+  problem = transform_vars_conditioning(problem, 10.0);
+  problem = transform_vars_asymmetric(problem, 0.2);
+  problem = transform_vars_oscillate(problem);
+  problem = transform_vars_shift(problem, xopt, 0);
+  problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
@@ -107,13 +107,13 @@ static coco_problem_t *f_rastrigin_rotated_bbob_problem_allocate(const size_t fu
   }
 
   problem = f_rastrigin_allocate(dimension);
-  problem = f_transform_obj_shift(problem, fopt);
-  problem = f_transform_vars_affine(problem, M, b, dimension);
-  problem = f_transform_vars_asymmetric(problem, 0.2);
-  problem = f_transform_vars_oscillate(problem);
+  problem = transform_obj_shift(problem, fopt);
+  problem = transform_vars_affine(problem, M, b, dimension);
+  problem = transform_vars_asymmetric(problem, 0.2);
+  problem = transform_vars_oscillate(problem);
   bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
-  problem = f_transform_vars_affine(problem, M, b, dimension);
-  problem = f_transform_vars_shift(problem, xopt, 0);
+  problem = transform_vars_affine(problem, M, b, dimension);
+  problem = transform_vars_shift(problem, xopt, 0);
 
   bbob2009_free_matrix(rot1, dimension);
   bbob2009_free_matrix(rot2, dimension);

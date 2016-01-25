@@ -39,7 +39,7 @@ static void transform_vars_x_hat_free(void *thing) {
 /**
  * Multiply the x-vector by the vector 1+-.
  */
-static coco_problem_t *f_transform_vars_x_hat(coco_problem_t *inner_problem, long seed) {
+static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, long seed) {
   transform_vars_x_hat_data_t *data;
   coco_problem_t *problem;
   size_t i;

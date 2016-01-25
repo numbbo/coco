@@ -100,14 +100,14 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
   }
 
   problem = f_schwefel_allocate(dimension);
-  problem = f_transform_obj_shift(problem, fopt);
-  problem = f_transform_vars_scale(problem, 100);
-  problem = f_transform_vars_shift(problem, tmp1, 0);
-  problem = f_transform_vars_affine(problem, M, b, dimension);
-  problem = f_transform_vars_shift(problem, tmp2, 0);
-  problem = f_transform_vars_z_hat(problem, xopt);
-  problem = f_transform_vars_scale(problem, 2);
-  problem = f_transform_vars_x_hat(problem, rseed);
+  problem = transform_obj_shift(problem, fopt);
+  problem = transform_vars_scale(problem, 100);
+  problem = transform_vars_shift(problem, tmp1, 0);
+  problem = transform_vars_affine(problem, M, b, dimension);
+  problem = transform_vars_shift(problem, tmp2, 0);
+  problem = transform_vars_z_hat(problem, xopt);
+  problem = transform_vars_scale(problem, 2);
+  problem = transform_vars_x_hat(problem, rseed);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);

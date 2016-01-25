@@ -64,11 +64,11 @@ static coco_problem_t *f_bueche_rastrigin_bbob_problem_allocate(const size_t fun
   }
 
   problem = f_bueche_rastrigin_allocate(dimension);
-  problem = f_transform_vars_brs(problem);
-  problem = f_transform_vars_oscillate(problem);
-  problem = f_transform_vars_shift(problem, xopt, 0);
-  problem = f_transform_obj_shift(problem, fopt);
-  problem = f_transform_obj_penalize(problem, penalty_factor);
+  problem = transform_vars_brs(problem);
+  problem = transform_vars_oscillate(problem);
+  problem = transform_vars_shift(problem, xopt, 0);
+  problem = transform_obj_shift(problem, fopt);
+  problem = transform_obj_penalize(problem, penalty_factor);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);

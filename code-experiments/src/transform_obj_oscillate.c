@@ -27,7 +27,7 @@ static void transform_obj_oscillate_evaluate(coco_problem_t *problem, const doub
  *
  * Caveat: this can change best_parameter and best_value. 
  */
-static coco_problem_t *f_transform_obj_oscillate(coco_problem_t *inner_problem) {
+static coco_problem_t *transform_obj_oscillate(coco_problem_t *inner_problem) {
   coco_problem_t *problem;
   problem = coco_problem_transformed_allocate(inner_problem, NULL, NULL);
   problem->evaluate_function = transform_obj_oscillate_evaluate;

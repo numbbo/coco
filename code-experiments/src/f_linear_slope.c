@@ -71,7 +71,7 @@ static coco_problem_t *f_linear_slope_bbob_problem_allocate(const size_t functio
   fopt = bbob2009_compute_fopt(function, instance);
 
   problem = f_linear_slope_allocate(dimension, xopt);
-  problem = f_transform_obj_shift(problem, fopt);
+  problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);

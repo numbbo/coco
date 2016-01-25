@@ -22,7 +22,7 @@ static void transform_obj_power_evaluate(coco_problem_t *problem, const double *
 /**
  * Raise the objective value to the power of a given exponent.
  */
-static coco_problem_t *f_transform_obj_power(coco_problem_t *inner_problem, const double exponent) {
+static coco_problem_t *transform_obj_power(coco_problem_t *inner_problem, const double exponent) {
   transform_obj_power_data_t *data;
   coco_problem_t *problem;
 
