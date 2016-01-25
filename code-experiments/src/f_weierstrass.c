@@ -12,11 +12,11 @@
 #include "transform_vars_shift.c"
 
 /* Number of summands in the Weierstrass problem. */
-#define WEIERSTRASS_SUMMANDS 12
+#define F_WEIERSTRASS_SUMMANDS 12
 typedef struct {
   double f0;
-  double ak[WEIERSTRASS_SUMMANDS];
-  double bk[WEIERSTRASS_SUMMANDS];
+  double ak[F_WEIERSTRASS_SUMMANDS];
+  double bk[F_WEIERSTRASS_SUMMANDS];
 } f_weierstrass_data_t;
 
 static double f_weierstrass_raw(const double *x, const size_t number_of_variables, f_weierstrass_data_t *data) {
@@ -26,7 +26,7 @@ static double f_weierstrass_raw(const double *x, const size_t number_of_variable
 
   result = 0.0;
   for (i = 0; i < number_of_variables; ++i) {
-    for (j = 0; j < WEIERSTRASS_SUMMANDS; ++j) {
+    for (j = 0; j < F_WEIERSTRASS_SUMMANDS; ++j) {
       result += cos(2 * coco_pi * (x[i] + 0.5) * data->bk[j]) * data->ak[j];
     }
   }
@@ -52,7 +52,7 @@ static coco_problem_t *f_weierstrass_allocate(const size_t number_of_variables) 
 
   data = coco_allocate_memory(sizeof(*data));
   data->f0 = 0.0;
-  for (i = 0; i < WEIERSTRASS_SUMMANDS; ++i) {
+  for (i = 0; i < F_WEIERSTRASS_SUMMANDS; ++i) {
     data->ak[i] = pow(0.5, (double) i);
     data->bk[i] = pow(3., (double) i);
     data->f0 += data->ak[i] * cos(2 * coco_pi * data->bk[i] * 0.5);
@@ -127,4 +127,4 @@ static coco_problem_t *f_weierstrass_bbob_problem_allocate(const size_t function
   return problem;
 }
 
-#undef WEIERSTRASS_SUMMANDS
+#undef F_WEIERSTRASS_SUMMANDS

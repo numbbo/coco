@@ -464,7 +464,7 @@ static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator,
   /* Log the last evaluation in the dat file if wasn't already logged */
   if (!indicator->target_hit) {
     fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-        indicator->overall_value, logger->precision_f, MO_RELATIVE_TARGET_VALUES[target_index]);
+        indicator->overall_value, logger->precision_f, mo_relateive_target_values[target_index]);
   }
 
   /* Log the information in the info file */
@@ -529,7 +529,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
   update_performed = logger_biobj_tree_update(logger, coco_problem_transformed_get_inner_problem(problem), node_item);
 
   /* If the archive was updated and you need to log all nondominated solutions, output the new solution to nondom_file */
-  if (update_performed && (logger->log_nondom_mode == ALL)) {
+  if (update_performed && (logger->log_nondom_mode == LOG_NONDOM_ALL)) {
     logger_biobj_tree_output(logger->nondom_file, logger->buffer_tree, logger->number_of_variables,
         logger->number_of_objectives, logger->log_vars, logger->precision_x, logger->precision_f);
     avl_tree_purge(logger->buffer_tree);
@@ -578,7 +578,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
 
         /* Check whether a target was hit */
         while ((indicator->next_target_id < MO_NUMBER_OF_TARGETS)
-            && (indicator->overall_value <= MO_RELATIVE_TARGET_VALUES[indicator->next_target_id])) {
+            && (indicator->overall_value <= mo_relateive_target_values[indicator->next_target_id])) {
           /* A target was hit */
           indicator->target_hit = 1;
           if (indicator->next_target_id + 1 < MO_NUMBER_OF_TARGETS)
@@ -592,14 +592,14 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
       if (indicator->target_hit) {
         fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
             indicator->overall_value, logger->precision_f,
-            MO_RELATIVE_TARGET_VALUES[indicator->next_target_id - 1]);
+            mo_relateive_target_values[indicator->next_target_id - 1]);
       }
       else if (coco_observer_evaluation_to_log(logger->number_of_evaluations, problem->number_of_variables)) {
         size_t target_index = 0;
         if (indicator->next_target_id > 0)
           target_index = indicator->next_target_id - 1;
         fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-            indicator->overall_value, logger->precision_f, MO_RELATIVE_TARGET_VALUES[target_index]);
+            indicator->overall_value, logger->precision_f, mo_relateive_target_values[target_index]);
         indicator->target_hit = 1;
       }
 
@@ -644,7 +644,7 @@ static void logger_biobj_free(void *stuff) {
   assert(stuff != NULL);
   logger = stuff;
 
-  if (logger->log_nondom_mode == FINAL) {
+  if (logger->log_nondom_mode == LOG_NONDOM_FINAL) {
      logger_biobj_finalize(logger);
   }
 
@@ -655,7 +655,7 @@ static void logger_biobj_free(void *stuff) {
     }
   }
 
-  if ((logger->log_nondom_mode != NONE) && (logger->nondom_file != NULL)) {
+  if ((logger->log_nondom_mode != LOG_NONDOM_NONE) && (logger->nondom_file != NULL)) {
     fclose(logger->nondom_file);
     logger->nondom_file = NULL;
   }
@@ -698,14 +698,14 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   logger_biobj->precision_x = observer->precision_x;
   logger_biobj->precision_f = observer->precision_f;
 
-  if (((observer_biobj->log_vars_mode == LOW_DIM) && (inner_problem->number_of_variables > 5))
-      || (observer_biobj->log_vars_mode == NEVER))
+  if (((observer_biobj->log_vars_mode == LOG_VARS_LOW_DIM) && (inner_problem->number_of_variables > 5))
+      || (observer_biobj->log_vars_mode == LOG_VARS_NEVER))
     logger_biobj->log_vars = 0;
   else
     logger_biobj->log_vars = 1;
 
   /* Initialize logging of nondominated solutions */
-  if (logger_biobj->log_nondom_mode != NONE) {
+  if (logger_biobj->log_nondom_mode != LOG_NONDOM_NONE) {
 
     /* Create the path to the file */
     path_name = coco_allocate_string(COCO_PATH_MAX);
@@ -715,12 +715,12 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
 
     /* Construct file name */
     prefix = coco_remove_from_string(inner_problem->problem_id, "_i", "_d");
-    if (logger_biobj->log_nondom_mode == ALL)
+    if (logger_biobj->log_nondom_mode == LOG_NONDOM_ALL)
       file_name = coco_strdupf("%s_nondom_all.dat", prefix);
-    else if (logger_biobj->log_nondom_mode == FINAL)
+    else if (logger_biobj->log_nondom_mode == LOG_NONDOM_FINAL)
       file_name = coco_strdupf("%s_nondom_final.dat", prefix);
     coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
-    if (logger_biobj->log_nondom_mode != NONE)
+    if (logger_biobj->log_nondom_mode != LOG_NONDOM_NONE)
       coco_free_memory(file_name);
     coco_free_memory(prefix);
 
@@ -754,7 +754,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   /* Initialize the indicators */
   if (logger_biobj->compute_indicators) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++)
-      logger_biobj->indicators[i] = logger_biobj_indicator(logger_biobj, inner_problem, OBSERVER_BIOBJ_INDICATORS[i]);
+      logger_biobj->indicators[i] = logger_biobj_indicator(logger_biobj, inner_problem, observer_biobj_indicators[i]);
 
     observer_biobj->previous_function = (long) inner_problem->suite_dep_function;
   }

@@ -7,7 +7,7 @@
 #include "suite_bbob_legacy_code.c"
 #include "transform_obj_shift.c"
 
-static double *gallagher_peaks;
+static double *f_gallagher_peaks;
 
 typedef struct {
   long rseed;
@@ -22,7 +22,7 @@ typedef struct {
  * Comparison function used for sorting.
  */
 static int f_gallagher_compare_doubles(const void *a, const void *b) {
-  double temp = gallagher_peaks[*(const size_t *) a] - gallagher_peaks[*(const size_t *) b];
+  double temp = f_gallagher_peaks[*(const size_t *) a] - f_gallagher_peaks[*(const size_t *) b];
   if (temp > 0)
     return 1;
   else if (temp < 0)
@@ -103,9 +103,9 @@ static void f_gallagher_free(coco_problem_t *problem) {
   problem->problem_free_function = NULL;
   coco_problem_free(problem);
 
-  if (gallagher_peaks != NULL) {
-    coco_free_memory(gallagher_peaks);
-    gallagher_peaks = NULL;
+  if (f_gallagher_peaks != NULL) {
+    coco_free_memory(f_gallagher_peaks);
+    f_gallagher_peaks = NULL;
   }
 }
 
@@ -147,16 +147,16 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   data->arr_scales = bbob2009_allocate_matrix(number_of_peaks, dimension);
 
   if (number_of_peaks == peaks_101) {
-    if (gallagher_peaks != NULL)
-      coco_free_memory(gallagher_peaks);
-    gallagher_peaks = coco_allocate_vector(peaks_101 * dimension);
+    if (f_gallagher_peaks != NULL)
+      coco_free_memory(f_gallagher_peaks);
+    f_gallagher_peaks = coco_allocate_vector(peaks_101 * dimension);
     maxcondition1 = sqrt(maxcondition1);
     b = 10.;
     c = 5.;
   } else if (number_of_peaks == peaks_21) {
-    if (gallagher_peaks != NULL)
-      coco_free_memory(gallagher_peaks);
-    gallagher_peaks = coco_allocate_vector(peaks_21 * dimension);
+    if (f_gallagher_peaks != NULL)
+      coco_free_memory(f_gallagher_peaks);
+    f_gallagher_peaks = coco_allocate_vector(peaks_21 * dimension);
     b = 9.8;
     c = 4.9;
   } else {
@@ -166,7 +166,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   bbob2009_compute_rotation(data->rotation, rseed, dimension);
 
   /* Initialize all the data of the inner problem */
-  bbob2009_unif(gallagher_peaks, number_of_peaks - 1, data->rseed);
+  bbob2009_unif(f_gallagher_peaks, number_of_peaks - 1, data->rseed);
   rperm = coco_allocate_vector_size_t(number_of_peaks - 1);
   for (i = 0; i < number_of_peaks - 1; ++i)
     rperm[i] = i;
@@ -186,7 +186,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
 
   rperm = coco_allocate_vector_size_t(dimension);
   for (i = 0; i < number_of_peaks; ++i) {
-    bbob2009_unif(gallagher_peaks, dimension, data->rseed + (long) (1000 * i));
+    bbob2009_unif(f_gallagher_peaks, dimension, data->rseed + (long) (1000 * i));
     for (j = 0; j < dimension; ++j)
       rperm[j] = j;
     qsort(rperm, dimension, sizeof(size_t), f_gallagher_compare_doubles);
@@ -197,14 +197,14 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   }
   coco_free_memory(rperm);
 
-  bbob2009_unif(gallagher_peaks, dimension * number_of_peaks, data->rseed);
+  bbob2009_unif(f_gallagher_peaks, dimension * number_of_peaks, data->rseed);
   for (i = 0; i < dimension; ++i) {
-    data->xopt[i] = 0.8 * (b * gallagher_peaks[i] - c);
-    problem->best_parameter[i] = 0.8 * (b * gallagher_peaks[i] - c);
+    data->xopt[i] = 0.8 * (b * f_gallagher_peaks[i] - c);
+    problem->best_parameter[i] = 0.8 * (b * f_gallagher_peaks[i] - c);
     for (j = 0; j < number_of_peaks; ++j) {
       data->x_local[i][j] = 0.;
       for (k = 0; k < dimension; ++k) {
-        data->x_local[i][j] += data->rotation[i][k] * (b * gallagher_peaks[j * dimension + k] - c);
+        data->x_local[i][j] += data->rotation[i][k] * (b * f_gallagher_peaks[j * dimension + k] - c);
       }
       if (j == 0) {
         data->x_local[i][j] *= 0.8;
