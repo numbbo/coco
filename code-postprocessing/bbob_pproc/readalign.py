@@ -150,7 +150,7 @@ class VMultiReader(MultiReader):
     idx = idxEvals # the alignment value is the number of function evaluations.
 
     def __init__(self, data, isBiobjective):
-        super(VMultiReader, self).__init__(data, isBiobjective)
+        super(VMultiReader, self).__init__(data)
         self.idxData = idxFBi if isBiobjective else idxFSingle # the data of concern are the function values.
 
     def isFinished(self):
@@ -189,7 +189,7 @@ class VMultiReaderNew(MultiReader):
     idx = idxEvals # the alignment value is the number of function evaluations.
 
     def __init__(self, data, isBiobjective):
-        super(VMultiReaderNew, self).__init__(data, isBiobjective)
+        super(VMultiReaderNew, self).__init__(data)
         self.idxData = idxFBi if isBiobjective else idxFSingle # the data of concern are the function values.
 
     def isFinished(self):
@@ -203,8 +203,10 @@ class VMultiReaderNew(MultiReader):
             index = res.index(min(res))
             self[index].next()            
             res = selectedValues()
+            if self[index].isFinished:
+                break
         
-        if res and len(res) == len(self):
+        if res and min(res) == max(res) and len(res) == len(self):
             return min(res)
         else:
             return None
@@ -239,7 +241,7 @@ class HMultiReader(MultiReader):
     idxData = idxEvals # the data of concern are the number of function evals.
 
     def __init__(self, data, isBiobjective):
-        super(HMultiReader, self).__init__(data, isBiobjective)
+        super(HMultiReader, self).__init__(data)
         # the alignment value is the function value.        
         self.idx = idxFBi if isBiobjective else idxFSingle 
         self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
