@@ -412,6 +412,16 @@ def run_octave():
     run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
 
 
+def test_octave():
+    """ Builds and runs the test in Octave, which is equal to the example experiment """
+    build_octave()
+    try:
+        run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])    
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
+
+
+
 ################################################################################
 ## Java
 def build_java():
