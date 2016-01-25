@@ -26,6 +26,7 @@ static double f_different_powers_raw(const double *x, const size_t number_of_var
 static void f_different_powers_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
   y[0] = f_different_powers_raw(x, problem->number_of_variables);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
 static coco_problem_t *f_different_powers_allocate(const size_t number_of_variables) {
