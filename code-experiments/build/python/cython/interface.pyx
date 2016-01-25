@@ -440,10 +440,17 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         `Suite(name, instance, options)`"""
         return self._options
 
+    @property
+    def info(self):
+        return str(self)
     def __repr__(self):
         return 'Suite(%r, %r, %r)'  % (self.name, self.instance, self.options)  # angled brackets
     def __str__(self):
-        return 'Suite("%s", "%s", "%s") with %d problems'  % (self.name, self.instance, self.options, len(self))
+        return 'Suite("%s", "%s", "%s") with %d problem%s in dimension%s %s' \
+            % (self.name, self.instance, self.options,
+               len(self), '' if len(self) == 1 else 's',
+               '' if len(self.dimensions) == 1 else 's',
+               '%d=%d' % (min(self.dimensions), max(self.dimensions)))
     def __len__(self):
         return len(self._indices)
 
