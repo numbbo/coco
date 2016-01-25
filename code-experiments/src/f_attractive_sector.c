@@ -98,11 +98,11 @@ static coco_problem_t *f_attractive_sector_bbob_problem_allocate(const size_t fu
   bbob2009_free_matrix(rot2, dimension);
 
   problem = f_attractive_sector_allocate(dimension, xopt);
-  problem = f_transform_obj_oscillate(problem);
-  problem = f_transform_obj_power(problem, 0.9);
-  problem = f_transform_obj_shift(problem, fopt);
-  problem = f_transform_vars_affine(problem, M, b, dimension);
-  problem = f_transform_vars_shift(problem, xopt, 0);
+  problem = transform_obj_oscillate(problem);
+  problem = transform_obj_power(problem, 0.9);
+  problem = transform_obj_shift(problem, fopt);
+  problem = transform_vars_affine(problem, M, b, dimension);
+  problem = transform_vars_shift(problem, xopt, 0);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);

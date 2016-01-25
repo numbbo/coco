@@ -67,10 +67,10 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
   factor = coco_double_max(1.0, sqrt((double) dimension) / 8.0);
 
   problem = f_rosenbrock_allocate(dimension);
-  problem = f_transform_vars_shift(problem, minus_one, 0);
-  problem = f_transform_vars_scale(problem, factor);
-  problem = f_transform_vars_shift(problem, xopt, 0);
-  problem = f_transform_obj_shift(problem, fopt);
+  problem = transform_vars_shift(problem, minus_one, 0);
+  problem = transform_vars_scale(problem, factor);
+  problem = transform_vars_shift(problem, xopt, 0);
+  problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
@@ -113,8 +113,8 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
   bbob2009_free_matrix(rot1, dimension);
 
   problem = f_rosenbrock_allocate(dimension);
-  problem = f_transform_vars_affine(problem, M, b, dimension);
-  problem = f_transform_obj_shift(problem, fopt);
+  problem = transform_vars_affine(problem, M, b, dimension);
+  problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);

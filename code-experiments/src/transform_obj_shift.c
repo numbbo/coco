@@ -21,7 +21,7 @@ static void transform_obj_shift_evaluate(coco_problem_t *problem, const double *
 /**
  * Shift the objective value of the inner problem by offset.
  */
-static coco_problem_t *f_transform_obj_shift(coco_problem_t *inner_problem, const double offset) {
+static coco_problem_t *transform_obj_shift(coco_problem_t *inner_problem, const double offset) {
   coco_problem_t *problem;
   transform_obj_shift_data_t *data;
   size_t i;

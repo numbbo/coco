@@ -39,7 +39,7 @@ static void transform_vars_conditioning_free(void *thing) {
 /**
  * Perform monotone oscillation(?) transformation on input variables.
  */
-static coco_problem_t *f_transform_vars_conditioning(coco_problem_t *inner_problem, const double alpha) {
+static coco_problem_t *transform_vars_conditioning(coco_problem_t *inner_problem, const double alpha) {
   transform_vars_conditioning_data_t *data;
   coco_problem_t *problem;
   data = coco_allocate_memory(sizeof(*data));

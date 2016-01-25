@@ -47,7 +47,7 @@ static void transform_vars_affine_free(void *thing) {
  *
  * The matrix M is stored in row-major format.
  */
-static coco_problem_t *f_transform_vars_affine(coco_problem_t *inner_problem,
+static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
                                                const double *M,
                                                const double *b,
                                                const size_t number_of_variables) {

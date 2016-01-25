@@ -35,7 +35,7 @@ static void transform_vars_z_hat_free(void *thing) {
 /*
  * Compute the vector {z^hat} for the BBOB Schwefel function.
  */
-static coco_problem_t *f_transform_vars_z_hat(coco_problem_t *inner_problem, const double *xopt) {
+static coco_problem_t *transform_vars_z_hat(coco_problem_t *inner_problem, const double *xopt) {
   transform_vars_z_hat_data_t *data;
   coco_problem_t *problem;
 

@@ -36,7 +36,7 @@ static void transform_obj_penalize_evaluate(coco_problem_t *problem, const doubl
  * Add a penalty to all evaluations outside of the region of interest
  * of ${inner_problem}.
  */
-static coco_problem_t *f_transform_obj_penalize(coco_problem_t *inner_problem, const double factor) {
+static coco_problem_t *transform_obj_penalize(coco_problem_t *inner_problem, const double factor) {
   coco_problem_t *problem;
   transform_obj_penalize_data_t *data;
   assert(inner_problem != NULL);

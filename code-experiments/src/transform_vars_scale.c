@@ -36,7 +36,7 @@ static void transform_vars_scale_free(void *thing) {
 /**
  * Scale all variables by factor before evaluation.
  */
-static coco_problem_t *f_transform_vars_scale(coco_problem_t *inner_problem, const double factor) {
+static coco_problem_t *transform_vars_scale(coco_problem_t *inner_problem, const double factor) {
   transform_vars_scale_data_t *data;
   coco_problem_t *problem;
 
