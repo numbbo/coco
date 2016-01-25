@@ -2,6 +2,7 @@
 
 #include "coco.h"
 #include "coco_internal.h"
+#include "coco_utilities.c"
 
 #include "suite_bbob.c"
 #include "suite_biobj.c"
@@ -602,28 +603,26 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   suite->current_problem = problem;
 
   /* Output information regarding the current place in the iteration */
-  if (((long) dimension_idx != previous_dimension_idx)
-      || ((dimension_idx == 0) && (previous_instance_idx < 0))) {
-    /* A new dimension started */
-    time_t timer;
-    char time_string[30];
-    struct tm* tm_info;
-    time(&timer);
-    tm_info = localtime(&timer);
-    strftime(time_string, 30, "%d.%m.%y %H:%M:%S", tm_info);
-    if (dimension_idx > 0)
-      coco_info_partial("done\n");
-    else
-      coco_info_partial("\n");
-    coco_info_partial("COCO INFO: %s, d=%lu, running: ", time_string, suite->dimensions[dimension_idx]);
-  }
-  if (((long) function_idx != previous_function_idx)
-      || ((dimension_idx == 0) && (previous_instance_idx < 0))){
-    /* A new function started */
-    coco_info_partial("f%02lu", suite->functions[function_idx]);
-  }
-  if ((long) instance_idx != previous_instance_idx) {
-    /* A new iteration started */
+  if (coco_log_level >= COCO_INFO) {
+    if (((long) dimension_idx != previous_dimension_idx) || (previous_instance_idx < 0)) {
+      /* A new dimension started */
+      time_t timer;
+      char time_string[30];
+      struct tm* tm_info;
+      time(&timer);
+      tm_info = localtime(&timer);
+      strftime(time_string, 30, "%d.%m.%y %H:%M:%S", tm_info);
+      if (dimension_idx > 0)
+        coco_info_partial("done\n");
+      else
+        coco_info_partial("\n");
+      coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string, suite->dimensions[dimension_idx], suite->functions[function_idx]);
+    }
+    else if ((long) function_idx != previous_function_idx){
+      /* A new function started */
+      coco_info_partial("f%02lu", suite->functions[function_idx]);
+    }
+    /* One dot for each instance */
     coco_info_partial(".", suite->instances[instance_idx]);
   }
 
