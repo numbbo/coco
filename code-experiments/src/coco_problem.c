@@ -12,7 +12,7 @@
 /***********************************************************************************************************/
 
 /**
- * @name Methods regarding COCO problem
+ * @name Methods regarding the basic COCO problem
  */
 /**@{*/
 /**
@@ -81,10 +81,8 @@ void coco_recommend_solution(coco_problem_t *problem, const double *x) {
 /***********************************************************************************************************/
 
 /**
- * coco_problem_allocate(number_of_variables):
- *
- * Allocate and pre-populate a new coco_problem_t for a problem with
- * ${number_of_variables}.
+ * @brief Allocates a new coco_problem_t for the given number of variables, number of objectives and
+ * number of constraints.
  */
 static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
                                              const size_t number_of_objectives,
@@ -123,7 +121,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
 }
 
 /**
- * Creates a duplicate of the 'other' for all fields except for data, which points to NULL.
+ * @brief Creates a duplicate of the 'other' problem for all fields except for data, which points to NULL.
  */
 static coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
   size_t i;
@@ -173,7 +171,7 @@ static coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
 }
 
 /**
- * Allocate a problem using scalar values for smallest_value_of_interest, largest_value_of_interest
+ * @brief Allocates a problem using scalar values for smallest_value_of_interest, largest_value_of_interest
  * and best_parameter.
  */
 static coco_problem_t *coco_problem_allocate_from_scalars(const char *problem_name,
@@ -445,6 +443,9 @@ size_t coco_problem_get_suite_dep_instance(coco_problem_t *problem) {
  */
 /**@{*/
 
+/**
+ * @brief Returns the data of the transformed problem.
+ */
 static void *coco_problem_transformed_get_data(coco_problem_t *problem) {
   assert(problem != NULL);
   assert(problem->data != NULL);
@@ -453,6 +454,9 @@ static void *coco_problem_transformed_get_data(coco_problem_t *problem) {
   return ((coco_problem_transformed_data_t *) problem->data)->data;
 }
 
+/**
+ * @brief Returns the inner problem of the transformed problem.
+ */
 static coco_problem_t *coco_problem_transformed_get_inner_problem(coco_problem_t *problem) {
   assert(problem != NULL);
   assert(problem->data != NULL);
@@ -461,6 +465,9 @@ static coco_problem_t *coco_problem_transformed_get_inner_problem(coco_problem_t
   return ((coco_problem_transformed_data_t *) problem->data)->inner_problem;
 }
 
+/**
+ * @brief Calls the coco_evaluate_function function on the inner problem.
+ */
 static void coco_problem_transformed_evaluate_function(coco_problem_t *problem, const double *x, double *y) {
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
@@ -471,6 +478,9 @@ static void coco_problem_transformed_evaluate_function(coco_problem_t *problem, 
   coco_evaluate_function(data->inner_problem, x, y);
 }
 
+/**
+ * @brief Calls the coco_evaluate_constraint function on the inner problem.
+ */
 static void coco_problem_transformed_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
@@ -481,6 +491,9 @@ static void coco_problem_transformed_evaluate_constraint(coco_problem_t *problem
   coco_evaluate_constraint(data->inner_problem, x, y);
 }
 
+/**
+ * @brief Calls the coco_recommend_solution function on the inner problem.
+ */
 static void coco_problem_transformed_recommend_solution(coco_problem_t *problem, const double *x) {
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
@@ -491,6 +504,9 @@ static void coco_problem_transformed_recommend_solution(coco_problem_t *problem,
   coco_recommend_solution(data->inner_problem, x);
 }
 
+/**
+ * @brief Frees the transformed problem.
+ */
 static void coco_problem_transformed_free(coco_problem_t *problem) {
   coco_problem_transformed_data_t *data;
 
@@ -550,6 +566,9 @@ static coco_problem_t *coco_problem_transformed_allocate(coco_problem_t *inner_p
  */
 /**@{*/
 
+/**
+ * @brief Calls the coco_evaluate_function function on the underlying problems.
+ */
 static void coco_problem_stacked_evaluate_function(coco_problem_t *problem, const double *x, double *y) {
   coco_problem_stacked_data_t* data = (coco_problem_stacked_data_t *) problem->data;
 
@@ -562,6 +581,9 @@ static void coco_problem_stacked_evaluate_function(coco_problem_t *problem, cons
   coco_evaluate_function(data->problem2, x, &y[coco_problem_get_number_of_objectives(data->problem1)]);
 }
 
+/**
+ * @brief Calls the coco_evaluate_constraint function on the underlying problems.
+ */
 static void coco_problem_stacked_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
   coco_problem_stacked_data_t* data = (coco_problem_stacked_data_t*) problem->data;
 
@@ -576,6 +598,11 @@ static void coco_problem_stacked_evaluate_constraint(coco_problem_t *problem, co
     coco_evaluate_constraint(data->problem2, x, &y[coco_problem_get_number_of_constraints(data->problem1)]);
 }
 
+/* TODO: Missing coco_problem_stacked_recommend_solution function! */
+
+/**
+ * @brief Frees the stacked problem.
+ */
 static void coco_problem_stacked_free(coco_problem_t *problem) {
   coco_problem_stacked_data_t *data;
 
@@ -678,5 +705,6 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1, c
 
   return problem;
 }
+/**@}*/
 
 /***********************************************************************************************************/

@@ -1,10 +1,11 @@
-/*
- * Generic COCO runtime implementation.
+/**
+ * @file coco_runtime_c.c
+ * @brief Generic COCO runtime implementation for the C language.
  *
- * Other language interfaces might want to replace this so that memory
- * allocation and error handling go through the respective language
- * runtime.
+ * Other language interfaces might want to replace this so that memory allocation and error handling go
+ * through the respective language runtime.
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>

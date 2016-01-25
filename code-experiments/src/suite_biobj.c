@@ -143,8 +143,8 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
     instance2 = suite_biobj_get_new_instance(suite, instance, instance1, num_bbob_functions, bbob_functions);
   }
 
-  problem1 = get_bbob_problem(bbob_functions[function1_idx], dimension, instance1);
-  problem2 = get_bbob_problem(bbob_functions[function2_idx], dimension, instance2);
+  problem1 = coco_get_bbob_problem(bbob_functions[function1_idx], dimension, instance1);
+  problem2 = coco_get_bbob_problem(bbob_functions[function2_idx], dimension, instance2);
 
   problem = coco_problem_stacked_allocate(problem1, problem2);
 
@@ -203,8 +203,8 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
             continue;
           }
 
-          problem1 = get_bbob_problem(function1, dimension, instance1);
-          problem2 = get_bbob_problem(function2, dimension, instance2);
+          problem1 = coco_get_bbob_problem(function1, dimension, instance1);
+          problem2 = coco_get_bbob_problem(function2, dimension, instance2);
           if (problem) {
             coco_problem_stacked_free(problem);
             problem = NULL;

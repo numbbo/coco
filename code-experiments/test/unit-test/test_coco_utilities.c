@@ -110,18 +110,18 @@ static void test_coco_create_remove_directory(void **state) {
   char *path_string = (char *)*state;
 
   /* At the beginning the path should not exist. */
-  exists = coco_path_exists(path_string);
+  exists = coco_directory_exists(path_string);
   assert_false(exists);
 
   coco_create_directory(path_string);
-  exists = coco_path_exists(path_string);
+  exists = coco_directory_exists(path_string);
   assert_true(exists);
 
   /* Calling it again to check the handling if the path does exist. */
   coco_create_directory(path_string);
 
   coco_remove_directory(path_string);
-  exists = coco_path_exists(path_string);
+  exists = coco_directory_exists(path_string);
   assert_false(exists);
 
   /* Calling it again to check the handling if the path does not exist. */
@@ -164,187 +164,6 @@ static void test_coco_double_round(void **state) {
   (void)state; /* unused */
 }
 
-static char *convert_to_string(size_t *array) {
-
-  size_t i = 0;
-  char tmp[10];
-  char *result;
-
-  if (array == NULL)
-    return NULL;
-
-  result = coco_allocate_memory(1000 * sizeof(char));
-  result[0] = '\0';
-
-  while (array[i] > 0) {
-    sprintf(tmp, "%lu,", array[i++]);
-    strcat(result, tmp);
-  }
-  strcat(result, "0");
-
-  return result;
-}
-
-static char *convert_to_string_with_newlines(char **array) {
-
-  size_t i;
-  char *result;
-
-  if ((array == NULL) || (*array == NULL))
-    return NULL;
-
-  result = coco_allocate_memory(1000 * sizeof(char));
-  result[0] = '\0';
-
-  if (array) {
-    for (i = 0; *(array + i); i++) {
-      strcat(result, *(array + i));
-      strcat(result, "\n");
-    }
-  }
-  strcat(result, "\0");
-
-  return result;
-}
-
-/**
- * Tests the function coco_string_get_numbers_from_ranges.
- */
-static void test_coco_string_get_numbers_from_ranges(void **state) {
-
-  size_t *result;
-  char *converted_result;
-
-  result = coco_string_get_numbers_from_ranges("", "", 1, 2);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges(NULL, NULL, 1, 2);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges("", "bla", 1, 2);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges("bla", "", 1, 2);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges("bla", "bla", 1, 2);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges("1-3,5-6,7,-3,15-", "name", 1, 20);
-  converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "1,2,3,5,6,7,1,2,3,15,16,17,18,19,20,0") == 0);
-  coco_free_memory(result);
-  coco_free_memory(converted_result);
-
-  result = coco_string_get_numbers_from_ranges("1-3,5-6", "name", 1, 2);
-  converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "1,2,0") == 0);
-  coco_free_memory(result);
-  coco_free_memory(converted_result);
-
-  result = coco_string_get_numbers_from_ranges("1-3,5-6", "name", 0, 20);
-  converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "1,2,3,5,6,0") == 0);
-  coco_free_memory(result);
-  coco_free_memory(converted_result);
-
-  result = coco_string_get_numbers_from_ranges("1-", "name", 1, 1200);
-  assert_true(result[1000] == 0);
-  assert_true(result[999] != 0);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges("1-2,1-", "name", 0, 0);
-  converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "1,2,0") == 0);
-  coco_free_memory(result);
-  coco_free_memory(converted_result);
-
-  result = coco_string_get_numbers_from_ranges("1-4,5-8", "name", 2, 7);
-  converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "2,3,4,5,6,7,0") == 0);
-  coco_free_memory(result);
-  coco_free_memory(converted_result);
-
-  result = coco_string_get_numbers_from_ranges("4-1", "name", 1, 20);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges("-0", "name", 1, 20);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges("-2,8-", "name", 3, 7);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges("1-8", "name", 4, 8);
-  converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "4,5,6,7,8,0") == 0);
-  coco_free_memory(result);
-  coco_free_memory(converted_result);
-
-  result = coco_string_get_numbers_from_ranges(",7", "name", 1, 20);
-  converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "7,0") == 0);
-  coco_free_memory(result);
-  coco_free_memory(converted_result);
-
-  result = coco_string_get_numbers_from_ranges("7,", "name", 1, 20);
-  converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "7,0") == 0);
-  coco_free_memory(result);
-  coco_free_memory(converted_result);
-
-  result = coco_string_get_numbers_from_ranges("-7-", "name", 1, 20);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges("--7", "name", 1, 20);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges("7--", "name", 1, 20);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges("7-,-", "name", 5, 8);
-  converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "7,8,5,6,7,8,0") == 0);
-  coco_free_memory(result);
-  coco_free_memory(converted_result);
-
-  result = coco_string_get_numbers_from_ranges("7-,,5", "name", 1, 8);
-  converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "7,8,5,0") == 0);
-  coco_free_memory(result);
-  coco_free_memory(converted_result);
-
-  result = coco_string_get_numbers_from_ranges(",,", "name", 1, 20);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  result = coco_string_get_numbers_from_ranges("1-8", "name", 5, 2);
-  assert_true(result == NULL);
-  coco_free_memory(result);
-
-  (void)state; /* unused */
-}
-
 /**
  * Tests the function coco_string_split.
  */
@@ -379,7 +198,6 @@ static int test_all_coco_utilities(void) {
       cmocka_unit_test(test_coco_double_max_min),
       cmocka_unit_test(test_coco_double_round),
       cmocka_unit_test(test_coco_string_split),
-      cmocka_unit_test(test_coco_string_get_numbers_from_ranges),
       cmocka_unit_test_setup_teardown(
           test_coco_create_remove_directory,
           setup_coco_create_remove_directory,
