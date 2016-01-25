@@ -37,6 +37,7 @@ static void transform_vars_oscillate_evaluate(coco_problem_t *self, const double
     }
   }
   coco_evaluate_function(inner_problem, oscillated_x, y);
+  assert(y[0] + 1e-13 >= self->best_value[0]);
 }
 
 static void transform_vars_oscillate_free(void *thing) {

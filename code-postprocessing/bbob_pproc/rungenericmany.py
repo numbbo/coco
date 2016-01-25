@@ -224,18 +224,18 @@ def main(argv=None):
         # from bbob_pproc import bbob2010 as inset # input settings
         # TODO: conditional imports are NOT the way to go here
         if genericsettings.inputsettings == "color":
-            from bbob_pproc import config, genericsettings as inset # input settings
+            from . import config, genericsettings as inset # input settings
             config.config(False)
         elif genericsettings.inputsettings == "grayscale":
             # this settings strategy (by proving different settings files) is problematic, 
             # because it means copy-paste of the settings
             # file and future changes have a great chance to make the pasted files incompatible
             # as has most likely happened with grayscalesettings:
-            from bbob_pproc import config, grayscalesettings as inset # input settings
+            from . import config, grayscalesettings as inset # input settings
             # better would be just adjust the previous settings, as config is doing it, 
             # so a config_grayscalesettings.py module seems the better approach to go 
         elif genericsettings.inputsettings == "black-white":
-            from bbob_pproc import config, bwsettings as inset # input settings
+            from . import config, bwsettings as inset # input settings
         else:
             txt = ('Settings: %s is not an appropriate ' % genericsettings.inputsettings
                    + 'argument for input flag "--settings".')
@@ -296,7 +296,7 @@ def main(argv=None):
             dict_max_fun_evals[ds.dim] = numpy.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(numpy.max(ds.maxevals))))
             
         # set target values
-        from bbob_pproc import config
+        from . import config
         config.target_values(genericsettings.isExpensive, dict_max_fun_evals)
         config.config(dsList[0].isBiobjective())
 
