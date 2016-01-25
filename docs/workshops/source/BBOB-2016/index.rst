@@ -21,7 +21,7 @@ with focus on multi-objective problems with two objective functions which is goi
 
 
 =======================================================  ========================================================================  =======================================================================================
-`register for news <http://numbbo.github.io/register>`_  `Coco quick start (scroll down a bit) <https://github.com/numbbo/coco>`_  `latest Coco release 0.5-beta <https://github.com/numbbo/coco/releases/tag/v0.5-beta>`_
+`register for news <http://numbbo.github.io/register>`_  `Coco quick start (scroll down a bit) <https://github.com/numbbo/coco>`_  `latest Coco release <https://github.com/numbbo/coco/releases/>`_
 =======================================================  ========================================================================  =======================================================================================
 
 
@@ -73,7 +73,7 @@ into plots, tables, html pages, and LaTeX templates (LaTeX templates for the bi-
 suite will be provided soon).
 
 The latest (hopefully) stable release of the Coco software can be downloaded as a whole
-`here <https://github.com/numbbo/coco/releases/tag/v0.5-beta>`_.
+`here <https://github.com/numbbo/coco/releases/>`_.
 
 Documentations of the functions used in the bbob-biobj suite for BBOB 2016 will be provided at
 http://numbbo.github.io/bbob-biobj-functions-doc (currently under development).
@@ -86,7 +86,7 @@ being if you want to compare your algorithm on the noisy testbed.
 Important Dates
 ---------------
 
-* 01/20/2016 first version of the new Coco platform released as `0.5-beta <https://github.com/numbbo/coco/releases/tag/v0.5-beta>`_
+* 01/20/2016 first version of the new Coco platform released as `0.5-beta <https://github.com/numbbo/coco/releases/>`_
 * 01/29/2016 release v0.7 of the Coco software with the main functionality to run experiments
 * 02/12/2016 first complete release v0.9 of the software
 * 03/18/2016 final release v1.0 for producing the papers
