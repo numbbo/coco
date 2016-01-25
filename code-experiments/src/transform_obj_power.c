@@ -16,6 +16,7 @@ static void transform_obj_power_evaluate(coco_problem_t *problem, const double *
   for (i = 0; i < problem->number_of_objectives; i++) {
       y[i] = pow(y[i], data->exponent);
   }
+  assert(y[0] + 1e-13 >= self->best_value[0]);
 }
 
 /**

@@ -68,7 +68,7 @@ def is_dirty():
     raise NotImplementedError()
     return hg(['hg', 'id', '-i'])[-1] == '+'
 
-def git_version(pep440=True):
+def git_version(pep440=False):
     """Return somewhat readible version number from git, like
     '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'"""
     try:

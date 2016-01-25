@@ -23,7 +23,7 @@ static void transform_vars_z_hat_evaluate(coco_problem_t *problem, const double 
     data->z[i] = x[i] + 0.25 * (x[i - 1] - 2.0 * fabs(data->xopt[i - 1]));
   }
   coco_evaluate_function(inner_problem, data->z, y);
-  assert(y[0] >= problem->best_value[0]);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
 static void transform_vars_z_hat_free(void *thing) {
