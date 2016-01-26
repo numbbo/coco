@@ -196,6 +196,11 @@ def coco_optimize(solver, fun, budget):
 # set up: CHANGE HERE SOLVER AND FURTHER SETTINGS AS DESIRED
 # ===============================================
 ######################### CHANGE HERE ########################################
+# CAVEAT: this might be modified from input args
+budget_multiplier = 2  # times dimension ### INCREASE THE MULTIPLIER WHEN THE DATA CHAIN IS STABLE ###
+number_of_batches = 1  # allows to run everything in several batches
+current_batch = 1      # 1..number_of_batches
+##############################################################################
 SOLVER = random_search
 #SOLVER = my_solver # fmin_slsqp # cma.fmin #
 suite_name = "bbob-biobj"
@@ -204,16 +209,12 @@ suite_instance = ""  # 'dimensions: 2,3,5,10,20 instance_idx: 1-5'
 suite_options = ""
 observer_name = suite_name
 observer_options = (
-    ' result_folder: ' + os.path.join('exdata', '%s_on_%s ' % (SOLVER.__name__, suite_name)) +
+    ' result_folder: ' +
+    os.path.join('exdata', '%s_on_%s_budget%d '
+                 % (SOLVER.__name__, suite_name, budget_multiplier)) +
     ' algorithm_name: %s ' % SOLVER.__name__ +
     ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
-
-######################### CHANGE HERE ########################################
-# CAVEAT: this might be modified from input args
-budget_multiplier = 2  # times dimension ### INCREASE THE MULTIPLIER WHEN THE DATA CHAIN IS STABLE ###
-number_of_batches = 1  # allows to run everything in several batches
-current_batch = 1      # 1..number_of_batches
-##############################################################################
+######################### END CHANGE HERE ####################################
 
 # ===============================================
 # run (main)
@@ -221,6 +222,8 @@ current_batch = 1      # 1..number_of_batches
 def main(budget_multiplier=budget_multiplier,
          current_batch=current_batch,
          number_of_batches=number_of_batches):
+    """Initialize suite and observer, then benchmark solver by calling
+    `batch_loop(SOLVER, suite, observer, budget_multiplier,...`. """
     observer = Observer(observer_name, observer_options)
     suite = Suite(suite_name, suite_instance, suite_options)
     print("Benchmarking solver '%s' with budget=%d*dimension on %s suite, %s"
@@ -239,6 +242,7 @@ def main(budget_multiplier=budget_multiplier,
 
 # ===============================================
 if __name__ == '__main__':
+    """read input parameters and call `main()`"""
     if len(sys.argv) > 1:
         if sys.argv[1] in ["--help", "-h"]:
             print(__doc__)

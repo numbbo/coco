@@ -132,8 +132,8 @@ def scaling_figure_caption():
 def beautify(axesLabel=True):
     """Customize figure presentation.
     
-    Uses information from :file:`benchmarkshortinfos.txt` for figure
-    title. 
+    Uses information from the appropriate benchmark short infos file 
+    for figure title. 
     
     """
 
