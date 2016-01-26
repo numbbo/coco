@@ -405,7 +405,9 @@ def main(argv=None):
 
             if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
-                pprldmany.all_single_functions(dictAlg, None,
+                pprldmany.all_single_functions(dictAlg, 
+                                               dsList.isBiobjective(),
+                                               None,
                                                outputdir,
                                                genericsettings.verbose)
             print_done()

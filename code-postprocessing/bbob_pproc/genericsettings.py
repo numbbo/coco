@@ -244,6 +244,9 @@ longoptlist = ["help", "output-dir=", "noisy", "noise-free",
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
 # and "sca-only" only affects rungeneric2
 
+def getBenchmarksShortInfos(isBiobjective):
+    return 'biobj-benchmarkshortinfos.txt' if isBiobjective else 'benchmarkshortinfos.txt'
+    
 def getFigFormats():
     if in_a_hurry:
         fig_formats = ('pdf', 'svg') if generate_svg_files else ('pdf',)
@@ -284,10 +287,12 @@ class GECCOBBOBTestbed(Testbed):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
         # only the short info, how to deal with both infos? 
-        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'  # 'benchmarkshortinfos.txt'
+        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.short_names = {}
         try:
-            info_list = open(os.path.join(os.path.dirname(__file__), 'benchmarkshortinfos.txt'), 'r').read().split('\n')
+            info_list = open(os.path.join(os.path.dirname(__file__), 
+                             getBenchmarksShortInfos(False)), 
+                             'r').read().split('\n')
             info_dict = {}
             for info in info_list:
                 key_val = info.split(' ', 1)
@@ -297,9 +302,45 @@ class GECCOBBOBTestbed(Testbed):
         except:
             warnings.warn('benchmark infos not found')
 
+class GECCOBiobjBBOBTestbed(Testbed):
+    """Testbed used in the GECCO biobjective BBOB workshop 2016.
+    """
+    def __init__(self):
+        # TODO: should become a function, as low_budget is a display setting
+        # not a testbed setting
+        # only the short info, how to deal with both infos? 
+        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
+        self.short_names = {}
+        try:
+            info_list = open(os.path.join(os.path.dirname(__file__), 
+                                          getBenchmarksShortInfos(True)), 
+                                          'r').read().split('\n')
+            info_dict = {}
+            for info in info_list:
+                key_val = info.split(' ', 1)
+                if len(key_val) > 1:
+                    info_dict[int(key_val[0])] = key_val[1]
+            self.short_names = info_dict
+        except:
+            print >>sys.stderr
+#            except:
+#                warnings.warn('benchmark infos not found')
+
 class GECCOBBOBNoisefreeTestbed(GECCOBBOBTestbed):
     __doc__ = GECCOBBOBTestbed.__doc__
 
+class GECCOBiobjBBOBNoisefreeTestbed(GECCOBiobjBBOBTestbed):
+    __doc__ = GECCOBiobjBBOBTestbed.__doc__
+
 # TODO: this needs to be set somewhere, e.g. in rungeneric*
 # or even better by investigating in the data attributes
-current_testbed = GECCOBBOBNoisefreeTestbed() 
+
+current_testbed = None
+def getCurrentTestbed(isBiobjective):
+    
+    global current_testbed
+
+    if not current_testbed:
+        current_testbed = GECCOBiobjBBOBNoisefreeTestbed() if isBiobjective else GECCOBBOBNoisefreeTestbed()
+        
+    return current_testbed
