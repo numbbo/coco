@@ -322,9 +322,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
                     info_dict[int(key_val[0])] = key_val[1]
             self.short_names = info_dict
         except:
-            print >>sys.stderr
-#            except:
-#                warnings.warn('benchmark infos not found')
+            warnings.warn('benchmark infos not found')
 
 class GECCOBBOBNoisefreeTestbed(GECCOBBOBTestbed):
     __doc__ = GECCOBBOBTestbed.__doc__
