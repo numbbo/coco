@@ -360,8 +360,11 @@ def main(argv=None):
             if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
                 if 1 < 3:
-                    pprldmany.all_single_functions(dictAlg, sortedAlgs,
-                            outputdir, genericsettings.verbose)
+                    pprldmany.all_single_functions(dictAlg, 
+                                                   dsList[0].isBiobjective(),
+                                                   sortedAlgs,
+                                                   outputdir, 
+                                                   genericsettings.verbose)
                 else:  # subject to removal
                     dictFG = pproc.dictAlgByFun(dictAlg)
                     for fg, tmpdictAlg in dictFG.iteritems():
