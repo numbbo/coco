@@ -4,6 +4,9 @@
 #include "coco_problem.c"
 #include "suite_bbob_legacy_code.c"
 
+/**
+ * @brief Data type for transform_vars_x_hat.
+ */
 typedef struct {
   long seed;
   double *x;

@@ -1,3 +1,8 @@
+/**
+ * @file logger_toy.c
+ * @brief The toy logger logs the evaluation number and function value each time a target has been hit.
+ */
+
 #include <stdio.h>
 #include <assert.h>
 
@@ -9,18 +14,17 @@
 #include "observer_toy.c"
 
 /**
- * This is a toy logger that logs the evaluation number and function value each time a target has been hit.
+ * @brief The toy logger data type.
  */
-
 typedef struct {
-  coco_observer_t *observer;
-  size_t next_target;
-  long number_of_evaluations;
+  coco_observer_t *observer;   /**< @brief Pointer to the COCO observer. */
+  size_t next_target;          /**< @brief The next target. */
+  long number_of_evaluations;  /**< @brief The number of evaluations performed so far. */
 } logger_toy_t;
 
 /**
- * Evaluates the function, increases the number of evaluations and outputs information based on the targets
- * that have been hit.
+ * @brief Evaluates the function, increases the number of evaluations and outputs information based on the
+ * targets that have been hit.
  */
 static void logger_toy_evaluate(coco_problem_t *problem, const double *x, double *y) {
 
@@ -46,7 +50,7 @@ static void logger_toy_evaluate(coco_problem_t *problem, const double *x, double
 }
 
 /**
- * Initializes the toy logger.
+ * @brief Initializes the toy logger.
  */
 static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inner_problem) {
 

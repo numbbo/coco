@@ -4,6 +4,9 @@
 #include "coco_problem.c"
 #include "large_scale_transformations.c"
 
+/**
+ * @brief Data type for transform_vars_permblockdiag.
+ */
 typedef struct {
   double **B;
   double *x;

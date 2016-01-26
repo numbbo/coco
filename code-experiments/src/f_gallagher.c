@@ -7,8 +7,16 @@
 #include "suite_bbob_legacy_code.c"
 #include "transform_obj_shift.c"
 
+/**
+ * @brief A global variable to store Gallagher peaks.
+ *
+ * Required for sorting.
+ */
 static double *f_gallagher_peaks;
 
+/**
+ * @brief Data type for f_gallagher.
+ */
 typedef struct {
   long rseed;
   size_t number_of_peaks;
@@ -35,7 +43,7 @@ static double f_gallagher_raw(const double *x, const size_t number_of_variables,
   size_t i, j; /* Loop over dim */
   double *tmx;
   double a = 0.1;
-  double tmp2, f = 0., Fadd, tmp, Fpen = 0., Ftrue = 0.;
+  double tmp2, f = 0., f_add, tmp, f_pen = 0., f_true = 0.;
   double fac;
   double result;
 
@@ -45,10 +53,10 @@ static double f_gallagher_raw(const double *x, const size_t number_of_variables,
   for (i = 0; i < number_of_variables; ++i) {
     tmp = fabs(x[i]) - 5.;
     if (tmp > 0.) {
-      Fpen += tmp * tmp;
+      f_pen += tmp * tmp;
     }
   }
-  Fadd = Fpen;
+  f_add = f_pen;
   /* Transformation in search space */
   /* TODO: this should rather be done in f_gallagher */
   tmx = coco_allocate_vector(number_of_variables);
@@ -71,17 +79,17 @@ static double f_gallagher_raw(const double *x, const size_t number_of_variables,
 
   f = 10. - f;
   if (f > 0) {
-    Ftrue = log(f) / a;
-    Ftrue = pow(exp(Ftrue + 0.49 * (sin(Ftrue) + sin(0.79 * Ftrue))), a);
+    f_true = log(f) / a;
+    f_true = pow(exp(f_true + 0.49 * (sin(f_true) + sin(0.79 * f_true))), a);
   } else if (f < 0) {
-    Ftrue = log(-f) / a;
-    Ftrue = -pow(exp(Ftrue + 0.49 * (sin(0.55 * Ftrue) + sin(0.31 * Ftrue))), a);
+    f_true = log(-f) / a;
+    f_true = -pow(exp(f_true + 0.49 * (sin(0.55 * f_true) + sin(0.31 * f_true))), a);
   } else
-    Ftrue = f;
+    f_true = f;
 
-  Ftrue *= Ftrue;
-  Ftrue += Fadd;
-  result = Ftrue;
+  f_true *= f_true;
+  f_true += f_add;
+  result = f_true;
   coco_free_memory(tmx);
   return result;
 }
@@ -160,7 +168,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
     b = 9.8;
     c = 4.9;
   } else {
-    coco_error("f_gallagher(): '%lu' is a bad number of peaks", number_of_peaks);
+    coco_error("f_gallagher(): '%lu' is a non-supported number of peaks", number_of_peaks);
   }
   data->rseed = rseed;
   bbob2009_compute_rotation(data->rotation, rseed, dimension);

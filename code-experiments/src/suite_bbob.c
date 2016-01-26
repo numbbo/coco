@@ -1,3 +1,9 @@
+/**
+ * @file suite_bbob.c
+ * @brief Implementation of the bbob suite containing 24 noiseless single-objective functions in 6
+ * dimensions.
+ */
+
 #include "coco.h"
 
 #include "f_attractive_sector.c"
@@ -27,17 +33,23 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t *dimensions,
                                          const char *default_instances);
 
+/**
+ * @brief Sets the dimensions and default instances for the bbob suite.
+ */
 static coco_suite_t *suite_bbob_allocate(void) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob", 24, 6, dimensions, "instances:1-5,51-60");
+  suite = coco_suite_allocate("bbob", 24, 6, dimensions, "year: 2016");
 
   return suite;
 }
 
+/**
+ * @brief Sets the instances associated with years for the bbob suite.
+ */
 static char *suite_bbob_get_instances_by_year(const int year) {
 
   if (year == 2009) {
@@ -65,7 +77,9 @@ static char *suite_bbob_get_instances_by_year(const int year) {
 }
 
 /**
- * Creates and returns a BBOB suite problem without needing the actual suite.
+ * @brief Creates and returns a BBOB problem without needing the actual bbob suite.
+ *
+ * Useful for other suites as well (see for example suite_biobj.c).
  */
 static coco_problem_t *coco_get_bbob_problem(const size_t function,
                                              const size_t dimension,
@@ -159,6 +173,15 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
   return problem;
 }
 
+/**
+ * @brief Returns the problem from the bbob suite that corresponds to the given parameters.
+ *
+ * @param suite The COCO suite.
+ * @param function_idx Index of the function (starting from 0).
+ * @param dimension_idx Index of the dimension (starting from 0).
+ * @param instance_idx Index of the instance (starting from 0).
+ * @return The problem that corresponds to the given parameters.
+ */
 static coco_problem_t *suite_bbob_get_problem(coco_suite_t *suite,
                                               const size_t function_idx,
                                               const size_t dimension_idx,

@@ -1,10 +1,28 @@
+/**
+ * @file suite_biobj.c
+ * @brief Implementation of the bbob-biobj suite containing 55 functions and 6 dimensions.
+ *
+ * The bi-objective suite was created by combining two single-objective problems from the bbob suite.
+ *
+ * @note Because some bi-objective problems constructed from two single-objective ones have a single optimal
+ * value, some care must be taken when selecting the instances. The already verified instances are stored in
+ * suite_biobj_instances. If a new instance of the problem is called, a check ensures that the two underlying
+ * single-objective instances create a true bi-objective problem. However, these new instances need to be
+ * manually added to suite_biobj_instances, otherwise they will be computed each time the suite constructor
+ * is invoked with these instances.
+ */
+
 #include "coco.h"
 #include "mo_generics.c"
 #include "suite_bbob.c"
 #include "suite_biobj_best_values_hyp.c"
 
-/* An array of triples biobj_instance - problem1_instance - problem2_instance that should be updated
- * with new instances when they are selected. */
+/**
+ * @brief The array of triples biobj_instance - problem1_instance - problem2_instance connecting bi-objective
+ * suite instances to the instances of the bbob suite.
+ *
+ * It should be updated with new instances when they are chosen.
+ */
 static const size_t suite_biobj_instances[][3] = {
     { 1, 2, 4 },
     { 2, 3, 5 },
@@ -18,13 +36,16 @@ static const size_t suite_biobj_instances[][3] = {
     { 10, 21, 22 }
 };
 
-/* Data for the biobjective suite */
+/**
+ * @brief The bbob-biobj suite data type.
+ */
 typedef struct {
 
-  /* A matrix of new instances (equal in form to suite_biobj_instances) that needs to be used only when
-   * an instance that is not in suite_biobj_instances is being invoked. */
-  size_t **new_instances;
-  size_t max_new_instances;
+  size_t **new_instances;    /**< @brief A matrix of new instances (equal in form to suite_biobj_instances)
+                                   that needs to be used only when an instance that is not in
+                                   suite_biobj_instances is being invoked. */
+
+  size_t max_new_instances;  /**< @brief The maximal number of new instances. */
 
 } suite_biobj_t;
 
@@ -40,17 +61,23 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
                                            const size_t num_bbob_functions,
                                            const size_t *bbob_functions);
 
+/**
+ * @brief Sets the dimensions and default instances for the bbob-biobj suite.
+ */
 static coco_suite_t *suite_biobj_allocate(void) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "instances:1-10");
+  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "year: 2016");
 
   return suite;
 }
 
+/**
+ * @brief Sets the instances associated with years for the bbob-biobj suite.
+ */
 static char *suite_biobj_get_instances_by_year(const int year) {
 
   if (year == 2016) {
@@ -62,12 +89,32 @@ static char *suite_biobj_get_instances_by_year(const int year) {
   }
 }
 
+/**
+ * @brief Returns the problem from the bbob-biobj suite that corresponds to the given parameters.
+ *
+ * Creates the bi-objective problem by constructing it from two single-objective problems from the bbob
+ * suite. If the invoked instance number is not in suite_biobj_instances, the function uses the following
+ * formula to construct a new appropriate instance:
+ *
+ *   problem1_instance = 2 * biobj_instance + 1
+ *
+ *   problem2_instance = problem1_instance + 1
+ *
+ * If needed, problem2_instance is increased (see also the explanation of suite_biobj_get_new_instance).
+ *
+ * @param suite The COCO suite.
+ * @param function_idx Index of the function (starting from 0).
+ * @param dimension_idx Index of the dimension (starting from 0).
+ * @param instance_idx Index of the instance (starting from 0).
+ * @return The problem that corresponds to the given parameters.
+ */
 static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
                                                const size_t function_idx,
                                                const size_t dimension_idx,
                                                const size_t instance_idx) {
 
   const size_t num_bbob_functions = 10;
+  /* Functions from the bbob suite that are used to construct the bi-objective problem. */
   const size_t bbob_functions[] = { 1, 2, 6, 8, 13, 14, 15, 17, 20, 21 };
 
   coco_problem_t *problem1, *problem2, *problem = NULL;
@@ -162,6 +209,17 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   return problem;
 }
 
+/**
+ * @brief Computes the instance number of the second problem/objective so that the resulting bi-objective
+ * problem has more than a single optimal solution.
+ *
+ * Starts by setting instance2 = instance1 + 1 and increases this number until an appropriate instance has
+ * been found (or until a maximum number of tries has been reached, in which case it throws a coco_error).
+ * An appropriate instance is the one for which the resulting bi-objective problem (in any considered
+ * dimension) has the ideal and nadir points apart enough in the objective space and the extreme optimal
+ * points apart enough in the decision space. When the instance has been found, it is output through
+ * coco_warning, so that the user can see it and eventually manually add it to suite_biobj_instances.
+ */
 static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
                                            const size_t instance,
                                            const size_t instance1,
@@ -211,7 +269,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
           }
           problem = coco_problem_stacked_allocate(problem1, problem2);
 
-          /* Check whether the ideal and reference points are too close in the objective space */
+          /* Check whether the ideal and nadir points are too close in the objective space */
           norm = mo_get_norm(problem->best_value, problem->nadir_value, 2);
           if (norm < 1e-1) { /* TODO How to set this value in a sensible manner? */
             coco_debug(
@@ -270,31 +328,9 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
 }
 
 /**
- * Frees the memory of the given biobjective suite.
+ * @brief Returns the best known value for indicator_name matching the given key if the key is found, and
+ * throws a coco_error otherwise.
  */
-static void suite_biobj_free(void *stuff) {
-
-  suite_biobj_t *data;
-  size_t i;
-
-  assert(stuff != NULL);
-  data = stuff;
-
-  if (data->new_instances) {
-    for (i = 0; i < data->max_new_instances; i++) {
-      if (data->new_instances[i]) {
-        coco_free_memory(data->new_instances[i]);
-        data->new_instances[i] = NULL;
-      }
-    }
-  }
-  coco_free_memory(data->new_instances);
-  data->new_instances = NULL;
-}
-
-/**
- * Returns the best known value for indicator_name matching the given key if the key is found, and raises an
- * error otherwise.  */
 static double suite_biobj_get_best_value(const char *indicator_name, const char *key) {
 
   size_t i, count;

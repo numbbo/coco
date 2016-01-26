@@ -3,6 +3,9 @@
 #include "coco.h"
 #include "coco_problem.c"
 
+/**
+ * @brief Data type for transform_obj_shift.
+ */
 typedef struct {
   double offset;
 } transform_obj_shift_data_t;

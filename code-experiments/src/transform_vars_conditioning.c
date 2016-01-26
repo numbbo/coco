@@ -7,6 +7,9 @@
 #include "coco.h"
 #include "coco_problem.c"
 
+/**
+ * @brief Data type for transform_vars_conditioning.
+ */
 typedef struct {
   double *x;
   double alpha;

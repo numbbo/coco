@@ -3,6 +3,9 @@
 #include "coco.h"
 #include "coco_problem.c"
 
+/**
+ * @brief Data type for transform_vars_affine.
+ */
 typedef struct {
   double *M, *b, *x;
 } transform_vars_affine_data_t;

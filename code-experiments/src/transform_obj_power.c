@@ -4,6 +4,9 @@
 #include "coco.h"
 #include "coco_problem.c"
 
+/**
+ * @brief Data type for transform_obj_power.
+ */
 typedef struct {
   double exponent;
 } transform_obj_power_data_t;

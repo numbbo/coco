@@ -8,6 +8,9 @@
 #include "coco.h"
 #include "coco_problem.c"
 
+/**
+ * @brief Data type for transform_vars_brs.
+ */
 typedef struct {
   double *x;
 } transform_vars_brs_data_t;
