@@ -38,9 +38,6 @@ static const double coco_pi = 3.14159265358979323846;
 static const double coco_two_pi = 2.0 * 3.14159265358979323846;
 /**@}*/
 
-/** @brief The maximum number of different instances in a suite. */
-#define COCO_MAX_INSTANCES 1000
-
 /***********************************************************************************************************/
 
 /** @brief Logging level type. */
@@ -248,7 +245,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *options);
 /**
  * @brief Frees the given observer.
  */
-void coco_observer_free(coco_observer_t *self);
+void coco_observer_free(coco_observer_t *observer);
 
 /**
  * @brief Adds an observer to the given problem.
@@ -274,9 +271,9 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
 void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y);
 
 /**
- * @brief Recommends number_of_solutions points (stored in x) as the current best guesses to the problem.
+ * @brief Recommends a solution as the current best guesses to the problem.
  */
-void coco_recommend_solutions(coco_problem_t *problem, const double *x, size_t number_of_solutions);
+void coco_recommend_solution(coco_problem_t *problem, const double *x);
 
 /**
  * @brief Frees the given problem.

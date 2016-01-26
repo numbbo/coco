@@ -1,35 +1,36 @@
-/*
- * Legacy code from BBOB2009 required to replicate the 2009 functions.
+/**
+ * @file suite_bbob_legacy_code.c
+ * @brief Legacy code from BBOB2009 required to replicate the 2009 functions.
  *
- * All of this code should only be used by the suite_bbob2009 functions
- * to provide compatibility to the legacy code. New test beds should
- * strive to use the new COCO facilities for random number
- * generation etc.
+ * All of this code should only be used by the suite_bbob2009 functions to provide compatibility to the
+ * legacy code. New test beds should strive to use the new COCO facilities for random number generation etc.
  */
 
 #include <math.h>
 #include <stdio.h>
 #include <assert.h>
 #include "coco.h"
+
+/** @brief Maximal dimension used in BBOB2009. */
 #define SUITE_BBOB2009_MAX_DIM 40
 
+/** @brief Computes the minimum of the two values. */
 static double bbob2009_fmin(double a, double b) {
   return (a < b) ? a : b;
 }
 
+/** @brief Computes the maximum of the two values. */
 static double bbob2009_fmax(double a, double b) {
   return (a > b) ? a : b;
 }
 
+/** @brief Rounds the given value. */
 static double bbob2009_round(double x) {
   return floor(x + 0.5);
 }
 
 /**
- * bbob2009_allocate_matrix(n, m):
- *
- * Allocate a ${n} by ${m} matrix structured as an array of pointers
- * to double arrays.
+ * @brief Allocates a n by m matrix structured as an array of pointers to double arrays.
  */
 static double **bbob2009_allocate_matrix(const size_t n, const size_t m) {
   double **matrix = NULL;
@@ -41,6 +42,9 @@ static double **bbob2009_allocate_matrix(const size_t n, const size_t m) {
   return matrix;
 }
 
+/**
+ * @brief Frees the matrix structured as an array of pointers to double arrays.
+ */
 static void bbob2009_free_matrix(double **matrix, const size_t n) {
   size_t i;
   for (i = 0; i < n; ++i) {
@@ -53,10 +57,7 @@ static void bbob2009_free_matrix(double **matrix, const size_t n) {
 }
 
 /**
- * bbob2009_unif(r, N, inseed):
- *
- * Generate N uniform random numbers using ${inseed} as the seed and
- * store them in ${r}.
+ * @brief Generates N uniform random numbers using inseed as the seed and stores them in r.
  */
 static void bbob2009_unif(double *r, size_t N, long inseed) {
   /* generates N uniform numbers with starting seed */
@@ -97,10 +98,7 @@ static void bbob2009_unif(double *r, size_t N, long inseed) {
 }
 
 /**
- * bbob2009_reshape(B, vector, m, n):
- *
- * Convert from packed matrix storage to an array of array of double
- * representation.
+ * @brief Converts from packed matrix storage to an array of array of double representation.
  */
 static double **bbob2009_reshape(double **B, double *vector, size_t m, size_t n) {
   size_t i, j;
@@ -113,10 +111,7 @@ static double **bbob2009_reshape(double **B, double *vector, size_t m, size_t n)
 }
 
 /**
- * bbob2009_gauss(g, N, seed)
- *
- * Generate ${N} Gaussian random numbers using the seed ${seed} and
- * store them in ${g}.
+ * @brief Generates N Gaussian random numbers using the given seed and stores them in g.
  */
 static void bbob2009_gauss(double *g, size_t N, long seed) {
   size_t i;
@@ -133,10 +128,7 @@ static void bbob2009_gauss(double *g, size_t N, long seed) {
 }
 
 /**
- * bbob2009_compute_rotation(B, seed, DIM):
- *
- * Compute a ${DIM}x${DIM} rotation matrix based on ${seed} and store
- * it in ${B}.
+ * @brief Computes a DIM by DIM rotation matrix based on seed and stores it in B.
  */
 static void bbob2009_compute_rotation(double **B, long seed, size_t DIM) {
   /* To ensure temporary data fits into gvec */
@@ -166,13 +158,13 @@ static void bbob2009_compute_rotation(double **B, long seed, size_t DIM) {
   }
 }
 
-static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b, const size_t dimension) {
+static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b, const size_t DIM) {
   size_t row, column;
   double *current_row;
 
-  for (row = 0; row < dimension; ++row) {
-    current_row = M + row * dimension;
-    for (column = 0; column < dimension; ++column) {
+  for (row = 0; row < DIM; ++row) {
+    current_row = M + row * DIM;
+    for (column = 0; column < DIM; ++column) {
       current_row[column] = rot[row][column];
     }
     b[row] = 0.0;
@@ -180,9 +172,7 @@ static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b, co
 }
 
 /**
- * bbob2009_compute_xopt(xopt, seed, DIM):
- *
- * Randomly compute the location of the global optimum.
+ * @brief Randomly computes the location of the global optimum.
  */
 static void bbob2009_compute_xopt(double *xopt, long seed, size_t DIM) {
   long i;
@@ -195,10 +185,7 @@ static void bbob2009_compute_xopt(double *xopt, long seed, size_t DIM) {
 }
 
 /**
- * bbob2009_compute_fopt(function, instance):
- *
- * Randomly choose the objective offset for function ${function}
- * and instance ${instance}.
+ * @brief Randomly chooses the objective offset for the given function and instance.
  */
 static double bbob2009_compute_fopt(size_t function, size_t instance) {
   long rseed, rrseed;
