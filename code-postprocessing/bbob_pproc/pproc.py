@@ -29,7 +29,7 @@ from pdb import set_trace
 import numpy, numpy as np
 import matplotlib.pyplot as plt
 from . import genericsettings, findfiles, toolsstats, toolsdivers
-from .readalign import split, alignData, HMultiReader, VMultiReader
+from .readalign import split, alignData, HMultiReader, VMultiReader, VMultiReaderNew
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers
 
@@ -595,6 +595,7 @@ class DataSet():
         nbRuns
         pickle
         plot
+        plot_funvals
         precision
         readfinalFminusFtarget
         readmaxevals
@@ -770,22 +771,28 @@ class DataSet():
             self.maxevals = maxevals
             self.finalfunvals = finalfunvals
 
-        if not self.isBiobjective():        
-            dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
+        dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
+                         for i in self.dataFiles)
+                             
+        if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
+            dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                              for i in self.dataFiles)
+            data = VMultiReaderNew(split(dataFiles), self.isBiobjective())
+        else:
             data = VMultiReader(split(dataFiles), self.isBiobjective())
-            if verbose:
-                print ("Processing %s: %d/%d trials found."
-                       % (dataFiles, len(data), len(self.instancenumbers)))
-            (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
-            self.funvals = adata
-            try:
-                for i in range(len(maxevals)):
-                    self.maxevals[i] = max(maxevals[i], self.maxevals[i])
-                    self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
-            except AttributeError:
-                self.maxevals = maxevals
-                self.finalfunvals = finalfunvals
+
+        if verbose:
+            print ("Processing %s: %d/%d trials found."
+                   % (dataFiles, len(data), len(self.instancenumbers)))
+        (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
+        self.funvals = adata
+        try:
+            for i in range(len(maxevals)):
+                self.maxevals[i] = max(maxevals[i], self.maxevals[i])
+                self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
+        except AttributeError:
+            self.maxevals = maxevals
+            self.finalfunvals = finalfunvals
         #TODO: take for maxevals the max for each trial, for finalfunvals the min...
 
         #extensions = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
@@ -841,10 +848,11 @@ class DataSet():
         """attributes `target`, `evals`, and `ert` are truncated to target values not 
         much smaller than defined in attribute `precision` (typically ``1e-8``). 
         Attribute `maxevals` is recomputed for columns that reach the final target
-        precision. 
+        precision. Note that in the bi-objective case the attribute `precision`
+        does not exist.
         
         """
-        if isinstance(genericsettings.current_testbed, genericsettings.GECCOBBOBTestbed):
+        if isinstance(genericsettings.getCurrentTestbed(self.isBiobjective()), genericsettings.GECCOBBOBTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
             while i > 1 and not self.isBiobjective() and self.evals[i-1][0] <= self.precision:
@@ -1329,14 +1337,34 @@ class DataSet():
 
         return list(tmp[i][1:] for i in targets)
 
-    def plot(self):
-        for evals in self.evals[:, 1:].transpose(): # loop over the rows of the transposed array
-            idx = self.evals[:, 0] > 0
+    def plot_funvals(self, **kwargs):
+        """plot data of `funvals` attribute, versatile"""
+        kwargs.setdefault('clip_on', False)
+        for funvals in self.funvals.T[1:]:  # loop over the rows of the transposed array
+            idx = isfinite(funvals > 1e-19)
+            plt.loglog(self.funvals[idx, 0], funvals[idx], **kwargs)
+            plt.ylabel('target $\Delta f$ value')
+            plt.xlabel('number of function evaluations')
+            plt.xlim(1, max(self.maxevals))
+        return plt.gca()
+    def plot(self, **kwargs):
+        """plot data from `evals` attribute.
+
+        `**kwargs` is passed to `matplolib.loglog`. """
+        kwargs.setdefault('clip_on', False)
+        for evals in self.evals.T[1:]:  # loop over the rows of the transposed array
+            idx = np.logical_and(self.evals[:, 0] > 1e-19, isfinite(evals))
             # plt.semilogx(self.evals[idx, 0], evals[idx])
-            plt.loglog(self.evals[idx, 0], evals[idx])
-            plt.gca().invert_xaxis()
-            plt.xlabel('target $\Delta f$ value')
-            plt.ylabel('number of function evaluations')
+            if 1 < 3:
+                plt.loglog(evals[idx], self.evals[idx, 0], **kwargs)
+                plt.ylabel('target $\Delta f$ value')
+                plt.xlabel('number of function evaluations')
+                plt.xlim(1, max(self.maxevals))
+            else:  # old version
+                plt.loglog(self.evals[idx, 0], evals[idx])
+                plt.gca().invert_xaxis()
+                plt.xlabel('target $\Delta f$ value')
+                plt.ylabel('number of function evaluations')
         return plt.gca()
 
 
@@ -1434,7 +1462,7 @@ class DataSetList(list):
         data_consistent = True
         for ds in self:
             data_consistent = data_consistent and ds.consistency_check()
-        if data_consistent:
+        if len(self) and data_consistent:
             print("  Data consistent according to test in consistency_check() in pproc.DataSet")
             
     def processIndexFile(self, indexFile, verbose=True):
@@ -1603,6 +1631,9 @@ class DataSetList(list):
     def dictByNoise(self):
         """Returns a dictionary splitting noisy and non-noisy entries."""
         sorted = {}
+        
+        # For bi-objective case we are not showing the noiselessall graph because 
+        # it is always equal to all graph.
         if not self.isBiobjective():
             for i in self:
                 if i.funcId in range(1, 56):
