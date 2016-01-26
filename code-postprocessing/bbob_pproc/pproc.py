@@ -1441,7 +1441,7 @@ class DataSetList(list):
         data_consistent = True
         for ds in self:
             data_consistent = data_consistent and ds.consistency_check()
-        if data_consistent:
+        if data_consistent and len(self):
             print("  Data consistent according to test in consistency_check() in pproc.DataSet")
             
     def processIndexFile(self, indexFile, verbose=True):
