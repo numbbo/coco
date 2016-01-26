@@ -184,7 +184,7 @@ our issue tracker at https://github.com/numbbo/coco/issues.
   things happen. Many files provide comparatively decent documentation at the
   moment which are translated via doxygen into a more readable web page at
   numbbo.github.io/coco-doc/C/. Generally:
-  - coco.h is the public interface, in particular as used in the demo.c file, however check out https://code.google.com/p/numbbo/issues/detail?id=98
+  - [coco.h](./code-experiments/src/coco.h) is the public interface, in particular as used in the example_experiment.c file
   - coco_internal.h provides the type definition of coco_problem_t
   - coco_suite.c is code that deals with an entire benchmark suite (i.e. a set of functions, eg. sweeping through them etc...)
   - coco_generics.c is somewhat generic code, e.g. defining a function call via coco_evaluate_function etc
