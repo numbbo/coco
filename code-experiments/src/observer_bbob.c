@@ -14,7 +14,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *pr
 typedef struct {
   size_t bbob_nbpts_nbevals; /**< @brief nb fun eval triggers */
   size_t bbob_nbpts_fval;    /**< @brief f value difference to the optimal triggers */
-} observer_bbob_t;
+} observer_bbob_data_t;
 
 /**
  * @brief Initializes the bbob observer.
@@ -25,7 +25,7 @@ typedef struct {
  */
 static void observer_bbob(coco_observer_t *observer, const char *options) {
   
-  observer_bbob_t *observer_bbob;
+  observer_bbob_data_t *observer_bbob;
   
   observer_bbob = coco_allocate_memory(sizeof(*observer_bbob));  
 

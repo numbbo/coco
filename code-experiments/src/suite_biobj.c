@@ -13,7 +13,7 @@
  */
 
 #include "coco.h"
-#include "mo_generics.c"
+#include "mo_utilities.c"
 #include "suite_bbob.c"
 #include "suite_biobj_best_values_hyp.c"
 

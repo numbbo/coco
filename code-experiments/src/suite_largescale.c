@@ -1,3 +1,8 @@
+/**
+ * @file suite_largescale.c
+ * @brief Implementation of the bbob large-scale suite containing 1 function in 6 large dimensions.
+ */
+
 #include "coco.h"
 
 #include "f_ellipsoid.c"
@@ -8,6 +13,9 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t *dimensions,
                                          const char *default_instances);
 
+/**
+ * @brief Sets the dimensions and default instances for the bbob large-scale suite.
+ */
 static coco_suite_t *suite_largescale_allocate(void) {
   
   coco_suite_t *suite;
@@ -43,6 +51,15 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
   return problem;
 }
 
+/**
+ * @brief Returns the problem from the bbob large-scale suite that corresponds to the given parameters.
+ *
+ * @param suite The COCO suite.
+ * @param function_idx Index of the function (starting from 0).
+ * @param dimension_idx Index of the dimension (starting from 0).
+ * @param instance_idx Index of the instance (starting from 0).
+ * @return The problem that corresponds to the given parameters.
+ */
 static coco_problem_t *suite_largescale_get_problem(coco_suite_t *suite,
                                                     const size_t function_idx,
                                                     const size_t dimension_idx,

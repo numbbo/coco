@@ -7,7 +7,7 @@
 #include "coco_internal.h"
 
 #include "coco_utilities.c"
-#include "mo_generics.c"
+#include "mo_utilities.c"
 
 /** @brief Number of implemented indicators */
 #define OBSERVER_BIOBJ_NUMBER_OF_INDICATORS 1
@@ -37,7 +37,7 @@ typedef struct {
 
   long previous_function;                      /**< @brief Information on the previous logged problem. */
 
-} observer_biobj_t;
+} observer_biobj_data_t;
 
 static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *problem);
 
@@ -59,7 +59,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
  */
 static void observer_biobj(coco_observer_t *observer, const char *options) {
 
-  observer_biobj_t *observer_biobj;
+  observer_biobj_data_t *observer_biobj;
   char string_value[COCO_PATH_MAX];
 
   observer_biobj = coco_allocate_memory(sizeof(*observer_biobj));
