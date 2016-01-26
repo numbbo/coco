@@ -48,7 +48,7 @@ static void transform_vars_brs_evaluate(coco_problem_t *problem, const double *x
 }
 
 /**
- * @brief Frees the data type.
+ * @brief Frees the data object.
  */
 static void transform_vars_brs_free(void *thing) {
   transform_vars_brs_data_t *data = thing;

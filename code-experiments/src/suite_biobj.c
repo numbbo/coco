@@ -328,6 +328,29 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
 }
 
 /**
+ * @brief  Frees the memory of the given bi-objective suite.
+ */
+static void suite_biobj_free(void *stuff) {
+
+  suite_biobj_t *data;
+  size_t i;
+
+  assert(stuff != NULL);
+  data = stuff;
+
+  if (data->new_instances) {
+    for (i = 0; i < data->max_new_instances; i++) {
+      if (data->new_instances[i]) {
+        coco_free_memory(data->new_instances[i]);
+        data->new_instances[i] = NULL;
+      }
+    }
+  }
+  coco_free_memory(data->new_instances);
+  data->new_instances = NULL;
+}
+
+/**
  * @brief Returns the best known value for indicator_name matching the given key if the key is found, and
  * throws a coco_error otherwise.
  */
