@@ -1,3 +1,8 @@
+/**
+ * @file f_rosenbrock.c
+ * @brief Implementation of the Rosenbrock function and problem.
+ */
+
 #include <assert.h>
 
 #include "coco.h"
@@ -8,6 +13,9 @@
 #include "transform_vars_affine.c"
 #include "transform_obj_shift.c"
 
+/**
+ * @brief Implements the Rosenbrock function without connections to any COCO structures.
+ */
 static double f_rosenbrock_raw(const double *x, const size_t number_of_variables) {
 
   size_t i = 0;
@@ -27,11 +35,18 @@ static double f_rosenbrock_raw(const double *x, const size_t number_of_variables
   return result;
 }
 
-static void f_rosenbrock_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_rosenbrock_raw(x, self->number_of_variables);
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
+static void f_rosenbrock_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_rosenbrock_raw(x, problem->number_of_variables);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Allocates the basic Rosenbrock problem.
+ */
 static coco_problem_t *f_rosenbrock_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Rosenbrock function",
@@ -43,6 +58,9 @@ static coco_problem_t *f_rosenbrock_allocate(const size_t number_of_variables) {
   return problem;
 }
 
+/**
+ * @brief Creates the BBOB Rosenbrock problem.
+ */
 static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
                                                           const size_t dimension,
                                                           const size_t instance,
@@ -63,13 +81,13 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
     xopt[i] *= 0.75;
   }
   fopt = bbob2009_compute_fopt(function, instance);
-  factor = coco_max_double(1.0, sqrt((double) dimension) / 8.0);
+  factor = coco_double_max(1.0, sqrt((double) dimension) / 8.0);
 
   problem = f_rosenbrock_allocate(dimension);
-  problem = f_transform_vars_shift(problem, minus_one, 0);
-  problem = f_transform_vars_scale(problem, factor);
-  problem = f_transform_vars_shift(problem, xopt, 0);
-  problem = f_transform_obj_shift(problem, fopt);
+  problem = transform_vars_shift(problem, minus_one, 0);
+  problem = transform_vars_scale(problem, factor);
+  problem = transform_vars_shift(problem, xopt, 0);
+  problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
@@ -80,6 +98,9 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
   return problem;
 }
 
+/**
+ * @brief Creates the BBOB rotated Rosenbrock problem.
+ */
 static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t function,
                                                                   const size_t dimension,
                                                                   const size_t instance,
@@ -98,7 +119,7 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
   rot1 = bbob2009_allocate_matrix(dimension, dimension);
   bbob2009_compute_rotation(rot1, rseed, dimension);
 
-  factor = coco_max_double(1.0, sqrt((double) dimension) / 8.0);
+  factor = coco_double_max(1.0, sqrt((double) dimension) / 8.0);
   /* Compute affine transformation */
   for (row = 0; row < dimension; ++row) {
     current_row = M + row * dimension;
@@ -112,8 +133,8 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
   bbob2009_free_matrix(rot1, dimension);
 
   problem = f_rosenbrock_allocate(dimension);
-  problem = f_transform_vars_affine(problem, M, b, dimension);
-  problem = f_transform_obj_shift(problem, fopt);
+  problem = transform_vars_affine(problem, M, b, dimension);
+  problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);

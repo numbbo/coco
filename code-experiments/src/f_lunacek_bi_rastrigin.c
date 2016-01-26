@@ -1,3 +1,8 @@
+/**
+ * @file f_lunacek_bi_rastrigin.c
+ * @brief Implementation of the Lunacek bi-Rastrigin function and problem.
+ */
+
 #include <assert.h>
 #include <math.h>
 
@@ -6,14 +11,20 @@
 #include "suite_bbob_legacy_code.c"
 #include "transform_obj_shift.c"
 
+/**
+ * @brief Data type for the Lunacek bi-Rastrigin problem.
+ */
 typedef struct {
   double *x_hat, *z;
   double *xopt, fopt;
   double **rot1, **rot2;
   long rseed;
-  coco_free_function_t old_free_problem;
+  coco_problem_free_function_t old_free_problem;
 } f_lunacek_bi_rastrigin_data_t;
 
+/**
+ * @brief Implements the Lunacek bi-Rastrigin function without connections to any COCO structures.
+ */
 static double f_lunacek_bi_rastrigin_raw(const double *x,
                                          const size_t number_of_variables,
                                          f_lunacek_bi_rastrigin_data_t *data) {
@@ -66,36 +77,46 @@ static double f_lunacek_bi_rastrigin_raw(const double *x,
     sum2 += (data->x_hat[i] - mu1) * (data->x_hat[i] - mu1);
     sum3 += cos(2 * coco_pi * data->z[i]);
   }
-  result = coco_min_double(sum1, d * (double) number_of_variables + s * sum2)
+  result = coco_double_min(sum1, d * (double) number_of_variables + s * sum2)
       + 10. * ((double) number_of_variables - sum3) + 1e4 * penalty;
   coco_free_memory(tmpvect);
 
   return result;
 }
 
-static void f_lunacek_bi_rastrigin_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_lunacek_bi_rastrigin_raw(x, self->number_of_variables, self->data);
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
+static void f_lunacek_bi_rastrigin_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_lunacek_bi_rastrigin_raw(x, problem->number_of_variables, problem->data);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
-static void f_lunacek_bi_rastrigin_free(coco_problem_t *self) {
+/**
+ * @brief Frees the Lunacek bi-Rastrigin data object.
+ */
+static void f_lunacek_bi_rastrigin_free(coco_problem_t *problem) {
   f_lunacek_bi_rastrigin_data_t *data;
-  data = self->data;
+  data = problem->data;
   coco_free_memory(data->x_hat);
   coco_free_memory(data->z);
   coco_free_memory(data->xopt);
-  bbob2009_free_matrix(data->rot1, self->number_of_variables);
-  bbob2009_free_matrix(data->rot2, self->number_of_variables);
+  bbob2009_free_matrix(data->rot1, problem->number_of_variables);
+  bbob2009_free_matrix(data->rot2, problem->number_of_variables);
 
   /* Let the generic free problem code deal with all of the
    * coco_problem_t fields.
    */
-  self->free_problem = NULL;
-  coco_problem_free(self);
+  problem->problem_free_function = NULL;
+  coco_problem_free(problem);
 }
 
-/* Note: there is no separate f_lunacek_bi_rastrigin_allocate() function! */
-
+/**
+ * @brief Creates the BBOB Lunacek bi-Rastrigin problem.
+ *
+ * @note There is no separate basic allocate function.
+ */
 static coco_problem_t *f_lunacek_bi_rastrigin_bbob_problem_allocate(const size_t function,
                                                                     const size_t dimension,
                                                                     const size_t instance,
@@ -142,7 +163,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_bbob_problem_allocate(const size_t
   f_lunacek_bi_rastrigin_evaluate(problem, problem->best_parameter, problem->best_value);
 
   fopt = bbob2009_compute_fopt(function, instance);
-  problem = f_transform_obj_shift(problem, fopt);
+  problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
