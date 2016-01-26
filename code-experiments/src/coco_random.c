@@ -16,7 +16,7 @@
 #define COCO_LONG_LAG 607
 
 /**
- * @brief A structure containing the state of the random generator.
+ * @brief A structure containing the state of the COCO random generator.
  */
 struct coco_random_state {
   double x[COCO_LONG_LAG];
