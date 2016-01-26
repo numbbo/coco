@@ -1,3 +1,8 @@
+/**
+ * @file transform_vars_x_hat.c
+ * @brief Implementation of multiplying the decision values by the vector 1+-.
+ */
+
 #include <assert.h>
 
 #include "coco.h"
@@ -13,6 +18,9 @@ typedef struct {
   coco_problem_free_function_t old_free_problem;
 } transform_vars_x_hat_data_t;
 
+/**
+ * @brief Evaluates the transformation.
+ */
 static void transform_vars_x_hat_evaluate(coco_problem_t *problem, const double *x, double *y) {
   size_t i;
   transform_vars_x_hat_data_t *data;
@@ -34,13 +42,16 @@ static void transform_vars_x_hat_evaluate(coco_problem_t *problem, const double 
   } while (0);
 }
 
+/**
+ * @brief Frees the data object.
+ */
 static void transform_vars_x_hat_free(void *thing) {
   transform_vars_x_hat_data_t *data = thing;
   coco_free_memory(data->x);
 }
 
 /**
- * Multiply the x-vector by the vector 1+-.
+ * @brief Creates the transformation.
  */
 static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, long seed) {
   transform_vars_x_hat_data_t *data;

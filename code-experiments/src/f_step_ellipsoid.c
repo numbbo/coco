@@ -1,5 +1,6 @@
-/*
- * f_step_ellipsoid.c
+/**
+ * @file f_step_ellipsoid.c
+ * @brief Implementation of the step ellipsoid function and problem.
  *
  * The BBOB step ellipsoid function intertwines the variable and objective transformations in such a way
  * that it is hard to devise a composition of generic transformations to implement it. In the end one would
@@ -16,7 +17,7 @@
 #include "suite_bbob_legacy_code.c"
 
 /**
- * @brief Data type for f_step_ellipsoid.
+ * @brief Data type for the step ellipsoid problem.
  */
 typedef struct {
   double *x, *xx;
@@ -24,6 +25,9 @@ typedef struct {
   double **rot1, **rot2;
 } f_step_ellipsoid_data_t;
 
+/**
+ * @brief Implements the step ellipsoid function without connections to any COCO structures.
+ */
 static double f_step_ellipsoid_raw(const double *x, size_t number_of_variables, f_step_ellipsoid_data_t *data) {
 
   static const double condition = 100;
@@ -78,12 +82,18 @@ static double f_step_ellipsoid_raw(const double *x, size_t number_of_variables, 
   return result;
 }
 
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
 static void f_step_ellipsoid_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
   y[0] = f_step_ellipsoid_raw(x, problem->number_of_variables, problem->data);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Frees the step ellipsoid data object.
+ */
 static void f_step_ellipsoid_free(coco_problem_t *problem) {
   f_step_ellipsoid_data_t *data;
   data = problem->data;
@@ -97,8 +107,11 @@ static void f_step_ellipsoid_free(coco_problem_t *problem) {
   coco_problem_free(problem);
 }
 
-/* Note: there is no separate f_step_ellipsoid_allocate() function! */
-
+/**
+ * @brief Creates the BBOB step ellipsoid problem.
+ *
+ * @note There is no separate basic allocate function.
+ */
 static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t function,
                                                               const size_t dimension,
                                                               const size_t instance,

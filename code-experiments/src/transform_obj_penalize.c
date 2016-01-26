@@ -1,3 +1,9 @@
+/**
+ * @file transform_obj_penalize.c
+ * @brief Implementation of adding a penalty to the objective value for solutions outside of the ROI in the
+ * decision space.
+ */
+
 #include <assert.h>
 
 #include "coco.h"
@@ -10,6 +16,9 @@ typedef struct {
   double factor;
 } transform_obj_penalize_data_t;
 
+/**
+ * @brief Evaluates the transformation.
+ */
 static void transform_obj_penalize_evaluate(coco_problem_t *problem, const double *x, double *y) {
   transform_obj_penalize_data_t *data = coco_problem_transformed_get_data(problem);
   const double *lower_bounds = problem->smallest_values_of_interest;
@@ -27,7 +36,6 @@ static void transform_obj_penalize_evaluate(coco_problem_t *problem, const doubl
     }
   }
   assert(coco_problem_transformed_get_inner_problem(problem) != NULL);
-  /*assert(problem->state != NULL);*/
   coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
   for (i = 0; i < problem->number_of_objectives; ++i) {
     y[i] += data->factor * penalty;
@@ -36,14 +44,12 @@ static void transform_obj_penalize_evaluate(coco_problem_t *problem, const doubl
 }
 
 /**
- * Add a penalty to all evaluations outside of the region of interest
- * of ${inner_problem}.
+ * @brief Creates the transformation.
  */
 static coco_problem_t *transform_obj_penalize(coco_problem_t *inner_problem, const double factor) {
   coco_problem_t *problem;
   transform_obj_penalize_data_t *data;
   assert(inner_problem != NULL);
-  /* assert(offset != NULL); */
 
   data = coco_allocate_memory(sizeof(*data));
   data->factor = factor;

@@ -1,3 +1,11 @@
+/**
+ * @file transform_vars_affine.c
+ * @brief Implementation of performing an affine transformation on decision values.
+ *
+ * x |-> Mx + b <br>
+ * The matrix M is stored in row-major format.
+ */
+
 #include <assert.h>
 
 #include "coco.h"
@@ -10,6 +18,9 @@ typedef struct {
   double *M, *b, *x;
 } transform_vars_affine_data_t;
 
+/**
+ * @brief Evaluates the transformation.
+ */
 static void transform_vars_affine_evaluate(coco_problem_t *problem, const double *x, double *y) {
   size_t i, j;
   transform_vars_affine_data_t *data;
@@ -30,6 +41,9 @@ static void transform_vars_affine_evaluate(coco_problem_t *problem, const double
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Frees the data object.
+ */
 static void transform_vars_affine_free(void *thing) {
   transform_vars_affine_data_t *data = thing;
   coco_free_memory(data->M);
@@ -37,23 +51,19 @@ static void transform_vars_affine_free(void *thing) {
   coco_free_memory(data->x);
 }
 
-/*
- * FIXMEs:
- * - Calculate new smallest/largest values of interest?
- * - Resize bounds vectors if input and output dimensions do not match
- * - problem_id and problem_name need to be adjusted
- */
-/*
- * Perform an affine transformation of the variable vector:
- *
- *   x |-> Mx + b
- *
- * The matrix M is stored in row-major format.
+/**
+ * @brief Creates the transformation.
  */
 static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
                                                const double *M,
                                                const double *b,
                                                const size_t number_of_variables) {
+  /*
+   * TODOs:
+   * - Calculate new smallest/largest values of interest?
+   * - Resize bounds vectors if input and output dimensions do not match
+   */
+
   coco_problem_t *problem;
   transform_vars_affine_data_t *data;
   size_t entries_in_M;

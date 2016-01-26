@@ -1,3 +1,8 @@
+/**
+ * @file transform_vars_z_hat.c
+ * @brief Implementation of the z^hat transformation of decision values for the BBOB Schwefel problem.
+ */
+
 #include <assert.h>
 
 #include "coco.h"
@@ -12,6 +17,9 @@ typedef struct {
   coco_problem_free_function_t old_free_problem;
 } transform_vars_z_hat_data_t;
 
+/**
+ * @brief Evaluates the transformation.
+ */
 static void transform_vars_z_hat_evaluate(coco_problem_t *problem, const double *x, double *y) {
   size_t i;
   transform_vars_z_hat_data_t *data;
@@ -29,14 +37,17 @@ static void transform_vars_z_hat_evaluate(coco_problem_t *problem, const double 
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Frees the data object.
+ */
 static void transform_vars_z_hat_free(void *thing) {
   transform_vars_z_hat_data_t *data = thing;
   coco_free_memory(data->xopt);
   coco_free_memory(data->z);
 }
 
-/*
- * Compute the vector {z^hat} for the BBOB Schwefel function.
+/**
+ * @brief Creates the transformation.
  */
 static coco_problem_t *transform_vars_z_hat(coco_problem_t *inner_problem, const double *xopt) {
   transform_vars_z_hat_data_t *data;

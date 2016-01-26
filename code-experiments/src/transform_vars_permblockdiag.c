@@ -1,3 +1,7 @@
+/**
+ * @file transform_vars_permblockdiag.c
+ */
+
 #include <assert.h>
 
 #include "coco.h"

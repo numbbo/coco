@@ -1,3 +1,8 @@
+/**
+ * @file transform_vars_shift.c
+ * @brief Implementation of shifting all decision values by an offset.
+ */
+
 #include <assert.h>
 
 #include "coco.h"
@@ -12,6 +17,9 @@ typedef struct {
   coco_problem_free_function_t old_free_problem;
 } transform_vars_shift_data_t;
 
+/**
+ * @brief Evaluates the transformation.
+ */
 static void transform_vars_shift_evaluate(coco_problem_t *problem, const double *x, double *y) {
   size_t i;
   transform_vars_shift_data_t *data;
@@ -27,14 +35,17 @@ static void transform_vars_shift_evaluate(coco_problem_t *problem, const double 
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Frees the data object.
+ */
 static void transform_vars_shift_free(void *thing) {
   transform_vars_shift_data_t *data = thing;
   coco_free_memory(data->shifted_x);
   coco_free_memory(data->offset);
 }
 
-/*
- * Shift all variables of ${inner_problem} by ${offset}.
+/**
+ * @brief Creates the transformation.
  */
 static coco_problem_t *transform_vars_shift(coco_problem_t *inner_problem,
                                               const double *offset,

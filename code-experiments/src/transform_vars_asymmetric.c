@@ -1,6 +1,8 @@
-/*
- * Implementation of the BBOB T_asy transformation for variables.
+/**
+ * @file transform_vars_asymmetric.c
+ * @brief Implementation of performing an asymmetric transformation on decision values.
  */
+
 #include <math.h>
 #include <assert.h>
 
@@ -15,6 +17,9 @@ typedef struct {
   double beta;
 } transform_vars_asymmetric_data_t;
 
+/**
+ * @brief Evaluates the transformation.
+ */
 static void transform_vars_asymmetric_evaluate(coco_problem_t *problem, const double *x, double *y) {
   size_t i;
   double exponent;
@@ -43,7 +48,7 @@ static void transform_vars_asymmetric_free(void *thing) {
 }
 
 /**
- * Perform monotone oscillation transformation on input variables.
+ * @brief Creates the transformation.
  */
 static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, const double beta) {
   transform_vars_asymmetric_data_t *data;

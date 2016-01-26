@@ -1,3 +1,8 @@
+/**
+ * @file f_weierstrass.c
+ * @brief Implementation of the Weierstrass function and problem.
+ */
+
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
@@ -15,7 +20,7 @@
 #define F_WEIERSTRASS_SUMMANDS 12
 
 /**
- * @brief Data type for f_weierstrass.
+ * @brief Data type for the Weierstrass problem.
  */
 typedef struct {
   double f0;
@@ -23,6 +28,9 @@ typedef struct {
   double bk[F_WEIERSTRASS_SUMMANDS];
 } f_weierstrass_data_t;
 
+/**
+ * @brief Implements the Weierstrass function without connections to any COCO structures.
+ */
 static double f_weierstrass_raw(const double *x, const size_t number_of_variables, f_weierstrass_data_t *data) {
 
   size_t i, j;
@@ -39,12 +47,18 @@ static double f_weierstrass_raw(const double *x, const size_t number_of_variable
   return result;
 }
 
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
 static void f_weierstrass_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
   y[0] = f_weierstrass_raw(x, problem->number_of_variables, problem->data);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Allocates the basic Weierstrass problem.
+ */
 static coco_problem_t *f_weierstrass_allocate(const size_t number_of_variables) {
 
   f_weierstrass_data_t *data;
@@ -72,6 +86,9 @@ static coco_problem_t *f_weierstrass_allocate(const size_t number_of_variables) 
   return problem;
 }
 
+/**
+ * @brief Creates the BBOB Weierstrass problem.
+ */
 static coco_problem_t *f_weierstrass_bbob_problem_allocate(const size_t function,
                                                            const size_t dimension,
                                                            const size_t instance,

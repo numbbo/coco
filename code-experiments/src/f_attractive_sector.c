@@ -1,3 +1,8 @@
+/**
+ * @file f_attractive_sector.c
+ * @brief Implementation of the attractive sector function and problem.
+ */
+
 #include <assert.h>
 #include <math.h>
 
@@ -11,12 +16,15 @@
 #include "transform_vars_shift.c"
 
 /**
- * @brief Data type for f_attractive_sector.
+ * @brief Data type for the attractive sector problem.
  */
 typedef struct {
   double *xopt;
 } f_attractive_sector_data_t;
 
+/**
+ * @brief Implements the attractive sector function without connections to any COCO structures.
+ */
 static double f_attractive_sector_raw(const double *x,
                                       const size_t number_of_variables,
                                       f_attractive_sector_data_t *data) {
@@ -34,12 +42,18 @@ static double f_attractive_sector_raw(const double *x,
   return result;
 }
 
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
 static void f_attractive_sector_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
   y[0] = f_attractive_sector_raw(x, problem->number_of_variables, problem->data);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Frees the attractive sector data object.
+ */
 static void f_attractive_sector_free(coco_problem_t *problem) {
   f_attractive_sector_data_t *data;
   data = problem->data;
@@ -48,6 +62,9 @@ static void f_attractive_sector_free(coco_problem_t *problem) {
   coco_problem_free(problem);
 }
 
+/**
+ * @brief Allocates the basic attractive sector problem.
+ */
 static coco_problem_t *f_attractive_sector_allocate(const size_t number_of_variables, const double *xopt) {
 
   f_attractive_sector_data_t *data;
@@ -64,6 +81,9 @@ static coco_problem_t *f_attractive_sector_allocate(const size_t number_of_varia
   return problem;
 }
 
+/**
+ * @brief Creates the BBOB attractive sector problem.
+ */
 static coco_problem_t *f_attractive_sector_bbob_problem_allocate(const size_t function,
                                                                  const size_t dimension,
                                                                  const size_t instance,
