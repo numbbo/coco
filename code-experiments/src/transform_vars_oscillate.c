@@ -8,6 +8,9 @@
 #include "coco.h"
 #include "coco_problem.c"
 
+/**
+ * @brief Data type for transform_vars_oscillate.
+ */
 typedef struct {
   double *oscillated_x;
 } transform_vars_oscillate_data_t;

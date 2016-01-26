@@ -10,6 +10,9 @@
 #include "transform_vars_affine.c"
 #include "transform_vars_shift.c"
 
+/**
+ * @brief Data type for f_attractive_sector.
+ */
 typedef struct {
   double *xopt;
 } f_attractive_sector_data_t;

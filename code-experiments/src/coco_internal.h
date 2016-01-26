@@ -79,7 +79,7 @@ typedef struct {
  * @brief The stacked COCO problem data type.
  *
  * This is a type of a structure used when stacking two problems (especially useful for constructing
- * multiobjective problems).
+ * multi-objective problems).
  */
 typedef struct {
   coco_problem_t *problem1; /**< @brief Pointer to the first problem (objective) */

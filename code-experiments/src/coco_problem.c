@@ -627,8 +627,8 @@ static void coco_problem_stacked_free(coco_problem_t *problem) {
 /**
  * @brief Allocates a problem constructed by stacking two COCO problems.
  * 
- * This is particularly useful for generating multiobjective problems, e.g. a biobjective problem from two
- * single objective problems. The stacked problem must behave like a normal COCO problem accepting the same
+ * This is particularly useful for generating multi-objective problems, e.g. a bi-objective problem from two
+ * single-objective problems. The stacked problem must behave like a normal COCO problem accepting the same
  * input.
  *
  * @note Regions of interest in the decision space must either agree or at least one of them must be NULL.

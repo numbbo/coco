@@ -6,6 +6,9 @@
 #include "suite_bbob_legacy_code.c"
 #include "transform_obj_shift.c"
 
+/**
+ * @brief Data type for f_lunacek_bi_rastrigin.
+ */
 typedef struct {
   double *x_hat, *z;
   double *xopt, fopt;

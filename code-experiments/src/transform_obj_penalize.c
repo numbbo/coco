@@ -3,6 +3,9 @@
 #include "coco.h"
 #include "coco_problem.c"
 
+/**
+ * @brief Data type for transform_obj_penalize.
+ */
 typedef struct {
   double factor;
 } transform_obj_penalize_data_t;

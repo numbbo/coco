@@ -3,6 +3,9 @@
 #include "coco.h"
 #include "coco_problem.c"
 
+/**
+ * @brief Data type for transform_vars_z_hat.
+ */
 typedef struct {
   double *xopt;
   double *z;

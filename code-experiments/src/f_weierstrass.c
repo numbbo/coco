@@ -11,8 +11,12 @@
 #include "transform_vars_oscillate.c"
 #include "transform_vars_shift.c"
 
-/* Number of summands in the Weierstrass problem. */
+/** @brief Number of summands in the Weierstrass problem. */
 #define F_WEIERSTRASS_SUMMANDS 12
+
+/**
+ * @brief Data type for f_weierstrass.
+ */
 typedef struct {
   double f0;
   double ak[F_WEIERSTRASS_SUMMANDS];

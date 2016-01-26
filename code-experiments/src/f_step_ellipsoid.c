@@ -15,6 +15,9 @@
 #include "coco_utilities.c"
 #include "suite_bbob_legacy_code.c"
 
+/**
+ * @brief Data type for f_step_ellipsoid.
+ */
 typedef struct {
   double *x, *xx;
   double *xopt, fopt;
