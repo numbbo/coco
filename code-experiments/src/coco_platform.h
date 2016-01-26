@@ -13,6 +13,8 @@
 #ifndef __COCO_PLATFORM__ 
 #define __COCO_PLATFORM__
 
+#include <stddef.h>
+
 /* Definitions of COCO_PATH_MAX, coco_path_separator, HAVE_GFA and HAVE_STAT heavily used by functions in
  * coco_utilities.c */
 #if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
