@@ -132,7 +132,7 @@ def batch_loop(solver, suite, observer, budget_multiplier,
     """
     addressed_problems = []
     short_info = ShortInfo()
-    for problem_index, problem_id in enumerate(suite.ids):
+    for problem_index, problem_id in enumerate(suite.ids()):
         if (problem_index + current_batch - 1) % number_of_batches:
             continue
         problem = suite.get_problem(problem_index, observer)
