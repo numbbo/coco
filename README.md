@@ -184,22 +184,29 @@ our issue tracker at https://github.com/numbbo/coco/issues.
   things happen. Many files provide comparatively decent documentation at the
   moment which are translated via doxygen into a more readable web page at
   numbbo.github.io/coco-doc/C/. Generally:
-  - [coco.h](./code-experiments/src/coco.h) is the public interface, in particular as used in the example_experiment.c file
+  - [coco.h](./code-experiments/src/coco.h) is the public interface, in particular
+    as used in the example_experiment.c file
   - coco_internal.h provides the type definition of coco_problem_t
-  - coco_suite.c is code that deals with an entire benchmark suite (i.e. a set of functions, eg. sweeping through them etc...)
-  - coco_generics.c is somewhat generic code, e.g. defining a function call via coco_evaluate_function etc
-  - coco_problem.c is the implementation of the coco_problem_t type/object (allocation etc).
+  - coco_suite.c is code that deals with an entire benchmark suite (i.e. a set of
+    functions, eg. sweeping through them etc...)
+  - coco_generics.c is somewhat generic code, e.g. defining a function call via
+    coco_evaluate_function etc
+  - coco_problem.c is the implementation of the coco_problem_t type/object
+    (allocation etc).
   - observer / logger files implement data logging (as wrappers around a coco
     problem inheriting thereby all properties of a coco problem)
   - most other files implement more or less what they say, e.g. the actual
     benchmark functions, transformations, benchmark suites, etc.
-  - currently, three benchmark suites and corresponding logging facilities are implemented:
-    * bbob: standard single-objective BBOB benchmark suite with 24 noiseless, scalable test functions
+  - currently, three benchmark suites and corresponding logging facilities are
+    implemented:
+    * bbob: standard single-objective BBOB benchmark suite with 24 noiseless,
+      scalable test functions
     * bbob-biobj: a bi-objective benchmark suite, combining 10 selected
       functions from the bbob suite, resulting in 55 noiseless functions
     * toy: a simple, probably easier-to-understand example for reading and testing
 
-* code-experiments/tools are a few meta-tools, mainly the amalgamate.py to merge all the C code into one file
+* code-experiments/tools are a few meta-tools, mainly the amalgamate.py to merge all
+  the C code into one file
 
 * code-experiments/test contains unit- and integration-tests, mainly for internal use
 
@@ -241,12 +248,13 @@ Traceback (most recent call last):
     raise error
 subprocess.CalledProcessError: Command '['locate', 'jni.h']' returned non-zero exit status 1
 ```
-check out [this](http://stackoverflow.com/questions/13526701/javah-missing-after-jdk-install-linux) and possibly [this](https://github.com/numbbo/coco/issues/416) for a solution. 
+check out [this](http://stackoverflow.com/questions/13526701/javah-missing-after-jdk-install-linux)
+and possibly [this](https://github.com/numbbo/coco/issues/416) for a solution. 
 
 ### Matlab
 
 #### Path to matlab
-If you see something like this when running ``python do.py build-matlab``
+If you see something like this when running `python do.py build-matlab`
 ```
 AML	['code-experiments/src/coco_generics.c', 'code-experiments/src/coco_random.c', 'code-experiments/src/coco_suite.c', 'code-experiments/src/coco_suites.c', 'code-experiments/src/coco_observer.c', 'code-experiments/src/coco_runtime_c.c'] -> code-experiments/build/matlab/coco.c
 COPY	code-experiments/src/coco.h -> code-experiments/build/matlab/coco.h
@@ -271,7 +279,10 @@ Traceback (most recent call last):
     raise child_exception
 OSError: [Errno 2] No such file or directory
 ```
-It might be because your system does not know the ``matlab`` command. To fix this, you should edit the file ``/etc/paths`` and add the path to the ``matlab`` bin file (Linux/Mac) or add the path to the folder where the `matlab.exe` lies to your Windows path. For instance, the ``etc/paths`` should look like something like this
+It might be because your system does not know the `matlab` command. To fix this,
+you should edit the file `/etc/paths` and add the path to the `matlab` bin file 
+(Linux/Mac) or add the path to the folder where the `matlab.exe` lies to your 
+Windows path. For instance, the `etc/paths` should look like something like this
 ```
 /usr/local/bin
 /usr/bin
@@ -282,15 +293,21 @@ It might be because your system does not know the ``matlab`` command. To fix thi
 ```
 
 #### SMA-EMOA example does not compile under Mac 
-With the more complex SMS-EMOA example. The problem is related to the compilation of the external C++ hypervolume calculation in hv.cpp. 
+With the more complex SMS-EMOA example. The problem is related to the compilation
+of the external C++ hypervolume calculation in `hv.cpp`. 
 
-A fix for this issue consists in adding to the files "hv.cpp" and "paretofront.c"  
-`#define char16_t UINT16_T`
+A fix for this issue consists in adding to the files `hv.cpp` and `paretofront.c`
+```
+#define char16_t UINT16_T
+```
 just before the line:
-`#include "mex.h"`
+```
+#include "mex.h"
+```
 
 #### Access to mex files denied
-If it happens that you get some `Access is denied` errors during `python do.py build-matlab` or `python do.py run-matlab` like this one
+If it happens that you get some `Access is denied` errors during
+`python do.py build-matlab` or `python do.py run-matlab` like this one
 ```
 C:\Users\dimo\Desktop\numbbo-brockho>python do.py run-matlab
 Traceback (most recent call last):
@@ -303,18 +320,25 @@ Traceback (most recent call last):
 WindowsError: [Error 5] Access is denied: 'code-experiments/build/matlab\\cocoEv
 aluateFunction.mexw32'
 ```
-a reason can be that a previously opened Matlab window still has some file handles open. Simply close all Matlab windows (and all running Matlab processes if there is any) before to run the `do.py` command again.
+a reason can be that a previously opened Matlab window still has some
+file handles open. Simply close all Matlab windows (and all running Matlab
+processes if there is any) before to run the `do.py` command again.
 
 
 ### Octave
 
 #### Command Window Closes Unexpectedly Under Windows
-If it happens that the command window, from which the `python do.py run-octave` is run, closes unexpectely under Windows, you might want to change the general way, Octave is called. Find your `octave.bat` file, which is in your Octave installation folder (typically something like `C:\Octave\Octave-4.0.0\` and remove or outcomment the last line, saying
+If it happens that the command window, from which the
+`python do.py run-octave` is run, closes unexpectely under Windows, you might
+want to change the general way, Octave is called. Find your `octave.bat` file,
+which is in your Octave installation folder (typically something like
+`C:\Octave\Octave-4.0.0\` and remove or outcomment the last line, saying
 ```
 Rem   Close the batch file's cmd.exe window
 exit
 ```
-We think already about a way to solve this issue directly in the `do.py` but it has low priority for the moment.
+We think already about a way to solve this issue directly in the `do.py` but it
+has low priority for the moment.
 
 ### Python
 
