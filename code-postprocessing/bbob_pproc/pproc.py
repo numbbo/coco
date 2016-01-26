@@ -595,6 +595,7 @@ class DataSet():
         nbRuns
         pickle
         plot
+        plot_funvals
         precision
         readfinalFminusFtarget
         readmaxevals
@@ -1336,14 +1337,34 @@ class DataSet():
 
         return list(tmp[i][1:] for i in targets)
 
-    def plot(self):
-        for evals in self.evals[:, 1:].transpose(): # loop over the rows of the transposed array
-            idx = self.evals[:, 0] > 0
+    def plot_funvals(self, **kwargs):
+        """plot data of `funvals` attribute, versatile"""
+        kwargs.setdefault('clip_on', False)
+        for funvals in self.funvals.T[1:]:  # loop over the rows of the transposed array
+            idx = isfinite(funvals > 1e-19)
+            plt.loglog(self.funvals[idx, 0], funvals[idx], **kwargs)
+            plt.ylabel('target $\Delta f$ value')
+            plt.xlabel('number of function evaluations')
+            plt.xlim(1, max(self.maxevals))
+        return plt.gca()
+    def plot(self, **kwargs):
+        """plot data from `evals` attribute.
+
+        `**kwargs` is passed to `matplolib.loglog`. """
+        kwargs.setdefault('clip_on', False)
+        for evals in self.evals.T[1:]:  # loop over the rows of the transposed array
+            idx = np.logical_and(self.evals[:, 0] > 1e-19, isfinite(evals))
             # plt.semilogx(self.evals[idx, 0], evals[idx])
-            plt.loglog(self.evals[idx, 0], evals[idx])
-            plt.gca().invert_xaxis()
-            plt.xlabel('target $\Delta f$ value')
-            plt.ylabel('number of function evaluations')
+            if 1 < 3:
+                plt.loglog(evals[idx], self.evals[idx, 0], **kwargs)
+                plt.ylabel('target $\Delta f$ value')
+                plt.xlabel('number of function evaluations')
+                plt.xlim(1, max(self.maxevals))
+            else:  # old version
+                plt.loglog(self.evals[idx, 0], evals[idx])
+                plt.gca().invert_xaxis()
+                plt.xlabel('target $\Delta f$ value')
+                plt.ylabel('number of function evaluations')
         return plt.gca()
 
 
@@ -1441,7 +1462,7 @@ class DataSetList(list):
         data_consistent = True
         for ds in self:
             data_consistent = data_consistent and ds.consistency_check()
-        if data_consistent and len(self):
+        if len(self) and data_consistent:
             print("  Data consistent according to test in consistency_check() in pproc.DataSet")
             
     def processIndexFile(self, indexFile, verbose=True):
