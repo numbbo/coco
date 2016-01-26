@@ -8,6 +8,7 @@ cimport numpy as np
 from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
 
 known_suite_names = [b"bbob", b"bbob-biobj"]
+_known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-largescale"]
 
 # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
 # __all__ = ['Problem', 'Benchmark']
@@ -72,8 +73,8 @@ cdef class Suite:
     Input arguments to `Suite` are `name: str`, `instance: str`, `options: str`,
     and passed to the respective C code (see `coco.h`).
 
-    >>> import cocoex as co
-    >>> suite = co.Suite("bbob", "", "")
+    >>> import cocoex as ex
+    >>> suite = ex.Suite("bbob", "", "")
     >>> f = suite.next_problem()
     >>> assert f.number_of_objectives == 1
     >>> print("f([1,2]) = %.11f" % f([1,2]))
@@ -81,8 +82,9 @@ cdef class Suite:
 
     Sweeping through all problems is as simple as::
 
-    >>> suite = co.Suite("bbob-biobj", "", "")
-    >>> observer = co.Observer("bbob-biobj", "exdata-doctest")
+    >>> import cocoex as ex
+    >>> suite = ex.Suite("bbob-biobj", "", "")
+    >>> observer = ex.Observer("bbob-biobj", "exdata-doctest")
     >>> for fun in suite:
     ...     if fun.index == 0:
     ...         print("Number of objectives %d, %d, %d" %
@@ -120,7 +122,7 @@ cdef class Suite:
     ...   # doctest: +ELLIPSIS
     Current problem index = 0...
     >>>   # Exactly the same using another looping technique:
-    >>> for id in suite.ids:
+    >>> for id in suite.ids():
     ...     fun = suite.get_problem(id, observer)
     ...     _ = solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
     ...     print("Evaluations on %s: %d" % (fun.name, fun.evaluations))
@@ -128,6 +130,12 @@ cdef class Suite:
     ...     # doctest: +ELLIPSIS
     Evaluations on ...
 
+    We can select a single function, say BBOB f9 in 20D, of a given suite like::
+    
+    >>> import cocoex as ex
+    >>> suite = ex.Suite("bbob", "", "dimensions:20 instance_idx:1")
+    >>> f9 = suite.get_problem(8)
+    
     See module attribute `cocoex.known_suite_names` for known suite names::
 
     >>> import cocoex as ex
@@ -273,6 +281,9 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         ...     # work work work using problem
         ...     problem.free()
 
+        A shortcut for `suite.get_problem(index)` is `suite[index]`, they are
+        synonym.
+
         Details:
         - Here an `index` takes values between 0 and `len(self) - 1` and can in
           principle be different from the problem index in the benchmark suite.
@@ -285,7 +296,7 @@ also report back a missing name to https://github.com/numbbo/coco/issues
           might just silently die, which is e.g. a known issue of the "bbob"
           observer.
 
-        See also `ids` and `find_problem_ids`.
+        See also `ids`.
         """
         if not self.initialized:
             raise ValueError("Suite has been finalized/free'ed")
@@ -299,6 +310,11 @@ also report back a missing name to https://github.com/numbbo/coco/issues
                                 True, self._name).add_observer(observer)
         except:
             raise NoSuchProblemException(self.name, str(id))
+    
+    def __getitem__(self, key):
+        """`self[i]` is a synonym for `self.get_problem(i)`, see `get_problem`
+        """
+        return self.get_problem(key)
 
     def free(self):
         """free underlying C structures"""
@@ -309,16 +325,25 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         if self.suite:
             coco_suite_free(self.suite)
 
-    def find_problem_ids(self, *id_snippets, get_problem=False, verbose=False):
-        """`find_problem_ids(*id_snippets, verbose=False)`
-        returns all problem IDs that contain each of the `id_snippets`.
+    def find_problem_ids(self, *args, **kwargs):
+        """has been renamed to `ids`"""
+        raise NotImplementedError(
+            "`find_problem_ids()` has been renamed to `ids()`")
+
+
+    def ids(self, *id_snippets, get_problem=False, verbose=False):
+        """`ids(*id_snippets, get_problem=False, verbose=False)`
+        return all problem IDs that contain all of the `id_snippets`.
+
+        An ID can be used for indexing, that is, when calling the method
+        `get_problem(id)`.
 
         If `get_problem is True`, the problem for the first matching ID is
         returned.
 
-        >>> import cocoex as co
-        >>> s = co.Suite("bbob", "", "")
-        >>> s.find_problem_ids("f001", "d10", "i01")
+        >>> import cocoex as ex
+        >>> s = ex.Suite("bbob", "", "")
+        >>> s.ids("f001", "d10", "i01")
         ['bbob_f001_i01_d10']
 
         We can sweep through all instances of the ellipsoidal function f10
@@ -326,7 +351,7 @@ also report back a missing name to https://github.com/numbbo/coco/issues
 
         >>> import cocoex as ex
         >>> suite = ex.Suite("bbob", "", "")
-        >>> ids = suite.find_problem_ids("f010", "d20")
+        >>> ids = suite.ids("f010", "d20")
         >>> used_indices = []
         >>> for p in suite:
         ...     if p.id in ids:
@@ -334,6 +359,14 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         ...         used_indices.append(p.index)
         >>> print(used_indices)
         [1575, 1576, 1577, 1578, 1579, 1580, 1581, 1582, 1583, 1584, 1585, 1586, 1587, 1588, 1589]
+
+        A desired problem can also be filtered out during creation::
+
+        >>> import cocoex as ex
+        >>> f9 = ex.Suite("bbob", "",
+        ...               "function_idx:9 dimensions:20 instance_idx:1-5")[0]
+        >>> print(f9.id)
+        bbob_f009_i01_d20
 
         """
         res = []
@@ -385,15 +418,6 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         """list of number of objectives occuring in this `Suite`"""
         return sorted(set(self._number_of_objectives))
     @property
-    def ids(self):
-        """list of all problem IDs.
-
-        An ID can be used when calling the method `get_problem(id)`.
-
-        See also `find_problem_ids`.
-        """
-        return list(self._ids)
-    @property
     def indices(self):
         """list of all problem indices, deprecated.
         
@@ -416,10 +440,17 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         `Suite(name, instance, options)`"""
         return self._options
 
+    @property
+    def info(self):
+        return str(self)
     def __repr__(self):
         return 'Suite(%r, %r, %r)'  % (self.name, self.instance, self.options)  # angled brackets
     def __str__(self):
-        return 'Suite("%s", "%s", "%s") with %d problems'  % (self.name, self.instance, self.options, len(self))
+        return 'Suite("%s", "%s", "%s") with %d problem%s in dimension%s %s' \
+            % (self.name, self.instance, self.options,
+               len(self), '' if len(self) == 1 else 's',
+               '' if len(self.dimensions) == 1 else 's',
+               '%d=%d' % (min(self.dimensions), max(self.dimensions)))
     def __len__(self):
         return len(self._indices)
 
@@ -482,13 +513,13 @@ cdef class Observer:
         The typical observer records data to be used in the COCO post-processing
         afterwards.
 
-        >>> import cocoex as co
-        >>> suite = co.Suite("bbob", "", "")
+        >>> import cocoex as ex
+        >>> suite = ex.Suite("bbob", "", "")
         >>> assert len(suite) == 2160
         >>> f = suite.get_problem(33)
         >>> assert isinstance(f, Problem)
         >>> assert f.id.endswith('f003_i04_d02')
-        >>> observer = co.Observer("bbob", "").observe(f)
+        >>> observer = ex.Observer("bbob", "").observe(f)
         >>> # work work work with f
         >>> f.free()
 
