@@ -1,3 +1,8 @@
+/**
+ * @file transform_obj_shift.c
+ * @brief Implementation of shifting the objective value by the given offset.
+ */
+
 #include <assert.h>
 
 #include "coco.h"
@@ -10,6 +15,9 @@ typedef struct {
   double offset;
 } transform_obj_shift_data_t;
 
+/**
+ * @brief Evaluates the transformation.
+ */
 static void transform_obj_shift_evaluate(coco_problem_t *problem, const double *x, double *y) {
   transform_obj_shift_data_t *data;
   size_t i;
@@ -22,7 +30,7 @@ static void transform_obj_shift_evaluate(coco_problem_t *problem, const double *
 }
 
 /**
- * Shift the objective value of the inner problem by offset.
+ * @brief Creates the transformation.
  */
 static coco_problem_t *transform_obj_shift(coco_problem_t *inner_problem, const double offset) {
   coco_problem_t *problem;

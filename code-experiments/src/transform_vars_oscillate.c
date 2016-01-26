@@ -1,5 +1,6 @@
-/*
- * Implementation of the BBOB T_osz transformation for variables.
+/**
+ * @file transform_vars_oscillate.c
+ * @brief Implementation of oscillating the decision values.
  */
 
 #include <math.h>
@@ -15,6 +16,9 @@ typedef struct {
   double *oscillated_x;
 } transform_vars_oscillate_data_t;
 
+/**
+ * @brief Evaluates the transformation.
+ */
 static void transform_vars_oscillate_evaluate(coco_problem_t *problem, const double *x, double *y) {
   static const double alpha = 0.1;
   double tmp, base, *oscillated_x;
@@ -43,13 +47,16 @@ static void transform_vars_oscillate_evaluate(coco_problem_t *problem, const dou
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Frees the data object.
+ */
 static void transform_vars_oscillate_free(void *thing) {
   transform_vars_oscillate_data_t *data = thing;
   coco_free_memory(data->oscillated_x);
 }
 
 /**
- * Perform monotone oscillation transformation on input variables.
+ * @brief Creates the transformation.
  */
 static coco_problem_t *transform_vars_oscillate(coco_problem_t *inner_problem) {
   transform_vars_oscillate_data_t *data;

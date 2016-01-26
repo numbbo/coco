@@ -1,6 +1,8 @@
-/*
- * Implementation of the BBOB Gamma(?) transformation for variables.
+/**
+ * @file transform_vars_conditioning.c
+ * @brief Implementation of conditioning decision values.
  */
+
 #include <math.h>
 #include <assert.h>
 
@@ -15,6 +17,9 @@ typedef struct {
   double alpha;
 } transform_vars_conditioning_data_t;
 
+/**
+ * @brief Evaluates the transformation.
+ */
 static void transform_vars_conditioning_evaluate(coco_problem_t *problem, const double *x, double *y) {
   size_t i;
   transform_vars_conditioning_data_t *data;
@@ -40,7 +45,7 @@ static void transform_vars_conditioning_free(void *thing) {
 }
 
 /**
- * Perform monotone oscillation(?) transformation on input variables.
+ * @brief Creates the transformation.
  */
 static coco_problem_t *transform_vars_conditioning(coco_problem_t *inner_problem, const double alpha) {
   transform_vars_conditioning_data_t *data;

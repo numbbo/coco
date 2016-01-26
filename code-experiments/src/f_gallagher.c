@@ -1,3 +1,8 @@
+/**
+ * @file f_gallagher.c
+ * @brief Implementation of the Gallagher function and problem.
+ */
+
 #include <assert.h>
 #include <math.h>
 
@@ -15,7 +20,7 @@
 static double *f_gallagher_peaks;
 
 /**
- * @brief Data type for f_gallagher.
+ * @brief Data type for the Gallagher problem.
  */
 typedef struct {
   long rseed;
@@ -39,6 +44,9 @@ static int f_gallagher_compare_doubles(const void *a, const void *b) {
     return 0;
 }
 
+/**
+ * @brief Implements the Gallagher function without connections to any COCO structures.
+ */
 static double f_gallagher_raw(const double *x, const size_t number_of_variables, f_gallagher_data_t *data) {
   size_t i, j; /* Loop over dim */
   double *tmx;
@@ -94,12 +102,18 @@ static double f_gallagher_raw(const double *x, const size_t number_of_variables,
   return result;
 }
 
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
 static void f_gallagher_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
   y[0] = f_gallagher_raw(x, problem->number_of_variables, problem->data);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Frees the Gallagher data object.
+ */
 static void f_gallagher_free(coco_problem_t *problem) {
   f_gallagher_data_t *data;
   data = problem->data;
@@ -117,8 +131,11 @@ static void f_gallagher_free(coco_problem_t *problem) {
   }
 }
 
-/* Note: there is no separate f_gallagher_allocate() function! */
-
+/**
+ * @brief Creates the BBOB Gallagher problem.
+ *
+ * @note There is no separate basic allocate function.
+ */
 static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
                                                          const size_t dimension,
                                                          const size_t instance,
@@ -168,7 +185,8 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
     b = 9.8;
     c = 4.9;
   } else {
-    coco_error("f_gallagher(): '%lu' is a non-supported number of peaks", number_of_peaks);
+    coco_error("f_gallagher_bbob_problem_allocate(): '%lu' is a non-supported number of peaks",
+        number_of_peaks);
   }
   data->rseed = rseed;
   bbob2009_compute_rotation(data->rotation, rseed, dimension);

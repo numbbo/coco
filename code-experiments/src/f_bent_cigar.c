@@ -1,3 +1,8 @@
+/**
+ * @file f_bent_cigar.c
+ * @brief Implementation of the bent cigar function and problem.
+ */
+
 #include <stdio.h>
 #include <assert.h>
 
@@ -9,6 +14,9 @@
 #include "transform_vars_asymmetric.c"
 #include "transform_vars_shift.c"
 
+/**
+ * @brief Implements the bent cigar function without connections to any COCO structures.
+ */
 static double f_bent_cigar_raw(const double *x, const size_t number_of_variables) {
 
   static const double condition = 1.0e6;
@@ -22,12 +30,18 @@ static double f_bent_cigar_raw(const double *x, const size_t number_of_variables
   return result;
 }
 
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
 static void f_bent_cigar_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
   y[0] = f_bent_cigar_raw(x, problem->number_of_variables);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Allocates the basic bent cigar problem.
+ */
 static coco_problem_t *f_bent_cigar_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("bent cigar function",
@@ -39,6 +53,9 @@ static coco_problem_t *f_bent_cigar_allocate(const size_t number_of_variables) {
   return problem;
 }
 
+/**
+ * @brief Creates the BBOB bent cigar problem.
+ */
 static coco_problem_t *f_bent_cigar_bbob_problem_allocate(const size_t function,
                                                           const size_t dimension,
                                                           const size_t instance,

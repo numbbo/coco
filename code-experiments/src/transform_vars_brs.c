@@ -1,7 +1,8 @@
-/*
- * Implementation of the ominous 's_i scaling' of the BBOB Bueche-Rastrigin
- * function.
+/**
+ * @file transform_vars_brs.c
+ * @brief Implementation of the ominous 's_i scaling' of the BBOB Bueche-Rastrigin problem.
  */
+
 #include <math.h>
 #include <assert.h>
 
@@ -15,6 +16,9 @@ typedef struct {
   double *x;
 } transform_vars_brs_data_t;
 
+/**
+ * @brief Evaluates the transformation.
+ */
 static void transform_vars_brs_evaluate(coco_problem_t *problem, const double *x, double *y) {
   size_t i;
   double factor;
@@ -43,13 +47,16 @@ static void transform_vars_brs_evaluate(coco_problem_t *problem, const double *x
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Frees the data type.
+ */
 static void transform_vars_brs_free(void *thing) {
   transform_vars_brs_data_t *data = thing;
   coco_free_memory(data->x);
 }
 
 /**
- * Perform monotone oscillation transformation on input variables.
+ * @brief Creates the transformation.
  */
 static coco_problem_t *transform_vars_brs(coco_problem_t *inner_problem) {
   transform_vars_brs_data_t *data;

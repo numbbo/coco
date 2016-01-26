@@ -1,3 +1,8 @@
+/**
+ * @file f_rosenbrock.c
+ * @brief Implementation of the Rosenbrock function and problem.
+ */
+
 #include <assert.h>
 
 #include "coco.h"
@@ -8,6 +13,9 @@
 #include "transform_vars_affine.c"
 #include "transform_obj_shift.c"
 
+/**
+ * @brief Implements the Rosenbrock function without connections to any COCO structures.
+ */
 static double f_rosenbrock_raw(const double *x, const size_t number_of_variables) {
 
   size_t i = 0;
@@ -27,12 +35,18 @@ static double f_rosenbrock_raw(const double *x, const size_t number_of_variables
   return result;
 }
 
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
 static void f_rosenbrock_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
   y[0] = f_rosenbrock_raw(x, problem->number_of_variables);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Allocates the basic Rosenbrock problem.
+ */
 static coco_problem_t *f_rosenbrock_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Rosenbrock function",
@@ -44,6 +58,9 @@ static coco_problem_t *f_rosenbrock_allocate(const size_t number_of_variables) {
   return problem;
 }
 
+/**
+ * @brief Creates the BBOB Rosenbrock problem.
+ */
 static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
                                                           const size_t dimension,
                                                           const size_t instance,
@@ -81,6 +98,9 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
   return problem;
 }
 
+/**
+ * @brief Creates the BBOB rotated Rosenbrock problem.
+ */
 static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t function,
                                                                   const size_t dimension,
                                                                   const size_t instance,

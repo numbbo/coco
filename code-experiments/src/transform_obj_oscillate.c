@@ -1,9 +1,17 @@
+/**
+ * @file transform_obj_oscillate.c
+ * @brief Implementation of oscillating the objective value.
+ */
+
 #include <assert.h>
 #include <math.h>
 
 #include "coco.h"
 #include "coco_problem.c"
 
+/**
+ * @brief Evaluates the transformation.
+ */
 static void transform_obj_oscillate_evaluate(coco_problem_t *problem, const double *x, double *y) {
   static const double factor = 0.1;
   size_t i;
@@ -23,9 +31,7 @@ static void transform_obj_oscillate_evaluate(coco_problem_t *problem, const doub
 }
 
 /**
- * Oscillate the objective value of the inner problem.
- *
- * Caveat: this can change best_parameter and best_value. 
+ * @brief Creates the transformation.
  */
 static coco_problem_t *transform_obj_oscillate(coco_problem_t *inner_problem) {
   coco_problem_t *problem;

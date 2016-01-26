@@ -1,3 +1,8 @@
+/**
+ * @file transform_obj_power.c
+ * @brief Implementation of raising the objective value to the power of a given exponent.
+ */
+
 #include <assert.h>
 #include <math.h>
 
@@ -11,6 +16,9 @@ typedef struct {
   double exponent;
 } transform_obj_power_data_t;
 
+/**
+ * @brief Evaluates the transformation.
+ */
 static void transform_obj_power_evaluate(coco_problem_t *problem, const double *x, double *y) {
   transform_obj_power_data_t *data;
   size_t i;
@@ -23,7 +31,7 @@ static void transform_obj_power_evaluate(coco_problem_t *problem, const double *
 }
 
 /**
- * Raise the objective value to the power of a given exponent.
+ * @brief Creates the transformation.
  */
 static coco_problem_t *transform_obj_power(coco_problem_t *inner_problem, const double exponent) {
   transform_obj_power_data_t *data;
