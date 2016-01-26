@@ -437,8 +437,8 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
             res = h # so the last element in res still has the label.
     return res
 
-def all_single_functions(dictAlg, sortedAlgs=None, outputdir='.',
-                         verbose=0):
+def all_single_functions(dictAlg, isBiobjective, sortedAlgs=None, 
+                         outputdir='.', verbose=0):
         dictFG = pp.dictAlgByFun(dictAlg)
         for fg, tmpdictAlg in dictFG.iteritems():
             dictDim = pp.dictAlgByDim(tmpdictAlg)
@@ -450,10 +450,11 @@ def all_single_functions(dictAlg, sortedAlgs=None, outputdir='.',
                 if not os.path.exists(single_fct_output_dir):
                     os.makedirs(single_fct_output_dir)
                 main(entries,
-                       order=sortedAlgs,
-                       outputdir=single_fct_output_dir,
-                       info=('f%03d_%02dD' % (fg, d)),
-                       verbose=verbose)
+                     isBiobjective,
+                     order=sortedAlgs,
+                     outputdir=single_fct_output_dir,
+                     info='f%03d_%02dD' % (fg, d),
+                     verbose=verbose)
 
 def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
          dimension=None, verbose=True):
@@ -522,7 +523,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             continue
         # print target_values((f, dim))
         for j, t in enumerate(target_values((f, dim))):
-        # for j, t in enumerate(genericsettings.current_testbed.ecdf_target_values(1e2, f)):
+        # for j, t in enumerate(genericsettings.getCurrentTestbed(isBiobjective).ecdf_target_values(1e2, f)):
             # funcsolved[j].add(f)
 
             for alg in algorithms_with_data:
@@ -657,7 +658,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
              verticalalignment="top", transform=plt.gca().transAxes)
     if len(dictFunc) == 1:
         plt.title(' '.join((str(dictFunc.keys()[0]),
-                  genericsettings.current_testbed.short_names[dictFunc.keys()[0]])))
+                  genericsettings.getCurrentTestbed(isBiobjective).short_names[dictFunc.keys()[0]])))
     a = plt.gca()
 
     plt.xlim(xmin=1e-0, xmax=x_limit**annotation_space_end_relative)

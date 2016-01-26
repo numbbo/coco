@@ -851,7 +851,7 @@ class DataSet():
         does not exist.
         
         """
-        if isinstance(genericsettings.current_testbed, genericsettings.GECCOBBOBTestbed):
+        if isinstance(genericsettings.getCurrentTestbed(self.isBiobjective()), genericsettings.GECCOBBOBTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
             while i > 1 and not self.isBiobjective() and self.evals[i-1][0] <= self.precision:
