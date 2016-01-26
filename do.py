@@ -183,7 +183,7 @@ def install_postprocessing():
     global release
     expand_file(join('code-postprocessing', 'setup.py.in'),
                 join('code-postprocessing', 'setup.py'),
-                {'COCO_VERSION': git_version()})
+                {'COCO_VERSION': git_version(pep440=True)})
     # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/bbob_pproc/latex-templates')
     python('code-postprocessing', ['setup.py', 'install', '--user'])
     
@@ -195,7 +195,7 @@ def _prep_python():
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
     copy_file('code-experiments/build/python/README.md', 'code-experiments/build/python/README.txt')
     expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
-                {'COCO_VERSION': git_version()}) # hg_version()})
+                {'COCO_VERSION': git_version(pep440=True)}) # hg_version()})
     # if 'darwin' in sys.platform:  # a hack to force cythoning
     #     run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
 
@@ -391,10 +391,11 @@ def run_matlab_sms():
 ################################################################################
 ## Octave
 def build_octave():
-    """Builds example in build/matlab/ with GNU Octave but not the one in examples/."""
+    """Builds example in build/matlab/ with GNU Octave."""
     
     global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/matlab/coco.c', release)
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
+               'code-experiments/build/matlab/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
@@ -404,11 +405,21 @@ def build_octave():
 def run_octave():
     # remove the mex files for a clean compilation first
     print('CLEAN\t mex files from code-experiments/build/matlab/')
-    for filename in glob.glob('code-experiments/build/matlab/*.mex*') :
-        os.remove( filename )
+    for filename in glob.glob('code-experiments/build/matlab/*.mex*'):
+        os.remove(filename)
     # amalgamate, copy, and build
     build_octave()
     run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
+
+
+def test_octave():
+    """ Builds and runs the test in Octave, which is equal to the example experiment """
+    build_octave()
+    try:
+        run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])    
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
+
 
 
 ################################################################################
@@ -505,7 +516,7 @@ def test_postprocessing():
     if 11 < 3:  # provisorial test fo biobj data
         run_c()
         python('code-experiments/build/c', ['-m', 'bbob_pproc',
-                                            'random_search_on_bbob-biobj'])
+                                            'RS_on_bbob-biobj'])
 
 ################################################################################
 ## Global

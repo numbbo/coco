@@ -468,8 +468,11 @@ def main(argv=None):
 
             if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
-                pprldmany.all_single_functions(dictAlg, sortedAlgs,
-                        outputdir, genericsettings.verbose)
+                pprldmany.all_single_functions(dictAlg, 
+                                               dsList[0].isBiobjective(),
+                                               sortedAlgs,
+                                               outputdir, 
+                                               genericsettings.verbose)
             print "ECDF runlength graphs done."
 
         if genericsettings.isConv:
