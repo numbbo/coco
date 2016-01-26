@@ -1,9 +1,9 @@
 /**
  * @file logger_biobj.c
- * @brief The bbob-biobj logger logs the values of the implemented indicators and archives nondominated
- * solutions.
+ * @brief Implementation of the bbob-biobj logger.
  *
- * It produces four kinds of files:
+ * Logs the values of the implemented indicators and archives nondominated solutions.
+ * Produces four kinds of files:
  * - The "info" files contain high-level information on the performed experiment. One .info file is created
  * for each problem group (and indicator type) and contains information on all the problems in that problem
  * group (and indicator type).
@@ -36,11 +36,11 @@
 #include "observer_biobj.c"
 
 #include "logger_biobj_avl_tree.c"
-#include "mo_generics.c"
 #include "mo_targets.c"
+#include "mo_utilities.c"
 
 /**
- * @brief The data type for each indicator.
+ * @brief The indicator type.
  */
 typedef struct {
 
@@ -62,7 +62,7 @@ typedef struct {
 } logger_biobj_indicator_t;
 
 /**
- * @brief The data type for the bi-objective logger.
+ * @brief The bi-objective logger data type.
  *
  * @note Some fields from the observers (coco_observer as well as observer_biobj) need to be copied here
  * because the observers can be deleted before the logger is finalized and we need these fields for
@@ -95,10 +95,10 @@ typedef struct {
 
   /* TODO: Check whether all this is really needed! */
 
-} logger_biobj_t;
+} logger_biobj_data_t;
 
 /**
- * @brief The data type contained in the node's item in the AVL tree.
+ * @brief The type for the node's item in the AVL tree.
  */
 typedef struct {
   double *x;          /**< @brief The decision values of this solution. */
@@ -256,7 +256,7 @@ static size_t logger_biobj_tree_output(FILE *file,
  *
  * @return 1 if the update was performed and 0 otherwise.
  */
-static int logger_biobj_tree_update(logger_biobj_t *logger,
+static int logger_biobj_tree_update(logger_biobj_data_t *logger,
                                     coco_problem_t *problem,
                                     logger_biobj_avl_item_t *node_item) {
 
@@ -404,19 +404,19 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
  *
  * Opens files for writing and resets counters.
  */
-static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
+static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_data_t *logger,
                                                         coco_problem_t *problem,
                                                         const char *indicator_name) {
 
   coco_observer_t *observer;
-  observer_biobj_t *observer_biobj;
+  observer_biobj_data_t *observer_biobj;
   logger_biobj_indicator_t *indicator;
   char *prefix, *file_name, *path_name;
   int info_file_exists = 0;
 
   indicator = (logger_biobj_indicator_t *) coco_allocate_memory(sizeof(*indicator));
   observer = logger->observer;
-  observer_biobj = (observer_biobj_t *) observer->data;
+  observer_biobj = (observer_biobj_data_t *) observer->data;
 
   indicator->name = coco_strdup(indicator_name);
 
@@ -484,7 +484,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
 /**
  * @brief Outputs the final information about this indicator.
  */
-static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, logger_biobj_t *logger) {
+static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, logger_biobj_data_t *logger) {
 
   size_t target_index = 0;
   if (indicator->next_target_id > 0)
@@ -537,7 +537,7 @@ static void logger_biobj_indicator_free(void *stuff) {
  */
 static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, double *y) {
 
-  logger_biobj_t *logger;
+  logger_biobj_data_t *logger;
 
   logger_biobj_avl_item_t *node_item;
   logger_biobj_indicator_t *indicator;
@@ -545,7 +545,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
   int update_performed;
   size_t i;
 
-  logger = (logger_biobj_t *) coco_problem_transformed_get_data(problem);
+  logger = (logger_biobj_data_t *) coco_problem_transformed_get_data(problem);
 
   /* Evaluate function */
   coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
@@ -643,7 +643,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
 /**
  * @brief Outputs the final nondominated solutions to the archive file.
  */
-static void logger_biobj_finalize(logger_biobj_t *logger) {
+static void logger_biobj_finalize(logger_biobj_data_t *logger) {
 
   avl_tree_t *resorted_tree;
   avl_node_t *solution;
@@ -671,7 +671,7 @@ static void logger_biobj_finalize(logger_biobj_t *logger) {
  */
 static void logger_biobj_free(void *stuff) {
 
-  logger_biobj_t *logger;
+  logger_biobj_data_t *logger;
   size_t i;
 
   assert(stuff != NULL);
@@ -704,8 +704,8 @@ static void logger_biobj_free(void *stuff) {
 static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *inner_problem) {
 
   coco_problem_t *problem;
-  logger_biobj_t *logger_biobj;
-  observer_biobj_t *observer_biobj;
+  logger_biobj_data_t *logger_biobj;
+  observer_biobj_data_t *observer_biobj;
   const char nondom_folder_name[] = "archive";
   char *path_name, *file_name = NULL, *prefix;
   size_t i;
@@ -724,7 +724,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   logger_biobj->number_of_objectives = inner_problem->number_of_objectives;
   logger_biobj->suite_dep_instance = inner_problem->suite_dep_instance;
 
-  observer_biobj = (observer_biobj_t *) observer->data;
+  observer_biobj = (observer_biobj_data_t *) observer->data;
   /* Copy values from the observes that you might need even if they do not exist any more */
   logger_biobj->log_nondom_mode = observer_biobj->log_nondom_mode;
   logger_biobj->compute_indicators = observer_biobj->compute_indicators;

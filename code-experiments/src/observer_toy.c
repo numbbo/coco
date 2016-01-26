@@ -15,14 +15,14 @@ typedef struct {
   FILE *log_file;            /**< @brief File used for logging. */
   size_t number_of_targets;  /**< @brief The number of targets. */
   double *targets;           /**< @brief The targets. */
-} observer_toy_t;
+} observer_toy_data_t;
 
 /**
  * @brief Frees memory of the toy observer data structure.
  */
 static void observer_toy_free(void *stuff) {
 
-  observer_toy_t *data;
+  observer_toy_data_t *data;
 
   assert(stuff != NULL);
   data = stuff;
@@ -48,7 +48,7 @@ static void observer_toy_free(void *stuff) {
  */
 static void observer_toy(coco_observer_t *observer, const char *options) {
 
-  observer_toy_t *observer_toy;
+  observer_toy_data_t *observer_toy;
   char *string_value;
   char *file_name;
   size_t i;

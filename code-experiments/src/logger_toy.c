@@ -1,6 +1,8 @@
 /**
  * @file logger_toy.c
- * @brief The toy logger logs the evaluation number and function value each time a target has been hit.
+ * @brief Implementation of the toy logger.
+ *
+ * Logs the evaluation number and function value each time a target has been hit.
  */
 
 #include <stdio.h>
@@ -20,7 +22,7 @@ typedef struct {
   coco_observer_t *observer;   /**< @brief Pointer to the COCO observer. */
   size_t next_target;          /**< @brief The next target. */
   long number_of_evaluations;  /**< @brief The number of evaluations performed so far. */
-} logger_toy_t;
+} logger_toy_data_t;
 
 /**
  * @brief Evaluates the function, increases the number of evaluations and outputs information based on the
@@ -28,12 +30,12 @@ typedef struct {
  */
 static void logger_toy_evaluate(coco_problem_t *problem, const double *x, double *y) {
 
-  logger_toy_t *logger;
-  observer_toy_t *observer_toy;
+  logger_toy_data_t *logger;
+  observer_toy_data_t *observer_toy;
   double *targets;
 
   logger = coco_problem_transformed_get_data(problem);
-  observer_toy = (observer_toy_t *) logger->observer->data;
+  observer_toy = (observer_toy_data_t *) logger->observer->data;
   targets = observer_toy->targets;
 
   coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
@@ -54,7 +56,7 @@ static void logger_toy_evaluate(coco_problem_t *problem, const double *x, double
  */
 static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inner_problem) {
 
-  logger_toy_t *logger_toy;
+  logger_toy_data_t *logger_toy;
   coco_problem_t *problem;
   FILE *output_file;
 
@@ -67,7 +69,7 @@ static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inn
   logger_toy->next_target = 0;
   logger_toy->number_of_evaluations = 0;
 
-  output_file = ((observer_toy_t *) logger_toy->observer->data)->log_file;
+  output_file = ((observer_toy_data_t *) logger_toy->observer->data)->log_file;
   fprintf(output_file, "\n%s, %s\n", coco_problem_get_id(inner_problem), coco_problem_get_name(inner_problem));
 
   problem = coco_problem_transformed_allocate(inner_problem, logger_toy, NULL);
