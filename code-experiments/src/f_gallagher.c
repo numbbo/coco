@@ -163,7 +163,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   /* Parameters for generating local optima. In the old code, they are different in f21 and f22 */
   double b, c;
 
-  data = coco_allocate_memory(sizeof(*data));
+  data = (f_gallagher_data_t *) coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
   data->number_of_peaks = number_of_peaks;
   data->xopt = coco_allocate_vector(dimension);
