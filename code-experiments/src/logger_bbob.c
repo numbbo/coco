@@ -26,7 +26,6 @@
 #include "coco_string.c"
 #include "observer_bbob.c"
 
-static int bbob_raisedOptValWarning;
 /*static const size_t bbob_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
 /*static const size_t bbob_nbpts_fval = 5;*/
 static size_t bbob_current_dim = 0;
@@ -412,11 +411,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   logger->number_of_evaluations++;
 
   /* Add sanity check for optimal f value */
-  /* assert(y[0] >= logger->optimal_fvalue); */
-  if (!bbob_raisedOptValWarning && y[0] < logger->optimal_fvalue) {
-    coco_warning("Observed fitness is smaller than supposed optimal fitness.");
-    bbob_raisedOptValWarning = 1;
-  }
+  assert(y[0] + 1e-13 >= logger->optimal_fvalue);
 
   /* Add a line in the .dat file for each logging target reached. */
   if (y[0] - logger->optimal_fvalue <= logger->f_trigger) {
@@ -527,7 +522,6 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   } else {
     logger_bbob->optimal_fvalue = *(inner_problem->best_value);
   }
-  bbob_raisedOptValWarning = 0;
 
   logger_bbob->idx_f_trigger = INT_MAX;
   logger_bbob->idx_t_trigger = 0;
