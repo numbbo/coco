@@ -21,7 +21,7 @@ static const size_t coco_observer_always_log[3] = {1, 2, 5};
  * otherwise (computed from coco_observer_always_log). For example, if coco_observer_always_log = {1, 2, 5},
  * returns true for 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, ...
  */
-static int coco_observer_evaluation_to_log(size_t evaluation_number, size_t dimension) {
+static int coco_observer_evaluation_to_log(const size_t evaluation_number, const size_t dimension) {
 
   size_t i;
   double j = 0, factor = 10;

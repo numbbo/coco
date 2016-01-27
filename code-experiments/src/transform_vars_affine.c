@@ -55,9 +55,9 @@ static void transform_vars_affine_free(void *thing) {
  * @brief Creates the transformation.
  */
 static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
-                                               const double *M,
-                                               const double *b,
-                                               const size_t number_of_variables) {
+                                             const double *M,
+                                             const double *b,
+                                             const size_t number_of_variables) {
   /*
    * TODOs:
    * - Calculate new smallest/largest values of interest?

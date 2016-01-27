@@ -131,27 +131,27 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
 /**
  * @brief Returns the problem of the suite defined by problem_index.
  */
-coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, size_t problem_index);
+coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, const size_t problem_index);
 
 /**
  * @brief Returns the number of problems in the given suite.
  */
-size_t coco_suite_get_number_of_problems(coco_suite_t *suite);
+size_t coco_suite_get_number_of_problems(const coco_suite_t *suite);
 
 /**
  * @brief Returns the function number in the suite in position function_idx (counting from 0).
  */
-size_t coco_suite_get_function_from_function_index(coco_suite_t *suite, size_t function_idx);
+size_t coco_suite_get_function_from_function_index(const coco_suite_t *suite, const size_t function_idx);
 
 /**
  * @brief Returns the dimension number in the suite in position dimension_idx (counting from 0).
  */
-size_t coco_suite_get_dimension_from_dimension_index(coco_suite_t *suite, size_t dimension_idx);
+size_t coco_suite_get_dimension_from_dimension_index(const coco_suite_t *suite, const size_t dimension_idx);
 
 /**
  * @brief Returns the instance number in the suite in position instance_idx (counting from 0).
  */
-size_t coco_suite_get_instance_from_instance_index(coco_suite_t *suite, size_t instance_idx);
+size_t coco_suite_get_instance_from_instance_index(const coco_suite_t *suite, const size_t instance_idx);
 /**@}*/
 
 /**
@@ -217,7 +217,7 @@ size_t coco_suite_get_instance_from_instance_index(coco_suite_t *suite, size_t i
  * @brief Computes the index of the problem in the suite that corresponds to the given function, dimension
  * and instance indexes.
  */
-size_t coco_suite_encode_problem_index(coco_suite_t *suite,
+size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
                                        const size_t function_idx,
                                        const size_t dimension_idx,
                                        const size_t instance_idx);
@@ -226,7 +226,7 @@ size_t coco_suite_encode_problem_index(coco_suite_t *suite,
  * @brief Computes the function, dimension and instance indexes of the problem with problem_index in the
  * given suite.
  */
-void coco_suite_decode_problem_index(coco_suite_t *suite,
+void coco_suite_decode_problem_index(const coco_suite_t *suite,
                                      const size_t problem_index,
                                      size_t *function_idx,
                                      size_t *instance_idx,
@@ -310,7 +310,7 @@ size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
 /**
  * @brief Returns the number of evaluations done on the problem.
  */
-size_t coco_problem_get_evaluations(coco_problem_t *problem);
+size_t coco_problem_get_evaluations(const coco_problem_t *problem);
 
 /**
  * @brief Returns the best observed value for the first objective.
@@ -337,7 +337,7 @@ const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *
 /**
  * @brief Returns the problem_index of the problem in its current suite.
  */
-size_t coco_problem_get_suite_dep_index(coco_problem_t *problem);
+size_t coco_problem_get_suite_dep_index(const coco_problem_t *problem);
 
 /**
  * @brief Returns an initial solution, i.e. a feasible variable setting, to the problem.

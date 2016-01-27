@@ -48,8 +48,8 @@ static void transform_vars_shift_free(void *thing) {
  * @brief Creates the transformation.
  */
 static coco_problem_t *transform_vars_shift(coco_problem_t *inner_problem,
-                                              const double *offset,
-                                              const int shift_bounds) {
+                                            const double *offset,
+                                            const int shift_bounds) {
   transform_vars_shift_data_t *data;
   coco_problem_t *problem;
   size_t i;

@@ -53,7 +53,7 @@ static void transform_vars_x_hat_free(void *thing) {
 /**
  * @brief Creates the transformation.
  */
-static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, long seed) {
+static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const long seed) {
   transform_vars_x_hat_data_t *data;
   coco_problem_t *problem;
   size_t i;

@@ -176,7 +176,7 @@ static char **coco_string_split(const char *string, const char delimiter) {
  *
  * The caller is responsible for freeing the allocated memory using coco_free_memory().
  */
-static char *coco_remove_from_string(char *string, char *from, char *to) {
+static char *coco_remove_from_string(const char *string, const char *from, const char *to) {
 
   char *result, *start, *stop;
 
