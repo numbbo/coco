@@ -429,7 +429,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_data_t *log
 
   /* Prepare the info file */
   path_name = coco_allocate_string(COCO_PATH_MAX);
-  memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
+  memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_create_directory(path_name);
   file_name = coco_strdupf("%s_%s.info", problem->problem_type, indicator_name);
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
@@ -444,7 +444,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_data_t *log
 
   /* Prepare the log file */
   path_name = coco_allocate_string(COCO_PATH_MAX);
-  memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
+  memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
   coco_create_directory(path_name);
   prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
@@ -742,7 +742,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
 
     /* Create the path to the file */
     path_name = coco_allocate_string(COCO_PATH_MAX);
-    memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
+    memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
     coco_join_path(path_name, COCO_PATH_MAX, nondom_folder_name, NULL);
     coco_create_directory(path_name);
 
