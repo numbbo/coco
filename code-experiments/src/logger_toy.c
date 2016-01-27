@@ -64,7 +64,7 @@ static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inn
     coco_warning("logger_toy(): The toy logger shouldn't be used to log a problem with %d objectives", inner_problem->number_of_objectives);
   }
 
-  logger_toy = coco_allocate_memory(sizeof(*logger_toy));
+  logger_toy = (logger_toy_data_t *) coco_allocate_memory(sizeof(*logger_toy));
   logger_toy->observer = observer;
   logger_toy->next_target = 0;
   logger_toy->number_of_evaluations = 0;

@@ -27,7 +27,7 @@ static void observer_bbob(coco_observer_t *observer, const char *options) {
   
   observer_bbob_data_t *observer_bbob;
   
-  observer_bbob = coco_allocate_memory(sizeof(*observer_bbob));  
+  observer_bbob = (observer_bbob_data_t *) coco_allocate_memory(sizeof(*observer_bbob));
 
   if ((coco_options_read_size_t(options, "nbpts_nbevals", &(observer_bbob->bbob_nbpts_nbevals)) == 0)) {
     observer_bbob->bbob_nbpts_nbevals = 20;

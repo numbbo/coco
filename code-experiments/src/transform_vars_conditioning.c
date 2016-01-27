@@ -50,7 +50,7 @@ static void transform_vars_conditioning_free(void *thing) {
 static coco_problem_t *transform_vars_conditioning(coco_problem_t *inner_problem, const double alpha) {
   transform_vars_conditioning_data_t *data;
   coco_problem_t *problem;
-  data = coco_allocate_memory(sizeof(*data));
+  data = (transform_vars_conditioning_data_t *) coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->alpha = alpha;
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_conditioning_free);
