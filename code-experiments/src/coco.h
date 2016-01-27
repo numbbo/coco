@@ -13,6 +13,8 @@
 extern "C" {
 #endif
 
+#include <stddef.h>
+
 /* Definitions of some 32 and 64-bit types (used by the random number generator) */
 #ifdef _MSC_VER
 typedef __int32 int32_t;
