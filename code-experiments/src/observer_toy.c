@@ -53,7 +53,7 @@ static void observer_toy(coco_observer_t *observer, const char *options) {
   char *file_name;
   size_t i;
 
-  observer_toy = coco_allocate_memory(sizeof(*observer_toy));
+  observer_toy = (observer_toy_data_t *) coco_allocate_memory(sizeof(*observer_toy));
 
   /* Read file_name and number_of_targets from the options and use them to initialize the observer */
   string_value = coco_allocate_string(COCO_PATH_MAX);

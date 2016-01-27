@@ -62,7 +62,7 @@ static void observer_biobj(coco_observer_t *observer, const char *options) {
   observer_biobj_data_t *observer_biobj;
   char string_value[COCO_PATH_MAX];
 
-  observer_biobj = coco_allocate_memory(sizeof(*observer_biobj));
+  observer_biobj = (observer_biobj_data_t *) coco_allocate_memory(sizeof(*observer_biobj));
 
   observer_biobj->log_nondom_mode = LOG_NONDOM_ALL;
   if (coco_options_read_string(options, "log_nondominated", string_value) > 0) {
