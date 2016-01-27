@@ -38,6 +38,12 @@ _Additional_ requirements for running an algorithm in a specific language.
 * Java: any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
   (i.e. in the system path). 
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
+* Python: For Windows, the MinGW compiler sometimes produces errors while
+  producing C extensions, such as it is while building the Python example experiment.
+  To fix this, Microsoft released a compiler package for Python 2.7 containing VC9.
+  It has both the 32-bit and 64-bit compilers and the Windows SDK headers
+  and libs necessary to build C extensions for Windows, 
+  see [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266).
 * Octave: tested with Octave 4.0.0 but older versions might work. Make sure `octave` can be called from
   the shell without closing the shell on exit, for details, see [here](./code-experiments/build/matlab/README.md)
 
