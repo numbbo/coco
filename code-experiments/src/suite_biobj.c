@@ -174,7 +174,7 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
        * suite_biobj_instances, the allocation uses max_new_instances. */
       data->max_new_instances = suite->number_of_instances;
 
-      data->new_instances = coco_allocate_memory(data->max_new_instances * sizeof(size_t *));
+      data->new_instances = (size_t **) coco_allocate_memory(data->max_new_instances * sizeof(size_t *));
       for (i = 0; i < data->max_new_instances; i++) {
         data->new_instances[i] = malloc(3 * sizeof(size_t));
         for (j = 0; j < 3; j++) {
