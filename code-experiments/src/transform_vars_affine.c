@@ -69,7 +69,7 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
   size_t entries_in_M;
 
   entries_in_M = inner_problem->number_of_variables * number_of_variables;
-  data = coco_allocate_memory(sizeof(*data));
+  data = (transform_vars_affine_data_t *) coco_allocate_memory(sizeof(*data));
   data->M = coco_duplicate_vector(M, entries_in_M);
   data->b = coco_duplicate_vector(b, inner_problem->number_of_variables);
   data->x = coco_allocate_vector(inner_problem->number_of_variables);

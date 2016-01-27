@@ -502,7 +502,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   logger_bbob_data_t *logger_bbob;
   coco_problem_t *problem;
 
-  logger_bbob = coco_allocate_memory(sizeof(*logger_bbob));
+  logger_bbob = (logger_bbob_data_t *) coco_allocate_memory(sizeof(*logger_bbob));
   logger_bbob->observer = observer;
 
   if (inner_problem->number_of_objectives != 1) {

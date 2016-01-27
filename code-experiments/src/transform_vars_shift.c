@@ -56,7 +56,7 @@ static coco_problem_t *transform_vars_shift(coco_problem_t *inner_problem,
   if (shift_bounds)
     coco_error("shift_bounds not implemented.");
 
-  data = coco_allocate_memory(sizeof(*data));
+  data = (transform_vars_shift_data_t *) coco_allocate_memory(sizeof(*data));
   data->offset = coco_duplicate_vector(offset, inner_problem->number_of_variables);
   data->shifted_x = coco_allocate_vector(inner_problem->number_of_variables);
 

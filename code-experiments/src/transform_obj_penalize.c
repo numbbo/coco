@@ -51,7 +51,7 @@ static coco_problem_t *transform_obj_penalize(coco_problem_t *inner_problem, con
   transform_obj_penalize_data_t *data;
   assert(inner_problem != NULL);
 
-  data = coco_allocate_memory(sizeof(*data));
+  data = (transform_obj_penalize_data_t *) coco_allocate_memory(sizeof(*data));
   data->factor = factor;
   problem = coco_problem_transformed_allocate(inner_problem, data, NULL);
   problem->evaluate_function = transform_obj_penalize_evaluate;

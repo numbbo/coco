@@ -79,7 +79,7 @@ static coco_problem_t *transform_vars_permblockdiag(coco_problem_t *inner_proble
   for (i = 0; i < nb_blocks; i++) {
     entries_in_M += block_sizes[i] * block_sizes[i];
   }
-  data = coco_allocate_memory(sizeof(*data));
+  data = (transform_vars_permblockdiag_t *) coco_allocate_memory(sizeof(*data));
   data->B = ls_copy_block_matrix(B, number_of_variables, block_sizes, nb_blocks);
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->P1 = coco_duplicate_size_t_vector(P1, inner_problem->number_of_variables);

@@ -53,7 +53,7 @@ static coco_problem_t *transform_vars_z_hat(coco_problem_t *inner_problem, const
   transform_vars_z_hat_data_t *data;
   coco_problem_t *problem;
 
-  data = coco_allocate_memory(sizeof(*data));
+  data = (transform_vars_z_hat_data_t *) coco_allocate_memory(sizeof(*data));
   data->xopt = coco_duplicate_vector(xopt, inner_problem->number_of_variables);
   data->z = coco_allocate_vector(inner_problem->number_of_variables);
 

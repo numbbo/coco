@@ -58,7 +58,7 @@ static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, long 
   coco_problem_t *problem;
   size_t i;
 
-  data = coco_allocate_memory(sizeof(*data));
+  data = (transform_vars_x_hat_data_t *) coco_allocate_memory(sizeof(*data));
   data->seed = seed;
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
