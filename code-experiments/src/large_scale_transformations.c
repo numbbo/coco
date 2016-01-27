@@ -8,7 +8,9 @@
 
 #include <time.h> /*tmp*/
 
-static double *random_data;/* global variable used to generate the random permutations */
+/* TODO: Document this file in doxygen style! */
+
+static double *ls_random_data;/* global variable used to generate the random permutations */
 
 /**
  * ls_allocate_blockmatrix(n, m, bs):
@@ -161,7 +163,7 @@ static double **ls_copy_block_matrix(const double *const *B, const size_t dimens
  * In our case, it serves as a random permutation generator
  */
 static int f_compare_doubles_for_random_permutation(const void *a, const void *b) {
-  double temp = random_data[*(const size_t *) a] - random_data[*(const size_t *) b];
+  double temp = ls_random_data[*(const size_t *) a] - ls_random_data[*(const size_t *) b];
   if (temp > 0)
     return 1;
   else if (temp < 0)
@@ -176,10 +178,10 @@ static int f_compare_doubles_for_random_permutation(const void *a, const void *b
 static void ls_compute_random_permutation(size_t *P, long seed, size_t n) {
   long i;
   coco_random_state_t *rng = coco_random_new((uint32_t) seed);
-  random_data = coco_allocate_vector(n);
+  ls_random_data = coco_allocate_vector(n);
   for (i = 0; i < n; i++){
     P[i] = (size_t) i;
-    random_data[i] = coco_random_uniform(rng);
+    ls_random_data[i] = coco_random_uniform(rng);
   }
   qsort(P, n, sizeof(size_t), f_compare_doubles_for_random_permutation);
   coco_random_free(rng);
@@ -209,12 +211,12 @@ static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, 
   size_t *idx_order;
   coco_random_state_t *rng = coco_random_new((uint32_t) seed);
 
-  random_data = coco_allocate_vector(n);
-  idx_order = (size_t *) coco_allocate_memory(n * sizeof(size_t));;
+  ls_random_data = coco_allocate_vector(n);
+  idx_order = coco_allocate_vector_size_t(n);
   for (i = 0; i < n; i++){
     P[i] = (size_t) i;
     idx_order[i] = (size_t) i;
-    random_data[i] = coco_random_uniform(rng);
+    ls_random_data[i] = coco_random_uniform(rng);
   }
   
   if (swap_range > 0) {
@@ -267,7 +269,7 @@ size_t *coco_duplicate_size_t_vector(const size_t *src, const size_t number_of_e
   assert(src != NULL);
   assert(number_of_elements > 0);
   
-  dst = (size_t *)coco_allocate_memory(number_of_elements * sizeof(size_t));
+  dst = coco_allocate_vector_size_t(number_of_elements);
   for (i = 0; i < number_of_elements; ++i) {
     dst[i] = src[i];
   }
@@ -286,7 +288,7 @@ size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
   
   block_size = (size_t) bbob2009_fmin((double)dimension / 4, 100);
   *nb_blocks = dimension / block_size + ((dimension % block_size) > 0);
-  block_sizes = (size_t *)coco_allocate_memory(*nb_blocks * sizeof(size_t));
+  block_sizes = coco_allocate_vector_size_t(*nb_blocks);
   for (i = 0; i < *nb_blocks - 1; i++) {
     block_sizes[i] = block_size;
   }

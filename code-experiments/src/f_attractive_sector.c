@@ -1,3 +1,8 @@
+/**
+ * @file f_attractive_sector.c
+ * @brief Implementation of the attractive sector function and problem.
+ */
+
 #include <assert.h>
 #include <math.h>
 
@@ -10,10 +15,16 @@
 #include "transform_vars_affine.c"
 #include "transform_vars_shift.c"
 
+/**
+ * @brief Data type for the attractive sector problem.
+ */
 typedef struct {
   double *xopt;
 } f_attractive_sector_data_t;
 
+/**
+ * @brief Implements the attractive sector function without connections to any COCO structures.
+ */
 static double f_attractive_sector_raw(const double *x,
                                       const size_t number_of_variables,
                                       f_attractive_sector_data_t *data) {
@@ -31,19 +42,29 @@ static double f_attractive_sector_raw(const double *x,
   return result;
 }
 
-static void f_attractive_sector_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_attractive_sector_raw(x, self->number_of_variables, self->data);
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
+static void f_attractive_sector_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_attractive_sector_raw(x, problem->number_of_variables, problem->data);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
-static void f_attractive_sector_free(coco_problem_t *self) {
+/**
+ * @brief Frees the attractive sector data object.
+ */
+static void f_attractive_sector_free(coco_problem_t *problem) {
   f_attractive_sector_data_t *data;
-  data = self->data;
+  data = problem->data;
   coco_free_memory(data->xopt);
-  self->free_problem = NULL;
-  coco_problem_free(self);
+  problem->problem_free_function = NULL;
+  coco_problem_free(problem);
 }
 
+/**
+ * @brief Allocates the basic attractive sector problem.
+ */
 static coco_problem_t *f_attractive_sector_allocate(const size_t number_of_variables, const double *xopt) {
 
   f_attractive_sector_data_t *data;
@@ -51,7 +72,7 @@ static coco_problem_t *f_attractive_sector_allocate(const size_t number_of_varia
       f_attractive_sector_evaluate, f_attractive_sector_free, number_of_variables, -5.0, 5.0, 0.0);
   coco_problem_set_id(problem, "%s_d%02lu", "attractive_sector", number_of_variables);
 
-  data = coco_allocate_memory(sizeof(*data));
+  data = (f_attractive_sector_data_t *) coco_allocate_memory(sizeof(*data));
   data->xopt = coco_duplicate_vector(xopt, number_of_variables);
   problem->data = data;
 
@@ -60,6 +81,9 @@ static coco_problem_t *f_attractive_sector_allocate(const size_t number_of_varia
   return problem;
 }
 
+/**
+ * @brief Creates the BBOB attractive sector problem.
+ */
 static coco_problem_t *f_attractive_sector_bbob_problem_allocate(const size_t function,
                                                                  const size_t dimension,
                                                                  const size_t instance,
@@ -97,11 +121,11 @@ static coco_problem_t *f_attractive_sector_bbob_problem_allocate(const size_t fu
   bbob2009_free_matrix(rot2, dimension);
 
   problem = f_attractive_sector_allocate(dimension, xopt);
-  problem = f_transform_obj_oscillate(problem);
-  problem = f_transform_obj_power(problem, 0.9);
-  problem = f_transform_obj_shift(problem, fopt);
-  problem = f_transform_vars_affine(problem, M, b, dimension);
-  problem = f_transform_vars_shift(problem, xopt, 0);
+  problem = transform_obj_oscillate(problem);
+  problem = transform_obj_power(problem, 0.9);
+  problem = transform_obj_shift(problem, fopt);
+  problem = transform_vars_affine(problem, M, b, dimension);
+  problem = transform_vars_shift(problem, xopt, 0);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);

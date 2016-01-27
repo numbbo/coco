@@ -13,6 +13,8 @@
 extern "C" {
 #endif
 
+#include <stddef.h>
+
 /* Definitions of some 32 and 64-bit types (used by the random number generator) */
 #ifdef _MSC_VER
 typedef __int32 int32_t;
@@ -38,9 +40,6 @@ static const double coco_pi = 3.14159265358979323846;
 static const double coco_two_pi = 2.0 * 3.14159265358979323846;
 /**@}*/
 
-/** @brief The maximum number of different instances in a suite. */
-#define COCO_MAX_INSTANCES 1000
-
 /***********************************************************************************************************/
 
 /** @brief Logging level type. */
@@ -61,14 +60,6 @@ struct coco_problem;
  *
  * See coco_problem for more information on its fields. */
 typedef struct coco_problem coco_problem_t;
-
-/**
- * @brief The COCO optimizer type.
- *
- * This is a template for optimizers - functions, which take a COCO problem as input and don't return any
- * value. If such a function exists, it can be used in the coco_run_benchmark function to run the benchmark.
- */
-typedef void (*coco_optimizer_t)(coco_problem_t *problem);
 
 /** @brief Structure containing a COCO suite. */
 struct coco_suite;
@@ -103,16 +94,6 @@ typedef struct coco_random_state coco_random_state_t;
  * @name Methods regarding COCO suite
  */
 /**@{*/
-
-/**
- * @brief Runs the benchmark.
- */
-void coco_run_benchmark(const char *suite_name,
-                        const char *suite_instance,
-                        const char *suite_options,
-                        const char *observer_name,
-                        const char *observer_options,
-                        coco_optimizer_t optimizer);
 
 /**
  * @brief Constructs a COCO suite.
@@ -248,7 +229,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *options);
 /**
  * @brief Frees the given observer.
  */
-void coco_observer_free(coco_observer_t *self);
+void coco_observer_free(coco_observer_t *observer);
 
 /**
  * @brief Adds an observer to the given problem.
@@ -274,9 +255,9 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
 void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y);
 
 /**
- * @brief Recommends number_of_solutions points (stored in x) as the current best guesses to the problem.
+ * @brief Recommends a solution as the current best guesses to the problem.
  */
-void coco_recommend_solutions(coco_problem_t *problem, const double *x, size_t number_of_solutions);
+void coco_recommend_solution(coco_problem_t *problem, const double *x);
 
 /**
  * @brief Frees the given problem.

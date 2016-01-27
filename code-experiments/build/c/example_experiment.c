@@ -61,7 +61,7 @@ void my_grid_search(coco_problem_t *problem) {
   size_t number_of_objectives = coco_problem_get_number_of_objectives(problem);
   double *x = coco_allocate_vector(dimension);
   double *y = coco_allocate_vector(number_of_objectives);
-  long *nodes = coco_allocate_memory(sizeof(long) * dimension);
+  long *nodes = (long *) coco_allocate_memory(sizeof(long) * dimension);
   double *grid_step = coco_allocate_vector(dimension);
   size_t i, j;
   size_t evaluations = 0;
@@ -124,9 +124,9 @@ void my_grid_search(coco_problem_t *problem) {
 void example_bbob(void) {
 
   /* Some options of the bbob observer. See documentation for other options. */
-  const char *observer_options = "result_folder: RS_on_bbob \
-                                  algorithm_name: RS \
-                                  algorithm_info: \"A simple random search algorithm\"";
+  const char *observer_options = "result_folder: RS_on_bbob "
+                                 "algorithm_name: RS "
+                                 "algorithm_info: \"A simple random search algorithm\"";
 
   coco_suite_t *suite;
   coco_observer_t *observer;
@@ -150,9 +150,9 @@ void example_bbob(void) {
 void example_biobj(void) {
 
   /* Some options of the biobjective observer. See documentation for other options. */
-  const char *observer_options = "result_folder: RS_on_bbob-biobj \
-                                  algorithm_name: RS \
-                                  algorithm_info: \"A simple random search algorithm\"";
+  const char *observer_options = "result_folder: RS_on_bbob-biobj "
+                                 "algorithm_name: RS "
+                                 "algorithm_info: \"A simple random search algorithm\"";
 
   coco_suite_t *suite;
   coco_observer_t *observer;

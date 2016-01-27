@@ -1,14 +1,22 @@
+/**
+ * @file transform_obj_oscillate.c
+ * @brief Implementation of oscillating the objective value.
+ */
+
 #include <assert.h>
 #include <math.h>
 
 #include "coco.h"
 #include "coco_problem.c"
 
-static void transform_obj_oscillate_evaluate(coco_problem_t *self, const double *x, double *y) {
+/**
+ * @brief Evaluates the transformation.
+ */
+static void transform_obj_oscillate_evaluate(coco_problem_t *problem, const double *x, double *y) {
   static const double factor = 0.1;
   size_t i;
-  coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
-  for (i = 0; i < self->number_of_objectives; i++) {
+  coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
+  for (i = 0; i < problem->number_of_objectives; i++) {
       if (y[i] != 0) {
           double log_y;
           log_y = log(fabs(y[i])) / factor;
@@ -19,20 +27,18 @@ static void transform_obj_oscillate_evaluate(coco_problem_t *self, const double 
           }
       }
   }
-  assert(y[0] + 1e-13 >= self->best_value[0]);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
 /**
- * Oscillate the objective value of the inner problem.
- *
- * Caveat: this can change best_parameter and best_value. 
+ * @brief Creates the transformation.
  */
-static coco_problem_t *f_transform_obj_oscillate(coco_problem_t *inner_problem) {
-  coco_problem_t *self;
-  self = coco_transformed_allocate(inner_problem, NULL, NULL);
-  self->evaluate_function = transform_obj_oscillate_evaluate;
+static coco_problem_t *transform_obj_oscillate(coco_problem_t *inner_problem) {
+  coco_problem_t *problem;
+  problem = coco_problem_transformed_allocate(inner_problem, NULL, NULL);
+  problem->evaluate_function = transform_obj_oscillate_evaluate;
   /* Compute best value */
   /* Maybe not the most efficient solution */
-  transform_obj_oscillate_evaluate(self, self->best_parameter, self->best_value);
-  return self;
+  transform_obj_oscillate_evaluate(problem, problem->best_parameter, problem->best_value);
+  return problem;
 }

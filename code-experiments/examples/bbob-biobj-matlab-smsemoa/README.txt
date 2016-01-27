@@ -7,15 +7,15 @@ biobjective BBOB test suite using the COCO framework.
 
 Make sure you have MATLAB, gcc, and g++ installed. To run an
 experiment, call first
-
-  % python do.py build-matlab
-
+```
+  python do.py build-matlab-sms
+```
 in your shell to update the coco.c and coco.h files in this matlab
 example folder and then type within matlab
-
-  > setup
-  > run_smsemoa_on_bbob_biobj
-
+```
+  setup
+  run_smsemoa_on_bbob_biobj
+```
 to compile and run the algorithm and the coco framework. 
 
 The main "magic" of compilations is contained in the setup.m file while
