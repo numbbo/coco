@@ -7,12 +7,13 @@
  * - The "info" files contain high-level information on the performed experiment. One .info file is created
  * for each problem group (and indicator type) and contains information on all the problems in that problem
  * group (and indicator type).
- * - The "dat" files contain function evaluations, indicator values and target hits for every target hit.
- * One .dat file is created for each problem function and dimension (and indicator type) and contains
- * information for all instances of that problem (and indicator type).
+ * - The "dat" files contain function evaluations, indicator values and target hits for every target hit as
+ * well as for the last evaluation. One .dat file is created for each problem function and dimension (and
+ * indicator type) and contains information for all instances of that problem (and indicator type).
  * - The "tdat" files contain function evaluation and indicator values for every predefined evaluation
- * number. One .tdat file is created for each problem function and dimension (and indicator type) and
- * contains information for all instances of that problem (and indicator type).
+ * number as well as for the last evaluation. One .tdat file is created for each problem function and
+ * dimension (and indicator type) and contains information for all instances of that problem (and indicator
+ * type).
  * - The "adat" files are archive files that contain function evaluations, 2 objectives and dim variables
  * for every nondominated solution. Whether these files are created, at what point in time the logger writes
  * nondominated solutions to the archive and whether the decision variables are output or not depends on
@@ -46,7 +47,8 @@ typedef struct {
 
   char *name;                /**< @brief Name of the indicator used for identification and the output. */
 
-  FILE *log_file;            /**< @brief File for logging indicator values at target hits. */
+  FILE *dat_file;            /**< @brief File for logging indicator values at predefined values. */
+  FILE *tdat_file;           /**< @brief File for logging indicator values at predefined evaluations. */
   FILE *info_file;           /**< @brief File for logging summary information on algorithm performance. */
 
   double best_value;         /**< @brief The best known indicator value for this problem. */
@@ -442,16 +444,31 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_data_t *log
   coco_free_memory(file_name);
   coco_free_memory(path_name);
 
-  /* Prepare the log file */
+  /* Prepare the tdat file */
   path_name = coco_allocate_string(COCO_PATH_MAX);
   memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
   coco_create_directory(path_name);
   prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
+  file_name = coco_strdupf("%s_%s.tdat", prefix, indicator_name);
+  coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
+  indicator->tdat_file = fopen(path_name, "a");
+  if (indicator->tdat_file == NULL) {
+    coco_error("logger_biobj_indicator() failed to open file '%s'.", path_name);
+    return NULL; /* Never reached */
+  }
+  coco_free_memory(file_name);
+  coco_free_memory(path_name);
+
+  /* Prepare the dat file */
+  path_name = coco_allocate_string(COCO_PATH_MAX);
+  memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
+  coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
+  coco_create_directory(path_name);
   file_name = coco_strdupf("%s_%s.dat", prefix, indicator_name);
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
-  indicator->log_file = fopen(path_name, "a");
-  if (indicator->log_file == NULL) {
+  indicator->dat_file = fopen(path_name, "a");
+  if (indicator->dat_file == NULL) {
     coco_error("logger_biobj_indicator() failed to open file '%s'.", path_name);
     return NULL; /* Never reached */
   }
@@ -472,11 +489,17 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_data_t *log
   coco_free_memory(file_name);
   coco_free_memory(path_name);
 
-  /* Output header information to the log file */
-  fprintf(indicator->log_file, "%%\n%% index = %ld, name = %s\n", problem->suite_dep_index, problem->problem_name);
-  fprintf(indicator->log_file, "%% instance = %ld, reference value = %.*e\n", problem->suite_dep_instance,
+  /* Output header information to the dat file */
+  fprintf(indicator->dat_file, "%%\n%% index = %ld, name = %s\n", problem->suite_dep_index, problem->problem_name);
+  fprintf(indicator->dat_file, "%% instance = %ld, reference value = %.*e\n", problem->suite_dep_instance,
       logger->precision_f, indicator->best_value);
-  fprintf(indicator->log_file, "%% function evaluation | indicator value | target hit\n");
+  fprintf(indicator->dat_file, "%% function evaluation | indicator value | target hit\n");
+
+  /* Output header information to the tdat file */
+  fprintf(indicator->tdat_file, "%%\n%% index = %ld, name = %s\n", problem->suite_dep_index, problem->problem_name);
+  fprintf(indicator->tdat_file, "%% instance = %ld, reference value = %.*e\n", problem->suite_dep_instance,
+      logger->precision_f, indicator->best_value);
+  fprintf(indicator->tdat_file, "%% function evaluation | indicator value\n");
 
   return indicator;
 }
@@ -492,8 +515,14 @@ static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator,
 
   /* Log the last evaluation in the dat file if wasn't already logged */
   if (!indicator->target_hit) {
-    fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
+    fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
         indicator->overall_value, logger->precision_f, mo_relateive_target_values[target_index]);
+  }
+
+  /* Log the last evaluation in the tdat file if wasn't already logged */
+  if (!coco_observer_evaluation_to_log(logger->number_of_evaluations, logger->number_of_variables)) {
+    fprintf(indicator->tdat_file, "%lu\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
+        indicator->overall_value);
   }
 
   /* Log the information in the info file */
@@ -517,9 +546,14 @@ static void logger_biobj_indicator_free(void *stuff) {
     indicator->name = NULL;
   }
 
-  if (indicator->log_file != NULL) {
-    fclose(indicator->log_file);
-    indicator->log_file = NULL;
+  if (indicator->dat_file != NULL) {
+    fclose(indicator->dat_file);
+    indicator->dat_file = NULL;
+  }
+
+  if (indicator->tdat_file != NULL) {
+    fclose(indicator->tdat_file);
+    indicator->tdat_file = NULL;
   }
 
   if (indicator->info_file != NULL) {
@@ -570,12 +604,13 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
     fflush(logger->archive_file);
   }
 
-  /* If the archive was updated and a new target was reached for an indicator or if this is the first
-   * evaluation, output indicator information. Note that a target is reached when the
-   * (best_value - current_value) <= relative_target_value
+  /* Perform output to the:
+   * - dat file, if the archive was updated and a new target was reached for an indicator;
+   * - tdat file, if the number of evaluations matches one of the predefined numbers.
+   *
+   * Note that a target is reached when the (best_value - current_value) <= relative_target_value
    * The relative_target_value is a target for indicator difference, not indicator value!
    */
-  /* Log the evaluation */
   if (logger->compute_indicators) {
     for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
 
@@ -621,19 +656,17 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
         }
       }
 
-      /* Log the evaluation if a target was hit or the evaluation number matches a predefined value */
+      /* Log to the dat file if a target was hit */
       if (indicator->target_hit) {
-        fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
+        fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
             indicator->overall_value, logger->precision_f,
             mo_relateive_target_values[indicator->next_target_id - 1]);
       }
-      else if (coco_observer_evaluation_to_log(logger->number_of_evaluations, problem->number_of_variables)) {
-        size_t target_index = 0;
-        if (indicator->next_target_id > 0)
-          target_index = indicator->next_target_id - 1;
-        fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-            indicator->overall_value, logger->precision_f, mo_relateive_target_values[target_index]);
-        indicator->target_hit = 1;
+
+      /* Log to the tdat file if the number of evaluations matches one of the predefined numbers */
+      if (coco_observer_evaluation_to_log(logger->number_of_evaluations, logger->number_of_variables)) {
+        fprintf(indicator->tdat_file, "%lu\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
+            indicator->overall_value);
       }
 
     }
