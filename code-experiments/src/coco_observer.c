@@ -1,30 +1,38 @@
+/**
+ * @file coco_observer.c
+ * @brief Definitions of functions regarding COCO observers.
+ */
+
 #include "coco.h"
 #include "coco_internal.h"
 
 /**
- * A set of numbers from which the evaluations that should always be logged are computed. For example, if
- * logger_biobj_always_log[3] = {1, 2, 5}, the logger will always output evaluations
+ * @brief A set of numbers from which the evaluations that should always be logged are computed.
+ *
+ * For example, if logger_biobj_always_log[3] = {1, 2, 5}, the logger will always output evaluations
  * 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
  */
 static const size_t coco_observer_always_log[3] = {1, 2, 5};
 
 /**
- * Returns true if the number_of_evaluations corresponds to a number that should always be logged and false
+ * @brief Determines whether the evaluation should be logged.
+ *
+ * Returns true if the evaluation_number corresponds to a number that should always be logged and false
  * otherwise (computed from coco_observer_always_log). For example, if coco_observer_always_log = {1, 2, 5},
- * return true for 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
+ * returns true for 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, ...
  */
-static int coco_observer_evaluation_to_log(size_t number_of_evaluations, size_t dimension) {
+static int coco_observer_evaluation_to_log(size_t evaluation_number, size_t dimension) {
 
   size_t i;
   double j = 0, factor = 10;
   size_t count = sizeof(coco_observer_always_log) / sizeof(size_t);
 
-  if (number_of_evaluations == 1)
+  if (evaluation_number == 1)
     return 1;
 
-  while ((size_t) pow(factor, j) * dimension <= number_of_evaluations) {
+  while ((size_t) pow(factor, j) * dimension <= evaluation_number) {
     for (i = 0; i < count; i++) {
-      if (number_of_evaluations == (size_t) pow(factor, j) * dimension * coco_observer_always_log[i])
+      if (evaluation_number == (size_t) pow(factor, j) * dimension * coco_observer_always_log[i])
         return 1;
     }
     j++;
@@ -38,7 +46,7 @@ static int coco_observer_evaluation_to_log(size_t number_of_evaluations, size_t 
 #include "logger_toy.c"
 
 /**
- * Allocates memory for a coco_observer_t instance.
+ * @brief Allocates memory for a coco_observer_t instance.
  */
 static coco_observer_t *coco_observer_allocate(const char *output_folder,
                                                const char *algorithm_name,
@@ -109,6 +117,7 @@ void coco_observer_free(coco_observer_t *observer) {
  * of digits to be printed after the decimal point. The default value is 8.
  * - precision_f: VALUE defines the precision used when outputting f values and corresponds to the number of
  * digits to be printed after the decimal point. The default value is 15.
+ *
  * @return The constructed observer object or NULL if observer_name equals NULL, "" or "no_observer".
  */
 coco_observer_t *coco_observer(const char *observer_name, const char *observer_options) {
@@ -124,15 +133,15 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     return NULL;
   }
 
-  result_folder = (char *) coco_allocate_memory(COCO_PATH_MAX);
-  algorithm_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
-  algorithm_info = (char *) coco_allocate_memory(5 * COCO_PATH_MAX);
+  result_folder = coco_allocate_string(COCO_PATH_MAX);
+  algorithm_name = coco_allocate_string(COCO_PATH_MAX);
+  algorithm_info = coco_allocate_string(5 * COCO_PATH_MAX);
   /* Read result_folder, algorithm_name and algorithm_info from the observer_options and use
    * them to initialize the observer */
   if (coco_options_read_string(observer_options, "result_folder", result_folder) == 0) {
     strcpy(result_folder, "exdata-default");
   }
-  coco_create_unique_path(&result_folder);
+  coco_create_unique_directory(&result_folder);
   coco_info("Results will be output to folder %s", result_folder);
 
   if (coco_options_read_string(observer_options, "algorithm_name", algorithm_name) == 0) {
@@ -182,6 +191,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
  *
  * @param problem The given COCO problem.
  * @param observer The COCO observer that will wrap the problem.
+ *
  * @returns The observed problem in the form of a new COCO problem instance or the same problem if the
  * observer is NULL.
  */

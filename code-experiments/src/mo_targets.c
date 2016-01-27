@@ -1,5 +1,7 @@
+/* TODO: To be replaced by dynamically set targets. */
+
 #define MO_NUMBER_OF_TARGETS 100
-const double MO_RELATIVE_TARGET_VALUES[MO_NUMBER_OF_TARGETS] = {
+const double mo_relateive_target_values[MO_NUMBER_OF_TARGETS] = {
  10.00000000000000,
  7.943282347242815,
  6.309573444801932,
