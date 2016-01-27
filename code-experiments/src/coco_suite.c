@@ -920,48 +920,6 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   return problem;
 }
 
-/**
- * Constructs a suite and observer given their options and runs the optimizer on all the problems in the
- * suite.
- *
- * @param suite_name A string containing the name of the suite. See suite_name in the coco_suite function for
- * possible values.
- * @param suite_instance A string used for defining the suite instances. See suite_instance in the coco_suite
- * function for possible values ("" and NULL result in default suite instances).
- * @param suite_options A string of pairs "key: value" used to filter the suite. See suite_options in the
- * coco_suite function for possible values ("" and NULL result in a non-filtered suite).
- * @param observer_name A string containing the name of the observer. See observer_name in the coco_observer
- * function for possible values ("", "no_observer" and NULL result in not using an observer).
- * @param observer_options A string of pairs "key: value" used to pass the options to the observer. See
- * observer_options in the coco_observer function for possible values ("" and NULL result in default observer
- * options).
- * @param optimizer An optimization algorithm to be run on each problem in the suite.
- */
-void coco_run_benchmark(const char *suite_name,
-                        const char *suite_instance,
-                        const char *suite_options,
-                        const char *observer_name,
-                        const char *observer_options,
-                        coco_optimizer_t optimizer) {
-
-  coco_suite_t *suite;
-  coco_observer_t *observer;
-  coco_problem_t *problem;
-
-  suite = coco_suite(suite_name, suite_instance, suite_options);
-  observer = coco_observer(observer_name, observer_options);
-
-  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
-
-    optimizer(problem);
-
-  }
-
-  coco_observer_free(observer);
-  coco_suite_free(suite);
-
-}
-
 /* See coco.h for more information on encoding and decoding problem index */
 
 /**
