@@ -353,7 +353,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   strncpy(dataFile_path, "data_f", COCO_PATH_MAX);
   strncat(dataFile_path, tmpc_funId,
   COCO_PATH_MAX - strlen(dataFile_path) - 1);
-  coco_join_path(folder_path, sizeof(folder_path), logger->observer->output_folder, dataFile_path,
+  coco_join_path(folder_path, sizeof(folder_path), logger->observer->result_folder, dataFile_path,
   NULL);
   coco_create_directory(folder_path);
   strncat(dataFile_path, "/bbobexp_f",
@@ -364,7 +364,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   strncat(dataFile_path, tmpc_dim, COCO_PATH_MAX - strlen(dataFile_path) - 1);
 
   /* index/info file */
-  logger_bbob_openIndexFile(logger, logger->observer->output_folder, indexFile_prefix, tmpc_funId,
+  logger_bbob_openIndexFile(logger, logger->observer->result_folder, indexFile_prefix, tmpc_funId,
       dataFile_path);
   fprintf(logger->index_file, ", %ld", coco_problem_get_suite_dep_instance(inner_problem));
   /* data files */
@@ -372,13 +372,13 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
   strncat(dataFile_path, bbob_infoFile_firstInstance_char,
   COCO_PATH_MAX - strlen(dataFile_path) - 1);
-  logger_bbob_open_dataFile(&(logger->fdata_file), logger->observer->output_folder, dataFile_path, ".dat");
+  logger_bbob_open_dataFile(&(logger->fdata_file), logger->observer->result_folder, dataFile_path, ".dat");
   fprintf(logger->fdata_file, bbob_file_header_str, logger->optimal_fvalue);
 
-  logger_bbob_open_dataFile(&(logger->tdata_file), logger->observer->output_folder, dataFile_path, ".tdat");
+  logger_bbob_open_dataFile(&(logger->tdata_file), logger->observer->result_folder, dataFile_path, ".tdat");
   fprintf(logger->tdata_file, bbob_file_header_str, logger->optimal_fvalue);
 
-  logger_bbob_open_dataFile(&(logger->rdata_file), logger->observer->output_folder, dataFile_path, ".rdat");
+  logger_bbob_open_dataFile(&(logger->rdata_file), logger->observer->result_folder, dataFile_path, ".rdat");
   fprintf(logger->rdata_file, bbob_file_header_str, logger->optimal_fvalue);
   logger->is_initialized = 1;
   coco_free_memory(tmpc_dim);

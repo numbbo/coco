@@ -67,7 +67,7 @@ static void observer_toy(coco_observer_t *observer, const char *options) {
 
   /* Open log_file */
   file_name = coco_allocate_string(COCO_PATH_MAX);
-  memcpy(file_name, observer->output_folder, strlen(observer->output_folder) + 1);
+  memcpy(file_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_create_directory(file_name);
   coco_join_path(file_name, COCO_PATH_MAX, string_value, NULL);
 
