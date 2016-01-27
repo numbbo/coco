@@ -37,7 +37,7 @@ static coco_problem_t *transform_obj_power(coco_problem_t *inner_problem, const 
   transform_obj_power_data_t *data;
   coco_problem_t *problem;
 
-  data = coco_allocate_memory(sizeof(*data));
+  data = (transform_obj_power_data_t *) coco_allocate_memory(sizeof(*data));
   data->exponent = exponent;
 
   problem = coco_problem_transformed_allocate(inner_problem, data, NULL);

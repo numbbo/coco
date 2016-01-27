@@ -68,7 +68,7 @@ static coco_problem_t *f_weierstrass_allocate(const size_t number_of_variables) 
       f_weierstrass_evaluate, NULL, number_of_variables, -5.0, 5.0, NAN);
   coco_problem_set_id(problem, "%s_d%02lu", "weierstrass", number_of_variables);
 
-  data = coco_allocate_memory(sizeof(*data));
+  data = (f_weierstrass_data_t *) coco_allocate_memory(sizeof(*data));
   data->f0 = 0.0;
   for (i = 0; i < F_WEIERSTRASS_SUMMANDS; ++i) {
     data->ak[i] = pow(0.5, (double) i);

@@ -61,7 +61,7 @@ void my_grid_search(coco_problem_t *problem) {
   size_t number_of_objectives = coco_problem_get_number_of_objectives(problem);
   double *x = coco_allocate_vector(dimension);
   double *y = coco_allocate_vector(number_of_objectives);
-  long *nodes = coco_allocate_memory(sizeof(long) * dimension);
+  long *nodes = (long *) coco_allocate_memory(sizeof(long) * dimension);
   double *grid_step = coco_allocate_vector(dimension);
   size_t i, j;
   size_t evaluations = 0;
