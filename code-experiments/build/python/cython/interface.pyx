@@ -38,9 +38,7 @@ cdef extern from "coco.h":
 
     void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
-    void coco_recommend_solutions(coco_problem_t *problem, 
-                                  const double *x,
-                                  size_t number_of_solutions)
+    void coco_recommend_solution(coco_problem_t *problem, const double *x)
                                   
     coco_problem_t* coco_suite_get_next_problem(coco_suite_t*, coco_observer_t*)
     coco_problem_t* coco_suite_get_problem(coco_suite_t *, size_t)
@@ -644,24 +642,19 @@ cdef class Problem:
                                <double *>np.PyArray_DATA(self.y))
         return self.y
     def recommend(self, arx):
-        """Recommend a list of solutions (with len 1 in the single-objective
-        case). """
+        """Recommend a solution. """
         raise NotImplementedError("has never been tested, incomment this to start testing")
         cdef np.ndarray[double, ndim=1, mode="c"] _x
-        assert isinstance(arx, list)
-        number = len(arx)
-        x = np.hstack(arx)
         x = np.array(x, copy=False, dtype=np.double, order='C')
-        if np.size(x) != number * self.number_of_variables:
+        if np.size(x) != self.number_of_variables:
             raise ValueError(
-                "Dimensions, `arx.shape==%s`, of input `arx` " % str(arx.shape) +
-                "do not match the problem dimension `number_of_variables==%d`." 
+                "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
+                "not match the problem dimension `number_of_variables==%d`." 
                              % self.number_of_variables)
         _x = x  # this is the final type conversion
         if self.problem is NULL:
             raise InvalidProblemException()
-        coco_recommend_solutions(self.problem, <double *>np.PyArray_DATA(_x),
-                                 number)
+        coco_recommend_solution(self.problem, <double *>np.PyArray_DATA(_x))
 
     def add_observer(self, observer):
         """`add_observer(self, observer: Observer)`, see also `Observer`.
