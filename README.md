@@ -327,6 +327,9 @@ processes if there is any) before to run the `do.py` command again.
 
 ### Octave
 
+#### Fresh Octave Installation Under Windows
+If you happen to install Octave just before you run `python do.py run-octave` under Windows, you need to run the octave.bat first once. It will set the correct path to the Octave `bin/` folder.
+
 #### Command Window Closes Unexpectedly Under Windows
 If it happens that the command window, from which the
 `python do.py run-octave` is run, closes unexpectely under Windows, you might
@@ -339,6 +342,12 @@ exit
 ```
 We think already about a way to solve this issue directly in the `do.py` but it
 has low priority for the moment.
+
+#### Running Algorithms in Octave and C Under Windows
+If want to run algorithms in Octave and C, please make sure that you run them from different
+command windows. The `octave.bat` happens to set some paths which might affect which compiler
+you use as default. This might crash the `python do.py run-c` if you run it in the same
+command windows *after* having run the `octave.bat`.
 
 ### Python
 
