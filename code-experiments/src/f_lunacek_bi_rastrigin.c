@@ -133,7 +133,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_bbob_problem_allocate(const size_t
   double fopt, *tmpvect;
   size_t i;
 
-  data = coco_allocate_memory(sizeof(*data));
+  data = (f_lunacek_bi_rastrigin_data_t *) coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
   data->x_hat = coco_allocate_vector(dimension);
   data->z = coco_allocate_vector(dimension);

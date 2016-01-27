@@ -715,7 +715,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
     return NULL; /* Never reached. */
   }
 
-  logger_biobj = coco_allocate_memory(sizeof(*logger_biobj));
+  logger_biobj = (logger_biobj_data_t *) coco_allocate_memory(sizeof(*logger_biobj));
 
   logger_biobj->observer = observer;
 

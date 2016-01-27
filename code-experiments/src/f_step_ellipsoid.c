@@ -124,7 +124,7 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
   coco_problem_t *problem = coco_problem_allocate_from_scalars("step ellipsoid function",
       f_step_ellipsoid_evaluate, f_step_ellipsoid_free, dimension, -5.0, 5.0, 0);
 
-  data = coco_allocate_memory(sizeof(*data));
+  data = (f_step_ellipsoid_data_t *) coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
   data->x = coco_allocate_vector(dimension);
   data->xx = coco_allocate_vector(dimension);

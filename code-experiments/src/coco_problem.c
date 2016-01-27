@@ -544,7 +544,7 @@ static coco_problem_t *coco_problem_transformed_allocate(coco_problem_t *inner_p
   coco_problem_transformed_data_t *problem;
   coco_problem_t *inner_copy;
 
-  problem = coco_allocate_memory(sizeof(*problem));
+  problem = (coco_problem_transformed_data_t *) coco_allocate_memory(sizeof(*problem));
   problem->inner_problem = inner_problem;
   problem->data = user_data;
   problem->data_free_function = data_free_function;
@@ -696,7 +696,7 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1, c
   coco_evaluate_function(problem2, problem1->best_parameter, &problem->nadir_value[1]);
 
   /* setup data holder */
-  data = coco_allocate_memory(sizeof(*data));
+  data = (coco_problem_stacked_data_t *) coco_allocate_memory(sizeof(*data));
   data->problem1 = problem1;
   data->problem2 = problem2;
 
