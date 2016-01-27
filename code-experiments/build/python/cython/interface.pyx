@@ -25,7 +25,7 @@ cdef extern from "coco.h":
         pass
 
     const char* coco_set_log_level(const char *level)
-    
+
     coco_observer_t *coco_observer(const char *observer_name, const char *options)
     void coco_observer_free(coco_observer_t *self)
     coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, 
@@ -39,7 +39,7 @@ cdef extern from "coco.h":
     void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
     void coco_recommend_solution(coco_problem_t *problem, const double *x)
-                                  
+
     coco_problem_t* coco_suite_get_next_problem(coco_suite_t*, coco_observer_t*)
     coco_problem_t* coco_suite_get_problem(coco_suite_t *, size_t)
 
@@ -129,11 +129,11 @@ cdef class Suite:
     Evaluations on ...
 
     We can select a single function, say BBOB f9 in 20D, of a given suite like::
-    
+
     >>> import cocoex as ex
     >>> suite = ex.Suite("bbob", "", "dimensions:20 instance_idx:1")
     >>> f9 = suite.get_problem(8)
-    
+
     See module attribute `cocoex.known_suite_names` for known suite names::
 
     >>> import cocoex as ex
@@ -187,7 +187,7 @@ cdef class Suite:
         cdef coco_suite_t* suite
         cdef coco_problem_t* p
         cdef bytes _old_level
-        
+
         if self.initialized:
             self.reset()
         self._ids = []
@@ -308,7 +308,7 @@ also report back a missing name to https://github.com/numbbo/coco/issues
                                 True, self._name).add_observer(observer)
         except:
             raise NoSuchProblemException(self.name, str(id))
-    
+
     def __getitem__(self, key):
         """`self[i]` is a synonym for `self.get_problem(i)`, see `get_problem`
         """
@@ -642,15 +642,19 @@ cdef class Problem:
                                <double *>np.PyArray_DATA(self.y))
         return self.y
     def recommend(self, arx):
-        """Recommend a solution. """
+        """Recommend a solution, return `None`.
+
+        The recommendation replaces the last evaluation or recommendation
+        for the assessment of the algorithm.
+        """
         raise NotImplementedError("has never been tested, incomment this to start testing")
         cdef np.ndarray[double, ndim=1, mode="c"] _x
         x = np.array(x, copy=False, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
             raise ValueError(
                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
-                "not match the problem dimension `number_of_variables==%d`." 
-                             % self.number_of_variables)
+                "not match the problem dimension `number_of_variables==%d`."
+                % self.number_of_variables)
         _x = x  # this is the final type conversion
         if self.problem is NULL:
             raise InvalidProblemException()
@@ -658,7 +662,7 @@ cdef class Problem:
 
     def add_observer(self, observer):
         """`add_observer(self, observer: Observer)`, see also `Observer`.
-        
+
         `observer` can be `None`, in which case nothing is done. 
         """
         if observer:
