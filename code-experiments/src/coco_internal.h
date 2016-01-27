@@ -148,7 +148,7 @@ struct coco_problem {
 struct coco_observer {
 
   int is_active;         /**< @brief Whether the observer is active (the logger will log some output). */
-  char *output_folder;   /**< @brief Name of the output folder. */
+  char *result_folder;   /**< @brief Name of the result folder. */
   char *algorithm_name;  /**< @brief Name of the algorithm to be used in logger output. */
   char *algorithm_info;  /**< @brief Additional information on the algorithm to be used in logger output. */
   int precision_x;       /**< @brief Output precision for decision variables. */
