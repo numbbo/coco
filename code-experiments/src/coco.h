@@ -61,14 +61,6 @@ struct coco_problem;
  * See coco_problem for more information on its fields. */
 typedef struct coco_problem coco_problem_t;
 
-/**
- * @brief The COCO optimizer type.
- *
- * This is a template for optimizers - functions, which take a COCO problem as input and don't return any
- * value. If such a function exists, it can be used in the coco_run_benchmark function to run the benchmark.
- */
-typedef void (*coco_optimizer_t)(coco_problem_t *problem);
-
 /** @brief Structure containing a COCO suite. */
 struct coco_suite;
 
@@ -102,16 +94,6 @@ typedef struct coco_random_state coco_random_state_t;
  * @name Methods regarding COCO suite
  */
 /**@{*/
-
-/**
- * @brief Runs the benchmark.
- */
-void coco_run_benchmark(const char *suite_name,
-                        const char *suite_instance,
-                        const char *suite_options,
-                        const char *observer_name,
-                        const char *observer_options,
-                        coco_optimizer_t optimizer);
 
 /**
  * @brief Constructs a COCO suite.
