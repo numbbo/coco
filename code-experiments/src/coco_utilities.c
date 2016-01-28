@@ -639,3 +639,27 @@ static int coco_double_almost_equal(const double a, const double b, const double
 /**@}*/
 
 /***********************************************************************************************************/
+
+/**
+ * @name Methods handling time
+ */
+/**@{*/
+
+/**
+ * @brief Returns the current time as a string.
+ *
+ * The caller is responsible for freeing the allocated memory using coco_free_memory().
+ */
+static char *coco_current_time_get_string(void) {
+  time_t timer;
+  char *time_string = coco_allocate_string(30);
+  struct tm* tm_info;
+  time(&timer);
+  tm_info = localtime(&timer);
+  assert(tm_info != NULL);
+  strftime(time_string, 30, "%d.%m.%y %H:%M:%S", tm_info);
+  return time_string;
+}
+/**@}*/
+
+/***********************************************************************************************************/
