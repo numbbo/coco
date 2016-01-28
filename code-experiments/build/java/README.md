@@ -1,3 +1,6 @@
+NumBBO/CoCO Framework in Java (Experimental Part)
+=================================================
+
 If you have setup and tested everything once with `python do.py run-java`, 
 see [here](https://github.com/numbbo/coco/blob/master/README.md), 
 type:
@@ -10,14 +13,13 @@ to (re-)compile the example experiment and
 
 to run it. Then change `ExampleExperiment.java` as needed.  
 
+Details
+-------
 
-DETAILS
-=======
-
-## Content of build/java directory
+### Content of the build/java folder
 
 
-build/java: contains necessary source files to generate the shared library
+This folder contains necessary source files to generate the shared library
 for calling coco C funtions and an example of testing a java optimizer on
 the coco benchmark
 
@@ -33,7 +35,7 @@ Files:
 
 *****************************************************
 
-## Compilation without `python do.py`
+### Compilation without `python do.py`
 
 #### for Linux and OSX (tested on a Mac OS X version 10.9.5)
 For generating the shared library, under build/java do:

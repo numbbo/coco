@@ -209,9 +209,8 @@ suite_instance = ""  # 'dimensions: 2,3,5,10,20 instance_idx: 1-5'
 suite_options = ""
 observer_name = suite_name
 observer_options = (
-    ' result_folder: ' +
-    os.path.join('exdata', '%s_on_%s_budget%d '
-                 % (SOLVER.__name__, suite_name, budget_multiplier)) +
+    ' result_folder: %s_on_%s_budget%d '
+                 % (SOLVER.__name__, suite_name, budget_multiplier) +
     ' algorithm_name: %s ' % SOLVER.__name__ +
     ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
 ######################### END CHANGE HERE ####################################
