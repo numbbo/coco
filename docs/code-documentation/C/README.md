@@ -15,9 +15,9 @@ In order to allow for easier maintenance and further extensions of the COCO plat
 entirely from 2014 till 2016. Now, a single implementation in ANSI C (aka C89) is used and called from
 the other languages to conduct the experiments. This documentation of the COCO C code serves therefore
 as the basic reference for:
-- How to conduct benchmarking experiments in C
-- How to write new test functions and combine them into test suites
-- How to write additional performance indicators and logging functionality
+- [How to conduct benchmarking experiments in C](#benchmarking)
+- [How to write new test functions and combine them into test suites](#new-suites)
+- [How to write additional performance indicators and logging functionality](#new-indicators)
 
 __Pointers to the source code and other documentation__
 
@@ -29,7 +29,7 @@ http://numbbo.github.io/bbob-biobj-functions-doc
 How to conduct experiments in all supported languages is described at
 http://numbbo.github.io/bbob-biobj-experiments-doc (coming soon)
 
-## How to conduct benchmarking experiments in C 
+## How to conduct benchmarking experiments in C <a name="benchmarking"></a>
 
 At this point we assume that the ``example_experiment`` in C is running on your machine (see the 
 [getting started guide](https://github.com/numbbo/coco/blob/master/README.md#getting-started) if you 
@@ -209,10 +209,10 @@ To learn more about the problem, you can access its properties in the following 
 See the ``coco.h`` file for more information on these and other functions you can use to interface 
 COCO problem and other COCO structures. 
 
-## How to write new test functions and combine them into test suites
+## How to write new test functions and combine them into test suites <a name="new-suites"></a>
 
 COMING SOON...
 
-## How to write additional performance indicators and logging functionality
+## How to write additional performance indicators and logging functionality <a name="new-indicators"></a>
 
 COMING SOON...
