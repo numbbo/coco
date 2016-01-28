@@ -131,8 +131,9 @@ The observer controls the logging that is performed within the benchmark. Some o
 general, while others are specific to the chosen observer. 
 
 Possible keys and values for the general ``observer_options`` are:
-- ``result_folder: NAME``, determines the output folder. If the folder with the given name already 
-exists, first NAME_001 will be tried, then NAME_002 and so on. The default value is "results".
+- ``result_folder: NAME``, determines the folder within the "exdata" folder into which the results will 
+be output. If the folder with the given name already exists, first NAME_001 will be tried, then NAME_002 
+and so on. The default value is "default".
 - ``algorithm_name: NAME``, where ``NAME`` is a short name of the algorithm that will be used in plots 
 (no spaces are allowed). The default value is "ALG".
 - ``algorithm_info: STRING`` stores the description of the algorithm. If it contains spaces, it must be 
