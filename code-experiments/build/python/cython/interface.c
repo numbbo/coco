@@ -764,7 +764,7 @@ typedef npy_cdouble __pyx_t_5numpy_complex_t;
 struct __pyx_opt_args_6cocoex_9interface_Problem_init;
 struct __pyx_opt_args_6cocoex_9interface_7Problem__initialize;
 
-/* "cython/interface.pyx":561
+/* "cython/interface.pyx":562
  *             coco_observer_free(self._observer)
  * 
  * cdef Problem_init(coco_problem_t* problem, free=True, suite_name=None):             # <<<<<<<<<<<<<<
@@ -777,7 +777,7 @@ struct __pyx_opt_args_6cocoex_9interface_Problem_init {
   PyObject *suite_name;
 };
 
-/* "cython/interface.pyx":594
+/* "cython/interface.pyx":595
  *         cdef np.npy_intp shape[1]
  *         self.initialized = False  # all done in _initialize
  *     cdef _initialize(self, coco_problem_t* problem, free=True):             # <<<<<<<<<<<<<<
@@ -789,7 +789,7 @@ struct __pyx_opt_args_6cocoex_9interface_7Problem__initialize {
   PyObject *free;
 };
 
-/* "cython/interface.pyx":68
+/* "cython/interface.pyx":69
  * cdef coco_observer_t* _current_observer
  * 
  * cdef class Suite:             # <<<<<<<<<<<<<<
@@ -815,7 +815,7 @@ struct __pyx_obj_6cocoex_9interface_Suite {
 };
 
 
-/* "cython/interface.pyx":480
+/* "cython/interface.pyx":481
  *             s is self or s.free()
  * 
  * cdef class Observer:             # <<<<<<<<<<<<<<
@@ -831,7 +831,7 @@ struct __pyx_obj_6cocoex_9interface_Observer {
 };
 
 
-/* "cython/interface.pyx":570
+/* "cython/interface.pyx":571
  *     res._suite_name = suite_name
  *     return res._initialize(problem, free)
  * cdef class Problem:             # <<<<<<<<<<<<<<
@@ -856,7 +856,7 @@ struct __pyx_obj_6cocoex_9interface_Problem {
 };
 
 
-/* "cython/interface.pyx":455
+/* "cython/interface.pyx":456
  *         return len(self._indices)
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -875,7 +875,7 @@ struct __pyx_obj_6cocoex_9interface___pyx_scope_struct____iter__ {
 
 
 
-/* "cython/interface.pyx":68
+/* "cython/interface.pyx":69
  * cdef coco_observer_t* _current_observer
  * 
  * cdef class Suite:             # <<<<<<<<<<<<<<
@@ -889,7 +889,7 @@ struct __pyx_vtabstruct_6cocoex_9interface_Suite {
 static struct __pyx_vtabstruct_6cocoex_9interface_Suite *__pyx_vtabptr_6cocoex_9interface_Suite;
 
 
-/* "cython/interface.pyx":570
+/* "cython/interface.pyx":571
  *     res._suite_name = suite_name
  *     return res._initialize(problem, free)
  * cdef class Problem:             # <<<<<<<<<<<<<<
@@ -1209,6 +1209,8 @@ static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *);
 
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
+
 #if CYTHON_CCOMPLEX
   #ifdef __cplusplus
     #define __Pyx_CREAL(z) ((z).real())
@@ -1306,8 +1308,6 @@ static CYTHON_INLINE __pyx_t_double_complex __pyx_t_double_complex_from_parts(do
         static CYTHON_INLINE __pyx_t_double_complex __Pyx_c_pow(__pyx_t_double_complex, __pyx_t_double_complex);
     #endif
 #endif
-
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
 
@@ -1539,10 +1539,11 @@ static char __pyx_k_bbob_largescale[] = "bbob-largescale";
 static char __pyx_k_current_problem[] = "current_problem";
 static char __pyx_k_exception_value[] = "exception_value";
 static char __pyx_k_cocoex_interface[] = "cocoex.interface";
+static char __pyx_k_final_target_hit[] = "final_target_hit";
 static char __pyx_k_cocoex_exceptions[] = "cocoex.exceptions";
 static char __pyx_k_known_suite_names[] = "known_suite_names";
 static char __pyx_k_list_of_observers[] = "list_of_observers";
-static char __pyx_k_Suite_ids_line_332[] = "Suite.ids (line 332)";
+static char __pyx_k_Suite_ids_line_333[] = "Suite.ids (line 333)";
 static char __pyx_k_NotImplementedError[] = "NotImplementedError";
 static char __pyx_k_known_suite_names_2[] = "_known_suite_names";
 static char __pyx_k_number_of_variables[] = "number_of_variables";
@@ -1553,14 +1554,14 @@ static char __pyx_k_best_observed_fvalue1[] = "best_observed_fvalue1";
 static char __pyx_k_number_of_constraints[] = "number_of_constraints";
 static char __pyx_k_NoSuchProblemException[] = "NoSuchProblemException";
 static char __pyx_k_InvalidProblemException[] = "InvalidProblemException";
-static char __pyx_k_Observer_observe_line_507[] = "Observer.observe (line 507)";
+static char __pyx_k_Observer_observe_line_508[] = "Observer.observe (line 508)";
 static char __pyx_k_finalized_invalid_problem[] = "finalized/invalid problem";
 static char __pyx_k_No_suite_with_name_s_found[] = "No suite with name '%s' found";
-static char __pyx_k_Suite_get_problem_line_268[] = "Suite.get_problem (line 268)";
+static char __pyx_k_Suite_get_problem_line_269[] = "Suite.get_problem (line 269)";
 static char __pyx_k_Problem_already_initialized[] = "Problem already initialized";
 static char __pyx_k_finalized_invalid_problem_2[] = "<finalized/invalid problem>";
 static char __pyx_k_ndarray_is_not_C_contiguous[] = "ndarray is not C contiguous";
-static char __pyx_k_Suite_current_index_line_385[] = "Suite.current_index (line 385)";
+static char __pyx_k_Suite_current_index_line_386[] = "Suite.current_index (line 386)";
 static char __pyx_k_update_current_observer_global[] = "_update_current_observer_global";
 static char __pyx_k_Suite_s_s_s_with_d_problem_s_in[] = "Suite(\"%s\", \"%s\", \"%s\") with %d problem%s in dimension%s %s";
 static char __pyx_k_Users_hansen_git_coco_code_expe[] = "/Users/hansen/git/coco/code-experiments/build/python/cython/interface.pyx";
@@ -1591,15 +1592,15 @@ static PyObject *__pyx_n_s_NoSuchSuiteException;
 static PyObject *__pyx_kp_u_No_suite_with_name_s_found;
 static PyObject *__pyx_kp_u_Non_native_byte_order_not_suppor;
 static PyObject *__pyx_n_s_NotImplementedError;
-static PyObject *__pyx_kp_u_Observer_observe_line_507;
+static PyObject *__pyx_kp_u_Observer_observe_line_508;
 static PyObject *__pyx_kp_u_Problem_already_initialized;
 static PyObject *__pyx_n_s_RuntimeError;
 static PyObject *__pyx_n_s_StopIteration;
 static PyObject *__pyx_n_s_Suite___iter;
-static PyObject *__pyx_kp_u_Suite_current_index_line_385;
-static PyObject *__pyx_kp_u_Suite_get_problem_line_268;
+static PyObject *__pyx_kp_u_Suite_current_index_line_386;
+static PyObject *__pyx_kp_u_Suite_get_problem_line_269;
 static PyObject *__pyx_kp_u_Suite_has_been_finalized_free_ed;
-static PyObject *__pyx_kp_u_Suite_ids_line_332;
+static PyObject *__pyx_kp_u_Suite_ids_line_333;
 static PyObject *__pyx_kp_u_Suite_r_r_r;
 static PyObject *__pyx_kp_u_Suite_s_s_s_with_d_problem_s_in;
 static PyObject *__pyx_n_s_TypeError;
@@ -1638,6 +1639,7 @@ static PyObject *__pyx_n_s_evaluations;
 static PyObject *__pyx_n_s_exception_type;
 static PyObject *__pyx_n_s_exception_value;
 static PyObject *__pyx_n_s_final_target_fvalue1;
+static PyObject *__pyx_n_s_final_target_hit;
 static PyObject *__pyx_kp_u_finalized_invalid_problem;
 static PyObject *__pyx_kp_u_finalized_invalid_problem_2;
 static PyObject *__pyx_n_s_find;
@@ -1761,20 +1763,21 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_16number_of_constraints(st
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_18lower_bounds(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_20upper_bounds(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_22evaluations(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_24final_target_fvalue1(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_26best_observed_fvalue1(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_28free(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_force); /* proto */
-static void __pyx_pf_6cocoex_9interface_7Problem_30__dealloc__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_x); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_34id(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_36name(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_38index(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_40suite(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_42info(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__repr__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_48__enter__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_50__exit__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_exception_type, CYTHON_UNUSED PyObject *__pyx_v_exception_value, CYTHON_UNUSED PyObject *__pyx_v_traceback); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_24final_target_hit(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_26final_target_fvalue1(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_28best_observed_fvalue1(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_30free(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_force); /* proto */
+static void __pyx_pf_6cocoex_9interface_7Problem_32__dealloc__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_34__call__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_x); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_36id(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_38name(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_40index(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_42suite(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44info(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__str__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_48__repr__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_50__enter__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_52__exit__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_exception_type, CYTHON_UNUSED PyObject *__pyx_v_exception_value, CYTHON_UNUSED PyObject *__pyx_v_traceback); /* proto */
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_13_lower_bounds___get__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
 static int __pyx_pf_6cocoex_9interface_7Problem_13_lower_bounds_2__set__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static int __pyx_pf_6cocoex_9interface_7Problem_13_lower_bounds_4__del__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
@@ -1811,8 +1814,8 @@ static PyObject *__pyx_tuple__17;
 static PyObject *__pyx_tuple__18;
 static PyObject *__pyx_codeobj__19;
 
-/* "cython/interface.pyx":58
- *     double coco_problem_get_best_observed_fvalue1(coco_problem_t *problem)
+/* "cython/interface.pyx":59
+ *     int coco_problem_final_target_hit(const coco_problem_t *problem)
  * 
  * cdef bytes _bstring(s):             # <<<<<<<<<<<<<<
  *     if type(s) is bytes:
@@ -1831,7 +1834,7 @@ static PyObject *__pyx_f_6cocoex_9interface__bstring(PyObject *__pyx_v_s) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_bstring", 0);
 
-  /* "cython/interface.pyx":59
+  /* "cython/interface.pyx":60
  * 
  * cdef bytes _bstring(s):
  *     if type(s) is bytes:             # <<<<<<<<<<<<<<
@@ -1842,7 +1845,7 @@ static PyObject *__pyx_f_6cocoex_9interface__bstring(PyObject *__pyx_v_s) {
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "cython/interface.pyx":60
+    /* "cython/interface.pyx":61
  * cdef bytes _bstring(s):
  *     if type(s) is bytes:
  *         return <bytes>s             # <<<<<<<<<<<<<<
@@ -1854,7 +1857,7 @@ static PyObject *__pyx_f_6cocoex_9interface__bstring(PyObject *__pyx_v_s) {
     __pyx_r = ((PyObject*)__pyx_v_s);
     goto __pyx_L0;
 
-    /* "cython/interface.pyx":59
+    /* "cython/interface.pyx":60
  * 
  * cdef bytes _bstring(s):
  *     if type(s) is bytes:             # <<<<<<<<<<<<<<
@@ -1863,7 +1866,7 @@ static PyObject *__pyx_f_6cocoex_9interface__bstring(PyObject *__pyx_v_s) {
  */
   }
 
-  /* "cython/interface.pyx":61
+  /* "cython/interface.pyx":62
  *     if type(s) is bytes:
  *         return <bytes>s
  *     elif isinstance(s, unicode):             # <<<<<<<<<<<<<<
@@ -1874,7 +1877,7 @@ static PyObject *__pyx_f_6cocoex_9interface__bstring(PyObject *__pyx_v_s) {
   __pyx_t_1 = (__pyx_t_2 != 0);
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":62
+    /* "cython/interface.pyx":63
  *         return <bytes>s
  *     elif isinstance(s, unicode):
  *         return s.encode('ascii')             # <<<<<<<<<<<<<<
@@ -1882,17 +1885,17 @@ static PyObject *__pyx_f_6cocoex_9interface__bstring(PyObject *__pyx_v_s) {
  *         raise TypeError()
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_s, __pyx_n_s_encode); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_s, __pyx_n_s_encode); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 63; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 63; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (!(likely(PyBytes_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "bytes", Py_TYPE(__pyx_t_4)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!(likely(PyBytes_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "bytes", Py_TYPE(__pyx_t_4)->tp_name), 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 63; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_r = ((PyObject*)__pyx_t_4);
     __pyx_t_4 = 0;
     goto __pyx_L0;
 
-    /* "cython/interface.pyx":61
+    /* "cython/interface.pyx":62
  *     if type(s) is bytes:
  *         return <bytes>s
  *     elif isinstance(s, unicode):             # <<<<<<<<<<<<<<
@@ -1901,7 +1904,7 @@ static PyObject *__pyx_f_6cocoex_9interface__bstring(PyObject *__pyx_v_s) {
  */
   }
 
-  /* "cython/interface.pyx":64
+  /* "cython/interface.pyx":65
  *         return s.encode('ascii')
  *     else:
  *         raise TypeError()             # <<<<<<<<<<<<<<
@@ -1909,15 +1912,15 @@ static PyObject *__pyx_f_6cocoex_9interface__bstring(PyObject *__pyx_v_s) {
  * cdef coco_observer_t* _current_observer
  */
   /*else*/ {
-    __pyx_t_4 = __Pyx_PyObject_CallNoArg(__pyx_builtin_TypeError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 64; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_CallNoArg(__pyx_builtin_TypeError); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_Raise(__pyx_t_4, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 64; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "cython/interface.pyx":58
- *     double coco_problem_get_best_observed_fvalue1(coco_problem_t *problem)
+  /* "cython/interface.pyx":59
+ *     int coco_problem_final_target_hit(const coco_problem_t *problem)
  * 
  * cdef bytes _bstring(s):             # <<<<<<<<<<<<<<
  *     if type(s) is bytes:
@@ -1936,7 +1939,7 @@ static PyObject *__pyx_f_6cocoex_9interface__bstring(PyObject *__pyx_v_s) {
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":172
+/* "cython/interface.pyx":173
  *     cdef initialized
  * 
  *     def __cinit__(self, suite_name, suite_instance, suite_options):             # <<<<<<<<<<<<<<
@@ -1977,16 +1980,16 @@ static int __pyx_pw_6cocoex_9interface_5Suite_1__cinit__(PyObject *__pyx_v_self,
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_suite_instance)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 172; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 173; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_suite_options)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 172; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 173; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 172; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 173; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -2001,7 +2004,7 @@ static int __pyx_pw_6cocoex_9interface_5Suite_1__cinit__(PyObject *__pyx_v_self,
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 172; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 173; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("cocoex.interface.Suite.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -2025,14 +2028,14 @@ static int __pyx_pf_6cocoex_9interface_5Suite___cinit__(struct __pyx_obj_6cocoex
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "cython/interface.pyx":174
+  /* "cython/interface.pyx":175
  *     def __cinit__(self, suite_name, suite_instance, suite_options):
  *         cdef np.npy_intp shape[1]  # probably completely useless
  *         self._name = _bstring(suite_name)             # <<<<<<<<<<<<<<
  *         self._instance = _bstring(suite_instance if suite_instance is not None else "")
  *         self._options = _bstring(suite_options if suite_options is not None else "")
  */
-  __pyx_t_1 = __pyx_f_6cocoex_9interface__bstring(__pyx_v_suite_name); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 174; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_6cocoex_9interface__bstring(__pyx_v_suite_name); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 175; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v_self->_name);
@@ -2040,7 +2043,7 @@ static int __pyx_pf_6cocoex_9interface_5Suite___cinit__(struct __pyx_obj_6cocoex
   __pyx_v_self->_name = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":175
+  /* "cython/interface.pyx":176
  *         cdef np.npy_intp shape[1]  # probably completely useless
  *         self._name = _bstring(suite_name)
  *         self._instance = _bstring(suite_instance if suite_instance is not None else "")             # <<<<<<<<<<<<<<
@@ -2055,7 +2058,7 @@ static int __pyx_pf_6cocoex_9interface_5Suite___cinit__(struct __pyx_obj_6cocoex
     __Pyx_INCREF(__pyx_kp_u__2);
     __pyx_t_1 = __pyx_kp_u__2;
   }
-  __pyx_t_3 = __pyx_f_6cocoex_9interface__bstring(__pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 175; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_f_6cocoex_9interface__bstring(__pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_GIVEREF(__pyx_t_3);
@@ -2064,7 +2067,7 @@ static int __pyx_pf_6cocoex_9interface_5Suite___cinit__(struct __pyx_obj_6cocoex
   __pyx_v_self->_instance = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "cython/interface.pyx":176
+  /* "cython/interface.pyx":177
  *         self._name = _bstring(suite_name)
  *         self._instance = _bstring(suite_instance if suite_instance is not None else "")
  *         self._options = _bstring(suite_options if suite_options is not None else "")             # <<<<<<<<<<<<<<
@@ -2079,7 +2082,7 @@ static int __pyx_pf_6cocoex_9interface_5Suite___cinit__(struct __pyx_obj_6cocoex
     __Pyx_INCREF(__pyx_kp_u__2);
     __pyx_t_3 = __pyx_kp_u__2;
   }
-  __pyx_t_1 = __pyx_f_6cocoex_9interface__bstring(__pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_6cocoex_9interface__bstring(__pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 177; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_GIVEREF(__pyx_t_1);
@@ -2088,7 +2091,7 @@ static int __pyx_pf_6cocoex_9interface_5Suite___cinit__(struct __pyx_obj_6cocoex
   __pyx_v_self->_options = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":177
+  /* "cython/interface.pyx":178
  *         self._instance = _bstring(suite_instance if suite_instance is not None else "")
  *         self._options = _bstring(suite_options if suite_options is not None else "")
  *         self._current_problem = NULL             # <<<<<<<<<<<<<<
@@ -2097,7 +2100,7 @@ static int __pyx_pf_6cocoex_9interface_5Suite___cinit__(struct __pyx_obj_6cocoex
  */
   __pyx_v_self->_current_problem = NULL;
 
-  /* "cython/interface.pyx":178
+  /* "cython/interface.pyx":179
  *         self._options = _bstring(suite_options if suite_options is not None else "")
  *         self._current_problem = NULL
  *         self.current_problem_ = None             # <<<<<<<<<<<<<<
@@ -2110,7 +2113,7 @@ static int __pyx_pf_6cocoex_9interface_5Suite___cinit__(struct __pyx_obj_6cocoex
   __Pyx_DECREF(__pyx_v_self->current_problem_);
   __pyx_v_self->current_problem_ = Py_None;
 
-  /* "cython/interface.pyx":179
+  /* "cython/interface.pyx":180
  *         self._current_problem = NULL
  *         self.current_problem_ = None
  *         self._current_index = None             # <<<<<<<<<<<<<<
@@ -2123,7 +2126,7 @@ static int __pyx_pf_6cocoex_9interface_5Suite___cinit__(struct __pyx_obj_6cocoex
   __Pyx_DECREF(__pyx_v_self->_current_index);
   __pyx_v_self->_current_index = Py_None;
 
-  /* "cython/interface.pyx":180
+  /* "cython/interface.pyx":181
  *         self.current_problem_ = None
  *         self._current_index = None
  *         self.initialized = False             # <<<<<<<<<<<<<<
@@ -2136,18 +2139,18 @@ static int __pyx_pf_6cocoex_9interface_5Suite___cinit__(struct __pyx_obj_6cocoex
   __Pyx_DECREF(__pyx_v_self->initialized);
   __pyx_v_self->initialized = Py_False;
 
-  /* "cython/interface.pyx":181
+  /* "cython/interface.pyx":182
  *         self._current_index = None
  *         self.initialized = False
  *         self._initialize()             # <<<<<<<<<<<<<<
  *         assert self.initialized
  *     cdef _initialize(self):
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_6cocoex_9interface_Suite *)__pyx_v_self->__pyx_vtab)->_initialize(__pyx_v_self); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 181; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = ((struct __pyx_vtabstruct_6cocoex_9interface_Suite *)__pyx_v_self->__pyx_vtab)->_initialize(__pyx_v_self); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 182; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":182
+  /* "cython/interface.pyx":183
  *         self.initialized = False
  *         self._initialize()
  *         assert self.initialized             # <<<<<<<<<<<<<<
@@ -2156,15 +2159,15 @@ static int __pyx_pf_6cocoex_9interface_5Suite___cinit__(struct __pyx_obj_6cocoex
  */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(!Py_OptimizeFlag)) {
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_self->initialized); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 182; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_self->initialized); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 183; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     if (unlikely(!__pyx_t_2)) {
       PyErr_SetNone(PyExc_AssertionError);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 182; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 183; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
   }
   #endif
 
-  /* "cython/interface.pyx":172
+  /* "cython/interface.pyx":173
  *     cdef initialized
  * 
  *     def __cinit__(self, suite_name, suite_instance, suite_options):             # <<<<<<<<<<<<<<
@@ -2185,7 +2188,7 @@ static int __pyx_pf_6cocoex_9interface_5Suite___cinit__(struct __pyx_obj_6cocoex
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":183
+/* "cython/interface.pyx":184
  *         self._initialize()
  *         assert self.initialized
  *     cdef _initialize(self):             # <<<<<<<<<<<<<<
@@ -2224,24 +2227,24 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_initialize", 0);
 
-  /* "cython/interface.pyx":191
+  /* "cython/interface.pyx":192
  *         cdef bytes _old_level
  * 
  *         if self.initialized:             # <<<<<<<<<<<<<<
  *             self.reset()
  *         self._ids = []
  */
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_self->initialized); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 191; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_self->initialized); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":192
+    /* "cython/interface.pyx":193
  * 
  *         if self.initialized:
  *             self.reset()             # <<<<<<<<<<<<<<
  *         self._ids = []
  *         self._indices = []
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_reset); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_reset); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 193; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_4 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_3))) {
@@ -2254,16 +2257,16 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
       }
     }
     if (__pyx_t_4) {
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 193; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     } else {
-      __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 193; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "cython/interface.pyx":191
+    /* "cython/interface.pyx":192
  *         cdef bytes _old_level
  * 
  *         if self.initialized:             # <<<<<<<<<<<<<<
@@ -2272,14 +2275,14 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
  */
   }
 
-  /* "cython/interface.pyx":193
+  /* "cython/interface.pyx":194
  *         if self.initialized:
  *             self.reset()
  *         self._ids = []             # <<<<<<<<<<<<<<
  *         self._indices = []
  *         self._names = []
  */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 193; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 194; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_2);
   __Pyx_GOTREF(__pyx_v_self->_ids);
@@ -2287,14 +2290,14 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
   __pyx_v_self->_ids = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "cython/interface.pyx":194
+  /* "cython/interface.pyx":195
  *             self.reset()
  *         self._ids = []
  *         self._indices = []             # <<<<<<<<<<<<<<
  *         self._names = []
  *         self._dimensions = []
  */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 194; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 195; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_2);
   __Pyx_GOTREF(__pyx_v_self->_indices);
@@ -2302,14 +2305,14 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
   __pyx_v_self->_indices = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "cython/interface.pyx":195
+  /* "cython/interface.pyx":196
  *         self._ids = []
  *         self._indices = []
  *         self._names = []             # <<<<<<<<<<<<<<
  *         self._dimensions = []
  *         self._number_of_objectives = []
  */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 195; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 196; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_2);
   __Pyx_GOTREF(__pyx_v_self->_names);
@@ -2317,14 +2320,14 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
   __pyx_v_self->_names = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "cython/interface.pyx":196
+  /* "cython/interface.pyx":197
  *         self._indices = []
  *         self._names = []
  *         self._dimensions = []             # <<<<<<<<<<<<<<
  *         self._number_of_objectives = []
  *         if str(self._name) not in [str(n) for n in known_suite_names]:
  */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 196; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 197; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_2);
   __Pyx_GOTREF(__pyx_v_self->_dimensions);
@@ -2332,14 +2335,14 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
   __pyx_v_self->_dimensions = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "cython/interface.pyx":197
+  /* "cython/interface.pyx":198
  *         self._names = []
  *         self._dimensions = []
  *         self._number_of_objectives = []             # <<<<<<<<<<<<<<
  *         if str(self._name) not in [str(n) for n in known_suite_names]:
  *             raise NoSuchSuiteException("""Unkown benchmark suite name "%s".
  */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 197; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_2);
   __Pyx_GOTREF(__pyx_v_self->_number_of_objectives);
@@ -2347,32 +2350,32 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
   __pyx_v_self->_number_of_objectives = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "cython/interface.pyx":198
+  /* "cython/interface.pyx":199
  *         self._dimensions = []
  *         self._number_of_objectives = []
  *         if str(self._name) not in [str(n) for n in known_suite_names]:             # <<<<<<<<<<<<<<
  *             raise NoSuchSuiteException("""Unkown benchmark suite name "%s".
  * Known suite names are %s.
  */
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_self->_name);
   __Pyx_GIVEREF(__pyx_v_self->_name);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_self->_name);
-  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_known_suite_names); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_known_suite_names); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   if (likely(PyList_CheckExact(__pyx_t_4)) || PyTuple_CheckExact(__pyx_t_4)) {
     __pyx_t_5 = __pyx_t_4; __Pyx_INCREF(__pyx_t_5); __pyx_t_6 = 0;
     __pyx_t_7 = NULL;
   } else {
-    __pyx_t_6 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_7 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   for (;;) {
@@ -2380,17 +2383,17 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
       if (likely(PyList_CheckExact(__pyx_t_5))) {
         if (__pyx_t_6 >= PyList_GET_SIZE(__pyx_t_5)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_6); __Pyx_INCREF(__pyx_t_4); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_6); __Pyx_INCREF(__pyx_t_4); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_5, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_4 = PySequence_ITEM(__pyx_t_5, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_4);
         #endif
       } else {
         if (__pyx_t_6 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_6); __Pyx_INCREF(__pyx_t_4); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_6); __Pyx_INCREF(__pyx_t_4); __pyx_t_6++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_5, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_4 = PySequence_ITEM(__pyx_t_5, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_4);
         #endif
       }
@@ -2400,7 +2403,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         break;
       }
@@ -2408,52 +2411,52 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
     }
     __Pyx_XDECREF_SET(__pyx_v_n, __pyx_t_4);
     __pyx_t_4 = 0;
-    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_INCREF(__pyx_v_n);
     __Pyx_GIVEREF(__pyx_v_n);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_n);
-    __pyx_t_8 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_4, NULL); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_4, NULL); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_8))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_8))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_1 = (__Pyx_PySequence_ContainsTF(__pyx_t_3, __pyx_t_2, Py_NE)); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = (__Pyx_PySequence_ContainsTF(__pyx_t_3, __pyx_t_2, Py_NE)); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_9 = (__pyx_t_1 != 0);
   if (__pyx_t_9) {
 
-    /* "cython/interface.pyx":199
+    /* "cython/interface.pyx":200
  *         self._number_of_objectives = []
  *         if str(self._name) not in [str(n) for n in known_suite_names]:
  *             raise NoSuchSuiteException("""Unkown benchmark suite name "%s".             # <<<<<<<<<<<<<<
  * Known suite names are %s.
  * If "%s" was not a typo, you can add the desired name to `known_suite_names`::
  */
-    __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_NoSuchSuiteException); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_NoSuchSuiteException); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 200; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
 
-    /* "cython/interface.pyx":210
+    /* "cython/interface.pyx":211
  * This will crash Python, if the suite "my_name" does in fact not exist. You might
  * also report back a missing name to https://github.com/numbbo/coco/issues
  * """ % (self._name, str(known_suite_names), self._name))             # <<<<<<<<<<<<<<
  *         try:
  *             suite = coco_suite(self._name, self._instance, self._options)
  */
-    __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_known_suite_names); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 210; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_known_suite_names); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 211; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_8 = PyTuple_New(1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 210; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = PyTuple_New(1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 211; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_GIVEREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_5);
     __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_8, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 210; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_8, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 211; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = PyTuple_New(3); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 210; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = PyTuple_New(3); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 211; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_INCREF(__pyx_v_self->_name);
     __Pyx_GIVEREF(__pyx_v_self->_name);
@@ -2464,7 +2467,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
     __Pyx_GIVEREF(__pyx_v_self->_name);
     PyTuple_SET_ITEM(__pyx_t_8, 2, __pyx_v_self->_name);
     __pyx_t_5 = 0;
-    __pyx_t_5 = PyUnicode_Format(__pyx_kp_u_Unkown_benchmark_suite_name_s_Kn, __pyx_t_8); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 210; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = PyUnicode_Format(__pyx_kp_u_Unkown_benchmark_suite_name_s_Kn, __pyx_t_8); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 211; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_t_8 = NULL;
@@ -2478,26 +2481,26 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
       }
     }
     if (!__pyx_t_8) {
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 200; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_GOTREF(__pyx_t_2);
     } else {
-      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 200; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_GIVEREF(__pyx_t_8); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_8); __pyx_t_8 = NULL;
       __Pyx_GIVEREF(__pyx_t_5);
       PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_t_5);
       __pyx_t_5 = 0;
-      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 200; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 199; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 200; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "cython/interface.pyx":198
+    /* "cython/interface.pyx":199
  *         self._dimensions = []
  *         self._number_of_objectives = []
  *         if str(self._name) not in [str(n) for n in known_suite_names]:             # <<<<<<<<<<<<<<
@@ -2506,7 +2509,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
  */
   }
 
-  /* "cython/interface.pyx":211
+  /* "cython/interface.pyx":212
  * also report back a missing name to https://github.com/numbbo/coco/issues
  * """ % (self._name, str(known_suite_names), self._name))
  *         try:             # <<<<<<<<<<<<<<
@@ -2520,19 +2523,19 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
     __Pyx_XGOTREF(__pyx_t_12);
     /*try:*/ {
 
-      /* "cython/interface.pyx":212
+      /* "cython/interface.pyx":213
  * """ % (self._name, str(known_suite_names), self._name))
  *         try:
  *             suite = coco_suite(self._name, self._instance, self._options)             # <<<<<<<<<<<<<<
  *         except:
  *             raise NoSuchSuiteException("No suite with name '%s' found" % self._name)
  */
-      __pyx_t_13 = __Pyx_PyObject_AsString(__pyx_v_self->_name); if (unlikely((!__pyx_t_13) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 212; __pyx_clineno = __LINE__; goto __pyx_L7_error;}
-      __pyx_t_14 = __Pyx_PyObject_AsString(__pyx_v_self->_instance); if (unlikely((!__pyx_t_14) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 212; __pyx_clineno = __LINE__; goto __pyx_L7_error;}
-      __pyx_t_15 = __Pyx_PyObject_AsString(__pyx_v_self->_options); if (unlikely((!__pyx_t_15) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 212; __pyx_clineno = __LINE__; goto __pyx_L7_error;}
+      __pyx_t_13 = __Pyx_PyObject_AsString(__pyx_v_self->_name); if (unlikely((!__pyx_t_13) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 213; __pyx_clineno = __LINE__; goto __pyx_L7_error;}
+      __pyx_t_14 = __Pyx_PyObject_AsString(__pyx_v_self->_instance); if (unlikely((!__pyx_t_14) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 213; __pyx_clineno = __LINE__; goto __pyx_L7_error;}
+      __pyx_t_15 = __Pyx_PyObject_AsString(__pyx_v_self->_options); if (unlikely((!__pyx_t_15) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 213; __pyx_clineno = __LINE__; goto __pyx_L7_error;}
       __pyx_v_suite = coco_suite(__pyx_t_13, __pyx_t_14, __pyx_t_15);
 
-      /* "cython/interface.pyx":211
+      /* "cython/interface.pyx":212
  * also report back a missing name to https://github.com/numbbo/coco/issues
  * """ % (self._name, str(known_suite_names), self._name))
  *         try:             # <<<<<<<<<<<<<<
@@ -2551,7 +2554,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "cython/interface.pyx":213
+    /* "cython/interface.pyx":214
  *         try:
  *             suite = coco_suite(self._name, self._instance, self._options)
  *         except:             # <<<<<<<<<<<<<<
@@ -2560,21 +2563,21 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
  */
     /*except:*/ {
       __Pyx_AddTraceback("cocoex.interface.Suite._initialize", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_2, &__pyx_t_3, &__pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 213; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
+      if (__Pyx_GetException(&__pyx_t_2, &__pyx_t_3, &__pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 214; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_GOTREF(__pyx_t_4);
 
-      /* "cython/interface.pyx":214
+      /* "cython/interface.pyx":215
  *             suite = coco_suite(self._name, self._instance, self._options)
  *         except:
  *             raise NoSuchSuiteException("No suite with name '%s' found" % self._name)             # <<<<<<<<<<<<<<
  *         if suite == NULL:
  *             raise NoSuchSuiteException("No suite with name '%s' found" % self._name)
  */
-      __pyx_t_8 = __Pyx_GetModuleGlobalName(__pyx_n_s_NoSuchSuiteException); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 214; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
+      __pyx_t_8 = __Pyx_GetModuleGlobalName(__pyx_n_s_NoSuchSuiteException); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 215; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_16 = PyUnicode_Format(__pyx_kp_u_No_suite_with_name_s_found, __pyx_v_self->_name); if (unlikely(!__pyx_t_16)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 214; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
+      __pyx_t_16 = PyUnicode_Format(__pyx_kp_u_No_suite_with_name_s_found, __pyx_v_self->_name); if (unlikely(!__pyx_t_16)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 215; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
       __Pyx_GOTREF(__pyx_t_16);
       __pyx_t_17 = NULL;
       if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_8))) {
@@ -2587,28 +2590,28 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
         }
       }
       if (!__pyx_t_17) {
-        __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_t_16); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 214; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
+        __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_t_16); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 215; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
         __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
         __Pyx_GOTREF(__pyx_t_5);
       } else {
-        __pyx_t_18 = PyTuple_New(1+1); if (unlikely(!__pyx_t_18)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 214; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
+        __pyx_t_18 = PyTuple_New(1+1); if (unlikely(!__pyx_t_18)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 215; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
         __Pyx_GOTREF(__pyx_t_18);
         __Pyx_GIVEREF(__pyx_t_17); PyTuple_SET_ITEM(__pyx_t_18, 0, __pyx_t_17); __pyx_t_17 = NULL;
         __Pyx_GIVEREF(__pyx_t_16);
         PyTuple_SET_ITEM(__pyx_t_18, 0+1, __pyx_t_16);
         __pyx_t_16 = 0;
-        __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_18, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 214; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
+        __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_18, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 215; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
       }
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
       __Pyx_Raise(__pyx_t_5, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 214; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 215; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
     }
     __pyx_L9_except_error:;
 
-    /* "cython/interface.pyx":211
+    /* "cython/interface.pyx":212
  * also report back a missing name to https://github.com/numbbo/coco/issues
  * """ % (self._name, str(known_suite_names), self._name))
  *         try:             # <<<<<<<<<<<<<<
@@ -2623,7 +2626,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
     __pyx_L14_try_end:;
   }
 
-  /* "cython/interface.pyx":215
+  /* "cython/interface.pyx":216
  *         except:
  *             raise NoSuchSuiteException("No suite with name '%s' found" % self._name)
  *         if suite == NULL:             # <<<<<<<<<<<<<<
@@ -2633,16 +2636,16 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
   __pyx_t_9 = ((__pyx_v_suite == NULL) != 0);
   if (__pyx_t_9) {
 
-    /* "cython/interface.pyx":216
+    /* "cython/interface.pyx":217
  *             raise NoSuchSuiteException("No suite with name '%s' found" % self._name)
  *         if suite == NULL:
  *             raise NoSuchSuiteException("No suite with name '%s' found" % self._name)             # <<<<<<<<<<<<<<
  *         while True:
  *             old_level = log_level('warning')
  */
-    __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_NoSuchSuiteException); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 216; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_NoSuchSuiteException); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 217; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_2 = PyUnicode_Format(__pyx_kp_u_No_suite_with_name_s_found, __pyx_v_self->_name); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 216; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = PyUnicode_Format(__pyx_kp_u_No_suite_with_name_s_found, __pyx_v_self->_name); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 217; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_5 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_3))) {
@@ -2655,26 +2658,26 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
       }
     }
     if (!__pyx_t_5) {
-      __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 216; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 217; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __Pyx_GOTREF(__pyx_t_4);
     } else {
-      __pyx_t_8 = PyTuple_New(1+1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 216; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_8 = PyTuple_New(1+1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 217; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_5); __pyx_t_5 = NULL;
       __Pyx_GIVEREF(__pyx_t_2);
       PyTuple_SET_ITEM(__pyx_t_8, 0+1, __pyx_t_2);
       __pyx_t_2 = 0;
-      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_8, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 216; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_8, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 217; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     }
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_Raise(__pyx_t_4, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 216; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 217; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "cython/interface.pyx":215
+    /* "cython/interface.pyx":216
  *         except:
  *             raise NoSuchSuiteException("No suite with name '%s' found" % self._name)
  *         if suite == NULL:             # <<<<<<<<<<<<<<
@@ -2683,7 +2686,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
  */
   }
 
-  /* "cython/interface.pyx":217
+  /* "cython/interface.pyx":218
  *         if suite == NULL:
  *             raise NoSuchSuiteException("No suite with name '%s' found" % self._name)
  *         while True:             # <<<<<<<<<<<<<<
@@ -2692,22 +2695,22 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
  */
   while (1) {
 
-    /* "cython/interface.pyx":218
+    /* "cython/interface.pyx":219
  *             raise NoSuchSuiteException("No suite with name '%s' found" % self._name)
  *         while True:
  *             old_level = log_level('warning')             # <<<<<<<<<<<<<<
  *             p = coco_suite_get_next_problem(suite, NULL)
  *             log_level(old_level)
  */
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_log_level); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 218; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_log_level); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 219; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 218; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 219; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_XDECREF_SET(__pyx_v_old_level, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":219
+    /* "cython/interface.pyx":220
  *         while True:
  *             old_level = log_level('warning')
  *             p = coco_suite_get_next_problem(suite, NULL)             # <<<<<<<<<<<<<<
@@ -2716,14 +2719,14 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
  */
     __pyx_v_p = coco_suite_get_next_problem(__pyx_v_suite, NULL);
 
-    /* "cython/interface.pyx":220
+    /* "cython/interface.pyx":221
  *             old_level = log_level('warning')
  *             p = coco_suite_get_next_problem(suite, NULL)
  *             log_level(old_level)             # <<<<<<<<<<<<<<
  *             if not p:
  *                 break
  */
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_log_level); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 220; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_log_level); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 221; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_8 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_4))) {
@@ -2736,23 +2739,23 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
       }
     }
     if (!__pyx_t_8) {
-      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_v_old_level); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 220; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_v_old_level); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 221; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
     } else {
-      __pyx_t_2 = PyTuple_New(1+1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 220; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = PyTuple_New(1+1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 221; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_GIVEREF(__pyx_t_8); PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_8); __pyx_t_8 = NULL;
       __Pyx_INCREF(__pyx_v_old_level);
       __Pyx_GIVEREF(__pyx_v_old_level);
       PyTuple_SET_ITEM(__pyx_t_2, 0+1, __pyx_v_old_level);
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 220; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 221; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":221
+    /* "cython/interface.pyx":222
  *             p = coco_suite_get_next_problem(suite, NULL)
  *             log_level(old_level)
  *             if not p:             # <<<<<<<<<<<<<<
@@ -2762,7 +2765,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
     __pyx_t_9 = ((!(__pyx_v_p != 0)) != 0);
     if (__pyx_t_9) {
 
-      /* "cython/interface.pyx":222
+      /* "cython/interface.pyx":223
  *             log_level(old_level)
  *             if not p:
  *                 break             # <<<<<<<<<<<<<<
@@ -2771,7 +2774,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
  */
       goto __pyx_L19_break;
 
-      /* "cython/interface.pyx":221
+      /* "cython/interface.pyx":222
  *             p = coco_suite_get_next_problem(suite, NULL)
  *             log_level(old_level)
  *             if not p:             # <<<<<<<<<<<<<<
@@ -2780,69 +2783,69 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
  */
     }
 
-    /* "cython/interface.pyx":223
+    /* "cython/interface.pyx":224
  *             if not p:
  *                 break
  *             self._indices.append(coco_problem_get_suite_dep_index(p))             # <<<<<<<<<<<<<<
  *             self._ids.append(coco_problem_get_id(p))
  *             self._names.append(coco_problem_get_name(p))
  */
-    __pyx_t_3 = __Pyx_PyInt_FromSize_t(coco_problem_get_suite_dep_index(__pyx_v_p)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 223; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyInt_FromSize_t(coco_problem_get_suite_dep_index(__pyx_v_p)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 224; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_19 = __Pyx_PyObject_Append(__pyx_v_self->_indices, __pyx_t_3); if (unlikely(__pyx_t_19 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 223; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_19 = __Pyx_PyObject_Append(__pyx_v_self->_indices, __pyx_t_3); if (unlikely(__pyx_t_19 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 224; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":224
+    /* "cython/interface.pyx":225
  *                 break
  *             self._indices.append(coco_problem_get_suite_dep_index(p))
  *             self._ids.append(coco_problem_get_id(p))             # <<<<<<<<<<<<<<
  *             self._names.append(coco_problem_get_name(p))
  *             self._dimensions.append(coco_problem_get_dimension(p))
  */
-    __pyx_t_3 = __Pyx_PyStr_FromString(coco_problem_get_id(__pyx_v_p)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 224; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyStr_FromString(coco_problem_get_id(__pyx_v_p)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_19 = __Pyx_PyObject_Append(__pyx_v_self->_ids, __pyx_t_3); if (unlikely(__pyx_t_19 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 224; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_19 = __Pyx_PyObject_Append(__pyx_v_self->_ids, __pyx_t_3); if (unlikely(__pyx_t_19 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":225
+    /* "cython/interface.pyx":226
  *             self._indices.append(coco_problem_get_suite_dep_index(p))
  *             self._ids.append(coco_problem_get_id(p))
  *             self._names.append(coco_problem_get_name(p))             # <<<<<<<<<<<<<<
  *             self._dimensions.append(coco_problem_get_dimension(p))
  *             self._number_of_objectives.append(coco_problem_get_number_of_objectives(p))
  */
-    __pyx_t_3 = __Pyx_PyStr_FromString(coco_problem_get_name(__pyx_v_p)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyStr_FromString(coco_problem_get_name(__pyx_v_p)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_19 = __Pyx_PyObject_Append(__pyx_v_self->_names, __pyx_t_3); if (unlikely(__pyx_t_19 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 225; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_19 = __Pyx_PyObject_Append(__pyx_v_self->_names, __pyx_t_3); if (unlikely(__pyx_t_19 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":226
+    /* "cython/interface.pyx":227
  *             self._ids.append(coco_problem_get_id(p))
  *             self._names.append(coco_problem_get_name(p))
  *             self._dimensions.append(coco_problem_get_dimension(p))             # <<<<<<<<<<<<<<
  *             self._number_of_objectives.append(coco_problem_get_number_of_objectives(p))
  *         coco_suite_free(suite)
  */
-    __pyx_t_3 = __Pyx_PyInt_FromSize_t(coco_problem_get_dimension(__pyx_v_p)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyInt_FromSize_t(coco_problem_get_dimension(__pyx_v_p)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_19 = __Pyx_PyObject_Append(__pyx_v_self->_dimensions, __pyx_t_3); if (unlikely(__pyx_t_19 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 226; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_19 = __Pyx_PyObject_Append(__pyx_v_self->_dimensions, __pyx_t_3); if (unlikely(__pyx_t_19 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":227
+    /* "cython/interface.pyx":228
  *             self._names.append(coco_problem_get_name(p))
  *             self._dimensions.append(coco_problem_get_dimension(p))
  *             self._number_of_objectives.append(coco_problem_get_number_of_objectives(p))             # <<<<<<<<<<<<<<
  *         coco_suite_free(suite)
  *         self.suite = coco_suite(self._name, self._instance, self._options)
  */
-    __pyx_t_3 = __Pyx_PyInt_FromSize_t(coco_problem_get_number_of_objectives(__pyx_v_p)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyInt_FromSize_t(coco_problem_get_number_of_objectives(__pyx_v_p)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 228; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_19 = __Pyx_PyObject_Append(__pyx_v_self->_number_of_objectives, __pyx_t_3); if (unlikely(__pyx_t_19 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 227; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_19 = __Pyx_PyObject_Append(__pyx_v_self->_number_of_objectives, __pyx_t_3); if (unlikely(__pyx_t_19 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 228; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   }
   __pyx_L19_break:;
 
-  /* "cython/interface.pyx":228
+  /* "cython/interface.pyx":229
  *             self._dimensions.append(coco_problem_get_dimension(p))
  *             self._number_of_objectives.append(coco_problem_get_number_of_objectives(p))
  *         coco_suite_free(suite)             # <<<<<<<<<<<<<<
@@ -2851,19 +2854,19 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
  */
   coco_suite_free(__pyx_v_suite);
 
-  /* "cython/interface.pyx":229
+  /* "cython/interface.pyx":230
  *             self._number_of_objectives.append(coco_problem_get_number_of_objectives(p))
  *         coco_suite_free(suite)
  *         self.suite = coco_suite(self._name, self._instance, self._options)             # <<<<<<<<<<<<<<
  *         self.initialized = True
  *         return self
  */
-  __pyx_t_13 = __Pyx_PyObject_AsString(__pyx_v_self->_name); if (unlikely((!__pyx_t_13) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 229; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_14 = __Pyx_PyObject_AsString(__pyx_v_self->_instance); if (unlikely((!__pyx_t_14) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 229; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_15 = __Pyx_PyObject_AsString(__pyx_v_self->_options); if (unlikely((!__pyx_t_15) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 229; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_13 = __Pyx_PyObject_AsString(__pyx_v_self->_name); if (unlikely((!__pyx_t_13) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 230; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_14 = __Pyx_PyObject_AsString(__pyx_v_self->_instance); if (unlikely((!__pyx_t_14) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 230; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_15 = __Pyx_PyObject_AsString(__pyx_v_self->_options); if (unlikely((!__pyx_t_15) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 230; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->suite = coco_suite(__pyx_t_13, __pyx_t_14, __pyx_t_15);
 
-  /* "cython/interface.pyx":230
+  /* "cython/interface.pyx":231
  *         coco_suite_free(suite)
  *         self.suite = coco_suite(self._name, self._instance, self._options)
  *         self.initialized = True             # <<<<<<<<<<<<<<
@@ -2876,7 +2879,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
   __Pyx_DECREF(__pyx_v_self->initialized);
   __pyx_v_self->initialized = Py_True;
 
-  /* "cython/interface.pyx":231
+  /* "cython/interface.pyx":232
  *         self.suite = coco_suite(self._name, self._instance, self._options)
  *         self.initialized = True
  *         return self             # <<<<<<<<<<<<<<
@@ -2888,7 +2891,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":183
+  /* "cython/interface.pyx":184
  *         self._initialize()
  *         assert self.initialized
  *     cdef _initialize(self):             # <<<<<<<<<<<<<<
@@ -2916,7 +2919,7 @@ static PyObject *__pyx_f_6cocoex_9interface_5Suite__initialize(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":232
+/* "cython/interface.pyx":233
  *         self.initialized = True
  *         return self
  *     def reset(self):             # <<<<<<<<<<<<<<
@@ -2950,7 +2953,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_2reset(struct __pyx_obj_6coc
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("reset", 0);
 
-  /* "cython/interface.pyx":235
+  /* "cython/interface.pyx":236
  *         """reset to original state, affecting `next_problem()`,
  *         `current_problem`, `current_index`"""
  *         self._current_index = None             # <<<<<<<<<<<<<<
@@ -2963,24 +2966,24 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_2reset(struct __pyx_obj_6coc
   __Pyx_DECREF(__pyx_v_self->_current_index);
   __pyx_v_self->_current_index = Py_None;
 
-  /* "cython/interface.pyx":236
+  /* "cython/interface.pyx":237
  *         `current_problem`, `current_index`"""
  *         self._current_index = None
  *         if self.current_problem_:             # <<<<<<<<<<<<<<
  *             self.current_problem_.free()
  *         self.current_problem_ = None
  */
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_self->current_problem_); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 236; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_self->current_problem_); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 237; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":237
+    /* "cython/interface.pyx":238
  *         self._current_index = None
  *         if self.current_problem_:
  *             self.current_problem_.free()             # <<<<<<<<<<<<<<
  *         self.current_problem_ = None
  *         self._current_problem = NULL
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->current_problem_, __pyx_n_s_free); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 237; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->current_problem_, __pyx_n_s_free); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 238; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_4 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_3))) {
@@ -2993,16 +2996,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_2reset(struct __pyx_obj_6coc
       }
     }
     if (__pyx_t_4) {
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 237; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 238; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     } else {
-      __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 237; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 238; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "cython/interface.pyx":236
+    /* "cython/interface.pyx":237
  *         `current_problem`, `current_index`"""
  *         self._current_index = None
  *         if self.current_problem_:             # <<<<<<<<<<<<<<
@@ -3011,7 +3014,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_2reset(struct __pyx_obj_6coc
  */
   }
 
-  /* "cython/interface.pyx":238
+  /* "cython/interface.pyx":239
  *         if self.current_problem_:
  *             self.current_problem_.free()
  *         self.current_problem_ = None             # <<<<<<<<<<<<<<
@@ -3024,7 +3027,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_2reset(struct __pyx_obj_6coc
   __Pyx_DECREF(__pyx_v_self->current_problem_);
   __pyx_v_self->current_problem_ = Py_None;
 
-  /* "cython/interface.pyx":239
+  /* "cython/interface.pyx":240
  *             self.current_problem_.free()
  *         self.current_problem_ = None
  *         self._current_problem = NULL             # <<<<<<<<<<<<<<
@@ -3033,7 +3036,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_2reset(struct __pyx_obj_6coc
  */
   __pyx_v_self->_current_problem = NULL;
 
-  /* "cython/interface.pyx":232
+  /* "cython/interface.pyx":233
  *         self.initialized = True
  *         return self
  *     def reset(self):             # <<<<<<<<<<<<<<
@@ -3056,7 +3059,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_2reset(struct __pyx_obj_6coc
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":240
+/* "cython/interface.pyx":241
  *         self.current_problem_ = None
  *         self._current_problem = NULL
  *     def next_problem(self, observer=None):             # <<<<<<<<<<<<<<
@@ -3096,7 +3099,7 @@ static PyObject *__pyx_pw_6cocoex_9interface_5Suite_5next_problem(PyObject *__py
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "next_problem") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 240; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "next_problem") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 241; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -3109,7 +3112,7 @@ static PyObject *__pyx_pw_6cocoex_9interface_5Suite_5next_problem(PyObject *__py
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("next_problem", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 240; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("next_problem", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 241; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("cocoex.interface.Suite.next_problem", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3140,31 +3143,31 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("next_problem", 0);
 
-  /* "cython/interface.pyx":248
+  /* "cython/interface.pyx":249
  *         cdef size_t index
  *         global _current_observer
  *         if not self.initialized:             # <<<<<<<<<<<<<<
  *             raise ValueError("Suite has been finalized/free'ed")
  *         if self.current_problem_:
  */
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_self->initialized); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 248; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_self->initialized); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 249; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_2 = ((!__pyx_t_1) != 0);
   if (__pyx_t_2) {
 
-    /* "cython/interface.pyx":249
+    /* "cython/interface.pyx":250
  *         global _current_observer
  *         if not self.initialized:
  *             raise ValueError("Suite has been finalized/free'ed")             # <<<<<<<<<<<<<<
  *         if self.current_problem_:
  *             self.current_problem_.free()
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 249; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 250; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 249; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 250; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "cython/interface.pyx":248
+    /* "cython/interface.pyx":249
  *         cdef size_t index
  *         global _current_observer
  *         if not self.initialized:             # <<<<<<<<<<<<<<
@@ -3173,24 +3176,24 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
  */
   }
 
-  /* "cython/interface.pyx":250
+  /* "cython/interface.pyx":251
  *         if not self.initialized:
  *             raise ValueError("Suite has been finalized/free'ed")
  *         if self.current_problem_:             # <<<<<<<<<<<<<<
  *             self.current_problem_.free()
  *         if self._current_index is None:
  */
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_self->current_problem_); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 250; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_self->current_problem_); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 251; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__pyx_t_2) {
 
-    /* "cython/interface.pyx":251
+    /* "cython/interface.pyx":252
  *             raise ValueError("Suite has been finalized/free'ed")
  *         if self.current_problem_:
  *             self.current_problem_.free()             # <<<<<<<<<<<<<<
  *         if self._current_index is None:
  *             self._current_index = -1
  */
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->current_problem_, __pyx_n_s_free); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 251; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->current_problem_, __pyx_n_s_free); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 252; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_5 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_4))) {
@@ -3203,16 +3206,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
       }
     }
     if (__pyx_t_5) {
-      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 251; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 252; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     } else {
-      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 251; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 252; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":250
+    /* "cython/interface.pyx":251
  *         if not self.initialized:
  *             raise ValueError("Suite has been finalized/free'ed")
  *         if self.current_problem_:             # <<<<<<<<<<<<<<
@@ -3221,7 +3224,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
  */
   }
 
-  /* "cython/interface.pyx":252
+  /* "cython/interface.pyx":253
  *         if self.current_problem_:
  *             self.current_problem_.free()
  *         if self._current_index is None:             # <<<<<<<<<<<<<<
@@ -3232,7 +3235,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
   __pyx_t_1 = (__pyx_t_2 != 0);
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":253
+    /* "cython/interface.pyx":254
  *             self.current_problem_.free()
  *         if self._current_index is None:
  *             self._current_index = -1             # <<<<<<<<<<<<<<
@@ -3245,7 +3248,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
     __Pyx_DECREF(__pyx_v_self->_current_index);
     __pyx_v_self->_current_index = __pyx_int_neg_1;
 
-    /* "cython/interface.pyx":252
+    /* "cython/interface.pyx":253
  *         if self.current_problem_:
  *             self.current_problem_.free()
  *         if self._current_index is None:             # <<<<<<<<<<<<<<
@@ -3254,14 +3257,14 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
  */
   }
 
-  /* "cython/interface.pyx":254
+  /* "cython/interface.pyx":255
  *         if self._current_index is None:
  *             self._current_index = -1
  *         self._current_index += 1             # <<<<<<<<<<<<<<
  *         if self._current_index >= len(self):
  *             self._current_problem = NULL
  */
-  __pyx_t_3 = __Pyx_PyInt_AddObjC(__pyx_v_self->_current_index, __pyx_int_1, 1, 1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 254; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_AddObjC(__pyx_v_self->_current_index, __pyx_int_1, 1, 1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 255; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_3);
   __Pyx_GOTREF(__pyx_v_self->_current_index);
@@ -3269,23 +3272,23 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
   __pyx_v_self->_current_index = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "cython/interface.pyx":255
+  /* "cython/interface.pyx":256
  *             self._current_index = -1
  *         self._current_index += 1
  *         if self._current_index >= len(self):             # <<<<<<<<<<<<<<
  *             self._current_problem = NULL
  *             self.current_problem_ = None
  */
-  __pyx_t_6 = PyObject_Length(((PyObject *)__pyx_v_self)); if (unlikely(__pyx_t_6 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 255; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_3 = PyInt_FromSsize_t(__pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 255; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = PyObject_Length(((PyObject *)__pyx_v_self)); if (unlikely(__pyx_t_6 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 256; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyInt_FromSsize_t(__pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 256; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyObject_RichCompare(__pyx_v_self->_current_index, __pyx_t_3, Py_GE); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 255; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyObject_RichCompare(__pyx_v_self->_current_index, __pyx_t_3, Py_GE); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 256; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 255; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 256; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":256
+    /* "cython/interface.pyx":257
  *         self._current_index += 1
  *         if self._current_index >= len(self):
  *             self._current_problem = NULL             # <<<<<<<<<<<<<<
@@ -3294,7 +3297,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
  */
     __pyx_v_self->_current_problem = NULL;
 
-    /* "cython/interface.pyx":257
+    /* "cython/interface.pyx":258
  *         if self._current_index >= len(self):
  *             self._current_problem = NULL
  *             self.current_problem_ = None             # <<<<<<<<<<<<<<
@@ -3307,7 +3310,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
     __Pyx_DECREF(__pyx_v_self->current_problem_);
     __pyx_v_self->current_problem_ = Py_None;
 
-    /* "cython/interface.pyx":255
+    /* "cython/interface.pyx":256
  *             self._current_index = -1
  *         self._current_index += 1
  *         if self._current_index >= len(self):             # <<<<<<<<<<<<<<
@@ -3317,7 +3320,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
     goto __pyx_L6;
   }
 
-  /* "cython/interface.pyx":260
+  /* "cython/interface.pyx":261
  *             # self._current_index = -1  # or use reset?
  *         else:
  *             index = self.indices[self._current_index]  # "conversion" to size_t             # <<<<<<<<<<<<<<
@@ -3325,16 +3328,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
  *                                         self.suite, index)
  */
   /*else*/ {
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_indices); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 260; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_indices); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 261; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = PyObject_GetItem(__pyx_t_4, __pyx_v_self->_current_index); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 260; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_3 = PyObject_GetItem(__pyx_t_4, __pyx_v_self->_current_index); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 261; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_7 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_7 == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 260; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_7 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_7 == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 261; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_index = __pyx_t_7;
 
-    /* "cython/interface.pyx":261
+    /* "cython/interface.pyx":262
  *         else:
  *             index = self.indices[self._current_index]  # "conversion" to size_t
  *             self._current_problem = coco_suite_get_problem(             # <<<<<<<<<<<<<<
@@ -3343,7 +3346,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
  */
     __pyx_v_self->_current_problem = coco_suite_get_problem(__pyx_v_self->suite, __pyx_v_index);
 
-    /* "cython/interface.pyx":264
+    /* "cython/interface.pyx":265
  *                                         self.suite, index)
  *             self.current_problem_ = Problem_init(self._current_problem,
  *                                                 True, self._name)             # <<<<<<<<<<<<<<
@@ -3353,7 +3356,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
     __pyx_t_3 = __pyx_v_self->_name;
     __Pyx_INCREF(__pyx_t_3);
 
-    /* "cython/interface.pyx":263
+    /* "cython/interface.pyx":264
  *             self._current_problem = coco_suite_get_problem(
  *                                         self.suite, index)
  *             self.current_problem_ = Problem_init(self._current_problem,             # <<<<<<<<<<<<<<
@@ -3363,7 +3366,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
     __pyx_t_8.__pyx_n = 2;
     __pyx_t_8.free = Py_True;
     __pyx_t_8.suite_name = __pyx_t_3;
-    __pyx_t_4 = __pyx_f_6cocoex_9interface_Problem_init(__pyx_v_self->_current_problem, &__pyx_t_8); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 263; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __pyx_f_6cocoex_9interface_Problem_init(__pyx_v_self->_current_problem, &__pyx_t_8); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 264; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GIVEREF(__pyx_t_4);
@@ -3372,24 +3375,24 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
     __pyx_v_self->current_problem_ = __pyx_t_4;
     __pyx_t_4 = 0;
 
-    /* "cython/interface.pyx":265
+    /* "cython/interface.pyx":266
  *             self.current_problem_ = Problem_init(self._current_problem,
  *                                                 True, self._name)
  *             if observer:             # <<<<<<<<<<<<<<
  *                 observer.observe(self.current_problem_)
  *         return self.current_problem_
  */
-    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_observer); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 265; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_observer); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 266; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     if (__pyx_t_1) {
 
-      /* "cython/interface.pyx":266
+      /* "cython/interface.pyx":267
  *                                                 True, self._name)
  *             if observer:
  *                 observer.observe(self.current_problem_)             # <<<<<<<<<<<<<<
  *         return self.current_problem_
  *     def get_problem(self, id, observer=None):
  */
-      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_observer, __pyx_n_s_observe); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 266; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_observer, __pyx_n_s_observe); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 267; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __pyx_t_5 = NULL;
       if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_3))) {
@@ -3402,23 +3405,23 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
         }
       }
       if (!__pyx_t_5) {
-        __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_self->current_problem_); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 266; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_self->current_problem_); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 267; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_4);
       } else {
-        __pyx_t_9 = PyTuple_New(1+1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 266; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_9 = PyTuple_New(1+1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 267; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_9);
         __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_5); __pyx_t_5 = NULL;
         __Pyx_INCREF(__pyx_v_self->current_problem_);
         __Pyx_GIVEREF(__pyx_v_self->current_problem_);
         PyTuple_SET_ITEM(__pyx_t_9, 0+1, __pyx_v_self->current_problem_);
-        __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_9, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 266; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_9, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 267; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
       }
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-      /* "cython/interface.pyx":265
+      /* "cython/interface.pyx":266
  *             self.current_problem_ = Problem_init(self._current_problem,
  *                                                 True, self._name)
  *             if observer:             # <<<<<<<<<<<<<<
@@ -3429,7 +3432,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
   }
   __pyx_L6:;
 
-  /* "cython/interface.pyx":267
+  /* "cython/interface.pyx":268
  *             if observer:
  *                 observer.observe(self.current_problem_)
  *         return self.current_problem_             # <<<<<<<<<<<<<<
@@ -3441,7 +3444,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
   __pyx_r = __pyx_v_self->current_problem_;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":240
+  /* "cython/interface.pyx":241
  *         self.current_problem_ = None
  *         self._current_problem = NULL
  *     def next_problem(self, observer=None):             # <<<<<<<<<<<<<<
@@ -3463,7 +3466,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_4next_problem(struct __pyx_o
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":268
+/* "cython/interface.pyx":269
  *                 observer.observe(self.current_problem_)
  *         return self.current_problem_
  *     def get_problem(self, id, observer=None):             # <<<<<<<<<<<<<<
@@ -3508,7 +3511,7 @@ static PyObject *__pyx_pw_6cocoex_9interface_5Suite_7get_problem(PyObject *__pyx
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_problem") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 268; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_problem") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 269; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -3523,7 +3526,7 @@ static PyObject *__pyx_pw_6cocoex_9interface_5Suite_7get_problem(PyObject *__pyx
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_problem", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 268; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("get_problem", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 269; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("cocoex.interface.Suite.get_problem", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3562,31 +3565,31 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("get_problem", 0);
 
-  /* "cython/interface.pyx":299
+  /* "cython/interface.pyx":300
  *         See also `ids`.
  *         """
  *         if not self.initialized:             # <<<<<<<<<<<<<<
  *             raise ValueError("Suite has been finalized/free'ed")
  *         index = id
  */
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_self->initialized); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 299; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_self->initialized); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 300; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_2 = ((!__pyx_t_1) != 0);
   if (__pyx_t_2) {
 
-    /* "cython/interface.pyx":300
+    /* "cython/interface.pyx":301
  *         """
  *         if not self.initialized:
  *             raise ValueError("Suite has been finalized/free'ed")             # <<<<<<<<<<<<<<
  *         index = id
  *         try:
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 300; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 301; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 300; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 301; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "cython/interface.pyx":299
+    /* "cython/interface.pyx":300
  *         See also `ids`.
  *         """
  *         if not self.initialized:             # <<<<<<<<<<<<<<
@@ -3595,7 +3598,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
  */
   }
 
-  /* "cython/interface.pyx":301
+  /* "cython/interface.pyx":302
  *         if not self.initialized:
  *             raise ValueError("Suite has been finalized/free'ed")
  *         index = id             # <<<<<<<<<<<<<<
@@ -3605,7 +3608,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
   __Pyx_INCREF(__pyx_v_id);
   __pyx_v_index = __pyx_v_id;
 
-  /* "cython/interface.pyx":302
+  /* "cython/interface.pyx":303
  *             raise ValueError("Suite has been finalized/free'ed")
  *         index = id
  *         try:             # <<<<<<<<<<<<<<
@@ -3619,23 +3622,23 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
     __Pyx_XGOTREF(__pyx_t_6);
     /*try:*/ {
 
-      /* "cython/interface.pyx":303
+      /* "cython/interface.pyx":304
  *         index = id
  *         try:
  *             1 / (id == int(id))  # int(id) might raise an exception             # <<<<<<<<<<<<<<
  *         except:
  *             index = self._ids.index(id)
  */
-      __pyx_t_3 = PyNumber_Int(__pyx_v_id); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 303; __pyx_clineno = __LINE__; goto __pyx_L4_error;}
+      __pyx_t_3 = PyNumber_Int(__pyx_v_id); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 304; __pyx_clineno = __LINE__; goto __pyx_L4_error;}
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_7 = PyObject_RichCompare(__pyx_v_id, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 303; __pyx_clineno = __LINE__; goto __pyx_L4_error;}
+      __pyx_t_7 = PyObject_RichCompare(__pyx_v_id, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 304; __pyx_clineno = __LINE__; goto __pyx_L4_error;}
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __pyx_t_3 = __Pyx_PyNumber_Divide(__pyx_int_1, __pyx_t_7); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 303; __pyx_clineno = __LINE__; goto __pyx_L4_error;}
+      __pyx_t_3 = __Pyx_PyNumber_Divide(__pyx_int_1, __pyx_t_7); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 304; __pyx_clineno = __LINE__; goto __pyx_L4_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-      /* "cython/interface.pyx":302
+      /* "cython/interface.pyx":303
  *             raise ValueError("Suite has been finalized/free'ed")
  *         index = id
  *         try:             # <<<<<<<<<<<<<<
@@ -3651,7 +3654,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":304
+    /* "cython/interface.pyx":305
  *         try:
  *             1 / (id == int(id))  # int(id) might raise an exception
  *         except:             # <<<<<<<<<<<<<<
@@ -3660,19 +3663,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
  */
     /*except:*/ {
       __Pyx_AddTraceback("cocoex.interface.Suite.get_problem", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_3, &__pyx_t_7, &__pyx_t_8) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 304; __pyx_clineno = __LINE__; goto __pyx_L6_except_error;}
+      if (__Pyx_GetException(&__pyx_t_3, &__pyx_t_7, &__pyx_t_8) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 305; __pyx_clineno = __LINE__; goto __pyx_L6_except_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GOTREF(__pyx_t_8);
 
-      /* "cython/interface.pyx":305
+      /* "cython/interface.pyx":306
  *             1 / (id == int(id))  # int(id) might raise an exception
  *         except:
  *             index = self._ids.index(id)             # <<<<<<<<<<<<<<
  *         try:
  *             return Problem_init(coco_suite_get_problem(self.suite, self._indices[index]),
  */
-      __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->_ids, __pyx_n_s_index); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 305; __pyx_clineno = __LINE__; goto __pyx_L6_except_error;}
+      __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->_ids, __pyx_n_s_index); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 306; __pyx_clineno = __LINE__; goto __pyx_L6_except_error;}
       __Pyx_GOTREF(__pyx_t_10);
       __pyx_t_11 = NULL;
       if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_10))) {
@@ -3685,16 +3688,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
         }
       }
       if (!__pyx_t_11) {
-        __pyx_t_9 = __Pyx_PyObject_CallOneArg(__pyx_t_10, __pyx_v_id); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 305; __pyx_clineno = __LINE__; goto __pyx_L6_except_error;}
+        __pyx_t_9 = __Pyx_PyObject_CallOneArg(__pyx_t_10, __pyx_v_id); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 306; __pyx_clineno = __LINE__; goto __pyx_L6_except_error;}
         __Pyx_GOTREF(__pyx_t_9);
       } else {
-        __pyx_t_12 = PyTuple_New(1+1); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 305; __pyx_clineno = __LINE__; goto __pyx_L6_except_error;}
+        __pyx_t_12 = PyTuple_New(1+1); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 306; __pyx_clineno = __LINE__; goto __pyx_L6_except_error;}
         __Pyx_GOTREF(__pyx_t_12);
         __Pyx_GIVEREF(__pyx_t_11); PyTuple_SET_ITEM(__pyx_t_12, 0, __pyx_t_11); __pyx_t_11 = NULL;
         __Pyx_INCREF(__pyx_v_id);
         __Pyx_GIVEREF(__pyx_v_id);
         PyTuple_SET_ITEM(__pyx_t_12, 0+1, __pyx_v_id);
-        __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_12, NULL); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 305; __pyx_clineno = __LINE__; goto __pyx_L6_except_error;}
+        __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_12, NULL); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 306; __pyx_clineno = __LINE__; goto __pyx_L6_except_error;}
         __Pyx_GOTREF(__pyx_t_9);
         __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
       }
@@ -3708,7 +3711,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
     }
     __pyx_L6_except_error:;
 
-    /* "cython/interface.pyx":302
+    /* "cython/interface.pyx":303
  *             raise ValueError("Suite has been finalized/free'ed")
  *         index = id
  *         try:             # <<<<<<<<<<<<<<
@@ -3728,7 +3731,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
     __pyx_L11_try_end:;
   }
 
-  /* "cython/interface.pyx":306
+  /* "cython/interface.pyx":307
  *         except:
  *             index = self._ids.index(id)
  *         try:             # <<<<<<<<<<<<<<
@@ -3742,7 +3745,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
     __Pyx_XGOTREF(__pyx_t_4);
     /*try:*/ {
 
-      /* "cython/interface.pyx":307
+      /* "cython/interface.pyx":308
  *             index = self._ids.index(id)
  *         try:
  *             return Problem_init(coco_suite_get_problem(self.suite, self._indices[index]),             # <<<<<<<<<<<<<<
@@ -3751,27 +3754,27 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
  */
       __Pyx_XDECREF(__pyx_r);
 
-      /* "cython/interface.pyx":308
+      /* "cython/interface.pyx":309
  *         try:
  *             return Problem_init(coco_suite_get_problem(self.suite, self._indices[index]),
  *                                 True, self._name).add_observer(observer)             # <<<<<<<<<<<<<<
  *         except:
  *             raise NoSuchProblemException(self.name, str(id))
  */
-      __pyx_t_7 = PyObject_GetItem(__pyx_v_self->_indices, __pyx_v_index); if (unlikely(__pyx_t_7 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 307; __pyx_clineno = __LINE__; goto __pyx_L14_error;};
+      __pyx_t_7 = PyObject_GetItem(__pyx_v_self->_indices, __pyx_v_index); if (unlikely(__pyx_t_7 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 308; __pyx_clineno = __LINE__; goto __pyx_L14_error;};
       __Pyx_GOTREF(__pyx_t_7);
 
-      /* "cython/interface.pyx":307
+      /* "cython/interface.pyx":308
  *             index = self._ids.index(id)
  *         try:
  *             return Problem_init(coco_suite_get_problem(self.suite, self._indices[index]),             # <<<<<<<<<<<<<<
  *                                 True, self._name).add_observer(observer)
  *         except:
  */
-      __pyx_t_13 = __Pyx_PyInt_As_size_t(__pyx_t_7); if (unlikely((__pyx_t_13 == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 307; __pyx_clineno = __LINE__; goto __pyx_L14_error;}
+      __pyx_t_13 = __Pyx_PyInt_As_size_t(__pyx_t_7); if (unlikely((__pyx_t_13 == (size_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 308; __pyx_clineno = __LINE__; goto __pyx_L14_error;}
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-      /* "cython/interface.pyx":308
+      /* "cython/interface.pyx":309
  *         try:
  *             return Problem_init(coco_suite_get_problem(self.suite, self._indices[index]),
  *                                 True, self._name).add_observer(observer)             # <<<<<<<<<<<<<<
@@ -3781,7 +3784,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
       __pyx_t_7 = __pyx_v_self->_name;
       __Pyx_INCREF(__pyx_t_7);
 
-      /* "cython/interface.pyx":307
+      /* "cython/interface.pyx":308
  *             index = self._ids.index(id)
  *         try:
  *             return Problem_init(coco_suite_get_problem(self.suite, self._indices[index]),             # <<<<<<<<<<<<<<
@@ -3791,18 +3794,18 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
       __pyx_t_14.__pyx_n = 2;
       __pyx_t_14.free = Py_True;
       __pyx_t_14.suite_name = __pyx_t_7;
-      __pyx_t_3 = __pyx_f_6cocoex_9interface_Problem_init(coco_suite_get_problem(__pyx_v_self->suite, __pyx_t_13), &__pyx_t_14); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 307; __pyx_clineno = __LINE__; goto __pyx_L14_error;}
+      __pyx_t_3 = __pyx_f_6cocoex_9interface_Problem_init(coco_suite_get_problem(__pyx_v_self->suite, __pyx_t_13), &__pyx_t_14); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 308; __pyx_clineno = __LINE__; goto __pyx_L14_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-      /* "cython/interface.pyx":308
+      /* "cython/interface.pyx":309
  *         try:
  *             return Problem_init(coco_suite_get_problem(self.suite, self._indices[index]),
  *                                 True, self._name).add_observer(observer)             # <<<<<<<<<<<<<<
  *         except:
  *             raise NoSuchProblemException(self.name, str(id))
  */
-      __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_add_observer); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 308; __pyx_clineno = __LINE__; goto __pyx_L14_error;}
+      __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_add_observer); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 309; __pyx_clineno = __LINE__; goto __pyx_L14_error;}
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __pyx_t_3 = NULL;
@@ -3816,16 +3819,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
         }
       }
       if (!__pyx_t_3) {
-        __pyx_t_8 = __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_v_observer); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 308; __pyx_clineno = __LINE__; goto __pyx_L14_error;}
+        __pyx_t_8 = __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_v_observer); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 309; __pyx_clineno = __LINE__; goto __pyx_L14_error;}
         __Pyx_GOTREF(__pyx_t_8);
       } else {
-        __pyx_t_9 = PyTuple_New(1+1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 308; __pyx_clineno = __LINE__; goto __pyx_L14_error;}
+        __pyx_t_9 = PyTuple_New(1+1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 309; __pyx_clineno = __LINE__; goto __pyx_L14_error;}
         __Pyx_GOTREF(__pyx_t_9);
         __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_3); __pyx_t_3 = NULL;
         __Pyx_INCREF(__pyx_v_observer);
         __Pyx_GIVEREF(__pyx_v_observer);
         PyTuple_SET_ITEM(__pyx_t_9, 0+1, __pyx_v_observer);
-        __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_9, NULL); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 308; __pyx_clineno = __LINE__; goto __pyx_L14_error;}
+        __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_9, NULL); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 309; __pyx_clineno = __LINE__; goto __pyx_L14_error;}
         __Pyx_GOTREF(__pyx_t_8);
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
       }
@@ -3834,7 +3837,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
       __pyx_t_8 = 0;
       goto __pyx_L18_try_return;
 
-      /* "cython/interface.pyx":306
+      /* "cython/interface.pyx":307
  *         except:
  *             index = self._ids.index(id)
  *         try:             # <<<<<<<<<<<<<<
@@ -3851,7 +3854,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "cython/interface.pyx":309
+    /* "cython/interface.pyx":310
  *             return Problem_init(coco_suite_get_problem(self.suite, self._indices[index]),
  *                                 True, self._name).add_observer(observer)
  *         except:             # <<<<<<<<<<<<<<
@@ -3860,28 +3863,28 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
  */
     /*except:*/ {
       __Pyx_AddTraceback("cocoex.interface.Suite.get_problem", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_8, &__pyx_t_7, &__pyx_t_9) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 309; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
+      if (__Pyx_GetException(&__pyx_t_8, &__pyx_t_7, &__pyx_t_9) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GOTREF(__pyx_t_9);
 
-      /* "cython/interface.pyx":310
+      /* "cython/interface.pyx":311
  *                                 True, self._name).add_observer(observer)
  *         except:
  *             raise NoSuchProblemException(self.name, str(id))             # <<<<<<<<<<<<<<
  * 
  *     def __getitem__(self, key):
  */
-      __pyx_t_10 = __Pyx_GetModuleGlobalName(__pyx_n_s_NoSuchProblemException); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
+      __pyx_t_10 = __Pyx_GetModuleGlobalName(__pyx_n_s_NoSuchProblemException); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 311; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
       __Pyx_GOTREF(__pyx_t_10);
-      __pyx_t_12 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
+      __pyx_t_12 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 311; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
       __Pyx_GOTREF(__pyx_t_12);
-      __pyx_t_11 = PyTuple_New(1); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
+      __pyx_t_11 = PyTuple_New(1); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 311; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
       __Pyx_GOTREF(__pyx_t_11);
       __Pyx_INCREF(__pyx_v_id);
       __Pyx_GIVEREF(__pyx_v_id);
       PyTuple_SET_ITEM(__pyx_t_11, 0, __pyx_v_id);
-      __pyx_t_15 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_11, NULL); if (unlikely(!__pyx_t_15)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
+      __pyx_t_15 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_11, NULL); if (unlikely(!__pyx_t_15)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 311; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
       __Pyx_GOTREF(__pyx_t_15);
       __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
       __pyx_t_11 = NULL;
@@ -3896,7 +3899,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
           __pyx_t_16 = 1;
         }
       }
-      __pyx_t_17 = PyTuple_New(2+__pyx_t_16); if (unlikely(!__pyx_t_17)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
+      __pyx_t_17 = PyTuple_New(2+__pyx_t_16); if (unlikely(!__pyx_t_17)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 311; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
       __Pyx_GOTREF(__pyx_t_17);
       if (__pyx_t_11) {
         __Pyx_GIVEREF(__pyx_t_11); PyTuple_SET_ITEM(__pyx_t_17, 0, __pyx_t_11); __pyx_t_11 = NULL;
@@ -3907,17 +3910,17 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
       PyTuple_SET_ITEM(__pyx_t_17, 1+__pyx_t_16, __pyx_t_15);
       __pyx_t_12 = 0;
       __pyx_t_15 = 0;
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_17, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
+      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_10, __pyx_t_17, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 311; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
       __Pyx_Raise(__pyx_t_3, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 310; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 311; __pyx_clineno = __LINE__; goto __pyx_L16_except_error;}
     }
     __pyx_L16_except_error:;
 
-    /* "cython/interface.pyx":306
+    /* "cython/interface.pyx":307
  *         except:
  *             index = self._ids.index(id)
  *         try:             # <<<<<<<<<<<<<<
@@ -3937,7 +3940,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
     goto __pyx_L0;
   }
 
-  /* "cython/interface.pyx":268
+  /* "cython/interface.pyx":269
  *                 observer.observe(self.current_problem_)
  *         return self.current_problem_
  *     def get_problem(self, id, observer=None):             # <<<<<<<<<<<<<<
@@ -3965,7 +3968,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_6get_problem(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":312
+/* "cython/interface.pyx":313
  *             raise NoSuchProblemException(self.name, str(id))
  * 
  *     def __getitem__(self, key):             # <<<<<<<<<<<<<<
@@ -4002,7 +4005,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_8__getitem__(struct __pyx_ob
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__getitem__", 0);
 
-  /* "cython/interface.pyx":315
+  /* "cython/interface.pyx":316
  *         """`self[i]` is a synonym for `self.get_problem(i)`, see `get_problem`
  *         """
  *         return self.get_problem(key)             # <<<<<<<<<<<<<<
@@ -4010,7 +4013,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_8__getitem__(struct __pyx_ob
  *     def free(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_problem); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 315; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_problem); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 316; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -4023,16 +4026,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_8__getitem__(struct __pyx_ob
     }
   }
   if (!__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_key); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 315; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_key); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 316; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 315; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 316; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __pyx_t_3 = NULL;
     __Pyx_INCREF(__pyx_v_key);
     __Pyx_GIVEREF(__pyx_v_key);
     PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_key);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 315; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 316; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
@@ -4041,7 +4044,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_8__getitem__(struct __pyx_ob
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":312
+  /* "cython/interface.pyx":313
  *             raise NoSuchProblemException(self.name, str(id))
  * 
  *     def __getitem__(self, key):             # <<<<<<<<<<<<<<
@@ -4063,7 +4066,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_8__getitem__(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":317
+/* "cython/interface.pyx":318
  *         return self.get_problem(key)
  * 
  *     def free(self):             # <<<<<<<<<<<<<<
@@ -4096,14 +4099,14 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_10free(struct __pyx_obj_6coc
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("free", 0);
 
-  /* "cython/interface.pyx":319
+  /* "cython/interface.pyx":320
  *     def free(self):
  *         """free underlying C structures"""
  *         self.__dealloc__()             # <<<<<<<<<<<<<<
  *         self.suite = NULL
  *         self.initialized = False  # not (yet) visible from outside
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_dealloc); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 319; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_dealloc); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 320; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -4116,16 +4119,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_10free(struct __pyx_obj_6coc
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 319; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 320; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 319; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 320; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":320
+  /* "cython/interface.pyx":321
  *         """free underlying C structures"""
  *         self.__dealloc__()
  *         self.suite = NULL             # <<<<<<<<<<<<<<
@@ -4134,7 +4137,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_10free(struct __pyx_obj_6coc
  */
   __pyx_v_self->suite = NULL;
 
-  /* "cython/interface.pyx":321
+  /* "cython/interface.pyx":322
  *         self.__dealloc__()
  *         self.suite = NULL
  *         self.initialized = False  # not (yet) visible from outside             # <<<<<<<<<<<<<<
@@ -4147,7 +4150,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_10free(struct __pyx_obj_6coc
   __Pyx_DECREF(__pyx_v_self->initialized);
   __pyx_v_self->initialized = Py_False;
 
-  /* "cython/interface.pyx":317
+  /* "cython/interface.pyx":318
  *         return self.get_problem(key)
  * 
  *     def free(self):             # <<<<<<<<<<<<<<
@@ -4170,7 +4173,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_10free(struct __pyx_obj_6coc
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":322
+/* "cython/interface.pyx":323
  *         self.suite = NULL
  *         self.initialized = False  # not (yet) visible from outside
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -4194,7 +4197,7 @@ static void __pyx_pf_6cocoex_9interface_5Suite_12__dealloc__(struct __pyx_obj_6c
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "cython/interface.pyx":323
+  /* "cython/interface.pyx":324
  *         self.initialized = False  # not (yet) visible from outside
  *     def __dealloc__(self):
  *         if self.suite:             # <<<<<<<<<<<<<<
@@ -4204,7 +4207,7 @@ static void __pyx_pf_6cocoex_9interface_5Suite_12__dealloc__(struct __pyx_obj_6c
   __pyx_t_1 = (__pyx_v_self->suite != 0);
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":324
+    /* "cython/interface.pyx":325
  *     def __dealloc__(self):
  *         if self.suite:
  *             coco_suite_free(self.suite)             # <<<<<<<<<<<<<<
@@ -4213,7 +4216,7 @@ static void __pyx_pf_6cocoex_9interface_5Suite_12__dealloc__(struct __pyx_obj_6c
  */
     coco_suite_free(__pyx_v_self->suite);
 
-    /* "cython/interface.pyx":323
+    /* "cython/interface.pyx":324
  *         self.initialized = False  # not (yet) visible from outside
  *     def __dealloc__(self):
  *         if self.suite:             # <<<<<<<<<<<<<<
@@ -4222,7 +4225,7 @@ static void __pyx_pf_6cocoex_9interface_5Suite_12__dealloc__(struct __pyx_obj_6c
  */
   }
 
-  /* "cython/interface.pyx":322
+  /* "cython/interface.pyx":323
  *         self.suite = NULL
  *         self.initialized = False  # not (yet) visible from outside
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -4234,7 +4237,7 @@ static void __pyx_pf_6cocoex_9interface_5Suite_12__dealloc__(struct __pyx_obj_6c
   __Pyx_RefNannyFinishContext();
 }
 
-/* "cython/interface.pyx":326
+/* "cython/interface.pyx":327
  *             coco_suite_free(self.suite)
  * 
  *     def find_problem_ids(self, *args, **kwargs):             # <<<<<<<<<<<<<<
@@ -4272,20 +4275,20 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_14find_problem_ids(CYTHON_UN
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("find_problem_ids", 0);
 
-  /* "cython/interface.pyx":328
+  /* "cython/interface.pyx":329
  *     def find_problem_ids(self, *args, **kwargs):
  *         """has been renamed to `ids`"""
  *         raise NotImplementedError(             # <<<<<<<<<<<<<<
  *             "`find_problem_ids()` has been renamed to `ids()`")
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_NotImplementedError, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 328; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_NotImplementedError, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 329; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[0]; __pyx_lineno = 328; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[0]; __pyx_lineno = 329; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "cython/interface.pyx":326
+  /* "cython/interface.pyx":327
  *             coco_suite_free(self.suite)
  * 
  *     def find_problem_ids(self, *args, **kwargs):             # <<<<<<<<<<<<<<
@@ -4303,7 +4306,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_14find_problem_ids(CYTHON_UN
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":332
+/* "cython/interface.pyx":333
  * 
  * 
  *     def ids(self, *id_snippets, get_problem=False, verbose=False):             # <<<<<<<<<<<<<<
@@ -4355,7 +4358,7 @@ static PyObject *__pyx_pw_6cocoex_9interface_5Suite_17ids(PyObject *__pyx_v_self
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, 0, "ids") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, 0, "ids") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 333; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) < 0) {
       goto __pyx_L5_argtuple_error;
@@ -4366,7 +4369,7 @@ static PyObject *__pyx_pw_6cocoex_9interface_5Suite_17ids(PyObject *__pyx_v_self
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("ids", 0, 0, 0, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 332; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("ids", 0, 0, 0, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 333; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_DECREF(__pyx_v_id_snippets); __pyx_v_id_snippets = 0;
   __Pyx_AddTraceback("cocoex.interface.Suite.ids", __pyx_clineno, __pyx_lineno, __pyx_filename);
@@ -4406,19 +4409,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("ids", 0);
 
-  /* "cython/interface.pyx":370
+  /* "cython/interface.pyx":371
  * 
  *         """
  *         res = []             # <<<<<<<<<<<<<<
  *         for idx, id in enumerate(self._ids):
  *             if all([id.find(i) >= 0 for i in id_snippets]):
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 370; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_res = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":371
+  /* "cython/interface.pyx":372
  *         """
  *         res = []
  *         for idx, id in enumerate(self._ids):             # <<<<<<<<<<<<<<
@@ -4431,26 +4434,26 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
     __pyx_t_2 = __pyx_v_self->_ids; __Pyx_INCREF(__pyx_t_2); __pyx_t_3 = 0;
     __pyx_t_4 = NULL;
   } else {
-    __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_v_self->_ids); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_v_self->_ids); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   for (;;) {
     if (likely(!__pyx_t_4)) {
       if (likely(PyList_CheckExact(__pyx_t_2))) {
         if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       } else {
         if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       }
@@ -4460,7 +4463,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         break;
       }
@@ -4470,33 +4473,33 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
     __pyx_t_5 = 0;
     __Pyx_INCREF(__pyx_t_1);
     __Pyx_XDECREF_SET(__pyx_v_idx, __pyx_t_1);
-    __pyx_t_5 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_1);
     __pyx_t_1 = __pyx_t_5;
     __pyx_t_5 = 0;
 
-    /* "cython/interface.pyx":372
+    /* "cython/interface.pyx":373
  *         res = []
  *         for idx, id in enumerate(self._ids):
  *             if all([id.find(i) >= 0 for i in id_snippets]):             # <<<<<<<<<<<<<<
  *                 if verbose:
  *                     print("  id=%s, index=%d" % (id, idx))
  */
-    __pyx_t_5 = PyList_New(0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = PyList_New(0); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_6 = __pyx_v_id_snippets; __Pyx_INCREF(__pyx_t_6); __pyx_t_7 = 0;
     for (;;) {
       if (__pyx_t_7 >= PyTuple_GET_SIZE(__pyx_t_6)) break;
       #if CYTHON_COMPILING_IN_CPYTHON
-      __pyx_t_8 = PyTuple_GET_ITEM(__pyx_t_6, __pyx_t_7); __Pyx_INCREF(__pyx_t_8); __pyx_t_7++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_8 = PyTuple_GET_ITEM(__pyx_t_6, __pyx_t_7); __Pyx_INCREF(__pyx_t_8); __pyx_t_7++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       #else
-      __pyx_t_8 = PySequence_ITEM(__pyx_t_6, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_8 = PySequence_ITEM(__pyx_t_6, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_8);
       #endif
       __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_8);
       __pyx_t_8 = 0;
-      __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_id, __pyx_n_s_find); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_id, __pyx_n_s_find); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_9);
       __pyx_t_10 = NULL;
       if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_9))) {
@@ -4509,56 +4512,56 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
         }
       }
       if (!__pyx_t_10) {
-        __pyx_t_8 = __Pyx_PyObject_CallOneArg(__pyx_t_9, __pyx_v_i); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_8 = __Pyx_PyObject_CallOneArg(__pyx_t_9, __pyx_v_i); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_8);
       } else {
-        __pyx_t_11 = PyTuple_New(1+1); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_11 = PyTuple_New(1+1); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_11);
         __Pyx_GIVEREF(__pyx_t_10); PyTuple_SET_ITEM(__pyx_t_11, 0, __pyx_t_10); __pyx_t_10 = NULL;
         __Pyx_INCREF(__pyx_v_i);
         __Pyx_GIVEREF(__pyx_v_i);
         PyTuple_SET_ITEM(__pyx_t_11, 0+1, __pyx_v_i);
-        __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_t_11, NULL); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_t_11, NULL); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_8);
         __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
       }
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-      __pyx_t_9 = PyObject_RichCompare(__pyx_t_8, __pyx_int_0, Py_GE); __Pyx_XGOTREF(__pyx_t_9); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_9 = PyObject_RichCompare(__pyx_t_8, __pyx_int_0, Py_GE); __Pyx_XGOTREF(__pyx_t_9); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_5, (PyObject*)__pyx_t_9))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_5, (PyObject*)__pyx_t_9))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
     }
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_GIVEREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_5);
     __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_all, __pyx_t_6, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_all, __pyx_t_6, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_12 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_12 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     if (__pyx_t_12) {
 
-      /* "cython/interface.pyx":373
+      /* "cython/interface.pyx":374
  *         for idx, id in enumerate(self._ids):
  *             if all([id.find(i) >= 0 for i in id_snippets]):
  *                 if verbose:             # <<<<<<<<<<<<<<
  *                     print("  id=%s, index=%d" % (id, idx))
  *                 res.append(id)
  */
-      __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_v_verbose); if (unlikely(__pyx_t_12 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_v_verbose); if (unlikely(__pyx_t_12 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       if (__pyx_t_12) {
 
-        /* "cython/interface.pyx":374
+        /* "cython/interface.pyx":375
  *             if all([id.find(i) >= 0 for i in id_snippets]):
  *                 if verbose:
  *                     print("  id=%s, index=%d" % (id, idx))             # <<<<<<<<<<<<<<
  *                 res.append(id)
  *         if get_problem:
  */
-        __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_INCREF(__pyx_v_id);
         __Pyx_GIVEREF(__pyx_v_id);
@@ -4566,20 +4569,20 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
         __Pyx_INCREF(__pyx_v_idx);
         __Pyx_GIVEREF(__pyx_v_idx);
         PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_v_idx);
-        __pyx_t_6 = PyUnicode_Format(__pyx_kp_u_id_s_index_d, __pyx_t_5); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_6 = PyUnicode_Format(__pyx_kp_u_id_s_index_d, __pyx_t_5); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_GIVEREF(__pyx_t_6);
         PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_6);
         __pyx_t_6 = 0;
-        __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_5, NULL); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_5, NULL); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-        /* "cython/interface.pyx":373
+        /* "cython/interface.pyx":374
  *         for idx, id in enumerate(self._ids):
  *             if all([id.find(i) >= 0 for i in id_snippets]):
  *                 if verbose:             # <<<<<<<<<<<<<<
@@ -4588,16 +4591,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
  */
       }
 
-      /* "cython/interface.pyx":375
+      /* "cython/interface.pyx":376
  *                 if verbose:
  *                     print("  id=%s, index=%d" % (id, idx))
  *                 res.append(id)             # <<<<<<<<<<<<<<
  *         if get_problem:
  *             return self.get_problem(res[0])
  */
-      __pyx_t_13 = __Pyx_PyList_Append(__pyx_v_res, __pyx_v_id); if (unlikely(__pyx_t_13 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_13 = __Pyx_PyList_Append(__pyx_v_res, __pyx_v_id); if (unlikely(__pyx_t_13 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 376; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-      /* "cython/interface.pyx":372
+      /* "cython/interface.pyx":373
  *         res = []
  *         for idx, id in enumerate(self._ids):
  *             if all([id.find(i) >= 0 for i in id_snippets]):             # <<<<<<<<<<<<<<
@@ -4606,7 +4609,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
  */
     }
 
-    /* "cython/interface.pyx":371
+    /* "cython/interface.pyx":372
  *         """
  *         res = []
  *         for idx, id in enumerate(self._ids):             # <<<<<<<<<<<<<<
@@ -4617,17 +4620,17 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":376
+  /* "cython/interface.pyx":377
  *                     print("  id=%s, index=%d" % (id, idx))
  *                 res.append(id)
  *         if get_problem:             # <<<<<<<<<<<<<<
  *             return self.get_problem(res[0])
  *         return res
  */
-  __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_v_get_problem); if (unlikely(__pyx_t_12 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 376; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_12 = __Pyx_PyObject_IsTrue(__pyx_v_get_problem); if (unlikely(__pyx_t_12 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__pyx_t_12) {
 
-    /* "cython/interface.pyx":377
+    /* "cython/interface.pyx":378
  *                 res.append(id)
  *         if get_problem:
  *             return self.get_problem(res[0])             # <<<<<<<<<<<<<<
@@ -4635,9 +4638,9 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
  * 
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_problem); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_problem); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 378; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = __Pyx_GetItemInt_List(__pyx_v_res, 0, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(__pyx_t_6 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_6 = __Pyx_GetItemInt_List(__pyx_v_res, 0, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(__pyx_t_6 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 378; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_5 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -4650,17 +4653,17 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
       }
     }
     if (!__pyx_t_5) {
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_6); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_6); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 378; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_GOTREF(__pyx_t_1);
     } else {
-      __pyx_t_9 = PyTuple_New(1+1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_9 = PyTuple_New(1+1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 378; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_9);
       __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_5); __pyx_t_5 = NULL;
       __Pyx_GIVEREF(__pyx_t_6);
       PyTuple_SET_ITEM(__pyx_t_9, 0+1, __pyx_t_6);
       __pyx_t_6 = 0;
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_9, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 377; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_9, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 378; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
     }
@@ -4669,7 +4672,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
     __pyx_t_1 = 0;
     goto __pyx_L0;
 
-    /* "cython/interface.pyx":376
+    /* "cython/interface.pyx":377
  *                     print("  id=%s, index=%d" % (id, idx))
  *                 res.append(id)
  *         if get_problem:             # <<<<<<<<<<<<<<
@@ -4678,7 +4681,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
  */
   }
 
-  /* "cython/interface.pyx":378
+  /* "cython/interface.pyx":379
  *         if get_problem:
  *             return self.get_problem(res[0])
  *         return res             # <<<<<<<<<<<<<<
@@ -4690,7 +4693,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
   __pyx_r = __pyx_v_res;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":332
+  /* "cython/interface.pyx":333
  * 
  * 
  *     def ids(self, *id_snippets, get_problem=False, verbose=False):             # <<<<<<<<<<<<<<
@@ -4720,7 +4723,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_16ids(struct __pyx_obj_6coco
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":381
+/* "cython/interface.pyx":382
  * 
  *     @property
  *     def current_problem(self):             # <<<<<<<<<<<<<<
@@ -4747,7 +4750,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_18current_problem(struct __p
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("current_problem", 0);
 
-  /* "cython/interface.pyx":383
+  /* "cython/interface.pyx":384
  *     def current_problem(self):
  *         """current "open/active" problem to be benchmarked"""
  *         return self.current_problem_             # <<<<<<<<<<<<<<
@@ -4759,7 +4762,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_18current_problem(struct __p
   __pyx_r = __pyx_v_self->current_problem_;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":381
+  /* "cython/interface.pyx":382
  * 
  *     @property
  *     def current_problem(self):             # <<<<<<<<<<<<<<
@@ -4774,7 +4777,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_18current_problem(struct __p
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":385
+/* "cython/interface.pyx":386
  *         return self.current_problem_
  *     @property
  *     def current_index(self):             # <<<<<<<<<<<<<<
@@ -4801,7 +4804,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_20current_index(struct __pyx
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("current_index", 0);
 
-  /* "cython/interface.pyx":405
+  /* "cython/interface.pyx":406
  * 
  *         """
  *         return self._current_index             # <<<<<<<<<<<<<<
@@ -4813,7 +4816,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_20current_index(struct __pyx
   __pyx_r = __pyx_v_self->_current_index;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":385
+  /* "cython/interface.pyx":386
  *         return self.current_problem_
  *     @property
  *     def current_index(self):             # <<<<<<<<<<<<<<
@@ -4828,7 +4831,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_20current_index(struct __pyx
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":407
+/* "cython/interface.pyx":408
  *         return self._current_index
  *     @property
  *     def problem_names(self):             # <<<<<<<<<<<<<<
@@ -4859,7 +4862,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_22problem_names(struct __pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("problem_names", 0);
 
-  /* "cython/interface.pyx":409
+  /* "cython/interface.pyx":410
  *     def problem_names(self):
  *         """list of problem names in this `Suite`, see also `ids`"""
  *         return list(self._names)             # <<<<<<<<<<<<<<
@@ -4867,13 +4870,13 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_22problem_names(struct __pyx
  *     def dimensions(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PySequence_List(__pyx_v_self->_names); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 409; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PySequence_List(__pyx_v_self->_names); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 410; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":407
+  /* "cython/interface.pyx":408
  *         return self._current_index
  *     @property
  *     def problem_names(self):             # <<<<<<<<<<<<<<
@@ -4892,7 +4895,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_22problem_names(struct __pyx
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":411
+/* "cython/interface.pyx":412
  *         return list(self._names)
  *     @property
  *     def dimensions(self):             # <<<<<<<<<<<<<<
@@ -4926,7 +4929,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_24dimensions(struct __pyx_ob
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("dimensions", 0);
 
-  /* "cython/interface.pyx":413
+  /* "cython/interface.pyx":414
  *     def dimensions(self):
  *         """list of problem dimensions occuring at least once in this `Suite`"""
  *         return sorted(set(self._dimensions))             # <<<<<<<<<<<<<<
@@ -4934,19 +4937,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_24dimensions(struct __pyx_ob
  *     def number_of_objectives(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = PySet_New(__pyx_v_self->_dimensions); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 413; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PySet_New(__pyx_v_self->_dimensions); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 414; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PySequence_List(__pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 413; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PySequence_List(__pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 414; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_1 = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
-  __pyx_t_4 = PyList_Sort(__pyx_t_1); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 413; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyList_Sort(__pyx_t_1); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 414; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":411
+  /* "cython/interface.pyx":412
  *         return list(self._names)
  *     @property
  *     def dimensions(self):             # <<<<<<<<<<<<<<
@@ -4967,7 +4970,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_24dimensions(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":415
+/* "cython/interface.pyx":416
  *         return sorted(set(self._dimensions))
  *     @property
  *     def number_of_objectives(self):             # <<<<<<<<<<<<<<
@@ -5001,7 +5004,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_26number_of_objectives(struc
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("number_of_objectives", 0);
 
-  /* "cython/interface.pyx":417
+  /* "cython/interface.pyx":418
  *     def number_of_objectives(self):
  *         """list of number of objectives occuring in this `Suite`"""
  *         return sorted(set(self._number_of_objectives))             # <<<<<<<<<<<<<<
@@ -5009,19 +5012,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_26number_of_objectives(struc
  *     def indices(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = PySet_New(__pyx_v_self->_number_of_objectives); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 417; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PySet_New(__pyx_v_self->_number_of_objectives); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 418; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PySequence_List(__pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 417; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PySequence_List(__pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 418; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_1 = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
-  __pyx_t_4 = PyList_Sort(__pyx_t_1); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 417; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyList_Sort(__pyx_t_1); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 418; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":415
+  /* "cython/interface.pyx":416
  *         return sorted(set(self._dimensions))
  *     @property
  *     def number_of_objectives(self):             # <<<<<<<<<<<<<<
@@ -5042,7 +5045,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_26number_of_objectives(struc
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":419
+/* "cython/interface.pyx":420
  *         return sorted(set(self._number_of_objectives))
  *     @property
  *     def indices(self):             # <<<<<<<<<<<<<<
@@ -5073,7 +5076,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_28indices(struct __pyx_obj_6
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("indices", 0);
 
-  /* "cython/interface.pyx":425
+  /* "cython/interface.pyx":426
  *         Indices used in the Python interface run between 0 and `len(self)`.
  *         """
  *         return list(self._indices)             # <<<<<<<<<<<<<<
@@ -5081,13 +5084,13 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_28indices(struct __pyx_obj_6
  *     def name(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PySequence_List(__pyx_v_self->_indices); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 425; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PySequence_List(__pyx_v_self->_indices); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 426; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":419
+  /* "cython/interface.pyx":420
  *         return sorted(set(self._number_of_objectives))
  *     @property
  *     def indices(self):             # <<<<<<<<<<<<<<
@@ -5106,7 +5109,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_28indices(struct __pyx_obj_6
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":427
+/* "cython/interface.pyx":428
  *         return list(self._indices)
  *     @property
  *     def name(self):             # <<<<<<<<<<<<<<
@@ -5133,7 +5136,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_30name(struct __pyx_obj_6coc
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("name", 0);
 
-  /* "cython/interface.pyx":429
+  /* "cython/interface.pyx":430
  *     def name(self):
  *         """name of this suite as used to instantiate the suite via `Suite(name, ...)`"""
  *         return self._name             # <<<<<<<<<<<<<<
@@ -5145,7 +5148,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_30name(struct __pyx_obj_6coc
   __pyx_r = __pyx_v_self->_name;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":427
+  /* "cython/interface.pyx":428
  *         return list(self._indices)
  *     @property
  *     def name(self):             # <<<<<<<<<<<<<<
@@ -5160,7 +5163,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_30name(struct __pyx_obj_6coc
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":431
+/* "cython/interface.pyx":432
  *         return self._name
  *     @property
  *     def instance(self):             # <<<<<<<<<<<<<<
@@ -5187,7 +5190,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_32instance(struct __pyx_obj_
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("instance", 0);
 
-  /* "cython/interface.pyx":434
+  /* "cython/interface.pyx":435
  *         """instance of this suite as used to instantiate the suite via
  *         `Suite(name, instance, ...)`"""
  *         return self._instance             # <<<<<<<<<<<<<<
@@ -5199,7 +5202,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_32instance(struct __pyx_obj_
   __pyx_r = __pyx_v_self->_instance;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":431
+  /* "cython/interface.pyx":432
  *         return self._name
  *     @property
  *     def instance(self):             # <<<<<<<<<<<<<<
@@ -5214,7 +5217,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_32instance(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":436
+/* "cython/interface.pyx":437
  *         return self._instance
  *     @property
  *     def options(self):             # <<<<<<<<<<<<<<
@@ -5241,7 +5244,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_34options(struct __pyx_obj_6
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("options", 0);
 
-  /* "cython/interface.pyx":439
+  /* "cython/interface.pyx":440
  *         """options for this suite as used to instantiate the suite via
  *         `Suite(name, instance, options)`"""
  *         return self._options             # <<<<<<<<<<<<<<
@@ -5253,7 +5256,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_34options(struct __pyx_obj_6
   __pyx_r = __pyx_v_self->_options;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":436
+  /* "cython/interface.pyx":437
  *         return self._instance
  *     @property
  *     def options(self):             # <<<<<<<<<<<<<<
@@ -5268,7 +5271,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_34options(struct __pyx_obj_6
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":442
+/* "cython/interface.pyx":443
  * 
  *     @property
  *     def info(self):             # <<<<<<<<<<<<<<
@@ -5299,7 +5302,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_36info(struct __pyx_obj_6coc
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("info", 0);
 
-  /* "cython/interface.pyx":443
+  /* "cython/interface.pyx":444
  *     @property
  *     def info(self):
  *         return str(self)             # <<<<<<<<<<<<<<
@@ -5307,19 +5310,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_36info(struct __pyx_obj_6coc
  *         return 'Suite(%r, %r, %r)'  % (self.name, self.instance, self.options)  # angled brackets
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 443; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 444; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(((PyObject *)__pyx_v_self));
   __Pyx_GIVEREF(((PyObject *)__pyx_v_self));
   PyTuple_SET_ITEM(__pyx_t_1, 0, ((PyObject *)__pyx_v_self));
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 443; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 444; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":442
+  /* "cython/interface.pyx":443
  * 
  *     @property
  *     def info(self):             # <<<<<<<<<<<<<<
@@ -5339,7 +5342,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_36info(struct __pyx_obj_6coc
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":444
+/* "cython/interface.pyx":445
  *     def info(self):
  *         return str(self)
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -5372,7 +5375,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_38__repr__(struct __pyx_obj_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__repr__", 0);
 
-  /* "cython/interface.pyx":445
+  /* "cython/interface.pyx":446
  *         return str(self)
  *     def __repr__(self):
  *         return 'Suite(%r, %r, %r)'  % (self.name, self.instance, self.options)  # angled brackets             # <<<<<<<<<<<<<<
@@ -5380,13 +5383,13 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_38__repr__(struct __pyx_obj_
  *         return 'Suite("%s", "%s", "%s") with %d problem%s in dimension%s %s' \
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 445; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 445; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_options); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 445; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_options); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 445; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
@@ -5397,14 +5400,14 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_38__repr__(struct __pyx_obj_
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_3 = PyUnicode_Format(__pyx_kp_u_Suite_r_r_r, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 445; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyUnicode_Format(__pyx_kp_u_Suite_r_r_r, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 446; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":444
+  /* "cython/interface.pyx":445
  *     def info(self):
  *         return str(self)
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -5426,7 +5429,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_38__repr__(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":446
+/* "cython/interface.pyx":447
  *     def __repr__(self):
  *         return 'Suite(%r, %r, %r)'  % (self.name, self.instance, self.options)  # angled brackets
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -5465,7 +5468,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_40__str__(struct __pyx_obj_6
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__str__", 0);
 
-  /* "cython/interface.pyx":447
+  /* "cython/interface.pyx":448
  *         return 'Suite(%r, %r, %r)'  % (self.name, self.instance, self.options)  # angled brackets
  *     def __str__(self):
  *         return 'Suite("%s", "%s", "%s") with %d problem%s in dimension%s %s' \             # <<<<<<<<<<<<<<
@@ -5474,31 +5477,31 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_40__str__(struct __pyx_obj_6
  */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "cython/interface.pyx":448
+  /* "cython/interface.pyx":449
  *     def __str__(self):
  *         return 'Suite("%s", "%s", "%s") with %d problem%s in dimension%s %s' \
  *             % (self.name, self.instance, self.options,             # <<<<<<<<<<<<<<
  *                len(self), '' if len(self) == 1 else 's',
  *                '' if len(self.dimensions) == 1 else 's',
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 448; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 449; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 448; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 449; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_options); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 448; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_options); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 449; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "cython/interface.pyx":449
+  /* "cython/interface.pyx":450
  *         return 'Suite("%s", "%s", "%s") with %d problem%s in dimension%s %s' \
  *             % (self.name, self.instance, self.options,
  *                len(self), '' if len(self) == 1 else 's',             # <<<<<<<<<<<<<<
  *                '' if len(self.dimensions) == 1 else 's',
  *                '%d=%d' % (min(self.dimensions), max(self.dimensions)))
  */
-  __pyx_t_4 = PyObject_Length(((PyObject *)__pyx_v_self)); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 449; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_5 = PyInt_FromSsize_t(__pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 449; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyObject_Length(((PyObject *)__pyx_v_self)); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 450; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = PyInt_FromSsize_t(__pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 450; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = PyObject_Length(((PyObject *)__pyx_v_self)); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 449; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyObject_Length(((PyObject *)__pyx_v_self)); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 450; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (((__pyx_t_4 == 1) != 0)) {
     __Pyx_INCREF(__pyx_kp_u__2);
     __pyx_t_6 = __pyx_kp_u__2;
@@ -5507,16 +5510,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_40__str__(struct __pyx_obj_6
     __pyx_t_6 = __pyx_n_u_s;
   }
 
-  /* "cython/interface.pyx":450
+  /* "cython/interface.pyx":451
  *             % (self.name, self.instance, self.options,
  *                len(self), '' if len(self) == 1 else 's',
  *                '' if len(self.dimensions) == 1 else 's',             # <<<<<<<<<<<<<<
  *                '%d=%d' % (min(self.dimensions), max(self.dimensions)))
  *     def __len__(self):
  */
-  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_dimensions); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 450; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_dimensions); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 451; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_4 = PyObject_Length(__pyx_t_8); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 450; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyObject_Length(__pyx_t_8); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 451; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   if (((__pyx_t_4 == 1) != 0)) {
     __Pyx_INCREF(__pyx_kp_u__2);
@@ -5526,34 +5529,34 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_40__str__(struct __pyx_obj_6
     __pyx_t_7 = __pyx_n_u_s;
   }
 
-  /* "cython/interface.pyx":451
+  /* "cython/interface.pyx":452
  *                len(self), '' if len(self) == 1 else 's',
  *                '' if len(self.dimensions) == 1 else 's',
  *                '%d=%d' % (min(self.dimensions), max(self.dimensions)))             # <<<<<<<<<<<<<<
  *     def __len__(self):
  *         return len(self._indices)
  */
-  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_dimensions); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 451; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_dimensions); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 452; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_9 = PyTuple_New(1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 451; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_9 = PyTuple_New(1); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 452; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_GIVEREF(__pyx_t_8);
   PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_8);
   __pyx_t_8 = 0;
-  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_builtin_min, __pyx_t_9, NULL); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 451; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_builtin_min, __pyx_t_9, NULL); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 452; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_dimensions); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 451; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_dimensions); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 452; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_10 = PyTuple_New(1); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 451; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_10 = PyTuple_New(1); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 452; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_GIVEREF(__pyx_t_9);
   PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_9);
   __pyx_t_9 = 0;
-  __pyx_t_9 = __Pyx_PyObject_Call(__pyx_builtin_max, __pyx_t_10, NULL); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 451; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_9 = __Pyx_PyObject_Call(__pyx_builtin_max, __pyx_t_10, NULL); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 452; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-  __pyx_t_10 = PyTuple_New(2); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 451; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_10 = PyTuple_New(2); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 452; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_GIVEREF(__pyx_t_8);
   PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_8);
@@ -5561,18 +5564,18 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_40__str__(struct __pyx_obj_6
   PyTuple_SET_ITEM(__pyx_t_10, 1, __pyx_t_9);
   __pyx_t_8 = 0;
   __pyx_t_9 = 0;
-  __pyx_t_9 = PyUnicode_Format(__pyx_kp_u_d_d, __pyx_t_10); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 451; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_9 = PyUnicode_Format(__pyx_kp_u_d_d, __pyx_t_10); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 452; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "cython/interface.pyx":448
+  /* "cython/interface.pyx":449
  *     def __str__(self):
  *         return 'Suite("%s", "%s", "%s") with %d problem%s in dimension%s %s' \
  *             % (self.name, self.instance, self.options,             # <<<<<<<<<<<<<<
  *                len(self), '' if len(self) == 1 else 's',
  *                '' if len(self.dimensions) == 1 else 's',
  */
-  __pyx_t_10 = PyTuple_New(7); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 448; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_10 = PyTuple_New(7); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 449; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_10, 0, __pyx_t_1);
@@ -5595,14 +5598,14 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_40__str__(struct __pyx_obj_6
   __pyx_t_6 = 0;
   __pyx_t_7 = 0;
   __pyx_t_9 = 0;
-  __pyx_t_9 = PyUnicode_Format(__pyx_kp_u_Suite_s_s_s_with_d_problem_s_in, __pyx_t_10); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 448; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_9 = PyUnicode_Format(__pyx_kp_u_Suite_s_s_s_with_d_problem_s_in, __pyx_t_10); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 449; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
   __pyx_r = __pyx_t_9;
   __pyx_t_9 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":446
+  /* "cython/interface.pyx":447
  *     def __repr__(self):
  *         return 'Suite(%r, %r, %r)'  % (self.name, self.instance, self.options)  # angled brackets
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -5629,7 +5632,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_40__str__(struct __pyx_obj_6
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":452
+/* "cython/interface.pyx":453
  *                '' if len(self.dimensions) == 1 else 's',
  *                '%d=%d' % (min(self.dimensions), max(self.dimensions)))
  *     def __len__(self):             # <<<<<<<<<<<<<<
@@ -5660,7 +5663,7 @@ static Py_ssize_t __pyx_pf_6cocoex_9interface_5Suite_42__len__(struct __pyx_obj_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__len__", 0);
 
-  /* "cython/interface.pyx":453
+  /* "cython/interface.pyx":454
  *                '%d=%d' % (min(self.dimensions), max(self.dimensions)))
  *     def __len__(self):
  *         return len(self._indices)             # <<<<<<<<<<<<<<
@@ -5669,12 +5672,12 @@ static Py_ssize_t __pyx_pf_6cocoex_9interface_5Suite_42__len__(struct __pyx_obj_
  */
   __pyx_t_1 = __pyx_v_self->_indices;
   __Pyx_INCREF(__pyx_t_1);
-  __pyx_t_2 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_2 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 453; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_2 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 454; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_2;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":452
+  /* "cython/interface.pyx":453
  *                '' if len(self.dimensions) == 1 else 's',
  *                '%d=%d' % (min(self.dimensions), max(self.dimensions)))
  *     def __len__(self):             # <<<<<<<<<<<<<<
@@ -5693,7 +5696,7 @@ static Py_ssize_t __pyx_pf_6cocoex_9interface_5Suite_42__len__(struct __pyx_obj_
 }
 static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineObject *__pyx_generator, PyObject *__pyx_sent_value); /* proto */
 
-/* "cython/interface.pyx":455
+/* "cython/interface.pyx":456
  *         return len(self._indices)
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -5736,7 +5739,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_44__iter__(struct __pyx_obj_
   __Pyx_INCREF((PyObject *)__pyx_cur_scope->__pyx_v_self);
   __Pyx_GIVEREF((PyObject *)__pyx_cur_scope->__pyx_v_self);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_6cocoex_9interface_5Suite_46generator, (PyObject *) __pyx_cur_scope, __pyx_n_s_iter, __pyx_n_s_Suite___iter); if (unlikely(!gen)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 455; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_6cocoex_9interface_5Suite_46generator, (PyObject *) __pyx_cur_scope, __pyx_n_s_iter, __pyx_n_s_Suite___iter); if (unlikely(!gen)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 456; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -5784,9 +5787,9 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
     return NULL;
   }
   __pyx_L3_first_run:;
-  if (unlikely(!__pyx_sent_value)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 455; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__pyx_sent_value)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 456; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "cython/interface.pyx":462
+  /* "cython/interface.pyx":463
  *         rewinds the suite to the initial state. """
  *         if 1 < 3:
  *             s = self             # <<<<<<<<<<<<<<
@@ -5797,14 +5800,14 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
   __Pyx_GIVEREF(((PyObject *)__pyx_cur_scope->__pyx_v_self));
   __pyx_cur_scope->__pyx_v_s = __pyx_cur_scope->__pyx_v_self;
 
-  /* "cython/interface.pyx":463
+  /* "cython/interface.pyx":464
  *         if 1 < 3:
  *             s = self
  *             s.reset()             # <<<<<<<<<<<<<<
  *         else:
  *             s = Suite(self.name, self.instance, self.options)
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_cur_scope->__pyx_v_s), __pyx_n_s_reset); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 463; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_cur_scope->__pyx_v_s), __pyx_n_s_reset); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 464; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -5817,16 +5820,16 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 463; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 464; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 463; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 464; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":466
+  /* "cython/interface.pyx":467
  *         else:
  *             s = Suite(self.name, self.instance, self.options)
  *         try:             # <<<<<<<<<<<<<<
@@ -5841,7 +5844,7 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
       __Pyx_XGOTREF(__pyx_t_6);
       /*try:*/ {
 
-        /* "cython/interface.pyx":467
+        /* "cython/interface.pyx":468
  *             s = Suite(self.name, self.instance, self.options)
  *         try:
  *             while True:             # <<<<<<<<<<<<<<
@@ -5850,7 +5853,7 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
  */
         while (1) {
 
-          /* "cython/interface.pyx":468
+          /* "cython/interface.pyx":469
  *         try:
  *             while True:
  *                 try:             # <<<<<<<<<<<<<<
@@ -5864,14 +5867,14 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
             __Pyx_XGOTREF(__pyx_t_9);
             /*try:*/ {
 
-              /* "cython/interface.pyx":469
+              /* "cython/interface.pyx":470
  *             while True:
  *                 try:
  *                     problem = s.next_problem()             # <<<<<<<<<<<<<<
  *                     if problem is None:
  *                         raise StopIteration
  */
-              __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_cur_scope->__pyx_v_s), __pyx_n_s_next_problem); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 469; __pyx_clineno = __LINE__; goto __pyx_L17_error;}
+              __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_cur_scope->__pyx_v_s), __pyx_n_s_next_problem); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L17_error;}
               __Pyx_GOTREF(__pyx_t_2);
               __pyx_t_3 = NULL;
               if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -5884,10 +5887,10 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
                 }
               }
               if (__pyx_t_3) {
-                __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 469; __pyx_clineno = __LINE__; goto __pyx_L17_error;}
+                __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L17_error;}
                 __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
               } else {
-                __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 469; __pyx_clineno = __LINE__; goto __pyx_L17_error;}
+                __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 470; __pyx_clineno = __LINE__; goto __pyx_L17_error;}
               }
               __Pyx_GOTREF(__pyx_t_1);
               __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -5896,7 +5899,7 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
               __Pyx_GIVEREF(__pyx_t_1);
               __pyx_t_1 = 0;
 
-              /* "cython/interface.pyx":470
+              /* "cython/interface.pyx":471
  *                 try:
  *                     problem = s.next_problem()
  *                     if problem is None:             # <<<<<<<<<<<<<<
@@ -5907,7 +5910,7 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
               __pyx_t_11 = (__pyx_t_10 != 0);
               if (__pyx_t_11) {
 
-                /* "cython/interface.pyx":471
+                /* "cython/interface.pyx":472
  *                     problem = s.next_problem()
  *                     if problem is None:
  *                         raise StopIteration             # <<<<<<<<<<<<<<
@@ -5915,9 +5918,9 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
  *                     raise StopIteration
  */
                 __Pyx_Raise(__pyx_builtin_StopIteration, 0, 0, 0);
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 471; __pyx_clineno = __LINE__; goto __pyx_L17_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 472; __pyx_clineno = __LINE__; goto __pyx_L17_error;}
 
-                /* "cython/interface.pyx":470
+                /* "cython/interface.pyx":471
  *                 try:
  *                     problem = s.next_problem()
  *                     if problem is None:             # <<<<<<<<<<<<<<
@@ -5926,7 +5929,7 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
  */
               }
 
-              /* "cython/interface.pyx":468
+              /* "cython/interface.pyx":469
  *         try:
  *             while True:
  *                 try:             # <<<<<<<<<<<<<<
@@ -5943,25 +5946,25 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
             __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
             __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-            /* "cython/interface.pyx":472
+            /* "cython/interface.pyx":473
  *                     if problem is None:
  *                         raise StopIteration
  *                 except NoSuchProblemException:             # <<<<<<<<<<<<<<
  *                     raise StopIteration
  *                 yield problem
  */
-            __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_NoSuchProblemException); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 472; __pyx_clineno = __LINE__; goto __pyx_L19_except_error;}
+            __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_NoSuchProblemException); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 473; __pyx_clineno = __LINE__; goto __pyx_L19_except_error;}
             __Pyx_GOTREF(__pyx_t_1);
             __pyx_t_12 = PyErr_ExceptionMatches(__pyx_t_1);
             __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
             if (__pyx_t_12) {
               __Pyx_AddTraceback("cocoex.interface.Suite.__iter__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-              if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_2, &__pyx_t_3) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 472; __pyx_clineno = __LINE__; goto __pyx_L19_except_error;}
+              if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_2, &__pyx_t_3) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 473; __pyx_clineno = __LINE__; goto __pyx_L19_except_error;}
               __Pyx_GOTREF(__pyx_t_1);
               __Pyx_GOTREF(__pyx_t_2);
               __Pyx_GOTREF(__pyx_t_3);
 
-              /* "cython/interface.pyx":473
+              /* "cython/interface.pyx":474
  *                         raise StopIteration
  *                 except NoSuchProblemException:
  *                     raise StopIteration             # <<<<<<<<<<<<<<
@@ -5969,12 +5972,12 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
  *         except:
  */
               __Pyx_Raise(__pyx_builtin_StopIteration, 0, 0, 0);
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 473; __pyx_clineno = __LINE__; goto __pyx_L19_except_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 474; __pyx_clineno = __LINE__; goto __pyx_L19_except_error;}
             }
             goto __pyx_L19_except_error;
             __pyx_L19_except_error:;
 
-            /* "cython/interface.pyx":468
+            /* "cython/interface.pyx":469
  *         try:
  *             while True:
  *                 try:             # <<<<<<<<<<<<<<
@@ -5989,7 +5992,7 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
             __pyx_L24_try_end:;
           }
 
-          /* "cython/interface.pyx":474
+          /* "cython/interface.pyx":475
  *                 except NoSuchProblemException:
  *                     raise StopIteration
  *                 yield problem             # <<<<<<<<<<<<<<
@@ -6019,10 +6022,10 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
           __pyx_t_6 = __pyx_cur_scope->__pyx_t_2;
           __pyx_cur_scope->__pyx_t_2 = 0;
           __Pyx_XGOTREF(__pyx_t_6);
-          if (unlikely(!__pyx_sent_value)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 474; __pyx_clineno = __LINE__; goto __pyx_L7_error;}
+          if (unlikely(!__pyx_sent_value)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 475; __pyx_clineno = __LINE__; goto __pyx_L7_error;}
         }
 
-        /* "cython/interface.pyx":466
+        /* "cython/interface.pyx":467
  *         else:
  *             s = Suite(self.name, self.instance, self.options)
  *         try:             # <<<<<<<<<<<<<<
@@ -6039,7 +6042,7 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
       __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-      /* "cython/interface.pyx":475
+      /* "cython/interface.pyx":476
  *                     raise StopIteration
  *                 yield problem
  *         except:             # <<<<<<<<<<<<<<
@@ -6048,12 +6051,12 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
  */
       /*except:*/ {
         __Pyx_AddTraceback("cocoex.interface.Suite.__iter__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-        if (__Pyx_GetException(&__pyx_t_3, &__pyx_t_2, &__pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 475; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
+        if (__Pyx_GetException(&__pyx_t_3, &__pyx_t_2, &__pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 476; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_GOTREF(__pyx_t_1);
 
-        /* "cython/interface.pyx":476
+        /* "cython/interface.pyx":477
  *                 yield problem
  *         except:
  *             raise             # <<<<<<<<<<<<<<
@@ -6065,11 +6068,11 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
         __Pyx_XGIVEREF(__pyx_t_1);
         __Pyx_ErrRestore(__pyx_t_3, __pyx_t_2, __pyx_t_1);
         __pyx_t_3 = 0; __pyx_t_2 = 0; __pyx_t_1 = 0; 
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 476; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 477; __pyx_clineno = __LINE__; goto __pyx_L9_except_error;}
       }
       __pyx_L9_except_error:;
 
-      /* "cython/interface.pyx":466
+      /* "cython/interface.pyx":467
  *         else:
  *             s = Suite(self.name, self.instance, self.options)
  *         try:             # <<<<<<<<<<<<<<
@@ -6085,7 +6088,7 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
     }
   }
 
-  /* "cython/interface.pyx":478
+  /* "cython/interface.pyx":479
  *             raise
  *         finally:  # makes this ctrl-c safe, at least it should
  *             s is self or s.free()             # <<<<<<<<<<<<<<
@@ -6097,13 +6100,13 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
       __pyx_t_11 = (__pyx_cur_scope->__pyx_v_s == __pyx_cur_scope->__pyx_v_self);
       if (!__pyx_t_11) {
       } else {
-        __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_11); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 478; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_11); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_2);
         __pyx_t_1 = __pyx_t_2;
         __pyx_t_2 = 0;
         goto __pyx_L31_bool_binop_done;
       }
-      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_cur_scope->__pyx_v_s), __pyx_n_s_free); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 478; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_cur_scope->__pyx_v_s), __pyx_n_s_free); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __pyx_t_13 = NULL;
       if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_3))) {
@@ -6116,10 +6119,10 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
         }
       }
       if (__pyx_t_13) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_13); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 478; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_13); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 478; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -6149,13 +6152,13 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
         __pyx_t_11 = (__pyx_cur_scope->__pyx_v_s == __pyx_cur_scope->__pyx_v_self);
         if (!__pyx_t_11) {
         } else {
-          __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_11); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 478; __pyx_clineno = __LINE__; goto __pyx_L34_error;}
+          __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_11); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L34_error;}
           __Pyx_GOTREF(__pyx_t_2);
           __pyx_t_1 = __pyx_t_2;
           __pyx_t_2 = 0;
           goto __pyx_L35_bool_binop_done;
         }
-        __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_cur_scope->__pyx_v_s), __pyx_n_s_free); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 478; __pyx_clineno = __LINE__; goto __pyx_L34_error;}
+        __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_cur_scope->__pyx_v_s), __pyx_n_s_free); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L34_error;}
         __Pyx_GOTREF(__pyx_t_3);
         __pyx_t_13 = NULL;
         if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_3))) {
@@ -6168,10 +6171,10 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
           }
         }
         if (__pyx_t_13) {
-          __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_13); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 478; __pyx_clineno = __LINE__; goto __pyx_L34_error;}
+          __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_13); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L34_error;}
           __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
         } else {
-          __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 478; __pyx_clineno = __LINE__; goto __pyx_L34_error;}
+          __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 479; __pyx_clineno = __LINE__; goto __pyx_L34_error;}
         }
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -6210,7 +6213,7 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
     __pyx_L6:;
   }
 
-  /* "cython/interface.pyx":455
+  /* "cython/interface.pyx":456
  *         return len(self._indices)
  * 
  *     def __iter__(self):             # <<<<<<<<<<<<<<
@@ -6235,7 +6238,7 @@ static PyObject *__pyx_gb_6cocoex_9interface_5Suite_46generator(__pyx_CoroutineO
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":495
+/* "cython/interface.pyx":496
  *     cdef _state
  * 
  *     def __cinit__(self, name, options):             # <<<<<<<<<<<<<<
@@ -6274,11 +6277,11 @@ static int __pyx_pw_6cocoex_9interface_8Observer_1__cinit__(PyObject *__pyx_v_se
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_options)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 495; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 496; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 495; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 496; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -6291,7 +6294,7 @@ static int __pyx_pw_6cocoex_9interface_8Observer_1__cinit__(PyObject *__pyx_v_se
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 495; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 496; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("cocoex.interface.Observer.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -6317,14 +6320,14 @@ static int __pyx_pf_6cocoex_9interface_8Observer___cinit__(struct __pyx_obj_6coc
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "cython/interface.pyx":496
+  /* "cython/interface.pyx":497
  * 
  *     def __cinit__(self, name, options):
  *         self._name = _bstring(name)             # <<<<<<<<<<<<<<
  *         self._options = _bstring(options if options is not None else "")
  *         self._observer = coco_observer(self._name, self._options)
  */
-  __pyx_t_1 = __pyx_f_6cocoex_9interface__bstring(__pyx_v_name); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 496; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_f_6cocoex_9interface__bstring(__pyx_v_name); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 497; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v_self->_name);
@@ -6332,7 +6335,7 @@ static int __pyx_pf_6cocoex_9interface_8Observer___cinit__(struct __pyx_obj_6coc
   __pyx_v_self->_name = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":497
+  /* "cython/interface.pyx":498
  *     def __cinit__(self, name, options):
  *         self._name = _bstring(name)
  *         self._options = _bstring(options if options is not None else "")             # <<<<<<<<<<<<<<
@@ -6347,7 +6350,7 @@ static int __pyx_pf_6cocoex_9interface_8Observer___cinit__(struct __pyx_obj_6coc
     __Pyx_INCREF(__pyx_kp_u__2);
     __pyx_t_1 = __pyx_kp_u__2;
   }
-  __pyx_t_3 = __pyx_f_6cocoex_9interface__bstring(__pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 497; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_f_6cocoex_9interface__bstring(__pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 498; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_GIVEREF(__pyx_t_3);
@@ -6356,18 +6359,18 @@ static int __pyx_pf_6cocoex_9interface_8Observer___cinit__(struct __pyx_obj_6coc
   __pyx_v_self->_options = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "cython/interface.pyx":498
+  /* "cython/interface.pyx":499
  *         self._name = _bstring(name)
  *         self._options = _bstring(options if options is not None else "")
  *         self._observer = coco_observer(self._name, self._options)             # <<<<<<<<<<<<<<
  *         self._state = 'initialized'
  * 
  */
-  __pyx_t_4 = __Pyx_PyObject_AsString(__pyx_v_self->_name); if (unlikely((!__pyx_t_4) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 498; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_5 = __Pyx_PyObject_AsString(__pyx_v_self->_options); if (unlikely((!__pyx_t_5) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 498; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_AsString(__pyx_v_self->_name); if (unlikely((!__pyx_t_4) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyObject_AsString(__pyx_v_self->_options); if (unlikely((!__pyx_t_5) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 499; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_self->_observer = coco_observer(__pyx_t_4, __pyx_t_5);
 
-  /* "cython/interface.pyx":499
+  /* "cython/interface.pyx":500
  *         self._options = _bstring(options if options is not None else "")
  *         self._observer = coco_observer(self._name, self._options)
  *         self._state = 'initialized'             # <<<<<<<<<<<<<<
@@ -6380,7 +6383,7 @@ static int __pyx_pf_6cocoex_9interface_8Observer___cinit__(struct __pyx_obj_6coc
   __Pyx_DECREF(__pyx_v_self->_state);
   __pyx_v_self->_state = __pyx_n_u_initialized;
 
-  /* "cython/interface.pyx":495
+  /* "cython/interface.pyx":496
  *     cdef _state
  * 
  *     def __cinit__(self, name, options):             # <<<<<<<<<<<<<<
@@ -6401,7 +6404,7 @@ static int __pyx_pf_6cocoex_9interface_8Observer___cinit__(struct __pyx_obj_6coc
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":501
+/* "cython/interface.pyx":502
  *         self._state = 'initialized'
  * 
  *     def _update_current_observer_global(self):             # <<<<<<<<<<<<<<
@@ -6429,7 +6432,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_2_update_current_observer
   coco_observer_t *__pyx_t_1;
   __Pyx_RefNannySetupContext("_update_current_observer_global", 0);
 
-  /* "cython/interface.pyx":505
+  /* "cython/interface.pyx":506
  *         for purely technical reasons"""
  *         global _current_observer
  *         _current_observer = self._observer             # <<<<<<<<<<<<<<
@@ -6439,7 +6442,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_2_update_current_observer
   __pyx_t_1 = __pyx_v_self->_observer;
   __pyx_v_6cocoex_9interface__current_observer = __pyx_t_1;
 
-  /* "cython/interface.pyx":501
+  /* "cython/interface.pyx":502
  *         self._state = 'initialized'
  * 
  *     def _update_current_observer_global(self):             # <<<<<<<<<<<<<<
@@ -6454,7 +6457,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_2_update_current_observer
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":507
+/* "cython/interface.pyx":508
  *         _current_observer = self._observer
  * 
  *     def observe(self, problem):             # <<<<<<<<<<<<<<
@@ -6488,14 +6491,14 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_4observe(struct __pyx_obj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("observe", 0);
 
-  /* "cython/interface.pyx":533
+  /* "cython/interface.pyx":534
  * 
  *         """
  *         self._update_current_observer_global()             # <<<<<<<<<<<<<<
  *         # problem.problem = coco_problem_add_observer(problem.problem, self._observer)
  *         # cannot be done here, because problem.problem is not recognized as C variable here
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update_current_observer_global); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 533; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update_current_observer_global); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 534; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -6508,23 +6511,23 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_4observe(struct __pyx_obj
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 533; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 534; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 533; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 534; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":537
+  /* "cython/interface.pyx":538
  *         # cannot be done here, because problem.problem is not recognized as C variable here
  *         # the alternative would be to pass the problem pointer to a global variable
  *         problem.add_observer(self)             # <<<<<<<<<<<<<<
  *         return self
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_problem, __pyx_n_s_add_observer); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 537; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_problem, __pyx_n_s_add_observer); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 538; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -6537,23 +6540,23 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_4observe(struct __pyx_obj
     }
   }
   if (!__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 537; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 538; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 537; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 538; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __pyx_t_3 = NULL;
     __Pyx_INCREF(((PyObject *)__pyx_v_self));
     __Pyx_GIVEREF(((PyObject *)__pyx_v_self));
     PyTuple_SET_ITEM(__pyx_t_4, 0+1, ((PyObject *)__pyx_v_self));
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 537; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 538; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":538
+  /* "cython/interface.pyx":539
  *         # the alternative would be to pass the problem pointer to a global variable
  *         problem.add_observer(self)
  *         return self             # <<<<<<<<<<<<<<
@@ -6565,7 +6568,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_4observe(struct __pyx_obj
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":507
+  /* "cython/interface.pyx":508
  *         _current_observer = self._observer
  * 
  *     def observe(self, problem):             # <<<<<<<<<<<<<<
@@ -6587,7 +6590,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_4observe(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":541
+/* "cython/interface.pyx":542
  * 
  *     @property
  *     def name(self):             # <<<<<<<<<<<<<<
@@ -6614,7 +6617,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_6name(struct __pyx_obj_6c
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("name", 0);
 
-  /* "cython/interface.pyx":545
+  /* "cython/interface.pyx":546
  *         `self` before.
  *         """
  *         return self._name             # <<<<<<<<<<<<<<
@@ -6626,7 +6629,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_6name(struct __pyx_obj_6c
   __pyx_r = __pyx_v_self->_name;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":541
+  /* "cython/interface.pyx":542
  * 
  *     @property
  *     def name(self):             # <<<<<<<<<<<<<<
@@ -6641,7 +6644,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_6name(struct __pyx_obj_6c
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":547
+/* "cython/interface.pyx":548
  *         return self._name
  *     @property
  *     def options(self):             # <<<<<<<<<<<<<<
@@ -6667,7 +6670,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_8options(struct __pyx_obj
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("options", 0);
 
-  /* "cython/interface.pyx":548
+  /* "cython/interface.pyx":549
  *     @property
  *     def options(self):
  *         return self._options             # <<<<<<<<<<<<<<
@@ -6679,7 +6682,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_8options(struct __pyx_obj
   __pyx_r = __pyx_v_self->_options;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":547
+  /* "cython/interface.pyx":548
  *         return self._name
  *     @property
  *     def options(self):             # <<<<<<<<<<<<<<
@@ -6694,7 +6697,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_8options(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":550
+/* "cython/interface.pyx":551
  *         return self._options
  *     @property
  *     def state(self):             # <<<<<<<<<<<<<<
@@ -6720,7 +6723,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_10state(struct __pyx_obj_
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("state", 0);
 
-  /* "cython/interface.pyx":551
+  /* "cython/interface.pyx":552
  *     @property
  *     def state(self):
  *         return self._state             # <<<<<<<<<<<<<<
@@ -6732,7 +6735,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_10state(struct __pyx_obj_
   __pyx_r = __pyx_v_self->_state;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":550
+  /* "cython/interface.pyx":551
  *         return self._options
  *     @property
  *     def state(self):             # <<<<<<<<<<<<<<
@@ -6747,7 +6750,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_10state(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":553
+/* "cython/interface.pyx":554
  *         return self._state
  * 
  *     def free(self):             # <<<<<<<<<<<<<<
@@ -6779,14 +6782,14 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_12free(struct __pyx_obj_6
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("free", 0);
 
-  /* "cython/interface.pyx":554
+  /* "cython/interface.pyx":555
  * 
  *     def free(self):
  *         self.__dealloc__()             # <<<<<<<<<<<<<<
  *         self._observer = NULL
  *         self._state = 'deactivated'
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_dealloc); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 554; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_dealloc); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 555; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -6799,16 +6802,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_12free(struct __pyx_obj_6
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 554; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 555; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 554; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 555; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":555
+  /* "cython/interface.pyx":556
  *     def free(self):
  *         self.__dealloc__()
  *         self._observer = NULL             # <<<<<<<<<<<<<<
@@ -6817,7 +6820,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_12free(struct __pyx_obj_6
  */
   __pyx_v_self->_observer = NULL;
 
-  /* "cython/interface.pyx":556
+  /* "cython/interface.pyx":557
  *         self.__dealloc__()
  *         self._observer = NULL
  *         self._state = 'deactivated'             # <<<<<<<<<<<<<<
@@ -6830,7 +6833,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_12free(struct __pyx_obj_6
   __Pyx_DECREF(__pyx_v_self->_state);
   __pyx_v_self->_state = __pyx_n_u_deactivated;
 
-  /* "cython/interface.pyx":553
+  /* "cython/interface.pyx":554
  *         return self._state
  * 
  *     def free(self):             # <<<<<<<<<<<<<<
@@ -6853,7 +6856,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_8Observer_12free(struct __pyx_obj_6
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":557
+/* "cython/interface.pyx":558
  *         self._observer = NULL
  *         self._state = 'deactivated'
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -6877,7 +6880,7 @@ static void __pyx_pf_6cocoex_9interface_8Observer_14__dealloc__(struct __pyx_obj
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "cython/interface.pyx":558
+  /* "cython/interface.pyx":559
  *         self._state = 'deactivated'
  *     def __dealloc__(self):
  *         if self._observer !=  NULL:             # <<<<<<<<<<<<<<
@@ -6887,7 +6890,7 @@ static void __pyx_pf_6cocoex_9interface_8Observer_14__dealloc__(struct __pyx_obj
   __pyx_t_1 = ((__pyx_v_self->_observer != NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":559
+    /* "cython/interface.pyx":560
  *     def __dealloc__(self):
  *         if self._observer !=  NULL:
  *             coco_observer_free(self._observer)             # <<<<<<<<<<<<<<
@@ -6896,7 +6899,7 @@ static void __pyx_pf_6cocoex_9interface_8Observer_14__dealloc__(struct __pyx_obj
  */
     coco_observer_free(__pyx_v_self->_observer);
 
-    /* "cython/interface.pyx":558
+    /* "cython/interface.pyx":559
  *         self._state = 'deactivated'
  *     def __dealloc__(self):
  *         if self._observer !=  NULL:             # <<<<<<<<<<<<<<
@@ -6905,7 +6908,7 @@ static void __pyx_pf_6cocoex_9interface_8Observer_14__dealloc__(struct __pyx_obj
  */
   }
 
-  /* "cython/interface.pyx":557
+  /* "cython/interface.pyx":558
  *         self._observer = NULL
  *         self._state = 'deactivated'
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -6917,7 +6920,7 @@ static void __pyx_pf_6cocoex_9interface_8Observer_14__dealloc__(struct __pyx_obj
   __Pyx_RefNannyFinishContext();
 }
 
-/* "cython/interface.pyx":561
+/* "cython/interface.pyx":562
  *             coco_observer_free(self._observer)
  * 
  * cdef Problem_init(coco_problem_t* problem, free=True, suite_name=None):             # <<<<<<<<<<<<<<
@@ -6946,19 +6949,19 @@ static PyObject *__pyx_f_6cocoex_9interface_Problem_init(coco_problem_t *__pyx_v
     }
   }
 
-  /* "cython/interface.pyx":567
+  /* "cython/interface.pyx":568
  *     This is necessary because __cinit__ cannot be defined as cdef, only as def.
  *     """
  *     res = Problem()             # <<<<<<<<<<<<<<
  *     res._suite_name = suite_name
  *     return res._initialize(problem, free)
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_6cocoex_9interface_Problem), __pyx_empty_tuple, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 567; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_6cocoex_9interface_Problem), __pyx_empty_tuple, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_res = ((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "cython/interface.pyx":568
+  /* "cython/interface.pyx":569
  *     """
  *     res = Problem()
  *     res._suite_name = suite_name             # <<<<<<<<<<<<<<
@@ -6971,7 +6974,7 @@ static PyObject *__pyx_f_6cocoex_9interface_Problem_init(coco_problem_t *__pyx_v
   __Pyx_DECREF(__pyx_v_res->_suite_name);
   __pyx_v_res->_suite_name = __pyx_v_suite_name;
 
-  /* "cython/interface.pyx":569
+  /* "cython/interface.pyx":570
  *     res = Problem()
  *     res._suite_name = suite_name
  *     return res._initialize(problem, free)             # <<<<<<<<<<<<<<
@@ -6981,13 +6984,13 @@ static PyObject *__pyx_f_6cocoex_9interface_Problem_init(coco_problem_t *__pyx_v
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.free = __pyx_v_free;
-  __pyx_t_1 = ((struct __pyx_vtabstruct_6cocoex_9interface_Problem *)__pyx_v_res->__pyx_vtab)->_initialize(__pyx_v_res, __pyx_v_problem, &__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 569; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = ((struct __pyx_vtabstruct_6cocoex_9interface_Problem *)__pyx_v_res->__pyx_vtab)->_initialize(__pyx_v_res, __pyx_v_problem, &__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":561
+  /* "cython/interface.pyx":562
  *             coco_observer_free(self._observer)
  * 
  * cdef Problem_init(coco_problem_t* problem, free=True, suite_name=None):             # <<<<<<<<<<<<<<
@@ -7007,7 +7010,7 @@ static PyObject *__pyx_f_6cocoex_9interface_Problem_init(coco_problem_t *__pyx_v
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":591
+/* "cython/interface.pyx":592
  *     cdef _do_free
  *     cdef initialized
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -7036,7 +7039,7 @@ static int __pyx_pf_6cocoex_9interface_7Problem___cinit__(struct __pyx_obj_6coco
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "cython/interface.pyx":593
+  /* "cython/interface.pyx":594
  *     def __cinit__(self):
  *         cdef np.npy_intp shape[1]
  *         self.initialized = False  # all done in _initialize             # <<<<<<<<<<<<<<
@@ -7049,7 +7052,7 @@ static int __pyx_pf_6cocoex_9interface_7Problem___cinit__(struct __pyx_obj_6coco
   __Pyx_DECREF(__pyx_v_self->initialized);
   __pyx_v_self->initialized = Py_False;
 
-  /* "cython/interface.pyx":591
+  /* "cython/interface.pyx":592
  *     cdef _do_free
  *     cdef initialized
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -7063,7 +7066,7 @@ static int __pyx_pf_6cocoex_9interface_7Problem___cinit__(struct __pyx_obj_6coco
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":594
+/* "cython/interface.pyx":595
  *         cdef np.npy_intp shape[1]
  *         self.initialized = False  # all done in _initialize
  *     cdef _initialize(self, coco_problem_t* problem, free=True):             # <<<<<<<<<<<<<<
@@ -7095,30 +7098,30 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
     }
   }
 
-  /* "cython/interface.pyx":596
+  /* "cython/interface.pyx":597
  *     cdef _initialize(self, coco_problem_t* problem, free=True):
  *         cdef np.npy_intp shape[1]
  *         if self.initialized:             # <<<<<<<<<<<<<<
  *             raise RuntimeError("Problem already initialized")
  *         if problem == NULL:
  */
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_self->initialized); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 596; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_self->initialized); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 597; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":597
+    /* "cython/interface.pyx":598
  *         cdef np.npy_intp shape[1]
  *         if self.initialized:
  *             raise RuntimeError("Problem already initialized")             # <<<<<<<<<<<<<<
  *         if problem == NULL:
  *             raise ValueError("in Problem._initialize(problem,...): problem is NULL")
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_RuntimeError, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 597; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_RuntimeError, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 598; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 597; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 598; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "cython/interface.pyx":596
+    /* "cython/interface.pyx":597
  *     cdef _initialize(self, coco_problem_t* problem, free=True):
  *         cdef np.npy_intp shape[1]
  *         if self.initialized:             # <<<<<<<<<<<<<<
@@ -7127,7 +7130,7 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
  */
   }
 
-  /* "cython/interface.pyx":598
+  /* "cython/interface.pyx":599
  *         if self.initialized:
  *             raise RuntimeError("Problem already initialized")
  *         if problem == NULL:             # <<<<<<<<<<<<<<
@@ -7137,20 +7140,20 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
   __pyx_t_1 = ((__pyx_v_problem == NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":599
+    /* "cython/interface.pyx":600
  *             raise RuntimeError("Problem already initialized")
  *         if problem == NULL:
  *             raise ValueError("in Problem._initialize(problem,...): problem is NULL")             # <<<<<<<<<<<<<<
  *         self.problem = problem
  *         self._problem_index = coco_problem_get_suite_dep_index(self.problem)
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 599; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 600; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 599; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 600; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "cython/interface.pyx":598
+    /* "cython/interface.pyx":599
  *         if self.initialized:
  *             raise RuntimeError("Problem already initialized")
  *         if problem == NULL:             # <<<<<<<<<<<<<<
@@ -7159,7 +7162,7 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
  */
   }
 
-  /* "cython/interface.pyx":600
+  /* "cython/interface.pyx":601
  *         if problem == NULL:
  *             raise ValueError("in Problem._initialize(problem,...): problem is NULL")
  *         self.problem = problem             # <<<<<<<<<<<<<<
@@ -7168,14 +7171,14 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
  */
   __pyx_v_self->problem = __pyx_v_problem;
 
-  /* "cython/interface.pyx":601
+  /* "cython/interface.pyx":602
  *             raise ValueError("in Problem._initialize(problem,...): problem is NULL")
  *         self.problem = problem
  *         self._problem_index = coco_problem_get_suite_dep_index(self.problem)             # <<<<<<<<<<<<<<
  *         self._do_free = free
  *         self._list_of_observers = []
  */
-  __pyx_t_2 = __Pyx_PyInt_FromSize_t(coco_problem_get_suite_dep_index(__pyx_v_self->problem)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 601; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyInt_FromSize_t(coco_problem_get_suite_dep_index(__pyx_v_self->problem)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 602; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_2);
   __Pyx_GOTREF(__pyx_v_self->_problem_index);
@@ -7183,7 +7186,7 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
   __pyx_v_self->_problem_index = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "cython/interface.pyx":602
+  /* "cython/interface.pyx":603
  *         self.problem = problem
  *         self._problem_index = coco_problem_get_suite_dep_index(self.problem)
  *         self._do_free = free             # <<<<<<<<<<<<<<
@@ -7196,14 +7199,14 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
   __Pyx_DECREF(__pyx_v_self->_do_free);
   __pyx_v_self->_do_free = __pyx_v_free;
 
-  /* "cython/interface.pyx":603
+  /* "cython/interface.pyx":604
  *         self._problem_index = coco_problem_get_suite_dep_index(self.problem)
  *         self._do_free = free
  *         self._list_of_observers = []             # <<<<<<<<<<<<<<
  *         # _problem_suite = _bstring(problem_suite)
  *         # self.problem_suite = _problem_suite
  */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 603; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 604; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_2);
   __Pyx_GOTREF(__pyx_v_self->_list_of_observers);
@@ -7211,7 +7214,7 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
   __pyx_v_self->_list_of_observers = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "cython/interface.pyx":608
+  /* "cython/interface.pyx":609
  *         # Implicit type conversion via passing safe,
  *         # see http://docs.cython.org/src/userguide/language_basics.html
  *         self._number_of_variables = coco_problem_get_dimension(self.problem)             # <<<<<<<<<<<<<<
@@ -7220,7 +7223,7 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
  */
   __pyx_v_self->_number_of_variables = coco_problem_get_dimension(__pyx_v_self->problem);
 
-  /* "cython/interface.pyx":609
+  /* "cython/interface.pyx":610
  *         # see http://docs.cython.org/src/userguide/language_basics.html
  *         self._number_of_variables = coco_problem_get_dimension(self.problem)
  *         self._number_of_objectives = coco_problem_get_number_of_objectives(self.problem)             # <<<<<<<<<<<<<<
@@ -7229,7 +7232,7 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
  */
   __pyx_v_self->_number_of_objectives = coco_problem_get_number_of_objectives(__pyx_v_self->problem);
 
-  /* "cython/interface.pyx":610
+  /* "cython/interface.pyx":611
  *         self._number_of_variables = coco_problem_get_dimension(self.problem)
  *         self._number_of_objectives = coco_problem_get_number_of_objectives(self.problem)
  *         self._number_of_constraints = coco_problem_get_number_of_constraints(self.problem)             # <<<<<<<<<<<<<<
@@ -7238,19 +7241,19 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
  */
   __pyx_v_self->_number_of_constraints = coco_problem_get_number_of_constraints(__pyx_v_self->problem);
 
-  /* "cython/interface.pyx":611
+  /* "cython/interface.pyx":612
  *         self._number_of_objectives = coco_problem_get_number_of_objectives(self.problem)
  *         self._number_of_constraints = coco_problem_get_number_of_constraints(self.problem)
  *         self.y = np.zeros(self._number_of_objectives)             # <<<<<<<<<<<<<<
  *         ## FIXME: Inefficient because we copy the bounds instead of
  *         ## sharing the data.
  */
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 612; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 612; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_objectives); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_objectives); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 612; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_5 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_4))) {
@@ -7263,49 +7266,49 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
     }
   }
   if (!__pyx_t_5) {
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 612; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_2);
   } else {
-    __pyx_t_6 = PyTuple_New(1+1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = PyTuple_New(1+1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 612; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_5); __pyx_t_5 = NULL;
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_6, 0+1, __pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 612; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 612; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GIVEREF(__pyx_t_2);
   __Pyx_GOTREF(__pyx_v_self->y);
   __Pyx_DECREF(((PyObject *)__pyx_v_self->y));
   __pyx_v_self->y = ((PyArrayObject *)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "cython/interface.pyx":614
+  /* "cython/interface.pyx":615
  *         ## FIXME: Inefficient because we copy the bounds instead of
  *         ## sharing the data.
  *         self._lower_bounds = -np.inf * np.ones(self._number_of_variables)             # <<<<<<<<<<<<<<
  *         self._upper_bounds = np.inf * np.ones(self._number_of_variables)
  *         # self.test_bounds = coco_problem_get_smallest_values_of_interest(self.problem)  # fails
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_inf); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_inf); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyNumber_Negative(__pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyNumber_Negative(__pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_ones); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_ones); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_variables); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_variables); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
   __pyx_t_5 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_3))) {
@@ -7318,50 +7321,50 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
     }
   }
   if (!__pyx_t_5) {
-    __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_6); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_6); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_GOTREF(__pyx_t_4);
   } else {
-    __pyx_t_7 = PyTuple_New(1+1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_7 = PyTuple_New(1+1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5); __pyx_t_5 = NULL;
     __Pyx_GIVEREF(__pyx_t_6);
     PyTuple_SET_ITEM(__pyx_t_7, 0+1, __pyx_t_6);
     __pyx_t_6 = 0;
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_7, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_7, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyNumber_Multiply(__pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyNumber_Multiply(__pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GIVEREF(__pyx_t_3);
   __Pyx_GOTREF(__pyx_v_self->_lower_bounds);
   __Pyx_DECREF(((PyObject *)__pyx_v_self->_lower_bounds));
   __pyx_v_self->_lower_bounds = ((PyArrayObject *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "cython/interface.pyx":615
+  /* "cython/interface.pyx":616
  *         ## sharing the data.
  *         self._lower_bounds = -np.inf * np.ones(self._number_of_variables)
  *         self._upper_bounds = np.inf * np.ones(self._number_of_variables)             # <<<<<<<<<<<<<<
  *         # self.test_bounds = coco_problem_get_smallest_values_of_interest(self.problem)  # fails
  *         for i in range(self._number_of_variables):
  */
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_inf); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_inf); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_ones); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_ones); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_variables); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_variables); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_6 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_7))) {
@@ -7374,33 +7377,33 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
     }
   }
   if (!__pyx_t_6) {
-    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_GOTREF(__pyx_t_3);
   } else {
-    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_6); __pyx_t_6 = NULL;
     __Pyx_GIVEREF(__pyx_t_2);
     PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_2);
     __pyx_t_2 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_5, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_5, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = PyNumber_Multiply(__pyx_t_4, __pyx_t_3); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_7 = PyNumber_Multiply(__pyx_t_4, __pyx_t_3); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (!(likely(((__pyx_t_7) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_7, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_7) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_7, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GIVEREF(__pyx_t_7);
   __Pyx_GOTREF(__pyx_v_self->_upper_bounds);
   __Pyx_DECREF(((PyObject *)__pyx_v_self->_upper_bounds));
   __pyx_v_self->_upper_bounds = ((PyArrayObject *)__pyx_t_7);
   __pyx_t_7 = 0;
 
-  /* "cython/interface.pyx":617
+  /* "cython/interface.pyx":618
  *         self._upper_bounds = np.inf * np.ones(self._number_of_variables)
  *         # self.test_bounds = coco_problem_get_smallest_values_of_interest(self.problem)  # fails
  *         for i in range(self._number_of_variables):             # <<<<<<<<<<<<<<
@@ -7411,7 +7414,7 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
   for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
     __pyx_v_i = __pyx_t_9;
 
-    /* "cython/interface.pyx":618
+    /* "cython/interface.pyx":619
  *         # self.test_bounds = coco_problem_get_smallest_values_of_interest(self.problem)  # fails
  *         for i in range(self._number_of_variables):
  *             if coco_problem_get_smallest_values_of_interest(self.problem) is not NULL:             # <<<<<<<<<<<<<<
@@ -7421,19 +7424,19 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
     __pyx_t_1 = ((coco_problem_get_smallest_values_of_interest(__pyx_v_self->problem) != NULL) != 0);
     if (__pyx_t_1) {
 
-      /* "cython/interface.pyx":619
+      /* "cython/interface.pyx":620
  *         for i in range(self._number_of_variables):
  *             if coco_problem_get_smallest_values_of_interest(self.problem) is not NULL:
  *                 self._lower_bounds[i] = coco_problem_get_smallest_values_of_interest(self.problem)[i]             # <<<<<<<<<<<<<<
  *             if coco_problem_get_largest_values_of_interest(self.problem) is not NULL:
  *                 self._upper_bounds[i] = coco_problem_get_largest_values_of_interest(self.problem)[i]
  */
-      __pyx_t_7 = PyFloat_FromDouble((coco_problem_get_smallest_values_of_interest(__pyx_v_self->problem)[__pyx_v_i])); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 619; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = PyFloat_FromDouble((coco_problem_get_smallest_values_of_interest(__pyx_v_self->problem)[__pyx_v_i])); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 620; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_7);
-      if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_self->_lower_bounds), __pyx_v_i, __pyx_t_7, size_t, 0, __Pyx_PyInt_FromSize_t, 0, 0, 1) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 619; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_self->_lower_bounds), __pyx_v_i, __pyx_t_7, size_t, 0, __Pyx_PyInt_FromSize_t, 0, 0, 1) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 620; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-      /* "cython/interface.pyx":618
+      /* "cython/interface.pyx":619
  *         # self.test_bounds = coco_problem_get_smallest_values_of_interest(self.problem)  # fails
  *         for i in range(self._number_of_variables):
  *             if coco_problem_get_smallest_values_of_interest(self.problem) is not NULL:             # <<<<<<<<<<<<<<
@@ -7442,7 +7445,7 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
  */
     }
 
-    /* "cython/interface.pyx":620
+    /* "cython/interface.pyx":621
  *             if coco_problem_get_smallest_values_of_interest(self.problem) is not NULL:
  *                 self._lower_bounds[i] = coco_problem_get_smallest_values_of_interest(self.problem)[i]
  *             if coco_problem_get_largest_values_of_interest(self.problem) is not NULL:             # <<<<<<<<<<<<<<
@@ -7452,19 +7455,19 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
     __pyx_t_1 = ((coco_problem_get_largest_values_of_interest(__pyx_v_self->problem) != NULL) != 0);
     if (__pyx_t_1) {
 
-      /* "cython/interface.pyx":621
+      /* "cython/interface.pyx":622
  *                 self._lower_bounds[i] = coco_problem_get_smallest_values_of_interest(self.problem)[i]
  *             if coco_problem_get_largest_values_of_interest(self.problem) is not NULL:
  *                 self._upper_bounds[i] = coco_problem_get_largest_values_of_interest(self.problem)[i]             # <<<<<<<<<<<<<<
  *         self.initialized = True
  *         return self
  */
-      __pyx_t_7 = PyFloat_FromDouble((coco_problem_get_largest_values_of_interest(__pyx_v_self->problem)[__pyx_v_i])); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_7 = PyFloat_FromDouble((coco_problem_get_largest_values_of_interest(__pyx_v_self->problem)[__pyx_v_i])); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_7);
-      if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_self->_upper_bounds), __pyx_v_i, __pyx_t_7, size_t, 0, __Pyx_PyInt_FromSize_t, 0, 0, 1) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_self->_upper_bounds), __pyx_v_i, __pyx_t_7, size_t, 0, __Pyx_PyInt_FromSize_t, 0, 0, 1) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-      /* "cython/interface.pyx":620
+      /* "cython/interface.pyx":621
  *             if coco_problem_get_smallest_values_of_interest(self.problem) is not NULL:
  *                 self._lower_bounds[i] = coco_problem_get_smallest_values_of_interest(self.problem)[i]
  *             if coco_problem_get_largest_values_of_interest(self.problem) is not NULL:             # <<<<<<<<<<<<<<
@@ -7474,7 +7477,7 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
     }
   }
 
-  /* "cython/interface.pyx":622
+  /* "cython/interface.pyx":623
  *             if coco_problem_get_largest_values_of_interest(self.problem) is not NULL:
  *                 self._upper_bounds[i] = coco_problem_get_largest_values_of_interest(self.problem)[i]
  *         self.initialized = True             # <<<<<<<<<<<<<<
@@ -7487,7 +7490,7 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
   __Pyx_DECREF(__pyx_v_self->initialized);
   __pyx_v_self->initialized = Py_True;
 
-  /* "cython/interface.pyx":623
+  /* "cython/interface.pyx":624
  *                 self._upper_bounds[i] = coco_problem_get_largest_values_of_interest(self.problem)[i]
  *         self.initialized = True
  *         return self             # <<<<<<<<<<<<<<
@@ -7499,7 +7502,7 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":594
+  /* "cython/interface.pyx":595
  *         cdef np.npy_intp shape[1]
  *         self.initialized = False  # all done in _initialize
  *     cdef _initialize(self, coco_problem_t* problem, free=True):             # <<<<<<<<<<<<<<
@@ -7523,7 +7526,7 @@ static PyObject *__pyx_f_6cocoex_9interface_7Problem__initialize(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":624
+/* "cython/interface.pyx":625
  *         self.initialized = True
  *         return self
  *     def constraint(self, x):             # <<<<<<<<<<<<<<
@@ -7554,20 +7557,20 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_2constraint(CYTHON_UNUSED 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("constraint", 0);
 
-  /* "cython/interface.pyx":629
+  /* "cython/interface.pyx":630
  *         By convention, constraints with values >= 0 are satisfied.
  *         """
  *         raise NotImplementedError("has never been tested, incomment this to start testing")             # <<<<<<<<<<<<<<
  *         cdef np.ndarray[double, ndim=1, mode="c"] _x
  *         x = np.array(x, copy=False, dtype=np.double, order='C')
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_NotImplementedError, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 629; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_NotImplementedError, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 630; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[0]; __pyx_lineno = 629; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[0]; __pyx_lineno = 630; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "cython/interface.pyx":624
+  /* "cython/interface.pyx":625
  *         self.initialized = True
  *         return self
  *     def constraint(self, x):             # <<<<<<<<<<<<<<
@@ -7585,7 +7588,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_2constraint(CYTHON_UNUSED 
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":644
+/* "cython/interface.pyx":645
  *                                <double *>np.PyArray_DATA(self.y))
  *         return self.y
  *     def recommend(self, arx):             # <<<<<<<<<<<<<<
@@ -7616,20 +7619,20 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_4recommend(CYTHON_UNUSED s
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("recommend", 0);
 
-  /* "cython/interface.pyx":650
+  /* "cython/interface.pyx":651
  *         for the assessment of the algorithm.
  *         """
  *         raise NotImplementedError("has never been tested, incomment this to start testing")             # <<<<<<<<<<<<<<
  *         cdef np.ndarray[double, ndim=1, mode="c"] _x
  *         x = np.array(x, copy=False, dtype=np.double, order='C')
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_NotImplementedError, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 650; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_NotImplementedError, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 651; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[0]; __pyx_lineno = 650; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[0]; __pyx_lineno = 651; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "cython/interface.pyx":644
+  /* "cython/interface.pyx":645
  *                                <double *>np.PyArray_DATA(self.y))
  *         return self.y
  *     def recommend(self, arx):             # <<<<<<<<<<<<<<
@@ -7647,7 +7650,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_4recommend(CYTHON_UNUSED s
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":663
+/* "cython/interface.pyx":664
  *         coco_recommend_solution(self.problem, <double *>np.PyArray_DATA(_x))
  * 
  *     def add_observer(self, observer):             # <<<<<<<<<<<<<<
@@ -7682,17 +7685,17 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6add_observer(struct __pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("add_observer", 0);
 
-  /* "cython/interface.pyx":668
+  /* "cython/interface.pyx":669
  *         `observer` can be `None`, in which case nothing is done.
  *         """
  *         if observer:             # <<<<<<<<<<<<<<
  *             assert self.problem
  *             observer._update_current_observer_global()
  */
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_observer); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 668; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_observer); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":669
+    /* "cython/interface.pyx":670
  *         """
  *         if observer:
  *             assert self.problem             # <<<<<<<<<<<<<<
@@ -7703,19 +7706,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6add_observer(struct __pyx
     if (unlikely(!Py_OptimizeFlag)) {
       if (unlikely(!(__pyx_v_self->problem != 0))) {
         PyErr_SetNone(PyExc_AssertionError);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 669; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 670; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
     }
     #endif
 
-    /* "cython/interface.pyx":670
+    /* "cython/interface.pyx":671
  *         if observer:
  *             assert self.problem
  *             observer._update_current_observer_global()             # <<<<<<<<<<<<<<
  *             self.problem = coco_problem_add_observer(self.problem, _current_observer)
  *             self._list_of_observers.append(observer)
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_observer, __pyx_n_s_update_current_observer_global); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 670; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_observer, __pyx_n_s_update_current_observer_global); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 671; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_4 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_3))) {
@@ -7728,16 +7731,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6add_observer(struct __pyx
       }
     }
     if (__pyx_t_4) {
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 670; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 671; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     } else {
-      __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 670; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 671; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "cython/interface.pyx":671
+    /* "cython/interface.pyx":672
  *             assert self.problem
  *             observer._update_current_observer_global()
  *             self.problem = coco_problem_add_observer(self.problem, _current_observer)             # <<<<<<<<<<<<<<
@@ -7746,16 +7749,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6add_observer(struct __pyx
  */
     __pyx_v_self->problem = coco_problem_add_observer(__pyx_v_self->problem, __pyx_v_6cocoex_9interface__current_observer);
 
-    /* "cython/interface.pyx":672
+    /* "cython/interface.pyx":673
  *             observer._update_current_observer_global()
  *             self.problem = coco_problem_add_observer(self.problem, _current_observer)
  *             self._list_of_observers.append(observer)             # <<<<<<<<<<<<<<
  *         return self
  * 
  */
-    __pyx_t_5 = __Pyx_PyObject_Append(__pyx_v_self->_list_of_observers, __pyx_v_observer); if (unlikely(__pyx_t_5 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 672; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyObject_Append(__pyx_v_self->_list_of_observers, __pyx_v_observer); if (unlikely(__pyx_t_5 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 673; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "cython/interface.pyx":668
+    /* "cython/interface.pyx":669
  *         `observer` can be `None`, in which case nothing is done.
  *         """
  *         if observer:             # <<<<<<<<<<<<<<
@@ -7764,7 +7767,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6add_observer(struct __pyx
  */
   }
 
-  /* "cython/interface.pyx":673
+  /* "cython/interface.pyx":674
  *             self.problem = coco_problem_add_observer(self.problem, _current_observer)
  *             self._list_of_observers.append(observer)
  *         return self             # <<<<<<<<<<<<<<
@@ -7776,7 +7779,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6add_observer(struct __pyx
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":663
+  /* "cython/interface.pyx":664
  *         coco_recommend_solution(self.problem, <double *>np.PyArray_DATA(_x))
  * 
  *     def add_observer(self, observer):             # <<<<<<<<<<<<<<
@@ -7797,7 +7800,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6add_observer(struct __pyx
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":675
+/* "cython/interface.pyx":676
  *         return self
  * 
  *     def _f0(self, x):             # <<<<<<<<<<<<<<
@@ -7831,7 +7834,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_8_f0(struct __pyx_obj_6coc
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_f0", 0);
 
-  /* "cython/interface.pyx":677
+  /* "cython/interface.pyx":678
  *     def _f0(self, x):
  *         """"inofficial" interface to `self` with target f-value of zero. """
  *         return self(x) - self.final_target_fvalue1             # <<<<<<<<<<<<<<
@@ -7851,23 +7854,23 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_8_f0(struct __pyx_obj_6coc
     }
   }
   if (!__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_x); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 677; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_x); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 677; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __pyx_t_3 = NULL;
     __Pyx_INCREF(__pyx_v_x);
     __Pyx_GIVEREF(__pyx_v_x);
     PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_x);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 677; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_final_target_fvalue1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 677; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_final_target_fvalue1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = PyNumber_Subtract(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 677; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyNumber_Subtract(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -7875,7 +7878,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_8_f0(struct __pyx_obj_6coc
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":675
+  /* "cython/interface.pyx":676
  *         return self
  * 
  *     def _f0(self, x):             # <<<<<<<<<<<<<<
@@ -7897,7 +7900,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_8_f0(struct __pyx_obj_6coc
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":680
+/* "cython/interface.pyx":681
  * 
  *     @property
  *     def list_of_observers(self):             # <<<<<<<<<<<<<<
@@ -7923,7 +7926,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_10list_of_observers(struct
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("list_of_observers", 0);
 
-  /* "cython/interface.pyx":681
+  /* "cython/interface.pyx":682
  *     @property
  *     def list_of_observers(self):
  *         return self._list_of_observers             # <<<<<<<<<<<<<<
@@ -7935,7 +7938,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_10list_of_observers(struct
   __pyx_r = __pyx_v_self->_list_of_observers;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":680
+  /* "cython/interface.pyx":681
  * 
  *     @property
  *     def list_of_observers(self):             # <<<<<<<<<<<<<<
@@ -7950,7 +7953,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_10list_of_observers(struct
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":685
+/* "cython/interface.pyx":686
  *         # this is a class definition which is instantiated automatically!?
  *         """Number of variables this problem instance expects as input."""
  *         def __get__(self):             # <<<<<<<<<<<<<<
@@ -7980,7 +7983,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_19number_of_variables___ge
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
 
-  /* "cython/interface.pyx":686
+  /* "cython/interface.pyx":687
  *         """Number of variables this problem instance expects as input."""
  *         def __get__(self):
  *             return self._number_of_variables             # <<<<<<<<<<<<<<
@@ -7988,13 +7991,13 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_19number_of_variables___ge
  *     def dimension(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_variables); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_variables); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 687; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":685
+  /* "cython/interface.pyx":686
  *         # this is a class definition which is instantiated automatically!?
  *         """Number of variables this problem instance expects as input."""
  *         def __get__(self):             # <<<<<<<<<<<<<<
@@ -8013,7 +8016,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_19number_of_variables___ge
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":688
+/* "cython/interface.pyx":689
  *             return self._number_of_variables
  *     @property
  *     def dimension(self):             # <<<<<<<<<<<<<<
@@ -8044,7 +8047,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_12dimension(struct __pyx_o
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("dimension", 0);
 
-  /* "cython/interface.pyx":690
+  /* "cython/interface.pyx":691
  *     def dimension(self):
  *         """alias for `number_of_variables` of the input space"""
  *         return self._number_of_variables             # <<<<<<<<<<<<<<
@@ -8052,13 +8055,13 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_12dimension(struct __pyx_o
  *     def number_of_objectives(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_variables); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 690; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_variables); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 691; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":688
+  /* "cython/interface.pyx":689
  *             return self._number_of_variables
  *     @property
  *     def dimension(self):             # <<<<<<<<<<<<<<
@@ -8077,7 +8080,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_12dimension(struct __pyx_o
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":692
+/* "cython/interface.pyx":693
  *         return self._number_of_variables
  *     @property
  *     def number_of_objectives(self):             # <<<<<<<<<<<<<<
@@ -8108,7 +8111,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_14number_of_objectives(str
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("number_of_objectives", 0);
 
-  /* "cython/interface.pyx":694
+  /* "cython/interface.pyx":695
  *     def number_of_objectives(self):
  *         "number of objectives, if equal to 1, call returns a scalar"
  *         return self._number_of_objectives             # <<<<<<<<<<<<<<
@@ -8116,13 +8119,13 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_14number_of_objectives(str
  *     def number_of_constraints(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_objectives); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 694; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_objectives); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 695; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":692
+  /* "cython/interface.pyx":693
  *         return self._number_of_variables
  *     @property
  *     def number_of_objectives(self):             # <<<<<<<<<<<<<<
@@ -8141,7 +8144,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_14number_of_objectives(str
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":696
+/* "cython/interface.pyx":697
  *         return self._number_of_objectives
  *     @property
  *     def number_of_constraints(self):             # <<<<<<<<<<<<<<
@@ -8172,7 +8175,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_16number_of_constraints(st
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("number_of_constraints", 0);
 
-  /* "cython/interface.pyx":698
+  /* "cython/interface.pyx":699
  *     def number_of_constraints(self):
  *         "number of constraints"
  *         return self._number_of_constraints             # <<<<<<<<<<<<<<
@@ -8180,13 +8183,13 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_16number_of_constraints(st
  *     def lower_bounds(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_constraints); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 698; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_self->_number_of_constraints); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 699; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":696
+  /* "cython/interface.pyx":697
  *         return self._number_of_objectives
  *     @property
  *     def number_of_constraints(self):             # <<<<<<<<<<<<<<
@@ -8205,7 +8208,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_16number_of_constraints(st
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":700
+/* "cython/interface.pyx":701
  *         return self._number_of_constraints
  *     @property
  *     def lower_bounds(self):             # <<<<<<<<<<<<<<
@@ -8232,7 +8235,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_18lower_bounds(struct __py
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("lower_bounds", 0);
 
-  /* "cython/interface.pyx":703
+  /* "cython/interface.pyx":704
  *         """depending on the test bed, these are not necessarily strict bounds
  *         """
  *         return self._lower_bounds             # <<<<<<<<<<<<<<
@@ -8244,7 +8247,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_18lower_bounds(struct __py
   __pyx_r = ((PyObject *)__pyx_v_self->_lower_bounds);
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":700
+  /* "cython/interface.pyx":701
  *         return self._number_of_constraints
  *     @property
  *     def lower_bounds(self):             # <<<<<<<<<<<<<<
@@ -8259,7 +8262,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_18lower_bounds(struct __py
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":705
+/* "cython/interface.pyx":706
  *         return self._lower_bounds
  *     @property
  *     def upper_bounds(self):             # <<<<<<<<<<<<<<
@@ -8286,7 +8289,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_20upper_bounds(struct __py
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("upper_bounds", 0);
 
-  /* "cython/interface.pyx":708
+  /* "cython/interface.pyx":709
  *         """depending on the test bed, these are not necessarily strict bounds
  *         """
  *         return self._upper_bounds             # <<<<<<<<<<<<<<
@@ -8298,7 +8301,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_20upper_bounds(struct __py
   __pyx_r = ((PyObject *)__pyx_v_self->_upper_bounds);
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":705
+  /* "cython/interface.pyx":706
  *         return self._lower_bounds
  *     @property
  *     def upper_bounds(self):             # <<<<<<<<<<<<<<
@@ -8313,7 +8316,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_20upper_bounds(struct __py
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":710
+/* "cython/interface.pyx":711
  *         return self._upper_bounds
  *     @property
  *     def evaluations(self):             # <<<<<<<<<<<<<<
@@ -8343,21 +8346,21 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_22evaluations(struct __pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("evaluations", 0);
 
-  /* "cython/interface.pyx":711
+  /* "cython/interface.pyx":712
  *     @property
  *     def evaluations(self):
  *         return coco_problem_get_evaluations(self.problem)             # <<<<<<<<<<<<<<
  *     @property
- *     def final_target_fvalue1(self):
+ *     def final_target_hit(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(coco_problem_get_evaluations(__pyx_v_self->problem)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 711; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(coco_problem_get_evaluations(__pyx_v_self->problem)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 712; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":710
+  /* "cython/interface.pyx":711
  *         return self._upper_bounds
  *     @property
  *     def evaluations(self):             # <<<<<<<<<<<<<<
@@ -8376,8 +8379,88 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_22evaluations(struct __pyx
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":713
+/* "cython/interface.pyx":714
  *         return coco_problem_get_evaluations(self.problem)
+ *     @property
+ *     def final_target_hit(self):             # <<<<<<<<<<<<<<
+ *         """return 1 if the final target is known and has been hit, 0 otherwise
+ *         """
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_25final_target_hit(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_6cocoex_9interface_7Problem_24final_target_hit[] = "return 1 if the final target is known and has been hit, 0 otherwise\n        ";
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_25final_target_hit(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("final_target_hit (wrapper)", 0);
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_24final_target_hit(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_24final_target_hit(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("final_target_hit", 0);
+
+  /* "cython/interface.pyx":717
+ *         """return 1 if the final target is known and has been hit, 0 otherwise
+ *         """
+ *         assert(self.problem)             # <<<<<<<<<<<<<<
+ *         return coco_problem_final_target_hit(self.problem)
+ *     @property
+ */
+  #ifndef CYTHON_WITHOUT_ASSERTIONS
+  if (unlikely(!Py_OptimizeFlag)) {
+    if (unlikely(!(__pyx_v_self->problem != 0))) {
+      PyErr_SetNone(PyExc_AssertionError);
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 717; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    }
+  }
+  #endif
+
+  /* "cython/interface.pyx":718
+ *         """
+ *         assert(self.problem)
+ *         return coco_problem_final_target_hit(self.problem)             # <<<<<<<<<<<<<<
+ *     @property
+ *     def final_target_fvalue1(self):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_int(coco_problem_final_target_hit(__pyx_v_self->problem)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 718; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "cython/interface.pyx":714
+ *         return coco_problem_get_evaluations(self.problem)
+ *     @property
+ *     def final_target_hit(self):             # <<<<<<<<<<<<<<
+ *         """return 1 if the final target is known and has been hit, 0 otherwise
+ *         """
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("cocoex.interface.Problem.final_target_hit", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "cython/interface.pyx":720
+ *         return coco_problem_final_target_hit(self.problem)
  *     @property
  *     def final_target_fvalue1(self):             # <<<<<<<<<<<<<<
  *         assert(self.problem)
@@ -8385,19 +8468,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_22evaluations(struct __pyx
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_25final_target_fvalue1(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_25final_target_fvalue1(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_27final_target_fvalue1(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_27final_target_fvalue1(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("final_target_fvalue1 (wrapper)", 0);
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_24final_target_fvalue1(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_26final_target_fvalue1(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_24final_target_fvalue1(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_26final_target_fvalue1(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -8406,7 +8489,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_24final_target_fvalue1(str
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("final_target_fvalue1", 0);
 
-  /* "cython/interface.pyx":714
+  /* "cython/interface.pyx":721
  *     @property
  *     def final_target_fvalue1(self):
  *         assert(self.problem)             # <<<<<<<<<<<<<<
@@ -8417,12 +8500,12 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_24final_target_fvalue1(str
   if (unlikely(!Py_OptimizeFlag)) {
     if (unlikely(!(__pyx_v_self->problem != 0))) {
       PyErr_SetNone(PyExc_AssertionError);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 721; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
   }
   #endif
 
-  /* "cython/interface.pyx":715
+  /* "cython/interface.pyx":722
  *     def final_target_fvalue1(self):
  *         assert(self.problem)
  *         return coco_problem_get_final_target_fvalue1(self.problem)             # <<<<<<<<<<<<<<
@@ -8430,14 +8513,14 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_24final_target_fvalue1(str
  *     def best_observed_fvalue1(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(coco_problem_get_final_target_fvalue1(__pyx_v_self->problem)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 715; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(coco_problem_get_final_target_fvalue1(__pyx_v_self->problem)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 722; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":713
- *         return coco_problem_get_evaluations(self.problem)
+  /* "cython/interface.pyx":720
+ *         return coco_problem_final_target_hit(self.problem)
  *     @property
  *     def final_target_fvalue1(self):             # <<<<<<<<<<<<<<
  *         assert(self.problem)
@@ -8455,7 +8538,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_24final_target_fvalue1(str
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":717
+/* "cython/interface.pyx":724
  *         return coco_problem_get_final_target_fvalue1(self.problem)
  *     @property
  *     def best_observed_fvalue1(self):             # <<<<<<<<<<<<<<
@@ -8464,19 +8547,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_24final_target_fvalue1(str
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_27best_observed_fvalue1(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_27best_observed_fvalue1(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_29best_observed_fvalue1(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_29best_observed_fvalue1(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("best_observed_fvalue1 (wrapper)", 0);
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_26best_observed_fvalue1(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_28best_observed_fvalue1(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_26best_observed_fvalue1(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_28best_observed_fvalue1(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -8485,7 +8568,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_26best_observed_fvalue1(st
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("best_observed_fvalue1", 0);
 
-  /* "cython/interface.pyx":718
+  /* "cython/interface.pyx":725
  *     @property
  *     def best_observed_fvalue1(self):
  *         assert(self.problem)             # <<<<<<<<<<<<<<
@@ -8496,12 +8579,12 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_26best_observed_fvalue1(st
   if (unlikely(!Py_OptimizeFlag)) {
     if (unlikely(!(__pyx_v_self->problem != 0))) {
       PyErr_SetNone(PyExc_AssertionError);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 718; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 725; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
   }
   #endif
 
-  /* "cython/interface.pyx":719
+  /* "cython/interface.pyx":726
  *     def best_observed_fvalue1(self):
  *         assert(self.problem)
  *         return coco_problem_get_best_observed_fvalue1(self.problem)             # <<<<<<<<<<<<<<
@@ -8509,13 +8592,13 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_26best_observed_fvalue1(st
  *     def free(self, force=False):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(coco_problem_get_best_observed_fvalue1(__pyx_v_self->problem)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 719; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyFloat_FromDouble(coco_problem_get_best_observed_fvalue1(__pyx_v_self->problem)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 726; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":717
+  /* "cython/interface.pyx":724
  *         return coco_problem_get_final_target_fvalue1(self.problem)
  *     @property
  *     def best_observed_fvalue1(self):             # <<<<<<<<<<<<<<
@@ -8534,7 +8617,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_26best_observed_fvalue1(st
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":721
+/* "cython/interface.pyx":728
  *         return coco_problem_get_best_observed_fvalue1(self.problem)
  * 
  *     def free(self, force=False):             # <<<<<<<<<<<<<<
@@ -8543,9 +8626,9 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_26best_observed_fvalue1(st
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_29free(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_6cocoex_9interface_7Problem_28free[] = "Free the given test problem.\n\n        Not strictly necessary (unless, possibly, for the observer). `free`\n        ensures that all files associated with the problem are closed as\n        soon as possible and any memory is freed. After free()ing the\n        problem, all other operations are invalid and will raise an\n        exception.\n        ";
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_29free(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_31free(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_6cocoex_9interface_7Problem_30free[] = "Free the given test problem.\n\n        Not strictly necessary (unless, possibly, for the observer). `free`\n        ensures that all files associated with the problem are closed as\n        soon as possible and any memory is freed. After free()ing the\n        problem, all other operations are invalid and will raise an\n        exception.\n        ";
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_31free(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_force = 0;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
@@ -8574,7 +8657,7 @@ static PyObject *__pyx_pw_6cocoex_9interface_7Problem_29free(PyObject *__pyx_v_s
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "free") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 721; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "free") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 728; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -8587,20 +8670,20 @@ static PyObject *__pyx_pw_6cocoex_9interface_7Problem_29free(PyObject *__pyx_v_s
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("free", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 721; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("free", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 728; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("cocoex.interface.Problem.free", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_28free(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self), __pyx_v_force);
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_30free(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self), __pyx_v_force);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_28free(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_force) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_30free(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_force) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -8610,7 +8693,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_28free(struct __pyx_obj_6c
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("free", 0);
 
-  /* "cython/interface.pyx":730
+  /* "cython/interface.pyx":737
  *         exception.
  *         """
  *         if self.problem != NULL and (self._do_free or force):             # <<<<<<<<<<<<<<
@@ -8623,18 +8706,18 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_28free(struct __pyx_obj_6c
     __pyx_t_1 = __pyx_t_2;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_self->_do_free); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 730; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_self->_do_free); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 737; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (!__pyx_t_2) {
   } else {
     __pyx_t_1 = __pyx_t_2;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_force); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 730; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_force); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 737; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_1 = __pyx_t_2;
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":731
+    /* "cython/interface.pyx":738
  *         """
  *         if self.problem != NULL and (self._do_free or force):
  *             coco_problem_free(self.problem)             # <<<<<<<<<<<<<<
@@ -8643,7 +8726,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_28free(struct __pyx_obj_6c
  */
     coco_problem_free(__pyx_v_self->problem);
 
-    /* "cython/interface.pyx":732
+    /* "cython/interface.pyx":739
  *         if self.problem != NULL and (self._do_free or force):
  *             coco_problem_free(self.problem)
  *             self.problem = NULL             # <<<<<<<<<<<<<<
@@ -8652,7 +8735,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_28free(struct __pyx_obj_6c
  */
     __pyx_v_self->problem = NULL;
 
-    /* "cython/interface.pyx":730
+    /* "cython/interface.pyx":737
  *         exception.
  *         """
  *         if self.problem != NULL and (self._do_free or force):             # <<<<<<<<<<<<<<
@@ -8661,7 +8744,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_28free(struct __pyx_obj_6c
  */
   }
 
-  /* "cython/interface.pyx":721
+  /* "cython/interface.pyx":728
  *         return coco_problem_get_best_observed_fvalue1(self.problem)
  * 
  *     def free(self, force=False):             # <<<<<<<<<<<<<<
@@ -8681,7 +8764,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_28free(struct __pyx_obj_6c
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":734
+/* "cython/interface.pyx":741
  *             self.problem = NULL
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -8690,17 +8773,17 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_28free(struct __pyx_obj_6c
  */
 
 /* Python wrapper */
-static void __pyx_pw_6cocoex_9interface_7Problem_31__dealloc__(PyObject *__pyx_v_self); /*proto*/
-static void __pyx_pw_6cocoex_9interface_7Problem_31__dealloc__(PyObject *__pyx_v_self) {
+static void __pyx_pw_6cocoex_9interface_7Problem_33__dealloc__(PyObject *__pyx_v_self); /*proto*/
+static void __pyx_pw_6cocoex_9interface_7Problem_33__dealloc__(PyObject *__pyx_v_self) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__ (wrapper)", 0);
-  __pyx_pf_6cocoex_9interface_7Problem_30__dealloc__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
+  __pyx_pf_6cocoex_9interface_7Problem_32__dealloc__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
 }
 
-static void __pyx_pf_6cocoex_9interface_7Problem_30__dealloc__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
+static void __pyx_pf_6cocoex_9interface_7Problem_32__dealloc__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -8709,14 +8792,14 @@ static void __pyx_pf_6cocoex_9interface_7Problem_30__dealloc__(struct __pyx_obj_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "cython/interface.pyx":738
+  /* "cython/interface.pyx":745
  *         # free let the problem_free() call(s) in coco_suite_t crash, hence
  *         # the possibility to set _do_free = False
  *         if self._do_free and self.problem != NULL:  # this is not guaranteed to work, see above link             # <<<<<<<<<<<<<<
  *             coco_problem_free(self.problem)
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_self->_do_free); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 738; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_self->_do_free); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 745; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (__pyx_t_2) {
   } else {
     __pyx_t_1 = __pyx_t_2;
@@ -8727,7 +8810,7 @@ static void __pyx_pf_6cocoex_9interface_7Problem_30__dealloc__(struct __pyx_obj_
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":739
+    /* "cython/interface.pyx":746
  *         # the possibility to set _do_free = False
  *         if self._do_free and self.problem != NULL:  # this is not guaranteed to work, see above link
  *             coco_problem_free(self.problem)             # <<<<<<<<<<<<<<
@@ -8736,7 +8819,7 @@ static void __pyx_pf_6cocoex_9interface_7Problem_30__dealloc__(struct __pyx_obj_
  */
     coco_problem_free(__pyx_v_self->problem);
 
-    /* "cython/interface.pyx":738
+    /* "cython/interface.pyx":745
  *         # free let the problem_free() call(s) in coco_suite_t crash, hence
  *         # the possibility to set _do_free = False
  *         if self._do_free and self.problem != NULL:  # this is not guaranteed to work, see above link             # <<<<<<<<<<<<<<
@@ -8745,7 +8828,7 @@ static void __pyx_pf_6cocoex_9interface_7Problem_30__dealloc__(struct __pyx_obj_
  */
   }
 
-  /* "cython/interface.pyx":734
+  /* "cython/interface.pyx":741
  *             self.problem = NULL
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -8761,7 +8844,7 @@ static void __pyx_pf_6cocoex_9interface_7Problem_30__dealloc__(struct __pyx_obj_
   __Pyx_RefNannyFinishContext();
 }
 
-/* "cython/interface.pyx":742
+/* "cython/interface.pyx":749
  * 
  *     # def __call__(self, np.ndarray[double, ndim=1, mode="c"] x):
  *     def __call__(self, x):             # <<<<<<<<<<<<<<
@@ -8770,12 +8853,12 @@ static void __pyx_pf_6cocoex_9interface_7Problem_30__dealloc__(struct __pyx_obj_
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_33__call__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_6cocoex_9interface_7Problem_32__call__[] = "return objective function value of input `x`";
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_35__call__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_6cocoex_9interface_7Problem_34__call__[] = "return objective function value of input `x`";
 #if CYTHON_COMPILING_IN_CPYTHON
-struct wrapperbase __pyx_wrapperbase_6cocoex_9interface_7Problem_32__call__;
+struct wrapperbase __pyx_wrapperbase_6cocoex_9interface_7Problem_34__call__;
 #endif
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_33__call__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_35__call__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_x = 0;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
@@ -8801,7 +8884,7 @@ static PyObject *__pyx_pw_6cocoex_9interface_7Problem_33__call__(PyObject *__pyx
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__call__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 742; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__call__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 749; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
       goto __pyx_L5_argtuple_error;
@@ -8812,20 +8895,20 @@ static PyObject *__pyx_pw_6cocoex_9interface_7Problem_33__call__(PyObject *__pyx
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__call__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 742; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__call__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 749; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("cocoex.interface.Problem.__call__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_32__call__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self), __pyx_v_x);
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_34__call__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self), __pyx_v_x);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_x) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_34__call__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_x) {
   PyArrayObject *__pyx_v__x = 0;
   __Pyx_LocalBuf_ND __pyx_pybuffernd__x;
   __Pyx_Buffer __pyx_pybuffer__x;
@@ -8851,7 +8934,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
   __pyx_pybuffernd__x.data = NULL;
   __pyx_pybuffernd__x.rcbuffer = &__pyx_pybuffer__x;
 
-  /* "cython/interface.pyx":745
+  /* "cython/interface.pyx":752
  *         """return objective function value of input `x`"""
  *         cdef np.ndarray[double, ndim=1, mode="c"] _x
  *         assert self.initialized             # <<<<<<<<<<<<<<
@@ -8860,43 +8943,43 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
  */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(!Py_OptimizeFlag)) {
-    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_self->initialized); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 745; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_self->initialized); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 752; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     if (unlikely(!__pyx_t_1)) {
       PyErr_SetNone(PyExc_AssertionError);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 745; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 752; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
   }
   #endif
 
-  /* "cython/interface.pyx":746
+  /* "cython/interface.pyx":753
  *         cdef np.ndarray[double, ndim=1, mode="c"] _x
  *         assert self.initialized
  *         x = np.array(x, copy=False, dtype=np.double, order='C')             # <<<<<<<<<<<<<<
  *         if np.size(x) != self.number_of_variables:
  *             raise ValueError(
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_array); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_array); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_x);
   __Pyx_GIVEREF(__pyx_v_x);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_x);
-  __pyx_t_4 = PyDict_New(); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyDict_New(); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_copy, Py_False) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_copy, Py_False) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_double); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_double); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_6) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_6) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_order, __pyx_n_u_C) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_order, __pyx_n_u_C) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -8904,16 +8987,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
   __Pyx_DECREF_SET(__pyx_v_x, __pyx_t_6);
   __pyx_t_6 = 0;
 
-  /* "cython/interface.pyx":747
+  /* "cython/interface.pyx":754
  *         assert self.initialized
  *         x = np.array(x, copy=False, dtype=np.double, order='C')
  *         if np.size(x) != self.number_of_variables:             # <<<<<<<<<<<<<<
  *             raise ValueError(
  *                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
  */
-  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 747; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_size); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 747; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_size); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -8927,39 +9010,39 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
     }
   }
   if (!__pyx_t_4) {
-    __pyx_t_6 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_x); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 747; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_x); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
   } else {
-    __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 747; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4); __pyx_t_4 = NULL;
     __Pyx_INCREF(__pyx_v_x);
     __Pyx_GIVEREF(__pyx_v_x);
     PyTuple_SET_ITEM(__pyx_t_3, 0+1, __pyx_v_x);
-    __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 747; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_number_of_variables); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 747; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_number_of_variables); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyObject_RichCompare(__pyx_t_6, __pyx_t_2, Py_NE); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 747; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyObject_RichCompare(__pyx_t_6, __pyx_t_2, Py_NE); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 747; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":749
+    /* "cython/interface.pyx":756
  *         if np.size(x) != self.number_of_variables:
  *             raise ValueError(
  *                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +             # <<<<<<<<<<<<<<
  *                 "not match the problem dimension `number_of_variables==%d`."
  *                              % self.number_of_variables)
  */
-    __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 749; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 756; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_size); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 749; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_size); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 756; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_2 = NULL;
@@ -8973,69 +9056,69 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
       }
     }
     if (!__pyx_t_2) {
-      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_x); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 749; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_x); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 756; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
     } else {
-      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 749; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 756; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2); __pyx_t_2 = NULL;
       __Pyx_INCREF(__pyx_v_x);
       __Pyx_GIVEREF(__pyx_v_x);
       PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_x);
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 749; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 756; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = PyUnicode_Format(__pyx_kp_u_Dimension_np_size_x_d_of_input_x, __pyx_t_3); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 749; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = PyUnicode_Format(__pyx_kp_u_Dimension_np_size_x_d_of_input_x, __pyx_t_3); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 756; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":751
+    /* "cython/interface.pyx":758
  *                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
  *                 "not match the problem dimension `number_of_variables==%d`."
  *                              % self.number_of_variables)             # <<<<<<<<<<<<<<
  *         _x = x  # this is the final type conversion
  *         if self.problem is NULL:
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_number_of_variables); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 751; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_number_of_variables); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 758; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = PyUnicode_Format(__pyx_kp_u_not_match_the_problem_dimension, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 751; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyUnicode_Format(__pyx_kp_u_not_match_the_problem_dimension, __pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 758; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":749
+    /* "cython/interface.pyx":756
  *         if np.size(x) != self.number_of_variables:
  *             raise ValueError(
  *                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +             # <<<<<<<<<<<<<<
  *                 "not match the problem dimension `number_of_variables==%d`."
  *                              % self.number_of_variables)
  */
-    __pyx_t_3 = __Pyx_PyUnicode_Concat(__pyx_t_6, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 749; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyUnicode_Concat(__pyx_t_6, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 756; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "cython/interface.pyx":748
+    /* "cython/interface.pyx":755
  *         x = np.array(x, copy=False, dtype=np.double, order='C')
  *         if np.size(x) != self.number_of_variables:
  *             raise ValueError(             # <<<<<<<<<<<<<<
  *                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
  *                 "not match the problem dimension `number_of_variables==%d`."
  */
-    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 748; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 755; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 748; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 755; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 748; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 755; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "cython/interface.pyx":747
+    /* "cython/interface.pyx":754
  *         assert self.initialized
  *         x = np.array(x, copy=False, dtype=np.double, order='C')
  *         if np.size(x) != self.number_of_variables:             # <<<<<<<<<<<<<<
@@ -9044,14 +9127,14 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
  */
   }
 
-  /* "cython/interface.pyx":752
+  /* "cython/interface.pyx":759
  *                 "not match the problem dimension `number_of_variables==%d`."
  *                              % self.number_of_variables)
  *         _x = x  # this is the final type conversion             # <<<<<<<<<<<<<<
  *         if self.problem is NULL:
  *             raise InvalidProblemException()
  */
-  if (!(likely(((__pyx_v_x) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_x, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 752; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_v_x) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_x, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 759; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_3 = __pyx_v_x;
   __Pyx_INCREF(__pyx_t_3);
   {
@@ -9068,12 +9151,12 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
       }
     }
     __pyx_pybuffernd__x.diminfo[0].strides = __pyx_pybuffernd__x.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd__x.diminfo[0].shape = __pyx_pybuffernd__x.rcbuffer->pybuffer.shape[0];
-    if (unlikely(__pyx_t_7 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 752; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__pyx_t_7 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 759; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_v__x = ((PyArrayObject *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "cython/interface.pyx":753
+  /* "cython/interface.pyx":760
  *                              % self.number_of_variables)
  *         _x = x  # this is the final type conversion
  *         if self.problem is NULL:             # <<<<<<<<<<<<<<
@@ -9083,14 +9166,14 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
   __pyx_t_1 = ((__pyx_v_self->problem == NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":754
+    /* "cython/interface.pyx":761
  *         _x = x  # this is the final type conversion
  *         if self.problem is NULL:
  *             raise InvalidProblemException()             # <<<<<<<<<<<<<<
  *         coco_evaluate_function(self.problem,
  *                                <double *>np.PyArray_DATA(_x),
  */
-    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_InvalidProblemException); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_InvalidProblemException); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_6 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_4))) {
@@ -9103,18 +9186,18 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
       }
     }
     if (__pyx_t_6) {
-      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     } else {
-      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "cython/interface.pyx":753
+    /* "cython/interface.pyx":760
  *                              % self.number_of_variables)
  *         _x = x  # this is the final type conversion
  *         if self.problem is NULL:             # <<<<<<<<<<<<<<
@@ -9123,7 +9206,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
  */
   }
 
-  /* "cython/interface.pyx":757
+  /* "cython/interface.pyx":764
  *         coco_evaluate_function(self.problem,
  *                                <double *>np.PyArray_DATA(_x),
  *                                <double *>np.PyArray_DATA(self.y))             # <<<<<<<<<<<<<<
@@ -9133,7 +9216,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
   __pyx_t_3 = ((PyObject *)__pyx_v_self->y);
   __Pyx_INCREF(__pyx_t_3);
 
-  /* "cython/interface.pyx":755
+  /* "cython/interface.pyx":762
  *         if self.problem is NULL:
  *             raise InvalidProblemException()
  *         coco_evaluate_function(self.problem,             # <<<<<<<<<<<<<<
@@ -9143,7 +9226,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
   coco_evaluate_function(__pyx_v_self->problem, ((double *)PyArray_DATA(((PyArrayObject *)__pyx_v__x))), ((double *)PyArray_DATA(((PyArrayObject *)__pyx_t_3))));
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "cython/interface.pyx":758
+  /* "cython/interface.pyx":765
  *                                <double *>np.PyArray_DATA(_x),
  *                                <double *>np.PyArray_DATA(self.y))
  *         return self.y[0] if self._number_of_objectives == 1 else self.y             # <<<<<<<<<<<<<<
@@ -9152,7 +9235,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
  */
   __Pyx_XDECREF(__pyx_r);
   if (((__pyx_v_self->_number_of_objectives == 1) != 0)) {
-    __pyx_t_4 = __Pyx_GetItemInt(((PyObject *)__pyx_v_self->y), 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_4 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 758; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_4 = __Pyx_GetItemInt(((PyObject *)__pyx_v_self->y), 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_4 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 765; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = __pyx_t_4;
     __pyx_t_4 = 0;
@@ -9164,7 +9247,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":742
+  /* "cython/interface.pyx":749
  * 
  *     # def __call__(self, np.ndarray[double, ndim=1, mode="c"] x):
  *     def __call__(self, x):             # <<<<<<<<<<<<<<
@@ -9196,7 +9279,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":761
+/* "cython/interface.pyx":768
  * 
  *     @property
  *     def id(self):             # <<<<<<<<<<<<<<
@@ -9205,20 +9288,20 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_32__call__(struct __pyx_ob
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_35id(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_6cocoex_9interface_7Problem_34id[] = "id as string without spaces or weird characters";
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_35id(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_37id(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_6cocoex_9interface_7Problem_36id[] = "id as string without spaces or weird characters";
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_37id(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("id (wrapper)", 0);
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_34id(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_36id(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_34id(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_36id(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -9228,7 +9311,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_34id(struct __pyx_obj_6coc
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("id", 0);
 
-  /* "cython/interface.pyx":763
+  /* "cython/interface.pyx":770
  *     def id(self):
  *         "id as string without spaces or weird characters"
  *         if self.problem is not NULL:             # <<<<<<<<<<<<<<
@@ -9238,7 +9321,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_34id(struct __pyx_obj_6coc
   __pyx_t_1 = ((__pyx_v_self->problem != NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":764
+    /* "cython/interface.pyx":771
  *         "id as string without spaces or weird characters"
  *         if self.problem is not NULL:
  *             return coco_problem_get_id(self.problem)             # <<<<<<<<<<<<<<
@@ -9246,13 +9329,13 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_34id(struct __pyx_obj_6coc
  *     @property
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_2 = __Pyx_PyStr_FromString(coco_problem_get_id(__pyx_v_self->problem)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 764; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyStr_FromString(coco_problem_get_id(__pyx_v_self->problem)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 771; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_r = __pyx_t_2;
     __pyx_t_2 = 0;
     goto __pyx_L0;
 
-    /* "cython/interface.pyx":763
+    /* "cython/interface.pyx":770
  *     def id(self):
  *         "id as string without spaces or weird characters"
  *         if self.problem is not NULL:             # <<<<<<<<<<<<<<
@@ -9261,7 +9344,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_34id(struct __pyx_obj_6coc
  */
   }
 
-  /* "cython/interface.pyx":761
+  /* "cython/interface.pyx":768
  * 
  *     @property
  *     def id(self):             # <<<<<<<<<<<<<<
@@ -9282,7 +9365,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_34id(struct __pyx_obj_6coc
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":767
+/* "cython/interface.pyx":774
  * 
  *     @property
  *     def name(self):             # <<<<<<<<<<<<<<
@@ -9291,19 +9374,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_34id(struct __pyx_obj_6coc
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_37name(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_37name(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_39name(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_39name(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("name (wrapper)", 0);
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_36name(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_38name(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_36name(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_38name(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -9313,7 +9396,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_36name(struct __pyx_obj_6c
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("name", 0);
 
-  /* "cython/interface.pyx":768
+  /* "cython/interface.pyx":775
  *     @property
  *     def name(self):
  *         if self.problem is not NULL:             # <<<<<<<<<<<<<<
@@ -9323,7 +9406,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_36name(struct __pyx_obj_6c
   __pyx_t_1 = ((__pyx_v_self->problem != NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":769
+    /* "cython/interface.pyx":776
  *     def name(self):
  *         if self.problem is not NULL:
  *             return coco_problem_get_name(self.problem)             # <<<<<<<<<<<<<<
@@ -9331,13 +9414,13 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_36name(struct __pyx_obj_6c
  *     @property
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_2 = __Pyx_PyStr_FromString(coco_problem_get_name(__pyx_v_self->problem)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 769; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyStr_FromString(coco_problem_get_name(__pyx_v_self->problem)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_r = __pyx_t_2;
     __pyx_t_2 = 0;
     goto __pyx_L0;
 
-    /* "cython/interface.pyx":768
+    /* "cython/interface.pyx":775
  *     @property
  *     def name(self):
  *         if self.problem is not NULL:             # <<<<<<<<<<<<<<
@@ -9346,7 +9429,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_36name(struct __pyx_obj_6c
  */
   }
 
-  /* "cython/interface.pyx":767
+  /* "cython/interface.pyx":774
  * 
  *     @property
  *     def name(self):             # <<<<<<<<<<<<<<
@@ -9367,7 +9450,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_36name(struct __pyx_obj_6c
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":772
+/* "cython/interface.pyx":779
  * 
  *     @property
  *     def index(self):             # <<<<<<<<<<<<<<
@@ -9376,25 +9459,25 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_36name(struct __pyx_obj_6c
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_39index(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_6cocoex_9interface_7Problem_38index[] = "problem index in the benchmark `Suite` of origin";
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_39index(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_41index(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_6cocoex_9interface_7Problem_40index[] = "problem index in the benchmark `Suite` of origin";
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_41index(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("index (wrapper)", 0);
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_38index(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_40index(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_38index(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_40index(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("index", 0);
 
-  /* "cython/interface.pyx":774
+  /* "cython/interface.pyx":781
  *     def index(self):
  *         """problem index in the benchmark `Suite` of origin"""
  *         return self._problem_index             # <<<<<<<<<<<<<<
@@ -9406,7 +9489,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_38index(struct __pyx_obj_6
   __pyx_r = __pyx_v_self->_problem_index;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":772
+  /* "cython/interface.pyx":779
  * 
  *     @property
  *     def index(self):             # <<<<<<<<<<<<<<
@@ -9421,7 +9504,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_38index(struct __pyx_obj_6
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":777
+/* "cython/interface.pyx":784
  * 
  *     @property
  *     def suite(self):             # <<<<<<<<<<<<<<
@@ -9430,25 +9513,25 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_38index(struct __pyx_obj_6
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_41suite(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_6cocoex_9interface_7Problem_40suite[] = "benchmark suite this problem is from";
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_41suite(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_43suite(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_6cocoex_9interface_7Problem_42suite[] = "benchmark suite this problem is from";
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_43suite(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("suite (wrapper)", 0);
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_40suite(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_42suite(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_40suite(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_42suite(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("suite", 0);
 
-  /* "cython/interface.pyx":779
+  /* "cython/interface.pyx":786
  *     def suite(self):
  *         """benchmark suite this problem is from"""
  *         return self._suite_name             # <<<<<<<<<<<<<<
@@ -9460,7 +9543,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_40suite(struct __pyx_obj_6
   __pyx_r = __pyx_v_self->_suite_name;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":777
+  /* "cython/interface.pyx":784
  * 
  *     @property
  *     def suite(self):             # <<<<<<<<<<<<<<
@@ -9475,7 +9558,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_40suite(struct __pyx_obj_6
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":782
+/* "cython/interface.pyx":789
  * 
  *     @property
  *     def info(self):             # <<<<<<<<<<<<<<
@@ -9484,19 +9567,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_40suite(struct __pyx_obj_6
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_43info(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_43info(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_45info(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_45info(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("info (wrapper)", 0);
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_42info(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_44info(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_42info(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44info(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -9506,7 +9589,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_42info(struct __pyx_obj_6c
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("info", 0);
 
-  /* "cython/interface.pyx":783
+  /* "cython/interface.pyx":790
  *     @property
  *     def info(self):
  *         return str(self)             # <<<<<<<<<<<<<<
@@ -9514,19 +9597,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_42info(struct __pyx_obj_6c
  *     def __str__(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 783; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 790; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(((PyObject *)__pyx_v_self));
   __Pyx_GIVEREF(((PyObject *)__pyx_v_self));
   PyTuple_SET_ITEM(__pyx_t_1, 0, ((PyObject *)__pyx_v_self));
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 783; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 790; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":782
+  /* "cython/interface.pyx":789
  * 
  *     @property
  *     def info(self):             # <<<<<<<<<<<<<<
@@ -9546,7 +9629,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_42info(struct __pyx_obj_6c
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":785
+/* "cython/interface.pyx":792
  *         return str(self)
  * 
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -9555,19 +9638,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_42info(struct __pyx_obj_6c
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_45__str__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_45__str__(PyObject *__pyx_v_self) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_47__str__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_47__str__(PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__str__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_44__str__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_46__str__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__str__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
   PyObject *__pyx_v_objective = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -9585,7 +9668,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__str__", 0);
 
-  /* "cython/interface.pyx":786
+  /* "cython/interface.pyx":793
  * 
  *     def __str__(self):
  *         if self.problem is not NULL:             # <<<<<<<<<<<<<<
@@ -9595,60 +9678,60 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
   __pyx_t_1 = ((__pyx_v_self->problem != NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":788
+    /* "cython/interface.pyx":795
  *         if self.problem is not NULL:
  *             objective = "%s-objective" % ('single'
  *                     if self.number_of_objectives == 1             # <<<<<<<<<<<<<<
  *                     else str(self.number_of_objectives))
  *             return "%s %s problem (%s)" % (self.id, objective,
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_number_of_objectives); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 788; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_number_of_objectives); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 795; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyInt_EqObjC(__pyx_t_3, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 788; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyInt_EqObjC(__pyx_t_3, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 795; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 788; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_1 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 795; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (__pyx_t_1) {
       __Pyx_INCREF(__pyx_n_u_single);
       __pyx_t_2 = __pyx_n_u_single;
     } else {
 
-      /* "cython/interface.pyx":789
+      /* "cython/interface.pyx":796
  *             objective = "%s-objective" % ('single'
  *                     if self.number_of_objectives == 1
  *                     else str(self.number_of_objectives))             # <<<<<<<<<<<<<<
  *             return "%s %s problem (%s)" % (self.id, objective,
  *                 self.name.replace(self.name.split()[0],
  */
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_number_of_objectives); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 789; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_number_of_objectives); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 796; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 789; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 796; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_GIVEREF(__pyx_t_4);
       PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4);
       __pyx_t_4 = 0;
-      __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_3, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 789; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_3, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 796; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __pyx_t_2 = __pyx_t_4;
       __pyx_t_4 = 0;
     }
 
-    /* "cython/interface.pyx":787
+    /* "cython/interface.pyx":794
  *     def __str__(self):
  *         if self.problem is not NULL:
  *             objective = "%s-objective" % ('single'             # <<<<<<<<<<<<<<
  *                     if self.number_of_objectives == 1
  *                     else str(self.number_of_objectives))
  */
-    __pyx_t_4 = PyUnicode_Format(__pyx_kp_u_s_objective, __pyx_t_2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 787; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyUnicode_Format(__pyx_kp_u_s_objective, __pyx_t_2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 794; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_objective = ((PyObject*)__pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "cython/interface.pyx":790
+    /* "cython/interface.pyx":797
  *                     if self.number_of_objectives == 1
  *                     else str(self.number_of_objectives))
  *             return "%s %s problem (%s)" % (self.id, objective,             # <<<<<<<<<<<<<<
@@ -9656,24 +9739,24 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
  *                                   self.name.split()[0] + "(%d)"
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_id); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 790; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_id); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 797; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
 
-    /* "cython/interface.pyx":791
+    /* "cython/interface.pyx":798
  *                     else str(self.number_of_objectives))
  *             return "%s %s problem (%s)" % (self.id, objective,
  *                 self.name.replace(self.name.split()[0],             # <<<<<<<<<<<<<<
  *                                   self.name.split()[0] + "(%d)"
  *                                   % (self.index if self.index is not None else -2)))
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 791; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 798; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_replace); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 791; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_replace); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 798; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 791; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 798; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_split); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 791; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_split); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 798; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_t_6 = NULL;
@@ -9687,27 +9770,27 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
       }
     }
     if (__pyx_t_6) {
-      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 791; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 798; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     } else {
-      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_7); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 791; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_7); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 798; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_7 = __Pyx_GetItemInt(__pyx_t_3, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_7 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 791; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_7 = __Pyx_GetItemInt(__pyx_t_3, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_7 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 798; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":792
+    /* "cython/interface.pyx":799
  *             return "%s %s problem (%s)" % (self.id, objective,
  *                 self.name.replace(self.name.split()[0],
  *                                   self.name.split()[0] + "(%d)"             # <<<<<<<<<<<<<<
  *                                   % (self.index if self.index is not None else -2)))
  *         else:
  */
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 792; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_name); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_split); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 792; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_split); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_t_6 = NULL;
@@ -9721,30 +9804,30 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
       }
     }
     if (__pyx_t_6) {
-      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 792; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     } else {
-      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_8); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 792; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_8); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_GetItemInt(__pyx_t_3, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 792; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_8 = __Pyx_GetItemInt(__pyx_t_3, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":793
+    /* "cython/interface.pyx":800
  *                 self.name.replace(self.name.split()[0],
  *                                   self.name.split()[0] + "(%d)"
  *                                   % (self.index if self.index is not None else -2)))             # <<<<<<<<<<<<<<
  *         else:
  *             return "finalized/invalid problem"
  */
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_index); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 793; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_index); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_1 = (__pyx_t_6 != Py_None);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     if ((__pyx_t_1 != 0)) {
-      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_index); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 793; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_index); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_6);
       __pyx_t_3 = __pyx_t_6;
       __pyx_t_6 = 0;
@@ -9752,18 +9835,18 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
       __Pyx_INCREF(__pyx_int_neg_2);
       __pyx_t_3 = __pyx_int_neg_2;
     }
-    __pyx_t_6 = PyUnicode_Format(__pyx_kp_u_d, __pyx_t_3); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 793; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = PyUnicode_Format(__pyx_kp_u_d, __pyx_t_3); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":792
+    /* "cython/interface.pyx":799
  *             return "%s %s problem (%s)" % (self.id, objective,
  *                 self.name.replace(self.name.split()[0],
  *                                   self.name.split()[0] + "(%d)"             # <<<<<<<<<<<<<<
  *                                   % (self.index if self.index is not None else -2)))
  *         else:
  */
-    __pyx_t_3 = PyNumber_Add(__pyx_t_8, __pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 792; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyNumber_Add(__pyx_t_8, __pyx_t_6); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -9779,7 +9862,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
         __pyx_t_9 = 1;
       }
     }
-    __pyx_t_8 = PyTuple_New(2+__pyx_t_9); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 791; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_8 = PyTuple_New(2+__pyx_t_9); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 798; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_8);
     if (__pyx_t_6) {
       __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6); __pyx_t_6 = NULL;
@@ -9790,19 +9873,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
     PyTuple_SET_ITEM(__pyx_t_8, 1+__pyx_t_9, __pyx_t_3);
     __pyx_t_7 = 0;
     __pyx_t_3 = 0;
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_8, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 791; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_8, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 798; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-    /* "cython/interface.pyx":790
+    /* "cython/interface.pyx":797
  *                     if self.number_of_objectives == 1
  *                     else str(self.number_of_objectives))
  *             return "%s %s problem (%s)" % (self.id, objective,             # <<<<<<<<<<<<<<
  *                 self.name.replace(self.name.split()[0],
  *                                   self.name.split()[0] + "(%d)"
  */
-    __pyx_t_5 = PyTuple_New(3); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 790; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = PyTuple_New(3); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 797; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_GIVEREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4);
@@ -9813,14 +9896,14 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
     PyTuple_SET_ITEM(__pyx_t_5, 2, __pyx_t_2);
     __pyx_t_4 = 0;
     __pyx_t_2 = 0;
-    __pyx_t_2 = PyUnicode_Format(__pyx_kp_u_s_s_problem_s, __pyx_t_5); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 790; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = PyUnicode_Format(__pyx_kp_u_s_s_problem_s, __pyx_t_5); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 797; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_r = __pyx_t_2;
     __pyx_t_2 = 0;
     goto __pyx_L0;
 
-    /* "cython/interface.pyx":786
+    /* "cython/interface.pyx":793
  * 
  *     def __str__(self):
  *         if self.problem is not NULL:             # <<<<<<<<<<<<<<
@@ -9829,7 +9912,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
  */
   }
 
-  /* "cython/interface.pyx":795
+  /* "cython/interface.pyx":802
  *                                   % (self.index if self.index is not None else -2)))
  *         else:
  *             return "finalized/invalid problem"             # <<<<<<<<<<<<<<
@@ -9843,7 +9926,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
     goto __pyx_L0;
   }
 
-  /* "cython/interface.pyx":785
+  /* "cython/interface.pyx":792
  *         return str(self)
  * 
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -9869,7 +9952,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":797
+/* "cython/interface.pyx":804
  *             return "finalized/invalid problem"
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -9878,19 +9961,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_44__str__(struct __pyx_obj
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_47__repr__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_47__repr__(PyObject *__pyx_v_self) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_49__repr__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_49__repr__(PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__repr__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_46__repr__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_48__repr__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__repr__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_48__repr__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -9902,7 +9985,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__repr__(struct __pyx_ob
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__repr__", 0);
 
-  /* "cython/interface.pyx":798
+  /* "cython/interface.pyx":805
  * 
  *     def __repr__(self):
  *         if self.problem is not NULL:             # <<<<<<<<<<<<<<
@@ -9912,7 +9995,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__repr__(struct __pyx_ob
   __pyx_t_1 = ((__pyx_v_self->problem != NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "cython/interface.pyx":799
+    /* "cython/interface.pyx":806
  *     def __repr__(self):
  *         if self.problem is not NULL:
  *             return "<%s(), id=%r>" % (             # <<<<<<<<<<<<<<
@@ -9921,19 +10004,19 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__repr__(struct __pyx_ob
  */
     __Pyx_XDECREF(__pyx_r);
 
-    /* "cython/interface.pyx":800
+    /* "cython/interface.pyx":807
  *         if self.problem is not NULL:
  *             return "<%s(), id=%r>" % (
  *                     repr(self.__class__).split()[1][1:-2],             # <<<<<<<<<<<<<<
  *                     # self.problem_suite, self.problem_index,
  *                     self.id)
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_class); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_class); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = PyObject_Repr(__pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyObject_Repr(__pyx_t_3); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_split); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_split); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_t_4 = NULL;
@@ -9947,38 +10030,38 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__repr__(struct __pyx_ob
       }
     }
     if (__pyx_t_4) {
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     } else {
-      __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_2, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_2, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(__pyx_t_3 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_3, 1, -2, NULL, NULL, &__pyx_slice__11, 1, 1, 1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_3, 1, -2, NULL, NULL, &__pyx_slice__11, 1, 1, 1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":802
+    /* "cython/interface.pyx":809
  *                     repr(self.__class__).split()[1][1:-2],
  *                     # self.problem_suite, self.problem_index,
  *                     self.id)             # <<<<<<<<<<<<<<
  *         else:
  *             return "<finalized/invalid problem>"
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_id); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 802; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_id); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
 
-    /* "cython/interface.pyx":800
+    /* "cython/interface.pyx":807
  *         if self.problem is not NULL:
  *             return "<%s(), id=%r>" % (
  *                     repr(self.__class__).split()[1][1:-2],             # <<<<<<<<<<<<<<
  *                     # self.problem_suite, self.problem_index,
  *                     self.id)
  */
-    __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_2);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2);
@@ -9987,21 +10070,21 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__repr__(struct __pyx_ob
     __pyx_t_2 = 0;
     __pyx_t_3 = 0;
 
-    /* "cython/interface.pyx":799
+    /* "cython/interface.pyx":806
  *     def __repr__(self):
  *         if self.problem is not NULL:
  *             return "<%s(), id=%r>" % (             # <<<<<<<<<<<<<<
  *                     repr(self.__class__).split()[1][1:-2],
  *                     # self.problem_suite, self.problem_index,
  */
-    __pyx_t_3 = PyUnicode_Format(__pyx_kp_u_s_id_r, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyUnicode_Format(__pyx_kp_u_s_id_r, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 806; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_r = __pyx_t_3;
     __pyx_t_3 = 0;
     goto __pyx_L0;
 
-    /* "cython/interface.pyx":798
+    /* "cython/interface.pyx":805
  * 
  *     def __repr__(self):
  *         if self.problem is not NULL:             # <<<<<<<<<<<<<<
@@ -10010,7 +10093,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__repr__(struct __pyx_ob
  */
   }
 
-  /* "cython/interface.pyx":804
+  /* "cython/interface.pyx":811
  *                     self.id)
  *         else:
  *             return "<finalized/invalid problem>"             # <<<<<<<<<<<<<<
@@ -10024,7 +10107,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__repr__(struct __pyx_ob
     goto __pyx_L0;
   }
 
-  /* "cython/interface.pyx":797
+  /* "cython/interface.pyx":804
  *             return "finalized/invalid problem"
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -10045,7 +10128,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__repr__(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":806
+/* "cython/interface.pyx":813
  *             return "<finalized/invalid problem>"
  * 
  *     def __enter__(self):             # <<<<<<<<<<<<<<
@@ -10054,25 +10137,25 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_46__repr__(struct __pyx_ob
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_49__enter__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_6cocoex_9interface_7Problem_48__enter__[] = "Allows ``with Benchmark(...).get_problem(...) as problem:``";
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_49__enter__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_51__enter__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_6cocoex_9interface_7Problem_50__enter__[] = "Allows ``with Benchmark(...).get_problem(...) as problem:``";
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_51__enter__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__enter__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_48__enter__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_50__enter__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_48__enter__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_50__enter__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__enter__", 0);
 
-  /* "cython/interface.pyx":808
+  /* "cython/interface.pyx":815
  *     def __enter__(self):
  *         """Allows ``with Benchmark(...).get_problem(...) as problem:``"""
  *         return self             # <<<<<<<<<<<<<<
@@ -10084,7 +10167,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_48__enter__(struct __pyx_o
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":806
+  /* "cython/interface.pyx":813
  *             return "<finalized/invalid problem>"
  * 
  *     def __enter__(self):             # <<<<<<<<<<<<<<
@@ -10099,7 +10182,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_48__enter__(struct __pyx_o
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":809
+/* "cython/interface.pyx":816
  *         """Allows ``with Benchmark(...).get_problem(...) as problem:``"""
  *         return self
  *     def __exit__(self, exception_type, exception_value, traceback):             # <<<<<<<<<<<<<<
@@ -10108,8 +10191,8 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_48__enter__(struct __pyx_o
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_51__exit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_51__exit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_53__exit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_53__exit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   CYTHON_UNUSED PyObject *__pyx_v_exception_type = 0;
   CYTHON_UNUSED PyObject *__pyx_v_exception_value = 0;
   CYTHON_UNUSED PyObject *__pyx_v_traceback = 0;
@@ -10140,16 +10223,16 @@ static PyObject *__pyx_pw_6cocoex_9interface_7Problem_51__exit__(PyObject *__pyx
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_exception_value)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__exit__", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__exit__", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 816; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_traceback)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__exit__", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__exit__", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 816; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__exit__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__exit__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 816; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -10164,20 +10247,20 @@ static PyObject *__pyx_pw_6cocoex_9interface_7Problem_51__exit__(PyObject *__pyx
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__exit__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__exit__", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 816; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("cocoex.interface.Problem.__exit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_50__exit__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self), __pyx_v_exception_type, __pyx_v_exception_value, __pyx_v_traceback);
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_52__exit__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self), __pyx_v_exception_type, __pyx_v_exception_value, __pyx_v_traceback);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_50__exit__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_exception_type, CYTHON_UNUSED PyObject *__pyx_v_exception_value, CYTHON_UNUSED PyObject *__pyx_v_traceback) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_52__exit__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_exception_type, CYTHON_UNUSED PyObject *__pyx_v_exception_value, CYTHON_UNUSED PyObject *__pyx_v_traceback) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -10191,7 +10274,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_50__exit__(struct __pyx_ob
   CYTHON_UNUSED int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__exit__", 0);
 
-  /* "cython/interface.pyx":810
+  /* "cython/interface.pyx":817
  *         return self
  *     def __exit__(self, exception_type, exception_value, traceback):
  *         try:             # <<<<<<<<<<<<<<
@@ -10205,14 +10288,14 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_50__exit__(struct __pyx_ob
     __Pyx_XGOTREF(__pyx_t_3);
     /*try:*/ {
 
-      /* "cython/interface.pyx":811
+      /* "cython/interface.pyx":818
  *     def __exit__(self, exception_type, exception_value, traceback):
  *         try:
  *             self.free()             # <<<<<<<<<<<<<<
  *         except:
  *             pass
  */
-      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_free); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 811; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_free); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 818; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       __Pyx_GOTREF(__pyx_t_5);
       __pyx_t_6 = NULL;
       if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_5))) {
@@ -10225,16 +10308,16 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_50__exit__(struct __pyx_ob
         }
       }
       if (__pyx_t_6) {
-        __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 811; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 818; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       } else {
-        __pyx_t_4 = __Pyx_PyObject_CallNoArg(__pyx_t_5); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 811; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        __pyx_t_4 = __Pyx_PyObject_CallNoArg(__pyx_t_5); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 818; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-      /* "cython/interface.pyx":810
+      /* "cython/interface.pyx":817
  *         return self
  *     def __exit__(self, exception_type, exception_value, traceback):
  *         try:             # <<<<<<<<<<<<<<
@@ -10251,7 +10334,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_50__exit__(struct __pyx_ob
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "cython/interface.pyx":812
+    /* "cython/interface.pyx":819
  *         try:
  *             self.free()
  *         except:             # <<<<<<<<<<<<<<
@@ -10270,7 +10353,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_50__exit__(struct __pyx_ob
     __pyx_L10_try_end:;
   }
 
-  /* "cython/interface.pyx":809
+  /* "cython/interface.pyx":816
  *         """Allows ``with Benchmark(...).get_problem(...) as problem:``"""
  *         return self
  *     def __exit__(self, exception_type, exception_value, traceback):             # <<<<<<<<<<<<<<
@@ -10285,7 +10368,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_50__exit__(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":581
+/* "cython/interface.pyx":582
  *     # cdef public np.ndarray lower_bounds
  *     # cdef public np.ndarray upper_bounds
  *     cdef public np.ndarray _lower_bounds             # <<<<<<<<<<<<<<
@@ -10343,7 +10426,7 @@ static int __pyx_pf_6cocoex_9interface_7Problem_13_lower_bounds_2__set__(struct 
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  if (!(likely(((__pyx_v_value) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_value, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 581; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_v_value) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_value, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 582; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_1 = __pyx_v_value;
   __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
@@ -10393,7 +10476,7 @@ static int __pyx_pf_6cocoex_9interface_7Problem_13_lower_bounds_4__del__(struct 
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":582
+/* "cython/interface.pyx":583
  *     # cdef public np.ndarray upper_bounds
  *     cdef public np.ndarray _lower_bounds
  *     cdef public np.ndarray _upper_bounds             # <<<<<<<<<<<<<<
@@ -10451,7 +10534,7 @@ static int __pyx_pf_6cocoex_9interface_7Problem_13_upper_bounds_2__set__(struct 
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  if (!(likely(((__pyx_v_value) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_value, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 582; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_v_value) == Py_None) || likely(__Pyx_TypeTest(__pyx_v_value, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 583; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_1 = __pyx_v_value;
   __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
@@ -10501,7 +10584,7 @@ static int __pyx_pf_6cocoex_9interface_7Problem_13_upper_bounds_4__del__(struct 
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":815
+/* "cython/interface.pyx":822
  *             pass
  * 
  * def log_level(level=None):             # <<<<<<<<<<<<<<
@@ -10542,7 +10625,7 @@ static PyObject *__pyx_pw_6cocoex_9interface_1log_level(PyObject *__pyx_self, Py
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "log_level") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 815; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "log_level") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 822; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -10555,7 +10638,7 @@ static PyObject *__pyx_pw_6cocoex_9interface_1log_level(PyObject *__pyx_self, Py
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("log_level", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 815; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("log_level", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 822; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("cocoex.interface.log_level", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -10581,7 +10664,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_log_level(CYTHON_UNUSED PyObject *_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("log_level", 0);
 
-  /* "cython/interface.pyx":822
+  /* "cython/interface.pyx":829
  *     with increasing verbosity, or '' which doesn't change anything.
  *     """
  *     cdef bytes _level = _bstring(level if level is not None else "")             # <<<<<<<<<<<<<<
@@ -10596,27 +10679,27 @@ static PyObject *__pyx_pf_6cocoex_9interface_log_level(CYTHON_UNUSED PyObject *_
     __Pyx_INCREF(__pyx_kp_u__2);
     __pyx_t_1 = __pyx_kp_u__2;
   }
-  __pyx_t_3 = __pyx_f_6cocoex_9interface__bstring(__pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 822; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_f_6cocoex_9interface__bstring(__pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 829; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v__level = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "cython/interface.pyx":823
+  /* "cython/interface.pyx":830
  *     """
  *     cdef bytes _level = _bstring(level if level is not None else "")
  *     return coco_set_log_level(_level)             # <<<<<<<<<<<<<<
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_4 = __Pyx_PyObject_AsString(__pyx_v__level); if (unlikely((!__pyx_t_4) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 823; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_3 = __Pyx_PyStr_FromString(coco_set_log_level(__pyx_t_4)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 823; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_AsString(__pyx_v__level); if (unlikely((!__pyx_t_4) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 830; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyStr_FromString(coco_set_log_level(__pyx_t_4)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 830; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "cython/interface.pyx":815
+  /* "cython/interface.pyx":822
  *             pass
  * 
  * def log_level(level=None):             # <<<<<<<<<<<<<<
@@ -13168,7 +13251,7 @@ static void __pyx_tp_dealloc_6cocoex_9interface_Problem(PyObject *o) {
     PyObject *etype, *eval, *etb;
     PyErr_Fetch(&etype, &eval, &etb);
     ++Py_REFCNT(o);
-    __pyx_pw_6cocoex_9interface_7Problem_31__dealloc__(o);
+    __pyx_pw_6cocoex_9interface_7Problem_33__dealloc__(o);
     --Py_REFCNT(o);
     PyErr_Restore(etype, eval, etb);
   }
@@ -13285,16 +13368,17 @@ static PyMethodDef __pyx_methods_6cocoex_9interface_Problem[] = {
   {"lower_bounds", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_19lower_bounds, METH_NOARGS, __pyx_doc_6cocoex_9interface_7Problem_18lower_bounds},
   {"upper_bounds", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_21upper_bounds, METH_NOARGS, __pyx_doc_6cocoex_9interface_7Problem_20upper_bounds},
   {"evaluations", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_23evaluations, METH_NOARGS, 0},
-  {"final_target_fvalue1", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_25final_target_fvalue1, METH_NOARGS, 0},
-  {"best_observed_fvalue1", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_27best_observed_fvalue1, METH_NOARGS, 0},
-  {"free", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_29free, METH_VARARGS|METH_KEYWORDS, __pyx_doc_6cocoex_9interface_7Problem_28free},
-  {"id", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_35id, METH_NOARGS, __pyx_doc_6cocoex_9interface_7Problem_34id},
-  {"name", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_37name, METH_NOARGS, 0},
-  {"index", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_39index, METH_NOARGS, __pyx_doc_6cocoex_9interface_7Problem_38index},
-  {"suite", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_41suite, METH_NOARGS, __pyx_doc_6cocoex_9interface_7Problem_40suite},
-  {"info", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_43info, METH_NOARGS, 0},
-  {"__enter__", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_49__enter__, METH_NOARGS, __pyx_doc_6cocoex_9interface_7Problem_48__enter__},
-  {"__exit__", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_51__exit__, METH_VARARGS|METH_KEYWORDS, 0},
+  {"final_target_hit", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_25final_target_hit, METH_NOARGS, __pyx_doc_6cocoex_9interface_7Problem_24final_target_hit},
+  {"final_target_fvalue1", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_27final_target_fvalue1, METH_NOARGS, 0},
+  {"best_observed_fvalue1", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_29best_observed_fvalue1, METH_NOARGS, 0},
+  {"free", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_31free, METH_VARARGS|METH_KEYWORDS, __pyx_doc_6cocoex_9interface_7Problem_30free},
+  {"id", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_37id, METH_NOARGS, __pyx_doc_6cocoex_9interface_7Problem_36id},
+  {"name", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_39name, METH_NOARGS, 0},
+  {"index", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_41index, METH_NOARGS, __pyx_doc_6cocoex_9interface_7Problem_40index},
+  {"suite", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_43suite, METH_NOARGS, __pyx_doc_6cocoex_9interface_7Problem_42suite},
+  {"info", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_45info, METH_NOARGS, 0},
+  {"__enter__", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_51__enter__, METH_NOARGS, __pyx_doc_6cocoex_9interface_7Problem_50__enter__},
+  {"__exit__", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_53__exit__, METH_VARARGS|METH_KEYWORDS, 0},
   {0, 0, 0, 0}
 };
 
@@ -13320,13 +13404,13 @@ static PyTypeObject __pyx_type_6cocoex_9interface_Problem = {
   #if PY_MAJOR_VERSION >= 3
   0, /*tp_as_async*/
   #endif
-  __pyx_pw_6cocoex_9interface_7Problem_47__repr__, /*tp_repr*/
+  __pyx_pw_6cocoex_9interface_7Problem_49__repr__, /*tp_repr*/
   0, /*tp_as_number*/
   0, /*tp_as_sequence*/
   0, /*tp_as_mapping*/
   0, /*tp_hash*/
-  __pyx_pw_6cocoex_9interface_7Problem_33__call__, /*tp_call*/
-  __pyx_pw_6cocoex_9interface_7Problem_45__str__, /*tp_str*/
+  __pyx_pw_6cocoex_9interface_7Problem_35__call__, /*tp_call*/
+  __pyx_pw_6cocoex_9interface_7Problem_47__str__, /*tp_str*/
   0, /*tp_getattro*/
   0, /*tp_setattro*/
   0, /*tp_as_buffer*/
@@ -13535,15 +13619,15 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_u_No_suite_with_name_s_found, __pyx_k_No_suite_with_name_s_found, sizeof(__pyx_k_No_suite_with_name_s_found), 0, 1, 0, 0},
   {&__pyx_kp_u_Non_native_byte_order_not_suppor, __pyx_k_Non_native_byte_order_not_suppor, sizeof(__pyx_k_Non_native_byte_order_not_suppor), 0, 1, 0, 0},
   {&__pyx_n_s_NotImplementedError, __pyx_k_NotImplementedError, sizeof(__pyx_k_NotImplementedError), 0, 0, 1, 1},
-  {&__pyx_kp_u_Observer_observe_line_507, __pyx_k_Observer_observe_line_507, sizeof(__pyx_k_Observer_observe_line_507), 0, 1, 0, 0},
+  {&__pyx_kp_u_Observer_observe_line_508, __pyx_k_Observer_observe_line_508, sizeof(__pyx_k_Observer_observe_line_508), 0, 1, 0, 0},
   {&__pyx_kp_u_Problem_already_initialized, __pyx_k_Problem_already_initialized, sizeof(__pyx_k_Problem_already_initialized), 0, 1, 0, 0},
   {&__pyx_n_s_RuntimeError, __pyx_k_RuntimeError, sizeof(__pyx_k_RuntimeError), 0, 0, 1, 1},
   {&__pyx_n_s_StopIteration, __pyx_k_StopIteration, sizeof(__pyx_k_StopIteration), 0, 0, 1, 1},
   {&__pyx_n_s_Suite___iter, __pyx_k_Suite___iter, sizeof(__pyx_k_Suite___iter), 0, 0, 1, 1},
-  {&__pyx_kp_u_Suite_current_index_line_385, __pyx_k_Suite_current_index_line_385, sizeof(__pyx_k_Suite_current_index_line_385), 0, 1, 0, 0},
-  {&__pyx_kp_u_Suite_get_problem_line_268, __pyx_k_Suite_get_problem_line_268, sizeof(__pyx_k_Suite_get_problem_line_268), 0, 1, 0, 0},
+  {&__pyx_kp_u_Suite_current_index_line_386, __pyx_k_Suite_current_index_line_386, sizeof(__pyx_k_Suite_current_index_line_386), 0, 1, 0, 0},
+  {&__pyx_kp_u_Suite_get_problem_line_269, __pyx_k_Suite_get_problem_line_269, sizeof(__pyx_k_Suite_get_problem_line_269), 0, 1, 0, 0},
   {&__pyx_kp_u_Suite_has_been_finalized_free_ed, __pyx_k_Suite_has_been_finalized_free_ed, sizeof(__pyx_k_Suite_has_been_finalized_free_ed), 0, 1, 0, 0},
-  {&__pyx_kp_u_Suite_ids_line_332, __pyx_k_Suite_ids_line_332, sizeof(__pyx_k_Suite_ids_line_332), 0, 1, 0, 0},
+  {&__pyx_kp_u_Suite_ids_line_333, __pyx_k_Suite_ids_line_333, sizeof(__pyx_k_Suite_ids_line_333), 0, 1, 0, 0},
   {&__pyx_kp_u_Suite_r_r_r, __pyx_k_Suite_r_r_r, sizeof(__pyx_k_Suite_r_r_r), 0, 1, 0, 0},
   {&__pyx_kp_u_Suite_s_s_s_with_d_problem_s_in, __pyx_k_Suite_s_s_s_with_d_problem_s_in, sizeof(__pyx_k_Suite_s_s_s_with_d_problem_s_in), 0, 1, 0, 0},
   {&__pyx_n_s_TypeError, __pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 0, 1, 1},
@@ -13582,6 +13666,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_exception_type, __pyx_k_exception_type, sizeof(__pyx_k_exception_type), 0, 0, 1, 1},
   {&__pyx_n_s_exception_value, __pyx_k_exception_value, sizeof(__pyx_k_exception_value), 0, 0, 1, 1},
   {&__pyx_n_s_final_target_fvalue1, __pyx_k_final_target_fvalue1, sizeof(__pyx_k_final_target_fvalue1), 0, 0, 1, 1},
+  {&__pyx_n_s_final_target_hit, __pyx_k_final_target_hit, sizeof(__pyx_k_final_target_hit), 0, 0, 1, 1},
   {&__pyx_kp_u_finalized_invalid_problem, __pyx_k_finalized_invalid_problem, sizeof(__pyx_k_finalized_invalid_problem), 0, 1, 0, 0},
   {&__pyx_kp_u_finalized_invalid_problem_2, __pyx_k_finalized_invalid_problem_2, sizeof(__pyx_k_finalized_invalid_problem_2), 0, 1, 0, 0},
   {&__pyx_n_s_find, __pyx_k_find, sizeof(__pyx_k_find), 0, 0, 1, 1},
@@ -13664,18 +13749,18 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_property = __Pyx_GetBuiltinName(__pyx_n_s_property); if (!__pyx_builtin_property) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 380; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 64; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 249; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_NotImplementedError = __Pyx_GetBuiltinName(__pyx_n_s_NotImplementedError); if (!__pyx_builtin_NotImplementedError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 328; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 371; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_all = __Pyx_GetBuiltinName(__pyx_n_s_all); if (!__pyx_builtin_all) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 374; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_min = __Pyx_GetBuiltinName(__pyx_n_s_min); if (!__pyx_builtin_min) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 451; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_max = __Pyx_GetBuiltinName(__pyx_n_s_max); if (!__pyx_builtin_max) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 451; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_StopIteration = __Pyx_GetBuiltinName(__pyx_n_s_StopIteration); if (!__pyx_builtin_StopIteration) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 471; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_RuntimeError = __Pyx_GetBuiltinName(__pyx_n_s_RuntimeError); if (!__pyx_builtin_RuntimeError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 597; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 617; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_property = __Pyx_GetBuiltinName(__pyx_n_s_property); if (!__pyx_builtin_property) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 381; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 250; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_NotImplementedError = __Pyx_GetBuiltinName(__pyx_n_s_NotImplementedError); if (!__pyx_builtin_NotImplementedError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 329; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 372; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_all = __Pyx_GetBuiltinName(__pyx_n_s_all); if (!__pyx_builtin_all) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 373; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 375; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_min = __Pyx_GetBuiltinName(__pyx_n_s_min); if (!__pyx_builtin_min) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 452; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_max = __Pyx_GetBuiltinName(__pyx_n_s_max); if (!__pyx_builtin_max) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 452; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_StopIteration = __Pyx_GetBuiltinName(__pyx_n_s_StopIteration); if (!__pyx_builtin_StopIteration) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 472; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_RuntimeError = __Pyx_GetBuiltinName(__pyx_n_s_RuntimeError); if (!__pyx_builtin_RuntimeError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 598; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 618; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -13685,113 +13770,113 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "cython/interface.pyx":62
+  /* "cython/interface.pyx":63
  *         return <bytes>s
  *     elif isinstance(s, unicode):
  *         return s.encode('ascii')             # <<<<<<<<<<<<<<
  *     else:
  *         raise TypeError()
  */
-  __pyx_tuple_ = PyTuple_Pack(1, __pyx_n_u_ascii); if (unlikely(!__pyx_tuple_)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple_ = PyTuple_Pack(1, __pyx_n_u_ascii); if (unlikely(!__pyx_tuple_)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 63; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
-  /* "cython/interface.pyx":218
+  /* "cython/interface.pyx":219
  *             raise NoSuchSuiteException("No suite with name '%s' found" % self._name)
  *         while True:
  *             old_level = log_level('warning')             # <<<<<<<<<<<<<<
  *             p = coco_suite_get_next_problem(suite, NULL)
  *             log_level(old_level)
  */
-  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_n_u_warning); if (unlikely(!__pyx_tuple__3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 218; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_n_u_warning); if (unlikely(!__pyx_tuple__3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 219; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
 
-  /* "cython/interface.pyx":249
+  /* "cython/interface.pyx":250
  *         global _current_observer
  *         if not self.initialized:
  *             raise ValueError("Suite has been finalized/free'ed")             # <<<<<<<<<<<<<<
  *         if self.current_problem_:
  *             self.current_problem_.free()
  */
-  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_kp_u_Suite_has_been_finalized_free_ed); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 249; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_kp_u_Suite_has_been_finalized_free_ed); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 250; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
 
-  /* "cython/interface.pyx":300
+  /* "cython/interface.pyx":301
  *         """
  *         if not self.initialized:
  *             raise ValueError("Suite has been finalized/free'ed")             # <<<<<<<<<<<<<<
  *         index = id
  *         try:
  */
-  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_u_Suite_has_been_finalized_free_ed); if (unlikely(!__pyx_tuple__5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 300; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_u_Suite_has_been_finalized_free_ed); if (unlikely(!__pyx_tuple__5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 301; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
-  /* "cython/interface.pyx":328
+  /* "cython/interface.pyx":329
  *     def find_problem_ids(self, *args, **kwargs):
  *         """has been renamed to `ids`"""
  *         raise NotImplementedError(             # <<<<<<<<<<<<<<
  *             "`find_problem_ids()` has been renamed to `ids()`")
  * 
  */
-  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_u_find_problem_ids_has_been_renam); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 328; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_u_find_problem_ids_has_been_renam); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 329; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "cython/interface.pyx":597
+  /* "cython/interface.pyx":598
  *         cdef np.npy_intp shape[1]
  *         if self.initialized:
  *             raise RuntimeError("Problem already initialized")             # <<<<<<<<<<<<<<
  *         if problem == NULL:
  *             raise ValueError("in Problem._initialize(problem,...): problem is NULL")
  */
-  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_u_Problem_already_initialized); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 597; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_u_Problem_already_initialized); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 598; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__7);
   __Pyx_GIVEREF(__pyx_tuple__7);
 
-  /* "cython/interface.pyx":599
+  /* "cython/interface.pyx":600
  *             raise RuntimeError("Problem already initialized")
  *         if problem == NULL:
  *             raise ValueError("in Problem._initialize(problem,...): problem is NULL")             # <<<<<<<<<<<<<<
  *         self.problem = problem
  *         self._problem_index = coco_problem_get_suite_dep_index(self.problem)
  */
-  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_u_in_Problem__initialize_problem_p); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 599; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_u_in_Problem__initialize_problem_p); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 600; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__8);
   __Pyx_GIVEREF(__pyx_tuple__8);
 
-  /* "cython/interface.pyx":629
+  /* "cython/interface.pyx":630
  *         By convention, constraints with values >= 0 are satisfied.
  *         """
  *         raise NotImplementedError("has never been tested, incomment this to start testing")             # <<<<<<<<<<<<<<
  *         cdef np.ndarray[double, ndim=1, mode="c"] _x
  *         x = np.array(x, copy=False, dtype=np.double, order='C')
  */
-  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_u_has_never_been_tested_incomment); if (unlikely(!__pyx_tuple__9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 629; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_u_has_never_been_tested_incomment); if (unlikely(!__pyx_tuple__9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 630; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__9);
   __Pyx_GIVEREF(__pyx_tuple__9);
 
-  /* "cython/interface.pyx":650
+  /* "cython/interface.pyx":651
  *         for the assessment of the algorithm.
  *         """
  *         raise NotImplementedError("has never been tested, incomment this to start testing")             # <<<<<<<<<<<<<<
  *         cdef np.ndarray[double, ndim=1, mode="c"] _x
  *         x = np.array(x, copy=False, dtype=np.double, order='C')
  */
-  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_u_has_never_been_tested_incomment); if (unlikely(!__pyx_tuple__10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 650; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_u_has_never_been_tested_incomment); if (unlikely(!__pyx_tuple__10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 651; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__10);
   __Pyx_GIVEREF(__pyx_tuple__10);
 
-  /* "cython/interface.pyx":800
+  /* "cython/interface.pyx":807
  *         if self.problem is not NULL:
  *             return "<%s(), id=%r>" % (
  *                     repr(self.__class__).split()[1][1:-2],             # <<<<<<<<<<<<<<
  *                     # self.problem_suite, self.problem_index,
  *                     self.id)
  */
-  __pyx_slice__11 = PySlice_New(__pyx_int_1, __pyx_int_neg_2, Py_None); if (unlikely(!__pyx_slice__11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_slice__11 = PySlice_New(__pyx_int_1, __pyx_int_neg_2, Py_None); if (unlikely(!__pyx_slice__11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_slice__11);
   __Pyx_GIVEREF(__pyx_slice__11);
 
@@ -13861,17 +13946,17 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__17);
   __Pyx_GIVEREF(__pyx_tuple__17);
 
-  /* "cython/interface.pyx":815
+  /* "cython/interface.pyx":822
  *             pass
  * 
  * def log_level(level=None):             # <<<<<<<<<<<<<<
  *     """`log_level(level=None)` return current log level and
  *     set new log level if `level is not None and level`.
  */
-  __pyx_tuple__18 = PyTuple_Pack(2, __pyx_n_s_level, __pyx_n_s_level_2); if (unlikely(!__pyx_tuple__18)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 815; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__18 = PyTuple_Pack(2, __pyx_n_s_level, __pyx_n_s_level_2); if (unlikely(!__pyx_tuple__18)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 822; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__18);
   __Pyx_GIVEREF(__pyx_tuple__18);
-  __pyx_codeobj__19 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_hansen_git_coco_code_expe, __pyx_n_s_log_level, 815, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__19)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 815; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__19 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_hansen_git_coco_code_expe, __pyx_n_s_log_level, 822, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__19)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 822; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -13979,11 +14064,11 @@ PyMODINIT_FUNC PyInit_interface(void)
   /*--- Type init code ---*/
   __pyx_vtabptr_6cocoex_9interface_Suite = &__pyx_vtable_6cocoex_9interface_Suite;
   __pyx_vtable_6cocoex_9interface_Suite._initialize = (PyObject *(*)(struct __pyx_obj_6cocoex_9interface_Suite *))__pyx_f_6cocoex_9interface_5Suite__initialize;
-  if (PyType_Ready(&__pyx_type_6cocoex_9interface_Suite) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_6cocoex_9interface_Suite) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_6cocoex_9interface_Suite.tp_print = 0;
   #if CYTHON_COMPILING_IN_CPYTHON
   {
-    PyObject *wrapper = PyObject_GetAttrString((PyObject *)&__pyx_type_6cocoex_9interface_Suite, "__getitem__"); if (unlikely(!wrapper)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    PyObject *wrapper = PyObject_GetAttrString((PyObject *)&__pyx_type_6cocoex_9interface_Suite, "__getitem__"); if (unlikely(!wrapper)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     if (Py_TYPE(wrapper) == &PyWrapperDescr_Type) {
       __pyx_wrapperbase_6cocoex_9interface_5Suite_8__getitem__ = *((PyWrapperDescrObject *)wrapper)->d_base;
       __pyx_wrapperbase_6cocoex_9interface_5Suite_8__getitem__.doc = __pyx_doc_6cocoex_9interface_5Suite_8__getitem__;
@@ -13993,7 +14078,7 @@ PyMODINIT_FUNC PyInit_interface(void)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON
   {
-    PyObject *wrapper = PyObject_GetAttrString((PyObject *)&__pyx_type_6cocoex_9interface_Suite, "__iter__"); if (unlikely(!wrapper)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    PyObject *wrapper = PyObject_GetAttrString((PyObject *)&__pyx_type_6cocoex_9interface_Suite, "__iter__"); if (unlikely(!wrapper)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     if (Py_TYPE(wrapper) == &PyWrapperDescr_Type) {
       __pyx_wrapperbase_6cocoex_9interface_5Suite_44__iter__ = *((PyWrapperDescrObject *)wrapper)->d_base;
       __pyx_wrapperbase_6cocoex_9interface_5Suite_44__iter__.doc = __pyx_doc_6cocoex_9interface_5Suite_44__iter__;
@@ -14001,31 +14086,31 @@ PyMODINIT_FUNC PyInit_interface(void)
     }
   }
   #endif
-  if (__Pyx_SetVtable(__pyx_type_6cocoex_9interface_Suite.tp_dict, __pyx_vtabptr_6cocoex_9interface_Suite) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (PyObject_SetAttrString(__pyx_m, "Suite", (PyObject *)&__pyx_type_6cocoex_9interface_Suite) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_SetVtable(__pyx_type_6cocoex_9interface_Suite.tp_dict, __pyx_vtabptr_6cocoex_9interface_Suite) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "Suite", (PyObject *)&__pyx_type_6cocoex_9interface_Suite) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_6cocoex_9interface_Suite = &__pyx_type_6cocoex_9interface_Suite;
-  if (PyType_Ready(&__pyx_type_6cocoex_9interface_Observer) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 480; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_6cocoex_9interface_Observer) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 481; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_6cocoex_9interface_Observer.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "Observer", (PyObject *)&__pyx_type_6cocoex_9interface_Observer) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 480; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "Observer", (PyObject *)&__pyx_type_6cocoex_9interface_Observer) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 481; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_6cocoex_9interface_Observer = &__pyx_type_6cocoex_9interface_Observer;
   __pyx_vtabptr_6cocoex_9interface_Problem = &__pyx_vtable_6cocoex_9interface_Problem;
   __pyx_vtable_6cocoex_9interface_Problem._initialize = (PyObject *(*)(struct __pyx_obj_6cocoex_9interface_Problem *, coco_problem_t *, struct __pyx_opt_args_6cocoex_9interface_7Problem__initialize *__pyx_optional_args))__pyx_f_6cocoex_9interface_7Problem__initialize;
-  if (PyType_Ready(&__pyx_type_6cocoex_9interface_Problem) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_6cocoex_9interface_Problem) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_6cocoex_9interface_Problem.tp_print = 0;
   #if CYTHON_COMPILING_IN_CPYTHON
   {
-    PyObject *wrapper = PyObject_GetAttrString((PyObject *)&__pyx_type_6cocoex_9interface_Problem, "__call__"); if (unlikely(!wrapper)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    PyObject *wrapper = PyObject_GetAttrString((PyObject *)&__pyx_type_6cocoex_9interface_Problem, "__call__"); if (unlikely(!wrapper)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     if (Py_TYPE(wrapper) == &PyWrapperDescr_Type) {
-      __pyx_wrapperbase_6cocoex_9interface_7Problem_32__call__ = *((PyWrapperDescrObject *)wrapper)->d_base;
-      __pyx_wrapperbase_6cocoex_9interface_7Problem_32__call__.doc = __pyx_doc_6cocoex_9interface_7Problem_32__call__;
-      ((PyWrapperDescrObject *)wrapper)->d_base = &__pyx_wrapperbase_6cocoex_9interface_7Problem_32__call__;
+      __pyx_wrapperbase_6cocoex_9interface_7Problem_34__call__ = *((PyWrapperDescrObject *)wrapper)->d_base;
+      __pyx_wrapperbase_6cocoex_9interface_7Problem_34__call__.doc = __pyx_doc_6cocoex_9interface_7Problem_34__call__;
+      ((PyWrapperDescrObject *)wrapper)->d_base = &__pyx_wrapperbase_6cocoex_9interface_7Problem_34__call__;
     }
   }
   #endif
-  if (__Pyx_SetVtable(__pyx_type_6cocoex_9interface_Problem.tp_dict, __pyx_vtabptr_6cocoex_9interface_Problem) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (PyObject_SetAttrString(__pyx_m, "Problem", (PyObject *)&__pyx_type_6cocoex_9interface_Problem) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_SetVtable(__pyx_type_6cocoex_9interface_Problem.tp_dict, __pyx_vtabptr_6cocoex_9interface_Problem) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "Problem", (PyObject *)&__pyx_type_6cocoex_9interface_Problem) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_6cocoex_9interface_Problem = &__pyx_type_6cocoex_9interface_Problem;
-  if (PyType_Ready(&__pyx_type_6cocoex_9interface___pyx_scope_struct____iter__) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 455; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_6cocoex_9interface___pyx_scope_struct____iter__) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 456; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_6cocoex_9interface___pyx_scope_struct____iter__.tp_print = 0;
   __pyx_ptype_6cocoex_9interface___pyx_scope_struct____iter__ = &__pyx_type_6cocoex_9interface___pyx_scope_struct____iter__;
   /*--- Type import code ---*/
@@ -14155,799 +14240,828 @@ PyMODINIT_FUNC PyInit_interface(void)
  */
   import_array();
 
-  /* "cython/interface.pyx":381
+  /* "cython/interface.pyx":382
  * 
  *     @property
  *     def current_problem(self):             # <<<<<<<<<<<<<<
  *         """current "open/active" problem to be benchmarked"""
  *         return self.current_problem_
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_current_problem); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 381; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_current_problem); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 382; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":380
+  /* "cython/interface.pyx":381
  *         return res
  * 
  *     @property             # <<<<<<<<<<<<<<
  *     def current_problem(self):
  *         """current "open/active" problem to be benchmarked"""
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 380; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 381; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 380; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 381; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_current_problem, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 381; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_current_problem, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 382; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Suite);
 
-  /* "cython/interface.pyx":385
+  /* "cython/interface.pyx":386
  *         return self.current_problem_
  *     @property
  *     def current_index(self):             # <<<<<<<<<<<<<<
  *         """index in the enumerator of all problems in this suite.
  * 
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_current_index); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 385; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_current_index); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 386; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":384
+  /* "cython/interface.pyx":385
  *         """current "open/active" problem to be benchmarked"""
  *         return self.current_problem_
  *     @property             # <<<<<<<<<<<<<<
  *     def current_index(self):
  *         """index in the enumerator of all problems in this suite.
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 384; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 385; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 384; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 385; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_current_index, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 385; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_current_index, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 386; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Suite);
 
-  /* "cython/interface.pyx":407
+  /* "cython/interface.pyx":408
  *         return self._current_index
  *     @property
  *     def problem_names(self):             # <<<<<<<<<<<<<<
  *         """list of problem names in this `Suite`, see also `ids`"""
  *         return list(self._names)
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_problem_names); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 407; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_problem_names); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 408; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":406
+  /* "cython/interface.pyx":407
  *         """
  *         return self._current_index
  *     @property             # <<<<<<<<<<<<<<
  *     def problem_names(self):
  *         """list of problem names in this `Suite`, see also `ids`"""
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 406; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 407; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 406; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 407; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_problem_names, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 407; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_problem_names, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 408; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Suite);
 
-  /* "cython/interface.pyx":411
+  /* "cython/interface.pyx":412
  *         return list(self._names)
  *     @property
  *     def dimensions(self):             # <<<<<<<<<<<<<<
  *         """list of problem dimensions occuring at least once in this `Suite`"""
  *         return sorted(set(self._dimensions))
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_dimensions); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 411; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_dimensions); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 412; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":410
+  /* "cython/interface.pyx":411
  *         """list of problem names in this `Suite`, see also `ids`"""
  *         return list(self._names)
  *     @property             # <<<<<<<<<<<<<<
  *     def dimensions(self):
  *         """list of problem dimensions occuring at least once in this `Suite`"""
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 410; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 411; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 410; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 411; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_dimensions, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 411; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_dimensions, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 412; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Suite);
 
-  /* "cython/interface.pyx":415
+  /* "cython/interface.pyx":416
  *         return sorted(set(self._dimensions))
  *     @property
  *     def number_of_objectives(self):             # <<<<<<<<<<<<<<
  *         """list of number of objectives occuring in this `Suite`"""
  *         return sorted(set(self._number_of_objectives))
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_number_of_objectives); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 415; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_number_of_objectives); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 416; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":414
+  /* "cython/interface.pyx":415
  *         """list of problem dimensions occuring at least once in this `Suite`"""
  *         return sorted(set(self._dimensions))
  *     @property             # <<<<<<<<<<<<<<
  *     def number_of_objectives(self):
  *         """list of number of objectives occuring in this `Suite`"""
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 414; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 415; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 414; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 415; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_number_of_objectives, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 415; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_number_of_objectives, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 416; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Suite);
 
-  /* "cython/interface.pyx":419
+  /* "cython/interface.pyx":420
  *         return sorted(set(self._number_of_objectives))
  *     @property
  *     def indices(self):             # <<<<<<<<<<<<<<
  *         """list of all problem indices, deprecated.
  * 
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_indices); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 419; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_indices); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 420; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":418
+  /* "cython/interface.pyx":419
  *         """list of number of objectives occuring in this `Suite`"""
  *         return sorted(set(self._number_of_objectives))
  *     @property             # <<<<<<<<<<<<<<
  *     def indices(self):
  *         """list of all problem indices, deprecated.
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 418; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 419; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 418; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 419; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_indices, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 419; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_indices, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 420; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Suite);
 
-  /* "cython/interface.pyx":427
+  /* "cython/interface.pyx":428
  *         return list(self._indices)
  *     @property
  *     def name(self):             # <<<<<<<<<<<<<<
  *         """name of this suite as used to instantiate the suite via `Suite(name, ...)`"""
  *         return self._name
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_name); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 427; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_name); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 428; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":426
+  /* "cython/interface.pyx":427
  *         """
  *         return list(self._indices)
  *     @property             # <<<<<<<<<<<<<<
  *     def name(self):
  *         """name of this suite as used to instantiate the suite via `Suite(name, ...)`"""
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 426; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 427; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 426; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 427; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_name, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 427; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_name, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 428; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Suite);
 
-  /* "cython/interface.pyx":431
+  /* "cython/interface.pyx":432
  *         return self._name
  *     @property
  *     def instance(self):             # <<<<<<<<<<<<<<
  *         """instance of this suite as used to instantiate the suite via
  *         `Suite(name, instance, ...)`"""
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 431; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_instance); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 432; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":430
+  /* "cython/interface.pyx":431
  *         """name of this suite as used to instantiate the suite via `Suite(name, ...)`"""
  *         return self._name
  *     @property             # <<<<<<<<<<<<<<
  *     def instance(self):
  *         """instance of this suite as used to instantiate the suite via
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 430; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 431; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 430; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 431; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_instance, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 431; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_instance, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 432; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Suite);
 
-  /* "cython/interface.pyx":436
+  /* "cython/interface.pyx":437
  *         return self._instance
  *     @property
  *     def options(self):             # <<<<<<<<<<<<<<
  *         """options for this suite as used to instantiate the suite via
  *         `Suite(name, instance, options)`"""
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_options); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 436; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_options); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 437; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":435
+  /* "cython/interface.pyx":436
  *         `Suite(name, instance, ...)`"""
  *         return self._instance
  *     @property             # <<<<<<<<<<<<<<
  *     def options(self):
  *         """options for this suite as used to instantiate the suite via
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 435; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 436; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 435; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 436; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_options, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 436; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_options, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 437; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Suite);
 
-  /* "cython/interface.pyx":442
+  /* "cython/interface.pyx":443
  * 
  *     @property
  *     def info(self):             # <<<<<<<<<<<<<<
  *         return str(self)
  *     def __repr__(self):
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_info); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 442; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Suite, __pyx_n_s_info); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 443; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":441
+  /* "cython/interface.pyx":442
  *         return self._options
  * 
  *     @property             # <<<<<<<<<<<<<<
  *     def info(self):
  *         return str(self)
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 441; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 442; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 441; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 442; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_info, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 442; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Suite->tp_dict, __pyx_n_s_info, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 443; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Suite);
 
-  /* "cython/interface.pyx":541
+  /* "cython/interface.pyx":542
  * 
  *     @property
  *     def name(self):             # <<<<<<<<<<<<<<
  *         """name of the observer as used with `Observer(name, ...)` to instantiate
  *         `self` before.
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Observer, __pyx_n_s_name); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 541; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Observer, __pyx_n_s_name); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 542; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":540
+  /* "cython/interface.pyx":541
  *         return self
  * 
  *     @property             # <<<<<<<<<<<<<<
  *     def name(self):
  *         """name of the observer as used with `Observer(name, ...)` to instantiate
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 540; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 541; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 540; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 541; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Observer->tp_dict, __pyx_n_s_name, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 541; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Observer->tp_dict, __pyx_n_s_name, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 542; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Observer);
 
-  /* "cython/interface.pyx":547
+  /* "cython/interface.pyx":548
  *         return self._name
  *     @property
  *     def options(self):             # <<<<<<<<<<<<<<
  *         return self._options
  *     @property
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Observer, __pyx_n_s_options); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 547; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Observer, __pyx_n_s_options); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 548; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":546
+  /* "cython/interface.pyx":547
  *         """
  *         return self._name
  *     @property             # <<<<<<<<<<<<<<
  *     def options(self):
  *         return self._options
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 546; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 547; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 546; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 547; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Observer->tp_dict, __pyx_n_s_options, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 547; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Observer->tp_dict, __pyx_n_s_options, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 548; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Observer);
 
-  /* "cython/interface.pyx":550
+  /* "cython/interface.pyx":551
  *         return self._options
  *     @property
  *     def state(self):             # <<<<<<<<<<<<<<
  *         return self._state
  * 
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Observer, __pyx_n_s_state); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 550; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Observer, __pyx_n_s_state); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 551; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":549
+  /* "cython/interface.pyx":550
  *     def options(self):
  *         return self._options
  *     @property             # <<<<<<<<<<<<<<
  *     def state(self):
  *         return self._state
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 549; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 550; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 549; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 550; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Observer->tp_dict, __pyx_n_s_state, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 550; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Observer->tp_dict, __pyx_n_s_state, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 551; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Observer);
 
-  /* "cython/interface.pyx":680
+  /* "cython/interface.pyx":681
  * 
  *     @property
  *     def list_of_observers(self):             # <<<<<<<<<<<<<<
  *         return self._list_of_observers
  *     property number_of_variables:  # this is cython syntax, not known in Python
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_list_of_observers); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_list_of_observers); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 681; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":679
+  /* "cython/interface.pyx":680
  *         return self(x) - self.final_target_fvalue1
  * 
  *     @property             # <<<<<<<<<<<<<<
  *     def list_of_observers(self):
  *         return self._list_of_observers
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 679; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 679; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_list_of_observers, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_list_of_observers, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 681; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":688
+  /* "cython/interface.pyx":689
  *             return self._number_of_variables
  *     @property
  *     def dimension(self):             # <<<<<<<<<<<<<<
  *         """alias for `number_of_variables` of the input space"""
  *         return self._number_of_variables
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_dimension); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 688; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_dimension); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":687
+  /* "cython/interface.pyx":688
  *         def __get__(self):
  *             return self._number_of_variables
  *     @property             # <<<<<<<<<<<<<<
  *     def dimension(self):
  *         """alias for `number_of_variables` of the input space"""
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 687; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 688; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 687; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 688; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_dimension, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 688; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_dimension, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":692
+  /* "cython/interface.pyx":693
  *         return self._number_of_variables
  *     @property
  *     def number_of_objectives(self):             # <<<<<<<<<<<<<<
  *         "number of objectives, if equal to 1, call returns a scalar"
  *         return self._number_of_objectives
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_number_of_objectives); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 692; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_number_of_objectives); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 693; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":691
+  /* "cython/interface.pyx":692
  *         """alias for `number_of_variables` of the input space"""
  *         return self._number_of_variables
  *     @property             # <<<<<<<<<<<<<<
  *     def number_of_objectives(self):
  *         "number of objectives, if equal to 1, call returns a scalar"
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 691; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 692; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 691; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 692; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_number_of_objectives, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 692; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_number_of_objectives, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 693; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":696
+  /* "cython/interface.pyx":697
  *         return self._number_of_objectives
  *     @property
  *     def number_of_constraints(self):             # <<<<<<<<<<<<<<
  *         "number of constraints"
  *         return self._number_of_constraints
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_number_of_constraints); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 696; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_number_of_constraints); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 697; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":695
+  /* "cython/interface.pyx":696
  *         "number of objectives, if equal to 1, call returns a scalar"
  *         return self._number_of_objectives
  *     @property             # <<<<<<<<<<<<<<
  *     def number_of_constraints(self):
  *         "number of constraints"
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 695; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 696; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 695; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 696; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_number_of_constraints, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 696; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_number_of_constraints, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 697; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":700
+  /* "cython/interface.pyx":701
  *         return self._number_of_constraints
  *     @property
  *     def lower_bounds(self):             # <<<<<<<<<<<<<<
  *         """depending on the test bed, these are not necessarily strict bounds
  *         """
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_lower_bounds); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_lower_bounds); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 701; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":699
+  /* "cython/interface.pyx":700
  *         "number of constraints"
  *         return self._number_of_constraints
  *     @property             # <<<<<<<<<<<<<<
  *     def lower_bounds(self):
  *         """depending on the test bed, these are not necessarily strict bounds
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 699; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 699; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_lower_bounds, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 700; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_lower_bounds, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 701; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":705
+  /* "cython/interface.pyx":706
  *         return self._lower_bounds
  *     @property
  *     def upper_bounds(self):             # <<<<<<<<<<<<<<
  *         """depending on the test bed, these are not necessarily strict bounds
  *         """
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_upper_bounds); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 705; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_upper_bounds); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 706; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":704
+  /* "cython/interface.pyx":705
  *         """
  *         return self._lower_bounds
  *     @property             # <<<<<<<<<<<<<<
  *     def upper_bounds(self):
  *         """depending on the test bed, these are not necessarily strict bounds
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 704; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 705; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 704; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 705; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_upper_bounds, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 705; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_upper_bounds, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 706; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":710
+  /* "cython/interface.pyx":711
  *         return self._upper_bounds
  *     @property
  *     def evaluations(self):             # <<<<<<<<<<<<<<
  *         return coco_problem_get_evaluations(self.problem)
  *     @property
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_evaluations); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 710; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_evaluations); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 711; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":709
+  /* "cython/interface.pyx":710
  *         """
  *         return self._upper_bounds
  *     @property             # <<<<<<<<<<<<<<
  *     def evaluations(self):
  *         return coco_problem_get_evaluations(self.problem)
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 709; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 710; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 709; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 710; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_evaluations, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 710; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_evaluations, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 711; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":713
+  /* "cython/interface.pyx":714
  *         return coco_problem_get_evaluations(self.problem)
+ *     @property
+ *     def final_target_hit(self):             # <<<<<<<<<<<<<<
+ *         """return 1 if the final target is known and has been hit, 0 otherwise
+ *         """
+ */
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_final_target_hit); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+
+  /* "cython/interface.pyx":713
+ *     def evaluations(self):
+ *         return coco_problem_get_evaluations(self.problem)
+ *     @property             # <<<<<<<<<<<<<<
+ *     def final_target_hit(self):
+ *         """return 1 if the final target is known and has been hit, 0 otherwise
+ */
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 713; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_2);
+  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
+  __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 713; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_final_target_hit, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 714; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
+
+  /* "cython/interface.pyx":720
+ *         return coco_problem_final_target_hit(self.problem)
  *     @property
  *     def final_target_fvalue1(self):             # <<<<<<<<<<<<<<
  *         assert(self.problem)
  *         return coco_problem_get_final_target_fvalue1(self.problem)
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_final_target_fvalue1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 713; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_final_target_fvalue1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 720; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":712
- *     def evaluations(self):
- *         return coco_problem_get_evaluations(self.problem)
+  /* "cython/interface.pyx":719
+ *         assert(self.problem)
+ *         return coco_problem_final_target_hit(self.problem)
  *     @property             # <<<<<<<<<<<<<<
  *     def final_target_fvalue1(self):
  *         assert(self.problem)
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 712; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 719; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 712; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 719; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_final_target_fvalue1, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 713; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_final_target_fvalue1, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 720; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":717
+  /* "cython/interface.pyx":724
  *         return coco_problem_get_final_target_fvalue1(self.problem)
  *     @property
  *     def best_observed_fvalue1(self):             # <<<<<<<<<<<<<<
  *         assert(self.problem)
  *         return coco_problem_get_best_observed_fvalue1(self.problem)
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_best_observed_fvalue1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 717; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_best_observed_fvalue1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 724; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":716
+  /* "cython/interface.pyx":723
  *         assert(self.problem)
  *         return coco_problem_get_final_target_fvalue1(self.problem)
  *     @property             # <<<<<<<<<<<<<<
  *     def best_observed_fvalue1(self):
  *         assert(self.problem)
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 716; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 723; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 716; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 723; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_best_observed_fvalue1, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 717; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_best_observed_fvalue1, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 724; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":761
+  /* "cython/interface.pyx":768
  * 
  *     @property
  *     def id(self):             # <<<<<<<<<<<<<<
  *         "id as string without spaces or weird characters"
  *         if self.problem is not NULL:
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_id); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_id); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 768; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":760
+  /* "cython/interface.pyx":767
  *         return self.y[0] if self._number_of_objectives == 1 else self.y
  * 
  *     @property             # <<<<<<<<<<<<<<
  *     def id(self):
  *         "id as string without spaces or weird characters"
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 760; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 767; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 760; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 767; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_id, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_id, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 768; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":767
+  /* "cython/interface.pyx":774
  * 
  *     @property
  *     def name(self):             # <<<<<<<<<<<<<<
  *         if self.problem is not NULL:
  *             return coco_problem_get_name(self.problem)
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_name); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 767; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_name); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 774; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":766
+  /* "cython/interface.pyx":773
  *             return coco_problem_get_id(self.problem)
  * 
  *     @property             # <<<<<<<<<<<<<<
  *     def name(self):
  *         if self.problem is not NULL:
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 766; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 773; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 766; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 773; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_name, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 767; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_name, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 774; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":772
+  /* "cython/interface.pyx":779
  * 
  *     @property
  *     def index(self):             # <<<<<<<<<<<<<<
  *         """problem index in the benchmark `Suite` of origin"""
  *         return self._problem_index
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_index); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 772; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_index); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 779; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":771
+  /* "cython/interface.pyx":778
  *             return coco_problem_get_name(self.problem)
  * 
  *     @property             # <<<<<<<<<<<<<<
  *     def index(self):
  *         """problem index in the benchmark `Suite` of origin"""
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 771; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 771; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_index, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 772; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_index, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 779; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":777
+  /* "cython/interface.pyx":784
  * 
  *     @property
  *     def suite(self):             # <<<<<<<<<<<<<<
  *         """benchmark suite this problem is from"""
  *         return self._suite_name
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_suite); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 777; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_suite); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 784; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":776
+  /* "cython/interface.pyx":783
  *         return self._problem_index
  * 
  *     @property             # <<<<<<<<<<<<<<
  *     def suite(self):
  *         """benchmark suite this problem is from"""
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 783; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 783; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_suite, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 777; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_suite, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 784; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":782
+  /* "cython/interface.pyx":789
  * 
  *     @property
  *     def info(self):             # <<<<<<<<<<<<<<
  *         return str(self)
  * 
  */
-  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_info); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 782; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_6cocoex_9interface_Problem, __pyx_n_s_info); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 789; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "cython/interface.pyx":781
+  /* "cython/interface.pyx":788
  *         return self._suite_name
  * 
  *     @property             # <<<<<<<<<<<<<<
  *     def info(self):
  *         return str(self)
  */
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 781; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 788; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 781; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_property, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 788; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_info, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 782; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_6cocoex_9interface_Problem->tp_dict, __pyx_n_s_info, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 789; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_6cocoex_9interface_Problem);
 
-  /* "cython/interface.pyx":815
+  /* "cython/interface.pyx":822
  *             pass
  * 
  * def log_level(level=None):             # <<<<<<<<<<<<<<
  *     """`log_level(level=None)` return current log level and
  *     set new log level if `level is not None and level`.
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_6cocoex_9interface_1log_level, NULL, __pyx_n_s_cocoex_interface); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 815; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_6cocoex_9interface_1log_level, NULL, __pyx_n_s_cocoex_interface); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 822; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_log_level, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 815; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_log_level, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 822; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "cython/interface.pyx":1
@@ -14957,10 +15071,10 @@ PyMODINIT_FUNC PyInit_interface(void)
  */
   __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_kp_u_Suite_get_problem_line_268, __pyx_kp_u_get_problem_self_id_observer_No) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (PyDict_SetItem(__pyx_t_2, __pyx_kp_u_Suite_ids_line_332, __pyx_kp_u_ids_id_snippets_get_problem_Fal) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (PyDict_SetItem(__pyx_t_2, __pyx_kp_u_Suite_current_index_line_385, __pyx_kp_u_index_in_the_enumerator_of_all_p) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (PyDict_SetItem(__pyx_t_2, __pyx_kp_u_Observer_observe_line_507, __pyx_kp_u_observe_problem_let_self_observ) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_2, __pyx_kp_u_Suite_get_problem_line_269, __pyx_kp_u_get_problem_self_id_observer_No) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_2, __pyx_kp_u_Suite_ids_line_333, __pyx_kp_u_ids_id_snippets_get_problem_Fal) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_2, __pyx_kp_u_Suite_current_index_line_386, __pyx_kp_u_index_in_the_enumerator_of_all_p) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_2, __pyx_kp_u_Observer_observe_line_508, __pyx_kp_u_observe_problem_let_self_observ) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
@@ -17194,6 +17308,32 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
     }
 }
 
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
+    const int neg_one = (int) -1, const_zero = (int) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(int) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(int) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+        } else if (sizeof(int) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+        }
+    } else {
+        if (sizeof(int) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(int) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(int),
+                                     little, !is_unsigned);
+    }
+}
+
 #if CYTHON_CCOMPLEX
   #ifdef __cplusplus
     static CYTHON_INLINE __pyx_t_float_complex __pyx_t_float_complex_from_parts(float x, float y) {
@@ -17433,32 +17573,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
         }
     #endif
 #endif
-
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
-    const int neg_one = (int) -1, const_zero = (int) 0;
-    const int is_unsigned = neg_one > const_zero;
-    if (is_unsigned) {
-        if (sizeof(int) < sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(int) <= sizeof(unsigned long)) {
-            return PyLong_FromUnsignedLong((unsigned long) value);
-        } else if (sizeof(int) <= sizeof(unsigned PY_LONG_LONG)) {
-            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
-        }
-    } else {
-        if (sizeof(int) <= sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(int) <= sizeof(PY_LONG_LONG)) {
-            return PyLong_FromLongLong((PY_LONG_LONG) value);
-        }
-    }
-    {
-        int one = 1; int little = (int)*(unsigned char *)&one;
-        unsigned char *bytes = (unsigned char *)&value;
-        return _PyLong_FromByteArray(bytes, sizeof(int),
-                                     little, !is_unsigned);
-    }
-}
 
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
     const int neg_one = (int) -1, const_zero = (int) 0;
