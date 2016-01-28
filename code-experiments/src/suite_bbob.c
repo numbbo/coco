@@ -36,7 +36,7 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 /**
  * @brief Sets the dimensions and default instances for the bbob suite.
  */
-static coco_suite_t *suite_bbob_allocate(void) {
+static coco_suite_t *suite_bbob_initialize(void) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
@@ -50,7 +50,7 @@ static coco_suite_t *suite_bbob_allocate(void) {
 /**
  * @brief Sets the instances associated with years for the bbob suite.
  */
-static char *suite_bbob_get_instances_by_year(const int year) {
+static const char *suite_bbob_get_instances_by_year(const int year) {
 
   if (year == 2009) {
     return "1-5,1-5,1-5";

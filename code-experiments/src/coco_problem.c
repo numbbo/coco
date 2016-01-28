@@ -472,7 +472,7 @@ static void coco_problem_transformed_evaluate_function(coco_problem_t *problem, 
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
   coco_evaluate_function(data->inner_problem, x, y);
@@ -485,7 +485,7 @@ static void coco_problem_transformed_evaluate_constraint(coco_problem_t *problem
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
   coco_evaluate_constraint(data->inner_problem, x, y);
@@ -498,7 +498,7 @@ static void coco_problem_transformed_recommend_solution(coco_problem_t *problem,
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
   coco_recommend_solution(data->inner_problem, x);
@@ -512,7 +512,7 @@ static void coco_problem_transformed_free(coco_problem_t *problem) {
 
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
   if (data->inner_problem != NULL) {
@@ -608,7 +608,7 @@ static void coco_problem_stacked_free(coco_problem_t *problem) {
 
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_stacked_data_t*) problem->data;
 
   if (data->problem1 != NULL) {
     coco_problem_free(data->problem1);

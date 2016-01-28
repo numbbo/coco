@@ -110,7 +110,7 @@ static double f_gallagher_raw(const double *x, const size_t number_of_variables,
  */
 static void f_gallagher_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
-  y[0] = f_gallagher_raw(x, problem->number_of_variables, problem->data);
+  y[0] = f_gallagher_raw(x, problem->number_of_variables, (f_gallagher_data_t *) problem->data);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
@@ -119,7 +119,7 @@ static void f_gallagher_evaluate(coco_problem_t *problem, const double *x, doubl
  */
 static void f_gallagher_free(coco_problem_t *problem) {
   f_gallagher_data_t *data;
-  data = problem->data;
+  data = (f_gallagher_data_t *) problem->data;
   coco_free_memory(data->xopt);
   coco_free_memory(data->peak_values);
   bbob2009_free_matrix(data->rotation, problem->number_of_variables);

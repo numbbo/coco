@@ -539,7 +539,7 @@ static void logger_biobj_indicator_free(void *stuff) {
   logger_biobj_indicator_t *indicator;
 
   assert(stuff != NULL);
-  indicator = stuff;
+  indicator = (logger_biobj_indicator_t *) stuff;
 
   if (indicator->name != NULL) {
     coco_free_memory(indicator->name);
@@ -708,7 +708,7 @@ static void logger_biobj_free(void *stuff) {
   size_t i;
 
   assert(stuff != NULL);
-  logger = stuff;
+  logger = (logger_biobj_data_t *) stuff;
 
   if (logger->log_nondom_mode == LOG_NONDOM_FINAL) {
      logger_biobj_finalize(logger);
