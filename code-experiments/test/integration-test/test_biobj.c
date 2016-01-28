@@ -16,10 +16,9 @@ static void wait_in_seconds(unsigned int secs) {
 
 static void valgrind_test(void) {
 
+  /* This should not create a memory leak (string is not freed)
   char *string = (char *) coco_allocate_memory(10 * sizeof(char));
-
-  /* This should not create a memory leak (string is not freed) */
-  printf("Valgrind printf test: %s\n", string);
+  printf("Valgrind printf test: %s\n", string);  */
 
   /* This should create a memory leak */
   printf("Valgrind printf test: %.3f\n", 3.0);
