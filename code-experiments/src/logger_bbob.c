@@ -389,7 +389,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
  * Layer added to the transformed-problem evaluate_function by the logger
  */
 static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, double *y) {
-  logger_bbob_data_t *logger = coco_problem_transformed_get_data(problem);
+  logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
   coco_problem_t * inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
   if (!logger->is_initialized) {
@@ -451,7 +451,7 @@ static void logger_bbob_free(void *stuff) {
   /* TODO: do all the "non simply freeing" stuff in another function
    * that can have problem as input
    */
-  logger_bbob_data_t *logger = stuff;
+  logger_bbob_data_t *logger = (logger_bbob_data_t *) stuff;
 
   if ((coco_log_level >= COCO_DEBUG) && logger && logger->number_of_evaluations > 0) {
     coco_debug("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,

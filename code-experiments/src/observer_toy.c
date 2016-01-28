@@ -25,7 +25,7 @@ static void observer_toy_free(void *stuff) {
   observer_toy_data_t *data;
 
   assert(stuff != NULL);
-  data = stuff;
+  data = (observer_toy_data_t *) stuff;
 
   if (data->log_file != NULL) {
     fclose(data->log_file);
