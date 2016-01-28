@@ -18,7 +18,7 @@
 /**
  * @brief A structure containing the state of the COCO random generator.
  */
-struct coco_random_state {
+struct coco_random_state_s {
   double x[COCO_LONG_LAG];
   size_t index;
 };
