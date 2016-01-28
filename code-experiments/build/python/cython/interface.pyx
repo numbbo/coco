@@ -54,6 +54,7 @@ cdef extern from "coco.h":
     double coco_problem_get_final_target_fvalue1(coco_problem_t *problem)
     size_t coco_problem_get_evaluations(coco_problem_t *problem)
     double coco_problem_get_best_observed_fvalue1(coco_problem_t *problem)
+    int coco_problem_final_target_hit(const coco_problem_t *problem)
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
@@ -709,6 +710,12 @@ cdef class Problem:
     @property
     def evaluations(self):
         return coco_problem_get_evaluations(self.problem)
+    @property
+    def final_target_hit(self):
+        """return 1 if the final target is known and has been hit, 0 otherwise
+        """
+        assert(self.problem)
+        return coco_problem_final_target_hit(self.problem)
     @property
     def final_target_fvalue1(self):
         assert(self.problem)
