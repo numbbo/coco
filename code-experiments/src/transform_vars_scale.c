@@ -23,7 +23,7 @@ static void transform_vars_scale_evaluate(coco_problem_t *problem, const double 
   size_t i;
   transform_vars_scale_data_t *data;
   coco_problem_t *inner_problem;
-  data = coco_problem_transformed_get_data(problem);
+  data = (transform_vars_scale_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
   do {
     const double factor = data->factor;
@@ -40,7 +40,7 @@ static void transform_vars_scale_evaluate(coco_problem_t *problem, const double 
  * @brief Frees the data object.
  */
 static void transform_vars_scale_free(void *thing) {
-  transform_vars_scale_data_t *data = thing;
+  transform_vars_scale_data_t *data = (transform_vars_scale_data_t *) thing;
   coco_free_memory(data->x);
 }
 
