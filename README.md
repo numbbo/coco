@@ -8,8 +8,8 @@ solvers for numerical optimization. Languages currently available are `C`, `Java
 `MATLAB/Octave`, and `Python`. Support for `C++` is expected to be available in the near 
 future. Contributions to link further languages (including `C++`) are more than welcome.
 
-See [here](http://numbbo.github.io/workshops) and [here](http://coco.gforge.inria.fr/) and 
-[further links](#Further-Links) below to learn more about the ideas behind CoCO.
+See the [workshops page](http://numbbo.github.io/workshops), the [previous COCO home page](http://coco.gforge.inria.fr/) 
+and [further links below](#Further-Links) to learn more about the ideas behind CoCO.
 
 Requirements  <a name="Requirements"></a>
 ------------
@@ -38,6 +38,12 @@ _Additional_ requirements for running an algorithm in a specific language.
 * Java: any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
   (i.e. in the system path). 
 * MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
+* Python: For Windows, the MinGW compiler sometimes produces errors while
+  producing C extensions, such as it is while building the Python example experiment.
+  To fix this, Microsoft released a compiler package for Python 2.7 containing VC9.
+  It has both the 32-bit and 64-bit compilers and the Windows SDK headers
+  and libs necessary to build C extensions for Windows, 
+  see [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266).
 * Octave: tested with Octave 4.0.0 but older versions might work. Make sure `octave` can be called from
   the shell without closing the shell on exit, for details, see [here](./code-experiments/build/matlab/README.md)
 
@@ -327,6 +333,9 @@ processes if there is any) before to run the `do.py` command again.
 
 ### Octave
 
+#### Fresh Octave Installation Under Windows
+If you happen to install Octave just before you run `python do.py run-octave` under Windows, you need to run the octave.bat first once. It will set the correct path to the Octave `bin/` folder.
+
 #### Command Window Closes Unexpectedly Under Windows
 If it happens that the command window, from which the
 `python do.py run-octave` is run, closes unexpectely under Windows, you might
@@ -339,6 +348,12 @@ exit
 ```
 We think already about a way to solve this issue directly in the `do.py` but it
 has low priority for the moment.
+
+#### Running Algorithms in Octave and C Under Windows
+If want to run algorithms in Octave and C, please make sure that you run them from different
+command windows. The `octave.bat` happens to set some paths which might affect which compiler
+you use as default. This might crash the `python do.py run-c` if you run it in the same
+command windows *after* having run the `octave.bat`.
 
 ### Python
 

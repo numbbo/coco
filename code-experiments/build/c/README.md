@@ -29,9 +29,8 @@ Getting Started
 
 See [here](../../../README.md#Getting-Started) for the first steps. Then
 
-- Copy `example_experiment.c` to a different folder of your choice. Along with it, 
-  copy to the new location also the files `coco.c`, `coco.h` and `Makefile`. Modify 
-  the `example_experiment.c` file to include the solver of your choice (instead of 
-  `random_search`).
+- Copy the files `example_experiment.c`, `coco.c`, `coco.h` and `Makefile` to a folder
+  of your choice. Modify the `example_experiment.c` file to include the solver of your
+  choice (instead of  `random_search`).
 
-- Use the Makefile to compile and run your experiment.
+- Invoke `make` to compile and run your experiment.
