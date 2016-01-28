@@ -28,24 +28,24 @@ Under Windows, two alternative compile toolchains can be used:
 
 1. [Cygwin](https://www.cygwin.com/) which comes with gcc and make, available in 32- and 64-bit versions.  
 2. MinGW's gcc (http://www.mingw.org/) and GNU make (http://gnuwin32.sourceforge.net/packages/make.htm).
-  MinGW only comes in 32-bit, but also runs on 64-bit machines. 
+  MinGW only comes in 32-bit, but also runs on 64-bit machines. See [_Language Specifics_](#Language-Specifics)
+  below, if Python is used to conduct experiments. 
 
 For using `git` under Windows (optional), we recommend installing [TortoiseGit](https://tortoisegit.org/).
 
-### Language Specifics
+### Language Specifics  <a name="Language-Specifics"></a>
 _Additional_ requirements for running an algorithm in a specific language.
 
-* Java: any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
+* **Java**: any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
   (i.e. in the system path). 
-* MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
-* Python: For Windows, the MinGW compiler sometimes produces errors while
-  producing C extensions, such as it is while building the Python example experiment.
-  To fix this, Microsoft released a compiler package for Python 2.7 containing VC9.
-  It has both the 32-bit and 64-bit compilers and the Windows SDK headers
-  and libs necessary to build C extensions for Windows, 
-  see [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266).
-* Octave: tested with Octave 4.0.0 but older versions might work. Make sure `octave` can be called from
-  the shell without closing the shell on exit, for details, see [here](./code-experiments/build/matlab/README.md)
+* **MATLAB**: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
+* **Python on Windows with MinGW** compiler: Microsoft compiler package for Python 2.7 
+  containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
+  These are necessary to build C extensions for the Python `cocoex` package for Windows. 
+  It has both the 32-bit and 64-bit compilers and the Windows SDK headers.
+* **Octave**: tested with Octave 4.0.0 but older versions might work. Make sure `octave` can be called from
+  the shell without closing the shell on exit, for details, 
+  see [here](./code-experiments/build/matlab/README.md)
 
 ### Guaranties (None)
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
@@ -57,7 +57,7 @@ Otherwise we will be happy if you can document them in detail on the
 [issue tracker](https://github.com/numbbo/coco/issues). 
 
 
- Getting Started <a name="Getting-Started"></a>
+Getting Started <a name="Getting-Started"></a>
 ---------------
 0. Check out the [_Requirements_](#Requirements) above.
 
