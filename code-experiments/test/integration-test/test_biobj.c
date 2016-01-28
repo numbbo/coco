@@ -78,6 +78,7 @@ void run_once(char *observer_options) {
 int main( int argc, char *argv[] )  {
 
   if ((argc == 2) && (strcmp(argv[1], "leak_check") == 0)) {
+    printf("Valgrind printf test: %.3f\n", 3.0);
     run_once("produce_all_data 1");
   }
   else {
