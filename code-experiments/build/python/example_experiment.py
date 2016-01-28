@@ -162,7 +162,7 @@ def coco_optimize(solver, fun, budget):
     dim = len(fun.lower_bounds)
 
     runs = 0
-    while budget > fun.evaluations:
+    while budget > fun.evaluations and not fun.final_target_hit:
         runs += 1
         remaining_budget = budget - fun.evaluations
         x0 = center if fun.evaluations == 0 else \
