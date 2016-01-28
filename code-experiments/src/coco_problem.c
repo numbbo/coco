@@ -320,6 +320,21 @@ size_t coco_problem_get_evaluations(coco_problem_t *problem) {
 }
 
 /**
+ * @note Can be used to prevent unnessary burning of CPU time. 
+ */
+int coco_problem_final_target_hit(const coco_problem_t *problem) {
+  assert(problem != NULL);
+  if (coco_problem_get_number_of_objectives(problem) != 1 ||
+      coco_problem_get_evaluations(problem) < 1) 
+    return 0;
+  if (problem->best_value == NULL ||
+      problem->final_target_delta == NULL ||
+      problem->best_observed_fvalue == NULL)
+    return 0;
+  return problem->best_observed_fvalue[0] <= problem->best_value[0] + problem->final_target_delta[0] ?
+    1 : 0;
+}
+/**
  * @note Tentative...
  */
 double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem) {
@@ -328,8 +343,8 @@ double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem) {
 }
 
 /**
- * @note This function breaks the black-box property: the returned  value is not meant to be used by the
- * optimization algorithm other than for testing termination conditions.
+ * @note This function breaks the black-box property: the returned  value is not
+ * meant to be used by the optimization algorithm.
  */
 double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem) {
   assert(problem != NULL);
