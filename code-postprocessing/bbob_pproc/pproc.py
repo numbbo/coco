@@ -775,6 +775,7 @@ class DataSet():
                          for i in self.dataFiles)
                              
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
+            warnings.warn('Missing tdat files. Please rerun the experiments.')
             dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                              for i in self.dataFiles)
             data = VMultiReaderNew(split(dataFiles), self.isBiobjective())
