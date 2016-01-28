@@ -66,7 +66,7 @@ Getting Started <a name="Getting-Started"></a>
 
   - either by clicking [here](https://github.com/numbbo/coco/archive/master.zip) and unzip the 
     `zip` file, 
-  - or by typing `git clone https://github.com/numbbo/coco.git`, preferred, as it 
+  - or (preferred) by typing `git clone https://github.com/numbbo/coco.git`. This way 
     allows to remain up-to-date easily (but needs `git` to be installed). After 
     cloning, `git pull` keeps the code up-to-date with the latest release. 
 
