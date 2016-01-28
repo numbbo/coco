@@ -13,20 +13,23 @@
 #include "transform_obj_shift.c"
 
 /**
- * @brief A global variable to store Gallagher peaks.
+ * @brief A random permutation type for the Gallagher problem.
  *
- * Required for sorting.
+ * Needed to create a random permutation that is compatible with the old code.
  */
-static double *f_gallagher_peaks;
+typedef struct {
+  double value;
+  size_t index;
+} f_gallagher_permutation_t;
 
 /**
  * @brief Data type for the Gallagher problem.
  */
 typedef struct {
   long rseed;
-  size_t number_of_peaks;
   double *xopt;
   double **rotation, **x_local, **arr_scales;
+  size_t number_of_peaks;
   double *peak_values;
   coco_problem_free_function_t old_free_problem;
 } f_gallagher_data_t;
@@ -35,7 +38,7 @@ typedef struct {
  * Comparison function used for sorting.
  */
 static int f_gallagher_compare_doubles(const void *a, const void *b) {
-  double temp = f_gallagher_peaks[*(const size_t *) a] - f_gallagher_peaks[*(const size_t *) b];
+  double temp = (*(f_gallagher_permutation_t *) a).value - (*(f_gallagher_permutation_t *) b).value;
   if (temp > 0)
     return 1;
   else if (temp < 0)
@@ -124,11 +127,6 @@ static void f_gallagher_free(coco_problem_t *problem) {
   bbob2009_free_matrix(data->arr_scales, data->number_of_peaks);
   problem->problem_free_function = NULL;
   coco_problem_free(problem);
-
-  if (f_gallagher_peaks != NULL) {
-    coco_free_memory(f_gallagher_peaks);
-    f_gallagher_peaks = NULL;
-  }
 }
 
 /**
@@ -153,7 +151,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   const size_t peaks_101 = 101;
 
   double fopt;
-  size_t i, j, k, *rperm;
+  size_t i, j, k;
   double maxcondition = 1000.;
   /* maxcondition1 satisfies the old code and the doc but seems wrong in that it is, with very high
    * probability, not the largest condition level!!! */
@@ -162,6 +160,9 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   double fitvalues[2] = { 1.1, 9.1 };
   /* Parameters for generating local optima. In the old code, they are different in f21 and f22 */
   double b, c;
+  /* Random permutation */
+  f_gallagher_permutation_t *rperm;
+  double *random_numbers;
 
   data = (f_gallagher_data_t *) coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
@@ -172,16 +173,10 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   data->arr_scales = bbob2009_allocate_matrix(number_of_peaks, dimension);
 
   if (number_of_peaks == peaks_101) {
-    if (f_gallagher_peaks != NULL)
-      coco_free_memory(f_gallagher_peaks);
-    f_gallagher_peaks = coco_allocate_vector(peaks_101 * dimension);
     maxcondition1 = sqrt(maxcondition1);
     b = 10.;
     c = 5.;
   } else if (number_of_peaks == peaks_21) {
-    if (f_gallagher_peaks != NULL)
-      coco_free_memory(f_gallagher_peaks);
-    f_gallagher_peaks = coco_allocate_vector(peaks_21 * dimension);
     b = 9.8;
     c = 4.9;
   } else {
@@ -192,11 +187,14 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   bbob2009_compute_rotation(data->rotation, rseed, dimension);
 
   /* Initialize all the data of the inner problem */
-  bbob2009_unif(f_gallagher_peaks, number_of_peaks - 1, data->rseed);
-  rperm = coco_allocate_vector_size_t(number_of_peaks - 1);
-  for (i = 0; i < number_of_peaks - 1; ++i)
-    rperm[i] = i;
-  qsort(rperm, number_of_peaks - 1, sizeof(size_t), f_gallagher_compare_doubles);
+  random_numbers = coco_allocate_vector(number_of_peaks * dimension); /* This is large enough for all cases below */
+  bbob2009_unif(random_numbers, number_of_peaks - 1, data->rseed);
+  rperm = (f_gallagher_permutation_t *) coco_allocate_memory(sizeof(*rperm) * (number_of_peaks - 1));
+  for (i = 0; i < number_of_peaks - 1; ++i) {
+    rperm[i].value = random_numbers[i];
+    rperm[i].index = i;
+  }
+  qsort(rperm, number_of_peaks - 1, sizeof(*rperm), f_gallagher_compare_doubles);
 
   /* Random permutation */
   arrCondition = coco_allocate_vector(number_of_peaks);
@@ -204,33 +202,35 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   data->peak_values = coco_allocate_vector(number_of_peaks);
   data->peak_values[0] = 10;
   for (i = 1; i < number_of_peaks; ++i) {
-    arrCondition[i] = pow(maxcondition, (double) (rperm[i - 1]) / ((double) (number_of_peaks - 2)));
+    arrCondition[i] = pow(maxcondition, (double) (rperm[i - 1].index) / ((double) (number_of_peaks - 2)));
     data->peak_values[i] = (double) (i - 1) / (double) (number_of_peaks - 2) * (fitvalues[1] - fitvalues[0])
         + fitvalues[0];
   }
   coco_free_memory(rperm);
 
-  rperm = coco_allocate_vector_size_t(dimension);
+  rperm = (f_gallagher_permutation_t *) coco_allocate_memory(sizeof(*rperm) * dimension);
   for (i = 0; i < number_of_peaks; ++i) {
-    bbob2009_unif(f_gallagher_peaks, dimension, data->rseed + (long) (1000 * i));
-    for (j = 0; j < dimension; ++j)
-      rperm[j] = j;
-    qsort(rperm, dimension, sizeof(size_t), f_gallagher_compare_doubles);
+    bbob2009_unif(random_numbers, dimension, data->rseed + (long) (1000 * i));
+    for (j = 0; j < dimension; ++j) {
+      rperm[j].value = random_numbers[j];
+      rperm[j].index = j;
+    }
+    qsort(rperm, dimension, sizeof(*rperm), f_gallagher_compare_doubles);
     for (j = 0; j < dimension; ++j) {
       data->arr_scales[i][j] = pow(arrCondition[i],
-          ((double) rperm[j]) / ((double) (dimension - 1)) - 0.5);
+          ((double) rperm[j].index) / ((double) (dimension - 1)) - 0.5);
     }
   }
   coco_free_memory(rperm);
 
-  bbob2009_unif(f_gallagher_peaks, dimension * number_of_peaks, data->rseed);
+  bbob2009_unif(random_numbers, dimension * number_of_peaks, data->rseed);
   for (i = 0; i < dimension; ++i) {
-    data->xopt[i] = 0.8 * (b * f_gallagher_peaks[i] - c);
-    problem->best_parameter[i] = 0.8 * (b * f_gallagher_peaks[i] - c);
+    data->xopt[i] = 0.8 * (b * random_numbers[i] - c);
+    problem->best_parameter[i] = 0.8 * (b * random_numbers[i] - c);
     for (j = 0; j < number_of_peaks; ++j) {
       data->x_local[i][j] = 0.;
       for (k = 0; k < dimension; ++k) {
-        data->x_local[i][j] += data->rotation[i][k] * (b * f_gallagher_peaks[j * dimension + k] - c);
+        data->x_local[i][j] += data->rotation[i][k] * (b * random_numbers[j * dimension + k] - c);
       }
       if (j == 0) {
         data->x_local[i][j] *= 0.8;
@@ -238,6 +238,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
     }
   }
   coco_free_memory(arrCondition);
+  coco_free_memory(random_numbers);
 
   problem->data = data;
 
@@ -253,3 +254,4 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
 
   return problem;
 }
+
