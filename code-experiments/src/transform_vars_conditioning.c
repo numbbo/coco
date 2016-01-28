@@ -25,7 +25,7 @@ static void transform_vars_conditioning_evaluate(coco_problem_t *problem, const 
   transform_vars_conditioning_data_t *data;
   coco_problem_t *inner_problem;
 
-  data = coco_problem_transformed_get_data(problem);
+  data = (transform_vars_conditioning_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
   for (i = 0; i < problem->number_of_variables; ++i) {
@@ -40,7 +40,7 @@ static void transform_vars_conditioning_evaluate(coco_problem_t *problem, const 
 }
 
 static void transform_vars_conditioning_free(void *thing) {
-  transform_vars_conditioning_data_t *data = thing;
+  transform_vars_conditioning_data_t *data = (transform_vars_conditioning_data_t *) thing;
   coco_free_memory(data->x);
 }
 

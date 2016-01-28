@@ -8,6 +8,10 @@
 #ifndef __COCO_INTERNAL__
 #define __COCO_INTERNAL__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /***********************************************************************************************************/
 /**
  * @brief The data free function type.
@@ -97,7 +101,7 @@ typedef struct {
  * the coco_problem_transformed_data_t structure creating some kind of "object inheritance". Even the logger
  * is considered as just another coco_problem instance wrapped around the original problem.
  */
-struct coco_problem {
+struct coco_problem_s {
 
   coco_initial_solution_function_t initial_solution;  /**< @brief  The function for creating an initial solution. */
   coco_evaluate_function_t evaluate_function;         /**< @brief  The function for evaluating the problem. */
@@ -145,7 +149,7 @@ struct coco_problem {
  * new problem of the suite is being observed, the observer initializes a new logger (wraps the observed
  * problem with the corresponding logger).
  */
-struct coco_observer {
+struct coco_observer_s {
 
   int is_active;         /**< @brief Whether the observer is active (the logger will log some output). */
   char *result_folder;   /**< @brief Name of the result folder. */
@@ -169,7 +173,7 @@ struct coco_observer {
  * while the instances are defined dynamically. The suite can be filtered - only the chosen functions,
  * dimensions and instances will be taken into account when iterating through the suite.
  */
-struct coco_suite {
+struct coco_suite_s {
 
   char *suite_name;                /**< @brief Name of the suite. */
 
@@ -194,4 +198,8 @@ struct coco_suite {
 
 };
 
+#ifdef __cplusplus
+}
 #endif
+#endif
+
