@@ -897,17 +897,13 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   if (coco_log_level >= COCO_INFO) {
     if (((long) dimension_idx != previous_dimension_idx) || (previous_instance_idx < 0)) {
       /* A new dimension started */
-      time_t timer;
-      char time_string[30];
-      struct tm* tm_info;
-      time(&timer);
-      tm_info = localtime(&timer);
-      strftime(time_string, 30, "%d.%m.%y %H:%M:%S", tm_info);
+      char *time_string = coco_current_time_get_string();
       if (dimension_idx > 0)
         coco_info_partial("done\n");
       else
         coco_info_partial("\n");
       coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string, suite->dimensions[dimension_idx], suite->functions[function_idx]);
+      coco_free_memory(time_string);
     }
     else if ((long) function_idx != previous_function_idx){
       /* A new function started */
