@@ -30,6 +30,25 @@ core_files = ['code-experiments/src/coco_random.c',
               'code-experiments/src/coco_observer.c'
               ]
 
+matlab_octave_wrapper_files = ['cocoEvaluateFunction.c',
+             'cocoObserver.c',
+             'cocoObserverFree.c',
+             'cocoProblemFree.c',
+             'cocoProblemGetDimension.c',
+             'cocoProblemGetEvaluations.c',
+             'cocoProblemGetId.c',
+             'cocoProblemGetLargestValuesOfInterest.c',
+             'cocoProblemGetName.c',
+             'cocoProblemGetNumberOfObjectives.c',
+             'cocoProblemGetSmallestValuesOfInterest.c',
+             'cocoProblemIsValid.c',
+             'cocoSetLogLevel.c',
+             'cocoSuite.c',
+             'cocoSuiteFree.c',
+             'cocoSuiteGetNextProblem.c',
+             'cocoSuiteGetProblem.c']
+    
+
 ################################################################################
 ## C
 def build_c():
@@ -359,21 +378,7 @@ def build_matlab_sms():
     copy_file('code-experiments/src/coco.h', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.h')
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
-    files = ['cocoEvaluateFunction.c',
-             'cocoObserver.c',
-             'cocoObserverFree.c',
-             'cocoProblemGetDimension.c',
-             'cocoProblemGetEvaluations.c',
-             'cocoProblemGetId.c',
-             'cocoProblemGetLargestValuesOfInterest.c',
-             'cocoProblemGetName.c',
-             'cocoProblemGetNumberOfObjectives.c',
-             'cocoProblemGetSmallestValuesOfInterest.c',
-             'cocoProblemIsValid.c',
-             'cocoSuite.c',
-             'cocoSuiteFree.c',
-             'cocoSuiteGetNextProblem.c']
-    for file in files:
+    for file in matlab_octave_wrapper_files:
         copy_file(join(source_folder, file),
                   join(destination_folder, file))
     # compile
