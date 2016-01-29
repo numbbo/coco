@@ -36,24 +36,25 @@ cdef extern from "coco.h":
     void coco_suite_free(coco_suite_t *suite)
     void coco_problem_free(coco_problem_t *problem)
 
-    void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
+    void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
     void coco_recommend_solution(coco_problem_t *problem, const double *x)
 
     coco_problem_t* coco_suite_get_next_problem(coco_suite_t*, coco_observer_t*)
-    coco_problem_t* coco_suite_get_problem(coco_suite_t *, size_t)
+    coco_problem_t* coco_suite_get_problem(coco_suite_t *, const size_t)
 
-    size_t coco_problem_get_suite_dep_index(coco_problem_t* )
-    size_t coco_problem_get_dimension(coco_problem_t *problem)
-    size_t coco_problem_get_number_of_objectives(coco_problem_t *problem)
-    size_t coco_problem_get_number_of_constraints(coco_problem_t *problem)
-    const char *coco_problem_get_id(coco_problem_t *problem)
-    const char *coco_problem_get_name(coco_problem_t *problem)
-    const double *coco_problem_get_smallest_values_of_interest(coco_problem_t *problem)
-    const double *coco_problem_get_largest_values_of_interest(coco_problem_t *problem)
-    double coco_problem_get_final_target_fvalue1(coco_problem_t *problem)
-    size_t coco_problem_get_evaluations(coco_problem_t *problem)
-    double coco_problem_get_best_observed_fvalue1(coco_problem_t *problem)
+    size_t coco_problem_get_suite_dep_index(const coco_problem_t* problem)
+    size_t coco_problem_get_dimension(const coco_problem_t *problem)
+    size_t coco_problem_get_number_of_objectives(const coco_problem_t *problem)
+    size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem)
+    const char *coco_problem_get_id(const coco_problem_t *problem)
+    const char *coco_problem_get_name(const coco_problem_t *problem)
+    const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *problem)
+    const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem)
+    double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
+    size_t coco_problem_get_evaluations(const coco_problem_t *problem)
+    double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
+    int coco_problem_final_target_hit(const coco_problem_t *problem)
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
@@ -709,6 +710,12 @@ cdef class Problem:
     @property
     def evaluations(self):
         return coco_problem_get_evaluations(self.problem)
+    @property
+    def final_target_hit(self):
+        """return 1 if the final target is known and has been hit, 0 otherwise
+        """
+        assert(self.problem)
+        return coco_problem_final_target_hit(self.problem)
     @property
     def final_target_fvalue1(self):
         assert(self.problem)

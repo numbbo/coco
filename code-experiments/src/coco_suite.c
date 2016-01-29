@@ -54,8 +54,7 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
  *
  * @note This function needs to be updated when a new suite is added to COCO.
  */
-static const char *coco_suite_get_instances_by_year(coco_suite_t *suite, const int year) {
-
+static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, const int year) {
   const char *year_string;
 
   if (strcmp(suite->suite_name, "bbob") == 0) {
@@ -77,9 +76,9 @@ static const char *coco_suite_get_instances_by_year(coco_suite_t *suite, const i
  * @note This function needs to be updated when a new suite is added to COCO.
  */
 static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
-                                                           size_t function_idx,
-                                                           size_t dimension_idx,
-                                                           size_t instance_idx) {
+                                                           const size_t function_idx,
+                                                           const size_t dimension_idx,
+                                                           const size_t instance_idx) {
 
   coco_problem_t *problem;
 
@@ -251,7 +250,7 @@ static void coco_suite_filter_dimensions(coco_suite_t *suite, const size_t *dime
  * @return The function number in position function_idx in the suite. If the function has been filtered out
  * through suite_options in the coco_suite function, the result is 0.
  */
-size_t coco_suite_get_function_from_function_index(coco_suite_t *suite, size_t function_idx) {
+size_t coco_suite_get_function_from_function_index(const coco_suite_t *suite, const size_t function_idx) {
 
   if (function_idx >= suite->number_of_functions) {
     coco_error("coco_suite_get_function_from_function_index(): function index exceeding the number of functions in the suite");
@@ -268,7 +267,7 @@ size_t coco_suite_get_function_from_function_index(coco_suite_t *suite, size_t f
  * @return The dimension number in position dimension_idx in the suite. If the dimension has been filtered out
  * through suite_options in the coco_suite function, the result is 0.
  */
-size_t coco_suite_get_dimension_from_dimension_index(coco_suite_t *suite, size_t dimension_idx) {
+size_t coco_suite_get_dimension_from_dimension_index(const coco_suite_t *suite, const size_t dimension_idx) {
 
   if (dimension_idx >= suite->number_of_dimensions) {
     coco_error("coco_suite_get_dimension_from_dimension_index(): dimensions index exceeding the number of dimensions in the suite");
@@ -285,7 +284,7 @@ size_t coco_suite_get_dimension_from_dimension_index(coco_suite_t *suite, size_t
  * @return The instance number in position instance_idx in the suite. If the instance has been filtered out
  * through suite_options in the coco_suite function, the result is 0.
  */
-size_t coco_suite_get_instance_from_instance_index(coco_suite_t *suite, size_t instance_idx) {
+size_t coco_suite_get_instance_from_instance_index(const coco_suite_t *suite, const size_t instance_idx) {
 
   if (instance_idx >= suite->number_of_instances) {
     coco_error("coco_suite_get_instance_from_instance_index(): instance index exceeding the number of instances in the suite");
@@ -346,7 +345,7 @@ void coco_suite_free(coco_suite_t *suite) {
  *
  * @return The problem of the suite defined by problem_index.
  */
-coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, size_t problem_index) {
+coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, const size_t problem_index) {
 
   size_t function_idx = 0, instance_idx = 0, dimension_idx = 0;
   coco_suite_decode_problem_index(suite, problem_index, &function_idx, &dimension_idx, &instance_idx);
@@ -363,7 +362,7 @@ coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, size_t problem_index
  *
  * @return The number of problems in the suite.
  */
-size_t coco_suite_get_number_of_problems(coco_suite_t *suite) {
+size_t coco_suite_get_number_of_problems(const coco_suite_t *suite) {
   return (suite->number_of_instances * suite->number_of_functions * suite->number_of_dimensions);
 }
 
@@ -377,7 +376,7 @@ size_t coco_suite_get_number_of_problems(coco_suite_t *suite) {
  * parsing stops and the current result is returned. The memory of the returned object needs to be freed by
  * the caller.
  */
-static size_t *coco_suite_parse_ranges(const char *string, const char *name, size_t min, size_t max) {
+static size_t *coco_suite_parse_ranges(const char *string, const char *name, const size_t min, const size_t max) {
 
   char *ptr, *dash = NULL;
   char **ranges, **numbers;
@@ -578,7 +577,7 @@ static size_t *coco_suite_parse_ranges(const char *string, const char *name, siz
  * If both "year" and "instances" are given, the second is ignored (and a warning is raised). See the
  * coco_suite function for more information about the required format.
  */
-static size_t *coco_suite_get_instance_indices(coco_suite_t *suite, const char *suite_instance) {
+static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const char *suite_instance) {
 
   int year = -1;
   char *instances = NULL;
@@ -929,7 +928,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
  *
  * @return The problem index in the suite computed from function_idx, dimension_idx and instance_idx.
  */
-size_t coco_suite_encode_problem_index(coco_suite_t *suite,
+size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
                                        const size_t function_idx,
                                        const size_t dimension_idx,
                                        const size_t instance_idx) {
@@ -946,7 +945,7 @@ size_t coco_suite_encode_problem_index(coco_suite_t *suite,
  * @param dimension_idx Pointer to the index of the dimension, which is set by this function.
  * @param instance_idx Pointer to the index of the instance, which is set by this function.
  */
-void coco_suite_decode_problem_index(coco_suite_t *suite,
+void coco_suite_decode_problem_index(const coco_suite_t *suite,
                                      const size_t problem_index,
                                      size_t *function_idx,
                                      size_t *dimension_idx,

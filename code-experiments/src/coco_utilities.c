@@ -88,7 +88,7 @@ const char *coco_set_log_level(const char *log_level) {
  * @param path_max_length The maximum length of the path.
  * @param ... Additional strings, must end with NULL
  */
-static void coco_join_path(char *path, size_t path_max_length, ...) {
+static void coco_join_path(char *path, const size_t path_max_length, ...) {
   const size_t path_separator_length = strlen(coco_path_separator);
   va_list args;
   char *path_component;
