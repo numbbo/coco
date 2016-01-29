@@ -136,14 +136,14 @@ void example_bbob(void) {
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL)
     while (coco_problem_get_evaluations(problem) < BUDGET * coco_problem_get_dimension(problem)) {
-      size_t current_evals = coco_problem_get_evaluations(problem);
+      size_t done_evals = coco_problem_get_evaluations(problem);
       
       my_random_search(problem);
       
       if (coco_problem_final_target_hit(problem))
         break;
-      if (coco_problem_get_evaluations(problem) <= current_evals) {
-        printf("WARNING: Budget has not been exhausted (%lu evaluations done)!\n", current_evals);
+      if (coco_problem_get_evaluations(problem) <= done_evals) { /* no additional evals were done */
+        printf("WARNING: Budget has not been exhausted (%lu evaluations done)!\n", done_evals);
         break;
       }
   }

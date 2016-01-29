@@ -19,6 +19,7 @@ the experimental data.
 
 from __future__ import absolute_import
 
+import os, sys
 import numpy
 import warnings
 
@@ -416,12 +417,22 @@ def alignArrayData(data):
     # of the data.
 
 
+def openfile(filePath):
+    if not os.path.isfile(filePath):
+        if ('win32' in sys.platform) and len(filePath) > 259:
+            raise IOError(2, 'The path is too long for the file "%s".' % filePath)
+        else:
+            raise IOError(2, 'The file "%s" does not exist.' % filePath)
+    
+    return open(filePath, 'r')
+    
+    
 def split(dataFiles, dim=None):
     """Split a list of data files into arrays corresponding to data sets."""
 
     dataSets = []
     for fil in dataFiles:
-        with open(fil, 'r') as f:
+        with openfile(fil) as f:
             # This doesnt work with windows.
             # content = numpy.loadtxt(fil, comments='%')
             lines = f.readlines()
