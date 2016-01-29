@@ -83,7 +83,7 @@ cdef class Suite:
 
     >>> import cocoex as ex
     >>> suite = ex.Suite("bbob-biobj", "", "")
-    >>> observer = ex.Observer("bbob-biobj", "exdata-doctest")
+    >>> observer = ex.Observer("bbob-biobj", "result_folder:doctest")
     >>> for fun in suite:
     ...     if fun.index == 0:
     ...         print("Number of objectives %d, %d, %d" %
@@ -112,12 +112,12 @@ cdef class Suite:
     >>> solver = random_search
     >>> suite = Suite("bbob", "year:2009", "")
     >>> observer = Observer("bbob",
-    ...              "result_folder: exdata-%s_on_%s" % (solver.__name__, "bbob2009"))
+    ...              "result_folder: %s_on_%s" % (solver.__name__, "bbob2009"))
     >>> for fun in suite:
     ...     print('Current problem index = %d' % fun.index)
     ...     observer.observe(fun)
     ...     solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
-    ...   # data should be now in the "exdata-random_search_on_bbob2009" folder
+    ...   # data should be now in the "exdata/random_search_on_bbob2009" folder
     ...   # doctest: +ELLIPSIS
     Current problem index = 0...
     >>>   # Exactly the same using another looping technique:
