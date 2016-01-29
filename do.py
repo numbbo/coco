@@ -556,6 +556,33 @@ def test():
     test_java()
     test_python()
 
+def silent(args):
+    """calls `main(args)` with redirected output to keep the console clean"""
+    # redirect stdout and call main
+    filename = '_check_output'
+    raised = None
+    stdout = sys.stdout
+
+    with open(filename, 'w') as out:
+        sys.stdout = out
+        try:
+            main(args)
+        except BaseException as raised:
+            pass
+    sys.stdout = stdout
+
+    # check whether an error occured
+    error = False
+    for line in open(filename, 'r').readlines():
+        if line.startswith('ERROR') or not line[0] in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+            error = True
+            break
+    if error:
+        for line in open(filename, 'r').readlines():
+            print(line, end="")
+    if raised:
+        raise raised
+
 def help():
     print("""COCO framework bootstrap tool.
 
@@ -595,11 +622,12 @@ Available commands for developers:
 
   build                - Build C, Java and Python modules
   run                  - Run example experiments in C, Java and Python
+  silent cmd           - Calls do.py cmd silently if no error occurs
   test                 - Test C, Java and Python modules
 
   run-sandbox-python   - Run a Python script with installed COCO module
                          Takes a single argument (name of Python script file)
-  
+
   test-c               - Build and run unit tests, integration tests 
                          and an example experiment test in C 
   test-c-unit          - Build and run unit tests in C
@@ -640,6 +668,7 @@ def main(args):
     elif cmd == 'run-octave': run_octave()    
     elif cmd == 'run-python':
         run_python(False) if len(args) > 1 and args[1] == 'no-tests' else run_python()
+    elif cmd == 'silent': silent(args[1:])
     elif cmd == 'test-c': test_c()
     elif cmd == 'test-c-unit': test_c_unit()
     elif cmd == 'test-c-integration': test_c_integration()
