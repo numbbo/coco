@@ -26,7 +26,7 @@ static void transform_vars_asymmetric_evaluate(coco_problem_t *problem, const do
   transform_vars_asymmetric_data_t *data;
   coco_problem_t *inner_problem;
 
-  data = coco_problem_transformed_get_data(problem);
+  data = (transform_vars_asymmetric_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
   for (i = 0; i < problem->number_of_variables; ++i) {
@@ -43,7 +43,7 @@ static void transform_vars_asymmetric_evaluate(coco_problem_t *problem, const do
 }
 
 static void transform_vars_asymmetric_free(void *thing) {
-  transform_vars_asymmetric_data_t *data = thing;
+  transform_vars_asymmetric_data_t *data = (transform_vars_asymmetric_data_t *) thing;
   coco_free_memory(data->x);
 }
 
@@ -53,7 +53,7 @@ static void transform_vars_asymmetric_free(void *thing) {
 static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, const double beta) {
   transform_vars_asymmetric_data_t *data;
   coco_problem_t *problem;
-  data = coco_allocate_memory(sizeof(*data));
+  data = (transform_vars_asymmetric_data_t *) coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->beta = beta;
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_asymmetric_free);

@@ -26,7 +26,6 @@
 #include "coco_string.c"
 #include "observer_bbob.c"
 
-static int bbob_raisedOptValWarning;
 /*static const size_t bbob_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
 /*static const size_t bbob_nbpts_fval = 5;*/
 static size_t bbob_current_dim = 0;
@@ -354,7 +353,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   strncpy(dataFile_path, "data_f", COCO_PATH_MAX);
   strncat(dataFile_path, tmpc_funId,
   COCO_PATH_MAX - strlen(dataFile_path) - 1);
-  coco_join_path(folder_path, sizeof(folder_path), logger->observer->output_folder, dataFile_path,
+  coco_join_path(folder_path, sizeof(folder_path), logger->observer->result_folder, dataFile_path,
   NULL);
   coco_create_directory(folder_path);
   strncat(dataFile_path, "/bbobexp_f",
@@ -365,7 +364,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   strncat(dataFile_path, tmpc_dim, COCO_PATH_MAX - strlen(dataFile_path) - 1);
 
   /* index/info file */
-  logger_bbob_openIndexFile(logger, logger->observer->output_folder, indexFile_prefix, tmpc_funId,
+  logger_bbob_openIndexFile(logger, logger->observer->result_folder, indexFile_prefix, tmpc_funId,
       dataFile_path);
   fprintf(logger->index_file, ", %ld", coco_problem_get_suite_dep_instance(inner_problem));
   /* data files */
@@ -373,13 +372,13 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
   strncat(dataFile_path, bbob_infoFile_firstInstance_char,
   COCO_PATH_MAX - strlen(dataFile_path) - 1);
-  logger_bbob_open_dataFile(&(logger->fdata_file), logger->observer->output_folder, dataFile_path, ".dat");
+  logger_bbob_open_dataFile(&(logger->fdata_file), logger->observer->result_folder, dataFile_path, ".dat");
   fprintf(logger->fdata_file, bbob_file_header_str, logger->optimal_fvalue);
 
-  logger_bbob_open_dataFile(&(logger->tdata_file), logger->observer->output_folder, dataFile_path, ".tdat");
+  logger_bbob_open_dataFile(&(logger->tdata_file), logger->observer->result_folder, dataFile_path, ".tdat");
   fprintf(logger->tdata_file, bbob_file_header_str, logger->optimal_fvalue);
 
-  logger_bbob_open_dataFile(&(logger->rdata_file), logger->observer->output_folder, dataFile_path, ".rdat");
+  logger_bbob_open_dataFile(&(logger->rdata_file), logger->observer->result_folder, dataFile_path, ".rdat");
   fprintf(logger->rdata_file, bbob_file_header_str, logger->optimal_fvalue);
   logger->is_initialized = 1;
   coco_free_memory(tmpc_dim);
@@ -390,7 +389,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
  * Layer added to the transformed-problem evaluate_function by the logger
  */
 static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, double *y) {
-  logger_bbob_data_t *logger = coco_problem_transformed_get_data(problem);
+  logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
   coco_problem_t * inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
   if (!logger->is_initialized) {
@@ -412,11 +411,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   logger->number_of_evaluations++;
 
   /* Add sanity check for optimal f value */
-  /* assert(y[0] >= logger->optimal_fvalue); */
-  if (!bbob_raisedOptValWarning && y[0] < logger->optimal_fvalue) {
-    coco_warning("Observed fitness is smaller than supposed optimal fitness.");
-    bbob_raisedOptValWarning = 1;
-  }
+  assert(y[0] + 1e-13 >= logger->optimal_fvalue);
 
   /* Add a line in the .dat file for each logging target reached. */
   if (y[0] - logger->optimal_fvalue <= logger->f_trigger) {
@@ -456,7 +451,7 @@ static void logger_bbob_free(void *stuff) {
   /* TODO: do all the "non simply freeing" stuff in another function
    * that can have problem as input
    */
-  logger_bbob_data_t *logger = stuff;
+  logger_bbob_data_t *logger = (logger_bbob_data_t *) stuff;
 
   if ((coco_log_level >= COCO_DEBUG) && logger && logger->number_of_evaluations > 0) {
     coco_debug("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,
@@ -502,7 +497,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   logger_bbob_data_t *logger_bbob;
   coco_problem_t *problem;
 
-  logger_bbob = coco_allocate_memory(sizeof(*logger_bbob));
+  logger_bbob = (logger_bbob_data_t *) coco_allocate_memory(sizeof(*logger_bbob));
   logger_bbob->observer = observer;
 
   if (inner_problem->number_of_objectives != 1) {
@@ -527,7 +522,6 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   } else {
     logger_bbob->optimal_fvalue = *(inner_problem->best_value);
   }
-  bbob_raisedOptValWarning = 0;
 
   logger_bbob->idx_f_trigger = INT_MAX;
   logger_bbob->idx_t_trigger = 0;

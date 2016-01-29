@@ -26,7 +26,7 @@ static void transform_vars_affine_evaluate(coco_problem_t *problem, const double
   transform_vars_affine_data_t *data;
   coco_problem_t *inner_problem;
 
-  data = coco_problem_transformed_get_data(problem);
+  data = (transform_vars_affine_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
   for (i = 0; i < inner_problem->number_of_variables; ++i) {
@@ -45,7 +45,7 @@ static void transform_vars_affine_evaluate(coco_problem_t *problem, const double
  * @brief Frees the data object.
  */
 static void transform_vars_affine_free(void *thing) {
-  transform_vars_affine_data_t *data = thing;
+  transform_vars_affine_data_t *data = (transform_vars_affine_data_t *) thing;
   coco_free_memory(data->M);
   coco_free_memory(data->b);
   coco_free_memory(data->x);
@@ -69,7 +69,7 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
   size_t entries_in_M;
 
   entries_in_M = inner_problem->number_of_variables * number_of_variables;
-  data = coco_allocate_memory(sizeof(*data));
+  data = (transform_vars_affine_data_t *) coco_allocate_memory(sizeof(*data));
   data->M = coco_duplicate_vector(M, entries_in_M);
   data->b = coco_duplicate_vector(b, inner_problem->number_of_variables);
   data->x = coco_allocate_vector(inner_problem->number_of_variables);

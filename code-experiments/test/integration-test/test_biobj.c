@@ -14,6 +14,16 @@ static void wait_in_seconds(unsigned int secs) {
     while (time(0) < retTime);
 }
 
+static void valgrind_test(void) {
+
+  /* This should not create a memory leak (string is not freed)
+  char *string = (char *) coco_allocate_memory(10 * sizeof(char));
+  printf("Valgrind printf test: %s\n", string);  */
+
+  /* This should create a memory leak */
+  printf("Valgrind printf test: %.3f\n", 3.0);
+}
+
 /**
  * A random search optimizer.
  */
@@ -68,7 +78,7 @@ void run_once(char *observer_options) {
   coco_observer_free(observer);
   coco_suite_free(suite);
 
-  coco_remove_directory("biobj");
+  coco_remove_directory("exdata");
   wait_in_seconds(2); /* So that the directory removal is surely finished */
 
   printf("DONE!\n");
@@ -78,19 +88,20 @@ void run_once(char *observer_options) {
 int main( int argc, char *argv[] )  {
 
   if ((argc == 2) && (strcmp(argv[1], "leak_check") == 0)) {
-    run_once("result_folder: biobj produce_all_data 1");
+    valgrind_test();
+    run_once("produce_all_data 1");
   }
   else {
-    run_once("result_folder: biobj produce_all_data 1");
-    run_once("result_folder: biobj log_nondominated: none  compute_indicators: 0");
-    run_once("result_folder: biobj log_nondominated: all   compute_indicators: 0");
-    run_once("result_folder: biobj log_nondominated: final compute_indicators: 0");
-    run_once("result_folder: biobj log_nondominated: none  compute_indicators: 1");
-    run_once("result_folder: biobj log_nondominated: all   compute_indicators: 1");
-    run_once("result_folder: biobj log_nondominated: final compute_indicators: 1");
-    run_once("result_folder: biobj log_nondominated: none  compute_indicators: 1 log_decision_variables: all");
-    run_once("result_folder: biobj log_nondominated: all   compute_indicators: 0 log_decision_variables: none");
-    run_once("result_folder: biobj log_nondominated: final compute_indicators: 1 log_decision_variables: low_dim");
+    run_once("produce_all_data 1");
+    run_once("log_nondominated: none  compute_indicators: 0");
+    run_once("log_nondominated: all   compute_indicators: 0");
+    run_once("log_nondominated: final compute_indicators: 0");
+    run_once("log_nondominated: none  compute_indicators: 1");
+    run_once("log_nondominated: all   compute_indicators: 1");
+    run_once("log_nondominated: final compute_indicators: 1");
+    run_once("log_nondominated: none  compute_indicators: 1 log_decision_variables: all");
+    run_once("log_nondominated: all   compute_indicators: 0 log_decision_variables: none");
+    run_once("log_nondominated: final compute_indicators: 1 log_decision_variables: low_dim");
   }
   return 0;
 }
