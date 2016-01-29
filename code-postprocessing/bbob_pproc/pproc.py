@@ -29,7 +29,7 @@ from pdb import set_trace
 import numpy, numpy as np
 import matplotlib.pyplot as plt
 from . import genericsettings, findfiles, toolsstats, toolsdivers
-from .readalign import split, alignData, HMultiReader, VMultiReader, VMultiReaderNew
+from .readalign import split, alignData, HMultiReader, VMultiReader, VMultiReaderNew, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers
 
@@ -1475,7 +1475,7 @@ class DataSetList(list):
         """Reads in an index (.info?) file information on the different runs."""
 
         try:
-            f = open(indexFile)
+            f = openfile(indexFile)
             if verbose:
                 print 'Processing %s.' % indexFile
 
@@ -1517,8 +1517,9 @@ class DataSetList(list):
                         warnings.warn("    data file " + data_file_names[i])
                 warnings.warn("  This is likely to produce spurious results.")
 
-        except IOError:
-            print 'Could not open %s.' % indexFile
+        except IOError, (errno, strerror):
+            print('Could not load "%s".' % indexFile)
+            print('I/O error(%s): %s' % (errno, strerror))
 
     def append(self, o, check_data_type=False):
         """Redefines the append method to check for unicity."""
