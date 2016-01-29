@@ -30,6 +30,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(!mxIsDouble(prhs[1])) {
         mexErrMsgIdAndTxt("cocoEvaluateFunction:notDoubleArray","Input x must be an array of doubles.");
     }
+    /* test if input dimension is consistent with problem dimension */
+    if(!(mxGetN(prhs[1]) == 1 & mxGetM(prhs[1]) == coco_problem_get_dimension(problem)) 
+          & !(mxGetM(prhs[1]) == 1 & mxGetN(prhs[1]) == coco_problem_get_dimension(problem))) {
+        mexErrMsgIdAndTxt("cocoEvaluateFunction:wrongDimension", "Input x does not comply with problem dimension.");
+    }
     /* get the x vector */
     x = mxGetPr(prhs[1]);
     /* prepare the return value */
