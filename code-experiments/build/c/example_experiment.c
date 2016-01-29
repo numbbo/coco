@@ -140,12 +140,15 @@ void example_bbob(void) {
       
       my_random_search(problem);
       
+      /* check reasons to break the loop */
       if (coco_problem_final_target_hit(problem))
         break;
-      if (coco_problem_get_evaluations(problem) <= done_evals) { /* no additional evals were done */
+      else if (coco_problem_get_evaluations(problem) == done_evals) { /* no additional evals were done */
         printf("WARNING: Budget has not been exhausted (%lu evaluations done)!\n", done_evals);
         break;
       }
+      else if (coco_problem_get_evaluations(problem) < done_evals)
+        coco_error("something weird happened here which should not happen");
   }
 
   coco_observer_free(observer);
