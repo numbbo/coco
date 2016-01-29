@@ -28,7 +28,7 @@ typedef struct {
 /**
  * @brief Implements the step ellipsoid function without connections to any COCO structures.
  */
-static double f_step_ellipsoid_raw(const double *x, size_t number_of_variables, f_step_ellipsoid_data_t *data) {
+static double f_step_ellipsoid_raw(const double *x, const size_t number_of_variables, f_step_ellipsoid_data_t *data) {
 
   static const double condition = 100;
   static const double alpha = 10.0;

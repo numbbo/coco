@@ -7,6 +7,7 @@
  * - The "info" files contain high-level information on the performed experiment. One .info file is created
  * for each problem group (and indicator type) and contains information on all the problems in that problem
  * group (and indicator type).
+
  * - The "dat" files contain function evaluations, indicator values and target hits for every target hit as
  * well as for the last evaluation. One .dat file is created for each problem function and dimension (and
  * indicator type) and contains information for all instances of that problem (and indicator type).
@@ -58,8 +59,6 @@ typedef struct {
 
   double additional_penalty; /**< @brief Additional penalty for solutions outside the ROI. */
   double overall_value;      /**< @brief The overall value of the indicator tested for target hits. */
-
-  size_t next_output_evaluation_num; /**< @brief TODO: This will be changed! */
 
 } logger_biobj_indicator_t;
 
@@ -158,7 +157,7 @@ static void logger_biobj_node_free(logger_biobj_avl_item_t *item, void *userdata
  * @brief Checks if the given node is smaller than the nadir point, and stores this information in the node's
  * item->within_ROI field.
  */
-static void logger_biobj_check_if_within_ROI(coco_problem_t *problem, avl_node_t *node) {
+static void logger_biobj_check_if_within_ROI(const coco_problem_t *problem, avl_node_t *node) {
 
   logger_biobj_avl_item_t *node_item = (logger_biobj_avl_item_t *) node->item;
   size_t i;
@@ -217,7 +216,7 @@ static int avl_tree_compare_by_time_stamp(const logger_biobj_avl_item_t *item1,
  * @brief Outputs the AVL tree to the given file. Returns the number of nodes in the tree.
  */
 static size_t logger_biobj_tree_output(FILE *file,
-                                       avl_tree_t *tree,
+                                       const avl_tree_t *tree,
                                        const size_t dim,
                                        const size_t num_obj,
                                        const int log_vars,
@@ -259,7 +258,7 @@ static size_t logger_biobj_tree_output(FILE *file,
  * @return 1 if the update was performed and 0 otherwise.
  */
 static int logger_biobj_tree_update(logger_biobj_data_t *logger,
-                                    coco_problem_t *problem,
+                                    const coco_problem_t *problem,
                                     logger_biobj_avl_item_t *node_item) {
 
   avl_node_t *node, *next_node, *new_node;
@@ -406,8 +405,8 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
  *
  * Opens files for writing and resets counters.
  */
-static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_data_t *logger,
-                                                        coco_problem_t *problem,
+static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_t *logger,
+                                                        const coco_problem_t *problem,
                                                         const char *indicator_name) {
 
   coco_observer_t *observer;
@@ -507,7 +506,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_data_t *log
 /**
  * @brief Outputs the final information about this indicator.
  */
-static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, logger_biobj_data_t *logger) {
+static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, const logger_biobj_data_t *logger) {
 
   size_t target_index = 0;
   if (indicator->next_target_id > 0)
