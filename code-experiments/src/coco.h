@@ -300,6 +300,11 @@ size_t coco_problem_get_evaluations(const coco_problem_t *problem);
 int coco_problem_final_target_hit(const coco_problem_t *problem);
 
 /**
+ * @brief Returns 1 if the final target was hit, 0 otherwise.
+ */
+int coco_problem_final_target_hit(const coco_problem_t *problem);
+
+/**
  * @brief Returns the best observed value for the first objective.
  */
 double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem);

@@ -54,12 +54,7 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
  *
  * @note This function needs to be updated when a new suite is added to COCO.
  */
-<<<<<<< HEAD
-static char *coco_suite_get_instances_by_year(const coco_suite_t *suite, const int year) {
-=======
-static const char *coco_suite_get_instances_by_year(coco_suite_t *suite, const int year) {
->>>>>>> afb187777e873a4b00b100e8eb0f1233b2611e14
-
+static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, const int year) {
   const char *year_string;
 
   if (strcmp(suite->suite_name, "bbob") == 0) {
@@ -381,11 +376,7 @@ size_t coco_suite_get_number_of_problems(const coco_suite_t *suite) {
  * parsing stops and the current result is returned. The memory of the returned object needs to be freed by
  * the caller.
  */
-<<<<<<< HEAD
-static size_t *coco_suite_parse_ranges(char *string, const char *name, const size_t min, const size_t max) {
-=======
-static size_t *coco_suite_parse_ranges(const char *string, const char *name, size_t min, size_t max) {
->>>>>>> afb187777e873a4b00b100e8eb0f1233b2611e14
+static size_t *coco_suite_parse_ranges(const char *string, const char *name, const size_t min, const size_t max) {
 
   char *ptr, *dash = NULL;
   char **ranges, **numbers;

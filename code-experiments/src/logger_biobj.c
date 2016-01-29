@@ -7,15 +7,10 @@
  * - The "info" files contain high-level information on the performed experiment. One .info file is created
  * for each problem group (and indicator type) and contains information on all the problems in that problem
  * group (and indicator type).
-<<<<<<< HEAD
- * - The "dat" files contain function evaluations, indicator values and target hits for every target hit and
- * first and last evaluation. One .dat file is created for each problem function and dimension (and indicator
- * type) and contains information for all instances of that problem (and indicator type).
-=======
+
  * - The "dat" files contain function evaluations, indicator values and target hits for every target hit as
  * well as for the last evaluation. One .dat file is created for each problem function and dimension (and
  * indicator type) and contains information for all instances of that problem (and indicator type).
->>>>>>> afb187777e873a4b00b100e8eb0f1233b2611e14
  * - The "tdat" files contain function evaluation and indicator values for every predefined evaluation
  * number as well as for the last evaluation. One .tdat file is created for each problem function and
  * dimension (and indicator type) and contains information for all instances of that problem (and indicator
