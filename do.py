@@ -41,8 +41,12 @@ def build_c():
     copy_file('code-experiments/build/c/coco.h', 'code-experiments/examples/bbob2009-c-cmaes/coco.h')
     write_file(git_revision(), "code-experiments/build/c/REVISION")
     write_file(git_version(), "code-experiments/build/c/VERSION")
-    make("code-experiments/build/c", "clean")
-    make("code-experiments/build/c", "all")
+    if 1 < 3:
+        python('code-experiments/build/c', ['make.py', 'clean'])
+        python('code-experiments/build/c', ['make.py', 'all'])
+    else:
+        make("code-experiments/build/c", "clean")
+        make("code-experiments/build/c", "all")
 
 def run_c():
     """ Builds and runs the example experiment in C """
