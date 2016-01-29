@@ -320,6 +320,21 @@ size_t coco_problem_get_evaluations(const coco_problem_t *problem) {
 }
 
 /**
+ * @note Can be used to prevent unnessary burning of CPU time. 
+ */
+int coco_problem_final_target_hit(const coco_problem_t *problem) {
+  assert(problem != NULL);
+  if (coco_problem_get_number_of_objectives(problem) != 1 ||
+      coco_problem_get_evaluations(problem) < 1) 
+    return 0;
+  if (problem->best_value == NULL ||
+      problem->final_target_delta == NULL ||
+      problem->best_observed_fvalue == NULL)
+    return 0;
+  return problem->best_observed_fvalue[0] <= problem->best_value[0] + problem->final_target_delta[0] ?
+    1 : 0;
+}
+/**
  * @note Tentative...
  */
 double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem) {
@@ -328,8 +343,8 @@ double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem) {
 }
 
 /**
- * @note This function breaks the black-box property: the returned  value is not meant to be used by the
- * optimization algorithm other than for testing termination conditions.
+ * @note This function breaks the black-box property: the returned  value is not
+ * meant to be used by the optimization algorithm.
  */
 double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem) {
   assert(problem != NULL);
@@ -472,7 +487,7 @@ static void coco_problem_transformed_evaluate_function(coco_problem_t *problem, 
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
   coco_evaluate_function(data->inner_problem, x, y);
@@ -485,7 +500,7 @@ static void coco_problem_transformed_evaluate_constraint(coco_problem_t *problem
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
   coco_evaluate_constraint(data->inner_problem, x, y);
@@ -498,7 +513,7 @@ static void coco_problem_transformed_recommend_solution(coco_problem_t *problem,
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
   coco_recommend_solution(data->inner_problem, x);
@@ -512,7 +527,7 @@ static void coco_problem_transformed_free(coco_problem_t *problem) {
 
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
   if (data->inner_problem != NULL) {
@@ -544,7 +559,7 @@ static coco_problem_t *coco_problem_transformed_allocate(coco_problem_t *inner_p
   coco_problem_transformed_data_t *problem;
   coco_problem_t *inner_copy;
 
-  problem = coco_allocate_memory(sizeof(*problem));
+  problem = (coco_problem_transformed_data_t *) coco_allocate_memory(sizeof(*problem));
   problem->inner_problem = inner_problem;
   problem->data = user_data;
   problem->data_free_function = data_free_function;
@@ -608,7 +623,7 @@ static void coco_problem_stacked_free(coco_problem_t *problem) {
 
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_stacked_data_t*) problem->data;
 
   if (data->problem1 != NULL) {
     coco_problem_free(data->problem1);
@@ -696,7 +711,7 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1, c
   coco_evaluate_function(problem2, problem1->best_parameter, &problem->nadir_value[1]);
 
   /* setup data holder */
-  data = coco_allocate_memory(sizeof(*data));
+  data = (coco_problem_stacked_data_t *) coco_allocate_memory(sizeof(*data));
   data->problem1 = problem1;
   data->problem2 = problem2;
 

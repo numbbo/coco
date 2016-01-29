@@ -9,10 +9,6 @@
 #ifndef __COCO_H__
 #define __COCO_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stddef.h>
 
 /* Definitions of some 32 and 64-bit types (used by the random number generator) */
@@ -30,6 +26,10 @@ typedef unsigned __int64 uint64_t;
 #ifndef NAN
 /** @brief To be used only if undefined by the included headers */
 #define NAN 8.8888e88
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /**
@@ -53,48 +53,40 @@ typedef enum {
 /***********************************************************************************************************/
 
 /** @brief Structure containing a COCO problem. */
-struct coco_problem;
+struct coco_problem_s;
 
 /**
  * @brief The COCO problem type.
  *
  * See coco_problem for more information on its fields. */
-typedef struct coco_problem coco_problem_t;
-
-/**
- * @brief The COCO optimizer type.
- *
- * This is a template for optimizers - functions, which take a COCO problem as input and don't return any
- * value. If such a function exists, it can be used in the coco_run_benchmark function to run the benchmark.
- */
-typedef void (*coco_optimizer_t)(coco_problem_t *problem);
+typedef struct coco_problem_s coco_problem_t;
 
 /** @brief Structure containing a COCO suite. */
-struct coco_suite;
+struct coco_suite_s;
 
 /**
  * @brief The COCO suite type.
  *
  * See coco_suite for more information on its fields. */
-typedef struct coco_suite coco_suite_t;
+typedef struct coco_suite_s coco_suite_t;
 
 /** @brief Structure containing a COCO observer. */
-struct coco_observer;
+struct coco_observer_s;
 
 /**
  * @brief The COCO observer type.
  *
  * See coco_observer for more information on its fields. */
-typedef struct coco_observer coco_observer_t;
+typedef struct coco_observer_s coco_observer_t;
 
 /** @brief Structure containing a COCO random state. */
-struct coco_random_state;
+struct coco_random_state_s;
 
 /**
  * @brief The COCO random state type.
  *
  * See coco_random_state for more information on its fields. */
-typedef struct coco_random_state coco_random_state_t;
+typedef struct coco_random_state_s coco_random_state_t;
 
 /***********************************************************************************************************/
 
@@ -102,16 +94,6 @@ typedef struct coco_random_state coco_random_state_t;
  * @name Methods regarding COCO suite
  */
 /**@{*/
-
-/**
- * @brief Runs the benchmark.
- */
-void coco_run_benchmark(const char *suite_name,
-                        const char *suite_instance,
-                        const char *suite_options,
-                        const char *observer_name,
-                        const char *observer_options,
-                        coco_optimizer_t optimizer);
 
 /**
  * @brief Constructs a COCO suite.
@@ -313,6 +295,11 @@ size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
 size_t coco_problem_get_evaluations(const coco_problem_t *problem);
 
 /**
+ * @brief Returns 1 if the final target was hit, 0 otherwise.
+ */
+int coco_problem_final_target_hit(const coco_problem_t *problem);
+
+/**
  * @brief Returns the best observed value for the first objective.
  */
 double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem);
@@ -320,7 +307,7 @@ double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem);
 /**
  * @brief Returns the target value for the first objective.
  */
-double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem);
+double depreciated_coco_problem_get_final_target_fvalue1(const coco_problem_t *problem);
 
 /**
  * @brief Returns a vector of size 'dimension' with lower bounds of the region of interest in

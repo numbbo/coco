@@ -25,7 +25,7 @@ static void observer_toy_free(void *stuff) {
   observer_toy_data_t *data;
 
   assert(stuff != NULL);
-  data = stuff;
+  data = (observer_toy_data_t *) stuff;
 
   if (data->log_file != NULL) {
     fclose(data->log_file);
@@ -53,7 +53,7 @@ static void observer_toy(coco_observer_t *observer, const char *options) {
   char *file_name;
   size_t i;
 
-  observer_toy = coco_allocate_memory(sizeof(*observer_toy));
+  observer_toy = (observer_toy_data_t *) coco_allocate_memory(sizeof(*observer_toy));
 
   /* Read file_name and number_of_targets from the options and use them to initialize the observer */
   string_value = coco_allocate_string(COCO_PATH_MAX);
@@ -67,7 +67,7 @@ static void observer_toy(coco_observer_t *observer, const char *options) {
 
   /* Open log_file */
   file_name = coco_allocate_string(COCO_PATH_MAX);
-  memcpy(file_name, observer->output_folder, strlen(observer->output_folder) + 1);
+  memcpy(file_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_create_directory(file_name);
   coco_join_path(file_name, COCO_PATH_MAX, string_value, NULL);
 

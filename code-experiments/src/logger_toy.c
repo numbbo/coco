@@ -34,7 +34,7 @@ static void logger_toy_evaluate(coco_problem_t *problem, const double *x, double
   observer_toy_data_t *observer_toy;
   double *targets;
 
-  logger = coco_problem_transformed_get_data(problem);
+  logger = (logger_toy_data_t *) coco_problem_transformed_get_data(problem);
   observer_toy = (observer_toy_data_t *) logger->observer->data;
   targets = observer_toy->targets;
 
@@ -64,7 +64,7 @@ static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inn
     coco_warning("logger_toy(): The toy logger shouldn't be used to log a problem with %d objectives", inner_problem->number_of_objectives);
   }
 
-  logger_toy = coco_allocate_memory(sizeof(*logger_toy));
+  logger_toy = (logger_toy_data_t *) coco_allocate_memory(sizeof(*logger_toy));
   logger_toy->observer = observer;
   logger_toy->next_target = 0;
   logger_toy->number_of_evaluations = 0;

@@ -87,7 +87,7 @@ static double f_step_ellipsoid_raw(const double *x, const size_t number_of_varia
  */
 static void f_step_ellipsoid_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
-  y[0] = f_step_ellipsoid_raw(x, problem->number_of_variables, problem->data);
+  y[0] = f_step_ellipsoid_raw(x, problem->number_of_variables, (f_step_ellipsoid_data_t *) problem->data);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
@@ -96,7 +96,7 @@ static void f_step_ellipsoid_evaluate(coco_problem_t *problem, const double *x, 
  */
 static void f_step_ellipsoid_free(coco_problem_t *problem) {
   f_step_ellipsoid_data_t *data;
-  data = problem->data;
+  data = (f_step_ellipsoid_data_t *) problem->data;
   coco_free_memory(data->x);
   coco_free_memory(data->xx);
   coco_free_memory(data->xopt);
@@ -124,7 +124,7 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
   coco_problem_t *problem = coco_problem_allocate_from_scalars("step ellipsoid function",
       f_step_ellipsoid_evaluate, f_step_ellipsoid_free, dimension, -5.0, 5.0, 0);
 
-  data = coco_allocate_memory(sizeof(*data));
+  data = (f_step_ellipsoid_data_t *) coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
   data->x = coco_allocate_vector(dimension);
   data->xx = coco_allocate_vector(dimension);
