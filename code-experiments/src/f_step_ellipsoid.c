@@ -87,7 +87,7 @@ static double f_step_ellipsoid_raw(const double *x, size_t number_of_variables, 
  */
 static void f_step_ellipsoid_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
-  y[0] = f_step_ellipsoid_raw(x, problem->number_of_variables, problem->data);
+  y[0] = f_step_ellipsoid_raw(x, problem->number_of_variables, (f_step_ellipsoid_data_t *) problem->data);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
@@ -96,7 +96,7 @@ static void f_step_ellipsoid_evaluate(coco_problem_t *problem, const double *x, 
  */
 static void f_step_ellipsoid_free(coco_problem_t *problem) {
   f_step_ellipsoid_data_t *data;
-  data = problem->data;
+  data = (f_step_ellipsoid_data_t *) problem->data;
   coco_free_memory(data->x);
   coco_free_memory(data->xx);
   coco_free_memory(data->xopt);

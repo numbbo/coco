@@ -34,7 +34,7 @@ static void logger_toy_evaluate(coco_problem_t *problem, const double *x, double
   observer_toy_data_t *observer_toy;
   double *targets;
 
-  logger = coco_problem_transformed_get_data(problem);
+  logger = (logger_toy_data_t *) coco_problem_transformed_get_data(problem);
   observer_toy = (observer_toy_data_t *) logger->observer->data;
   targets = observer_toy->targets;
 

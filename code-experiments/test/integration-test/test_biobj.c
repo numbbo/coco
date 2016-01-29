@@ -14,6 +14,16 @@ static void wait_in_seconds(unsigned int secs) {
     while (time(0) < retTime);
 }
 
+static void valgrind_test(void) {
+
+  /* This should not create a memory leak (string is not freed)
+  char *string = (char *) coco_allocate_memory(10 * sizeof(char));
+  printf("Valgrind printf test: %s\n", string);  */
+
+  /* This should create a memory leak */
+  printf("Valgrind printf test: %.3f\n", 3.0);
+}
+
 /**
  * A random search optimizer.
  */
@@ -78,6 +88,7 @@ void run_once(char *observer_options) {
 int main( int argc, char *argv[] )  {
 
   if ((argc == 2) && (strcmp(argv[1], "leak_check") == 0)) {
+    valgrind_test();
     run_once("produce_all_data 1");
   }
   else {

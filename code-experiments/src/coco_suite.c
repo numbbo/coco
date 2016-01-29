@@ -33,13 +33,13 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
   coco_suite_t *suite;
 
   if (strcmp(suite_name, "toy") == 0) {
-    suite = suite_toy_allocate();
+    suite = suite_toy_initialize();
   } else if (strcmp(suite_name, "bbob") == 0) {
-    suite = suite_bbob_allocate();
+    suite = suite_bbob_initialize();
   } else if (strcmp(suite_name, "bbob-biobj") == 0) {
-    suite = suite_biobj_allocate();
+    suite = suite_biobj_initialize();
   } else if (strcmp(suite_name, "bbob-largescale") == 0) {
-    suite = suite_largescale_allocate();
+    suite = suite_largescale_initialize();
   }
   else {
     coco_error("coco_suite_intialize(): unknown problem suite");
@@ -54,9 +54,9 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
  *
  * @note This function needs to be updated when a new suite is added to COCO.
  */
-static char *coco_suite_get_instances_by_year(coco_suite_t *suite, const int year) {
+static const char *coco_suite_get_instances_by_year(coco_suite_t *suite, const int year) {
 
-  char *year_string;
+  const char *year_string;
 
   if (strcmp(suite->suite_name, "bbob") == 0) {
     year_string = suite_bbob_get_instances_by_year(year);
@@ -377,7 +377,7 @@ size_t coco_suite_get_number_of_problems(coco_suite_t *suite) {
  * parsing stops and the current result is returned. The memory of the returned object needs to be freed by
  * the caller.
  */
-static size_t *coco_suite_parse_ranges(char *string, const char *name, size_t min, size_t max) {
+static size_t *coco_suite_parse_ranges(const char *string, const char *name, size_t min, size_t max) {
 
   char *ptr, *dash = NULL;
   char **ranges, **numbers;
@@ -387,17 +387,19 @@ static size_t *coco_suite_parse_ranges(char *string, const char *name, size_t mi
   size_t *result;
   size_t i_result = 0;
 
+  char *str = coco_strdup(string);
+
   /* Check for empty string */
-  if ((string == NULL) || (strlen(string) == 0)) {
+  if ((str == NULL) || (strlen(str) == 0)) {
     coco_warning("coco_suite_parse_ranges(): cannot parse empty ranges");
     return NULL;
   }
 
-  ptr = string;
+  ptr = str;
   /* Check for disallowed characters */
   while (*ptr != '\0') {
     if ((*ptr != '-') && (*ptr != ',') && !isdigit((unsigned char )*ptr)) {
-      coco_warning("coco_suite_parse_ranges(): problem parsing '%s' - cannot parse ranges with '%c'", string,
+      coco_warning("coco_suite_parse_ranges(): problem parsing '%s' - cannot parse ranges with '%c'", str,
           *ptr);
       return NULL;
     } else
@@ -413,7 +415,8 @@ static size_t *coco_suite_parse_ranges(char *string, const char *name, size_t mi
   result = coco_allocate_vector_size_t(COCO_MAX_INSTANCES + 1);
 
   /* Split string to ranges w.r.t commas */
-  ranges = coco_string_split(string, ',');
+  ranges = coco_string_split(str, ',');
+  coco_free_memory(str);
 
   if (ranges) {
     /* Go over the current range */
@@ -579,7 +582,7 @@ static size_t *coco_suite_get_instance_indices(coco_suite_t *suite, const char *
 
   int year = -1;
   char *instances = NULL;
-  char *year_string = NULL;
+  const char *year_string = NULL;
   long year_found, instances_found;
   int parce_year = 1, parce_instances = 1;
   size_t *result = NULL;
@@ -897,17 +900,13 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   if (coco_log_level >= COCO_INFO) {
     if (((long) dimension_idx != previous_dimension_idx) || (previous_instance_idx < 0)) {
       /* A new dimension started */
-      time_t timer;
-      char time_string[30];
-      struct tm* tm_info;
-      time(&timer);
-      tm_info = localtime(&timer);
-      strftime(time_string, 30, "%d.%m.%y %H:%M:%S", tm_info);
+      char *time_string = coco_current_time_get_string();
       if (dimension_idx > 0)
         coco_info_partial("done\n");
       else
         coco_info_partial("\n");
       coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string, suite->dimensions[dimension_idx], suite->functions[function_idx]);
+      coco_free_memory(time_string);
     }
     else if ((long) function_idx != previous_function_idx){
       /* A new function started */
