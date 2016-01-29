@@ -41,7 +41,6 @@ cdef extern from "coco.h":
     void coco_recommend_solution(coco_problem_t *problem, const double *x)
 
     coco_problem_t* coco_suite_get_next_problem(coco_suite_t*, coco_observer_t*)
-<<<<<<< HEAD
     coco_problem_t* coco_suite_get_problem(coco_suite_t *, const size_t)
 
     size_t coco_problem_get_suite_dep_index(const coco_problem_t* problem)
@@ -55,22 +54,7 @@ cdef extern from "coco.h":
     double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations(const coco_problem_t *problem)
     double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
-=======
-    coco_problem_t* coco_suite_get_problem(coco_suite_t *, size_t)
-
-    size_t coco_problem_get_suite_dep_index(coco_problem_t* )
-    size_t coco_problem_get_dimension(coco_problem_t *problem)
-    size_t coco_problem_get_number_of_objectives(coco_problem_t *problem)
-    size_t coco_problem_get_number_of_constraints(coco_problem_t *problem)
-    const char *coco_problem_get_id(coco_problem_t *problem)
-    const char *coco_problem_get_name(coco_problem_t *problem)
-    const double *coco_problem_get_smallest_values_of_interest(coco_problem_t *problem)
-    const double *coco_problem_get_largest_values_of_interest(coco_problem_t *problem)
-    double coco_problem_get_final_target_fvalue1(coco_problem_t *problem)
-    size_t coco_problem_get_evaluations(coco_problem_t *problem)
-    double coco_problem_get_best_observed_fvalue1(coco_problem_t *problem)
     int coco_problem_final_target_hit(const coco_problem_t *problem)
->>>>>>> afb187777e873a4b00b100e8eb0f1233b2611e14
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
