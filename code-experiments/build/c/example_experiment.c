@@ -12,13 +12,13 @@
  * The max budget for optimization algorithms should be set to dim * BUDGET
  */
 static const size_t BUDGET = 2;
+static coco_random_state_t *RNG;
 
 /**
  * A random search algorithm that can be used for single- as well as multi-objective optimization.
  */
 void my_random_search(coco_problem_t *problem) {
 
-  coco_random_state_t *rng = coco_random_new(0xdeadbeef);
   const double *lbounds = coco_problem_get_smallest_values_of_interest(problem);
   const double *ubounds = coco_problem_get_largest_values_of_interest(problem);
   size_t dimension = coco_problem_get_dimension(problem);
@@ -28,14 +28,14 @@ void my_random_search(coco_problem_t *problem) {
   double range;
   size_t i, j;
 
-  size_t max_budget = dimension * BUDGET;
+  size_t max_budget = dimension * BUDGET;  /* a hack */
 
   for (i = 0; i < max_budget; ++i) {
 
     /* Construct x as a random point between the lower and upper bounds */
     for (j = 0; j < dimension; ++j) {
       range = ubounds[j] - lbounds[j];
-      x[j] = lbounds[j] + coco_random_uniform(rng) * range;
+      x[j] = lbounds[j] + coco_random_uniform(RNG) * range;
     }
 
     /* Call COCO's evaluate function where all the logging is performed */
@@ -43,7 +43,6 @@ void my_random_search(coco_problem_t *problem) {
 
   }
 
-  coco_random_free(rng);
   coco_free_memory(x);
   coco_free_memory(y);
 }
@@ -135,8 +134,18 @@ void example_bbob(void) {
   suite = coco_suite("bbob", "year: 2016", "dimensions: 2,3,5,10,20,40");
   observer = coco_observer("bbob", observer_options);
 
-  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
-    my_random_search(problem);
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL)
+    while (coco_problem_get_evaluations(problem) < BUDGET * coco_problem_get_dimension(problem)) {
+      size_t done_evals = coco_problem_get_evaluations(problem);
+      
+      my_random_search(problem);
+      
+      if (coco_problem_final_target_hit(problem))
+        break;
+      if (coco_problem_get_evaluations(problem) <= done_evals) { /* no additional evals were done */
+        printf("WARNING: Budget has not been exhausted (%lu evaluations done)!\n", done_evals);
+        break;
+      }
   }
 
   coco_observer_free(observer);
@@ -175,17 +184,25 @@ void example_biobj(void) {
  */
 int main(void) {
 
+  RNG = coco_random_new(0xdeadbeef);
+
   printf("Running the example experiment... (might take time, be patient)\n");
   fflush(stdout);
   
   /* Change the log level to "warning" to get less output */
   coco_set_log_level("info");
-
+  
   example_biobj();
+  
+  /* example_bbob();
+  */
 
   printf("Done!\n");
 
   fflush(stdout);
+
+  coco_random_free(RNG);
+
   return 0;
 }
 

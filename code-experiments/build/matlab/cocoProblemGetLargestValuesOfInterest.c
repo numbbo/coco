@@ -13,10 +13,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     size_t *ref;
     coco_problem_t *problem = NULL;
-    int nb_dim;
+    size_t nb_dim;
     const double *res;
     int i;
-    double *v; /* intermediate variable that aloows to set plhs[0] */
+    double *v; /* intermediate variable that allows to set plhs[0] */
 
     /* check for proper number of arguments */
     if(nrhs!=1) {
@@ -27,7 +27,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     problem = (coco_problem_t *)(*ref);
     
     nb_dim = coco_problem_get_dimension(problem);
-    plhs[0] = mxCreateDoubleMatrix(1, (mwSize)nb_dim, mxREAL);
+    plhs[0] = mxCreateDoubleMatrix(1, nb_dim, mxREAL);
     v = mxGetPr(plhs[0]);
     /* call coco_problem_get_largest_values_of_interest(...) */
     res = coco_problem_get_largest_values_of_interest(problem);

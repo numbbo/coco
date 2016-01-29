@@ -27,7 +27,7 @@ static void transform_vars_permblockdiag_evaluate(coco_problem_t *problem, const
   transform_vars_permblockdiag_t *data;
   coco_problem_t *inner_problem;
   
-  data = coco_problem_transformed_get_data(problem);
+  data = (transform_vars_permblockdiag_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
   
   for (i = 0; i < inner_problem->number_of_variables; ++i) {
@@ -48,7 +48,7 @@ static void transform_vars_permblockdiag_evaluate(coco_problem_t *problem, const
 }
 
 static void transform_vars_permblockdiag_free(void *thing) {
-  transform_vars_permblockdiag_t *data = thing;
+  transform_vars_permblockdiag_t *data = (transform_vars_permblockdiag_t *) thing;
   coco_free_memory(data->B);
   coco_free_memory(data->P1);
   coco_free_memory(data->P2);
