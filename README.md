@@ -252,7 +252,8 @@ Traceback (most recent call last):
     raise error
 subprocess.CalledProcessError: Command '['locate', 'jni.h']' returned non-zero exit status 1
 ```
-check out [this](http://stackoverflow.com/questions/13526701/javah-missing-after-jdk-install-linux)
+it means `javah` is either not installed (see above) or cannot be found in the system
+path, see [this](http://stackoverflow.com/questions/13526701/javah-missing-after-jdk-install-linux)
 and possibly [this](https://github.com/numbbo/coco/issues/416) for a solution. 
 
 ### Matlab
@@ -296,7 +297,7 @@ Windows path. For instance, the `etc/paths` should look like something like this
 /Applications/MATLAB_R2012a.app/bin/
 ```
 
-#### SMA-EMOA example does not compile under Mac 
+#### SMS-EMOA example does not compile under Mac 
 With the more complex SMS-EMOA example. The problem is related to the compilation
 of the external C++ hypervolume calculation in `hv.cpp`. 
 
