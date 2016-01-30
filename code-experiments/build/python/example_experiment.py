@@ -34,10 +34,23 @@ except: pass
 try: range = xrange  # let range always be an iterator
 except NameError: pass
 
+
 def print_flush(*args):
     """print without newline and flush"""
     print(*args, end="")
     sys.stdout.flush()
+
+
+def ascetime(sec):
+    """return elapsed time as str.
+
+    Example: return `"0h33:21"` if `sec == 33*60 + 21`. 
+    """
+    h = sec / 60**2
+    m = 60 * (h - h // 1)
+    s = 60 * (m - m // 1)
+    return "%dh%02d:%02d" % (h, m, s)
+
 
 class ShortInfo(object):
     """print minimal info during benchmarking.
@@ -137,11 +150,11 @@ def batch_loop(solver, suite, observer, budget,
 #===============================================
 # interface: ADD AN OPTIMIZER BELOW
 #===============================================
-def coco_optimize(solver, fun, budget, max_runs=1e9):
+def coco_optimize(solver, fun, max_evals, max_runs=1e9):
     """`fun` is a callable, to be optimized by `solver`.
 
     The `solver` is called repeatedly with different initial solutions
-    until either the budget is exhausted or `max_run` solver calls
+    until either the `max_evals` are exhausted or `max_run` solver calls
     have been made or the `solver` has not called `fun` even once
     in the last run.
     """
@@ -152,21 +165,21 @@ def coco_optimize(solver, fun, budget, max_runs=1e9):
               fun.evaluations)
 
     for restarts in range(int(max_runs)):
-        remaining_budget = budget - fun.evaluations
+        remaining_evals = max_evals - fun.evaluations
         x0 = center + (restarts > 0) * 0.8 * range_ * (
                 np.random.rand(fun.dimension) - 0.5)
 
         if solver.__name__ in ("random_search", ):
             solver(fun, fun.lower_bounds, fun.upper_bounds,
-                   remaining_budget)
+                   remaining_evals)
         elif solver.__name__ == 'fmin' and solver.func_globals['__name__'] == 'cma':
             x0 = "%f + %f * np.random.rand(%d)" % (center[0], 0.8 * range_[0],
                                             fun.dimension)
             solver(fun, x0, 0.2 * range_[0], restarts=8,
-                   options=dict(scaling=range_/range_[0], maxfevals=remaining_budget,
+                   options=dict(scaling=range_/range_[0], maxfevals=remaining_evals,
                                 verbose=-9))
         elif solver.__name__ == 'fmin_slsqp':
-            solver(fun, x0, iter=1 + remaining_budget / fun.dimension,
+            solver(fun, x0, iter=1 + remaining_evals / fun.dimension,
                    iprint=-1)
 ############################ ADD HERE ########################################
         # ### IMPLEMENT HERE THE CALL TO ANOTHER SOLVER/OPTIMIZER ###
@@ -176,13 +189,13 @@ def coco_optimize(solver, fun, budget, max_runs=1e9):
         else:
             raise ValueError("no entry for solver %s" % str(solver.__name__))
 
-        if fun.evaluations >= budget or fun.final_target_hit:
+        if fun.evaluations >= max_evals or fun.final_target_hit:
             break
         # quit if fun.evaluations did not increase
-        if fun.evaluations <= budget - remaining_budget:
-            if budget - fun.evaluations > fun.dimension + 1:
-                print("WARNING: Remaining budget of %d evaluations" %
-                      remaining_budget)
+        if fun.evaluations <= max_evals - remaining_evals:
+            if max_evals - fun.evaluations > fun.dimension + 1:
+                print("WARNING: %d evaluations remaining" %
+                      remaining_evals)
             break
 
     if restarts > 0:
@@ -233,9 +246,7 @@ def main(budget=budget,
     t0 = time.clock()
     batch_loop(SOLVER, suite, observer, budget, max_runs,
                current_batch, number_of_batches)
-    m = (time.clock() - t0) / 60
-    print(", %s (%dh%02d:%02d)." % (time.asctime(), m / 60, m - 60 * (m // 60),
-                                    60 * (m - m // 1)))
+    print(", %s (%s)." % (time.asctime(), ascetime(time.clock() - t0)))
 
 # ===============================================
 if __name__ == '__main__':
