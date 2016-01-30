@@ -7,7 +7,7 @@ This test can and should become much more sophisticated.
 
 """
 
-import os, sys, time
+import os, sys, time, inspect
 import fnmatch
 import urllib
 import shutil
@@ -55,10 +55,10 @@ def copy_latex_templates():
     currentFolder = os.path.dirname(os.path.realpath(__file__))
     templateFolder = os.path.abspath(join_path(currentFolder, '..', 'latex-templates'))
     # templateFolder = os.path.abspath('latex-templates')
-    shutil.copy(join_path(templateFolder, 'templateBBOBarticle.tex'), currentFolder)
-    shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), currentFolder)
-    shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), currentFolder)
-    shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'templateBBOBarticle.tex'), '.')
+    shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), '.')
+    shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), '.')
+    shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), '.')
 
 def run_latex_template(filename):
     filePath = os.path.abspath(join_path(os.path.dirname(__file__), filename))
@@ -218,6 +218,9 @@ def main(args):
         test_count = 0
         #doctest.testmod(report=True, verbose=True)  # this is quite cool!
         # go through the py files in the bbob_pproc folder
+        currentPath = os.getcwd()        
+        newPath = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+        os.chdir(newPath)        
         for root, dirnames, filenames in os.walk(os.path.dirname(os.path.realpath(__file__))):
           for filename in fnmatch.filter(filenames, '*.py'):
             current_failure_count, current_test_count = doctest.testfile(
@@ -226,6 +229,7 @@ def main(args):
             test_count += current_test_count
             if current_failure_count:
                 print('doctest file "%s" failed' % os.path.join(root, filename))
+        os.chdir(currentPath)
     else:
         stdout = sys.stdout
         fn = '_bbob_pproc_doctest_.txt'

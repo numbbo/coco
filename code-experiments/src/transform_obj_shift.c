@@ -1,37 +1,48 @@
+/**
+ * @file transform_obj_shift.c
+ * @brief Implementation of shifting the objective value by the given offset.
+ */
+
 #include <assert.h>
 
 #include "coco.h"
 #include "coco_problem.c"
 
+/**
+ * @brief Data type for transform_obj_shift.
+ */
 typedef struct {
   double offset;
 } transform_obj_shift_data_t;
 
-static void transform_obj_shift_evaluate(coco_problem_t *self, const double *x, double *y) {
+/**
+ * @brief Evaluates the transformation.
+ */
+static void transform_obj_shift_evaluate(coco_problem_t *problem, const double *x, double *y) {
   transform_obj_shift_data_t *data;
   size_t i;
-  data = coco_transformed_get_data(self);
-  coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
-  for (i = 0; i < self->number_of_objectives; i++) {
+  data = (transform_obj_shift_data_t *) coco_problem_transformed_get_data(problem);
+  coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
+  for (i = 0; i < problem->number_of_objectives; i++) {
       y[i] += data->offset;
   }
-  assert(y[0] + 1e-13 >= self->best_value[0]);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
 /**
- * Shift the objective value of the inner problem by offset.
+ * @brief Creates the transformation.
  */
-static coco_problem_t *f_transform_obj_shift(coco_problem_t *inner_problem, const double offset) {
-  coco_problem_t *self;
+static coco_problem_t *transform_obj_shift(coco_problem_t *inner_problem, const double offset) {
+  coco_problem_t *problem;
   transform_obj_shift_data_t *data;
   size_t i;
-  data = coco_allocate_memory(sizeof(*data));
+  data = (transform_obj_shift_data_t *) coco_allocate_memory(sizeof(*data));
   data->offset = offset;
 
-  self = coco_transformed_allocate(inner_problem, data, NULL);
-  self->evaluate_function = transform_obj_shift_evaluate;
-  for (i = 0; i < self->number_of_objectives; i++) {
-      self->best_value[0] += offset;
+  problem = coco_problem_transformed_allocate(inner_problem, data, NULL);
+  problem->evaluate_function = transform_obj_shift_evaluate;
+  for (i = 0; i < problem->number_of_objectives; i++) {
+      problem->best_value[0] += offset;
   }
-  return self;
+  return problem;
 }
