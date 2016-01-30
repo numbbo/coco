@@ -70,7 +70,7 @@ Getting Started <a name="Getting-Started"></a>
 
   **CAVEAT: this code is still under heavy development**. The record of official releases can 
   be found [here](https://github.com/numbbo/coco/releases). The latest release corresponds 
-  to the [master branch](https://github.com/numbbo/coco/tree/master) as liked above. 
+  to the [master branch](https://github.com/numbbo/coco/tree/master) as linked above. 
 
 2. In a system shell, **`cd` into** the `coco` or `coco-<version>` folder (framework root), 
   where the file `do.py` can be found. Type, i.e. **execute**, one of the following commands once
