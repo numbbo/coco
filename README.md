@@ -4,9 +4,9 @@ numbbo/coco: Comparing Continuous Optimizers
 This code reimplements the original Comparing Continous Optimizer platform, now 
 rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
 the code provides a platform to benchmark and compare continuous optimizers, AKA non-linear 
-solvers for numerical optimization. Languages currently available are `C`, `Java`, 
-`MATLAB/Octave`, and `Python`. Support for `C++` is expected to be available in the near 
-future. Contributions to link further languages (including `C++`) are more than welcome.
+solvers for numerical optimization. Languages currently available are `C/C++`, `Java`, 
+`MATLAB/Octave`, and `Python`. Contributions to link further languages (including a better
+example in `C++`) are more than welcome.
 
 See the [workshops page](http://numbbo.github.io/workshops), the [previous COCO home page](http://coco.gforge.inria.fr/) 
 and [further links below](#Further-Links) to learn more about the ideas behind CoCO.
@@ -70,7 +70,7 @@ Getting Started <a name="Getting-Started"></a>
 
   **CAVEAT: this code is still under heavy development**. The record of official releases can 
   be found [here](https://github.com/numbbo/coco/releases). The latest release corresponds 
-  to the [master branch](https://github.com/numbbo/coco/tree/master) as liked above. 
+  to the [master branch](https://github.com/numbbo/coco/tree/master) as linked above. 
 
 2. In a system shell, **`cd` into** the `coco` or `coco-<version>` folder (framework root), 
   where the file `do.py` can be found. Type, i.e. **execute**, one of the following commands once
