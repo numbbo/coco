@@ -100,6 +100,8 @@ def _clean_up(folder, start_matches, protected):
 
     CAVEAT: use with care, as with `"", ""` as second and third arguments 
     this deletes all folder entries like `rm *` does. """
+    if not os.path.isdir(folder):
+        return
     if not protected and "" in start_matches:
         raise ValueError(
             '_clean_up(folder, [..., "", ...], []) is not permitted, resembles "rm *"')
@@ -112,7 +114,7 @@ def _clean_up(folder, start_matches, protected):
 
 
 def main(args):
-    list_before = os.listdir('exdata')
+    list_before = os.listdir('exdata') if os.path.isdir('exdata') else []
     print('Running doctests...'), sys.stdout.flush()
     run_doctests()
     print('doctests done.\nRunning example_experiment:'), sys.stdout.flush()
