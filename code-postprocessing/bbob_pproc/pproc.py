@@ -29,7 +29,7 @@ from pdb import set_trace
 import numpy, numpy as np
 import matplotlib.pyplot as plt
 from . import genericsettings, findfiles, toolsstats, toolsdivers
-from .readalign import split, alignData, HMultiReader, VMultiReader, VMultiReaderNew
+from .readalign import split, alignData, HMultiReader, VMultiReader, VMultiReaderNew, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers
 
@@ -775,6 +775,7 @@ class DataSet():
                          for i in self.dataFiles)
                              
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
+            warnings.warn('Missing tdat files. Please rerun the experiments.')
             dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                              for i in self.dataFiles)
             data = VMultiReaderNew(split(dataFiles), self.isBiobjective())
@@ -891,6 +892,7 @@ class DataSet():
         
         instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))        
         
+        expectedNumberOfInstances = 10 if self.isBiobjective() else 15        
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
             for i in set(self.instancenumbers):
@@ -905,15 +907,17 @@ class DataSet():
                                 str(self.instancenumbers) + 
                                 ' (f' + str(self.funcId) + ', ' + str(self.dim)
                                 + 'D)')
-        elif len(self.instancenumbers) < 15:
+        elif len(self.instancenumbers) < expectedNumberOfInstances:
             is_consistent = False
-            warnings.warn('  less than 15 instances in ' + 
+            warnings.warn('  less than ' + str(expectedNumberOfInstances) +
+                                ' instances in ' + 
                                 str(self.instancenumbers) + 
                                 ' (f' + str(self.funcId) + ', ' +
                                 str(self.dim) + 'D)')
-        elif len(self.instancenumbers) > 15:
+        elif len(self.instancenumbers) > expectedNumberOfInstances:
             is_consistent = False
-            warnings.warn('  more than 15 instances in ' + 
+            warnings.warn('  more than ' + str(expectedNumberOfInstances) + 
+                                ' instances in ' + 
                                 str(self.instancenumbers)+ 
                                 ' (f' + str(self.funcId) + ', ' + 
                                 str(self.dim) + 'D)')
@@ -921,9 +925,11 @@ class DataSet():
                 and (instancedict != genericsettings.instancesOfInterest2010)
                 and (instancedict != genericsettings.instancesOfInterest2012)
                 and (instancedict != genericsettings.instancesOfInterest2013)
-                and (instancedict != genericsettings.instancesOfInterest2015)):
+                and (instancedict != genericsettings.instancesOfInterest2015)
+                and (instancedict != genericsettings.instancesOfInterest2016)
+                and (instancedict != genericsettings.instancesOfInterestBiobj2016)):
             is_consistent = False
-            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, or 2015')
+            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, 2015 or 2016')
         return is_consistent
             
     def computeERTfromEvals(self):
@@ -1469,7 +1475,7 @@ class DataSetList(list):
         """Reads in an index (.info?) file information on the different runs."""
 
         try:
-            f = open(indexFile)
+            f = openfile(indexFile)
             if verbose:
                 print 'Processing %s.' % indexFile
 
@@ -1511,8 +1517,9 @@ class DataSetList(list):
                         warnings.warn("    data file " + data_file_names[i])
                 warnings.warn("  This is likely to produce spurious results.")
 
-        except IOError:
-            print 'Could not open %s.' % indexFile
+        except IOError, (errno, strerror):
+            print('Could not load "%s".' % indexFile)
+            print('I/O error(%s): %s' % (errno, strerror))
 
     def append(self, o, check_data_type=False):
         """Redefines the append method to check for unicity."""

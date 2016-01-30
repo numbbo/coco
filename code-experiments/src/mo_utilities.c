@@ -1,13 +1,20 @@
+/**
+ * @file mo_utilities.c
+ * @brief Definitions of miscellaneous functions used for multi-objective problems.
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "coco.h"
 
 /**
- * Checks the dominance relation in the unconstrained minimization case between
- * objectives1 and objectives2 and returns:
- *  1 if objectives1 dominates objectives2
- *  0 if objectives1 and objectives2 are non-dominated
- * -1 if objectives2 dominates objectives1
+ * @brief Checks the dominance relation in the unconstrained minimization case between objectives1 and
+ * objectives2.
+ *
+ * @return
+ *  1 if objectives1 dominates objectives2 <br>
+ *  0 if objectives1 and objectives2 are non-dominated <br>
+ * -1 if objectives2 dominates objectives1 <br>
  * -2 if objectives1 is identical to objectives2
  */
 static int mo_get_dominance(const double *objectives1, const double *objectives2, const size_t num_obj) {
@@ -37,7 +44,7 @@ static int mo_get_dominance(const double *objectives1, const double *objectives2
 }
 
 /**
- * Computes and returns the Euclidean norm of two dim-dimensional points first and second.
+ * @brief Computes and returns the Euclidean norm of two dim-dimensional points first and second.
  */
 static double mo_get_norm(const double *first, const double *second, const size_t dim) {
 
@@ -52,8 +59,9 @@ static double mo_get_norm(const double *first, const double *second, const size_
 }
 
 /**
- * Computes and returns the minimal normalized distance from the point y to the ROI assuming the point is
- * dominated by the ideal point and the dimension equals 2.
+ * @brief Computes and returns the minimal normalized distance from the point y to the ROI.
+ *
+ * @note Assumes the point is dominated by the ideal point and the dimension equals 2.
  */
 static double mo_get_distance_to_ROI(const double *y,
                                      const double *ideal,

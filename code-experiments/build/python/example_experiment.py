@@ -18,6 +18,8 @@ Usage from a python shell::
 does the same but runs the "first" of one single batch.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
+try: range = xrange
+except NameError: pass
 import os, sys
 import time
 import numpy as np  # "pip install numpy" installs numpy
@@ -39,16 +41,16 @@ def print_flush(*args):
 
 class ShortInfo(object):
     """print minimal info during benchmarking.
-    
+
     After initialization, to be called right before the solver is called with
     the respective problem. Prints nothing if only the instance id changed.
-    
+
     Example output:
-    
+
         Jan20 18h27:56, d=2, running: f01f02f03f04f05f06f07f08f09f10f11f12f13f14f15f16f17f18f19f20f21f22f23f24f25f26f27f28f29f30f31f32f33f34f35f36f37f38f39f40f41f42f43f44f45f46f47f48f49f50f51f52f53f54f55 done
-        
+
         Jan20 18h27:56, d=3, running: f01f02f03f04f05f06f07f08f09f10f11f12f13f14f15f16f17f18f19f20f21f22f23f24f25f26f27f28f29f30f31f32f33f34f35f36f37f38f39f40f41f42f43f44f45f46f47f48f49f50f51f52f53f54f55 done
-        
+
         Jan20 18h27:57, d=5, running: f01f02f03f04f05f06f07f08f09f10f11f12f13f14f15f16f17f18f19f20f21f22f23f24f25f26f27f28f29f30f31f32f33f34f35f36f37f38f39f40f41f42f43f44f45f46f47f48f49f50f51f52f53f54f55 done
 
     """
@@ -65,20 +67,21 @@ class ShortInfo(object):
         res = ""
         if problem.dimension != self.d_current:
             res += '%s%s, d=%d, running: ' % (' done\n\n' if self.d_current else '',
-                        self.short_time_stap(), problem.dimension)
+                        ShortInfo.short_time_stap(), problem.dimension)
             self.d_current = problem.dimension
         if f != self.f_current:
             res += '%s' % f
             self.f_current = f
         # print_flush(res)
         return res
-    def short_time_stap(self):
+    @staticmethod
+    def short_time_stap():
         l = time.asctime().split()
         d = l[0]
         d = l[1] + l[2]
         h, m, s = l[3].split(':')
         return d + ' ' + h + 'h' + m + ':' + s
-    
+
 # ===============================================
 # prepare (the most basic example solver)
 # ===============================================
@@ -102,102 +105,96 @@ def random_search(fun, lbounds, ubounds, budget):
 # ===============================================
 # loops over a benchmark problem suite
 # ===============================================
-def simple_loop(solver, suite, observer, budget_multiplier):
-    """loop over all problems in `suite` calling `solver` with
-    max budget `budge_multipier * dimension`.
-    """
-    found_problems, addressed_problems = 0, 0
-    short_info = ShortInfo()
-    for problem in suite:
-        found_problems += 1
-        # use problem only under some conditions, mainly for testing
-        if 11 < 3 and not ('f11' in problem.id and 'i03' in problem.id):
-            continue
-        observer.observe(problem)
-        short_info.print(problem) if verbose else None
-        coco_optimize(solver, problem, budget_multiplier * problem.dimension)
-        print_flush(".") if verbose else None
-        addressed_problems += 1
-    print(" done\n%s done (%d of %d problems benchmarked)"
-          % (suite_name, addressed_problems, found_problems), end="")
+def batch_loop(solver, suite, observer, budget,
+               max_runs, current_batch, number_of_batches):
+    """loop over all problems in `suite` calling
+    `coco_optimize(solver, problem, budget * problem.dimension, max_runs)`
+    for each eligible problem.
 
-
-def batch_loop(solver, suite, observer, budget_multiplier,
-               current_batch, number_of_batches):
-    """loop over some problems in `suite` calling `solver` with
-    max budget `budge_multipier * dimension`.
-
-    A problem is executed if `number_of_batches` is one or if
-    `problem_index + current_batch` modulo `number_of_batches` equals to one.
+    A problem is eligible if
+    `problem_index + current_batch - 1` modulo `number_of_batches`
+    equals to zero.
     """
     addressed_problems = []
     short_info = ShortInfo()
-    for problem_index, problem_id in enumerate(suite.ids):
+    for problem_index, problem in enumerate(suite):
         if (problem_index + current_batch - 1) % number_of_batches:
             continue
-        problem = suite.get_problem(problem_index, observer)
+        observer.observe(problem)
         short_info.print(problem) if verbose else None
-        coco_optimize(solver, problem, budget_multiplier * problem.dimension)
+        coco_optimize(solver, problem, budget * problem.dimension, max_runs)
         print_flush(".") if verbose else None
         problem.free()
-        addressed_problems += [problem_id]
+        addressed_problems += [problem.id]
     print(" done\n%s done (%d of %d problems benchmarked%s)" %
            (suite_name, len(addressed_problems), len(suite),
              ((" in batch %d of %d" % (current_batch, number_of_batches))
                if number_of_batches > 1 else "")), end="")
     if number_of_batches > 1:
         print("\n    MAKE SURE TO RUN ALL BATCHES", end="")
+    return addressed_problems
 
 #===============================================
 # interface: ADD AN OPTIMIZER BELOW
 #===============================================
-def coco_optimize(solver, fun, budget):
+def coco_optimize(solver, fun, budget, max_runs=1e9):
     """`fun` is a callable, to be optimized by `solver`.
 
     The `solver` is called repeatedly with different initial solutions
-    until the budget is exhausted.
+    until either the budget is exhausted or `max_run` solver calls
+    have been made or the `solver` has not called `fun` even once
+    in the last run.
     """
     range_ = fun.upper_bounds - fun.lower_bounds
     center = fun.lower_bounds + range_ / 2
-    dim = len(fun.lower_bounds)
+    if fun.evaluations:
+        print('WARNING: %d evaluations were done before the first solver call' %
+              fun.evaluations)
 
-    runs = 0
-    while budget > fun.evaluations:
-        runs += 1
+    for restarts in range(int(max_runs)):
         remaining_budget = budget - fun.evaluations
-        x0 = center if fun.evaluations == 0 else \
-             center + 0.8 * range_ * (np.random.rand(dim) - 0.5)
+        x0 = center + (restarts > 0) * 0.8 * range_ * (
+                np.random.rand(fun.dimension) - 0.5)
 
         if solver.__name__ in ("random_search", ):
             solver(fun, fun.lower_bounds, fun.upper_bounds,
-                    remaining_budget)
+                   remaining_budget)
         elif solver.__name__ == 'fmin' and solver.func_globals['__name__'] == 'cma':
-            # x0 = "%f + %f * np.rand(%d)" % (center[0], range_[0], dim)  # for bbob
-            solver(fun, x0, 0.2 * range_, restarts=8,
-                   options=dict(scaling=range_, maxfevals=remaining_budget,
+            x0 = "%f + %f * np.random.rand(%d)" % (center[0], 0.8 * range_[0],
+                                            fun.dimension)
+            solver(fun, x0, 0.2 * range_[0], restarts=8,
+                   options=dict(scaling=range_/range_[0], maxfevals=remaining_budget,
                                 verbose=-9))
         elif solver.__name__ == 'fmin_slsqp':
-            solver(fun, x0, iter=1 + remaining_budget / dim, iprint=-1)
+            solver(fun, x0, iter=1 + remaining_budget / fun.dimension,
+                   iprint=-1)
 ############################ ADD HERE ########################################
         # ### IMPLEMENT HERE THE CALL TO ANOTHER SOLVER/OPTIMIZER ###
         # elif True:
         #     CALL MY SOLVER, interfaces vary
 ##############################################################################
         else:
-            print("no entry for solver %s" % str(solver.__name__))
+            raise ValueError("no entry for solver %s" % str(solver.__name__))
 
-        if fun.number_of_objectives == 1 and \
-                fun.best_observed_fvalue1 < fun.final_target_fvalue1:
+        if fun.evaluations >= budget or fun.final_target_hit:
             break
-    if runs > 1:
-        print("%d runs, " % runs, end="")
+        # quit if fun.evaluations did not increase
+        if fun.evaluations <= budget - remaining_budget:
+            if budget - fun.evaluations > fun.dimension + 1:
+                print("WARNING: Remaining budget of %d evaluations" %
+                      remaining_budget)
+            break
+
+    if restarts > 0:
+        print("%d runs, " % (restarts + 1), end="")
 
 # ===============================================
 # set up: CHANGE HERE SOLVER AND FURTHER SETTINGS AS DESIRED
 # ===============================================
 ######################### CHANGE HERE ########################################
 # CAVEAT: this might be modified from input args
-budget_multiplier = 2  # times dimension ### INCREASE THE MULTIPLIER WHEN THE DATA CHAIN IS STABLE ###
+budget = 2  # maxfevals = budget x dimension ### INCREASE budget WHEN THE DATA CHAIN IS STABLE ###
+max_runs = 1e9  # number of (almost) independent trials per problem instance
 number_of_batches = 1  # allows to run everything in several batches
 current_batch = 1      # 1..number_of_batches
 ##############################################################################
@@ -209,9 +206,8 @@ suite_instance = ""  # 'dimensions: 2,3,5,10,20 instance_idx: 1-5'
 suite_options = ""
 observer_name = suite_name
 observer_options = (
-    ' result_folder: ' +
-    os.path.join('exdata', '%s_on_%s_budget%d '
-                 % (SOLVER.__name__, suite_name, budget_multiplier)) +
+    ' result_folder: %s_on_%s_budget%d '
+                 % (SOLVER.__name__, suite_name, budget) +
     ' algorithm_name: %s ' % SOLVER.__name__ +
     ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
 ######################### END CHANGE HERE ####################################
@@ -219,26 +215,27 @@ observer_options = (
 # ===============================================
 # run (main)
 # ===============================================
-def main(budget_multiplier=budget_multiplier,
+def main(budget=budget,
+         max_runs=max_runs,
          current_batch=current_batch,
          number_of_batches=number_of_batches):
     """Initialize suite and observer, then benchmark solver by calling
-    `batch_loop(SOLVER, suite, observer, budget_multiplier,...`. """
+    `batch_loop(SOLVER, suite, observer, budget,...`.
+    """
     observer = Observer(observer_name, observer_options)
     suite = Suite(suite_name, suite_instance, suite_options)
     print("Benchmarking solver '%s' with budget=%d*dimension on %s suite, %s"
-          % (' '.join(str(SOLVER).split()[:2]), budget_multiplier,
+          % (' '.join(str(SOLVER).split()[:2]), budget,
              suite.name, time.asctime()))
+    if number_of_batches > 1:
+        print_flush('Batch usecase, make sure you run *all* %d batches.\n' %
+                    number_of_batches)
     t0 = time.clock()
-    if 11 < 3:
-        simple_loop(SOLVER, suite, observer, budget_multiplier)
-    elif 1 < 3:
-        if number_of_batches > 1:
-            print_flush('Batch usecase, make sure you run *all* %d batches.\n' %
-                        number_of_batches)
-        batch_loop(SOLVER, suite, observer, budget_multiplier,
-                   current_batch, number_of_batches)
-    print(", %s (%.2f min)." % (time.asctime(), (time.clock()-t0)/60**1))
+    batch_loop(SOLVER, suite, observer, budget, max_runs,
+               current_batch, number_of_batches)
+    m = (time.clock() - t0) / 60
+    print(", %s (%dh%02d:%02d)." % (time.asctime(), m / 60, m - 60 * (m // 60),
+                                    60 * (m - m // 1)))
 
 # ===============================================
 if __name__ == '__main__':
@@ -247,7 +244,7 @@ if __name__ == '__main__':
         if sys.argv[1] in ["--help", "-h"]:
             print(__doc__)
             exit(0)
-        budget_multiplier = float(sys.argv[1])
+        budget = float(sys.argv[1])
     if len(sys.argv) > 2:
         current_batch = int(sys.argv[2])
     if len(sys.argv) > 3:
@@ -257,4 +254,4 @@ if __name__ == '__main__':
             for i in range(4, len(sys.argv))]
         messages.append('See "python example_experiment.py -h" for help.')
         raise ValueError('\n'.join(messages))
-    main(budget_multiplier, current_batch, number_of_batches)
+    main(budget, max_runs, current_batch, number_of_batches)
