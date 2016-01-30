@@ -15,6 +15,7 @@
 #include "transform_vars_shift.c"
 
 #include "transform_vars_permblockdiag.c"
+#include "transform_obj_norm_by_dim.c"
 
 #define proportion_long_axes_denom 40
 
@@ -61,6 +62,7 @@ static coco_problem_t *f_bent_cigar_allocate(const size_t number_of_variables) {
 
 /**
  * @brief Implements the generalized bent cigar function without connections to any COCO structures.
+ * put it in a separate source file f_bent_cigar_generalized.c ?
  */
 static double f_bent_cigar_generalized_raw(const double *x, const size_t number_of_variables) {
   
@@ -185,11 +187,14 @@ static coco_problem_t *f_bent_cigar_generalized_permblockdiag_bbob_problem_alloc
   
   
   problem = f_bent_cigar_generalized_allocate(dimension);
-  problem = transform_obj_shift(problem, fopt);
   problem = transform_vars_permblockdiag(problem, B_copy, P1, P2, dimension, block_sizes, nb_blocks);
   problem = transform_vars_asymmetric(problem, 0.5);
   problem = transform_vars_permblockdiag(problem, B_copy, P1, P2, dimension, block_sizes, nb_blocks);
   problem = transform_vars_shift(problem, xopt, 0);
+
+  problem = transform_obj_norm_by_dim(problem);  
+  problem = transform_obj_shift(problem, fopt);
+
   
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
