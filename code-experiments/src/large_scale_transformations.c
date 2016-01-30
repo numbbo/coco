@@ -281,10 +281,11 @@ size_t *coco_duplicate_size_t_vector(const size_t *src, const size_t number_of_e
  * returns the list of block_sizes and sets nb_blocks to its correct value
  * TODO: update with chosen parameter setting
  */
-size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
+size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension, const long seed){
   size_t *block_sizes;
   size_t block_size;
   int i;
+  coco_random_state_t *rng = coco_random_new((uint32_t) seed);
   
   block_size = (size_t) bbob2009_fmin((double)dimension / 4, 100);
   *nb_blocks = dimension / block_size + ((dimension % block_size) > 0);
@@ -293,6 +294,9 @@ size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
     block_sizes[i] = block_size;
   }
   block_sizes[*nb_blocks - 1] = dimension - (*nb_blocks - 1) * block_size; /*add rest*/
+  
+  coco_random_free(rng);
+
   return block_sizes;
 }
 
