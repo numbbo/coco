@@ -232,9 +232,9 @@ def main(budget=budget,
     t0 = time.clock()
     batch_loop(SOLVER, suite, observer, budget, max_runs,
                current_batch, number_of_batches)
-    t1 = time.clock()
-    m = int((t1 - t0) / 60)
-    print(", %s (%d:%02d min)." % (time.asctime(), m, t1 - t0 - 60*m))
+    m = (time.clock() - t0) / 60
+    print(", %s (%dh%02d:%02d)." % (time.asctime(), m / 60, m - 60 * (m // 60),
+                                    60 * (m - m // 1)))
 
 # ===============================================
 if __name__ == '__main__':
