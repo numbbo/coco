@@ -574,7 +574,7 @@ def silent(args):
     # check whether an error occured
     error = False
     for line in open(filename, 'r').readlines():
-        if line.startswith('ERROR') or not line[0] in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+        if line.startswith('ERR') or not line[0] in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
             error = True
             break
     if error:
