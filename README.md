@@ -296,7 +296,7 @@ Windows path. For instance, the `etc/paths` should look like something like this
 /Applications/MATLAB_R2012a.app/bin/
 ```
 
-#### SMA-EMOA example does not compile under Mac 
+#### SMS-EMOA example does not compile under Mac 
 With the more complex SMS-EMOA example. The problem is related to the compilation
 of the external C++ hypervolume calculation in `hv.cpp`. 
 
