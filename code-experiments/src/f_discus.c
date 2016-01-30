@@ -15,7 +15,7 @@
 
 #include "transform_vars_permblockdiag.c"
 
-#define proportion_short_axes_denom 40
+#define proportion_short_axes_denom 40 /* Make it a parameter of f_discus_generalized_raw? */
 
 /**
  * @brief Implements the discus function without connections to any COCO structures.
@@ -86,7 +86,7 @@ static double f_discus_generalized_raw(const double *x, const size_t number_of_v
 /**
  * @brief Uses the generalized raw function to evaluate the COCO problem.
  */
-static void f_discus_gen_evaluate(coco_problem_t *problem, const double *x, double *y) {
+static void f_discus_generalized_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
   y[0] = f_discus_generalized_raw(x, problem->number_of_variables);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
@@ -95,14 +95,14 @@ static void f_discus_gen_evaluate(coco_problem_t *problem, const double *x, doub
 /**
  * @brief Allocates the basic generalized discus problem.
  */
-static coco_problem_t *f_discus_gen_allocate(const size_t number_of_variables) {
+static coco_problem_t *f_discus_generalized_allocate(const size_t number_of_variables) {
   
   coco_problem_t *problem = coco_problem_allocate_from_scalars("generalized discus function",
-                                                               f_discus_gen_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
-  coco_problem_set_id(problem, "%s_d%02lu", "discus_gen", number_of_variables);
+                                                               f_discus_generalized_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
+  coco_problem_set_id(problem, "%s_d%02lu", "discus_generalized", number_of_variables);
   
   /* Compute best solution */
-  f_discus_gen_evaluate(problem, problem->best_parameter, problem->best_value);
+  f_discus_generalized_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }
 
@@ -152,7 +152,7 @@ static coco_problem_t *f_discus_bbob_problem_allocate(const size_t function,
 
 
 
-static coco_problem_t *f_discus_gen_permblockdiag_bbob_problem_allocate(const size_t function,
+static coco_problem_t *f_discus_generalized_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                        const size_t dimension,
                                                                        const size_t instance,
                                                                        const long rseed,
@@ -185,7 +185,7 @@ static coco_problem_t *f_discus_gen_permblockdiag_bbob_problem_allocate(const si
   ls_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
   
   
-  problem = f_discus_gen_allocate(dimension);
+  problem = f_discus_generalized_allocate(dimension);
   problem = transform_vars_oscillate(problem);
   problem = transform_vars_permblockdiag(problem, B_copy, P1, P2, dimension, block_sizes, nb_blocks);
   problem = transform_vars_shift(problem, xopt, 0);
@@ -201,6 +201,5 @@ static coco_problem_t *f_discus_gen_permblockdiag_bbob_problem_allocate(const si
   coco_free_memory(block_sizes);
   coco_free_memory(xopt);
   return problem;
-  
 }
 
