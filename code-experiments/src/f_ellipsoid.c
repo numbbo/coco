@@ -13,6 +13,7 @@
 #include "transform_vars_affine.c"
 #include "transform_vars_shift.c"
 #include "transform_obj_shift.c"
+
 #include "transform_vars_permblockdiag.c"
 
 /**
@@ -143,7 +144,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   size_t swap_range;
   size_t nb_swaps;
   
-  block_sizes = ls_get_block_sizes(&nb_blocks, dimension);
+  block_sizes = ls_get_block_sizes(&nb_blocks, dimension, rseed);
   swap_range = ls_get_swap_range(dimension);
   nb_swaps = ls_get_nb_swaps(dimension);
 
@@ -175,7 +176,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   coco_free_memory(P1);
   coco_free_memory(P2);
   coco_free_memory(block_sizes);
-  
+  coco_free_memory(xopt);
   return problem;
 }
 
