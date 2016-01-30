@@ -19,29 +19,27 @@ Requirements  <a name="Requirements"></a>
   - optional: `git`
 2. For a machine running the post-processing
   - Python 2.6 or 2.7 with `numpy` (preferably >=1.7) and `matplotlib` installed. 
-    We recommend to install the [Anaconda library](https://www.continuum.io/downloads). 
+    We recommend to install the [Anaconda Python 2.7 library](https://www.continuum.io/downloads). 
     Python 3 is not yet supported with the post-processing part of NumBBO/CoCO!
 
 ### Windows Specifics
 Under Windows, two alternative compile toolchains can be used: 
 
 1. [Cygwin](https://www.cygwin.com/) which comes with gcc and make, available in 32- and 64-bit versions.  
-2. MinGW's gcc (http://www.mingw.org/) and GNU make (http://gnuwin32.sourceforge.net/packages/make.htm).
-  MinGW only comes in 32-bit, but also runs on 64-bit machines. See [_Language Specifics_](#Language-Specifics)
-  below, if Python is used to conduct experiments. 
+2. MinGW's gcc (http://www.mingw.org/), which only comes in 32-bit, but also runs on 64-bit machines. 
 
 For using `git` under Windows (optional), we recommend installing [TortoiseGit](https://tortoisegit.org/).
 
 ### Language Specifics  <a name="Language-Specifics"></a>
 _Additional_ requirements for running an algorithm in a specific language.
 
-* **C**: make, such as GNU make
+* **C**: make, such as GNU make ([GNU make for Windows](http://gnuwin32.sourceforge.net/packages/make.htm)). 
 * **Java**: `gcc` and any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
   (i.e. in the system path). 
 * **MATLAB**: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
-* **Python on Windows with MinGW** compiler: Microsoft compiler package for Python 2.7 
+* **Python on Windows with MinGW**: Python 2.7 and the Microsoft compiler package for Python 2.7 
   containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
-  These are necessary to build C extensions for the Python `cocoex` package for Windows. 
+  These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
   It has both the 32-bit and 64-bit compilers and the Windows SDK headers.
 * **Octave**: tested with Octave 4.0.0 but older versions might work. Make sure `octave` can be called from
   the shell without closing the shell on exit, for details, 
