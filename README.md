@@ -15,7 +15,6 @@ Requirements  <a name="Requirements"></a>
 ------------
 1. For a machine running experiments 
   - A `C` compiler, such as gcc
-  - make, such as GNU make
   - Python >=2.6 with `setuptools` installed
   - optional: `git`
 2. For a machine running the post-processing
@@ -36,7 +35,8 @@ For using `git` under Windows (optional), we recommend installing [TortoiseGit](
 ### Language Specifics  <a name="Language-Specifics"></a>
 _Additional_ requirements for running an algorithm in a specific language.
 
-* **Java**: any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
+* **C**: make, such as GNU make
+* **Java**: `gcc` and any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
   (i.e. in the system path). 
 * **MATLAB**: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
 * **Python on Windows with MinGW** compiler: Microsoft compiler package for Python 2.7 
