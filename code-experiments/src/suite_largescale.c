@@ -22,7 +22,7 @@ static coco_suite_t *suite_largescale_initialize(void) {
   coco_suite_t *suite;
   /*const size_t dimensions[] = { 8, 16, 32, 64, 128, 256,512,1024};*/
   const size_t dimensions[] = { 40, 80, 160, 320, 640, 1280};
-  suite = coco_suite_allocate("bbob-largescale", 2, 6, dimensions, "instances:1-15");
+  suite = coco_suite_allocate("bbob-largescale", 3, 6, dimensions, "instances:1-15");
   return suite;
 }
 
@@ -46,6 +46,9 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
   } else if (function == 2) {
     problem = f_different_powers_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                                               problem_id_template, problem_name_template);
+  } else if (function == 3) {
+    problem = f_discus_gen_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                                     problem_id_template, problem_name_template);
   } else {
     coco_error("coco_get_largescale_problem(): cannot retrieve problem f%lu instance %lu in %luD", function,
         instance, dimension);
