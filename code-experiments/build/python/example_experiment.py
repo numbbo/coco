@@ -132,6 +132,7 @@ def batch_loop(solver, suite, observer, budget,
                if number_of_batches > 1 else "")), end="")
     if number_of_batches > 1:
         print("\n    MAKE SURE TO RUN ALL BATCHES", end="")
+    return addressed_problems
 
 #===============================================
 # interface: ADD AN OPTIMIZER BELOW
@@ -159,10 +160,10 @@ def coco_optimize(solver, fun, budget, max_runs=1e9):
             solver(fun, fun.lower_bounds, fun.upper_bounds,
                    remaining_budget)
         elif solver.__name__ == 'fmin' and solver.func_globals['__name__'] == 'cma':
-            x0 = "%f + %f * np.rand(%d)" % (center[0], 0.8 * range_[0],
+            x0 = "%f + %f * np.random.rand(%d)" % (center[0], 0.8 * range_[0],
                                             fun.dimension)
-            solver(fun, x0, 0.2 * range_, restarts=8,
-                   options=dict(scaling=range_, maxfevals=remaining_budget,
+            solver(fun, x0, 0.2 * range_[0], restarts=8,
+                   options=dict(scaling=range_/range_[0], maxfevals=remaining_budget,
                                 verbose=-9))
         elif solver.__name__ == 'fmin_slsqp':
             solver(fun, x0, iter=1 + remaining_budget / fun.dimension,
