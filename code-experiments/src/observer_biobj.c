@@ -87,9 +87,9 @@ static void observer_biobj(coco_observer_t *observer, const char *options) {
     observer_biobj->produce_all_data = 0;
 
   if (observer_biobj->produce_all_data) {
-    observer_biobj->log_vars_mode = LOG_VARS_LOW_DIM;
     observer_biobj->compute_indicators = 1;
     observer_biobj->log_nondom_mode = LOG_NONDOM_ALL;
+    observer_biobj->log_vars_mode = LOG_VARS_LOW_DIM;
   }
 
   if (observer_biobj->compute_indicators) {
