@@ -9,12 +9,6 @@
 #include "coco_utilities.c"
 #include "mo_utilities.c"
 
-/** @brief Number of implemented indicators */
-#define OBSERVER_BIOBJ_NUMBER_OF_INDICATORS 1
-
-/** @brief Names of implemented indicators */
-const char *observer_biobj_indicators[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS] = { "hyp" };
-
 /** @brief Enum for denoting the way in which the nondominated solutions are logged. */
 typedef enum {
   LOG_NONDOM_NONE, LOG_NONDOM_FINAL, LOG_NONDOM_ALL

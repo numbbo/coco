@@ -251,32 +251,6 @@ static coco_observer_t *coco_observer_allocate(const char *result_folder,
   return observer;
 }
 
-/**
- * @brief Duplicates a coco_observer_t instance.
- */
-static coco_observer_t *coco_observer_duplicate(const coco_observer_t *original,
-                                                void *data,
-                                                coco_data_free_function_t data_free_function,
-                                                coco_logger_initialize_function_t logger_initialize_function) {
-
-  coco_observer_t *observer;
-  observer = (coco_observer_t *) coco_allocate_memory(sizeof(*observer));
-
-  observer->result_folder = coco_strdup(original->result_folder);
-  observer->algorithm_name = coco_strdup(original->algorithm_name);
-  observer->algorithm_info = coco_strdup(original->algorithm_info);
-  observer->number_of_targets = original->number_of_targets;
-  observer->target_precision = original->target_precision;
-  observer->base_evaluations = coco_strdup(original->base_evaluations);
-  observer->precision_x = original->precision_x;
-  observer->precision_f = original->precision_f;
-  observer->data = data;
-  observer->data_free_function = data_free_function;
-  observer->logger_initialize_function = logger_initialize_function;
-  observer->is_active = original->is_active;
-  return observer;
-}
-
 void coco_observer_free(coco_observer_t *observer) {
 
   if (observer != NULL) {
@@ -441,11 +415,11 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
 }
 
 /**
- * Wraps the observer around the problem if the observer is not NULL and invokes initialization of the
- * corresponding logger.
+ * Wraps the observer's logger around the problem if the observer is not NULL and invokes the initialization
+ * of this logger.
  *
  * @param problem The given COCO problem.
- * @param observer The COCO observer that will wrap the problem.
+ * @param observer The COCO observer, whose logger will wrap the problem.
  *
  * @returns The observed problem in the form of a new COCO problem instance or the same problem if the
  * observer is NULL.
