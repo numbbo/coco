@@ -498,8 +498,6 @@ static int coco_options_read_size_t(const char *options, const char *name, size_
   return coco_options_read(options, name, "%lu", pointer);
 }
 
-/* Commented to silence the compiler */
-#if 0
 /**
  * @brief Reads a double value from options using the form "name1: value1 name2: value2".
  *
@@ -510,9 +508,8 @@ static int coco_options_read_size_t(const char *options, const char *name, size_
  * @return The number of successful assignments.
  */
 static int coco_options_read_double(const char *options, const char *name, double *pointer) {
-  return coco_options_read(options, name, "%f", pointer);
+  return coco_options_read(options, name, "%lf", pointer);
 }
-#endif
 
 /**
  * @brief Reads a string from options using the form "name1: value1 name2: value2".
@@ -641,7 +638,7 @@ static int coco_double_almost_equal(const double a, const double b, const double
 /***********************************************************************************************************/
 
 /**
- * @name Methods handling time
+ * @name Miscellaneous methods
  */
 /**@{*/
 
@@ -659,6 +656,27 @@ static char *coco_current_time_get_string(void) {
   assert(tm_info != NULL);
   strftime(time_string, 30, "%d.%m.%y %H:%M:%S", tm_info);
   return time_string;
+}
+
+/**
+ * @brief Returns the number of positive numbers pointed to by numbers (the count stops when the first
+ * 0 is encountered of max_count numbers have been read).
+ *
+ * If there are more than max_count numbers, a coco_error is raised. The name argument is used
+ * only to provide more informative output in case of any problems.
+ */
+static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, const char *name) {
+
+  size_t count = 0;
+  while ((count < max_count) && (numbers[count] != 0)) {
+    count++;
+  }
+  if (count == max_count) {
+    coco_error("coco_count_numbers(): over %lu numbers in %s", max_count, name);
+    return 0; /* Never reached*/
+  }
+
+  return count;
 }
 /**@}*/
 
