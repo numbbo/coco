@@ -56,11 +56,11 @@ Details and Known Issues
   ```
   #define char16_t UINT16_T
   ```
-  right before the #include "mex.h" lines of the corresponding C files. This holds
-  especially for the more complicated example in ../../examples/bbob-biobj-matlab-smsemoa/.
+  right before the `#include "mex.h"` lines of the corresponding C files. This holds
+  especially for the more complicated example in `../../examples/bbob-biobj-matlab-smsemoa/`.
 - When running with GNU Octave under Windows, you might experience that the Windows command window is closed on exit
   of Octave. To solve this issue, find the `octave.bat` file in your Octave installation folder and remove the `exit`
-  in the last line.
+  in the last line or change it to `Rem exit`.
 
 Tested Environments
 -------------------

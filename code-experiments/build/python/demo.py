@@ -160,17 +160,6 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
                (suite_name, addressed_problems, found_problems,
                  ((" in batch %d of %d" % (current_batch, number_of_batches))
                    if number_of_batches > 1 else ""), time.asctime(), (time.clock()-t0)/60, ))
-     
-    if 11 < 3:
-        # generic usecase, possible if solver can be cast into a coco_optimizer_t *
-        # which might often not be a straight forward type conversion, because (i) the
-        # optimizer takes a function (pointer) as input, (ii) argument passing to
-        # the optimizer seems not possible (e.g. max budget) unless the interface
-        # is changed and (iii) argument passing to the function might be impossible
-        # to negotiate. 
-        print("Minimal usecase, doesn't work though")
-        Benchmark(coco_optimize, suite_name, suite_options,  # suite options are in the possible future
-                  observer_name, observer_options)
         
 if __name__ == '__main__':
     if len(sys.argv) > 1:

@@ -25,11 +25,29 @@ from cocoutils import make, run, python, check_output
 from cocoutils import copy_file, expand_file, write_file
 from cocoutils import git_version, git_revision
 
-core_files = ['code-experiments/src/coco_generics.c',
-              'code-experiments/src/coco_random.c',
+core_files = ['code-experiments/src/coco_random.c',
               'code-experiments/src/coco_suite.c',
               'code-experiments/src/coco_observer.c'
               ]
+
+matlab_octave_wrapper_files = ['cocoEvaluateFunction.c',
+             'cocoObserver.c',
+             'cocoObserverFree.c',
+             'cocoProblemFree.c',
+             'cocoProblemGetDimension.c',
+             'cocoProblemGetEvaluations.c',
+             'cocoProblemGetId.c',
+             'cocoProblemGetLargestValuesOfInterest.c',
+             'cocoProblemGetName.c',
+             'cocoProblemGetNumberOfObjectives.c',
+             'cocoProblemGetSmallestValuesOfInterest.c',
+             'cocoProblemIsValid.c',
+             'cocoSetLogLevel.c',
+             'cocoSuite.c',
+             'cocoSuiteFree.c',
+             'cocoSuiteGetNextProblem.c',
+             'cocoSuiteGetProblem.c']
+    
 
 ################################################################################
 ## C
@@ -42,8 +60,12 @@ def build_c():
     copy_file('code-experiments/build/c/coco.h', 'code-experiments/examples/bbob2009-c-cmaes/coco.h')
     write_file(git_revision(), "code-experiments/build/c/REVISION")
     write_file(git_version(), "code-experiments/build/c/VERSION")
-    make("code-experiments/build/c", "clean")
-    make("code-experiments/build/c", "all")
+    if 11 < 3:
+        python('code-experiments/build/c', ['make.py', 'clean'])
+        python('code-experiments/build/c', ['make.py', 'all'])
+    else:
+        make("code-experiments/build/c", "clean")
+        make("code-experiments/build/c", "all")
 
 def run_c():
     """ Builds and runs the example experiment in C """
@@ -183,7 +205,7 @@ def install_postprocessing():
     global release
     expand_file(join('code-postprocessing', 'setup.py.in'),
                 join('code-postprocessing', 'setup.py'),
-                {'COCO_VERSION': git_version()})
+                {'COCO_VERSION': git_version(pep440=True)})
     # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/bbob_pproc/latex-templates')
     python('code-postprocessing', ['setup.py', 'install', '--user'])
     
@@ -195,7 +217,7 @@ def _prep_python():
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
     copy_file('code-experiments/build/python/README.md', 'code-experiments/build/python/README.txt')
     expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
-                {'COCO_VERSION': git_version()}) # hg_version()})
+                {'COCO_VERSION': git_version(pep440=True)}) # hg_version()})
     # if 'darwin' in sys.platform:  # a hack to force cythoning
     #     run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
 
@@ -356,21 +378,7 @@ def build_matlab_sms():
     copy_file('code-experiments/src/coco.h', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.h')
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
-    files = ['cocoEvaluateFunction.c',
-             'cocoObserver.c',
-             'cocoObserverFree.c',
-             'cocoProblemGetDimension.c',
-             'cocoProblemGetEvaluations.c',
-             'cocoProblemGetId.c',
-             'cocoProblemGetLargestValuesOfInterest.c',
-             'cocoProblemGetName.c',
-             'cocoProblemGetNumberOfObjectives.c',
-             'cocoProblemGetSmallestValuesOfInterest.c',
-             'cocoProblemIsValid.c',
-             'cocoSuite.c',
-             'cocoSuiteFree.c',
-             'cocoSuiteGetNextProblem.c']
-    for file in files:
+    for file in matlab_octave_wrapper_files:
         copy_file(join(source_folder, file),
                   join(destination_folder, file))
     # compile
@@ -391,24 +399,51 @@ def run_matlab_sms():
 ################################################################################
 ## Octave
 def build_octave():
-    """Builds example in build/matlab/ with GNU Octave but not the one in examples/."""
+    """Builds example in build/matlab/ with GNU Octave."""
     
     global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/matlab/coco.c', release)
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
+               'code-experiments/build/matlab/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
-    run('code-experiments/build/matlab', ['octave', '--no-gui', 'setup.m'])
-
+    
+    # Copy octave-coco.bat to the Octave folder under Windows to allow
+    # calling Octave from command line without messing up the system.    
+    # Note that 'win32' stands for both Windows 32-bit and 64-bit.
+    if ('win32' in sys.platform):
+        print('SEARCH\tfor Octave folder from C:\\ (can take some time)')
+        lookfor = 'octave.bat'
+        for root, dirs, files in os.walk('C:\\'):
+            if lookfor in files:
+                break
+        copy_file('code-experiments/build/matlab/octave_coco.bat.in', join(root, 'octave_coco.bat'))
+        
+        run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'setup.m'])
+    else:
+        run('code-experiments/build/matlab', ['octave', '--no-gui', 'setup.m'])
     
 def run_octave():
     # remove the mex files for a clean compilation first
     print('CLEAN\t mex files from code-experiments/build/matlab/')
-    for filename in glob.glob('code-experiments/build/matlab/*.mex*') :
-        os.remove( filename )
+    for filename in glob.glob('code-experiments/build/matlab/*.mex*'):
+        os.remove(filename)
     # amalgamate, copy, and build
     build_octave()
-    run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
+    if ('win32' in sys.platform):
+        run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'])
+    else:
+        run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
+
+
+def test_octave():
+    """ Builds and runs the test in Octave, which is equal to the example experiment """
+    build_octave()
+    try:
+        run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])    
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
+
 
 
 ################################################################################
@@ -465,7 +500,7 @@ def build_java():
         run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-c', 
                            'CocoJNI.c'])
         run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-o', 
-                           'libCocoJNI.so', '-shared', 'CocoJNI.c'])
+                           'libCocoJNI.so', '-fPIC', '-shared', 'CocoJNI.c'])
                            
     # 5. Mac
     elif ('darwin' in sys.platform):
@@ -502,6 +537,10 @@ def test_postprocessing():
     install_postprocessing()
     python('code-postprocessing/bbob_pproc', ['__main__.py'])
     # python('code-postprocessing', ['-m', 'bbob_pproc'])
+    if 11 < 3:  # provisorial test fo biobj data
+        run_c()
+        python('code-experiments/build/c', ['-m', 'bbob_pproc',
+                                            'RS_on_bbob-biobj'])
 
 ################################################################################
 ## Global
@@ -532,6 +571,33 @@ def test():
     test_c()
     test_java()
     test_python()
+
+def silent(args):
+    """calls `main(args)` with redirected output to keep the console clean"""
+    # redirect stdout and call main
+    filename = '_check_output'
+    raised = None
+    stdout = sys.stdout
+
+    with open(filename, 'w') as out:
+        sys.stdout = out
+        try:
+            main(args)
+        except BaseException as raised:
+            pass
+    sys.stdout = stdout
+
+    # check whether an error occured
+    error = False
+    for line in open(filename, 'r').readlines():
+        if line.startswith('ERR') or not line[0] in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+            error = True
+            break
+    if error:
+        for line in open(filename, 'r').readlines():
+            print(line, end="")
+    if raised:
+        raise raised
 
 def help():
     print("""COCO framework bootstrap tool.
@@ -572,11 +638,12 @@ Available commands for developers:
 
   build                - Build C, Java and Python modules
   run                  - Run example experiments in C, Java and Python
+  silent cmd ...       - Calls "do.py cmd ..." and remains silent if no error occurs
   test                 - Test C, Java and Python modules
 
   run-sandbox-python   - Run a Python script with installed COCO module
                          Takes a single argument (name of Python script file)
-  
+
   test-c               - Build and run unit tests, integration tests 
                          and an example experiment test in C 
   test-c-unit          - Build and run unit tests in C
@@ -590,14 +657,14 @@ Available commands for developers:
   leak-check           - Check for memory leaks in C
 
 
-To build a release version which does not include debugging information in the 
+To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
 """)
 def main(args):
     if len(args) < 1:
         help()
         sys.exit(0)
-    cmd = args[0].replace('_', '-')
+    cmd = args[0].replace('_', '-').lower()
     if cmd == 'build': build()
     elif cmd == 'run': run_all()
     elif cmd == 'test': test()
@@ -617,6 +684,7 @@ def main(args):
     elif cmd == 'run-octave': run_octave()    
     elif cmd == 'run-python':
         run_python(False) if len(args) > 1 and args[1] == 'no-tests' else run_python()
+    elif cmd == 'silent': silent(args[1:])
     elif cmd == 'test-c': test_c()
     elif cmd == 'test-c-unit': test_c_unit()
     elif cmd == 'test-c-integration': test_c_integration()
