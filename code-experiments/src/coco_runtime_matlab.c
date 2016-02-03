@@ -41,9 +41,6 @@ void coco_info(const char *message, ...) {
   if (coco_log_level >= COCO_INFO) {
     mexPrintf("COCO INFO: ");
     mexPrintf(message, args);
-	mexPrintf("< ");
-	mexPrintf(message);
-	mexPrintf(" >");
     mexPrintf("\n");
   }
 }
