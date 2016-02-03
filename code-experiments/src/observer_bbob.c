@@ -33,7 +33,7 @@ static void observer_bbob(coco_observer_t *observer, const char *options) {
     observer_bbob->bbob_nbpts_nbevals = 20;
   }
   if ((coco_options_read_size_t(options, "nbpts_fval", &(observer_bbob->bbob_nbpts_fval)) == 0)) {
-    observer_bbob->bbob_nbpts_fval = 5;
+    observer_bbob->bbob_nbpts_fval = 10;
   }
 
   observer->logger_initialize_function = logger_bbob;

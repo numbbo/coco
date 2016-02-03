@@ -12,15 +12,15 @@
 /**
  * @brief The type for triggers based on target values.
  *
- * The target values that trigger logging are 10**(exponent/number_of_targets) from DBL_MAX down to
- * precision and from -precision on with step -10**(exponent/number_of_targets) without any explicit
- * minimal value.
+ * The target values that trigger logging are at every 10**(exponent/number_of_triggers) from positive
+ * infinity down to precision and from -precision on with step -10**(exponent/number_of_triggers) until
+ * negative infinity.
  */
 typedef struct {
 
-  int exponent;               /**< @brief Exponent used for computing the currently hit target. */
+  int exponent;               /**< @brief Value used to compare with the previously hit target. */
   double value;               /**< @brief Value of the currently hit target. */
-  size_t number_of_targets;   /**< @brief The number of targets between 10**(i/n) and 10**((i+1)/n). */
+  size_t number_of_triggers;  /**< @brief Number of target triggers between 10**i and 10**(i+1) for any i. */
   double precision;           /**< @brief Minimal precision of interest. */
 
 } coco_observer_targets_t;
@@ -28,19 +28,25 @@ typedef struct {
 /**
  * @brief The type for triggers based on numbers of evaluations.
  *
- * The numbers of evaluations that trigger logging are 1 and every base_evaluation*dim*(10**exponent), where
- * dim is the dimensionality of the problem (number of variables) and exponent is an integer >= 0.
+ * The numbers of evaluations that trigger logging are any of the two:
+ * - every 10**(exponent1/number_of_triggers) for exponent1 >= 0
+ * - every base_evaluation * dimension * (10**exponent2) for exponent2 >= 0
  */
 typedef struct {
 
+  /* First trigger */
+  size_t value1;              /**< @brief The next value for the first trigger. */
+  size_t exponent1;           /**< @brief Exponent used to compute the first trigger. */
+  size_t number_of_triggers;  /**< @brief Number of target triggers between 10**i and 10**(i+1) for any i. */
+
+  /* Second trigger */
+  size_t value2;              /**< @brief The next value for the second trigger. */
+  size_t exponent2;           /**< @brief Exponent used to compute the second trigger. */
   size_t *base_evaluations;   /**< @brief The base evaluation numbers used to compute the actual evaluation
                                    numbers that trigger logging. */
   size_t base_count;          /**< @brief The number of base evaluations. */
-  size_t dimension;           /**< @brief Dimension used in the calculation. */
-
-  size_t evaluation_trigger;  /**< @brief The next evaluation number that triggers logging. */
   size_t base_index;          /**< @brief The next index of the base evaluations. */
-  size_t exponent;            /**< @brief Exponent used for computing the next trigger. */
+  size_t dimension;           /**< @brief Dimension used in the calculation of the first trigger. */
 
 } coco_observer_evaluations_t;
 
@@ -71,69 +77,85 @@ static coco_observer_targets_t *coco_observer_targets(const size_t number_of_tar
   coco_observer_targets_t *targets = (coco_observer_targets_t *) coco_allocate_memory(sizeof(*targets));
   targets->exponent = INT_MAX;
   targets->value = DBL_MAX;
-  targets->number_of_targets = number_of_targets;
+  targets->number_of_triggers = number_of_targets;
   targets->precision = precision;
 
   return targets;
 }
 
-/**
- * @brief Computes and returns whether the given value should trigger logging while also updating the state
- * of the targets.
- *
- * @note Takes into account also the negative case and the almost-zero case (i.e. the case when the
- * given_value is smaller than the minimal precision).
- *
- * @return 1 if the given_value has hit a new target and 0 otherwise.
- */
 static int coco_observer_targets_trigger(coco_observer_targets_t *targets, const double given_value) {
 
   int update_performed = 0;
-  const double number_of_targets_double = (double) (long) targets->number_of_targets;
-  int last_exponent;
-  int current_exponent, adjusted_exponent;
-  double verified_value = given_value;
-  int sign = 1;
+
+  const double number_of_targets_double = (double) (long) targets->number_of_triggers;
+
+  double verified_value = 0;
+  int last_exponent = 0;
+  int current_exponent = 0;
+  int adjusted_exponent = 0;
 
   assert(targets != NULL);
 
-  /* Handle the almost zero case */
-  if (fabs(given_value) < targets->precision) {
-    verified_value = targets->precision;
-    sign = 0;
-  }
-  /* Handle the negative case when < -precision */
-  else if (given_value < 0) {
-    verified_value = -given_value;
-    sign = -1;
-  }
+  /* The given_value is positive */
+  if (given_value > 0) {
 
-  last_exponent = targets->exponent;
-  /* If this is the first time the update was called, set the last_exponent to some value greater than the
-   * current exponent */
-  if (last_exponent == INT_MAX) {
-    last_exponent = (int) (ceil(log10(verified_value) * number_of_targets_double)) + 1;
-  }
+    /* If close to zero, use precision instead of the given_value*/
+    if (given_value < targets->precision) {
+      verified_value = targets->precision;
+    } else {
+      verified_value = given_value;
+    }
 
-  if (sign >= 0)
     current_exponent = (int) (ceil(log10(verified_value) * number_of_targets_double));
-  else
+
+    /* If this is the first time the update was called, set the last_exponent to some value greater than the
+     * current exponent */
+    if (last_exponent == INT_MAX) {
+      last_exponent = current_exponent + 1;
+    } else {
+      last_exponent = targets->exponent;
+    }
+
+    if (current_exponent < last_exponent) {
+      /* Update the target information */
+      targets->exponent = current_exponent;
+      targets->value = pow(10, (double) current_exponent / number_of_targets_double);
+      update_performed = 1;
+    }
+  }
+  /* The given_value is negative, therefore adjustments need to be made */
+  else {
+
+    /* If close to zero, use precision instead of the given_value*/
+    if (given_value > -targets->precision) {
+      verified_value = targets->precision;
+    } else {
+      verified_value = -given_value;
+    }
+
+    /* Adjustment: use floor instead of ceil! */
     current_exponent = (int) (floor(log10(verified_value) * number_of_targets_double));
 
-  /* Compute the adjusted_exponent in such a way, that it is always diminishing in value. The adjusted
-   * exponent can only be used to verify if a new target has been hit. To compute the actual target
-   * value, the current_exponent needs to be used. */
-  adjusted_exponent = current_exponent;
-  if (sign < 0) {
-    adjusted_exponent = 2 * (int) (ceil(log10(targets->precision) * number_of_targets_double))
-        - (int) targets->number_of_targets - current_exponent;
-  }
+    /* If this is the first time the update was called, set the last_exponent to some value greater than the
+     * current exponent */
+    if (last_exponent == INT_MAX) {
+      last_exponent = current_exponent + 1;
+    } else {
+      last_exponent = targets->exponent;
+    }
 
-  if (adjusted_exponent < last_exponent) {
-    /* Update the target information */
-    targets->exponent = adjusted_exponent;
-    targets->value = pow(10, (double) current_exponent / number_of_targets_double) * sign;
-    update_performed = 1;
+    /* Compute the adjusted_exponent in such a way, that it is always diminishing in value. The adjusted
+     * exponent can only be used to verify if a new target has been hit. To compute the actual target
+     * value, the current_exponent needs to be used. */
+    adjusted_exponent = 2 * (int) (ceil(log10(targets->precision) * number_of_targets_double))
+        - current_exponent - 1;
+
+    if (adjusted_exponent < last_exponent) {
+      /* Update the target information */
+      targets->exponent = adjusted_exponent;
+      targets->value = - pow(10, (double) current_exponent / number_of_targets_double);
+      update_performed = 1;
+    }
   }
 
   return update_performed;
@@ -151,52 +173,107 @@ static int coco_observer_targets_trigger(coco_observer_targets_t *targets, const
 /**
  * @brief Creates and returns a structure containing information on triggers based on evaluation numbers.
  *
+ * The numbers of evaluations that trigger logging are any of the two:
+ * - every 10**(exponent1/number_of_triggers) for exponent1 >= 0
+ * - every base_evaluation * dimension * (10**exponent2) for exponent2 >= 0
+ *
+ * @note The coco_observer_evaluations_t object instances need to be freed using the
+ * coco_observer_evaluations_free function!
+ *
  * @param base_evaluations Evaluation numbers formatted as a string, which are used as the base to compute
- * the actual triggers. For example, if base_evaluations = "1,2,5", the logger will be triggered by
- * evaluations 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
+ * the second trigger. For example, if base_evaluations = "1,2,5", the logger will be triggered by
+ * evaluations dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
  */
 static coco_observer_evaluations_t *coco_observer_evaluations(const char *base_evaluations,
                                                               const size_t dimension) {
 
   coco_observer_evaluations_t *evaluations = (coco_observer_evaluations_t *) coco_allocate_memory(
       sizeof(*evaluations));
+
+  /* First trigger */
+  evaluations->value1 = 1;
+  evaluations->exponent1 = 0;
+  evaluations->number_of_triggers = 20;
+
+  /* Second trigger */
   evaluations->base_evaluations = coco_string_parse_ranges(base_evaluations, 1, 0, "base_evaluations",
       COCO_MAX_EVALS_TO_LOG);
   evaluations->dimension = dimension;
   evaluations->base_count = coco_count_numbers(evaluations->base_evaluations, COCO_MAX_EVALS_TO_LOG,
       "base_evaluations");
-  evaluations->evaluation_trigger = 1;
   evaluations->base_index = 0;
-  evaluations->exponent = 0;
+  evaluations->value2 = dimension * evaluations->base_evaluations[0];
+  evaluations->exponent2 = 0;
 
   return evaluations;
 }
 
 /**
- * @brief Computes and returns whether the given evaluation number should trigger logging while also updating
- * the state of the evaluation trigger.
+ * @brief Computes and returns whether the given evaluation number triggers the first condition of the
+ * logging based on the number of evaluations.
+ *
+ * The second condition is:
+ * evaluation_number == 10**(exponent1/number_of_triggers)
  */
-static int coco_observer_evaluations_trigger(coco_observer_evaluations_t *evaluations,
-                                             const size_t evaluation_number) {
+static int coco_observer_evaluations_trigger_first(coco_observer_evaluations_t *evaluations,
+                                                   const size_t evaluation_number) {
 
   assert(evaluations != NULL);
 
-  if (evaluation_number == evaluations->evaluation_trigger) {
-    /* Compute the next trigger */
-    if (evaluation_number != 1) {
-      if (evaluations->base_index < evaluations->base_count - 1) {
-        evaluations->base_index++;
-      } else {
-        evaluations->base_index = 0;
-        evaluations->exponent++;
-      }
+  if (evaluation_number == evaluations->value1) {
+    /* Compute the next value for the first trigger */
+    while ((size_t) floor(pow(10, (double) evaluations->exponent1 / (double) evaluations->number_of_triggers)) <= evaluations->value1) {
+      evaluations->exponent1++;
     }
-    evaluations->evaluation_trigger = (size_t) (pow(10, (double) evaluations->exponent)
+    evaluations->value1 = (size_t) floor(pow(10, (double) evaluations->exponent1 / (double) evaluations->number_of_triggers));
+    return 1;
+  }
+  return 0;
+}
+
+/**
+ * @brief Computes and returns whether the given evaluation number triggers the second condition of the
+ * logging based on the number of evaluations.
+ *
+ * The second condition is:
+ * evaluation_number == base_evaluation[base_index] * dimension * (10**exponent2)
+ */
+static int coco_observer_evaluations_trigger_second(coco_observer_evaluations_t *evaluations,
+                                                    const size_t evaluation_number) {
+
+  assert(evaluations != NULL);
+
+  if (evaluation_number == evaluations->value2) {
+    /* Compute the next value for the second trigger */
+    if (evaluations->base_index < evaluations->base_count - 1) {
+      evaluations->base_index++;
+    } else {
+      evaluations->base_index = 0;
+      evaluations->exponent2++;
+    }
+    evaluations->value2 = (size_t) (pow(10, (double) evaluations->exponent2)
         * (double) (long) evaluations->dimension
         * (double) (long) evaluations->base_evaluations[evaluations->base_index]);
     return 1;
   }
   return 0;
+}
+
+/**
+ * @brief Returns 1 if any of the two triggers based on the number of evaluations equal 1 and 0 otherwise.
+ *
+ * The numbers of evaluations that trigger logging are any of the two:
+ * - every 10**(exponent1/number_of_triggers) for exponent1 >= 0
+ * - every base_evaluation * dimension * (10**exponent2) for exponent2 >= 0
+ */
+static int coco_observer_evaluations_trigger(coco_observer_evaluations_t *evaluations,
+                                             const size_t evaluation_number) {
+
+  /* Both functions need to be called so that both triggers are correctly updated */
+  int first = coco_observer_evaluations_trigger_first(evaluations, evaluation_number);
+  int second = coco_observer_evaluations_trigger_second(evaluations, evaluation_number);
+
+  return (first + second > 0) ? 1: 0;
 }
 
 /**
@@ -212,40 +289,6 @@ static void coco_observer_evaluations_free(coco_observer_evaluations_t *evaluati
 /**@}*/
 
 /***********************************************************************************************************/
-/**
- * @brief A set of numbers from which the evaluations that should always be logged are computed.
- *
- * For example, if logger_biobj_always_log[3] = {1, 2, 5}, the logger will always output evaluations
- * 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
- */
-static const size_t deprecated__coco_observer_always_log[3] = {1, 2, 5};
-
-/**
- * @brief Determines whether the evaluation should be logged.
- *
- * Returns true if the evaluation_number corresponds to a number that should always be logged and false
- * otherwise (computed from coco_observer_always_log). For example, if coco_observer_always_log = {1, 2, 5},
- * returns true for 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, ...
- */
-static int deprecated__coco_observer_evaluation_to_log(const size_t evaluation_number, const size_t dimension) {
-
-  size_t i;
-  double j = 0, factor = 10;
-  size_t count = sizeof(deprecated__coco_observer_always_log) / sizeof(size_t);
-
-  if (evaluation_number == 1)
-    return 1;
-
-  while ((size_t) pow(factor, j) * dimension <= evaluation_number) {
-    for (i = 0; i < count; i++) {
-      if (evaluation_number == (size_t) pow(factor, j) * dimension * deprecated__coco_observer_always_log[i])
-        return 1;
-    }
-    j++;
-  }
-
-  return 0;
-}
 
 /**
  * @brief Allocates memory for a coco_observer_t instance.
@@ -253,9 +296,10 @@ static int deprecated__coco_observer_evaluation_to_log(const size_t evaluation_n
 static coco_observer_t *coco_observer_allocate(const char *result_folder,
                                                const char *algorithm_name,
                                                const char *algorithm_info,
-                                               const size_t number_of_targets,
+                                               const size_t number_target_triggers,
                                                const double target_precision,
-                                               const char *base_evaluations,
+                                               const size_t number_evaluation_triggers,
+                                               const char *base_evaluation_triggers,
                                                const int precision_x,
                                                const int precision_f) {
 
@@ -265,9 +309,10 @@ static coco_observer_t *coco_observer_allocate(const char *result_folder,
   observer->result_folder = coco_strdup(result_folder);
   observer->algorithm_name = coco_strdup(algorithm_name);
   observer->algorithm_info = coco_strdup(algorithm_info);
-  observer->number_of_targets = number_of_targets;
+  observer->number_target_triggers = number_target_triggers;
   observer->target_precision = target_precision;
-  observer->base_evaluations = coco_strdup(base_evaluations);
+  observer->number_evaluation_triggers = number_evaluation_triggers;
+  observer->base_evaluation_triggers = coco_strdup(base_evaluation_triggers);
   observer->precision_x = precision_x;
   observer->precision_f = precision_f;
   observer->data = NULL;
@@ -288,8 +333,8 @@ void coco_observer_free(coco_observer_t *observer) {
     if (observer->algorithm_info != NULL)
       coco_free_memory(observer->algorithm_info);
 
-    if (observer->base_evaluations != NULL)
-      coco_free_memory(observer->base_evaluations);
+    if (observer->base_evaluation_triggers != NULL)
+      coco_free_memory(observer->base_evaluation_triggers);
 
     if (observer->data != NULL) {
       if (observer->data_free_function != NULL) {
@@ -329,15 +374,16 @@ void coco_observer_free(coco_observer_t *observer) {
  * spaces are allowed). The default value is "ALG".
  * - "algorithm_info: STRING" stores the description of the algorithm. If it contains spaces, it must be
  * surrounded by double quotes. The default value is "" (no description).
- * - "number_of_targets: VALUE" defines the number of targets between each 10**(i/n) and 10**((i+1)/n)
- * (equally spaced in the logarithmic scale). The default value is 10.
+ * - "number_target_triggers: VALUE" defines the number of targets between each 10**i and 10**(i+1)
+ * (equally spaced in the logarithmic scale) that trigger logging. The default value is 100.
  * - "target_precision: VALUE" defines the precision used for targets (there are no targets for
  * abs(values) < target_precision). The default value is 1e-8.
- * - "evaluations_to_log: VALUES" defines the "base evaluations" used to compute the evaluations that are to
- * be logged independently on their target values. The numbers of evaluations that trigger logging are 1 and
- * every base_evaluation*dim*(10**exponent), where dim is the dimensionality of the problem (number of
- * variables) and exponent is an integer >= 0. For example, if base_evaluations = "1,2,5", the logger will
- * be triggered by evaluations 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2,
+ * - "number_evaluation_triggers: VALUE" defines the number of evaluations to be logged between each 10**i
+ * and 10**(i+1). The default value is 20.
+ * - "base_evaluation_triggers: VALUES" defines the base evaluations used to produce an additional
+ * evaluation number-based logging. The numbers of evaluations that trigger logging are every
+ * base_evaluation * dimension * (10**i). For example, if base_evaluation_triggers = "1,2,5", the logger will
+ * be triggered by evaluations dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2,
  * 100*dim*5, ... The default value is "1,2,5".
  * - "precision_x: VALUE" defines the precision used when outputting variables and corresponds to the number
  * of digits to be printed after the decimal point. The default value is 8.
@@ -353,9 +399,10 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   const char *outer_folder_name = "exdata";
   int precision_x, precision_f;
 
-  size_t number_of_targets;
+  size_t number_target_triggers;
+  size_t number_evaluation_triggers;
   double target_precision;
-  char *base_evaluations;
+  char *base_evaluation_triggers;
 
   if (0 == strcmp(observer_name, "no_observer")) {
     return NULL;
@@ -387,10 +434,10 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     strcpy(algorithm_info, "");
   }
 
-  number_of_targets = 10;
-  if (coco_options_read_size_t(observer_options, "number_of_targets", &number_of_targets) != 0) {
-    if (number_of_targets == 0)
-      number_of_targets = 10;
+  number_target_triggers = 100;
+  if (coco_options_read_size_t(observer_options, "number_target_triggers", &number_target_triggers) != 0) {
+    if (number_target_triggers == 0)
+      number_target_triggers = 100;
   }
 
   target_precision = 1e-8;
@@ -399,9 +446,15 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
       target_precision = 1e-8;
   }
 
-  base_evaluations = coco_allocate_string(COCO_PATH_MAX);
-  if (coco_options_read_string(observer_options, "evaluations_to_log", base_evaluations) == 0) {
-    strcpy(base_evaluations, "1,2,5");
+  number_evaluation_triggers = 20;
+  if (coco_options_read_size_t(observer_options, "number_evaluation_triggers", &number_evaluation_triggers) != 0) {
+    if (number_evaluation_triggers < 4)
+      number_evaluation_triggers = 20;
+  }
+
+  base_evaluation_triggers = coco_allocate_string(COCO_PATH_MAX);
+  if (coco_options_read_string(observer_options, "base_evaluation_triggers", base_evaluation_triggers) == 0) {
+    strcpy(base_evaluation_triggers, "1,2,5");
   }
 
   precision_x = 8;
@@ -416,14 +469,14 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
       precision_f = 15;
   }
 
-  observer = coco_observer_allocate(path, algorithm_name, algorithm_info, number_of_targets, target_precision,
-      base_evaluations, precision_x, precision_f);
+  observer = coco_observer_allocate(path, algorithm_name, algorithm_info, number_target_triggers, target_precision,
+      number_evaluation_triggers, base_evaluation_triggers, precision_x, precision_f);
 
   coco_free_memory(path);
   coco_free_memory(result_folder);
   coco_free_memory(algorithm_name);
   coco_free_memory(algorithm_info);
-  coco_free_memory(base_evaluations);
+  coco_free_memory(base_evaluation_triggers);
 
   /* Here each observer must have an entry */
   if (0 == strcmp(observer_name, "toy")) {
