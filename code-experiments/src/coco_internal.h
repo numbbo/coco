@@ -151,13 +151,20 @@ struct coco_problem_s {
  */
 struct coco_observer_s {
 
-  int is_active;         /**< @brief Whether the observer is active (the logger will log some output). */
-  char *result_folder;   /**< @brief Name of the result folder. */
-  char *algorithm_name;  /**< @brief Name of the algorithm to be used in logger output. */
-  char *algorithm_info;  /**< @brief Additional information on the algorithm to be used in logger output. */
-  int precision_x;       /**< @brief Output precision for decision variables. */
-  int precision_f;       /**< @brief Output precision for function values. */
-  void *data;            /**< @brief Void pointer that can be used to point to data specific to an observer. */
+  int is_active;             /**< @brief Whether the observer is active (the logger will log some output). */
+  char *result_folder;       /**< @brief Name of the result folder. */
+  char *algorithm_name;      /**< @brief Name of the algorithm to be used in logger output. */
+  char *algorithm_info;      /**< @brief Additional information on the algorithm to be used in logger output. */
+  size_t number_target_triggers;
+                             /**< @brief The number of targets between each 10**i and 10**(i+1). */
+  double target_precision;   /**< @brief The minimal precision used for targets. */
+  size_t number_evaluation_triggers;
+                             /**< @brief The number of triggers between each 10**i and 10**(i+1) evaluation number. */
+  char *base_evaluation_triggers;
+                             /**< @brief The "base evaluations" used to evaluations that trigger logging. */
+  int precision_x;           /**< @brief Output precision for decision variables. */
+  int precision_f;           /**< @brief Output precision for function values. */
+  void *data;                /**< @brief Void pointer that can be used to point to data specific to an observer. */
 
   coco_data_free_function_t data_free_function;                 /**< @brief  The function for freeing this
                                                                 observer. */
