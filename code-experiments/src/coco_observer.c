@@ -81,12 +81,15 @@ static coco_observer_targets_t *coco_observer_targets(const size_t number_of_tar
  *
  * @note Takes into account also the negative case and the almost-zero case (given_value smaller than the
  * minimal precision).
+ *
+ * @return 1 if the given_value has hit a new target and 0 otherwise.
  */
 static int coco_observer_targets_trigger(coco_observer_targets_t *targets, const double given_value) {
 
   int update_performed = 0;
   const double number_of_targets_double = (double) (long) targets->number_of_targets;
-  int last_exponent = targets->exponent;
+  int last_exponent;
+  int current_exponent, adjusted_exponent;
   double verified_value = given_value;
   int sign = 1;
 
@@ -95,22 +98,36 @@ static int coco_observer_targets_trigger(coco_observer_targets_t *targets, const
   /* Handle the almost zero case */
   if (fabs(given_value) < targets->precision) {
     verified_value = targets->precision;
+    sign = 0;
   }
-  /* Handle the negative case larger than -targets->minimal_precision */
+  /* Handle the negative case when < -precision */
   else if (given_value < 0) {
     verified_value = -given_value;
     sign = -1;
   }
 
+  last_exponent = targets->exponent;
   /* If this is the first time the update was called, set the last_exponent to some value greater than the
    * current exponent */
   if (last_exponent == INT_MAX) {
-    last_exponent = (int) (ceil(log10(verified_value) * number_of_targets_double)) + sign;
+    last_exponent = (int) (ceil(log10(verified_value) * number_of_targets_double)) + 1;
   }
-  targets->exponent = (int) (ceil(log10(verified_value) * number_of_targets_double));
 
-  if (targets->exponent != last_exponent) {
-    targets->value = pow(10, (double) targets->exponent / number_of_targets_double) * sign;
+  if (sign >= 0)
+    current_exponent = (int) (ceil(log10(verified_value) * number_of_targets_double));
+  else
+    current_exponent = (int) (floor(log10(verified_value) * number_of_targets_double));
+  adjusted_exponent = current_exponent;
+
+  /* Adjust the current_exponent so that the exponents are always diminishing in value */
+  if (sign < 0) {
+    adjusted_exponent = 2 * (int) (ceil(log10(targets->precision) * number_of_targets_double))
+        - number_of_targets_double - current_exponent;
+  }
+
+  if (adjusted_exponent < last_exponent) {
+    targets->exponent = adjusted_exponent;
+    targets->value = pow(10, (double) current_exponent / number_of_targets_double) * sign;
     update_performed = 1;
   }
 

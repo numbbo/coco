@@ -508,7 +508,7 @@ static int coco_options_read_size_t(const char *options, const char *name, size_
  * @return The number of successful assignments.
  */
 static int coco_options_read_double(const char *options, const char *name, double *pointer) {
-  return coco_options_read(options, name, "%f", pointer);
+  return coco_options_read(options, name, "%lf", pointer);
 }
 
 /**
