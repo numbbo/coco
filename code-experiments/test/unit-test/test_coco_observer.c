@@ -31,10 +31,90 @@ static void test_coco_observer_evaluation_to_log(void **state) {
   (void)state; /* unused */
 }
 
+static void test_coco_observer_targets_trigger(void **state) {
+
+  coco_observer_targets_t *targets = coco_observer_targets(10, 1e-8);
+  int update;
+
+  update = coco_observer_targets_trigger(targets, 12);
+  assert(update);
+  assert(targets->value >= 12);
+
+  update = coco_observer_targets_trigger(targets, 10);
+  assert(update);
+  assert(targets->value >= 10);
+
+  update = coco_observer_targets_trigger(targets, 2);
+  assert(update);
+  assert(targets->value >= 2);
+
+  update = coco_observer_targets_trigger(targets, 1.2);
+  assert(update);
+  assert(targets->value >= 1.2);
+
+  update = coco_observer_targets_trigger(targets, 0.12);
+  assert(update);
+  assert(targets->value >= 0.12);
+
+  update = coco_observer_targets_trigger(targets, 10);
+  assert(!update);
+
+  update = coco_observer_targets_trigger(targets, 2);
+  assert(!update);
+
+  update = coco_observer_targets_trigger(targets, 0.000012);
+  assert(update);
+  assert(targets->value >= 0.000012);
+
+  update = coco_observer_targets_trigger(targets, 12);
+  assert(!update);
+
+  update = coco_observer_targets_trigger(targets, 1e-8);
+  assert(update);
+  assert(targets->value >= 1e-8);
+
+  update = coco_observer_targets_trigger(targets, 1e-9);
+  assert(!update);
+
+  update = coco_observer_targets_trigger(targets, -1.2e-8);
+  assert(update);
+  assert(targets->value >= -1.2e-8);
+
+  update = coco_observer_targets_trigger(targets, -1.2e-7);
+  assert(update);
+  assert(targets->value >= -1.2e-7);
+
+  update = coco_observer_targets_trigger(targets, 2);
+  assert(!update);
+
+  update = coco_observer_targets_trigger(targets, -1200);
+  assert(update);
+  assert(targets->value >= -1200);
+
+  coco_free_memory(targets);
+
+  targets = coco_observer_targets(10, 1e-8);
+  update = coco_observer_targets_trigger(targets, 1e-9);
+  assert(update);
+  update = coco_observer_targets_trigger(targets, -1.2e-8);
+  assert(update);
+  update = coco_observer_targets_trigger(targets, -1.2e-7);
+  assert(update);
+  coco_free_memory(targets);
+
+  targets = coco_observer_targets(10, 1e-8);
+  update = coco_observer_targets_trigger(targets, -1.2e-7);
+  assert(update);
+  coco_free_memory(targets);
+
+  (void)state; /* unused */
+}
+
 static int test_all_coco_observer(void) {
 
   const struct CMUnitTest tests[] = {
-      cmocka_unit_test(test_coco_observer_evaluation_to_log)
+      cmocka_unit_test(test_coco_observer_evaluation_to_log),
+      cmocka_unit_test(test_coco_observer_targets_trigger)
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);
