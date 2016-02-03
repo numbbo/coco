@@ -9,12 +9,6 @@
 #include "coco_utilities.c"
 #include "mo_utilities.c"
 
-/** @brief Number of implemented indicators */
-#define OBSERVER_BIOBJ_NUMBER_OF_INDICATORS 1
-
-/** @brief Names of implemented indicators */
-const char *observer_biobj_indicators[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS] = { "hyp" };
-
 /** @brief Enum for denoting the way in which the nondominated solutions are logged. */
 typedef enum {
   LOG_NONDOM_NONE, LOG_NONDOM_FINAL, LOG_NONDOM_ALL
@@ -45,15 +39,15 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *p
  * @brief Initializes the bi-objective observer.
  *
  * Possible options:
- * - log_nondominated : none (don't log nondominated solutions)
- * - log_nondominated : final (log only the final nondominated solutions)
- * - log_nondominated : all (log every solution that is nondominated at creation time; default value)
- * - log_decision_variables : none (don't output decision variables)
- * - log_decision_variables : log_dim (output decision variables only for dimensions lower or equal to 5;
+ * - log_nondominated: none (don't log nondominated solutions)
+ * - log_nondominated: final (log only the final nondominated solutions)
+ * - log_nondominated: all (log every solution that is nondominated at creation time; default value)
+ * - log_decision_variables: none (don't output decision variables)
+ * - log_decision_variables: log_dim (output decision variables only for dimensions lower or equal to 5;
  * default value)
- * - log_decision_variables : all (output all decision variables)
- * - compute_indicators : 0 / 1 (whether to compute and output performance indicators; default value is 1)
- * - produce_all_data: 0 / 1 (whether to produce all data; if set to 1, overwrites other options and is
+ * - log_decision_variables: all (output all decision variables)
+ * - compute_indicators: 0 / 1 (whether to compute and output performance indicators; default value is 1)
+ * - produce_all_data:0 / 1 (whether to produce all data; if set to 1, overwrites other options and is
  * equivalent to setting log_nondominated to all, log_decision_variables to log_dim and compute_indicators
  * to 1; if set to 0, it does not change the values of other options; default value is 0)
  */
@@ -87,9 +81,9 @@ static void observer_biobj(coco_observer_t *observer, const char *options) {
     observer_biobj->produce_all_data = 0;
 
   if (observer_biobj->produce_all_data) {
-    observer_biobj->log_vars_mode = LOG_VARS_LOW_DIM;
     observer_biobj->compute_indicators = 1;
     observer_biobj->log_nondom_mode = LOG_NONDOM_ALL;
+    observer_biobj->log_vars_mode = LOG_VARS_LOW_DIM;
   }
 
   if (observer_biobj->compute_indicators) {
