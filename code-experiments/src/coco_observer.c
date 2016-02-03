@@ -381,7 +381,7 @@ void coco_observer_free(coco_observer_t *observer) {
  * - "number_evaluation_triggers: VALUE" defines the number of evaluations to be logged between each 10**i
  * and 10**(i+1). The default value is 20.
  * - "base_evaluation_triggers: VALUES" defines the base evaluations used to produce an additional
- * evaluation number-based logging. The numbers of evaluations that trigger logging are every
+ * evaluation-based logging. The numbers of evaluations that trigger logging are every
  * base_evaluation * dimension * (10**i). For example, if base_evaluation_triggers = "1,2,5", the logger will
  * be triggered by evaluations dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2,
  * 100*dim*5, ... The default value is "1,2,5".
