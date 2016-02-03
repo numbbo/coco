@@ -9,6 +9,8 @@
 
 #include "coco.h"
 
+static size_t *coco_allocate_vector_size_t(const size_t number_of_elements);
+
 /**
  * @brief Creates a duplicate copy of string and returns a pointer to it.
  *
@@ -205,3 +207,211 @@ static char *coco_remove_from_string(const char *string, const char *from, const
   return result;
 }
 
+
+/**
+ * @brief Returns the numbers defined by the ranges.
+ *
+ * Reads ranges from a string of positive ranges separated by commas. For example: "-3,5-6,8-". Returns the
+ * numbers that are defined by the ranges if min and max are used as their extremes. If the ranges with open
+ * beginning/end are not allowed, use 0 as min/max. The returned string has an appended 0 to mark its end.
+ * A maximum of max_count values is returned. If there is a problem with one of the ranges, the parsing stops
+ * and the current result is returned. The memory of the returned object needs to be freed by the caller.
+ */
+static size_t *coco_string_parse_ranges(const char *string,
+                                        const size_t min,
+                                        const size_t max,
+                                        const char *name,
+                                        const size_t max_count) {
+
+  char *ptr, *dash = NULL;
+  char **ranges, **numbers;
+  size_t i, j, count;
+  size_t num[2];
+
+  size_t *result;
+  size_t i_result = 0;
+
+  char *str = coco_strdup(string);
+
+  /* Check for empty string */
+  if ((str == NULL) || (strlen(str) == 0)) {
+    coco_warning("coco_string_parse_ranges(): cannot parse empty ranges");
+    return NULL;
+  }
+
+  ptr = str;
+  /* Check for disallowed characters */
+  while (*ptr != '\0') {
+    if ((*ptr != '-') && (*ptr != ',') && !isdigit((unsigned char )*ptr)) {
+      coco_warning("coco_string_parse_ranges(): problem parsing '%s' - cannot parse ranges with '%c'", str,
+          *ptr);
+      return NULL;
+    } else
+      ptr++;
+  }
+
+  /* Check for incorrect boundaries */
+  if ((max > 0) && (min > max)) {
+    coco_warning("coco_string_parse_ranges(): incorrect boundaries");
+    return NULL;
+  }
+
+  result = coco_allocate_vector_size_t(max_count + 1);
+
+  /* Split string to ranges w.r.t commas */
+  ranges = coco_string_split(str, ',');
+  coco_free_memory(str);
+
+  if (ranges) {
+    /* Go over the current range */
+    for (i = 0; *(ranges + i); i++) {
+
+      ptr = *(ranges + i);
+      /* Count the number of '-' */
+      count = 0;
+      while (*ptr != '\0') {
+        if (*ptr == '-') {
+          if (count == 0)
+            /* Remember the position of the first '-' */
+            dash = ptr;
+          count++;
+        }
+        ptr++;
+      }
+      /* Point again to the start of the range */
+      ptr = *(ranges + i);
+
+      /* Check for incorrect number of '-' */
+      if (count > 1) {
+        coco_warning("coco_string_parse_ranges(): problem parsing '%s' - too many '-'s", string);
+        /* Cleanup */
+        for (j = i; *(ranges + j); j++)
+          coco_free_memory(*(ranges + j));
+        coco_free_memory(ranges);
+        if (i_result == 0) {
+          coco_free_memory(result);
+          return NULL;
+        }
+        result[i_result] = 0;
+        return result;
+      } else if (count == 0) {
+        /* Range is in the format: n (no range) */
+        num[0] = (size_t) strtol(ptr, NULL, 10);
+        num[1] = num[0];
+      } else {
+        /* Range is in one of the following formats: n-m / -n / n- / - */
+
+        /* Split current range to numbers w.r.t '-' */
+        numbers = coco_string_split(ptr, '-');
+        j = 0;
+        if (numbers) {
+          /* Read the numbers */
+          for (j = 0; *(numbers + j); j++) {
+            assert(j < 2);
+            num[j] = (size_t) strtol(*(numbers + j), NULL, 10);
+            coco_free_memory(*(numbers + j));
+          }
+        }
+        coco_free_memory(numbers);
+
+        if (j == 0) {
+          /* Range is in the format - (open ends) */
+          if ((min == 0) || (max == 0)) {
+            coco_warning("coco_string_parse_ranges(): '%s' ranges cannot have an open ends; some ranges ignored", name);
+            /* Cleanup */
+            for (j = i; *(ranges + j); j++)
+              coco_free_memory(*(ranges + j));
+            coco_free_memory(ranges);
+            if (i_result == 0) {
+              coco_free_memory(result);
+              return NULL;
+            }
+            result[i_result] = 0;
+            return result;
+          }
+          num[0] = min;
+          num[1] = max;
+        } else if (j == 1) {
+          if (dash - *(ranges + i) == 0) {
+            /* Range is in the format -n */
+            if (min == 0) {
+              coco_warning("coco_string_parse_ranges(): '%s' ranges cannot have an open beginning; some ranges ignored", name);
+              /* Cleanup */
+              for (j = i; *(ranges + j); j++)
+                coco_free_memory(*(ranges + j));
+              coco_free_memory(ranges);
+              if (i_result == 0) {
+                coco_free_memory(result);
+                return NULL;
+              }
+              result[i_result] = 0;
+              return result;
+            }
+            num[1] = num[0];
+            num[0] = min;
+          } else {
+            /* Range is in the format n- */
+            if (max == 0) {
+              coco_warning("coco_string_parse_ranges(): '%s' ranges cannot have an open end; some ranges ignored", name);
+              /* Cleanup */
+              for (j = i; *(ranges + j); j++)
+                coco_free_memory(*(ranges + j));
+              coco_free_memory(ranges);
+              if (i_result == 0) {
+                coco_free_memory(result);
+                return NULL;
+              }
+              result[i_result] = 0;
+              return result;
+            }
+            num[1] = max;
+          }
+        }
+        /* if (j == 2), range is in the format n-m and there is nothing to do */
+      }
+
+      /* Make sure the boundaries are taken into account */
+      if ((min > 0) && (num[0] < min)) {
+        num[0] = min;
+        coco_warning("coco_string_parse_ranges(): '%s' ranges adjusted to be >= %lu", name, min);
+      }
+      if ((max > 0) && (num[1] > max)) {
+        num[1] = max;
+        coco_warning("coco_string_parse_ranges(): '%s' ranges adjusted to be <= %lu", name, max);
+      }
+      if (num[0] > num[1]) {
+        coco_warning("coco_string_parse_ranges(): '%s' ranges not within boundaries; some ranges ignored", name);
+        /* Cleanup */
+        for (j = i; *(ranges + j); j++)
+          coco_free_memory(*(ranges + j));
+        coco_free_memory(ranges);
+        if (i_result == 0) {
+          coco_free_memory(result);
+          return NULL;
+        }
+        result[i_result] = 0;
+        return result;
+      }
+
+      /* Write in result */
+      for (j = num[0]; j <= num[1]; j++) {
+        if (i_result > max_count - 1)
+          break;
+        result[i_result++] = j;
+      }
+
+      coco_free_memory(*(ranges + i));
+      *(ranges + i) = NULL;
+    }
+  }
+
+  coco_free_memory(ranges);
+
+  if (i_result == 0) {
+    coco_free_memory(result);
+    return NULL;
+  }
+
+  result[i_result] = 0;
+  return result;
+}
