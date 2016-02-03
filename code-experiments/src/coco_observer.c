@@ -33,10 +33,12 @@ typedef struct {
  */
 typedef struct {
 
-  size_t evaluation_trigger;  /**< @brief The next evaluation number that triggers logging. */
   size_t *base_evaluations;   /**< @brief The base evaluation numbers used to compute the actual evaluation
                                    numbers that trigger logging. */
   size_t base_count;          /**< @brief The number of base evaluations. */
+  size_t dimension;           /**< @brief Dimension used in the calculation. */
+
+  size_t evaluation_trigger;  /**< @brief The next evaluation number that triggers logging. */
   size_t base_index;          /**< @brief The next index of the base evaluations. */
   size_t exponent;            /**< @brief Exponent used for computing the next trigger. */
 
@@ -79,8 +81,8 @@ static coco_observer_targets_t *coco_observer_targets(const size_t number_of_tar
  * @brief Computes and returns whether the given value should trigger logging while also updating the state
  * of the targets.
  *
- * @note Takes into account also the negative case and the almost-zero case (given_value smaller than the
- * minimal precision).
+ * @note Takes into account also the negative case and the almost-zero case (i.e. the case when the
+ * given_value is smaller than the minimal precision).
  *
  * @return 1 if the given_value has hit a new target and 0 otherwise.
  */
@@ -117,15 +119,18 @@ static int coco_observer_targets_trigger(coco_observer_targets_t *targets, const
     current_exponent = (int) (ceil(log10(verified_value) * number_of_targets_double));
   else
     current_exponent = (int) (floor(log10(verified_value) * number_of_targets_double));
-  adjusted_exponent = current_exponent;
 
-  /* Adjust the current_exponent so that the exponents are always diminishing in value */
+  /* Compute the adjusted_exponent in such a way, that it is always diminishing in value. The adjusted
+   * exponent can only be used to verify if a new target has been hit. To compute the actual target
+   * value, the current_exponent needs to be used. */
+  adjusted_exponent = current_exponent;
   if (sign < 0) {
     adjusted_exponent = 2 * (int) (ceil(log10(targets->precision) * number_of_targets_double))
-        - number_of_targets_double - current_exponent;
+        - (int) targets->number_of_targets - current_exponent;
   }
 
   if (adjusted_exponent < last_exponent) {
+    /* Update the target information */
     targets->exponent = adjusted_exponent;
     targets->value = pow(10, (double) current_exponent / number_of_targets_double) * sign;
     update_performed = 1;
@@ -150,16 +155,18 @@ static int coco_observer_targets_trigger(coco_observer_targets_t *targets, const
  * the actual triggers. For example, if base_evaluations = "1,2,5", the logger will be triggered by
  * evaluations 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
  */
-static coco_observer_evaluations_t *coco_observer_evaluations(const char *base_evaluations) {
+static coco_observer_evaluations_t *coco_observer_evaluations(const char *base_evaluations,
+                                                              const size_t dimension) {
 
   coco_observer_evaluations_t *evaluations = (coco_observer_evaluations_t *) coco_allocate_memory(
       sizeof(*evaluations));
-  evaluations->evaluation_trigger = 1;
-  evaluations->base_index = 0;
   evaluations->base_evaluations = coco_string_parse_ranges(base_evaluations, 1, 0, "base_evaluations",
       COCO_MAX_EVALS_TO_LOG);
+  evaluations->dimension = dimension;
   evaluations->base_count = coco_count_numbers(evaluations->base_evaluations, COCO_MAX_EVALS_TO_LOG,
       "base_evaluations");
+  evaluations->evaluation_trigger = 1;
+  evaluations->base_index = 0;
   evaluations->exponent = 0;
 
   return evaluations;
@@ -170,8 +177,9 @@ static coco_observer_evaluations_t *coco_observer_evaluations(const char *base_e
  * the state of the evaluation trigger.
  */
 static int coco_observer_evaluations_trigger(coco_observer_evaluations_t *evaluations,
-                                             const size_t evaluation_number,
-                                             const size_t dimension) {
+                                             const size_t evaluation_number) {
+
+  assert(evaluations != NULL);
 
   if (evaluation_number == evaluations->evaluation_trigger) {
     /* Compute the next trigger */
@@ -184,7 +192,8 @@ static int coco_observer_evaluations_trigger(coco_observer_evaluations_t *evalua
       }
     }
     evaluations->evaluation_trigger = (size_t) (pow(10, (double) evaluations->exponent)
-        * (double) (long) dimension * (double) (long) evaluations->base_evaluations[evaluations->base_index]);
+        * (double) (long) evaluations->dimension
+        * (double) (long) evaluations->base_evaluations[evaluations->base_index]);
     return 1;
   }
   return 0;
@@ -209,7 +218,7 @@ static void coco_observer_evaluations_free(coco_observer_evaluations_t *evaluati
  * For example, if logger_biobj_always_log[3] = {1, 2, 5}, the logger will always output evaluations
  * 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, 100*dim*5, ...
  */
-static const size_t coco_observer_always_log[3] = {1, 2, 5};
+static const size_t deprecated__coco_observer_always_log[3] = {1, 2, 5};
 
 /**
  * @brief Determines whether the evaluation should be logged.
@@ -218,18 +227,18 @@ static const size_t coco_observer_always_log[3] = {1, 2, 5};
  * otherwise (computed from coco_observer_always_log). For example, if coco_observer_always_log = {1, 2, 5},
  * returns true for 1, dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2, ...
  */
-static int coco_observer_evaluation_to_log(const size_t evaluation_number, const size_t dimension) {
+static int deprecated__coco_observer_evaluation_to_log(const size_t evaluation_number, const size_t dimension) {
 
   size_t i;
   double j = 0, factor = 10;
-  size_t count = sizeof(coco_observer_always_log) / sizeof(size_t);
+  size_t count = sizeof(deprecated__coco_observer_always_log) / sizeof(size_t);
 
   if (evaluation_number == 1)
     return 1;
 
   while ((size_t) pow(factor, j) * dimension <= evaluation_number) {
     for (i = 0; i < count; i++) {
-      if (evaluation_number == (size_t) pow(factor, j) * dimension * coco_observer_always_log[i])
+      if (evaluation_number == (size_t) pow(factor, j) * dimension * deprecated__coco_observer_always_log[i])
         return 1;
     }
     j++;

@@ -436,7 +436,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   indicator->overall_value = 0;
 
   indicator->targets = coco_observer_targets(observer->number_of_targets, observer->target_precision);
-  indicator->evaluations = coco_observer_evaluations(observer->base_evaluations);
+  indicator->evaluations = coco_observer_evaluations(observer->base_evaluations, problem->number_of_variables);
 
   /* Prepare the info file */
   path_name = coco_allocate_string(COCO_PATH_MAX);
@@ -671,7 +671,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
 
       /* Log to the tdat file if the number of evaluations matches one of the predefined numbers */
       indicator->evaluation_logged = coco_observer_evaluations_trigger(indicator->evaluations,
-          logger->number_of_evaluations, logger->number_of_variables);
+          logger->number_of_evaluations);
       if (indicator->evaluation_logged) {
         fprintf(indicator->tdat_file, "%lu\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
             indicator->overall_value);
