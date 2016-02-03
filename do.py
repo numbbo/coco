@@ -321,7 +321,7 @@ def build_matlab():
     """Builds MATLAB example in build/matlab/ but not the one in examples/."""
     
     global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/matlab/coco.c', release)
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_matlab.c'],  'code-experiments/build/matlab/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
