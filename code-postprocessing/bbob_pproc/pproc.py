@@ -29,7 +29,7 @@ from pdb import set_trace
 import numpy, numpy as np
 import matplotlib.pyplot as plt
 from . import genericsettings, findfiles, toolsstats, toolsdivers
-from .readalign import split, alignData, HMultiReader, VMultiReader
+from .readalign import split, alignData, HMultiReader, VMultiReader, VMultiReaderNew, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers
 
@@ -595,6 +595,7 @@ class DataSet():
         nbRuns
         pickle
         plot
+        plot_funvals
         precision
         readfinalFminusFtarget
         readmaxevals
@@ -770,22 +771,29 @@ class DataSet():
             self.maxevals = maxevals
             self.finalfunvals = finalfunvals
 
-        if not self.isBiobjective():        
-            dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
+        dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
+                         for i in self.dataFiles)
+                             
+        if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
+            warnings.warn('Missing tdat files. Please rerun the experiments.')
+            dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                              for i in self.dataFiles)
+            data = VMultiReaderNew(split(dataFiles), self.isBiobjective())
+        else:
             data = VMultiReader(split(dataFiles), self.isBiobjective())
-            if verbose:
-                print ("Processing %s: %d/%d trials found."
-                       % (dataFiles, len(data), len(self.instancenumbers)))
-            (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
-            self.funvals = adata
-            try:
-                for i in range(len(maxevals)):
-                    self.maxevals[i] = max(maxevals[i], self.maxevals[i])
-                    self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
-            except AttributeError:
-                self.maxevals = maxevals
-                self.finalfunvals = finalfunvals
+
+        if verbose:
+            print ("Processing %s: %d/%d trials found."
+                   % (dataFiles, len(data), len(self.instancenumbers)))
+        (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
+        self.funvals = adata
+        try:
+            for i in range(len(maxevals)):
+                self.maxevals[i] = max(maxevals[i], self.maxevals[i])
+                self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
+        except AttributeError:
+            self.maxevals = maxevals
+            self.finalfunvals = finalfunvals
         #TODO: take for maxevals the max for each trial, for finalfunvals the min...
 
         #extensions = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
@@ -841,10 +849,11 @@ class DataSet():
         """attributes `target`, `evals`, and `ert` are truncated to target values not 
         much smaller than defined in attribute `precision` (typically ``1e-8``). 
         Attribute `maxevals` is recomputed for columns that reach the final target
-        precision. 
+        precision. Note that in the bi-objective case the attribute `precision`
+        does not exist.
         
         """
-        if isinstance(genericsettings.current_testbed, genericsettings.GECCOBBOBTestbed):
+        if isinstance(genericsettings.getCurrentTestbed(self.isBiobjective()), genericsettings.GECCOBBOBTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
             while i > 1 and not self.isBiobjective() and self.evals[i-1][0] <= self.precision:
@@ -883,6 +892,7 @@ class DataSet():
         
         instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))        
         
+        expectedNumberOfInstances = 10 if self.isBiobjective() else 15        
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
             for i in set(self.instancenumbers):
@@ -897,15 +907,17 @@ class DataSet():
                                 str(self.instancenumbers) + 
                                 ' (f' + str(self.funcId) + ', ' + str(self.dim)
                                 + 'D)')
-        elif len(self.instancenumbers) < 15:
+        elif len(self.instancenumbers) < expectedNumberOfInstances:
             is_consistent = False
-            warnings.warn('  less than 15 instances in ' + 
+            warnings.warn('  less than ' + str(expectedNumberOfInstances) +
+                                ' instances in ' + 
                                 str(self.instancenumbers) + 
                                 ' (f' + str(self.funcId) + ', ' +
                                 str(self.dim) + 'D)')
-        elif len(self.instancenumbers) > 15:
+        elif len(self.instancenumbers) > expectedNumberOfInstances:
             is_consistent = False
-            warnings.warn('  more than 15 instances in ' + 
+            warnings.warn('  more than ' + str(expectedNumberOfInstances) + 
+                                ' instances in ' + 
                                 str(self.instancenumbers)+ 
                                 ' (f' + str(self.funcId) + ', ' + 
                                 str(self.dim) + 'D)')
@@ -913,9 +925,11 @@ class DataSet():
                 and (instancedict != genericsettings.instancesOfInterest2010)
                 and (instancedict != genericsettings.instancesOfInterest2012)
                 and (instancedict != genericsettings.instancesOfInterest2013)
-                and (instancedict != genericsettings.instancesOfInterest2015)):
+                and (instancedict != genericsettings.instancesOfInterest2015)
+                and (instancedict != genericsettings.instancesOfInterest2016)
+                and (instancedict != genericsettings.instancesOfInterestBiobj2016)):
             is_consistent = False
-            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, or 2015')
+            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, 2015 or 2016')
         return is_consistent
             
     def computeERTfromEvals(self):
@@ -1329,14 +1343,34 @@ class DataSet():
 
         return list(tmp[i][1:] for i in targets)
 
-    def plot(self):
-        for evals in self.evals[:, 1:].transpose(): # loop over the rows of the transposed array
-            idx = self.evals[:, 0] > 0
+    def plot_funvals(self, **kwargs):
+        """plot data of `funvals` attribute, versatile"""
+        kwargs.setdefault('clip_on', False)
+        for funvals in self.funvals.T[1:]:  # loop over the rows of the transposed array
+            idx = isfinite(funvals > 1e-19)
+            plt.loglog(self.funvals[idx, 0], funvals[idx], **kwargs)
+            plt.ylabel('target $\Delta f$ value')
+            plt.xlabel('number of function evaluations')
+            plt.xlim(1, max(self.maxevals))
+        return plt.gca()
+    def plot(self, **kwargs):
+        """plot data from `evals` attribute.
+
+        `**kwargs` is passed to `matplolib.loglog`. """
+        kwargs.setdefault('clip_on', False)
+        for evals in self.evals.T[1:]:  # loop over the rows of the transposed array
+            idx = np.logical_and(self.evals[:, 0] > 1e-19, isfinite(evals))
             # plt.semilogx(self.evals[idx, 0], evals[idx])
-            plt.loglog(self.evals[idx, 0], evals[idx])
-            plt.gca().invert_xaxis()
-            plt.xlabel('target $\Delta f$ value')
-            plt.ylabel('number of function evaluations')
+            if 1 < 3:
+                plt.loglog(evals[idx], self.evals[idx, 0], **kwargs)
+                plt.ylabel('target $\Delta f$ value')
+                plt.xlabel('number of function evaluations')
+                plt.xlim(1, max(self.maxevals))
+            else:  # old version
+                plt.loglog(self.evals[idx, 0], evals[idx])
+                plt.gca().invert_xaxis()
+                plt.xlabel('target $\Delta f$ value')
+                plt.ylabel('number of function evaluations')
         return plt.gca()
 
 
@@ -1434,14 +1468,14 @@ class DataSetList(list):
         data_consistent = True
         for ds in self:
             data_consistent = data_consistent and ds.consistency_check()
-        if data_consistent:
+        if len(self) and data_consistent:
             print("  Data consistent according to test in consistency_check() in pproc.DataSet")
             
     def processIndexFile(self, indexFile, verbose=True):
         """Reads in an index (.info?) file information on the different runs."""
 
         try:
-            f = open(indexFile)
+            f = openfile(indexFile)
             if verbose:
                 print 'Processing %s.' % indexFile
 
@@ -1483,8 +1517,9 @@ class DataSetList(list):
                         warnings.warn("    data file " + data_file_names[i])
                 warnings.warn("  This is likely to produce spurious results.")
 
-        except IOError:
-            print 'Could not open %s.' % indexFile
+        except IOError, (errno, strerror):
+            print('Could not load "%s".' % indexFile)
+            print('I/O error(%s): %s' % (errno, strerror))
 
     def append(self, o, check_data_type=False):
         """Redefines the append method to check for unicity."""
@@ -1603,6 +1638,9 @@ class DataSetList(list):
     def dictByNoise(self):
         """Returns a dictionary splitting noisy and non-noisy entries."""
         sorted = {}
+        
+        # For bi-objective case we are not showing the noiselessall graph because 
+        # it is always equal to all graph.
         if not self.isBiobjective():
             for i in self:
                 if i.funcId in range(1, 56):

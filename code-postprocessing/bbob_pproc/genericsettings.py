@@ -69,6 +69,9 @@ instancesOfInterest2013 = {1:1, 2:1, 3:1, 4:1, 5:1, 31:1, 32:1, 33:1, 34:1,
                        35:1, 36:1, 37:1, 38:1, 39:1, 40:1}  # 2013 instances
 instancesOfInterest2015 = {1:1, 2:1, 3:1, 4:1, 5:1, 41:1, 42:1, 43:1, 44:1,
                        45:1, 46:1, 47:1, 48:1, 49:1, 50:1}  # 2015 instances
+instancesOfInterest2016 = {1:1, 2:1, 3:1, 4:1, 5:1, 51:1, 52:1, 53:1, 54:1,
+                       55:1, 56:1, 57:1, 58:1, 59:1, 60:1}  # 2016 instances
+instancesOfInterestBiobj2016 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1}  # bi-objective 2016 instances
 instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 41:1, 42:1, 43:1, 44:1,
                        45:1, 46:1, 47:1, 48:1, 49:1, 50:1}  # 2015 instances; only for consistency checking
 
@@ -244,6 +247,9 @@ longoptlist = ["help", "output-dir=", "noisy", "noise-free",
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
 # and "sca-only" only affects rungeneric2
 
+def getBenchmarksShortInfos(isBiobjective):
+    return 'biobj-benchmarkshortinfos.txt' if isBiobjective else 'benchmarkshortinfos.txt'
+    
 def getFigFormats():
     if in_a_hurry:
         fig_formats = ('pdf', 'svg') if generate_svg_files else ('pdf',)
@@ -284,10 +290,34 @@ class GECCOBBOBTestbed(Testbed):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
         # only the short info, how to deal with both infos? 
-        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'  # 'benchmarkshortinfos.txt'
+        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.short_names = {}
         try:
-            info_list = open(os.path.join(os.path.dirname(__file__), 'benchmarkshortinfos.txt'), 'r').read().split('\n')
+            info_list = open(os.path.join(os.path.dirname(__file__), 
+                             getBenchmarksShortInfos(False)), 
+                             'r').read().split('\n')
+            info_dict = {}
+            for info in info_list:
+                key_val = info.split(' ', 1)
+                if len(key_val) > 1:
+                    info_dict[int(key_val[0])] = key_val[1]
+            self.short_names = info_dict
+        except:
+            warnings.warn('benchmark infos not found')
+
+class GECCOBiobjBBOBTestbed(Testbed):
+    """Testbed used in the GECCO biobjective BBOB workshop 2016.
+    """
+    def __init__(self):
+        # TODO: should become a function, as low_budget is a display setting
+        # not a testbed setting
+        # only the short info, how to deal with both infos? 
+        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
+        self.short_names = {}
+        try:
+            info_list = open(os.path.join(os.path.dirname(__file__), 
+                                          getBenchmarksShortInfos(True)), 
+                                          'r').read().split('\n')
             info_dict = {}
             for info in info_list:
                 key_val = info.split(' ', 1)
@@ -300,6 +330,18 @@ class GECCOBBOBTestbed(Testbed):
 class GECCOBBOBNoisefreeTestbed(GECCOBBOBTestbed):
     __doc__ = GECCOBBOBTestbed.__doc__
 
+class GECCOBiobjBBOBNoisefreeTestbed(GECCOBiobjBBOBTestbed):
+    __doc__ = GECCOBiobjBBOBTestbed.__doc__
+
 # TODO: this needs to be set somewhere, e.g. in rungeneric*
 # or even better by investigating in the data attributes
-current_testbed = GECCOBBOBNoisefreeTestbed() 
+
+current_testbed = None
+def getCurrentTestbed(isBiobjective):
+    
+    global current_testbed
+
+    if not current_testbed:
+        current_testbed = GECCOBiobjBBOBNoisefreeTestbed() if isBiobjective else GECCOBBOBNoisefreeTestbed()
+        
+    return current_testbed

@@ -189,12 +189,11 @@ class BestAlgSet():
         setalgs = set(resalgs)
         dictFunValsNoFail = {}
         for alg in setalgs:
-            if not dictAlg[alg].isBiobjective():
-                for curline in dictAlg[alg].funvals:
-                    if (curline[1:] == dictAlg[alg].finalfunvals).any():
-                        # only works because the funvals are monotonous
-                        break
-                dictFunValsNoFail[alg] = curline.copy()
+            for curline in dictAlg[alg].funvals:
+                if (curline[1:] == dictAlg[alg].finalfunvals).any():
+                    # only works because the funvals are monotonous
+                    break
+            dictFunValsNoFail[alg] = curline.copy()
 
         self.evals = resDataSet
         # evals is not a np array but a list of arrays because they may not
@@ -463,12 +462,17 @@ def loadBestBiobj2016():
     global bestbiobjalgentries2016
     # global statement necessary to change the variable bestalg.bestbiobjalgentries2016
 
+    if bestbiobjalgentries2016:
+        return
+
     print "Loading best bi-objective algorithm data from BBOB-2016...",  
     sys.stdout.flush()
 
     bestalgfilepath = os.path.split(__file__)[0]
-    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle.gz')
-    fid = gzip.open(picklefilename, 'r')
+    #picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle.gz')
+    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle')
+    #fid = gzip.open(picklefilename, 'r')
+    fid = open(picklefilename, 'r')
     bestbiobjalgentries2016 = pickle.load(fid)
     fid.close()
     print_done()

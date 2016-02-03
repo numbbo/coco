@@ -292,7 +292,7 @@ def main(argv=None):
         dsList = DataSetList(filelist, genericsettings.verbose)
         
         if not dsList:
-            raise Usage("Nothing to do: post-processing stopped.")
+            raise Usage("Nothing to do: post-processing stopped. For more information check the messages above.")
 
         if genericsettings.isNoisy and not genericsettings.isNoiseFree:
             dsList = dsList.dictByNoise().get('nzall', DataSetList())
@@ -405,7 +405,9 @@ def main(argv=None):
 
             if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
-                pprldmany.all_single_functions(dictAlg, None,
+                pprldmany.all_single_functions(dictAlg, 
+                                               dsList.isBiobjective(),
+                                               None,
                                                outputdir,
                                                genericsettings.verbose)
             print_done()

@@ -96,6 +96,12 @@ def next_dimension(dim):
         return 2
     return 2 * dim
 
+def addImage(imageName, addLink):
+    if (addLink):
+        return '<a href="file:%s"><IMG SRC="%s"></a>' % (2 * (imageName,))
+    else:
+        return '<IMG SRC="%s">' % imageName
+
 def save_single_functions_html(filename, algname='', extension='svg',
                                add_to_names = '', algorithmCount = AlgorithmCount.NON_SPECIFIED,
                                values_of_interest = []):
@@ -106,16 +112,16 @@ def save_single_functions_html(filename, algname='', extension='svg',
         f.write(html_header % (header_title.strip().replace(' ', ', '), algname, imageWarning))
             
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
+        addLinkForNextDim = add_to_names.endswith('D')
         if algorithmCount is AlgorithmCount.ONE:
             headerERT = 'Expected number of <i>f</i>-evaluations to reach target'
             f.write("<H2> %s </H2>\n" % headerERT)
-            if add_to_names.endswith('D'):
+            if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
                 f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
             for ifun in range(1, 25):
-                f.write('<IMG SRC="ppfigdim_f%03d' % (ifun)
-                        + add_to_names + '.%s">' % (extension))
-            if add_to_names.endswith('D'):
+                f.write(addImage('ppfigdim_f%03d%s.%s' % (ifun, add_to_names, extension), not addLinkForNextDim))
+            if addLinkForNextDim:
                 f.write('"\n</A>\n')
 
             key = 'bbobppfigdimlegendrlbased' if genericsettings.runlength_based_targets else 'bbobppfigdimlegendfixed'
@@ -145,7 +151,7 @@ def save_single_functions_html(filename, algname='', extension='svg',
                     f.write('<p><b>%s in %d-D</b></p>' % (typeValue, dimension))
                     f.write('<div>')
                     for name in names:
-                        f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, typeKey, extension))
+                        f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
                     f.write('</div>')
             
             key = 'bbobpprldistrlegendrlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendfixed'
@@ -154,7 +160,7 @@ def save_single_functions_html(filename, algname='', extension='svg',
             headerERTLoss = 'ERT loss ratios'
             f.write("<H2> %s </H2>\n" % headerERTLoss)
             for dimension in dimensions:
-                f.write('<IMG SRC="pplogloss_%02dD_noiselessall.%s">' % (dimension, extension))
+                f.write(addImage('pplogloss_%02dD_noiselessall.%s' % (dimension, extension), True))
             f.write("\n<!--tables-->\n")
             f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption##'))
         
@@ -169,7 +175,7 @@ def save_single_functions_html(filename, algname='', extension='svg',
                 f.write('<p><b>%s in %s</b></p>' % (typeValue, '-D and '.join(str(x) for x in dimensions) + '-D'))
                 f.write('<div>')
                 for dimension in dimensions:
-                    f.write('<IMG SRC="pplogloss_%02dD_%s.%s">' % (dimension, typeKey, extension))
+                    f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
                 f.write('</div>')
                     
             f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption##'))
@@ -178,19 +184,17 @@ def save_single_functions_html(filename, algname='', extension='svg',
             headerERT = 'Scaling of ERT with dimension'
             f.write("\n<H2> %s </H2>\n" % headerERT)
             for ifun in range(1, 25):
-                f.write('<IMG SRC="ppfigs_f%03d' % (ifun)
-                        + add_to_names + '.%s">' % (extension))
+                f.write(addImage('ppfigs_f%03d%s.%s' % (ifun, add_to_names, extension), True))
             f.write(captionStringFormat % '##bbobppfigslegend##')
         
             headerERT = 'Scatter plots per function'
             f.write("\n<H2> %s </H2>\n" % headerERT)
-            if add_to_names.endswith('D'):
+            if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
                 f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
             for ifun in range(1, 25):
-                f.write('<IMG SRC="ppscatter_f%03d' % (ifun)
-                        + add_to_names + '.%s">' % (extension))
-            if add_to_names.endswith('D'):
+                f.write(addImage('ppscatter_f%03d%s.%s' % (ifun, add_to_names, extension), not addLinkForNextDim))
+            if addLinkForNextDim:
                 f.write('"\n</A>\n')
     
             f.write(captionStringFormat % '##bbobppscatterlegend##')
@@ -212,7 +216,7 @@ def save_single_functions_html(filename, algname='', extension='svg',
                     f.write('<p><b>%s in %d-D</b></p>' % (typeValue, dimension))
                     f.write('<div>')
                     for name in names:
-                        f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, typeKey, extension))
+                        f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
                     f.write('</div>')
 
             key = 'bbobpprldistrlegendtworlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendtwofixed'
@@ -226,13 +230,12 @@ def save_single_functions_html(filename, algname='', extension='svg',
         elif algorithmCount is AlgorithmCount.MANY:
             headerERT = 'Scaling of ERT with dimension'
             f.write("\n<H2> %s </H2>\n" % headerERT)
-            if add_to_names.endswith('D'):
+            if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
                 f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
             for ifun in range(1, 25):
-                f.write('<IMG SRC="ppfigs_f%03d' % (ifun)
-                        + add_to_names + '.%s">' % (extension))
-            if add_to_names.endswith('D'):
+                f.write(addImage('ppfigs_f%03d%s.%s' % (ifun, add_to_names, extension), not addLinkForNextDim))
+            if addLinkForNextDim:
                 f.write('"\n</A>\n')
             
             f.write(captionStringFormat % '##bbobppfigslegend##')
@@ -246,13 +249,12 @@ def save_single_functions_html(filename, algname='', extension='svg',
         elif algorithmCount is AlgorithmCount.NON_SPECIFIED:
             headerERT = 'Scaling of ERT with dimension'
             f.write("\n<H2> %s </H2>\n" % headerERT)
-            if add_to_names.endswith('D'):
+            if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
                 f.write('<A HREF="%s">\n' % (name + name_for_click  + '.html'))
             for ifun in range(1, 25):
-                f.write('<IMG SRC="'+ name + '_f%03d' % (ifun)
-                        + add_to_names + '.%s">' % (extension))
-            if add_to_names.endswith('D'):
+                f.write(addImage('%s_f%03d%s.%s' % (name, ifun, add_to_names, extension), not addLinkForNextDim))
+            if addLinkForNextDim:
                 f.write('"\n</A>\n')
 
         f.write("\n</BODY>\n</HTML>")
@@ -273,7 +275,7 @@ def write_ECDF(f, dimension, extension, captionStringFormat):
     for typeKey, typeValue in types.iteritems():
         f.write('<p><b>%s</b></p>' % typeValue)
         for name in names:
-            f.write('<IMG SRC="%s_%02dD_%s.%s">' % (name, dimension, typeKey, extension))
+            f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
     
     f.write(captionStringFormat % ('\n##bbobECDFslegend%d##' % dimension))
 

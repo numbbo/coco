@@ -21,7 +21,10 @@ if __name__ == "__main__":
     # Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import pproc
+try:
+    from . import pproc
+except:
+    from bbob_pproc import pproc
 
 ### Class Definitions ###
 

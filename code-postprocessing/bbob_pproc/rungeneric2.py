@@ -468,8 +468,11 @@ def main(argv=None):
 
             if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
-                pprldmany.all_single_functions(dictAlg, sortedAlgs,
-                        outputdir, genericsettings.verbose)
+                pprldmany.all_single_functions(dictAlg, 
+                                               dsList[0].isBiobjective(),
+                                               sortedAlgs,
+                                               outputdir, 
+                                               genericsettings.verbose)
             print "ECDF runlength graphs done."
 
         if genericsettings.isConv:
@@ -477,7 +480,7 @@ def main(argv=None):
 
         if genericsettings.isScatter:
             if genericsettings.runlength_based_targets:
-                ppscatter.targets = pproc.RunlengthBasedTargetValues(np.logspace(numpy.log10(0.5), numpy.log10(50), 8), dsList[0].isBiobjective())
+                ppscatter.targets = pproc.RunlengthBasedTargetValues(np.logspace(numpy.log10(0.5), numpy.log10(50), 8))
             ppscatter.main(dsList1, dsList0, outputdir,
                            verbose=genericsettings.verbose)
             prepend_to_file(os.path.join(outputdir,

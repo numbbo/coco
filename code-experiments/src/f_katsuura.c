@@ -1,3 +1,8 @@
+/**
+ * @file f_katsuura.c
+ * @brief Implementation of the Katsuura function and problem.
+ */
+
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
@@ -11,6 +16,9 @@
 #include "transform_vars_shift.c"
 #include "transform_obj_penalize.c"
 
+/**
+ * @brief Implements the Katsuura function without connections to any COCO structures.
+ */
 static double f_katsuura_raw(const double *x, const size_t number_of_variables) {
 
   size_t i, j;
@@ -23,7 +31,7 @@ static double f_katsuura_raw(const double *x, const size_t number_of_variables) 
     tmp = 0;
     for (j = 1; j < 33; ++j) {
       tmp2 = pow(2., (double) j);
-      tmp += fabs(tmp2 * x[i] - coco_round_double(tmp2 * x[i])) / tmp2;
+      tmp += fabs(tmp2 * x[i] - coco_double_round(tmp2 * x[i])) / tmp2;
     }
     tmp = 1.0 + ((double) (long) i + 1) * tmp;
     result *= tmp;
@@ -34,11 +42,18 @@ static double f_katsuura_raw(const double *x, const size_t number_of_variables) 
   return result;
 }
 
-static void f_katsuura_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_katsuura_raw(x, self->number_of_variables);
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
+static void f_katsuura_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_katsuura_raw(x, problem->number_of_variables);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Allocates the basic Katsuura problem.
+ */
 static coco_problem_t *f_katsuura_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Katsuura function",
@@ -49,6 +64,10 @@ static coco_problem_t *f_katsuura_allocate(const size_t number_of_variables) {
   f_katsuura_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }
+
+/**
+ * @brief Creates the BBOB Katsuura problem.
+ */
 static coco_problem_t *f_katsuura_bbob_problem_allocate(const size_t function,
                                                         const size_t dimension,
                                                         const size_t instance,
@@ -86,10 +105,10 @@ static coco_problem_t *f_katsuura_bbob_problem_allocate(const size_t function,
   }
 
   problem = f_katsuura_allocate(dimension);
-  problem = f_transform_obj_shift(problem, fopt);
-  problem = f_transform_vars_affine(problem, M, b, dimension);
-  problem = f_transform_vars_shift(problem, xopt, 0);
-  problem = f_transform_obj_penalize(problem, penalty_factor);
+  problem = transform_obj_shift(problem, fopt);
+  problem = transform_vars_affine(problem, M, b, dimension);
+  problem = transform_vars_shift(problem, xopt, 0);
+  problem = transform_obj_penalize(problem, penalty_factor);
 
   bbob2009_free_matrix(rot1, dimension);
   bbob2009_free_matrix(rot2, dimension);
