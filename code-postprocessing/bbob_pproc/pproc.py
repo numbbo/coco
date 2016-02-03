@@ -28,6 +28,7 @@ import warnings
 from pdb import set_trace
 import numpy, numpy as np
 import matplotlib.pyplot as plt
+from collections import OrderedDict
 from . import genericsettings, findfiles, toolsstats, toolsdivers
 from .readalign import split, alignData, HMultiReader, VMultiReader, VMultiReaderNew, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
@@ -1639,16 +1640,13 @@ class DataSetList(list):
         """Returns a dictionary splitting noisy and non-noisy entries."""
         sorted = {}
         
-        # For bi-objective case we are not showing the noiselessall graph because 
-        # it is always equal to all graph.
-        if not self.isBiobjective():
-            for i in self:
-                if i.funcId in range(1, 56):
-                    sorted.setdefault('noiselessall', DataSetList()).append(i)
-                elif i.funcId in range(101, 131):
-                    sorted.setdefault('nzall', DataSetList()).append(i)
-                else:
-                    warnings.warn('Unknown function id.')
+        for i in self:
+            if i.funcId in range(1, 56):
+                sorted.setdefault('noiselessall', DataSetList()).append(i)
+            elif i.funcId in range(101, 131):
+                sorted.setdefault('nzall', DataSetList()).append(i)
+            else:
+                warnings.warn('Unknown function id.')
 
         return sorted
 
@@ -1716,6 +1714,25 @@ class DataSetList(list):
             return self.dictByFuncGroupBiobjective()
         else:
             return self.dictByFuncGroupSingleObjective()
+
+    def getFuncGroups(self):
+        """Returns a dictionary of function groups.
+        
+        The output dictionary has functions group names as keys 
+        and function group descriptions as values.
+        """
+        if self.isBiobjective():
+            dictByFuncGroup = self.dictByFuncGroupBiobjective()
+            groups = OrderedDict(sorted((key, key.replace('_', ' ')) for key in dictByFuncGroup.keys()))
+            return groups
+        else:
+            groups = OrderedDict([
+                ('separ', 'Separable functions'), 
+                ('lcond', 'Misc. moderate functions'), 
+                ('hcond', 'Ill-conditioned functions'), 
+                ('multi', 'Multi-modal functions'), 
+                ('mult2', 'Weak structure functions')]) 
+            return groups
 
     def dictByParam(self, param):
         """Returns a dictionary of DataSetList by parameter values.

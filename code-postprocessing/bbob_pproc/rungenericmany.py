@@ -321,14 +321,17 @@ def main(argv=None):
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.many_algorithm_file_name),
             '', # algorithms names are clearly visible in the figure
-            algorithmCount=ppfig.AlgorithmCount.MANY
+            algorithmCount = ppfig.AlgorithmCount.MANY,
+            isBiobjective = dsList[0].isBiobjective(),
+            functionGroups = dictAlg[sortedAlgs[0]].getFuncGroups()
         )
 
         ppfig.copy_js_files(outputdir)
         
         # convergence plots
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
+            ppconverrorbars.main(dictAlg, dsList[0].isBiobjective(), 
+                                 outputdir, genericsettings.verbose)
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
             config.config(dsList[0].isBiobjective())
