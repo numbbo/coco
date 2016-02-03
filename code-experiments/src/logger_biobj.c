@@ -435,8 +435,8 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   indicator->additional_penalty = 0;
   indicator->overall_value = 0;
 
-  indicator->targets = coco_observer_targets(observer->number_of_targets, observer->target_precision);
-  indicator->evaluations = coco_observer_evaluations(observer->base_evaluations, problem->number_of_variables);
+  indicator->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
+  indicator->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, problem->number_of_variables);
 
   /* Prepare the info file */
   path_name = coco_allocate_string(COCO_PATH_MAX);

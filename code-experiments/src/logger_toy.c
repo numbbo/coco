@@ -86,7 +86,7 @@ static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inn
   /* Initialize the logger_toy_data_t object instance */
   logger_toy = (logger_toy_data_t *) coco_allocate_memory(sizeof(*logger_toy));
   logger_toy->number_of_evaluations = 0;
-  logger_toy->targets = coco_observer_targets(observer->number_of_targets, observer->target_precision);
+  logger_toy->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
   logger_toy->log_file = ((observer_toy_data_t *) observer->data)->log_file;
   logger_toy->precision_x = observer->precision_x;
   logger_toy->precision_f = observer->precision_f;

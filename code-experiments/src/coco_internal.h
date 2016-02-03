@@ -155,9 +155,13 @@ struct coco_observer_s {
   char *result_folder;       /**< @brief Name of the result folder. */
   char *algorithm_name;      /**< @brief Name of the algorithm to be used in logger output. */
   char *algorithm_info;      /**< @brief Additional information on the algorithm to be used in logger output. */
-  size_t number_of_targets;  /**< @brief The number of targets between each 10**(i/n) and 10**((i+1)/n). */
+  size_t number_target_triggers;
+                             /**< @brief The number of targets between each 10**i and 10**(i+1). */
   double target_precision;   /**< @brief The minimal precision used for targets. */
-  char *base_evaluations;    /**< @brief The "base evaluations" used to evaluations that trigger logging. */
+  size_t number_evaluation_triggers;
+                             /**< @brief The number of triggers between each 10**i and 10**(i+1) evaluation number. */
+  char *base_evaluation_triggers;
+                             /**< @brief The "base evaluations" used to evaluations that trigger logging. */
   int precision_x;           /**< @brief Output precision for decision variables. */
   int precision_f;           /**< @brief Output precision for function values. */
   void *data;                /**< @brief Void pointer that can be used to point to data specific to an observer. */
