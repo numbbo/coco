@@ -338,7 +338,7 @@ def main(argv=None):
             dsList.pickle(verbose=genericsettings.verbose)
 
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
+            ppconverrorbars.main(dictAlg, dsList.isBiobjective(), outputdir, genericsettings.verbose)
 
         if genericsettings.isFig:
             print "Scaling figures...",
@@ -387,13 +387,19 @@ def main(argv=None):
                 except KeyError:
                     continue
 
-                pprldistr.main(sliceDim, True,
-                               outputdir, 'all', genericsettings.verbose)
                 dictNoise = sliceDim.dictByNoise()
+
+                # If there is only one noise type then we don't need the all graphs.
+                if len(dictNoise) > 1:
+                    pprldistr.main(sliceDim, True,
+                                   outputdir, 'all', genericsettings.verbose)
+                
+                    
                 for noise, sliceNoise in dictNoise.iteritems():
                     pprldistr.main(sliceNoise, True,
                                    outputdir,
                                    '%s' % noise, genericsettings.verbose)
+
                 dictFG = sliceDim.dictByFuncGroup()
                 for fGroup, sliceFuncGroup in dictFG.items():
                     pprldistr.main(sliceFuncGroup, True,
