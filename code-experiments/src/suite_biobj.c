@@ -131,8 +131,9 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   int instance_found = 0;
 
   /* A "magic" formula to compute the BBOB function index from the bi-objective function index */
-  function1_idx = num_bbob_functions -
-      (size_t) (-0.5 + sqrt(0.25 + 2.0 * (double) (suite->number_of_functions - function_idx - 1))) - 1;
+  function1_idx = num_bbob_functions
+      - coco_double_to_size_t(
+          floor(-0.5 + sqrt(0.25 + 2.0 * (double) (suite->number_of_functions - function_idx - 1)))) - 1;
   function2_idx = function_idx - (function1_idx * num_bbob_functions) +
       (function1_idx * (function1_idx + 1)) / 2;
 
