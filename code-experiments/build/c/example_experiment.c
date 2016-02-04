@@ -140,6 +140,7 @@ void example_bbob_tentative(void) {
     for (irun = 1; irun <= 1 + INDEPENDENT_RESTARTS; ++irun) {
       size_t done_evals = coco_problem_get_evaluations(problem);
 
+      /* TODO: if irun > 1, we need to make sure to not reproduce the exact same run. */
       /* TODO: the interface needs to change for *all* examples
       my_random_search(problem, BUDGET * coco_problem_get_dimension(problem) - done_evals);  PLUG IN THE DESIRED OPTIMIZER HERE */
 
