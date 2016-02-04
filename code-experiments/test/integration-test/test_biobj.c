@@ -104,9 +104,8 @@ void multiple_observers(void) {
 
     my_optimizer(problem_outer);
 
-    coco_problem_remove_observer(problem_outer, observer_outer);
-    coco_problem_remove_observer(problem_middle, observer_middle);
-
+    problem_middle = coco_problem_remove_observer(problem_outer, observer_outer);
+    problem_inner = coco_problem_remove_observer(problem_middle, observer_middle);
   }
 
   coco_observer_free(observer_inner);
@@ -124,6 +123,7 @@ int main( int argc, char *argv[] )  {
     multiple_observers();
   }
   else {
+    multiple_observers();
     run_once("produce_all_data 1");
     run_once("log_nondominated: none  compute_indicators: 0");
     run_once("log_nondominated: all   compute_indicators: 0");
@@ -134,7 +134,6 @@ int main( int argc, char *argv[] )  {
     run_once("log_nondominated: none  compute_indicators: 1 log_decision_variables: all");
     run_once("log_nondominated: all   compute_indicators: 0 log_decision_variables: none");
     run_once("log_nondominated: final compute_indicators: 1 log_decision_variables: low_dim");
-    multiple_observers();
   }
 
   coco_remove_directory("exdata");
