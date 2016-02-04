@@ -295,8 +295,8 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   char indexFile_prefix[10] = "bbobexp"; /* TODO (minor): make the prefix bbobexp a parameter that the user can modify */
   size_t str_length_funId, str_length_dim;
   
-  str_length_funId = (size_t) bbob2009_fmax(1, ceil(log10((double) coco_problem_get_suite_dep_function(inner_problem))));
-  str_length_dim = (size_t) bbob2009_fmax(1, ceil(log10((double) inner_problem->number_of_variables)));
+  str_length_funId = coco_double_to_size_t(bbob2009_fmax(1, ceil(log10((double) coco_problem_get_suite_dep_function(inner_problem)))));
+  str_length_dim = coco_double_to_size_t(bbob2009_fmax(1, ceil(log10((double) inner_problem->number_of_variables))));
   tmpc_funId = coco_allocate_string(str_length_funId);
   tmpc_dim = coco_allocate_string(str_length_dim);
 
