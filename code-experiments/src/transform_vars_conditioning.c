@@ -41,10 +41,18 @@ static void transform_vars_conditioning_free(void *thing) {
 static coco_problem_t *f_transform_vars_conditioning(coco_problem_t *inner_problem, const double alpha) {
   transform_vars_conditioning_data_t *data;
   coco_problem_t *self;
+  size_t i = 0, zero = 1;
   data = coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->alpha = alpha;
   self = coco_transformed_allocate(inner_problem, data, transform_vars_conditioning_free);
   self->evaluate_function = transform_vars_conditioning_evaluate;
+  while (i < inner_problem->number_of_variables && zero) {
+      zero = (inner_problem->best_parameter[i] == 0);
+      i++;
+  }
+  if (!zero) {
+      coco_warning("f_transform_vars_conditioning(): 'best_parameter' not updated");
+  }
   return self;
 }

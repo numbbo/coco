@@ -39,12 +39,17 @@ static void transform_vars_scale_free(void *thing) {
 static coco_problem_t *f_transform_vars_scale(coco_problem_t *inner_problem, const double factor) {
   transform_vars_scale_data_t *data;
   coco_problem_t *self;
-
+  size_t i;
   data = coco_allocate_memory(sizeof(*data));
   data->factor = factor;
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
-
   self = coco_transformed_allocate(inner_problem, data, transform_vars_scale_free);
   self->evaluate_function = transform_vars_scale_evaluate;
+  /* Compute best parameter */
+  if (data->factor != 0.) {
+      for (i = 0; i < self->number_of_variables; i++) {
+          self->best_parameter[i] /= data->factor;
+      }
+  } /* else error? */
   return self;
 }

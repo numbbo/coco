@@ -38,12 +38,13 @@ static void transform_vars_z_hat_free(void *thing) {
 static coco_problem_t *f_transform_vars_z_hat(coco_problem_t *inner_problem, const double *xopt) {
   transform_vars_z_hat_data_t *data;
   coco_problem_t *self;
-
+    size_t i = 0, zero = 1;
   data = coco_allocate_memory(sizeof(*data));
   data->xopt = coco_duplicate_vector(xopt, inner_problem->number_of_variables);
   data->z = coco_allocate_vector(inner_problem->number_of_variables);
 
   self = coco_transformed_allocate(inner_problem, data, transform_vars_z_hat_free);
   self->evaluate_function = transform_vars_z_hat_evaluate;
+  coco_warning("f_transform_vars_z_hat(): 'best_parameter' not updated");
   return self;
 }
