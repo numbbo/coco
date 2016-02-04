@@ -55,7 +55,7 @@ static coco_problem_t *transform_vars_scale(coco_problem_t *inner_problem, const
   data->factor = factor;
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_scale_free);
+  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_scale_free, "transform_vars_scale");
   problem->evaluate_function = transform_vars_scale_evaluate;
   return problem;
 }
