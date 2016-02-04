@@ -236,6 +236,11 @@ void coco_observer_free(coco_observer_t *observer);
  */
 coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer);
 
+/**
+ * @brief Removes an observer from the given problem.
+ */
+coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_observer_t *observer);
+
 /**@}*/
 
 /***********************************************************************************************************/
@@ -293,11 +298,6 @@ size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
  * @brief Returns the number of evaluations done on the problem.
  */
 size_t coco_problem_get_evaluations(const coco_problem_t *problem);
-
-/**
- * @brief Returns 1 if the final target was hit, 0 otherwise.
- */
-int coco_problem_final_target_hit(const coco_problem_t *problem);
 
 /**
  * @brief Returns 1 if the final target was hit, 0 otherwise.

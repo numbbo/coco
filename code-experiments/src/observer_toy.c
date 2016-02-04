@@ -7,6 +7,7 @@
 #include "coco_utilities.c"
 
 static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *problem);
+static void logger_toy_free(void *logger);
 
 /**
  * @brief The toy observer data type.
@@ -64,7 +65,11 @@ static void observer_toy(coco_observer_t *observer, const char *options) {
     return; /* Never reached */
   }
 
-  observer->logger_initialize_function = logger_toy;
+  coco_free_memory(string_value);
+  coco_free_memory(file_name);
+
+  observer->logger_allocate_function = logger_toy;
+  observer->logger_free_function = logger_toy_free;
   observer->data_free_function = observer_toy_free;
   observer->data = observer_toy;
 }

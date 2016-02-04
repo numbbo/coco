@@ -294,6 +294,7 @@ static void coco_observer_evaluations_free(coco_observer_evaluations_t *evaluati
  * @brief Allocates memory for a coco_observer_t instance.
  */
 static coco_observer_t *coco_observer_allocate(const char *result_folder,
+                                               const char *observer_name,
                                                const char *algorithm_name,
                                                const char *algorithm_info,
                                                const size_t number_target_triggers,
@@ -307,6 +308,7 @@ static coco_observer_t *coco_observer_allocate(const char *result_folder,
   observer = (coco_observer_t *) coco_allocate_memory(sizeof(*observer));
   /* Initialize fields to sane/safe defaults */
   observer->result_folder = coco_strdup(result_folder);
+  observer->observer_name = coco_strdup(observer_name);
   observer->algorithm_name = coco_strdup(algorithm_name);
   observer->algorithm_info = coco_strdup(algorithm_info);
   observer->number_target_triggers = number_target_triggers;
@@ -317,7 +319,8 @@ static coco_observer_t *coco_observer_allocate(const char *result_folder,
   observer->precision_f = precision_f;
   observer->data = NULL;
   observer->data_free_function = NULL;
-  observer->logger_initialize_function = NULL;
+  observer->logger_allocate_function = NULL;
+  observer->logger_free_function = NULL;
   observer->is_active = 1;
   return observer;
 }
@@ -326,6 +329,8 @@ void coco_observer_free(coco_observer_t *observer) {
 
   if (observer != NULL) {
     observer->is_active = 0;
+    if (observer->observer_name != NULL)
+      coco_free_memory(observer->observer_name);
     if (observer->result_folder != NULL)
       coco_free_memory(observer->result_folder);
     if (observer->algorithm_name != NULL)
@@ -344,7 +349,9 @@ void coco_observer_free(coco_observer_t *observer) {
       observer->data = NULL;
     }
 
-    observer->logger_initialize_function = NULL;
+    observer->logger_allocate_function = NULL;
+    observer->logger_free_function = NULL;
+
     coco_free_memory(observer);
     observer = NULL;
   }
@@ -469,8 +476,9 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
       precision_f = 15;
   }
 
-  observer = coco_observer_allocate(path, algorithm_name, algorithm_info, number_target_triggers, target_precision,
-      number_evaluation_triggers, base_evaluation_triggers, precision_x, precision_f);
+  observer = coco_observer_allocate(path, observer_name, algorithm_name, algorithm_info,
+      number_target_triggers, target_precision, number_evaluation_triggers, base_evaluation_triggers,
+      precision_x, precision_f);
 
   coco_free_memory(path);
   coco_free_memory(result_folder);
@@ -478,7 +486,14 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   coco_free_memory(algorithm_info);
   coco_free_memory(base_evaluation_triggers);
 
-  /* Here each observer must have an entry */
+  /* Here each observer must have an entry - a call to a specific function that sets the following observer
+   * fields:
+   * - observer_name
+   * - logger_allocate_function
+   * - logger_free_function
+   * - data_free_function
+   * - data
+   */
   if (0 == strcmp(observer_name, "toy")) {
     observer_toy(observer, observer_options);
   } else if (0 == strcmp(observer_name, "bbob")) {
@@ -506,10 +521,50 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
 coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer) {
 
   if ((observer == NULL) || (observer->is_active == 0)) {
-    coco_warning("The problem will not be observed. %s", observer == NULL ? "(observer == NULL)" : "(observer not active)");
+    coco_warning("The problem will not be observed. %s",
+        observer == NULL ? "(observer == NULL)" : "(observer not active)");
     return problem;
   }
 
-  return observer->logger_initialize_function(observer, problem);
+  assert(observer->logger_allocate_function);
+  return observer->logger_allocate_function(observer, problem);
 }
 
+/**
+ * Frees the observer's logger and returns the inner problem.
+ *
+ * @param problem The observed COCO problem.
+ * @param observer The COCO observer, whose logger was wrapping the problem.
+ *
+ * @returns The unobserved problem as a pointer to the inner problem or the same problem if the problem
+ * was not observed.
+ */
+coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_observer_t *observer) {
+
+  coco_problem_t *problem_unobserved;
+  char *prefix;
+
+  if ((observer == NULL) || (observer->is_active == 0)) {
+    coco_warning("The problem was not observed. %s",
+        observer == NULL ? "(observer == NULL)" : "(observer not active)");
+    return problem;
+  }
+
+  /* Check that we are removing the observer that is actually wrapping the problem.
+   *
+   * This is a hack - it assumes that the name of the problem is formatted as "observer_name(problem_name)".
+   * While not elegant, it does the job and is better than nothing. */
+  prefix = coco_remove_from_string(problem->problem_name, "(", "");
+  if (strcmp(prefix, observer->observer_name) != 0) {
+    coco_error("coco_problem_remove_observer(): trying to remove observer %s instead of %s",
+        observer->observer_name, prefix);
+  }
+  coco_free_memory(prefix);
+
+  /* Keep the inner problem and remove the logger data */
+  problem_unobserved = coco_problem_transformed_get_inner_problem(problem);
+  coco_problem_transformed_free_data(problem);
+  problem = NULL;
+
+  return problem_unobserved;
+}

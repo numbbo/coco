@@ -91,7 +91,7 @@ static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inn
   logger_toy->precision_x = observer->precision_x;
   logger_toy->precision_f = observer->precision_f;
 
-  problem = coco_problem_transformed_allocate(inner_problem, logger_toy, logger_toy_free);
+  problem = coco_problem_transformed_allocate(inner_problem, logger_toy, logger_toy_free, observer->observer_name);
   problem->evaluate_function = logger_toy_evaluate;
 
   /* Output initial information */
