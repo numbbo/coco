@@ -541,6 +541,7 @@ coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer
  */
 coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_observer_t *observer) {
 
+  coco_problem_t *problem_unobserved;
   char *prefix;
 
   if ((observer == NULL) || (observer->is_active == 0)) {
@@ -551,7 +552,7 @@ coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_obser
 
   /* Check that we are removing the observer that is actually wrapping the problem.
    *
-   * This is a hack - it assumes that the first word in the problem name is the name of the observer.
+   * This is a hack - it assumes that the name of the problem is formatted as "observer_name(problem_name)".
    * While not elegant, it does the job and is better than nothing. */
   prefix = coco_remove_from_string(problem->problem_name, "(", "");
   if (strcmp(prefix, observer->observer_name) != 0) {
@@ -560,8 +561,10 @@ coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_obser
   }
   coco_free_memory(prefix);
 
-  assert(observer->logger_free_function);
-  observer->logger_free_function(coco_problem_transformed_get_data(problem));
+  /* Keep the inner problem and remove the logger data */
+  problem_unobserved = coco_problem_transformed_get_inner_problem(problem);
+  coco_problem_transformed_free_data(problem);
+  problem = NULL;
 
-  return coco_problem_transformed_get_inner_problem(problem);
+  return problem_unobserved;
 }
