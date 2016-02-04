@@ -500,7 +500,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   logger_bbob->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
   logger_bbob->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, inner_problem->number_of_variables);
 
-  problem = coco_problem_transformed_allocate(inner_problem, logger_bbob, logger_bbob_free);
+  problem = coco_problem_transformed_allocate(inner_problem, logger_bbob, logger_bbob_free, observer->observer_name);
 
   problem->evaluate_function = logger_bbob_evaluate;
   bbob_logger_is_open = 1;
