@@ -65,6 +65,9 @@ static void observer_toy(coco_observer_t *observer, const char *options) {
     return; /* Never reached */
   }
 
+  coco_free_memory(string_value);
+  coco_free_memory(file_name);
+
   observer->logger_allocate_function = logger_toy;
   observer->logger_free_function = logger_toy_free;
   observer->data_free_function = observer_toy_free;
