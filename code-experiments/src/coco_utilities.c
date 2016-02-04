@@ -624,6 +624,13 @@ static double coco_double_min(const double a, const double b) {
   }
 }
 
+/**
+ * @brief Performs a "safer" double to size_t conversion.
+ */
+static size_t coco_double_to_size_t(const double number) {
+  return (size_t) coco_double_round(number);
+}
+
 /* Commented to silence the compiler (unused function warning) */
 #if 0
 /**
