@@ -181,7 +181,7 @@ int main(void) {
   /* Change the log level to "warning" to get less output */
   coco_set_log_level("info");
 
-  example_biobj();
+  example_bbob();
 
   printf("Done!\n");
 
