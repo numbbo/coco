@@ -176,6 +176,9 @@ static char **coco_string_split(const char *string, const char delimiter) {
 /**
  * @brief Creates and returns a string with removed characters between from and to.
  *
+ * If you wish to remove characters from the beginning of the string, set from to "".
+ * If you wish to remove characters until the end of the string, set to to "".
+ *
  * The caller is responsible for freeing the allocated memory using coco_free_memory().
  */
 static char *coco_remove_from_string(const char *string, const char *from, const char *to) {

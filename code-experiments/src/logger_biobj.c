@@ -828,9 +828,6 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
       (avl_free_t) logger_biobj_node_free);
   logger_biobj->buffer_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_eval_number, NULL);
 
-  problem = coco_problem_transformed_allocate(inner_problem, logger_biobj, logger_biobj_free);
-  problem->evaluate_function = logger_biobj_evaluate;
-
   /* Initialize the indicators */
   if (logger_biobj->compute_indicators) {
     for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++)
@@ -838,6 +835,9 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
 
     observer_biobj->previous_function = (long) inner_problem->suite_dep_function;
   }
+
+  problem = coco_problem_transformed_allocate(inner_problem, logger_biobj, logger_biobj_free, observer->observer_name);
+  problem->evaluate_function = logger_biobj_evaluate;
 
   return problem;
 }

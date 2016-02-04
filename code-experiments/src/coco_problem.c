@@ -551,13 +551,16 @@ static void coco_problem_transformed_free(coco_problem_t *problem) {
 /**
  * @brief Allocates a transformed problem that wraps the inner_problem.
  *
- * By default all methods will dispatch to the inner_problem.
+ * By default all methods will dispatch to the inner_problem. A prefix is prepended to the problem name
+ * in order to reflect the transformation somewhere.
  */
 static coco_problem_t *coco_problem_transformed_allocate(coco_problem_t *inner_problem,
                                                          void *user_data,
-                                                         coco_data_free_function_t data_free_function) {
+                                                         coco_data_free_function_t data_free_function,
+                                                         const char *name_prefix) {
   coco_problem_transformed_data_t *problem;
   coco_problem_t *inner_copy;
+  char *old_name = coco_strdup(inner_problem->problem_name);
 
   problem = (coco_problem_transformed_data_t *) coco_allocate_memory(sizeof(*problem));
   problem->inner_problem = inner_problem;
@@ -570,6 +573,10 @@ static coco_problem_t *coco_problem_transformed_allocate(coco_problem_t *inner_p
   inner_copy->recommend_solution = coco_problem_transformed_recommend_solution;
   inner_copy->problem_free_function = coco_problem_transformed_free;
   inner_copy->data = problem;
+
+  coco_problem_set_name(inner_copy, "%s(%s)", name_prefix, old_name);
+  coco_free_memory(old_name);
+
   return inner_copy;
 }
 /**@}*/

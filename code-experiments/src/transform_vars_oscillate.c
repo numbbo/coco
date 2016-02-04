@@ -64,7 +64,7 @@ static coco_problem_t *transform_vars_oscillate(coco_problem_t *inner_problem) {
   data = (transform_vars_oscillate_data_t *) coco_allocate_memory(sizeof(*data));
   data->oscillated_x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_oscillate_free);
+  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_oscillate_free, "transform_vars_oscillate");
   problem->evaluate_function = transform_vars_oscillate_evaluate;
   return problem;
 }
