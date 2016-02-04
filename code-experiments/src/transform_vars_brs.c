@@ -63,7 +63,7 @@ static coco_problem_t *transform_vars_brs(coco_problem_t *inner_problem) {
   coco_problem_t *problem;
   data = (transform_vars_brs_data_t *) coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
-  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_brs_free);
+  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_brs_free, "transform_vars_brs");
   problem->evaluate_function = transform_vars_brs_evaluate;
   return problem;
 }

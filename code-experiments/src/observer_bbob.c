@@ -7,6 +7,7 @@
 #include "coco_utilities.c"
 
 static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *problem);
+static void logger_bbob_free(void *logger);
 
 /**
  * @brief The bbob observer data type.
@@ -24,7 +25,8 @@ typedef struct {
  */
 static void observer_bbob(coco_observer_t *observer, const char *options) {
 
-  observer->logger_initialize_function = logger_bbob;
+  observer->logger_allocate_function = logger_bbob;
+  observer->logger_free_function = logger_bbob_free;
   observer->data_free_function = NULL;
   observer->data = NULL;
 
