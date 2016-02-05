@@ -58,10 +58,16 @@ static void logger_biobj_free(void *logger);
  * "log_decision_variables: low_dim" and "compute_indicators: 1". If set to 0, it does not change the values
  * of the other options. The default value is 0.
  */
-static void observer_biobj(coco_observer_t *observer, const char *options) {
+static void observer_biobj(coco_observer_t *observer, const char *options, coco_option_keys_t **option_keys) {
 
   observer_biobj_data_t *observer_biobj;
   char string_value[COCO_PATH_MAX];
+
+  /* Sets the valid keys for bbob-biobj observer options
+   * IMPORTANT: This list should be up-to-date with the code and the documentation */
+  const char *known_keys[] = { "log_nondominated", "log_decision_variables", "compute_indicators",
+      "produce_all_data" };
+  *option_keys = coco_option_keys_allocate(sizeof(known_keys) / sizeof(char *), known_keys);
 
   observer_biobj = (observer_biobj_data_t *) coco_allocate_memory(sizeof(*observer_biobj));
 

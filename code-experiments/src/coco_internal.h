@@ -98,6 +98,16 @@ typedef struct {
   coco_problem_t *problem2; /**< @brief Pointer to the second problem (objective) */
 } coco_problem_stacked_data_t;
 
+/**
+ * @brief The option keys data type.
+ *
+ * This is a type of a structure used to contain a set of known option keys (used by suites and observers).
+ */
+typedef struct {
+  size_t count;  /**< @brief Number of option keys */
+  char **keys;   /**< @brief Pointer to option keys */
+} coco_option_keys_t;
+
 
 /***********************************************************************************************************/
 
