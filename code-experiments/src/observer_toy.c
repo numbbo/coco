@@ -39,11 +39,16 @@ static void observer_toy_free(void *stuff) {
  * Possible options:
  * - file_name: string (name of the output file; default value is "first_hitting_times.dat")
  */
-static void observer_toy(coco_observer_t *observer, const char *options) {
+static void observer_toy(coco_observer_t *observer, const char *options, coco_option_keys_t **option_keys) {
 
   observer_toy_data_t *observer_toy;
   char *string_value;
   char *file_name;
+
+  /* Sets the valid keys for toy observer options
+   * IMPORTANT: This list should be up-to-date with the code and the documentation */
+  const char *known_keys[] = { "file_name" };
+  *option_keys = coco_option_keys_allocate(sizeof(known_keys) / sizeof(char *), known_keys);
 
   observer_toy = (observer_toy_data_t *) coco_allocate_memory(sizeof(*observer_toy));
 

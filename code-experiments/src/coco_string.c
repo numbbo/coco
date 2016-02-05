@@ -150,7 +150,7 @@ static char **coco_string_split(const char *string, const char delimiter) {
   /* Makes room for an empty string that will be appended at the end */
   count++;
 
-  result = (char **) coco_allocate_memory(count * sizeof(char*));
+  result = (char **) coco_allocate_memory(count * sizeof(char *));
 
   /* Iterates through tokens
    * NOTE: strtok() ignores multiple delimiters, therefore the final number of detected substrings might be
