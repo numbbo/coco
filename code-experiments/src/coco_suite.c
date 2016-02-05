@@ -542,6 +542,11 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
   else {
     instances = coco_suite_get_instance_indices(suite, suite_instance);
 
+    if (!instances) {
+      /* Something wrong in the suite_instance string, use default instead */
+      instances = coco_suite_get_instance_indices(suite, suite->default_instances);
+    }
+
     /* Check for redundant option keys for suite instance */
     known_option_keys = coco_option_keys_allocate(sizeof(known_keys_i) / sizeof(char *), known_keys_i);
     given_option_keys = coco_option_keys(suite_instance);
