@@ -115,10 +115,7 @@ def main(argv=None):
             single function.
         --expensive
             runlength-based f-target values and fixed display limits,
-            useful with comparatively small budgets. By default the
-            setting is based on the budget used in the data.
-        --not-expensive
-            expensive setting off. 
+            useful with comparatively small budgets.
         --svg
             generate also the svg figures which are used in html files 
         --runlength-based
@@ -234,8 +231,6 @@ def main(argv=None):
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 genericsettings.isExpensive = True  # comprises runlength-based
-            elif o == "--not-expensive":
-                genericsettings.isExpensive = False
             elif o == "--svg":
                 genericsettings.generate_svg_files = True
             elif o == "--sca-only":
@@ -305,7 +300,7 @@ def main(argv=None):
             dict_max_fun_evals[ds.dim] = np.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
         
         from . import config
-        config.target_values(genericsettings.isExpensive, dict_max_fun_evals)
+        config.target_values(genericsettings.isExpensive)
         config.config(dsList.isBiobjective())
 
         if (genericsettings.verbose):
