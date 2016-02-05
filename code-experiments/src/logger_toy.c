@@ -1,3 +1,11 @@
+/**
+ * @file logger_toy.c
+ * @brief Implementation of the toy logger.
+ *
+ * Logs the evaluation number, function value the target hit and all the variables each time a target has
+ * been hit.
+ */
+
 #include <stdio.h>
 #include <assert.h>
 
@@ -9,64 +17,89 @@
 #include "observer_toy.c"
 
 /**
- * This is a toy logger that logs the evaluation number and function value each time a target has been hit.
+ * @brief The toy logger data type.
  */
-
 typedef struct {
-  coco_observer_t *observer;
-  size_t next_target;
-  long number_of_evaluations;
-} logger_toy_t;
+  FILE *log_file;                    /**< @brief Pointer to the file already prepared for logging. */
+  coco_observer_targets_t *targets;  /**< @brief Triggers based on target values. */
+  size_t number_of_evaluations;      /**< @brief The number of evaluations performed so far. */
+  int precision_x;                   /**< @brief Precision for outputting decision values. */
+  int precision_f;                   /**< @brief Precision for outputting objective values. */
+} logger_toy_data_t;
 
 /**
- * Evaluates the function, increases the number of evaluations and outputs information based on the targets
- * that have been hit.
+ * @brief Frees the memory of the given toy logger.
  */
-static void logger_toy_evaluate(coco_problem_t *self, const double *x, double *y) {
+static void logger_toy_free(void *stuff) {
 
-  logger_toy_t *logger;
-  observer_toy_t *observer_toy;
-  double *targets;
+  logger_toy_data_t *logger;
 
-  logger = coco_transformed_get_data(self);
-  observer_toy = (observer_toy_t *) logger->observer->data;
-  targets = observer_toy->targets;
+  assert(stuff != NULL);
+  logger = (logger_toy_data_t *) stuff;
 
-  coco_evaluate_function(coco_transformed_get_inner_problem(self), x, y);
-  logger->number_of_evaluations++;
-
-  /* Add a line for each target that has been hit */
-  while (y[0] <= targets[logger->next_target] && logger->next_target < observer_toy->number_of_targets) {
-    fprintf(observer_toy->log_file, "%e\t%5ld\t%.5f\n", targets[logger->next_target],
-        logger->number_of_evaluations, y[0]);
-    logger->next_target++;
+  if (logger->targets != NULL){
+    coco_free_memory(logger->targets);
+    logger->targets = NULL;
   }
-  /* Flush output so that impatient users can see the progress */
-  fflush(observer_toy->log_file);
+
 }
 
 /**
- * Initializes the toy logger.
+ * @brief Evaluates the function, increases the number of evaluations and outputs information based on the
+ * targets that have been hit.
  */
-static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *problem) {
+static void logger_toy_evaluate(coco_problem_t *problem, const double *x, double *y) {
 
-  logger_toy_t *logger;
-  coco_problem_t *self;
-  FILE *output_file;
+  logger_toy_data_t *logger = (logger_toy_data_t *) coco_problem_transformed_get_data(problem);
+  size_t i;
 
-  if (problem->number_of_objectives != 1) {
-    coco_warning("logger_toy(): The toy logger shouldn't be used to log a problem with %d objectives", problem->number_of_objectives);
+  coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
+  logger->number_of_evaluations++;
+
+  /* Output the solution when a new target that has been hit */
+  if (coco_observer_targets_trigger(logger->targets, y[0])) {
+    fprintf(logger->log_file, "%lu\t%.*e\t%.*e", logger->number_of_evaluations, logger->precision_f, y[0],
+        logger->precision_f, logger->targets->value);
+    for (i = 0; i < problem->number_of_variables; i++) {
+      fprintf(logger->log_file, "\t%.*e", logger->precision_x, x[i]);
+    }
+    fprintf(logger->log_file, "\n");
   }
 
-  logger = coco_allocate_memory(sizeof(*logger));
-  logger->observer = observer;
-  logger->next_target = 0;
-  logger->number_of_evaluations = 0;
+  /* Flush output so that impatient users can see the progress */
+  fflush(logger->log_file);
+}
 
-  output_file = ((observer_toy_t *) logger->observer->data)->log_file;
-  fprintf(output_file, "\n%s, %s\n", coco_problem_get_id(problem), coco_problem_get_name(problem));
+/**
+ * @brief Initializes the toy logger.
+ */
+static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inner_problem) {
 
-  self = coco_transformed_allocate(problem, logger, NULL);
-  self->evaluate_function = logger_toy_evaluate;
-  return self;
+  logger_toy_data_t *logger_toy;
+  coco_problem_t *problem;
+
+  if (inner_problem->number_of_objectives != 1) {
+    coco_warning("logger_toy(): The toy logger shouldn't be used to log a problem with %d objectives",
+        inner_problem->number_of_objectives);
+  }
+
+  /* Initialize the logger_toy_data_t object instance */
+  logger_toy = (logger_toy_data_t *) coco_allocate_memory(sizeof(*logger_toy));
+  logger_toy->number_of_evaluations = 0;
+  logger_toy->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
+  logger_toy->log_file = ((observer_toy_data_t *) observer->data)->log_file;
+  logger_toy->precision_x = observer->precision_x;
+  logger_toy->precision_f = observer->precision_f;
+
+  problem = coco_problem_transformed_allocate(inner_problem, logger_toy, logger_toy_free, observer->observer_name);
+  problem->evaluate_function = logger_toy_evaluate;
+
+  /* Output initial information */
+  fprintf(logger_toy->log_file, "\n");
+  fprintf(logger_toy->log_file, "%% problem_id = %s, problem_name = %s\n", coco_problem_get_id(inner_problem),
+      coco_problem_get_name(inner_problem));
+  fprintf(logger_toy->log_file, "%% evaluation number | function value | target hit | %lu variables \n",
+      inner_problem->number_of_variables);
+
+  return problem;
 }

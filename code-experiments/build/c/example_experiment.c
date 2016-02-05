@@ -12,13 +12,13 @@
  * The max budget for optimization algorithms should be set to dim * BUDGET
  */
 static const size_t BUDGET = 2;
+static coco_random_state_t *RNG;
 
 /**
  * A random search algorithm that can be used for single- as well as multi-objective optimization.
  */
 void my_random_search(coco_problem_t *problem) {
 
-  coco_random_state_t *rng = coco_random_new(0xdeadbeef);
   const double *lbounds = coco_problem_get_smallest_values_of_interest(problem);
   const double *ubounds = coco_problem_get_largest_values_of_interest(problem);
   size_t dimension = coco_problem_get_dimension(problem);
@@ -28,14 +28,14 @@ void my_random_search(coco_problem_t *problem) {
   double range;
   size_t i, j;
 
-  size_t max_budget = dimension * BUDGET;
+  size_t max_budget = dimension * BUDGET;  /* a hack */
 
   for (i = 0; i < max_budget; ++i) {
 
     /* Construct x as a random point between the lower and upper bounds */
     for (j = 0; j < dimension; ++j) {
       range = ubounds[j] - lbounds[j];
-      x[j] = lbounds[j] + coco_random_uniform(rng) * range;
+      x[j] = lbounds[j] + coco_random_uniform(RNG) * range;
     }
 
     /* Call COCO's evaluate function where all the logging is performed */
@@ -43,7 +43,6 @@ void my_random_search(coco_problem_t *problem) {
 
   }
 
-  coco_random_free(rng);
   coco_free_memory(x);
   coco_free_memory(y);
 }
@@ -61,7 +60,7 @@ void my_grid_search(coco_problem_t *problem) {
   size_t number_of_objectives = coco_problem_get_number_of_objectives(problem);
   double *x = coco_allocate_vector(dimension);
   double *y = coco_allocate_vector(number_of_objectives);
-  long *nodes = coco_allocate_memory(sizeof(long) * dimension);
+  long *nodes = (long *) coco_allocate_memory(sizeof(long) * dimension);
   double *grid_step = coco_allocate_vector(dimension);
   size_t i, j;
   size_t evaluations = 0;
@@ -121,12 +120,57 @@ void my_grid_search(coco_problem_t *problem) {
 /**
  * A simple example of benchmarking an optimization algorithm on the bbob suite with instances from 2009.
  */
+void example_bbob_tentative(void) {
+
+  /* Some options of the bbob observer. See documentation for other options. */
+  const char *observer_options = "result_folder: RS_on_bbob "
+                                 "algorithm_name: RS "
+                                 "algorithm_info: \"A simple random search algorithm\"";
+
+  size_t INDEPENDENT_RESTARTS = 0;  /* should move to where BUDGET is set */
+  size_t irun; 
+  coco_suite_t *suite;
+  coco_observer_t *observer;
+  coco_problem_t *problem;
+
+  suite = coco_suite("bbob", "year: 2016", "dimensions: 2,3,5,10,20,40");
+  observer = coco_observer("bbob", observer_options);
+
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL)
+    for (irun = 1; irun <= 1 + INDEPENDENT_RESTARTS; ++irun) {
+      size_t done_evals = coco_problem_get_evaluations(problem);
+
+      /* TODO: if irun > 1, we need to make sure to not reproduce the exact same run. */
+      /* TODO: the interface needs to change for *all* examples
+      my_random_search(problem, BUDGET * coco_problem_get_dimension(problem) - done_evals);  PLUG IN THE DESIRED OPTIMIZER HERE */
+
+      /* check reasons to break the loop */
+      if (coco_problem_final_target_hit(problem) ||
+          coco_problem_get_evaluations(problem) >= BUDGET * coco_problem_get_dimension(problem))
+        break;
+      if (coco_problem_get_evaluations(problem) == done_evals) { /* no additional evals were done */
+        printf("WARNING: Budget has not been exhausted (%lu/%lu evaluations done)!\n",
+               done_evals, BUDGET * coco_problem_get_dimension(problem));
+        break;
+      }
+      if (coco_problem_get_evaluations(problem) < done_evals)
+        coco_error("something weird happened here which should not happen: f-evaluations decreased");
+    }
+
+  coco_observer_free(observer);
+  coco_suite_free(suite);
+
+}
+
+/**
+ * A simple example of benchmarking an optimization algorithm on the bbob suite with instances from 2009.
+ */
 void example_bbob(void) {
 
   /* Some options of the bbob observer. See documentation for other options. */
-  const char *observer_options = "result_folder: RS_on_bbob \
-                                  algorithm_name: RS \
-                                  algorithm_info: \"A simple random search algorithm\"";
+  const char *observer_options = "result_folder: RS_on_bbob "
+                                 "algorithm_name: RS "
+                                 "algorithm_info: \"A simple random search algorithm\"";
 
   coco_suite_t *suite;
   coco_observer_t *observer;
@@ -135,8 +179,21 @@ void example_bbob(void) {
   suite = coco_suite("bbob", "year: 2016", "dimensions: 2,3,5,10,20,40");
   observer = coco_observer("bbob", observer_options);
 
-  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
-    my_random_search(problem);
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL)
+    while (coco_problem_get_evaluations(problem) < BUDGET * coco_problem_get_dimension(problem)) {
+      size_t done_evals = coco_problem_get_evaluations(problem);
+      
+      my_random_search(problem);
+      
+      /* check reasons to break the loop */
+      if (coco_problem_final_target_hit(problem))
+        break;
+      else if (coco_problem_get_evaluations(problem) == done_evals) { /* no additional evals were done */
+        printf("WARNING: Budget has not been exhausted (%lu evaluations done)!\n", done_evals);
+        break;
+      }
+      else if (coco_problem_get_evaluations(problem) < done_evals)
+        coco_error("something weird happened here which should not happen");
   }
 
   coco_observer_free(observer);
@@ -150,9 +207,9 @@ void example_bbob(void) {
 void example_biobj(void) {
 
   /* Some options of the biobjective observer. See documentation for other options. */
-  const char *observer_options = "result_folder: RS_on_bbob-biobj \
-                                  algorithm_name: RS \
-                                  algorithm_info: \"A simple random search algorithm\"";
+  const char *observer_options = "result_folder: RS_on_bbob-biobj "
+                                 "algorithm_name: RS "
+                                 "algorithm_info: \"A simple random search algorithm\"";
 
   coco_suite_t *suite;
   coco_observer_t *observer;
@@ -175,17 +232,25 @@ void example_biobj(void) {
  */
 int main(void) {
 
+  RNG = coco_random_new(0xdeadbeef);
+
   printf("Running the example experiment... (might take time, be patient)\n");
   fflush(stdout);
   
   /* Change the log level to "warning" to get less output */
   coco_set_log_level("info");
-
+  
   example_biobj();
+  
+  /* example_bbob();
+  */
 
   printf("Done!\n");
 
   fflush(stdout);
+
+  coco_random_free(RNG);
+
   return 0;
 }
 

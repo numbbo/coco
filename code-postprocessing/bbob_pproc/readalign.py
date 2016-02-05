@@ -19,6 +19,7 @@ the experimental data.
 
 from __future__ import absolute_import
 
+import os, sys
 import numpy
 import warnings
 
@@ -150,7 +151,7 @@ class VMultiReader(MultiReader):
     idx = idxEvals # the alignment value is the number of function evaluations.
 
     def __init__(self, data, isBiobjective):
-        super(VMultiReader, self).__init__(data, isBiobjective)
+        super(VMultiReader, self).__init__(data)
         self.idxData = idxFBi if isBiobjective else idxFSingle # the data of concern are the function values.
 
     def isFinished(self):
@@ -176,6 +177,58 @@ class VMultiReader(MultiReader):
                     break
                 i.next()
         return numpy.insert(self.currentLine(), 0, currentValue)
+        
+class VMultiReaderNew(MultiReader):
+    """List of data arrays to be aligned vertically.
+
+    Aligned vertically means, all number of function evaluations are the
+    closest from below or equal to the alignment number of function
+    evaluations.
+
+    """
+
+    idx = idxEvals # the alignment value is the number of function evaluations.
+
+    def __init__(self, data, isBiobjective):
+        super(VMultiReaderNew, self).__init__(data)
+        self.idxData = idxFBi if isBiobjective else idxFSingle # the data of concern are the function values.
+
+    def isFinished(self):
+        return all(i.isFinished for i in self)
+
+    def getAlignedValues(self, selectedValues):
+        
+        res = selectedValues()
+        # iterate until you find the same evaluation number in all functions
+        while res and min(res) < max(res) and len(res) == len(self):
+            index = res.index(min(res))
+            self[index].next()            
+            res = selectedValues()
+            if self[index].isFinished:
+                break
+        
+        if res and min(res) == max(res) and len(res) == len(self):
+            return min(res)
+        else:
+            return None
+        
+    def getInitialValue(self):
+        for i in self:
+            i.next()
+        
+        return self.getAlignedValues(self.currentValues)
+        
+    def newCurrentValue(self):
+
+        return self.getAlignedValues(self.nextValues)
+        
+    def align(self, currentValue):
+        for i in self:
+            while not i.isFinished:
+                if i.nextLine[self.idx] > currentValue:
+                    break
+                i.next()
+        return numpy.insert(self.currentLine(), 0, currentValue)
 
 
 class HMultiReader(MultiReader):
@@ -189,7 +242,7 @@ class HMultiReader(MultiReader):
     idxData = idxEvals # the data of concern are the number of function evals.
 
     def __init__(self, data, isBiobjective):
-        super(HMultiReader, self).__init__(data, isBiobjective)
+        super(HMultiReader, self).__init__(data)
         # the alignment value is the function value.        
         self.idx = idxFBi if isBiobjective else idxFSingle 
         self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
@@ -204,8 +257,10 @@ class HMultiReader(MultiReader):
         if currentValue == 0:
             return True
 
+        # It can be more than one line for the previous alignment value.
+        # We iterate until we find a better value or to the end of the lines.
         for i in self:
-            while i.nextLine[self.idx] > currentValue and not i.isNearlyFinished:
+            while i.nextLine[self.idx] > currentValue and not i.isFinished:
                 i.next();
                 
         return not any(i.nextLine[self.idx] <= currentValue for i in self)
@@ -290,6 +345,13 @@ class VArrayMultiReader(ArrayMultiReader, VMultiReader):
         ArrayMultiReader.__init__(self, data)
         #TODO: Should this use super?
 
+class VArrayMultiReaderNew(ArrayMultiReader, VMultiReader):
+    """Wrapper class of *aligned* data arrays to be aligned vertically."""
+
+    def __init__(self, data):
+        ArrayMultiReader.__init__(self, data)
+        #TODO: Should this use super?
+
 class HArrayMultiReader(ArrayMultiReader, HMultiReader):
     """Wrapper class of *aligned* data arrays to be aligned horizontally."""
 
@@ -320,7 +382,7 @@ def alignData(data, isBiobjective):
     if data.isFinished():
         res.append(data.align(currentValue))
 
-    while not data.isFinished():
+    while not data.isFinished() and currentValue:
         res.append(data.align(currentValue))
         currentValue = data.newCurrentValue()
 
@@ -355,12 +417,22 @@ def alignArrayData(data):
     # of the data.
 
 
+def openfile(filePath):
+    if not os.path.isfile(filePath):
+        if ('win32' in sys.platform) and len(filePath) > 259:
+            raise IOError(2, 'The path is too long for the file "%s".' % filePath)
+        else:
+            raise IOError(2, 'The file "%s" does not exist.' % filePath)
+    
+    return open(filePath, 'r')
+    
+    
 def split(dataFiles, dim=None):
     """Split a list of data files into arrays corresponding to data sets."""
 
     dataSets = []
     for fil in dataFiles:
-        with open(fil, 'r') as f:
+        with openfile(fil) as f:
             # This doesnt work with windows.
             # content = numpy.loadtxt(fil, comments='%')
             lines = f.readlines()

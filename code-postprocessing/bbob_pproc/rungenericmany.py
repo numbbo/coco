@@ -115,10 +115,7 @@ def main(argv=None):
             single function. 
         --expensive
             runlength-based f-target values and fixed display limits,
-            useful with comparatively small budgets. By default the
-            setting is based on the budget used in the data.
-        --not-expensive
-            expensive setting off. 
+            useful with comparatively small budgets.
         --svg
             generate also the svg figures which are used in html files 
         -
@@ -206,8 +203,6 @@ def main(argv=None):
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 genericsettings.isExpensive = True  # comprises runlength-based
-            elif o == "--not-expensive":
-                genericsettings.isExpensive = False  
             elif o == "--svg":
                 genericsettings.generate_svg_files = True
             elif o == "--sca-only":
@@ -287,17 +282,9 @@ def main(argv=None):
             if genericsettings.isNoiseFree and not genericsettings.isNoisy:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
 
-
-
-        # compute maxfuneval values
-        # TODO: we should rather take min_algorithm max_evals
-        dict_max_fun_evals = {}
-        for ds in dsList:
-            dict_max_fun_evals[ds.dim] = numpy.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(numpy.max(ds.maxevals))))
-            
         # set target values
         from . import config
-        config.target_values(genericsettings.isExpensive, dict_max_fun_evals)
+        config.target_values(genericsettings.isExpensive)
         config.config(dsList[0].isBiobjective())
 
 
@@ -321,14 +308,17 @@ def main(argv=None):
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.many_algorithm_file_name),
             '', # algorithms names are clearly visible in the figure
-            algorithmCount=ppfig.AlgorithmCount.MANY
+            algorithmCount = ppfig.AlgorithmCount.MANY,
+            isBiobjective = dsList[0].isBiobjective(),
+            functionGroups = dictAlg[sortedAlgs[0]].getFuncGroups()
         )
 
         ppfig.copy_js_files(outputdir)
         
         # convergence plots
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
+            ppconverrorbars.main(dictAlg, dsList[0].isBiobjective(), 
+                                 outputdir, genericsettings.verbose)
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
             config.config(dsList[0].isBiobjective())
@@ -360,8 +350,11 @@ def main(argv=None):
             if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
                 if 1 < 3:
-                    pprldmany.all_single_functions(dictAlg, sortedAlgs,
-                            outputdir, genericsettings.verbose)
+                    pprldmany.all_single_functions(dictAlg, 
+                                                   dsList[0].isBiobjective(),
+                                                   sortedAlgs,
+                                                   outputdir, 
+                                                   genericsettings.verbose)
                 else:  # subject to removal
                     dictFG = pproc.dictAlgByFun(dictAlg)
                     for fg, tmpdictAlg in dictFG.iteritems():

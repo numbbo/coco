@@ -49,7 +49,6 @@ static void test_coco_suite_encode_problem_index_with_wrapping(void **state) {
 }
 #endif
 
-
 /**
  * Tests the function coco_suite_get_next_problem_index.
  */

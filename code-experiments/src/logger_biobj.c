@@ -1,3 +1,30 @@
+/**
+ * @file logger_biobj.c
+ * @brief Implementation of the bbob-biobj logger.
+ *
+ * Logs the values of the implemented indicators and archives nondominated solutions.
+ * Produces four kinds of files:
+ * - The "info" files contain high-level information on the performed experiment. One .info file is created
+ * for each problem group (and indicator type) and contains information on all the problems in that problem
+ * group (and indicator type).
+
+ * - The "dat" files contain function evaluations, indicator values and target hits for every target hit as
+ * well as for the last evaluation. One .dat file is created for each problem function and dimension (and
+ * indicator type) and contains information for all instances of that problem (and indicator type).
+ * - The "tdat" files contain function evaluation and indicator values for every predefined evaluation
+ * number as well as for the last evaluation. One .tdat file is created for each problem function and
+ * dimension (and indicator type) and contains information for all instances of that problem (and indicator
+ * type).
+ * - The "adat" files are archive files that contain function evaluations, 2 objectives and dim variables
+ * for every nondominated solution. Whether these files are created, at what point in time the logger writes
+ * nondominated solutions to the archive and whether the decision variables are output or not depends on
+ * the values of log_nondom_mode and log_nondom_mode. See the bi-objective observer constructor
+ * observer_biobj() for more information. One .adat file is created for each problem function and dimension
+ * and contains information for all instances of that problem.
+ *
+ * @note Whenever in this file a ROI is mentioned, it means the region of interest in the objective space.
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -11,89 +38,91 @@
 #include "observer_biobj.c"
 
 #include "logger_biobj_avl_tree.c"
-#include "mo_generics.c"
-#include "mo_targets.c"
+#include "mo_utilities.c"
+
+/** @brief Number of implemented indicators */
+#define LOGGER_BIOBJ_NUMBER_OF_INDICATORS 1
+
+/** @brief Names of implemented indicators */
+const char *logger_biobj_indicators[LOGGER_BIOBJ_NUMBER_OF_INDICATORS] = { "hyp" };
 
 /**
- * This is a biobjective logger that logs the values of some indicators and can output also nondominated
- * solutions.
+ * @brief The indicator type.
  */
-
-/* Data for each indicator */
 typedef struct {
-  /* Name of the indicator to be used for identification and in the output */
-  char *name;
 
-  /* File for logging indicator values at target hits */
-  FILE *log_file;
-  /* File for logging summary information on algorithm performance */
-  FILE *info_file;
+  char *name;                /**< @brief Name of the indicator used for identification and the output. */
 
-  /* The best known indicator value for this benchmark problem */
-  double best_value;
-  size_t next_target_id;
-  /* Whether the target was hit in the latest evaluation */
-  int target_hit;
-  /* The current indicator value */
-  double current_value;
-  /* Additional penalty */
-  double additional_penalty;
-  /* The overall value of the indicator tested for target hits */
-  double overall_value;
+  FILE *dat_file;            /**< @brief File for logging indicator values at predefined values. */
+  FILE *tdat_file;           /**< @brief File for logging indicator values at predefined evaluations. */
+  FILE *info_file;           /**< @brief File for logging summary information on algorithm performance. */
 
-  size_t next_output_evaluation_num;
+  int target_hit;            /**< @brief Whether the target was hit in the latest evaluation. */
+  coco_observer_targets_t *targets;
+                             /**< @brief Triggers based on target values. */
+  int evaluation_logged;     /**< @brief Whether the whether the latest evaluation was logged. */
+  coco_observer_evaluations_t *evaluations;
+                             /**< @brief Triggers based on numbers of evaluations. */
+
+  double best_value;         /**< @brief The best known indicator value for this problem. */
+  double current_value;      /**< @brief The current indicator value. */
+  double additional_penalty; /**< @brief Additional penalty for solutions outside the ROI. */
+  double overall_value;      /**< @brief The overall value of the indicator tested for target hits. */
 
 } logger_biobj_indicator_t;
 
-/* Data for the biobjective logger */
+/**
+ * @brief The bi-objective logger data type.
+ *
+ * @note Some fields from the observers (coco_observer as well as observer_biobj) need to be copied here
+ * because the observers can be deleted before the logger is finalized and we need these fields for
+ * finalization.
+ */
 typedef struct {
-  /* To access options read by the general observer */
-  coco_observer_t *observer;
-
   observer_biobj_log_nondom_e log_nondom_mode;
-  /* File for logging nondominated solutions (either all or final) */
-  FILE *nondom_file;
+                                 /**< @brief Mode for archiving nondominated solutions. */
+  FILE *adat_file;               /**< @brief File for archiving nondominated solutions (all or final). */
 
-  /* Whether to log the decision variables */
-  int log_vars;
-  int precision_x;
-  int precision_f;
+  int log_vars;                  /**< @brief Whether to log the decision values. */
 
-  size_t number_of_evaluations;
-  size_t number_of_variables;
-  size_t number_of_objectives;
-  size_t suite_dep_instance;
+  int precision_x;               /**< @brief Precision for outputting decision values. */
+  int precision_f;               /**< @brief Precision for outputting objective values. */
 
-  /* The tree keeping currently non-dominated solutions */
-  avl_tree_t *archive_tree;
-  /* The tree with pointers to nondominated solutions that haven't been logged yet */
-  avl_tree_t *buffer_tree;
+  size_t number_of_evaluations;  /**< @brief The number of evaluations performed so far. */
+  size_t number_of_variables;    /**< @brief Dimension of the problem. */
+  size_t number_of_objectives;   /**< @brief Number of objectives (clearly equal to 2). */
+  size_t suite_dep_instance;     /**< @brief Suite-dependent instance number of the observed problem. */
+
+  avl_tree_t *archive_tree;      /**< @brief The tree keeping currently non-dominated solutions. */
+  avl_tree_t *buffer_tree;       /**< @brief The tree with pointers to nondominated solutions that haven't
+                                      been logged yet. */
 
   /* Indicators (TODO: Implement others!) */
-  int compute_indicators;
-  logger_biobj_indicator_t *indicators[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS];
+  int compute_indicators;        /**< @brief Whether to compute the indicators. */
+  logger_biobj_indicator_t *indicators[LOGGER_BIOBJ_NUMBER_OF_INDICATORS];
+                                 /**< @brief The implemented indicators. */
+} logger_biobj_data_t;
 
-} logger_biobj_t;
-
-/* Data contained in the node's item in the AVL tree */
+/**
+ * @brief The type for the node's item in the AVL tree.
+ */
 typedef struct {
-  double *x;
-  double *y;
-  size_t time_stamp;
+  double *x;                 /**< @brief The decision values of this solution. */
+  double *y;                 /**< @brief The values of objectives of this solution. */
+  size_t evaluation_number;  /**< @brief The evaluation number of when the solution was created. */
 
-  /* The contribution of this solution to the overall indicator values */
-  double indicator_contribution[OBSERVER_BIOBJ_NUMBER_OF_INDICATORS];
-  /* Whether the solution is within the region of interest (ROI) */
-  int within_ROI;
+  double indicator_contribution[LOGGER_BIOBJ_NUMBER_OF_INDICATORS];
+                      /**< @brief The contribution of this solution to the overall indicator values. */
+  int within_ROI;     /**< @brief Whether the solution is within the region of interest (ROI). */
 
 } logger_biobj_avl_item_t;
 
 /**
- * Creates and returns the information on the solution in the form of a node's item in the AVL tree.
+ * @brief Creates and returns the information on the solution in the form of a node's item in the AVL tree.
  */
 static logger_biobj_avl_item_t* logger_biobj_node_create(const double *x,
                                                          const double *y,
-                                                         const size_t time_stamp,
+                                                         const size_t evaluation_number,
                                                          const size_t dim,
                                                          const size_t num_obj) {
 
@@ -111,15 +140,15 @@ static logger_biobj_avl_item_t* logger_biobj_node_create(const double *x,
     item->x[i] = x[i];
   for (i = 0; i < num_obj; i++)
     item->y[i] = y[i];
-  item->time_stamp = time_stamp;
-  for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++)
+  item->evaluation_number = evaluation_number;
+  for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++)
     item->indicator_contribution[i] = 0;
   item->within_ROI = 0;
   return item;
 }
 
 /**
- * Frees the data of the given logger_biobj_avl_item_t.
+ * @brief Frees the data of the given logger_biobj_avl_item_t.
  */
 static void logger_biobj_node_free(logger_biobj_avl_item_t *item, void *userdata) {
 
@@ -130,10 +159,10 @@ static void logger_biobj_node_free(logger_biobj_avl_item_t *item, void *userdata
 }
 
 /**
- * Checks if the given node is smaller than the reference point, and stores this information in the node's
+ * @brief Checks if the given node is smaller than the nadir point, and stores this information in the node's
  * item->within_ROI field.
  */
-static void logger_biobj_check_if_within_ROI(coco_problem_t *problem, avl_node_t *node) {
+static void logger_biobj_check_if_within_ROI(const coco_problem_t *problem, avl_node_t *node) {
 
   logger_biobj_avl_item_t *node_item = (logger_biobj_avl_item_t *) node->item;
   size_t i;
@@ -146,20 +175,20 @@ static void logger_biobj_check_if_within_ROI(coco_problem_t *problem, avl_node_t
     }
 
   if (!node_item->within_ROI)
-    for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++)
+    for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++)
       node_item->indicator_contribution[i] = 0;
 
   return;
 }
 
 /**
- * Defines the ordering of AVL tree nodes based on the value of the last objective.
+ * @brief Defines the ordering of AVL tree nodes based on the value of the last objective.
+ *
+ * @note This ordering is used by the archive_tree.
  */
 static int avl_tree_compare_by_last_objective(const logger_biobj_avl_item_t *item1,
                                               const logger_biobj_avl_item_t *item2,
                                               void *userdata) {
-  /* This ordering is used by the archive_tree. */
-
   if (item1->y[1] < item2->y[1])
     return -1;
   else if (item1->y[1] > item2->y[1])
@@ -171,16 +200,17 @@ static int avl_tree_compare_by_last_objective(const logger_biobj_avl_item_t *ite
 }
 
 /**
- * Defines the ordering of AVL tree nodes based on the time stamp.
+ * @brief Defines the ordering of AVL tree nodes based on the evaluation number (the time when the nodes were
+ * created).
+ *
+ * @note This ordering is used by the buffer_tree.
  */
-static int avl_tree_compare_by_time_stamp(const logger_biobj_avl_item_t *item1,
-                                          const logger_biobj_avl_item_t *item2,
-                                          void *userdata) {
-  /* This ordering is used by the buffer_tree. */
-
-  if (item1->time_stamp < item2->time_stamp)
+static int avl_tree_compare_by_eval_number(const logger_biobj_avl_item_t *item1,
+                                           const logger_biobj_avl_item_t *item2,
+                                           void *userdata) {
+  if (item1->evaluation_number < item2->evaluation_number)
     return -1;
-  else if (item1->time_stamp > item2->time_stamp)
+  else if (item1->evaluation_number > item2->evaluation_number)
     return 1;
   else
     return 0;
@@ -189,10 +219,10 @@ static int avl_tree_compare_by_time_stamp(const logger_biobj_avl_item_t *item1,
 }
 
 /**
- * Outputs the AVL tree to the given file. Returns the number of nodes in the tree.
+ * @brief Outputs the AVL tree to the given file. Returns the number of nodes in the tree.
  */
 static size_t logger_biobj_tree_output(FILE *file,
-                                       avl_tree_t *tree,
+                                       const avl_tree_t *tree,
                                        const size_t dim,
                                        const size_t num_obj,
                                        const int log_vars,
@@ -208,7 +238,7 @@ static size_t logger_biobj_tree_output(FILE *file,
     /* There is at least a solution in the tree to output */
     solution = tree->head;
     while (solution != NULL) {
-      fprintf(file, "%lu\t", ((logger_biobj_avl_item_t*) solution->item)->time_stamp);
+      fprintf(file, "%lu\t", ((logger_biobj_avl_item_t*) solution->item)->evaluation_number);
       for (j = 0; j < num_obj; j++)
         fprintf(file, "%.*e\t", precision_f, ((logger_biobj_avl_item_t*) solution->item)->y[j]);
       if (log_vars) {
@@ -225,12 +255,16 @@ static size_t logger_biobj_tree_output(FILE *file,
 }
 
 /**
+ * @brief Updates the archive and buffer trees with the given node.
+ *
  * Checks for domination and updates the archive tree and the values of the indicators if the given node is
- * not weakly dominated by existing nodes in the archive tree.
- * Returns 1 if the update was performed and 0 otherwise.
+ * not weakly dominated by existing nodes in the archive tree. This is where the main computation of
+ * indicator values takes place.
+ *
+ * @return 1 if the update was performed and 0 otherwise.
  */
-static int logger_biobj_tree_update(logger_biobj_t *logger,
-                                    coco_problem_t *problem,
+static int logger_biobj_tree_update(logger_biobj_data_t *logger,
+                                    const coco_problem_t *problem,
                                     logger_biobj_avl_item_t *node_item) {
 
   avl_node_t *node, *next_node, *new_node;
@@ -255,7 +289,7 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
       if (dominance == 1) {
         /* The new point dominates the next point, remove the next point */
         if (logger->compute_indicators) {
-          for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+          for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
             logger->indicators[i]->current_value -= ((logger_biobj_avl_item_t*) node->item)->indicator_contribution[i];
           }
         }
@@ -282,7 +316,7 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
       if (dominance == 1) {
         /* The new point dominates the next point, remove the next point */
         if (logger->compute_indicators) {
-          for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+          for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
             logger->indicators[i]->current_value -= ((logger_biobj_avl_item_t*) node->item)->indicator_contribution[i];
           }
         }
@@ -306,7 +340,7 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
         if (new_node->next != NULL) {
           next_item = (logger_biobj_avl_item_t*) new_node->next->item;
           if (next_item->within_ROI) {
-            for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+            for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
               logger->indicators[i]->current_value -= next_item->indicator_contribution[i];
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
                 next_item->indicator_contribution[i] = (node_item->y[0] - next_item->y[0])
@@ -327,7 +361,7 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
         if (new_node->prev != NULL) {
           previous_item = (logger_biobj_avl_item_t*) new_node->prev->item;
           if (previous_item->within_ROI) {
-            for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+            for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
                 node_item->indicator_contribution[i] = (previous_item->y[0] - node_item->y[0])
                     / (problem->nadir_value[0] - problem->best_value[0])
@@ -348,7 +382,7 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
 
         if (previous_unavailable) {
           /* Previous item does not exist or is out of ROI, use reference point instead */
-          for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+          for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
             if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
               node_item->indicator_contribution[i] = (problem->nadir_value[0] - node_item->y[0])
                   / (problem->nadir_value[0] - problem->best_value[0])
@@ -362,7 +396,7 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
           }
         }
 
-        for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+        for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
           logger->indicators[i]->current_value += node_item->indicator_contribution[i];
         }
       }
@@ -373,35 +407,41 @@ static int logger_biobj_tree_update(logger_biobj_t *logger,
 }
 
 /**
- * Initializes the indicator with name indicator_name.
+ * @brief Initializes the indicator with name indicator_name.
+ *
+ * Opens files for writing and resets counters.
  */
-static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
-                                                        coco_problem_t *problem,
+static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_t *logger,
+                                                        const coco_observer_t *observer,
+                                                        const coco_problem_t *problem,
                                                         const char *indicator_name) {
 
-  coco_observer_t *observer;
-  observer_biobj_t *observer_biobj;
+  observer_biobj_data_t *observer_biobj;
   logger_biobj_indicator_t *indicator;
   char *prefix, *file_name, *path_name;
   int info_file_exists = 0;
 
   indicator = (logger_biobj_indicator_t *) coco_allocate_memory(sizeof(*indicator));
-  observer = logger->observer;
-  observer_biobj = (observer_biobj_t *) observer->data;
+  assert(observer);
+  assert(observer->data);
+  observer_biobj = (observer_biobj_data_t *) observer->data;
 
   indicator->name = coco_strdup(indicator_name);
 
   indicator->best_value = suite_biobj_get_best_value(indicator->name, problem->problem_id);
-  indicator->next_target_id = 0;
   indicator->target_hit = 0;
+  indicator->evaluation_logged = 0;
   indicator->current_value = 0;
   indicator->additional_penalty = 0;
   indicator->overall_value = 0;
 
+  indicator->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
+  indicator->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, problem->number_of_variables);
+
   /* Prepare the info file */
-  path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
-  memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
-  coco_create_path(path_name);
+  path_name = coco_allocate_string(COCO_PATH_MAX);
+  memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
+  coco_create_directory(path_name);
   file_name = coco_strdupf("%s_%s.info", problem->problem_type, indicator_name);
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
   info_file_exists = coco_file_exists(path_name);
@@ -413,16 +453,31 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   coco_free_memory(file_name);
   coco_free_memory(path_name);
 
-  /* Prepare the log file */
-  path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
-  memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
+  /* Prepare the tdat file */
+  path_name = coco_allocate_string(COCO_PATH_MAX);
+  memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
-  coco_create_path(path_name);
+  coco_create_directory(path_name);
   prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
+  file_name = coco_strdupf("%s_%s.tdat", prefix, indicator_name);
+  coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
+  indicator->tdat_file = fopen(path_name, "a");
+  if (indicator->tdat_file == NULL) {
+    coco_error("logger_biobj_indicator() failed to open file '%s'.", path_name);
+    return NULL; /* Never reached */
+  }
+  coco_free_memory(file_name);
+  coco_free_memory(path_name);
+
+  /* Prepare the dat file */
+  path_name = coco_allocate_string(COCO_PATH_MAX);
+  memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
+  coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
+  coco_create_directory(path_name);
   file_name = coco_strdupf("%s_%s.dat", prefix, indicator_name);
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
-  indicator->log_file = fopen(path_name, "a");
-  if (indicator->log_file == NULL) {
+  indicator->dat_file = fopen(path_name, "a");
+  if (indicator->dat_file == NULL) {
     coco_error("logger_biobj_indicator() failed to open file '%s'.", path_name);
     return NULL; /* Never reached */
   }
@@ -443,28 +498,36 @@ static logger_biobj_indicator_t *logger_biobj_indicator(logger_biobj_t *logger,
   coco_free_memory(file_name);
   coco_free_memory(path_name);
 
-  /* Output header information to the log file */
-  fprintf(indicator->log_file, "%%\n%% index = %ld, name = %s\n", problem->suite_dep_index, problem->problem_name);
-  fprintf(indicator->log_file, "%% instance = %ld, reference value = %.*e\n", problem->suite_dep_instance,
+  /* Output header information to the dat file */
+  fprintf(indicator->dat_file, "%%\n%% index = %ld, name = %s\n", problem->suite_dep_index, problem->problem_name);
+  fprintf(indicator->dat_file, "%% instance = %ld, reference value = %.*e\n", problem->suite_dep_instance,
       logger->precision_f, indicator->best_value);
-  fprintf(indicator->log_file, "%% function evaluation | indicator value | target hit\n");
+  fprintf(indicator->dat_file, "%% function evaluation | indicator value | target hit\n");
+
+  /* Output header information to the tdat file */
+  fprintf(indicator->tdat_file, "%%\n%% index = %ld, name = %s\n", problem->suite_dep_index, problem->problem_name);
+  fprintf(indicator->tdat_file, "%% instance = %ld, reference value = %.*e\n", problem->suite_dep_instance,
+      logger->precision_f, indicator->best_value);
+  fprintf(indicator->tdat_file, "%% function eval_number | indicator value\n");
 
   return indicator;
 }
 
 /**
- * Outputs the final information about this indicator.
+ * @brief Outputs the final information about this indicator.
  */
-static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, logger_biobj_t *logger) {
+static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, const logger_biobj_data_t *logger) {
 
-  size_t target_index = 0;
-  if (indicator->next_target_id > 0)
-    target_index = indicator->next_target_id - 1;
-
-  /* Log the last evaluation in the dat file if wasn't already logged */
+  /* Log the last eval_number in the dat file if wasn't already logged */
   if (!indicator->target_hit) {
-    fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-        indicator->overall_value, logger->precision_f, MO_RELATIVE_TARGET_VALUES[target_index]);
+    fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
+        indicator->overall_value, logger->precision_f, ((coco_observer_targets_t *) indicator->targets)->value);
+  }
+
+  /* Log the last eval_number in the tdat file if wasn't already logged */
+  if (!indicator->evaluation_logged) {
+    fprintf(indicator->tdat_file, "%lu\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
+        indicator->overall_value);
   }
 
   /* Log the information in the info file */
@@ -474,23 +537,28 @@ static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator,
 }
 
 /**
- * Frees the memory of the given indicator.
+ * @brief Frees the memory of the given indicator.
  */
 static void logger_biobj_indicator_free(void *stuff) {
 
   logger_biobj_indicator_t *indicator;
 
   assert(stuff != NULL);
-  indicator = stuff;
+  indicator = (logger_biobj_indicator_t *) stuff;
 
   if (indicator->name != NULL) {
     coco_free_memory(indicator->name);
     indicator->name = NULL;
   }
 
-  if (indicator->log_file != NULL) {
-    fclose(indicator->log_file);
-    indicator->log_file = NULL;
+  if (indicator->dat_file != NULL) {
+    fclose(indicator->dat_file);
+    indicator->dat_file = NULL;
+  }
+
+  if (indicator->tdat_file != NULL) {
+    fclose(indicator->tdat_file);
+    indicator->tdat_file = NULL;
   }
 
   if (indicator->info_file != NULL) {
@@ -498,17 +566,27 @@ static void logger_biobj_indicator_free(void *stuff) {
     indicator->info_file = NULL;
   }
 
+  if (indicator->targets != NULL){
+    coco_free_memory(indicator->targets);
+    indicator->targets = NULL;
+  }
+
+  if (indicator->evaluations != NULL){
+    coco_observer_evaluations_free(indicator->evaluations);
+    indicator->evaluations = NULL;
+  }
+
   coco_free_memory(stuff);
 
 }
 
 /**
- * Evaluates the function, increases the number of evaluations and outputs information based on observer
- * options.
+ * @brief Evaluates the function, increases the number of evaluations and outputs information based on the
+ * observer options.
  */
 static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, double *y) {
 
-  logger_biobj_t *logger;
+  logger_biobj_data_t *logger;
 
   logger_biobj_avl_item_t *node_item;
   logger_biobj_indicator_t *indicator;
@@ -516,35 +594,40 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
   int update_performed;
   size_t i;
 
-  logger = (logger_biobj_t *) coco_transformed_get_data(problem);
+  logger = (logger_biobj_data_t *) coco_problem_transformed_get_data(problem);
 
   /* Evaluate function */
-  coco_evaluate_function(coco_transformed_get_inner_problem(problem), x, y);
+  coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
   logger->number_of_evaluations++;
 
-  /* Update the archive with the new solution, if it is not dominated by or equal to existing solutions in the archive */
+  /* Update the archive with the new solution, if it is not dominated by or equal to existing solutions in
+   * the archive */
   node_item = logger_biobj_node_create(x, y, logger->number_of_evaluations, logger->number_of_variables,
       logger->number_of_objectives);
 
-  update_performed = logger_biobj_tree_update(logger, coco_transformed_get_inner_problem(problem), node_item);
+  update_performed = logger_biobj_tree_update(logger, coco_problem_transformed_get_inner_problem(problem),
+      node_item);
 
-  /* If the archive was updated and you need to log all nondominated solutions, output the new solution to nondom_file */
-  if (update_performed && (logger->log_nondom_mode == ALL)) {
-    logger_biobj_tree_output(logger->nondom_file, logger->buffer_tree, logger->number_of_variables,
+  /* If the archive was updated and you need to log all nondominated solutions, output the new solution to
+   * nondom_file */
+  if (update_performed && (logger->log_nondom_mode == LOG_NONDOM_ALL)) {
+    logger_biobj_tree_output(logger->adat_file, logger->buffer_tree, logger->number_of_variables,
         logger->number_of_objectives, logger->log_vars, logger->precision_x, logger->precision_f);
     avl_tree_purge(logger->buffer_tree);
 
     /* Flush output so that impatient users can see progress. */
-    fflush(logger->nondom_file);
+    fflush(logger->adat_file);
   }
 
-  /* If the archive was updated and a new target was reached for an indicator or if this is the first evaluation,
-   * output indicator information. Note that a target is reached when the (best_value - current_value) <=
-   * relative_target_value (the relative_target_value is a target for indicator difference, not indicator value!)
+  /* Perform output to the:
+   * - dat file, if the archive was updated and a new target was reached for an indicator;
+   * - tdat file, if the number of evaluations matches one of the predefined numbers.
+   *
+   * Note that a target is reached when the (best_value - current_value) <= relative_target_value
+   * The relative_target_value is a target for indicator difference, not indicator value!
    */
-  /* Log the evaluation */
   if (logger->compute_indicators) {
-    for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+    for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
 
       indicator = logger->indicators[i];
       indicator->target_hit = 0;
@@ -561,7 +644,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
               while (solution != NULL) {
                 double distance = mo_get_distance_to_ROI(((logger_biobj_avl_item_t*) solution->item)->y,
                     problem->best_value, problem->nadir_value, problem->number_of_objectives);
-                indicator->additional_penalty = coco_min_double(indicator->additional_penalty, distance);
+                indicator->additional_penalty = coco_double_min(indicator->additional_penalty, distance);
                 solution = solution->next;
               }
             }
@@ -577,30 +660,21 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
         }
 
         /* Check whether a target was hit */
-        while ((indicator->next_target_id < MO_NUMBER_OF_TARGETS)
-            && (indicator->overall_value <= MO_RELATIVE_TARGET_VALUES[indicator->next_target_id])) {
-          /* A target was hit */
-          indicator->target_hit = 1;
-          if (indicator->next_target_id + 1 < MO_NUMBER_OF_TARGETS)
-            indicator->next_target_id++;
-          else
-            break;
-        }
+        indicator->target_hit = coco_observer_targets_trigger(indicator->targets, indicator->overall_value);
       }
 
-      /* Log the evaluation if a target was hit or the evaluation number matches a predefined value */
+      /* Log to the dat file if a target was hit */
       if (indicator->target_hit) {
-        fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-            indicator->overall_value, logger->precision_f,
-            MO_RELATIVE_TARGET_VALUES[indicator->next_target_id - 1]);
+        fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
+            indicator->overall_value, logger->precision_f, ((coco_observer_targets_t *) indicator->targets)->value);
       }
-      else if (coco_observer_evaluation_to_log(logger->number_of_evaluations, problem->number_of_variables)) {
-        size_t target_index = 0;
-        if (indicator->next_target_id > 0)
-          target_index = indicator->next_target_id - 1;
-        fprintf(indicator->log_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-            indicator->overall_value, logger->precision_f, MO_RELATIVE_TARGET_VALUES[target_index]);
-        indicator->target_hit = 1;
+
+      /* Log to the tdat file if the number of evaluations matches one of the predefined numbers */
+      indicator->evaluation_logged = coco_observer_evaluations_trigger(indicator->evaluations,
+          logger->number_of_evaluations);
+      if (indicator->evaluation_logged) {
+        fprintf(indicator->tdat_file, "%lu\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
+            indicator->overall_value);
       }
 
     }
@@ -608,15 +682,15 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
 }
 
 /**
- * Outputs the final nondominated solutions.
+ * @brief Outputs the final nondominated solutions to the archive file.
  */
-static void logger_biobj_finalize(logger_biobj_t *logger) {
+static void logger_biobj_finalize(logger_biobj_data_t *logger) {
 
   avl_tree_t *resorted_tree;
   avl_node_t *solution;
 
-  /* Resort archive_tree according to time stamp and then output it */
-  resorted_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_time_stamp, NULL);
+  /* Re-sort archive_tree according to time stamp and then output it */
+  resorted_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_eval_number, NULL);
 
   if (logger->archive_tree->tail) {
     /* There is at least a solution in the tree to output */
@@ -627,37 +701,37 @@ static void logger_biobj_finalize(logger_biobj_t *logger) {
     }
   }
 
-  logger_biobj_tree_output(logger->nondom_file, resorted_tree, logger->number_of_variables,
+  logger_biobj_tree_output(logger->adat_file, resorted_tree, logger->number_of_variables,
       logger->number_of_objectives, logger->log_vars, logger->precision_x, logger->precision_f);
 
   avl_tree_destruct(resorted_tree);
 }
 
 /**
- * Frees the memory of the given biobjective logger.
+ * @brief Frees the memory of the given biobjective logger.
  */
 static void logger_biobj_free(void *stuff) {
 
-  logger_biobj_t *logger;
+  logger_biobj_data_t *logger;
   size_t i;
 
   assert(stuff != NULL);
-  logger = stuff;
+  logger = (logger_biobj_data_t *) stuff;
 
-  if (logger->log_nondom_mode == FINAL) {
+  if (logger->log_nondom_mode == LOG_NONDOM_FINAL) {
      logger_biobj_finalize(logger);
   }
 
   if (logger->compute_indicators) {
-    for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+    for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
       logger_biobj_indicator_finalize(logger->indicators[i], logger);
       logger_biobj_indicator_free(logger->indicators[i]);
     }
   }
 
-  if ((logger->log_nondom_mode != NONE) && (logger->nondom_file != NULL)) {
-    fclose(logger->nondom_file);
-    logger->nondom_file = NULL;
+  if ((logger->log_nondom_mode != LOG_NONDOM_NONE) && (logger->adat_file != NULL)) {
+    fclose(logger->adat_file);
+    logger->adat_file = NULL;
   }
 
   avl_tree_destruct(logger->archive_tree);
@@ -666,98 +740,104 @@ static void logger_biobj_free(void *stuff) {
 }
 
 /**
- * Initializes the biobjective logger.
+ * @brief Initializes the biobjective logger.
+ *
+ * Copies all observer field values that are needed after initialization into logger field values for two
+ * reasons:
+ * - If the observer is deleted before the suite, the observer is not available anymore when the logger
+ * is finalized.
+ * - This reduces function calls.
  */
-static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *problem) {
+static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *inner_problem) {
 
-  coco_problem_t *self;
-  logger_biobj_t *logger;
-  observer_biobj_t *observer_biobj;
+  coco_problem_t *problem;
+  logger_biobj_data_t *logger_biobj;
+  observer_biobj_data_t *observer_biobj;
   const char nondom_folder_name[] = "archive";
   char *path_name, *file_name = NULL, *prefix;
   size_t i;
 
-  if (problem->number_of_objectives != 2) {
-    coco_error("logger_biobj(): The biobjective logger cannot log a problem with %d objective(s)", problem->number_of_objectives);
+  if (inner_problem->number_of_objectives != 2) {
+    coco_error("logger_biobj(): The bi-objective logger cannot log a problem with %d objective(s)",
+        inner_problem->number_of_objectives);
     return NULL; /* Never reached. */
   }
 
-  logger = coco_allocate_memory(sizeof(*logger));
+  logger_biobj = (logger_biobj_data_t *) coco_allocate_memory(sizeof(*logger_biobj));
 
-  logger->observer = observer;
+  logger_biobj->number_of_evaluations = 0;
+  logger_biobj->number_of_variables = inner_problem->number_of_variables;
+  logger_biobj->number_of_objectives = inner_problem->number_of_objectives;
+  logger_biobj->suite_dep_instance = inner_problem->suite_dep_instance;
 
-  logger->number_of_evaluations = 0;
-  logger->number_of_variables = problem->number_of_variables;
-  logger->number_of_objectives = problem->number_of_objectives;
-  logger->suite_dep_instance = problem->suite_dep_instance;
-
-  observer_biobj = (observer_biobj_t *) observer->data;
+  observer_biobj = (observer_biobj_data_t *) observer->data;
   /* Copy values from the observes that you might need even if they do not exist any more */
-  logger->log_nondom_mode = observer_biobj->log_nondom_mode;
-  logger->compute_indicators = observer_biobj->compute_indicators;
-  logger->precision_x = observer->precision_x;
-  logger->precision_f = observer->precision_f;
+  logger_biobj->log_nondom_mode = observer_biobj->log_nondom_mode;
+  logger_biobj->compute_indicators = observer_biobj->compute_indicators;
+  logger_biobj->precision_x = observer->precision_x;
+  logger_biobj->precision_f = observer->precision_f;
 
-  if (((observer_biobj->log_vars_mode == LOW_DIM) && (problem->number_of_variables > 5))
-      || (observer_biobj->log_vars_mode == NEVER))
-    logger->log_vars = 0;
+  if (((observer_biobj->log_vars_mode == LOG_VARS_LOW_DIM) && (inner_problem->number_of_variables > 5))
+      || (observer_biobj->log_vars_mode == LOG_VARS_NEVER))
+    logger_biobj->log_vars = 0;
   else
-    logger->log_vars = 1;
+    logger_biobj->log_vars = 1;
 
-  /* Initialize logging of nondominated solutions */
-  if (logger->log_nondom_mode != NONE) {
+  /* Initialize logging of nondominated solutions into the archive file */
+  if (logger_biobj->log_nondom_mode != LOG_NONDOM_NONE) {
 
     /* Create the path to the file */
-    path_name = (char *) coco_allocate_memory(COCO_PATH_MAX);
-    memcpy(path_name, observer->output_folder, strlen(observer->output_folder) + 1);
+    path_name = coco_allocate_string(COCO_PATH_MAX);
+    memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
     coco_join_path(path_name, COCO_PATH_MAX, nondom_folder_name, NULL);
-    coco_create_path(path_name);
+    coco_create_directory(path_name);
 
     /* Construct file name */
-    prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
-    if (logger->log_nondom_mode == ALL)
-      file_name = coco_strdupf("%s_nondom_all.dat", prefix);
-    else if (logger->log_nondom_mode == FINAL)
-      file_name = coco_strdupf("%s_nondom_final.dat", prefix);
+    prefix = coco_remove_from_string(inner_problem->problem_id, "_i", "_d");
+    if (logger_biobj->log_nondom_mode == LOG_NONDOM_ALL)
+      file_name = coco_strdupf("%s_nondom_all.adat", prefix);
+    else if (logger_biobj->log_nondom_mode == LOG_NONDOM_FINAL)
+      file_name = coco_strdupf("%s_nondom_final.adat", prefix);
     coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
-    if (logger->log_nondom_mode != NONE)
+    if (logger_biobj->log_nondom_mode != LOG_NONDOM_NONE)
       coco_free_memory(file_name);
     coco_free_memory(prefix);
 
-    /* Open and initialize the file */
-    logger->nondom_file = fopen(path_name, "a");
-    if (logger->nondom_file == NULL) {
+    /* Open and initialize the archive file */
+    logger_biobj->adat_file = fopen(path_name, "a");
+    if (logger_biobj->adat_file == NULL) {
       coco_error("logger_biobj() failed to open file '%s'.", path_name);
       return NULL; /* Never reached */
     }
     coco_free_memory(path_name);
 
     /* Output header information */
-    fprintf(logger->nondom_file, "%% instance = %ld, name = %s\n", problem->suite_dep_instance, problem->problem_name);
-    if (logger->log_vars) {
-      fprintf(logger->nondom_file, "%% function evaluation | %lu objectives | %lu variables\n",
-          problem->number_of_objectives, problem->number_of_variables);
+    fprintf(logger_biobj->adat_file, "%% instance = %ld, name = %s\n", inner_problem->suite_dep_instance,
+        inner_problem->problem_name);
+    if (logger_biobj->log_vars) {
+      fprintf(logger_biobj->adat_file, "%% function eval_number | %lu objectives | %lu variables\n",
+          inner_problem->number_of_objectives, inner_problem->number_of_variables);
     } else {
-      fprintf(logger->nondom_file, "%% function evaluation | %lu objectives \n",
-          problem->number_of_objectives);
+      fprintf(logger_biobj->adat_file, "%% function eval_number | %lu objectives \n",
+          inner_problem->number_of_objectives);
     }
   }
 
   /* Initialize the AVL trees */
-  logger->archive_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_last_objective,
+  logger_biobj->archive_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_last_objective,
       (avl_free_t) logger_biobj_node_free);
-  logger->buffer_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_time_stamp, NULL);
-
-  self = coco_transformed_allocate(problem, logger, logger_biobj_free);
-  self->evaluate_function = logger_biobj_evaluate;
+  logger_biobj->buffer_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_eval_number, NULL);
 
   /* Initialize the indicators */
-  if (logger->compute_indicators) {
-    for (i = 0; i < OBSERVER_BIOBJ_NUMBER_OF_INDICATORS; i++)
-      logger->indicators[i] = logger_biobj_indicator(logger, problem, OBSERVER_BIOBJ_INDICATORS[i]);
+  if (logger_biobj->compute_indicators) {
+    for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++)
+      logger_biobj->indicators[i] = logger_biobj_indicator(logger_biobj, observer, inner_problem, logger_biobj_indicators[i]);
 
-    observer_biobj->previous_function = (long) problem->suite_dep_function;
+    observer_biobj->previous_function = (long) inner_problem->suite_dep_function;
   }
 
-  return self;
+  problem = coco_problem_transformed_allocate(inner_problem, logger_biobj, logger_biobj_free, observer->observer_name);
+  problem->evaluate_function = logger_biobj_evaluate;
+
+  return problem;
 }
