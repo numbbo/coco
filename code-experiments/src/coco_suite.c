@@ -527,14 +527,49 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
   long dim_found, dim_idx_found;
   int parce_dim = 1, parce_dim_idx = 1;
 
+  coco_option_keys_t *known_option_keys, *given_option_keys, *redundant_option_keys;
+
+  /* Sets the valid keys for suite options and suite instance */
+  const char *known_keys_o[] = { "dimensions", "function_idx", "instance_idx" };
+  const char *known_keys_i[] = { "year", "instances" };
+
   /* Initialize the suite */
   suite = coco_suite_intialize(suite_name);
 
   /* Set the instance */
   if ((!suite_instance) || (strlen(suite_instance) == 0))
     instances = coco_suite_get_instance_indices(suite, suite->default_instances);
-  else
+  else {
     instances = coco_suite_get_instance_indices(suite, suite_instance);
+
+    if (!instances) {
+      /* Something wrong in the suite_instance string, use default instead */
+      instances = coco_suite_get_instance_indices(suite, suite->default_instances);
+    }
+
+    /* Check for redundant option keys for suite instance */
+    known_option_keys = coco_option_keys_allocate(sizeof(known_keys_i) / sizeof(char *), known_keys_i);
+    given_option_keys = coco_option_keys(suite_instance);
+
+    if (given_option_keys) {
+      redundant_option_keys = coco_option_keys_get_redundant(known_option_keys, given_option_keys);
+
+      if ((redundant_option_keys != NULL) && (redundant_option_keys->count > 0)) {
+        /* Warn the user that some of given options are being ignored and output the valid options */
+        char *output_redundant = coco_option_keys_get_output_string(redundant_option_keys,
+            "coco_suite(): Some keys in suite instance were ignored:\n");
+        char *output_valid = coco_option_keys_get_output_string(known_option_keys,
+            "Valid keys for suite instance are:\n");
+        coco_warning("%s%s", output_redundant, output_valid);
+        coco_free_memory(output_redundant);
+        coco_free_memory(output_valid);
+      }
+
+      coco_option_keys_free(given_option_keys);
+      coco_option_keys_free(redundant_option_keys);
+    }
+    coco_option_keys_free(known_option_keys);
+  }
   coco_suite_set_instance(suite, instances);
   coco_free_memory(instances);
 
@@ -606,6 +641,30 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
       }
     }
     coco_free_memory(option_string);
+
+    /* Check for redundant option keys for suite options */
+    known_option_keys = coco_option_keys_allocate(sizeof(known_keys_o) / sizeof(char *), known_keys_o);
+    given_option_keys = coco_option_keys(suite_options);
+
+    if (given_option_keys) {
+      redundant_option_keys = coco_option_keys_get_redundant(known_option_keys, given_option_keys);
+
+      if ((redundant_option_keys != NULL) && (redundant_option_keys->count > 0)) {
+        /* Warn the user that some of given options are being ignored and output the valid options */
+        char *output_redundant = coco_option_keys_get_output_string(redundant_option_keys,
+            "coco_suite(): Some keys in suite options were ignored:\n");
+        char *output_valid = coco_option_keys_get_output_string(known_option_keys,
+            "Valid keys for suite options are:\n");
+        coco_warning("%s%s", output_redundant, output_valid);
+        coco_free_memory(output_redundant);
+        coco_free_memory(output_valid);
+      }
+
+      coco_option_keys_free(given_option_keys);
+      coco_option_keys_free(redundant_option_keys);
+    }
+    coco_option_keys_free(known_option_keys);
+
   }
 
   /* Check that there are enough dimensions, functions and instances left */
