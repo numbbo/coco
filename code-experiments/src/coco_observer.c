@@ -394,7 +394,7 @@ void coco_observer_free(coco_observer_t *observer) {
  * 100*dim*5, ... The default value is "1,2,5".
  * - "precision_x: VALUE" defines the precision used when outputting variables and corresponds to the number
  * of digits to be printed after the decimal point. The default value is 8.
- * - precision_f: VALUE defines the precision used when outputting f values and corresponds to the number of
+ * - "precision_f: VALUE" defines the precision used when outputting f values and corresponds to the number of
  * digits to be printed after the decimal point. The default value is 15.
  *
  * @return The constructed observer object or NULL if observer_name equals NULL, "" or "no_observer".
@@ -410,6 +410,15 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   size_t number_evaluation_triggers;
   double target_precision;
   char *base_evaluation_triggers;
+
+  coco_option_keys_t *known_option_keys, *given_option_keys, *additional_option_keys, *redundant_option_keys;
+
+  /* Sets the valid keys for observer options
+   * IMPORTANT: This list should be up-to-date with the code and the documentation */
+  const char *known_keys[] = { "result_folder", "algorithm_name", "algorithm_info",
+      "number_target_triggers", "target_precision", "number_evaluation_triggers", "base_evaluation_triggers",
+      "precision_x", "precision_f" };
+  additional_option_keys = NULL; /* To be set by the chosen observer */
 
   if (0 == strcmp(observer_name, "no_observer")) {
     return NULL;
@@ -486,24 +495,47 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   coco_free_memory(algorithm_info);
   coco_free_memory(base_evaluation_triggers);
 
-  /* Here each observer must have an entry - a call to a specific function that sets the following observer
-   * fields:
-   * - observer_name
+  /* Here each observer must have an entry - a call to a specific function that sets the additional_option_keys
+   * and the following observer fields:
    * - logger_allocate_function
    * - logger_free_function
    * - data_free_function
-   * - data
-   */
+   * - data */
   if (0 == strcmp(observer_name, "toy")) {
-    observer_toy(observer, observer_options);
+    observer_toy(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob")) {
-    observer_bbob(observer, observer_options);
+    observer_bbob(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob-biobj")) {
-    observer_biobj(observer, observer_options);
+    observer_biobj(observer, observer_options, &additional_option_keys);
   } else {
     coco_warning("Unknown observer!");
     return NULL;
   }
+
+  /* Check for redundant option keys */
+  known_option_keys = coco_option_keys_allocate(sizeof(known_keys) / sizeof(char *), known_keys);
+  coco_option_keys_add(&known_option_keys, additional_option_keys);
+  given_option_keys = coco_option_keys(observer_options);
+
+  if (given_option_keys) {
+    redundant_option_keys = coco_option_keys_get_redundant(known_option_keys, given_option_keys);
+
+    if ((redundant_option_keys != NULL) && (redundant_option_keys->count > 0)) {
+      /* Warn the user that some of given options are being ignored and output the valid options */
+      char *output_redundant = coco_option_keys_get_output_string(redundant_option_keys,
+          "coco_observer(): Some keys in observer options were ignored:\n");
+      char *output_valid = coco_option_keys_get_output_string(known_option_keys,
+          "Valid keys for observer options are:\n");
+      coco_warning("%s%s", output_redundant, output_valid);
+      coco_free_memory(output_redundant);
+      coco_free_memory(output_valid);
+    }
+
+    coco_option_keys_free(given_option_keys);
+    coco_option_keys_free(redundant_option_keys);
+  }
+  coco_option_keys_free(known_option_keys);
+  coco_option_keys_free(additional_option_keys);
 
   return observer;
 }

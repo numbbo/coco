@@ -23,12 +23,14 @@ typedef struct {
 /**
  * @brief Initializes the bbob observer.
  */
-static void observer_bbob(coco_observer_t *observer, const char *options) {
+static void observer_bbob(coco_observer_t *observer, const char *options, coco_option_keys_t **option_keys) {
 
   observer->logger_allocate_function = logger_bbob;
   observer->logger_free_function = logger_bbob_free;
   observer->data_free_function = NULL;
   observer->data = NULL;
 
-  (void)options; /* To silence the compiler */
+  *option_keys = NULL;
+
+  (void) options; /* To silence the compiler */
 }
