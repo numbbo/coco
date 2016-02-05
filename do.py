@@ -226,7 +226,8 @@ def build_python():
     ## Force distutils to use Cython
     # os.environ['USE_CYTHON'] = 'true'
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
-    python('code-experiments/build/python', ['setup.py', 'install', '--user'])
+    # python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
+    run(join('code-experiments', 'build', 'python'), ['python', 'setup.py', 'install', '--user'])
     # os.environ.pop('USE_CYTHON')
 
 def run_python(test=True):
