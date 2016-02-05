@@ -516,23 +516,26 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   known_option_keys = coco_option_keys_allocate(sizeof(known_keys) / sizeof(char *), known_keys);
   coco_option_keys_add(&known_option_keys, additional_option_keys);
   given_option_keys = coco_option_keys(observer_options);
-  redundant_option_keys = coco_option_keys_get_redundant(known_option_keys, given_option_keys);
 
-  if ((redundant_option_keys != NULL) && (redundant_option_keys->count > 0)) {
-    /* Warn the user that some of given options are being ignored and output the valid options */
-    char *output_redundant = coco_option_keys_get_output_string(redundant_option_keys,
-        "coco_observer(): Some keys in observer options were ignored:\n");
-    char *output_valid = coco_option_keys_get_output_string(known_option_keys,
-        "Valid keys for observer options are:\n");
-    coco_warning("%s%s", output_redundant, output_valid);
-    coco_free_memory(output_redundant);
-    coco_free_memory(output_valid);
+  if (given_option_keys) {
+    redundant_option_keys = coco_option_keys_get_redundant(known_option_keys, given_option_keys);
+
+    if ((redundant_option_keys != NULL) && (redundant_option_keys->count > 0)) {
+      /* Warn the user that some of given options are being ignored and output the valid options */
+      char *output_redundant = coco_option_keys_get_output_string(redundant_option_keys,
+          "coco_observer(): Some keys in observer options were ignored:\n");
+      char *output_valid = coco_option_keys_get_output_string(known_option_keys,
+          "Valid keys for observer options are:\n");
+      coco_warning("%s%s", output_redundant, output_valid);
+      coco_free_memory(output_redundant);
+      coco_free_memory(output_valid);
+    }
+
+    coco_option_keys_free(given_option_keys);
+    coco_option_keys_free(redundant_option_keys);
   }
-
   coco_option_keys_free(known_option_keys);
   coco_option_keys_free(additional_option_keys);
-  coco_option_keys_free(given_option_keys);
-  coco_option_keys_free(redundant_option_keys);
 
   return observer;
 }
