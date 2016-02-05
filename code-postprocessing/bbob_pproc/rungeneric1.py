@@ -115,10 +115,7 @@ def main(argv=None):
             single function.
         --expensive
             runlength-based f-target values and fixed display limits,
-            useful with comparatively small budgets. By default the
-            setting is based on the budget used in the data.
-        --not-expensive
-            expensive setting off. 
+            useful with comparatively small budgets.
         --svg
             generate also the svg figures which are used in html files 
         --runlength-based
@@ -234,8 +231,6 @@ def main(argv=None):
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 genericsettings.isExpensive = True  # comprises runlength-based
-            elif o == "--not-expensive":
-                genericsettings.isExpensive = False
             elif o == "--svg":
                 genericsettings.generate_svg_files = True
             elif o == "--sca-only":
@@ -292,7 +287,7 @@ def main(argv=None):
         dsList = DataSetList(filelist, genericsettings.verbose)
         
         if not dsList:
-            raise Usage("Nothing to do: post-processing stopped.")
+            raise Usage("Nothing to do: post-processing stopped. For more information check the messages above.")
 
         if genericsettings.isNoisy and not genericsettings.isNoiseFree:
             dsList = dsList.dictByNoise().get('nzall', DataSetList())
@@ -305,7 +300,7 @@ def main(argv=None):
             dict_max_fun_evals[ds.dim] = np.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
         
         from . import config
-        config.target_values(genericsettings.isExpensive, dict_max_fun_evals)
+        config.target_values(genericsettings.isExpensive)
         config.config(dsList.isBiobjective())
 
         if (genericsettings.verbose):
@@ -338,7 +333,7 @@ def main(argv=None):
             dsList.pickle(verbose=genericsettings.verbose)
 
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
+            ppconverrorbars.main(dictAlg, dsList.isBiobjective(), outputdir, genericsettings.verbose)
 
         if genericsettings.isFig:
             print "Scaling figures...",
@@ -387,13 +382,19 @@ def main(argv=None):
                 except KeyError:
                     continue
 
-                pprldistr.main(sliceDim, True,
-                               outputdir, 'all', genericsettings.verbose)
                 dictNoise = sliceDim.dictByNoise()
+
+                # If there is only one noise type then we don't need the all graphs.
+                if len(dictNoise) > 1:
+                    pprldistr.main(sliceDim, True,
+                                   outputdir, 'all', genericsettings.verbose)
+                
+                    
                 for noise, sliceNoise in dictNoise.iteritems():
                     pprldistr.main(sliceNoise, True,
                                    outputdir,
                                    '%s' % noise, genericsettings.verbose)
+
                 dictFG = sliceDim.dictByFuncGroup()
                 for fGroup, sliceFuncGroup in dictFG.items():
                     pprldistr.main(sliceFuncGroup, True,
@@ -405,7 +406,9 @@ def main(argv=None):
 
             if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
-                pprldmany.all_single_functions(dictAlg, None,
+                pprldmany.all_single_functions(dictAlg, 
+                                               dsList.isBiobjective(),
+                                               None,
                                                outputdir,
                                                genericsettings.verbose)
             print_done()

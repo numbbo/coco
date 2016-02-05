@@ -506,9 +506,6 @@ def plotFVDistr(dsList, budget, min_f = 1e-8, **plotArgs):
     x = []
     nn = 0
     for ds in dsList:
-        if ds.isBiobjective():
-            continue;
-            
         for i, fvals in enumerate(ds.funvals):
             if fvals[0] > budget * ds.dim:
                 assert i > 0, 'first entry ' + str(fvals[0]) + 'was smaller than maximal budget ' + str(budget * ds.dim)
@@ -835,7 +832,7 @@ def main(dsList, isStoringXMax = False, outputdir = '',
                  )
         try: # was never tested, so let's make it safe
             if len(funcs) == 1:
-                plt.title(genericsettings.current_testbed.info(funcs[0])[:27])
+                plt.title(genericsettings.getCurrentTestbed(dsList.isBiobjective()).info(funcs[0])[:27])
         except:
             warnings.warn('could not print title')
 
@@ -844,10 +841,6 @@ def main(dsList, isStoringXMax = False, outputdir = '',
         saveFigure(filename, verbose = verbose)
         plt.close(fig)
 
-        for ds in dictdim:
-            if ds.isBiobjective():
-                return
-        
         # second figure: Function Value Distribution
         filename = os.path.join(outputdir, 'ppfvdistr_%02dD_%s' % (d, info))
         fig = plt.figure()

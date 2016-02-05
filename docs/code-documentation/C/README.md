@@ -15,9 +15,9 @@ In order to allow for easier maintenance and further extensions of the COCO plat
 entirely from 2014 till 2016. Now, a single implementation in ANSI C (aka C89) is used and called from
 the other languages to conduct the experiments. This documentation of the COCO C code serves therefore
 as the basic reference for:
-- How to conduct benchmarking experiments in C
-- How to write new test functions and combine them into test suites
-- How to write additional performance indicators and logging functionality
+- [How to conduct benchmarking experiments in C](#benchmarking)
+- [How to write new test functions and combine them into test suites](#new-suites)
+- [How to write additional performance indicators and logging functionality](#new-indicators)
 
 __Pointers to the source code and other documentation__
 
@@ -29,7 +29,7 @@ http://numbbo.github.io/bbob-biobj-functions-doc
 How to conduct experiments in all supported languages is described at
 http://numbbo.github.io/bbob-biobj-experiments-doc (coming soon)
 
-## How to conduct benchmarking experiments in C 
+## How to conduct benchmarking experiments in C <a name="benchmarking"></a>
 
 At this point we assume that the ``example_experiment`` in C is running on your machine (see the 
 [getting started guide](https://github.com/numbbo/coco/blob/master/README.md#getting-started) if you 
@@ -131,23 +131,28 @@ The observer controls the logging that is performed within the benchmark. Some o
 general, while others are specific to the chosen observer. 
 
 Possible keys and values for the general ``observer_options`` are:
-- ``result_folder: NAME``, determines the output folder. If the folder with the given name already 
-exists, first NAME_001 will be tried, then NAME_002 and so on. The default value is "results".
+- ``result_folder: NAME``, determines the folder within the "exdata" folder into which the results will 
+be output. If the folder with the given name already exists, first NAME_001 will be tried, then NAME_002 
+and so on. The default value is "default".
 - ``algorithm_name: NAME``, where ``NAME`` is a short name of the algorithm that will be used in plots 
 (no spaces are allowed). The default value is "ALG".
 - ``algorithm_info: STRING`` stores the description of the algorithm. If it contains spaces, it must be 
 surrounded by double quotes. The default value is "" (no description).
+- ``number_target_triggers: VALUE`` defines the number of targets between each 10**i and 10**(i+1)
+(equally spaced in the logarithmic scale) that trigger logging. The default value is 100.
+- ``target_precision: VALUE`` defines the precision used for targets (there are no targets for
+abs(values) < target_precision). The default value is 1e-8.
+- ``number_evaluation_triggers: VALUE`` defines the number of evaluations to be logged between each 10**i
+and 10**(i+1). The default value is 20.
+- ``base_evaluation_triggers: VALUES`` defines the base evaluations used to produce an additional
+evaluation-based logging. The numbers of evaluations that trigger logging are every
+base_evaluation * dimension * (10**i). For example, if base_evaluation_triggers = "1,2,5", the logger will
+be triggered by evaluations dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2,
+100*dim*5, ... The default value is "1,2,5". 
 - ``precision_x: VALUE`` defines the precision used when outputting variables and corresponds to the 
 number of digits to be printed after the decimal point. The default value is 8.
 - ``precision_f: VALUE`` defines the precision used when outputting f values and corresponds to the 
 number of digits to be printed after the decimal point. The default value is 15.
-
-Possible keys and values for the ``observer_options`` of the ``bbob`` observer are:
-- ``bbob_nbpts_nbevals: VALUE`` defines the function evaluation numbers that trigger logging (the 
-actual triggers are computed as 10**(i/bbob_nbpts_nbevals) for i = 1, 2, ... ). The default value is 
-20.
-- ``bbob_nbpts_fval: VALUE`` defines the differences to the optimum value that trigger logging (the 
-actual triggers are computed as 10**(i/bbob_nbpts_fval) for i = 1, 2, ... ). The default value is 5. 
 
 Possible keys and values for the ``observer_options`` of the ``bbob-biobj`` observer are:
 - ``log_nondominated: STRING`` determines which nondominated solutions to log. ``STRING`` can take 
@@ -156,7 +161,7 @@ solutions) and ``all`` (log every solution that is nondominated at creation time
 is all.
 - ``log_decision_variables: STRING`` determines whether the decision variables are to be logged
 in addition to the objective variables in the output of nondominated solutions. ``STRING`` can take 
-on the values ``none`` (don't output decision variables), ``log_dim``(output decision variables only 
+on the values ``none`` (don't output decision variables), ``low_dim``(output decision variables only 
 for dimensions lower or equal to 5) and ``all`` (output all decision variables). The default value is 
 log_dim. 
 - ``compute_indicators : VALUE`` determines whether to compute and output performance indicators 
@@ -208,10 +213,10 @@ To learn more about the problem, you can access its properties in the following 
 See the ``coco.h`` file for more information on these and other functions you can use to interface 
 COCO problem and other COCO structures. 
 
-## How to write new test functions and combine them into test suites
+## How to write new test functions and combine them into test suites <a name="new-suites"></a>
 
 COMING SOON...
 
-## How to write additional performance indicators and logging functionality
+## How to write additional performance indicators and logging functionality <a name="new-indicators"></a>
 
 COMING SOON...

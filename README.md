@@ -4,42 +4,46 @@ numbbo/coco: Comparing Continuous Optimizers
 This code reimplements the original Comparing Continous Optimizer platform, now 
 rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
 the code provides a platform to benchmark and compare continuous optimizers, AKA non-linear 
-solvers for numerical optimization. Languages currently available are `C`, `Java`, 
-`MATLAB/Octave`, and `Python`. Support for `C++` is expected to be available in the near 
-future. Contributions to link further languages (including `C++`) are more than welcome.
+solvers for numerical optimization. Languages currently available are `C/C++`, `Java`, 
+`MATLAB/Octave`, and `Python`. Contributions to link further languages (including a better
+example in `C++`) are more than welcome.
 
-See [here](http://numbbo.github.io/workshops) and [here](http://coco.gforge.inria.fr/) and 
-[further links](#Further-Links) below to learn more about the ideas behind CoCO.
+See the [workshops page](http://numbbo.github.io/workshops), the [previous COCO home page](http://coco.gforge.inria.fr/) 
+and [further links below](#Further-Links) to learn more about the ideas behind CoCO.
 
 Requirements  <a name="Requirements"></a>
 ------------
 1. For a machine running experiments 
   - A `C` compiler, such as gcc
-  - make, such as GNU make
   - Python >=2.6 with `setuptools` installed
   - optional: `git`
 2. For a machine running the post-processing
   - Python 2.6 or 2.7 with `numpy` (preferably >=1.7) and `matplotlib` installed. 
-    We recommend to install the [Anaconda library](https://www.continuum.io/downloads). 
+    We recommend to install the [Anaconda Python 2.7 library](https://www.continuum.io/downloads). 
     Python 3 is not yet supported with the post-processing part of NumBBO/CoCO!
 
 ### Windows Specifics
 Under Windows, two alternative compile toolchains can be used: 
 
 1. [Cygwin](https://www.cygwin.com/) which comes with gcc and make, available in 32- and 64-bit versions.  
-2. MinGW's gcc (http://www.mingw.org/) and GNU make (http://gnuwin32.sourceforge.net/packages/make.htm).
-  MinGW only comes in 32-bit, but also runs on 64-bit machines. 
+2. MinGW's gcc (http://www.mingw.org/), which only comes in 32-bit, but also runs on 64-bit machines. 
 
 For using `git` under Windows (optional), we recommend installing [TortoiseGit](https://tortoisegit.org/).
 
-### Language Specifics
+### Language Specifics  <a name="Language-Specifics"></a>
 _Additional_ requirements for running an algorithm in a specific language.
 
-* Java: any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
+* **C**: make, such as GNU make ([GNU make for Windows](http://gnuwin32.sourceforge.net/packages/make.htm)). 
+* **Java**: `gcc` and any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
   (i.e. in the system path). 
-* MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
-* Octave: tested with Octave 4.0.0 but older versions might work. Make sure `octave` can be called from
-  the shell without closing the shell on exit, for details, see [here](./code-experiments/build/matlab/README.md)
+* **MATLAB**: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
+* **Python on Windows with MinGW**: Python 2.7 and the Microsoft compiler package for Python 2.7 
+  containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
+  These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
+  It has both the 32-bit and 64-bit compilers and the Windows SDK headers.
+* **Octave**: tested with Octave 4.0.0 but older versions might work. Make sure `octave` can be called from
+  the shell without closing the shell on exit, for details, 
+  see [here](./code-experiments/build/matlab/README.md)
 
 ### Guaranties (None)
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
@@ -51,7 +55,7 @@ Otherwise we will be happy if you can document them in detail on the
 [issue tracker](https://github.com/numbbo/coco/issues). 
 
 
- Getting Started <a name="Getting-Started"></a>
+Getting Started <a name="Getting-Started"></a>
 ---------------
 0. Check out the [_Requirements_](#Requirements) above.
 
@@ -60,13 +64,13 @@ Otherwise we will be happy if you can document them in detail on the
 
   - either by clicking [here](https://github.com/numbbo/coco/archive/master.zip) and unzip the 
     `zip` file, 
-  - or by typing `git clone https://github.com/numbbo/coco.git`, preferred, as it 
+  - or (preferred) by typing `git clone https://github.com/numbbo/coco.git`. This way 
     allows to remain up-to-date easily (but needs `git` to be installed). After 
     cloning, `git pull` keeps the code up-to-date with the latest release. 
 
   **CAVEAT: this code is still under heavy development**. The record of official releases can 
   be found [here](https://github.com/numbbo/coco/releases). The latest release corresponds 
-  to the [master branch](https://github.com/numbbo/coco/tree/master) as liked above. 
+  to the [master branch](https://github.com/numbbo/coco/tree/master) as linked above. 
 
 2. In a system shell, **`cd` into** the `coco` or `coco-<version>` folder (framework root), 
   where the file `do.py` can be found. Type, i.e. **execute**, one of the following commands once
@@ -184,22 +188,29 @@ our issue tracker at https://github.com/numbbo/coco/issues.
   things happen. Many files provide comparatively decent documentation at the
   moment which are translated via doxygen into a more readable web page at
   numbbo.github.io/coco-doc/C/. Generally:
-  - coco.h is the public interface, in particular as used in the demo.c file, however check out https://code.google.com/p/numbbo/issues/detail?id=98
+  - [coco.h](./code-experiments/src/coco.h) is the public interface, in particular
+    as used in the example_experiment.c file
   - coco_internal.h provides the type definition of coco_problem_t
-  - coco_suite.c is code that deals with an entire benchmark suite (i.e. a set of functions, eg. sweeping through them etc...)
-  - coco_generics.c is somewhat generic code, e.g. defining a function call via coco_evaluate_function etc
-  - coco_problem.c is the implementation of the coco_problem_t type/object (allocation etc).
+  - coco_suite.c is code that deals with an entire benchmark suite (i.e. a set of
+    functions, eg. sweeping through them etc...)
+  - coco_generics.c is somewhat generic code, e.g. defining a function call via
+    coco_evaluate_function etc
+  - coco_problem.c is the implementation of the coco_problem_t type/object
+    (allocation etc).
   - observer / logger files implement data logging (as wrappers around a coco
     problem inheriting thereby all properties of a coco problem)
   - most other files implement more or less what they say, e.g. the actual
     benchmark functions, transformations, benchmark suites, etc.
-  - currently, three benchmark suites and corresponding logging facilities are implemented:
-    * bbob: standard single-objective BBOB benchmark suite with 24 noiseless, scalable test functions
+  - currently, three benchmark suites and corresponding logging facilities are
+    implemented:
+    * bbob: standard single-objective BBOB benchmark suite with 24 noiseless,
+      scalable test functions
     * bbob-biobj: a bi-objective benchmark suite, combining 10 selected
       functions from the bbob suite, resulting in 55 noiseless functions
     * toy: a simple, probably easier-to-understand example for reading and testing
 
-* code-experiments/tools are a few meta-tools, mainly the amalgamate.py to merge all the C code into one file
+* code-experiments/tools are a few meta-tools, mainly the amalgamate.py to merge all
+  the C code into one file
 
 * code-experiments/test contains unit- and integration-tests, mainly for internal use
 
@@ -241,14 +252,14 @@ Traceback (most recent call last):
     raise error
 subprocess.CalledProcessError: Command '['locate', 'jni.h']' returned non-zero exit status 1
 ```
-check out [this](http://stackoverflow.com/questions/13526701/javah-missing-after-jdk-install-linux) and possibly [this](https://github.com/numbbo/coco/issues/416) for a solution. 
+it means `javah` is either not installed (see above) or cannot be found in the system
+path, see [this](http://stackoverflow.com/questions/13526701/javah-missing-after-jdk-install-linux)
+and possibly [this](https://github.com/numbbo/coco/issues/416) for a solution. 
 
 ### Matlab
 
-#### `build-matlab` crashes under Linux
-The Matlab wrapper does not always work under Linux with the current code: an issue is filed for the Ubuntu operating system at https://github.com/numbbo/coco/issues/318
-### Path to matlab
-If you see something like this when running ``python do.py build-matlab``
+#### Path to matlab
+If you see something like this when running `python do.py build-matlab`
 ```
 AML	['code-experiments/src/coco_generics.c', 'code-experiments/src/coco_random.c', 'code-experiments/src/coco_suite.c', 'code-experiments/src/coco_suites.c', 'code-experiments/src/coco_observer.c', 'code-experiments/src/coco_runtime_c.c'] -> code-experiments/build/matlab/coco.c
 COPY	code-experiments/src/coco.h -> code-experiments/build/matlab/coco.h
@@ -273,7 +284,10 @@ Traceback (most recent call last):
     raise child_exception
 OSError: [Errno 2] No such file or directory
 ```
-It might be because your system does not know the ``matlab`` command. To fix this you should edit the file ``/etc/paths`` and add the path to the ``matlab`` bin file. For instance the ``etc/paths`` should look like something like this
+It might be because your system does not know the `matlab` command. To fix this,
+you should edit the file `/etc/paths` and add the path to the `matlab` bin file 
+(Linux/Mac) or add the path to the folder where the `matlab.exe` lies to your 
+Windows path. For instance, the `etc/paths` should look like something like this
 ```
 /usr/local/bin
 /usr/bin
@@ -283,23 +297,62 @@ It might be because your system does not know the ``matlab`` command. To fix thi
 /Applications/MATLAB_R2012a.app/bin/
 ```
 
-#### SMA-EMOA example does not compile under Mac 
-With the more complex SMS-EMOA example. The problem is related to the compilation of the external C++ hypervolume calculation in hv.cpp. 
+#### SMS-EMOA example does not compile under Mac 
+With the more complex SMS-EMOA example. The problem is related to the compilation
+of the external C++ hypervolume calculation in `hv.cpp`. 
 
-A fix for this issue consists in adding to the files "hv.cpp" and "paretofront.c"  
-`#define char16_t UINT16_T`
+A fix for this issue consists in adding to the files `hv.cpp` and `paretofront.c`
+```
+#define char16_t UINT16_T
+```
 just before the line:
-`#include "mex.h"`
+```
+#include "mex.h"
+```
+
+#### Access to mex files denied
+If it happens that you get some `Access is denied` errors during
+`python do.py build-matlab` or `python do.py run-matlab` like this one
+```
+C:\Users\dimo\Desktop\numbbo-brockho>python do.py run-matlab
+Traceback (most recent call last):
+  File "do.py", line 649, in <module>
+    main(sys.argv[1:])
+  File "do.py", line 630, in main
+    elif cmd == 'run-matlab': run_matlab()
+  File "do.py", line 312, in run_matlab
+    os.remove( filename )
+WindowsError: [Error 5] Access is denied: 'code-experiments/build/matlab\\cocoEv
+aluateFunction.mexw32'
+```
+a reason can be that a previously opened Matlab window still has some
+file handles open. Simply close all Matlab windows (and all running Matlab
+processes if there is any) before to run the `do.py` command again.
+
 
 ### Octave
 
+#### Fresh Octave Installation Under Windows
+If you happen to install Octave just before you run `python do.py run-octave` under Windows, you need to run the octave.bat first once. It will set the correct path to the Octave `bin/` folder.
+
 #### Command Window Closes Unexpectedly Under Windows
-If it happens that the command window, from which the `python do.py run-octave` is run, closes unexpectely under Windows, you might want to change the general way, Octave is called. Find your `octave.bat` file, which is in your Octave installation folder (typically something like `C:\Octave\Octave-4.0.0\` and remove or outcomment the last line, saying
+If it happens that the command window, from which the
+`python do.py run-octave` is run, closes unexpectely under Windows, you might
+want to change the general way, Octave is called. Find your `octave.bat` file,
+which is in your Octave installation folder (typically something like
+`C:\Octave\Octave-4.0.0\` and remove or outcomment the last line, saying
 ```
 Rem   Close the batch file's cmd.exe window
 exit
 ```
-We think already about a way to solve this issue directly in the `do.py` but it has low priority for the moment.
+We think already about a way to solve this issue directly in the `do.py` but it
+has low priority for the moment.
+
+#### Running Algorithms in Octave and C Under Windows
+If want to run algorithms in Octave and C, please make sure that you run them from different
+command windows. The `octave.bat` happens to set some paths which might affect which compiler
+you use as default. This might crash the `python do.py run-c` if you run it in the same
+command windows *after* having run the `octave.bat`.
 
 ### Python
 
