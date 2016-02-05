@@ -471,13 +471,13 @@ static void coco_option_keys_free(coco_option_keys_t *option_keys) {
 
   size_t i;
 
-  assert(option_keys);
-
-  for (i = 0; i < option_keys->count; i++) {
-    coco_free_memory(option_keys->keys[i]);
+  if (option_keys) {
+    for (i = 0; i < option_keys->count; i++) {
+      coco_free_memory(option_keys->keys[i]);
+    }
+    coco_free_memory(option_keys->keys);
+    coco_free_memory(option_keys);
   }
-  coco_free_memory(option_keys->keys);
-  coco_free_memory(option_keys);
 }
 
 /**
@@ -570,7 +570,6 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
 
   /* Check for empty string and string without colons */
   if ((option_string == NULL) || (strlen(option_string) == 0)|| (strchr(option_string, ':') == NULL)) {
-    coco_warning("coco_option_keys(): cannot parse empty options or options without ':'");
     return NULL;
   }
 
