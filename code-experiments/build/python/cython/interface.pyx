@@ -132,7 +132,7 @@ cdef class Suite:
     We can select a single function, say BBOB f9 in 20D, of a given suite like::
 
     >>> import cocoex as ex
-    >>> suite = ex.Suite("bbob", "", "dimensions:20 instance_idx:1")
+    >>> suite = ex.Suite("bbob", "", "dimensions:20 instance_indices:1")
     >>> f9 = suite.get_problem(8)
 
     See module attribute `cocoex.known_suite_names` for known suite names::
@@ -363,7 +363,7 @@ also report back a missing name to https://github.com/numbbo/coco/issues
 
         >>> import cocoex as ex
         >>> f9 = ex.Suite("bbob", "",
-        ...               "function_idx:9 dimensions:20 instance_idx:1-5")[0]
+        ...               "function_indices:9 dimensions:20 instance_indices:1-5")[0]
         >>> print(f9.id)
         bbob_f009_i01_d20
 
