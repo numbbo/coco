@@ -509,9 +509,9 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * parallelizing the experiments). Supported options:
  * - "dimensions: LIST", where LIST is the list of dimensions to keep in the suite (range-style syntax is
  * not allowed here),
- * - "function_idx: VALUES", where VALUES is a list or a range of function indexes (starting from 1) to keep
+ * - "function_indices: VALUES", where VALUES is a list or a range of function indices (starting from 1) to keep
  * in the suite, and
- * - "instance_idx: VALUES", where VALUES is a list or a range of instance indexes (starting from 1) to keep
+ * - "instance_indices: VALUES", where VALUES is a list or a range of instance indices (starting from 1) to keep
  * in the suite.
  *
  * @return The constructed suite object.

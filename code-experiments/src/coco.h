@@ -197,7 +197,7 @@ size_t coco_suite_get_instance_from_instance_index(const coco_suite_t *suite, co
 /**@{*/
 /**
  * @brief Computes the index of the problem in the suite that corresponds to the given function, dimension
- * and instance indexes.
+ * and instance indices.
  */
 size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
                                        const size_t function_idx,
