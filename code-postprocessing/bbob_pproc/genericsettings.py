@@ -226,7 +226,7 @@ isConv = False
 verbose = False
 outputdir = 'ppdata'
 inputsettings = 'color'
-isExpensive = None 
+isExpensive = False 
 isRldOnSingleFcts = False
 isRLDistr = True
 ##
@@ -241,7 +241,7 @@ shortoptlist = "hvpo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "tab-only", "fig-only", "rld-only", "rld-single-fcts",
                "verbose", "settings=", "conv", 
-               "expensive", "not-expensive", "runlength-based",
+               "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
                "sca-only", "svg"]
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1

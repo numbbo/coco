@@ -226,7 +226,8 @@ def build_python():
     ## Force distutils to use Cython
     # os.environ['USE_CYTHON'] = 'true'
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
-    python('code-experiments/build/python', ['setup.py', 'install', '--user'])
+    # python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
+    run(join('code-experiments', 'build', 'python'), ['python', 'setup.py', 'install', '--user'])
     # os.environ.pop('USE_CYTHON')
 
 def run_python(test=True):
@@ -407,8 +408,21 @@ def build_octave():
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
-    run('code-experiments/build/matlab', ['octave', '--no-gui', 'setup.m'])
-
+    
+    # Copy octave-coco.bat to the Octave folder under Windows to allow
+    # calling Octave from command line without messing up the system.    
+    # Note that 'win32' stands for both Windows 32-bit and 64-bit.
+    if ('win32' in sys.platform):
+        print('SEARCH\tfor Octave folder from C:\\ (can take some time)')
+        lookfor = 'octave.bat'
+        for root, dirs, files in os.walk('C:\\'):
+            if lookfor in files:
+                break
+        copy_file('code-experiments/build/matlab/octave_coco.bat.in', join(root, 'octave_coco.bat'))
+        
+        run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'setup.m'])
+    else:
+        run('code-experiments/build/matlab', ['octave', '--no-gui', 'setup.m'])
     
 def run_octave():
     # remove the mex files for a clean compilation first
@@ -417,7 +431,10 @@ def run_octave():
         os.remove(filename)
     # amalgamate, copy, and build
     build_octave()
-    run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
+    if ('win32' in sys.platform):
+        run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'])
+    else:
+        run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
 
 
 def test_octave():
