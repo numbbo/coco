@@ -282,8 +282,6 @@ void cocoSetLogLevel(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     res = coco_set_log_level(level);
     /* prepare the return value */
     plhs[0] = mxCreateString(res);
-
-    coco_warning("TODO: This Coco functionality is not yet supported in Matlab.");
 }
 
 void cocoSuite(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -348,7 +346,6 @@ void cocoSuiteGetNextProblem(int nlhs, mxArray *plhs[], int nrhs, const mxArray 
     observer = (coco_observer_t *)(*ref2);
     
     /* call coco_suite_get_next_problem() */
-    
     problem = coco_suite_get_next_problem(suite, observer);
     
     /* prepare the return value */

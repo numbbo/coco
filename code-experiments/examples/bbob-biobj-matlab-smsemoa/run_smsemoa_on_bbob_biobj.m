@@ -1,33 +1,32 @@
 % Runs the SMS-EMOA on the bbob-biobj test suite.
 
-BUDGET_MULTIPLIER = 2;
+more off; % to get immediate output in Octave
+
+BUDGET_MULTIPLIER = 2; % algorithm runs for BUDGET_MULTIPLIER*dimension funevals
 suite_name = 'bbob-biobj';
-suite_instance = '';
-% dimension 40 is optional:
-suite_options = 'dimensions: 2,3,5,10,20,40 instance_indices: 1-10';
-observer_name = 'bbob-biobj';
+observer_name = suite_name;
 observer_options = ['result_folder: SMSEMOA_on_bbob-biobj \',...
                     'algorithm_name: SMS-EMOA \',...
                     'algorithm_info: "SMS-EMOA without restarts" \', ...
-                    'log_level: info'];      
-
-suite = cocoSuite(suite_name, suite_instance, suite_options);
-observer = cocoObserver(observer_name, observer_options);
+                    'log_level: COCO_INFO'];      
+                
+% dimension 40 is optional:
+suite = cocoCall('cocoSuite', suite_name, 'year: 2016', 'dimensions: 2,3,5,10,20,40');
+observer = cocoCall('cocoObserver', observer_name, observer_options);
 
 while true
-    problem = cocoSuiteGetNextProblem(suite, observer);
-    if (~cocoProblemIsValid(problem))
+    problem = cocoCall('cocoSuiteGetNextProblem', suite, observer);
+    if (~cocoCall('cocoProblemIsValid', problem))
         break;
     end
-    disp(['Optimizing ', cocoProblemGetId(problem)]);
-    dimension = cocoProblemGetDimension(problem)
-    while BUDGET_MULTIPLIER*dimension > cocoProblemGetEvaluations(problem)
-    my_smsemoa(problem, cocoProblemGetSmallestValuesOfInterest(problem),...
-      cocoProblemGetLargestValuesOfInterest(problem),...
-      BUDGET_MULTIPLIER*dimension-cocoProblemGetEvaluations(problem));
+    dimension = cocoCall('cocoProblemGetDimension', problem);
+    while BUDGET_MULTIPLIER*dimension > cocoCall('cocoProblemGetEvaluations', problem)
+        my_smsemoa(problem, ...
+            cocoCall('cocoProblemGetSmallestValuesOfInterest', problem), ...
+            cocoCall('cocoProblemGetLargestValuesOfInterest', problem), ...
+            BUDGET_MULTIPLIER*dimension-cocoCall('cocoProblemGetEvaluations', problem));
     end;
-    disp(['Done with problem ', cocoProblemGetId(problem), '...']);
 end
 
-cocoObserverFree(observer);
-cocoSuiteFree(suite);
+cocoCall('cocoObserverFree', observer);
+cocoCall('cocoSuiteFree', suite);
