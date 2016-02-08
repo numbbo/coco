@@ -13,7 +13,6 @@
 #include "transform_vars_shift.c"
 #include "transform_obj_shift.c"
 
-
 /**
  * @brief Implements the discus function without connections to any COCO structures.
  */
