@@ -6,6 +6,8 @@
 #include "coco.h"
 
 #include "f_ellipsoid.c"
+#include "f_discus.c"
+#include "f_bent_cigar.c"
 #include "f_different_powers.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
