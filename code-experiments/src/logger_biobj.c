@@ -452,7 +452,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   indicator->target_hit = 0;
   indicator->evaluation_logged = 0;
   indicator->current_value = 0;
-  indicator->additional_penalty = 0;
+  indicator->additional_penalty = DBL_MAX;
   indicator->overall_value = 0;
 
   indicator->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
@@ -643,8 +643,10 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
    * - dat file, if the archive was updated and a new target was reached for an indicator;
    * - tdat file, if the number of evaluations matches one of the predefined numbers.
    *
-   * Note that a target is reached when the (best_value - current_value) <= relative_target_value
-   * The relative_target_value is a target for indicator difference, not indicator value!
+   * Note that a target is reached when
+   * best_value - current_value + additional_penalty <= relative_target_value
+   *
+   * The relative_target_value is a target for indicator difference, not the actual indicator value!
    */
   if (logger->compute_indicators) {
     for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
@@ -657,18 +659,11 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
         /* Compute the overall_value of an indicator */
         if (strcmp(indicator->name, "hyp") == 0) {
           if (indicator->current_value == 0) {
-            /* The additional penalty for hypervolume is the minimal distance from the nondominated set to the ROI */
-            /* TODO: This could be implemented more efficiently (only update the additional_penalty with the new value)! */
-            indicator->additional_penalty = DBL_MAX;
-            if (logger->archive_tree->tail) {
-              solution = logger->archive_tree->head;
-              while (solution != NULL) {
-                double distance = mo_get_distance_to_ROI(((logger_biobj_avl_item_t*) solution->item)->y,
-                    problem->best_value, problem->nadir_value, problem->number_of_objectives);
-                indicator->additional_penalty = coco_double_min(indicator->additional_penalty, distance);
-                solution = solution->next;
-              }
-            }
+            /* Update the additional penalty for hypervolume (the minimal distance from the nondominated set
+             * to the ROI) */
+            double new_distance = mo_get_distance_to_ROI(node_item->y,
+                problem->best_value, problem->nadir_value, problem->number_of_objectives);
+            indicator->additional_penalty = coco_double_min(indicator->additional_penalty, new_distance);
             assert(indicator->additional_penalty >= 0);
           } else {
             indicator->additional_penalty = 0;
@@ -687,7 +682,8 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
       /* Log to the dat file if a target was hit */
       if (indicator->target_hit) {
         fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-            indicator->overall_value, logger->precision_f, ((coco_observer_targets_t *) indicator->targets)->value);
+            indicator->overall_value, logger->precision_f,
+            ((coco_observer_targets_t *) indicator->targets)->value);
       }
 
       /* Log to the tdat file if the number of evaluations matches one of the predefined numbers */
