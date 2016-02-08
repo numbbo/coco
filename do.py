@@ -422,7 +422,10 @@ def test_octave():
     """ Builds and runs the test in Octave, which is equal to the example experiment """
     build_octave()
     try:
-        run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])    
+        if ('win32' in sys.platform):
+            run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'])
+        else:
+            run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])   
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
