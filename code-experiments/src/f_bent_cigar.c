@@ -14,7 +14,6 @@
 #include "transform_vars_asymmetric.c"
 #include "transform_vars_shift.c"
 
-
 /**
  * @brief Implements the bent cigar function without connections to any COCO structures.
  */
@@ -53,7 +52,6 @@ static coco_problem_t *f_bent_cigar_allocate(const size_t number_of_variables) {
   f_bent_cigar_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }
-
 
 /**
  * @brief Creates the BBOB bent cigar problem.
@@ -97,5 +95,3 @@ static coco_problem_t *f_bent_cigar_bbob_problem_allocate(const size_t function,
   coco_free_memory(xopt);
   return problem;
 }
-
-

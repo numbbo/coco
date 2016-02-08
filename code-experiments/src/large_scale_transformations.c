@@ -287,14 +287,12 @@ static size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
   int i;
 
   block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension / 4, 100));
-
   *nb_blocks = dimension / block_size + ((dimension % block_size) > 0);
   block_sizes = coco_allocate_vector_size_t(*nb_blocks);
   for (i = 0; i < *nb_blocks - 1; i++) {
     block_sizes[i] = block_size;
   }
   block_sizes[*nb_blocks - 1] = dimension - (*nb_blocks - 1) * block_size; /*add rest*/
-
   return block_sizes;
 }
 
