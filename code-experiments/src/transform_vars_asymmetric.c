@@ -56,7 +56,7 @@ static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, 
   data = (transform_vars_asymmetric_data_t *) coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->beta = beta;
-  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_asymmetric_free);
+  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_asymmetric_free, "transform_vars_asymmetric");
   problem->evaluate_function = transform_vars_asymmetric_evaluate;
   return problem;
 }
