@@ -1,13 +1,14 @@
-% This script runs random search for 2*DIM function evaluations on
-% the biobjective 'bbob-biobj' suite.
+%
+% This script runs random search for BUDGET_MULTIPLIER*DIM function
+% evaluations on the biobjective 'bbob-biobj' suite.
 %
 % An example experiment on the single-objective 'bbob' suite can be started
 % by renaming the suite_name below.
-
+%
 more off; % to get immediate output in Octave
 
 
-BUDGET_MULTIPLIER = 2; % algorithm runs for BUDGET*dimension funevals
+BUDGET_MULTIPLIER = 2; % algorithm runs for BUDGET_MULTIPLIER*dimension funevals
 suite_name = 'bbob-biobj'; % works for 'bbob' as well
 observer_name = suite_name;
 
@@ -20,7 +21,10 @@ observer_options = strcat('result_folder: RS_on_', ...
 suite = cocoCall('cocoSuite', suite_name, 'year: 2016', 'dimensions: 2,3,5,10,20,40');
 observer = cocoCall('cocoObserver', observer_name, observer_options);
 
-disp(['Running random search on the ', suite_name, ' suite...']);
+% set log level depending on how much output you want to see: ['COCO_ERROR',
+% 'COCO_WARNING', 'COCO_INFO', 'COCO_DEBUG'] from few to a lot.
+cocoCall('cocoSetLogLevel', 'COCO_INFO');
+
 while true
     problem = cocoCall('cocoSuiteGetNextProblem', suite, observer);
     if (~cocoCall('cocoProblemIsValid', problem))
@@ -34,6 +38,5 @@ while true
             BUDGET_MULTIPLIER*dimension-cocoCall('cocoProblemGetEvaluations', problem));
     end;
 end
-disp(['Done with ', suite_name, ' suite.']);
 cocoCall('cocoObserverFree', observer);
 cocoCall('cocoSuiteFree', suite);

@@ -30,25 +30,6 @@ core_files = ['code-experiments/src/coco_random.c',
               'code-experiments/src/coco_observer.c'
               ]
 
-matlab_octave_wrapper_files = ['cocoEvaluateFunction.c',
-             'cocoObserver.c',
-             'cocoObserverFree.c',
-             'cocoProblemFree.c',
-             'cocoProblemGetDimension.c',
-             'cocoProblemGetEvaluations.c',
-             'cocoProblemGetId.c',
-             'cocoProblemGetLargestValuesOfInterest.c',
-             'cocoProblemGetName.c',
-             'cocoProblemGetNumberOfObjectives.c',
-             'cocoProblemGetSmallestValuesOfInterest.c',
-             'cocoProblemIsValid.c',
-             'cocoSetLogLevel.c',
-             'cocoSuite.c',
-             'cocoSuiteFree.c',
-             'cocoSuiteGetNextProblem.c',
-             'cocoSuiteGetProblem.c']
-    
-
 ################################################################################
 ## C
 def build_c():
@@ -330,12 +311,14 @@ def build_matlab():
 
     
 def run_matlab():
+    """ Builds and runs the example experiment in build/matlab/ in MATLAB """
+    print('CLEAN\tmex files from code-experiments/build/matlab/')
     # remove the mex files for a clean compilation first
     for filename in glob.glob('code-experiments/build/matlab/*.mex*') :
         os.remove( filename )
     # amalgamate, copy, and build
     build_matlab()
-    wait_for_compilation_to_finish('./code-experiments/build/matlab/cocoProblemIsValid')
+    wait_for_compilation_to_finish('./code-experiments/build/matlab/cocoCall')
     # run after compilation finished
     run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'exampleexperiment, exit'])
 
@@ -368,25 +351,23 @@ def wait_for_compilation_to_finish(filenameprefix):
 
 
 def build_matlab_sms():
+    """Builds the SMS-EMOA in MATLAB """
     global release
     join = os.path.join
-    source_folder = join('code-experiments', 'build', 'matlab')
-    destination_folder = join('code-experiments', 'examples',
-                              'bbob-biobj-matlab-smsemoa')
+    destination_folder = 'code-experiments/examples/bbob-biobj-matlab-smsemoa'
     # amalgamate and copy files
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_matlab.c'],
                join(destination_folder, 'coco.c'), release)
-    copy_file('code-experiments/src/coco.h', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.h')
+    copy_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'))
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
-    for file in matlab_octave_wrapper_files:
-        copy_file(join(source_folder, file),
-                  join(destination_folder, file))
+    copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
     # compile
-    run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
+    run(destination_folder, ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
 
 def run_matlab_sms():
-    print('CLEAN\t mex files from code-experiments/build/matlab/')
+    """ Builds and runs the SMS-EMOA in MATLAB """
+    print('CLEAN\tmex files from code-experiments/examples/bbob-biobj-matlab-smsemoa/')
     # remove the mex files for a clean compilation first
     for filename in glob.glob('code-experiments/examples/bbob-biobj-matlab-smsemoa/*.mex*') :
         os.remove( filename )
@@ -426,7 +407,7 @@ def build_octave():
     
 def run_octave():
     # remove the mex files for a clean compilation first
-    print('CLEAN\t mex files from code-experiments/build/matlab/')
+    print('CLEAN\tmex files from code-experiments/build/matlab/')
     for filename in glob.glob('code-experiments/build/matlab/*.mex*'):
         os.remove(filename)
     # amalgamate, copy, and build
