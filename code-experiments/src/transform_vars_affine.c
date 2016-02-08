@@ -74,7 +74,7 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
   data->b = coco_duplicate_vector(b, inner_problem->number_of_variables);
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_affine_free);
+  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_affine_free, "transform_vars_affine");
   problem->evaluate_function = transform_vars_affine_evaluate;
   return problem;
 }

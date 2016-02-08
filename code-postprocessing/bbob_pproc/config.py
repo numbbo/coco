@@ -16,34 +16,22 @@ used by other modules, but does not modify settings of other modules.
 """
 
 import numpy as np
-import ppfig, ppfigdim, pptable
+import ppfigdim, pptable
 from . import genericsettings, pproc, pprldistr
 from .comp2 import ppfig2, ppscatter, pptable2
 from .compall import ppfigs, pprldmany, pptables
 
 def target_values(is_expensive, dict_max_fun_evals={}, runlength_limit=1e3):
-    """manage target values setting in "expensive" optimization scenario, 
-    when ``is_expensive not in (True, False), the setting is based on 
-    the comparison of entries in ``dict_max_fun_evals`` with
-    ``runlength_limit``.
+    """manage target values setting in "expensive" optimization scenario.
     
     """
-    # if len(dict_max_fun_evals):
-    #     genericsettings.dict_max_fun_evals = dict_max_fun_evals
-    is_runlength_based = True if is_expensive else None 
+
     if is_expensive:
-        genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive 
-    if is_runlength_based:
         genericsettings.runlength_based_targets = True
-    elif is_runlength_based is False:
-        genericsettings.runlength_based_targets = False            
-    else: # if genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
-        if len(dict_max_fun_evals) and np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < runlength_limit: 
-            genericsettings.runlength_based_targets = True
-            genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive
-        else:
-            genericsettings.runlength_based_targets = False
-            
+        genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive 
+    else:
+        genericsettings.runlength_based_targets = False
+        genericsettings.maxevals_fix_display = None
             
 def config(isBiobjective):
     """called from a high level, e.g. rungeneric, to configure the lower level 

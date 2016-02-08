@@ -4,7 +4,7 @@ BUDGET_MULTIPLIER = 2;
 suite_name = 'bbob-biobj';
 suite_instance = '';
 % dimension 40 is optional:
-suite_options = 'dimensions: 2,3,5,10,20,40 instance_idx: 1-10';
+suite_options = 'dimensions: 2,3,5,10,20,40 instance_indices: 1-10';
 observer_name = 'bbob-biobj';
 observer_options = ['result_folder: SMSEMOA_on_bbob-biobj \',...
                     'algorithm_name: SMS-EMOA \',...

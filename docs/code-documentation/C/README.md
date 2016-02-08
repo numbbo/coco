@@ -105,16 +105,18 @@ workshop.
 Possible keys and values for ``suite_options`` are:
 - ``dimensions: LIST``, where ``LIST`` is the list of dimensions to keep in the suite (range-style
 syntax is not allowed here), 
-- ``function_idx: VALUES``, where ``VALUES`` is a list or a range of function indexes (starting 
+- ``dimension_indices: VALUES``, where ``VALUES`` is a list or a range of dimension indices (starting 
 from 1) to keep in the suite, and
-- ``instance_idx: VALUES``, where ``VALUES`` is a list or a range of instance indexes (starting 
+- ``function_indices: VALUES``, where ``VALUES`` is a list or a range of function indices (starting 
+from 1) to keep in the suite, and
+- ``instance_indices: VALUES``, where ``VALUES`` is a list or a range of instance indices (starting 
 from 1) to keep in the suite. 
 
 For example, the call:
 
     suite = coco_suite("bbob-biobj", 
                        "instances: 10-20", 
-                       "dimensions: 2,3,5,10,20 instance_idx:1-5");
+                       "dimensions: 2,3,5,10,20 instance_indices:1-5");
 
 first creates the biobjective suite with instances 10 to 20, but then uses only the first five 
 dimensions (skipping dimension 40) and the first five instances (i.e. instances 10 to 14) of the suite. 
@@ -138,17 +140,21 @@ and so on. The default value is "default".
 (no spaces are allowed). The default value is "ALG".
 - ``algorithm_info: STRING`` stores the description of the algorithm. If it contains spaces, it must be 
 surrounded by double quotes. The default value is "" (no description).
+- ``number_target_triggers: VALUE`` defines the number of targets between each 10**i and 10**(i+1)
+(equally spaced in the logarithmic scale) that trigger logging. The default value is 100.
+- ``target_precision: VALUE`` defines the precision used for targets (there are no targets for
+abs(values) < target_precision). The default value is 1e-8.
+- ``number_evaluation_triggers: VALUE`` defines the number of evaluations to be logged between each 10**i
+and 10**(i+1). The default value is 20.
+- ``base_evaluation_triggers: VALUES`` defines the base evaluations used to produce an additional
+evaluation-based logging. The numbers of evaluations that trigger logging are every
+base_evaluation * dimension * (10**i). For example, if base_evaluation_triggers = "1,2,5", the logger will
+be triggered by evaluations dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2,
+100*dim*5, ... The default value is "1,2,5". 
 - ``precision_x: VALUE`` defines the precision used when outputting variables and corresponds to the 
 number of digits to be printed after the decimal point. The default value is 8.
 - ``precision_f: VALUE`` defines the precision used when outputting f values and corresponds to the 
 number of digits to be printed after the decimal point. The default value is 15.
-
-Possible keys and values for the ``observer_options`` of the ``bbob`` observer are:
-- ``bbob_nbpts_nbevals: VALUE`` defines the function evaluation numbers that trigger logging (the 
-actual triggers are computed as 10**(i/bbob_nbpts_nbevals) for i = 1, 2, ... ). The default value is 
-20.
-- ``bbob_nbpts_fval: VALUE`` defines the differences to the optimum value that trigger logging (the 
-actual triggers are computed as 10**(i/bbob_nbpts_fval) for i = 1, 2, ... ). The default value is 5. 
 
 Possible keys and values for the ``observer_options`` of the ``bbob-biobj`` observer are:
 - ``log_nondominated: STRING`` determines which nondominated solutions to log. ``STRING`` can take 
@@ -157,7 +163,7 @@ solutions) and ``all`` (log every solution that is nondominated at creation time
 is all.
 - ``log_decision_variables: STRING`` determines whether the decision variables are to be logged
 in addition to the objective variables in the output of nondominated solutions. ``STRING`` can take 
-on the values ``none`` (don't output decision variables), ``log_dim``(output decision variables only 
+on the values ``none`` (don't output decision variables), ``low_dim``(output decision variables only 
 for dimensions lower or equal to 5) and ``all`` (output all decision variables). The default value is 
 log_dim. 
 - ``compute_indicators : VALUE`` determines whether to compute and output performance indicators 

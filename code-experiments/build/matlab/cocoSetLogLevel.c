@@ -25,4 +25,5 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     /* prepare the return value */
     plhs[0] = mxCreateString(res);
 
+    coco_warning("This Coco functionality is not yet supported in Matlab.");
 }
