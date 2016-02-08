@@ -21,9 +21,9 @@ observer_options = strcat('result_folder: RS_on_', ...
 suite = cocoCall('cocoSuite', suite_name, 'year: 2016', 'dimensions: 2,3,5,10,20,40');
 observer = cocoCall('cocoObserver', observer_name, observer_options);
 
-% set log level depending on how much output you want to see: ['COCO_ERROR',
-% 'COCO_WARNING', 'COCO_INFO', 'COCO_DEBUG'] from few to a lot.
-cocoCall('cocoSetLogLevel', 'COCO_INFO');
+% set log level depending on how much output you want to see, e.g. 'warning'
+% for fewer output than 'info'.
+cocoCall('cocoSetLogLevel', 'info');
 
 while true
     problem = cocoCall('cocoSuiteGetNextProblem', suite, observer);
