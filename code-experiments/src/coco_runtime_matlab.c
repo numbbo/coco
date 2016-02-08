@@ -1,79 +1,102 @@
 /**
- * @file coco_runtime_c.c
- * @brief Generic COCO runtime implementation for the C language.
+ * @file coco_runtime_matlab.c
+ * @brief Specific COCO runtime implementation for the Matlab language
+ * that replaces coco_runtime_c.c with the Matlab-specific counterparts.
  *
- * Other language interfaces might want to replace this so that memory allocation and error handling go
- * through the respective language runtime.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 
+#include <mex.h>
+
 #include "coco.h"
 #include "coco_utilities.c"
+
+
 
 void coco_error(const char *message, ...) {
   va_list args;
 
-  fprintf(stderr, "COCO FATAL ERROR: ");
+  char buffer[500];
+  int n;
+
+  mexPrintf("COCO FATAL ERROR: ");
   va_start(args, message);
-  vfprintf(stderr, message, args);
-  va_end(args);
-  fprintf(stderr, "\n");
+    n = vsprintf(buffer, message, args);
+    va_end(args);  
+    mexPrintf(buffer);
+
+  mexPrintf("\n");
   exit(EXIT_FAILURE);
 }
 
 void coco_warning(const char *message, ...) {
   va_list args;
 
+  char buffer[500];
+  int n;
+
   if (coco_log_level >= COCO_WARNING) {
-    fprintf(stderr, "COCO WARNING: ");
+    mexPrintf("COCO WARNING: ");
     va_start(args, message);
-    vfprintf(stderr, message, args);
-    va_end(args);
-    fprintf(stderr, "\n");
+    n = vsprintf(buffer, message, args);
+    va_end(args);  
+    mexPrintf(buffer);
+
+    mexPrintf("\n");
   }
 }
 
 void coco_info(const char *message, ...) {
   va_list args;
-
+ 
+  char buffer[500];
+  int n;
+  
   if (coco_log_level >= COCO_INFO) {
-    fprintf(stdout, "COCO INFO: ");
+    mexPrintf("COCO INFO: ");
     va_start(args, message);
-    vfprintf(stdout, message, args);
-    va_end(args);
-    fprintf(stdout, "\n");
-    fflush(stdout);
+    n = vsprintf(buffer, message, args);
+    va_end(args);  
+    mexPrintf(buffer);
+    mexPrintf("\n");
   }
 }
-
+ 
 /**
  * A function similar to coco_info that prints only the given message without any prefix and without
  * adding a new line.
  */
 void coco_info_partial(const char *message, ...) {
   va_list args;
-
+ 
+  char buffer[500];
+  int n;
+  
   if (coco_log_level >= COCO_INFO) {
     va_start(args, message);
-    vfprintf(stdout, message, args);
-    va_end(args);
-    fflush(stdout);
+    n = vsprintf(buffer, message, args);
+    va_end(args);  
+    mexPrintf(buffer);
   }
 }
+
 
 void coco_debug(const char *message, ...) {
   va_list args;
 
+  char buffer[500];
+  int n;
+
   if (coco_log_level >= COCO_DEBUG) {
-    fprintf(stdout, "COCO DEBUG: ");
+    mexPrintf("COCO DEBUG: ");
     va_start(args, message);
-    vfprintf(stdout, message, args);
-    va_end(args);
-    fprintf(stdout, "\n");
-    fflush(stdout);
+    n = vsprintf(buffer, message, args);
+    va_end(args);      
+    mexPrintf(buffer);
+    mexPrintf("\n");
   }
 }
 
