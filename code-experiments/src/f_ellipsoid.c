@@ -17,8 +17,6 @@
 #include "transform_vars_permblockdiag.c"
 #include "transform_obj_norm_by_dim.c"
 
-size_t dim_now = 0;
-
 /**
  * @brief Implements the ellipsoid function without connections to any COCO structures.
  */
@@ -147,7 +145,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   size_t swap_range;
   size_t nb_swaps;
   
-  block_sizes = ls_get_block_sizes(&nb_blocks, dimension, rseed);
+  block_sizes = ls_get_block_sizes(&nb_blocks, dimension);
   swap_range = ls_get_swap_range(dimension);
   nb_swaps = ls_get_nb_swaps(dimension);
 
@@ -169,7 +167,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   problem = transform_vars_oscillate(problem);
   problem = transform_vars_permblockdiag(problem, B_copy, P1, P2, dimension, block_sizes, nb_blocks);
   problem = transform_vars_shift(problem, xopt, 0);
-  
+
   problem = transform_obj_norm_by_dim(problem);
   problem = transform_obj_shift(problem, fopt);
 

@@ -252,7 +252,7 @@ static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, 
       /* generate random permutation instead */
       ls_compute_random_permutation(P, seed, n);
     }
-    
+
   }
   coco_random_free(rng);
 }
@@ -281,7 +281,7 @@ static size_t *coco_duplicate_size_t_vector(const size_t *src, const size_t numb
  * returns the list of block_sizes and sets nb_blocks to its correct value
  * TODO: update with chosen parameter setting
  */
-static size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension, const long seed){
+static size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
   size_t *block_sizes;
   size_t block_size;
   int i;
@@ -294,8 +294,6 @@ static size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension, const lon
     block_sizes[i] = block_size;
   }
   block_sizes[*nb_blocks - 1] = dimension - (*nb_blocks - 1) * block_size; /*add rest*/
-  
-  coco_random_free(rng);
 
   return block_sizes;
 }
