@@ -120,10 +120,7 @@ def main(argv=None):
             single function.
         --expensive
             runlength-based f-target values and fixed display limits,
-            useful with comparatively small budgets. By default the
-            setting is based on the budget used in the data.
-        --not-expensive
-            expensive setting off. 
+            useful with comparatively small budgets. 
         --svg
             generate also the svg figures which are used in html files 
 
@@ -212,8 +209,6 @@ def main(argv=None):
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 genericsettings.isExpensive = True  # comprises runlength-based
-            elif o == "--not-expensive":
-                genericsettings.isExpensive = False  
             elif o == "--svg":
                 genericsettings.generate_svg_files = True
             elif o == "--los-only":
@@ -300,16 +295,7 @@ def main(argv=None):
         for i in dsList1:
             i.algId = alg1name
 
-        # compute maxfuneval values
-        dict_max_fun_evals1 = {}
-        dict_max_fun_evals2 = {}
-        for ds in dsList0:
-            dict_max_fun_evals1[ds.dim] = np.max((dict_max_fun_evals1.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
-        for ds in dsList1:
-            dict_max_fun_evals2[ds.dim] = np.max((dict_max_fun_evals2.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
-        config.target_values(genericsettings.isExpensive, {1: min([max([val/dim for dim, val in dict_max_fun_evals1.iteritems()]), 
-                                                   max([val/dim for dim, val in dict_max_fun_evals2.iteritems()])]
-                                                  )})
+        config.target_values(genericsettings.isExpensive)
         config.config(dsList[0].isBiobjective())
         
         ######################### Post-processing #############################

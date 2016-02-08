@@ -154,27 +154,6 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 }
 
 /**
- * @brief Returns the number of positive numbers pointed to by numbers (the count stops when the first
- * 0 is encountered).
- *
- * If there are more than COCO_MAX_INSTANCES numbers, a coco_error is raised. The name argument is used
- * only to provide more informative output in case of any problems.
- */
-static size_t coco_suite_count_numbers(const size_t *numbers, const char *name) {
-
-  size_t count = 0;
-  while ((count < COCO_MAX_INSTANCES) && (numbers[count] != 0)) {
-    count++;
-  }
-  if (count == COCO_MAX_INSTANCES) {
-    coco_error("coco_suite_count_numbers(): over %lu numbers in %s", COCO_MAX_INSTANCES, name);
-    return 0; /* Never reached*/
-  }
-
-  return count;
-}
-
-/**
  * @brief Sets the suite instance to the given instance_numbers.
  */
 static void coco_suite_set_instance(coco_suite_t *suite,
@@ -187,7 +166,7 @@ static void coco_suite_set_instance(coco_suite_t *suite,
     return;
   }
 
-  suite->number_of_instances = coco_suite_count_numbers(instance_numbers, "suite instance numbers");
+  suite->number_of_instances = coco_count_numbers(instance_numbers, COCO_MAX_INSTANCES, "suite instance numbers");
   suite->instances = coco_allocate_vector_size_t(suite->number_of_instances);
   for (i = 0; i < suite->number_of_instances; i++) {
     suite->instances[i] = instance_numbers[i];
@@ -196,14 +175,15 @@ static void coco_suite_set_instance(coco_suite_t *suite,
 }
 
 /**
- * @brief Filters the given items w.r.t. the given indices (starting from 0).
+ * @brief Filters the given items w.r.t. the given indices (starting from 1).
  *
- * Sets items[i] to 0 for every i that cannot be found in indices.
+ * Sets items[i - 1] to 0 for every i that cannot be found in indices (this function performs the conversion
+ * from user-friendly indices starting from 1 to C-friendly indices starting from 0).
  */
-static void coco_suite_filter_idx(size_t *items, const size_t number_of_items, const size_t *indices, const char *name) {
+static void coco_suite_filter_indices(size_t *items, const size_t number_of_items, const size_t *indices, const char *name) {
 
   size_t i, j;
-  size_t count = coco_suite_count_numbers(indices, name);
+  size_t count = coco_count_numbers(indices, COCO_MAX_INSTANCES, name);
   int found;
 
   for (i = 1; i <= number_of_items; i++) {
@@ -228,7 +208,7 @@ static void coco_suite_filter_idx(size_t *items, const size_t number_of_items, c
 static void coco_suite_filter_dimensions(coco_suite_t *suite, const size_t *dimension_numbers) {
 
   size_t i, j;
-  size_t count = coco_suite_count_numbers(dimension_numbers, "dimensions");
+  size_t count = coco_count_numbers(dimension_numbers, COCO_MAX_INSTANCES, "dimensions");
   int found;
 
   for (i = 0; i < suite->number_of_dimensions; i++) {
@@ -366,210 +346,6 @@ size_t coco_suite_get_number_of_problems(const coco_suite_t *suite) {
   return (suite->number_of_instances * suite->number_of_functions * suite->number_of_dimensions);
 }
 
-/**
- * @brief Returns the numbers defined by the ranges.
- *
- * Reads ranges from a string of positive ranges separated by commas. For example: "-3,5-6,8-". Returns the
- * numbers that are defined by the ranges if min and max are used as their extremes. If the ranges with open
- * beginning/end are not allowed, use 0 as min/max. The returned string has an appended 0 to mark its end.
- * A maximum of COCO_MAX_INSTANCES values is returned. If there is a problem with one of the ranges, the
- * parsing stops and the current result is returned. The memory of the returned object needs to be freed by
- * the caller.
- */
-static size_t *coco_suite_parse_ranges(const char *string, const char *name, const size_t min, const size_t max) {
-
-  char *ptr, *dash = NULL;
-  char **ranges, **numbers;
-  size_t i, j, count;
-  size_t num[2];
-
-  size_t *result;
-  size_t i_result = 0;
-
-  char *str = coco_strdup(string);
-
-  /* Check for empty string */
-  if ((str == NULL) || (strlen(str) == 0)) {
-    coco_warning("coco_suite_parse_ranges(): cannot parse empty ranges");
-    return NULL;
-  }
-
-  ptr = str;
-  /* Check for disallowed characters */
-  while (*ptr != '\0') {
-    if ((*ptr != '-') && (*ptr != ',') && !isdigit((unsigned char )*ptr)) {
-      coco_warning("coco_suite_parse_ranges(): problem parsing '%s' - cannot parse ranges with '%c'", str,
-          *ptr);
-      return NULL;
-    } else
-      ptr++;
-  }
-
-  /* Check for incorrect boundaries */
-  if ((max > 0) && (min > max)) {
-    coco_warning("coco_suite_parse_ranges(): incorrect boundaries");
-    return NULL;
-  }
-
-  result = coco_allocate_vector_size_t(COCO_MAX_INSTANCES + 1);
-
-  /* Split string to ranges w.r.t commas */
-  ranges = coco_string_split(str, ',');
-  coco_free_memory(str);
-
-  if (ranges) {
-    /* Go over the current range */
-    for (i = 0; *(ranges + i); i++) {
-
-      ptr = *(ranges + i);
-      /* Count the number of '-' */
-      count = 0;
-      while (*ptr != '\0') {
-        if (*ptr == '-') {
-          if (count == 0)
-            /* Remember the position of the first '-' */
-            dash = ptr;
-          count++;
-        }
-        ptr++;
-      }
-      /* Point again to the start of the range */
-      ptr = *(ranges + i);
-
-      /* Check for incorrect number of '-' */
-      if (count > 1) {
-        coco_warning("coco_suite_parse_ranges(): problem parsing '%s' - too many '-'s", string);
-        /* Cleanup */
-        for (j = i; *(ranges + j); j++)
-          coco_free_memory(*(ranges + j));
-        coco_free_memory(ranges);
-        if (i_result == 0) {
-          coco_free_memory(result);
-          return NULL;
-        }
-        result[i_result] = 0;
-        return result;
-      } else if (count == 0) {
-        /* Range is in the format: n (no range) */
-        num[0] = (size_t) strtol(ptr, NULL, 10);
-        num[1] = num[0];
-      } else {
-        /* Range is in one of the following formats: n-m / -n / n- / - */
-
-        /* Split current range to numbers w.r.t '-' */
-        numbers = coco_string_split(ptr, '-');
-        j = 0;
-        if (numbers) {
-          /* Read the numbers */
-          for (j = 0; *(numbers + j); j++) {
-            assert(j < 2);
-            num[j] = (size_t) strtol(*(numbers + j), NULL, 10);
-            coco_free_memory(*(numbers + j));
-          }
-        }
-        coco_free_memory(numbers);
-
-        if (j == 0) {
-          /* Range is in the format - (open ends) */
-          if ((min == 0) || (max == 0)) {
-            coco_warning("coco_suite_parse_ranges(): '%s' ranges cannot have an open ends; some ranges ignored", name);
-            /* Cleanup */
-            for (j = i; *(ranges + j); j++)
-              coco_free_memory(*(ranges + j));
-            coco_free_memory(ranges);
-            if (i_result == 0) {
-              coco_free_memory(result);
-              return NULL;
-            }
-            result[i_result] = 0;
-            return result;
-          }
-          num[0] = min;
-          num[1] = max;
-        } else if (j == 1) {
-          if (dash - *(ranges + i) == 0) {
-            /* Range is in the format -n */
-            if (min == 0) {
-              coco_warning("coco_suite_parse_ranges(): '%s' ranges cannot have an open beginning; some ranges ignored", name);
-              /* Cleanup */
-              for (j = i; *(ranges + j); j++)
-                coco_free_memory(*(ranges + j));
-              coco_free_memory(ranges);
-              if (i_result == 0) {
-                coco_free_memory(result);
-                return NULL;
-              }
-              result[i_result] = 0;
-              return result;
-            }
-            num[1] = num[0];
-            num[0] = min;
-          } else {
-            /* Range is in the format n- */
-            if (max == 0) {
-              coco_warning("coco_suite_parse_ranges(): '%s' ranges cannot have an open end; some ranges ignored", name);
-              /* Cleanup */
-              for (j = i; *(ranges + j); j++)
-                coco_free_memory(*(ranges + j));
-              coco_free_memory(ranges);
-              if (i_result == 0) {
-                coco_free_memory(result);
-                return NULL;
-              }
-              result[i_result] = 0;
-              return result;
-            }
-            num[1] = max;
-          }
-        }
-        /* if (j == 2), range is in the format n-m and there is nothing to do */
-      }
-
-      /* Make sure the boundaries are taken into account */
-      if ((min > 0) && (num[0] < min)) {
-        num[0] = min;
-        coco_warning("coco_suite_parse_ranges(): '%s' ranges adjusted to be >= %lu", name, min);
-      }
-      if ((max > 0) && (num[1] > max)) {
-        num[1] = max;
-        coco_warning("coco_suite_parse_ranges(): '%s' ranges adjusted to be <= %lu", name, max);
-      }
-      if (num[0] > num[1]) {
-        coco_warning("coco_suite_parse_ranges(): '%s' ranges not within boundaries; some ranges ignored", name);
-        /* Cleanup */
-        for (j = i; *(ranges + j); j++)
-          coco_free_memory(*(ranges + j));
-        coco_free_memory(ranges);
-        if (i_result == 0) {
-          coco_free_memory(result);
-          return NULL;
-        }
-        result[i_result] = 0;
-        return result;
-      }
-
-      /* Write in result */
-      for (j = num[0]; j <= num[1]; j++) {
-        if (i_result > COCO_MAX_INSTANCES - 1)
-          break;
-        result[i_result++] = j;
-      }
-
-      coco_free_memory(*(ranges + i));
-      *(ranges + i) = NULL;
-    }
-  }
-
-  coco_free_memory(ranges);
-
-  if (i_result == 0) {
-    coco_free_memory(result);
-    return NULL;
-  }
-
-  result[i_result] = 0;
-  return result;
-}
 
 /**
  * @brief Returns the instances read from either a "year: YEAR" or "instances: NUMBERS" string.
@@ -609,7 +385,7 @@ static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const 
   if ((year_found >= 0) && (parce_year == 1)) {
     if (coco_options_read_int(suite_instance, "year", &(year)) != 0) {
       year_string = coco_suite_get_instances_by_year(suite, year);
-      result = coco_suite_parse_ranges(year_string, "instances", 1, 0);
+      result = coco_string_parse_ranges(year_string, 1, 0, "instances", COCO_MAX_INSTANCES);
     } else {
       coco_warning("coco_suite_get_instance_indices(): problems parsing the 'year' suite_instance option, ignored");
     }
@@ -618,7 +394,7 @@ static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const 
   instances = coco_allocate_string(COCO_MAX_INSTANCES);
   if ((instances_found >= 0) && (parce_instances == 1)) {
     if (coco_options_read_values(suite_instance, "instances", instances) > 0) {
-      result = coco_suite_parse_ranges(instances, "instances", 1, 0);
+      result = coco_string_parse_ranges(instances, 1, 0, "instances", COCO_MAX_INSTANCES);
     } else {
       coco_warning("coco_suite_get_instance_indices(): problems parsing the 'instance' suite_instance option, ignored");
     }
@@ -734,9 +510,11 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * parallelizing the experiments). Supported options:
  * - "dimensions: LIST", where LIST is the list of dimensions to keep in the suite (range-style syntax is
  * not allowed here),
- * - "function_idx: VALUES", where VALUES is a list or a range of function indexes (starting from 1) to keep
+ * - "dimension_indices: VALUES", where VALUES is a list or a range of dimension indices (starting from 1) to keep
  * in the suite, and
- * - "instance_idx: VALUES", where VALUES is a list or a range of instance indexes (starting from 1) to keep
+ * - "function_indices: VALUES", where VALUES is a list or a range of function indices (starting from 1) to keep
+ * in the suite, and
+ * - "instance_indices: VALUES", where VALUES is a list or a range of instance indices (starting from 1) to keep
  * in the suite.
  *
  * @return The constructed suite object.
@@ -752,65 +530,103 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
   long dim_found, dim_idx_found;
   int parce_dim = 1, parce_dim_idx = 1;
 
+  coco_option_keys_t *known_option_keys, *given_option_keys, *redundant_option_keys;
+
+  /* Sets the valid keys for suite options and suite instance */
+  const char *known_keys_o[] = { "dimensions", "dimension_indices", "function_indices", "instance_indices" };
+  const char *known_keys_i[] = { "year", "instances" };
+
   /* Initialize the suite */
   suite = coco_suite_intialize(suite_name);
 
   /* Set the instance */
   if ((!suite_instance) || (strlen(suite_instance) == 0))
     instances = coco_suite_get_instance_indices(suite, suite->default_instances);
-  else
+  else {
     instances = coco_suite_get_instance_indices(suite, suite_instance);
+
+    if (!instances) {
+      /* Something wrong in the suite_instance string, use default instead */
+      instances = coco_suite_get_instance_indices(suite, suite->default_instances);
+    }
+
+    /* Check for redundant option keys for suite instance */
+    known_option_keys = coco_option_keys_allocate(sizeof(known_keys_i) / sizeof(char *), known_keys_i);
+    given_option_keys = coco_option_keys(suite_instance);
+
+    if (given_option_keys) {
+      redundant_option_keys = coco_option_keys_get_redundant(known_option_keys, given_option_keys);
+
+      if ((redundant_option_keys != NULL) && (redundant_option_keys->count > 0)) {
+        /* Warn the user that some of given options are being ignored and output the valid options */
+        char *output_redundant = coco_option_keys_get_output_string(redundant_option_keys,
+            "coco_suite(): Some keys in suite instance were ignored:\n");
+        char *output_valid = coco_option_keys_get_output_string(known_option_keys,
+            "Valid keys for suite instance are:\n");
+        coco_warning("%s%s", output_redundant, output_valid);
+        coco_free_memory(output_redundant);
+        coco_free_memory(output_valid);
+      }
+
+      coco_option_keys_free(given_option_keys);
+      coco_option_keys_free(redundant_option_keys);
+    }
+    coco_option_keys_free(known_option_keys);
+  }
   coco_suite_set_instance(suite, instances);
   coco_free_memory(instances);
 
   /* Apply filter if any given by the suite_options */
   if ((suite_options) && (strlen(suite_options) > 0)) {
     option_string = coco_allocate_string(COCO_PATH_MAX);
-    if (coco_options_read_values(suite_options, "function_idx", option_string) > 0) {
-      indices = coco_suite_parse_ranges(option_string, "function_idx", 1, suite->number_of_functions);
+    if (coco_options_read_values(suite_options, "function_indices", option_string) > 0) {
+      indices = coco_string_parse_ranges(option_string, 1, suite->number_of_functions, "function_indices", COCO_MAX_INSTANCES);
       if (indices != NULL) {
-        coco_suite_filter_idx(suite->functions, suite->number_of_functions, indices, "function_idx");
+        coco_suite_filter_indices(suite->functions, suite->number_of_functions, indices, "function_indices");
         coco_free_memory(indices);
       }
     }
     coco_free_memory(option_string);
 
     option_string = coco_allocate_string(COCO_PATH_MAX);
-    if (coco_options_read_values(suite_options, "instance_idx", option_string) > 0) {
-      indices = coco_suite_parse_ranges(option_string, "instance_idx", 1, suite->number_of_instances);
+    if (coco_options_read_values(suite_options, "instance_indices", option_string) > 0) {
+      indices = coco_string_parse_ranges(option_string, 1, suite->number_of_instances, "instance_indices", COCO_MAX_INSTANCES);
       if (indices != NULL) {
-        coco_suite_filter_idx(suite->instances, suite->number_of_instances, indices, "instance_idx");
+        coco_suite_filter_indices(suite->instances, suite->number_of_instances, indices, "instance_indices");
         coco_free_memory(indices);
       }
     }
     coco_free_memory(option_string);
 
     dim_found = coco_strfind(suite_options, "dimensions");
-    dim_idx_found = coco_strfind(suite_options, "dimension_idx");
+    dim_idx_found = coco_strfind(suite_options, "dimension_indices");
 
     if ((dim_found > 0) && (dim_idx_found > 0)) {
       if (dim_found < dim_idx_found) {
         parce_dim_idx = 0;
-        coco_warning("coco_suite(): 'dimension_idx' suite option ignored because it follows 'dimensions'");
+        coco_warning("coco_suite(): 'dimension_indices' suite option ignored because it follows 'dimensions'");
       }
       else {
         parce_dim = 0;
-        coco_warning("coco_suite(): 'dimensions' suite option ignored because it follows 'dimension_idx'");
+        coco_warning("coco_suite(): 'dimensions' suite option ignored because it follows 'dimension_indices'");
       }
     }
 
     option_string = coco_allocate_string(COCO_PATH_MAX);
-    if ((dim_idx_found >= 0) && (parce_dim_idx == 1) && (coco_options_read_values(suite_options, "dimension_idx", option_string) > 0)) {
-      indices = coco_suite_parse_ranges(option_string, "dimension_idx", 1, suite->number_of_dimensions);
+    if ((dim_idx_found >= 0) && (parce_dim_idx == 1)
+        && (coco_options_read_values(suite_options, "dimension_indices", option_string) > 0)) {
+      indices = coco_string_parse_ranges(option_string, 1, suite->number_of_dimensions, "dimension_indices",
+          COCO_MAX_INSTANCES);
       if (indices != NULL) {
-        coco_suite_filter_idx(suite->dimensions, suite->number_of_dimensions, indices, "dimension_idx");
+        coco_suite_filter_indices(suite->dimensions, suite->number_of_dimensions, indices, "dimension_indices");
         coco_free_memory(indices);
       }
     }
     coco_free_memory(option_string);
 
     option_string = coco_allocate_string(COCO_PATH_MAX);
-    if ((dim_found >= 0) && (parce_dim == 1) && (coco_options_read_values(suite_options, "dimensions", option_string) > 0)) {
+    if ((dim_found >= 0) && (parce_dim == 1)
+        && (coco_options_read_values(suite_options, "dimensions", option_string) > 0)) {
       ptr = option_string;
       /* Check for disallowed characters */
       while (*ptr != '\0') {
@@ -820,14 +636,38 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
         } else
           ptr++;
       }
-      dimensions = coco_suite_parse_ranges(option_string, "dimensions", suite->dimensions[0],
-          suite->dimensions[suite->number_of_dimensions - 1]);
+      dimensions = coco_string_parse_ranges(option_string, suite->dimensions[0],
+          suite->dimensions[suite->number_of_dimensions - 1], "dimensions", COCO_MAX_INSTANCES);
       if (dimensions != NULL) {
         coco_suite_filter_dimensions(suite, dimensions);
         coco_free_memory(dimensions);
       }
     }
     coco_free_memory(option_string);
+
+    /* Check for redundant option keys for suite options */
+    known_option_keys = coco_option_keys_allocate(sizeof(known_keys_o) / sizeof(char *), known_keys_o);
+    given_option_keys = coco_option_keys(suite_options);
+
+    if (given_option_keys) {
+      redundant_option_keys = coco_option_keys_get_redundant(known_option_keys, given_option_keys);
+
+      if ((redundant_option_keys != NULL) && (redundant_option_keys->count > 0)) {
+        /* Warn the user that some of given options are being ignored and output the valid options */
+        char *output_redundant = coco_option_keys_get_output_string(redundant_option_keys,
+            "coco_suite(): Some keys in suite options were ignored:\n");
+        char *output_valid = coco_option_keys_get_output_string(known_option_keys,
+            "Valid keys for suite options are:\n");
+        coco_warning("%s%s", output_redundant, output_valid);
+        coco_free_memory(output_redundant);
+        coco_free_memory(output_valid);
+      }
+
+      coco_option_keys_free(given_option_keys);
+      coco_option_keys_free(redundant_option_keys);
+    }
+    coco_option_keys_free(known_option_keys);
+
   }
 
   /* Check that there are enough dimensions, functions and instances left */

@@ -35,7 +35,7 @@ static void transform_obj_oscillate_evaluate(coco_problem_t *problem, const doub
  */
 static coco_problem_t *transform_obj_oscillate(coco_problem_t *inner_problem) {
   coco_problem_t *problem;
-  problem = coco_problem_transformed_allocate(inner_problem, NULL, NULL);
+  problem = coco_problem_transformed_allocate(inner_problem, NULL, NULL, "transform_obj_oscillate");
   problem->evaluate_function = transform_obj_oscillate_evaluate;
   /* Compute best value */
   /* Maybe not the most efficient solution */
