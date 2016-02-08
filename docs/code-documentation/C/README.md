@@ -105,9 +105,11 @@ workshop.
 Possible keys and values for ``suite_options`` are:
 - ``dimensions: LIST``, where ``LIST`` is the list of dimensions to keep in the suite (range-style
 syntax is not allowed here), 
-- ``function_indices: VALUES``, where ``VALUES`` is a list or a range of function indexes (starting 
+- ``dimension_indices: VALUES``, where ``VALUES`` is a list or a range of dimension indices (starting 
 from 1) to keep in the suite, and
-- ``instance_indices: VALUES``, where ``VALUES`` is a list or a range of instance indexes (starting 
+- ``function_indices: VALUES``, where ``VALUES`` is a list or a range of function indices (starting 
+from 1) to keep in the suite, and
+- ``instance_indices: VALUES``, where ``VALUES`` is a list or a range of instance indices (starting 
 from 1) to keep in the suite. 
 
 For example, the call:
