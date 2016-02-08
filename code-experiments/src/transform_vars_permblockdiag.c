@@ -26,10 +26,9 @@ static void transform_vars_permblockdiag_evaluate(coco_problem_t *problem, const
   size_t i, j, current_blocksize, first_non_zero_ind;
   transform_vars_permblockdiag_t *data;
   coco_problem_t *inner_problem;
-  
+
   data = (transform_vars_permblockdiag_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
-  
   for (i = 0; i < inner_problem->number_of_variables; ++i) {
     current_blocksize = data->block_size_map[data->P2[i]];/*the block_size is that of the permuted line*/
     first_non_zero_ind = data->first_non_zero_map[data->P2[i]];
@@ -38,11 +37,8 @@ static void transform_vars_permblockdiag_evaluate(coco_problem_t *problem, const
     for (j = first_non_zero_ind; j < first_non_zero_ind + current_blocksize; ++j) {/*blocksize[P2[i]]*/
       data->x[i] += data->B[data->P2[i]][j - first_non_zero_ind] * x[data->P1[j]];/*all B lines start at 0*/
     }
-    if (data->x[i] > 100 || data->x[i] < -100 || 1) {
-    }
-    
   }
-  
+
   coco_evaluate_function(inner_problem, data->x, y);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }

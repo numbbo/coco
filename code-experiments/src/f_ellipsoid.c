@@ -16,6 +16,9 @@
 
 #include "transform_vars_permblockdiag.c"
 #include "transform_obj_norm_by_dim.c"
+
+size_t dim_now = 0;
+
 /**
  * @brief Implements the ellipsoid function without connections to any COCO structures.
  */
