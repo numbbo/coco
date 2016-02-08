@@ -66,7 +66,7 @@ void run_once(char *observer_options) {
   printf("Running experiment with options %s\n", observer_options);
   fflush(stdout);
 
-  suite = coco_suite("bbob-biobj", NULL, "dimensions: 2 function_idx: 5-10 function_idx: 2-3");
+  suite = coco_suite("bbob-biobj", NULL, "dimensions: 2 function_indices: 5-10 instance_indices: 2-3");
   observer = coco_observer("bbob-biobj", observer_options);
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
@@ -91,7 +91,7 @@ void multiple_observers(void) {
   coco_observer_t *observer_inner, *observer_middle, *observer_outer;
   coco_problem_t *problem_inner, *problem_middle, *problem_outer;
 
-  suite = coco_suite("bbob-biobj", "year: 2016", "dimensions: 2 function_idx: 1-3");
+  suite = coco_suite("bbob-biobj", "year: 2016", "dimensions: 2 function_indices: 1-3");
 
   observer_inner = coco_observer("toy", "");
   observer_middle = coco_observer("bbob-biobj", "log_nondominated: final log_decision_variables: none");

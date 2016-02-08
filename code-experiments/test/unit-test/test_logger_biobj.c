@@ -33,7 +33,7 @@ static void test_logger_biobj_evaluate(void **state) {
     coco_error("test_logger_biobj_evaluate() failed to open file '%s'.", file_name);
   }
 
-  suite = coco_suite("bbob-biobj", "year: 2016", "dimensions: 2 function_idx: 23 instance_idx: 5");
+  suite = coco_suite("bbob-biobj", "year: 2016", "dimensions: 2 function_indices: 23 instance_indices: 5");
   observer = coco_observer("bbob-biobj", "");
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
