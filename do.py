@@ -389,18 +389,10 @@ def build_octave():
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
-    
-    # Copy octave-coco.bat to the Octave folder under Windows to allow
-    # calling Octave from command line without messing up the system.    
-    # Note that 'win32' stands for both Windows 32-bit and 64-bit.
+
+    # make sure that under Windows, run_octave has been run at least once
+    # before to provide the necessary octave_coco.bat file     
     if ('win32' in sys.platform):
-        print('SEARCH\tfor Octave folder from C:\\ (can take some time)')
-        lookfor = 'octave.bat'
-        for root, dirs, files in os.walk('C:\\'):
-            if lookfor in files:
-                break
-        copy_file('code-experiments/build/matlab/octave_coco.bat.in', join(root, 'octave_coco.bat'))
-        
         run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'setup.m'])
     else:
         run('code-experiments/build/matlab', ['octave', '--no-gui', 'setup.m'])
@@ -410,6 +402,18 @@ def run_octave():
     print('CLEAN\tmex files from code-experiments/build/matlab/')
     for filename in glob.glob('code-experiments/build/matlab/*.mex*'):
         os.remove(filename)
+        
+    # Copy octave-coco.bat to the Octave folder under Windows to allow
+    # calling Octave from command line without messing up the system.    
+    # Note that 'win32' stands for both Windows 32-bit and 64-bit.
+    if ('win32' in sys.platform):        
+        print('SEARCH\tfor Octave folder from C:\\ (can take some time)')
+        lookfor = 'octave.bat'
+        for root, dirs, files in os.walk('C:\\'):
+            if lookfor in files:
+                break
+        copy_file('code-experiments/build/matlab/octave_coco.bat.in', join(root, 'octave_coco.bat'))
+        
     # amalgamate, copy, and build
     build_octave()
     if ('win32' in sys.platform):
@@ -638,6 +642,7 @@ Available commands for developers:
   test-python          - Build and run minimal test of Python module
   test-python2         - Build and run minimal test of Python 2 module
   test-python3         - Build and run minimal test of Python 3 module
+  test-octave          - Build and run example experiment in Octave
   test-postprocessing  - Runs post-processing tests.
   leak-check           - Check for memory leaks in C
 
@@ -678,6 +683,7 @@ def main(args):
     elif cmd == 'test-python': test_python()
     elif cmd == 'test-python2': test_python2()
     elif cmd == 'test-python3': test_python3()
+    elif cmd == 'test-octave': test_octave()
     elif cmd == 'test-postprocessing': test_postprocessing()
     elif cmd == 'leak-check': leak_check()
     else: help()
