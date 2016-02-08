@@ -112,6 +112,10 @@ from 1) to keep in the suite, and
 - ``instance_indices: VALUES``, where ``VALUES`` is a list or a range of instance indices (starting 
 from 1) to keep in the suite. 
 
+If both ``dimensions`` and ``dimension_indices`` appear in the ``suite_options`` string, only the first 
+one is taken into account. If no ``suite_options`` is given, no filtering by functions, dimensions and
+instances is performed, i.e. the experiment will be run on the entire benchmark suite. 
+
 For example, the call:
 
     suite = coco_suite("bbob-biobj", 
