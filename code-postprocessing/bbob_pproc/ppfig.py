@@ -72,6 +72,10 @@ html_header = """<HTML>
 <BODY>
 <H1> %s
 </H1>
+"""
+
+html_header_ext = html_header + """
+%s
 <H2 style="color:red"> %s </H2>
 """
 
@@ -102,14 +106,53 @@ def addImage(imageName, addLink):
     else:
         return '<IMG SRC="%s">' % imageName
 
-def save_single_functions_html(filename, algname='', extension='svg',
-                               add_to_names = '', algorithmCount = AlgorithmCount.NON_SPECIFIED,
-                               values_of_interest = [], isBiobjective = False, functionGroups = None):
+def save_index_html_file(filename, algorithmList):
+
+    with open(filename + '.html', 'w') as f:
+        f.write(html_header % ('Post processing results', 'Post processing results'))
+            
+        f.write('<H2>Single algorithm data</H2>\n')
+        for algorithm in algorithmList:
+            algName = algorithm.split(os.sep)[-1]         
+            link = '%s/templateBBOBarticle.html' % algName
+            f.write('<H3>&nbsp;<a href="%s">%s</a></H3>\n' % (link, algName))
+        
+        if (len(algorithmList) >= 2):
+            f.write('<H2>Comparison data</H2>\n')
+            if (len(algorithmList) == 2):
+                f.write('<H3><a href="templateBBOBcmp.html">&nbsp;Two algorithm comparison</a></H3>\n')
+            else:
+                f.write('<H3><a href="templateBBOBmany.html">&nbsp;Many algorithm comparison</a></H3>\n')
+
+        f.write("\n</BODY>\n</HTML>")
+
+def getHomeLink(algorithmCount):
+    homeLink = '<H3><a href="%sindex.html">[Home]</a></H3>'    
+    if algorithmCount is AlgorithmCount.ONE:
+        return homeLink % '../'
+    elif algorithmCount is AlgorithmCount.TWO or algorithmCount is AlgorithmCount.MANY:
+        return homeLink % ''
+    
+    return ''
+
+def save_single_functions_html(filename, 
+                               algname='', 
+                               extension='svg',
+                               add_to_names = '', 
+                               algorithmCount = AlgorithmCount.NON_SPECIFIED,
+                               values_of_interest = [],
+                               isBiobjective = False, 
+                               functionGroups = None,
+                               algorithmList = []):
+    
     name = filename.split(os.sep)[-1]
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ' ' + name + add_to_names
         imageWarning = '' if extension in genericsettings.getFigFormats() else 'For generating figures use the --svg option.'
-        f.write(html_header % (header_title.strip().replace(' ', ', '), algname, imageWarning))
+        f.write(html_header_ext % (header_title.strip().replace(' ', ', '), 
+                                   algname, 
+                                   getHomeLink(algorithmCount),
+                                   imageWarning))
             
         if functionGroups is None:
             functionGroups = OrderedDict([])
