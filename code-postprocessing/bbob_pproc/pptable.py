@@ -99,6 +99,9 @@ table_caption_rlbased = table_caption_one + table_caption_two2 + table_caption_r
 def _treat(ds):
 
     bestalgentries = bestalg.loadBestAlgorithm(ds.isBiobjective())
+    
+    if not bestalgentries:
+        return None, None
 
     # Rec array: http://docs.scipy.org/doc/numpy/user/basics.rec.html
     bestentry = bestalgentries[(ds.dim, ds.funcId)]
@@ -241,22 +244,22 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 #write ftarget:fevals
                 for i in xrange(len(bestalgdata[:-1])):
-                    temp="%.1e" %targetsOfInterest((f,d))[i]
-                    if temp[-2]=="0":
-                        temp=temp[:-2]+temp[-1]
+                    temp = "%.1e" % targetsOfInterest((f,d))[i]
+                    if temp[-2] == "0":
+                        temp = temp[:-2] + temp[-1]
                     curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
                                    % (temp, writeFEvalsMaxPrec(bestalgdata[i], 2)))
                     curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
                                        % (temp, writeFEvalsMaxPrec(bestalgdata[i], 2)))
-                temp="%.1e" %targetsOfInterest((f,d))[-1]
-                if temp[-2]=="0":
-                    temp=temp[:-2]+temp[-1]
+                temp="%.1e" % targetsOfInterest((f,d))[-1]
+                if temp[-2] == "0":
+                    temp = temp[:-2] + temp[-1]
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
                                % (temp, writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
                 curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
                                    % (temp, writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
                 #success
-                targetf=targetsOfInterest((f,d))[-1]
+                targetf = targetsOfInterest((f,d))[-1]
                            
             else:            
                 # write #fevals of the reference alg
@@ -356,7 +359,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
                     tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                   % (alignment, tmp))
-                    tableentryHtml = ('<td>%s</td>' % tmpHtml)
+                    tableentryHtml = ('%s' % tmpHtml)
                 else:
                     # Formatting
                     tmp = float(ert) / bestalgdata[i]
