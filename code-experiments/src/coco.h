@@ -410,6 +410,16 @@ void coco_warning(const char *message, ...);
 void coco_info(const char *message, ...);
 
 /**
+ * @brief Prints only the given message without any prefix and new line.
+ *
+ * A function similar to coco_info but producing no additional text than
+ * the given message.
+ *
+ * The output is only produced if coco_log_level >= COCO_INFO.
+ */
+void coco_info_partial(const char *message, ...);
+
+/**
  * @brief Outputs detailed information usually used for debugging.
  */
 void coco_debug(const char *message, ...);
