@@ -41,9 +41,7 @@ _Additional_ requirements for running an algorithm in a specific language.
   containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
   These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
   It has both the 32-bit and 64-bit compilers and the Windows SDK headers.
-* **Octave**: tested with Octave 4.0.0 but older versions might work. Make sure `octave` can be called from
-  the shell without closing the shell on exit, for details, 
-  see [here](./code-experiments/build/matlab/README.md)
+* **Octave**: Octave 4.0.0 or later. On operating systems other than Windows, earlier versions might work.
 
 ### Guaranties (None)
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
@@ -331,28 +329,8 @@ processes if there is any) before to run the `do.py` command again.
 
 
 ### Octave
+none for the moment
 
-#### Fresh Octave Installation Under Windows
-If you happen to install Octave just before you run `python do.py run-octave` under Windows, you need to run the octave.bat first once. It will set the correct path to the Octave `bin/` folder.
-
-#### Command Window Closes Unexpectedly Under Windows
-If it happens that the command window, from which the
-`python do.py run-octave` is run, closes unexpectely under Windows, you might
-want to change the general way, Octave is called. Find your `octave.bat` file,
-which is in your Octave installation folder (typically something like
-`C:\Octave\Octave-4.0.0\` and remove or outcomment the last line, saying
-```
-Rem   Close the batch file's cmd.exe window
-exit
-```
-We think already about a way to solve this issue directly in the `do.py` but it
-has low priority for the moment.
-
-#### Running Algorithms in Octave and C Under Windows
-If want to run algorithms in Octave and C, please make sure that you run them from different
-command windows. The `octave.bat` happens to set some paths which might affect which compiler
-you use as default. This might crash the `python do.py run-c` if you run it in the same
-command windows *after* having run the `octave.bat`.
 
 ### Python
 
