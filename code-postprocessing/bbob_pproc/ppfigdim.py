@@ -472,6 +472,9 @@ def plot_previous_algorithms(func, isBiobjective, target=values_of_interest):  #
     target = pproc.TargetValues.cast(target)
 
     bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+    
+    if not bestalgentries:
+        return None
 
     bestalgdata = []
     for d in dimensions:
@@ -512,8 +515,6 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     # plt.rc("legend", fontsize=20)
 
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
-
-    bestalg.loadBestAlgorithm(dsList.isBiobjective())
 
     dictFunc = dsList.dictByFunc()
 

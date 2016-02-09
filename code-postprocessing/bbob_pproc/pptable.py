@@ -163,8 +163,6 @@ def main2(dsList, dimsOfInterest, outputdir='.', info='', verbose=True):
         # insert a separator between the default file name and the additional
         # information string.
     
-    bestalg.loadBestAlgorithm(dsList.isBiobjective())
-
     for d, dsdim in dsList.dictByDim().iteritems():
         res = []
         for f, dsfun in sorted(dsdim.dictByFunc().iteritems()):
