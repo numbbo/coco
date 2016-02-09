@@ -24,7 +24,7 @@
 %   >> problem = cocoCall('cocoSuiteGetNextProblem', suite, observer);
 %   >> cocoCall('cocoSetLogLevel', 'info')
 %   ans = warning
-%   .>> cocoCall('cocoObserverFree', suite);
+%   .>> cocoCall('cocoObserverFree', observer);
 %   >> cocoCall('cocoSuiteFree', suite);
 %
 %
