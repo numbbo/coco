@@ -1,4 +1,4 @@
-# Returns the problem of the suite defined by problem_index 
+# Returns the problem of the suite defined by problem_index.
 #
 # Example usage:
 #

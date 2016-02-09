@@ -251,21 +251,6 @@ void cocoProblemGetSmallestValuesOfInterest(int nlhs, mxArray *plhs[], int nrhs,
     }
 }
 
-void cocoProblemIsValid(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
-{
-    size_t *ref;
-    coco_problem_t *pb = NULL;
-
-    /* check for proper number of arguments */
-    if(nrhs!=1) {
-        mexErrMsgIdAndTxt("problemIsValid:nrhs","One input required.");
-    }
-    /* get the problem */
-    ref = (size_t *)mxGetData(prhs[0]);
-    pb = (coco_problem_t *)(*ref);
-    plhs[0] = mxCreateLogicalScalar(pb != NULL);
-}
-
 void cocoSetLogLevel(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
   
