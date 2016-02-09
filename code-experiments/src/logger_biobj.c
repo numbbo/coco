@@ -7,7 +7,6 @@
  * - The "info" files contain high-level information on the performed experiment. One .info file is created
  * for each problem group (and indicator type) and contains information on all the problems in that problem
  * group (and indicator type).
-
  * - The "dat" files contain function evaluations, indicator values and target hits for every target hit as
  * well as for the last evaluation. One .dat file is created for each problem function and dimension (and
  * indicator type) and contains information for all instances of that problem (and indicator type).
@@ -23,6 +22,7 @@
  * and contains information for all instances of that problem.
  *
  * @note Whenever in this file a ROI is mentioned, it means the region of interest in the objective space.
+ * The ROI is a rectangle with the ideal and nadir points as its two opposite vertices.
  */
 
 #include <stdio.h>
@@ -43,11 +43,31 @@
 /** @brief Number of implemented indicators */
 #define LOGGER_BIOBJ_NUMBER_OF_INDICATORS 1
 
-/** @brief Names of implemented indicators */
+/** @brief Names of implemented indicators
+ *
+ * "hyp" stands for the hypervolume indicator.
+ * */
 const char *logger_biobj_indicators[LOGGER_BIOBJ_NUMBER_OF_INDICATORS] = { "hyp" };
 
 /**
  * @brief The indicator type.
+ *
+ * <B> The hypervolume indicator ("hyp") </B>
+ *
+ * The hypervolume indicator measures the volume of the portion of the ROI in the objective space that is
+ * dominated by the current Pareto front approximation. Instead of logging the hypervolume indicator value,
+ * this implementation logs the difference between the best know hypervolume indicator (a value stored in
+ * best_value) and the hypervolume indicator of the current Pareto front approximation (current_value). The
+ * current_value equals 0 if no solution is located in the ROI. In order to be able to register the
+ * performance of an optimizer even before the ROI is reached, an additional value is computed when no
+ * solutions are located inside the ROI. This value is stored in additional_penalty and equals the
+ * normalized distance to the ROI of the solution closest to the ROI (additional_penalty is set to 0 as
+ * soon as a solution reaches the ROI). The final value to be logged (overall_value) is therefore computed
+ * in the following way:
+ *
+ * overall_value = best_value - current_value + additional_penalty
+ *
+ * @note Other indicators are yet to be implemented.
  */
 typedef struct {
 
@@ -432,7 +452,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   indicator->target_hit = 0;
   indicator->evaluation_logged = 0;
   indicator->current_value = 0;
-  indicator->additional_penalty = 0;
+  indicator->additional_penalty = DBL_MAX;
   indicator->overall_value = 0;
 
   indicator->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
@@ -623,8 +643,10 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
    * - dat file, if the archive was updated and a new target was reached for an indicator;
    * - tdat file, if the number of evaluations matches one of the predefined numbers.
    *
-   * Note that a target is reached when the (best_value - current_value) <= relative_target_value
-   * The relative_target_value is a target for indicator difference, not indicator value!
+   * Note that a target is reached when
+   * best_value - current_value + additional_penalty <= relative_target_value
+   *
+   * The relative_target_value is a target for indicator difference, not the actual indicator value!
    */
   if (logger->compute_indicators) {
     for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
@@ -637,17 +659,11 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
         /* Compute the overall_value of an indicator */
         if (strcmp(indicator->name, "hyp") == 0) {
           if (indicator->current_value == 0) {
-            /* The additional penalty for hypervolume is the minimal distance from the nondominated set to the ROI */
-            indicator->additional_penalty = DBL_MAX;
-            if (logger->archive_tree->tail) {
-              solution = logger->archive_tree->head;
-              while (solution != NULL) {
-                double distance = mo_get_distance_to_ROI(((logger_biobj_avl_item_t*) solution->item)->y,
-                    problem->best_value, problem->nadir_value, problem->number_of_objectives);
-                indicator->additional_penalty = coco_double_min(indicator->additional_penalty, distance);
-                solution = solution->next;
-              }
-            }
+            /* Update the additional penalty for hypervolume (the minimal distance from the nondominated set
+             * to the ROI) */
+            double new_distance = mo_get_distance_to_ROI(node_item->y,
+                problem->best_value, problem->nadir_value, problem->number_of_objectives);
+            indicator->additional_penalty = coco_double_min(indicator->additional_penalty, new_distance);
             assert(indicator->additional_penalty >= 0);
           } else {
             indicator->additional_penalty = 0;
@@ -666,7 +682,8 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
       /* Log to the dat file if a target was hit */
       if (indicator->target_hit) {
         fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", logger->number_of_evaluations, logger->precision_f,
-            indicator->overall_value, logger->precision_f, ((coco_observer_targets_t *) indicator->targets)->value);
+            indicator->overall_value, logger->precision_f,
+            ((coco_observer_targets_t *) indicator->targets)->value);
       }
 
       /* Log to the tdat file if the number of evaluations matches one of the predefined numbers */
