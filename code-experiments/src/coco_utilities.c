@@ -630,7 +630,7 @@ static char *coco_option_keys_get_output_string(const coco_option_keys_t *option
                                                 const char *info_string) {
   size_t i;
   char *string, *new_string;
-
+  string = NULL;
   if ((option_keys != NULL) && (option_keys->count > 0)) {
 
     string = coco_strdup(info_string);
