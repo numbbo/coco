@@ -196,6 +196,8 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
             if max_evals - fun.evaluations > fun.dimension + 1:
                 print("WARNING: %d evaluations remaining" %
                       remaining_evals)
+            if fun.evaluations < max_evals - remaining_evals:
+                raise RuntimeError("function evaluations decreased")
             break
 
     if restarts > 0:
@@ -215,7 +217,7 @@ SOLVER = random_search
 #SOLVER = my_solver # fmin_slsqp # cma.fmin #
 suite_name = "bbob-biobj"
 # suite_name = "bbob"
-suite_instance = ""  # 'dimensions: 2,3,5,10,20 instance_idx: 1-5'
+suite_instance = ""  # 'dimensions: 2,3,5,10,20 instance_indices: 1-5'
 suite_options = ""
 observer_name = suite_name
 observer_options = (
@@ -241,8 +243,8 @@ def main(budget=budget,
           % (' '.join(str(SOLVER).split()[:2]), budget,
              suite.name, time.asctime()))
     if number_of_batches > 1:
-        print_flush('Batch usecase, make sure you run *all* %d batches.\n' %
-                    number_of_batches)
+        print('Batch usecase, make sure you run *all* %d batches.\n' %
+              number_of_batches)
     t0 = time.clock()
     batch_loop(SOLVER, suite, observer, budget, max_runs,
                current_batch, number_of_batches)

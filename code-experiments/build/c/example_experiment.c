@@ -120,6 +120,51 @@ void my_grid_search(coco_problem_t *problem) {
 /**
  * A simple example of benchmarking an optimization algorithm on the bbob suite with instances from 2009.
  */
+void example_bbob_tentative(void) {
+
+  /* Some options of the bbob observer. See documentation for other options. */
+  const char *observer_options = "result_folder: RS_on_bbob "
+                                 "algorithm_name: RS "
+                                 "algorithm_info: \"A simple random search algorithm\"";
+
+  size_t INDEPENDENT_RESTARTS = 0;  /* should move to where BUDGET is set */
+  size_t irun; 
+  coco_suite_t *suite;
+  coco_observer_t *observer;
+  coco_problem_t *problem;
+
+  suite = coco_suite("bbob", "year: 2016", "dimensions: 2,3,5,10,20,40");
+  observer = coco_observer("bbob", observer_options);
+
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL)
+    for (irun = 1; irun <= 1 + INDEPENDENT_RESTARTS; ++irun) {
+      size_t done_evals = coco_problem_get_evaluations(problem);
+
+      /* TODO: if irun > 1, we need to make sure to not reproduce the exact same run. */
+      /* TODO: the interface needs to change for *all* examples
+      my_random_search(problem, BUDGET * coco_problem_get_dimension(problem) - done_evals);  PLUG IN THE DESIRED OPTIMIZER HERE */
+
+      /* check reasons to break the loop */
+      if (coco_problem_final_target_hit(problem) ||
+          coco_problem_get_evaluations(problem) >= BUDGET * coco_problem_get_dimension(problem))
+        break;
+      if (coco_problem_get_evaluations(problem) == done_evals) { /* no additional evals were done */
+        printf("WARNING: Budget has not been exhausted (%lu/%lu evaluations done)!\n",
+               done_evals, BUDGET * coco_problem_get_dimension(problem));
+        break;
+      }
+      if (coco_problem_get_evaluations(problem) < done_evals)
+        coco_error("something weird happened here which should not happen: f-evaluations decreased");
+    }
+
+  coco_observer_free(observer);
+  coco_suite_free(suite);
+
+}
+
+/**
+ * A simple example of benchmarking an optimization algorithm on the bbob suite with instances from 2009.
+ */
 void example_bbob(void) {
 
   /* Some options of the bbob observer. See documentation for other options. */

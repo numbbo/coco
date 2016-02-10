@@ -4,9 +4,9 @@ numbbo/coco: Comparing Continuous Optimizers
 This code reimplements the original Comparing Continous Optimizer platform, now 
 rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
 the code provides a platform to benchmark and compare continuous optimizers, AKA non-linear 
-solvers for numerical optimization. Languages currently available are `C`, `Java`, 
-`MATLAB/Octave`, and `Python`. Support for `C++` is expected to be available in the near 
-future. Contributions to link further languages (including `C++`) are more than welcome.
+solvers for numerical optimization. Languages currently available are `C/C++`, `Java`, 
+`MATLAB/Octave`, and `Python`. Contributions to link further languages (including a better
+example in `C++`) are more than welcome.
 
 See the [workshops page](http://numbbo.github.io/workshops), the [previous COCO home page](http://coco.gforge.inria.fr/) 
 and [further links below](#Further-Links) to learn more about the ideas behind CoCO.
@@ -41,9 +41,7 @@ _Additional_ requirements for running an algorithm in a specific language.
   containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
   These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
   It has both the 32-bit and 64-bit compilers and the Windows SDK headers.
-* **Octave**: tested with Octave 4.0.0 but older versions might work. Make sure `octave` can be called from
-  the shell without closing the shell on exit, for details, 
-  see [here](./code-experiments/build/matlab/README.md)
+* **Octave**: Octave 4.0.0 or later. On operating systems other than Windows, earlier versions might work.
 
 ### Guaranties (None)
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
@@ -70,7 +68,7 @@ Getting Started <a name="Getting-Started"></a>
 
   **CAVEAT: this code is still under heavy development**. The record of official releases can 
   be found [here](https://github.com/numbbo/coco/releases). The latest release corresponds 
-  to the [master branch](https://github.com/numbbo/coco/tree/master) as liked above. 
+  to the [master branch](https://github.com/numbbo/coco/tree/master) as linked above. 
 
 2. In a system shell, **`cd` into** the `coco` or `coco-<version>` folder (framework root), 
   where the file `do.py` can be found. Type, i.e. **execute**, one of the following commands once
@@ -331,28 +329,8 @@ processes if there is any) before to run the `do.py` command again.
 
 
 ### Octave
+none for the moment
 
-#### Fresh Octave Installation Under Windows
-If you happen to install Octave just before you run `python do.py run-octave` under Windows, you need to run the octave.bat first once. It will set the correct path to the Octave `bin/` folder.
-
-#### Command Window Closes Unexpectedly Under Windows
-If it happens that the command window, from which the
-`python do.py run-octave` is run, closes unexpectely under Windows, you might
-want to change the general way, Octave is called. Find your `octave.bat` file,
-which is in your Octave installation folder (typically something like
-`C:\Octave\Octave-4.0.0\` and remove or outcomment the last line, saying
-```
-Rem   Close the batch file's cmd.exe window
-exit
-```
-We think already about a way to solve this issue directly in the `do.py` but it
-has low priority for the moment.
-
-#### Running Algorithms in Octave and C Under Windows
-If want to run algorithms in Octave and C, please make sure that you run them from different
-command windows. The `octave.bat` happens to set some paths which might affect which compiler
-you use as default. This might crash the `python do.py run-c` if you run it in the same
-command windows *after* having run the `octave.bat`.
 
 ### Python
 

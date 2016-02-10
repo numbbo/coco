@@ -53,7 +53,7 @@ static coco_problem_t *transform_obj_penalize(coco_problem_t *inner_problem, con
 
   data = (transform_obj_penalize_data_t *) coco_allocate_memory(sizeof(*data));
   data->factor = factor;
-  problem = coco_problem_transformed_allocate(inner_problem, data, NULL);
+  problem = coco_problem_transformed_allocate(inner_problem, data, NULL, "transform_obj_penalize");
   problem->evaluate_function = transform_obj_penalize_evaluate;
   /* No need to update the best value as the best parameter is feasible */
   return problem;
