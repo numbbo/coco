@@ -26,8 +26,6 @@
 #include "coco_string.c"
 #include "observer_bbob.c"
 
-/*static const size_t bbob_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
-/*static const size_t bbob_nbpts_fval = 5;*/
 static size_t bbob_current_dim = 0;
 static size_t bbob_current_funId = 0;
 static size_t bbob_infoFile_firstInstance = 0;
@@ -56,8 +54,6 @@ static int bbob_logger_is_open = 0; /* this could become lock-list of .info file
 typedef struct {
   coco_observer_t *observer;
   int is_initialized;
-  /*char *path;// relative path to the data folder. //Wassim: now fetched from the observer */
-  /*const char *alg_name; the alg name, for now, temporarily the same as the path. Wassim: Now in the observer */
   FILE *index_file; /* index file */
   FILE *fdata_file; /* function value aligned data file */
   FILE *tdata_file; /* number of function evaluations aligned data file */
@@ -71,7 +67,7 @@ typedef struct {
    * interface should probably be the same for all free functions so passing the
    * problem as a second parameter is not an option even though we need info
    * form it.*/
-  size_t function_id; /*TODO: consider changing name*/
+  size_t function_id;
   size_t instance_id;
   size_t number_of_variables;
   double optimal_fvalue;
@@ -151,28 +147,6 @@ static void logger_bbob_open_dataFile(FILE **target_file,
     }
   }
 }
-
-/*
-static void logger_bbob_open_dataFile(FILE **target_file,
-                                      const char *path,
-                                      const char *dataFile_path,
-                                      const char *file_extension) {
-  char file_path[COCO_PATH_MAX] = { 0 };
-  char relative_filePath[COCO_PATH_MAX] = { 0 };
-  int errnum;
-  strncpy(relative_filePath, dataFile_path,
-  COCO_PATH_MAX - strlen(relative_filePath) - 1);
-  strncat(relative_filePath, file_extension,
-  COCO_PATH_MAX - strlen(relative_filePath) - 1);
-  coco_join_path(file_path, sizeof(file_path), path, relative_filePath, NULL);
-  if (*target_file == NULL) {
-    *target_file = fopen(file_path, "a+");
-    errnum = errno;
-    if (*target_file == NULL) {
-      _bbob_logger_error_io(*target_file, errnum);
-    }
-  }
-}*/
 
 /**
  * Creates the index file fileName_prefix+problem_id+file_extension in
