@@ -23,7 +23,7 @@ static coco_suite_t *suite_largescale_initialize(void) {
   
   coco_suite_t *suite;
   const size_t dimensions[] = { 40, 80, 160, 320, 640, 1280, 2560, 5120};
-  suite = coco_suite_allocate("bbob-largescale", 5, 8, dimensions, "instances:1-5");
+  suite = coco_suite_allocate("bbob-largescale", 5, 8, dimensions, "instances:1-15");
   return suite;
 }
 

@@ -610,7 +610,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
 
   logger_biobj_avl_item_t *node_item;
   logger_biobj_indicator_t *indicator;
-  avl_node_t *solution;
+  /* avl_node_t *solution;*/
   int update_performed;
   size_t i;
 
