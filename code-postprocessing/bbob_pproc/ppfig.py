@@ -142,8 +142,7 @@ def save_single_functions_html(filename,
                                algorithmCount = AlgorithmCount.NON_SPECIFIED,
                                values_of_interest = [],
                                isBiobjective = False, 
-                               functionGroups = None,
-                               algorithmList = []):
+                               functionGroups = None):
     
     name = filename.split(os.sep)[-1]
     with open(filename + add_to_names + '.html', 'w') as f:
@@ -162,6 +161,8 @@ def save_single_functions_html(filename,
         maxFunctionIndex = 55 if isBiobjective else 24
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
         addLinkForNextDim = add_to_names.endswith('D')
+        bestAlgExists = not isBiobjective
+        
         if algorithmCount is AlgorithmCount.ONE:
             headerERT = 'Expected number of <i>f</i>-evaluations to reach target'
             f.write("<H2> %s </H2>\n" % headerERT)
@@ -250,7 +251,10 @@ def save_single_functions_html(filename,
             key = 'bbobpprldistrlegendtworlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendtwofixed'
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
-            headerERT = 'Table showing the ERT in number of function evaluations divided by the best ERT measured during BBOB-2009'
+            headerERT = 'Table showing the ERT in number of function evaluations'
+            if bestAlgExists:
+                headerERT += ' divided by the best ERT measured during BBOB-2009'
+                
             f.write("\n<H2> %s </H2>\n" % headerERT)
             f.write("\n<!--pptable2Html-->\n")
             f.write(captionStringFormat % '##bbobpptablestwolegend##')
@@ -271,8 +275,8 @@ def save_single_functions_html(filename,
             write_ECDF(f, 5, extension, captionStringFormat, functionGroups)
             write_ECDF(f, 20, extension, captionStringFormat, functionGroups)
                 
-            write_pptables(f, 5, captionStringFormat, maxFunctionIndex)
-            write_pptables(f, 20, captionStringFormat, maxFunctionIndex)
+            write_pptables(f, 5, captionStringFormat, maxFunctionIndex, bestAlgExists)
+            write_pptables(f, 20, captionStringFormat, maxFunctionIndex, bestAlgExists)
 
         elif algorithmCount is AlgorithmCount.NON_SPECIFIED:
             headerERT = 'Scaling of ERT with dimension'
@@ -301,11 +305,12 @@ def write_ECDF(f, dimension, extension, captionStringFormat, functionGroups):
     
     f.write(captionStringFormat % ('\n##bbobECDFslegend%d##' % dimension))
 
-def write_pptables(f, dimension, captionStringFormat, maxFunctionIndex):
+def write_pptables(f, dimension, captionStringFormat, maxFunctionIndex, bestAlgExists):
     """Writes line for pptables images."""
 
-    headerERT = 'Table showing the ERT in number of function evaluations divided by' \
-                'the best ERT measured during BBOB-2009 for dimension %d' % dimension
+    additionalText = 'divided by the best ERT measured during BBOB-2009' if bestAlgExists else ''
+    headerERT = 'Table showing the ERT in number of function evaluations %s ' \
+                'for dimension %d' % (additionalText, dimension)
     
     f.write("\n<H2> %s </H2>\n" % headerERT)
     for ifun in range(1, maxFunctionIndex + 1):
