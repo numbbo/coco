@@ -412,8 +412,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoProblemGetNumberOfObjectives(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetsmallestvaluesofinterest") == 0) {
         cocoProblemGetSmallestValuesOfInterest(nlhs, plhs, nrhs-1, prhs+1);
-    } else if (strcmp(cocofunction, "cocoproblemisvalid") == 0) {
-        cocoProblemIsValid(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocosetloglevel") == 0) {
         cocoSetLogLevel(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocosuite") == 0) {
