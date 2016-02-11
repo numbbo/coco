@@ -730,6 +730,10 @@ class DataSet():
                 # We just skip the element.
                 continue
             else:
+                # We take only the first 5 instances for the bi-objective case (for now).
+                if self.isBiobjective() and len(self.instancenumbers) >= 5:
+                    continue
+                
                 if not ':' in elem:
                     # if elem does not have ':' it means the run was not
                     # finalized properly.
@@ -893,7 +897,8 @@ class DataSet():
         
         instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))        
         
-        expectedNumberOfInstances = 10 if self.isBiobjective() else 15        
+        # We take only the first 5 instances for the bi-objective case (for now).
+        expectedNumberOfInstances = 5 if self.isBiobjective() else 15        
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
             for i in set(self.instancenumbers):
