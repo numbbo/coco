@@ -8,10 +8,11 @@ solvers for numerical optimization. Languages currently available are `C/C++`, `
 `MATLAB/Octave`, and `Python`. Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
-Consult also the [BBOB workshops series](http://numbbo.github.io/workshops),
-consider to [register here](http://numbbo.github.io/register) for news, 
-see the [previous COCO home page here](http://coco.gforge.inria.fr/) and 
-[further links below](#Further-Links) to learn more about the ideas behind CoCO.
+For more information, 
+- consult the [BBOB workshops series](http://numbbo.github.io/workshops),
+- consider to [register here](http://numbbo.github.io/register) for news, 
+- see the [previous COCO home page here](http://coco.gforge.inria.fr/) and 
+- see the [links below](#Links) to learn more about the ideas behind CoCO.
 
 Requirements  <a name="Requirements"></a>
 ------------
@@ -414,8 +415,8 @@ Details
   Windows 7 machine with cygwin.
 
 
-Further Links and Documentation <a name="Further-Links"></a>
--------------------------------
+Links and Documentation <a name="Links"></a>
+-----------------------
 * The [_BBOB workshop series_](http://numbbo.github.io/workshops), which uses the
   NumBBO/Coco framework extensively, can be tracked at 
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
