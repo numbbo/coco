@@ -66,10 +66,10 @@ def run_latex_template(filename):
     DEVNULL = open(os.devnull, 'wb')
     return subprocess.call(args, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
 
-def retrieve_algorithm(dataPath, year, algorithmName):
-    algorithmFile = join_path(dataPath, algorithmName)
+def retrieve_algorithm(dataPath, folderName, algorithmName, fileName = None):
+    algorithmFile = join_path(dataPath, fileName if fileName else algorithmName)
     if not os.path.exists(algorithmFile):
-        dataurl = 'http://coco.gforge.inria.fr/data-archive/%s/%s' % (year, algorithmName)
+        dataurl = 'http://coco.gforge.inria.fr/data-archive/%s/%s' % (folderName, algorithmName)
         urllib.urlretrieve(dataurl, algorithmFile)
 
 def prepare_data(run_all_tests):
@@ -81,6 +81,7 @@ def prepare_data(run_all_tests):
     # retrieve_algorithm(dataPath, '2010', 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz')
     # [outcommented and replaced by BIPOP until 2010 data is in new format] 
     retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noiseless.tgz')    
+    retrieve_algorithm(dataPath, 'biobj-test', 'RS_on_bbob-biobj-test.tgz', 'RS.tgz')
 
     if run_all_tests:
         retrieve_algorithm(dataPath, '2009', 'BIPOP-CMA-ES_hansen_noiseless.tgz')   
@@ -165,6 +166,16 @@ def main(args):
 
     result = run_latex_template("templateBBOBarticle.tex")
     assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
+
+    t0 = time.time()
+    print(python + command + join_path(data_path, 'RS.tgz'))
+    result = os.system(python + command + join_path(data_path, 'RS.tgz'))
+    print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
+    assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
+
+    # Latex templates are not prepared yet for bi-objective case.    
+#    result = run_latex_template("templateBBOBarticle.tex")
+#    assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
 
     if run_all_tests:    
         t0 = time.time()
