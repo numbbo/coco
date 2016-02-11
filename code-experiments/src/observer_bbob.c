@@ -18,7 +18,8 @@ typedef struct {
   size_t current_dim;
   size_t current_fun_id;
   size_t info_file_first_instance;
-  /* ... and others */
+  size_t number_of_dimensions;
+  size_t dimensions_in_current_info_file[6];
 } observer_bbob_data_t;
 
 /**
@@ -26,11 +27,16 @@ typedef struct {
  */
 static void observer_bbob(coco_observer_t *observer, const char *options, coco_option_keys_t **option_keys) {
 
+  size_t i;
   observer_bbob_data_t *observer_bbob;
   observer_bbob = (observer_bbob_data_t *) coco_allocate_memory(sizeof(*observer_bbob));
   observer_bbob->current_dim = 0;
   observer_bbob->current_fun_id = 0;
   observer_bbob->info_file_first_instance = 0;
+  observer_bbob->number_of_dimensions = 6;
+  for (i = 0; i < observer_bbob->number_of_dimensions; i++) {
+    observer_bbob->dimensions_in_current_info_file[i] = 0;
+  }
 
   observer->logger_allocate_function = logger_bbob;
   observer->logger_free_function = logger_bbob_free;

@@ -28,10 +28,8 @@
 
 
 /* a possible solution: have a list of dims that are already in the file, if the ones we're about to log
- * is != bbob_current_dim and the funId is currend_funId, create a new .info file with as suffix the
+ * is != bbob_current_dim and the funId is current_funId, create a new .info file with as suffix the
  * number of the first instance */
-static const int bbob_number_of_dimensions = 6;
-static size_t bbob_dimensions_in_current_infoFile[6] = { 0, 0, 0, 0, 0, 0 }; /* TODO should use dimensions from the suite */
 
 /* The current_... mechanism fails if several problems are open.
  * For the time being this should lead to an error.
@@ -197,16 +195,16 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
       if (observer_bbob->current_dim != logger->number_of_variables) {
         int i, j;
         for (i = 0;
-            i < bbob_number_of_dimensions && bbob_dimensions_in_current_infoFile[i] != 0
-                && bbob_dimensions_in_current_infoFile[i] != logger->number_of_variables; i++) {
+            i < observer_bbob->number_of_dimensions && observer_bbob->dimensions_in_current_info_file[i] != 0
+                && observer_bbob->dimensions_in_current_info_file[i] != logger->number_of_variables; i++) {
           ; /* checks whether dimension already present in the current infoFile */
         }
-        if (i < bbob_number_of_dimensions && bbob_dimensions_in_current_infoFile[i] == 0) {
+        if (i < observer_bbob->number_of_dimensions && observer_bbob->dimensions_in_current_info_file[i] == 0) {
           /* new dimension seen for the first time */
-          bbob_dimensions_in_current_infoFile[i] = logger->number_of_variables;
+          observer_bbob->dimensions_in_current_info_file[i] = logger->number_of_variables;
           newLine = 1;
         } else {
-          if (i < bbob_number_of_dimensions) { /* dimension already present, need to create a new file */
+          if (i < observer_bbob->number_of_dimensions) { /* dimension already present, need to create a new file */
             newLine = 0;
             file_path[strlen(file_path) - strlen(bbob_infoFile_firstInstance_char) - 7] = 0; /* truncate the instance part */
             observer_bbob->info_file_first_instance = logger->instance_id;
@@ -217,10 +215,10 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
           } else {/*we have all dimensions*/
             newLine = 1;
           }
-          for (j = 0; j < bbob_number_of_dimensions; j++) { /* new info file, reinitialize list of dims */
-            bbob_dimensions_in_current_infoFile[j] = 0;
+          for (j = 0; j < observer_bbob->number_of_dimensions; j++) { /* new info file, reinitialize list of dims */
+            observer_bbob->dimensions_in_current_info_file[j] = 0;
           }
-          bbob_dimensions_in_current_infoFile[i] = logger->number_of_variables;
+          observer_bbob->dimensions_in_current_info_file[i] = logger->number_of_variables;
         }
       } else {
         if ( observer_bbob->current_fun_id != logger->function_id ) {
