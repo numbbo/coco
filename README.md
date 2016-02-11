@@ -381,6 +381,11 @@ Under Linux
 ```
 should do the trick. 
 
+#### Module Update/Install Does Not Propagate
+We have observed a case where the update of the `cocoex` Python module seemed to have no 
+effect. In this case it has been successful to remove all previously installed versions, 
+see [here](https://github.com/numbbo/coco/issues/586) for a few more details. 
+
 
 Details
 -------
