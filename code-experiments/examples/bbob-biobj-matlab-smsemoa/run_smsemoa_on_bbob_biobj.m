@@ -16,9 +16,6 @@ observer = cocoCall('cocoObserver', observer_name, observer_options);
 
 while true
     problem = cocoCall('cocoSuiteGetNextProblem', suite, observer);
-    if (~cocoCall('cocoProblemIsValid', problem))
-        break;
-    end
     dimension = cocoCall('cocoProblemGetDimension', problem);
     while BUDGET_MULTIPLIER*dimension > cocoCall('cocoProblemGetEvaluations', problem)
         my_smsemoa(problem, ...

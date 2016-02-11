@@ -421,7 +421,6 @@ def run_octave():
     else:
         run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
 
-
 def test_octave():
     """ Builds and runs the test in Octave, which is equal to the example experiment """
     build_octave()
@@ -432,6 +431,36 @@ def test_octave():
             run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])   
     except subprocess.CalledProcessError:
         sys.exit(-1)
+
+def build_octave_sms():
+    """Builds the SMS-EMOA in Octave """
+    global release
+    join = os.path.join
+    destination_folder = 'code-experiments/examples/bbob-biobj-matlab-smsemoa'
+    # amalgamate and copy files
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
+               join(destination_folder, 'coco.c'), release)
+    copy_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'))
+    write_file(git_revision(), join(destination_folder, "REVISION"))
+    write_file(git_version(), join(destination_folder, "VERSION"))
+    copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
+    # compile
+    if ('win32' in sys.platform):
+        run(destination_folder, ['octave_coco.bat', '--no-gui', 'setup.m'])
+    else:
+        run(destination_folder, ['octave', '--no-gui', 'setup.m'])   
+
+def run_matlab_sms():
+    """ Builds and runs the SMS-EMOA in MATLAB """
+    print('CLEAN\tmex files from code-experiments/examples/bbob-biobj-matlab-smsemoa/')
+    # remove the mex files for a clean compilation first
+    for filename in glob.glob('code-experiments/examples/bbob-biobj-matlab-smsemoa/*.mex*') :
+        os.remove( filename )
+    # amalgamate, copy, and build
+    build_matlab_sms()
+    wait_for_compilation_to_finish('./code-experiments/examples/bbob-biobj-matlab-smsemoa/paretofront')
+    # run after compilation finished
+    run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'run_smsemoa_on_bbob_biobj, exit'])
 
 
 
@@ -663,6 +692,7 @@ def main(args):
     elif cmd == 'build-matlab': build_matlab()
     elif cmd == 'build-matlab-sms': build_matlab_sms()
     elif cmd == 'build-octave': build_octave()    
+    elif cmd == 'build-octave-sms': build_octave_sms()    
     elif cmd == 'build-python': build_python()
     elif cmd == 'build-python2': build_python2()
     elif cmd == 'build-python3': build_python3()
