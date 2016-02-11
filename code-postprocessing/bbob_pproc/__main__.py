@@ -160,23 +160,22 @@ def main(args):
     print(python + command + '--conv' + 
                 join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     result = os.system(python + command + '--conv' + 
-                join_path(data_path, 'RS_on_bbob-biobj-test.tgz'))
-    print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
-    assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
-
-    # Latex templates are not prepared yet for bi-objective case.    
-#    result = run_latex_template("templateBBOBarticle.tex")
-#    assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
-
-    t0 = time.time()
-    print(python + command + join_path(data_path, 'BFGS_ros_noiseless.tgz'))
-    result = os.system(python + command + '--conv' + 
                 join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
 
     result = run_latex_template("templateBBOBarticle.tex")
     assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
+
+    t0 = time.time()
+    print(python + command + join_path(data_path, 'RS_on_bbob-biobj-test.tgz'))
+    result = os.system(python + command + join_path(data_path, 'RS_on_bbob-biobj-test.tgz'))
+    print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
+    assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
+
+    # Latex templates are not prepared yet for bi-objective case.    
+#    result = run_latex_template("templateBBOBarticle.tex")
+#    assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
 
     if run_all_tests:    
         t0 = time.time()
