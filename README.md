@@ -1,15 +1,17 @@
 numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
-This code reimplements the original Comparing Continous Optimizer platform, now 
-rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
+[This code](https://github.com/numbbo/coco) reimplements the original Comparing Continous Optimizer platform, 
+now rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
 the code provides a platform to benchmark and compare continuous optimizers, AKA non-linear 
 solvers for numerical optimization. Languages currently available are `C/C++`, `Java`, 
 `MATLAB/Octave`, and `Python`. Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
-See the [workshops page](http://numbbo.github.io/workshops), the [previous COCO home page](http://coco.gforge.inria.fr/) 
-and [further links below](#Further-Links) to learn more about the ideas behind CoCO.
+Consult also the [BBOB workshops series](http://numbbo.github.io/workshops),
+consider to [register here](http://numbbo.github.io/register) for news, 
+see the [previous COCO home page here](http://coco.gforge.inria.fr/) and 
+[further links below](#Further-Links) to learn more about the ideas behind CoCO.
 
 Requirements  <a name="Requirements"></a>
 ------------
