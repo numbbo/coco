@@ -190,7 +190,7 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
         logger_bbob_error_io(*target_file, errnum);
       }
       fclose(tmp_file);
-    } else { /* either file doesn't exist (new funId) or new Dim */
+    } else { /* either file doesn't exist (new fun_id) or new Dim */
       /* check that the dim was not already present earlier in the file, if so, create a new info file */
       if (observer_bbob->current_dim != logger->number_of_variables) {
         int i, j;
@@ -199,6 +199,7 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
                 && observer_bbob->dimensions_in_current_info_file[i] != logger->number_of_variables; i++) {
           ; /* checks whether dimension already present in the current infoFile */
         }
+
         if (i < observer_bbob->number_of_dimensions && observer_bbob->dimensions_in_current_info_file[i] == 0) {
           /* new dimension seen for the first time */
           observer_bbob->dimensions_in_current_info_file[i] = logger->number_of_variables;
