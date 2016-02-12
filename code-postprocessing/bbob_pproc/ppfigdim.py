@@ -472,6 +472,9 @@ def plot_previous_algorithms(func, isBiobjective, target=values_of_interest):  #
     target = pproc.TargetValues.cast(target)
 
     bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+    
+    if not bestalgentries:
+        return None
 
     bestalgdata = []
     for d in dimensions:
@@ -513,14 +516,14 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
 
-    bestalg.loadBestAlgorithm(dsList.isBiobjective())
-
     dictFunc = dsList.dictByFunc()
 
     ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
                                 dictFunc[dictFunc.keys()[0]][0].algId,
-                                algorithmCount=ppfig.AlgorithmCount.ONE,
-                                values_of_interest = values_of_interest)
+                                algorithmCount = ppfig.AlgorithmCount.ONE,
+                                values_of_interest = values_of_interest,
+                                isBiobjective = dsList.isBiobjective(),
+                                functionGroups = dsList.getFuncGroups())
     ppfig.copy_js_files(outputdir)
     
     funInfos = ppfigparam.read_fun_infos(dsList.isBiobjective())    

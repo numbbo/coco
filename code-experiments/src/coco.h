@@ -197,7 +197,7 @@ size_t coco_suite_get_instance_from_instance_index(const coco_suite_t *suite, co
 /**@{*/
 /**
  * @brief Computes the index of the problem in the suite that corresponds to the given function, dimension
- * and instance indexes.
+ * and instance indices.
  */
 size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
                                        const size_t function_idx,
@@ -235,6 +235,11 @@ void coco_observer_free(coco_observer_t *observer);
  * @brief Adds an observer to the given problem.
  */
 coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer);
+
+/**
+ * @brief Removes an observer from the given problem.
+ */
+coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_observer_t *observer);
 
 /**@}*/
 
@@ -293,11 +298,6 @@ size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
  * @brief Returns the number of evaluations done on the problem.
  */
 size_t coco_problem_get_evaluations(const coco_problem_t *problem);
-
-/**
- * @brief Returns 1 if the final target was hit, 0 otherwise.
- */
-int coco_problem_final_target_hit(const coco_problem_t *problem);
 
 /**
  * @brief Returns 1 if the final target was hit, 0 otherwise.
@@ -408,6 +408,16 @@ void coco_warning(const char *message, ...);
  * @brief Outputs some information.
  */
 void coco_info(const char *message, ...);
+
+/**
+ * @brief Prints only the given message without any prefix and new line.
+ *
+ * A function similar to coco_info but producing no additional text than
+ * the given message.
+ *
+ * The output is only produced if coco_log_level >= COCO_INFO.
+ */
+void coco_info_partial(const char *message, ...);
 
 /**
  * @brief Outputs detailed information usually used for debugging.

@@ -437,9 +437,213 @@ static double *coco_duplicate_vector(const double *src, const size_t number_of_e
 /***********************************************************************************************************/
 
 /**
- * @name Methods regarding reading options from a string
+ * @name Methods regarding string options
  */
 /**@{*/
+
+/**
+ * @brief Allocates an option keys structure holding the given number of option keys.
+ */
+static coco_option_keys_t *coco_option_keys_allocate(const size_t count, const char **keys) {
+
+  size_t i;
+  coco_option_keys_t *option_keys;
+
+  if ((count == 0) || (keys == NULL))
+    return NULL;
+
+  option_keys = (coco_option_keys_t *) coco_allocate_memory(sizeof(*option_keys));
+
+  option_keys->keys = (char **) coco_allocate_memory(count * sizeof(char *));
+  for (i = 0; i < count; i++) {
+    assert(keys[i]);
+    option_keys->keys[i] = coco_strdup(keys[i]);
+  }
+  option_keys->count = count;
+
+  return option_keys;
+}
+
+/**
+ * @brief Frees the given option keys structure.
+ */
+static void coco_option_keys_free(coco_option_keys_t *option_keys) {
+
+  size_t i;
+
+  if (option_keys) {
+    for (i = 0; i < option_keys->count; i++) {
+      coco_free_memory(option_keys->keys[i]);
+    }
+    coco_free_memory(option_keys->keys);
+    coco_free_memory(option_keys);
+  }
+}
+
+/**
+ * @brief Returns redundant option keys (the ones present in given_option_keys but not in known_option_keys).
+ */
+static coco_option_keys_t *coco_option_keys_get_redundant(const coco_option_keys_t *known_option_keys,
+                                                          const coco_option_keys_t *given_option_keys) {
+
+  size_t i, j, count = 0;
+  int found;
+  char **redundant_keys;
+  coco_option_keys_t *redundant_option_keys;
+
+  assert(known_option_keys != NULL);
+  assert(given_option_keys != NULL);
+
+  /* Find the redundant keys */
+  redundant_keys = (char **) coco_allocate_memory(given_option_keys->count * sizeof(char *));
+  for (i = 0; i < given_option_keys->count; i++) {
+    found = 0;
+    for (j = 0; j < known_option_keys->count; j++) {
+      if (strcmp(given_option_keys->keys[i], known_option_keys->keys[j]) == 0) {
+        found = 1;
+        break;
+      }
+    }
+    if (!found) {
+      redundant_keys[count++] = coco_strdup(given_option_keys->keys[i]);
+    }
+  }
+  redundant_option_keys = coco_option_keys_allocate(count, (const char**) redundant_keys);
+
+  /* Free memory */
+  for (i = 0; i < count; i++) {
+    coco_free_memory(redundant_keys[i]);
+  }
+  coco_free_memory(redundant_keys);
+
+  return redundant_option_keys;
+}
+
+/**
+ * @brief Adds additional option keys to the given basic option keys (changes the basic keys).
+ */
+static void coco_option_keys_add(coco_option_keys_t **basic_option_keys,
+                                 const coco_option_keys_t *additional_option_keys) {
+
+  size_t i, j;
+  size_t new_count;
+  char **new_keys;
+  coco_option_keys_t *new_option_keys;
+
+  assert(*basic_option_keys != NULL);
+  if (additional_option_keys == NULL)
+    return;
+
+  /* Construct the union of both keys */
+  new_count = (*basic_option_keys)->count + additional_option_keys->count;
+  new_keys = (char **) coco_allocate_memory(new_count * sizeof(char *));
+  for (i = 0; i < (*basic_option_keys)->count; i++) {
+    new_keys[i] = coco_strdup((*basic_option_keys)->keys[i]);
+  }
+  for (j = 0; j < additional_option_keys->count; j++) {
+    new_keys[(*basic_option_keys)->count + j] = coco_strdup(additional_option_keys->keys[j]);
+  }
+  new_option_keys = coco_option_keys_allocate(new_count, (const char**) new_keys);
+
+  /* Free the old basic keys */
+  coco_option_keys_free(*basic_option_keys);
+  *basic_option_keys = new_option_keys;
+  for (i = 0; i < new_count; i++) {
+    coco_free_memory(new_keys[i]);
+  }
+  coco_free_memory(new_keys);
+}
+
+/**
+ * @brief Creates an instance of option keys from the given string of options containing keys and values
+ * separated by colons.
+ *
+ * @note Relies heavily on the "key: value" format and might fail if the number of colons doesn't match the
+ * number of keys.
+ */
+static coco_option_keys_t *coco_option_keys(const char *option_string) {
+
+  size_t i, j;
+  char **keys;
+  coco_option_keys_t *option_keys = NULL;
+  char *string_to_parse, *key;
+
+  /* Check for empty string and string without colons */
+  if ((option_string == NULL) || (strlen(option_string) == 0)|| (strchr(option_string, ':') == NULL)) {
+    return NULL;
+  }
+
+  /* Split the options w.r.t ':' */
+  keys = coco_string_split(option_string, ':');
+
+  if (keys) {
+    /* Keys now contain something like this: "values_of_previous_key this_key" except for the first, which
+     * contains only the key and the last, which contains only the previous values */
+    for (i = 0; *(keys + i); i++) {
+      string_to_parse = coco_strdup(*(keys + i));
+
+      /* Remove any trailing spaces */
+      for (j = strlen(string_to_parse) - 1; (j > 0) && isspace((unsigned char) string_to_parse[j]); j--) {
+        string_to_parse[j] = '\0';
+      }
+
+      /* Disregard everything before the last space */
+      key = strrchr(string_to_parse, ' ');
+      if (key == NULL) {
+        /* No spaces left, everything is the key */
+        key = string_to_parse;
+      } else {
+        /* Move to the start of the key (one char after the space) */
+        key++;
+      }
+
+      /* Put the key in keys */
+      coco_free_memory(*(keys + i));
+      *(keys + i) = coco_strdup(key);
+      coco_free_memory(string_to_parse);
+
+      /* Stop if this is the last substring that contains a key */
+      if (*(keys + i + 1) == NULL) {
+        coco_free_memory(*(keys + i + 1));
+        break;
+      }
+    }
+
+    option_keys = coco_option_keys_allocate(i, (const char**) keys);
+
+    /* Free the keys */
+    for (i = 0; *(keys + i); i++) {
+      coco_free_memory(*(keys + i));
+    }
+    coco_free_memory(keys);
+  }
+
+  return option_keys;
+}
+
+/**
+ * @brief Creates and returns a string containing the info_string and all keys from option_keys.
+ *
+ * Can be used to output information about the given option_keys.
+ */
+static char *coco_option_keys_get_output_string(const coco_option_keys_t *option_keys,
+                                                const char *info_string) {
+  size_t i;
+  char *string, *new_string;
+
+  if ((option_keys != NULL) && (option_keys->count > 0)) {
+
+    string = coco_strdup(info_string);
+    for (i = 0; i < option_keys->count; i++) {
+      new_string = coco_strdupf("%s %s\n", string, option_keys->keys[i]);
+      coco_free_memory(string);
+      string = new_string;
+    }
+  }
+
+  return string;
+}
+
 /**
  * @brief Parses options in the form "name1: value1 name2: value2".
  *
@@ -498,8 +702,6 @@ static int coco_options_read_size_t(const char *options, const char *name, size_
   return coco_options_read(options, name, "%lu", pointer);
 }
 
-/* Commented to silence the compiler */
-#if 0
 /**
  * @brief Reads a double value from options using the form "name1: value1 name2: value2".
  *
@@ -510,9 +712,8 @@ static int coco_options_read_size_t(const char *options, const char *name, size_
  * @return The number of successful assignments.
  */
 static int coco_options_read_double(const char *options, const char *name, double *pointer) {
-  return coco_options_read(options, name, "%f", pointer);
+  return coco_options_read(options, name, "%lf", pointer);
 }
-#endif
 
 /**
  * @brief Reads a string from options using the form "name1: value1 name2: value2".
@@ -627,6 +828,13 @@ static double coco_double_min(const double a, const double b) {
   }
 }
 
+/**
+ * @brief Performs a "safer" double to size_t conversion.
+ */
+static size_t coco_double_to_size_t(const double number) {
+  return (size_t) coco_double_round(number);
+}
+
 /* Commented to silence the compiler (unused function warning) */
 #if 0
 /**
@@ -641,7 +849,7 @@ static int coco_double_almost_equal(const double a, const double b, const double
 /***********************************************************************************************************/
 
 /**
- * @name Methods handling time
+ * @name Miscellaneous methods
  */
 /**@{*/
 
@@ -659,6 +867,27 @@ static char *coco_current_time_get_string(void) {
   assert(tm_info != NULL);
   strftime(time_string, 30, "%d.%m.%y %H:%M:%S", tm_info);
   return time_string;
+}
+
+/**
+ * @brief Returns the number of positive numbers pointed to by numbers (the count stops when the first
+ * 0 is encountered of max_count numbers have been read).
+ *
+ * If there are more than max_count numbers, a coco_error is raised. The name argument is used
+ * only to provide more informative output in case of any problems.
+ */
+static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, const char *name) {
+
+  size_t count = 0;
+  while ((count < max_count) && (numbers[count] != 0)) {
+    count++;
+  }
+  if (count == max_count) {
+    coco_error("coco_count_numbers(): over %lu numbers in %s", max_count, name);
+    return 0; /* Never reached*/
+  }
+
+  return count;
 }
 /**@}*/
 
