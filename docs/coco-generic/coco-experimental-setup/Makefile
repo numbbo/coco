@@ -6,8 +6,8 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build
-HTMLBUILDDIR  = ../../../bbob-biobj-functions-doc
-PDF           = bbob-biobj-functions.pdf
+HTMLBUILDDIR  = ../../../../coco-doc/experimental-setup
+PDF           = coco-experimental-setup.pdf
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
@@ -26,8 +26,7 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  html       to make standalone HTML files"
-	@echo "  html-topublish to make standalone HTML files in the repository bbob-biobj-functions-doc"
-	@echo "  latexpdf   to make LaTeX files and pdf in ../"
+	@echo "  html-topublish to make standalone HTML files in the repository bbob-biobj-experiments-doc"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
 	@echo "  singlehtml to make a single large HTML file"
 	@echo "  pickle     to make pickle files"
@@ -38,6 +37,7 @@ help:
 	@echo "  devhelp    to make HTML files and a Devhelp project"
 	@echo "  epub       to make an epub"
 	@echo "  latex      to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
+	@echo "  latexpdf   to make LaTeX files and run them through pdflatex"
 	@echo "  latexpdfja to make LaTeX files and run them through platex/dvipdfmx"
 	@echo "  text       to make text files"
 	@echo "  man        to make manual pages"
@@ -95,9 +95,9 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/biobj-functions.qhcp"
+	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/bbob-biobj-experiments-doc.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/biobj-functions.qhc"
+	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/bbob-biobj-experiments-doc.qhc"
 
 applehelp:
 	$(SPHINXBUILD) -b applehelp $(ALLSPHINXOPTS) $(BUILDDIR)/applehelp
@@ -112,8 +112,8 @@ devhelp:
 	@echo
 	@echo "Build finished."
 	@echo "To view the help file:"
-	@echo "# mkdir -p $$HOME/.local/share/devhelp/biobj-functions"
-	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/biobj-functions"
+	@echo "# mkdir -p $$HOME/.local/share/devhelp/bbob-biobj-experiments-doc"
+	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/bbob-biobj-experiments-doc"
 	@echo "# devhelp"
 
 epub:
@@ -134,7 +134,7 @@ latexpdf:
 	$(MAKE) -C $(BUILDDIR)/latex all-pdf
 	cp $(BUILDDIR)/latex/$(PDF) ../$(PDF)
 	@echo "pdflatex finished; see ../$(PDF)."
-
+		
 latexpdfja:
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 	@echo "Running LaTeX files through platex and dvipdfmx..."
