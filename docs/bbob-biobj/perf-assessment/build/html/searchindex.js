@@ -1,0 +1,1 @@
+Search.setIndex({envversion:46,filenames:["index"],objects:{},objnames:{},objtypes:{},terms:{content:0,index:0,modul:0,page:0,search:0},titles:["Welcome to the experimental setup description for the bbob-biobj suite!"],titleterms:{bbob:0,biobj:0,descript:0,experiment:0,indic:0,setup:0,suit:0,tabl:0,welcom:0}})
