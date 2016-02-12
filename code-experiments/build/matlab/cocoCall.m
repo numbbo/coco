@@ -14,6 +14,8 @@
 %       Evaluates problem in point x and saves the result in y. 
 %   * cocoObserver: observer_name, observer_options
 %       Returns a new COCO observer. 
+%   * cocoProblemFinalTargetHit: problem
+%       Returns 1 if the final target was hit on given problem, 0 otherwise.
 %   * cocoObserverFree: observer
 %       Frees the given observer.
 %   * cocoProblemFree: problem
@@ -34,6 +36,8 @@
 %   * cocoProblemGetSmallestValuesOfInterest: problem
 %       Returns a vector of size 'dimension' with lower bounds of the region
 %         of interest in the decision space for the given problem.
+%   * cocoProblemIsValid: problem
+%       Returns 1 if the given problem is a valid Coco problem, 0 otherwise.
 %   * cocoSetLogLevel: log_level 	
 %       Sets the COCO log level to the given value (a string) and returns the
 %         previous value. 
