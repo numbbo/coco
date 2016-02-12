@@ -22,6 +22,7 @@ typedef struct {
   size_t info_file_first_instance;
   size_t number_of_dimensions;
   size_t dimensions_in_current_info_file[MAX_NB_DIMS];
+  int logger_is_open;
 } observer_bbob_data_t;
 
 /**
@@ -48,6 +49,7 @@ static void observer_bbob(coco_observer_t *observer, const char *options, coco_o
   for (i = 0; i < observer_bbob->number_of_dimensions; i++) {
     observer_bbob->dimensions_in_current_info_file[i] = 0;
   }
+  observer_bbob->logger_is_open = 0;
 
   observer->logger_allocate_function = logger_bbob;
   observer->logger_free_function = logger_bbob_free;

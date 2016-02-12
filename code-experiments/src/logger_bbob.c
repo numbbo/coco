@@ -26,20 +26,15 @@
 #include "coco_string.c"
 #include "observer_bbob.c"
 
-
-/* a possible solution: have a list of dims that are already in the file, if the ones we're about to log
- * is != bbob_current_dim and the funId is current_funId, create a new .info file with as suffix the
- * number of the first instance */
-
 /* The current_... mechanism fails if several problems are open.
  * For the time being this should lead to an error.
  *
  * A possible solution: bbob_logger_is_open becomes a reference
  * counter and as long as another logger is open, always a new info
  * file is generated.
- * TODO: Shouldn't the new way of handling observers already fix this?
+ * TODO: Shouldn't the new way of handling observers already fix this? 
+ *    logger_is_open still triggers when a python run from the python shell is interrupted and a new one is lunched
  */
-static int bbob_logger_is_open = 0; /* this could become lock-list of .info files */
 
 /* TODO: add possibility of adding a prefix to the index files (easy to do through observer options) */
 
@@ -379,6 +374,12 @@ static void logger_bbob_free(void *stuff) {
    */
   logger_bbob_data_t *logger = (logger_bbob_data_t *) stuff;
 
+  if (logger->observer->data != NULL) {
+    /*the observer data seems to be freed before the logger in the last run!*/
+      ((observer_bbob_data_t *) logger->observer->data)->logger_is_open = 0;
+  }
+
+  
   if ((coco_log_level >= COCO_DEBUG) && logger && logger->number_of_evaluations > 0) {
     coco_debug("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,
         logger->number_of_evaluations);
@@ -427,7 +428,6 @@ static void logger_bbob_free(void *stuff) {
     logger->evaluations = NULL;
   }
 
-  bbob_logger_is_open = 0;
 }
 
 static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *inner_problem) {
@@ -441,8 +441,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
     coco_warning("logger_bbob(): The bbob logger shouldn't be used to log a problem with %d objectives",
         inner_problem->number_of_objectives);
   }
-
-  if (bbob_logger_is_open)
+  if (((observer_bbob_data_t *) observer->data)->logger_is_open)
     coco_error("The current bbob_logger (observer) must be closed before a new one is opened");
   /* This is the name of the folder which happens to be the algName */
   /*logger->path = coco_strdup(observer->output_folder);*/
@@ -479,7 +478,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   problem = coco_problem_transformed_allocate(inner_problem, logger_bbob, logger_bbob_free, observer->observer_name);
 
   problem->evaluate_function = logger_bbob_evaluate;
-  bbob_logger_is_open = 1;
+  ((observer_bbob_data_t *) observer->data)->logger_is_open = 1;
   return problem;
 }
 
