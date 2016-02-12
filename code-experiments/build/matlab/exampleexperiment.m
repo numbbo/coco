@@ -27,13 +27,16 @@ cocoCall('cocoSetLogLevel', 'info');
 
 while true
     problem = cocoCall('cocoSuiteGetNextProblem', suite, observer);
+    if (~cocoCall('cocoProblemIsValid', problem))
+        break;
+    end
     dimension = cocoCall('cocoProblemGetDimension', problem);
     while BUDGET_MULTIPLIER*dimension > cocoCall('cocoProblemGetEvaluations', problem)
         my_optimizer(problem,...
             cocoCall('cocoProblemGetSmallestValuesOfInterest', problem),...
             cocoCall('cocoProblemGetLargestValuesOfInterest', problem),...
             BUDGET_MULTIPLIER*dimension-cocoCall('cocoProblemGetEvaluations', problem));
-    end;
+    end
 end
 cocoCall('cocoObserverFree', observer);
 cocoCall('cocoSuiteFree', suite);
