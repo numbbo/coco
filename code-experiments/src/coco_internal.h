@@ -8,6 +8,10 @@
 #ifndef __COCO_INTERNAL__
 #define __COCO_INTERNAL__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /***********************************************************************************************************/
 /**
  * @brief The data free function type.
@@ -47,13 +51,21 @@ typedef void (*coco_evaluate_function_t)(coco_problem_t *problem, const double *
 typedef void (*coco_recommend_function_t)(coco_problem_t *problem, const double *x);
 
 /**
- * @brief The logger initialize function type.
+ * @brief The allocate logger function type.
  *
- * This is a template for functions initialize a logger (wrap a logger around the given problem and return
+ * This is a template for functions that allocate a logger (wrap a logger around the given problem and return
  * the wrapped problem).
  */
-typedef coco_problem_t *(*coco_logger_initialize_function_t)(coco_observer_t *observer,
-                                                             coco_problem_t *problem);
+typedef coco_problem_t *(*coco_logger_allocate_function_t)(coco_observer_t *observer,
+                                                           coco_problem_t *problem);
+
+/**
+ * @brief The free logger function type.
+ *
+ * This is a template for functions that free a logger.
+ */
+typedef void (*coco_logger_free_function_t)(void *logger);
+
 
 /**
  * @brief The transformed COCO problem data type.
@@ -86,6 +98,16 @@ typedef struct {
   coco_problem_t *problem2; /**< @brief Pointer to the second problem (objective) */
 } coco_problem_stacked_data_t;
 
+/**
+ * @brief The option keys data type.
+ *
+ * This is a type of a structure used to contain a set of known option keys (used by suites and observers).
+ */
+typedef struct {
+  size_t count;  /**< @brief Number of option keys */
+  char **keys;   /**< @brief Pointer to option keys */
+} coco_option_keys_t;
+
 
 /***********************************************************************************************************/
 
@@ -97,7 +119,7 @@ typedef struct {
  * the coco_problem_transformed_data_t structure creating some kind of "object inheritance". Even the logger
  * is considered as just another coco_problem instance wrapped around the original problem.
  */
-struct coco_problem {
+struct coco_problem_s {
 
   coco_initial_solution_function_t initial_solution;  /**< @brief  The function for creating an initial solution. */
   coco_evaluate_function_t evaluate_function;         /**< @brief  The function for evaluating the problem. */
@@ -145,20 +167,27 @@ struct coco_problem {
  * new problem of the suite is being observed, the observer initializes a new logger (wraps the observed
  * problem with the corresponding logger).
  */
-struct coco_observer {
+struct coco_observer_s {
 
-  int is_active;         /**< @brief Whether the observer is active (the logger will log some output). */
-  char *result_folder;   /**< @brief Name of the result folder. */
-  char *algorithm_name;  /**< @brief Name of the algorithm to be used in logger output. */
-  char *algorithm_info;  /**< @brief Additional information on the algorithm to be used in logger output. */
-  int precision_x;       /**< @brief Output precision for decision variables. */
-  int precision_f;       /**< @brief Output precision for function values. */
-  void *data;            /**< @brief Void pointer that can be used to point to data specific to an observer. */
+  int is_active;             /**< @brief Whether the observer is active (the logger will log some output). */
+  char *observer_name;       /**< @brief Name of the observer for identification purposes. */
+  char *result_folder;       /**< @brief Name of the result folder. */
+  char *algorithm_name;      /**< @brief Name of the algorithm to be used in logger output. */
+  char *algorithm_info;      /**< @brief Additional information on the algorithm to be used in logger output. */
+  size_t number_target_triggers;
+                             /**< @brief The number of targets between each 10**i and 10**(i+1). */
+  double target_precision;   /**< @brief The minimal precision used for targets. */
+  size_t number_evaluation_triggers;
+                             /**< @brief The number of triggers between each 10**i and 10**(i+1) evaluation number. */
+  char *base_evaluation_triggers;
+                             /**< @brief The "base evaluations" used to evaluations that trigger logging. */
+  int precision_x;           /**< @brief Output precision for decision variables. */
+  int precision_f;           /**< @brief Output precision for function values. */
+  void *data;                /**< @brief Void pointer that can be used to point to data specific to an observer. */
 
-  coco_data_free_function_t data_free_function;                 /**< @brief  The function for freeing this
-                                                                observer. */
-  coco_logger_initialize_function_t logger_initialize_function; /**< @brief  The function for initializing
-                                                                the corresponding logger. */
+  coco_data_free_function_t data_free_function;             /**< @brief  The function for freeing this observer. */
+  coco_logger_allocate_function_t logger_allocate_function; /**< @brief  The function for allocating the logger. */
+  coco_logger_free_function_t logger_free_function;         /**< @brief  The function for freeing the logger. */
 };
 
 /**
@@ -169,7 +198,7 @@ struct coco_observer {
  * while the instances are defined dynamically. The suite can be filtered - only the chosen functions,
  * dimensions and instances will be taken into account when iterating through the suite.
  */
-struct coco_suite {
+struct coco_suite_s {
 
   char *suite_name;                /**< @brief Name of the suite. */
 
@@ -194,4 +223,8 @@ struct coco_suite {
 
 };
 
+#ifdef __cplusplus
+}
 #endif
+#endif
+

@@ -28,8 +28,9 @@ import warnings
 from pdb import set_trace
 import numpy, numpy as np
 import matplotlib.pyplot as plt
+from collections import OrderedDict
 from . import genericsettings, findfiles, toolsstats, toolsdivers
-from .readalign import split, alignData, HMultiReader, VMultiReader, VMultiReaderNew
+from .readalign import split, alignData, HMultiReader, VMultiReader, VMultiReaderNew, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers
 
@@ -729,6 +730,10 @@ class DataSet():
                 # We just skip the element.
                 continue
             else:
+                # We take only the first 5 instances for the bi-objective case (for now).
+                if self.isBiobjective() and len(self.instancenumbers) >= 5:
+                    continue
+                
                 if not ':' in elem:
                     # if elem does not have ':' it means the run was not
                     # finalized properly.
@@ -775,6 +780,7 @@ class DataSet():
                          for i in self.dataFiles)
                              
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
+            warnings.warn('Missing tdat files. Please rerun the experiments.')
             dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                              for i in self.dataFiles)
             data = VMultiReaderNew(split(dataFiles), self.isBiobjective())
@@ -891,7 +897,8 @@ class DataSet():
         
         instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))        
         
-        expectedNumberOfInstances = 10 if self.isBiobjective() else 15        
+        # We take only the first 5 instances for the bi-objective case (for now).
+        expectedNumberOfInstances = 5 if self.isBiobjective() else 15        
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
             for i in set(self.instancenumbers):
@@ -1474,7 +1481,7 @@ class DataSetList(list):
         """Reads in an index (.info?) file information on the different runs."""
 
         try:
-            f = open(indexFile)
+            f = openfile(indexFile)
             if verbose:
                 print 'Processing %s.' % indexFile
 
@@ -1516,8 +1523,9 @@ class DataSetList(list):
                         warnings.warn("    data file " + data_file_names[i])
                 warnings.warn("  This is likely to produce spurious results.")
 
-        except IOError:
-            print 'Could not open %s.' % indexFile
+        except IOError, (errno, strerror):
+            print('Could not load "%s".' % indexFile)
+            print('I/O error(%s): %s' % (errno, strerror))
 
     def append(self, o, check_data_type=False):
         """Redefines the append method to check for unicity."""
@@ -1637,16 +1645,13 @@ class DataSetList(list):
         """Returns a dictionary splitting noisy and non-noisy entries."""
         sorted = {}
         
-        # For bi-objective case we are not showing the noiselessall graph because 
-        # it is always equal to all graph.
-        if not self.isBiobjective():
-            for i in self:
-                if i.funcId in range(1, 56):
-                    sorted.setdefault('noiselessall', DataSetList()).append(i)
-                elif i.funcId in range(101, 131):
-                    sorted.setdefault('nzall', DataSetList()).append(i)
-                else:
-                    warnings.warn('Unknown function id.')
+        for i in self:
+            if i.funcId in range(1, 56):
+                sorted.setdefault('noiselessall', DataSetList()).append(i)
+            elif i.funcId in range(101, 131):
+                sorted.setdefault('nzall', DataSetList()).append(i)
+            else:
+                warnings.warn('Unknown function id.')
 
         return sorted
 
@@ -1714,6 +1719,25 @@ class DataSetList(list):
             return self.dictByFuncGroupBiobjective()
         else:
             return self.dictByFuncGroupSingleObjective()
+
+    def getFuncGroups(self):
+        """Returns a dictionary of function groups.
+        
+        The output dictionary has functions group names as keys 
+        and function group descriptions as values.
+        """
+        if self.isBiobjective():
+            dictByFuncGroup = self.dictByFuncGroupBiobjective()
+            groups = OrderedDict(sorted((key, key.replace('_', ' ')) for key in dictByFuncGroup.keys()))
+            return groups
+        else:
+            groups = OrderedDict([
+                ('separ', 'Separable functions'), 
+                ('lcond', 'Misc. moderate functions'), 
+                ('hcond', 'Ill-conditioned functions'), 
+                ('multi', 'Multi-modal functions'), 
+                ('mult2', 'Weak structure functions')]) 
+            return groups
 
     def dictByParam(self, param):
         """Returns a dictionary of DataSetList by parameter values.

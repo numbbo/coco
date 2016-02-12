@@ -72,7 +72,6 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     if info:
         info = '_' + info
 
-    dims = set.intersection(set(dictDim0.keys()), set(dictDim1.keys()))
     bestalgentries = bestalg.loadBestAlgorithm(dsList0.isBiobjective())
     
     header = []
@@ -110,55 +109,8 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             targets = targetsOfInterest((f, d))
             targetf = targets[-1]
             
-            bestalgentry = bestalgentries[(d, f)]
             curline = [r'${\bf f_{%d}}$' % f]
             curlineHtml = ['<th><b>f<sub>%d</sub></b></th>\n' % f]
-            bestalgdata = bestalgentry.detERT(targets)
-            bestalgevals, bestalgalgs = bestalgentry.detEvals(targets)
-
-            if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
-                # write ftarget:fevals
-                for i in xrange(len(bestalgdata[:-1])):
-                    temp = "%.1e" % targetsOfInterest((f, d))[i]
-                    if temp[-2]=="0":
-                        temp = temp[:-2]+temp[-1]
-                    curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
-                                   % (temp,writeFEvalsMaxPrec(bestalgdata[i], 2)))
-                    curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
-                                       % (temp, writeFEvalsMaxPrec(bestalgdata[i], 2)))
-                temp = "%.1e" % targetsOfInterest((f, d))[-1]
-                if temp[-2]=="0":
-                    temp = temp[:-2]+temp[-1]
-                curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
-                               % (temp,writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
-                curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
-                                   % (temp, writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
-            else:            
-                # write #fevals of the reference alg
-                for i in bestalgdata[:-1]:
-                    curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
-                                   % writeFEvalsMaxPrec(i, 2))
-                    curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(i, 2))
-
-                curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
-                               % writeFEvalsMaxPrec(bestalgdata[-1], 2))
-                curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
-
-            tmp = bestalgentry.detEvals([targetf])[0][0]
-            tmp2 = numpy.sum(numpy.isnan(tmp) == False)
-            curline.append('%d' % (tmp2))
-            if tmp2 > 0:
-                curline.append('/%d' % len(tmp))
-                curlineHtml.append('<td>%d/%d</td>\n' % (tmp2, len(tmp)))
-            else:
-                curlineHtml.append('<td>%d</td>\n' % (tmp2))
-
-            table.append(curline[:])
-            tableHtml.extend(curlineHtml[:])
-            tableHtml.append('</tr>\n')
-            extraeol.append('')
-
-            rankdata0 = []  # never used
 
             # generate all data from ranksum test
             entries = []
@@ -178,12 +130,66 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     if _tt is None:
                         raise ValueError
                     
+            if bestalgentries:            
+                bestalgentry = bestalgentries[(d, f)]
+                bestalgdata = bestalgentry.detERT(targets)
+                bestalgevals, bestalgalgs = bestalgentry.detEvals(targets)
+    
+                if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+                    # write ftarget:fevals
+                    for i in xrange(len(bestalgdata[:-1])):
+                        temp = "%.1e" % targetsOfInterest((f, d))[i]
+                        if temp[-2]=="0":
+                            temp = temp[:-2]+temp[-1]
+                        curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
+                                       % (temp, writeFEvalsMaxPrec(bestalgdata[i], 2)))
+                        curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
+                                           % (temp, writeFEvalsMaxPrec(bestalgdata[i], 2)))
+                    temp = "%.1e" % targetsOfInterest((f, d))[-1]
+                    if temp[-2]=="0":
+                        temp = temp[:-2]+temp[-1]
+                    curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
+                                   % (temp, writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
+                    curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
+                                       % (temp, writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
+                else:            
+                    # write #fevals of the reference alg
+                    for i in bestalgdata[:-1]:
+                        curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
+                                       % writeFEvalsMaxPrec(i, 2))
+                        curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(i, 2))
+    
+                    curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
+                                   % writeFEvalsMaxPrec(bestalgdata[-1], 2))
+                    curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
+    
+                tmp = bestalgentry.detEvals([targetf])[0][0]
+                tmp2 = numpy.sum(numpy.isnan(tmp) == False)
+                curline.append('%d' % (tmp2))
+                if tmp2 > 0:
+                    curline.append('/%d' % len(tmp))
+                    curlineHtml.append('<td>%d/%d</td>\n' % (tmp2, len(tmp)))
+                else:
+                    curlineHtml.append('<td>%d</td>\n' % (tmp2))
+            
+            else: # if not bestalgentries
+                curline.append(r'\multicolumn{%d}{@{}c@{}|}{}' % (2 * (len(targetsOfInterest.labels()) + 1)))
+                curlineHtml.append('<td colspan="%d" />\n' % (len(targetsOfInterest.labels()) + 1))
+                
+            curlineHtml = [i.replace('$\infty$', '&infin;') for i in curlineHtml]
+            table.append(curline[:])
+            tableHtml.extend(curlineHtml[:])
+            tableHtml.append('</tr>\n')
+            extraeol.append('')
+
             if len(entries) < 2: # funcion not available for *both* algorithms
                 continue  # TODO: check which one is missing and make sure that what is there is displayed properly in the following
             
             testres0vs1 = significancetest(entries[0], entries[1], targets)
-            testresbestvs1 = significancetest(bestalgentry, entries[1], targets)
-            testresbestvs0 = significancetest(bestalgentry, entries[0], targets)
+            
+            if bestalgentries:
+                testresbestvs1 = significancetest(bestalgentry, entries[1], targets)
+                testresbestvs0 = significancetest(bestalgentry, entries[0], targets)
 
             for nb, entry in enumerate(entries):
                 tableHtml.append('<tr>\n')
@@ -232,21 +238,26 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     if i == len(data) - 1: # last element
                         alignment = 'c|'
 
-                    if numpy.isinf(bestalgdata[i]): # if the 2009 best did not solve the problem
+                    if not bestalgentries or numpy.isinf(bestalgdata[i]): # if the 2009 best did not solve the problem
 
                         tmp = writeFEvalsMaxPrec(float(dati), 2)
                         if not numpy.isinf(dati):
-                            tmpHtml = '<i>%s</i>' % (tmp)
-                            tmp = r'\textit{%s}' % (tmp)
+                            if bestalgentries:                        
+                                tmpHtml = '<i>%s</i>' % (tmp)
+                                tmp = r'\textit{%s}' % (tmp)
+                            else:
+                                tmpHtml = tmp
+
                             if isBold:
                                 tmp = r'\textbf{%s}' % tmp
                                 tmpHtml = '<b>%s</b>' % tmpHtml
 
                         if dispersion[i] and numpy.isfinite(dispersion[i]):
-                            tmp += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i], 1)
-                        tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
-                                      % (alignment, tmp))
-                        tableentryHtml = (' (%s)' % tmp)
+                            evalsMaxPrec = writeFEvalsMaxPrec(dispersion[i], 1)
+                            tmp += r'${\scriptscriptstyle (%s)}$' % evalsMaxPrec
+                            tmpHtml += ' (%s)' % evalsMaxPrec
+                        tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}' % (alignment, tmp))
+                        tableentryHtml = ('%s' % tmpHtml)
                     else:
                         # Formatting
                         tmp = float(dati)/bestalgdata[i]
@@ -307,26 +318,27 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     superscript = ''
                     superscriptHtml = ''
 
-                    if nb == 0:
-                        z, p = testresbestvs0[i]
-                    else:
-                        z, p = testresbestvs1[i]
-
-                    #The conditions are now that ERT < ERT_best
-                    if ((nbtests * p) < 0.05 and dati - bestalgdata[i] < 0.
-                        and z < 0.):
-                        nbstars = -numpy.ceil(numpy.log10(nbtests * p))
-                        #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
-                        if z > 0:
-                            superscript = r'\uparrow' #* nbstars
-                            superscriptHtml = '&uarr;'
+                    if bestalgentries:
+                        if nb == 0:
+                            z, p = testresbestvs0[i]
                         else:
-                            superscript = r'\downarrow' #* nbstars
-                            superscriptHtml = '&darr;'
-                            # print z, linebest[i], line1
-                        if nbstars > 1:
-                            superscript += str(int(nbstars))
-                            superscriptHtml += str(int(nbstars))
+                            z, p = testresbestvs1[i]
+    
+                        #The conditions are now that ERT < ERT_best
+                        if ((nbtests * p) < 0.05 and dati - bestalgdata[i] < 0.
+                            and z < 0.):
+                            nbstars = -numpy.ceil(numpy.log10(nbtests * p))
+                            #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
+                            if z > 0:
+                                superscript = r'\uparrow' #* nbstars
+                                superscriptHtml = '&uarr;'
+                            else:
+                                superscript = r'\downarrow' #* nbstars
+                                superscriptHtml = '&darr;'
+                                # print z, linebest[i], line1
+                            if nbstars > 1:
+                                superscript += str(int(nbstars))
+                                superscriptHtml += str(int(nbstars))
 
                     if superscript or significance0vs1:
                         s = ''

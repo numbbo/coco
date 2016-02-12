@@ -41,8 +41,12 @@ def build_c():
     copy_file('code-experiments/build/c/coco.h', 'code-experiments/examples/bbob2009-c-cmaes/coco.h')
     write_file(git_revision(), "code-experiments/build/c/REVISION")
     write_file(git_version(), "code-experiments/build/c/VERSION")
-    make("code-experiments/build/c", "clean")
-    make("code-experiments/build/c", "all")
+    if 11 < 3:
+        python('code-experiments/build/c', ['make.py', 'clean'])
+        python('code-experiments/build/c', ['make.py', 'all'])
+    else:
+        make("code-experiments/build/c", "clean")
+        make("code-experiments/build/c", "all")
 
 def run_c():
     """ Builds and runs the example experiment in C """
@@ -203,7 +207,8 @@ def build_python():
     ## Force distutils to use Cython
     # os.environ['USE_CYTHON'] = 'true'
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
-    python('code-experiments/build/python', ['setup.py', 'install', '--user'])
+    # python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
+    run(join('code-experiments', 'build', 'python'), ['python', 'setup.py', 'install', '--user'])
     # os.environ.pop('USE_CYTHON')
 
 def run_python(test=True):
@@ -298,7 +303,7 @@ def build_matlab():
     """Builds MATLAB example in build/matlab/ but not the one in examples/."""
     
     global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/matlab/coco.c', release)
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_matlab.c'],  'code-experiments/build/matlab/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
@@ -306,12 +311,14 @@ def build_matlab():
 
     
 def run_matlab():
+    """ Builds and runs the example experiment in build/matlab/ in MATLAB """
+    print('CLEAN\tmex files from code-experiments/build/matlab/')
     # remove the mex files for a clean compilation first
     for filename in glob.glob('code-experiments/build/matlab/*.mex*') :
         os.remove( filename )
     # amalgamate, copy, and build
     build_matlab()
-    wait_for_compilation_to_finish('./code-experiments/build/matlab/cocoProblemIsValid')
+    wait_for_compilation_to_finish('./code-experiments/build/matlab/cocoCall')
     # run after compilation finished
     run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'exampleexperiment, exit'])
 
@@ -344,39 +351,23 @@ def wait_for_compilation_to_finish(filenameprefix):
 
 
 def build_matlab_sms():
+    """Builds the SMS-EMOA in MATLAB """
     global release
     join = os.path.join
-    source_folder = join('code-experiments', 'build', 'matlab')
-    destination_folder = join('code-experiments', 'examples',
-                              'bbob-biobj-matlab-smsemoa')
+    destination_folder = 'code-experiments/examples/bbob-biobj-matlab-smsemoa'
     # amalgamate and copy files
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_matlab.c'],
                join(destination_folder, 'coco.c'), release)
-    copy_file('code-experiments/src/coco.h', 'code-experiments/examples/bbob-biobj-matlab-smsemoa/coco.h')
+    copy_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'))
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
-    files = ['cocoEvaluateFunction.c',
-             'cocoObserver.c',
-             'cocoObserverFree.c',
-             'cocoProblemGetDimension.c',
-             'cocoProblemGetEvaluations.c',
-             'cocoProblemGetId.c',
-             'cocoProblemGetLargestValuesOfInterest.c',
-             'cocoProblemGetName.c',
-             'cocoProblemGetNumberOfObjectives.c',
-             'cocoProblemGetSmallestValuesOfInterest.c',
-             'cocoProblemIsValid.c',
-             'cocoSuite.c',
-             'cocoSuiteFree.c',
-             'cocoSuiteGetNextProblem.c']
-    for file in files:
-        copy_file(join(source_folder, file),
-                  join(destination_folder, file))
+    copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
     # compile
-    run('code-experiments/examples/bbob-biobj-matlab-smsemoa', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
+    run(destination_folder, ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
 
 def run_matlab_sms():
-    print('CLEAN\t mex files from code-experiments/build/matlab/')
+    """ Builds and runs the SMS-EMOA in MATLAB """
+    print('CLEAN\tmex files from code-experiments/examples/bbob-biobj-matlab-smsemoa/')
     # remove the mex files for a clean compilation first
     for filename in glob.glob('code-experiments/examples/bbob-biobj-matlab-smsemoa/*.mex*') :
         os.remove( filename )
@@ -398,24 +389,47 @@ def build_octave():
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
-    run('code-experiments/build/matlab', ['octave', '--no-gui', 'setup.m'])
 
+    # make sure that under Windows, run_octave has been run at least once
+    # before to provide the necessary octave_coco.bat file     
+    if ('win32' in sys.platform):
+        run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'setup.m'])
+    else:
+        run('code-experiments/build/matlab', ['octave', '--no-gui', 'setup.m'])
     
 def run_octave():
     # remove the mex files for a clean compilation first
-    print('CLEAN\t mex files from code-experiments/build/matlab/')
+    print('CLEAN\tmex files from code-experiments/build/matlab/')
     for filename in glob.glob('code-experiments/build/matlab/*.mex*'):
         os.remove(filename)
+        
+    # Copy octave-coco.bat to the Octave folder under Windows to allow
+    # calling Octave from command line without messing up the system.    
+    # Note that 'win32' stands for both Windows 32-bit and 64-bit.
+    if ('win32' in sys.platform):        
+        print('SEARCH\tfor Octave folder from C:\\ (can take some time)')
+        lookfor = 'octave.bat'
+        for root, dirs, files in os.walk('C:\\'):
+            if lookfor in files:
+                break
+        copy_file('code-experiments/build/matlab/octave_coco.bat.in', join(root, 'octave_coco.bat'))
+        
     # amalgamate, copy, and build
     build_octave()
-    run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
+    if ('win32' in sys.platform):
+        run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'])
+    else:
+        run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])
 
 
 def test_octave():
     """ Builds and runs the test in Octave, which is equal to the example experiment """
     build_octave()
     try:
-        run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])    
+        if ('win32' in sys.platform):
+            run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'])
+        else:
+            run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'])   
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -547,6 +561,33 @@ def test():
     test_java()
     test_python()
 
+def silent(args):
+    """calls `main(args)` with redirected output to keep the console clean"""
+    # redirect stdout and call main
+    filename = '_check_output'
+    raised = None
+    stdout = sys.stdout
+
+    with open(filename, 'w') as out:
+        sys.stdout = out
+        try:
+            main(args)
+        except BaseException as raised:
+            pass
+    sys.stdout = stdout
+
+    # check whether an error occured
+    error = False
+    for line in open(filename, 'r').readlines():
+        if line.startswith('ERR') or not line[0] in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+            error = True
+            break
+    if error:
+        for line in open(filename, 'r').readlines():
+            print(line, end="")
+    if raised:
+        raise raised
+
 def help():
     print("""COCO framework bootstrap tool.
 
@@ -586,11 +627,12 @@ Available commands for developers:
 
   build                - Build C, Java and Python modules
   run                  - Run example experiments in C, Java and Python
+  silent cmd ...       - Calls "do.py cmd ..." and remains silent if no error occurs
   test                 - Test C, Java and Python modules
 
   run-sandbox-python   - Run a Python script with installed COCO module
                          Takes a single argument (name of Python script file)
-  
+
   test-c               - Build and run unit tests, integration tests 
                          and an example experiment test in C 
   test-c-unit          - Build and run unit tests in C
@@ -600,11 +642,12 @@ Available commands for developers:
   test-python          - Build and run minimal test of Python module
   test-python2         - Build and run minimal test of Python 2 module
   test-python3         - Build and run minimal test of Python 3 module
+  test-octave          - Build and run example experiment in Octave
   test-postprocessing  - Runs post-processing tests.
   leak-check           - Check for memory leaks in C
 
 
-To build a release version which does not include debugging information in the 
+To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
 """)
 def main(args):
@@ -631,6 +674,7 @@ def main(args):
     elif cmd == 'run-octave': run_octave()    
     elif cmd == 'run-python':
         run_python(False) if len(args) > 1 and args[1] == 'no-tests' else run_python()
+    elif cmd == 'silent': silent(args[1:])
     elif cmd == 'test-c': test_c()
     elif cmd == 'test-c-unit': test_c_unit()
     elif cmd == 'test-c-integration': test_c_integration()
@@ -639,6 +683,7 @@ def main(args):
     elif cmd == 'test-python': test_python()
     elif cmd == 'test-python2': test_python2()
     elif cmd == 'test-python3': test_python3()
+    elif cmd == 'test-octave': test_octave()
     elif cmd == 'test-postprocessing': test_postprocessing()
     elif cmd == 'leak-check': leak_check()
     else: help()

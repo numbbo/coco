@@ -411,22 +411,23 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, target=ftarget
 
         bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
 
-        bestalgdata = []
-        dimbestalg = list(df[0] for df in bestalgentries if df[1] == f)
-        dimbestalg.sort()
-        dimbestalg2 = []
-        for d in dimbestalg:
-            entry = bestalgentries[(d, f)]
-            tmp = entry.detERT(target((f, d)))[0]
-            if numpy.isfinite(tmp):
-                bestalgdata.append(float(tmp)/d)
-                dimbestalg2.append(d)
-
-        tmp = plt.plot(dimbestalg2, bestalgdata, color=refcolor, linewidth=10,
-                       marker='d', markersize=25, markeredgecolor=refcolor, zorder=-1
-                       #label='best 2009', 
-                       )
-        handles.append(tmp)
+        if bestalgentries:        
+            bestalgdata = []
+            dimbestalg = list(df[0] for df in bestalgentries if df[1] == f)
+            dimbestalg.sort()
+            dimbestalg2 = []
+            for d in dimbestalg:
+                entry = bestalgentries[(d, f)]
+                tmp = entry.detERT(target((f, d)))[0]
+                if numpy.isfinite(tmp):
+                    bestalgdata.append(float(tmp)/d)
+                    dimbestalg2.append(d)
+    
+            tmp = plt.plot(dimbestalg2, bestalgdata, color=refcolor, linewidth=10,
+                           marker='d', markersize=25, markeredgecolor=refcolor, zorder=-1
+                           #label='best 2009', 
+                           )
+            handles.append(tmp)
         
         if show_significance: # plot significance-stars
             xstar, ystar = [], []

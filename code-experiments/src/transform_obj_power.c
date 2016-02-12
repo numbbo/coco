@@ -22,7 +22,7 @@ typedef struct {
 static void transform_obj_power_evaluate(coco_problem_t *problem, const double *x, double *y) {
   transform_obj_power_data_t *data;
   size_t i;
-  data = coco_problem_transformed_get_data(problem);
+  data = (transform_obj_power_data_t *) coco_problem_transformed_get_data(problem);
   coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
   for (i = 0; i < problem->number_of_objectives; i++) {
       y[i] = pow(y[i], data->exponent);
@@ -40,7 +40,7 @@ static coco_problem_t *transform_obj_power(coco_problem_t *inner_problem, const 
   data = (transform_obj_power_data_t *) coco_allocate_memory(sizeof(*data));
   data->exponent = exponent;
 
-  problem = coco_problem_transformed_allocate(inner_problem, data, NULL);
+  problem = coco_problem_transformed_allocate(inner_problem, data, NULL, "transform_obj_power");
   problem->evaluate_function = transform_obj_power_evaluate;
   /* Compute best value */
   transform_obj_power_evaluate(problem, problem->best_parameter, problem->best_value);

@@ -71,7 +71,7 @@ instancesOfInterest2015 = {1:1, 2:1, 3:1, 4:1, 5:1, 41:1, 42:1, 43:1, 44:1,
                        45:1, 46:1, 47:1, 48:1, 49:1, 50:1}  # 2015 instances
 instancesOfInterest2016 = {1:1, 2:1, 3:1, 4:1, 5:1, 51:1, 52:1, 53:1, 54:1,
                        55:1, 56:1, 57:1, 58:1, 59:1, 60:1}  # 2016 instances
-instancesOfInterestBiobj2016 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1}  # bi-objective 2016 instances
+instancesOfInterestBiobj2016 = {1:1, 2:1, 3:1, 4:1, 5:1}  # bi-objective 2016 instances
 instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 41:1, 42:1, 43:1, 44:1,
                        45:1, 46:1, 47:1, 48:1, 49:1, 50:1}  # 2015 instances; only for consistency checking
 
@@ -211,6 +211,7 @@ rclegend = {"fontsize": 20}
 single_algorithm_file_name = 'templateBBOBarticle'
 two_algorithm_file_name = 'templateBBOBcmp'
 many_algorithm_file_name = 'templateBBOBmany'
+index_html_file_name = 'index'
 
 latex_commands_for_html = 'latex_commands_for_html'    
 
@@ -226,7 +227,7 @@ isConv = False
 verbose = False
 outputdir = 'ppdata'
 inputsettings = 'color'
-isExpensive = None 
+isExpensive = False 
 isRldOnSingleFcts = False
 isRLDistr = True
 ##
@@ -241,7 +242,7 @@ shortoptlist = "hvpo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "tab-only", "fig-only", "rld-only", "rld-single-fcts",
                "verbose", "settings=", "conv", 
-               "expensive", "not-expensive", "runlength-based",
+               "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
                "sca-only", "svg"]
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1

@@ -36,24 +36,25 @@ cdef extern from "coco.h":
     void coco_suite_free(coco_suite_t *suite)
     void coco_problem_free(coco_problem_t *problem)
 
-    void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
+    void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
     void coco_recommend_solution(coco_problem_t *problem, const double *x)
 
     coco_problem_t* coco_suite_get_next_problem(coco_suite_t*, coco_observer_t*)
-    coco_problem_t* coco_suite_get_problem(coco_suite_t *, size_t)
+    coco_problem_t* coco_suite_get_problem(coco_suite_t *, const size_t)
 
-    size_t coco_problem_get_suite_dep_index(coco_problem_t* )
-    size_t coco_problem_get_dimension(coco_problem_t *problem)
-    size_t coco_problem_get_number_of_objectives(coco_problem_t *problem)
-    size_t coco_problem_get_number_of_constraints(coco_problem_t *problem)
-    const char *coco_problem_get_id(coco_problem_t *problem)
-    const char *coco_problem_get_name(coco_problem_t *problem)
-    const double *coco_problem_get_smallest_values_of_interest(coco_problem_t *problem)
-    const double *coco_problem_get_largest_values_of_interest(coco_problem_t *problem)
-    double coco_problem_get_final_target_fvalue1(coco_problem_t *problem)
-    size_t coco_problem_get_evaluations(coco_problem_t *problem)
-    double coco_problem_get_best_observed_fvalue1(coco_problem_t *problem)
+    size_t coco_problem_get_suite_dep_index(const coco_problem_t* problem)
+    size_t coco_problem_get_dimension(const coco_problem_t *problem)
+    size_t coco_problem_get_number_of_objectives(const coco_problem_t *problem)
+    size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem)
+    const char *coco_problem_get_id(const coco_problem_t *problem)
+    const char *coco_problem_get_name(const coco_problem_t *problem)
+    const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *problem)
+    const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem)
+    double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
+    size_t coco_problem_get_evaluations(const coco_problem_t *problem)
+    double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
+    int coco_problem_final_target_hit(const coco_problem_t *problem)
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
@@ -82,7 +83,7 @@ cdef class Suite:
 
     >>> import cocoex as ex
     >>> suite = ex.Suite("bbob-biobj", "", "")
-    >>> observer = ex.Observer("bbob-biobj", "exdata-doctest")
+    >>> observer = ex.Observer("bbob-biobj", "result_folder:doctest")
     >>> for fun in suite:
     ...     if fun.index == 0:
     ...         print("Number of objectives %d, %d, %d" %
@@ -111,12 +112,12 @@ cdef class Suite:
     >>> solver = random_search
     >>> suite = Suite("bbob", "year:2009", "")
     >>> observer = Observer("bbob",
-    ...              "result_folder: exdata-%s_on_%s" % (solver.__name__, "bbob2009"))
+    ...              "result_folder: %s_on_%s" % (solver.__name__, "bbob2009"))
     >>> for fun in suite:
     ...     print('Current problem index = %d' % fun.index)
     ...     observer.observe(fun)
     ...     solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
-    ...   # data should be now in the "exdata-random_search_on_bbob2009" folder
+    ...   # data should be now in the "exdata/random_search_on_bbob2009" folder
     ...   # doctest: +ELLIPSIS
     Current problem index = 0...
     >>>   # Exactly the same using another looping technique:
@@ -131,7 +132,7 @@ cdef class Suite:
     We can select a single function, say BBOB f9 in 20D, of a given suite like::
 
     >>> import cocoex as ex
-    >>> suite = ex.Suite("bbob", "", "dimensions:20 instance_idx:1")
+    >>> suite = ex.Suite("bbob", "", "dimensions:20 instance_indices:1")
     >>> f9 = suite.get_problem(8)
 
     See module attribute `cocoex.known_suite_names` for known suite names::
@@ -362,7 +363,7 @@ also report back a missing name to https://github.com/numbbo/coco/issues
 
         >>> import cocoex as ex
         >>> f9 = ex.Suite("bbob", "",
-        ...               "function_idx:9 dimensions:20 instance_idx:1-5")[0]
+        ...               "function_indices:9 dimensions:20 instance_indices:1-5")[0]
         >>> print(f9.id)
         bbob_f009_i01_d20
 
@@ -709,6 +710,12 @@ cdef class Problem:
     @property
     def evaluations(self):
         return coco_problem_get_evaluations(self.problem)
+    @property
+    def final_target_hit(self):
+        """return 1 if the final target is known and has been hit, 0 otherwise
+        """
+        assert(self.problem)
+        return coco_problem_final_target_hit(self.problem)
     @property
     def final_target_fvalue1(self):
         assert(self.problem)
