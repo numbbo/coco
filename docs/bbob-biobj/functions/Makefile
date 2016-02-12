@@ -6,7 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build
-HTMLBUILDDIR  = ../../../bbob-biobj-functions-doc
+HTMLBUILDDIR  = ../../../../coco-doc/bbob-biobj/functions
 PDF           = bbob-biobj-functions.pdf
 
 # User-friendly check for sphinx-build
