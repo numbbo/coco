@@ -44,7 +44,7 @@ if __name__ == "__main__":
         res = cocopp.rungeneric.main(sys.argv[1:])
         sys.exit(res)
 
-from . import genericsettings, rungeneric1, rungeneric2, rungenericmany
+from . import genericsettings, rungeneric1, rungeneric2, rungenericmany, ppfig
 from .toolsdivers import prepend_to_file, truncate_latex_command_file, print_done
 
 __all__ = ['main']
@@ -270,6 +270,10 @@ def main(argv=None):
 
         for i in range(len(args)):  # prepend common path inputdir to all names
             args[i] = os.path.join(inputdir, args[i])
+
+        ppfig.save_index_html_file(
+            os.path.join(outputdir, genericsettings.index_html_file_name), 
+            args)
 
         for i, alg in enumerate(args):
             # remove '../' from algorithm output folder

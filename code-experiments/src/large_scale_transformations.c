@@ -2,7 +2,6 @@
 #include <assert.h>
 #include "coco.h"
 
-#include "coco_runtime_c.c" /*tmp*/
 #include "coco_random.c" /*tmp*/
 #include "suite_bbob_legacy_code.c" /*tmp*/
 

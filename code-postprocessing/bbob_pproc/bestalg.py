@@ -481,9 +481,11 @@ def loadBestAlgorithm(isBioobjective):
     """Loads the best single or bi objective algorithm. """
     
     if isBioobjective:
-        if not bestbiobjalgentries2016:
-            loadBestBiobj2016()
-        return bestbiobjalgentries2016
+        # Currently we do not have a good best algorithm for the bi-objective case.
+        return None
+#        if not bestbiobjalgentries2016:
+#            loadBestBiobj2016()
+#        return bestbiobjalgentries2016
     else:
         if not bestalgentries2009:
             loadBBOB2009()

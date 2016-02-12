@@ -6,8 +6,8 @@ if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
 set BUILDDIR=build
-set HTMLBUILDDIR=../../../bbob-biobj-functions-doc
-set PDF=bbob-biobj-functions.pdf
+set HTMLBUILDDIR=../../../../coco-doc/perf-assessment
+set PDF=coco-perf-assessment.pdf
 set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% source
 set I18NSPHINXOPTS=%SPHINXOPTS% source
 if NOT "%PAPER%" == "" (
@@ -21,7 +21,7 @@ if "%1" == "help" (
 	:help
 	echo.Please use `make ^<target^>` where ^<target^> is one of
 	echo.  html           to make standalone HTML files
-	echo.  html-topublish to make HTML files in the repository bbob-biobj-functions-doc"
+	echo.  html-topublish to make HTML files in the repository bbob-biobj-experiments-doc"
 	echo.  latexpdf       to make LaTeX files and pdf in ../
 	echo.  dirhtml        to make HTML files named index.html in directories
 	echo.  singlehtml     to make a single large HTML file
@@ -139,9 +139,9 @@ if "%1" == "qthelp" (
 	echo.
 	echo.Build finished; now you can run "qcollectiongenerator" with the ^
 .qhcp project file in %BUILDDIR%/qthelp, like this:
-	echo.^> qcollectiongenerator %BUILDDIR%\qthelp\biobj-functions.qhcp
+	echo.^> qcollectiongenerator %BUILDDIR%\qthelp\bbob-biobj-experiments-doc.qhcp
 	echo.To view the help file:
-	echo.^> assistant -collectionFile %BUILDDIR%\qthelp\biobj-functions.ghc
+	echo.^> assistant -collectionFile %BUILDDIR%\qthelp\bbob-biobj-experiments-doc.ghc
 	goto end
 )
 
@@ -173,7 +173,7 @@ if "%1" == "latexpdf" (
 	%SPHINXBUILD% -b latex %ALLSPHINXOPTS% %BUILDDIR%/latex
 	cd %BUILDDIR%/latex
 	make all-pdf
-	cd %~dp0 
+	cd %~dp0
 	move %BUILDDIR%\latex\%PDF% ..\
 	echo.
 	echo.Build finished; see ../%PDF%.
