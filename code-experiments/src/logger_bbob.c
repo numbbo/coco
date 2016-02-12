@@ -53,10 +53,6 @@ typedef struct {
   double last_fvalue;
   short written_last_eval; /**< @brief allows writing the the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
   double *best_solution;
-  /* The following are to only pass data as a parameter in the free function. The
-   * interface should probably be the same for all free functions so passing the
-   * problem as a second parameter is not an option even though we need info
-   * form it.*/
   size_t function_id;
   size_t instance_id;
   size_t number_of_variables;
@@ -88,8 +84,6 @@ static void logger_bbob_write_data(FILE *target_file,
                                    const int precision_f,
                                    const int precision_x) {
 
-/*  fprintf(target_file, "%ld %+10.9e %+10.9e %+10.9e %+10.9e", number_of_evaluations, fvalue - best_value,
-      best_fvalue - best_value, fvalue, best_fvalue);*/
   fprintf(target_file, "%lu %.*e %.*e %.*e %.*e", number_of_evaluations, precision_f, fvalue - best_value,
           precision_f, best_fvalue - best_value, precision_f, fvalue, precision_f, best_fvalue);
   if (number_of_variables < 22) {
@@ -102,7 +96,7 @@ static void logger_bbob_write_data(FILE *target_file,
 }
 
 /**
- * Error when trying to create the file "path"
+ * @brief Error when trying to create the file "path"
  */
 static void logger_bbob_error_io(FILE *path, int errnum) {
   const char *error_format = "Error opening file: %s\n ";
@@ -110,15 +104,8 @@ static void logger_bbob_error_io(FILE *path, int errnum) {
 }
 
 /**
- * Creates the data files or simply opens it
+ * @brief Creates the data file or simply opens it
  */
-
-/*
- calling sequence:
- logger_bbob_open_dataFile(&(logger->fdata_file), logger->observer->output_folder, dataFile_path,
- ".dat");
- */
-
 static void logger_bbob_open_dataFile(FILE **target_file,
                                       const char *path,
                                       const char *dataFile_path,
