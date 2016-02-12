@@ -425,7 +425,7 @@ Links and Documentation <a name="Links"></a>
 * More detailed documentation of the existing benchmark suites can be found here:
   - for the **`BBOB`** problem suite at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
-  - for the **`bbob-biobj`** problem suite at http://numbbo.github.io/bbob-biobj-functions-doc
+  - for the **`bbob-biobj`** problem suite at http://numbbo.github.io/coco-doc/bbob-biobj/functions
 * Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
   http://numbbo.github.io/coco-doc/C
 * Downloading this repository 
