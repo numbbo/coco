@@ -549,7 +549,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 dictData.setdefault(alg, []).extend(x)
                 dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
 
-        displaybest2009 = not isBiobjective #disabled until we find the bug
+        displaybest2009 = not isBiobjective #disabled for bi-objective case
         if displaybest2009:
             #set_trace()
             bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
@@ -675,7 +675,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 os.path.join(outputdir, 'pprldmany'),
                 '', # algorithms names are clearly visible in the figure
                 add_to_names='_%02dD' %(dim),
-                algorithmCount=ppfig.AlgorithmCount.NON_SPECIFIED
+                algorithmCount = ppfig.AlgorithmCount.NON_SPECIFIED,
+                isBiobjective = isBiobjective
             )
     if close_figure:
         plt.close()

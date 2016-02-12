@@ -133,7 +133,7 @@ static coco_problem_t *coco_problem_duplicate(const coco_problem_t *other) {
   problem->evaluate_function = other->evaluate_function;
   problem->evaluate_constraint = other->evaluate_constraint;
   problem->recommend_solution = other->recommend_solution;
-  problem->problem_free_function = NULL;
+  problem->problem_free_function = other->problem_free_function;
 
   for (i = 0; i < problem->number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = other->smallest_values_of_interest[i];
@@ -520,20 +520,17 @@ static void coco_problem_transformed_recommend_solution(coco_problem_t *problem,
 }
 
 /**
- * @brief Frees the transformed problem.
+ * @brief Frees only the data of the transformed problem leaving the inner problem intact.
+ *
+ * @note If there is no other pointer to the inner problem, access to it will be lost.
  */
-static void coco_problem_transformed_free(coco_problem_t *problem) {
+static void coco_problem_transformed_free_data(coco_problem_t *problem) {
   coco_problem_transformed_data_t *data;
 
   assert(problem != NULL);
   assert(problem->data != NULL);
   data = (coco_problem_transformed_data_t *) problem->data;
-  assert(data->inner_problem != NULL);
 
-  if (data->inner_problem != NULL) {
-    coco_problem_free(data->inner_problem);
-    data->inner_problem = NULL;
-  }
   if (data->data != NULL) {
     if (data->data_free_function != NULL) {
       data->data_free_function(data->data);
@@ -549,15 +546,35 @@ static void coco_problem_transformed_free(coco_problem_t *problem) {
 }
 
 /**
+ * @brief Frees the transformed problem.
+ */
+static void coco_problem_transformed_free(coco_problem_t *problem) {
+  coco_problem_transformed_data_t *data;
+
+  assert(problem != NULL);
+  assert(problem->data != NULL);
+  data = (coco_problem_transformed_data_t *) problem->data;
+  assert(data->inner_problem != NULL);
+  if (data->inner_problem != NULL) {
+    coco_problem_free(data->inner_problem);
+    data->inner_problem = NULL;
+  }
+  coco_problem_transformed_free_data(problem);
+}
+
+/**
  * @brief Allocates a transformed problem that wraps the inner_problem.
  *
- * By default all methods will dispatch to the inner_problem.
+ * By default all methods will dispatch to the inner_problem. A prefix is prepended to the problem name
+ * in order to reflect the transformation somewhere.
  */
 static coco_problem_t *coco_problem_transformed_allocate(coco_problem_t *inner_problem,
                                                          void *user_data,
-                                                         coco_data_free_function_t data_free_function) {
+                                                         coco_data_free_function_t data_free_function,
+                                                         const char *name_prefix) {
   coco_problem_transformed_data_t *problem;
   coco_problem_t *inner_copy;
+  char *old_name = coco_strdup(inner_problem->problem_name);
 
   problem = (coco_problem_transformed_data_t *) coco_allocate_memory(sizeof(*problem));
   problem->inner_problem = inner_problem;
@@ -570,6 +587,10 @@ static coco_problem_t *coco_problem_transformed_allocate(coco_problem_t *inner_p
   inner_copy->recommend_solution = coco_problem_transformed_recommend_solution;
   inner_copy->problem_free_function = coco_problem_transformed_free;
   inner_copy->data = problem;
+
+  coco_problem_set_name(inner_copy, "%s(%s)", name_prefix, old_name);
+  coco_free_memory(old_name);
+
   return inner_copy;
 }
 /**@}*/
