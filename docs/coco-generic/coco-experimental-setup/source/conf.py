@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# docs/bbob-biobj/functions documentation build configuration file, created by
-# sphinx-quickstart on Thu Dec 24 16:35:27 2015.
+# docs/coco-generic/coco-experimental-setup documentation build configuration
+# file, created by sphinx-quickstart on Fri Feb 12 14:40:02 2016.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -30,12 +30,8 @@ import shlex
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
     'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.viewcode',
+    'sphinx.ext.pngmath',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -53,8 +49,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'bbob-biobj-functions-doc'
-copyright = u'2015, The BBOBies'
+project = u'docs-coco-generic-coco-experimental-setup'
+copyright = u'2016, The BBOBies'
 author = u'The BBOBies'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -207,7 +203,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'bbob-biobj-functions-doc'
+htmlhelp_basename = 'docs-coco-generic-coco-experimental-setup'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -229,7 +225,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'bbob-biobj-functions.tex', u'Function Documentation of the bbob-biobj Test Suite',
+  (master_doc, 'coco-experimental-setup.tex', u'General Experimental Setup in the Comparing Continuous Optimizers Platform Coco',
    u'The BBOBies', 'manual'),
 ]
 
@@ -259,8 +255,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'bbob-biobj-functions-doc', u'Function Documentation of the bbob-biobj Test Suite',
-     [author], 1)
+  (master_doc, 'coco-experimental-setup.tex', u'General Experimental Setup in the Comparing Continuous Optimizers Platform Coco',
+   [author], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -273,8 +269,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'bbob-biobj-functions-doc', u'Function Documentation of the bbob-biobj Test Suite',
-   author, 'bbob-biobj-functions-doc', 'Documents all functions of the bbob-biobj test suite.',
+  (master_doc, 'coco-experimental-setup.tex', u'General Experimental Setup in the Comparing Continuous Optimizers Platform Coco',
+   author, 'coco-experimental-setup', 'One line description of project.',
    'Miscellaneous'),
 ]
 
