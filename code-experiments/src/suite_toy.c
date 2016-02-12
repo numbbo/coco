@@ -21,7 +21,7 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 /**
  * @brief Sets the dimensions and default instances for the toy suite.
  */
-static coco_suite_t *suite_toy_allocate(void) {
+static coco_suite_t *suite_toy_initialize(void) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20 };

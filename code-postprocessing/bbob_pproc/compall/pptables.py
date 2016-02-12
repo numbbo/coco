@@ -257,11 +257,10 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         targetf = targets[-1]
         
         # best 2009
-        refalgentry = bestalgentries[df]
-        refalgert = refalgentry.detERT(targets)
-        refalgevals = (refalgentry.detEvals((targetf, ))[0][0])
-        refalgnbruns = len(refalgevals)
-        refalgnbsucc = numpy.sum(numpy.isnan(refalgevals) == False)
+        if bestalgentries:        
+            refalgentry = bestalgentries[df]
+            refalgert = refalgentry.detERT(targets)
+            refalgevals = (refalgentry.detEvals((targetf, ))[0][0])
 
         # Process the data
         # The following variables will be lists of elements each corresponding
@@ -320,7 +319,8 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             #algmedmaxevals.append(numpy.median(entry.maxevals)/df[0])
             #algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
 
-            algtestres.append(significancetest(refalgentry, entry, targets))
+            if bestalgentries:            
+                algtestres.append(significancetest(refalgentry, entry, targets))
 
             # determine success probability for Df = 1e-8
             e = entry.detEvals((targetf ,))[0]
@@ -391,48 +391,56 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         curline = [r'ERT$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
         replaceValue = 'ERT<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
-        if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
-            # write ftarget:fevals
-            counter = 1
-            for i in xrange(len(refalgert[:-1])):
-                temp="%.1e" %targetsOfInterest((df[1], df[0]))[i]
+        if bestalgentries:
+            if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+                # write ftarget:fevals
+                counter = 1
+                for i in xrange(len(refalgert[:-1])):
+                    temp="%.1e" %targetsOfInterest((df[1], df[0]))[i]
+                    if temp[-2]=="0":
+                        temp=temp[:-2]+temp[-1]
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
+                                       % (temp, writeFEvalsMaxPrec(refalgert[i], 2)))
+                    replaceValue = '<i>%s</i>:%s' % (temp, writeFEvalsMaxPrec(refalgert[i], 2))
+                    curlineHtml = [item.replace('REPLACE%d' % counter, replaceValue) for item in curlineHtml]
+                    counter += 1
+                    
+                temp="%.1e" %targetsOfInterest((df[1], df[0]))[-1]
                 if temp[-2]=="0":
                     temp=temp[:-2]+temp[-1]
-                curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
-                                   % (temp, writeFEvalsMaxPrec(refalgert[i], 2)))
-                replaceValue = '<i>%s</i>:%s' % (temp, writeFEvalsMaxPrec(refalgert[i], 2))
+                curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
+                                   % (temp ,writeFEvalsMaxPrec(refalgert[-1], 2))) 
+                replaceValue = '<i>%s</i>:%s' % (temp, writeFEvalsMaxPrec(refalgert[-1], 2)) 
                 curlineHtml = [item.replace('REPLACE%d' % counter, replaceValue) for item in curlineHtml]
-                counter += 1
-                
-            temp="%.1e" %targetsOfInterest((df[1], df[0]))[-1]
-            if temp[-2]=="0":
-                temp=temp[:-2]+temp[-1]
-            curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
-                               % (temp ,writeFEvalsMaxPrec(refalgert[-1], 2))) 
-            replaceValue = '<i>%s</i>:%s' % (temp, writeFEvalsMaxPrec(refalgert[-1], 2)) 
-            curlineHtml = [item.replace('REPLACE%d' % counter, replaceValue) for item in curlineHtml]
-        else:            
-            # write #fevals of the reference alg
-            counter = 1
-            for i in refalgert[:-1]:
-                curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
-                                   % writeFEvalsMaxPrec(i, 2))
-                curlineHtml = [item.replace('REPLACE%d' % counter, writeFEvalsMaxPrec(i, 2)) for item in curlineHtml]
-                counter += 1
-            curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
-                               % writeFEvalsMaxPrec(refalgert[-1], 2))
-            curlineHtml = [item.replace('REPLACE%d' % counter, writeFEvalsMaxPrec(refalgert[-1], 2)) for item in curlineHtml]
+            else:            
+                # write #fevals of the reference alg
+                counter = 1
+                for i in refalgert[:-1]:
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
+                                       % writeFEvalsMaxPrec(i, 2))
+                    curlineHtml = [item.replace('REPLACE%d' % counter, writeFEvalsMaxPrec(i, 2)) for item in curlineHtml]
+                    counter += 1
+                curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
+                                   % writeFEvalsMaxPrec(refalgert[-1], 2))
+                curlineHtml = [item.replace('REPLACE%d' % counter, writeFEvalsMaxPrec(refalgert[-1], 2)) for item in curlineHtml]
 
-        # write the success ratio for the reference alg
-        tmp2 = numpy.sum(numpy.isnan(refalgevals) == False) # count the nb of success
-        curline.append('%d' % (tmp2))
-        if tmp2 > 0:
-            curline.append('/%d' % len(refalgevals))
-            replaceValue = '%d/%d' % (tmp2, len(refalgevals))
-        else:
-            replaceValue = '%d' % tmp2
-        curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
+            # write the success ratio for the reference alg
+            tmp2 = numpy.sum(numpy.isnan(refalgevals) == False) # count the nb of success
+            curline.append('%d' % (tmp2))
+            if tmp2 > 0:
+                curline.append('/%d' % len(refalgevals))
+                replaceValue = '%d/%d' % (tmp2, len(refalgevals))
+            else:
+                replaceValue = '%d' % tmp2
+            curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
+            
+        else: # if not bestalgentries
+            curline.append(r'\multicolumn{%d}{@{}c@{}|}{}' % (2 * (len(targets) + 1)))
+            for counter in range(1, len(targets) + 1):
+                curlineHtml = [item.replace('REPLACE%d' % counter, '&nbsp;') for item in curlineHtml]
+            curlineHtml = [item.replace('REPLACEF', '&nbsp;') for item in curlineHtml]
 
+        curlineHtml = [i.replace('$\infty$', '&infin;') for i in curlineHtml]
         table.append(curline[:])
         tableHtml.extend(curlineHtml[:])
         tableHtml.append('<tbody>\n')
@@ -456,14 +464,19 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             curline = [commandname + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
             curlineHtml = ['<th>%s</th>\n' % str_to_latex(strip_pathname1(alg))]
 
-            for j, tmp in enumerate(zip(algerts[i], algdisp[i],  # j is target index
-                                        isBoldArray[i], algtestres[i])):
-                ert, dispersion, isBold, testres = tmp
+            zipToEnumerate = zip(algerts[i], algdisp[i], isBoldArray[i], algtestres[i]) if bestalgentries else zip(algerts[i], algdisp[i], isBoldArray[i])
+            
+            for j, tmp in enumerate(zipToEnumerate): # j is target index
+                if bestalgentries:
+                    ert, dispersion, isBold, testres = tmp
+                else:
+                    ert, dispersion, isBold = tmp
+                    
                 alignment = '@{\,}X@{\,}'
                 if j == len(algerts[i]) - 1:
                     alignment = '@{\,}X@{\,}|'
 
-                data = ert/refalgert[j]
+                data = ert/refalgert[j] if bestalgentries else ert
                 # write star for significance against all other algorithms
                 str_significance_subsup = ''
                 str_significance_subsup_html = ''
@@ -474,26 +487,27 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     str_significance_subsup =  r"^{%s%s}" % (significance_vs_others_symbol, str(int(logp)) if logp > 1 else '')
                     str_significance_subsup_html = '<sup>%s%s</sup>' % (significance_vs_others_symbol_html, str(int(logp)) if logp > 1 else '')
 
-                # moved out of the above else: this was a bug!?
-                z, p = testres
-                if (nbtests * p) < 0.05 and data < 1. and z < 0.: 
-                    if not numpy.isinf(refalgert[j]):
-                        tmpevals = algevals[i][j].copy()
-                        tmpevals[numpy.isnan(tmpevals)] = algentries[i].maxevals[numpy.isnan(tmpevals)]
-                        bestevals = refalgentry.detEvals(targets)
-                        bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
-                        bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
-                        tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
-                        bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
-
-                    #The conditions are now that ERT < ERT_best and
-                    # all(sorted(FEvals_best) > sorted(FEvals_current)).
-                    if numpy.isinf(refalgert[j]) or all(tmpevals < bestevals):
-                        nbstars = -numpy.ceil(numpy.log10(nbtests * p))
-                        # tmp2[-1] += r'$^{%s}$' % superscript
-                        str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol, 
-                                                                 str(int(nbstars)) if nbstars > 1 else '')
-                        str_significance_subsup_html = '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html, 
+                if bestalgentries:                
+                    # moved out of the above else: this was a bug!?
+                    z, p = testres
+                    if (nbtests * p) < 0.05 and data < 1. and z < 0.: 
+                        if not numpy.isinf(refalgert[j]):
+                            tmpevals = algevals[i][j].copy()
+                            tmpevals[numpy.isnan(tmpevals)] = algentries[i].maxevals[numpy.isnan(tmpevals)]
+                            bestevals = refalgentry.detEvals(targets)
+                            bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
+                            bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
+                            tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
+                            bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
+    
+                        #The conditions are now that ERT < ERT_best and
+                        # all(sorted(FEvals_best) > sorted(FEvals_current)).
+                        if numpy.isinf(refalgert[j]) or all(tmpevals < bestevals):
+                            nbstars = -numpy.ceil(numpy.log10(nbtests * p))
+                            # tmp2[-1] += r'$^{%s}$' % superscript
+                            str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol, 
+                                                                     str(int(nbstars)) if nbstars > 1 else '')
+                            str_significance_subsup_html = '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html, 
                                                                  str(int(nbstars)) if nbstars > 1 else '')
                 if str_significance_subsup:
                     str_significance_subsup = '$%s$' % str_significance_subsup
@@ -501,18 +515,24 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                 # format number in variable data
                 if numpy.isnan(data):
                     curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
+                    curlineHtml.append('<td>&nbsp;</td>')
                 else:
-                    if numpy.isinf(refalgert[j]):
-                        curline.append(r'\multicolumn{2}{%s}{\textbf{%s}\mbox{\tiny (%s)}%s}'
-                                       % (alignment,
-                                          writeFEvalsMaxPrec(algerts[i][j], 2),
-                                          writeFEvalsMaxPrec(dispersion, precdispersion), 
+                    if not bestalgentries or numpy.isinf(refalgert[j]):
+                        tableentry = r'\textbf{%s}' % writeFEvalsMaxPrec(algerts[i][j], 2)
+                        tableentryHtml = '<b>%s</b>' % writeFEvalsMaxPrec(algerts[i][j], 2)
+                        if dispersion and numpy.isfinite(dispersion):
+                            tableentry += r'\mbox{\tiny (%s)}' %  writeFEvalsMaxPrec(dispersion, precdispersion)
+                            tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion, precdispersion)
+                        
+                        curline.append(r'\multicolumn{2}{%s}{%s}%s' 
+                                       % (alignment, 
+                                          tableentry,
                                           str_significance_subsup))
-                        curlineHtml.append('<td sorttable_customkey=\"%f\"><b>%s</b> (%s)%s</td>\n'
-                                       % (algerts[i][j],
-                                          writeFEvalsMaxPrec(algerts[i][j], 2),
-                                          writeFEvalsMaxPrec(dispersion, precdispersion), 
-                                          str_significance_subsup_html))
+                                       
+                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>\n' 
+                                           % (algerts[i][j],
+                                              tableentryHtml,
+                                              str_significance_subsup_html))
                         continue
 
                     tmp = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
@@ -530,7 +550,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                                 tmp = r'\textbf{%s}' % tmp
 
                         if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion/refalgert[j]
+                            tmpdisp = dispersion/refalgert[j] if bestalgentries else dispersion
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.005: # TODO: hack
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                             else:
@@ -538,7 +558,6 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                             tmp += r'\mbox{\tiny (%s)}' % tmpdisp
                             tmpHtml += ' (%s)' % tmpdisp
                         curline.append(r'\multicolumn{2}{%s}{%s%s}' % (alignment, tmp, str_significance_subsup))
-                        tmpHtml = tmpHtml.replace('$\infty$', '&infin;')                
                         if (numpy.isinf(sortKey)):
                             sortKey = sys.maxint
                         curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>' % (sortKey, tmpHtml, str_significance_subsup_html))
@@ -560,7 +579,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                             tmp2html = []
                             tmp2html.extend(tmp2)
                         if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion/refalgert[j]
+                            tmpdisp = dispersion/refalgert[j] if bestalgentries else dispersion
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                             else:
@@ -571,13 +590,13 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                         tmp2html[-1] += str_significance_subsup_html
                         curline.extend(tmp2)
                         tmp2html = ("").join(str(item) for item in tmp2html)
-                        tmp2html = tmp2html.replace('$\infty$', '&infin;')                
                         curlineHtml.append('<td sorttable_customkey=\"%f\">%s</td>' % (data, tmp2html))
                                         
             curline.append('%d' % algnbsucc[i])
             curline.append('/%d' % algnbruns[i])
             table.append(curline)
             curlineHtml.append('<td sorttable_customkey=\"%d\">%d/%d</td>\n' % (algnbsucc[i], algnbsucc[i], algnbruns[i]))
+            curlineHtml = [i.replace('$\infty$', '&infin;') for i in curlineHtml]
             tableHtml.extend(curlineHtml[:])
             extraeol.append('')
 

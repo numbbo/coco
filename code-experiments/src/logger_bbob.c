@@ -62,11 +62,6 @@ typedef struct {
   FILE *fdata_file; /* function value aligned data file */
   FILE *tdata_file; /* number of function evaluations aligned data file */
   FILE *rdata_file; /* restart info data file */
-  double f_trigger; /* next upper bound on the fvalue to trigger a log in the .dat file*/
-  long t_trigger; /* next lower bound on nb fun evals to trigger a log in the .tdat file*/
-  int idx_f_trigger; /* allows to track the index i in logging target = {10**(i/bbob_nbpts_fval), i \in Z} */
-  int idx_t_trigger; /* allows to track the index i in logging nbevals = {int(10**(i/bbob_nbpts_nbevals)), i \in Z} */
-  int idx_tdim_trigger; /* allows to track the index i in logging nbevals = {dim * 10**i, i \in Z} */
   size_t number_of_evaluations;
   double best_fvalue;
   double last_fvalue;
@@ -80,6 +75,10 @@ typedef struct {
   size_t instance_id;
   size_t number_of_variables;
   double optimal_fvalue;
+
+  coco_observer_targets_t *targets;          /**< @brief Triggers based on target values. */
+  coco_observer_evaluations_t *evaluations;  /**< @brief Triggers based on the number of evaluations. */
+
 } logger_bbob_data_t;
 
 static const char *bbob_file_header_str = "%% function evaluation | "
@@ -89,47 +88,6 @@ static const char *bbob_file_header_str = "%% function evaluation | "
     "best measured fitness | "
     "x1 | "
     "x2...\n";
-
-static void logger_bbob_update_f_trigger(logger_bbob_data_t *logger, double fvalue) {
-  /* "jump" directly to the next closest (but larger) target to the
-   * current fvalue from the initial target
-   */
-  observer_bbob_data_t *observer_bbob;
-  observer_bbob = (observer_bbob_data_t *) logger->observer->data;
-
-  if (fvalue - logger->optimal_fvalue <= 0.) {
-    logger->f_trigger = -DBL_MAX;
-  } else {
-    if (logger->idx_f_trigger == INT_MAX) { /* first time*/
-      logger->idx_f_trigger = (int) (ceil(log10(fvalue - logger->optimal_fvalue))
-          * (double) (long) observer_bbob->bbob_nbpts_fval);
-    } else { /* We only call this function when we reach the current f_trigger*/
-      logger->idx_f_trigger--;
-    }
-    logger->f_trigger = pow(10, logger->idx_f_trigger * 1.0 / (double) (long) observer_bbob->bbob_nbpts_fval);
-    while (fvalue - logger->optimal_fvalue <= logger->f_trigger) {
-      logger->idx_f_trigger--;
-      logger->f_trigger = pow(10,
-          logger->idx_f_trigger * 1.0 / (double) (long) observer_bbob->bbob_nbpts_fval);
-    }
-  }
-}
-
-static void logger_bbob_update_t_trigger(logger_bbob_data_t *logger, size_t number_of_variables) {
-  observer_bbob_data_t *observer_bbob;
-  observer_bbob = (observer_bbob_data_t *) logger->observer->data;
-  while (logger->number_of_evaluations
-      >= floor(pow(10, (double) logger->idx_t_trigger / (double) (long) observer_bbob->bbob_nbpts_nbevals)))
-    logger->idx_t_trigger++;
-
-  while (logger->number_of_evaluations
-      >= (double) (long) number_of_variables * pow(10, (double) logger->idx_tdim_trigger))
-    logger->idx_tdim_trigger++;
-
-  logger->t_trigger = (long) coco_double_min(
-      floor(pow(10, (double) logger->idx_t_trigger / (double) (long) observer_bbob->bbob_nbpts_nbevals)),
-      (double) (long) number_of_variables * pow(10, (double) logger->idx_tdim_trigger));
-}
 
 /**
  * adds a formated line to a data file
@@ -337,8 +295,8 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   char indexFile_prefix[10] = "bbobexp"; /* TODO (minor): make the prefix bbobexp a parameter that the user can modify */
   size_t str_length_funId, str_length_dim;
   
-  str_length_funId = (size_t) bbob2009_fmax(1, ceil(log10((double) coco_problem_get_suite_dep_function(inner_problem))));
-  str_length_dim = (size_t) bbob2009_fmax(1, ceil(log10((double) inner_problem->number_of_variables)));
+  str_length_funId = coco_double_to_size_t(bbob2009_fmax(1, ceil(log10((double) coco_problem_get_suite_dep_function(inner_problem)))));
+  str_length_dim = coco_double_to_size_t(bbob2009_fmax(1, ceil(log10((double) inner_problem->number_of_variables))));
   tmpc_funId = coco_allocate_string(str_length_funId);
   tmpc_dim = coco_allocate_string(str_length_dim);
 
@@ -389,8 +347,10 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
  * Layer added to the transformed-problem evaluate_function by the logger
  */
 static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, double *y) {
-  logger_bbob_data_t *logger = coco_problem_transformed_get_data(problem);
+  logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
   coco_problem_t * inner_problem = coco_problem_transformed_get_inner_problem(problem);
+
+  size_t i;
 
   if (!logger->is_initialized) {
     logger_bbob_initialize(logger, inner_problem);
@@ -403,7 +363,6 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   logger->last_fvalue = y[0];
   logger->written_last_eval = 0;
   if (logger->number_of_evaluations == 0 || y[0] < logger->best_fvalue) {
-    size_t i;
     logger->best_fvalue = y[0];
     for (i = 0; i < problem->number_of_variables; i++)
       logger->best_solution[i] = x[i];
@@ -414,26 +373,17 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   assert(y[0] + 1e-13 >= logger->optimal_fvalue);
 
   /* Add a line in the .dat file for each logging target reached. */
-  if (y[0] - logger->optimal_fvalue <= logger->f_trigger) {
+    if (coco_observer_targets_trigger(logger->targets, y[0] - logger->optimal_fvalue)) {
 
     logger_bbob_write_data(logger->fdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
         logger->optimal_fvalue, x, problem->number_of_variables);
-    logger_bbob_update_f_trigger(logger, y[0]);
   }
 
   /* Add a line in the .tdat file each time an fevals trigger is reached.*/
-  if (logger->number_of_evaluations >= logger->t_trigger) {
+  if (coco_observer_evaluations_trigger(logger->evaluations, logger->number_of_evaluations)) {
     logger->written_last_eval = 1;
     logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
         logger->optimal_fvalue, x, problem->number_of_variables);
-    logger_bbob_update_t_trigger(logger, problem->number_of_variables);
-  } else {
-    /* Add a line in the .tdat file each time a dimension-depended trigger is reached.*/
-    if ((coco_observer_evaluation_to_log(logger->number_of_evaluations, problem->number_of_variables))) {
-      logger->written_last_eval = 1;
-      logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
-                             logger->optimal_fvalue, x, problem->number_of_variables);
-    }
   }
 
   /* Flush output so that impatient users can see progress. */
@@ -451,7 +401,7 @@ static void logger_bbob_free(void *stuff) {
   /* TODO: do all the "non simply freeing" stuff in another function
    * that can have problem as input
    */
-  logger_bbob_data_t *logger = stuff;
+  logger_bbob_data_t *logger = (logger_bbob_data_t *) stuff;
 
   if ((coco_log_level >= COCO_DEBUG) && logger && logger->number_of_evaluations > 0) {
     coco_debug("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,
@@ -490,6 +440,17 @@ static void logger_bbob_free(void *stuff) {
     coco_free_memory(logger->best_solution);
     logger->best_solution = NULL;
   }
+
+  if (logger->targets != NULL){
+    coco_free_memory(logger->targets);
+    logger->targets = NULL;
+  }
+
+  if (logger->evaluations != NULL){
+    coco_observer_evaluations_free(logger->evaluations);
+    logger->evaluations = NULL;
+  }
+
   bbob_logger_is_open = 0;
 }
 
@@ -523,11 +484,6 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
     logger_bbob->optimal_fvalue = *(inner_problem->best_value);
   }
 
-  logger_bbob->idx_f_trigger = INT_MAX;
-  logger_bbob->idx_t_trigger = 0;
-  logger_bbob->idx_tdim_trigger = 0;
-  logger_bbob->f_trigger = DBL_MAX;
-  logger_bbob->t_trigger = 0;
   logger_bbob->number_of_evaluations = 0;
   logger_bbob->best_solution = coco_allocate_vector(inner_problem->number_of_variables);
   /* TODO: the following inits are just to be in the safe side and
@@ -540,7 +496,11 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   logger_bbob->last_fvalue = DBL_MAX;
   logger_bbob->is_initialized = 0;
 
-  problem = coco_problem_transformed_allocate(inner_problem, logger_bbob, logger_bbob_free);
+  /* Initialize triggers based on target values and number of evaluations */
+  logger_bbob->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
+  logger_bbob->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, inner_problem->number_of_variables);
+
+  problem = coco_problem_transformed_allocate(inner_problem, logger_bbob, logger_bbob_free, observer->observer_name);
 
   problem->evaluate_function = logger_bbob_evaluate;
   bbob_logger_is_open = 1;

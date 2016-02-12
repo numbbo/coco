@@ -27,7 +27,7 @@ static void transform_vars_permblockdiag_evaluate(coco_problem_t *problem, const
   transform_vars_permblockdiag_t *data;
   coco_problem_t *inner_problem;
   
-  data = coco_problem_transformed_get_data(problem);
+  data = (transform_vars_permblockdiag_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
   
   for (i = 0; i < inner_problem->number_of_variables; ++i) {
@@ -48,7 +48,7 @@ static void transform_vars_permblockdiag_evaluate(coco_problem_t *problem, const
 }
 
 static void transform_vars_permblockdiag_free(void *thing) {
-  transform_vars_permblockdiag_t *data = thing;
+  transform_vars_permblockdiag_t *data = (transform_vars_permblockdiag_t *) thing;
   coco_free_memory(data->B);
   coco_free_memory(data->P1);
   coco_free_memory(data->P2);
@@ -64,12 +64,12 @@ static void transform_vars_permblockdiag_free(void *thing) {
  * The matrix M is stored in row-major format.
  */
 static coco_problem_t *transform_vars_permblockdiag(coco_problem_t *inner_problem,
-                                                         const double *const *B,
-                                                         const size_t *P1,
-                                                         const size_t *P2,
-                                                         const size_t number_of_variables,
-                                                         const size_t *block_sizes,
-                                                         const size_t nb_blocks) {
+                                                    const double * const *B,
+                                                    const size_t *P1,
+                                                    const size_t *P2,
+                                                    const size_t number_of_variables,
+                                                    const size_t *block_sizes,
+                                                    const size_t nb_blocks) {
   coco_problem_t *problem;
   transform_vars_permblockdiag_t *data;
   size_t entries_in_M, idx_blocksize, next_bs_change, current_blocksize;
@@ -101,7 +101,7 @@ static coco_problem_t *transform_vars_permblockdiag(coco_problem_t *inner_proble
     data->first_non_zero_map[i] = next_bs_change - current_blocksize;/* next_bs_change serves also as a cumsum for blocksizes*/
   }
   
-  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_permblockdiag_free);
+  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_permblockdiag_free, "transform_vars_permblockdiag");
   problem->evaluate_function = transform_vars_permblockdiag_evaluate;
   return problem;
 }

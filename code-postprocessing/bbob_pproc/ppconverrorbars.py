@@ -65,7 +65,7 @@ def beautify():
     limits = plt.ylim()
     plt.ylim(max((limits[0], final_target)), limits[1])
 
-def main(dictAlg, outputdir='.', verbose=True):
+def main(dictAlg, isBiobjective, outputdir='.', verbose=True):
     """Main routine for generating convergence plots
 
     """
@@ -115,7 +115,8 @@ def main(dictAlg, outputdir='.', verbose=True):
     except KeyError:
         algname = str(dictFun[l].keys()[0])
     save_single_functions_html(os.path.join(outputdir, 'ppconv'),
-                               algname)  # first try
+                               algname,
+                               isBiobjective = isBiobjective)  # first try
     print("Convergence plots done.")
         
 if __name__ == "__main__":
