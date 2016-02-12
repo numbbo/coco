@@ -76,6 +76,8 @@ html_header = """<HTML>
 
 html_header_ext = html_header + """
 %s
+%s
+%s
 <H2 style="color:red"> %s </H2>
 """
 
@@ -127,11 +129,23 @@ def save_index_html_file(filename, algorithmList):
         f.write("\n</BODY>\n</HTML>")
 
 def getHomeLink(algorithmCount):
-    homeLink = '<H3><a href="%sindex.html">[Home]</a></H3>'    
+    homeLink = '<H3><a href="%s%s.html">[Home]</a></H3>'    
     if algorithmCount is AlgorithmCount.ONE:
-        return homeLink % '../'
+        return homeLink % ('../', genericsettings.index_html_file_name)
     elif algorithmCount is AlgorithmCount.TWO or algorithmCount is AlgorithmCount.MANY:
-        return homeLink % ''
+        return homeLink % ('', genericsettings.index_html_file_name)
+    
+    return ''
+
+def getConvLink(algorithmType):
+    if genericsettings.isConv and algorithmType is not AlgorithmCount.NON_SPECIFIED:
+        return '<H3><a href="%s.html">[Convergence plots]</a></H3>' % genericsettings.ppconv_file_name
+    
+    return ''
+
+def getParentLink(algorithmType, parentFileName):
+    if parentFileName and algorithmType is AlgorithmCount.NON_SPECIFIED:
+        return '<H3><a href="%s.html">[Other plots]</a></H3>' % parentFileName
     
     return ''
 
@@ -142,7 +156,8 @@ def save_single_functions_html(filename,
                                algorithmCount = AlgorithmCount.NON_SPECIFIED,
                                values_of_interest = [],
                                isBiobjective = False, 
-                               functionGroups = None):
+                               functionGroups = None,
+                               parentFileName = None): # used only with AlgorithmCount.NON_SPECIFIED
     
     name = filename.split(os.sep)[-1]
     with open(filename + add_to_names + '.html', 'w') as f:
@@ -151,6 +166,8 @@ def save_single_functions_html(filename,
         f.write(html_header_ext % (header_title.strip().replace(' ', ', '), 
                                    algname, 
                                    getHomeLink(algorithmCount),
+                                   getConvLink(algorithmCount),
+                                   getParentLink(algorithmCount, parentFileName),
                                    imageWarning))
             
         if functionGroups is None:
