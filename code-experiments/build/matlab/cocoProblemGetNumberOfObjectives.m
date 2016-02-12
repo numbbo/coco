@@ -1,15 +1,15 @@
-% Returns the problem of the suite defined by problem_index.
+% Returns the number of objectives of the given problem.
 %
 % Parameters:
-%   suite          The given suite.
-%   problem_index  The index of the problem to be returned.
+%   problem  The given problem.
+%
 %
 % Example usage:
 %
 %   >> suite_name = 'bbob-biobj'; % works for 'bbob' as well
 %   >> suite = cocoCall('cocoSuite', suite_name, 'year: 2016', 'dimensions: 2,3,5,10,20,40');
 %   >> problem = cocoCall('cocoSuiteGetProblem', suite, 10);
-%   >> cocoCall('cocoProblemGetDimension', problem)
+%   >> cocoCall('cocoProblemGetNumberOfObjectives', problem)
 %   ans = 2
 %   >> cocoCall('cocoEvaluateFunction', problem, [2, 10])
 %   ans =
