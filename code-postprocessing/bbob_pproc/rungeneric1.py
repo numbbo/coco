@@ -333,7 +333,11 @@ def main(argv=None):
             dsList.pickle(verbose=genericsettings.verbose)
 
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, dsList.isBiobjective(), outputdir, genericsettings.verbose)
+            ppconverrorbars.main(dictAlg, 
+                                 dsList.isBiobjective(),
+                                 outputdir, 
+                                 genericsettings.verbose,
+                                 genericsettings.single_algorithm_file_name)
 
         if genericsettings.isFig:
             print "Scaling figures...",

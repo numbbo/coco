@@ -211,7 +211,8 @@ rclegend = {"fontsize": 20}
 single_algorithm_file_name = 'templateBBOBarticle'
 two_algorithm_file_name = 'templateBBOBcmp'
 many_algorithm_file_name = 'templateBBOBmany'
-index_html_file_name = 'index'
+index_html_file_name = 'ppdata'
+ppconv_file_name = 'ppconv'
 
 latex_commands_for_html = 'latex_commands_for_html'    
 

@@ -462,7 +462,11 @@ def main(argv=None):
             print "ECDF runlength graphs done."
 
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, dsList[0].isBiobjective(), outputdir, genericsettings.verbose)
+            ppconverrorbars.main(dictAlg, 
+                                 dsList[0].isBiobjective(),
+                                 outputdir, 
+                                 genericsettings.verbose,
+                                 genericsettings.two_algorithm_file_name)
 
         if genericsettings.isScatter:
             if genericsettings.runlength_based_targets:

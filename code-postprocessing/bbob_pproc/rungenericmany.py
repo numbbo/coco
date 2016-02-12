@@ -317,8 +317,11 @@ def main(argv=None):
         
         # convergence plots
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, dsList[0].isBiobjective(), 
-                                 outputdir, genericsettings.verbose)
+            ppconverrorbars.main(dictAlg, 
+                                 dsList[0].isBiobjective(), 
+                                 outputdir, 
+                                 genericsettings.verbose,
+                                 genericsettings.many_algorithm_file_name)
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
             config.config(dsList[0].isBiobjective())
