@@ -44,14 +44,14 @@
 typedef struct {
   coco_observer_t *observer;
   int is_initialized;
-  FILE *index_file; /* index file */
-  FILE *fdata_file; /* function value aligned data file */
-  FILE *tdata_file; /* number of function evaluations aligned data file */
-  FILE *rdata_file; /* restart info data file */
+  FILE *index_file; /**< @brief index file */
+  FILE *fdata_file; /**< @brief function value aligned data file */
+  FILE *tdata_file; /**< @brief number of function evaluations aligned data file */
+  FILE *rdata_file; /**< @brief restart info data file */
   size_t number_of_evaluations;
   double best_fvalue;
   double last_fvalue;
-  short written_last_eval; /* allows writing the the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
+  short written_last_eval; /**< @brief allows writing the the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
   double *best_solution;
   /* The following are to only pass data as a parameter in the free function. The
    * interface should probably be the same for all free functions so passing the
@@ -76,7 +76,7 @@ static const char *bbob_file_header_str = "%% function evaluation | "
     "x2...\n";
 
 /**
- * adds a formated line to a data file
+ * @brief adds a formated line to a data file
  */
 static void logger_bbob_write_data(FILE *target_file,
                                    size_t number_of_evaluations,
@@ -84,16 +84,18 @@ static void logger_bbob_write_data(FILE *target_file,
                                    double best_fvalue,
                                    double best_value,
                                    const double *x,
-                                   size_t number_of_variables) {
-  /* for some reason, it's %.0f in the old code instead of the 10.9e
-   * in the documentation
-   */
-  fprintf(target_file, "%ld %+10.9e %+10.9e %+10.9e %+10.9e", number_of_evaluations, fvalue - best_value,
-      best_fvalue - best_value, fvalue, best_fvalue);
+                                   size_t number_of_variables,
+                                   const int precision_f,
+                                   const int precision_x) {
+
+/*  fprintf(target_file, "%ld %+10.9e %+10.9e %+10.9e %+10.9e", number_of_evaluations, fvalue - best_value,
+      best_fvalue - best_value, fvalue, best_fvalue);*/
+  fprintf(target_file, "%lu %.*e %.*e %.*e %.*e", number_of_evaluations, precision_f, fvalue - best_value,
+          precision_f, best_fvalue - best_value, precision_f, fvalue, precision_f, best_fvalue);
   if (number_of_variables < 22) {
     size_t i;
     for (i = 0; i < number_of_variables; i++) {
-      fprintf(target_file, " %+5.4e", x[i]);
+      fprintf(target_file, " %.*e", precision_x, x[i]);
     }
   }
   fprintf(target_file, "\n");
@@ -139,8 +141,8 @@ static void logger_bbob_open_dataFile(FILE **target_file,
 }
 
 /**
- * Creates the index file fileName_prefix+problem_id+file_extension in
- * folde_path
+ * @brief Creates the index file fileName_prefix+problem_id+file_extension in
+ *        folde_path
  */
 static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
                                       const char *folder_path,
@@ -233,9 +235,8 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
         }
         fclose(tmp_file);
       }
-
       fprintf(*target_file, "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s'\n",
-          (int) strtol(function_id, NULL, 10), logger->number_of_variables, pow(10, -8),
+          (int) strtol(function_id, NULL, 10), logger->number_of_variables, logger->observer->target_precision,
           logger->observer->algorithm_name);
       fprintf(*target_file, "%%\n");
       strncat(used_dataFile_path, "_i", COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
@@ -347,14 +348,14 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     if (coco_observer_targets_trigger(logger->targets, y[0] - logger->optimal_fvalue)) {
 
     logger_bbob_write_data(logger->fdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
-        logger->optimal_fvalue, x, problem->number_of_variables);
+        logger->optimal_fvalue, x, problem->number_of_variables, logger->observer->precision_f, logger->observer->precision_x);
   }
 
   /* Add a line in the .tdat file each time an fevals trigger is reached.*/
   if (coco_observer_evaluations_trigger(logger->evaluations, logger->number_of_evaluations)) {
     logger->written_last_eval = 1;
     logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
-        logger->optimal_fvalue, x, problem->number_of_variables);
+        logger->optimal_fvalue, x, problem->number_of_variables, logger->observer->precision_f, logger->observer->precision_x);
   }
 
   /* Flush output so that impatient users can see progress. */
@@ -362,31 +363,41 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
 }
 
 /**
- * Also serves as a finalize run method so. Must be called at the end
- * of Each run to correctly fill the index file
- *
- * TODO: make sure it is called at the end of each run or move the
- * writing into files to another function
+ * @brief Finalize function of the logger, writes final data to the index file
  */
-static void logger_bbob_free(void *stuff) {
-  /* TODO: do all the "non simply freeing" stuff in another function
-   * that can have problem as input
-   */
-  logger_bbob_data_t *logger = (logger_bbob_data_t *) stuff;
+static void logger_bbob_finalize(const logger_bbob_data_t *logger){
 
-  if (logger->observer->data != NULL) {
-    /*the observer data seems to be freed before the logger in the last run!*/
-      ((observer_bbob_data_t *) logger->observer->data)->logger_is_open = 0;
-  }
-
-  
   if ((coco_log_level >= COCO_DEBUG) && logger && logger->number_of_evaluations > 0) {
     coco_debug("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,
-        logger->number_of_evaluations);
+               logger->number_of_evaluations);
   }
+  /* log the final information of the run in the info file*/
+  fprintf(logger->index_file, ":%ld|%.1e", logger->number_of_evaluations,
+          logger->best_fvalue - logger->optimal_fvalue);
+
+  /* log the last evaluation (if not logged) in the *.tdata file*/
+  if (!logger->written_last_eval) {
+    logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, logger->last_fvalue,
+                           logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, logger->number_of_variables, logger->observer->precision_f, logger->observer->precision_x);
+  }
+
+  /* let the observer know that the logger is closed */
+  if (logger->observer->data != NULL) {
+    /*the observer data seems to be freed before the logger in the last run!*/
+    ((observer_bbob_data_t *) logger->observer->data)->logger_is_open = 0;
+  }
+}
+
+
+/**
+ * @brief calls the finalize functions then frees the logger
+ */
+static void logger_bbob_free(void *stuff) {
+
+  logger_bbob_data_t *logger = (logger_bbob_data_t *) stuff;
+
+  logger_bbob_finalize(logger);
   if (logger->index_file != NULL) {
-    fprintf(logger->index_file, ":%ld|%.1e", logger->number_of_evaluations,
-        logger->best_fvalue - logger->optimal_fvalue);
     fclose(logger->index_file);
     logger->index_file = NULL;
   }
@@ -400,10 +411,6 @@ static void logger_bbob_free(void *stuff) {
      * instance. Maybe start with forcing it to generate a new
      * "instance" of problem for each restart in the beginning
      */
-    if (!logger->written_last_eval) {
-      logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, logger->last_fvalue,
-          logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, logger->number_of_variables);
-    }
     fclose(logger->tdata_file);
     logger->tdata_file = NULL;
   }
@@ -443,16 +450,13 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   }
   if (((observer_bbob_data_t *) observer->data)->logger_is_open)
     coco_error("The current bbob_logger (observer) must be closed before a new one is opened");
-  /* This is the name of the folder which happens to be the algName */
-  /*logger->path = coco_strdup(observer->output_folder);*/
+
   logger_bbob->index_file = NULL;
   logger_bbob->fdata_file = NULL;
   logger_bbob->tdata_file = NULL;
   logger_bbob->rdata_file = NULL;
   logger_bbob->number_of_variables = inner_problem->number_of_variables;
   if (inner_problem->best_value == NULL) {
-    /* coco_error("Optimal f value must be defined for each problem in order for the logger to work properly"); */
-    /* Setting the value to 0 results in the assertion y>=optimal_fvalue being susceptible to failure */
     coco_warning("undefined optimal f value. Set to 0");
     logger_bbob->optimal_fvalue = 0;
   } else {
@@ -461,10 +465,6 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
 
   logger_bbob->number_of_evaluations = 0;
   logger_bbob->best_solution = coco_allocate_vector(inner_problem->number_of_variables);
-  /* TODO: the following inits are just to be in the safe side and
-   * should eventually be removed. Some fields of the bbob_logger struct
-   * might be useless
-   */
   logger_bbob->function_id = coco_problem_get_suite_dep_function(inner_problem);
   logger_bbob->instance_id = coco_problem_get_suite_dep_instance(inner_problem);
   logger_bbob->written_last_eval = 1;
