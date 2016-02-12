@@ -84,6 +84,26 @@ void cocoObserverFree(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
     coco_observer_free(observer);
 }
 
+void cocoProblemFinalTargetHit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    size_t *ref;
+    coco_problem_t *problem = NULL;
+    const mwSize dims[2] = {1, 1};  
+    size_t *res;
+
+    /* check for proper number of arguments */
+    if(nrhs!=1) {
+        mexErrMsgIdAndTxt("cocoProblemGetDimension:nrhs","One input required.");
+    }
+    /* get the problem */
+    ref = (size_t *)mxGetData(prhs[0]);
+    problem = (coco_problem_t *)(*ref);
+    /* prepare the return value */
+    plhs[0] = mxCreateNumericArray(2, dims, mxINT32_CLASS, mxREAL);
+    res = (size_t *)mxGetData(plhs[0]);
+    res[0] = coco_problem_final_target_hit(problem);
+}
+
 void cocoProblemFree(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     char *problem_suite;
@@ -411,6 +431,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoObserver(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoobserverfree") == 0) {
         cocoObserverFree(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoproblemfinaltargethit") == 0) {
+        cocoProblemFinalTargetHit(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemfree") == 0) {
         cocoProblemFree(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetdimension") == 0) {
@@ -427,7 +449,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoProblemGetNumberOfObjectives(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetsmallestvaluesofinterest") == 0) {
         cocoProblemGetSmallestValuesOfInterest(nlhs, plhs, nrhs-1, prhs+1);
-    } else if (strcmp(cocofunction, "cocoproblemgetsmallestvaluesofinterest") == 0) {
+    } else if (strcmp(cocofunction, "cocoproblemisvalid") == 0) {
         cocoProblemIsValid(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocosetloglevel") == 0) {
         cocoSetLogLevel(nlhs, plhs, nrhs-1, prhs+1);
