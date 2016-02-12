@@ -6,8 +6,8 @@ if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
 set BUILDDIR=build
-set HTMLBUILDDIR=../../../bbob-biobj-experiments-doc
-set PDF=bbob-biobj-experiments.pdf
+set HTMLBUILDDIR=../../../../coco-doc/experimental-setup
+set PDF=coco-experimental-setup.pdf
 set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% source
 set I18NSPHINXOPTS=%SPHINXOPTS% source
 if NOT "%PAPER%" == "" (
