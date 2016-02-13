@@ -1,3 +1,5 @@
+.. _sec-test-functions:
+
 ======================================================
 The ``bbob-biobj`` Test Functions and Their Properties
 ======================================================
