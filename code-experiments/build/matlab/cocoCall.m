@@ -26,6 +26,8 @@
 %       Returns the number of evaluations done on the problem.
 %   * cocoProblemGetId: problem
 %       Returns the ID of the problem. 
+%   * cocoProblemGetInitialSolution: problem
+%       Returns an initial solution (ie a feasible variable setting) to problem.
 %   * cocoProblemGetLargestValuesOfInterest: problem
 %       Returns a vector of size 'dimension' with upper bounds of the region
 %         of interest in the decision space for the given problem.
