@@ -93,7 +93,7 @@ void cocoProblemFinalTargetHit(int nlhs, mxArray *plhs[], int nrhs, const mxArra
 
     /* check for proper number of arguments */
     if(nrhs!=1) {
-        mexErrMsgIdAndTxt("cocoProblemGetDimension:nrhs","One input required.");
+        mexErrMsgIdAndTxt("cocoProblemFinalTargetHit:nrhs","One input required.");
     }
     /* get the problem */
     ref = (size_t *)mxGetData(prhs[0]);
@@ -178,6 +178,31 @@ void cocoProblemGetId(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
     res = coco_problem_get_id(pb);
     /* prepare the return value */
     plhs[0] = mxCreateString(res);
+}
+
+void cocoProblemGetInitialSolution(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    size_t *ref;
+    coco_problem_t *problem = NULL;
+    size_t nb_dim;
+    const double *res;
+    int i;
+    double *v; /* intermediate variable that allows to set plhs[0] */
+
+    /* check for proper number of arguments */
+    if(nrhs!=1) {
+        mexErrMsgIdAndTxt("cocoProblemGetInitialSolution:nrhs","One input required.");
+    }
+    /* get the problem */
+    ref = (size_t *)mxGetData(prhs[0]);
+    problem = (coco_problem_t *)(*ref);
+    
+    nb_dim = coco_problem_get_dimension(problem);
+    plhs[0] = mxCreateDoubleMatrix(1, nb_dim, mxREAL);
+    v = mxGetPr(plhs[0]);
+    /* call coco_problem_get_largest_values_of_interest(...) */
+    coco_problem_get_initial_solution(problem, v);
+    printf("%e", v[0]);
 }
 
 void cocoProblemGetLargestValuesOfInterest(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -441,6 +466,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoProblemGetEvaluations(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetid") == 0) {
         cocoProblemGetId(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoproblemgetinitialsolution") == 0) {
+        cocoProblemGetInitialSolution(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetlargestvaluesofinterest") == 0) {
         cocoProblemGetLargestValuesOfInterest(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetname") == 0) {
