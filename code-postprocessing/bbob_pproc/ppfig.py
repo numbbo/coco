@@ -12,7 +12,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import shutil
 # from pdb import set_trace
-from . import genericsettings, toolsstats, htmldesc  # absolute_import => . refers to where ppfig resides in the package
+from . import genericsettings, toolsstats, htmldesc, findfiles  # absolute_import => . refers to where ppfig resides in the package
 
 
 bbox_inches_choices = {  # do we also need pad_inches = 0?
@@ -115,16 +115,16 @@ def save_index_html_file(filename, algorithmList):
             
         f.write('<H2>Single algorithm data</H2>\n')
         for algorithm in algorithmList:
-            algName = algorithm.split(os.sep)[-1]         
-            link = '%s/templateBBOBarticle.html' % algName
-            f.write('<H3>&nbsp;<a href="%s">%s</a></H3>\n' % (link, algName))
+            algfolder = findfiles.get_output_directory_subfolder(algorithm)
+            link = '%s/templateBBOBarticle.html' % algfolder
+            f.write('<H3>&nbsp;<a href="%s">%s</a></H3>\n' % (link, algfolder))
         
         if (len(algorithmList) >= 2):
             f.write('<H2>Comparison data</H2>\n')
             if (len(algorithmList) == 2):
-                f.write('<H3><a href="templateBBOBcmp.html">&nbsp;Two algorithm comparison</a></H3>\n')
+                f.write('<H3>&nbsp;<a href="templateBBOBcmp.html">Two algorithm comparison</a></H3>\n')
             else:
-                f.write('<H3><a href="templateBBOBmany.html">&nbsp;Many algorithm comparison</a></H3>\n')
+                f.write('<H3>&nbsp;<a href="templateBBOBmany.html">Many algorithm comparison</a></H3>\n')
 
         f.write("\n</BODY>\n</HTML>")
 
