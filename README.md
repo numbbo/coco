@@ -1,15 +1,18 @@
 numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
-This code reimplements the original Comparing Continous Optimizer platform, now 
-rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
+[This code](https://github.com/numbbo/coco) reimplements the original Comparing Continous Optimizer platform, 
+now rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
 the code provides a platform to benchmark and compare continuous optimizers, AKA non-linear 
 solvers for numerical optimization. Languages currently available are `C/C++`, `Java`, 
 `MATLAB/Octave`, and `Python`. Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
-See the [workshops page](http://numbbo.github.io/workshops), the [previous COCO home page](http://coco.gforge.inria.fr/) 
-and [further links below](#Further-Links) to learn more about the ideas behind CoCO.
+For more information, 
+- consult the [BBOB workshops series](http://numbbo.github.io/workshops),
+- consider to [register here](http://numbbo.github.io/register) for news, 
+- see the [previous COCO home page here](http://coco.gforge.inria.fr/) and 
+- see the [links below](#Links) to learn more about the ideas behind CoCO.
 
 Requirements  <a name="Requirements"></a>
 ------------
@@ -412,8 +415,8 @@ Details
   Windows 7 machine with cygwin.
 
 
-Further Links and Documentation <a name="Further-Links"></a>
--------------------------------
+Links and Documentation <a name="Links"></a>
+-----------------------
 * The [_BBOB workshop series_](http://numbbo.github.io/workshops), which uses the
   NumBBO/Coco framework extensively, can be tracked at 
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
@@ -422,7 +425,7 @@ Further Links and Documentation <a name="Further-Links"></a>
 * More detailed documentation of the existing benchmark suites can be found here:
   - for the **`BBOB`** problem suite at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
-  - for the **`bbob-biobj`** problem suite at http://numbbo.github.io/bbob-biobj-functions-doc
+  - for the **`bbob-biobj`** problem suite at http://numbbo.github.io/coco-doc/bbob-biobj/functions
 * Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
   http://numbbo.github.io/coco-doc/C
 * Downloading this repository 
