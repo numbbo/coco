@@ -148,11 +148,11 @@ def main(argv=None):
             omit calling :py:func:`bbob_pproc.rungeneric1.main`, if
             more than one data path argument is provided. 
 
-        --rld-single-fcts
+        --no-rld-single-fcts
 
-            generate also runlength distribution figures for each
-            single function. Works only if more than two algorithms are given. 
-            These figures are not (yet) used in the LaTeX templates. 
+            do not generate runlength distribution figures for each
+            single function. These figures are not (yet) used 
+            in the LaTeX templates. 
 
         --input-path=INPUTPATH
 
@@ -164,9 +164,9 @@ def main(argv=None):
             takes values between 0 (default) and 1000, fast processing that 
             does not write eps files and uses a small number of bootstrap samples
 
-        --svg
+        --no-svg
 
-            generate also the svg figures which are used in html files
+            do not generate the svg figures which are used in html files
 
     Exceptions raised:
 
@@ -232,8 +232,8 @@ def main(argv=None):
                     print 'in_a_hurry like', genericsettings.in_a_hurry, '(should finally be set to zero)'
             elif o in ("--input-path", ):
                 inputdir = a
-            elif o in ("--svg"):
-                genericsettings.generate_svg_files = True
+            elif o in ("--no-svg"):
+                genericsettings.generate_svg_files = False
             else:
                 isAssigned = False
                 if o in longoptlist or o in shortoptlist:
