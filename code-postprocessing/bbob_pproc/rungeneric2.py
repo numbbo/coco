@@ -458,7 +458,8 @@ def main(argv=None):
                                                dsList[0].isBiobjective(),
                                                sortedAlgs,
                                                outputdir, 
-                                               genericsettings.verbose)
+                                               genericsettings.verbose,
+                                               genericsettings.two_algorithm_file_name)
             print "ECDF runlength graphs done."
 
         if genericsettings.isConv:

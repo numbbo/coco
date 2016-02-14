@@ -357,7 +357,8 @@ def main(argv=None):
                                                    dsList[0].isBiobjective(),
                                                    sortedAlgs,
                                                    outputdir, 
-                                                   genericsettings.verbose)
+                                                   genericsettings.verbose,
+                                                   genericsettings.many_algorithm_file_name)
                 else:  # subject to removal
                     dictFG = pproc.dictAlgByFun(dictAlg)
                     for fg, tmpdictAlg in dictFG.iteritems():

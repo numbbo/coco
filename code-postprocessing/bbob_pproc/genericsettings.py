@@ -213,6 +213,7 @@ two_algorithm_file_name = 'templateBBOBcmp'
 many_algorithm_file_name = 'templateBBOBmany'
 index_html_file_name = 'ppdata'
 ppconv_file_name = 'ppconv'
+pprldmany_file_name = 'pprldmany'
 
 latex_commands_for_html = 'latex_commands_for_html'    
 

@@ -414,7 +414,8 @@ def main(argv=None):
                                                dsList.isBiobjective(),
                                                None,
                                                outputdir,
-                                               genericsettings.verbose)
+                                               genericsettings.verbose,
+                                               genericsettings.single_algorithm_file_name)
             print_done()
 
         if genericsettings.isLogLoss:

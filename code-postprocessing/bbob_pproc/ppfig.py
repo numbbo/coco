@@ -78,6 +78,7 @@ html_header_ext = html_header + """
 %s
 %s
 %s
+%s
 <H2 style="color:red"> %s </H2>
 """
 
@@ -142,6 +143,12 @@ def getConvLink(algorithmType):
         return '<H3><a href="%s.html">[Convergence plots]</a></H3>' % genericsettings.ppconv_file_name
     
     return ''
+    
+def getRldLink(algorithmType):
+    if genericsettings.isRldOnSingleFcts and algorithmType is not AlgorithmCount.NON_SPECIFIED:
+        return '<H3><a href="pprldmany-single-functions/%s_02D.html">[Runlength distribution plots]</a></H3>' % genericsettings.pprldmany_file_name
+    
+    return ''
 
 def getParentLink(algorithmType, parentFileName):
     if parentFileName and algorithmType is AlgorithmCount.NON_SPECIFIED:
@@ -167,6 +174,7 @@ def save_single_functions_html(filename,
                                    algname, 
                                    getHomeLink(algorithmCount),
                                    getConvLink(algorithmCount),
+                                   getRldLink(algorithmCount),
                                    getParentLink(algorithmCount, parentFileName),
                                    imageWarning))
             
