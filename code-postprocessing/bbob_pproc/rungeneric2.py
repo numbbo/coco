@@ -115,8 +115,8 @@ def main(argv=None):
         --conv 
             if this option is chosen, additionally convergence
             plots for each function and algorithm are generated.
-        --rld-single-fcts
-            generate also runlength distribution figures for each
+        --no-rld-single-fcts
+            do not generate runlength distribution figures for each
             single function.
         --expensive
             runlength-based f-target values and fixed display limits,
@@ -203,8 +203,8 @@ def main(argv=None):
                 genericsettings.inputsettings = a
             elif o == "--conv":
                 genericsettings.isConv = True
-            elif o == "--rld-single-fcts":
-                genericsettings.isRldOnSingleFcts = True
+            elif o == "--no-rld-single-fcts":
+                genericsettings.isRldOnSingleFcts = False
             elif o == "--runlength-based":
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":

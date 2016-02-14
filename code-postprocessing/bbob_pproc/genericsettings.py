@@ -229,7 +229,7 @@ verbose = False
 outputdir = 'ppdata'
 inputsettings = 'color'
 isExpensive = False 
-isRldOnSingleFcts = False
+isRldOnSingleFcts = True
 isRLDistr = True
 ##
 isLogLoss = True # only affects rungeneric1
@@ -241,7 +241,7 @@ isScaleUp = True # only affects rungeneric2, only set here and not altered by an
 # Used by getopt:
 shortoptlist = "hvpo:"    
 longoptlist = ["help", "output-dir=", "noisy", "noise-free",
-               "tab-only", "fig-only", "rld-only", "rld-single-fcts",
+               "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
                "verbose", "settings=", "conv", 
                "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
