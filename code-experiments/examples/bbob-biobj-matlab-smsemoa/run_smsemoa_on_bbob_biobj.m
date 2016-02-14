@@ -51,7 +51,7 @@ while true
         i = i+1;
         if (i > 0)
             fprintf('INFO: algorithm restarted');
-        endif
+        end
         doneEvalsBefore = cocoCall('cocoProblemGetEvaluations', problem);
         
         % start algorithm with remaining number of function evaluations:
@@ -64,18 +64,18 @@ while true
         doneEvalsAfter = cocoCall('cocoProblemGetEvaluations', problem);
         if (cocoCall('cocoProblemFinalTargetHit', problem) == 1) || (doneEvalsAfter >= BUDGET_MULTIPLIER * dimension)
             break;
-        endif
+        end
         if (doneEvalsAfter == doneEvalsBefore)
             fprintf('WARNING: Budget has not been exhausted (%d/%d evaluations done)!\n', ....
                     doneEvalsBefore, BUDGET_MULTIPLIER * dimension);
             break;
-        endif
+        end
         if (doneEvalsAfter < doneEvalsBefore)
             fprintf('ERROR: Something weird happened here which should not happen: f-evaluations decreased');
-        endif
+        end
         if (i >= NUM_OF_INDEPENDENT_RESTARTS)
             break;
-        endif
+        end
     end
 end
 
