@@ -116,8 +116,8 @@ def main(argv=None):
         --expensive
             runlength-based f-target values and fixed display limits,
             useful with comparatively small budgets.
-        --svg
-            generate also the svg figures which are used in html files 
+        --no-svg
+            do not generate the svg figures which are used in html files
         --runlength-based
             runlength-based f-target values, such that the
             "level of difficulty" is similar for all functions. 
@@ -231,8 +231,8 @@ def main(argv=None):
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 genericsettings.isExpensive = True  # comprises runlength-based
-            elif o == "--svg":
-                genericsettings.generate_svg_files = True
+            elif o == "--no-svg":
+                genericsettings.generate_svg_files = False
             elif o == "--sca-only":
                 warnings.warn("option --sca-only will have no effect with rungeneric1.py")
             else:
