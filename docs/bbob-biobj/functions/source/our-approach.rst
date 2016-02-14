@@ -51,6 +51,25 @@ TODO: why we chose those 10 functions we chose? --> 2 per function
 group
 
 TODO: mention already here all ten single-objective functions 
+The final choice for the ``bbob-biobj`` suite includes the following
+10 single-objective ``bbob`` functions, given with respect to their
+``bbob`` function group:
+
+* Separable functions
+  - Sphere (:math:`f_1` in ``bbob`` suite)
+  - Ellipsoid separable (:math:`f_2` in ``bbob`` suite)
+* Functions with low or moderate conditioning 
+  - Attractive sector (:math:`f_6` in ``bbob`` suite)
+  - Rosenbrock original (:math:`f_8` in ``bbob`` suite)
+* Functions with high conditioning and unimodal 
+  - Sharp ridge (:math:`f_{13}` in ``bbob`` suite)
+  - Sum of different powers (:math:`f_{14}` in ``bbob`` suite)
+* Multi-modal functions with adequate global structure 
+  - Rastrigin (:math:`f_{15}` in ``bbob`` suite)
+  - Schaffer F7, condition 10 (:math:`f_{17}` in ``bbob`` suite)
+* Multi-modal functions with weak global structure 
+  - Schwefel x*sin(x) (:math:`f_{20}` in ``bbob`` suite)
+  - Gallagher 101 peaks (:math:`f_{21}` in ``bbob`` suite)
 
 
 Normalization, Ideal and Nadir Point
