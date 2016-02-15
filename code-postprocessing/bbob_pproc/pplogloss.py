@@ -521,6 +521,10 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
 
     """
 
+    # Currently we do not have a good best algorithm for the bi-objective case.
+    if dsList.isBiobjective():
+        return
+
     #Set variables
     prcOfInterest = [0, 10, 25, 50, 75, 90]
     for d, dsdim in dsList.dictByDim().iteritems():
@@ -786,6 +790,10 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
     #plt.rc("font", size=20)
     #plt.rc("legend", fontsize=20)
 
+    # Currently we do not have a good best algorithm for the bi-objective case.
+    if dsList.isBiobjective():
+        return
+    
     if isStoringXRange:
         global evalf
     else:
