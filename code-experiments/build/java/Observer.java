@@ -5,7 +5,8 @@ public class Observer {
 
 	/** 
 	 * Constructs the observer from observerName and observerOptions.
-	 * TODO: Copy explanation of options from the C code. 
+	 * See http://numbbo.github.io/coco-doc/C/#observer-parameters for more information on 
+	 * valid observer parameters.
 	 * @param observerName
 	 * @param observerOptions
 	 * @throws Exception
