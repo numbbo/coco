@@ -25,7 +25,7 @@ in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
-generate_svg_files = False # generate the svg figures
+generate_svg_files = True # generate the svg figures
 scaling_figures_with_boxes = True 
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
@@ -71,7 +71,7 @@ instancesOfInterest2015 = {1:1, 2:1, 3:1, 4:1, 5:1, 41:1, 42:1, 43:1, 44:1,
                        45:1, 46:1, 47:1, 48:1, 49:1, 50:1}  # 2015 instances
 instancesOfInterest2016 = {1:1, 2:1, 3:1, 4:1, 5:1, 51:1, 52:1, 53:1, 54:1,
                        55:1, 56:1, 57:1, 58:1, 59:1, 60:1}  # 2016 instances
-instancesOfInterestBiobj2016 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1}  # bi-objective 2016 instances
+instancesOfInterestBiobj2016 = {1:1, 2:1, 3:1, 4:1, 5:1}  # bi-objective 2016 instances
 instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 41:1, 42:1, 43:1, 44:1,
                        45:1, 46:1, 47:1, 48:1, 49:1, 50:1}  # 2015 instances; only for consistency checking
 
@@ -211,6 +211,9 @@ rclegend = {"fontsize": 20}
 single_algorithm_file_name = 'templateBBOBarticle'
 two_algorithm_file_name = 'templateBBOBcmp'
 many_algorithm_file_name = 'templateBBOBmany'
+index_html_file_name = 'ppdata'
+ppconv_file_name = 'ppconv'
+pprldmany_file_name = 'pprldmany'
 
 latex_commands_for_html = 'latex_commands_for_html'    
 
@@ -227,7 +230,7 @@ verbose = False
 outputdir = 'ppdata'
 inputsettings = 'color'
 isExpensive = False 
-isRldOnSingleFcts = False
+isRldOnSingleFcts = True
 isRLDistr = True
 ##
 isLogLoss = True # only affects rungeneric1
@@ -239,11 +242,11 @@ isScaleUp = True # only affects rungeneric2, only set here and not altered by an
 # Used by getopt:
 shortoptlist = "hvpo:"    
 longoptlist = ["help", "output-dir=", "noisy", "noise-free",
-               "tab-only", "fig-only", "rld-only", "rld-single-fcts",
+               "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
                "verbose", "settings=", "conv", 
                "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
-               "sca-only", "svg"]
+               "sca-only", "no-svg"]
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
 # and "sca-only" only affects rungeneric2
 

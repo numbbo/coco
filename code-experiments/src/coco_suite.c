@@ -175,11 +175,12 @@ static void coco_suite_set_instance(coco_suite_t *suite,
 }
 
 /**
- * @brief Filters the given items w.r.t. the given indices (starting from 0).
+ * @brief Filters the given items w.r.t. the given indices (starting from 1).
  *
- * Sets items[i] to 0 for every i that cannot be found in indices.
+ * Sets items[i - 1] to 0 for every i that cannot be found in indices (this function performs the conversion
+ * from user-friendly indices starting from 1 to C-friendly indices starting from 0).
  */
-static void coco_suite_filter_idx(size_t *items, const size_t number_of_items, const size_t *indices, const char *name) {
+static void coco_suite_filter_indices(size_t *items, const size_t number_of_items, const size_t *indices, const char *name) {
 
   size_t i, j;
   size_t count = coco_count_numbers(indices, COCO_MAX_INSTANCES, name);
@@ -487,7 +488,7 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * Currently, four suites are supported:
  * - "bbob" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
- * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/bbob-biobj-functions-doc">bi-objective
+ * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective
  * functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-largescale" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 large dimensions (40, 80, 160, 320, 640, 1280)
@@ -509,9 +510,11 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * parallelizing the experiments). Supported options:
  * - "dimensions: LIST", where LIST is the list of dimensions to keep in the suite (range-style syntax is
  * not allowed here),
- * - "function_idx: VALUES", where VALUES is a list or a range of function indexes (starting from 1) to keep
+ * - "dimension_indices: VALUES", where VALUES is a list or a range of dimension indices (starting from 1) to keep
  * in the suite, and
- * - "instance_idx: VALUES", where VALUES is a list or a range of instance indexes (starting from 1) to keep
+ * - "function_indices: VALUES", where VALUES is a list or a range of function indices (starting from 1) to keep
+ * in the suite, and
+ * - "instance_indices: VALUES", where VALUES is a list or a range of instance indices (starting from 1) to keep
  * in the suite.
  *
  * @return The constructed suite object.
@@ -530,7 +533,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
   coco_option_keys_t *known_option_keys, *given_option_keys, *redundant_option_keys;
 
   /* Sets the valid keys for suite options and suite instance */
-  const char *known_keys_o[] = { "dimensions", "function_idx", "instance_idx" };
+  const char *known_keys_o[] = { "dimensions", "dimension_indices", "function_indices", "instance_indices" };
   const char *known_keys_i[] = { "year", "instances" };
 
   /* Initialize the suite */
@@ -576,46 +579,46 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
   /* Apply filter if any given by the suite_options */
   if ((suite_options) && (strlen(suite_options) > 0)) {
     option_string = coco_allocate_string(COCO_PATH_MAX);
-    if (coco_options_read_values(suite_options, "function_idx", option_string) > 0) {
-      indices = coco_string_parse_ranges(option_string, 1, suite->number_of_functions, "function_idx", COCO_MAX_INSTANCES);
+    if (coco_options_read_values(suite_options, "function_indices", option_string) > 0) {
+      indices = coco_string_parse_ranges(option_string, 1, suite->number_of_functions, "function_indices", COCO_MAX_INSTANCES);
       if (indices != NULL) {
-        coco_suite_filter_idx(suite->functions, suite->number_of_functions, indices, "function_idx");
+        coco_suite_filter_indices(suite->functions, suite->number_of_functions, indices, "function_indices");
         coco_free_memory(indices);
       }
     }
     coco_free_memory(option_string);
 
     option_string = coco_allocate_string(COCO_PATH_MAX);
-    if (coco_options_read_values(suite_options, "instance_idx", option_string) > 0) {
-      indices = coco_string_parse_ranges(option_string, 1, suite->number_of_instances, "instance_idx", COCO_MAX_INSTANCES);
+    if (coco_options_read_values(suite_options, "instance_indices", option_string) > 0) {
+      indices = coco_string_parse_ranges(option_string, 1, suite->number_of_instances, "instance_indices", COCO_MAX_INSTANCES);
       if (indices != NULL) {
-        coco_suite_filter_idx(suite->instances, suite->number_of_instances, indices, "instance_idx");
+        coco_suite_filter_indices(suite->instances, suite->number_of_instances, indices, "instance_indices");
         coco_free_memory(indices);
       }
     }
     coco_free_memory(option_string);
 
     dim_found = coco_strfind(suite_options, "dimensions");
-    dim_idx_found = coco_strfind(suite_options, "dimension_idx");
+    dim_idx_found = coco_strfind(suite_options, "dimension_indices");
 
     if ((dim_found > 0) && (dim_idx_found > 0)) {
       if (dim_found < dim_idx_found) {
         parce_dim_idx = 0;
-        coco_warning("coco_suite(): 'dimension_idx' suite option ignored because it follows 'dimensions'");
+        coco_warning("coco_suite(): 'dimension_indices' suite option ignored because it follows 'dimensions'");
       }
       else {
         parce_dim = 0;
-        coco_warning("coco_suite(): 'dimensions' suite option ignored because it follows 'dimension_idx'");
+        coco_warning("coco_suite(): 'dimensions' suite option ignored because it follows 'dimension_indices'");
       }
     }
 
     option_string = coco_allocate_string(COCO_PATH_MAX);
     if ((dim_idx_found >= 0) && (parce_dim_idx == 1)
-        && (coco_options_read_values(suite_options, "dimension_idx", option_string) > 0)) {
-      indices = coco_string_parse_ranges(option_string, 1, suite->number_of_dimensions, "dimension_idx",
+        && (coco_options_read_values(suite_options, "dimension_indices", option_string) > 0)) {
+      indices = coco_string_parse_ranges(option_string, 1, suite->number_of_dimensions, "dimension_indices",
           COCO_MAX_INSTANCES);
       if (indices != NULL) {
-        coco_suite_filter_idx(suite->dimensions, suite->number_of_dimensions, indices, "dimension_idx");
+        coco_suite_filter_indices(suite->dimensions, suite->number_of_dimensions, indices, "dimension_indices");
         coco_free_memory(indices);
       }
     }

@@ -197,7 +197,7 @@ size_t coco_suite_get_instance_from_instance_index(const coco_suite_t *suite, co
 /**@{*/
 /**
  * @brief Computes the index of the problem in the suite that corresponds to the given function, dimension
- * and instance indexes.
+ * and instance indices.
  */
 size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
                                        const size_t function_idx,
@@ -408,6 +408,16 @@ void coco_warning(const char *message, ...);
  * @brief Outputs some information.
  */
 void coco_info(const char *message, ...);
+
+/**
+ * @brief Prints only the given message without any prefix and new line.
+ *
+ * A function similar to coco_info but producing no additional text than
+ * the given message.
+ *
+ * The output is only produced if coco_log_level >= COCO_INFO.
+ */
+void coco_info_partial(const char *message, ...);
 
 /**
  * @brief Outputs detailed information usually used for debugging.

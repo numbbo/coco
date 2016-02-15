@@ -34,8 +34,8 @@ static void transform_vars_brs_evaluate(coco_problem_t *problem, const double *x
      * sqrt(10)^((i-1)/(D-1)) just like the legacy code.
      */
     factor = pow(sqrt(10.0), (double) (long) i / ((double) (long) problem->number_of_variables - 1.0));
-    /* Documentation specifies odd indexes and starts indexing
-     * from 1, we use all even indexes since C starts indexing
+    /* Documentation specifies odd indices and starts indexing
+     * from 1, we use all even indices since C starts indexing
      * with 0.
      */
     if (x[i] > 0.0 && i % 2 == 0) {

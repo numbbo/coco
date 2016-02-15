@@ -12,7 +12,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import shutil
 # from pdb import set_trace
-from . import genericsettings, toolsstats, htmldesc  # absolute_import => . refers to where ppfig resides in the package
+from . import genericsettings, toolsstats, htmldesc, findfiles  # absolute_import => . refers to where ppfig resides in the package
 
 
 bbox_inches_choices = {  # do we also need pad_inches = 0?
@@ -72,6 +72,13 @@ html_header = """<HTML>
 <BODY>
 <H1> %s
 </H1>
+"""
+
+html_header_ext = html_header + """
+%s
+%s
+%s
+%s
 <H2 style="color:red"> %s </H2>
 """
 
@@ -102,14 +109,74 @@ def addImage(imageName, addLink):
     else:
         return '<IMG SRC="%s">' % imageName
 
-def save_single_functions_html(filename, algname='', extension='svg',
-                               add_to_names = '', algorithmCount = AlgorithmCount.NON_SPECIFIED,
-                               values_of_interest = [], isBiobjective = False, functionGroups = None):
+def save_index_html_file(filename, algorithmList):
+
+    with open(filename + '.html', 'w') as f:
+        f.write(html_header % ('Post processing results', 'Post processing results'))
+            
+        f.write('<H2>Single algorithm data</H2>\n')
+        for algorithm in algorithmList:
+            algfolder = findfiles.get_output_directory_subfolder(algorithm)
+            link = '%s/templateBBOBarticle.html' % algfolder
+            f.write('<H3>&nbsp;<a href="%s">%s</a></H3>\n' % (link, algfolder))
+        
+        if (len(algorithmList) >= 2):
+            f.write('<H2>Comparison data</H2>\n')
+            if (len(algorithmList) == 2):
+                f.write('<H3>&nbsp;<a href="templateBBOBcmp.html">Two algorithm comparison</a></H3>\n')
+            else:
+                f.write('<H3>&nbsp;<a href="templateBBOBmany.html">Many algorithm comparison</a></H3>\n')
+
+        f.write("\n</BODY>\n</HTML>")
+
+def getHomeLink(algorithmCount):
+    homeLink = '<H3><a href="%s%s.html">[Home]</a></H3>'    
+    if algorithmCount is AlgorithmCount.ONE:
+        return homeLink % ('../', genericsettings.index_html_file_name)
+    elif algorithmCount is AlgorithmCount.TWO or algorithmCount is AlgorithmCount.MANY:
+        return homeLink % ('', genericsettings.index_html_file_name)
+    
+    return ''
+
+def getConvLink(algorithmType):
+    if genericsettings.isConv and algorithmType is not AlgorithmCount.NON_SPECIFIED:
+        return '<H3><a href="%s.html">[Convergence plots]</a></H3>' % genericsettings.ppconv_file_name
+    
+    return ''
+    
+def getRldLink(algorithmType):
+    if genericsettings.isRldOnSingleFcts and algorithmType is not AlgorithmCount.NON_SPECIFIED:
+        return '<H3><a href="pprldmany-single-functions/%s_02D.html">[Runlength distribution plots]</a></H3>' % genericsettings.pprldmany_file_name
+    
+    return ''
+
+def getParentLink(algorithmType, parentFileName):
+    if parentFileName and algorithmType is AlgorithmCount.NON_SPECIFIED:
+        return '<H3><a href="%s.html">[Other plots]</a></H3>' % parentFileName
+    
+    return ''
+
+def save_single_functions_html(filename, 
+                               algname='', 
+                               extension='svg',
+                               add_to_names = '', 
+                               algorithmCount = AlgorithmCount.NON_SPECIFIED,
+                               values_of_interest = [],
+                               isBiobjective = False, 
+                               functionGroups = None,
+                               parentFileName = None): # used only with AlgorithmCount.NON_SPECIFIED
+    
     name = filename.split(os.sep)[-1]
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ' ' + name + add_to_names
         imageWarning = '' if extension in genericsettings.getFigFormats() else 'For generating figures use the --svg option.'
-        f.write(html_header % (header_title.strip().replace(' ', ', '), algname, imageWarning))
+        f.write(html_header_ext % (header_title.strip().replace(' ', ', '), 
+                                   algname, 
+                                   getHomeLink(algorithmCount),
+                                   getConvLink(algorithmCount),
+                                   getRldLink(algorithmCount),
+                                   getParentLink(algorithmCount, parentFileName),
+                                   imageWarning))
             
         if functionGroups is None:
             functionGroups = OrderedDict([])
@@ -119,6 +186,8 @@ def save_single_functions_html(filename, algname='', extension='svg',
         maxFunctionIndex = 55 if isBiobjective else 24
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
         addLinkForNextDim = add_to_names.endswith('D')
+        bestAlgExists = not isBiobjective
+        
         if algorithmCount is AlgorithmCount.ONE:
             headerERT = 'Expected number of <i>f</i>-evaluations to reach target'
             f.write("<H2> %s </H2>\n" % headerERT)
@@ -207,7 +276,10 @@ def save_single_functions_html(filename, algname='', extension='svg',
             key = 'bbobpprldistrlegendtworlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendtwofixed'
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
-            headerERT = 'Table showing the ERT in number of function evaluations divided by the best ERT measured during BBOB-2009'
+            headerERT = 'Table showing the ERT in number of function evaluations'
+            if bestAlgExists:
+                headerERT += ' divided by the best ERT measured during BBOB-2009'
+                
             f.write("\n<H2> %s </H2>\n" % headerERT)
             f.write("\n<!--pptable2Html-->\n")
             f.write(captionStringFormat % '##bbobpptablestwolegend##')
@@ -228,8 +300,8 @@ def save_single_functions_html(filename, algname='', extension='svg',
             write_ECDF(f, 5, extension, captionStringFormat, functionGroups)
             write_ECDF(f, 20, extension, captionStringFormat, functionGroups)
                 
-            write_pptables(f, 5, captionStringFormat, maxFunctionIndex)
-            write_pptables(f, 20, captionStringFormat, maxFunctionIndex)
+            write_pptables(f, 5, captionStringFormat, maxFunctionIndex, bestAlgExists)
+            write_pptables(f, 20, captionStringFormat, maxFunctionIndex, bestAlgExists)
 
         elif algorithmCount is AlgorithmCount.NON_SPECIFIED:
             headerERT = 'Scaling of ERT with dimension'
@@ -258,11 +330,12 @@ def write_ECDF(f, dimension, extension, captionStringFormat, functionGroups):
     
     f.write(captionStringFormat % ('\n##bbobECDFslegend%d##' % dimension))
 
-def write_pptables(f, dimension, captionStringFormat, maxFunctionIndex):
+def write_pptables(f, dimension, captionStringFormat, maxFunctionIndex, bestAlgExists):
     """Writes line for pptables images."""
 
-    headerERT = 'Table showing the ERT in number of function evaluations divided by' \
-                'the best ERT measured during BBOB-2009 for dimension %d' % dimension
+    additionalText = 'divided by the best ERT measured during BBOB-2009' if bestAlgExists else ''
+    headerERT = 'Table showing the ERT in number of function evaluations %s ' \
+                'for dimension %d' % (additionalText, dimension)
     
     f.write("\n<H2> %s </H2>\n" % headerERT)
     for ifun in range(1, maxFunctionIndex + 1):

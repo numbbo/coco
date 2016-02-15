@@ -110,14 +110,14 @@ def main(argv=None):
         --conv
             if this option is chosen, additionally convergence plots
             for each function and algorithm are generated.
-        --rld-single-fcts
-            generate also runlength distribution figures for each
+        --no-rld-single-fcts
+            do not generate runlength distribution figures for each
             single function.
         --expensive
             runlength-based f-target values and fixed display limits,
             useful with comparatively small budgets.
-        --svg
-            generate also the svg figures which are used in html files 
+        --no-svg
+            do not generate the svg figures which are used in html files
         --runlength-based
             runlength-based f-target values, such that the
             "level of difficulty" is similar for all functions. 
@@ -225,14 +225,14 @@ def main(argv=None):
                 genericsettings.inputsettings = a
             elif o == "--conv":
                 genericsettings.isConv = True
-            elif o == "--rld-single-fcts":
-                genericsettings.isRldOnSingleFcts = True
+            elif o == "--no-rld-single-fcts":
+                genericsettings.isRldOnSingleFcts = False
             elif o == "--runlength-based":
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 genericsettings.isExpensive = True  # comprises runlength-based
-            elif o == "--svg":
-                genericsettings.generate_svg_files = True
+            elif o == "--no-svg":
+                genericsettings.generate_svg_files = False
             elif o == "--sca-only":
                 warnings.warn("option --sca-only will have no effect with rungeneric1.py")
             else:
@@ -333,7 +333,11 @@ def main(argv=None):
             dsList.pickle(verbose=genericsettings.verbose)
 
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, dsList.isBiobjective(), outputdir, genericsettings.verbose)
+            ppconverrorbars.main(dictAlg, 
+                                 dsList.isBiobjective(),
+                                 outputdir, 
+                                 genericsettings.verbose,
+                                 genericsettings.single_algorithm_file_name)
 
         if genericsettings.isFig:
             print "Scaling figures...",
@@ -410,7 +414,8 @@ def main(argv=None):
                                                dsList.isBiobjective(),
                                                None,
                                                outputdir,
-                                               genericsettings.verbose)
+                                               genericsettings.verbose,
+                                               genericsettings.single_algorithm_file_name)
             print_done()
 
         if genericsettings.isLogLoss:
