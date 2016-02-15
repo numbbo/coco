@@ -84,6 +84,26 @@ void cocoObserverFree(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
     coco_observer_free(observer);
 }
 
+void cocoProblemFinalTargetHit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    size_t *ref;
+    coco_problem_t *problem = NULL;
+    const mwSize dims[2] = {1, 1};  
+    size_t *res;
+
+    /* check for proper number of arguments */
+    if(nrhs!=1) {
+        mexErrMsgIdAndTxt("cocoProblemFinalTargetHit:nrhs","One input required.");
+    }
+    /* get the problem */
+    ref = (size_t *)mxGetData(prhs[0]);
+    problem = (coco_problem_t *)(*ref);
+    /* prepare the return value */
+    plhs[0] = mxCreateNumericArray(2, dims, mxINT32_CLASS, mxREAL);
+    res = (size_t *)mxGetData(plhs[0]);
+    res[0] = coco_problem_final_target_hit(problem);
+}
+
 void cocoProblemFree(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     char *problem_suite;
@@ -158,6 +178,31 @@ void cocoProblemGetId(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
     res = coco_problem_get_id(pb);
     /* prepare the return value */
     plhs[0] = mxCreateString(res);
+}
+
+void cocoProblemGetInitialSolution(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    size_t *ref;
+    coco_problem_t *problem = NULL;
+    size_t nb_dim;
+    const double *res;
+    int i;
+    double *v; /* intermediate variable that allows to set plhs[0] */
+
+    /* check for proper number of arguments */
+    if(nrhs!=1) {
+        mexErrMsgIdAndTxt("cocoProblemGetInitialSolution:nrhs","One input required.");
+    }
+    /* get the problem */
+    ref = (size_t *)mxGetData(prhs[0]);
+    problem = (coco_problem_t *)(*ref);
+    
+    nb_dim = coco_problem_get_dimension(problem);
+    plhs[0] = mxCreateDoubleMatrix(1, nb_dim, mxREAL);
+    v = mxGetPr(plhs[0]);
+    /* call coco_problem_get_largest_values_of_interest(...) */
+    coco_problem_get_initial_solution(problem, v);
+    printf("%e", v[0]);
 }
 
 void cocoProblemGetLargestValuesOfInterest(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -411,6 +456,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoObserver(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoobserverfree") == 0) {
         cocoObserverFree(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoproblemfinaltargethit") == 0) {
+        cocoProblemFinalTargetHit(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemfree") == 0) {
         cocoProblemFree(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetdimension") == 0) {
@@ -419,6 +466,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoProblemGetEvaluations(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetid") == 0) {
         cocoProblemGetId(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoproblemgetinitialsolution") == 0) {
+        cocoProblemGetInitialSolution(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetlargestvaluesofinterest") == 0) {
         cocoProblemGetLargestValuesOfInterest(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetname") == 0) {

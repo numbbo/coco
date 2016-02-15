@@ -1,3 +1,5 @@
+.. _sec:stateoftheart:
+
 ===============================================
 State-of-the-art in Multiobjective Benchmarking
 ===============================================

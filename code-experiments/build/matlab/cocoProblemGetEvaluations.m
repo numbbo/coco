@@ -1,8 +1,8 @@
-% Returns the problem of the suite defined by problem_index.
+% Returns the number of evaluations done on the given problem. 
 %
 % Parameters:
-%   suite          The given suite.
-%   problem_index  The index of the problem to be returned.
+%   problem  The given problem.
+%
 %
 % Example usage:
 %
@@ -14,7 +14,17 @@
 %   >> cocoCall('cocoEvaluateFunction', problem, [2, 10])
 %   ans =
 %
-%      5.9543e+002  1.6626e+008
+%     5.9543e+002  1.6626e+008
+%
+%   >> cocoCall('cocoProblemGetEvaluations', problem)
+%   ans = 1
+%   >> cocoCall('cocoEvaluateFunction', problem, [4, 10])
+%   ans =
+%
+%    6.2303e+002  1.6626e+008
+%
+%   >> cocoCall('cocoProblemGetEvaluations', problem)
+%   ans = 2
 %   >> cocoCall('cocoProblemFree', problem);
 %   >> cocoCall('cocoSuiteFree', suite);
 %

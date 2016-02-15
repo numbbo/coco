@@ -110,14 +110,14 @@ def main(argv=None):
         --conv
             if this option is chosen, additionally convergence
             plots for each function and algorithm are generated.
-        --rld-single-fcts
-            generate also runlength distribution figures for each
+        --no-rld-single-fcts
+            do not generate runlength distribution figures for each
             single function. 
         --expensive
             runlength-based f-target values and fixed display limits,
             useful with comparatively small budgets.
-        --svg
-            generate also the svg figures which are used in html files 
+        --no-svg
+            do not generate the svg figures which are used in html files
         -
 
     Exceptions raised:
@@ -187,8 +187,8 @@ def main(argv=None):
             elif o == "--tab-only":
                 genericsettings.isRLDistr = False
                 genericsettings.isFig = False
-            elif o == "--rld-single-fcts":
-                genericsettings.isRldOnSingleFcts = True
+            elif o == "--no-rld-single-fcts":
+                genericsettings.isRldOnSingleFcts = False
             elif o == "--rld-only":
                 genericsettings.isTab = False
                 genericsettings.isFig = False
@@ -203,8 +203,8 @@ def main(argv=None):
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 genericsettings.isExpensive = True  # comprises runlength-based
-            elif o == "--svg":
-                genericsettings.generate_svg_files = True
+            elif o == "--no-svg":
+                genericsettings.generate_svg_files = False
             elif o == "--sca-only":
                 warnings.warn("option --sca-only will have no effect with rungenericmany.py")
             elif o == "--los-only":
@@ -317,8 +317,11 @@ def main(argv=None):
         
         # convergence plots
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, dsList[0].isBiobjective(), 
-                                 outputdir, genericsettings.verbose)
+            ppconverrorbars.main(dictAlg, 
+                                 dsList[0].isBiobjective(), 
+                                 outputdir, 
+                                 genericsettings.verbose,
+                                 genericsettings.many_algorithm_file_name)
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
             config.config(dsList[0].isBiobjective())
@@ -354,7 +357,8 @@ def main(argv=None):
                                                    dsList[0].isBiobjective(),
                                                    sortedAlgs,
                                                    outputdir, 
-                                                   genericsettings.verbose)
+                                                   genericsettings.verbose,
+                                                   genericsettings.many_algorithm_file_name)
                 else:  # subject to removal
                     dictFG = pproc.dictAlgByFun(dictAlg)
                     for fg, tmpdictAlg in dictFG.iteritems():
