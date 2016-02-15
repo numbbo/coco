@@ -395,7 +395,8 @@ Details
 - The C code features an object oriented implementation, where the
   `coco_problem_t` is the most central data structure / object. `coco.h`,
   `example_experiment.c` and `coco_internal.h` are probably the best pointers to
-  start __to investigate the code__ (but see also ). `coco_problem_t`
+  start __to investigate the code__ (but see also 
+  [here](https://numbbo.github.io/coco-doc/C/annotated.html)). `coco_problem_t`
   defines a benchmark function instance (in a given dimension), and is called
   via `coco_evaluate_function`.
 
