@@ -1,20 +1,19 @@
-% Returns the problem of the suite defined by problem_index.
+% Returns the name of the given problem.
 %
 % Parameters:
-%   suite          The given suite.
-%   problem_index  The index of the problem to be returned.
+%   problem  The given problem.
+%
 %
 % Example usage:
 %
 %   >> suite_name = 'bbob-biobj'; % works for 'bbob' as well
 %   >> suite = cocoCall('cocoSuite', suite_name, 'year: 2016', 'dimensions: 2,3,5,10,20,40');
 %   >> problem = cocoCall('cocoSuiteGetProblem', suite, 10);
-%   >> cocoCall('cocoProblemGetDimension', problem)
-%   ans = 2
-%   >> cocoCall('cocoEvaluateFunction', problem, [2, 10])
-%   ans =
-%
-%      5.9543e+002  1.6626e+008
+%   >> cocoCall('cocoProblemGetName', problem)
+%   ans = bbob_f001_i02_d02__bbob_f002_i04_d02
 %   >> cocoCall('cocoProblemFree', problem);
 %   >> cocoCall('cocoSuiteFree', suite);
 %
+
+
+
