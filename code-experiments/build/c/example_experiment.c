@@ -1,8 +1,8 @@
 /**
- * An example of benchmarking random search on three COCO suites. A grid search optimizer is also
+ * An example of benchmarking random search on a COCO suite. A grid search optimizer is also
  * implemented and can be used instead of random search.
  *
- * Set the global parameters BUDGET_MULTIPLIER and INDEPENDENT_RESTARTS to suit your needs.
+ * Set the global parameter BUDGET_MULTIPLIER to suit your needs.
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -17,10 +17,14 @@
 static const size_t BUDGET_MULTIPLIER = 2;
 
 /**
- * The maximal number of independent restarts allowed for an algorithm that restarts itself. Set to a desired
- * value.
+ * The maximal number of independent restarts allowed for an algorithm that restarts itself.
  */
-static const size_t INDEPENDENT_RESTARTS = 0;
+static const size_t INDEPENDENT_RESTARTS = 1e5;
+
+/**
+ * The random seed. Change if needed.
+ */
+static const uint32_t RANDOM_SEED = 0xdeadbeef;
 
 /**
  * A function type for evaluation functions, where the first argument is the vector to be evaluated and the
@@ -32,14 +36,14 @@ typedef void (*evaluate_function_t)(const double *x, double *y);
  * A pointer to the problem to be optimized (needed in order to simplify the interface between the optimization
  * algorithm and the COCO platform).
  */
-static coco_problem_t *problem;
+static coco_problem_t *PROBLEM;
 
 /**
  * The function that calls the evaluation of the first vector on the problem to be optimized and stores the
  * evaluation result in the second vector.
  */
 static void evaluate_function(const double *x, double *y) {
-  coco_evaluate_function(problem, x, y);
+  coco_evaluate_function(PROBLEM, x, y);
 }
 
 /* Declarations of all functions implemented in this file (so that their order is not important): */
@@ -68,7 +72,7 @@ void my_grid_search(evaluate_function_t evaluate,
  */
 int main(void) {
 
-  coco_random_state_t *random_generator = coco_random_new(0xdeadbeef);
+  coco_random_state_t *random_generator = coco_random_new(RANDOM_SEED);
 
   /* Change the log level to "warning" to get less output */
   coco_set_log_level("info");
@@ -118,36 +122,36 @@ void example_experiment(const char *suite_name,
   coco_free_memory(observer_options);
 
   /* Iterate over all problems in the suite */
-  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
+  while ((PROBLEM = coco_suite_get_next_problem(suite, observer)) != NULL) {
 
-    size_t dimension = coco_problem_get_dimension(problem);
+    size_t dimension = coco_problem_get_dimension(PROBLEM);
 
     /* Run the algorithm at least once */
     for (run = 1; run <= 1 + INDEPENDENT_RESTARTS; run++) {
 
-      size_t evaluations_done = coco_problem_get_evaluations(problem);
+      size_t evaluations_done = coco_problem_get_evaluations(PROBLEM);
       long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - (long) evaluations_done;
 
       /* Break the loop if the target was hit or there are no more remaining evaluations */
-      if (coco_problem_final_target_hit(problem) || (evaluations_remaining <= 0))
+      if (coco_problem_final_target_hit(PROBLEM) || (evaluations_remaining <= 0))
         break;
 
       /* Call the optimization algorithm for the remaining number of evaluations */
       my_random_search(evaluate_function,
                        dimension,
-                       coco_problem_get_number_of_objectives(problem),
-                       coco_problem_get_smallest_values_of_interest(problem),
-                       coco_problem_get_largest_values_of_interest(problem),
+                       coco_problem_get_number_of_objectives(PROBLEM),
+                       coco_problem_get_smallest_values_of_interest(PROBLEM),
+                       coco_problem_get_largest_values_of_interest(PROBLEM),
                        (size_t) evaluations_remaining,
                        random_generator);
 
       /* Break the loop if the algorithm performed no evaluations or an unexpected thing happened */
-      if (coco_problem_get_evaluations(problem) == evaluations_done) {
+      if (coco_problem_get_evaluations(PROBLEM) == evaluations_done) {
         printf("WARNING: Budget has not been exhausted (%lu/%lu evaluations done)!\n", evaluations_done,
             dimension * BUDGET_MULTIPLIER);
         break;
       }
-      else if (coco_problem_get_evaluations(problem) < evaluations_done)
+      else if (coco_problem_get_evaluations(PROBLEM) < evaluations_done)
         coco_error("Something unexpected happened - function evaluations were decreased!");
     }
 
