@@ -59,8 +59,8 @@ static coco_problem_t *transform_vars_scale(coco_problem_t *inner_problem, const
   problem->evaluate_function = transform_vars_scale_evaluate;
   /* Compute best parameter */
   if (data->factor != 0.) {
-      for (i = 0; i < self->number_of_variables; i++) {
-          self->best_parameter[i] /= data->factor;
+      for (i = 0; i < problem->number_of_variables; i++) {
+          problem->best_parameter[i] /= data->factor;
       }
   } /* else error? */
   return problem;
