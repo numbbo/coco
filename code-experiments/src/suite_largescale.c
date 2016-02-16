@@ -6,6 +6,9 @@
 #include "coco.h"
 
 #include "f_ellipsoid.c"
+#include "f_discus_generalized.c"
+#include "f_bent_cigar_generalized.c"
+#include "f_different_powers.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
@@ -19,9 +22,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 static coco_suite_t *suite_largescale_initialize(void) {
   
   coco_suite_t *suite;
-  /*const size_t dimensions[] = { 8, 16, 32, 64, 128, 256,512,1024};*/
-  const size_t dimensions[] = { 40, 80, 160, 320, 640, 1280};
-  suite = coco_suite_allocate("bbob-largescale", 1, 6, dimensions, "instances:1-15");
+  const size_t dimensions[] = { 40, 80, 160, 320, 640, 1280, 2560, 5120};
+  suite = coco_suite_allocate("bbob-largescale", 5, 8, dimensions, "instances:1-15");
   return suite;
 }
 
@@ -33,14 +35,27 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
                                                    const size_t instance) {
   coco_problem_t *problem = NULL;
 
-  const char *problem_id_template = "bbob_f%03lu_i%02lu_d%02lu";
-  const char *problem_name_template = "BBOB suite problem f%lu instance %lu in %luD";
+  const char *problem_id_template = "bbob_f%03lu_i%02lu_d%04lu";
+  const char *problem_name_template = "BBOB large-scale suite problem f%lu instance %lu in %luD";
 
   const long rseed = (long) (function + 10000 * instance);
   /*const long rseed_3 = (long) (3 + 10000 * instance);*/
   /*const long rseed_17 = (long) (17 + 10000 * instance);*/
   if (function == 1) {
+    problem = f_sphere_bbob_problem_allocate(function, dimension, instance, rseed,
+        problem_id_template, problem_name_template);
+  } else if (function == 2) {
     problem = f_ellipsoid_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
+        problem_id_template, problem_name_template);
+  }
+    else if (function == 3) {
+    problem = f_different_powers_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
+        problem_id_template, problem_name_template);
+  } else if (function == 4) {
+    problem = f_discus_generalized_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
+        problem_id_template, problem_name_template);
+  } else if (function == 5) {
+    problem = f_bent_cigar_generalized_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else {
     coco_error("coco_get_largescale_problem(): cannot retrieve problem f%lu instance %lu in %luD", function,

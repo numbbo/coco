@@ -13,7 +13,9 @@
 #include "transform_vars_affine.c"
 #include "transform_vars_shift.c"
 #include "transform_obj_shift.c"
+
 #include "transform_vars_permblockdiag.c"
+#include "transform_obj_norm_by_dim.c"
 
 /**
  * @brief Implements the ellipsoid function without connections to any COCO structures.
@@ -165,6 +167,8 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   problem = transform_vars_oscillate(problem);
   problem = transform_vars_permblockdiag(problem, B_copy, P1, P2, dimension, block_sizes, nb_blocks);
   problem = transform_vars_shift(problem, xopt, 0);
+
+  problem = transform_obj_norm_by_dim(problem);
   problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
@@ -175,7 +179,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   coco_free_memory(P1);
   coco_free_memory(P2);
   coco_free_memory(block_sizes);
-  
+  coco_free_memory(xopt);
   return problem;
 }
 
