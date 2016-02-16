@@ -552,9 +552,12 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
 
         displaybest2009 = not isBiobjective #disabled for bi-objective case
+        bestalgentries = bestalg.loadBestAlgorithm(isBiobjective) #no extra loading since force is default to False
+        if (dim, f) not in bestalgentries.keys(): #dimension/function not present in best2009
+              displaybest2009 = False
         if displaybest2009:
             #set_trace()
-            bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+            #bestalgentries = bestalg.loadBestAlgorithm(isBiobjective) # now done above
             bestalgentry = bestalgentries[(dim, f)]
             bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
             # print bestalgevals
