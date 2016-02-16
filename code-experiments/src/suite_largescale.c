@@ -45,7 +45,7 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_sphere_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else if (function == 2) {
-    problem = f_ellipsoid_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
+    problem = f_ellipsoid_permblockdiag_bbob_problem_allocate_test_seprate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   }
     else if (function == 3) {
