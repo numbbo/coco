@@ -252,7 +252,7 @@ def main(argv=None):
         
         if 11 < 3:
             from bbob_pproc import config  # input settings
-            config.config(False)
+            config.config()
             import imp
             # import testbedsettings as testbedsettings # input settings
             try:
@@ -349,8 +349,10 @@ def main(argv=None):
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
             plt.rc('pdf', fonttype = 42)
-            ppfigdim.main(dsList, ppfigdim.values_of_interest,
-                          outputdir, genericsettings.verbose)
+            ppfigdim.main(dsList, 
+                          genericsettings.current_testbed.ppfigdim_target_values,
+                          outputdir, 
+                          genericsettings.verbose)
             plt.rcdefaults()
             print_done()
 

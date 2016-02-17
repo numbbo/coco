@@ -832,7 +832,7 @@ def main(dsList, isStoringXMax = False, outputdir = '',
                  )
         try: # was never tested, so let's make it safe
             if len(funcs) == 1:
-                plt.title(genericsettings.getCurrentTestbed(dsList.isBiobjective()).info(funcs[0])[:27])
+                plt.title(genericsettings.current_testbed.info(funcs[0])[:27])
         except:
             warnings.warn('could not print title')
 
