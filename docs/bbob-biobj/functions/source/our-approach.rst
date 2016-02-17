@@ -3,9 +3,8 @@ Overview of the Proposed ``bbob-biobj`` Test Suite
 ==================================================
 
 The ``bbob-biobj`` test suite provides 55 bi-objective functions in six
-dimensions (2, 3, 5, 10, 20, and 40) with arbitrary many instances.
-In particular,
-the 55 functions are derived from combining a subset of the 24 well-known
+dimensions (2, 3, 5, 10, 20, and 40) with arbitrary many instances (10 of them being typically fixed for a BBOB workshop).
+The 55 functions are derived from combining a subset of the 24 well-known
 single-objective functions of the ``bbob`` test suite which
 has been used since 2009 in the `BBOB workshop series
 <http://numbbo.github.io/workshops/>`_ . While concrete details on each of
@@ -16,17 +15,13 @@ them together with their common properties.
 
 The Single-objective ``bbob`` Functions Used
 --------------------------------------------
-As a test suite in the `Coco framework`_, also the ``bbob-biobj`` functions
-are supposed to be designed to represent typical difficulties obverved in
-real-world optimization problems. Given the drawbacks of existing
-multi-objective benchmark suites, mentioned in :ref:`sec:stateoftheart`,
-and the fact that the single-objective ``bbob`` suite is considered as
-representative of many difficulties observed in real-world problems, it is
-only natural to combine the existing single-objective ``bbob`` functions
-to multi-objective ones.
+The ``bbob-biobj`` test suite is designed to represent typical difficulties obverved in
+real-world optimization problems. It is based on the fact that a multi-objective problem is a combination of single-objective functions and that thus one can build multi-objective problems with representative difficulties by simply combining single objective functions with representative difficulties observed in real-world problems.
+We naturally use the single-objective ``bbob`` suite designed to be representative of many difficulties observed in real-world problems.
+
 
 Combining all 24 ``bbob`` functions in pairs thereby results in
-:math:`24^2=576` bi-objective functions overall. If we assume
+:math:`24^2=576` bi-objective functions overall. Given
 that most (if not all) multi-objective optimization algorithms are
 invariant to permutations of the objective functions, a
 bi-objective function combining for example the sphere function
@@ -42,7 +37,7 @@ results in :math:`24+ {24 \choose 2} = 300` functions.
 First tests, e.g. in [BTH2015a]_, showed that having 300 functions
 in Coco's first bi-objective suite is impracticable in terms
 of the overall running time of the benchmarking experiment. Hence,
-we decided to choose only the following 10 of the 24 ``bbob``
+we consider only the following 10 of the 24 ``bbob``
 functions:
 
 * Separable functions

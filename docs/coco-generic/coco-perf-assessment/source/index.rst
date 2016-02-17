@@ -250,7 +250,7 @@ Based on the interpretation of instances as pure repetitions, we build some simu
 
 We sample a run-length uniformly at random among the Nruns run-length. If this run-length correspond to a unsuccessful trial we draw uniformly again among the Nruns run-length a new run-length. We repeat this operation until we obtain a run-length corresponding to a successful trial. The simulated run-length sums up all the run-lengths till a successful trial has been sampled.
 
-We typically generate many more simulated run-length than the number of function instances (corresponding to Nruns).
+We typically generate many more simulated run-length than the number of function instances (corresponding to Nruns). 
 
 
 Using simulated run-length for plotting ECDF graphs
