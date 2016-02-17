@@ -762,7 +762,7 @@ class DataSet():
         # put into variable dataFiles the files where to look for data
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
-        data = HMultiReader(split(dataFiles), self.isBiobjective())
+        data = HMultiReader(split(dataFiles, self.isBiobjective()), self.isBiobjective())
         if verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
@@ -783,9 +783,9 @@ class DataSet():
             warnings.warn('Missing tdat files. Please rerun the experiments.')
             dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                              for i in self.dataFiles)
-            data = VMultiReaderNew(split(dataFiles), self.isBiobjective())
+            data = VMultiReaderNew(split(dataFiles, self.isBiobjective()), self.isBiobjective())
         else:
-            data = VMultiReader(split(dataFiles), self.isBiobjective())
+            data = VMultiReader(split(dataFiles, self.isBiobjective()), self.isBiobjective())
 
         if verbose:
             print ("Processing %s: %d/%d trials found."
@@ -830,7 +830,7 @@ class DataSet():
         self._cut_data()
         # Compute ERT
         self.computeERTfromEvals()
-        assert all(self.evals[0][1:] == 1)        
+#        assert all(self.evals[0][1:] == 1)        
         
     @property
     def evals_(self):
