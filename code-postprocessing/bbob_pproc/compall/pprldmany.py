@@ -525,7 +525,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             continue
         # print target_values((f, dim))
         for j, t in enumerate(target_values((f, dim))):
-        # for j, t in enumerate(genericsettings.loadCurrentTestbed(isBiobjective).ecdf_target_values(1e2, f)):
+        # for j, t in enumerate(genericsettings.current_testbed.ecdf_target_values(1e2, f)):
             # funcsolved[j].add(f)
 
             for alg in algorithms_with_data:
@@ -660,7 +660,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
              verticalalignment="top", transform=plt.gca().transAxes)
     if len(dictFunc) == 1:
         plt.title(' '.join((str(dictFunc.keys()[0]),
-                  genericsettings.loadCurrentTestbed(isBiobjective).short_names[dictFunc.keys()[0]])))
+                  genericsettings.current_testbed.short_names[dictFunc.keys()[0]])))
     a = plt.gca()
 
     plt.xlim(xmin=1e-0, xmax=x_limit**annotation_space_end_relative)

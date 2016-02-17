@@ -222,7 +222,7 @@ def main(argv=None):
         # from bbob_pproc import bbob2010 as inset # input settings
         if genericsettings.inputsettings == "color":
             from bbob_pproc import genericsettings as inset # input settings
-            config.config(False)
+            config.config()
         elif genericsettings.inputsettings == "grayscale": # probably very much obsolete
             from bbob_pproc import grayscalesettings as inset # input settings
         elif genericsettings.inputsettings == "black-white": # probably very much obsolete
@@ -296,7 +296,6 @@ def main(argv=None):
 
         config.target_values(genericsettings.isExpensive)
         config.config(dsList[0].isBiobjective())
-        genericsettings.loadCurrentTestbed(dsList[0].isBiobjective())
         
         ######################### Post-processing #############################
         if genericsettings.isFig or genericsettings.isRLDistr or genericsettings.isTab or genericsettings.isScatter:

@@ -219,7 +219,7 @@ def main(argv=None):
         # TODO: conditional imports are NOT the way to go here
         if genericsettings.inputsettings == "color":
             from . import config, genericsettings as inset # input settings
-            config.config(False)
+            config.config()
         elif genericsettings.inputsettings == "grayscale":
             # this settings strategy (by proving different settings files) is problematic, 
             # because it means copy-paste of the settings
@@ -285,7 +285,6 @@ def main(argv=None):
         from . import config
         config.target_values(genericsettings.isExpensive)
         config.config(dsList[0].isBiobjective())
-        genericsettings.loadCurrentTestbed(dsList[0].isBiobjective())
 
 
         for i in dsList:
