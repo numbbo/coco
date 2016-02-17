@@ -295,6 +295,7 @@ class GECCOBBOBTestbed(Testbed):
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.short_names = {}
+        self.ppfigs_ftarget = 1e-8
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
                              getBenchmarksShortInfos(False)), 
@@ -317,6 +318,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.short_names = {}
+        self.ppfigs_ftarget = 1e-4
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
                                           getBenchmarksShortInfos(True)), 
@@ -340,7 +342,8 @@ class GECCOBiobjBBOBNoisefreeTestbed(GECCOBiobjBBOBTestbed):
 # or even better by investigating in the data attributes
 
 current_testbed = None
-def getCurrentTestbed(isBiobjective):
+
+def loadCurrentTestbed(isBiobjective):
     
     global current_testbed
 

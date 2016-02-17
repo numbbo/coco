@@ -23,7 +23,6 @@ import warnings
 import numpy
 import matplotlib
 
-ftarget = 1e-8
 target_runlength = 10 # used for ppfigs.main
 
 if __name__ == "__main__":
@@ -286,6 +285,7 @@ def main(argv=None):
         from . import config
         config.target_values(genericsettings.isExpensive)
         config.config(dsList[0].isBiobjective())
+        genericsettings.loadCurrentTestbed(dsList[0].isBiobjective())
 
 
         for i in dsList:
@@ -402,7 +402,6 @@ def main(argv=None):
                         
             print "Comparison tables done."
 
-        global ftarget  # not nice
         if genericsettings.isFig:
             plt.rc("axes", labelsize=20, titlesize=24)
             plt.rc("xtick", labelsize=20)
@@ -410,6 +409,8 @@ def main(argv=None):
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
             plt.rc('pdf', fonttype = 42)
+
+            ftarget = genericsettings.current_testbed.ppfigs_ftarget
             if genericsettings.runlength_based_targets:
                 reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
                 ftarget = pproc.RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
@@ -417,8 +418,8 @@ def main(argv=None):
             ppfigs.main(dictAlg, 
                         genericsettings.many_algorithm_file_name, 
                         dsList[0].isBiobjective(),
-                        sortedAlgs, 
                         ftarget,
+                        sortedAlgs, 
                         outputdir, 
                         genericsettings.verbose)
             plt.rcdefaults()

@@ -23,7 +23,6 @@ import numpy
 import numpy as np
 import matplotlib
 
-ftarget = 1e-8  # used for ppfigs.main 
 ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
 target_runlength = 10 # used for ppfigs.main
 
@@ -297,6 +296,7 @@ def main(argv=None):
 
         config.target_values(genericsettings.isExpensive)
         config.config(dsList[0].isBiobjective())
+        genericsettings.loadCurrentTestbed(dsList[0].isBiobjective())
         
         ######################### Post-processing #############################
         if genericsettings.isFig or genericsettings.isRLDistr or genericsettings.isTab or genericsettings.isScatter:
@@ -572,6 +572,7 @@ def main(argv=None):
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
             plt.rc('pdf', fonttype = 42)
+            ftarget = genericsettings.current_testbed.ppfigs_ftarget
             if genericsettings.runlength_based_targets:
                 reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
                 ftarget = RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
@@ -579,8 +580,8 @@ def main(argv=None):
             ppfigs.main(dictAlg, 
                         genericsettings.two_algorithm_file_name, 
                         dsList[0].isBiobjective(),
-                        sortedAlgs, 
                         ftarget,
+                        sortedAlgs, 
                         outputdir, 
                         genericsettings.verbose)
             plt.rcdefaults()
