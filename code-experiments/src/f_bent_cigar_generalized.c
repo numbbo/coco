@@ -14,7 +14,8 @@
 #include "transform_vars_asymmetric.c"
 #include "transform_vars_shift.c"
 
-#include "transform_vars_permblockdiag.c"
+#include "transform_vars_permutation.c"
+#include "transform_vars_blockrotation.c"
 #include "transform_obj_norm_by_dim.c"
 
 #define proportion_long_axes_denom 40
@@ -87,25 +88,29 @@ static coco_problem_t *f_bent_cigar_generalized_permblockdiag_bbob_problem_alloc
   size_t swap_range;
   size_t nb_swaps;
 
-  block_sizes = ls_get_block_sizes(&nb_blocks, dimension);
-  swap_range = ls_get_swap_range(dimension);
-  nb_swaps = ls_get_nb_swaps(dimension);
+  block_sizes = coco_get_block_sizes(&nb_blocks, dimension, "bbob-largescale");
+  swap_range = coco_get_swap_range(dimension, "bbob-largescale");
+  nb_swaps = coco_get_nb_swaps(dimension, "bbob-largescale");
 
   xopt = coco_allocate_vector(dimension);
   bbob2009_compute_xopt(xopt, rseed + 1000000, dimension);
   fopt = bbob2009_compute_fopt(function, instance);
 
-  B = ls_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
+  B = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
   B_copy = (const double *const *)B;
 
-  ls_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
-  ls_compute_truncated_uniform_swap_permutation(P1, rseed + 2000000, dimension, nb_swaps, swap_range);
-  ls_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
+  coco_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
+  coco_compute_truncated_uniform_swap_permutation(P1, rseed + 2000000, dimension, nb_swaps, swap_range);
+  coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
 
   problem = f_bent_cigar_generalized_allocate(dimension);
-  problem = transform_vars_permblockdiag(problem, B_copy, P1, P2, dimension, block_sizes, nb_blocks);
+  problem = transform_vars_permutation(problem, P2, dimension);/* LIFO */
+  problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
+  problem = transform_vars_permutation(problem, P1, dimension);
   problem = transform_vars_asymmetric(problem, 0.5);
-  problem = transform_vars_permblockdiag(problem, B_copy, P1, P2, dimension, block_sizes, nb_blocks);
+  problem = transform_vars_permutation(problem, P2, dimension);/* LIFO */
+  problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
+  problem = transform_vars_permutation(problem, P1, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
 
   problem = transform_obj_norm_by_dim(problem);
@@ -114,7 +119,7 @@ static coco_problem_t *f_bent_cigar_generalized_permblockdiag_bbob_problem_alloc
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "large_scale_block_rotated");/*TODO: no large scale prefix*/
-  ls_free_block_matrix(B, dimension);
+  coco_free_block_matrix(B, dimension);
   coco_free_memory(P1);
   coco_free_memory(P2);
   coco_free_memory(block_sizes);
