@@ -176,14 +176,41 @@ Coco documentation states
   function value). Overall *Ntrial* runs are conducted on different
   instantiations.
 
- 
+Also in the bi-objective case, we provide the idea of instances by
+relying on the instances provided within the single-objective
+``bbob`` suite. In addition, we assert that
+  
+  * the distance (Euclidean norm) between the ideal and the nadir
+    point (in objective space) is at least 1e1 and that
+	
+  * the two single-objective optima (in search space, also called
+    the extreme optimal points) are not closer than :math:`10^{-4}`.
+	 
+In general, the two single-objective problem instances 
 
+ * problem1_instance = 2 \* biobj_instance + 1 and
+ * problem2_instance = problem1_instance + 1
 
+are chosen to create the bi-objective problem instance ``biobj_instance``
+while ``problem2_instance`` is increased successively until the two above
+properties are fullfilled. For example, the ``bbob-biobj`` instance
+8 consists of instance 17 for the first objective and instance 18 for
+the second objective while for the ``bbob-biobj`` instance 9, the
+first instance is 19 but for the second objective, instance 21 is chosen
+instead of instance 20.
 
+Exceptions to the above rule are, for historical reasons, the
+``bbob-biobj`` instances 1 and 2 in order to match the instances
+1 to 5 with the ones proposed in [BTH2015a]_. The ``bbob-biobj``
+instance 1 contains the single-objective instances 2 and 4 and
+the ``bbob-biobj`` instance 2 contains the two instances 3 and 5.
 
-TODO: describe how the instances are generated
-
-TODO: recommendation: 10 instances
+Note that the number of instances from the ``bbob-biobj`` suite is neither
+limited from above nor from below. However, less than 3 instances will
+render the potential statistics and their interpretation problematic
+while even the smallest difference can be made statistically
+significant with a high enough number of instances. Thus, we
+recommend to use 5 to 15 instances for the actual benchmarking.
 
 
   
