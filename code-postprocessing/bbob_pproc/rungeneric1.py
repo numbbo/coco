@@ -302,6 +302,7 @@ def main(argv=None):
         from . import config
         config.target_values(genericsettings.isExpensive)
         config.config(dsList.isBiobjective())
+        genericsettings.loadCurrentTestbed(dsList.isBiobjective())
 
         if (genericsettings.verbose):
             for i in dsList:
