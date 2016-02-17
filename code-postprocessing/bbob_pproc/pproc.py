@@ -830,7 +830,7 @@ class DataSet():
         self._cut_data()
         # Compute ERT
         self.computeERTfromEvals()
-#        assert all(self.evals[0][1:] == 1)        
+        assert all(self.evals[0][1:] == 1)        
         
     @property
     def evals_(self):
@@ -858,7 +858,7 @@ class DataSet():
         does not exist.
         
         """
-        if isinstance(genericsettings.current_testbed, genericsettings.GECCOBBOBTestbed):
+        if isinstance(genericsettings.loadCurrentTestbed(self.isBiobjective(), TargetValues), genericsettings.GECCOBBOBTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
             while i > 1 and not self.isBiobjective() and self.evals[i-1][0] <= self.precision:
