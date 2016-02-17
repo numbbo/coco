@@ -206,7 +206,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate_test_sepr
   swap_range = ls_get_swap_range(dimension);
   nb_swaps = ls_get_nb_swaps(dimension);
   
-  /*printf("f:%zu  n:%zu  i:%zu  bs:[%zu,...,%zu,%zu]  sR:%zu\n", function, dimension, instance, block_sizes[0], block_sizes[0],block_sizes[nb_blocks-1], swap_range);*/
+
   
   xopt = coco_allocate_vector(dimension);
   bbob2009_compute_xopt(xopt, rseed, dimension);
@@ -222,13 +222,12 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate_test_sepr
   
   problem = f_ellipsoid_allocate(dimension);
   problem = transform_vars_oscillate(problem);
-
   //problem = transform_vars_permblockdiag(problem, B_copy, P1, P2, dimension, block_sizes, nb_blocks);
-  problem = transform_vars_permutation(problem, P1, dimension);
+  problem = transform_vars_permutation(problem, P2, dimension);/* LIFO */
   problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
-  problem = transform_vars_permutation(problem, P2, dimension);
-
+  problem = transform_vars_permutation(problem, P1, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
+
   
   problem = transform_obj_norm_by_dim(problem);
   problem = transform_obj_shift(problem, fopt);

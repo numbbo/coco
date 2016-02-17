@@ -40,7 +40,7 @@ static void transform_vars_blockrotation_evaluate(coco_problem_t *problem, const
       data->x[i] += data->B[i][j - first_non_zero_ind] * x[j]; /*all B lines start at 0*/
     }
   }
-  
+
   coco_evaluate_function(inner_problem, data->x, y);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
