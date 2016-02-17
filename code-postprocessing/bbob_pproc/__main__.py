@@ -157,9 +157,9 @@ def main(args):
     
     print('*** testing module bbob_pproc ***')
     t0 = time.time()
-    print(python + command + '--conv' + ' --no-svg' +
+    print(python + command + '--conv' + ' --no-svg --settings=grayscale' +
                 join_path(data_path, 'BFGS_ros_noiseless.tgz'))
-    result = os.system(python + command + '--conv' + ' --no-svg' +
+    result = os.system(python + command + '--conv' + ' --no-svg --settings=grayscale' +
                 join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
@@ -168,8 +168,8 @@ def main(args):
     assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
 
     t0 = time.time()
-    print(python + command + '--no-svg' + join_path(data_path, 'RS.tgz'))
-    result = os.system(python + command + '--no-svg' + join_path(data_path, 'RS.tgz'))
+    print(python + command + '--no-svg --settings=grayscale' + join_path(data_path, 'RS.tgz'))
+    result = os.system(python + command + '--no-svg --settings=grayscale' + join_path(data_path, 'RS.tgz'))
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
 
