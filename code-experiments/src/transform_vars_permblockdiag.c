@@ -6,7 +6,10 @@
 
 #include "coco.h"
 #include "coco_problem.c"
-#include "large_scale_transformations.c"
+//#include "large_scale_transformations.c"
+#include "transform_vars_permutation_helpers.c"
+#include "transform_vars_blockrotation_helpers.c"
+
 
 /**
  * @brief Data type for transform_vars_permblockdiag.

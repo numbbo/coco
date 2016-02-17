@@ -10,7 +10,7 @@
 
 #include "coco.h"
 #include "coco_problem.c"
-#include "large_scale_transformations.c"
+#include "transform_vars_blockrotation_helpers.c"
 
 /**
  * @brief Data type for transform_vars_blockrotation.
@@ -69,7 +69,7 @@ static coco_problem_t *transform_vars_blockrotation(coco_problem_t *inner_proble
     entries_in_M += block_sizes[i] * block_sizes[i];
   }
   data = (transform_vars_blockrotation_t *) coco_allocate_memory(sizeof(*data));
-  data->B = ls_copy_block_matrix(B, number_of_variables, block_sizes, nb_blocks);
+  data->B = coco_copy_block_matrix(B, number_of_variables, block_sizes, nb_blocks);
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->block_sizes = coco_duplicate_size_t_vector(block_sizes, nb_blocks);
   data->nb_blocks = nb_blocks;
