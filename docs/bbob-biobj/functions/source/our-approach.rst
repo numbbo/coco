@@ -176,7 +176,7 @@ relying on the instances provided within the single-objective
 ``bbob`` suite. In addition, we assert that
   
   * the distance (Euclidean norm) between the ideal and the nadir
-    point (in objective space) is at least 1e1 and that
+    point (in objective space) is at least 1e-1 and that
 	
   * the two single-objective optima (in search space, also called
     the extreme optimal points) are not closer than :math:`10^{-4}`.
