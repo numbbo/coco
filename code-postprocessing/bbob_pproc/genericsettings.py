@@ -264,6 +264,11 @@ def getFigFormats():
     
     return fig_formats
     
+def getFontSize(nameList):
+    maxFuncLength = max(len(i) for i in nameList)
+    fontSize = 24 - max(0, 4 * ((maxFuncLength - 35) / 5))
+    return fontSize
+
 class Testbed(object):
     """this might become the future way to have settings related to testbeds
     TODO: should go somewhere else than genericsettings.py 
