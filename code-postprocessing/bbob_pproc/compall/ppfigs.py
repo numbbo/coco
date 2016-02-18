@@ -444,8 +444,10 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
                             ystar.append(ert/dim)
 
             plt.plot(xstar, ystar, 'k*', markerfacecolor=None, markeredgewidth=2, markersize=0.5*styles[0]['markersize'])
+        
+        fontSize = genericsettings.getFontSize(funInfos.values())
         if f in funInfos.keys():
-            plt.gca().set_title(funInfos[f])
+            plt.gca().set_title(funInfos[f], fontsize=fontSize)
 
         isLegend = False
         if legend:
@@ -516,7 +518,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
         handles.append(tmp)
 
         if f in funInfos.keys():
-            plt.gca().set_title(funInfos[f])
+            plt.gca().set_title(funInfos[f], fontsize=fontSize)
 
         beautify(rightlegend=legend)
 
