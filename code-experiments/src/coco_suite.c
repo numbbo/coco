@@ -704,9 +704,15 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   size_t instance_idx;
   coco_problem_t *problem;
 
-  long previous_function_idx = suite->current_function_idx;
-  long previous_dimension_idx = suite->current_dimension_idx;
-  long previous_instance_idx = suite->current_instance_idx;
+  long previous_function_idx;
+  long previous_dimension_idx;
+  long previous_instance_idx;
+
+  assert(suite != NULL);
+
+  previous_function_idx = suite->current_function_idx;
+  previous_dimension_idx = suite->current_dimension_idx;
+  previous_instance_idx = suite->current_instance_idx;
 
   /* Iterate through the suite by instances, then functions and lastly dimensions in search for the next
    * problem. Note that these functions set the values of suite fields current_instance_idx,
