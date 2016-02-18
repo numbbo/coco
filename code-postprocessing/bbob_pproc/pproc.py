@@ -184,12 +184,16 @@ class RunlengthBasedTargetValues(TargetValues):
     """a class instance call returns f-target values based on 
     reference runlengths::
     
+        >>> import os
         >>> import bbob_pproc as bb
+        >>> cwd = os.getcwd()
+        >>> os.chdir("..")
         >>> targets = bb.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
         >>> targets(fun_dim=(1, 20)) # doctest:+ELLIPSIS
         Loading best algorithm data from BBOB-2009...   done ...
         array([  6.30957345e+01,   5.75439938e+01,   1.00000000e-08,
                  1.00000000e-08,   1.00000000e-08])
+        >>> os.chdir(cwd)
              
     returns a list of target f-values for F1 in 20-D, based on the 
     ERT values ``[0.5,...,50]``. 
@@ -830,7 +834,7 @@ class DataSet():
         self._cut_data()
         # Compute ERT
         self.computeERTfromEvals()
-        assert all(self.evals[0][1:] == 1)        
+#        assert all(self.evals[0][1:] == 1)        
         
     @property
     def evals_(self):
