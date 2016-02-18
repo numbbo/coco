@@ -834,7 +834,7 @@ class DataSet():
         self._cut_data()
         # Compute ERT
         self.computeERTfromEvals()
-#        assert all(self.evals[0][1:] == 1)        
+        assert all(self.evals[0][1:] == 1)        
         
     @property
     def evals_(self):
