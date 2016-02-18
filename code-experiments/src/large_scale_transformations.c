@@ -2,13 +2,14 @@
 #include <assert.h>
 #include "coco.h"
 
-#include "coco_runtime_c.c" /*tmp*/
 #include "coco_random.c" /*tmp*/
 #include "suite_bbob_legacy_code.c" /*tmp*/
 
 #include <time.h> /*tmp*/
 
-static double *random_data;/* global variable used to generate the random permutations */
+/* TODO: Document this file in doxygen style! */
+
+static double *ls_random_data;/* global variable used to generate the random permutations */
 
 /**
  * ls_allocate_blockmatrix(n, m, bs):
@@ -76,7 +77,7 @@ static void ls_compute_blockrotation(double **B, long seed, size_t n, size_t *bl
   double **current_block;
   size_t i, j, k; /* Loop over pairs of column vectors. */
   size_t idx_block, current_blocksize,cumsum_prev_block_sizes, sum_block_sizes;
-  size_t nb_entries, current_gvect_pos;
+  size_t nb_entries;
   coco_random_state_t *rng = coco_random_new((uint32_t) seed);
   
   nb_entries = 0;
@@ -86,15 +87,11 @@ static void ls_compute_blockrotation(double **B, long seed, size_t n, size_t *bl
     nb_entries += block_sizes[i] * block_sizes[i];
   }
   assert(sum_block_sizes == n);
-  /*gvect = coco_allocate_vector(nb_entries);*/
   
-  /*bbob2009_gauss(gvect, nb_entries, seed);*/
-  current_gvect_pos = 0;
   cumsum_prev_block_sizes = 0;/* shift in rows to account for the previous blocks */
   for (idx_block = 0; idx_block < nb_blocks; idx_block++) {
     current_blocksize = block_sizes[idx_block];
     current_block = bbob2009_allocate_matrix(current_blocksize, current_blocksize);
-    /*bbob2009_reshape(current_block, &gvect[current_gvect_pos], current_blocksize, current_blocksize);*/
     for (i = 0; i < current_blocksize; i++) {
       for (j = 0; j < current_blocksize; j++) {
         current_block[i][j] = coco_random_normal(rng);
@@ -165,7 +162,7 @@ static double **ls_copy_block_matrix(const double *const *B, const size_t dimens
  * In our case, it serves as a random permutation generator
  */
 static int f_compare_doubles_for_random_permutation(const void *a, const void *b) {
-  double temp = random_data[*(const size_t *) a] - random_data[*(const size_t *) b];
+  double temp = ls_random_data[*(const size_t *) a] - ls_random_data[*(const size_t *) b];
   if (temp > 0)
     return 1;
   else if (temp < 0)
@@ -180,10 +177,10 @@ static int f_compare_doubles_for_random_permutation(const void *a, const void *b
 static void ls_compute_random_permutation(size_t *P, long seed, size_t n) {
   long i;
   coco_random_state_t *rng = coco_random_new((uint32_t) seed);
-  random_data = coco_allocate_vector(n);
+  ls_random_data = coco_allocate_vector(n);
   for (i = 0; i < n; i++){
     P[i] = (size_t) i;
-    random_data[i] = coco_random_uniform(rng);
+    ls_random_data[i] = coco_random_uniform(rng);
   }
   qsort(P, n, sizeof(size_t), f_compare_doubles_for_random_permutation);
   coco_random_free(rng);
@@ -192,14 +189,11 @@ static void ls_compute_random_permutation(size_t *P, long seed, size_t n) {
 
 /*
  * returns a uniformly distributed integer between lower_bound and upper_bound using seed.
- * bbob2009_unif is used to generate the uniform floating number in [0,1] instead of rand()/(1 + RAND_MAX)
- * use size_t as return type and force positive values instead?
  */
-long ls_rand_int(long lower_bound, long upper_bound,   coco_random_state_t *rng){
+static long ls_rand_int(long lower_bound, long upper_bound, coco_random_state_t *rng){
   long range;
   range = upper_bound - lower_bound + 1;
-  
-  return (long)(((double) coco_random_uniform(rng)) * range + lower_bound);
+  return ((long)(coco_random_uniform(rng) * (double) range)) + lower_bound;
 }
 
 
@@ -216,12 +210,12 @@ static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, 
   size_t *idx_order;
   coco_random_state_t *rng = coco_random_new((uint32_t) seed);
 
-  random_data = coco_allocate_vector(n);
-  idx_order = (size_t *) coco_allocate_memory(n * sizeof(size_t));;
+  ls_random_data = coco_allocate_vector(n);
+  idx_order = coco_allocate_vector_size_t(n);
   for (i = 0; i < n; i++){
     P[i] = (size_t) i;
     idx_order[i] = (size_t) i;
-    random_data[i] = coco_random_uniform(rng);
+    ls_random_data[i] = coco_random_uniform(rng);
   }
   
   if (swap_range > 0) {
@@ -257,7 +251,7 @@ static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, 
       /* generate random permutation instead */
       ls_compute_random_permutation(P, seed, n);
     }
-    
+
   }
   coco_random_free(rng);
 }
@@ -267,14 +261,14 @@ static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, 
 /*
  * duplicates a size_t vector
  */
-size_t *coco_duplicate_size_t_vector(const size_t *src, const size_t number_of_elements) {
+static size_t *coco_duplicate_size_t_vector(const size_t *src, const size_t number_of_elements) {
   size_t i;
   size_t *dst;
   
   assert(src != NULL);
   assert(number_of_elements > 0);
   
-  dst = (size_t *)coco_allocate_memory(number_of_elements * sizeof(size_t));
+  dst = coco_allocate_vector_size_t(number_of_elements);
   for (i = 0; i < number_of_elements; ++i) {
     dst[i] = src[i];
   }
@@ -286,14 +280,14 @@ size_t *coco_duplicate_size_t_vector(const size_t *src, const size_t number_of_e
  * returns the list of block_sizes and sets nb_blocks to its correct value
  * TODO: update with chosen parameter setting
  */
-size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
+static size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
   size_t *block_sizes;
   size_t block_size;
   int i;
-  
-  block_size = (size_t) bbob2009_fmin(dimension / 4, 100);
+
+  block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension / 4, 100));
   *nb_blocks = dimension / block_size + ((dimension % block_size) > 0);
-  block_sizes = (size_t *)coco_allocate_memory(*nb_blocks * sizeof(size_t));
+  block_sizes = coco_allocate_vector_size_t(*nb_blocks);
   for (i = 0; i < *nb_blocks - 1; i++) {
     block_sizes[i] = block_size;
   }
@@ -304,16 +298,14 @@ size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
 
 /*
  * return the swap_range corresponding to the problem
- * TODO: update with chosen parameter setting
  */
-size_t ls_get_swap_range(size_t dimension){
+static size_t ls_get_swap_range(size_t dimension){
   return dimension / 3;
 }
 
 
 /*
  * return the number of swaps corresponding to the problem
- * TODO: update with chosen parameter setting
  */
 size_t ls_get_nb_swaps(size_t dimension){
   return dimension;

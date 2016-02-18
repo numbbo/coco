@@ -68,18 +68,22 @@ def is_dirty():
     raise NotImplementedError()
     return hg(['hg', 'id', '-i'])[-1] == '+'
 
-def git_version(pep440=True):
+def git_version(pep440=False):
     """Return somewhat readible version number from git, like
     '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'"""
     try:
         res = git(['describe', '--tags'])
-        if pep440:
-            return '.'.join(res.split('-')[:2])
+    except:
+        res = os.path.split(os.getcwd())[-1]
+    if pep440:
+        while len(res) and res[0] not in '0123456789':
+            res = res[1:]
+        if '-' in res:
+           return '.'.join(res.split('-')[:2])
         else:
             return res
-    except:
-        # print('git version call failed')
-        return ''
+    else:
+        return res
 
 def git_revision():
     """Return unreadible git revision identifier, like

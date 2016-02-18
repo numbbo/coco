@@ -1,43 +1,17 @@
-/*
- * Generic COCO runtime implementation.
+/**
+ * @file coco_runtime_c.c
+ * @brief Generic COCO runtime implementation for the C language.
  *
- * Other language interfaces might want to replace this so that memory
- * allocation and error handling go through the respective language
- * runtime.
+ * Other language interfaces might want to replace this so that memory allocation and error handling go
+ * through the respective language runtime.
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 
 #include "coco.h"
 #include "coco_utilities.c"
-
-/**
- * Initialize the logging level to COCO_INFO.
- */
-static coco_log_level_type_e coco_log_level = COCO_INFO;
-
-/**
- * @param log_level Denotes the level of information given to the user through the standard output and
- * error streams. Can take on the values:
- * - "error" (only error messages are output),
- * - "warning" (only error and warning messages are output),
- * - "info" (only error, warning and info messages are output) and
- * - "debug" (all messages are output).
- *
- * The default value is info.
- */
-void coco_set_log_level(const char *log_level) {
-
-  if (strcmp(log_level, "error") == 0)
-    coco_log_level = COCO_ERROR;
-  else if (strcmp(log_level, "warning") == 0)
-    coco_log_level = COCO_WARNING;
-  else if (strcmp(log_level, "info") == 0)
-    coco_log_level = COCO_INFO;
-  else if (strcmp(log_level, "debug") == 0)
-    coco_log_level = COCO_DEBUG;
-}
 
 void coco_error(const char *message, ...) {
   va_list args;
@@ -79,7 +53,7 @@ void coco_info(const char *message, ...) {
  * A function similar to coco_info that prints only the given message without any prefix and without
  * adding a new line.
  */
-static void coco_info_partial(const char *message, ...) {
+void coco_info_partial(const char *message, ...) {
   va_list args;
 
   if (coco_log_level >= COCO_INFO) {

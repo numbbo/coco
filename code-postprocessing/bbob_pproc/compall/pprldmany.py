@@ -437,8 +437,8 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
             res = h # so the last element in res still has the label.
     return res
 
-def all_single_functions(dictAlg, sortedAlgs=None, outputdir='.',
-                         verbose=0):
+def all_single_functions(dictAlg, isBiobjective, sortedAlgs=None, 
+                         outputdir='.', verbose=0, parentHtmlFileName=None):
         dictFG = pp.dictAlgByFun(dictAlg)
         for fg, tmpdictAlg in dictFG.iteritems():
             dictDim = pp.dictAlgByDim(tmpdictAlg)
@@ -450,13 +450,15 @@ def all_single_functions(dictAlg, sortedAlgs=None, outputdir='.',
                 if not os.path.exists(single_fct_output_dir):
                     os.makedirs(single_fct_output_dir)
                 main(entries,
-                       order=sortedAlgs,
-                       outputdir=single_fct_output_dir,
-                       info=('f%03d_%02dD' % (fg, d)),
-                       verbose=verbose)
+                     isBiobjective,
+                     order=sortedAlgs,
+                     outputdir=single_fct_output_dir,
+                     info='f%03d_%02dD' % (fg, d),
+                     verbose=verbose,
+                     parentHtmlFileName=parentHtmlFileName)
 
 def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
-         dimension=None, verbose=True):
+         dimension=None, verbose=True, parentHtmlFileName=None):
     """Generates a figure showing the performance of algorithms.
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
@@ -471,6 +473,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     :param str outputdir: output directory
     :param str info: output file name suffix
     :param bool verbose: controls verbosity
+    :param str parentHtmlFileName: defines the parent html page 
 
     """
     global x_limit  # late assignment of default, because it can be set to None in config 
@@ -548,10 +551,13 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 dictData.setdefault(alg, []).extend(x)
                 dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
 
-        displaybest2009 = not isBiobjective #disabled until we find the bug
+        displaybest2009 = not isBiobjective #disabled for bi-objective case
+        bestalgentries = bestalg.loadBestAlgorithm(isBiobjective) #no extra loading since force is default to False
+        if (dim, f) not in bestalgentries.keys(): #dimension/function not present in best2009
+              displaybest2009 = False
         if displaybest2009:
             #set_trace()
-            bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+            #bestalgentries = bestalg.loadBestAlgorithm(isBiobjective) # now done above
             bestalgentry = bestalgentries[(dim, f)]
             bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
             # print bestalgevals
@@ -674,7 +680,9 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 os.path.join(outputdir, 'pprldmany'),
                 '', # algorithms names are clearly visible in the figure
                 add_to_names='_%02dD' %(dim),
-                algorithmCount=ppfig.AlgorithmCount.NON_SPECIFIED
+                algorithmCount = ppfig.AlgorithmCount.NON_SPECIFIED,
+                isBiobjective = isBiobjective,
+                parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None
             )
     if close_figure:
         plt.close()

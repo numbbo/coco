@@ -16,40 +16,31 @@ used by other modules, but does not modify settings of other modules.
 """
 
 import numpy as np
-import ppfig, ppfigdim, pptable
+import ppfigdim, pptable
 from . import genericsettings, pproc, pprldistr
 from .comp2 import ppfig2, ppscatter, pptable2
 from .compall import ppfigs, pprldmany, pptables
 
 def target_values(is_expensive, dict_max_fun_evals={}, runlength_limit=1e3):
-    """manage target values setting in "expensive" optimization scenario, 
-    when ``is_expensive not in (True, False), the setting is based on 
-    the comparison of entries in ``dict_max_fun_evals`` with
-    ``runlength_limit``.
+    """manage target values setting in "expensive" optimization scenario.
     
     """
-    # if len(dict_max_fun_evals):
-    #     genericsettings.dict_max_fun_evals = dict_max_fun_evals
-    is_runlength_based = True if is_expensive else None 
+
     if is_expensive:
-        genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive 
-    if is_runlength_based:
         genericsettings.runlength_based_targets = True
-    elif is_runlength_based is False:
-        genericsettings.runlength_based_targets = False            
-    else: # if genericsettings.runlength_based_targets == 'auto':  # automatic choice of evaluation setup, looks still like a hack
-        if len(dict_max_fun_evals) and np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()]) < runlength_limit: 
-            genericsettings.runlength_based_targets = True
-            genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive
-        else:
-            genericsettings.runlength_based_targets = False
+        genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive 
+    else:
+        genericsettings.runlength_based_targets = False
+        genericsettings.maxevals_fix_display = None
             
-            
-def config(isBiobjective):
+def config(isBiobjective=None):
     """called from a high level, e.g. rungeneric, to configure the lower level 
     modules via modifying parameter settings. 
     """
+    if isBiobjective is not None:
+        genericsettings.loadCurrentTestbed(isBiobjective, pproc.TargetValues)
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets 
+
     if genericsettings.runlength_based_targets in (True, 1):
         print 'Using bestGECCO2009 based target values: now for each function the target ' + \
               'values differ, but the "level of difficulty" is "the same". '
@@ -65,22 +56,32 @@ def config(isBiobjective):
             # pprldmany.caption = ... captions are still hard coded in LaTeX
             pprldmany.x_limit = genericsettings.maxevals_fix_display  # always fixed
             
-        # genericsettings (to be used in rungeneric2 while calling pprldistr.comp(...)):    
-        genericsettings.rldValsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_single_rldistr, 
-                                                                             reference_data = reference_data,
-                                                                             force_different_targets_factor=10**-0.2)
+
+        if genericsettings.current_testbed:
+            
+            testbed = genericsettings.current_testbed  
+            # genericsettings (to be used in rungeneric2 while calling pprldistr.comp(...)):    
+            testbed.rldValsOfInterest = pproc.RunlengthBasedTargetValues(
+                                        genericsettings.target_runlengths_in_single_rldistr, 
+                                        reference_data = reference_data,
+                                        force_different_targets_factor=10**-0.2)
+
+            testbed.ppfigdim_target_values = pproc.RunlengthBasedTargetValues(
+                                             genericsettings.target_runlengths_in_scaling_figs,
+                                             # [10**i for i in [2.0, 1.5, 1.0, 0.5, 0.1, -0.3]],
+                                             # [10**i for i in [1.7, 1, 0.3, -0.3]]
+                                             reference_data = reference_data,
+                                             force_different_targets_factor=10**-0.2)
+
+            testbed.pprldistr_target_values = pproc.RunlengthBasedTargetValues(
+                                              genericsettings.target_runlengths_in_single_rldistr, 
+                                              reference_data = reference_data,
+                                              force_different_targets_factor=10**-0.2)
+
         # pprldistr:
-        pprldistr.single_target_values = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_single_rldistr, 
-                                                                          reference_data = reference_data,
-                                                                          force_different_targets_factor=10**-0.2)
         pprldistr.runlen_xlimits_max = genericsettings.maxevals_fix_display / 2 if genericsettings.maxevals_fix_display else None # can be None
         pprldistr.runlen_xlimits_min = 10**-0.3  # can be None
         # ppfigdim:
-        ppfigdim.values_of_interest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_scaling_figs,
-                                                                       # [10**i for i in [2.0, 1.5, 1.0, 0.5, 0.1, -0.3]],
-                                                                       # [10**i for i in [1.7, 1, 0.3, -0.3]]
-                                                                       reference_data = reference_data,
-                                                                       force_different_targets_factor=10**-0.2)
         ppfigdim.xlim_max = genericsettings.maxevals_fix_display
         if ppfigdim.xlim_max:
             ppfigdim.styles = [  # sort of rainbow style, most difficult (red) first

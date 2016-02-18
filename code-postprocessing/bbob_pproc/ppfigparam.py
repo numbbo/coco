@@ -17,9 +17,8 @@ import os
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
-from pdb import set_trace
-from . import toolsstats, bestalg
-from .ppfig import saveFigure, groupByRange
+from . import toolsstats, bestalg, genericsettings
+from .ppfig import saveFigure
 
 __all__ = ['beautify', 'plot', 'main']
 
@@ -46,7 +45,7 @@ def read_fun_infos(isBiobjective):
     try:
         funInfos = {}
         
-        filename = 'biobj-benchmarkshortinfos.txt' if isBiobjective else 'benchmarkshortinfos.txt'        
+        filename = genericsettings.getBenchmarksShortInfos(isBiobjective)
         infofile = os.path.join(os.path.split(__file__)[0], filename)
         f = open(infofile, 'r')
         for line in f:

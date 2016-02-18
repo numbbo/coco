@@ -15,9 +15,9 @@ In order to allow for easier maintenance and further extensions of the COCO plat
 entirely from 2014 till 2016. Now, a single implementation in ANSI C (aka C89) is used and called from
 the other languages to conduct the experiments. This documentation of the COCO C code serves therefore
 as the basic reference for:
-- How to conduct benchmarking experiments in C
-- How to write new test functions and combine them into test suites
-- How to write additional performance indicators and logging functionality
+- [How to conduct benchmarking experiments in C](#benchmarking)
+- [How to write new test functions and combine them into test suites](#new-suites)
+- [How to write additional performance indicators and logging functionality](#new-indicators)
 
 __Pointers to the source code and other documentation__
 
@@ -29,27 +29,40 @@ http://numbbo.github.io/bbob-biobj-functions-doc
 How to conduct experiments in all supported languages is described at
 http://numbbo.github.io/bbob-biobj-experiments-doc (coming soon)
 
-## How to conduct benchmarking experiments in C 
+## How to conduct benchmarking experiments in C <a name="benchmarking"></a>
 
 At this point we assume that the ``example_experiment`` in C is running on your machine (see the 
 [getting started guide](https://github.com/numbbo/coco/blob/master/README.md#getting-started) if you 
 need any assistance). The best way to create your own benchmark experiment is to copy that example and
 make the changes you need to include your optimizer. 
 
-Benchmarking the algorithm ``my_optimizer`` on the ``bbob-biobj`` suite with default parameters 
-(see below for explanation of the [suite parameters](#suite-parameters) and 
-[observer parameters](#observer-parameters)) is invoked in the following way:
+In order to simplify the interface between the optimizers and the COCO platform, a static pointer
+to a COCO problem and a function type for evaluation functions are used:
+
+    static coco_problem_t *PROBLEM;
+    typedef void (*evaluate_function_t)(const double *x, double *y);
+
+Benchmarking a single run of the  algorithm ``my_optimizer`` on the ``bbob-biobj`` suite with default 
+parameters is invoked in the following way (see below for explanation of the 
+[suite parameters](#suite-parameters) and [observer parameters](#observer-parameters)):
 
     coco_suite_t *suite;
     coco_observer_t *observer;
-    coco_problem_t *problem;
 
     suite = coco_suite("bbob-biobj", "", "");
     observer = coco_observer("bbob-biobj", "");
 
-    while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
-      my_optimizer(problem);
-    }
+    while ((PROBLEM = coco_suite_get_next_problem(suite, observer)) != NULL) {
+      size_t dimension = coco_problem_get_dimension(PROBLEM);
+
+      my_optimizer(evaluate_function, 
+                   dimension,
+                   coco_problem_get_number_of_objectives(PROBLEM),
+                   coco_problem_get_smallest_values_of_interest(PROBLEM),
+                   coco_problem_get_largest_values_of_interest(PROBLEM),
+                   dimension * BUDGET_MULTIPLIER,
+                   random_generator);
+    }  
 
     coco_observer_free(observer);
     coco_suite_free(suite);
@@ -57,19 +70,34 @@ Benchmarking the algorithm ``my_optimizer`` on the ``bbob-biobj`` suite with def
 The ``coco_suite_t`` object is a collection of (in this case biobjective) optimization problems of 
 type ``coco_problem_t``. The while loop iterates through all problems of the suite and optimizes 
 each of them with ``my_optimizer`` (a simple random search is used in the ``example_experiment``). 
-The ``coco_observer_t`` object takes care of logging the performance of the optimizer. Note that 
-this benchmarking procedure remains the same whether we are dealing with single- 
-or multi-objective problems and algorithms. To perform benchmarking on a different suite and with a 
-different observer, just replace ``"bbob-biobj"`` with the name of the desired suite and observer. 
+The ``coco_observer_t`` object takes care of logging the performance of the optimizer. The interface
+to ``my_optimizer`` includes the following parameters:
+- the function that evaluates solutions on the optimization problem in question,
+- the number of variables (dimension),
+- the number of objectives,
+- the smallest and largest values of interest, which define the region of interest in the decision space,
+- the maximal budget of evaluations and
+- the random generator.
 
-The optimizer should be run until ``dimension * BUDGET`` number of evaluations have been reached. 
-In the ``example_experiment``, the ``BUDGET`` is conservatively set using
+The optimizer should be run until ``dimension * BUDGET_MULTIPLIER`` number of evaluations have 
+been reached. In the ``example_experiment``, the ``BUDGET_MULTIPLIER`` is conservatively set using
 
-    static const size_t BUDGET = 2;
+    static const size_t BUDGET_MULTIPLIER = 2;
 
 so that the experiment runs quickly. You need to increase the budget for your real benchmarking
-experiments, but do so gradually (you might want to test ``BUDGET = 1e2`` before you use any larger
-values) to see how it effects the running time of the benchmark. 
+experiments, but do so gradually (you might want to test ``BUDGET_MULTIPLIER = 1e2`` before you 
+use any larger values) to see how it effects the running time of the benchmark. 
+
+The actual ``example_experiment`` contains an additional loop that supports __independent restarts__
+by ``my_optimizer`` and takes care of breaking the loop when the target has been hit or the 
+budget of function evaluations has been exhausted. While the simple random search used in the 
+example does not trigger restarts by itself, your optimizer most probably should (in order to avoid
+being stuck in a local optimum). When restarting the algorithm make sure that the optimizer is not 
+doing the exaclty same thing in every run. 
+
+Note that this benchmarking procedure remains the same whether we are dealing with single- 
+or multi-objective problems and algorithms. To perform benchmarking on a different suite and with a 
+different observer, just replace ``"bbob-biobj"`` with the name of the desired suite and observer. 
 
 In the above example, the suite and observer are called without additional parameters (the empty 
 strings ``""`` are used), which means that their default values apply. These can be changed by 
@@ -105,16 +133,22 @@ workshop.
 Possible keys and values for ``suite_options`` are:
 - ``dimensions: LIST``, where ``LIST`` is the list of dimensions to keep in the suite (range-style
 syntax is not allowed here), 
-- ``function_idx: VALUES``, where ``VALUES`` is a list or a range of function indexes (starting 
+- ``dimension_indices: VALUES``, where ``VALUES`` is a list or a range of dimension indices (starting 
 from 1) to keep in the suite, and
-- ``instance_idx: VALUES``, where ``VALUES`` is a list or a range of instance indexes (starting 
+- ``function_indices: VALUES``, where ``VALUES`` is a list or a range of function indices (starting 
+from 1) to keep in the suite, and
+- ``instance_indices: VALUES``, where ``VALUES`` is a list or a range of instance indices (starting 
 from 1) to keep in the suite. 
+
+If both ``dimensions`` and ``dimension_indices`` appear in the ``suite_options`` string, only the first 
+one is taken into account. If no ``suite_options`` is given, no filtering by functions, dimensions and
+instances is performed, i.e. the experiment will be run on the entire benchmark suite. 
 
 For example, the call:
 
     suite = coco_suite("bbob-biobj", 
                        "instances: 10-20", 
-                       "dimensions: 2,3,5,10,20 instance_idx:1-5");
+                       "dimensions: 2,3,5,10,20 instance_indices:1-5");
 
 first creates the biobjective suite with instances 10 to 20, but then uses only the first five 
 dimensions (skipping dimension 40) and the first five instances (i.e. instances 10 to 14) of the suite. 
@@ -131,23 +165,28 @@ The observer controls the logging that is performed within the benchmark. Some o
 general, while others are specific to the chosen observer. 
 
 Possible keys and values for the general ``observer_options`` are:
-- ``result_folder: NAME``, determines the output folder. If the folder with the given name already 
-exists, first NAME_001 will be tried, then NAME_002 and so on. The default value is "results".
+- ``result_folder: NAME``, determines the folder within the "exdata" folder into which the results will 
+be output. If the folder with the given name already exists, first NAME_001 will be tried, then NAME_002 
+and so on. The default value is "default".
 - ``algorithm_name: NAME``, where ``NAME`` is a short name of the algorithm that will be used in plots 
 (no spaces are allowed). The default value is "ALG".
 - ``algorithm_info: STRING`` stores the description of the algorithm. If it contains spaces, it must be 
 surrounded by double quotes. The default value is "" (no description).
+- ``number_target_triggers: VALUE`` defines the number of targets between each 10**i and 10**(i+1)
+(equally spaced in the logarithmic scale) that trigger logging. The default value is 100.
+- ``target_precision: VALUE`` defines the precision used for targets (there are no targets for
+abs(values) < target_precision). The default value is 1e-8.
+- ``number_evaluation_triggers: VALUE`` defines the number of evaluations to be logged between each 10**i
+and 10**(i+1). The default value is 20.
+- ``base_evaluation_triggers: VALUES`` defines the base evaluations used to produce an additional
+evaluation-based logging. The numbers of evaluations that trigger logging are every
+base_evaluation * dimension * (10**i). For example, if base_evaluation_triggers = "1,2,5", the logger will
+be triggered by evaluations dim*1, dim*2, dim*5, 10*dim*1, 10*dim*2, 10*dim*5, 100*dim*1, 100*dim*2,
+100*dim*5, ... The default value is "1,2,5". 
 - ``precision_x: VALUE`` defines the precision used when outputting variables and corresponds to the 
 number of digits to be printed after the decimal point. The default value is 8.
 - ``precision_f: VALUE`` defines the precision used when outputting f values and corresponds to the 
 number of digits to be printed after the decimal point. The default value is 15.
-
-Possible keys and values for the ``observer_options`` of the ``bbob`` observer are:
-- ``bbob_nbpts_nbevals: VALUE`` defines the function evaluation numbers that trigger logging (the 
-actual triggers are computed as 10**(i/bbob_nbpts_nbevals) for i = 1, 2, ... ). The default value is 
-20.
-- ``bbob_nbpts_fval: VALUE`` defines the differences to the optimum value that trigger logging (the 
-actual triggers are computed as 10**(i/bbob_nbpts_fval) for i = 1, 2, ... ). The default value is 5. 
 
 Possible keys and values for the ``observer_options`` of the ``bbob-biobj`` observer are:
 - ``log_nondominated: STRING`` determines which nondominated solutions to log. ``STRING`` can take 
@@ -156,7 +195,7 @@ solutions) and ``all`` (log every solution that is nondominated at creation time
 is all.
 - ``log_decision_variables: STRING`` determines whether the decision variables are to be logged
 in addition to the objective variables in the output of nondominated solutions. ``STRING`` can take 
-on the values ``none`` (don't output decision variables), ``log_dim``(output decision variables only 
+on the values ``none`` (don't output decision variables), ``low_dim``(output decision variables only 
 for dimensions lower or equal to 5) and ``all`` (output all decision variables). The default value is 
 log_dim. 
 - ``compute_indicators : VALUE`` determines whether to compute and output performance indicators 
@@ -208,10 +247,10 @@ To learn more about the problem, you can access its properties in the following 
 See the ``coco.h`` file for more information on these and other functions you can use to interface 
 COCO problem and other COCO structures. 
 
-## How to write new test functions and combine them into test suites
+## How to write new test functions and combine them into test suites <a name="new-suites"></a>
 
 COMING SOON...
 
-## How to write additional performance indicators and logging functionality
+## How to write additional performance indicators and logging functionality <a name="new-indicators"></a>
 
 COMING SOON...

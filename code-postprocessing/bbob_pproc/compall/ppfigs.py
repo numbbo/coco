@@ -19,7 +19,6 @@ from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 #           {'color': 'm'},
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
 
-ftarget_default = 1e-8
 show_significance = 0.01  # for zero nothing is shown
 scaling_figure_caption_start_fixed = (r"""Expected running time (\ERT\ in number of $f$-evaluations 
                 as $\log_{10}$ value), divided by dimension for target function value $BBOBPPFIGSFTARGET$ 
@@ -313,7 +312,7 @@ def generateData(dataSet, target):
     res[3] = numpy.max(dataSet.maxevals)
     return res
 
-def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', verbose=True):
+def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, outputdir='ppdata', verbose=True):
     """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
     
     One function and one target per figure.
@@ -411,22 +410,23 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, target=ftarget
 
         bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
 
-        bestalgdata = []
-        dimbestalg = list(df[0] for df in bestalgentries if df[1] == f)
-        dimbestalg.sort()
-        dimbestalg2 = []
-        for d in dimbestalg:
-            entry = bestalgentries[(d, f)]
-            tmp = entry.detERT(target((f, d)))[0]
-            if numpy.isfinite(tmp):
-                bestalgdata.append(float(tmp)/d)
-                dimbestalg2.append(d)
-
-        tmp = plt.plot(dimbestalg2, bestalgdata, color=refcolor, linewidth=10,
-                       marker='d', markersize=25, markeredgecolor=refcolor, zorder=-1
-                       #label='best 2009', 
-                       )
-        handles.append(tmp)
+        if bestalgentries:        
+            bestalgdata = []
+            dimbestalg = list(df[0] for df in bestalgentries if df[1] == f)
+            dimbestalg.sort()
+            dimbestalg2 = []
+            for d in dimbestalg:
+                entry = bestalgentries[(d, f)]
+                tmp = entry.detERT(target((f, d)))[0]
+                if numpy.isfinite(tmp):
+                    bestalgdata.append(float(tmp)/d)
+                    dimbestalg2.append(d)
+    
+            tmp = plt.plot(dimbestalg2, bestalgdata, color=refcolor, linewidth=10,
+                           marker='d', markersize=25, markeredgecolor=refcolor, zorder=-1
+                           #label='best 2009', 
+                           )
+            handles.append(tmp)
         
         if show_significance: # plot significance-stars
             xstar, ystar = [], []
