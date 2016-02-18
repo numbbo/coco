@@ -357,7 +357,9 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             save_single_functions_html(
                 os.path.join(outputdir, genericsettings.two_algorithm_file_name),
                 "%s vs %s" % (algName1, algName0),
-                algorithmCount=AlgorithmCount.TWO)
+                algorithmCount = AlgorithmCount.TWO,
+                isBiobjective = dsList0.isBiobjective(),
+                functionGroups = dsList0.getFuncGroups())
         plt.close()
 
     #plt.rcdefaults()

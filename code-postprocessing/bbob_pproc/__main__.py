@@ -7,7 +7,7 @@ This test can and should become much more sophisticated.
 
 """
 
-import os, sys, time
+import os, sys, time, inspect
 import fnmatch
 import urllib
 import shutil
@@ -55,10 +55,10 @@ def copy_latex_templates():
     currentFolder = os.path.dirname(os.path.realpath(__file__))
     templateFolder = os.path.abspath(join_path(currentFolder, '..', 'latex-templates'))
     # templateFolder = os.path.abspath('latex-templates')
-    shutil.copy(join_path(templateFolder, 'templateBBOBarticle.tex'), currentFolder)
-    shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), currentFolder)
-    shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), currentFolder)
-    shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'templateBBOBarticle.tex'), '.')
+    shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), '.')
+    shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), '.')
+    shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), '.')
 
 def run_latex_template(filename):
     filePath = os.path.abspath(join_path(os.path.dirname(__file__), filename))
@@ -66,10 +66,10 @@ def run_latex_template(filename):
     DEVNULL = open(os.devnull, 'wb')
     return subprocess.call(args, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
 
-def retrieve_algorithm(dataPath, year, algorithmName):
-    algorithmFile = join_path(dataPath, algorithmName)
+def retrieve_algorithm(dataPath, folderName, algorithmName, fileName = None):
+    algorithmFile = join_path(dataPath, fileName if fileName else algorithmName)
     if not os.path.exists(algorithmFile):
-        dataurl = 'http://coco.gforge.inria.fr/data-archive/%s/%s' % (year, algorithmName)
+        dataurl = 'http://coco.gforge.inria.fr/data-archive/%s/%s' % (folderName, algorithmName)
         urllib.urlretrieve(dataurl, algorithmFile)
 
 def prepare_data(run_all_tests):
@@ -81,6 +81,7 @@ def prepare_data(run_all_tests):
     # retrieve_algorithm(dataPath, '2010', 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz')
     # [outcommented and replaced by BIPOP until 2010 data is in new format] 
     retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noiseless.tgz')    
+    retrieve_algorithm(dataPath, 'biobj-test', 'RS_on_bbob-biobj-test.tgz', 'RS.tgz')
 
     if run_all_tests:
         retrieve_algorithm(dataPath, '2009', 'BIPOP-CMA-ES_hansen_noiseless.tgz')   
@@ -156,15 +157,25 @@ def main(args):
     
     print('*** testing module bbob_pproc ***')
     t0 = time.time()
-    print(python + command + '--conv' + 
+    print(python + command + '--conv' + ' --no-svg --settings=grayscale' +
                 join_path(data_path, 'BFGS_ros_noiseless.tgz'))
-    result = os.system(python + command + '--conv' + 
+    result = os.system(python + command + '--conv' + ' --no-svg --settings=grayscale' +
                 join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
 
     result = run_latex_template("templateBBOBarticle.tex")
     assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
+
+    t0 = time.time()
+    print(python + command + '--no-svg --settings=grayscale' + join_path(data_path, 'RS.tgz'))
+    result = os.system(python + command + '--no-svg --settings=grayscale' + join_path(data_path, 'RS.tgz'))
+    print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
+    assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
+
+    # Latex templates are not prepared yet for bi-objective case.    
+#    result = run_latex_template("templateBBOBarticle.tex")
+#    assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
 
     if run_all_tests:    
         t0 = time.time()
@@ -218,6 +229,9 @@ def main(args):
         test_count = 0
         #doctest.testmod(report=True, verbose=True)  # this is quite cool!
         # go through the py files in the bbob_pproc folder
+        currentPath = os.getcwd()        
+        newPath = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+        os.chdir(newPath)        
         for root, dirnames, filenames in os.walk(os.path.dirname(os.path.realpath(__file__))):
           for filename in fnmatch.filter(filenames, '*.py'):
             current_failure_count, current_test_count = doctest.testfile(
@@ -226,6 +240,7 @@ def main(args):
             test_count += current_test_count
             if current_failure_count:
                 print('doctest file "%s" failed' % os.path.join(root, filename))
+        os.chdir(currentPath)
     else:
         stdout = sys.stdout
         fn = '_bbob_pproc_doctest_.txt'

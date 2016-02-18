@@ -1,6 +1,6 @@
 /**
- * This file contains all necessary interfaces to the COCO code in C. The structures coco_problem,
- * coco_suite and coco_observer are accessed by means of "pointers" of type long.
+ * This file contains all necessary interfaces to the COCO code in C. The structures coco_problem_s,
+ * coco_suite_s and coco_observer_s are accessed by means of "pointers" of type long.
  *
  * TODO: Check if the casts from pointer to C structure actually work (how can this be done?)
  */
@@ -411,6 +411,28 @@ JNIEXPORT jstring JNICALL Java_CocoJNI_cocoProblemGetName
 
 /*
  * Class:     CocoJNI
+ * Method:    cocoProblemGetEvaluations
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_CocoJNI_cocoProblemGetEvaluations
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem_pointer) {
+
+  coco_problem_t *problem = NULL;
+  jlong jresult;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoProblemGetIndex\n");
+  }
+
+  problem = (coco_problem_t *) jproblem_pointer;
+  jresult = (jlong) coco_problem_get_evaluations(problem);
+  return jresult;
+}
+
+/*
+ * Class:     CocoJNI
  * Method:    cocoProblemGetIndex
  * Signature: (J)J
  */
@@ -428,5 +450,27 @@ JNIEXPORT jlong JNICALL Java_CocoJNI_cocoProblemGetIndex
 
   problem = (coco_problem_t *) jproblem_pointer;
   jresult = (jlong) coco_problem_get_suite_dep_index(problem);
+  return jresult;
+}
+
+/*
+ * Class:     CocoJNI
+ * Method:    cocoProblemIsFinalTargetHit
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_CocoJNI_cocoProblemIsFinalTargetHit
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem_pointer) {
+
+  coco_problem_t *problem = NULL;
+  jint jresult;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoProblemGetIndex\n");
+  }
+
+  problem = (coco_problem_t *) jproblem_pointer;
+  jresult = (jint) coco_problem_final_target_hit(problem);
   return jresult;
 }

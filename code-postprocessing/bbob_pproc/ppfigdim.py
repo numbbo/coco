@@ -55,10 +55,8 @@ import os
 import warnings
 import matplotlib.pyplot as plt
 import numpy as np
-from pdb import set_trace
 from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam
 
-values_of_interest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # to rename!?
 xlim_max = None
 ynormalize_by_dimension = True  # not at all tested yet
 
@@ -122,6 +120,8 @@ dimensions = genericsettings.dimensions_to_display
 functions_with_legend = (1, 24, 101, 130)
 
 def scaling_figure_caption():
+    
+    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
     if genericsettings.runlength_based_targets:
         return scaling_figure_caption_rlbased.replace('values_of_interest', 
                                         ', '.join(values_of_interest.labels()))
@@ -132,8 +132,8 @@ def scaling_figure_caption():
 def beautify(axesLabel=True):
     """Customize figure presentation.
     
-    Uses information from :file:`benchmarkshortinfos.txt` for figure
-    title. 
+    Uses information from the appropriate benchmark short infos file 
+    for figure title. 
     
     """
 
@@ -150,6 +150,8 @@ def beautify(axesLabel=True):
     axisHandle.grid(False, which='minor')
     # axisHandle.xaxis.grid(True, linewidth=0, which='major')
     ymin, ymax = plt.ylim()
+
+    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
 
     # horizontal grid
     if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
@@ -317,7 +319,7 @@ def plot_a_bar(x, y,
              markersize=0, **styles2)
 
     
-def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
+def plot(dsList, valuesOfInterest=None, styles=styles):
     """From a DataSetList, plot a figure of ERT/dim vs dim.
     
     There will be one set of graphs per function represented in the
@@ -334,6 +336,9 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
     :returns: handles
 
     """
+    if not valuesOfInterest:
+        valuesOfInterest = genericsettings.current_testbed.ppfigdim_target_values
+
     valuesOfInterest = pproc.TargetValues.cast(valuesOfInterest)
     styles = list(reversed(styles[:len(valuesOfInterest)]))
     dsList = pproc.DataSetList(dsList)
@@ -466,12 +471,19 @@ def plot(dsList, valuesOfInterest=values_of_interest, styles=styles):
         # if later the ylim[0] becomes >> 1, this might be a problem
     return res
 
-def plot_previous_algorithms(func, isBiobjective, target=values_of_interest):  # lambda x: [1e-8]):
+def plot_previous_algorithms(func, isBiobjective, target=None):  # lambda x: [1e-8]):
     """Add graph of the BBOB-2009 virtual best algorithm using the
     last, most difficult target in ``target``."""
+    
+    if not target:
+        target = genericsettings.current_testbed.ppfigdim_target_values
+        
     target = pproc.TargetValues.cast(target)
 
     bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+    
+    if not bestalgentries:
+        return None
 
     bestalgdata = []
     for d in dimensions:
@@ -513,14 +525,15 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
 
-    bestalg.loadBestAlgorithm(dsList.isBiobjective())
-
     dictFunc = dsList.dictByFunc()
 
+    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
     ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
                                 dictFunc[dictFunc.keys()[0]][0].algId,
-                                algorithmCount=ppfig.AlgorithmCount.ONE,
-                                values_of_interest = values_of_interest)
+                                algorithmCount = ppfig.AlgorithmCount.ONE,
+                                values_of_interest = values_of_interest,
+                                isBiobjective = dsList.isBiobjective(),
+                                functionGroups = dsList.getFuncGroups())
     ppfig.copy_js_files(outputdir)
     
     funInfos = ppfigparam.read_fun_infos(dsList.isBiobjective())    
