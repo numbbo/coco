@@ -18,7 +18,7 @@ if 1 < 3 and test:
     np.seterr(all='raise')
 np.seterr(under='ignore')  # ignore underflow
 
-#global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
+#global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest
 #set_trace()
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
@@ -37,7 +37,6 @@ target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
 xlimit_expensive = 1e3  # used in 
 tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7) # used as input for pptables.main in rungenericmany 
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
-rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 
 tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
@@ -289,12 +288,17 @@ class Testbed(object):
 class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
     """
-    def __init__(self):
+    def __init__(self, targetValues):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.short_names = {}
+        self.ppfigs_ftarget = 1e-8
+        self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # possibly changed in config
+        self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
+        self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
+
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
                              getBenchmarksShortInfos(False)), 
@@ -311,12 +315,17 @@ class GECCOBBOBTestbed(Testbed):
 class GECCOBiobjBBOBTestbed(Testbed):
     """Testbed used in the GECCO biobjective BBOB workshop 2016.
     """
-    def __init__(self):
+    def __init__(self, targetValues):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.short_names = {}
+        self.ppfigs_ftarget = 1e-4
+        self.ppfigdim_target_values = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
+        self.pprldistr_target_values = targetValues((1e-1, 1e-3, 1e-5)) # possibly changed in config
+        self.rldValsOfInterest = (1e-1, 1e-3, 1e-5) # possibly changed in config
+
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
                                           getBenchmarksShortInfos(True)), 
@@ -340,11 +349,15 @@ class GECCOBiobjBBOBNoisefreeTestbed(GECCOBiobjBBOBTestbed):
 # or even better by investigating in the data attributes
 
 current_testbed = None
-def getCurrentTestbed(isBiobjective):
+
+def loadCurrentTestbed(isBiobjective, targetValues):
     
     global current_testbed
 
     if not current_testbed:
-        current_testbed = GECCOBiobjBBOBNoisefreeTestbed() if isBiobjective else GECCOBBOBNoisefreeTestbed()
-        
+        if isBiobjective:        
+            current_testbed = GECCOBiobjBBOBNoisefreeTestbed(targetValues)
+        else:
+            current_testbed = GECCOBBOBNoisefreeTestbed(targetValues)
+
     return current_testbed

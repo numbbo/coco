@@ -5,7 +5,8 @@ public class Suite {
 
 	/**
 	 * Constructs the suite from the given suiteName, suiteInstance and suiteOptions.
-	 * TODO: Copy explanation of options from the C code
+	 * See http://numbbo.github.io/coco-doc/C/#suite-parameters for more information on 
+	 * valid suite parameters.
 	 * @param suiteName
 	 * @param suiteInstance
 	 * @param suiteOptions
