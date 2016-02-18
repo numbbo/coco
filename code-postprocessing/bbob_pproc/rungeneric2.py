@@ -376,7 +376,7 @@ def main(argv=None):
                     # ECDF for all functions altogether
                     try:
                         pprldistr2.main(dictDim0[dim], dictDim1[dim], dim,
-                                        inset.rldValsOfInterest,
+                                        genericsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
                                         '%02dD_all' % dim,
                                         genericsettings.verbose)
@@ -391,7 +391,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr2.main(dictFG1[fGroup], dictFG0[fGroup], dim,
-                                        inset.rldValsOfInterest,
+                                        genericsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
                                         '%02dD_%s' % (dim, fGroup),
                                         genericsettings.verbose)
@@ -402,7 +402,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr2.main(dictFN1[fGroup], dictFN0[fGroup], dim,
-                                        inset.rldValsOfInterest,
+                                        genericsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
                                         '%02dD_%s' % (dim, fGroup),
                                         genericsettings.verbose)
@@ -424,7 +424,7 @@ def main(argv=None):
                 if dim in inset.rldDimsOfInterest:
                     try:
                         pprldistr.comp(dictDim1[dim], dictDim0[dim],
-                                       inset.rldValsOfInterest, # TODO: let rldVals... possibly be RL-based targets
+                                       genericsettings.current_testbed.rldValsOfInterest, # TODO: let rldVals... possibly be RL-based targets
                                        True,
                                        outputdir, 'all', genericsettings.verbose)
                     except KeyError:
@@ -438,7 +438,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr.comp(dictFG1[fGroup], dictFG0[fGroup],
-                                       inset.rldValsOfInterest, True,
+                                       genericsettings.current_testbed.rldValsOfInterest, True,
                                        outputdir,
                                        '%s' % fGroup, genericsettings.verbose)
 
@@ -447,7 +447,7 @@ def main(argv=None):
                     dictFN1 = dictDim1[dim].dictByNoise()
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr.comp(dictFN1[fGroup], dictFN0[fGroup],
-                                       inset.rldValsOfInterest, True,
+                                       genericsettings.current_testbed.rldValsOfInterest, True,
                                        outputdir,
                                        '%s' % fGroup, genericsettings.verbose)
 
