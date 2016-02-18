@@ -186,7 +186,9 @@ def main(argv=None):
         # Process options
         outputdir = genericsettings.outputdir
         for o, a in opts:
-            if o in ("-v", "--verbose"):
+            if o in ("--large-scale"):# Wassim: added large scale option, instead of just changing dimensions_to_display, use this for easier, further uses
+                genericsettings.isLargeScale = True
+            elif o in ("-v", "--verbose"):
                 genericsettings.verbose = True
             elif o in ("-h", "--help"):
                 usage()

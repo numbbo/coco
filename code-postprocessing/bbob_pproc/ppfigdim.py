@@ -116,7 +116,10 @@ scaling_figure_caption_rlbased = caption_part_one + r"""%
     # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
 
 # should correspond with the colors in pprldistr.
-dimensions = genericsettings.dimensions_to_display
+# Wassim: TODO seems to be set before rungeneric so useless here!!!!
+dimensions = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls
+
+
 functions_with_legend = (1, 24, 101, 130)
 
 def scaling_figure_caption():
@@ -173,11 +176,16 @@ def beautify(axesLabel=True):
         plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:', linewidth=0.5)
         # TODO: this should be done before the real lines are plotted?
 
+
     # for x in dimensions:
     #     plt.plot(2 * [x], [0.1, 1e11], 'k:', linewidth=0.5)
 
     # Ticks on axes
     # axisHandle.invert_xaxis()
+    
+    # Wassim:
+    dimensions = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls
+    
     dimticklist = dimensions 
     dimannlist = dimensions 
     # TODO: All these should depend on one given input (xlim, ylim)
