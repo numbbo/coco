@@ -27,7 +27,7 @@ static void test_logger_biobj_evaluate(void **state) {
   logger_biobj_indicator_t *indicator;
 
   int scan_return;
-  char file_name[] = "test_logger_biobj.txt";
+  char file_name[] = "test_hypervolume.txt";
   FILE *f_results = fopen(file_name, "r");
   if (f_results == NULL) {
     coco_error("test_logger_biobj_evaluate() failed to open file '%s'.", file_name);

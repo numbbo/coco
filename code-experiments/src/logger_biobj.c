@@ -35,9 +35,9 @@
 #include "coco_utilities.c"
 #include "coco_problem.c"
 #include "coco_string.c"
+#include "mo_avl_tree.c"
 #include "observer_biobj.c"
 
-#include "logger_biobj_avl_tree.c"
 #include "mo_utilities.c"
 
 /** @brief Number of implemented indicators */
@@ -124,7 +124,7 @@ typedef struct {
 } logger_biobj_data_t;
 
 /**
- * @brief The type for the node's item in the AVL tree.
+ * @brief The type for the node's item in the AVL tree as used by the bi-objective logger.
  */
 typedef struct {
   double *x;                 /**< @brief The decision values of this solution. */
@@ -179,26 +179,14 @@ static void logger_biobj_node_free(logger_biobj_avl_item_t *item, void *userdata
 }
 
 /**
- * @brief Checks if the given node is smaller than the nadir point, and stores this information in the node's
- * item->within_ROI field.
+ * @brief Checks if the given node item is within the ROI and stores this information in its
+ * within_ROI field.
  */
-static void logger_biobj_check_if_within_ROI(const coco_problem_t *problem, avl_node_t *node) {
+static void logger_biobj_check_within_ROI(const coco_problem_t *problem,
+                                          logger_biobj_avl_item_t *node_item) {
 
-  logger_biobj_avl_item_t *node_item = (logger_biobj_avl_item_t *) node->item;
-  size_t i;
-
-  node_item->within_ROI = 1;
-  for (i = 0; i < problem->number_of_objectives; i++)
-    if (node_item->y[i] > problem->nadir_value[i]) {
-      node_item->within_ROI = 0;
-      break;
-    }
-
-  if (!node_item->within_ROI)
-    for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++)
-      node_item->indicator_contribution[i] = 0;
-
-  return;
+  node_item->within_ROI = mo_solution_is_within_ROI(node_item->y, problem->best_value, problem->nadir_value,
+      problem->number_of_objectives);
 }
 
 /**
@@ -352,7 +340,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
     avl_item_insert(logger->buffer_tree, node_item);
 
     if (logger->compute_indicators) {
-      logger_biobj_check_if_within_ROI(problem, new_node);
+      logger_biobj_check_within_ROI(problem, node_item);
       if (node_item->within_ROI) {
         /* Compute indicator value for new node and update the indicator value of the affected nodes */
         logger_biobj_avl_item_t *next_item, *previous_item;

@@ -58,7 +58,7 @@ struct coco_problem_s;
 /**
  * @brief The COCO problem type.
  *
- * See coco_problem for more information on its fields. */
+ * See coco_problem_s for more information on its fields. */
 typedef struct coco_problem_s coco_problem_t;
 
 /** @brief Structure containing a COCO suite. */
@@ -67,7 +67,7 @@ struct coco_suite_s;
 /**
  * @brief The COCO suite type.
  *
- * See coco_suite for more information on its fields. */
+ * See coco_suite_s for more information on its fields. */
 typedef struct coco_suite_s coco_suite_t;
 
 /** @brief Structure containing a COCO observer. */
@@ -76,8 +76,17 @@ struct coco_observer_s;
 /**
  * @brief The COCO observer type.
  *
- * See coco_observer for more information on its fields. */
+ * See coco_observer_s for more information on its fields. */
 typedef struct coco_observer_s coco_observer_t;
+
+/** @brief Structure containing a COCO archive. */
+struct coco_archive_s;
+
+/**
+ * @brief The COCO archive type.
+ *
+ * See coco_archive_s for more information on its fields. */
+typedef struct coco_archive_s coco_archive_t;
 
 /** @brief Structure containing a COCO random state. */
 struct coco_random_state_s;
@@ -85,7 +94,7 @@ struct coco_random_state_s;
 /**
  * @brief The COCO random state type.
  *
- * See coco_random_state for more information on its fields. */
+ * See coco_random_state_s for more information on its fields. */
 typedef struct coco_random_state_s coco_random_state_t;
 
 /***********************************************************************************************************/
@@ -428,6 +437,49 @@ void coco_debug(const char *message, ...);
  * @brief Sets the COCO log level to the given value and returns the previous value of the log level.
  */
 const char *coco_set_log_level(const char *level);
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
+ * @name Methods regarding COCO archives (used when pre-processing MO data)
+ */
+/**@{*/
+
+/**
+ * @brief Constructs a COCO archive.
+ */
+coco_archive_t *coco_archive(const char *suite_name,
+                             const size_t function,
+                             const size_t dimension,
+                             const size_t instance);
+/**
+ * @brief Adds a solution with objectives (f1, f2) to the archive if none of the existing solutions in the
+ * archive dominates it. In this case, returns 1, otherwise the archive is not updated and the method
+ * returns 0.
+ */
+int coco_archive_add_solution(coco_archive_t *archive, const double f1, const double f2, const char *text);
+
+/**
+ * @brief Returns the number of (non-dominated) solutions in the archive (computed first, if needed).
+ */
+size_t coco_archive_get_number_of_solutions(coco_archive_t *archive);
+
+/**
+ * @brief Returns the hypervolume of the archive (computed first, if needed).
+ */
+double coco_archive_get_hypervolume(coco_archive_t *archive);
+
+/**
+ * @brief Returns the text of the next (non-dominated) solution in the archive and NULL when there are no
+ * solutions left. The first two solutions are always the extreme ones.
+ */
+const char *coco_archive_get_next_solution_text(coco_archive_t *archive);
+
+/**
+ * @brief Frees the archive.
+ */
+void coco_archive_free(coco_archive_t *archive);
 /**@}*/
 
 /***********************************************************************************************************/

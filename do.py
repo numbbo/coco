@@ -27,7 +27,8 @@ from cocoutils import git_version, git_revision
 
 core_files = ['code-experiments/src/coco_random.c',
               'code-experiments/src/coco_suite.c',
-              'code-experiments/src/coco_observer.c'
+              'code-experiments/src/coco_observer.c',
+              'code-experiments/src/coco_archive.c'
               ]
 
 ################################################################################
@@ -35,7 +36,7 @@ core_files = ['code-experiments/src/coco_random.c',
 def build_c():
     """ Builds the C source code """
     global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/c/coco.c', release)
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'], 'code-experiments/build/c/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/c/coco.h')
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/examples/bbob2009-c-cmaes/coco.c')
     copy_file('code-experiments/build/c/coco.h', 'code-experiments/examples/bbob2009-c-cmaes/coco.h')
