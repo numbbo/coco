@@ -184,12 +184,16 @@ class RunlengthBasedTargetValues(TargetValues):
     """a class instance call returns f-target values based on 
     reference runlengths::
     
+        >>> import os
         >>> import bbob_pproc as bb
+        >>> cwd = os.getcwd()
+        >>> os.chdir("..")
         >>> targets = bb.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
         >>> targets(fun_dim=(1, 20)) # doctest:+ELLIPSIS
         Loading best algorithm data from BBOB-2009...   done ...
         array([  6.30957345e+01,   5.75439938e+01,   1.00000000e-08,
                  1.00000000e-08,   1.00000000e-08])
+        >>> os.chdir(cwd)
              
     returns a list of target f-values for F1 in 20-D, based on the 
     ERT values ``[0.5,...,50]``. 
@@ -762,7 +766,7 @@ class DataSet():
         # put into variable dataFiles the files where to look for data
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
-        data = HMultiReader(split(dataFiles), self.isBiobjective())
+        data = HMultiReader(split(dataFiles, self.isBiobjective()), self.isBiobjective())
         if verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
@@ -783,9 +787,9 @@ class DataSet():
             warnings.warn('Missing tdat files. Please rerun the experiments.')
             dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                              for i in self.dataFiles)
-            data = VMultiReaderNew(split(dataFiles), self.isBiobjective())
+            data = VMultiReaderNew(split(dataFiles, self.isBiobjective()), self.isBiobjective())
         else:
-            data = VMultiReader(split(dataFiles), self.isBiobjective())
+            data = VMultiReader(split(dataFiles, self.isBiobjective()), self.isBiobjective())
 
         if verbose:
             print ("Processing %s: %d/%d trials found."
@@ -858,7 +862,7 @@ class DataSet():
         does not exist.
         
         """
-        if isinstance(genericsettings.getCurrentTestbed(self.isBiobjective()), genericsettings.GECCOBBOBTestbed):
+        if isinstance(genericsettings.loadCurrentTestbed(self.isBiobjective(), TargetValues), genericsettings.GECCOBBOBTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
             while i > 1 and not self.isBiobjective() and self.evals[i-1][0] <= self.precision:

@@ -225,21 +225,22 @@ def save_single_functions_html(filename,
             key = 'bbobpprldistrlegendrlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendfixed'
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
-            headerERTLoss = 'ERT loss ratios'
-            f.write("<H2> %s </H2>\n" % headerERTLoss)
-            for dimension in dimensions:
-                f.write(addImage('pplogloss_%02dD_noiselessall.%s' % (dimension, extension), True))
-            f.write("\n<!--tables-->\n")
-            f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption##'))
-        
-            for typeKey, typeValue in functionGroups.iteritems():
-                f.write('<p><b>%s in %s</b></p>' % (typeValue, '-D and '.join(str(x) for x in dimensions) + '-D'))
-                f.write('<div>')
+            if not isBiobjective:            
+                headerERTLoss = 'ERT loss ratios'
+                f.write("<H2> %s </H2>\n" % headerERTLoss)
                 for dimension in dimensions:
-                    f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
-                f.write('</div>')
-                    
-            f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption##'))
+                    f.write(addImage('pplogloss_%02dD_noiselessall.%s' % (dimension, extension), True))
+                f.write("\n<!--tables-->\n")
+                f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption##'))
+            
+                for typeKey, typeValue in functionGroups.iteritems():
+                    f.write('<p><b>%s in %s</b></p>' % (typeValue, '-D and '.join(str(x) for x in dimensions) + '-D'))
+                    f.write('<div>')
+                    for dimension in dimensions:
+                        f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
+                    f.write('</div>')
+                        
+                f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption##'))
         
         elif algorithmCount is AlgorithmCount.TWO:
             headerERT = 'Scaling of ERT with dimension'

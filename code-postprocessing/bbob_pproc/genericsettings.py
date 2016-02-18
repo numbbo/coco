@@ -289,12 +289,15 @@ class Testbed(object):
 class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
     """
-    def __init__(self):
+    def __init__(self, targetValues):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.short_names = {}
+        self.ppfigs_ftarget = 1e-8
+        self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))
+
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
                              getBenchmarksShortInfos(False)), 
@@ -311,12 +314,15 @@ class GECCOBBOBTestbed(Testbed):
 class GECCOBiobjBBOBTestbed(Testbed):
     """Testbed used in the GECCO biobjective BBOB workshop 2016.
     """
-    def __init__(self):
+    def __init__(self, targetValues):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.short_names = {}
+        self.ppfigs_ftarget = 1e-4
+        self.ppfigdim_target_values = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-5))
+
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
                                           getBenchmarksShortInfos(True)), 
@@ -340,11 +346,15 @@ class GECCOBiobjBBOBNoisefreeTestbed(GECCOBiobjBBOBTestbed):
 # or even better by investigating in the data attributes
 
 current_testbed = None
-def getCurrentTestbed(isBiobjective):
+
+def loadCurrentTestbed(isBiobjective, targetValues):
     
     global current_testbed
 
     if not current_testbed:
-        current_testbed = GECCOBiobjBBOBNoisefreeTestbed() if isBiobjective else GECCOBBOBNoisefreeTestbed()
-        
+        if isBiobjective:        
+            current_testbed = GECCOBiobjBBOBNoisefreeTestbed(targetValues)
+        else:
+            current_testbed = GECCOBBOBNoisefreeTestbed(targetValues)
+
     return current_testbed
