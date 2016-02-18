@@ -25,13 +25,14 @@ in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
-dimensions_to_display = (40, 80, 160)
+dimensions_to_display_ls = (40, 80, 160, 320, 640, 1280) # Wassim: large scale suite
 generate_svg_files = True # generate the svg figures
 scaling_figures_with_boxes = True 
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
+tabDimsOfInterest_ls = (80, 640)  # Wassim: large scale
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_table = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
@@ -232,6 +233,7 @@ inputsettings = 'color'
 isExpensive = False 
 isRldOnSingleFcts = True
 isRLDistr = True
+isLargeScale = False # Wassim: added large scale tag
 ##
 isLogLoss = True # only affects rungeneric1
 isPickled = False # only affects rungeneric1
@@ -243,7 +245,7 @@ isScaleUp = True # only affects rungeneric2, only set here and not altered by an
 shortoptlist = "hvpo:"    
 longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
-               "verbose", "settings=", "conv", 
+               "verbose", "settings=", "conv", "large-scale",# Wassim: added large-scale option
                "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
                "sca-only", "no-svg"]
