@@ -82,8 +82,8 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_bent_cigar_generalized_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                             problem_id_template, problem_name_template);
   } else if (function == 13) {
-    problem = NULL; /*f_sharp_ridge_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                  problem_id_template, problem_name_template);*/
+    problem = f_sharp_ridge_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                  problem_id_template, problem_name_template);
   } else if (function == 14) {
     problem = f_different_powers_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                             problem_id_template, problem_name_template);
