@@ -52,7 +52,6 @@ from . import toolsstats, genericsettings, pproc
 from .ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 from .pptex import color_to_latex, marker_to_latex
 
-single_target_values = pproc.TargetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)]
 # TODO: the method names in this module seem to be overly unclear or misleading and should be revised.
 
@@ -283,7 +282,10 @@ def beautifyRLD(xlimit_max = None):
     if xlimit_max:
         plt.xlim(xmax = xlimit_max ** 1.0) # was 1.05
     plt.xlim(xmin = runlen_xlimits_min)
-    plt.text(plt.xlim()[0], plt.ylim()[0], single_target_values.short_info, fontsize = 14)
+    plt.text(plt.xlim()[0], 
+             plt.ylim()[0], 
+             genericsettings.current_testbed.pprldistr_target_values.short_info, 
+             fontsize = 14)
     beautifyECDF()
 
 def beautifyFVD(isStoringXMax = False, ylabel = True):
@@ -650,7 +652,7 @@ def beautify():
 #         set_trace()
 #         plt.setp(plt.gcf(), 'figsize', (16.35, 6.))
 
-def plot(dsList, targets = single_target_values, **plotArgs):
+def plot(dsList, targets=None, **plotArgs):
     """Plot ECDF of evaluations and final function values
     in a single figure for demonstration purposes."""
     # targets = targets()  # TODO: this needs to be rectified
@@ -659,6 +661,9 @@ def plot(dsList, targets = single_target_values, **plotArgs):
     assert len(dsList.dictByDim()) == 1, ('Cannot display different '
                                           'dimensionalities together')
     res = []
+    
+    if not targets:
+        targets = genericsettings.current_testbed.ppfigdim_target_values
 
     plt.subplot(121)
     maxEvalsFactor = max(i.mMaxEvals() / i.dim for i in dsList)
@@ -785,7 +790,7 @@ def main(dsList, isStoringXMax = False, outputdir = '',
     # plt.rc("ytick", labelsize=20)
     # plt.rc("font", size=20)
     # plt.rc("legend", fontsize=20)
-    targets = single_target_values # convenience abbreviation
+    targets = genericsettings.current_testbed.pprldistr_target_values # convenience abbreviation
 
     for d, dictdim in dsList.dictByDim().iteritems():
         maxEvalsFactor = max(i.mMaxEvals() / d for i in dictdim)
@@ -832,7 +837,7 @@ def main(dsList, isStoringXMax = False, outputdir = '',
                  )
         try: # was never tested, so let's make it safe
             if len(funcs) == 1:
-                plt.title(genericsettings.getCurrentTestbed(dsList.isBiobjective()).info(funcs[0])[:27])
+                plt.title(genericsettings.current_testbed.info(funcs[0])[:27])
         except:
             warnings.warn('could not print title')
 

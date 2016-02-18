@@ -5,6 +5,20 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :numbered: 3
+
+.. |ftarget| replace:: :math:`f_\mathrm{target}`
+.. |nruns| replace:: :math:`\texttt{Ntrial}`
+.. |DIM| replace:: :math:`D`
+.. _2009: http://www.sigevo.org/gecco-2009/workshops.html#bbob
+.. _2010: http://www.sigevo.org/gecco-2010/workshops.html#bbob
+.. _2012: http://www.sigevo.org/gecco-2012/workshops.html#bbob
+.. _BBOB-2009: http://coco.gforge.inria.fr/doku.php?id=bbob-2009-results
+.. _BBOB-2010: http://coco.gforge.inria.fr/doku.php?id=bbob-2010-results
+.. _BBOB-2012: http://coco.gforge.inria.fr/doku.php?id=bbob-2012
+.. _GECCO: http://www.sigevo.org/gecco-2012/
+.. _COCO: http://coco.gforge.inria.fr
+.. |ERT| replace:: :math:`\mathrm{ERT}`
 
 
 
@@ -93,6 +107,31 @@ comparisons like DE, ES, PSO), fixed-target measures can be made
 invariant under these transformations by simply choosing different
 target values while fixed-cost measures require the transformation
 of all resulting data.
+
+.. _sec:TIOI:
+
+Two Interpretation Of Instances
+================================
+
+Different instances of each function are used when collecting the number of function evaluations needed to reach a target for a given function. Those instances correspond to different instantiations of the (random) transformations applied to the raw functions behind the construction of the test functions. (A transformation can be a random rotation of the search space, ...)
+
+We interpret the different instances in two different manner:
+
+Pure repetition
+***************
+
+First of all, we interpret the different instances as if they are just a repetition of the same function. In this case we consider the run length collected on the different instances (for a given function and target) as independent identically distributed random variables. This interpretation is important for our construction of the simulated run-length and the computation of the ERT performance measure.
+
+
+Instances are actually different
+********************************
+
+Simulated runlengths don't make sense in this interpretation 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+They can represent a feature (e.g. condition number)
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 
 
 .. _sec:ERT:
@@ -218,29 +257,21 @@ the success probability. In the example, just under 50% for precision 10\
 :sup:`-8` (thick red) and just above 70% for precision 10\ :sup:`-1` (cyan).
 
 
-Simulated runs
-***************
+Simulated run-length
+********************
 
-Using simulated runs for plotting ECDF graphs
-*********************************************
+Based on the interpretation of instances as pure repetitions, we build some simulated run-length from the Nruns collected data, that is from the number of function evaluations needed to reach a given target or in case the target is not reached, the number of function evaluations of the unsuccessful run. The construction of a simulated run works as follow:
 
-In the end the ECDF graphs produced are stochastic.
+We sample a run-length uniformly at random among the Nruns run-length. If this run-length correspond to a unsuccessful trial we draw uniformly again among the Nruns run-length a new run-length. We repeat this operation until we obtain a run-length corresponding to a successful trial. The simulated run-length sums up all the run-lengths till a successful trial has been sampled.
+
+We typically generate many more simulated run-length than the number of function instances (corresponding to Nruns). 
 
 
-Two interpretation of instances
-================================
+Using simulated run-length for plotting ECDF graphs
+****************************************************
 
-Pure repetition
-***************
+The simulated run-length are used to plot the ECDF graphs: the ECDF graphs correspond to the empirical cumulative distributions of some simulated run-length generated each time the post-processing is called. As a consequence the processus of producing an ECDF graph from the collected data is stochastic and some small variations between two independent post-processing from the same data can be observed.
 
-Instances are actually different
-********************************
-
-Simulated runlengths don't make sense in this interpretation 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-They can represent a feature (e.g. condition number)
-++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Understanding the different plots
 ==================================

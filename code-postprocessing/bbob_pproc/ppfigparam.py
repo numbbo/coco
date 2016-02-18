@@ -260,8 +260,9 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
         if func in (1, 24, 101, 130):
             plt.legend(loc="best")
         
+        fontSize = genericsettings.getFontSize(funInfos.values())
         if func in funInfos.keys():
-            a.set_title(funInfos[func])
+            a.set_title(funInfos[func], fontsize=fontSize)
 
         saveFigure(filename, verbose=verbose)
         plt.close()

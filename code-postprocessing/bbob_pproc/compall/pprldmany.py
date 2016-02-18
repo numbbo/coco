@@ -438,7 +438,7 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
     return res
 
 def all_single_functions(dictAlg, isBiobjective, sortedAlgs=None, 
-                         outputdir='.', verbose=0):
+                         outputdir='.', verbose=0, parentHtmlFileName=None):
         dictFG = pp.dictAlgByFun(dictAlg)
         for fg, tmpdictAlg in dictFG.iteritems():
             dictDim = pp.dictAlgByDim(tmpdictAlg)
@@ -454,10 +454,11 @@ def all_single_functions(dictAlg, isBiobjective, sortedAlgs=None,
                      order=sortedAlgs,
                      outputdir=single_fct_output_dir,
                      info='f%03d_%02dD' % (fg, d),
-                     verbose=verbose)
+                     verbose=verbose,
+                     parentHtmlFileName=parentHtmlFileName)
 
 def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
-         dimension=None, verbose=True):
+         dimension=None, verbose=True, parentHtmlFileName=None):
     """Generates a figure showing the performance of algorithms.
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
@@ -472,6 +473,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     :param str outputdir: output directory
     :param str info: output file name suffix
     :param bool verbose: controls verbosity
+    :param str parentHtmlFileName: defines the parent html page 
 
     """
     global x_limit  # late assignment of default, because it can be set to None in config 
@@ -523,7 +525,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             continue
         # print target_values((f, dim))
         for j, t in enumerate(target_values((f, dim))):
-        # for j, t in enumerate(genericsettings.getCurrentTestbed(isBiobjective).ecdf_target_values(1e2, f)):
+        # for j, t in enumerate(genericsettings.current_testbed.ecdf_target_values(1e2, f)):
             # funcsolved[j].add(f)
 
             for alg in algorithms_with_data:
@@ -658,7 +660,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
              verticalalignment="top", transform=plt.gca().transAxes)
     if len(dictFunc) == 1:
         plt.title(' '.join((str(dictFunc.keys()[0]),
-                  genericsettings.getCurrentTestbed(isBiobjective).short_names[dictFunc.keys()[0]])))
+                  genericsettings.current_testbed.short_names[dictFunc.keys()[0]])))
     a = plt.gca()
 
     plt.xlim(xmin=1e-0, xmax=x_limit**annotation_space_end_relative)
@@ -676,7 +678,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 '', # algorithms names are clearly visible in the figure
                 add_to_names='_%02dD' %(dim),
                 algorithmCount = ppfig.AlgorithmCount.NON_SPECIFIED,
-                isBiobjective = isBiobjective
+                isBiobjective = isBiobjective,
+                parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None
             )
     if close_figure:
         plt.close()

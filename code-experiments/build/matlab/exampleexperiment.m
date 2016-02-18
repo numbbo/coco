@@ -16,11 +16,11 @@ more off; % to get immediate output in Octave
 % Experiment Parameters %
 %%%%%%%%%%%%%%%%%%%%%%%%%
 BUDGET_MULTIPLIER = 2; % algorithm runs for BUDGET_MULTIPLIER*dimension funevals
-NUM_OF_INDEPENDENT_RESTARTS = 0; % number of independent algorithm restarts;
-                                 % if >0, make sure that the algorithm is not
-                                 % always doing the same thing in each run
-                                 % (typically trivial for randomized algorithms)
-                           
+NUM_OF_INDEPENDENT_RESTARTS = 1e9; % max. number of independent algorithm
+                                   % restarts; if >0, make sure that the
+                                   % algorithm is not always doing the same thing
+                                   % in each run (which is typically trivial for
+                                   % randomized algorithms)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Prepare Experiment    %

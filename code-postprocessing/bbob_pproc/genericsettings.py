@@ -18,14 +18,14 @@ if 1 < 3 and test:
     np.seterr(all='raise')
 np.seterr(under='ignore')  # ignore underflow
 
-#global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
+#global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest
 #set_trace()
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
-generate_svg_files = False # generate the svg figures
+generate_svg_files = True # generate the svg figures
 scaling_figures_with_boxes = True 
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
@@ -37,7 +37,6 @@ target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
 xlimit_expensive = 1e3  # used in 
 tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7) # used as input for pptables.main in rungenericmany 
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
-rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 
 tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
@@ -211,7 +210,9 @@ rclegend = {"fontsize": 20}
 single_algorithm_file_name = 'templateBBOBarticle'
 two_algorithm_file_name = 'templateBBOBcmp'
 many_algorithm_file_name = 'templateBBOBmany'
-index_html_file_name = 'index'
+index_html_file_name = 'ppdata'
+ppconv_file_name = 'ppconv'
+pprldmany_file_name = 'pprldmany'
 
 latex_commands_for_html = 'latex_commands_for_html'    
 
@@ -228,7 +229,7 @@ verbose = False
 outputdir = 'ppdata'
 inputsettings = 'color'
 isExpensive = False 
-isRldOnSingleFcts = False
+isRldOnSingleFcts = True
 isRLDistr = True
 ##
 isLogLoss = True # only affects rungeneric1
@@ -240,11 +241,11 @@ isScaleUp = True # only affects rungeneric2, only set here and not altered by an
 # Used by getopt:
 shortoptlist = "hvpo:"    
 longoptlist = ["help", "output-dir=", "noisy", "noise-free",
-               "tab-only", "fig-only", "rld-only", "rld-single-fcts",
+               "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
                "verbose", "settings=", "conv", 
                "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
-               "sca-only", "svg"]
+               "sca-only", "no-svg"]
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
 # and "sca-only" only affects rungeneric2
 
@@ -260,6 +261,11 @@ def getFigFormats():
     
     return fig_formats
     
+def getFontSize(nameList):
+    maxFuncLength = max(len(i) for i in nameList)
+    fontSize = 24 - max(0, 4 * ((maxFuncLength - 35) / 5))
+    return fontSize
+
 class Testbed(object):
     """this might become the future way to have settings related to testbeds
     TODO: should go somewhere else than genericsettings.py 
@@ -287,12 +293,17 @@ class Testbed(object):
 class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
     """
-    def __init__(self):
+    def __init__(self, targetValues):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.short_names = {}
+        self.ppfigs_ftarget = 1e-8
+        self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # possibly changed in config
+        self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
+        self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
+
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
                              getBenchmarksShortInfos(False)), 
@@ -309,12 +320,17 @@ class GECCOBBOBTestbed(Testbed):
 class GECCOBiobjBBOBTestbed(Testbed):
     """Testbed used in the GECCO biobjective BBOB workshop 2016.
     """
-    def __init__(self):
+    def __init__(self, targetValues):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.short_names = {}
+        self.ppfigs_ftarget = 1e-4
+        self.ppfigdim_target_values = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
+        self.pprldistr_target_values = targetValues((1e-1, 1e-3, 1e-5)) # possibly changed in config
+        self.rldValsOfInterest = (1e-1, 1e-3, 1e-5) # possibly changed in config
+
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
                                           getBenchmarksShortInfos(True)), 
@@ -338,11 +354,15 @@ class GECCOBiobjBBOBNoisefreeTestbed(GECCOBiobjBBOBTestbed):
 # or even better by investigating in the data attributes
 
 current_testbed = None
-def getCurrentTestbed(isBiobjective):
+
+def loadCurrentTestbed(isBiobjective, targetValues):
     
     global current_testbed
 
     if not current_testbed:
-        current_testbed = GECCOBiobjBBOBNoisefreeTestbed() if isBiobjective else GECCOBBOBNoisefreeTestbed()
-        
+        if isBiobjective:        
+            current_testbed = GECCOBiobjBBOBNoisefreeTestbed(targetValues)
+        else:
+            current_testbed = GECCOBBOBNoisefreeTestbed(targetValues)
+
     return current_testbed
