@@ -57,22 +57,29 @@ def config(isBiobjective=None):
             # pprldmany.caption = ... captions are still hard coded in LaTeX
             pprldmany.x_limit = genericsettings.maxevals_fix_display  # always fixed
             
-        # genericsettings (to be used in rungeneric2 while calling pprldistr.comp(...)):    
-        genericsettings.rldValsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_single_rldistr, 
-                                                                             reference_data = reference_data,
-                                                                             force_different_targets_factor=10**-0.2)
 
         if genericsettings.current_testbed:
-            genericsettings.current_testbed.ppfigdim_target_values = \
-                pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_scaling_figs,
-                                                 # [10**i for i in [2.0, 1.5, 1.0, 0.5, 0.1, -0.3]],
-                                                 # [10**i for i in [1.7, 1, 0.3, -0.3]]
-                                                 reference_data = reference_data,
-                                                 force_different_targets_factor=10**-0.2)
+            
+            testbed = genericsettings.current_testbed  
+            # genericsettings (to be used in rungeneric2 while calling pprldistr.comp(...)):    
+            testbed.rldValsOfInterest = pproc.RunlengthBasedTargetValues(
+                                        genericsettings.target_runlengths_in_single_rldistr, 
+                                        reference_data = reference_data,
+                                        force_different_targets_factor=10**-0.2)
+
+            testbed.ppfigdim_target_values = pproc.RunlengthBasedTargetValues(
+                                             genericsettings.target_runlengths_in_scaling_figs,
+                                             # [10**i for i in [2.0, 1.5, 1.0, 0.5, 0.1, -0.3]],
+                                             # [10**i for i in [1.7, 1, 0.3, -0.3]]
+                                             reference_data = reference_data,
+                                             force_different_targets_factor=10**-0.2)
+
+            testbed.pprldistr_target_values = pproc.RunlengthBasedTargetValues(
+                                              genericsettings.target_runlengths_in_single_rldistr, 
+                                              reference_data = reference_data,
+                                              force_different_targets_factor=10**-0.2)
+
         # pprldistr:
-        pprldistr.single_target_values = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_single_rldistr, 
-                                                                          reference_data = reference_data,
-                                                                          force_different_targets_factor=10**-0.2)
         pprldistr.runlen_xlimits_max = genericsettings.maxevals_fix_display / 2 if genericsettings.maxevals_fix_display else None # can be None
         pprldistr.runlen_xlimits_min = 10**-0.3  # can be None
         # ppfigdim:
