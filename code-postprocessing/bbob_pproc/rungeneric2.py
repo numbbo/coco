@@ -517,6 +517,7 @@ def main(argv=None):
                             tmp1.extend(dictFunc1[f])
                         group0.append(tmp0)
                         group1.append(tmp1)
+                    
                     for i, g in enumerate(zip(group0, group1)):
                         pptable2.main(g[0], g[1], inset.tabDimsOfInterest,
                                       outputdir,
