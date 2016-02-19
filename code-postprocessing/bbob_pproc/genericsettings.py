@@ -57,7 +57,6 @@ simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a
 # summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-1 
 # summarized_target_function_values = [-1, 3] # easy easy 
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure (means what?)
-# not (yet) in use: pprldmany_target_values = pproc.TargetValues(10**np.arange(-8, 2, 0.2))  # might not work because of cyclic import
 
 instancesOfInterest2009 = {1:3, 2:3, 3:3, 4:3, 5:3}  # 2009 instances
 instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1,
@@ -302,7 +301,9 @@ class GECCOBBOBTestbed(Testbed):
         self.ppfigs_ftarget = 1e-8
         self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # possibly changed in config
         self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
+        self.pprldmany_target_values = targetValues(10**np.arange(2, -8, -0.2)) # possibly changed in config
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
+        self.ppfvdistr_min_target = 1e-8
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -329,7 +330,9 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.ppfigs_ftarget = 1e-4
         self.ppfigdim_target_values = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
         self.pprldistr_target_values = targetValues((1e-1, 1e-3, 1e-5)) # possibly changed in config
+        self.pprldmany_target_values = targetValues(10**np.arange(0, -5, -0.2)) # possibly changed in config
         self.rldValsOfInterest = (1e-1, 1e-3, 1e-5) # possibly changed in config
+        self.ppfvdistr_min_target = 1e-5
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
