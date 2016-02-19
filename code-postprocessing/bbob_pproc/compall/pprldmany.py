@@ -54,7 +54,6 @@ from .. import ppfig  # consecutiveNumbers, saveFigure, plotUnifLogXMarkers, log
 from .. import pptex  # numtotex
 
 displaybest2009 = True
-target_values = pp.TargetValues(10**np.arange(2, -8, -0.2)) # possibly changed in config
 x_limit = None  # not sure whether this is necessary/useful
 x_limit_default = 1e7 # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
 divide_by_dimension = True
@@ -387,7 +386,7 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
 
     """
     if targets is None:
-        targets = target_values  # set above or in config.py
+        targets = genericsettings.current_testbed.pprldmany_target_values
     try:
         if np.min(targets) >= 1:
             ValueError('smallest target f-value is not smaller than one, use ``pproc.TargetValues(targets)`` to prevent this error')
@@ -520,6 +519,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     # funcsolved = [set()] * len(targets) # number of functions solved per target
     xbest2009 = []
     maxevalsbest2009 = []
+    target_values = genericsettings.current_testbed.pprldmany_target_values
     for f, dictAlgperFunc in dictFunc.iteritems():
         if function_IDs and f not in function_IDs:
             continue
