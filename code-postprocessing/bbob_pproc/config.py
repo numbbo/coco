@@ -49,11 +49,6 @@ def config(isBiobjective=None):
         reference_data = 'bestBiobj2016' if isBiobjective else 'bestGECCO2009'                
         # pprldmany: 
         if 1 < 3:  # not yet functional, captions need to be adjusted and the bug reported by Ilya sorted out
-            pprldmany.target_values = pproc.RunlengthBasedTargetValues(np.logspace(np.log10(0.5), np.log10(50), 31),
-                                                                       reference_data = reference_data,
-                                                                       smallest_target=1e-8 * 10**0.000,
-                                                                       force_different_targets_factor=1,
-                                                                       unique_target_values=True)
             # pprldmany.caption = ... captions are still hard coded in LaTeX
             pprldmany.x_limit = genericsettings.maxevals_fix_display  # always fixed
             
@@ -79,6 +74,12 @@ def config(isBiobjective=None):
                                               reference_data = reference_data,
                                               force_different_targets_factor=10**-0.2)
 
+            testbed.pprldmany_target_values = pproc.RunlengthBasedTargetValues(
+                                               np.logspace(np.log10(0.5), np.log10(50), 31),
+                                               reference_data = reference_data,
+                                               smallest_target=1e-8 * 10**0.000,
+                                               force_different_targets_factor=1,
+                                               unique_target_values=True)
         # pprldistr:
         pprldistr.runlen_xlimits_max = genericsettings.maxevals_fix_display / 2 if genericsettings.maxevals_fix_display else None # can be None
         pprldistr.runlen_xlimits_min = 10**-0.3  # can be None
@@ -117,8 +118,9 @@ def config(isBiobjective=None):
         pass # here the default values of the modules apply
         # pprlmany.x_limit = ...should depend on noisy/noiseless
     if 11 < 3:  # for testing purpose
-        # TODO: this case needs to be tested yet: the current problem is that no noisy data are in this folder
-        pprldmany.target_values = pproc.RunlengthBasedTargetValues(10**np.arange(1, 4, 0.2), 'RANDOMSEARCH')
+        if genericsettings.current_testbed:        
+            # TODO: this case needs to be tested yet: the current problem is that no noisy data are in this folder
+            genericsettings.current_testbed.pprldmany_target_values = pproc.RunlengthBasedTargetValues(10**np.arange(1, 4, 0.2), 'RANDOMSEARCH')
  
 
     pprldmany.fontsize = 20.0  # should depend on the number of data lines down to 10.0 ?
