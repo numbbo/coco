@@ -32,7 +32,7 @@ scaling_figures_with_boxes = True
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
-tabDimsOfInterest_ls = (80, 640)  # Wassim: large scale
+tabDimsOfInterest_ls = (80, 640)  # Wassim: large scale TODO: use it
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_table = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config

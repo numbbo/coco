@@ -10,6 +10,9 @@
 #include "f_discus_generalized.c"
 #include "f_bent_cigar_generalized.c"
 #include "f_different_powers.c"
+#include "f_rastrigin.c"
+#include "f_bueche_rastrigin.c"
+#include "f_linear_slope.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
@@ -40,26 +43,26 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
   const char *problem_name_template = "BBOB large-scale suite problem f%lu instance %lu in %luD";
 
   const long rseed = (long) (function + 10000 * instance);
-  /*const long rseed_3 = (long) (3 + 10000 * instance);*/
+  const long rseed_3 = (long) (3 + 10000 * instance);
   /*const long rseed_17 = (long) (17 + 10000 * instance);*/
 
   /*TODO: finish implementing the large scale test-suite functions.
-          current list: 1,10,11,12,14*/
+          current list: 1-5,10-12,14*/
   if (function == 1) {
     problem = f_sphere_bbob_problem_allocate(function, dimension, instance, rseed,
                                              problem_id_template, problem_name_template);
   } else if (function == 2) {
-    problem = NULL; /*f_ellipsoid_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                problem_id_template, problem_name_template);*/
+    problem = f_ellipsoid_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                problem_id_template, problem_name_template);
   } else if (function == 3) {
-    problem = NULL; /*f_rastrigin_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                problem_id_template, problem_name_template);*/
+    problem = f_rastrigin_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                problem_id_template, problem_name_template);
   } else if (function == 4) {
-    problem = NULL; /*f_bueche_rastrigin_bbob_problem_allocate(function, dimension, instance, rseed_3,
-                                                       problem_id_template, problem_name_template);*/
+    problem = f_bueche_rastrigin_bbob_problem_allocate(function, dimension, instance, rseed_3,
+                                                       problem_id_template, problem_name_template);
   } else if (function == 5) {
-    problem = NULL; /*f_linear_slope_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                   problem_id_template, problem_name_template);*/
+    problem = f_linear_slope_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                   problem_id_template, problem_name_template);
   } else if (function == 6) {
     problem = NULL; /*f_attractive_sector_bbob_problem_allocate(function, dimension, instance, rseed,
                                                         problem_id_template, problem_name_template);*/
