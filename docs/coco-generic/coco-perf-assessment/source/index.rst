@@ -35,10 +35,13 @@ Indices and tables
 In this document we explain the rationale behind the performance assessment of the COCO framework, the performance measures used and the display of results.
 
 .. sectnum::
-Performance Measurement
+Introduction
 =======================
 
-We advocate performance measures that are:
+On Performance Measures
+-----------------------
+
+We advocate **performance measures** that are:
 
 * quantitative, ideally with a ratio scale (opposed to interval or ordinal
   scale) [#]_ and with a wide variation (i.e., for example, with values ranging
@@ -51,10 +54,8 @@ We advocate performance measures that are:
 For these reasons we measure "running times" to reach a target function value, denoted as fixed-target scenario in the following. 
 
 
-.. _sec:verthori:
-
 Fixed-Cost versus Fixed-Target Scenario
-=======================================
+---------------------------------------
 
 Two different approaches for collecting data and making measurements from
 experiments are schematically depicted in Figure :ref:`fig:HorizontalvsVertical`.
@@ -109,6 +110,15 @@ comparisons like DE, ES, PSO), fixed-target measures can be made
 invariant under these transformations by simply choosing different
 target values while fixed-cost measures require the transformation
 of all resulting data.
+
+
+Run-length over problems
+------------------------
+
+We define a problem as a set (function, dimension, instance, function target) where the concept of instance is described in the function documentation (it is obtained by instantiating some random transformations). We collect run-length for the set of problems associated to the test-suit definition and a collection of targets.
+
+The display of results is hence based on those collected run-length. We either used displays  based on the expected run-length |ERT| described in Section `Expected Running Time`_  or based on the distribution of run-length using empirical cumulative distribution as described in Section `Empirical Cumulative Distribution Functions`_
+
 
 .. _sec:TIOI:
 
@@ -203,6 +213,7 @@ bootstrapped running times is, besides its displacement, a good approximation
 of the true distribution. We provide some percentiles of the bootstrapped
 distribution.
 
+.. _sec:ECDF:
 
 Empirical Cumulative Distribution Functions
 ===========================================
