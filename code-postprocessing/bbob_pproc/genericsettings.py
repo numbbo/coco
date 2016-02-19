@@ -44,7 +44,7 @@ tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
 
 rldDimsOfInterest = (5, 20)
-rldDimsOfInterest = [40] # Wassim: for large scale TODO: use it by generating new large-scale reference data
+rldDimsOfInterest = [40, 80] # Wassim: for large scale TODO: use it by generating new large-scale reference data
 figValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # this is a bad name that should improve, which fig, what vals???
 # figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8) #in/outcomment if desired
 ##Put backward to have the legend in the same order as the lines.
