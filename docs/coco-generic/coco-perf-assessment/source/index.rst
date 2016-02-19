@@ -5,6 +5,20 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :numbered: 3
+
+.. |ftarget| replace:: :math:`f_\mathrm{target}`
+.. |nruns| replace:: :math:`\texttt{Ntrial}`
+.. |DIM| replace:: :math:`D`
+.. _2009: http://www.sigevo.org/gecco-2009/workshops.html#bbob
+.. _2010: http://www.sigevo.org/gecco-2010/workshops.html#bbob
+.. _2012: http://www.sigevo.org/gecco-2012/workshops.html#bbob
+.. _BBOB-2009: http://coco.gforge.inria.fr/doku.php?id=bbob-2009-results
+.. _BBOB-2010: http://coco.gforge.inria.fr/doku.php?id=bbob-2010-results
+.. _BBOB-2012: http://coco.gforge.inria.fr/doku.php?id=bbob-2012
+.. _GECCO: http://www.sigevo.org/gecco-2012/
+.. _COCO: http://coco.gforge.inria.fr
+.. |ERT| replace:: :math:`\mathrm{ERT}`
 
 
 
@@ -254,7 +268,7 @@ We typically generate many more simulated run-length than the number of function
 
 
 Using simulated run-length for plotting ECDF graphs
-*********************************************
+****************************************************
 
 The simulated run-length are used to plot the ECDF graphs: the ECDF graphs correspond to the empirical cumulative distributions of some simulated run-length generated each time the post-processing is called. As a consequence the processus of producing an ECDF graph from the collected data is stochastic and some small variations between two independent post-processing from the same data can be observed.
 
