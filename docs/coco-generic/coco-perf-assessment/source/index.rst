@@ -1,11 +1,13 @@
+#################################################################################
 Welcome to the generic performance assessment description for the Coco platform!
-================================================================================
-
-Contents:
+#################################################################################
 
 .. toctree::
    :maxdepth: 2
    :numbered: 3
+
+.. contents:: Table of contents
+
 
 .. |ftarget| replace:: :math:`f_\mathrm{target}`
 .. |nruns| replace:: :math:`\texttt{Ntrial}`
@@ -32,7 +34,7 @@ Indices and tables
 
 In this document we explain the rationale behind the performance assessment of the COCO framework, the performance measures used and the display of results.
 
-
+.. sectnum::
 Performance Measurement
 =======================
 
