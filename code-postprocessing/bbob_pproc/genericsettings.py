@@ -32,7 +32,7 @@ scaling_figures_with_boxes = True
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
-tabDimsOfInterest_ls = (80, 640)  # Wassim: large scale TODO: use it
+tabDimsOfInterest = [40]  # Wassim: large scale TODO: use it by generating new large-scale reference data
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_table = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
@@ -44,9 +44,13 @@ tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
 
 rldDimsOfInterest = (5, 20)
+rldDimsOfInterest = [40] # Wassim: for large scale TODO: use it by generating new large-scale reference data
 figValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # this is a bad name that should improve, which fig, what vals???
 # figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8) #in/outcomment if desired
 ##Put backward to have the legend in the same order as the lines.
+
+htmlDimsOfInterest = [5, 20] # Wassim: Empirical cumulative distribution functions (ECDF) and ERT loss ratios shown dimensions in html file
+htmlDimsOfInterest_ls = [40, 80] # Wassim: for large scale
 
 simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max((0, in_a_hurry)))
 simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a_hurry)))
