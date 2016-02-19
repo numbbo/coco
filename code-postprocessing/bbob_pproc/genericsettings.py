@@ -303,6 +303,7 @@ class GECCOBBOBTestbed(Testbed):
         self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # possibly changed in config
         self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
+        self.ppfvdistr_min_target = 1e-8
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -330,6 +331,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.ppfigdim_target_values = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
         self.pprldistr_target_values = targetValues((1e-1, 1e-3, 1e-5)) # possibly changed in config
         self.rldValsOfInterest = (1e-1, 1e-3, 1e-5) # possibly changed in config
+        self.ppfvdistr_min_target = 1e-5
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
