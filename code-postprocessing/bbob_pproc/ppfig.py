@@ -189,7 +189,7 @@ def save_single_functions_html(filename,
         bestAlgExists = not isBiobjective
         
         dimensions = genericsettings.htmlDimsOfInterest_ls if genericsettings.isLargeScale else genericsettings.htmlDimsOfInterest
-        
+
         if algorithmCount is AlgorithmCount.ONE:
             headerERT = 'Expected number of <i>f</i>-evaluations to reach target'
             f.write("<H2> %s </H2>\n" % headerERT)

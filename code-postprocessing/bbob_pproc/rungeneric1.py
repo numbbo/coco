@@ -445,18 +445,22 @@ def main(argv=None):
                     except KeyError:
                         continue
                     info = '%s' % ng
-                    pplogloss.main(sliceDim, CrE, True,
+                    try: # Wassim: warning for large-scale data, TODO: use different reference data or just not plot it
+                        pplogloss.main(sliceDim, CrE, True,
                                    outputdir, info,
                                    verbose=genericsettings.verbose)
-                    pplogloss.generateTable(sliceDim, CrE,
+                        pplogloss.generateTable(sliceDim, CrE,
                                             outputdir, info,
                                             verbose=genericsettings.verbose)
-                    for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
-                        info = '%s' % fGroup
-                        pplogloss.main(sliceFuncGroup, CrE, True,
+                        for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
+                            info = '%s' % fGroup
+                            pplogloss.main(sliceFuncGroup, CrE, True,
                                        outputdir, info,
                                        verbose=genericsettings.verbose)
-                    pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
+                            pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
+                    except KeyError:
+                        warnings.warn("bestAlg data not found, no pplogloss output")
+
 
             print_done()
 
