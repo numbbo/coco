@@ -251,6 +251,8 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             if isBold:
                                 tmp = r'\textbf{%s}' % tmp
                                 tmpHtml = '<b>%s</b>' % tmpHtml
+                        else:
+                            tmpHtml = tmp
 
                         if dispersion[i] and numpy.isfinite(dispersion[i]):
                             evalsMaxPrec = writeFEvalsMaxPrec(dispersion[i], 1)
