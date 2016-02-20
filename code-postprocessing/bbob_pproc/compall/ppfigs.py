@@ -19,7 +19,6 @@ from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 #           {'color': 'm'},
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
 
-ftarget_default = 1e-8
 show_significance = 0.01  # for zero nothing is shown
 scaling_figure_caption_start_fixed = (r"""Expected running time (\ERT\ in number of $f$-evaluations 
                 as $\log_{10}$ value), divided by dimension for target function value $BBOBPPFIGSFTARGET$ 
@@ -313,7 +312,7 @@ def generateData(dataSet, target):
     res[3] = numpy.max(dataSet.maxevals)
     return res
 
-def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', verbose=True):
+def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, outputdir='ppdata', verbose=True):
     """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
     
     One function and one target per figure.
@@ -445,8 +444,10 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, target=ftarget
                             ystar.append(ert/dim)
 
             plt.plot(xstar, ystar, 'k*', markerfacecolor=None, markeredgewidth=2, markersize=0.5*styles[0]['markersize'])
+        
+        fontSize = genericsettings.getFontSize(funInfos.values())
         if f in funInfos.keys():
-            plt.gca().set_title(funInfos[f])
+            plt.gca().set_title(funInfos[f], fontsize=fontSize)
 
         isLegend = False
         if legend:
@@ -517,7 +518,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, target=ftarget
         handles.append(tmp)
 
         if f in funInfos.keys():
-            plt.gca().set_title(funInfos[f])
+            plt.gca().set_title(funInfos[f], fontsize=fontSize)
 
         beautify(rightlegend=legend)
 
