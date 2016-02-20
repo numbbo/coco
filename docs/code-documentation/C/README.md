@@ -36,20 +36,33 @@ At this point we assume that the ``example_experiment`` in C is running on your 
 need any assistance). The best way to create your own benchmark experiment is to copy that example and
 make the changes you need to include your optimizer. 
 
-Benchmarking the algorithm ``my_optimizer`` on the ``bbob-biobj`` suite with default parameters 
-(see below for explanation of the [suite parameters](#suite-parameters) and 
-[observer parameters](#observer-parameters)) is invoked in the following way:
+In order to simplify the interface between the optimizers and the COCO platform, a static pointer
+to a COCO problem and a function type for evaluation functions are used:
+
+    static coco_problem_t *PROBLEM;
+    typedef void (*evaluate_function_t)(const double *x, double *y);
+
+Benchmarking a single run of the  algorithm ``my_optimizer`` on the ``bbob-biobj`` suite with default 
+parameters is invoked in the following way (see below for explanation of the 
+[suite parameters](#suite-parameters) and [observer parameters](#observer-parameters)):
 
     coco_suite_t *suite;
     coco_observer_t *observer;
-    coco_problem_t *problem;
 
     suite = coco_suite("bbob-biobj", "", "");
     observer = coco_observer("bbob-biobj", "");
 
-    while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
-      my_optimizer(problem);
-    }
+    while ((PROBLEM = coco_suite_get_next_problem(suite, observer)) != NULL) {
+      size_t dimension = coco_problem_get_dimension(PROBLEM);
+
+      my_optimizer(evaluate_function, 
+                   dimension,
+                   coco_problem_get_number_of_objectives(PROBLEM),
+                   coco_problem_get_smallest_values_of_interest(PROBLEM),
+                   coco_problem_get_largest_values_of_interest(PROBLEM),
+                   dimension * BUDGET_MULTIPLIER,
+                   random_generator);
+    }  
 
     coco_observer_free(observer);
     coco_suite_free(suite);
@@ -57,19 +70,34 @@ Benchmarking the algorithm ``my_optimizer`` on the ``bbob-biobj`` suite with def
 The ``coco_suite_t`` object is a collection of (in this case biobjective) optimization problems of 
 type ``coco_problem_t``. The while loop iterates through all problems of the suite and optimizes 
 each of them with ``my_optimizer`` (a simple random search is used in the ``example_experiment``). 
-The ``coco_observer_t`` object takes care of logging the performance of the optimizer. Note that 
-this benchmarking procedure remains the same whether we are dealing with single- 
-or multi-objective problems and algorithms. To perform benchmarking on a different suite and with a 
-different observer, just replace ``"bbob-biobj"`` with the name of the desired suite and observer. 
+The ``coco_observer_t`` object takes care of logging the performance of the optimizer. The interface
+to ``my_optimizer`` includes the following parameters:
+- the function that evaluates solutions on the optimization problem in question,
+- the number of variables (dimension),
+- the number of objectives,
+- the smallest and largest values of interest, which define the region of interest in the decision space,
+- the maximal budget of evaluations and
+- the random generator.
 
-The optimizer should be run until ``dimension * BUDGET`` number of evaluations have been reached. 
-In the ``example_experiment``, the ``BUDGET`` is conservatively set using
+The optimizer should be run until ``dimension * BUDGET_MULTIPLIER`` number of evaluations have 
+been reached. In the ``example_experiment``, the ``BUDGET_MULTIPLIER`` is conservatively set using
 
-    static const size_t BUDGET = 2;
+    static const size_t BUDGET_MULTIPLIER = 2;
 
 so that the experiment runs quickly. You need to increase the budget for your real benchmarking
-experiments, but do so gradually (you might want to test ``BUDGET = 1e2`` before you use any larger
-values) to see how it effects the running time of the benchmark. 
+experiments, but do so gradually (you might want to test ``BUDGET_MULTIPLIER = 1e2`` before you 
+use any larger values) to see how it effects the running time of the benchmark. 
+
+The actual ``example_experiment`` contains an additional loop that supports __independent restarts__
+by ``my_optimizer`` and takes care of breaking the loop when the target has been hit or the 
+budget of function evaluations has been exhausted. While the simple random search used in the 
+example does not trigger restarts by itself, your optimizer most probably should (in order to avoid
+being stuck in a local optimum). When restarting the algorithm make sure that the optimizer is not 
+doing the exaclty same thing in every run. 
+
+Note that this benchmarking procedure remains the same whether we are dealing with single- 
+or multi-objective problems and algorithms. To perform benchmarking on a different suite and with a 
+different observer, just replace ``"bbob-biobj"`` with the name of the desired suite and observer. 
 
 In the above example, the suite and observer are called without additional parameters (the empty 
 strings ``""`` are used), which means that their default values apply. These can be changed by 

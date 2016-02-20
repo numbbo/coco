@@ -346,8 +346,9 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             #plt.axvline(entry0.mMaxEvals(), ls='--', color=colors[i])
             #plt.axhline(entry1.mMaxEvals(), ls='--', color=colors[i])
 
+        fontSize = genericsettings.getFontSize(funInfos.values())
         if f in funInfos.keys():        
-            plt.ylabel(funInfos[f])
+            plt.ylabel(funInfos[f], fontsize=fontSize)
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
         saveFigure(filename, verbose=verbose)

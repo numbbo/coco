@@ -427,7 +427,7 @@ def openfile(filePath):
     return open(filePath, 'r')
     
     
-def split(dataFiles, dim=None):
+def split(dataFiles, isBiobjective, dim=None):
     """Split a list of data files into arrays corresponding to data sets."""
 
     dataSets = []
@@ -446,6 +446,8 @@ def split(dataFiles, dim=None):
                 if content:
                     dataSets.append(numpy.vstack(content))
                     content = []
+                    if isBiobjective and len(dataSets) >= 5:
+                        break
                 continue
 
             # else remove end-of-line sign
