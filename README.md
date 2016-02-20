@@ -128,7 +128,7 @@ Getting Started <a name="Getting-Started"></a>
 6.  **Postprocess** the data from the results folder by typing
 
     ```
-    python -m bbob_pproc YOURDATAFOLDER [MORE_FOLDERS]
+    python -m bbob_pproc [-o OUTPUT_FOLDERNAME] YOURDATAFOLDER [MORE_DATAFOLDERS]
     ```
 
   The name `bbob_pproc` will become `cocopp` in future. Any subfolder in the
@@ -140,7 +140,7 @@ Getting Started <a name="Getting-Started"></a>
   A folder, `ppdata` by default, will be generated, which contains all output from 
   the post-processing, including a `ppdata.html` file, useful as main entry point to 
   explore the result with a browser. Data might be overwritten, 
-  it is therefore useful to change the output folder name with the `-o FOLDERNAME` 
+  it is therefore useful to change the output folder name with the `-o OUTPUT_FOLDERNAME` 
   option.
 
   For the single-objective `bbob` suite, a summary pdf can be produced via 
