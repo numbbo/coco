@@ -1,22 +1,7 @@
-Welcome to the generic experimental setup description for the Coco platform!
-============================================================================
-
-Contents:
-
-.. toctree::
-   :maxdepth: 2
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-Black-Box Optimization Benchmarking Procedure
-=============================================
+.. title:: COCO: Experimental Procedure
+.. image:: _images/title-image.png
+.. sectnum::
+  :depth: 3
 
 .. |ftarget| replace:: :math:`f_\mathrm{target}`
 .. |nruns| replace:: :math:`\texttt{Ntrial}`
@@ -28,23 +13,294 @@ Black-Box Optimization Benchmarking Procedure
 .. _BBOB-2010: http://coco.gforge.inria.fr/doku.php?id=bbob-2010-results
 .. _BBOB-2012: http://coco.gforge.inria.fr/doku.php?id=bbob-2012
 .. _GECCO: http://www.sigevo.org/gecco-2012/
-.. _COCO: http://coco.gforge.inria.fr
+.. _COCO: https://github.com/numbbo/coco
+.. _COCOold: http://coco.gforge.inria.fr
 
-COCO_ has been used in several workshops during the GECCO_ conference since 2009_ (BBOB-2009_).
+.. |coco_problem_get_dimension| replace:: ``coco_problem_get_dimension``
+.. _coco_problem_get_dimension: http://numbbo.github.io/coco-doc/C/coco_8h.html#a0dabf3e4f5630d08077530a1341f13ab
 
-For these workshops, a testbed of 24 noiseless functions and another of 30
-noisy functions are provided. Descriptions of the functions can be found at
-http://coco.gforge.inria.fr/doku.php?id=downloads
+.. |coco_problem_get_largest_values_of_interest| replace:: 
+  ``coco_problem_get_largest_values_of_interest``
+.. _coco_problem_get_largest_values_of_interest: http://numbbo.github.io/coco-doc/C/coco_8h.html#a29c89e039494ae8b4f8e520cba1eb154
 
-This section describes the setup of the experimental procedures and their rationales,  giving the guidelines to produce an article for a GECCO-BBOB workshop using COCO.
+.. |coco_problem_get_smallest_values_of_interest| replace::
+  ``coco_problem_get_smallest_values_of_interest``
+.. _coco_problem_get_smallest_values_of_interest: http://numbbo.github.io/coco-doc/C/coco_8h.html#a4ea6c067adfa866b0179329fe9b7c458
 
-.. contents::
-   :local:
+.. |coco_problem_get_initial_solution| replace:: 
+  ``coco_problem_get_initial_solution``
+.. _coco_problem_get_initial_solution: http://numbbo.github.io/coco-doc/C/coco_8h.html#ac5a44845acfadd7c5cccb9900a566b32
+
+.. |coco_problem_final_target_hit| replace:: 
+  ``coco_problem_final_target_hit``
+.. _coco_problem_final_target_hit: 
+  http://numbbo.github.io/coco-doc/C/coco_8h.html#a1164d85fd641ca48046b943344ae9069
+
+.. |coco_problem_get_number_of_objectives| replace:: 
+  ``coco_problem_get_number_of_objectives``
+.. _coco_problem_get_number_of_objectives: http://numbbo.github.io/coco-doc/C/coco_8h.html#ab0d1fcc7f592c283f1e67cde2afeb60a
+
+.. |coco_problem_get_number_of_constraints| replace:: 
+  ``coco_problem_get_number_of_constraints``
+.. _coco_problem_get_number_of_constraints: http://numbbo.github.io/coco-doc/C/coco_8h.html#ad5c7b0889170a105671a14c8383fbb22
+
+.. |coco_evaluate_function| replace:: 
+  ``coco_evaluate_function``
+.. _coco_evaluate_function: http://numbbo.github.io/coco-doc/C/coco_8h.html#aabbc02b57084ab069c37e1c27426b95c
+
+.. |coco_evaluate_constraint| replace:: 
+  ``coco_evaluate_constraint``
+.. _coco_evaluate_constraint: 
+  http://numbbo.github.io/coco-doc/C/coco_8h.html#ab5cce904e394349ec1be1bcdc35967fa
+
+.. |coco_problem_t| replace:: 
+  ``coco_problem_t``
+.. _coco_problem_t: 
+  http://numbbo.github.io/coco-doc/C/coco_8h.html#a408ba01b98c78bf5be3df36562d99478
+
+.. |coco_recommend_solution| replace:: 
+  ``coco_recommend_solution``
+.. _coco_recommend_solution: 
+  http://numbbo.github.io/coco-doc/C/coco_8h.html#afd76a19eddd49fb78c22563390437df2
+
+.. #################################################################################
+.. #################################################################################
+.. #################################################################################
+
+|
+|
+
+.. contents:: Table of Contents
+
+|
+|
+
+Introduction
+============
+In this document we describe the experimental set-up for *black-box 
+optimization benchmarking* with the COCO_ platform. 
+
+.. TODO:: cite document from 2009/2010
+
+The platform provides
+several (single and bi-objective) *test suites* with black-box problems of different 
+dimensions to be minimized. The platform also automatically collects the relevant 
+data to display the performance results after a post-processing is applied. The number of problem evaluations to reach a certain solution quality (:math:`f`-value) is the central measure of performance. 
+
+Terminology
+-----------
+function
+  We talk about a **function** as a mapping
+  :math:`\mathbb{R}^n\to\mathbb{R}^m` with scalable input space, that is,
+  :math:`n` is not (yet) determined, and usually :math:`m\in\{1,2\}`.
+  Functions are commonly parametrized such that different *instances* of the
+  "same" function are available, e.g. translated or shifted versions. 
+  
+problem
+  We talk about a **problem**, |coco_problem_t|_, as a specific *function
+  instance* on which the optimization algorithm is run. Specifically, a problem
+  can be described as the triple ``(dimension, function, instance)``. 
+  In the context of performance
+  assessment, also one or several target :math:`f`- or :math:`\Delta f`-values
+  are attached to each problem. That is, a target value is added to the 
+  above triple to define a single problem. 
+  
+runtime
+  We define *runtime*, or *run-length* as the *number of evaluations* of a
+  given problem, also referred to as number of *function evaluations*. 
+  
+suite
+  A test- or benchmark-suite is a collection of problems, typically between
+  twenty and a hundred, where the number of objectives :math:`m` is fixed. 
+
+.. compare also the `COCO read me`_. .. _`COCO read me`: https://github.com/numbbo/coco/blob/master/README.md 
+
+
+Conducting the Experiment
+==========================
+
+The optimization algorithm to be benchmarked is run on each problem 
+of the given test suite once. There is no prescribed maximally allowed 
+runtime. The longer the experiments, the more data are available to assess 
+the performance accurately, however see also Section :ref:`sec:stopping`. 
+
+.. _sec:input:
+
+Initialization and Input to the Algorithm
+------------------------------------------
+
+An algorithm can use the following input information from each problem. For initialization: 
+
+1. **Input and output dimensions** of the problem, specifically:
+
+    - The search space (input) dimension via |coco_problem_get_dimension|_, 
+    - The number of objectives via |coco_problem_get_number_of_objectives|_, 
+      which is the "output" dimension of |coco_evaluate_function|_. 
+      All functions of a single benchmark suite have the same number 
+      of objectives, currently either one or two. 
+    - The number of constraints via |coco_problem_get_number_of_constraints|_, 
+      which is the "output" dimension of |coco_evaluate_constraint|_. *All* 
+      problems of a single benchmark suite have either no constraints, or 
+      one or more constraints. 
+
+2. The **search domain of interest** via |coco_problem_get_largest_values_of_interest|_ and |coco_problem_get_smallest_values_of_interest|_. The optimum (or the pareto set) lies within the search domain of interested. If the optimizer operates on a bounded domain only, the domain of interest can be interpreted as lower and upper bounds.
+
+3. A **feasible (initial) solution** via |coco_problem_get_initial_solution|_. 
+
+The initial state of the optimization algorithm and its parameters shall only be based on
+these input values. The initial algorithm setting is considered as part of
+the algorithm and must therefore follow the same procedure for all problems of a
+suite. The problem identifier or the positioning of the problem in the suite or
+any (other) known characteristics of the problem are, for obvious reasons, not
+allowed as input to the algorithm, see also Section
+:ref:`sec:tuning`.
+
+During an optimization run, the following (new) information is available to
+the algorithm: 
+
+#. The result, i.e. the :math:`f`-value(s), from evaluating the problem 
+   at a given search point 
+   via |coco_evaluate_function|_. 
+
+#. The result from evaluating the constraints of the problem at a 
+   given search point via |coco_evaluate_constraint|_. 
+ 
+#. The result of |coco_problem_final_target_hit|_, which can be used
+   to terminate a run conclusively without changing the performance assessment
+   in any way. Currently, if the number of objectives :math:`m > 1`, this
+   function returns always zero. 
+
+The number of evaluations of the problem and/or constraints are the search
+costs, also referred to as runtime, and used for the performance assessment of
+the algorithm. 
+
+.. _sec:recommendations:
+
+Recommendations
+----------------
+
+The performance assessment is by default based on the :math:`f`-values of the
+evaluated solutions. Each evaluation is associated with the evaluated
+solution, which is considered as the currently best known approximation of the
+optimum by the algorithm. The associated solution and hence the
+:math:`f`-value associated *to the current (last) evaluation* can be changed
+by calling |coco_recommend_solution|_. On non-noisy suites it is neither
+necessary nor advantageous to recommend the same solution repeatedly.
+Recommendations allow the algorithm to explore (in particular bad) solutions
+without affecting the performance assessment by the choice of the solution 
+of which it acquires the :math:`f`-value. 
+
+.. On non-noisy suites the last evaluation changes the assessment only if the :math:`f`-value is better than all :math:`f`-values from previous evaluations. 
+
+
+
+.. _sec:stopping:
+
+Termination Criteria and Restarts
+----------------------------------
+
+Algorithms with any budget of function evaluations are considered in the
+assessment of the results. Exploiting a large number of function evaluations
+increases the chance to achieve better function values and improves
+comparability. [#]_ In any case, a run can be conclusively terminated if
+|coco_problem_final_target_hit| returns 1. Otherwise, the choice of
+termination is a relevant part of the algorithm, because a timely
+termination (and restart) of stagnating runs is likely to improve the performance. To
+exploit a large number of function evaluations effectively, a multistart
+procedure which relies on an interim termination of the algorithm is
+advisable. 
+
+Multistarts can be independent or feature a parameter sweep. Independent
+restarts do not change the central performance measure. Independent restarts
+mainly improve the reliability and "visibility" of the measured value. 
+
+.. For example, using a fast algorithm
+   with a small success probability, say 5% (or 1%), chances are that not a
+   single of 15 trials is successful. With 10 (or 90) independent restarts,
+   the success probability will increase to 40% and the performance will
+   become visible. At least four to five (here out of 15) successful trials are
+   desirable to accomplish a stable performance measurement. This reasoning
+   remains valid for any target function value (different values are
+   considered in the evaluation).
+
+.. Restarts either from a previous solution, or with a different parameter
+   setup, for example with different (increasing) population sizes, might be
+   considered, as it has been applied quite successful [Auger:2005a]_ [Harik:1999]_.
+
+.. Choosing different setups mimics what might be done in practice. All restart
+   mechanisms are finally considered as part of the algorithm under consideration.
+
+.. The easiest functions of BBOB can be solved
+   in less than :math:`10 D` function evaluations, while on the most difficult
+   functions a budget of more than :math:`1000 D^2` function
+   evaluations to reach the final :math:`f_\mathrm{target} = f_\mathrm{opt} + 10^{-8}` is expected.
+
+.. [#] Algorithms are only comparable up to the smallest budget given to 
+  any of them. 
+
+
+Time Complexity Experiment
+--------------------------
+
+In order to get a rough measurement of the time complexity of the algorithm,
+the overall CPU time should be measured when running the algorithm on a single
+function for at least a few tens of seconds (and at least a few iterations) in
+all available dimensions. [#]_  The chosen setup should reflect a "realistic
+average scenario". If another termination criterion is reached, the algorithm
+is restarted (like for a new trial). The *CPU-time per function evaluation* is
+reported for each dimension. The chosen setup, coding language, compiler and
+computational architecture for conducting these experiments are described.
+
+.. The :file:`exampletiming.*` code template is provided to run this experiment. For CPU-inexpensive algorithms the timing might mainly reflect the time spent in function :meth:`fgeneric`.
+
+.. [#] On the ``bbob`` test suite the first instance of the 
+  Rosenbrock function :math:`f_8` is used, that is, 
+  the suite indices 105, 465, 825, 1185, 1545, 1905. 
+
+.. _sec:tuning:
+
+Parameter Setting and Tuning of Algorithms
+------------------------------------------
+
+.. The algorithm and the used parameter setting for the algorithm should be 
+   described thoroughly. 
+
+Any tuning of parameters to the test suite should be described and the
+approximate number of tested parameter settings should be given. 
+
+On all functions the very same parameter setting must be used (which might well depend on the dimensionality, see Section :ref:`sec:input`). That means, the *a priori* use of function-dependent parameter settings is prohibited (since 2012).  The function ID or any function characteristics (like
+separability, multi-modality, ...) cannot be considered as input parameter to the algorithm. 
+
+On the other hand, benchmarking different parameter settings as "different
+algorithms" on an entire test suite is encouraged. 
+
+.. In order to combine
+   different parameter settings within a single algorithm, one can use multiple runs with
+   different parameters (for example restarts, see also Section
+   :ref:`sec:stopping`), or probing techniques to identify
+   problem-wise the appropriate parameters online. The underlying assumption in
+   this experimental setup is that also in practice we do not know in advance
+   whether the algorithm will face :math:`f_1` or :math:`f_2`, a unimodal or a
+   multimodal function... therefore we cannot adjust algorithm parameters *a
+   priori* [#]_.
+
+.. In contrast to most other function properties, the property of having 
+   noise can usually be verified easily. Therefore, for noisy functions a
+   *second* testbed has been defined. The two testbeds can be approached *a
+   priori* with different parameter settings or different algorithms.
+
+
+
+The ``bbob`` Suite
+===================
+
+This section describes the specific setup and rationales for the BBOB benchmark suite.
+The descriptions of the functions can be found at http://coco.gforge.inria.fr/doku.php?id=downloads
 
 Symbols, Constants, and Parameters
 ----------------------------------
 
-For the workshops, some constants were set:
+For the BBOB test, the following constants are set:
 
   :math:`D = 2; 3; 5; 10; 20; 40` 
     is search space dimensionalities used for all functions.
@@ -105,136 +361,6 @@ We take records for a larger number of predefined target values, defined relativ
 The chosen value for the final (smallest) |ftarget| is somewhat arbitrary. 
 Reasonable values can change by simple modifications in the function
 definition. In order to safely prevent numerical precision problems, the final target is :math:`f_\mathrm{target} = f_\mathrm{opt} + 10^{-8}`.
-
-Benchmarking Experiment
------------------------
-
-The real-parameter search algorithm under consideration is run on a testbed of
-benchmark functions to be minimized (the implementation of the functions is
-provided in C/C++, Java, MATLAB/Octave and Python). On each function and for
-each dimensionality |nruns| trials are carried out (see also
-:ref:`sec:rationales`). Different function *instances* can be used. 
-
-The :file:`exampleexperiment.*` code template is provided to run this experiment. For BBOB-2012, the instances are 1 to 5 and 21 to 30. 
-
-.. _sec:input:
-
-Input to the Algorithm and Initialization
-_________________________________________
-
-An algorithm can use the following input:
-
-  #. the search space dimensionality |DIM|
-
-  #. the search domain; all functions of BBOB are defined everywhere in
-     :math:`\mathbb{R}^{D}` and have their global optimum in :math:`[-5,5]^{D}`.
-     Most BBOB functions have their global optimum in the range
-     :math:`[-4,4]^{D}` which can be a reasonable setting for initial solutions.
-
-  #. indication of the testbed under consideration, i.e. different
-     algorithms and/or parameter settings can be used for the
-     noise-free and the noisy testbed. 
-
-  #. the final target precision delta-value :math:`\Delta f = 10^{-8}` (see above),
-     in order to implement effective termination and restart mechanisms 
-     (which should also prevent early termination)
-
-  #. the target function value |ftarget|, however provided *only* for
-     conclusive (final) termination of trials, in order to reduce the 
-     overall CPU requirements. The target function value must not be used as
-     algorithm input otherwise (not even to trigger within-trial
-     restarts).
-
-Based on these input parameters, the parameter setting and initialization of
-the algorithm is entirely left to the user. As a consequence, the setting shall
-be identical for all benchmark functions of one testbed (the function
-identifier or any known characteristics of the function are, for natural reasons, not allowed as
-input to the algorithm, see also Section :ref:`sec:tuning`).
-
-.. _sec:stopping:
-
-Termination Criteria and Restarts
-_________________________________
-
-Algorithms with any budget of function evaluations, small or large, are
-considered in the analysis of the results. Exploiting a larger number of
-function evaluations increases the chance to achieve better function values or
-even to solve the function up to the final |ftarget| [#]_.
-In any case, a trial can be conclusively terminated if |ftarget| is reached.
-Otherwise, the choice of termination is a relevant part of the algorithm: the
-termination of unsuccessful trials affects the performance. To exploit a large
-number of function evaluations effectively, we suggest considering a multistart
-procedure, which relies on an interim termination of the algorithm.
-
-.. |ERT| replace:: :math:`\mathrm{ERT}`
-
-Independent restarts do not change the main performance measure,
-*expected running time* (\ |ERT|\ , see Appendix :ref:`sec:ERT`) to hit
-a given target. Independent restarts mainly improve the reliability and
-"visibility" of the measured value. For example, using a fast algorithm
-with a small success probability, say 5% (or 1%), chances are that not a
-single of 15 trials is successful. With 10 (or 90) independent restarts,
-the success probability will increase to 40% and the performance will
-become visible. At least four to five (here out of 15) successful trials are
-desirable to accomplish a stable performance measurement. This reasoning
-remains valid for any target function value (different values are
-considered in the evaluation).
-
-Restarts either from a previous solution, or with a different parameter
-setup, for example with different (increasing) population sizes, might be
-considered, as it has been applied quite successful [Auger:2005a]_ [Harik:1999]_.
-
-Choosing different setups mimics what might be done in practice. All restart
-mechanisms are finally considered as part of the algorithm under consideration.
-
-.. [#] The easiest functions of BBOB can be solved
-   in less than :math:`10 D` function evaluations, while on the most difficult
-   functions a budget of more than :math:`1000 D^2` function
-   evaluations to reach the final :math:`f_\mathrm{target} = f_\mathrm{opt} + 10^{-8}` is expected.
-
-
-Time Complexity Experiment
---------------------------
-
-In order to get a rough measurement of the time complexity of the algorithm,
-the overall CPU time is measured when running the algorithm on :math:`f_8`
-(Rosenbrock function) of the BBOB testbed for at least a few tens of seconds
-(and at least a few iterations).  The chosen setup should reflect a "realistic
-average scenario". If another termination criterion is reached, the algorithm
-is restarted (like for a new trial). The *CPU-time per function evaluation* is
-reported for each dimension. The time complexity experiment is conducted in the
-same dimensions as the benchmarking experiment. The chosen setup, coding
-language, compiler and computational architecture for conducting these
-experiments are described.
-
-The :file:`exampletiming.*` code template is provided to run this experiment. For CPU-inexpensive algorithms the timing might mainly reflect the time spent in function :meth:`fgeneric`.
-
-.. _sec:tuning:
-
-Parameter Setting and Tuning of Algorithms
-------------------------------------------
-
-The algorithm and the used parameter setting for the algorithm should be
-described thoroughly. Any tuning of parameters to the testbed should be
-described and the approximate number of tested parameter settings should be
-given. 
-
-On all functions the very same parameter setting must be used (which might well depend on the dimensionality, see Section :ref:`sec:input`). That means, *a priori* use of function-dependent parameter settings is prohibited (since 2012).  In other words, the function ID or any function characteristics (like
-separability, multi-modality, ...) cannot be considered as input parameter to the algorithm. Instead, we encourage benchmarking different
-parameter settings as "different algorithms" on the entire testbed. In order
-to combine different parameter settings, one might use either multiple runs
-with different parameters (for example restarts, see also
-Section :ref:`sec:stopping`), or use (other) probing techniques for identifying
-function-wise the appropriate parameters online. The underlying assumption in
-this experimental setup is that also in practice we do not know in advance
-whether the algorithm will face :math:`f_1` or :math:`f_2`, a unimodal or a
-multimodal function... therefore we cannot adjust algorithm parameters *a
-priori* [#]_.
-
-.. [#] In contrast to most other function properties, the property of having 
-   noise can usually be verified easily. Therefore, for noisy functions a
-   *second* testbed has been defined. The two testbeds can be approached *a
-   priori* with different parameter settings or different algorithms.
 
 
 
