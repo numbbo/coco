@@ -56,7 +56,7 @@ offset = 0.005
 incrstars = 1.5
 fthresh = 1e-8
 xmax = 1000
-functions_with_legend = (1, 24, 101, 130)
+functions_with_legend = (1, 24, 55, 101, 130)
 
 dimension_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
 

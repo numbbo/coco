@@ -117,7 +117,7 @@ scaling_figure_caption_rlbased = caption_part_one + r"""%
 
 # should correspond with the colors in pprldistr.
 dimensions = genericsettings.dimensions_to_display
-functions_with_legend = (1, 24, 101, 130)
+functions_with_legend = (1, 24, 55, 101, 130)
 
 def scaling_figure_caption():
     
