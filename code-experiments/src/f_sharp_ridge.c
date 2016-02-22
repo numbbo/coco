@@ -14,6 +14,10 @@
 #include "transform_vars_shift.c"
 #include "transform_vars_conditioning.c"
 
+#include "transform_vars_permutation.c"
+#include "transform_vars_blockrotation.c"
+#include "transform_obj_norm_by_dim.c"
+
 /**
  * @brief Implements the sharp ridge function without connections to any COCO structures.
  */
