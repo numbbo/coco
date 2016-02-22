@@ -1,0 +1,23 @@
+.. _sec:TIOI:
+
+Two Interpretation Of Instances
+================================
+
+Different instances of each function are used when collecting the number of function evaluations needed to reach a target for a given function. Those instances correspond to different instantiations of the (random) transformations applied to the raw functions behind the construction of the test functions. (A transformation can be a random rotation of the search space, ...)
+
+We interpret the different instances in two different manner:
+
+Pure repetition
+***************
+
+First of all, we interpret the different instances as if they are just a repetition of the same function. In this case we consider the run length collected on the different instances (for a given function and target) as independent identically distributed random variables. This interpretation is important for our construction of the simulated run-length and the computation of the ERT performance measure.
+
+
+Instances are actually different
+********************************
+
+Simulated runlengths don't make sense in this interpretation 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+They can represent a feature (e.g. condition number)
+++++++++++++++++++++++++++++++++++++++++++++++++++++
