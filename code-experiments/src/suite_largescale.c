@@ -71,11 +71,11 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = NULL; /*f_step_ellipsoid_bbob_problem_allocate(function, dimension, instance, rseed,
                                                      problem_id_template, problem_name_template);*/
   } else if (function == 8) {
-    problem = NULL; /*f_rosenbrock_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                 problem_id_template, problem_name_template);*/
+    problem = f_rosenbrock_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                 problem_id_template, problem_name_template);
   } else if (function == 9) {
-    problem = NULL; /*f_rosenbrock_rotated_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                         problem_id_template, problem_name_template);*/
+    problem = f_rosenbrock_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                         problem_id_template, problem_name_template);
   } else if (function == 10) {
     problem = f_ellipsoid_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                             problem_id_template, problem_name_template);
