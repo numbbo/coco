@@ -166,8 +166,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   coco_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
   coco_compute_truncated_uniform_swap_permutation(P1, rseed + 2000000, dimension, nb_swaps, swap_range);
   coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
-  
-  
+
   problem = f_ellipsoid_allocate(dimension);
   problem = transform_vars_oscillate(problem);
   problem = transform_vars_permutation(problem, P2, dimension);/* LIFO */
