@@ -80,6 +80,11 @@ static coco_problem_t *f_rastrigin_bbob_problem_allocate(const size_t function,
   problem = transform_vars_asymmetric(problem, 0.2);
   problem = transform_vars_oscillate(problem);
   problem = transform_vars_shift(problem, xopt, 0);
+
+  /*if large scale test-bed, normalize by dim*/
+  if (coco_strfind(problem_name_template, "BBOB large-scale suite") >= 0){
+    problem = transform_obj_norm_by_dim(problem);
+  }
   problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);

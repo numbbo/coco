@@ -494,7 +494,7 @@ def plotRLDistr(dsList, target, label = '', max_fun_evals = np.inf,
     res = plotECDF(x, nn, **kwargs)
     return res
 
-def plotFVDistr(dsList, budget, min_f = 1e-8, **plotArgs):
+def plotFVDistr(dsList, budget, min_f = None, **plotArgs):
     """Creates ECDF of final function values plot from a DataSetList.
 
     :param dsList: data sets
@@ -505,6 +505,9 @@ def plotFVDistr(dsList, budget, min_f = 1e-8, **plotArgs):
     :returns: handle
 
     """
+    if not min_f:
+        min_f = genericsettings.current_testbed.ppfvdistr_min_target
+    
     x = []
     nn = 0
     for ds in dsList:
@@ -790,7 +793,8 @@ def main(dsList, isStoringXMax = False, outputdir = '',
     # plt.rc("ytick", labelsize=20)
     # plt.rc("font", size=20)
     # plt.rc("legend", fontsize=20)
-    targets = genericsettings.current_testbed.pprldistr_target_values # convenience abbreviation
+    testbed = genericsettings.current_testbed
+    targets = testbed.pprldistr_target_values # convenience abbreviation
 
     for d, dictdim in dsList.dictByDim().iteritems():
         maxEvalsFactor = max(i.mMaxEvals() / d for i in dictdim)
@@ -837,7 +841,7 @@ def main(dsList, isStoringXMax = False, outputdir = '',
                  )
         try: # was never tested, so let's make it safe
             if len(funcs) == 1:
-                plt.title(genericsettings.current_testbed.info(funcs[0])[:27])
+                plt.title(testbed.info(funcs[0])[:27])
         except:
             warnings.warn('could not print title')
 
@@ -849,12 +853,12 @@ def main(dsList, isStoringXMax = False, outputdir = '',
         # second figure: Function Value Distribution
         filename = os.path.join(outputdir, 'ppfvdistr_%02dD_%s' % (d, info))
         fig = plt.figure()
-        plotFVDistr(dictdim, np.inf, 1e-8, **rldStyles[-1])
+        plotFVDistr(dictdim, np.inf, testbed.ppfvdistr_min_target, **rldStyles[-1])
         # coloring right to left
         for j, max_eval_factor in enumerate(single_runlength_factors):
             if max_eval_factor > maxEvalsFactor:
                 break
-            plotFVDistr(dictdim, max_eval_factor, 1e-8,
+            plotFVDistr(dictdim, max_eval_factor, testbed.ppfvdistr_min_target,
                         **rldUnsuccStyles[j % len(rldUnsuccStyles)])
 
         plt.text(0.98, 0.02, text, horizontalalignment = "right",

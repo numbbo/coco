@@ -84,6 +84,34 @@ void cocoObserverFree(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
     coco_observer_free(observer);
 }
 
+void cocoProblemAddObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    coco_problem_t *problem;
+    coco_observer_t *observer;
+    coco_problem_t *observedproblem;
+    size_t *ref, *ref2;
+    
+    /* check for proper number of arguments */
+    if(nrhs!=2) {
+        mexErrMsgIdAndTxt("cocoProblemAddObserver:nrhs","Two inputs required.");
+    }
+    
+    /* get the suite */
+    ref = (size_t *)mxGetData(prhs[0]);
+    problem = (coco_problem_t *)(*ref);
+    /* get the observer */
+    ref2 = (size_t *)mxGetData(prhs[1]);
+    observer = (coco_observer_t *)(*ref2);
+    
+    /* call coco_problem_add_observer() */
+    observedproblem = coco_problem_add_observer(problem, observer);
+    
+    /* prepare the return value */
+    plhs[0] = mxCreateNumericMatrix(1, 1 ,mxINT64_CLASS, mxREAL);
+    ref = (size_t *)mxGetData(plhs[0]);
+    *ref = (size_t)observedproblem;
+}
+
 void cocoProblemFinalTargetHit(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     size_t *ref;
@@ -200,7 +228,7 @@ void cocoProblemGetInitialSolution(int nlhs, mxArray *plhs[], int nrhs, const mx
     nb_dim = coco_problem_get_dimension(problem);
     plhs[0] = mxCreateDoubleMatrix(1, nb_dim, mxREAL);
     v = mxGetPr(plhs[0]);
-    /* call coco_problem_get_largest_values_of_interest(...) */
+    /* call coco_problem_get_initial_solution(...) */
     coco_problem_get_initial_solution(problem, v);
     printf("%e", v[0]);
 }
@@ -309,6 +337,34 @@ void cocoProblemIsValid(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs
     ref = (size_t *)mxGetData(prhs[0]);
     pb = (coco_problem_t *)(*ref);
     plhs[0] = mxCreateLogicalScalar(pb != NULL);
+}
+
+void cocoProblemRemoveObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    coco_problem_t *problem;
+    coco_observer_t *observer;
+    coco_problem_t *unobservedproblem;
+    size_t *ref, *ref2;
+    
+    /* check for proper number of arguments */
+    if(nrhs!=2) {
+        mexErrMsgIdAndTxt("cocoProblemREmoveObserver:nrhs","Two inputs required.");
+    }
+    
+    /* get the suite */
+    ref = (size_t *)mxGetData(prhs[0]);
+    problem = (coco_problem_t *)(*ref);
+    /* get the observer */
+    ref2 = (size_t *)mxGetData(prhs[1]);
+    observer = (coco_observer_t *)(*ref2);
+    
+    /* call coco_problem_remove_observer() */
+    unobservedproblem = coco_problem_remove_observer(problem, observer);
+    
+    /* prepare the return value */
+    plhs[0] = mxCreateNumericMatrix(1, 1 ,mxINT64_CLASS, mxREAL);
+    ref = (size_t *)mxGetData(plhs[0]);
+    *ref = (size_t)unobservedproblem;
 }
 
 void cocoSetLogLevel(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -456,6 +512,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoObserver(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoobserverfree") == 0) {
         cocoObserverFree(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoproblemaddobserver") == 0) {
+        cocoProblemAddObserver(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemfinaltargethit") == 0) {
         cocoProblemFinalTargetHit(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemfree") == 0) {
@@ -478,6 +536,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoProblemGetSmallestValuesOfInterest(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemisvalid") == 0) {
         cocoProblemIsValid(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoproblemremoveobserver") == 0) {
+        cocoProblemRemoveObserver(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocosetloglevel") == 0) {
         cocoSetLogLevel(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocosuite") == 0) {

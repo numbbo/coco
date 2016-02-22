@@ -116,7 +116,10 @@ scaling_figure_caption_rlbased = caption_part_one + r"""%
     # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
 
 # should correspond with the colors in pprldistr.
-dimensions = genericsettings.dimensions_to_display
+# Wassim: TODO seems to be set before rungeneric so useless here!!!!
+dimensions = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls
+
+
 functions_with_legend = (1, 24, 101, 130)
 
 def scaling_figure_caption():
@@ -173,11 +176,16 @@ def beautify(axesLabel=True):
         plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:', linewidth=0.5)
         # TODO: this should be done before the real lines are plotted?
 
+
     # for x in dimensions:
     #     plt.plot(2 * [x], [0.1, 1e11], 'k:', linewidth=0.5)
 
     # Ticks on axes
     # axisHandle.invert_xaxis()
+    
+    # Wassim:
+    dimensions = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls
+    
     dimticklist = dimensions 
     dimannlist = dimensions 
     # TODO: All these should depend on one given input (xlim, ylim)
@@ -536,7 +544,8 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
                                 functionGroups = dsList.getFuncGroups())
     ppfig.copy_js_files(outputdir)
     
-    funInfos = ppfigparam.read_fun_infos(dsList.isBiobjective())    
+    funInfos = ppfigparam.read_fun_infos(dsList.isBiobjective())
+    fontSize = genericsettings.getFontSize(funInfos.values())
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)
@@ -548,8 +557,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             # print(plt.rcParams['axes.titlesize'])
             # print(plt.rcParams['font.size'])
             funcName = funInfos[func]
-            fontSize = 24 - max(0, 4 * ((len(funcName) - 35) / 5))
-            plt.gca().set_title(funcName, fontsize=fontSize)  # 24 is global font.size
+            plt.gca().set_title(funcName, fontsize=fontSize)
         plot_previous_algorithms(func, dsList.isBiobjective(), _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         with warnings.catch_warnings(record=True) as ws:

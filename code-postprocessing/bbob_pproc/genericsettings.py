@@ -25,13 +25,14 @@ in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
-dimensions_to_display = (40, 80, 160)
+dimensions_to_display_ls = (40, 80, 160, 320, 640, 1280) # Wassim: large scale suite
 generate_svg_files = True # generate the svg figures
 scaling_figures_with_boxes = True 
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
+tabDimsOfInterest = [40]  # Wassim: large scale TODO: use it by generating new large-scale reference data
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_table = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
@@ -43,9 +44,13 @@ tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
 
 rldDimsOfInterest = (5, 20)
+rldDimsOfInterest = [40, 80] # Wassim: for large scale TODO: use it by generating new large-scale reference data
 figValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # this is a bad name that should improve, which fig, what vals???
 # figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8) #in/outcomment if desired
 ##Put backward to have the legend in the same order as the lines.
+
+htmlDimsOfInterest = [5, 20] # Wassim: Empirical cumulative distribution functions (ECDF) and ERT loss ratios shown dimensions in html file
+htmlDimsOfInterest_ls = [40, 80] # Wassim: for large scale
 
 simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max((0, in_a_hurry)))
 simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a_hurry)))
@@ -58,7 +63,6 @@ simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a
 # summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-1 
 # summarized_target_function_values = [-1, 3] # easy easy 
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure (means what?)
-# not (yet) in use: pprldmany_target_values = pproc.TargetValues(10**np.arange(-8, 2, 0.2))  # might not work because of cyclic import
 
 instancesOfInterest2009 = {1:3, 2:3, 3:3, 4:3, 5:3}  # 2009 instances
 instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1,
@@ -232,6 +236,7 @@ inputsettings = 'color'
 isExpensive = False 
 isRldOnSingleFcts = True
 isRLDistr = True
+isLargeScale = False # Wassim: added large scale tag
 ##
 isLogLoss = True # only affects rungeneric1
 isPickled = False # only affects rungeneric1
@@ -243,7 +248,7 @@ isScaleUp = True # only affects rungeneric2, only set here and not altered by an
 shortoptlist = "hvpo:"    
 longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
-               "verbose", "settings=", "conv", 
+               "verbose", "settings=", "conv", "large-scale",# Wassim: added large-scale option
                "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
                "sca-only", "no-svg"]
@@ -262,6 +267,11 @@ def getFigFormats():
     
     return fig_formats
     
+def getFontSize(nameList):
+    maxFuncLength = max(len(i) for i in nameList)
+    fontSize = 24 - max(0, 4 * ((maxFuncLength - 35) / 5))
+    return fontSize
+
 class Testbed(object):
     """this might become the future way to have settings related to testbeds
     TODO: should go somewhere else than genericsettings.py 
@@ -298,7 +308,9 @@ class GECCOBBOBTestbed(Testbed):
         self.ppfigs_ftarget = 1e-8
         self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # possibly changed in config
         self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
+        self.pprldmany_target_values = targetValues(10**np.arange(2, -8, -0.2)) # possibly changed in config
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
+        self.ppfvdistr_min_target = 1e-8
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -325,7 +337,9 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.ppfigs_ftarget = 1e-4
         self.ppfigdim_target_values = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
         self.pprldistr_target_values = targetValues((1e-1, 1e-3, 1e-5)) # possibly changed in config
+        self.pprldmany_target_values = targetValues(10**np.arange(0, -5, -0.2)) # possibly changed in config
         self.rldValsOfInterest = (1e-1, 1e-3, 1e-5) # possibly changed in config
+        self.ppfvdistr_min_target = 1e-5
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 

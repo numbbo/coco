@@ -286,9 +286,10 @@ def main(argv=None):
         config.target_values(genericsettings.isExpensive)
         config.config(dsList[0].isBiobjective())
 
-
+        _dimensions_to_display = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls # Wassim: modify genericsettings.dimensions_to_display directly?
         for i in dsList:
-            if i.dim not in genericsettings.dimensions_to_display:
+            #if i.dim not in genericsettings.dimensions_to_display:
+            if i.dim not in _dimensions_to_display:
                 continue
 
             if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) <
