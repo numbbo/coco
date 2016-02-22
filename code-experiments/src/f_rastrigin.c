@@ -17,6 +17,10 @@
 #include "transform_obj_shift.c"
 #include "transform_vars_affine.c"
 
+#include "transform_vars_permutation.c"
+#include "transform_vars_blockrotation.c"
+#include "transform_obj_norm_by_dim.c"
+
 /**
  * @brief Implements the Rastrigin function without connections to any COCO structures.
  */
@@ -98,6 +102,64 @@ static coco_problem_t *f_rastrigin_bbob_problem_allocate(const size_t function,
 /**
  * @brief Creates the BBOB rotated Rastrigin problem.
  */
+static coco_problem_t *f_rastrigin_rotated_bbob_problem_allocate(const size_t function,
+                                                                 const size_t dimension,
+                                                                 const size_t instance,
+                                                                 const long rseed,
+                                                                 const char *problem_id_template,
+                                                                 const char *problem_name_template) {
+    double *xopt, fopt;
+    coco_problem_t *problem = NULL;
+    size_t i, j, k;
+    double *M = coco_allocate_vector(dimension * dimension);
+    double *b = coco_allocate_vector(dimension);
+    double *current_row, **rot1, **rot2;
+    
+    xopt = coco_allocate_vector(dimension);
+    fopt = bbob2009_compute_fopt(function, instance);
+    bbob2009_compute_xopt(xopt, rseed, dimension);
+    
+    rot1 = bbob2009_allocate_matrix(dimension, dimension);
+    rot2 = bbob2009_allocate_matrix(dimension, dimension);
+    bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+    bbob2009_compute_rotation(rot2, rseed, dimension);
+    for (i = 0; i < dimension; ++i) {
+        b[i] = 0.0;
+        current_row = M + i * dimension;
+        for (j = 0; j < dimension; ++j) {
+            current_row[j] = 0.0;
+            for (k = 0; k < dimension; ++k) {
+                double exponent = 1.0 * (int) k / ((double) (long) dimension - 1.0);
+                current_row[j] += rot1[i][k] * pow(sqrt(10), exponent) * rot2[k][j];
+            }
+        }
+    }
+    
+    problem = f_rastrigin_allocate(dimension);
+    problem = transform_obj_shift(problem, fopt);
+    problem = transform_vars_affine(problem, M, b, dimension);
+    problem = transform_vars_asymmetric(problem, 0.2);
+    problem = transform_vars_oscillate(problem);
+    bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
+    problem = transform_vars_affine(problem, M, b, dimension);
+    problem = transform_vars_shift(problem, xopt, 0);
+    
+    bbob2009_free_matrix(rot1, dimension);
+    bbob2009_free_matrix(rot2, dimension);
+    
+    coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+    coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+    coco_problem_set_type(problem, "4-multi-modal");
+    
+    coco_free_memory(M);
+    coco_free_memory(b);
+    coco_free_memory(xopt);
+    return problem;
+}
+
+/**
+ * @brief Creates the BBOB rotated Rastrigin problem for large scale.
+ */
 static coco_problem_t *f_rastrigin_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                        const size_t dimension,
                                                                        const size_t instance,
@@ -106,7 +168,6 @@ static coco_problem_t *f_rastrigin_permblockdiag_bbob_problem_allocate(const siz
                                                                        const char *problem_name_template) {
     double *xopt, fopt;
     coco_problem_t *problem = NULL;
-    size_t i, j, k;
     double **B1;
     double **B2;
     const double *const *B1_copy;
@@ -146,27 +207,24 @@ static coco_problem_t *f_rastrigin_permblockdiag_bbob_problem_allocate(const siz
     coco_compute_truncated_uniform_swap_permutation(P22, rseed + 6000000, dimension, nb_swaps, swap_range);
     
     problem = f_rastrigin_allocate(dimension);
-    // R operator
     problem = transform_vars_permutation(problem, P22, dimension);
     problem = transform_vars_blockrotation(problem, B2_copy, dimension, block_sizes2, nb_blocks2);
     problem = transform_vars_permutation(problem, P12, dimension);
-    // Lambda operator
+    
     problem = transform_vars_conditioning(problem, 10.0);
-    // Q operator
+    
     problem = transform_vars_permutation(problem, P21, dimension);
     problem = transform_vars_blockrotation(problem, B1_copy, dimension, block_sizes1, nb_blocks1);
     problem = transform_vars_permutation(problem, P11, dimension);
-    // T_asy operator
+  
     problem = transform_vars_asymmetric(problem, 0.2);
-    // T_osz operator
+
     problem = transform_vars_oscillate(problem);
-    // R operator
     problem = transform_vars_permutation(problem, P22, dimension);
     problem = transform_vars_blockrotation(problem, B2_copy, dimension, block_sizes2, nb_blocks2);
     problem = transform_vars_permutation(problem, P12, dimension);
-    
+ 
     problem = transform_vars_shift(problem, xopt, 0);
-    
     problem = transform_obj_norm_by_dim(problem);
     problem = transform_obj_shift(problem, fopt);
     
@@ -185,6 +243,3 @@ static coco_problem_t *f_rastrigin_permblockdiag_bbob_problem_allocate(const siz
     coco_free_memory(xopt);
     return problem;
 }
-
-f_rosenbrock_permblockdiag_bbob_problem_allocate
-
