@@ -234,17 +234,20 @@ latex_elements = {
   \usepackage{amssymb}
   \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
   \newcommand{\ignore}[1]{}
-  \newcommand{\abstractinconf}{""" + abstract + r"""}
-  \newcommand{\abstractinrst}{\begin{abstract}\abstractinconf\end{abstract}}
+  \newcommand{\abstracttextinconfpy}{""" + abstract + r"""}
 
 %%%%%% TOGGLE the renewcommand to update toc / show abstract first %%%%%%
   \newcommand{\generatetoc}{\boolean{true}}  % (re-)generate toc
   \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
 
-  \ifthenelse{\generatetoc}{}{
+  % abstract is latex-only in rst
+  \newcommand{\abstractinrst}{\begin{abstract}\abstracttextinconfpy\end{abstract}} 
+  % abstract via redefinition of \tableofcontents
+  \ifthenelse{\generatetoc}{% do nothing here, \tableofcontents does the work
+    }{% redefine \tableofcontents such that the abstract can go first:
     \renewcommand{\abstractinrst}{}
     \renewcommand{\tableofcontents}{
-      \begin{abstract}\abstractinconf\end{abstract}
+      \begin{abstract}\abstracttextinconfpy\end{abstract}
       \par\par
       \section*{Contents}
       \begin{minipage}{\textwidth}\setlength{\baselineskip}{3ex}
