@@ -1,11 +1,13 @@
+#################################################################################
 Welcome to the generic performance assessment description for the Coco platform!
-================================================================================
-
-Contents:
+#################################################################################
 
 .. toctree::
    :maxdepth: 2
    :numbered: 3
+
+.. contents:: Table of contents
+
 
 .. |ftarget| replace:: :math:`f_\mathrm{target}`
 .. |nruns| replace:: :math:`\texttt{Ntrial}`
@@ -22,21 +24,19 @@ Contents:
 
 
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
 
 In this document we explain the rationale behind the performance assessment of the COCO framework, the performance measures used and the display of results.
 
+.. sectnum::
 
-Performance Measurement
-=======================
+Introduction
+=============
 
-We advocate performance measures that are:
+
+On Performance Measures
+-----------------------
+
+We advocate **performance measures** that are:
 
 * quantitative, ideally with a ratio scale (opposed to interval or ordinal
   scale) [#]_ and with a wide variation (i.e., for example, with values ranging
@@ -52,7 +52,7 @@ For these reasons we measure "running times" to reach a target function value, d
 .. _sec:verthori:
 
 Fixed-Cost versus Fixed-Target Scenario
-=======================================
+---------------------------------------
 
 Two different approaches for collecting data and making measurements from
 experiments are schematically depicted in Figure :ref:`fig:HorizontalvsVertical`.
@@ -108,31 +108,18 @@ invariant under these transformations by simply choosing different
 target values while fixed-cost measures require the transformation
 of all resulting data.
 
-.. _sec:TIOI:
 
-Two Interpretation Of Instances
-================================
+Run-length over problems
+------------------------
 
-Different instances of each function are used when collecting the number of function evaluations needed to reach a target for a given function. Those instances correspond to different instantiations of the (random) transformations applied to the raw functions behind the construction of the test functions. (A transformation can be a random rotation of the search space, ...)
+We define a problem as a set ``(function, dimension, instance, function target)`` where the concept of instance is described in the function documentation (it is obtained by instantiating some random transformations). We collect run-length swiping over functions, dimensions, instances and targets.
 
-We interpret the different instances in two different manner:
+The display of results is hence based on those collected run-length. We either used displays  based on the expected run-length |ERT| described in Section `Expected Running Time`_  or based on the distribution of run-length using empirical cumulative distribution as described in Section `Empirical Cumulative Distribution Functions`_
 
-Pure repetition
-***************
+Interpretation of instances
+***************************
 
-First of all, we interpret the different instances as if they are just a repetition of the same function. In this case we consider the run length collected on the different instances (for a given function and target) as independent identically distributed random variables. This interpretation is important for our construction of the simulated run-length and the computation of the ERT performance measure.
-
-
-Instances are actually different
-********************************
-
-Simulated runlengths don't make sense in this interpretation 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-They can represent a feature (e.g. condition number)
-++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
+Different instances of each function are used when collecting the number of function evaluations needed to reach a target for a given function. We interpret the different instances as if they are just a repetition of the same function. In this case we consider the run length collected on the different instances (for a given function, dimension and target) as independent identically distributed random variables.
 
 .. _sec:ERT:
 
@@ -142,40 +129,55 @@ Expected Running Time
 We use the *expected running time* (|ERT|, introduced in [Price:1997]_ as
 ENES and analyzed in [Auger:2005b]_ as success performance) as most
 prominent performance measure. The Expected Running Time is defined as the
-expected number of function evaluations to reach a target function value for
-the first time. For a non-zero success rate |ps|, the |ERT| computes to:
+average number of function evaluations while the best function value was not smaller than the target
 
-.. _eq:SPone:
+.. _eq:ERT:
 
 .. math::
    :nowrap:
 
    \begin{eqnarray}
-     \mathrm{ERT}(f_\mathrm{target}) &=& \mathrm{RT}_\mathrm{S} + \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}} \,\mathrm{RT}_\mathrm{US} \\
-                                     &=& \frac{p_{\mathrm{s}} \mathrm{RT}_\mathrm{S} + (1-p_{\mathrm{s}}) \mathrm{RT}_\mathrm{US}}{p_{\mathrm{s}}} \\
-                                     &=& \frac{\#\mathrm{FEs}(f_\mathrm{best}\ge f_\mathrm{target})}{\#\mathrm{succ}}
+     \mathrm{ERT}(f_\mathrm{target}) &=& \frac{\#\mathrm{FEs}(f_\mathrm{best}\ge f_\mathrm{target})}{\#\mathrm{succ}}
    \end{eqnarray}
+
 
 .. |nbsucc| replace:: :math:`\#\mathrm{succ}`
 .. |ps| replace:: :math:`p_{\mathrm{s}}`
 .. |Ts| replace:: :math:`\mathrm{RT}_\mathrm{S}`
 .. |Tus| replace:: :math:`\mathrm{RT}_\mathrm{US}`
 
+where |nbsucc| denotes the number of successful trials (successful trials are those that reached |ftarget|) and  :math:`\#\mathrm{FEs}(f_\mathrm{best}(\mathrm{FE}) \ge f_\mathrm{target})` is
+the number of function evaluations
+conducted in all trials, while the best function value was not smaller than
+|ftarget| during the trial, i.e. the sum over all trials of:
+
+.. _eq:SPone1:
+
+.. math::
+   \max \{\mathrm{FE} \mbox{ s.t. } f_\mathrm{best}(\mathrm{FE}) \ge f_\mathrm{target} \}.
+
+
+The |ERT| coincides with the estimate of the expected running time needed to reach |ftarget| by an (hypothetical) algorithm that would conduct restarts till a successful run (i.e. reaching the target) is observed. More precisely |ERT| writes also
+
+.. _eq:SPone2:
+
+.. math::
+   :nowrap:
+
+   \begin{eqnarray}
+     \mathrm{ERT}(f_\mathrm{target}) &=& \mathrm{RT}_\mathrm{S} + \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}} \,\mathrm{RT}_\mathrm{US} \\
+                                     &=& \frac{p_{\mathrm{s}} \mathrm{RT}_\mathrm{S} + (1-p_{\mathrm{s}}) \mathrm{RT}_\mathrm{US}}{p_{\mathrm{s}}}
+   \end{eqnarray}
+
+
 
 where the *running times* |Ts| and |Tus| denote the average number of
 function evaluations for successful and unsuccessful trials, respectively (zero
 for none respective trial), and |ps| denotes the fraction of successful trials.
 Successful trials are those that reached |ftarget|; evaluations after
-|ftarget| was reached are disregarded. The
-:math:`\#\mathrm{FEs}(f_\mathrm{best}(\mathrm{FE}) \ge f_\mathrm{target})` is
-the number of function evaluations
-conducted in all trials, while the best function value was not smaller than
-|ftarget| during the trial, i.e. the sum over all trials of:
+|ftarget| was reached are disregarded.
 
-.. math::
-   \max \{\mathrm{FE} \mbox{ s.t. } f_\mathrm{best}(\mathrm{FE}) \ge f_\mathrm{target} \} .
-
-The |nbsucc| denotes the number of successful trials. |ERT| estimates the
+Note that|ERT| estimates the
 expected running time to reach |ftarget| [Auger:2005b]_, as a function of
 |ftarget|. In particular, |Ts| and |ps| depend on the |ftarget| value. Whenever
 not all trials were successful, ERT also depends (strongly) on the termination
@@ -186,14 +188,16 @@ criteria of the algorithm.
 __ http://en.wikipedia.org/w/index.php?title=Level_of_measurement&oldid=478392481
 
 
-Bootstrapping
-**************
+Bootstrapping and Simulated Runs
+================================
 
 The |ERT| computes a single measurement from a data sample set (in our case
 from |nruns| optimization runs). Bootstrapping [Efron:1993]_ can provide a
 dispersion measure for this aggregated measurement: here, a "single data
 sample" is derived from the original data by repeatedly drawing single trials
-with replacement until a successful trial is drawn. The running time of the
+with replacement until a successful trial is drawn. We call also this single data sample a simulated run.
+
+The running time of the
 single sample is computed as the sum of function evaluations in the drawn
 trials (for the last trial up to where the target function value is reached)
 [Auger:2005b]_ [Auger:2009]_. The distribution of the
@@ -201,6 +205,7 @@ bootstrapped running times is, besides its displacement, a good approximation
 of the true distribution. We provide some percentiles of the bootstrapped
 distribution.
 
+.. _sec:ECDF:
 
 Empirical Cumulative Distribution Functions
 ===========================================
@@ -258,7 +263,7 @@ the success probability. In the example, just under 50% for precision 10\
 
 
 Simulated run-length
-********************
+--------------------
 
 Based on the interpretation of instances as pure repetitions, we build some simulated run-length from the Nruns collected data, that is from the number of function evaluations needed to reach a given target or in case the target is not reached, the number of function evaluations of the unsuccessful run. The construction of a simulated run works as follow:
 
@@ -268,7 +273,7 @@ We typically generate many more simulated run-length than the number of function
 
 
 Using simulated run-length for plotting ECDF graphs
-****************************************************
+---------------------------------------------------
 
 The simulated run-length are used to plot the ECDF graphs: the ECDF graphs correspond to the empirical cumulative distributions of some simulated run-length generated each time the post-processing is called. As a consequence the processus of producing an ECDF graph from the collected data is stochastic and some small variations between two independent post-processing from the same data can be observed.
 

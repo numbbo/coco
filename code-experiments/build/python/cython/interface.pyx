@@ -762,7 +762,7 @@ cdef class Problem:
         coco_evaluate_function(self.problem,
                                <double *>np.PyArray_DATA(_x),
                                <double *>np.PyArray_DATA(self.y))
-        return self.y[0] if self._number_of_objectives == 1 else self.y
+        return self.y[0] if self._number_of_objectives == 1 else np.array(self.y, copy=True)
 
     @property
     def id(self): 
