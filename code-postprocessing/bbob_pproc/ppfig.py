@@ -188,6 +188,8 @@ def save_single_functions_html(filename,
         addLinkForNextDim = add_to_names.endswith('D')
         bestAlgExists = not isBiobjective
         
+        dimensions = genericsettings.htmlDimsOfInterest_ls if genericsettings.isLargeScale else genericsettings.htmlDimsOfInterest
+
         if algorithmCount is AlgorithmCount.ONE:
             headerERT = 'Expected number of <i>f</i>-evaluations to reach target'
             f.write("<H2> %s </H2>\n" % headerERT)
@@ -210,8 +212,9 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % htmldesc.getValue('##bbobpptablecaption##'))
     
             names = ['pprldistr', 'ppfvdistr']
-            dimensions = [5, 20]
-            
+            #dimensions = [5, 20] # Wassim: now done earlier depending on genericsettings.isLargeScale
+            #dimensions = [40, 80] # Wassim: for large scale
+
             headerECDF = ' Empirical cumulative distribution functions (ECDF)'
             f.write("<H2> %s </H2>\n" % headerECDF)
             for dimension in dimensions:
@@ -262,7 +265,8 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % '##bbobppscatterlegend##')
 
             names = ['pprldistr', 'pplogabs']
-            dimensions = [5, 20]
+            # dimensions = [5, 20] # Wassim: now done earlier depending on genericsettings.isLargeScale
+            # dimensions = [40, 80] # Wassim: for large scale
 
             headerECDF = 'Empirical cumulative distribution functions (ECDFs) per function group'
             f.write("\n<H2> %s </H2>\n" % headerECDF)

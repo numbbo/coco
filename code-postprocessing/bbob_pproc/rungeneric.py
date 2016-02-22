@@ -221,6 +221,8 @@ def main(argv=None):
         genopts = []
         outputdir = genericsettings.outputdir
         for o, a in opts:
+            if o in ("--large-scale"):# Wassim: added large scale option, instead of just changing dimensions_to_display, use this for easier, further uses
+                genericsettings.isLargeScale = True
             if o in ("-h", "--help"):
                 usage()
                 sys.exit()

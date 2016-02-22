@@ -365,7 +365,8 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                         if isBold:
                             tmp = r'\textbf{%s}' % tmp
                             tmpHtml = '<b>%s</b>' % tmpHtml
-
+                    else:
+                        tmpHtml = tmp
                     tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                   % (alignment, tmp))
                     tableentryHtml = ('%s' % tmpHtml)

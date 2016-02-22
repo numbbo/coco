@@ -806,7 +806,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
         EVALS.extend(10.**(np.arange(1, np.ceil(1e-9 + np.log10(maxevals * 1./d))))*d)
         if not evalf:
             evalf = (np.log10(EVALS[0]/d), np.log10(EVALS[-1]/d))
-    
+
         data = generateData(dsdim, EVALS, CrE)
         ydata = []
         for i in range(len(EVALS)):

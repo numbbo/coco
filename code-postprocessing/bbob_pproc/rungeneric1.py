@@ -186,7 +186,9 @@ def main(argv=None):
         # Process options
         outputdir = genericsettings.outputdir
         for o, a in opts:
-            if o in ("-v", "--verbose"):
+            if o in ("--large-scale"):# Wassim: added large scale option, instead of just changing dimensions_to_display, use this for easier, further uses
+                genericsettings.isLargeScale = True
+            elif o in ("-v", "--verbose"):
                 genericsettings.verbose = True
             elif o in ("-h", "--help"):
                 usage()
@@ -443,18 +445,22 @@ def main(argv=None):
                     except KeyError:
                         continue
                     info = '%s' % ng
-                    pplogloss.main(sliceDim, CrE, True,
+                    try: # Wassim: warning for large-scale data, TODO: use different reference data or just not plot it
+                        pplogloss.main(sliceDim, CrE, True,
                                    outputdir, info,
                                    verbose=genericsettings.verbose)
-                    pplogloss.generateTable(sliceDim, CrE,
+                        pplogloss.generateTable(sliceDim, CrE,
                                             outputdir, info,
                                             verbose=genericsettings.verbose)
-                    for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
-                        info = '%s' % fGroup
-                        pplogloss.main(sliceFuncGroup, CrE, True,
+                        for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
+                            info = '%s' % fGroup
+                            pplogloss.main(sliceFuncGroup, CrE, True,
                                        outputdir, info,
                                        verbose=genericsettings.verbose)
-                    pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
+                            pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
+                    except KeyError:
+                        warnings.warn("bestAlg data not found, no pplogloss output")
+
 
             print_done()
 
