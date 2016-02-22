@@ -24,8 +24,8 @@ setup(
                           'js/*', 'tth/*', 
                           '../latex-templates/*.tex',
                           '../latex-templates/*.cls',
-                          'data/IPOP-CMA-ES/*',
-                          'data/RANDOMSEARCH/*'
+                          'data/IPOP-CMA-ES/*.pickle.gz',
+                          'data/RANDOMSEARCH/*.pickle.gz'
                           ]},
     url = 'https://github.com/numbbo/coco',
     license = 'BSD',
