@@ -30,6 +30,15 @@ Quick access to the functions: :ref:`f1 <f1>`, :ref:`f2 <f2>`, :ref:`f3 <f3>`,
 :ref:`f44 <f44>`, :ref:`f45 <f45>`, :ref:`f46 <f46>`, :ref:`f47 <f47>`,
 :ref:`f48 <f48>`, :ref:`f49 <f49>`, :ref:`f50 <f50>`, :ref:`f51 <f51>`,
 :ref:`f52 <f52>`, :ref:`f53 <f53>`, :ref:`f54 <f54>`, :ref:`f55 <f55>`.
+
+
+Some Function Properties
+------------------------
+.. todo::
+
+   explain general properties like separability/non-separability,
+   uni-modularity/multi-modality, well-conditioned/ill-conditioned, ...
+
    
 
 The 55 ``bbob-biobj`` Functions
@@ -81,7 +90,7 @@ Information gained from this function:
 Combination of sphere function (:math:`f_1` in the ``bbob`` suite)
 and attractive sector function (:math:`f_6` in the ``bbob`` suite).
 
-Both functions are unimodal, but only the first objective is
+Both objective functions are unimodal, but only the first objective is
 separable and truly convex quadratic. The attractive sector
 function is highly asymmetric, where only one *hypercone* (with
 angular base area) with a volume of roughly :math:`(1/2)^D`
@@ -109,7 +118,7 @@ and original, i.e., unrotated Rosenbrock function (:math:`f_8` in the
 
 The first objective is separable and truly convex, the second
 objective is partially separable (tri-band structure). The first
-objective is uni-modal while the second objective has a local
+objective is unimodal while the second objective has a local
 optimum with an attraction volume of about 25\%.
 
 Contained in the *separable - moderate* function class.
@@ -131,13 +140,26 @@ Information gained from this function:
 Combination of sphere function (:math:`f_1` in the ``bbob`` suite)
 and sharp ridge function (:math:`f_{13}` in the ``bbob`` suite).
 
-.. todo::
-   Give more details.
+Both objective functions are unimodal.
+In addition to the simple, separable, and differentiable first
+objective, a sharp, i.e., non-differentiable ridge has to be
+followed for optimizing the (non-separable) second objective. The
+gradient towards the ridge remains constant, when the ridge is
+approached from a given point.
+Approaching the ridge is initially effective, but becomes ineffective
+close to the ridge when the rigde needs to be followed in direction
+to its optimum.  The necessary change in *search behavior* close to
+the ridge is diffiult to diagnose, because the gradient
+towards the ridge does not flatten out.
 
 Contained in the *separable - ill-conditioned* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+* Can the search continuously change its search direction when
+  approaching one of the extremes of the Pareto front/Pareto set?
+* What is the effect of having a non-smooth, non-differentiabale
+  function to optimize?
 
 
 .. _f6:
@@ -148,14 +170,26 @@ Combination of sphere function (:math:`f_1` in the ``bbob`` suite)
 and sum of different powers function (:math:`f_{14}` in the ``bbob``
 suite).
 
+Both objective functions are unimodal. The first objective is
+separable, the second non-separable.
+When approaching the second objective's optimum, the sensitivies
+of the variables in the rotated search space become more and
+more different. In addition, the second objective function
+possesses a small solution volume.
+
 .. todo::
-   Give more details.
+
+   the above text should be checked for clarity and correctness
+
 
 Contained in the *separable - ill-conditioned* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+.. todo::
 
+   to be written
+   
 
 .. _f7:
 
@@ -164,15 +198,24 @@ Information gained from this function:
 Combination of sphere function (:math:`f_1` in the ``bbob`` suite)
 and Rastrigin function (:math:`f_{15}` in the ``bbob`` suite).
 
-.. todo::
-   Give more details.
+In addition to the simple sphere function, the prototypical highly
+multimodal Rastrigin function needs to be solved which has originally
+a very regular and symmetric structure for the placement of the optima.
+Here, however, transformations are performed to alleviate
+the original symmetry and regularity in the second objective.
+
+The properties of the second objective contain non-separabilty,
+multi-modality (roughly :math:`10^D` local optima), a conditioning of
+about 10, and a large global amplitude compared to the local amplitudes.
 
 Contained in the *separable - multi-modal* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+* With respect to fully unimodal functions: what is the effect of
+  multimodality?
 
-
+  
 .. _f8:
 
 :math:`f_8`: Sphere/Schaffer F7, condition 10
@@ -181,13 +224,19 @@ Combination of sphere function (:math:`f_1` in the ``bbob`` suite)
 and Schaffer F7 function with condition number 10 (:math:`f_{17}` in
 the ``bbob`` suite).
 
-.. todo::
-   Give more details.
+In addition to the simple sphere function, an asymmetric, non-separable,
+and highly multimodal function needs to be solved to approach the Pareto
+front/Pareto set where the frequency and amplitude of the modulation
+in the second objective vary. The conditioning of the second objective
+and thus the entire bi-objective function is low.
 
 Contained in the *separable - multi-modal* function class.
 
+
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+* In comparison to :math:`f_7` and :math:`f_{50}`:  What is the
+  effct of multimodality on a less regular function?
 
 
 .. _f9:
