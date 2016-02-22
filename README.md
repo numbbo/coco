@@ -43,7 +43,7 @@ _Additional_ requirements for running an algorithm in a specific language.
 * **Python on Windows with MinGW**: Python 2.7 and the Microsoft compiler package for Python 2.7 
   containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
   These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
-  It has both the 32-bit and 64-bit compilers and the Windows SDK headers.
+  The package contains 32-bit and 64-bit compilers and the Windows SDK headers.
 * **Octave**: Octave 4.0.0 or later. On operating systems other than Windows, earlier versions might work.
 
 ### Guaranties (None)
