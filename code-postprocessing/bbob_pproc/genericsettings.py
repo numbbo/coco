@@ -18,7 +18,7 @@ if 1 < 3 and test:
     np.seterr(all='raise')
 np.seterr(under='ignore')  # ignore underflow
 
-#global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
+#global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest
 #set_trace()
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
@@ -37,7 +37,6 @@ target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
 xlimit_expensive = 1e3  # used in 
 tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7) # used as input for pptables.main in rungenericmany 
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
-rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 
 tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
@@ -58,7 +57,6 @@ simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a
 # summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-1 
 # summarized_target_function_values = [-1, 3] # easy easy 
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure (means what?)
-# not (yet) in use: pprldmany_target_values = pproc.TargetValues(10**np.arange(-8, 2, 0.2))  # might not work because of cyclic import
 
 instancesOfInterest2009 = {1:3, 2:3, 3:3, 4:3, 5:3}  # 2009 instances
 instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1,
@@ -262,6 +260,11 @@ def getFigFormats():
     
     return fig_formats
     
+def getFontSize(nameList):
+    maxFuncLength = max(len(i) for i in nameList)
+    fontSize = 24 - max(0, 4 * ((maxFuncLength - 35) / 5))
+    return fontSize
+
 class Testbed(object):
     """this might become the future way to have settings related to testbeds
     TODO: should go somewhere else than genericsettings.py 
@@ -296,7 +299,11 @@ class GECCOBBOBTestbed(Testbed):
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.short_names = {}
         self.ppfigs_ftarget = 1e-8
-        self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))
+        self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # possibly changed in config
+        self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
+        self.pprldmany_target_values = targetValues(10**np.arange(2, -8, -0.2)) # possibly changed in config
+        self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
+        self.ppfvdistr_min_target = 1e-8
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -321,7 +328,11 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.short_names = {}
         self.ppfigs_ftarget = 1e-4
-        self.ppfigdim_target_values = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-5))
+        self.ppfigdim_target_values = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
+        self.pprldistr_target_values = targetValues((1e-1, 1e-3, 1e-5)) # possibly changed in config
+        self.pprldmany_target_values = targetValues(10**np.arange(0, -5, -0.2)) # possibly changed in config
+        self.rldValsOfInterest = (1e-1, 1e-3, 1e-5) # possibly changed in config
+        self.ppfvdistr_min_target = 1e-5
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
