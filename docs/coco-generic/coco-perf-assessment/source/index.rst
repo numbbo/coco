@@ -34,7 +34,8 @@ Terminology
 ------------
 *problem*
   In the context of performance
-  assessment, we talk about a *problem* as the quadruplet ``(dimension, function, instance, function-target-value)``. 
+  assessment, we talk about a *problem* as the quadruple 
+  ``(dimension, function, instance, function-target-value)``. 
 
 *instance*
   Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...
@@ -127,6 +128,23 @@ Run-length over problems
 ------------------------
 
 We define a problem as a set ``(function, dimension, instance, function target)`` where the concept of instance is described in the function documentation (it is obtained by instantiating some random transformations). We collect run-length swiping over functions, dimensions, instances and targets.
+
+.. Niko: "function target" seems misleading, as the target depends also on the instance
+  (and also on the dimension). |target value| might be a possible nomenclature, we also
+  have already |ftarget| defined above. 
+  
+.. |target value| replace:: target-:math:`f`-value
+.. an alterative could be .. |target value| replace:: target value
+
+.. Niko: I think we should discuss instances somewhere here, in particular as (a) there is 
+  no generic "function document" and (b) the interpretation is related to the display
+  and/or assessment. 
+
+.. Niko: when conducting an experiment we sweep over all available 
+  ``(function, dimension, instance)`` triplets. A single trial than generates the 
+  quadruples. 
+  
+.. Niko: let me know what/where I can/should start to do/change here. 
 
 The display of results is hence based on those collected run-length. We either used displays  based on the expected run-length |ERT| described in Section `Expected Running Time`_  or based on the distribution of run-length using empirical cumulative distribution as described in Section `Empirical Cumulative Distribution Functions`_
 
@@ -265,7 +283,7 @@ A cutting line in Figure :ref:`fig:HorizontalvsVertical` corresponds to a
 "data" line in Figure :ref:`fig:ecdf`, where 450 (30 x 15) convergence graphs
 are evaluated. For example, the thick red graph in Figure :ref:`fig:ecdf` shows
 on the left the distribution of the running length (number of function
-evaluations) [Hoos:1998]_ for reaching precision
+evaluations) [HOO1998]_ for reaching precision
 :math:`\Delta f = 10^{-8}` (horizontal cut). The graph continues on the right
 as a vertical cut for the maximum number of function evaluations, showing the
 distribution of the best achieved :math:`\Delta f` values, divided by 10\
@@ -315,7 +333,7 @@ Understanding the different plots
 .. [Harik:1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation
    Conference (GECCO)*, volume 1, pages 258–265. ACM, 1999.
-.. [Hoos:1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
+.. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
    algorithms—pitfalls and remedies. In *Proceedings of the Fourteenth 
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
    pages 238–245, 1998.
