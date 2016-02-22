@@ -55,10 +55,10 @@ def copy_latex_templates():
     currentFolder = os.path.dirname(os.path.realpath(__file__))
     templateFolder = os.path.abspath(join_path(currentFolder, '..', 'latex-templates'))
     # templateFolder = os.path.abspath('latex-templates')
-    shutil.copy(join_path(templateFolder, 'templateBBOBarticle.tex'), '.')
-    shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), '.')
-    shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), '.')
-    shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), '.')
+    shutil.copy(join_path(templateFolder, 'templateBBOBarticle.tex'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), currentFolder)
 
 def run_latex_template(filename):
     filePath = os.path.abspath(join_path(os.path.dirname(__file__), filename))
