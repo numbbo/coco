@@ -203,7 +203,7 @@ the algorithm:
    function returns always zero. 
 
 The number of evaluations of the problem and/or constraints are the search
-costs, also referred to as runtime or run-length, and used for the performance 
+costs, also referred to as runtime, and used for the performance 
 assessment of the algorithm. 
 
 
@@ -228,11 +228,12 @@ Moreover, any multistart procedure (which relies on an interim termination of th
 encouraged. Multistarts may not be independent as they can feature a parameter sweep (e.g., increasing population size [HAR1999]_ [AUG2005]_) or can be based on the outcome of the previous starts. 
 
 An algorithm can be conclusively terminated if
-|coco_problem_final_target_hit|_ returns 1. This saves CPU cycles without affecting the performance assessment, because there is not (better) target left to hit. 
+|coco_problem_final_target_hit|_ returns 1. This saves CPU cycles without affecting the performance assessment, because there is no target left to hit for the first time. 
 
-.. [#] In the single objective case some care should be 
-  taken to apply termination conditions that allow to hit the final target on the
-  most basic functions, like the sphere :math:`f_1`, i.e. problems 0, 360, 720, 1080, 1440, and 1800 of the ``bbob`` suite.  
+.. [#] In the single objective case care should be 
+  taken to apply termination conditions that allow to hit the final target on
+  the most basic functions, like the sphere function :math:`f_1`, that is on the
+  problems 0, 360, 720, 1080, 1440, and 1800 of the ``bbob`` suite.  
 
 .. [#] The COCO_ platform provides example code to implement independent restarts. 
 
