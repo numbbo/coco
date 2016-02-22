@@ -9,6 +9,7 @@
 #include "f_ellipsoid.c"
 #include "f_discus_generalized.c"
 #include "f_bent_cigar_generalized.c"
+#include "f_sharp_ridge.c"
 #include "f_different_powers.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
@@ -82,7 +83,7 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_bent_cigar_generalized_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                             problem_id_template, problem_name_template);
   } else if (function == 13) {
-    problem = f_sharp_ridge_bbob_problem_allocate(function, dimension, instance, rseed,
+    problem = f_sharp_ridge_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                                   problem_id_template, problem_name_template);
   } else if (function == 14) {
     problem = f_different_powers_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
