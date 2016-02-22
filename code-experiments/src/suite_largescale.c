@@ -13,6 +13,7 @@
 #include "f_rastrigin.c"
 #include "f_bueche_rastrigin.c"
 #include "f_linear_slope.c"
+#include "f_attractive_sector.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
@@ -47,7 +48,7 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
   /*const long rseed_17 = (long) (17 + 10000 * instance);*/
 
   /*TODO: finish implementing the large scale test-suite functions.
-          current list: 1-5,10-12,14*/
+          current list: 1-6,10-12,14*/
   if (function == 1) {
     problem = f_sphere_bbob_problem_allocate(function, dimension, instance, rseed,
                                              problem_id_template, problem_name_template);
@@ -64,8 +65,8 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_linear_slope_bbob_problem_allocate(function, dimension, instance, rseed,
                                                    problem_id_template, problem_name_template);
   } else if (function == 6) {
-    problem = NULL; /*f_attractive_sector_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                        problem_id_template, problem_name_template);*/
+    problem = f_attractive_sector_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                        problem_id_template, problem_name_template);
   } else if (function == 7) {
     problem = NULL; /*f_step_ellipsoid_bbob_problem_allocate(function, dimension, instance, rseed,
                                                      problem_id_template, problem_name_template);*/
