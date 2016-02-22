@@ -13,6 +13,10 @@
 #include "transform_vars_affine.c"
 #include "transform_obj_shift.c"
 
+#include "transform_vars_permutation.c"
+#include "transform_vars_blockrotation.c"
+#include "transform_obj_norm_by_dim.c"
+
 /**
  * @brief Implements the Rosenbrock function without connections to any COCO structures.
  */
@@ -87,6 +91,12 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
   problem = transform_vars_shift(problem, minus_one, 0);
   problem = transform_vars_scale(problem, factor);
   problem = transform_vars_shift(problem, xopt, 0);
+    
+  /*if large scale test-bed, normalize by dim*/
+  if (coco_strfind(problem_name_template, "BBOB large-scale suite") >= 0){
+        problem = transform_obj_norm_by_dim(problem);
+  }
+    
   problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
@@ -144,3 +154,68 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
   coco_free_memory(b);
   return problem;
 }
+
+/**
+ * @brief Creates the BBOB rotated Rosenbrock problem for large scale.
+ */
+static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const size_t function,
+                                                                                const size_t dimension,
+                                                                                const size_t instance,
+                                                                                const long rseed,
+                                                                                const char *problem_id_template,
+                                                                                const char *problem_name_template) {
+    
+    double fopt;
+    coco_problem_t *problem = NULL;
+    double *minus_half, factor;
+    size_t i;
+    
+    double **B;
+    const double *const *B_copy;
+    size_t *P1 = coco_allocate_vector_size_t(dimension);
+    size_t *P2 = coco_allocate_vector_size_t(dimension);
+    size_t *block_sizes;
+    size_t nb_blocks;
+    size_t swap_range;
+    size_t nb_swaps;
+    
+    block_sizes = coco_get_block_sizes(&nb_blocks, dimension, "bbob-largescale");
+    swap_range = coco_get_swap_range(dimension, "bbob-largescale");
+    nb_swaps = coco_get_nb_swaps(dimension, "bbob-largescale");
+    
+    fopt = bbob2009_compute_fopt(function, instance);
+    factor = coco_double_max(1.0, sqrt((double) dimension) / 8.0);
+    minus_half = coco_allocate_vector(dimension);
+    for (i = 0; i < dimension; ++i) {
+        minus_half[i] = -0.5;
+    }
+    
+    B = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
+    B_copy = (const double *const *)B;
+    
+    coco_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
+    coco_compute_truncated_uniform_swap_permutation(P1, rseed + 2000000, dimension, nb_swaps, swap_range);
+    coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
+    
+    problem = f_rosenbrock_allocate(dimension);
+    problem = transform_vars_shift(problem, minus_half, 0);
+    problem = transform_vars_permutation(problem, P2, dimension);/* LIFO */
+    problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
+    problem = transform_vars_permutation(problem, P1, dimension);
+    
+    problem = transform_obj_norm_by_dim(problem);
+    problem = transform_obj_shift(problem, fopt);
+    
+    coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+    coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+    coco_problem_set_type(problem, "large_scale_block_rotated");
+    
+    coco_free_memory(minus_half);
+    coco_free_block_matrix(B, dimension);
+    coco_free_memory(P1);
+    coco_free_memory(P2);
+    coco_free_memory(block_sizes);
+    return problem;
+}
+
+
