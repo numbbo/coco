@@ -4,8 +4,14 @@ numbbo/coco: Comparing Continuous Optimizers
 [This code](https://github.com/numbbo/coco) reimplements the original Comparing Continous Optimizer platform, 
 now rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
 the code provides a platform to benchmark and compare continuous optimizers, AKA non-linear 
-solvers for numerical optimization. Languages currently available are `C/C++`, `Java`, 
-`MATLAB/Octave`, and `Python`. Contributions to link further languages (including a better
+solvers for numerical optimization. Languages currently available are 
+
+  - `C/C++`
+  - `Java`
+  - `MATLAB/Octave`
+  - `Python`
+
+Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
 For more information, 
