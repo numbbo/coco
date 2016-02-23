@@ -21,3 +21,22 @@ Simulated runlengths don't make sense in this interpretation
 
 They can represent a feature (e.g. condition number)
 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Bootstrapping and Simulated Runs
+================================
+
+The |ERT| computes a single measurement from a data sample set (in our case
+from |nruns| optimization runs). Bootstrapping [Efron:1993]_ can provide a
+dispersion measure for this aggregated measurement: here, a "single data
+sample" is derived from the original data by repeatedly drawing single trials
+with replacement until a successful trial is drawn. We call also this single data sample a **simulated run**.	
+
+The running time of the
+single sample is computed as the sum of function evaluations in the drawn
+trials (for the last trial up to where the target function value is reached)
+[Auger:2005b]_ [Auger:2009]_. The distribution of the
+bootstrapped running times is, besides its displacement, a good approximation
+of the true distribution. We provide some percentiles of the bootstrapped
+distribution.
+
+Simulated runs are heavily used for displaying the distribution.
