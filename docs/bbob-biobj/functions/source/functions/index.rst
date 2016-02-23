@@ -13,7 +13,7 @@ and their properties.
    - its definition and relation to the ``bbob`` test suite (function ids for example)
    - plots of the best known approximations of the Pareto set and the Pareto front
    - potentially the outcomes of example algorithms
-   - plots (in objective space) of randomly samples search points
+   - plots (in objective space) of randomly sampled search points
    - potentially function value distributions along cuts through the search space
 
 Quick access to the functions: :ref:`f1 <f1>`, :ref:`f2 <f2>`, :ref:`f3 <f3>`,
@@ -34,10 +34,43 @@ Quick access to the functions: :ref:`f1 <f1>`, :ref:`f2 <f2>`, :ref:`f3 <f3>`,
 
 Some Function Properties
 ------------------------
-.. todo::
+In the description of the 55 ``bbob-biobj`` functions below, several
+general properties of objective functions will be mentioned that
+shall be quickly defined here.
 
-   explain general properties like separability/non-separability,
-   uni-modularity/multi-modality, well-conditioned/ill-conditioned, ...
+A *separable* function does not show any dependencies between the
+variables and can therefore solves by applying :math:`D` consecutive
+one-dimensional optimizations along the coordinate axes while
+keeping the other variables fixed. Consequently, *non-separable*
+problems must be considered much more diffiult and most of the
+proposed benchmark functions are designed being non-separable. The
+typical well-established technique to generate non-separable
+functions from separable ones is the application of a rotation matrix
+:math:`\mathbf R`.
+
+A *unimodal* function has only one local minimum which is at the same
+time also its global one. The opposite is a *multimodal* function
+which appears to have at least one local minimum and which is
+highly common in practical optimization problems.
+
+*Ill-conditioning* is a another typical challenge in real-parameter
+optimization and, besides multimodality, probably the most common one.
+Conditioning of a function can be rigorously formalized in the
+case of convex quadratic functions,
+:math:`f(x) = \frac{1}{2} x^THx` where :math:`H` is a symmetric
+positive definite matrix, as the condition number of the Hessian matrix
+:math:`H`. Since contour lines associated to a convex quadratic function
+are ellipsoids, the condition number corresponds to the square root of
+the ratio between the largest axis of the ellipsoid and the shortest axis.
+For more general functions, conditioning loosely refers to the square of
+the ratio between the largest and smallest direction of a contour line. 
+The proposed ``bbob-biobj`` testbed contains ill-conditioned functions
+with a typical conditioning of :math:`10^6`. We believe this a realistic
+requirement, while we have seen practical problems with conditioning
+as large as :math:`10^{10}`.
+
+
+
 
    
 
@@ -205,7 +238,7 @@ Here, however, transformations are performed to alleviate
 the original symmetry and regularity in the second objective.
 
 The properties of the second objective contain non-separabilty,
-multi-modality (roughly :math:`10^D` local optima), a conditioning of
+multimodality (roughly :math:`10^D` local optima), a conditioning of
 about 10, and a large global amplitude compared to the local amplitudes.
 
 Contained in the *separable - multi-modal* function class.
@@ -236,7 +269,7 @@ Contained in the *separable - multi-modal* function class.
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
 * In comparison to :math:`f_7` and :math:`f_{50}`:  What is the
-  effct of multimodality on a less regular function?
+  effect of multimodality on a less regular function?
 
 
 .. _f9:
@@ -246,15 +279,19 @@ Information gained from this function:
 Combination of sphere function (:math:`f_1` in the ``bbob`` suite)
 and Schwefel function (:math:`f_{20}` in the ``bbob`` suite).
 
-.. todo::
-   Give more details.
+While the first objective function is separable and unimodal,
+the second objective function is partially separable and highly
+multimodal---having the most prominent :math:`2^D` minima located
+comparatively close to the corners of the unpenalized search area. 
 
 Contained in the *separable - weakly-structured* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+* In comparison to e.g. :math:`f_8`: What is the effect of a weak
+  global structure?
 
-
+  
 .. _f10:
 
 :math:`f_{10}`: Sphere/Gallagher 101 peaks
@@ -263,13 +300,18 @@ Combination of sphere function (:math:`f_1` in the ``bbob`` suite)
 and Gallagher function with 101 peaks (:math:`f_{21}` in the ``bbob``
 suite).
 
-.. todo::
-   Give more details.
+While the first objective function is separable and unimodal,
+the second objective function is non-separable and consists
+of 101 optima with position and height being unrelated and
+randomly chosen (different for each instantiation of the function).
+The conditioning around the global optimum of the second
+objective function is about 30.
 
 Contained in the *separable - weakly-structured* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+* Is the search effective without any global structure?
 
 
 .. _f11:
@@ -279,13 +321,16 @@ Information gained from this function:
 Combination of two separable ellipsoid functions (:math:`f_2` in the
 ``bbob`` suite).
 
-.. todo::
-   Give more details.
+Both objectives are unimodal, separable, only globally
+quadratic with smooth local irregularities, and highly
+ill-conditioned with a condition number of
+about :math:`10^6`.
 
 Contained in the *separable - separable* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+* In comparison to :math:`f_1`: Is symmetry exploited?
 
 
 .. _f12:
@@ -296,13 +341,22 @@ Combination of separable ellipsoid function (:math:`f_2` in the
 ``bbob`` suite) and attractive sector function (:math:`f_{6}`
 in the ``bbob`` suite).
 
-.. todo::
-   Give more details.
+Both objective functions are unimodal but only the first
+one is separable. The first objective function, in addition,
+is globally quadratic with smooth local irregularities, and
+highly ill-conditioned with a condition number of about
+:math:`10^6`. The second objective function is highly
+asymmetric, where only one *hypercone* (with
+angular base area) with a volume of roughly :math:`(1/2)^D`
+yields low function values. The optimum of it is located at
+the tip of this cone. This function can be deceptive for
+cumulative step size adaptation.
 
 Contained in the *separable - moderate* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+* In comparison to, for example, :math:`f_1`: Is symmetry exploited?
 
 
 .. _f13:
@@ -314,13 +368,22 @@ Combination of separable ellipsoid function (:math:`f_2` in the
 (:math:`f_{8}`
 in the ``bbob`` suite).
 
-.. todo::
-   Give more details.
+
+Only the first objective is separable and unimodal. The second
+objective is partially separable (tri-band structure) and has a local
+optimum with an attraction volume of about 25\%.
+In addition, the first objective function shows smooth local
+irregularities from a globally convex quadratic function and is
+highly ill-conditioned with a condition number of about
+:math:`10^6`. 
 
 Contained in the *separable - moderate* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+* Can the search handle highly conditioned functions and follow a long
+  path with :math:`D-1` changes in the direction when it approaches the
+  Pareto front/Pareto set?
 
 
 .. _f14:
