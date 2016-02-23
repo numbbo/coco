@@ -22,7 +22,7 @@ except ImportError:
 
 import numpy as np 
 
-from .. import toolsstats, readalign, ppfigparam
+from .. import toolsstats, readalign, ppfigparam, genericsettings
 from ..toolsstats import ranksumtest
 from ..ppfig import saveFigure, plotUnifLogXMarkers
 #try:
@@ -56,7 +56,6 @@ offset = 0.005
 incrstars = 1.5
 fthresh = 1e-8
 xmax = 1000
-functions_with_legend = (1, 24, 55, 101, 130)
 
 dimension_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
 
@@ -422,7 +421,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
         if func in funInfos.keys():
             plt.title(funInfos[func])
 
-        if func in functions_with_legend:
+        if func in genericsettings.current_testbed.functions_with_legend:
             plt.legend(loc='best')
 
         # save
