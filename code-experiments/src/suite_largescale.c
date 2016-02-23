@@ -95,8 +95,8 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_rastrigin_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                                         problem_id_template, problem_name_template);
   } else if (function == 16) {
-    problem = NULL; /*f_weierstrass_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                  problem_id_template, problem_name_template);*/
+    problem = f_weierstrass_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                  problem_id_template, problem_name_template);
   } else if (function == 17) {
     problem = NULL; /*f_schaffers_bbob_problem_allocate(function, dimension, instance, rseed, 10,
                                                 problem_id_template, problem_name_template);*/
