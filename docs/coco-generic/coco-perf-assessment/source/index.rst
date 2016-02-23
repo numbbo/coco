@@ -1,12 +1,9 @@
-#################################################################################
-Welcome to the generic performance assessment description for the Coco platform!
-#################################################################################
-
+##############################
+COCO: Performance Assessment
+##############################
 .. toctree::
    :maxdepth: 2
-   :numbered: 3
 
-.. contents:: Table of contents
 
 
 .. |ftarget| replace:: :math:`f_\mathrm{target}`
@@ -25,16 +22,33 @@ Welcome to the generic performance assessment description for the Coco platform!
 
 
 
-In this document we explain the rationale behind the performance assessment of the COCO framework, the performance measures used and the display of results.
-
-.. sectnum::
+..
+   sectnum::
 
 Introduction
 =============
 
+In this document we explain the rationale behind the performance assessment within the COCO platform. The simple but central idea is that we advocate *quantitative* performance measures as opposed to simple rankings of algorithm performances. From there on follows that run-length for function value targets are collected. We then either display expected run-length through the `Expected Running Time`_ (ERT) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF).
+
+Terminology
+------------
+*problem*
+  In the context of performance
+  assessment, we talk about a *problem* as the quadruplet ``(dimension, function, instance, function-target-value)``. 
+
+*instance*
+  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...
+  
+*runtime*
+  We define *runtime*, or *run-length* [HOO1998]_
+  as the *number of evaluations* 
+  conducted on a given problem, also referred to as number of *function* evaluations. 
+  Our central performance measure is the runtime until a given target :math:`f`-value 
+  is hit.
+  
 
 On Performance Measures
------------------------
+=======================
 
 We advocate **performance measures** that are:
 
@@ -46,13 +60,13 @@ We advocate **performance measures** that are:
 * relevant with respect to the "real world"
 * as simple as possible
 
-For these reasons we measure "running times" to reach a target function value, denoted as fixed-target scenario in the following. 
+For these reasons we measure runtime to reach a target function value, denoted as fixed-target scenario in the following. 
 
 
 .. _sec:verthori:
 
 Fixed-Cost versus Fixed-Target Scenario
----------------------------------------
+----------------------------------------
 
 Two different approaches for collecting data and making measurements from
 experiments are schematically depicted in Figure :ref:`fig:HorizontalvsVertical`.
@@ -195,7 +209,7 @@ The |ERT| computes a single measurement from a data sample set (in our case
 from |nruns| optimization runs). Bootstrapping [Efron:1993]_ can provide a
 dispersion measure for this aggregated measurement: here, a "single data
 sample" is derived from the original data by repeatedly drawing single trials
-with replacement until a successful trial is drawn. We call also this single data sample a simulated run.
+with replacement until a successful trial is drawn. We call also this single data sample a **simulated run**.	
 
 The running time of the
 single sample is computed as the sum of function evaluations in the drawn
@@ -204,6 +218,8 @@ trials (for the last trial up to where the target function value is reached)
 bootstrapped running times is, besides its displacement, a good approximation
 of the true distribution. We provide some percentiles of the bootstrapped
 distribution.
+
+Simulated runs are heavily used for displaying the distribution.
 
 .. _sec:ECDF:
 
