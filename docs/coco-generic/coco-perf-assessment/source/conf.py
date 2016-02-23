@@ -23,6 +23,11 @@ import shlex
 
 # -- General configuration ------------------------------------------------
 
+# -- General configuration ------------------------------------------------
+authors = "The BBOBies"
+abstract = """We explain how performance assessement is done with the COCO platform.
+"""
+
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
 
@@ -117,6 +122,18 @@ html_theme = 'sphinx_rtd_theme'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #html_theme_options = {}
+html_theme = 'alabaster' #  white, times font 
+# html_theme = 'sphinxdoc'  # puts empty spaces left and right
+html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
+# html_theme = 'sphinx_rtd_theme'  # contents not structured (mobile style?)
+# html_theme = 'agogo'  # fixed width
+# html_theme = 'nature'  # underlays of sections titles
+# html_theme = 'pyramid'  # relatively clean white/gray, sf font hard to read, too small section titles
+
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
+# html_theme_options = {'font_family': 'goudy old style'}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
@@ -124,6 +141,8 @@ html_theme = 'sphinx_rtd_theme'
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 #html_title = None
+html_title = "COCO: Performance Assessment"
+
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -178,7 +197,7 @@ html_static_path = ['_static']
 #html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-#html_show_copyright = True
+html_show_copyright = False
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -212,15 +231,37 @@ latex_elements = {
 #'papersize': 'letterpaper',
 
 # The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+'pointsize': '12pt',
 
 # Additional stuff for the LaTeX preamble.
-#'preamble': '',
+'preamble': r"""
+  \usepackage{amssymb}
+  \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
+  \newcommand{\ignore}[1]{}
+  \newcommand{\abstractinconf}{""" + abstract + r"""}
+  \newcommand{\abstractinrst}{\begin{abstract}\abstractinconf\end{abstract}}
 
+%%%%%% TOGGLE the renewcommand to update toc / show abstract first %%%%%%
+  \newcommand{\generatetoc}{\boolean{true}}  % (re-)generate toc
+  \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
+
+  \ifthenelse{\generatetoc}{}{
+    \renewcommand{\abstractinrst}{}
+    \renewcommand{\tableofcontents}{
+      \begin{abstract}\abstractinconf\end{abstract}
+      \par\par
+      \section*{Contents}
+      \begin{minipage}{\textwidth}\setlength{\baselineskip}{3ex}
+        \makeatletter % changes the catcode of @ to 11  % see http://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
+        \input{coco-experimental-setup.toc}
+        \makeatother % changes the catcode of @ back to 12
+      \end{minipage}
+    }
+  }
+""",
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
 }
-
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
