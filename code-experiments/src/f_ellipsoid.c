@@ -134,7 +134,9 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
   return problem;
 }
 
-
+/**
+ * @brief Creates the BBOB permuted block-rotated ellipsoid problem.
+ */
 static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                        const size_t dimension,
                                                                        const size_t instance,
@@ -166,13 +168,12 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   coco_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
   coco_compute_truncated_uniform_swap_permutation(P1, rseed + 2000000, dimension, nb_swaps, swap_range);
   coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
-  
-  
+
   problem = f_ellipsoid_allocate(dimension);
   problem = transform_vars_oscillate(problem);
   problem = transform_vars_permutation(problem, P2, dimension);/* LIFO */
   problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
-  problem = transform_vars_permutation(problem, P1, dimension);/*Consider replacing P21 and P12 by a single permutation P3*/
+  problem = transform_vars_permutation(problem, P1, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
 
   

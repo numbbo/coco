@@ -99,7 +99,9 @@ static coco_problem_t *f_different_powers_bbob_problem_allocate(const size_t fun
   return problem;
 }
 
-
+/**
+ * @brief Creates the BBOB generalized permuted block-rotated different powers problem.
+ */
 static coco_problem_t *f_different_powers_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                        const size_t dimension,
                                                                        const size_t instance,

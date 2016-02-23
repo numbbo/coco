@@ -114,7 +114,7 @@ static coco_problem_t *f_sharp_ridge_bbob_problem_allocate(const size_t function
 }
 
 /**
- * @brief Creates the BBOB sharp ridge problem in large dimension.
+ * @brief Creates the BBOB permuted block-rotated sharp ridge problem
  */
 static coco_problem_t *f_sharp_ridge_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                          const size_t dimension,
