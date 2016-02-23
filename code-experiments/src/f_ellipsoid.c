@@ -134,7 +134,9 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
   return problem;
 }
 
-
+/**
+ * @brief Creates the BBOB permuted block-rotated ellipsoid problem.
+ */
 static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                        const size_t dimension,
                                                                        const size_t instance,

@@ -156,7 +156,7 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
 }
 
 /**
- * @brief Creates the BBOB rotated Rosenbrock problem for large scale.
+ * @brief Creates the BBOB permuted block-rotated Rosenbrock problem for large scale.
  */
 static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                                 const size_t dimension,
@@ -199,12 +199,12 @@ static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const si
     
     problem = f_rosenbrock_allocate(dimension);
     problem = transform_vars_shift(problem, minus_half, 0);
+    problem = transform_vars_scale(problem, factor);
     problem = transform_vars_permutation(problem, P2, dimension);/* LIFO */
     problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
     problem = transform_vars_permutation(problem, P1, dimension);
     
     problem = transform_obj_norm_by_dim(problem);
-    problem = transform_vars_scale(problem, factor);
     problem = transform_obj_shift(problem, fopt);
     
     coco_problem_set_id(problem, problem_id_template, function, instance, dimension);

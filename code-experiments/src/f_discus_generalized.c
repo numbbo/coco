@@ -70,7 +70,7 @@ static coco_problem_t *f_discus_generalized_allocate(const size_t number_of_vari
 
 
 /**
- * @brief Creates the BBOB generalized discus problem.
+ * @brief Creates the BBOB generalized permuted block-rotated discus problem.
  */
 static coco_problem_t *f_discus_generalized_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                                 const size_t dimension,
