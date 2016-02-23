@@ -13,6 +13,7 @@
 #include "f_different_powers.c"
 #include "f_rastrigin.c"
 #include "f_weierstrass.c"
+#include "f_schaffers.c"
 #include "f_bueche_rastrigin.c"
 #include "f_linear_slope.c"
 #include "f_attractive_sector.c"
@@ -47,7 +48,7 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
 
   const long rseed = (long) (function + 10000 * instance);
   const long rseed_3 = (long) (3 + 10000 * instance);
-  /*const long rseed_17 = (long) (17 + 10000 * instance);*/
+  const long rseed_17 = (long) (17 + 10000 * instance);
 
   /*TODO: finish implementing the large scale test-suite functions.
           current list: 1-6,8-14*/
@@ -100,11 +101,11 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_weierstrass_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                                   problem_id_template, problem_name_template);
   } else if (function == 17) {
-    problem = NULL; /*f_schaffers_bbob_problem_allocate(function, dimension, instance, rseed, 10,
-                                                problem_id_template, problem_name_template);*/
+    problem = f_schaffers_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed, 10,
+                                                problem_id_template, problem_name_template);
   } else if (function == 18) {
-    problem = NULL; /*f_schaffers_bbob_problem_allocate(function, dimension, instance, rseed_17, 1000,
-                                                problem_id_template, problem_name_template);*/
+    problem = f_schaffers_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed_17, 1000,
+                                                problem_id_template, problem_name_template);
   } else if (function == 19) {
     problem = NULL; /*f_griewank_rosenbrock_bbob_problem_allocate(function, dimension, instance, rseed,
                                                           problem_id_template, problem_name_template);*/
