@@ -204,6 +204,7 @@ static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const si
     problem = transform_vars_permutation(problem, P1, dimension);
     
     problem = transform_obj_norm_by_dim(problem);
+    problem = transform_vars_scale(problem, factor);
     problem = transform_obj_shift(problem, fopt);
     
     coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
