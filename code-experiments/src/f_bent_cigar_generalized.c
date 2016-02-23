@@ -69,7 +69,7 @@ static coco_problem_t *f_bent_cigar_generalized_allocate(const size_t number_of_
 
 
 /**
- * @brief Creates the BBOB generalized bent cigar problem.
+ * @brief Creates the BBOB generalized permuted block-rotated bent cigar problem.
  */
 static coco_problem_t *f_bent_cigar_generalized_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                                     const size_t dimension,

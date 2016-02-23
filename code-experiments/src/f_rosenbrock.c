@@ -156,7 +156,7 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
 }
 
 /**
- * @brief Creates the BBOB rotated Rosenbrock problem for large scale.
+ * @brief Creates the BBOB permuted block-rotated Rosenbrock problem for large scale.
  */
 static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                                 const size_t dimension,
