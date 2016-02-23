@@ -12,6 +12,7 @@
 #include "f_sharp_ridge.c"
 #include "f_different_powers.c"
 #include "f_rastrigin.c"
+#include "f_weierstrass.c"
 #include "f_bueche_rastrigin.c"
 #include "f_linear_slope.c"
 
