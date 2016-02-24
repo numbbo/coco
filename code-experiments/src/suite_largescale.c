@@ -14,6 +14,7 @@
 #include "f_rastrigin.c"
 #include "f_weierstrass.c"
 #include "f_schaffers.c"
+#include "f_griewank_rosenbrock.c"
 #include "f_bueche_rastrigin.c"
 #include "f_linear_slope.c"
 #include "f_attractive_sector.c"
@@ -107,8 +108,8 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_schaffers_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed_17, 1000,
                                                 problem_id_template, problem_name_template);
   } else if (function == 19) {
-    problem = NULL; /*f_griewank_rosenbrock_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                          problem_id_template, problem_name_template);*/
+    problem = f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                          problem_id_template, problem_name_template);
   } else if (function == 20) {
     problem = NULL; /*f_schwefel_bbob_problem_allocate(function, dimension, instance, rseed,
                                                problem_id_template, problem_name_template);*/
