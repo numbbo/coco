@@ -11,6 +11,7 @@
 #include "suite_bbob_legacy_code.c"
 #include "transform_obj_shift.c"
 #include "transform_vars_shift.c"
+#include "transform_obj_norm_by_dim.c"
 
 /**
  * @brief Implements the sphere function without connections to any COCO structures.
