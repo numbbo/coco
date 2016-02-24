@@ -117,7 +117,6 @@ scaling_figure_caption_rlbased = caption_part_one + r"""%
 
 # should correspond with the colors in pprldistr.
 dimensions = genericsettings.dimensions_to_display
-functions_with_legend = (1, 24, 101, 130)
 
 def scaling_figure_caption():
     
@@ -543,7 +542,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         beautify(axesLabel=False)
         plt.text(plt.xlim()[0], plt.ylim()[0],
                  _valuesOfInterest.short_info, fontsize=14)
-        if func in functions_with_legend:
+        if func in genericsettings.current_testbed.functions_with_legend:
             plt.legend(loc="best")
         if func in funInfos.keys():
             # print(plt.rcParams['axes.titlesize'])
