@@ -16,6 +16,16 @@
 #include "coco_utilities.c"
 #include "suite_bbob_legacy_code.c"
 
+#include "transform_obj_penalize.c"
+#include "transform_obj_shift.c"
+#include "transform_vars_shift.c"
+
+#include "transform_vars_permutation.c"
+#include "transform_vars_blockrotation.c"
+#include "transform_obj_norm_by_dim.c"
+#include "transform_vars_round_step.c"
+
+
 /**
  * @brief Data type for the step ellipsoid problem.
  */
@@ -24,6 +34,7 @@ typedef struct {
   double *xopt, fopt;
   double **rot1, **rot2;
 } f_step_ellipsoid_data_t;
+
 
 /**
  * @brief Implements the step ellipsoid function without connections to any COCO structures.
@@ -155,3 +166,127 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
 
   return problem;
 }
+
+
+
+
+
+
+/**
+ * @brief Implements the step ellipsoid function without connections to any COCO structures.
+ */
+static double f_step_ellipsoid_core(const double *x, const size_t number_of_variables) {
+  
+  static const double condition = 100;
+  size_t i;
+  double result;
+  result = 0.0;
+
+  for (i = 0; i < number_of_variables; ++i) {
+    double exponent;
+    exponent = (double) (long) i / ((double) (long) number_of_variables - 1.0);
+    result += pow(condition, exponent) * x[i] * x[i];
+    ;
+  }
+  result = 0.1 * coco_double_max(x[number_of_variables] * 1.0e-4, result); /*x[number_of_variables] is \hat{z}_1 thanks to transform_vars_round_step.c */
+  return result;
+}
+
+
+/**
+ * @brief Uses the raw function to evaluate the ls COCO problem.
+ */
+static void f_step_ellipsoid_permblock_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_step_ellipsoid_core(x, problem->number_of_variables);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
+}
+
+/**
+ * @brief Allocates the basic step ellipsoid problem.
+ * an additional coordinate is added that will contain the value of \hat{z}_1 but that is ignored by functions other that f_step_ellipsoid_core and transform_vars_round_step. The latter sets it.
+ */
+static coco_problem_t *f_step_ellipsoid_allocate(const size_t number_of_variables) {
+  
+  coco_problem_t *problem = coco_problem_allocate_from_scalars("step ellipsoid function",
+                                          f_step_ellipsoid_permblock_evaluate, NULL, number_of_variables + 1, -5.0, 5.0, 0.0);
+  problem->number_of_variables = number_of_variables; /* force it since otherwise it would be set to dim+1 and used so everywhere*/
+  problem->best_parameter[number_of_variables] = -1.0;
+  
+  coco_problem_set_id(problem, "%s_d%02lu", "step_ellipsoid", number_of_variables);
+  /* Compute best solution */
+  f_step_ellipsoid_permblock_evaluate(problem, problem->best_parameter, problem->best_value);
+
+  return problem;
+}
+
+/**
+ * @brief Creates the BBOB permuted block-rotated step ellipsoid problem.
+ */
+static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(const size_t function,
+                                                              const size_t dimension,
+                                                              const size_t instance,
+                                                              const long rseed,
+                                                              const char *problem_id_template,
+                                                              const char *problem_name_template) {
+  double alpha = 10.; /*parameter of rounding*/
+  double *xopt, fopt;
+  coco_problem_t *problem = NULL;
+  double **B1, **B2;
+  const double *const *B1_copy;
+  const double *const *B2_copy;
+  size_t *P11, *P12, *P21, *P22;
+  size_t *block_sizes1, *block_sizes2, nb_blocks1, nb_blocks2, swap_range1, swap_range2, nb_swaps1, nb_swaps2;
+  double penalty_factor = 1.;
+
+  xopt = coco_allocate_vector(dimension);
+  fopt = bbob2009_compute_fopt(function, instance);
+  bbob2009_compute_xopt(xopt, rseed, dimension);
+  
+  block_sizes1 = coco_get_block_sizes(&nb_blocks1, dimension, "bbob-largescale");
+  block_sizes2 = coco_get_block_sizes(&nb_blocks2, dimension, "bbob-largescale");
+  swap_range1 = coco_get_swap_range(dimension, "bbob-largescale");
+  swap_range2 = coco_get_swap_range(dimension, "bbob-largescale");
+  nb_swaps1 = coco_get_nb_swaps(dimension, "bbob-largescale");
+  nb_swaps2 = coco_get_nb_swaps(dimension, "bbob-largescale");
+
+  B1 = coco_allocate_blockmatrix(dimension, block_sizes1, nb_blocks1);
+  B2 = coco_allocate_blockmatrix(dimension, block_sizes2, nb_blocks2);
+  B1_copy = (const double *const *)B1;
+  B2_copy = (const double *const *)B2;
+  coco_compute_blockrotation(B1, rseed + 1000000, dimension, block_sizes1, nb_blocks1);
+  coco_compute_blockrotation(B2, rseed, dimension, block_sizes2, nb_blocks2);
+  
+  P11 = coco_allocate_vector_size_t(dimension);
+  P12 = coco_allocate_vector_size_t(dimension);
+  P21 = coco_allocate_vector_size_t(dimension);
+  P22 = coco_allocate_vector_size_t(dimension);
+  coco_compute_truncated_uniform_swap_permutation(P11, rseed + 2000000, dimension, nb_swaps1, swap_range1);
+  coco_compute_truncated_uniform_swap_permutation(P12, rseed + 3000000, dimension, nb_swaps1, swap_range1);
+  coco_compute_truncated_uniform_swap_permutation(P21, rseed + 4000000, dimension, nb_swaps2, swap_range2);
+  coco_compute_truncated_uniform_swap_permutation(P22, rseed + 5000000, dimension, nb_swaps2, swap_range2);
+
+  problem = f_step_ellipsoid_allocate(dimension);
+  
+  problem = transform_vars_permutation(problem, P22, dimension);
+  problem = transform_vars_blockrotation(problem, B2_copy, dimension, block_sizes2, nb_blocks2);
+  problem = transform_vars_permutation(problem, P21, dimension);
+  problem = transform_vars_round_step(problem, alpha);/* also puts \hat{z}_1 in x[dimension]*/
+  
+  problem = transform_vars_conditioning(problem, 10.0);
+  problem = transform_vars_permutation(problem, P12, dimension);
+  problem = transform_vars_blockrotation(problem, B1_copy, dimension, block_sizes1, nb_blocks1);
+  problem = transform_vars_permutation(problem, P11, dimension);
+  problem = transform_vars_shift(problem, xopt, 0);
+  
+  problem = transform_obj_norm_by_dim(problem);
+  problem = transform_obj_penalize(problem, penalty_factor);
+  problem = transform_obj_shift(problem, fopt);
+
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_type(problem, "large_scale_block_rotated");
+  
+  return problem;
+}
+
