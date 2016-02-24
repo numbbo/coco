@@ -150,14 +150,13 @@ static coco_problem_t *f_schaffers_permblockdiag_bbob_problem_allocate(const siz
     size_t nb_blocks2;
     size_t swap_range;
     size_t nb_swaps;
-    
-    
+
+    const double penalty_factor = 10.0;
+
     block_sizes1 = coco_get_block_sizes(&nb_blocks1, dimension, "bbob-largescale");
     block_sizes2 = coco_get_block_sizes(&nb_blocks2, dimension, "bbob-largescale");
     swap_range = coco_get_swap_range(dimension, "bbob-largescale");
     nb_swaps = coco_get_nb_swaps(dimension, "bbob-largescale");
-    
-    const double penalty_factor = 10.0;
     
     xopt = coco_allocate_vector(dimension);
     fopt = bbob2009_compute_fopt(function, instance);
