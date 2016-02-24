@@ -1603,7 +1603,7 @@ class DataSetList(list):
         """
         d = DictAlg()
         for i in self:
-            d.setdefault(i.algId, DataSetList()).append(i)
+            d.setdefault((i.algId, ''), DataSetList()).append(i)
         return d
 
     def dictByDim(self):
