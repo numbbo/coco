@@ -238,7 +238,7 @@ latex_elements = {
 
 %%%%%% TOGGLE the renewcommand to update toc / show abstract first %%%%%%
   \newcommand{\generatetoc}{\boolean{true}}  % (re-)generate toc
-  \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
+%  \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
 
   % abstract is latex-only in rst
   \newcommand{\abstractinrst}{\begin{abstract}\abstracttextinconfpy\end{abstract}} 

@@ -136,6 +136,10 @@
 \newcommand{\target}{\mathrm{\bf target}}
 \newcommand{\problem}{\mathcal{P}}
 \newcommand{\thetabar}{{\bar{\theta}}}
+\newcommand{\ftheta}{f_{\theta}}
+\newcommand{\fthetabar}{f_{\bar{\theta}}}
+\newcommand{\fopt}{f^{\rm opt}_{\bar{\theta}}}
+
 
 \title{Appendix to COCO performance assessment documentation}
 \author{The Author}
@@ -148,16 +152,16 @@
 The objective of this small document is to formalize some concepts related to the COCO benchmarking procedure and hopefully clarify them.
 
 \begin{itemize}
-\item a COCO problem is defined as a triple $(\dim, \function, \instance)$. In this terminology a $\function$ is actually a parametrized function and the $\instance$ is an instantiation of the parameters. More precisely let us consider a parametrized function $\mathcal{F}_{\theta}: \R^n \to \R^m$ for $\theta \in \Theta$ then a COCO problem corresponds to $\mathcal{P}=(n,\mathcal{F}_{\theta},\bar{\theta})$ where $n \in \mathbb{N}$ is a dimension, and $\bar{\theta}$ is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem $\mathcal{P}$ will optimize $\x \in \R^n \to \mathcal{F}_{\bar{\theta}}(\x)$.
+\item a COCO problem is defined as a triple $(\dim, \function, \instance)$. In this terminology a $\function$ is actually a parametrized function and the $\instance$ is an instantiation of the parameters. More precisely let us consider a parametrized function $\ftheta: \R^n \to \R^m$ for $\theta \in \Theta$ then a COCO problem corresponds to $\mathcal{P}=(n,\ftheta,\bar{\theta})$ where $n \in \mathbb{N}$ is a dimension, and $\bar{\theta}$ is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem $\mathcal{P}$ will optimize $\x \in \R^n \to \fthetabar(\x)$.
 \item The \emph{instance} concept is introduced to avoid possible exploitation of bias on a specific function. Typically the parameters encoded within an instance can be rotation matrices used to rotate the search space, vectors used to shift the optimum. \anne{different instances are supposed to be "close enough". Analogy with changing the initial point.}
-\item In the performance assessment setting, we associate to a problem $\mathcal{P}$, a $\target$, which is a function value $f_{\target} $ at which we extract the running time of the algorithm. Given that the optimal function value, that is $f_{\rm opt}^{\bar{\theta}} =  \min \mathcal{F}_{\bar{\theta}}$ depends on the specific instance $\bar{\theta}$, the $\target$ function values also depends on the instance $\bar{\theta}$. However commonly $f_{\target}^{\bar{\theta}} - f_{\rm opt}^{\bar{\theta}} $ that can be thought as {\bf precision}, does not depend on the instance $\bar{\theta}$ such that we can unambiguously consider for different instances $(\thetabar_1, \ldots,\thetabar_K)$ of a parametrized problem $ \mathcal{F}_{\bar{\theta}}(\x)$, the set of targets $f_{\target}^{\thetabar_1}, \ldots,f_{\target}^{\thetabar_K}$ associated to a similar precision.
-\item Run-length of a problem $\problem=(n,\mathcal{F}_{\theta},\bar{\theta},f_{\target}^{\bar{\theta}})$. Given a target, we extract the run-length of a problem, that is the number of function evaluations needed by the algorithm to reach the target function value $f_{\target}^{\bar{\theta}}$ when optimizing $\mathcal{F}_{\bar{\theta}}(\x)$.
+\item In the performance assessment setting, we associate to a problem $\mathcal{P}$, a $\target$, which is a function value $f_{\target} $ at which we extract the running time of the algorithm. Given that the optimal function value, that is $\fopt =  \min_{\x} \fthetabar(\x)$ depends on the specific instance $\bar{\theta}$, the $\target$ function values also depends on the instance $\bar{\theta}$. However commonly $f_{\target}^{\bar{\theta}} - f_{\rm opt}^{\bar{\theta}} $ that can be thought as {\bf precision}, does not depend on the instance $\bar{\theta}$ such that we can unambiguously consider for different instances $(\thetabar_1, \ldots,\thetabar_K)$ of a parametrized problem $ \fthetabar(\x)$, the set of targets $f_{\target}^{\thetabar_1}, \ldots,f_{\target}^{\thetabar_K}$ associated to a similar precision.
+\item Run-length of a problem $\problem=(n,\ftheta,\bar{\theta},f_{\target}^{\bar{\theta}})$. Given a target, we extract the run-length of a problem, that is the number of function evaluations needed by the algorithm to reach the target function value $f_{\target}^{\bar{\theta}}$ when optimizing $\fthetabar(\x)$.
 
 \item We measure run-length on a single problem
 
 \item We can aggregate several run-lengths in which case we have to select a subset of problems. We can vary $f_\target$ only, or vary $\theta$ only, or we can vary both and/or additionally the function. If we vary $f_\target$, the events are not independent. \anne{Discuss the link / connection between this point and the next one.}
 
-\item Collection of run-length for a parametrized function for a set of instances: Given a parametrized function $\x \to \mathcal{F}_{\theta}(\x)$ and a set of instances $(\thetabar_1, \ldots,\thetabar_K)$, we compute the instance-wise targets associated to a given precision (see above). We then collect the runtime associated to those targets. \anne{We might want to give some names here ...}
+\item Collection of run-length for a parametrized function for a set of instances: Given a parametrized function $\x \to \ftheta(\x)$ and a set of instances $(\thetabar_1, \ldots,\thetabar_K)$, we compute the instance-wise targets associated to a given precision (see above). We then collect the runtime associated to those targets. \anne{We might want to give some names here ...}
 \item Only moment where we consider the run-length as i.id. is vary instance, with associated target. Why is it reasonable: similar to changing initial conditions on the same instance.
 \end{itemize}
 
