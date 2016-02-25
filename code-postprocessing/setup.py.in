@@ -19,13 +19,14 @@ setup(
                           'best*algentries*.pickle',
                           'best*algentries*.pickle.gz',
                           'pprldistr2009*.pickle.gz',
+                          'latex_commands_for_html.html',
     # this is not supposed to copy to the subfolder, see https://docs.python.org/2/distutils/setupscript.html
     # but it does. 
                           'js/*', 'tth/*', 
                           '../latex-templates/*.tex',
                           '../latex-templates/*.cls',
-                          'data/IPOP-CMA-ES/*',
-                          'data/RANDOMSEARCH/*'
+                          'data/IPOP-CMA-ES/*.pickle.gz',
+                          'data/RANDOMSEARCH/*.pickle.gz'
                           ]},
     url = 'https://github.com/numbbo/coco',
     license = 'BSD',
