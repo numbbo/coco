@@ -41,9 +41,19 @@ abstract = """We present an experimental setup and procedure for benchmarking nu
 extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.pngmath',
+#     'sphinx.ext.mathjax',
 ]
 
-# Add any paths that contain templates here, relative to this directory.
+pngmath_dvipng_args = [
+    '-gamma', '1.5',  # not --gamma?
+    '-D', '110', 
+#    '--gif', 
+#    '--bdpi', '440',  # see man dvipng
+#    '-Q', '5', 
+    '-bg', 'Transparent',
+]
+
+
 templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
@@ -232,6 +242,7 @@ latex_elements = {
 # Additional stuff for the LaTeX preamble.
 'preamble': r"""
   \usepackage{amssymb}
+  \pagestyle{plain}
   \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
   \newcommand{\ignore}[1]{}
   \newcommand{\abstracttextinconfpy}{""" + abstract + r"""}
