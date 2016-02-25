@@ -100,6 +100,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. |f| replace:: :math:`f`
 .. |x| replace:: :math:`x`
 
+.. role:: red
+.. |todo| replace:: **todo**
 
 .. #################################################################################
 .. #################################################################################
@@ -111,16 +113,35 @@ Introduction
 .. Note:: (to address) Reasons for having COCO: automatize the process of benchmarking
 
 We consider the problem to minimize a function :math:`f: X\subset\mathbb{R}^n \to \mathbb{R}^m, \,n,m\ge1` in a black-box scenario. 
-More specifically, we aim to find a solution :math:`x\in X` with small value(s) of :math:`f(x)\in\mathbb{R}^m` as quickly as possible, where we consider *time* to be the number of calls to the function |f|. 
-An optimization algorithm addresses this problem. We assume that no prior knowledge about |f| is available and |f| is considered as a black-box the algorithm can query with solutions |x|. 
+More specifically, we aim to find, as quickly as possible, one or several solutions :math:`x\in X` with small value(s) of :math:`f(x)\in\mathbb{R}^m`. We consider *time* to be the number of calls to the function |f|, if not stated otherwise. 
+An optimization algorithm, also known as *solver*, addresses this problem. We assume that no prior knowledge about |f| is available and |f| is considered as a black-box the algorithm can query with solutions |x|.
 
-
-Benchmarking optimization algorithms, also known as *solvers*, seems to be a
+Considering this setup, benchmarking optimization algorithms seems to be a
 rather simple and straightforward task. However, under closer inspection it is
-surprisingly tedious. It appears to be difficult to get meaningful and easily interpretable benchmarking results and the process offers quite a few unexpected 
-pitfalls. Here, we offer a conceptual guideline for benchmarking continuous optimization algorithms which is implemented in the COCO_ [#]_ framework.
+surprisingly tedious, and it appears to be difficult to get meaningful and easily interpretable benchmarking results. [#]_
+Here, we offer a conceptual guideline for benchmarking continuous optimization algorithms which has been implemented in the COCO_ framework. [#]_
+
+
+Why COCO_?
+----------
+
+Our conceptual guideline offers a few defining features.  
+
+  - hard to defeat
+  - comprehensible
+  - budget-less
+  - runtime on a collection of problems
+
+|todo|
+
+Terminology
+------------
+
+
+.. [#] It remains to be a standard procedure to present tens or even hundreds of numbers in one or several tables, left to the reader to scan and compare to each other. 
 
 .. [#] see https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
+
 
 General structure: experiments + postprocessing
 ===============================================
