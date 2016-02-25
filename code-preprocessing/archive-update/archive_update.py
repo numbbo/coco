@@ -5,12 +5,13 @@
    stored in the output archives. A file with the best known hypervolume values
    is generated from these hypervolumes and the ones stored in C source files. 
 """
+from __future__ import absolute_import, division, print_function, unicode_literals
 import os
-import pyximport; pyximport.install()
 
 from archive_exceptions import PreprocessingWarning, PreprocessingException
 import archive_load_data as ld
 from archive import Archive
+import archive as a
 #from archive_mock import Archive
 
 class ProblemInstanceInfo:
@@ -69,9 +70,7 @@ class ProblemInstanceInfo:
     def fill_archive(self, archive):
         """Reads the solutions from the files and feeds them to the given 
            archive. 
-        """
-        # Make sure this works also for the last line in the file!
-        
+        """        
         for file_name in self.file_names:            
             with open(file_name, 'r') as f:
             
@@ -79,6 +78,9 @@ class ProblemInstanceInfo:
                 stop_reading = False
                 
                 for line in f:
+                    if not line.strip():
+                        # Ignore empty lines
+                        continue
                     if (line[0] == '%') and stop_reading:
                         break
                     elif ((line[0] == '%') and (not instance_found)):
@@ -91,8 +93,8 @@ class ProblemInstanceInfo:
                             if not stop_reading:
                                 stop_reading = True
                             # Solution found, feed it to the archive
-                            archive.add_solution(line.split('\t')[1], 
-                                                 line.split('\t')[2], 
+                            archive.add_solution(float(line.split('\t')[1]), 
+                                                 float(line.split('\t')[2]), 
                                                  line)
                      
                 f.close()
@@ -103,7 +105,7 @@ class ProblemInstanceInfo:
     def write_archive_solutions(self, output_path, archive):
         """Appends solutions to a file in the output_path named according
            to self's suite_name, function and dimension.
-        """
+        """            
         ld.create_path(output_path)
         file_name = os.path.join(output_path, 
                                  "{}_f{:02d}_d{:02d}_nondominated.adat".format(
@@ -253,6 +255,8 @@ def merge_archives(input_path, output_path):
             break
         print(problem_instance_info)
         
+        old_level = a.log_level("warning")
+        
         # Create an archive for this problem instance
         archive = Archive(problem_instance_info.suite_name,
                           problem_instance_info.function,
@@ -266,6 +270,8 @@ def merge_archives(input_path, output_path):
         problem_instance_info.write_archive_solutions(output_path, archive)        
         
         result.update({str(problem_instance_info) : archive.hypervolume})   
+        
+        a.log_level(old_level)
     
     return result
         

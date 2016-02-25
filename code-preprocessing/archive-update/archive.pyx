@@ -20,6 +20,8 @@ cdef extern from "coco.h":
     double coco_archive_get_hypervolume(coco_archive_t *archive)
     char *coco_archive_get_next_solution_text(coco_archive_t *archive)
     void coco_archive_free(coco_archive_t *archive)
+    
+    char* coco_set_log_level(char *level)
               
 cdef bytes _bstring(s):
     if type(s) is bytes:
@@ -40,40 +42,36 @@ cdef class Archive:
     cdef size_t _instance
     
     cdef size_t _number_of_solutions
-    cdef double _hypervolume
+    cdef double _hypervolume    
+    cdef bytes _tmp_text
+    
     cdef up_to_date
     
     def __cinit__(self, suite_name, function, dimension, instance):
+            
         self._suite_name = _bstring(suite_name)
         self._function = function
         self._dimension = dimension
         self._instance = instance
         self.up_to_date = False
         
-        archive = coco_archive(self._suite_name, self._function, 
-                               self._dimension, self._instance)
-                               
-        # To avoid the infinite loop
-        self.iteration = 0
+        self.archive = coco_archive(self._suite_name, self._function, 
+                                    self._dimension, self._instance)
         
     def __dealloc__(self):
         coco_archive_free(self.archive)
                             
-    def add_solution(self, f1, f2, text):
-        updated = coco_archive_add_solution(self.archive, f1, f2, text)
+    def add_solution(self, f1, f2, text):        
+        updated = coco_archive_add_solution(self.archive, f1, f2, text)            
         if updated:
-            self.up_to_date = False
+            self.up_to_date = False            
         return updated
         
-    def get_next_solution_text(self):
-        # TODO: Handle the NULL case, otherwise you are in an infinite loop!
-#        if (self.text is NULL):
-#            return None
-        self.iteration += 1
-        if (self.iteration > 10):
+    def get_next_solution_text(self):            
+        self._tmp_text = coco_archive_get_next_solution_text(self.archive)
+        if self._tmp_text == "":
             return None
-            
-        return coco_archive_get_next_solution_text(self.archive)
+        return self._tmp_text
         
     def update(self):
         if not self.up_to_date:
@@ -91,4 +89,12 @@ cdef class Archive:
         self.update()
         return self._hypervolume
     
+def log_level(level=None):
+    """`log_level(level=None)` return current log level and
+    set new log level if `level is not None and level`.
     
+    `level` must be 'error' or 'warning' or 'info' or 'debug', listed
+    with increasing verbosity, or '' which doesn't change anything.
+    """
+    cdef bytes _level = _bstring(level if level is not None else "")
+    return coco_set_log_level(_level)
