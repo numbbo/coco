@@ -348,18 +348,17 @@ Time Complexity Experiment
 ==========================
 
 In order to get a rough measurement of the time complexity of the algorithm,
-the wall-clock or CPU time should be measured when running the algorithm 
-on the benchmark suite. 
-The chosen setup should reflect a "realistic average scenario". [#]_
-The **time divided by the number of function evaluations is presented separately 
-for each dimension** for which the suite provides benchmark problems. 
-The chosen setup, coding language, compiler and
+the wall-clock or CPU time should be measured when running the algorithm on
+the benchmark suite. The chosen setup should reflect a "realistic average
+scenario". [#]_ The **time divided by the number of function evaluations is
+presented separately for each dimension** for which the suite provides
+benchmark problems. The chosen setup, coding language, compiler and
 computational architecture for conducting these experiments are described.
 
 .. The :file:`exampletiming.*` code template is provided to run this experiment. For CPU-inexpensive algorithms the timing might mainly reflect the time spent in function :math:`fgeneric`.
 
 .. [#] 
-  The example experiment code provide the timing output measured over all
+  The example experiment code provides the timing output measured over all
   problems of a single dimension by default. It also can be used to make a record
   of the same timing experiment with "pure random search", which can serve as 
   additional base-line data. On the ``bbob`` test suite, also only the
