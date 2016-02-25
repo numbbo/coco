@@ -481,17 +481,18 @@ coco_archive_t *coco_archive(const char *suite_name,
 int coco_archive_add_solution(coco_archive_t *archive, const double f1, const double f2, const char *text);
 
 /**
- * @brief Returns the number of (non-dominated) solutions in the archive (if needed, they are first computed).
+ * @brief Returns the number of (non-dominated) solutions in the archive (computed first, if needed).
  */
 size_t coco_archive_get_number_of_solutions(coco_archive_t *archive);
 
 /**
- * @brief Returns the hypervolume of the archive (if needed, it is first computed).
+ * @brief Returns the hypervolume of the archive (computed first, if needed).
  */
 double coco_archive_get_hypervolume(coco_archive_t *archive);
 
 /**
- * @brief Returns the text of the next (non-dominated) solution in the archive.
+ * @brief Returns the text of the next (non-dominated) solution in the archive and NULL when there are no
+ * solutions left. The first two solutions are always the extreme ones.
  */
 const char *coco_archive_get_next_solution_text(coco_archive_t *archive);
 
@@ -2010,7 +2011,7 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
 static char *coco_option_keys_get_output_string(const coco_option_keys_t *option_keys,
                                                 const char *info_string) {
   size_t i;
-  char *string, *new_string;
+  char *string = NULL, *new_string;
 
   if ((option_keys != NULL) && (option_keys->count > 0)) {
 
@@ -2617,16 +2618,14 @@ size_t coco_problem_get_evaluations(const coco_problem_t *problem) {
 }
 
 /**
- * @note Can be used to prevent unnessary burning of CPU time. 
+ * @note Can be used to prevent unnecessary burning of CPU time.
  */
 int coco_problem_final_target_hit(const coco_problem_t *problem) {
   assert(problem != NULL);
   if (coco_problem_get_number_of_objectives(problem) != 1 ||
       coco_problem_get_evaluations(problem) < 1) 
     return 0;
-  if (problem->best_value == NULL ||
-      problem->final_target_delta == NULL ||
-      problem->best_observed_fvalue == NULL)
+  if (problem->best_value == NULL)
     return 0;
   return problem->best_observed_fvalue[0] <= problem->best_value[0] + problem->final_target_delta[0] ?
     1 : 0;
@@ -7380,7 +7379,13 @@ static int mo_solution_is_within_ROI(const double *y,
  * @brief Contains the best known hypervolume values for the bbob-biobj suite problems.
  */
 
-/** @brief The best known hypervolume values for the bbob-biobj suite problems. */
+/**
+ * @brief The best known hypervolume values for the bbob-biobj suite problems.
+ *
+ * @note Because this file is used for automatically retrieving the existing best hypervolume values for
+ * pre-processing purposes, its formatting should not be altered. This means that there must be exactly one
+ * string per line and no strings on the first line (line with {) and last line (line with }).
+ */
 static const char *suite_biobj_best_values_hyp[] = {
   "bbob-biobj_f01_i01_d02 0.833332381880295",
   "bbob-biobj_f02_i01_d02 0.995822556045719",
@@ -15505,7 +15510,6 @@ coco_archive_t *coco_archive(const char *suite_name,
 
   coco_free_memory(suite_instance);
   coco_free_memory(suite_options);
-
   coco_suite_free(suite);
 
   return archive;
