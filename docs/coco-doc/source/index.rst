@@ -97,6 +97,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. _coco_problem_get_evaluations(const coco_problem_t * problem): 
   http://numbbo.github.io/coco-doc/C/coco_8h.html#a6ad88cdba2ffd15847346d594974067f
 
+.. |f| replace:: :math:`f`
+.. |x| replace:: :math:`x`
+
 
 .. #################################################################################
 .. #################################################################################
@@ -105,8 +108,19 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 Introduction
 ============
-Reasons for having COCO: automatize the process of benchmarking
+.. Note:: (to address) Reasons for having COCO: automatize the process of benchmarking
 
+We consider the problem to minimize a function :math:`f: X\subset\mathbb{R}^n \to \mathbb{R}^m, \,n,m\ge1` in a black-box scenario. 
+More specifically, we aim to find a solution :math:`x\in X` with small value(s) of :math:`f(x)\in\mathbb{R}^m` as quickly as possible, where we consider *time* to be the number of calls to the function |f|. 
+An optimization algorithm addresses this problem. We assume that no prior knowledge about |f| is available and |f| is considered as a black-box the algorithm can query with solutions |x|. 
+
+
+Benchmarking optimization algorithms, also known as *solvers*, seems to be a
+rather simple and straightforward task. However, under closer inspection it is
+surprisingly tedious. It appears to be difficult to get meaningful and easily interpretable benchmarking results and the process offers quite a few unexpected 
+pitfalls. Here, we offer a conceptual guideline for benchmarking continuous optimization algorithms which is implemented in the COCO_ [#]_ framework.
+
+.. [#] see https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
 
 General structure: experiments + postprocessing
 ===============================================
