@@ -30,8 +30,8 @@ Introduction
 
 In this document we explain the rationale behind the performance assessment within the COCO platform. The simple but central idea is that we advocate *quantitative* performance measures as opposed to simple rankings of algorithm performances. From there on follows that run-length for function value targets are collected. We then either display expected run-length through the `Expected Running Time`_ (ERT) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF).
 
-Terminology
-------------
+Terminology and Definitions
+----------------------------
 *problem*
   In the context of performance
   assessment, we talk about a *problem* as the quadruple 
