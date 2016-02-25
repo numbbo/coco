@@ -143,8 +143,8 @@ framework. Running an optimizer, ``fmin``, on benchmark suite in Python becomes 
     import cocopp as pp
     from myoptimizer import fmin
     
-    suite = ex.suite("bbob", "", "")
-    observer = ex.observer("bbob", "result_folder: myoptimizer_on_bbob", "")
+    suite = ex.Suite("bbob", "", "")
+    observer = ex.Observer("bbob", "result_folder: myoptimizer_on_bbob")
     
     for p in suite:
         observer.observe(p)
