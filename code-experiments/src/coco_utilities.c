@@ -629,7 +629,7 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
 static char *coco_option_keys_get_output_string(const coco_option_keys_t *option_keys,
                                                 const char *info_string) {
   size_t i;
-  char *string, *new_string;
+  char *string = NULL, *new_string;
 
   if ((option_keys != NULL) && (option_keys->count > 0)) {
 
