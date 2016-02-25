@@ -471,7 +471,7 @@ size_t coco_archive_get_number_of_solutions(coco_archive_t *archive);
 double coco_archive_get_hypervolume(coco_archive_t *archive);
 
 /**
- * @brief Returns the text of the next (non-dominated) solution in the archive and NULL when there are no
+ * @brief Returns the text of the next (non-dominated) solution in the archive and "" when there are no
  * solutions left. The first two solutions are always the extreme ones.
  */
 const char *coco_archive_get_next_solution_text(coco_archive_t *archive);

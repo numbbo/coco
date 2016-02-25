@@ -461,17 +461,18 @@ coco_archive_t *coco_archive(const char *suite_name,
 int coco_archive_add_solution(coco_archive_t *archive, const double f1, const double f2, const char *text);
 
 /**
- * @brief Returns the number of (non-dominated) solutions in the archive (if needed, they are first computed).
+ * @brief Returns the number of (non-dominated) solutions in the archive (computed first, if needed).
  */
 size_t coco_archive_get_number_of_solutions(coco_archive_t *archive);
 
 /**
- * @brief Returns the hypervolume of the archive (if needed, it is first computed).
+ * @brief Returns the hypervolume of the archive (computed first, if needed).
  */
 double coco_archive_get_hypervolume(coco_archive_t *archive);
 
 /**
- * @brief Returns the text of the next (non-dominated) solution in the archive.
+ * @brief Returns the text of the next (non-dominated) solution in the archive and NULL when there are no
+ * solutions left. The first two solutions are always the extreme ones.
  */
 const char *coco_archive_get_next_solution_text(coco_archive_t *archive);
 

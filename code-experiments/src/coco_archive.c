@@ -314,7 +314,7 @@ const char *coco_archive_get_next_solution_text(coco_archive_t *archive) {
   } else {
 
     if (archive->current_solution == NULL)
-      return NULL;
+      return "";
 
     if ((archive->current_solution == archive->extreme1) || (archive->current_solution == archive->extreme2)) {
       /* Skip this one */
