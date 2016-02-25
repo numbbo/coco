@@ -287,6 +287,16 @@ static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(cons
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "large_scale_block_rotated");
   
+  coco_free_block_matrix(B1, dimension);
+  coco_free_block_matrix(B2, dimension);
+  coco_free_memory(P11);
+  coco_free_memory(P12);
+  coco_free_memory(P21);
+  coco_free_memory(P22);
+  coco_free_memory(block_sizes1);
+  coco_free_memory(block_sizes2);
+  coco_free_memory(xopt);
+  
   return problem;
 }
 
