@@ -116,11 +116,12 @@ scaling_figure_caption_rlbased = caption_part_one + r"""%
     # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
 
 # should correspond with the colors in pprldistr.
+
 # Wassim: TODO seems to be set before rungeneric so useless here!!!!
 dimensions = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls
 
 
-functions_with_legend = (1, 24, 101, 130)
+#functions_with_legend = (1, 24, 101, 130)
 
 def scaling_figure_caption():
     
@@ -551,7 +552,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         beautify(axesLabel=False)
         plt.text(plt.xlim()[0], plt.ylim()[0],
                  _valuesOfInterest.short_info, fontsize=14)
-        if func in functions_with_legend:
+        if func in genericsettings.current_testbed.functions_with_legend:
             plt.legend(loc="best")
         if func in funInfos.keys():
             # print(plt.rcParams['axes.titlesize'])

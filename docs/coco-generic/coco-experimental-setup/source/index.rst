@@ -91,6 +91,12 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$
   ``coco_recommend_solution``
 .. _coco_recommend_solution: 
   http://numbbo.github.io/coco-doc/C/coco_8h.html#afd76a19eddd49fb78c22563390437df2
+  
+.. |coco_problem_get_evaluations(const coco_problem_t * problem)| replace::
+  ``coco_problem_get_evaluations(const coco_problem_t * problem)``
+.. _coco_problem_get_evaluations(const coco_problem_t * problem): 
+  http://numbbo.github.io/coco-doc/C/coco_8h.html#a6ad88cdba2ffd15847346d594974067f
+
 
 .. #################################################################################
 .. #################################################################################
@@ -204,8 +210,13 @@ the algorithm:
 
 The number of evaluations of the problem and/or constraints are the search
 costs, also referred to as runtime, and used for the performance 
-assessment of the algorithm. 
+assessment of the algorithm. [#]_
 
+.. [#] |coco_problem_get_evaluations(const coco_problem_t * problem)|_ is a
+  convenience functions that returns the number of evaluations done on ``problem``. 
+  Because this information is available to the optimization algorithm anyway, 
+  the convenience function might be used additionally. 
+  
 
 .. _sec:stopping:
 .. _sec:budget:
@@ -360,19 +371,19 @@ computational architecture for conducting these experiments are described.
    Evolutionary Computation (CEC 2005)*, pages 1769--1776. IEEE Press, 2005.
 .. .. [Auger:2005b] A. Auger and N. Hansen. Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
-   Evolutionary Computation (CEC 2005)*, pages 1777<E2><80><93>1784, 2005.
+   Evolutionary Computation (CEC 2005)*, pages 1777-1784, 2005.
 .. .. [Auger:2009] Anne Auger and Raymond Ros. Benchmarking the pure
    random search on the BBOB-2009 testbed. In Franz Rothlauf, editor, *GECCO
-   (Companion)*, pages 2479<E2><80><93>2484. ACM, 2009.
+   (Companion)*, pages 2479-2484. ACM, 2009.
 .. .. [Efron:1993] B. Efron and R. Tibshirani. *An introduction to the
    bootstrap.* Chapman & Hall/CRC, 1993.
 .. [HAR1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation
-   Conference (GECCO)*, volume 1, pages 258--265. ACM, 1999.
+   Conference (GECCO)*, volume 1, pages 258-265. ACM, 1999.
 .. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
    algorithms: pitfalls and remedies. In *Proceedings of the Fourteenth 
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
-   pages 238<E2><80><93>245, 1998.
+   pages 238-245, 1998.
 .. .. [PRI1997] K. Price. Differential evolution vs. the functions of
    the second ICEO. In Proceedings of the IEEE International Congress on
    Evolutionary Computation, pages 153--157, 1997.
