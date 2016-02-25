@@ -12,7 +12,7 @@ This module can be called from the shell, it will recursively look for
 
 """
 from __future__ import absolute_import
-import os
+import os, sys
 import warnings
 #import zipfile
 import tarfile
@@ -72,7 +72,12 @@ def get_directory(directory, extractFiles):
         if (extractFiles):        
             if ((not os.path.exists(dirname))
                     or (os.path.getmtime(dirname) < os.path.getmtime(directory))): 
-                tarfile.TarFile.open(directory).extractall(dirname)
+                tarFile = tarfile.TarFile.open(directory)
+                longestFileLength = max(len(i) for i in tarFile.getnames())
+                if ('win32' in sys.platform) and + len(dirname) + longestFileLength > 259:
+                    raise IOError(2, 'Some of the files cannot be extracted from "%s". The path is too long.' % directory)
+                
+                tarFile.extractall(dirname)
                 # TarFile.open handles tar.gz/tgz
                 print '    archive extracted to folder', dirname, '...'
         directory = dirname
