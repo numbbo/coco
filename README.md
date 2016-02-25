@@ -4,8 +4,14 @@ numbbo/coco: Comparing Continuous Optimizers
 [This code](https://github.com/numbbo/coco) reimplements the original Comparing Continous Optimizer platform, 
 now rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
 the code provides a platform to benchmark and compare continuous optimizers, AKA non-linear 
-solvers for numerical optimization. Languages currently available are `C/C++`, `Java`, 
-`MATLAB/Octave`, and `Python`. Contributions to link further languages (including a better
+solvers for numerical optimization. Languages currently available are 
+
+  - `C/C++`
+  - `Java`
+  - `MATLAB/Octave`
+  - `Python`
+
+Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
 For more information, 
@@ -43,7 +49,7 @@ _Additional_ requirements for running an algorithm in a specific language.
 * **Python on Windows with MinGW**: Python 2.7 and the Microsoft compiler package for Python 2.7 
   containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
   These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
-  It has both the 32-bit and 64-bit compilers and the Windows SDK headers.
+  The package contains 32-bit and 64-bit compilers and the Windows SDK headers.
 * **Octave**: Octave 4.0.0 or later. On operating systems other than Windows, earlier versions might work.
 
 ### Guaranties (None)
