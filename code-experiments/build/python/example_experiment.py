@@ -70,16 +70,26 @@ class ShortInfo(object):
     def __init__(self):
         self.f_current = 0  # function id (not problem id)
         self.d_current = 0  # dimension
+        self.t0_dimension = time.time()
+        self.evals_dimension = 0
     def print(self, problem, end="", **kwargs):
         print(self(problem), end=end, **kwargs)
         sys.stdout.flush()
+    def add_evals(self, evals):
+        self.evals_dimension += evals
+    def dimension_done(self):
+        s = '\n    done in %.1e seconds/evaluation' % ((time.time() - self.t0_dimension) / self.evals_dimension)
+        # print(self.evals_dimension)
+        self.t0_dimension = time.time()
+        self.evals_dimension = 0
+        return s
     def __call__(self, problem):
         """uses `problem.id` and `problem.dimension` to decide what to print.
         """
         f = "f" + problem.id.lower().split('_f')[1].split('_')[0]
         res = ""
         if problem.dimension != self.d_current:
-            res += '%s%s, d=%d, running: ' % (' done\n\n' if self.d_current else '',
+            res += '%s%s, d=%d, running: ' % (self.dimension_done() + "\n\n" if self.d_current else '',
                         ShortInfo.short_time_stap(), problem.dimension)
             self.d_current = problem.dimension
         if f != self.f_current:
@@ -137,9 +147,11 @@ def batch_loop(solver, suite, observer, budget,
         short_info.print(problem) if verbose else None
         coco_optimize(solver, problem, budget * problem.dimension, max_runs)
         print_flush(".") if verbose else None
+        short_info.add_evals(problem.evaluations)
         problem.free()
         addressed_problems += [problem.id]
-    print(" done\n%s done (%d of %d problems benchmarked%s)" %
+    print(short_info.dimension_done())
+    print("  %s done (%d of %d problems benchmarked%s)" %
            (suite_name, len(addressed_problems), len(suite),
              ((" in batch %d of %d" % (current_batch, number_of_batches))
                if number_of_batches > 1 else "")), end="")
@@ -215,11 +227,11 @@ number_of_batches = 1  # allows to run everything in several batches
 current_batch = 1      # 1..number_of_batches
 ##############################################################################
 SOLVER = random_search
-#SOLVER = my_solver # fmin_slsqp # cma.fmin #
+#SOLVER = my_solver # fmin_slsqp # SOLVER = cma.fmin
 suite_name = "bbob-biobj"
-# suite_name = "bbob"
-suite_instance = ""  # 'dimensions: 2,3,5,10,20 instance_indices: 1-5'
-suite_options = ""
+#suite_name = "bbob"
+suite_instance = ""
+suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
 observer_name = suite_name
 observer_options = (
     ' result_folder: %s_on_%s_budget%04d '
