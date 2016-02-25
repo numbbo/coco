@@ -580,7 +580,8 @@ cdef class Problem:
     objective function value when called with a candidate solution as input.
     """
     cdef coco_problem_t* problem
-    cdef np.ndarray y  # argument for coco_evaluate
+    cdef np.ndarray y_values  # argument for coco_evaluate
+    cdef np.ndarray constraint_values  # argument for coco_evaluate
     cdef np.ndarray x_initial  # argument for coco_problem_get_initial_solution
     # cdef public const double[:] test_bounds
     # cdef public np.ndarray lower_bounds
@@ -615,7 +616,8 @@ cdef class Problem:
         self._number_of_variables = coco_problem_get_dimension(self.problem)
         self._number_of_objectives = coco_problem_get_number_of_objectives(self.problem)
         self._number_of_constraints = coco_problem_get_number_of_constraints(self.problem)
-        self.y = np.zeros(self._number_of_objectives)
+        self.y_values = np.zeros(self._number_of_objectives)
+        self.constraint_values = np.zeros(self._number_of_constraints)
         self.x_initial = np.zeros(self._number_of_variables)
         ## FIXME: Inefficient because we copy the bounds instead of
         ## sharing the data.
@@ -647,8 +649,8 @@ cdef class Problem:
             raise InvalidProblemException()
         coco_evaluate_constraint(self.problem,
                                <double *>np.PyArray_DATA(_x),
-                               <double *>np.PyArray_DATA(self.y))
-        return np.array(self.y, copy=True)
+                               <double *>np.PyArray_DATA(self.constraint_values))
+        return np.array(self.constraint_values, copy=True)
     def recommend(self, arx):
         """Recommend a solution, return `None`.
 
@@ -774,10 +776,10 @@ cdef class Problem:
             raise InvalidProblemException()
         coco_evaluate_function(self.problem,
                                <double *>np.PyArray_DATA(_x),
-                               <double *>np.PyArray_DATA(self.y))
+                               <double *>np.PyArray_DATA(self.y_values))
         if self._number_of_objectives == 1:
-            return self.y[0]
-        return np.array(self.y, copy=True)
+            return self.y_values[0]
+        return np.array(self.y_values, copy=True)
 
     @property
     def id(self):
