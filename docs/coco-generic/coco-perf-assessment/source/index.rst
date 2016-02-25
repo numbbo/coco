@@ -20,8 +20,6 @@ COCO: Performance Assessment
 .. |ERT| replace:: :math:`\mathrm{ERT}`
 
 
-
-
 ..
    sectnum::
 

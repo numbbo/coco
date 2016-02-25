@@ -97,6 +97,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. _coco_problem_get_evaluations(const coco_problem_t * problem): 
   http://numbbo.github.io/coco-doc/C/coco_8h.html#a6ad88cdba2ffd15847346d594974067f
 
+.. |\citeCOCOexset| replace:: [COCOexset]
+
 .. |f| replace:: :math:`f`
 .. |x| replace:: :math:`x`
 
@@ -131,6 +133,27 @@ Our conceptual guideline offers a few defining features.
   - comprehensible
   - budget-less
   - runtime on a collection of problems
+
+Last but not least, the process of benchmarking is automized within the COCO_ 
+framework. Running an optimizer, ``fmin``, on benchmark suite in Python becomes as simple as
+
+.. code:: python
+
+    import cocoex as ex
+    import cocopp as pp
+    from myoptimizer import fmin
+    
+    suite = ex.suite("bbob", "", "")
+    observer = ex.observer("bbob", "result_folder: myoptimizer_on_bbob", "")
+    
+    for p in suite:
+        observer.observe(p)
+        fmin(p, p.initial_solution)
+        
+    pp.main('exdata/myoptimizer_on_bbob')
+
+
+Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
 
 |todo|
 

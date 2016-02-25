@@ -7,8 +7,6 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ...
 %%%
 
-.. .. image:: _images/title-image.png
-
 .. |
 .. |
 .. .. sectnum::
