@@ -95,9 +95,12 @@ caption_part_one = r"""%
 #    "function value.  " +
 scaling_figure_caption_fixed = caption_part_one + r"""%
     Shown are $\Df = 10^{\{values_of_interest\}}$.  
-    Numbers above \ERT-symbols (if appearing) indicate the number of trials reaching the respective target. 
-    The light thick line with diamonds indicates the respective best result from BBOB-2009 for $\Df=10^{-8}$. 
-    Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling.  
+    Numbers above \ERT-symbols (if appearing) indicate the number of trials
+    reaching the respective target. """ + (r"""The light thick line with
+    diamonds indicates the respective best result from BBOB-2009 for
+    $\Df=10^{-8}$. """ if not isinstance(genericsettings.current_testbed,
+    genericsettings.GECCOBiobjBBOBNoisefreeTestbed) else "") + """Horizontal
+    lines mean linear scaling, slanted grid lines depict quadratic scaling.  
     """
 scaling_figure_caption_rlbased = caption_part_one + r"""%
     Shown is the \ERT\ for 
