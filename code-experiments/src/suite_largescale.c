@@ -13,6 +13,7 @@
 #include "f_different_powers.c"
 #include "f_rastrigin.c"
 #include "f_weierstrass.c"
+#include "f_step_ellipsoid.c"
 #include "f_schaffers.c"
 #include "f_griewank_rosenbrock.c"
 #include "f_schwefel.c"
@@ -53,7 +54,7 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
   const long rseed_17 = (long) (17 + 10000 * instance);
 
   /*TODO: finish implementing the large scale test-suite functions.
-          current list: 1-6,8-14*/
+          current list: 1-19*/
   if (function == 1) {
     problem = f_sphere_bbob_problem_allocate(function, dimension, instance, rseed,
                                              problem_id_template, problem_name_template);
@@ -73,8 +74,8 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_attractive_sector_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                                         problem_id_template, problem_name_template);
   } else if (function == 7) {
-    problem = NULL; /*f_step_ellipsoid_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                     problem_id_template, problem_name_template);*/
+    problem = f_step_ellipsoid_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
+                                                     problem_id_template, problem_name_template);
   } else if (function == 8) {
     problem = f_rosenbrock_bbob_problem_allocate(function, dimension, instance, rseed,
                                                  problem_id_template, problem_name_template);
