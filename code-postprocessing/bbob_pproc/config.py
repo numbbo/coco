@@ -43,7 +43,7 @@ def config(isBiobjective=None):
         
         if isBiobjective:
             # pptable:
-            pptable.table_caption = pptable.table_caption_biobjective
+            pptable.set_table_caption('biobjective')
         
         
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets 
@@ -102,7 +102,8 @@ def config(isBiobjective=None):
                     ] 
             
         # pptable:
-        pptable.table_caption=pptable.table_caption_rlbased
+        #pptable.table_caption=pptable.table_caption_rlbased
+        pptable.set_table_caption('rlbased')
         pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
                                                                      reference_data = reference_data,
                                                                      force_different_targets_factor=10**-0.2)

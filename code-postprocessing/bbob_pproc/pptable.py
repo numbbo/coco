@@ -93,19 +93,31 @@ table_caption_rest = r"""%
     functions.
     """
 table_caption = table_caption_one + table_caption_two1 + table_caption_rest
-table_caption_rlbased = table_caption_one + table_caption_two2 + table_caption_rest
 
-table_caption_biobjective = r"""%
-    Expected running time (ERT in number of function 
-    evaluations) to reach given targets. For each function, the ERT 
-    and in braces, as dispersion measure, the half difference between 90 and 
-    10\%-tile of bootstrapped run lengths is shown for the different target
-    \Df-values as shown in the top row. 
-    \#succ is the number of trials that reached the (final) target $\fopt + 10^{-5}$.
-    The median number of conducted function evaluations is additionally given in 
-    \textit{italics}, if the target in the last column was never reached. 
-    """
 
+def set_table_caption(setting):
+    """ Sets table caption, based on the setting which can be
+        either 'rlbased' or 'biobjective'.
+    """    
+    global table_caption    
+    
+
+    if setting == 'rlbased':
+        table_caption = table_caption_one + table_caption_two2 + table_caption_rest
+    elif setting == 'biobjective':
+        table_caption = r"""%
+                Expected running time (ERT in number of function 
+                evaluations) to reach given targets. For each function, the ERT 
+                and in braces, as dispersion measure, the half difference between 90 and 
+                10\%-tile of bootstrapped run lengths is shown for the different target
+                \Df-values as shown in the top row. 
+                \#succ is the number of trials that reached the (final) target 
+                $\fopt + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+                The median number of conducted function evaluations is additionally given in 
+                \textit{italics}, if the target in the last column was never reached. 
+                """        
+    else:
+        warnings.warn('Not supported table caption setting. Using default.')
 
 def _treat(ds):
 

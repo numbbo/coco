@@ -299,6 +299,7 @@ class GECCOBBOBTestbed(Testbed):
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.name = 'bbob'
         self.short_names = {}
+        self.hardesttargetlatex = '10^{-8}'
         self.ppfigs_ftarget = 1e-8
         self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # possibly changed in config
         self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
@@ -330,9 +331,10 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.name = 'bbob-biobj'
         self.short_names = {}
+        self.hardesttargetlatex = '10^{-5}'
         self.ppfigs_ftarget = 1e-5
         self.ppfigdim_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config
-        self.pprldistr_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config
+        self.pprldistr_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
         self.pprldmany_target_values = targetValues(10**np.arange(0, -5.1, -0.1)) # possibly changed in config
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5) # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
