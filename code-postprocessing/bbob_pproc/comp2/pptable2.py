@@ -238,7 +238,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                     if i == len(data) - 1: # last element
                         alignment = 'c|'
 
-                    if not bestalgentries or numpy.isinf(bestalgdata[i]): # if the 2009 best did not solve the problem
+                    if bestalgentries and numpy.isinf(bestalgdata[i]): # if the 2009 best did not solve the problem
 
                         tmp = writeFEvalsMaxPrec(float(dati), 2)
                         if not numpy.isinf(dati):
@@ -262,7 +262,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         tableentryHtml = ('%s' % tmpHtml)
                     else:
                         # Formatting
-                        tmp = float(dati)/bestalgdata[i]
+                        tmp = float(dati)/bestalgdata[i] if bestalgentries else float(dati)
                         assert not numpy.isnan(tmp)
                         isscientific = False
                         if tmp >= 1000:
@@ -282,7 +282,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             elif 11 < 3 and significance0vs1 < 0:  # cave: negative significance has no meaning anymore
                                 tableentry = r'\textit{%s}' % tableentry
                                 tableentryHtml = '<i>%s</i>' % tableentryHtml
-                            if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
+                            if bestalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
                                 tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
                                 tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
@@ -295,7 +295,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             elif 11 < 3 and significance0vs1 < 0:
                                 tableentry = r'\textit{%s}' % tableentry
                                 tableentryHtml = '<i>%s</i>' % tableentryHtml
-                            if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
+                            if bestalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
                                 tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
                                 tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
@@ -313,7 +313,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                             tableentryHtml = '.'.join(tmpHtml)
                             if len(tmp) == 1:
                                 tableentry += '&'
-                            if dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
+                            if bestalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
                                 tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
                                 tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
 
