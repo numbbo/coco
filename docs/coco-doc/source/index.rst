@@ -97,7 +97,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. _coco_problem_get_evaluations(const coco_problem_t * problem): 
   http://numbbo.github.io/coco-doc/C/coco_8h.html#a6ad88cdba2ffd15847346d594974067f
 
-.. |\citeCOCOexset| replace:: [COCOexset]
+.. |citeCOCOex| replace:: [COCOex]
 
 .. |f| replace:: :math:`f`
 .. |x| replace:: :math:`x`
@@ -116,26 +116,40 @@ Introduction
 
 We consider the problem to minimize a function :math:`f: X\subset\mathbb{R}^n \to \mathbb{R}^m, \,n,m\ge1` in a black-box scenario. 
 More specifically, we aim to find, as quickly as possible, one or several solutions :math:`x\in X` with small value(s) of :math:`f(x)\in\mathbb{R}^m`. We consider *time* to be the number of calls to the function |f|, if not stated otherwise. 
-An optimization algorithm, also known as *solver*, addresses this problem. We assume that no prior knowledge about |f| is available and |f| is considered as a black-box the algorithm can query with solutions |x|.
+An continuous optimization algorithm, also known as *solver*, addresses this problem. 
+Here we assume that no prior knowledge about |f| is available to the algorithm, 
+and |f| is considered as a black-box that the algorithm can query with solutions 
+:math:`x\in\mathbb{R}^n`.
 
 Considering this setup, benchmarking optimization algorithms seems to be a
 rather simple and straightforward task. However, under closer inspection it is
-surprisingly tedious, and it appears to be difficult to get meaningful and easily interpretable benchmarking results. [#]_
+surprisingly tedious, and it appears to be difficult to get meaningful and easily interpretable results. [#]_
 Here, we offer a conceptual guideline for benchmarking continuous optimization algorithms which has been implemented in the COCO_ framework. [#]_
 
 
 Why COCO_?
 ----------
 
-Our conceptual guideline offers a few defining features.  
+Our conceptual guideline has a few defining features.  
 
-  - hard to defeat
-  - comprehensible
-  - budget-less
-  - runtime on a collection of problems
+  - Benchmark functions are difficult to "defeat", that is, they do not 
+    have artificial regularities that can be (intentionally or unintentionally) 
+    exploited by an algorithm. [#]_
+  - Benchmark functions are comprehensible, to allow a meaningful 
+    interpretation of performance results. 
+  - There is no predefined budget (number of |f|-evaluations), the experimental 
+    procedure is budget-less. [COCOex]_
+  - A single performance 
+    measure is used: runtime measured in number of |f|-evaluations. Runtime is
+    
+    - quantitative on the ratio scale [cite]
+    - easily interpretable
+    - assumes a wide range of values
+    - aggregates over a collection of problems in meaningful way
 
 Last but not least, the process of benchmarking is automized within the COCO_ 
-framework. Running an optimizer, ``fmin``, on benchmark suite in Python becomes as simple as
+framework. Running an optimizer, say ``fmin``, on a benchmark suite in Python 
+becomes as simple as
 
 .. code:: python
 
@@ -144,18 +158,17 @@ framework. Running an optimizer, ``fmin``, on benchmark suite in Python becomes 
     from myoptimizer import fmin
     
     suite = ex.Suite("bbob", "", "")
-    observer = ex.Observer("bbob", "result_folder: myoptimizer_on_bbob")
+    observer = ex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
     
     for p in suite:
         observer.observe(p)
         fmin(p, p.initial_solution)
         
-    pp.main('exdata/myoptimizer_on_bbob')
+    pp.main('exdata/myoptimizer-on-bbob')
 
 
-Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
+Now the file ``ppdata/myoptimizer-on-bbob/ppdata.html`` can be used to browse the resulting data. 
 
-|todo|
 
 Terminology
 ------------
@@ -163,8 +176,11 @@ Terminology
 
 .. [#] It remains to be a standard procedure to present tens or even hundreds of numbers in one or several tables, left to the reader to scan and compare to each other. 
 
-.. [#] see https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
+.. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
 
+.. [#] For example, the optimum is not in all-zeros and optima are not placed 
+    on a regular grid. Which regularities are common place in real-world 
+    optimization problems remains an open question. 
 
 General structure: experiments + postprocessing
 ===============================================
@@ -208,6 +224,7 @@ Different test suites
 
 .. ############################# References #########################################
 
+.. [COCOex] The BBOBies: Experimental Setup. 
 
 .. .. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
