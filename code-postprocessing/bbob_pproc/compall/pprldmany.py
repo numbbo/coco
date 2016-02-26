@@ -304,7 +304,7 @@ def plotLegend(handles, maxval):
         numberOfCharacters = 7
         firstPart = [i[:numberOfCharacters] for i in labelList]
         maxLength = max(len(i) for i in labelList)
-        while (len(firstPart) > len(set(firstPart)) or numberOfCharacters > maxLength):
+        while (len(firstPart) > len(set(firstPart)) and numberOfCharacters <= maxLength):
             numberOfCharacters += 1
             firstPart = [i[:numberOfCharacters] for i in labelList]
             
