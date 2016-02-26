@@ -13,14 +13,17 @@ public class CocoJNI {
 	
 	// Observer
 	public static native long cocoGetObserver(String observerName, String observerOptions);
-	public static native void cocoFinalizeObserver(long ObserverPointer);
+	public static native void cocoFinalizeObserver(long observerPointer);
+	public static native long cocoProblemAddObserver(long problemPointer, long observerPointer);
+	public static native long cocoProblemRemoveObserver(long problemPointer, long observerPointer);
 
 	// Suite
 	public static native long cocoGetSuite(String suiteName, String suiteInstance, String suiteOptions);
-	public static native void cocoFinalizeSuite(long SuitePointer);
+	public static native void cocoFinalizeSuite(long suitePointer);
 
 	// Problem
-	public static native long cocoGetNextProblem(long suitePointer, long ObserverPointer);
+	public static native long cocoSuiteGetNextProblem(long suitePointer, long observerPointer);
+	public static native long cocoSuiteGetProblem(long suitePointer, long problemIndex);
 
 	// Functions
 	public static native double[] cocoEvaluateFunction(long problemPointer, double[] x);
