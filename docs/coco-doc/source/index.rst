@@ -114,72 +114,86 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 Introduction
 ============
 
-We consider the problem to minimize a function :math:`f: X\subset\mathbb{R}^n \to \mathbb{R}^m, \,n,m\ge1` such that for :math:`g: X\subset\mathbb{R}^n \to \mathbb{R}^l` we have :math:`g_i(x)\le0` for all :math:`i=1\dots l` 
-in a black-box scenario. 
+We consider the black-box optimization problem to minimize a function :math:`f: X\subset\mathbb{R}^n \to \mathbb{R}^m, \,n,m\ge1` such that for :math:`g: X\subset\mathbb{R}^n \to \mathbb{R}^l` for all :math:`i=1\dots l` we have :math:`g_i(x)\le0`. 
 More specifically, we aim to find, as quickly as possible, one or several solutions :math:`x\in X` with small value(s) of :math:`f(x)\in\mathbb{R}^m` and :math:`g_i(x)\le0`. 
 We consider *time* to be the number of calls to the function |f|. 
 A continuous optimization algorithm, also known as *solver*, addresses this problem. 
-Here, we assume that no prior knowledge about |f| or |g| are available to the algorithm, 
-and they are considered as a black-box that the algorithm can query with solutions 
+Here, we assume that no prior knowledge about |f| or |g| are available to the algorithm, that is, 
+they are considered as a black-box the algorithm can query with solutions 
 :math:`x\in\mathbb{R}^n`.
 
 Considering this setup, benchmarking optimization algorithms seems to be a
-rather simple and straightforward task. We run an algorithm on a collection of problems and display the results. Under closer inspection however it turns out to be surprisingly tedious, and it appears to be difficult to get results that can be meaningfully interpreted even by non-experts in reasonable time. [#]_
+rather simple and straightforward task. We run an algorithm on a collection of problems and display the results. Under closer inspection however it turns out to be surprisingly tedious, and it appears to be difficult to get results that can be meaningfully interpreted beyond the standard claim that one algorithm is better 
+than another on some problems and vice versa. [#]_
 Here, we offer a conceptual guideline for benchmarking continuous optimization algorithms which tries to address this challenge and has been implemented in the 
 COCO_ framework. [#]_ 
 
-The COCO_ framework provides the practical means for automatized benchmarking procedure. Benchmarking an optimization algorithm, say implemented in the function ``fmin``, on a benchmark suite in Python becomes as simple as
+The COCO_ framework provides the practical means for an automatized benchmarking procedure. Benchmarking an optimization algorithm, say implemented in the function ``fmin``, on a benchmark suite in Python becomes as simple as
 
 .. code:: python
 
-    import cocoex as ex
-    import cocopp as pp
-    from myoptimizer import fmin
+  import cocoex as ex
+  import cocopp as pp
+  from myoptimizer import fmin
     
-    suite = ex.Suite("bbob", "", "")
-    observer = ex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
+  suite = ex.Suite("bbob", "2013", "")
+  observer = ex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
     
-    for p in suite:
-        observer.observe(p)
-        fmin(p, p.initial_solution)
+  for p in suite:
+      observer.observe(p)
+      fmin(p, p.initial_solution)
         
-    pp.main('exdata/myoptimizer-on-bbob')
+  pp.main('exdata/myoptimizer-on-bbob')
 
 Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
 
-The COCO_ framework provides 
+The COCO_ framework provides currently
 
     - an interface to several languages, currently C/C++, Java, Matlab/Octave, 
-      Python in which the benchmarked optimizer might be written
-    - several testbeds, currently all written in C
-    - data logging facilities
-    - data post-processing and display facilities
-    
+      Python, in which the benchmarked optimizer might be written
+    - several benchmark suites or testbeds, currently all written in C
+    - data logging facilities via the ``Observer``
+    - data post-processing and data display facilities in ``html``
+    - article LaTeX templates
+
+The underlying philosophy of COCO_ is to provide everything which an experimenter needed to implement, if they wanted to benchmark an algorithm properly.
+
 
 Why COCO_?
 ----------
 
-Our conceptual benchmarking guideline has a few main defining features.  
+Appart from diminishing the burden and the pitfalls of repetitive coding by many experimenters, 
+our aim is to provide a *conceptual guideline for better benchmarking*. 
+Our guideline has a few defining features.  
 
-  - Benchmark functions are difficult to "defeat", that is, they do not 
-    have artificial regularities that can be (intentionally or unintentionally) 
-    exploited by an algorithm. [#]_
-  - Benchmark functions are comprehensible, to allow a meaningful 
-    interpretation of performance results. 
-  - There is no predefined budget (number of |f|-evaluations), the experimental 
-    procedure is budget-less. [COCOex]_
-  - A single performance 
-    measure is used: runtime, measured in number of |f|-evaluations. Runtime 
-    has the advantages to
+  #. Benchmark functions are comprehensibly designed, to allow a meaningful 
+     interpretation of performance results. 
+
+  #. Benchmark functions are difficult to "defeat", that is, they do not 
+     have artificial regularities that can be (intentionally or unintentionally) 
+     exploited by an algorithm. [#]_
     
-    - be easily interpretable without expert domain knowledge
-    - quantitative on the ratio scale [cite]
-    - assume a wide range of values
-    - aggregate over a collection of problems in meaningful way
+  #. Benchmark functions are scalable with the input dimension. 
+  
+  #. There is no predefined budget (number of |f|-evaluations) for running an
+     experiment, the experimental 
+     procedure is budget-free [COCOex]_.
+
+  #. A single performance  measure is used, namely runtime measured in 
+     number of |f|-evaluations. Runtime has the advantage to
+    
+     - be easily interpretable without expert domain knowledge
+     - be quantitative on the ratio scale [cite]
+     - assume a wide range of values
+     - aggregate over a collection of values in a very meaningful way
+
+.. note:: later we want to talk about the interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances). 
 
 
 Terminology
 -----------
+We specify a few terms which are used later. 
+
 *function*
   We talk about a *function* as a mapping
   :math:`\mathbb{R}^n\to\mathbb{R}^m` with scalable input space, that is,
@@ -219,10 +233,6 @@ Terminology
     on a regular grid. Which regularities are common place in real-world 
     optimization problems remains an open question. 
 
-General structure: experiments + postprocessing
-===============================================
-one code base: in C, wrapped in different languages (Java, Python, Matlab/Octave) for the experiments, in python for the postprocessing
-
 
 Reasons for having the platform - Overall appraoch in COCO ("what other do wrong and we do better")
 ===================================================================================================
@@ -237,6 +247,11 @@ Reasons for having the platform - Overall appraoch in COCO ("what other do wrong
 	- budget-less
 
 * Automatizing the benchmarking+postprocessing
+
+
+General structure: experiments + postprocessing
+===============================================
+one code base: in C, wrapped in different languages (Java, Python, Matlab/Octave) for the experiments, in python for the postprocessing
 
 
 Terminology and definition of problem, function, instance, target? 
