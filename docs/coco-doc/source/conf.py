@@ -59,6 +59,13 @@ pngmath_dvipng_args = [ # see http://www.nongnu.org/dvipng/dvipng_4.html#Command
 #    '-T', '1.1in,1.3cm',   # image size, affects size, but nothing is rendered
 ]
 
+latex_commands = r"""
+  \newcommand{\R}{\ensuremath{\mathbb{R}}}
+  \newcommand{\finstance}{\ensuremath{f^i}}
+"""
+
+pngmath_latex_preamble = latex_commands
+
 templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
@@ -273,7 +280,7 @@ latex_elements = {
       \end{minipage}
     }
   }
-""",
+""" + latex_commands,
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
 }

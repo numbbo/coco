@@ -156,8 +156,10 @@ The COCO_ framework provides currently
     - data post-processing and data display facilities in ``html``
     - article LaTeX templates
 
-The underlying philosophy of COCO_ is to provide everything which an experimenter needed to implement, if they wanted to benchmark an algorithm properly.
+The underlying philosophy of COCO_ is to provide everything which experimenters 
+need to implement, if they want to benchmark an algorithm properly.
 
+.. Note:: talk about restarts somewhere, it's related to budget. 
 
 Why COCO_?
 ----------
@@ -167,13 +169,13 @@ our aim is to provide a *conceptual guideline for better benchmarking*.
 Our guideline has a few defining features.  
 
   #. Benchmark functions are comprehensibly designed, to allow a meaningful 
-     interpretation of performance results. 
+     interpretation of performance results [WHI1996].
 
   #. Benchmark functions are difficult to "defeat", that is, they do not 
      have artificial regularities that can be (intentionally or unintentionally) 
      exploited by an algorithm. [#]_
     
-  #. Benchmark functions are scalable with the input dimension. 
+  #. Benchmark functions are scalable with the input dimension [WHI1996]. 
   
   #. There is no predefined budget (number of |f|-evaluations) for running an
      experiment, the experimental 
@@ -183,7 +185,7 @@ Our guideline has a few defining features.
      number of |f|-evaluations. Runtime has the advantage to
     
      - be easily interpretable without expert domain knowledge
-     - be quantitative on the ratio scale [cite]
+     - be quantitative on the ratio scale [STE1946]_. 
      - assume a wide range of values
      - aggregate over a collection of values in a very meaningful way
 
@@ -205,7 +207,8 @@ We specify a few terms which are used later.
   We talk about a *problem*, |coco_problem_t|_, as a specific *function
   instance* on which the optimization algorithm is run. Specifically, a problem
   can be described as the triple ``(dimension, function, instance)``. A problem
-  can be evaluated and returns an :math:`f`-value or -vector. 
+  can be evaluated and returns an |f|-value or -vector and, in case,
+  a |g|-vector. 
   In the context of performance
   assessment, additionally one or several target :math:`f`- or :math:`\Delta f`-values
   are attached to each problem. That is, a target value is added to the 
@@ -233,31 +236,37 @@ We specify a few terms which are used later.
     on a regular grid. Which regularities are common place in real-world 
     optimization problems remains an open question. 
 
-
-Reasons for having the platform - Overall appraoch in COCO ("what other do wrong and we do better")
-===================================================================================================
-* "Defining" Properties of Test Suites
-
-	- comprehensible
-	- difficult to defeat (instance concept)
-
-* Performance measurements
-
-	- quantitative
-	- budget-less
-
-* Automatizing the benchmarking+postprocessing
+.. .. [#] Wikipedia__ gives a reasonable introduction to scale types.
+.. .. was 261754099
+.. .. __ http://en.wikipedia.org/w/index.php?title=Level_of_measurement&oldid=478392481
 
 
-General structure: experiments + postprocessing
-===============================================
-one code base: in C, wrapped in different languages (Java, Python, Matlab/Octave) for the experiments, in python for the postprocessing
+
+.. Note:: (old) Reasons for having the platform - Overall appraoch in COCO ("what other do wrong and we do better")
+
+
+.. |n| replace:: :math:`n`
+.. |theta| replace:: :math:`\theta`
+.. |i| replace:: :math:`i`
 
 
 Terminology and definition of problem, function, instance, target? 
 ==================================================================
-Instance concept (Niko)
+
+In the COCO_ framework we consider *parametrized* functions
+:math:`\finstance:\R^n \to \mathbb{R}^m`, which are parametrized via the
+parameters dimension |n| and instance |i|. By fixing |n| and |i| we
+define an optimization problem that we can present to an optimization
+algorithm. Varying |n| or |i| leads to a variation of the problem, while
+we still talk about the same function. 
+
+Giving each function |f| a name or an index, the triple ``(dimension |n|, 
+|f|-index, instance |i|)`` defines a problem. 
+
+Instance concept
 -----------------------
+
+Changing significant features/parameters of the problem class (systematically or randomized)
     
 Generate repetitions, natural randomization
 -------------------------------------------
@@ -265,11 +274,29 @@ Generate repetitions, natural randomization
 Generality, Fairness, avoid exploitation/cheating
 -------------------------------------------------
 
-Changing significant features/parameters of the problem class (systematically or randomized)
---------------------------------------------------------------------------------------------
+
+Targets
+-------
+To each problem, as defined above, we attach a number of target values. 
+
+
+
+General code structure
+===============================================
+
+experiments + postprocessing
+
+one code base: in C, wrapped in different languages (Java, Python, Matlab/Octave) for the experiments, in python for the postprocessing
+
 
 Different test suites
 =====================
+
+bbob
+----
+
+bbob-biobj
+----------
 
 
 
@@ -303,5 +330,8 @@ Different test suites
 .. .. [PRI1997] K. Price. Differential evolution vs. the functions of
    the second ICEO. In Proceedings of the IEEE International Congress on
    Evolutionary Computation, pages 153--157, 1997.
+   
+.. [STE1946] Stevens, S.S. On the theory of scales of measurement. *Science* 103(2684), pp. 677-680, 1946.
+
 
 .. ############################## END Document #######################################
