@@ -135,12 +135,12 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'alabaster' #  white, times font 
-# html_theme = 'sphinxdoc'  # puts empty spaces left and right
 html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
+html_theme = 'nature'  # underlays of sections titles
+#html_theme = 'alabaster' #  white, times font 
+#html_theme = 'sphinxdoc'  # puts too much empty spaces left and right
 # html_theme = 'sphinx_rtd_theme'  # contents not structured (mobile style?)
 # html_theme = 'agogo'  # fixed width
-# html_theme = 'nature'  # underlays of sections titles
 # html_theme = 'pyramid'  # relatively clean white/gray, sf font hard to read, too small section titles
 
 # Theme options are theme-specific and customize the look and feel of a theme
