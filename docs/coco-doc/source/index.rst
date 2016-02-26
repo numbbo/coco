@@ -113,21 +113,48 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 Introduction
 ============
-.. Note:: (to address) Reasons for having COCO: automatize the process of benchmarking
 
-We consider the problem to minimize a function :math:`f: X\subset\mathbb{R}^n \to \mathbb{R}^m, \,n,m\ge1` such that :math:`g: X\subset\mathbb{R}^n \to \mathbb{R}^o`
-satisfies :math:`g(x)\le0` in a black-box scenario. 
-More specifically, we aim to find, as quickly as possible, one or several solutions :math:`x\in X` with small value(s) of :math:`f(x)\in\mathbb{R}^m` and :math:`g(x)\le0`. 
-We consider *time* to be the number of calls to the function |f|, if not stated otherwise. 
-An continuous optimization algorithm, also known as *solver*, addresses this problem. 
-Here we assume that no prior knowledge about |f| or |g| are available to the algorithm, 
+We consider the problem to minimize a function :math:`f: X\subset\mathbb{R}^n \to \mathbb{R}^m, \,n,m\ge1` such that for :math:`g: X\subset\mathbb{R}^n \to \mathbb{R}^l` we have :math:`g_i(x)\le0` for all :math:`i=1\dots l` 
+in a black-box scenario. 
+More specifically, we aim to find, as quickly as possible, one or several solutions :math:`x\in X` with small value(s) of :math:`f(x)\in\mathbb{R}^m` and :math:`g_i(x)\le0`. 
+We consider *time* to be the number of calls to the function |f|. 
+A continuous optimization algorithm, also known as *solver*, addresses this problem. 
+Here, we assume that no prior knowledge about |f| or |g| are available to the algorithm, 
 and they are considered as a black-box that the algorithm can query with solutions 
 :math:`x\in\mathbb{R}^n`.
 
 Considering this setup, benchmarking optimization algorithms seems to be a
-rather simple and straightforward task. Under closer inspection however it turns out to be surprisingly tedious, and it appears to be difficult to get meaningful and easily interpretable results. [#]_
-Here, we offer a conceptual guideline for benchmarking continuous optimization algorithms which has been implemented in the COCO_ framework. [#]_
+rather simple and straightforward task. We run an algorithm on a collection of problems and display the results. Under closer inspection however it turns out to be surprisingly tedious, and it appears to be difficult to get results that can be meaningfully interpreted even by non-experts in reasonable time. [#]_
+Here, we offer a conceptual guideline for benchmarking continuous optimization algorithms which tries to address this challenge and has been implemented in the 
+COCO_ framework. [#]_ 
 
+The COCO_ framework provides the practical means for automatized benchmarking procedure. Benchmarking an optimization algorithm, say implemented in the function ``fmin``, on a benchmark suite in Python becomes as simple as
+
+.. code:: python
+
+    import cocoex as ex
+    import cocopp as pp
+    from myoptimizer import fmin
+    
+    suite = ex.Suite("bbob", "", "")
+    observer = ex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
+    
+    for p in suite:
+        observer.observe(p)
+        fmin(p, p.initial_solution)
+        
+    pp.main('exdata/myoptimizer-on-bbob')
+
+Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
+
+The COCO_ framework provides 
+
+    - an interface to several languages, currently C/C++, Java, Matlab/Octave, 
+      Python in which the benchmarked optimizer might be written
+    - several testbeds, currently all written in C
+    - data logging facilities
+    - data post-processing and display facilities
+    
 
 Why COCO_?
 ----------
@@ -149,28 +176,6 @@ Our conceptual benchmarking guideline has a few main defining features.
     - quantitative on the ratio scale [cite]
     - assume a wide range of values
     - aggregate over a collection of problems in meaningful way
-
-Last but not least, the process of benchmarking is automized within the COCO_ 
-framework. Running an optimizer, say ``fmin``, on a benchmark suite in Python 
-becomes as simple as
-
-.. code:: python
-
-    import cocoex as ex
-    import cocopp as pp
-    from myoptimizer import fmin
-    
-    suite = ex.Suite("bbob", "", "")
-    observer = ex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
-    
-    for p in suite:
-        observer.observe(p)
-        fmin(p, p.initial_solution)
-        
-    pp.main('exdata/myoptimizer-on-bbob')
-
-
-Now the file ``ppdata/myoptimizer-on-bbob/ppdata.html`` can be used to browse the resulting data. 
 
 
 Terminology
