@@ -41,6 +41,11 @@ def config(isBiobjective=None):
     if isBiobjective is not None:
         genericsettings.loadCurrentTestbed(isBiobjective, pproc.TargetValues)
         
+        if isBiobjective:
+            # pptable:
+            pptable.table_caption = pptable.table_caption_biobjective
+        
+        
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets 
     if genericsettings.runlength_based_targets in (True, 1):
         print 'Using bestGECCO2009 based target values: now for each function the target ' + \
