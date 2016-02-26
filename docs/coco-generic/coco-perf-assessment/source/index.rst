@@ -5,7 +5,6 @@ COCO: Performance Assessment
    :maxdepth: 2
 
 
-
 .. |ftarget| replace:: :math:`f_\mathrm{target}`
 .. |nruns| replace:: :math:`\texttt{Ntrial}`
 .. |DIM| replace:: :math:`D`
@@ -18,7 +17,11 @@ COCO: Performance Assessment
 .. _GECCO: http://www.sigevo.org/gecco-2012/
 .. _COCO: http://coco.gforge.inria.fr
 .. |ERT| replace:: :math:`\mathrm{ERT}`
-
+.. |dim| replace:: :math:`\mathrm{dim}`
+.. |function| replace:: :math:`\mathrm{function}`
+.. |instance| replace:: :math:`\mathrm{instance}`
+.. |R| replace:: :math:`\mathbb{R}`
+.. |ftheta| replace::  :math:`f_{\theta}`
 
 ..
    sectnum::
@@ -31,9 +34,9 @@ In this document we explain the rationale behind the performance assessment with
 Terminology and Definitions
 ----------------------------
 *problem*
-  In the context of performance
-  assessment, we talk about a *problem* as the quadruple 
-  ``(dimension, function, instance, function-target-value)``. 
+ A COCO problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`\mathcal{P}=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is a dimension, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem :math:`\mathcal{P}` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`.
+ 
+ In the performance assessment setting, we associate to a problem :math:`\mathcal{P}`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\bar{\theta}}(\mathbf{x})` depends on the specific instance :math:`\bar{\theta}`, the :math:`{\rm target}` function values also depends on the instance :math:`\bar{\theta}`. However commonly :math:`f_{\rm target} - f_{\rm opt}`  that can be thought as ``precision``, does not depend on the instance :math:`\bar{\theta}` such that we can unambiguously consider for different instances :math:`({\bar{\theta}}_1, \ldots,{\bar{\theta}}_K)` of a parametrized problem :math:`f_{\bar{\theta}}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\bar{\theta}}_1}, \ldots,f^{\rm target}_{{\bar{\theta}}_K}` associated to a similar precision.
 
 *instance*
   Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...
