@@ -100,6 +100,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. |citeCOCOex| replace:: [COCOex]
 
 .. |f| replace:: :math:`f`
+.. |g| replace:: :math:`g`
 .. |x| replace:: :math:`x`
 
 .. role:: red
@@ -114,23 +115,24 @@ Introduction
 ============
 .. Note:: (to address) Reasons for having COCO: automatize the process of benchmarking
 
-We consider the problem to minimize a function :math:`f: X\subset\mathbb{R}^n \to \mathbb{R}^m, \,n,m\ge1` in a black-box scenario. 
-More specifically, we aim to find, as quickly as possible, one or several solutions :math:`x\in X` with small value(s) of :math:`f(x)\in\mathbb{R}^m`. We consider *time* to be the number of calls to the function |f|, if not stated otherwise. 
+We consider the problem to minimize a function :math:`f: X\subset\mathbb{R}^n \to \mathbb{R}^m, \,n,m\ge1` such that :math:`g: X\subset\mathbb{R}^n \to \mathbb{R}^o`
+satisfies :math:`g(x)\le0` in a black-box scenario. 
+More specifically, we aim to find, as quickly as possible, one or several solutions :math:`x\in X` with small value(s) of :math:`f(x)\in\mathbb{R}^m` and :math:`g(x)\le0`. 
+We consider *time* to be the number of calls to the function |f|, if not stated otherwise. 
 An continuous optimization algorithm, also known as *solver*, addresses this problem. 
-Here we assume that no prior knowledge about |f| is available to the algorithm, 
-and |f| is considered as a black-box that the algorithm can query with solutions 
+Here we assume that no prior knowledge about |f| or |g| are available to the algorithm, 
+and they are considered as a black-box that the algorithm can query with solutions 
 :math:`x\in\mathbb{R}^n`.
 
 Considering this setup, benchmarking optimization algorithms seems to be a
-rather simple and straightforward task. However, under closer inspection it is
-surprisingly tedious, and it appears to be difficult to get meaningful and easily interpretable results. [#]_
+rather simple and straightforward task. Under closer inspection however it turns out to be surprisingly tedious, and it appears to be difficult to get meaningful and easily interpretable results. [#]_
 Here, we offer a conceptual guideline for benchmarking continuous optimization algorithms which has been implemented in the COCO_ framework. [#]_
 
 
 Why COCO_?
 ----------
 
-Our conceptual guideline has a few defining features.  
+Our conceptual benchmarking guideline has a few main defining features.  
 
   - Benchmark functions are difficult to "defeat", that is, they do not 
     have artificial regularities that can be (intentionally or unintentionally) 
@@ -140,12 +142,13 @@ Our conceptual guideline has a few defining features.
   - There is no predefined budget (number of |f|-evaluations), the experimental 
     procedure is budget-less. [COCOex]_
   - A single performance 
-    measure is used: runtime measured in number of |f|-evaluations. Runtime is
+    measure is used: runtime, measured in number of |f|-evaluations. Runtime 
+    has the advantages to
     
+    - be easily interpretable without expert domain knowledge
     - quantitative on the ratio scale [cite]
-    - easily interpretable
-    - assumes a wide range of values
-    - aggregates over a collection of problems in meaningful way
+    - assume a wide range of values
+    - aggregate over a collection of problems in meaningful way
 
 Last but not least, the process of benchmarking is automized within the COCO_ 
 framework. Running an optimizer, say ``fmin``, on a benchmark suite in Python 
@@ -171,10 +174,39 @@ Now the file ``ppdata/myoptimizer-on-bbob/ppdata.html`` can be used to browse th
 
 
 Terminology
-------------
+-----------
+*function*
+  We talk about a *function* as a mapping
+  :math:`\mathbb{R}^n\to\mathbb{R}^m` with scalable input space, that is,
+  :math:`n` is not (yet) determined, and usually :math:`m\in\{1,2\}`.
+  Functions are commonly parametrized such that different *instances* of the
+  "same" function are available, e.g. translated or shifted versions. 
+  
+*problem*
+  We talk about a *problem*, |coco_problem_t|_, as a specific *function
+  instance* on which the optimization algorithm is run. Specifically, a problem
+  can be described as the triple ``(dimension, function, instance)``. A problem
+  can be evaluated and returns an :math:`f`-value or -vector. 
+  In the context of performance
+  assessment, additionally one or several target :math:`f`- or :math:`\Delta f`-values
+  are attached to each problem. That is, a target value is added to the 
+  above triple to define a single problem. 
+  
+*runtime*
+  We define *runtime*, or *run-length* [HOO1998]_
+  as the *number of evaluations* 
+  conducted on a given problem, also referred to as number of *function* evaluations. 
+  Our central performance measure is the runtime until a given target :math:`f`-value 
+  is hit.
+
+*suite*
+  A test- or benchmark-suite is a collection of problems, typically between
+  twenty and a hundred, where the number of objectives :math:`m` is fixed. 
 
 
-.. [#] It remains to be a standard procedure to present tens or even hundreds of numbers in one or several tables, left to the reader to scan and compare to each other. 
+.. [#] It remains to be a standard procedure to present tens or even hundreds 
+    of numbers in one or several tables, left to the reader to scan and compare 
+    to each other [SUG2015]. 
 
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
 
@@ -244,7 +276,7 @@ Different test suites
 .. .. [HAR1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation
    Conference (GECCO)*, volume 1, pages 258-265. ACM, 1999.
-.. .. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
+.. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
    algorithms: pitfalls and remedies. In *Proceedings of the Fourteenth 
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
    pages 238-245, 1998.
