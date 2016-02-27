@@ -262,7 +262,7 @@ def getFigFormats():
     
 def getFontSize(nameList):
     maxFuncLength = max(len(i) for i in nameList)
-    fontSize = 24 - max(0, 4 * ((maxFuncLength - 35) / 5))
+    fontSize = 24 - max(0, 2 * ((maxFuncLength - 35) / 5))
     return fontSize
 
 class Testbed(object):
@@ -304,6 +304,7 @@ class GECCOBBOBTestbed(Testbed):
         self.pprldmany_target_values = targetValues(10**np.arange(2, -8, -0.2)) # possibly changed in config
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
         self.ppfvdistr_min_target = 1e-8
+        self.functions_with_legend = (1, 24, 101, 130)
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -333,6 +334,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.pprldmany_target_values = targetValues(10**np.arange(0, -5, -0.2)) # possibly changed in config
         self.rldValsOfInterest = (1e-1, 1e-3, 1e-5) # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
+        self.functions_with_legend = (1, 30, 31, 55)
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 

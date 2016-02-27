@@ -295,6 +295,24 @@ def plotLegend(handles, maxval):
     reshandles = []
     ys = {}
     lh = 0
+
+    def get_label_length(labelList):
+        """ Finds the minimal length of the names used in the label so that 
+        all the names are different. Always at least 9 character are displayed.
+        """
+        
+        numberOfCharacters = 7
+        firstPart = [i[:numberOfCharacters] for i in labelList]
+        maxLength = max(len(i) for i in labelList)
+        while (len(firstPart) > len(set(firstPart)) and numberOfCharacters <= maxLength):
+            numberOfCharacters += 1
+            firstPart = [i[:numberOfCharacters] for i in labelList]
+            
+        return min (numberOfCharacters + 2, maxLength) 
+
+    
+    labelList = [toolsdivers.strip_pathname1(plt.getp(h[-1], 'label')) for h in handles]
+    numberOfCharacters = get_label_length(labelList)
     for h in handles:
         x2 = []
         y2 = []
@@ -354,7 +372,7 @@ def plotLegend(handles, maxval):
                                       color=plt.getp(h, 'markeredgecolor'), **tmp))
                     reshandles.append(
                         plt.text(maxval**(0.02 + annotation_line_end_relative), y,
-                                 toolsdivers.str_to_latex(toolsdivers.strip_pathname1(plt.getp(h, 'label'))),
+                                 toolsdivers.str_to_latex(toolsdivers.strip_pathname1(plt.getp(h, 'label'))[:numberOfCharacters]),
                                  horizontalalignment="left",
                                  verticalalignment="center", size=fontsize))
                     reslabels.append(plt.getp(h, 'label'))

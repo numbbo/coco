@@ -22,6 +22,15 @@ import shlex
 #sys.path.insert(0, os.path.abspath('.'))
 
 # -- General configuration ------------------------------------------------
+authors = "The BBOBies"
+abstract = """We present an experimental setup and procedure for benchmarking numerical
+  optimization algorithms in a black-box scenario, as used with the COCO
+  platform. We describe initialization of, and input to the algorithm and
+  touch upon the relevance of termination and restarts. We introduce the
+  concept of recommendations for benchmarking. Recommendations detach the
+  solutions used in function calls from the any-time performance assessment of
+  the algorithm.
+"""
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
@@ -31,10 +40,25 @@ import shlex
 # ones.
 extensions = [
     'sphinx.ext.todo',
-    'sphinx.ext.pngmath',
+    'sphinx.ext.pngmath',  # low resolution
+#    'sphinx.ext.jsmath',  # javascript, older than mathjax, needs jsmath_path set
+#    'sphinx.ext.mathjax',
+#    'matplotlib.sphinxext.mathmpl',  # low resolution
 ]
 
-# Add any paths that contain templates here, relative to this directory.
+pngmath_use_preview = True  # "When this is enabled, the images put into the HTML document will get a vertical-align style that correctly aligns the baselines."
+pngmath_dvipng_args = [ # see http://www.nongnu.org/dvipng/dvipng_4.html#Command_002dline-options
+    '-gamma', '1.5',  # heavyness of color 0.5 is between black and background, 1.5 is blacker than black, --gamma works as well?
+    '-D', '109',  # size, 100=current font size
+#    '-D', '110',  # size, 100=current font size, 110 is default
+#    '-gif',  # doesn't work in browser and doesn't look less pixelated
+#    '--bdpi', '440',  # see man dvipng
+#    '-Q', '5',
+    '-bg', 'Transparent',
+#    '-T', '1.1in,1.3cm',   # image size, affects size, but nothing is rendered
+]
+
+
 templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
@@ -111,19 +135,25 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'alabaster' #  white, times font 
+# html_theme = 'sphinxdoc'  # puts empty spaces left and right
+html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
+# html_theme = 'sphinx_rtd_theme'  # contents not structured (mobile style?)
+# html_theme = 'agogo'  # fixed width
+# html_theme = 'nature'  # underlays of sections titles
+# html_theme = 'pyramid'  # relatively clean white/gray, sf font hard to read, too small section titles
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+# html_theme_options = {'font_family': 'goudy old style'}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+html_title = "COCO: Experimental Procedure"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -178,7 +208,7 @@ html_static_path = ['_static']
 #html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-#html_show_copyright = True
+html_show_copyright = False
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -212,11 +242,38 @@ latex_elements = {
 #'papersize': 'letterpaper',
 
 # The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+'pointsize': '12pt',
 
 # Additional stuff for the LaTeX preamble.
-#'preamble': '',
+'preamble': r"""
+  \usepackage{amssymb}
+  \pagestyle{plain}
+  \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
+  \newcommand{\ignore}[1]{}
+  \newcommand{\abstracttextinconfpy}{""" + abstract + r"""}
 
+%%%%%% TOGGLE the renewcommand to update toc / show abstract first %%%%%%
+  \newcommand{\generatetoc}{\boolean{true}}  % (re-)generate toc
+%  \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
+
+  % abstract is latex-only in rst
+  \newcommand{\abstractinrst}{\begin{abstract}\abstracttextinconfpy\end{abstract}} 
+  % abstract via redefinition of \tableofcontents
+  \ifthenelse{\generatetoc}{% do nothing here, \tableofcontents does the work
+    }{% redefine \tableofcontents such that the abstract can go first:
+    \renewcommand{\abstractinrst}{}
+    \renewcommand{\tableofcontents}{
+      \begin{abstract}\abstracttextinconfpy\end{abstract}
+      \par\par
+      \section*{Contents}
+      \begin{minipage}{\textwidth}\setlength{\baselineskip}{3ex}
+        \makeatletter % changes the catcode of @ to 11  % see http://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
+        \input{coco-experimental-setup.toc}
+        \makeatother % changes the catcode of @ back to 12
+      \end{minipage}
+    }
+  }
+""",
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
 }
@@ -225,8 +282,11 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'coco-experimental-setup.tex', u'General Experimental Setup in the Comparing Continuous Optimizers Platform Coco',
-   u'The BBOBies', 'manual'),
+  (master_doc, 
+   'coco-experimental-setup.tex', 
+  u'{COCO}: The Experimental Procedure',
+  u'The BBOBies', 
+   'article'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
