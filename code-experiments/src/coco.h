@@ -220,8 +220,8 @@ size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
 void coco_suite_decode_problem_index(const coco_suite_t *suite,
                                      const size_t problem_index,
                                      size_t *function_idx,
-                                     size_t *instance_idx,
-                                     size_t *dimension_idx);
+                                     size_t *dimension_idx,
+                                     size_t *instance_idx);
 /**@}*/
 
 /***********************************************************************************************************/

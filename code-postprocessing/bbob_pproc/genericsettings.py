@@ -262,7 +262,7 @@ def getFigFormats():
     
 def getFontSize(nameList):
     maxFuncLength = max(len(i) for i in nameList)
-    fontSize = 24 - max(0, 4 * ((maxFuncLength - 35) / 5))
+    fontSize = 24 - max(0, 2 * ((maxFuncLength - 35) / 5))
     return fontSize
 
 class Testbed(object):

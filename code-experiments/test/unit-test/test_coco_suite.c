@@ -50,7 +50,27 @@ static void test_coco_suite_encode_problem_index_with_wrapping(void **state) {
 #endif
 
 /**
- * Tests the function coco_suite_get_next_problem_index.
+ * Tests the function coco_suite_get_problem.
+ */
+static void test_coco_suite_get_problem(void **state) {
+
+  coco_suite_t *suite = coco_suite("bbob-biobj", NULL, "dimensions: 5");
+  coco_problem_t *problem;
+
+  problem = coco_suite_get_problem(suite, 0);
+  assert_true(problem == NULL);
+
+  problem = coco_suite_get_problem(suite, 1200);
+  assert_true(problem != NULL);
+
+  coco_problem_free(problem);
+  coco_suite_free(suite);
+
+  (void)state; /* unused */
+}
+
+/**
+ * Tests the function coco_suite_encode_problem_index.
  */
 static void test_coco_suite_encode_problem_index(void **state) {
 
@@ -68,7 +88,8 @@ static void test_coco_suite_encode_problem_index(void **state) {
 static int test_all_coco_suite(void) {
 
   const struct CMUnitTest tests[] = {
-      cmocka_unit_test(test_coco_suite_encode_problem_index)
+      cmocka_unit_test(test_coco_suite_encode_problem_index),
+      cmocka_unit_test(test_coco_suite_get_problem)
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);
