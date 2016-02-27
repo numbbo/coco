@@ -226,7 +226,6 @@ htmlhelp_basename = 'docs-coco-generic-coco-perf-assessment'
 
 # -- Options for LaTeX output ---------------------------------------------
 
-
 latex_elements = {
 # The paper size ('letterpaper' or 'a4paper').
 #'papersize': 'letterpaper',
@@ -291,6 +290,7 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_domain_indices = True
 
+pngmath_latex_preamble = r"\newcommand{\R}{\mathbb{R}}"
 
 # -- Options for manual page output ---------------------------------------
 
