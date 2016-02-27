@@ -61,7 +61,9 @@ pngmath_dvipng_args = [ # see http://www.nongnu.org/dvipng/dvipng_4.html#Command
 
 latex_commands = r"""
   \newcommand{\R}{\ensuremath{\mathbb{R}}}
-  \newcommand{\finstance}{\ensuremath{f^i}}
+  \newcommand{\ve}[1]{{\boldsymbol{#1}}}
+  \newcommand{\x}{\ensuremath{\ve{x}}}
+  \newcommand{\finstance}{\ensuremath{f^j}}
 """
 
 pngmath_latex_preamble = latex_commands
