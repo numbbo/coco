@@ -349,16 +349,19 @@ invariant).
 
 Targets
 ========
-To each problem, as defined above, we attach a number of target values. 
-For each target value, |t|, a quadruple :math:`(n, i, j, t)` gives raise to a 
-runtime: when the indicator- of |f|-value drops below...
 
+In order to measure the runtime of an algorithm on a problem, we need to establish a termination condition. For this end, we set a target (|f|- or indicator-) value, |t|. Runtime is then defined as the evaluation count when the target was first hit (see also Recommendations_ in [BBO2016ex]_). 
+To each problem, :math:`(n, i, j)`, we attach a collection of target values. 
+
+.. _Recommendations: https://www.github.com
 .. todo::
 
-Restarts
-=========
+Runtime
+-------
 
-Related to budget, budget-free...
+For each target value, |t|, the quadruple :math:`(f_i, n, j, t)` gives raise to a 
+runtime, the runtime when this problem is solved up to the target quality |t|. In the context of performance evaluation, we refer to such a quadruple also as a *problem*. 
+
 
 .. todo::
 
@@ -380,6 +383,14 @@ Aggregation
 
 
 .. todo::
+
+Restarts
+=========
+
+Related to budget, budget-free...
+
+.. todo::
+
 
 
 General Code Structure
