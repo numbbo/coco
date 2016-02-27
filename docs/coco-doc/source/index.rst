@@ -132,8 +132,12 @@ than another on some problems, and vice versa. [#]_
 Here, we offer a conceptual guideline for benchmarking continuous optimization algorithms which tries to address this challenge and has been implemented within the 
 COCO_ framework. [#]_ 
 
-The COCO_ framework provides the practical means for an automatized benchmarking procedure. Benchmarking an optimization algorithm, say, implemented in the function ``fmin``, on a benchmark suite in Python becomes as simple as
+The COCO_ framework provides the practical means for an automatized benchmarking procedure. Benchmarking an optimization algorithm, say, implemented in the function `fmin`, on a benchmark suite in Python becomes as simple as
 
+.. raw:: latex
+
+    Figure 1. \begin{figure}\begin{minipage}{\textwidth}
+    
 .. code:: python
 
   import cocoex
@@ -149,6 +153,11 @@ The COCO_ framework provides the practical means for an automatized benchmarking
         
   cocopp.main('exdata/myoptimizer-on-bbob')
 
+.. raw:: latex 
+
+    \end{minipage}\caption{Code to benchmark ```fmin``` on the ``bbob`` suite. }
+    \end{figure}
+
 Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
 
 The COCO_ framework provides currently
@@ -161,25 +170,25 @@ The COCO_ framework provides currently
     - article LaTeX templates
 
 The underlying philosophy of COCO_ is to provide everything which most experimenters 
-need to implement if they want to benchmark an algorithm properly.
+needed to implement if they wanted to benchmark an algorithm properly.
 
 .. Note:: talk about restarts somewhere, it's related to budget. 
 
 Why COCO_?
 ----------
 
-Appart from diminishing the burden and the pitfalls of repetitive coding by many experimenters, 
-our aim is to provide a *conceptual guideline for better benchmarking*. 
+Appart from diminishing the burden (time) and the pitfalls (bugs, misses) of repetitive 
+coding by many experimenters, our aim is to provide a *conceptual guideline for better benchmarking*. 
 Our guideline has a few defining features.  
 
-  #. Benchmark functions are comprehensibly designed, to allow a meaningful 
-     interpretation of performance results [WHI1996]_.
+  #. Benchmark functions are designed to be comprehensible, to allow a meaningful 
+     interpretation of performance results.
 
   #. Benchmark functions are difficult to "defeat", that is, they do not 
      have artificial regularities that can be (intentionally or unintentionally) 
      exploited by an algorithm. [#]_
     
-  #. Benchmark functions are scalable with the input dimension [WHI1996]. 
+  #. Benchmark functions are scalable with the input dimension [WHI1996]_. 
   
   #. There is no predefined budget (number of |f|-evaluations) for running an
      experiment, the experimental 
@@ -189,7 +198,7 @@ Our guideline has a few defining features.
      number of |f|-evaluations. Runtime has the advantage to
     
      - be easily interpretable without expert domain knowledge
-     - be quantitative on the ratio scale [STE1946]_. 
+     - be quantitative on the ratio scale [STE1946]_ 
      - assume a wide range of values
      - aggregate over a collection of values in a very meaningful way
 
@@ -198,6 +207,8 @@ Our guideline has a few defining features.
 
 Terminology
 -----------
+.. todo:: this is a duplicate, should become shorter or go away
+
 We specify a few terms which are used later. 
 
 *function*
@@ -237,7 +248,7 @@ We specify a few terms which are used later.
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
 
 .. [#] For example, the optimum is not in all-zeros, optima are not placed 
-    on a regular grid, the function is not separable. Which regularities are 
+    on a regular grid, the function is not separable [WHI1996]_. Which regularities are 
     common place in real-world optimization problems remains an open question. 
 
 .. .. [#] Wikipedia__ gives a reasonable introduction to scale types.
@@ -253,35 +264,42 @@ We specify a few terms which are used later.
 .. |theta| replace:: :math:`\theta`
 .. |i| replace:: :math:`i`
 .. |j| replace:: :math:`j`
+.. |t| replace:: :math:`t`
 .. |fi| replace:: :math:`f_i`
 
 
-Terminology and definition of problem, function, instance, target? 
+Functions, instances, and problems 
 ==================================================================
 
-In the COCO_ framework we consider functions, |fi|, :math:`i=1,2,\dots` as *parametrized* via the parameters dimension |n| and instance |j|, that is, :math:`\finstance_i:\R^n \to \mathbb{R}^m`. By fixing |n| and |j| for function |fi|, we
+In the COCO_ framework we consider functions, |fi|, :math:`i=1,2,\dots` as *parametrized* via the parameters dimension, |n|, and instance, |j|, that is, :math:`\finstance_i:\R^n \to \mathbb{R}^m`. By fixing |n| and |j| for 
+function |fi|, we
 define an optimization problem that we can present to an optimization
 algorithm. Varying |n| or |j| leads to a variation of the problem over 
-the same function. For each testbed, the triple :math:`(n, i, j)` (dimension, 
-function index, instance) uniquely defines a problem. 
+the same function |i|. For each test suite, the triple :math:`(n, i, j)\equiv(f_i, n, j)` uniquely defines a problem that can be presented to the optimization algorithm. Each problem receives an index in the suite itself. 
 
 
 Instance concept
 -----------------------
 
-Changing significant features/parameters of the problem class (systematically or randomized)
-    
-Generate repetitions, natural randomization
--------------------------------------------
+As the formalization above suggest, the differentiation between function and
+instance index is of pure semantic nature. 
 
-Generality, Fairness, avoid exploitation/cheating
--------------------------------------------------
+This semantics has however important implications in how we treat and
+interpret the results. 
+
+    
+  - Generate repetitions, natural randomization
+
+  - Generality, Fairness, avoid exploitation/cheating
+
+  - Changing significant features/parameters of the problem class (systematically or randomized)
 
 
 Targets
 -------
 To each problem, as defined above, we attach a number of target values. 
-A quadruple :math:`(n, i, j, t)` gives raise to a runtime. 
+For each target value, |t|, a quadruple :math:`(n, i, j, t)` gives raise to a 
+runtime: when the indicator- of |f|-value drops below...
 
 
 
