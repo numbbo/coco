@@ -71,7 +71,8 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
 
 /**
  * @brief Calls the function that returns the problem corresponding to the given suite, function index,
- * dimension index and instance index.
+ * dimension index and instance index. If the indices don't correspond to a problem because of suite
+ * filtering, it returns NULL.
  *
  * @note This function needs to be updated when a new suite is added to COCO.
  */
@@ -81,6 +82,12 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
                                                            const size_t instance_idx) {
 
   coco_problem_t *problem;
+
+  if ((suite->functions[function_idx] == 0) ||
+      (suite->dimensions[dimension_idx] == 0) ||
+	  (suite->instances[instance_idx] == 0)) {
+	  return NULL;
+  }
 
   if (strcmp(suite->suite_name, "toy") == 0) {
     problem = suite_toy_get_problem(suite, function_idx, dimension_idx, instance_idx);
@@ -323,7 +330,8 @@ void coco_suite_free(coco_suite_t *suite) {
  * @param suite The given suite.
  * @param problem_index The index of the problem to be returned.
  *
- * @return The problem of the suite defined by problem_index.
+ * @return The problem of the suite defined by problem_index (NULL if this problem has been filtered out
+ * from the suite).
  */
 coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, const size_t problem_index) {
 
@@ -704,9 +712,15 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   size_t instance_idx;
   coco_problem_t *problem;
 
-  long previous_function_idx = suite->current_function_idx;
-  long previous_dimension_idx = suite->current_dimension_idx;
-  long previous_instance_idx = suite->current_instance_idx;
+  long previous_function_idx;
+  long previous_dimension_idx;
+  long previous_instance_idx;
+
+  assert(suite != NULL);
+
+  previous_function_idx = suite->current_function_idx;
+  previous_dimension_idx = suite->current_dimension_idx;
+  previous_instance_idx = suite->current_instance_idx;
 
   /* Iterate through the suite by instances, then functions and lastly dimensions in search for the next
    * problem. Note that these functions set the values of suite fields current_instance_idx,
