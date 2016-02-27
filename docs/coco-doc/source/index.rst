@@ -113,21 +113,33 @@ Introduction
 
 .. note:: search problem rather than optimization problem? 
 
-We consider the continuous black-box optimization problem to minimize a function 
-:math:`f: X\subset\mathbb{R}^n \to \mathbb{R}^m, \,n,m\ge1` such that with :math:`g: X\subset\mathbb{R}^n \to \mathbb{R}^l` we have :math:`g_i(\x)\le0` for all :math:`i=1\dots l`. 
-More specifically, we aim to find, as quickly as possible, one or several solutions :math:`\x\in X` with small value(s) of :math:`f(\x)\in\mathbb{R}^m` satisfying :math:`g_i(\x)\le0`. 
+We consider the continuous black-box optimization problem
+
+.. math::
+
+    f: X\subset\mathbb{R}^n \to \mathbb{R}^m \qquad n,m\ge1 
+
+    g: X\subset\mathbb{R}^n \to \mathbb{R}^l \qquad l\ge0 \enspace.
+    
+.. old such that with :math:`g: X\subset\mathbb{R}^n \to \mathbb{R}^l` we have :math:`g_i(\x)\le0` for all :math:`i=1\dots l`. 
+
+More specifically, we aim to find, as quickly as possible, one or several solutions :math:`\x\in X` with *small* value(s) of :math:`f(\x)\in\mathbb{R}^m` satisfying :math:`g_i(\x)\le0` for all :math:`i=1\dots l`. 
 We consider *time* to be the number of calls to the function |f|. 
 
-A continuous optimization algorithm, also known as *solver*, addresses this problem. 
+A continuous optimization algorithm, also known as *solver*, addresses the above problem. 
 Here, we assume that no prior knowledge about |f| or |g| are available to the algorithm, that is, 
-they are considered as a black-box the algorithm can query with solutions 
+they are considered as a black-box which the algorithm can query with solutions 
 :math:`\x\in\mathbb{R}^n`.
 
 From these prerequisits, benchmarking optimization algorithms seems to be a
-rather simple and straightforward task. We run an algorithm on a collection of problems and display the results. Under closer inspection however it turns out to be surprisingly tedious, and it appears to be difficult to get results that can be meaningfully interpreted beyond the standard claim that one algorithm is better 
-than another on some problems, and vice versa. [#]_
-Here, we offer a conceptual guideline for benchmarking continuous optimization algorithms which tries to address this challenge and has been implemented within the 
-COCO_ framework. [#]_ 
+rather simple and straightforward task. We run an algorithm on a collection of
+problems and display the results. However, under closer inspection,
+benchmarking turns out to be surprisingly tedious, and it appears to be
+difficult to get results that can be meaningfully interpreted beyond the
+standard claim that one algorithm is better than another on some problems, and
+vice versa. [#]_ Here, we offer a conceptual guideline for benchmarking
+continuous optimization algorithms which tries to address this challenge and
+has been implemented within the COCO_ framework. [#]_ 
 
 The COCO_ framework provides the practical means for an automatized benchmarking procedure. Benchmarking an optimization algorithm, say, implemented in the function `fmin`, on a benchmark suite in Python becomes as simple as
 
@@ -179,21 +191,25 @@ and omissions) of the repetitive coding task by many experimenters, our aim is t
 provide a *conceptual guideline for better benchmarking*. Our guideline has 
 the following defining features.  
 
-  #. Benchmark functions are designed to be comprehensible, to allow a meaningful 
-     interpretation of performance results.
+.. format hint: four spaces are needed to make the continuation
+     https://gist.github.com/dupuy/1855764
 
-  #. Benchmark functions are difficult to "defeat", that is, they do not 
-     have artificial regularities that can be (intentionally or unintentionally) 
-     exploited by an algorithm. [#]_
-    
-  #. Benchmark functions are scalable with the input dimension [WHI1996]_. 
-  
-  #. There is no predefined budget (number of |f|-evaluations) for running an
-     experiment, the experimental 
-     procedure is budget-free [BBO2016ex]_.
+#. Benchmark functions are 
 
-  #. A single performance  measure is used, namely runtime measured in 
-     number of |f|-evaluations. Runtime has the advantage to
+    #. used as black boxes to the algorithm, however they 
+       are explicitly known to the scientific community. 
+    #. designed to be comprehensible, to allow a meaningful 
+       interpretation of performance results.
+    #. difficult to "defeat", that is, they do not 
+       have artificial regularities that can be (intentionally or unintentionally) 
+       exploited by an algorithm. [#]_
+    #. scalable with the input dimension [WHI1996]_.
+
+#. There is no predefined budget (number of |f|-evaluations) for running an
+   experiment, the experimental procedure is budget-free [BBO2016ex]_.
+
+#. A single performance  measure is used, namely runtime measured in 
+   number of |f|-evaluations. Runtime has the advantage to
     
      - be easily interpretable without expert domain knowledge
      - be quantitative on the ratio scale [STE1946]_ 
@@ -201,6 +217,11 @@ the following defining features.
      - aggregate over a collection of values in a very meaningful way
      
      A missing runtime value is considered as possible outcome (see below). 
+     
+#. Display 
+
+
+.. todo:: 
 
 .. note:: later we want to talk about the interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances), but see also [BBO2016perf]_. 
 
@@ -270,12 +291,13 @@ We specify a few terms which are used later.
 .. |fi| replace:: :math:`f_i`
 
 
-Functions, instances, and problems 
+Functions, Instances, and Problems 
 ==========================================
 
 In the COCO_ framework we consider functions, |fi|, which are for each suite distinguished by an identifier :math:`i=1,2,\dots`. Functions are *parametrized* with the parameters dimension, |n|, and instance number, |j|, that is for a given |m| we have
 
 .. math::
+
     \finstance_i \equiv f(n, i, j):\R^n \to \mathbb{R}^m \quad
     \x \mapsto \finstance_i (\x) = f(n, i, j)(\x)\enspace. 
     
@@ -288,7 +310,7 @@ an index in the suite, mapping the triple :math:`(n, i, j)` to a single
 number. 
 
 
-The Instance concept
+The Instance Concept
 -----------------------
 
 As the formalization above suggests, the differentiation between function (index) 
@@ -296,14 +318,14 @@ and instance index is of purely semantic nature.
 This semantics however has important implications in how we display and
 interpret the results. We interpret varying the instance parameter in the following ways. 
 
-  - generate repetitions on the functions
-  - natural randomization 
-  - averaging away irrelevant aspects of the function hence providing
+- generate repetitions on the functions
+- natural randomization 
+- averaging away irrelevant aspects of the function hence providing
 
-    - generality
-    - fairness
-    - avoid intentional (cheating) or unintentional exploitation of 
-      artificial function properties
+  - generality
+  - fairness
+  - avoid intentional (cheating) or unintentional exploitation of 
+    artificial function properties
 
 For example, we consider the absolute location of the optimum not a defining
 function feature. Consequently, conducting several trials either with a
@@ -311,7 +333,7 @@ randomized initial solution or on instances with randomized search space
 translations is equivalent, given that the optimizer behaves translation
 invariant. 
 
-  - Changing significant features/parameters of the problem class (systematically or randomized)
+.. todo:: Changing significant features/parameters of the problem class (systematically or randomized)
 
 Targets
 ========
@@ -319,46 +341,63 @@ To each problem, as defined above, we attach a number of target values.
 For each target value, |t|, a quadruple :math:`(n, i, j, t)` gives raise to a 
 runtime: when the indicator- of |f|-value drops below...
 
+.. todo::
+
 Restarts
 =========
 
-Related to budget, budget-free. 
+Related to budget, budget-free...
 
-
+.. todo::
 
 Runtime
 ========
 
 - missing value is interpreted as being above the explored budget. A simulated restart adds at least the minimum runtime from a successful trial. 
 
+.. todo::
+
 Aggregation
 ------------
 
-  - Missing values can be integrated over within instances [BBO2016perf]_. 
+- Missing values can be integrated over within instances [BBO2016perf]_. 
+
+.. todo::
 
 
-
-General code structure
+General Code Structure
 ===============================================
 
-experiments + postprocessing
+The code bases consists of two parts. 
 
-one code base: in C, wrapped in different languages (Java, Python, Matlab/Octave) for the experiments, in python for the postprocessing
+The *Experiments* part
+  defines test suites and allows to conduct experiments providing the output data. The `code base is written in C`__, and wrapped in different languages (currently Java, Python, Matlab/Octave). An amalgamation technique is used that outputs two files ``coco.h`` and ``coco.c`` which suffice to use the experiments part of the framework. 
+
+  .. __: http://numbbo.github.io/coco-doc/C
 
 
-Different test suites
+The *post-processing* part
+  processes the data and display the results. This part is entirely written in 
+  Python and relies heavily on |matplotlib|_ [HUN2007]_.  
+
+.. |matplotlib| replace:: ``matplotlib``
+.. _matplotlib: http://matplotlib.org/
+
+
+
+Test Suites
 =====================
 Currently, the COCO_ framework provides three different test suites. 
 
 ``bbob`` 
-  containing 24 functions in five subgroups [HAN2009fun]_
+  contains 24 functions in five subgroups [HAN2009fun]_.
 
 ``bbob-noisy``
-  containing 30 noisy problems in three subgroups [HAN2009noi]_, 
-  currently only implemented in the `old code basis`_
+  contains 30 noisy problems in three subgroups [HAN2009noi]_, 
+  currently only implemented in the `old code basis`_.
 
 ``bbob-biobj``
-  containing 55 bi-objective (:math:`m=2`) functions in 15 subgroups. 
+  contains 55 bi-objective (:math:`m=2`) functions in 15 subgroups [BBO2016fun]_. 
   
 .. _`old code basis`: http://coco.gforge.inria.fr/doku.php?id=downloads
 
@@ -376,17 +415,23 @@ __ https://www.github.com
 .. [BBO2016perf] The BBOBies: `Performance Assessment`__. 
 __ https://www.github.com
 
+.. [BBO2016fun] The BBOBies: Biobjective Function Definitions. 
+
 .. .. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
 .. .. [HAN2010] Hansen, N., A. Auger, S. Finck R. and Ros (2010), Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
 
 .. [HAN2009fun] N.Hansen, S. Finck, R. Ros, and A. Auger. `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, 2009, updated February 2010.
-__ http://coco.gforge.inria.fr/
-__ https://hal.inria.fr/inria-00362633
+.. __: http://coco.gforge.inria.fr/
+.. __: https://hal.inria.fr/inria-00362633
 
 .. [HAN2009noi] N.Hansen, S. Finck, R. Ros, and A. Auger. `Real-Parameter Black-Box Optimization Benchmarking 2009: Noisy Functions Definitions`__. `Technical Report RR-6869`__, Inria, 2009, updated February 2010.
-__ http://coco.gforge.inria.fr/
-__ https://hal.inria.fr/inria-00369466
+.. __: http://coco.gforge.inria.fr/
+.. __: https://hal.inria.fr/inria-00369466
+
+.. [HUN2007] Hunter, J. D. (2007). Matplotlib: A 2D graphics environment, 
+  *Computing In Science \& Engineering*, 9(3): 90-95. 
+
 
 .. .. [AUG2005] A Auger and N Hansen. A restart CMA evolution strategy with
    increasing population size. In *Proceedings of the IEEE Congress on
