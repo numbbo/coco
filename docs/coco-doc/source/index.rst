@@ -204,7 +204,9 @@ the following defining features.
 
 .. note:: later we want to talk about the interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances), but see also [BBO2016perf]_. 
 
+.. note:: later we want to talk about the interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances). 
 
+.. note:: (Anne) would mention in addition meaningful and comprehensible display of performance measure [in contrast to - extreme result of just final ranking of BBcomp or aggregation of dimension in math opt community]
 
 Terminology
 -----------
