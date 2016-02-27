@@ -1,12 +1,9 @@
-#################################################################################
-Welcome to the generic performance assessment description for the Coco platform!
-#################################################################################
-
+##############################
+COCO: Performance Assessment
+##############################
 .. toctree::
    :maxdepth: 2
-   :numbered: 3
 
-.. contents:: Table of contents
 
 
 .. |ftarget| replace:: :math:`f_\mathrm{target}`
@@ -23,18 +20,34 @@ Welcome to the generic performance assessment description for the Coco platform!
 .. |ERT| replace:: :math:`\mathrm{ERT}`
 
 
-
-
-In this document we explain the rationale behind the performance assessment of the COCO framework, the performance measures used and the display of results.
-
-.. sectnum::
+..
+   sectnum::
 
 Introduction
 =============
 
+In this document we explain the rationale behind the performance assessment within the COCO platform. The simple but central idea is that we advocate *quantitative* performance measures as opposed to simple rankings of algorithm performances. From there on follows that run-length for function value targets are collected. We then either display expected run-length through the `Expected Running Time`_ (ERT) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF).
+
+Terminology and Definitions
+----------------------------
+*problem*
+  In the context of performance
+  assessment, we talk about a *problem* as the quadruple 
+  ``(dimension, function, instance, function-target-value)``. 
+
+*instance*
+  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...
+  
+*runtime*
+  We define *runtime*, or *run-length* [HOO1998]_
+  as the *number of evaluations* 
+  conducted on a given problem, also referred to as number of *function* evaluations. 
+  Our central performance measure is the runtime until a given target :math:`f`-value 
+  is hit.
+  
 
 On Performance Measures
------------------------
+=======================
 
 We advocate **performance measures** that are:
 
@@ -46,13 +59,13 @@ We advocate **performance measures** that are:
 * relevant with respect to the "real world"
 * as simple as possible
 
-For these reasons we measure "running times" to reach a target function value, denoted as fixed-target scenario in the following. 
+For these reasons we measure runtime to reach a target function value, denoted as fixed-target scenario in the following. 
 
 
 .. _sec:verthori:
 
 Fixed-Cost versus Fixed-Target Scenario
----------------------------------------
+----------------------------------------
 
 Two different approaches for collecting data and making measurements from
 experiments are schematically depicted in Figure :ref:`fig:HorizontalvsVertical`.
@@ -109,17 +122,43 @@ target values while fixed-cost measures require the transformation
 of all resulting data.
 
 
-Run-length over problems
-------------------------
+Run-length over Problems
+=========================
 
-We define a problem as a set ``(function, dimension, instance, function target)`` where the concept of instance is described in the function documentation (it is obtained by instantiating some random transformations). We collect run-length swiping over functions, dimensions, instances and targets.
+From the previous section we know that we want to collect run-length for different targets in order to display quantitative measurements. A problem is defined as the quadruplet ``(function, dimension, instance, function target)``. We **interpret the different instances** of a function (in a given dimension) as if they are just a repetition of the same function. More precisely while instances typically change the exact definition of the function (for instance two different instances of the sphere function will typically have shifted optima), we consider that the run-length for two different instances of a given function (for example the sphere function) in a given dimension and for a given target are just independent identically distributed random variables.
+
+Hence **our display of performance** starts from the following collected data: given a function, dimension, function target, we have a collection of run-length that correspond to the number of function evaluations needed to reach the target for all the instances where the algorithm was run. When the target was not reached we collect the number of function evaluations till the algorithm is stopped.
+
+.. Niko: "function target" seems misleading, as the target depends also on the instance
+  (and also on the dimension). |target value| might be a possible nomenclature, we also
+  have already |ftarget| defined above. 
+  
+.. |target value| replace:: target-:math:`f`-value
+.. an alterative could be .. |target value| replace:: target value
+
+.. Niko: I think we should discuss instances somewhere here, in particular as (a) there is 
+  no generic "function document" and (b) the interpretation is related to the display
+  and/or assessment. 
+
+.. Niko: when conducting an experiment we sweep over all available 
+  ``(function, dimension, instance)`` triplets. A single trial than generates the 
+  quadruples. 
+  
+.. Niko: let me know what/where I can/should start to do/change here. 
 
 The display of results is hence based on those collected run-length. We either used displays  based on the expected run-length |ERT| described in Section `Expected Running Time`_  or based on the distribution of run-length using empirical cumulative distribution as described in Section `Empirical Cumulative Distribution Functions`_
 
-Interpretation of instances
-***************************
 
-Different instances of each function are used when collecting the number of function evaluations needed to reach a target for a given function. We interpret the different instances as if they are just a repetition of the same function. In this case we consider the run length collected on the different instances (for a given function, dimension and target) as independent identically distributed random variables.
+Simulated Run-length and Bootstrapping
+---------------------------------------
+
+The collection of run-length available is typically small: maximally 15 for the data collected for the BBOB 2009-2015 workshops where the algorithms were run on 15 instances. In order to artificially generate more data, we use **bootstrapping** [Efron:1993]_.  More precisely we derive some simulated run-length as explained below.
+
+**Simulated Run-length:** We consider the run-length of trials that reached the target, those run-length are *run-length of successful trials* i.e., they correspond to runs of the algorithm that successfully reached the target (hence solved the problem). In addition, for the *unsuccessful trials* that did not reach the target, we consider the run-length before to stop, that is the number of function evaluations before to stop.
+
+We repeatedly draw among those successful and unsuccessful run-length, single trials with replacement until a successful trial is drawn.  The concatenation of those trials is called a **simulated run-length**. It simulates the run-length of an algorithm that would be restarted till a success is observed [Auger:2005b]_ [Auger:2009]_. The collection of simulated run-length is called bootstrapped distribution.
+
+We use bootstrapping to provide dispersion measures and provide some percentiles of the bootstrapped distribution. In addition the distribution of the bootstrapped runtimes is used as an approximation of the true runtime distribution.
 
 .. _sec:ERT:
 
@@ -188,23 +227,6 @@ criteria of the algorithm.
 __ http://en.wikipedia.org/w/index.php?title=Level_of_measurement&oldid=478392481
 
 
-Bootstrapping and Simulated Runs
-================================
-
-The |ERT| computes a single measurement from a data sample set (in our case
-from |nruns| optimization runs). Bootstrapping [Efron:1993]_ can provide a
-dispersion measure for this aggregated measurement: here, a "single data
-sample" is derived from the original data by repeatedly drawing single trials
-with replacement until a successful trial is drawn. We call also this single data sample a simulated run.
-
-The running time of the
-single sample is computed as the sum of function evaluations in the drawn
-trials (for the last trial up to where the target function value is reached)
-[Auger:2005b]_ [Auger:2009]_. The distribution of the
-bootstrapped running times is, besides its displacement, a good approximation
-of the true distribution. We provide some percentiles of the bootstrapped
-distribution.
-
 .. _sec:ECDF:
 
 Empirical Cumulative Distribution Functions
@@ -249,7 +271,7 @@ A cutting line in Figure :ref:`fig:HorizontalvsVertical` corresponds to a
 "data" line in Figure :ref:`fig:ecdf`, where 450 (30 x 15) convergence graphs
 are evaluated. For example, the thick red graph in Figure :ref:`fig:ecdf` shows
 on the left the distribution of the running length (number of function
-evaluations) [Hoos:1998]_ for reaching precision
+evaluations) [HOO1998]_ for reaching precision
 :math:`\Delta f = 10^{-8}` (horizontal cut). The graph continues on the right
 as a vertical cut for the maximum number of function evaluations, showing the
 distribution of the best achieved :math:`\Delta f` values, divided by 10\
@@ -299,7 +321,7 @@ Understanding the different plots
 .. [Harik:1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation
    Conference (GECCO)*, volume 1, pages 258–265. ACM, 1999.
-.. [Hoos:1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
+.. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
    algorithms—pitfalls and remedies. In *Proceedings of the Fourteenth 
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
    pages 238–245, 1998.
