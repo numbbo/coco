@@ -66,6 +66,58 @@ JNIEXPORT jlong JNICALL Java_CocoJNI_cocoGetObserver
 
 /*
  * Class:     CocoJNI
+ * Method:    cocoProblemAddObserver
+ * Signature: (JJ)J
+ */
+JNIEXPORT jlong JNICALL Java_CocoJNI_cocoProblemAddObserver
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem_pointer, jlong jobserver_pointer) {
+
+  coco_observer_t *observer = NULL;
+  coco_problem_t *problem_before = NULL;
+  coco_problem_t *problem_after = NULL;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoProblemAddObserver\n");
+  }
+
+  observer = (coco_observer_t *) jobserver_pointer;
+  problem_before = (coco_problem_t *) jproblem_pointer;
+
+  problem_after = coco_problem_add_observer(problem_before, observer);
+
+  return (jlong) problem_after;
+}
+
+/*
+ * Class:     CocoJNI
+ * Method:    cocoProblemRemoveObserver
+ * Signature: (JJ)J
+ */
+JNIEXPORT jlong JNICALL Java_CocoJNI_cocoProblemRemoveObserver
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem_pointer, jlong jobserver_pointer) {
+
+  coco_observer_t *observer = NULL;
+  coco_problem_t *problem_before = NULL;
+  coco_problem_t *problem_after = NULL;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoProblemRemoveObserver\n");
+  }
+
+  observer = (coco_observer_t *) jobserver_pointer;
+  problem_before = (coco_problem_t *) jproblem_pointer;
+
+  problem_after = coco_problem_remove_observer(problem_before, observer);
+
+  return (jlong) problem_after;
+}
+
+/*
+ * Class:     CocoJNI
  * Method:    cocoFinalizeObserver
  * Signature: (J)V
  */
@@ -136,10 +188,10 @@ JNIEXPORT void JNICALL Java_CocoJNI_cocoFinalizeSuite
 
 /*
  * Class:     CocoJNI
- * Method:    cocoGetNextProblem
+ * Method:    cocoSuiteGetNextProblem
  * Signature: (JJ)J
  */
-JNIEXPORT jlong JNICALL Java_CocoJNI_cocoGetNextProblem
+JNIEXPORT jlong JNICALL Java_CocoJNI_cocoSuiteGetNextProblem
 (JNIEnv *jenv, jclass interface_cls, jlong jsuite_pointer, jlong jobserver_pointer) {
 
   coco_problem_t *problem = NULL;
@@ -149,12 +201,38 @@ JNIEXPORT jlong JNICALL Java_CocoJNI_cocoGetNextProblem
   /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
   if (interface_cls == NULL) {
     jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
-    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoGetNextProblem\n");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoSuiteGetNextProblem\n");
   }
 
   suite = (coco_suite_t *) jsuite_pointer;
   observer = (coco_observer_t *) jobserver_pointer;
   problem = coco_suite_get_next_problem(suite, observer);
+
+  if (problem == NULL)
+    return 0;
+
+  return (jlong) problem;
+}
+
+/*
+ * Class:     CocoJNI
+ * Method:    cocoSuiteGetProblem
+ * Signature: (JJ)J
+ */
+JNIEXPORT jlong JNICALL Java_CocoJNI_cocoSuiteGetProblem
+(JNIEnv *jenv, jclass interface_cls, jlong jsuite_pointer, jlong jproblem_index) {
+
+  coco_problem_t *problem = NULL;
+  coco_suite_t *suite = NULL;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoSuiteGetProblem\n");
+  }
+
+  suite = (coco_suite_t *) jsuite_pointer;
+  problem = coco_suite_get_problem(suite, jproblem_index);
 
   if (problem == NULL)
     return 0;

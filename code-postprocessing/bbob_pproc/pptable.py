@@ -353,7 +353,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                 if nbstars > 0:
                     isBold = True
 
-                if not bestalgentries or np.isinf(bestalgdata[i]): # if the best did not solve the problem
+                if bestalgentries and np.isinf(bestalgdata[i]): # if the best did not solve the problem
                     tmp = writeFEvalsMaxPrec(float(ert), 2)
                     if not np.isinf(ert):
                         if bestalgentries:                        
@@ -372,7 +372,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     tableentryHtml = ('%s' % tmpHtml)
                 else:
                     # Formatting
-                    tmp = float(ert) / bestalgdata[i]
+                    tmp = float(ert) / bestalgdata[i] if bestalgentries else float(ert)
                     assert not np.isnan(tmp)
                     tableentry = writeFEvalsMaxPrec(tmp, 2)
                     tableentryHtml = writeFEvalsMaxPrec(tmp, 2)

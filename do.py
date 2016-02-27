@@ -523,8 +523,14 @@ def build_java():
                            
     # 5. Mac
     elif ('darwin' in sys.platform):
+        import re
+        jdkversion = check_output(['javac', '-version'], stderr = STDOUT,
+                                  env = os.environ, universal_newlines = True)
+        jdkversion = re.split(" |\n", jdkversion)[1]
         jdkpath = '/System/Library/Frameworks/JavaVM.framework/Headers'
-        run('code-experiments/build/java', ['gcc', '-I', jdkpath, '-c', 'CocoJNI.c'])
+        jdkpath1 = '/Library/Java/JavaVirtualMachines/jdk' + jdkversion + '.jdk/Contents/Home/include'
+        jdkpath2 = jdkpath1 + '/darwin'
+        run('code-experiments/build/java', ['gcc', '-I', jdkpath, '-I', jdkpath1, '-I', jdkpath2, '-c', 'CocoJNI.c'])
         run('code-experiments/build/java', ['gcc', '-dynamiclib', '-o', 'libCocoJNI.jnilib',
                            'CocoJNI.o'])
     
