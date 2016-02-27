@@ -97,14 +97,11 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. _coco_problem_get_evaluations(const coco_problem_t * problem): 
   http://numbbo.github.io/coco-doc/C/coco_8h.html#a6ad88cdba2ffd15847346d594974067f
 
-.. |citeCOCOex| replace:: [COCOex]
 
 .. |f| replace:: :math:`f`
 .. |g| replace:: :math:`g`
 .. |x| replace:: :math:`x`
 
-.. role:: red
-.. |todo| replace:: **todo**
 
 .. #################################################################################
 .. #################################################################################
@@ -177,10 +174,10 @@ needed to implement if they wanted to benchmark an algorithm properly.
 Why COCO_?
 ----------
 
-Appart from diminishing the burden (time) and the pitfalls (as well as bugs
-and omissions) of repetitive coding task by many experimenters, our aim is to
-provide a *conceptual guideline for better benchmarking*. Our guideline has a
-few defining features.  
+Appart from diminishing the burden (time) and the pitfalls (and bugs
+and omissions) of the repetitive coding task by many experimenters, our aim is to
+provide a *conceptual guideline for better benchmarking*. Our guideline has 
+the following defining features.  
 
   #. Benchmark functions are designed to be comprehensible, to allow a meaningful 
      interpretation of performance results.
@@ -193,7 +190,7 @@ few defining features.
   
   #. There is no predefined budget (number of |f|-evaluations) for running an
      experiment, the experimental 
-     procedure is budget-free [COCOex]_.
+     procedure is budget-free [BBO2016ex]_.
 
   #. A single performance  measure is used, namely runtime measured in 
      number of |f|-evaluations. Runtime has the advantage to
@@ -202,8 +199,11 @@ few defining features.
      - be quantitative on the ratio scale [STE1946]_ 
      - assume a wide range of values
      - aggregate over a collection of values in a very meaningful way
+     
+     A missing runtime value is considered as possible outcome (see below). 
 
-.. note:: later we want to talk about the interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances). 
+.. note:: later we want to talk about the interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances), but see also [BBO2016perf]_. 
+
 
 
 Terminology
@@ -271,7 +271,7 @@ We specify a few terms which are used later.
 
 
 Functions, instances, and problems 
-==================================================================
+==========================================
 
 In the COCO_ framework we consider functions, |fi|, which are for each suite distinguished by an identifier :math:`i=1,2,\dots`. Functions are *parametrized* with the parameters dimension, |n|, and instance number, |j|, that is for a given |m| we have
 
@@ -291,8 +291,8 @@ number.
 The Instance concept
 -----------------------
 
-As the formalization above suggest, the differentiation between function (index) 
-and instance index is of purely semantic nature only. 
+As the formalization above suggests, the differentiation between function (index) 
+and instance index is of purely semantic nature. 
 This semantics however has important implications in how we display and
 interpret the results. We interpret varying the instance parameter in the following ways. 
 
@@ -300,24 +300,41 @@ interpret the results. We interpret varying the instance parameter in the follow
   - natural randomization 
   - averaging away irrelevant aspects of the function hence providing
 
-    - Generality
-    - Fairness
-    - avoid exploitation/cheating
+    - generality
+    - fairness
+    - avoid intentional (cheating) or unintentional exploitation of 
+      artificial function properties
 
-
+For example, we consider the absolute location of the optimum not a defining
+function feature. Consequently, conducting several trials either with a
+randomized initial solution or on instances with randomized search space
+translations is equivalent, given that the optimizer behaves translation
+invariant. 
 
   - Changing significant features/parameters of the problem class (systematically or randomized)
 
-Restarts
---------
-
-Related to budget, budget-free. 
-
 Targets
--------
+========
 To each problem, as defined above, we attach a number of target values. 
 For each target value, |t|, a quadruple :math:`(n, i, j, t)` gives raise to a 
 runtime: when the indicator- of |f|-value drops below...
+
+Restarts
+=========
+
+Related to budget, budget-free. 
+
+
+
+Runtime
+========
+
+- missing value is interpreted as being above the explored budget. A simulated restart adds at least the minimum runtime from a successful trial. 
+
+Aggregation
+------------
+
+  - Missing values can be integrated over within instances [BBO2016perf]_. 
 
 
 
@@ -331,25 +348,42 @@ one code base: in C, wrapped in different languages (Java, Python, Matlab/Octave
 
 Different test suites
 =====================
+Currently, the COCO_ framework provides three different test suites. 
 
-bbob
-----
+``bbob`` 
+  containing 24 functions in five subgroups [HAN2009fun]_
 
-bbob-biobj
-----------
+``bbob-noisy``
+  containing 30 noisy problems in three subgroups [HAN2009noi]_, 
+  currently only implemented in the `old code basis`_
 
-
+``bbob-biobj``
+  containing 55 bi-objective (:math:`m=2`) functions in 15 subgroups. 
+  
+.. _`old code basis`: http://coco.gforge.inria.fr/doku.php?id=downloads
 
 
 .. ############################# References #########################################
 
-.. [COCOex] The BBOBies: `Experimental Setup`__. 
+.. author list yet to be defined
 
+.. [BBO2016ex] The BBOBies: `Experimental Setup`__. 
+__ https://www.github.com
+
+.. [BBO2016perf] The BBOBies: `Performance Assessment`__. 
 __ https://www.github.com
 
 .. .. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
 .. .. [HAN2010] Hansen, N., A. Auger, S. Finck R. and Ros (2010), Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
+
+.. [HAN2009fun] N.Hansen, S. Finck, R. Ros, and A. Auger. `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, 2009, updated February 2010.
+__ http://coco.gforge.inria.fr/
+__ https://hal.inria.fr/inria-00362633
+
+.. [HAN2009noi] N.Hansen, S. Finck, R. Ros, and A. Auger. `Real-Parameter Black-Box Optimization Benchmarking 2009: Noisy Functions Definitions`__. `Technical Report RR-6869`__, Inria, 2009, updated February 2010.
+__ http://coco.gforge.inria.fr/
+__ https://hal.inria.fr/inria-00369466
 
 .. .. [AUG2005] A Auger and N Hansen. A restart CMA evolution strategy with
    increasing population size. In *Proceedings of the IEEE Congress on
