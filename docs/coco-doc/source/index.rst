@@ -136,7 +136,7 @@ The COCO_ framework provides the practical means for an automatized benchmarking
 
 .. raw:: latex
 
-    Figure 1. \begin{figure}\begin{minipage}{\textwidth}
+    in Figure 1. \begin{figure} %\begin{minipage}{\textwidth}
     
 .. code:: python
 
@@ -155,7 +155,8 @@ The COCO_ framework provides the practical means for an automatized benchmarking
 
 .. raw:: latex 
 
-    \end{minipage}\caption{Code to benchmark ```fmin``` on the ``bbob`` suite. }
+    \caption{Code to benchmark \texttt{fmin} on the \texttt{bbob} suite and
+    display the results. }
     \end{figure}
 
 Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
@@ -172,14 +173,14 @@ The COCO_ framework provides currently
 The underlying philosophy of COCO_ is to provide everything which most experimenters 
 needed to implement if they wanted to benchmark an algorithm properly.
 
-.. Note:: talk about restarts somewhere, it's related to budget. 
 
 Why COCO_?
 ----------
 
-Appart from diminishing the burden (time) and the pitfalls (bugs, misses) of repetitive 
-coding by many experimenters, our aim is to provide a *conceptual guideline for better benchmarking*. 
-Our guideline has a few defining features.  
+Appart from diminishing the burden (time) and the pitfalls (as well as bugs
+and omissions) of repetitive coding task by many experimenters, our aim is to
+provide a *conceptual guideline for better benchmarking*. Our guideline has a
+few defining features.  
 
   #. Benchmark functions are designed to be comprehensible, to allow a meaningful 
      interpretation of performance results.
@@ -261,6 +262,7 @@ We specify a few terms which are used later.
 
 
 .. |n| replace:: :math:`n`
+.. |m| replace:: :math:`m`
 .. |theta| replace:: :math:`\theta`
 .. |i| replace:: :math:`i`
 .. |j| replace:: :math:`j`
@@ -271,29 +273,45 @@ We specify a few terms which are used later.
 Functions, instances, and problems 
 ==================================================================
 
-In the COCO_ framework we consider functions, |fi|, :math:`i=1,2,\dots` as *parametrized* via the parameters dimension, |n|, and instance, |j|, that is, :math:`\finstance_i:\R^n \to \mathbb{R}^m`. By fixing |n| and |j| for 
-function |fi|, we
-define an optimization problem that we can present to an optimization
-algorithm. Varying |n| or |j| leads to a variation of the problem over 
-the same function |i|. For each test suite, the triple :math:`(n, i, j)\equiv(f_i, n, j)` uniquely defines a problem that can be presented to the optimization algorithm. Each problem receives an index in the suite itself. 
+In the COCO_ framework we consider functions, |fi|, which are for each suite distinguished by an identifier :math:`i=1,2,\dots`. Functions are *parametrized* with the parameters dimension, |n|, and instance number, |j|, that is for a given |m| we have
+
+.. math::
+    \finstance_i \equiv f(n, i, j):\R^n \to \mathbb{R}^m \quad
+    \x \mapsto \finstance_i (\x) = f(n, i, j)(\x)\enspace. 
+    
+By fixing |n| and |j| for function |fi|, we define an optimization problem
+that we can present to an optimization algorithm. Varying |n| or |j| leads to
+a variation of the problem over the same function |i|. For each test suite,
+the triple :math:`(n, i, j)\equiv(f_i, n, j)` uniquely defines a problem that
+can be presented to the optimization algorithm. Each problem receives again
+an index in the suite, mapping the triple :math:`(n, i, j)` to a single
+number. 
 
 
-Instance concept
+The Instance concept
 -----------------------
 
-As the formalization above suggest, the differentiation between function and
-instance index is of pure semantic nature. 
+As the formalization above suggest, the differentiation between function (index) 
+and instance index is of purely semantic nature only. 
+This semantics however has important implications in how we display and
+interpret the results. We interpret varying the instance parameter in the following ways. 
 
-This semantics has however important implications in how we treat and
-interpret the results. 
+  - generate repetitions on the functions
+  - natural randomization 
+  - averaging away irrelevant aspects of the function hence providing
 
-    
-  - Generate repetitions, natural randomization
+    - Generality
+    - Fairness
+    - avoid exploitation/cheating
 
-  - Generality, Fairness, avoid exploitation/cheating
+
 
   - Changing significant features/parameters of the problem class (systematically or randomized)
 
+Restarts
+--------
+
+Related to budget, budget-free. 
 
 Targets
 -------
@@ -325,7 +343,9 @@ bbob-biobj
 
 .. ############################# References #########################################
 
-.. [COCOex] The BBOBies: Experimental Setup. 
+.. [COCOex] The BBOBies: `Experimental Setup`__. 
+
+__ https://www.github.com
 
 .. .. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
