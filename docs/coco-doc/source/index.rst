@@ -114,50 +114,54 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 Introduction
 ============
 
-We consider the black-box optimization problem to minimize a function :math:`f: X\subset\mathbb{R}^n \to \mathbb{R}^m, \,n,m\ge1` such that for :math:`g: X\subset\mathbb{R}^n \to \mathbb{R}^l` for all :math:`i=1\dots l` we have :math:`g_i(x)\le0`. 
-More specifically, we aim to find, as quickly as possible, one or several solutions :math:`x\in X` with small value(s) of :math:`f(x)\in\mathbb{R}^m` and :math:`g_i(x)\le0`. 
+.. note:: search problem rather than optimization problem? 
+
+We consider the continuous black-box optimization problem to minimize a function 
+:math:`f: X\subset\mathbb{R}^n \to \mathbb{R}^m, \,n,m\ge1` such that with :math:`g: X\subset\mathbb{R}^n \to \mathbb{R}^l` we have :math:`g_i(\x)\le0` for all :math:`i=1\dots l`. 
+More specifically, we aim to find, as quickly as possible, one or several solutions :math:`\x\in X` with small value(s) of :math:`f(\x)\in\mathbb{R}^m` satisfying :math:`g_i(\x)\le0`. 
 We consider *time* to be the number of calls to the function |f|. 
+
 A continuous optimization algorithm, also known as *solver*, addresses this problem. 
 Here, we assume that no prior knowledge about |f| or |g| are available to the algorithm, that is, 
 they are considered as a black-box the algorithm can query with solutions 
-:math:`x\in\mathbb{R}^n`.
+:math:`\x\in\mathbb{R}^n`.
 
-Considering this setup, benchmarking optimization algorithms seems to be a
+From these prerequisits, benchmarking optimization algorithms seems to be a
 rather simple and straightforward task. We run an algorithm on a collection of problems and display the results. Under closer inspection however it turns out to be surprisingly tedious, and it appears to be difficult to get results that can be meaningfully interpreted beyond the standard claim that one algorithm is better 
-than another on some problems and vice versa. [#]_
-Here, we offer a conceptual guideline for benchmarking continuous optimization algorithms which tries to address this challenge and has been implemented in the 
+than another on some problems, and vice versa. [#]_
+Here, we offer a conceptual guideline for benchmarking continuous optimization algorithms which tries to address this challenge and has been implemented within the 
 COCO_ framework. [#]_ 
 
-The COCO_ framework provides the practical means for an automatized benchmarking procedure. Benchmarking an optimization algorithm, say implemented in the function ``fmin``, on a benchmark suite in Python becomes as simple as
+The COCO_ framework provides the practical means for an automatized benchmarking procedure. Benchmarking an optimization algorithm, say, implemented in the function ``fmin``, on a benchmark suite in Python becomes as simple as
 
 .. code:: python
 
-  import cocoex as ex
-  import cocopp as pp
+  import cocoex
+  import cocopp
   from myoptimizer import fmin
     
-  suite = ex.Suite("bbob", "2013", "")
-  observer = ex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
+  suite = cocoex.Suite("bbob", "2013", "")
+  observer = cocoex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
     
   for p in suite:
       observer.observe(p)
       fmin(p, p.initial_solution)
         
-  pp.main('exdata/myoptimizer-on-bbob')
+  cocopp.main('exdata/myoptimizer-on-bbob')
 
 Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
 
 The COCO_ framework provides currently
 
-    - an interface to several languages, currently C/C++, Java, Matlab/Octave, 
-      Python, in which the benchmarked optimizer might be written
+    - an interface to several languages in which the benchmarked optimizer
+      might be written, currently C/C++, Java, Matlab/Octave, Python
     - several benchmark suites or testbeds, currently all written in C
     - data logging facilities via the ``Observer``
-    - data post-processing and data display facilities in ``html``
+    - data post-processing in Python and data display facilities in ``html``
     - article LaTeX templates
 
-The underlying philosophy of COCO_ is to provide everything which experimenters 
-need to implement, if they want to benchmark an algorithm properly.
+The underlying philosophy of COCO_ is to provide everything which most experimenters 
+need to implement if they want to benchmark an algorithm properly.
 
 .. Note:: talk about restarts somewhere, it's related to budget. 
 
@@ -169,7 +173,7 @@ our aim is to provide a *conceptual guideline for better benchmarking*.
 Our guideline has a few defining features.  
 
   #. Benchmark functions are comprehensibly designed, to allow a meaningful 
-     interpretation of performance results [WHI1996].
+     interpretation of performance results [WHI1996]_.
 
   #. Benchmark functions are difficult to "defeat", that is, they do not 
      have artificial regularities that can be (intentionally or unintentionally) 
@@ -206,7 +210,7 @@ We specify a few terms which are used later.
 *problem*
   We talk about a *problem*, |coco_problem_t|_, as a specific *function
   instance* on which the optimization algorithm is run. Specifically, a problem
-  can be described as the triple ``(dimension, function, instance)``. A problem
+  can be described as the triple ``(dimension, function, instantiation)``. A problem
   can be evaluated and returns an |f|-value or -vector and, in case,
   a |g|-vector. 
   In the context of performance
@@ -232,9 +236,9 @@ We specify a few terms which are used later.
 
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
 
-.. [#] For example, the optimum is not in all-zeros and optima are not placed 
-    on a regular grid. Which regularities are common place in real-world 
-    optimization problems remains an open question. 
+.. [#] For example, the optimum is not in all-zeros, optima are not placed 
+    on a regular grid, the function is not separable. Which regularities are 
+    common place in real-world optimization problems remains an open question. 
 
 .. .. [#] Wikipedia__ gives a reasonable introduction to scale types.
 .. .. was 261754099
@@ -248,20 +252,19 @@ We specify a few terms which are used later.
 .. |n| replace:: :math:`n`
 .. |theta| replace:: :math:`\theta`
 .. |i| replace:: :math:`i`
+.. |j| replace:: :math:`j`
+.. |fi| replace:: :math:`f_i`
 
 
 Terminology and definition of problem, function, instance, target? 
 ==================================================================
 
-In the COCO_ framework we consider *parametrized* functions
-:math:`\finstance:\R^n \to \mathbb{R}^m`, which are parametrized via the
-parameters dimension |n| and instance |i|. By fixing |n| and |i| we
+In the COCO_ framework we consider functions, |fi|, :math:`i=1,2,\dots` as *parametrized* via the parameters dimension |n| and instance |j|, that is, :math:`\finstance_i:\R^n \to \mathbb{R}^m`. By fixing |n| and |j| for function |fi|, we
 define an optimization problem that we can present to an optimization
-algorithm. Varying |n| or |i| leads to a variation of the problem, while
-we still talk about the same function. 
+algorithm. Varying |n| or |j| leads to a variation of the problem over 
+the same function. For each testbed, the triple :math:`(n, i, j)` (dimension, 
+function index, instance) uniquely defines a problem. 
 
-Giving each function |f| a name or an index, the triple ``(dimension |n|, 
-|f|-index, instance |i|)`` defines a problem. 
 
 Instance concept
 -----------------------
@@ -278,6 +281,7 @@ Generality, Fairness, avoid exploitation/cheating
 Targets
 -------
 To each problem, as defined above, we attach a number of target values. 
+A quadruple :math:`(n, i, j, t)` gives raise to a runtime. 
 
 
 
@@ -318,6 +322,9 @@ bbob-biobj
 .. .. [Auger:2009] Anne Auger and Raymond Ros. Benchmarking the pure
    random search on the BBOB-2009 testbed. In Franz Rothlauf, editor, *GECCO
    (Companion)*, pages 2479-2484. ACM, 2009.
+   
+.. .. [BAR1995] R. Barr, ?. Golden, J. Kelly, M Resende, and Jr. W. Stewart. Designing and Reporting on Computational Experiments with Heuristic Methods. Journal of Heuristics, 1:9–32, 1995. 
+
 .. .. [Efron:1993] B. Efron and R. Tibshirani. *An introduction to the
    bootstrap.* Chapman & Hall/CRC, 1993.
 .. .. [HAR1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
@@ -332,6 +339,8 @@ bbob-biobj
    Evolutionary Computation, pages 153--157, 1997.
    
 .. [STE1946] Stevens, S.S. On the theory of scales of measurement. *Science* 103(2684), pp. 677-680, 1946.
+
+.. [WHI1996] Whitley, D., Rana, S., Dzubera, J., Mathias, K. E. Evaluating evolutionary algorithms. *Artificial intelligence*, 85(1), 245-276, 1996.
 
 
 .. ############################## END Document #######################################
