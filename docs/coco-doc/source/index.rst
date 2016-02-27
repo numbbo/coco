@@ -302,18 +302,23 @@ We specify a few terms which are used later.
 Functions, Instances, and Problems 
 ==========================================
 
-In the COCO_ framework we consider functions, |fi|, which are for each suite distinguished by an identifier :math:`i=1,2,\dots`. Functions are *parametrized* with the parameters dimension, |n|, and instance number, |j|, that is for a given |m| we have
+In the COCO_ framework we consider functions, |fi|, which are for each suite
+distinguished by their identifier :math:`i=1,2,\dots`. Functions are
+*parametrized* by dimension, |n|, and instance number, |j|,
+that is for a given |m| we have
 
 .. math::
 
     \finstance_i \equiv f(n, i, j):\R^n \to \mathbb{R}^m \quad
     \x \mapsto \finstance_i (\x) = f(n, i, j)(\x)\enspace. 
     
+Varying |n| or |j| leads to a variation of the problem over the same function
+|i| of a given suite. 
 By fixing |n| and |j| for function |fi|, we define an optimization problem
-that we can present to an optimization algorithm. Varying |n| or |j| leads to
-a variation of the problem over the same function |i|. For each test suite,
-the triple :math:`(n, i, j)\equiv(f_i, n, j)` uniquely defines a problem that
-can be presented to the optimization algorithm. Each problem receives again
+that can be presented to an optimization algorithm, that is, 
+for each test suite,
+the triple :math:`(n, i, j)\equiv(f_i, n, j)` uniquely defines a problem. 
+Each problem receives again
 an index in the suite, mapping the triple :math:`(n, i, j)` to a single
 number. 
 
@@ -331,15 +336,14 @@ interpret the results. We interpret varying the instance parameter in the follow
 - averaging away irrelevant aspects of the function hence providing
 
   - generality
-  - fairness
-  - avoid intentional (cheating) or unintentional exploitation of 
+  - a fair setup by preventing intentional (cheating) or unintentional exploitation of 
     artificial function properties
 
 For example, we consider the absolute location of the optimum not a defining
 function feature. Consequently, conducting several trials either with a
 randomized initial solution or on instances with randomized search space
-translations is equivalent, given that the optimizer behaves translation
-invariant. 
+translations is equivalent (given that the optimizer behaves translation
+invariant). 
 
 .. todo:: Changing significant features/parameters of the problem class (systematically or randomized)
 
