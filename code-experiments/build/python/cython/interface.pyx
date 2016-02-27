@@ -135,6 +135,8 @@ cdef class Suite:
 
     >>> import cocoex as ex
     >>> suite = ex.Suite("bbob", "", "dimensions:20 instance_indices:1")
+    >>> len(suite)
+    24
     >>> f9 = suite.get_problem(8)
     >>> x = f9.initial_solution  # a copy of a feasible point
     >>> all(x == 0)
