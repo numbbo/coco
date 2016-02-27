@@ -141,7 +141,10 @@ vice versa. [#]_ Here, we offer a conceptual guideline for benchmarking
 continuous optimization algorithms which tries to address this challenge and
 has been implemented within the COCO_ framework. [#]_ 
 
-The COCO_ framework provides the practical means for an automatized benchmarking procedure. Benchmarking an optimization algorithm, say, implemented in the function `fmin`, on a benchmark suite in Python becomes as simple as
+The COCO_ framework provides the practical means for an automatized
+benchmarking procedure. Benchmarking an optimization algorithm, say,
+implemented in the function ``fmin``, on a benchmark suite becomes (in Python)
+as simple as
 
 .. raw:: latex
 
@@ -164,20 +167,25 @@ The COCO_ framework provides the practical means for an automatized benchmarking
 
 .. raw:: latex 
 
-    \caption{Code to benchmark \texttt{fmin} on the \texttt{bbob} suite and
-    display the results. }
-    \end{figure}
+    \caption[Minimal benchmarking code in Python]{
+    Code to benchmark \texttt{fmin} on the \texttt{bbob} suite and
+    display the results.
 
 Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
 
+.. raw:: latex 
+
+    }
+    \end{figure}
+
 The COCO_ framework provides currently
 
-    - an interface to several languages in which the benchmarked optimizer
-      might be written, currently C/C++, Java, Matlab/Octave, Python
-    - several benchmark suites or testbeds, currently all written in C
-    - data logging facilities via the ``Observer``
-    - data post-processing in Python and data display facilities in ``html``
-    - article LaTeX templates
+- an interface to several languages in which the benchmarked optimizer
+  might be written, currently C/C++, Java, Matlab/Octave, Python
+- several benchmark suites or testbeds, currently all written in C
+- data logging facilities via the ``Observer``
+- data post-processing in Python and data display facilities in ``html``
+- article LaTeX templates
 
 The underlying philosophy of COCO_ is to provide everything which most experimenters 
 needed to implement if they wanted to benchmark an algorithm properly.
@@ -196,7 +204,7 @@ the following defining features.
 
 #. Benchmark functions are 
 
-    #. used as black boxes to the algorithm, however they 
+    #. used as black boxes for the algorithm, however they 
        are explicitly known to the scientific community. 
     #. designed to be comprehensible, to allow a meaningful 
        interpretation of performance results.
@@ -216,14 +224,14 @@ the following defining features.
      - assume a wide range of values
      - aggregate over a collection of values in a very meaningful way
      
-     A missing runtime value is considered as possible outcome (see below). 
-     
-#. Display 
+   A missing runtime value is considered as possible outcome (see below).
+
+   .. todo:: add link
+    
+#. The display is as convenient (user-centered) and informative as it can get. 
 
 
 .. todo:: 
-
-.. note:: later we want to talk about the interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances), but see also [BBO2016perf]_. 
 
 .. note:: (Anne) would mention in addition meaningful and comprehensible display of performance measure [in contrast to - extreme result of just final ranking of BBcomp or aggregation of dimension in math opt community]
 
@@ -360,7 +368,12 @@ Runtime
 Aggregation
 ------------
 
-- Missing values can be integrated over within instances [BBO2016perf]_. 
+.. note::
+
+  - Missing values can be integrated over within instances [BBO2016perf]_. 
+
+  - interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances), but see also [BBO2016perf]_. 
+
 
 .. todo::
 
