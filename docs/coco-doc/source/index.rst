@@ -152,11 +152,12 @@ as simple as
     
 .. code:: python
 
-  import cocoex
+  try: import cocoex  
+  except: import bbob_pproc as cocoex
   import cocopp
   from myoptimizer import fmin
     
-  suite = cocoex.Suite("bbob", "2013", "")
+  suite = cocoex.Suite("bbob", "year: 2016", "")
   observer = cocoex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
     
   for p in suite:
@@ -217,10 +218,10 @@ the following defining features.
    experiment, the experimental procedure is budget-free [BBO2016ex]_.
 
 #. A single performance  measure is used, namely runtime measured in 
-   number of |f|-evaluations. Runtime has the advantage to
+   number of |f|-evaluations [BBO2016perf]_. Runtime has the advantage to 
     
      - be easily interpretable without expert domain knowledge
-     - be quantitative on the ratio scale [STE1946]_ 
+     - be quantitative on the ratio scale [STE1946]_ [#]_
      - assume a wide range of values
      - aggregate over a collection of values in a very meaningful way
      
@@ -228,12 +229,13 @@ the following defining features.
 
    .. todo:: add link
     
-#. The display is as convenient (user-centered) and informative as it can get. 
+#. The display is as comprehensible, intuitive and informative as as possible. 
+   Aggregation over dimension is avoided, because dimension is a parameter 
+   a practitioner can and should use to select an optimizer. 
 
 
 .. todo:: 
 
-.. note:: (Anne) would mention in addition meaningful and comprehensible display of performance measure [in contrast to - extreme result of just final ranking of BBcomp or aggregation of dimension in math opt community]
 
 Terminology
 -----------
@@ -278,8 +280,12 @@ We specify a few terms which are used later.
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
 
 .. [#] For example, the optimum is not in all-zeros, optima are not placed 
-    on a regular grid, the function is not separable [WHI1996]_. Which regularities are 
-    common place in real-world optimization problems remains an open question. 
+    on a regular grid, the function is not separable [WHI1996]_. Which 
+    regularities are common place in real-world optimization problems remains 
+    an open question. 
+
+.. [#] As opposed to ranking algorithm based on their solution quality achieved
+  after a given runtime.  
 
 .. .. [#] Wikipedia__ gives a reasonable introduction to scale types.
 .. .. was 261754099
