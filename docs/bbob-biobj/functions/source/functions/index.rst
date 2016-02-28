@@ -42,7 +42,7 @@ A *separable* function does not show any dependencies between the
 variables and can therefore solves by applying :math:`D` consecutive
 one-dimensional optimizations along the coordinate axes while
 keeping the other variables fixed. Consequently, *non-separable*
-problems must be considered much more diffiult and most of the
+problems must be considered much more difficult and most of the
 proposed benchmark functions are designed being non-separable. The
 typical well-established technique to generate non-separable
 functions from separable ones is the application of a rotation matrix
@@ -394,13 +394,23 @@ Combination of separable ellipsoid function (:math:`f_2` in the
 ``bbob`` suite) and sharp ridge function (:math:`f_{13}`
 in the ``bbob`` suite).
 
-.. todo::
-   Give more details.
+Both objective functions are unimodal but only the first one is
+separable.
+
+The first objective is globally quadratic but with smooth local
+irregularities and highly ill-conditioned with a condition number of
+about :math:`10^6`. For optimizing the second objective, a sharp,
+i.e., non-differentiable ridge has to be followed.
 
 Contained in the *separable - ill-conditioned* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+* Can the search continuously change its search direction when
+  approaching one of the extremes of the Pareto front/Pareto set?
+* What is the effect of having to solve both a highly-conditioned
+  and a non-smooth, non-differentiabale function to approximate
+  the Pareto front/Pareto set?
 
 
 .. _f15:
@@ -411,14 +421,22 @@ Combination of separable ellipsoid function (:math:`f_2` in the
 ``bbob`` suite) and sum of different powers function
 (:math:`f_{14}` in the ``bbob`` suite).
 
-.. todo::
-   Give more details.
+Both objective functions are unimodal but only the first one is
+separable.
+
+The first objective is globally quadratic but with smooth local
+irregularities and highly ill-conditioned with a condition number of
+about :math:`10^6`. When approaching the second objective's optimum,
+the sensitivies of the variables in the rotated search space become
+more and more different.
 
 Contained in the *separable - ill-conditioned* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
-
+* Can the Pareto front/Pareto set be approached when both a
+  highly conditioned function and a function, the conditioning
+  of which increases when approaching the optimum, must be solved?
 
 .. _f16:
 
@@ -428,13 +446,24 @@ Combination of separable ellipsoid function (:math:`f_2` in the
 ``bbob`` suite) and Rastrigin function (:math:`f_{15}`
 in the ``bbob`` suite).
 
-.. todo::
-   Give more details.
+The objective functions show rather opposite properties.
+The first one is separable, the second not. The first one
+is unimodal, the second highly multimodal (roughly :math:`10^D` local
+optima). The first one s highly ill-conditioning (condition number of
+:math:`10^6`), the second one has a conditioning of about 10. Local
+non-linear transformations are performed in both objective functions
+to alleviate the original symmetry and regularity of the two
+baseline functions.
 
 Contained in the *separable - multi-modal* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+* With respect to fully unimodal functions: what is the effect of
+  multimodality?
+* With respect to low-conditioned problems: what is the effect of
+  high conditioning?
+
 
 
 .. _f17:
@@ -445,15 +474,20 @@ Combination of separable ellipsoid function (:math:`f_2` in the
 ``bbob`` suite) and Schaffer F7 function with condition number 10
 (:math:`f_{17}` in the ``bbob`` suite).
 
-.. todo::
-   Give more details.
+Also here, both single objectives possess opposing properties.
+The first objective is unimodal, besides small local non-linearities symmetric,
+separable and highly ill-conditioned while the second objective is highly
+multi-modal, asymmetric, and non-separable, with only a low conditioning.
 
 Contained in the *separable - multi-modal* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+* What is the effect of the opposing difficulties posed by the
+  single objectives when parts of the Pareto front (at the extremes, in the
+  middle, ...) are explored?
 
-
+  
 .. _f18:
 
 :math:`f_{18}`: Ellipsoid separable/Schwefel x*sin(x)
