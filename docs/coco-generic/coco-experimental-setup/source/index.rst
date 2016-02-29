@@ -113,10 +113,10 @@ Our central measure of performance, to which the experimental procedure is adapt
 Terminology
 -----------
 *function*
-  We talk about a *function* as a mapping
+  We talk about a *function* as a parametrized mapping
   :math:`\mathbb{R}^n\to\mathbb{R}^m` with scalable input space, that is,
   :math:`n` is not (yet) determined, and usually :math:`m\in\{1,2\}`.
-  Functions are commonly parametrized such that different *instances* of the
+  Functions are parametrized such that different *instances* of the
   "same" function are available, e.g. translated or shifted versions. 
   
 *problem*
@@ -125,15 +125,15 @@ Terminology
   can be described as the triple ``(dimension, function, instance)``. A problem
   can be evaluated and returns an :math:`f`-value or -vector. 
   In the context of performance
-  assessment, additionally one or several target :math:`f`- or :math:`\Delta f`-values
-  are attached to each problem. That is, a target value is added to the 
-  above triple to define a single problem. 
+  assessment, a target :math:`f`- or indicator-value
+  is attached to each problem. That is, a target value is added to the 
+  above triple to define a single problem in this case. 
   
 *runtime*
   We define *runtime*, or *run-length* [HOO1998]_
   as the *number of evaluations* 
   conducted on a given problem, also referred to as number of *function* evaluations. 
-  Our central performance measure is the runtime until a given target :math:`f`-value 
+  Our central performance measure is the runtime until a given target value 
   is hit.
 
 *suite*
