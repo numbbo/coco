@@ -6,8 +6,8 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build
-HTMLBUILDDIR  = ../../../../coco-doc/bbob-biobj/perf-assessment
-PDF           = bbob-biobj-perf-assessment.pdf
+HTMLBUILDDIR  = ../../../../coco-doc/
+PDF           = coco-doc.pdf
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
