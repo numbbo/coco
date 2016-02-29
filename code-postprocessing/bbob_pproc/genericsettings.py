@@ -25,7 +25,7 @@ in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
-dimensions_to_display_ls = (40, 80, 160, 320, 640, 1280) # Wassim: large scale suite
+dimensions_to_display_ls = (20, 40, 80, 160, 320, 640, 1280) # Wassim: large scale suite
 generate_svg_files = True # generate the svg figures
 scaling_figures_with_boxes = True 
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
